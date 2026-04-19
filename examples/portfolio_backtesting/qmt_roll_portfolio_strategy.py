@@ -129,6 +129,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     regular_add_use_day_extreme_stop: bool = True
     restrict_regular_add_to_first: bool = True
     require_reversal_for_add: bool = True
+    ma5_extreme_filter_enabled: bool = True
+    ma5_extreme_compare_days: int = 3
+    ma5_angle_reversal_filter_enabled: bool = True
+    ma5_angle_reversal_lookback_days: int = 10
+    ma5_angle_reversal_angle_threshold_deg: float = 45.0
+    short_ma5_slope_filter_enabled: bool = True
     wick_chop_filter_enabled: bool = False
     wick_chop_filter_lookback: int = 10
     wick_chop_filter_max_days: int = 4
@@ -194,6 +200,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "regular_add_use_day_extreme_stop",
         "restrict_regular_add_to_first",
         "require_reversal_for_add",
+        "ma5_extreme_filter_enabled",
+        "ma5_extreme_compare_days",
+        "ma5_angle_reversal_filter_enabled",
+        "ma5_angle_reversal_lookback_days",
+        "ma5_angle_reversal_angle_threshold_deg",
+        "short_ma5_slope_filter_enabled",
         "wick_chop_filter_enabled",
         "wick_chop_filter_lookback",
         "wick_chop_filter_max_days",
@@ -1235,6 +1247,184 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 count += 1
         return count <= int(max_days), count, len(df)
 
+    @staticmethod
+    def _is_latest_ma_extreme(
+        market_data_df: pd.DataFrame,
+        period: int = 5,
+        compare_days: int = 3,
+        mode: str = "max",
+    ) -> tuple[bool, float | None, list[float]]:
+        try:
+            period_i = max(int(period or 5), 1)
+            compare_i = max(int(compare_days or 3), 1)
+            if market_data_df is None or len(market_data_df) < period_i + compare_i - 1:
+                return False, None, []
+            close = pd.to_numeric(market_data_df["close"], errors="coerce")
+            ma = close.rolling(window=period_i).mean().dropna()
+            if len(ma) < compare_i:
+                return False, None, []
+
+            recent_vals = [float(x) for x in ma.iloc[-compare_i:].tolist() if pd.notna(x)]
+            if len(recent_vals) < compare_i:
+                return False, None, recent_vals
+
+            latest_val = float(recent_vals[-1])
+            if compare_i >= 3:
+                prev1_val = float(recent_vals[-2])
+                prev2_val = float(recent_vals[-3])
+                if mode == "min":
+                    should_block = (prev1_val < latest_val) and (prev2_val < prev1_val)
+                    return (not should_block), latest_val, recent_vals
+                should_block = (prev1_val > latest_val) and (prev2_val > prev1_val)
+                return (not should_block), latest_val, recent_vals
+
+            if mode == "min":
+                return latest_val <= min(recent_vals), latest_val, recent_vals
+            return latest_val >= max(recent_vals), latest_val, recent_vals
+        except Exception:
+            return False, None, []
+
+    @staticmethod
+    def _get_ma_slope_direction(market_data_df: pd.DataFrame, period: int = 5) -> float:
+        try:
+            period_i = int(period or 5)
+            if market_data_df is None or len(market_data_df) < max(period_i, 2) + 1:
+                return 0.0
+            close = pd.to_numeric(market_data_df["close"], errors="coerce")
+            ma = close.rolling(window=period_i).mean()
+            if len(ma) < 2 or pd.isna(ma.iloc[-1]) or pd.isna(ma.iloc[-2]):
+                return 0.0
+            return float(ma.iloc[-1] - ma.iloc[-2])
+        except Exception:
+            return 0.0
+
+    @staticmethod
+    def _evaluate_ma5_angle_reversal_filter(
+        market_data_df: pd.DataFrame,
+        period: int = 5,
+        lookback_days: int = 10,
+        angle_threshold_deg: float = 30.0,
+    ) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "should_block": False,
+            "recent_angles": [],
+            "matched_prev_angle": None,
+            "matched_curr_angle": None,
+            "threshold_deg": float(angle_threshold_deg or 30.0),
+        }
+        try:
+            period_i = max(int(period or 5), 1)
+            lookback_i = max(int(lookback_days or 10), 2)
+            threshold_f = float(angle_threshold_deg or 30.0)
+            if market_data_df is None or len(market_data_df) < period_i + 2:
+                return result
+            close = pd.to_numeric(market_data_df["close"], errors="coerce")
+            ma = close.rolling(window=period_i).mean().dropna()
+            if len(ma) < 3:
+                return result
+
+            angles: list[float] = []
+            for i in range(1, len(ma)):
+                prev_v = ma.iloc[i - 1]
+                curr_v = ma.iloc[i]
+                if pd.isna(prev_v) or pd.isna(curr_v):
+                    continue
+                delta = float(curr_v) - float(prev_v)
+                angle_deg = float(math.degrees(math.atan(delta)))
+                angles.append(angle_deg)
+
+            if len(angles) < 2:
+                return result
+
+            recent_angles = [float(x) for x in angles[-lookback_i:]]
+            result["recent_angles"] = recent_angles
+            for i in range(1, len(recent_angles)):
+                prev_angle = float(recent_angles[i - 1])
+                curr_angle = float(recent_angles[i])
+                if prev_angle < -threshold_f and curr_angle > threshold_f:
+                    result["should_block"] = True
+                    result["matched_prev_angle"] = prev_angle
+                    result["matched_curr_angle"] = curr_angle
+                    break
+            return result
+        except Exception:
+            return result
+
+    def _is_simple_ma_trend(
+        self,
+        market_data_df: pd.DataFrame,
+        direction: str,
+        slope_lookback: int = 3,
+    ) -> bool:
+        try:
+            if market_data_df is None:
+                return False
+            need = int(self.ma_extra_long) + int(slope_lookback) + 2
+            if len(market_data_df) < need:
+                return False
+            close = market_data_df["close"]
+            close_last = float(close.iloc[-1])
+
+            ma_short = float(close.rolling(int(self.ma_short)).mean().iloc[-1])
+            ma_mid = float(close.rolling(int(self.ma_mid)).mean().iloc[-1])
+            ma_long = float(close.rolling(int(self.ma_long)).mean().iloc[-1])
+            ma_extra = float(close.rolling(int(self.ma_extra_long)).mean().iloc[-1])
+            ma_long_prev = float(close.rolling(int(self.ma_long)).mean().iloc[-1 - int(slope_lookback)])
+
+            if direction == "long":
+                return ma_short > ma_mid > ma_long > ma_extra and ma_long > ma_long_prev and close_last > ma_long
+            if direction == "short":
+                return ma_short < ma_mid < ma_long < ma_extra and ma_long < ma_long_prev and close_last < ma_long
+            return False
+        except Exception:
+            return False
+
+    def _passes_entry_filters(self, signal: str, history: pd.DataFrame) -> bool:
+        if not signal:
+            return False
+
+        is_long = signal.startswith("long")
+        is_short = signal.startswith("short")
+
+        if self.ma5_extreme_filter_enabled:
+            mode = "max" if is_long else "min"
+            ok, _, _ = self._is_latest_ma_extreme(
+                history,
+                period=self.ma_short,
+                compare_days=self.ma5_extreme_compare_days,
+                mode=mode,
+            )
+            if not ok:
+                return False
+
+        if self.ma5_angle_reversal_filter_enabled:
+            angle_filter = self._evaluate_ma5_angle_reversal_filter(
+                history,
+                period=self.ma_short,
+                lookback_days=self.ma5_angle_reversal_lookback_days,
+                angle_threshold_deg=self.ma5_angle_reversal_angle_threshold_deg,
+            )
+            if angle_filter.get("should_block"):
+                return False
+
+        if is_short and self.short_ma5_slope_filter_enabled:
+            ma5_slope = self._get_ma_slope_direction(history, period=self.ma_short)
+            if ma5_slope > 0:
+                return False
+
+        if self.wick_chop_filter_enabled:
+            direction = "long" if is_long else "short"
+            if not self._is_simple_ma_trend(history, direction, 3):
+                ok, _, _ = self._wick_chop_filter_ok(
+                    history,
+                    self.wick_chop_filter_lookback,
+                    self.wick_chop_filter_max_days,
+                )
+                if not ok:
+                    return False
+
+        return True
+
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
         close = pd.Series(am.close_array)
         ma_short = close.rolling(self.ma_short).mean()
@@ -1303,32 +1493,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if (golden_5_10 or death_5_10) and not (golden_10_20 or death_10_20 or golden_20_40 or death_20_40):
             if golden_5_10 and bullish_alignment and allow_long:
                 signal = "long_case1a"
-                risk_mode = "breakout" if breakout_up else "regular"
                 breakout = breakout_up
             elif death_5_10 and bearish_alignment and allow_short:
                 signal = "short_case1a"
-                risk_mode = "breakout" if breakout_down else "regular"
                 breakout = breakout_down
         elif golden_10_20 or death_10_20 or golden_20_40 or death_20_40:
             if (golden_10_20 or golden_20_40) and bullish_alignment and allow_long:
-                if (not self.case2_requires_breakout) or breakout_up:
-                    signal = "long_case2"
-                    risk_mode = "ma_cross_breakout"
-                    breakout = breakout_up
+                signal = "long_case2"
+                breakout = breakout_up
             elif (death_10_20 or death_20_40) and bearish_alignment and allow_short:
-                if (not self.case2_requires_breakout) or breakout_down:
-                    signal = "short_case2"
-                    risk_mode = "ma_cross_breakout"
-                    breakout = breakout_down
+                signal = "short_case2"
+                breakout = breakout_down
         else:
             if macd_golden and bullish_alignment and allow_long:
                 signal = "long_case3"
-                risk_mode = "breakout" if breakout_up else "regular"
                 breakout = breakout_up
             elif macd_death and bearish_alignment and allow_short:
                 signal = "short_case3"
-                risk_mode = "breakout" if breakout_down else "regular"
                 breakout = breakout_down
+
+        if signal and not self._passes_entry_filters(signal, history):
+            signal = ""
+            risk_mode = "regular"
+            breakout = False
 
         return self._signal_result(signal, bullish_alignment, bearish_alignment, float(ma_long.iloc[-1]), risk_mode, breakout)
 
