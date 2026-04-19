@@ -33,8 +33,10 @@ def main() -> None:
         capital=1_000_000,
     )
 
+    mapping_csv_path: Path = (OUTPUT_DIR / "tqsdk_main_contract_mapping_2020_2026_04.csv").resolve()
+
     setting: dict[str, object] = {
-        "mapping_csv_path": str((OUTPUT_DIR / "tqsdk_main_contract_mapping_2020_2026_04.csv").resolve()),
+        "mapping_csv_path": str(mapping_csv_path),
         "ma_short": 5,
         "ma_mid": 10,
         "ma_long": 20,
@@ -92,7 +94,13 @@ def main() -> None:
 
     statistics: dict = engine.calculate_statistics()
     print(statistics)
-    save_backtest_artifacts(engine, statistics)
+    save_backtest_artifacts(
+        engine,
+        statistics,
+        file_prefix="qmt_roll",
+        chart_title="QMT Roll Portfolio Backtest",
+        mapping_csv_path=mapping_csv_path,
+    )
 
     if OPEN_BROWSER_CHART:
         engine.show_chart()
