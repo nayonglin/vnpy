@@ -6,6 +6,7 @@ from datetime import datetime
 from vnpy.trader.constant import Exchange
 
 
+PRELOAD_START_DT: datetime = datetime(2019, 6, 1)
 START_DT: datetime = datetime(2020, 1, 1)
 END_DT: datetime = datetime(2026, 4, 30)
 

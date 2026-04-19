@@ -7,7 +7,7 @@ from vnpy_portfoliostrategy import BacktestingEngine
 
 from main_contract_mapping import build_contract_metadata
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
-from qmt_universe import END_DT, START_DT
+from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, OUTPUT_DIR, save_backtest_artifacts
 
 
@@ -24,7 +24,7 @@ def main() -> None:
     engine.set_parameters(
         vt_symbols=vt_symbols,
         interval=Interval.DAILY,
-        start=START_DT,
+        start=PRELOAD_START_DT,
         end=END_DT,
         rates=rates,
         slippages=slippages,
@@ -52,9 +52,9 @@ def main() -> None:
         "short_entry_enabled": False,
         "rollover_reopen_enabled": True,
         "max_capital_usage_ratio": 0.9,
-        "risk_ratio_of_total_assets": 0.01,
-        "risk_ratio_breakout": 0.01,
-        "risk_ratio_ma_cross_breakout": 0.01,
+        "risk_ratio_of_total_assets": 0.04,
+        "risk_ratio_breakout": 0.04,
+        "risk_ratio_ma_cross_breakout": 0.04,
         "min_risk_per_trade": 1000.0,
         "max_risk_per_trade": 50_000_000.0,
         "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in margin_ratios.items()),
@@ -96,9 +96,15 @@ def main() -> None:
 
     engine.load_data()
     engine.run_backtesting()
-    engine.calculate_result()
+    daily_df = engine.calculate_result()
+    if daily_df is not None:
+        analysis_df = daily_df.copy()
+        analysis_df = analysis_df.loc[analysis_df.index >= START_DT.date()]
+    else:
+        analysis_df = None
 
-    statistics: dict = engine.calculate_statistics()
+    statistics: dict = engine.calculate_statistics(analysis_df)
+    engine.daily_df = analysis_df
     print(statistics)
     save_backtest_artifacts(
         engine,
@@ -106,6 +112,7 @@ def main() -> None:
         file_prefix="qmt_roll",
         chart_title="QMT Roll Portfolio Backtest",
         mapping_csv_path=mapping_csv_path,
+        analysis_start=START_DT,
     )
 
     if OPEN_BROWSER_CHART:

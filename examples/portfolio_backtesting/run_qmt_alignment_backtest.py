@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 from typing import Any
+from datetime import datetime
 
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -116,6 +117,29 @@ def _normalize_daily_df(daily_df: pd.DataFrame) -> pd.DataFrame:
     normalized: pd.DataFrame = daily_df.copy()
     normalized.index = pd.to_datetime(normalized.index)
     normalized.sort_index(inplace=True)
+    return normalized
+
+
+def _ensure_chart_columns(daily_df: pd.DataFrame, capital: float) -> pd.DataFrame:
+    normalized: pd.DataFrame = daily_df.copy()
+
+    if "balance" not in normalized.columns:
+        net_pnl = pd.to_numeric(normalized.get("net_pnl", pd.Series(0.0, index=normalized.index)), errors="coerce").fillna(0.0)
+        normalized["balance"] = float(capital) + net_pnl.cumsum()
+
+    if "drawdown" not in normalized.columns:
+        highlevel = normalized["balance"].cummax()
+        normalized["highlevel"] = highlevel
+        normalized["drawdown"] = normalized["balance"] - highlevel
+
+    if "ddpercent" not in normalized.columns:
+        highlevel = normalized.get("highlevel")
+        if highlevel is None:
+            highlevel = normalized["balance"].cummax()
+            normalized["highlevel"] = highlevel
+        safe_highlevel = highlevel.replace(0, pd.NA)
+        normalized["ddpercent"] = (normalized["drawdown"] / safe_highlevel * 100).fillna(0.0)
+
     return normalized
 
 
@@ -928,6 +952,7 @@ def save_backtest_artifacts(
     file_prefix: str = "qmt_alignment",
     chart_title: str = "QMT Alignment Portfolio Backtest",
     mapping_csv_path: Path | None = None,
+    analysis_start: datetime | None = None,
 ) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -938,6 +963,22 @@ def save_backtest_artifacts(
     daily_df = engine.daily_df
     if daily_df is not None:
         daily_df = _normalize_daily_df(daily_df)
+        if analysis_start is not None:
+            daily_df = daily_df[daily_df.index >= pd.Timestamp(analysis_start)]
+        if not daily_df.empty:
+            daily_df = _ensure_chart_columns(daily_df, float(statistics.get("capital", 0) or 0))
+
+    if analysis_start is not None and not trades_df.empty:
+        trade_dt = pd.to_datetime(trades_df["datetime"]).dt.tz_localize(None)
+        trades_df = trades_df.loc[trade_dt >= pd.Timestamp(analysis_start)].copy()
+
+    if analysis_start is not None and not positions_df.empty:
+        pos_dt = pd.to_datetime(positions_df["date"])
+        positions_df = positions_df.loc[pos_dt >= pd.Timestamp(analysis_start)].copy()
+
+    if analysis_start is not None and not entry_risk_df.empty:
+        risk_dt = pd.to_datetime(entry_risk_df["datetime"]).dt.tz_localize(None)
+        entry_risk_df = entry_risk_df.loc[risk_dt >= pd.Timestamp(analysis_start)].copy()
 
         daily_path: Path = OUTPUT_DIR / f"{file_prefix}_daily.csv"
         daily_df.to_csv(daily_path, encoding="utf-8-sig")

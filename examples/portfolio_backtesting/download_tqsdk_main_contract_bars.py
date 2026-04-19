@@ -13,7 +13,7 @@ from vnpy.trader.database import get_database
 from vnpy.trader.object import HistoryRequest
 
 from main_contract_mapping import build_contract_metadata
-from qmt_universe import END_DT, START_DT
+from qmt_universe import END_DT, PRELOAD_START_DT
 
 
 LOCAL_TQSDK_PATH: Path = PROJECT_ROOT / "vnpy_tqsdk" / "tqsdk_datafeed.py"
@@ -42,7 +42,7 @@ def main() -> None:
             symbol=symbol,
             exchange=exchange,
             interval=Interval.DAILY,
-            start=START_DT,
+            start=PRELOAD_START_DT,
             end=END_DT,
         )
         bars = datafeed.query_bar_history(req)
