@@ -3,25 +3,37 @@
 *.pyo
 *.pyd
 *.egg-info/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.python-version
+.env
+.env.*
+.venv/
+.py311/
+.mamba-root/
+.tools/
 
 # Jupyter
-.ipynb_checkpoints
+.ipynb_checkpoints/
 
 # IDE
-.vscode
-.idea
+.vscode/
+.idea/
 *.wpr
 *.wpu
-.vs
-x64
+.vs/
+x64/
 
 # Temp
-build
-dist
+build/
+dist/
 *.local
 
 # VeighNa
-.vntrader
+.vntrader/
 
 # Visual Studio intermediate files
 *.exp
@@ -30,9 +42,9 @@ dist
 *.pdb
 
 # Documents
-_build
-_static
-_templates
+_build/
+_static/
+_templates/
 
 # Misc
 .DS_Store
@@ -40,4 +52,7 @@ _templates
 
 # Alpha
 lab/
-/.mypy_cache
+/.mypy_cache/
+examples/alpha_research/native_results/
+examples/alpha_research/public_results/
+examples/portfolio_backtesting/backtest_outputs/
