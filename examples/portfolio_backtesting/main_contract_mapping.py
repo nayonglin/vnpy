@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 
+from contract_metadata import build_resolved_metadata
 from qmt_universe import MARGIN_RATIOS, PRICETICKS, RATES, SIZES, SLIPPAGES
 
 
@@ -49,15 +50,25 @@ def build_contract_metadata(mapping_path: Path | None = None) -> dict[str, Any]:
     slippages: dict[str, float] = {
         vt_symbol: float(SLIPPAGES[source_symbol_by_contract[vt_symbol]]) for vt_symbol in vt_symbols
     }
-    sizes: dict[str, int] = {
+    default_sizes: dict[str, int] = {
         vt_symbol: int(SIZES[source_symbol_by_contract[vt_symbol]]) for vt_symbol in vt_symbols
     }
-    priceticks: dict[str, float] = {
+    default_priceticks: dict[str, float] = {
         vt_symbol: float(PRICETICKS[source_symbol_by_contract[vt_symbol]]) for vt_symbol in vt_symbols
     }
-    margin_ratios: dict[str, float] = {
+    default_margin_ratios: dict[str, float] = {
         vt_symbol: float(MARGIN_RATIOS[source_symbol_by_contract[vt_symbol]]) for vt_symbol in vt_symbols
     }
+    resolved = build_resolved_metadata(
+        vt_symbols=vt_symbols,
+        default_sizes=default_sizes,
+        default_priceticks=default_priceticks,
+        default_margin_ratios=default_margin_ratios,
+        fallback_symbol_by_vt=source_symbol_by_contract,
+    )
+    sizes: dict[str, int] = resolved["sizes"]
+    priceticks: dict[str, float] = resolved["priceticks"]
+    margin_ratios: dict[str, float] = resolved["margin_ratios"]
 
     product_symbols: list[str] = sorted(df["continuous_symbol_vt"].drop_duplicates().tolist())
 
@@ -68,6 +79,7 @@ def build_contract_metadata(mapping_path: Path | None = None) -> dict[str, Any]:
         "sizes": sizes,
         "priceticks": priceticks,
         "margin_ratios": margin_ratios,
+        "metadata_sources": resolved["metadata_sources"],
         "source_symbol_by_contract": source_symbol_by_contract,
         "product_symbols": product_symbols,
     }

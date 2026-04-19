@@ -12,6 +12,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+from contract_metadata import build_resolved_metadata
 from vnpy.trader.constant import Direction, Exchange, Interval
 from vnpy.trader.database import get_database
 from vnpy_portfoliostrategy import BacktestingEngine
@@ -1045,6 +1046,16 @@ def save_backtest_artifacts(
 
 
 def main() -> None:
+    resolved = build_resolved_metadata(
+        vt_symbols=VT_SYMBOLS,
+        default_sizes=SIZES,
+        default_priceticks=PRICETICKS,
+        default_margin_ratios=MARGIN_RATIOS,
+    )
+    resolved_sizes: dict[str, int] = resolved["sizes"]
+    resolved_priceticks: dict[str, float] = resolved["priceticks"]
+    resolved_margin_ratios: dict[str, float] = resolved["margin_ratios"]
+
     engine = BacktestingEngine()
     engine.set_parameters(
         vt_symbols=VT_SYMBOLS,
@@ -1053,8 +1064,8 @@ def main() -> None:
         end=END_DT,
         rates=RATES,
         slippages=SLIPPAGES,
-        sizes=SIZES,
-        priceticks=PRICETICKS,
+        sizes=resolved_sizes,
+        priceticks=resolved_priceticks,
         capital=1_000_000,
     )
 
@@ -1078,7 +1089,7 @@ def main() -> None:
         "risk_ratio_ma_cross_breakout": 0.01,
         "min_risk_per_trade": 1000.0,
         "max_risk_per_trade": 50_000_000.0,
-        "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in MARGIN_RATIOS.items()),
+        "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in resolved_margin_ratios.items()),
         "streak_risk_multipliers": "1.0,1.0,1.0,0.1",
         "stop_loss_pct": 0.02,
         "trailing_stop_enabled": True,
