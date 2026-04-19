@@ -34,7 +34,7 @@ PRODUCT_SPECS: list[ProductSpec] = [
     ProductSpec("SA", Exchange.CZCE, 20, 1.0, 1.0, 0.12),
     ProductSpec("rb", Exchange.SHFE, 10, 1.0, 1.0, 0.10),
     ProductSpec("jm", Exchange.DCE, 60, 0.5, 1.0, 0.20),
-    ProductSpec("a", Exchange.DCE, 10, 1.0, 1.0, 0.10),
+    # ProductSpec("a", Exchange.DCE, 10, 1.0, 1.0, 0.10),  # Temporarily excluded from the universe.
     ProductSpec("hc", Exchange.SHFE, 10, 1.0, 1.0, 0.10),
     ProductSpec("j", Exchange.DCE, 100, 0.5, 1.0, 0.20),
     ProductSpec("CF", Exchange.CZCE, 5, 5.0, 5.0, 0.12),

@@ -240,6 +240,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             product_vt: ProductState(product_vt_symbol=product_vt) for product_vt in self.product_symbols
         }
         self.base_capital: float = self._resolve_base_capital()
+        self.entry_risk_diagnostics: list[dict[str, Any]] = []
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -300,24 +301,46 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     if self._count_active_positions() >= self.max_concurrent_positions:
                         continue
 
-                    volume: int = self._calculate_entry_volume(
+                    sizing: dict[str, Any] = self._calculate_entry_sizing(
                         target_contract, "long", target_bar, history, signal_data
                     )
+                    volume: int = int(sizing["selected_volume"])
                     if volume <= 0:
                         continue
 
-                    self._open_position(state, target_contract, "long", volume, target_bar, signal, history, signal_data)
+                    self._open_position(
+                        state,
+                        target_contract,
+                        "long",
+                        volume,
+                        target_bar,
+                        signal,
+                        history,
+                        signal_data,
+                        sizing_snapshot=sizing,
+                    )
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
                 elif signal.startswith("short") and self.short_entry_enabled:
                     if self._count_active_positions() >= self.max_concurrent_positions:
                         continue
 
-                    volume = self._calculate_entry_volume(target_contract, "short", target_bar, history, signal_data)
+                    sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
+                    volume = int(sizing["selected_volume"])
                     if volume <= 0:
                         continue
 
-                    self._open_position(state, target_contract, "short", volume, target_bar, signal, history, signal_data)
+                    self._open_position(
+                        state,
+                        target_contract,
+                        "short",
+                        volume,
+                        target_bar,
+                        signal,
+                        history,
+                        signal_data,
+                        sizing_snapshot=sizing,
+                    )
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
                 continue
@@ -352,10 +375,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 if signal.startswith("short"):
                     self._close_all_layers(state, float(target_bar.close_price))
                     if self.short_entry_enabled:
-                        volume = self._calculate_entry_volume(target_contract, "short", target_bar, history, signal_data)
+                        sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
+                        volume = int(sizing["selected_volume"])
                         if volume > 0:
                             self._open_position(
-                                state, target_contract, "short", volume, target_bar, signal, history, signal_data
+                                state,
+                                target_contract,
+                                "short",
+                                volume,
+                                target_bar,
+                                signal,
+                                history,
+                                signal_data,
+                                sizing_snapshot=sizing,
                             )
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
@@ -374,10 +406,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 if signal.startswith("long"):
                     self._close_all_layers(state, float(target_bar.close_price))
                     if self.long_entry_enabled:
-                        volume = self._calculate_entry_volume(target_contract, "long", target_bar, history, signal_data)
+                        sizing = self._calculate_entry_sizing(target_contract, "long", target_bar, history, signal_data)
+                        volume = int(sizing["selected_volume"])
                         if volume > 0:
                             self._open_position(
-                                state, target_contract, "long", volume, target_bar, signal, history, signal_data
+                                state,
+                                target_contract,
+                                "long",
+                                volume,
+                                target_bar,
+                                signal,
+                                history,
+                                signal_data,
+                                sizing_snapshot=sizing,
                             )
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
@@ -448,7 +489,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if not reopen_allowed:
             return
 
-        volume: int = self._calculate_entry_volume(
+        sizing: dict[str, Any] = self._calculate_entry_sizing(
             target_contract,
             old_direction,
             new_bar,
@@ -456,10 +497,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             signal_data,
             risk_mode_override=old_risk_mode,
         )
+        volume: int = int(sizing["selected_volume"])
         if volume <= 0:
             return
 
-        self._open_position(state, target_contract, old_direction, volume, new_bar, "rollover_reopen", history, signal_data)
+        self._open_position(
+            state,
+            target_contract,
+            old_direction,
+            volume,
+            new_bar,
+            "rollover_reopen",
+            history,
+            signal_data,
+            sizing_snapshot=sizing,
+        )
         state.risk_mode = old_risk_mode
         state.rollover_opened_today = self._bar_date(new_bar)
         self._apply_state_target(state)
@@ -528,7 +580,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         tier: int = min(self.loss_streak, len(multipliers) - 1)
         return max(0.0, multipliers[tier])
 
-    def _calculate_entry_volume(
+    def _calculate_entry_sizing(
         self,
         vt_symbol: str,
         direction: str,
@@ -536,11 +588,39 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         history: pd.DataFrame,
         signal_data: dict[str, Any],
         risk_mode_override: str | None = None,
-    ) -> int:
+    ) -> dict[str, Any]:
         if self.fixed_size > 0:
-            return int(self.fixed_size)
+            volume: int = int(self.fixed_size)
+            price: float = float(bar.close_price)
+            stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
+            size: int = self.get_size(vt_symbol)
+            margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
+            risk_per_contract: float = max(abs(price - stop_price) * size, max(float(self.get_pricetick(vt_symbol)) * size, 1.0))
+            margin_per_contract: float = price * size * margin_ratio
+            allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
+            free_capital: float = max(0.0, self.estimated_equity - self.total_margin_in_use)
+            limited_balance: float = max(0.0, min(free_capital, allowed_capital))
+            return {
+                "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
+                "risk_ratio": None,
+                "risk_amount": None,
+                "limited_balance": limited_balance,
+                "allowed_capital": allowed_capital,
+                "free_capital": free_capital,
+                "stop_price": stop_price,
+                "risk_per_contract": risk_per_contract,
+                "margin_ratio": margin_ratio,
+                "margin_per_contract": margin_per_contract,
+                "contracts_by_risk": None,
+                "contracts_by_margin": None,
+                "selected_volume": volume,
+                "risk_multiplier": self._current_streak_multiplier(),
+                "sizing_method": "fixed_size",
+            }
 
         limited_balance: float = self._limited_available_balance()
+        allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
+        free_capital: float = max(0.0, self.estimated_equity - self.total_margin_in_use)
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
             risk_ratio: float = self.risk_ratio_ma_cross_breakout
@@ -564,8 +644,44 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         volume: int = min(contracts_by_risk, contracts_by_margin, self.max_position_size)
         if 0 < volume < self.min_position_size:
-            return 0
-        return max(0, volume)
+            volume = 0
+
+        return {
+            "risk_mode": risk_mode,
+            "risk_ratio": risk_ratio,
+            "risk_amount": risk_amount,
+            "limited_balance": limited_balance,
+            "allowed_capital": allowed_capital,
+            "free_capital": free_capital,
+            "stop_price": stop_price,
+            "risk_per_contract": risk_per_contract,
+            "margin_ratio": margin_ratio,
+            "margin_per_contract": margin_per_contract,
+            "contracts_by_risk": contracts_by_risk,
+            "contracts_by_margin": contracts_by_margin,
+            "selected_volume": max(0, volume),
+            "risk_multiplier": self._current_streak_multiplier(),
+            "sizing_method": "risk_budget",
+        }
+
+    def _calculate_entry_volume(
+        self,
+        vt_symbol: str,
+        direction: str,
+        bar: BarData,
+        history: pd.DataFrame,
+        signal_data: dict[str, Any],
+        risk_mode_override: str | None = None,
+    ) -> int:
+        sizing: dict[str, Any] = self._calculate_entry_sizing(
+            vt_symbol,
+            direction,
+            bar,
+            history,
+            signal_data,
+            risk_mode_override=risk_mode_override,
+        )
+        return int(sizing["selected_volume"])
 
     def _count_active_positions(self) -> int:
         count: int = 0
@@ -584,7 +700,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         signal: str,
         history: pd.DataFrame,
         signal_data: dict[str, Any],
+        sizing_snapshot: dict[str, Any] | None = None,
     ) -> None:
+        if sizing_snapshot is None:
+            sizing_snapshot = self._calculate_entry_sizing(
+                contract_vt_symbol,
+                direction,
+                bar,
+                history,
+                signal_data,
+            )
+
+        stop_price: float = float(sizing_snapshot["stop_price"])
         state.reset()
         state.contract_vt_symbol = contract_vt_symbol
         state.direction = direction
@@ -597,13 +724,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 direction=direction,
                 volume=max(1, int(volume)),
                 entry_price=float(bar.close_price),
-                stop_price=self._entry_stop_price(direction, bar, history, use_day_extreme=True),
+                stop_price=stop_price,
                 highest_price=float(bar.high_price),
                 lowest_price=float(bar.low_price),
                 signal=signal,
                 entry_date=state.entry_date,
                 margin_ratio=self._margin_ratio_for_symbol(contract_vt_symbol),
             )
+        )
+        self._record_entry_risk_diagnostic(
+            product_vt_symbol=state.product_vt_symbol,
+            contract_vt_symbol=contract_vt_symbol,
+            direction=direction,
+            bar=bar,
+            signal=signal,
+            layer_kind="base",
+            volume=max(1, int(volume)),
+            stop_price=stop_price,
+            risk_mode=str(sizing_snapshot.get("risk_mode", signal_data.get("risk_mode", "regular"))),
+            sizing_snapshot=sizing_snapshot,
         )
 
     def _append_layer(
@@ -631,6 +770,34 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 margin_ratio=self._margin_ratio_for_symbol(state.contract_vt_symbol),
             )
         )
+        self._record_entry_risk_diagnostic(
+            product_vt_symbol=state.product_vt_symbol,
+            contract_vt_symbol=state.contract_vt_symbol,
+            direction=state.direction,
+            bar=bar,
+            signal=signal,
+            layer_kind=kind,
+            volume=max(1, int(volume)),
+            stop_price=stop_price,
+            risk_mode=state.risk_mode,
+            sizing_snapshot={
+                "risk_mode": state.risk_mode,
+                "risk_ratio": None,
+                "risk_amount": None,
+                "limited_balance": self._limited_available_balance(),
+                "allowed_capital": max(0.0, self.estimated_equity * self.max_capital_usage_ratio),
+                "free_capital": max(0.0, self.estimated_equity - self.total_margin_in_use),
+                "stop_price": stop_price,
+                "risk_per_contract": None,
+                "margin_ratio": self._margin_ratio_for_symbol(state.contract_vt_symbol),
+                "margin_per_contract": None,
+                "contracts_by_risk": None,
+                "contracts_by_margin": None,
+                "selected_volume": max(1, int(volume)),
+                "risk_multiplier": self._current_streak_multiplier(),
+                "sizing_method": "add_multiplier" if kind == "add" else "donchian_multiplier",
+            },
+        )
 
     def _apply_state_target(self, state: ProductState) -> None:
         if not state.contract_vt_symbol:
@@ -638,6 +805,73 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         volume: int = state.active_volume()
         target: int = -volume if state.direction == "short" else volume
         self.set_target(state.contract_vt_symbol, target)
+
+    def _record_entry_risk_diagnostic(
+        self,
+        product_vt_symbol: str,
+        contract_vt_symbol: str,
+        direction: str,
+        bar: BarData,
+        signal: str,
+        layer_kind: str,
+        volume: int,
+        stop_price: float,
+        risk_mode: str,
+        sizing_snapshot: dict[str, Any],
+    ) -> None:
+        entry_price: float = float(bar.close_price)
+        size: int = self.get_size(contract_vt_symbol)
+        margin_ratio: float = float(sizing_snapshot.get("margin_ratio", self._margin_ratio_for_symbol(contract_vt_symbol)) or 0.0)
+        risk_per_contract: float = sizing_snapshot.get("risk_per_contract")
+        if risk_per_contract is None:
+            min_risk: float = max(float(self.get_pricetick(contract_vt_symbol)) * size, 1.0)
+            risk_per_contract = max(abs(entry_price - stop_price) * size, min_risk)
+
+        margin_per_contract: float = sizing_snapshot.get("margin_per_contract")
+        if margin_per_contract is None:
+            margin_per_contract = entry_price * size * margin_ratio
+
+        actual_risk_amount: float = risk_per_contract * volume
+        actual_margin_amount: float = margin_per_contract * volume
+        estimated_equity: float = float(self.estimated_equity or self.base_capital)
+
+        self.entry_risk_diagnostics.append(
+            {
+                "entry_index": len(self.entry_risk_diagnostics) + 1,
+                "datetime": bar.datetime,
+                "date": bar.datetime.date(),
+                "product_vt_symbol": product_vt_symbol,
+                "contract_vt_symbol": contract_vt_symbol,
+                "direction": direction,
+                "signal": signal,
+                "layer_kind": layer_kind,
+                "risk_mode": risk_mode,
+                "sizing_method": sizing_snapshot.get("sizing_method", "unknown"),
+                "estimated_equity": estimated_equity,
+                "total_margin_in_use_before": float(self.total_margin_in_use),
+                "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
+                "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
+                "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
+                "risk_ratio": sizing_snapshot.get("risk_ratio"),
+                "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "target_risk_amount": sizing_snapshot.get("risk_amount"),
+                "entry_price": entry_price,
+                "stop_price": stop_price,
+                "stop_distance": abs(entry_price - stop_price),
+                "size": size,
+                "risk_per_contract": risk_per_contract,
+                "actual_risk_amount": actual_risk_amount,
+                "margin_ratio": margin_ratio,
+                "margin_per_contract": margin_per_contract,
+                "actual_margin_amount": actual_margin_amount,
+                "projected_total_margin_after": float(self.total_margin_in_use) + actual_margin_amount,
+                "volume": int(volume),
+                "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
+                "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
+                "selected_volume": sizing_snapshot.get("selected_volume"),
+                "loss_streak": int(self.loss_streak),
+            }
+        )
 
     def _reconcile_state_with_position(self, state: ProductState, current_pos: int, bar: BarData) -> None:
         if current_pos == 0:

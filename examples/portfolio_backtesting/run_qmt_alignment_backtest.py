@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import timedelta
+import html
 import json
 from pathlib import Path
 import re
@@ -9,7 +11,8 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-from vnpy.trader.constant import Direction, Interval
+from vnpy.trader.constant import Direction, Exchange, Interval
+from vnpy.trader.database import get_database
 from vnpy_portfoliostrategy import BacktestingEngine
 
 from qmt_alignment_portfolio_strategy import QmtAlignmentPortfolioStrategy
@@ -18,6 +21,8 @@ from qmt_universe import END_DT, MARGIN_RATIOS, PRICETICKS, RATES, SIZES, SLIPPA
 OUTPUT_DIR: Path = Path(__file__).resolve().parent / "backtest_outputs"
 OPEN_BROWSER_CHART: bool = False
 MONTH_LABELS: list[str] = [f"{month}月" for month in range(1, 13)]
+TRADE_REVIEW_LOOKBACK_BARS: int = 30
+TRADE_REVIEW_LOOKAHEAD_BARS: int = 30
 
 
 def _to_builtin(value: Any) -> Any:
@@ -91,6 +96,19 @@ def build_positions_df(engine: BacktestingEngine) -> pd.DataFrame:
 
     df = pd.DataFrame(rows)
     df.sort_values(["date", "vt_symbol"], inplace=True)
+    return df
+
+
+def build_entry_risk_diagnostics_df(engine: BacktestingEngine) -> pd.DataFrame:
+    strategy = getattr(engine, "strategy", None)
+    rows: list[dict[str, Any]] = getattr(strategy, "entry_risk_diagnostics", []) if strategy else []
+    if not rows:
+        return pd.DataFrame()
+
+    df: pd.DataFrame = pd.DataFrame(rows)
+    sort_columns: list[str] = [column for column in ["entry_index", "datetime", "contract_vt_symbol"] if column in df.columns]
+    if sort_columns:
+        df.sort_values(sort_columns, inplace=True)
     return df
 
 
@@ -401,6 +419,508 @@ def _create_professional_dashboard(
     return fig
 
 
+def _normalize_trade_review_input(df: pd.DataFrame, datetime_col: str) -> pd.DataFrame:
+    normalized = df.copy()
+    normalized[datetime_col] = pd.to_datetime(normalized[datetime_col]).dt.tz_localize(None)
+    normalized["date"] = normalized[datetime_col].dt.normalize()
+    return normalized
+
+
+def _parse_vt_symbol(vt_symbol: str) -> tuple[str, Exchange]:
+    symbol, exchange = vt_symbol.split(".", 1)
+    return symbol, Exchange(exchange)
+
+
+def _load_trade_review_bars(trades_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    if trades_df.empty:
+        return {}
+
+    database = get_database()
+    bars_by_contract: dict[str, pd.DataFrame] = {}
+
+    for vt_symbol, group_df in trades_df.groupby("vt_symbol"):
+        symbol, exchange = _parse_vt_symbol(vt_symbol)
+        start_dt = group_df["datetime"].min().to_pydatetime() - timedelta(days=120)
+        end_dt = group_df["datetime"].max().to_pydatetime() + timedelta(days=120)
+        bars = database.load_bar_data(symbol, exchange, Interval.DAILY, start_dt, end_dt)
+
+        rows: list[dict[str, Any]] = []
+        for bar in bars:
+            rows.append(
+                {
+                    "date": pd.Timestamp(bar.datetime).tz_localize(None).normalize(),
+                    "open": float(bar.open_price),
+                    "high": float(bar.high_price),
+                    "low": float(bar.low_price),
+                    "close": float(bar.close_price),
+                    "volume": float(bar.volume),
+                }
+            )
+
+        if rows:
+            contract_df = pd.DataFrame(rows).drop_duplicates(subset=["date"]).sort_values("date")
+            bars_by_contract[vt_symbol] = contract_df
+
+    return bars_by_contract
+
+
+def _match_entry_risk_to_trades(trades_df: pd.DataFrame, entry_risk_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
+    if trades_df.empty or entry_risk_df.empty:
+        return {}
+
+    open_trades = trades_df[trades_df["offset"] == "Open"].copy()
+    open_trades["direction_key"] = open_trades["direction"].str.lower()
+    open_trades["volume_key"] = open_trades["volume"].round(8)
+    open_trades.sort_values(["vt_symbol", "direction_key", "datetime", "trade_id"], inplace=True)
+
+    risk_df = entry_risk_df.copy()
+    risk_df["direction_key"] = risk_df["direction"].astype(str).str.lower()
+    risk_df["volume_key"] = risk_df["volume"].astype(float).round(8)
+    risk_df.sort_values(["contract_vt_symbol", "direction_key", "datetime", "entry_index"], inplace=True)
+
+    matched: dict[str, dict[str, Any]] = {}
+
+    grouped_risks: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for risk_row in risk_df.to_dict("records"):
+        key = (str(risk_row["contract_vt_symbol"]), str(risk_row["direction_key"]))
+        grouped_risks.setdefault(key, []).append(risk_row)
+
+    for trade_row in open_trades.to_dict("records"):
+        key = (str(trade_row["vt_symbol"]), str(trade_row["direction_key"]))
+        candidates = grouped_risks.get(key, [])
+
+        selected_index: int | None = None
+        for index, risk_row in enumerate(candidates):
+            if float(risk_row["volume_key"]) != float(trade_row["volume_key"]):
+                continue
+            risk_dt = pd.Timestamp(risk_row["datetime"])
+            trade_dt = pd.Timestamp(trade_row["datetime"])
+            if risk_dt <= trade_dt <= risk_dt + pd.Timedelta(days=5):
+                selected_index = index
+                break
+
+        if selected_index is None:
+            continue
+
+        matched[str(trade_row["trade_id"])] = candidates.pop(selected_index)
+
+    return matched
+
+
+def _marker_style(direction: str, offset: str, is_selected: bool = False) -> tuple[str, str]:
+    if offset == "Open" and direction == "Long":
+        return ("triangle-up", "#16A34A" if not is_selected else "#0F8A34")
+    if offset == "Open" and direction == "Short":
+        return ("triangle-down", "#DC2626" if not is_selected else "#B91C1C")
+    if offset == "Close" and direction == "Short":
+        return ("x", "#EF4444" if not is_selected else "#B91C1C")
+    return ("x", "#2563EB" if not is_selected else "#1D4ED8")
+
+
+def _build_trade_review_records(
+    trades_df: pd.DataFrame,
+    entry_risk_df: pd.DataFrame,
+    mapping_csv_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    if trades_df.empty:
+        return []
+
+    normalized_trades = _normalize_trade_review_input(trades_df, "datetime")
+    normalized_risks = _normalize_trade_review_input(entry_risk_df, "datetime") if not entry_risk_df.empty else entry_risk_df
+    bars_by_contract = _load_trade_review_bars(normalized_trades)
+    risk_by_trade_id = _match_entry_risk_to_trades(normalized_trades, normalized_risks) if not entry_risk_df.empty else {}
+    roll_df = _build_roll_event_df(mapping_csv_path)
+    if not roll_df.empty:
+        roll_df = roll_df.copy()
+        roll_df["date"] = pd.to_datetime(roll_df["date"]).dt.normalize()
+
+    contract_product_map = _load_contract_product_map(mapping_csv_path)
+    records: list[dict[str, Any]] = []
+
+    for display_index, trade_row in enumerate(normalized_trades.to_dict("records"), start=1):
+        vt_symbol = str(trade_row["vt_symbol"])
+        bars_df = bars_by_contract.get(vt_symbol)
+        if bars_df is None or bars_df.empty:
+            continue
+
+        trade_date = pd.Timestamp(trade_row["date"])
+        matching = bars_df.index[bars_df["date"] == trade_date].tolist()
+        if matching:
+            center_index = matching[0]
+        else:
+            center_index = int(bars_df["date"].searchsorted(trade_date, side="left"))
+            center_index = min(max(center_index - 1, 0), len(bars_df) - 1)
+
+        left = max(0, center_index - TRADE_REVIEW_LOOKBACK_BARS)
+        right = min(len(bars_df), center_index + TRADE_REVIEW_LOOKAHEAD_BARS + 1)
+        window_df = bars_df.iloc[left:right].copy()
+        window_start = pd.Timestamp(window_df["date"].iloc[0])
+        window_end = pd.Timestamp(window_df["date"].iloc[-1])
+
+        window_trades = normalized_trades[
+            (normalized_trades["vt_symbol"] == vt_symbol)
+            & (normalized_trades["date"] >= window_start)
+            & (normalized_trades["date"] <= window_end)
+        ].copy()
+
+        trade_markers: list[dict[str, Any]] = []
+        for window_trade in window_trades.to_dict("records"):
+            is_selected = str(window_trade["trade_id"]) == str(trade_row["trade_id"])
+            symbol, color = _marker_style(str(window_trade["direction"]), str(window_trade["offset"]), is_selected)
+            trade_markers.append(
+                {
+                    "x": pd.Timestamp(window_trade["date"]).strftime("%Y-%m-%d"),
+                    "y": float(window_trade["price"]),
+                    "text": (
+                        f"{window_trade['trade_id']}<br>"
+                        f"{window_trade['direction']} {window_trade['offset']}<br>"
+                        f"价格: {float(window_trade['price']):,.2f}<br>"
+                        f"手数: {float(window_trade['volume']):,.0f}"
+                    ),
+                    "symbol": symbol,
+                    "color": color,
+                    "size": 14 if is_selected else 10,
+                    "selected": is_selected,
+                }
+            )
+
+        roll_markers: list[dict[str, Any]] = []
+        if not roll_df.empty:
+            contract_roll_df = roll_df[
+                (
+                    (roll_df["prev_contract_vt"] == vt_symbol)
+                    | (roll_df["main_contract_vt"] == vt_symbol)
+                )
+                & (roll_df["date"] >= window_start)
+                & (roll_df["date"] <= window_end)
+            ].copy()
+
+            close_map = dict(zip(window_df["date"], window_df["close"], strict=False))
+            for roll_row in contract_roll_df.to_dict("records"):
+                y_value = close_map.get(roll_row["date"], float(window_df["close"].iloc[-1]))
+                roll_markers.append(
+                    {
+                        "x": pd.Timestamp(roll_row["date"]).strftime("%Y-%m-%d"),
+                        "y": float(y_value),
+                        "text": str(roll_row["roll_label"]),
+                    }
+                )
+
+        risk_row = risk_by_trade_id.get(str(trade_row["trade_id"]))
+        risk_summary: dict[str, Any] | None = None
+        stop_line: list[float] | None = None
+        if risk_row:
+            risk_summary = {
+                "layer_kind": risk_row.get("layer_kind"),
+                "risk_mode": risk_row.get("risk_mode"),
+                "sizing_method": risk_row.get("sizing_method"),
+                "estimated_equity": risk_row.get("estimated_equity"),
+                "total_margin_in_use_before": risk_row.get("total_margin_in_use_before"),
+                "limited_balance": risk_row.get("limited_balance"),
+                "target_risk_amount": risk_row.get("target_risk_amount"),
+                "actual_risk_amount": risk_row.get("actual_risk_amount"),
+                "entry_price": risk_row.get("entry_price"),
+                "stop_price": risk_row.get("stop_price"),
+                "stop_distance": risk_row.get("stop_distance"),
+                "risk_per_contract": risk_row.get("risk_per_contract"),
+                "actual_margin_amount": risk_row.get("actual_margin_amount"),
+                "contracts_by_risk": risk_row.get("contracts_by_risk"),
+                "contracts_by_margin": risk_row.get("contracts_by_margin"),
+                "selected_volume": risk_row.get("selected_volume"),
+                "loss_streak": risk_row.get("loss_streak"),
+            }
+            if risk_row.get("stop_price") is not None:
+                stop_line = [float(risk_row["stop_price"])] * len(window_df)
+
+        product_symbol = contract_product_map.get(vt_symbol, _infer_product_symbol(vt_symbol))
+        trade_date_text = pd.Timestamp(trade_row["datetime"]).strftime("%Y-%m-%d %H:%M:%S")
+        label = (
+            f"{display_index}. {trade_date_text} | {vt_symbol} | "
+            f"{trade_row['direction']} {trade_row['offset']} | "
+            f"@{float(trade_row['price']):,.2f} x {float(trade_row['volume']):,.0f}"
+        )
+
+        records.append(
+            {
+                "record_index": display_index,
+                "label": label,
+                "trade_id": str(trade_row["trade_id"]),
+                "datetime": trade_date_text,
+                "date": pd.Timestamp(trade_row["date"]).strftime("%Y-%m-%d"),
+                "vt_symbol": vt_symbol,
+                "product_vt_symbol": product_symbol,
+                "direction": str(trade_row["direction"]),
+                "offset": str(trade_row["offset"]),
+                "price": float(trade_row["price"]),
+                "volume": float(trade_row["volume"]),
+                "bars": {
+                    "date": window_df["date"].dt.strftime("%Y-%m-%d").tolist(),
+                    "open": window_df["open"].round(4).tolist(),
+                    "high": window_df["high"].round(4).tolist(),
+                    "low": window_df["low"].round(4).tolist(),
+                    "close": window_df["close"].round(4).tolist(),
+                    "volume": window_df["volume"].round(4).tolist(),
+                },
+                "trade_markers": trade_markers,
+                "roll_markers": roll_markers,
+                "risk": risk_summary,
+                "stop_line": stop_line,
+            }
+        )
+
+    return records
+
+
+def _create_trade_review_html(
+    trade_review_records: list[dict[str, Any]],
+    html_title: str,
+) -> str:
+    payload: str = json.dumps(trade_review_records, ensure_ascii=False).replace("</", "<\\/")
+    page_title = html.escape(html_title)
+    template = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>__TITLE__</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f5f7fb; color: #1f2937; }
+    .page { max-width: 1500px; margin: 0 auto; padding: 20px; }
+    h1 { margin: 0 0 16px; font-size: 28px; }
+    .toolbar { display: grid; grid-template-columns: 220px 1fr auto auto; gap: 12px; align-items: center; margin-bottom: 16px; }
+    select, input, button { height: 40px; border: 1px solid #d0d7e2; border-radius: 8px; padding: 0 12px; background: #fff; font-size: 14px; }
+    button { cursor: pointer; }
+    .meta { display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .card { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08); }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .kv { display: grid; grid-template-columns: 140px 1fr; row-gap: 6px; column-gap: 8px; font-size: 13px; }
+    .kv div:nth-child(odd) { color: #64748b; }
+    #trade-chart { background: #fff; border-radius: 12px; padding: 8px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08); }
+    .footer { margin-top: 12px; font-size: 12px; color: #64748b; }
+    @media (max-width: 1100px) {
+      .toolbar { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>__TITLE__</h1>
+    <div class="toolbar">
+      <select id="contract-filter"></select>
+      <select id="trade-select"></select>
+      <button id="prev-btn">上一笔</button>
+      <button id="next-btn">下一笔</button>
+    </div>
+    <div class="meta">
+      <div class="card"><h3>成交信息</h3><div id="trade-summary" class="kv"></div></div>
+      <div class="card"><h3>开仓风险快照</h3><div id="risk-summary" class="kv"></div></div>
+      <div class="card"><h3>窗口信息</h3><div id="window-summary" class="kv"></div></div>
+      <div class="card"><h3>说明</h3><div class="kv"><div>绿色三角</div><div>开多</div><div>红色三角</div><div>开空</div><div>红色叉号</div><div>平多</div><div>蓝色叉号</div><div>平空</div><div>橙色虚线</div><div>开仓止损线</div><div>紫色菱形</div><div>换月事件</div></div></div>
+    </div>
+    <div id="trade-chart"></div>
+    <div class="footer">复盘页按每笔成交截取前后 30 根日线，叠加同窗口内全部成交点、换月事件和开仓风险快照。</div>
+  </div>
+  <script>
+    const tradeRecords = __PAYLOAD__;
+    const contractFilter = document.getElementById("contract-filter");
+    const tradeSelect = document.getElementById("trade-select");
+    const tradeSummary = document.getElementById("trade-summary");
+    const riskSummary = document.getElementById("risk-summary");
+    const windowSummary = document.getElementById("window-summary");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    let filteredIndices = [];
+    let activePosition = 0;
+
+    function formatNumber(value, digits = 2) {
+      if (value === null || value === undefined || value === "") return "-";
+      return Number(value).toLocaleString("zh-CN", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    }
+
+    function kvHtml(items) {
+      return items.map(([k, v]) => `<div>${k}</div><div>${v ?? "-"}</div>`).join("");
+    }
+
+    function buildContractFilter() {
+      const contracts = ["全部合约", ...new Set(tradeRecords.map(r => r.vt_symbol))];
+      contractFilter.innerHTML = contracts.map(v => `<option value="${v}">${v}</option>`).join("");
+    }
+
+    function refreshTradeOptions() {
+      const selectedContract = contractFilter.value;
+      filteredIndices = tradeRecords
+        .map((record, index) => ({ record, index }))
+        .filter(item => selectedContract === "全部合约" || item.record.vt_symbol === selectedContract)
+        .map(item => item.index);
+
+      tradeSelect.innerHTML = filteredIndices
+        .map((index, position) => `<option value="${position}">${tradeRecords[index].label}</option>`)
+        .join("");
+
+      activePosition = 0;
+      renderTrade();
+    }
+
+    function renderTrade() {
+      if (!filteredIndices.length) {
+        tradeSummary.innerHTML = "";
+        riskSummary.innerHTML = "";
+        windowSummary.innerHTML = "";
+        Plotly.newPlot("trade-chart", [], { title: "无可用交易" }, { responsive: true, displaylogo: false });
+        return;
+      }
+
+      const record = tradeRecords[filteredIndices[activePosition]];
+      tradeSelect.value = String(activePosition);
+
+      tradeSummary.innerHTML = kvHtml([
+        ["序号", `${record.record_index}`],
+        ["成交时间", record.datetime],
+        ["合约", record.vt_symbol],
+        ["品种", record.product_vt_symbol],
+        ["方向", `${record.direction} / ${record.offset}`],
+        ["成交价", formatNumber(record.price)],
+        ["手数", formatNumber(record.volume, 0)],
+        ["成交编号", record.trade_id],
+      ]);
+
+      if (record.risk) {
+        riskSummary.innerHTML = kvHtml([
+          ["层级", record.risk.layer_kind],
+          ["模式", `${record.risk.risk_mode} / ${record.risk.sizing_method}`],
+          ["目标风险", formatNumber(record.risk.target_risk_amount)],
+          ["实际风险", formatNumber(record.risk.actual_risk_amount)],
+          ["保证金占用", formatNumber(record.risk.actual_margin_amount)],
+          ["止损价", formatNumber(record.risk.stop_price)],
+          ["单手风险", formatNumber(record.risk.risk_per_contract)],
+          ["可用资金", formatNumber(record.risk.limited_balance)],
+        ]);
+      } else {
+        riskSummary.innerHTML = kvHtml([
+          ["说明", "该笔不是开仓，或未匹配到开仓风险快照"],
+          ["目标风险", "-"],
+          ["实际风险", "-"],
+          ["保证金占用", "-"],
+          ["止损价", "-"],
+          ["单手风险", "-"],
+          ["可用资金", "-"],
+          ["手数限制", "-"],
+        ]);
+      }
+
+      const barCount = record.bars.date.length;
+      windowSummary.innerHTML = kvHtml([
+        ["窗口起点", record.bars.date[0]],
+        ["窗口终点", record.bars.date[barCount - 1]],
+        ["K线数量", `${barCount}`],
+        ["窗口内成交点", `${record.trade_markers.length}`],
+        ["窗口内换月", `${record.roll_markers.length}`],
+        ["当前筛选", `${activePosition + 1} / ${filteredIndices.length}`],
+        ["前瞻根数", "30"],
+        ["回看根数", "30"],
+      ]);
+
+      const traces = [
+        {
+          type: "candlestick",
+          x: record.bars.date,
+          open: record.bars.open,
+          high: record.bars.high,
+          low: record.bars.low,
+          close: record.bars.close,
+          name: "日线K线",
+          increasing: { line: { color: "#ef4444" }, fillcolor: "#ef4444" },
+          decreasing: { line: { color: "#16a34a" }, fillcolor: "#16a34a" },
+        },
+        {
+          type: "scatter",
+          mode: "markers",
+          x: record.trade_markers.map(item => item.x),
+          y: record.trade_markers.map(item => item.y),
+          text: record.trade_markers.map(item => item.text),
+          hovertemplate: "%{text}<extra></extra>",
+          marker: {
+            symbol: record.trade_markers.map(item => item.symbol),
+            color: record.trade_markers.map(item => item.color),
+            size: record.trade_markers.map(item => item.size),
+            line: { width: 1, color: "#0f172a" },
+          },
+          name: "成交点",
+        },
+      ];
+
+      if (record.stop_line) {
+        traces.push({
+          type: "scatter",
+          mode: "lines",
+          x: record.bars.date,
+          y: record.stop_line,
+          name: "开仓止损线",
+          line: { color: "#f59e0b", width: 2, dash: "dash" },
+          hovertemplate: "止损价: %{y:,.2f}<extra></extra>",
+        });
+      }
+
+      if (record.roll_markers.length) {
+        traces.push({
+          type: "scatter",
+          mode: "markers",
+          x: record.roll_markers.map(item => item.x),
+          y: record.roll_markers.map(item => item.y),
+          text: record.roll_markers.map(item => item.text),
+          hovertemplate: "%{text}<extra></extra>",
+          marker: {
+            symbol: "diamond",
+            size: 11,
+            color: "#7c3aed",
+            line: { width: 1, color: "#5b21b6" },
+          },
+          name: "换月事件",
+        });
+      }
+
+      const layout = {
+        title: `${record.vt_symbol} | ${record.direction} ${record.offset} | ${record.datetime}`,
+        height: 760,
+        margin: { l: 40, r: 30, t: 60, b: 40 },
+        xaxis: { rangeslider: { visible: false } },
+        yaxis: { title: "价格" },
+        hovermode: "x unified",
+        legend: { orientation: "h", y: 1.02, x: 0 },
+        paper_bgcolor: "#ffffff",
+        plot_bgcolor: "#ffffff",
+      };
+
+      Plotly.newPlot("trade-chart", traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    contractFilter.addEventListener("change", refreshTradeOptions);
+    tradeSelect.addEventListener("change", (event) => {
+      activePosition = Number(event.target.value);
+      renderTrade();
+    });
+    prevBtn.addEventListener("click", () => {
+      if (!filteredIndices.length) return;
+      activePosition = (activePosition - 1 + filteredIndices.length) % filteredIndices.length;
+      renderTrade();
+    });
+    nextBtn.addEventListener("click", () => {
+      if (!filteredIndices.length) return;
+      activePosition = (activePosition + 1) % filteredIndices.length;
+      renderTrade();
+    });
+
+    buildContractFilter();
+    refreshTradeOptions();
+  </script>
+</body>
+</html>
+"""
+    return template.replace("__TITLE__", page_title).replace("__PAYLOAD__", payload)
+
+
 def save_backtest_artifacts(
     engine: BacktestingEngine,
     statistics: dict,
@@ -413,6 +933,7 @@ def save_backtest_artifacts(
 
     positions_df: pd.DataFrame = build_positions_df(engine)
     trades_df: pd.DataFrame = build_trades_df(engine)
+    entry_risk_df: pd.DataFrame = build_entry_risk_diagnostics_df(engine)
 
     daily_df = engine.daily_df
     if daily_df is not None:
@@ -456,6 +977,22 @@ def save_backtest_artifacts(
         pivot_path: Path = OUTPUT_DIR / f"{file_prefix}_end_positions_wide_2020_2026_04.csv"
         pivot_df.to_csv(pivot_path, encoding="utf-8-sig")
         print(f"end positions wide csv: {pivot_path}")
+
+    if not entry_risk_df.empty:
+        entry_risk_path: Path = OUTPUT_DIR / f"{file_prefix}_entry_risk_diagnostics_2020_2026_04.csv"
+        entry_risk_df.to_csv(entry_risk_path, index=False, encoding="utf-8-sig")
+        print(f"entry risk diagnostics csv: {entry_risk_path}")
+
+    if not trades_df.empty:
+        trade_review_records = _build_trade_review_records(trades_df, entry_risk_df, mapping_csv_path)
+        if trade_review_records:
+            trade_review_html = _create_trade_review_html(
+                trade_review_records,
+                f"{chart_title} - Trade Review",
+            )
+            trade_review_path: Path = OUTPUT_DIR / f"{file_prefix}_trade_review.html"
+            trade_review_path.write_text(trade_review_html, encoding="utf-8")
+            print(f"trade review html: {trade_review_path}")
 
     stats_path: Path = OUTPUT_DIR / f"{file_prefix}_statistics.json"
     serializable_stats: dict[str, object] = {
