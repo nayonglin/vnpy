@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 import json
 from pathlib import Path
 from typing import Any
@@ -13,63 +12,7 @@ from vnpy.trader.constant import Direction, Interval
 from vnpy_portfoliostrategy import BacktestingEngine
 
 from qmt_alignment_portfolio_strategy import QmtAlignmentPortfolioStrategy
-
-
-VT_SYMBOLS: list[str] = [
-    "SM.CZCE",
-    "SA.CZCE",
-    "rb.SHFE",
-    "jm.DCE",
-    "a.DCE",
-    "hc.SHFE",
-]
-
-# These symbols represent dominant-continuous futures series in the local database.
-# They are mapped from TqSdk main contracts during download.
-RATES: dict[str, float] = {
-    "SM.CZCE": 0.0,
-    "SA.CZCE": 0.0,
-    "rb.SHFE": 0.0,
-    "jm.DCE": 0.0,
-    "a.DCE": 0.0,
-    "hc.SHFE": 0.0,
-}
-
-SLIPPAGES: dict[str, float] = {
-    "SM.CZCE": 2.0,
-    "SA.CZCE": 1.0,
-    "rb.SHFE": 1.0,
-    "jm.DCE": 1.0,
-    "a.DCE": 1.0,
-    "hc.SHFE": 1.0,
-}
-
-SIZES: dict[str, int] = {
-    "SM.CZCE": 5,
-    "SA.CZCE": 20,
-    "rb.SHFE": 10,
-    "jm.DCE": 60,
-    "a.DCE": 10,
-    "hc.SHFE": 10,
-}
-
-PRICETICKS: dict[str, float] = {
-    "SM.CZCE": 2.0,
-    "SA.CZCE": 1.0,
-    "rb.SHFE": 1.0,
-    "jm.DCE": 0.5,
-    "a.DCE": 1.0,
-    "hc.SHFE": 1.0,
-}
-
-MARGIN_RATIOS: dict[str, float] = {
-    "SM.CZCE": 0.12,
-    "SA.CZCE": 0.12,
-    "rb.SHFE": 0.10,
-    "jm.DCE": 0.20,
-    "a.DCE": 0.10,
-    "hc.SHFE": 0.10,
-}
+from qmt_universe import END_DT, MARGIN_RATIOS, PRICETICKS, RATES, SIZES, SLIPPAGES, START_DT, VT_SYMBOLS
 
 OUTPUT_DIR: Path = Path(__file__).resolve().parent / "backtest_outputs"
 OPEN_BROWSER_CHART: bool = False
@@ -195,18 +138,18 @@ def save_backtest_artifacts(engine: BacktestingEngine, statistics: dict) -> None
 
     trades_df: pd.DataFrame = build_trades_df(engine)
     if not trades_df.empty:
-        trades_path: Path = OUTPUT_DIR / "qmt_alignment_trades_2020_2024.csv"
+        trades_path: Path = OUTPUT_DIR / "qmt_alignment_trades_2020_2026_04.csv"
         trades_df.to_csv(trades_path, index=False, encoding="utf-8-sig")
         print(f"trades csv: {trades_path}")
 
     positions_df: pd.DataFrame = build_positions_df(engine)
     if not positions_df.empty:
-        positions_path: Path = OUTPUT_DIR / "qmt_alignment_position_changes_2020_2024.csv"
+        positions_path: Path = OUTPUT_DIR / "qmt_alignment_position_changes_2020_2026_04.csv"
         positions_df.to_csv(positions_path, index=False, encoding="utf-8-sig")
         print(f"position changes csv: {positions_path}")
 
         pivot_df: pd.DataFrame = positions_df.pivot(index="date", columns="vt_symbol", values="end_pos").fillna(0)
-        pivot_path: Path = OUTPUT_DIR / "qmt_alignment_end_positions_wide_2020_2024.csv"
+        pivot_path: Path = OUTPUT_DIR / "qmt_alignment_end_positions_wide_2020_2026_04.csv"
         pivot_df.to_csv(pivot_path, encoding="utf-8-sig")
         print(f"end positions wide csv: {pivot_path}")
 
@@ -224,8 +167,8 @@ def main() -> None:
     engine.set_parameters(
         vt_symbols=VT_SYMBOLS,
         interval=Interval.DAILY,
-        start=datetime(2020, 1, 1),
-        end=datetime(2024, 12, 31),
+        start=START_DT,
+        end=END_DT,
         rates=RATES,
         slippages=SLIPPAGES,
         sizes=SIZES,
