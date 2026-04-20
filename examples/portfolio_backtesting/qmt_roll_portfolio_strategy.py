@@ -1241,17 +1241,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _entry_stop_price(self, direction: str, bar: BarData, history: pd.DataFrame, use_day_extreme: bool) -> float:
         basic_long = float(bar.close_price) * (1 - self.stop_loss_pct)
         basic_short = float(bar.close_price) * (1 + self.stop_loss_pct)
+        close_price = float(bar.close_price)
+        low_price = float(bar.low_price)
+        high_price = float(bar.high_price)
         recent3 = history.tail(3) if len(history) >= 3 else history
-        min_low = float(recent3["low"].min()) if not recent3.empty else float(bar.low_price)
-        max_high = float(recent3["high"].max()) if not recent3.empty else float(bar.high_price)
+        min_low = float(recent3["low"].min()) if not recent3.empty else low_price
+        max_high = float(recent3["high"].max()) if not recent3.empty else high_price
         smart_long = max(basic_long, min_low)
         smart_short = min(basic_short, max_high)
         if use_day_extreme:
             if direction == "long":
-                # Align with the original QMT behavior: long entries size and initialize
-                # the stop directly from the entry day's low.
-                return float(bar.low_price)
-            return min(float(bar.high_price), smart_short)
+                # When close is too close to the day's low, fall back to a minimum
+                # stop distance based on close to avoid oversized positions.
+                day_drop_ratio = (close_price - low_price) / close_price if close_price > 0 else 0.0
+                if day_drop_ratio < self.stop_loss_pct:
+                    return basic_long
+                return low_price
+            return min(high_price, smart_short)
         return smart_long if direction == "long" else smart_short
 
     def _simple_stop_price(self, direction: str, close_price: float) -> float:

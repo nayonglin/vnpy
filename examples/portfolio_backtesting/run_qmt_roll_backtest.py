@@ -4,12 +4,91 @@ from pathlib import Path
 from typing import Any
 
 from vnpy.trader.constant import Interval
+from vnpy.trader.object import BarData, TradeData
 from vnpy_portfoliostrategy import BacktestingEngine
+from vnpy_portfoliostrategy.backtesting import Status
 
 from main_contract_mapping import build_contract_metadata
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, OUTPUT_DIR, save_backtest_artifacts
+
+
+class SameDayCloseBacktestingEngine(BacktestingEngine):
+    """Portfolio backtesting engine that executes strategy orders on the same daily bar close."""
+
+    def new_bars(self, dt) -> None:
+        """Push daily bars, let strategy react, then match orders at the same bar close."""
+        self.datetime = dt
+
+        bars: dict[str, BarData] = {}
+        for vt_symbol in self.vt_symbols:
+            bar: BarData | None = self.history_data.get((dt, vt_symbol), None)
+
+            if bar:
+                self.bars[vt_symbol] = bar
+                bars[vt_symbol] = bar
+            elif vt_symbol in self.bars:
+                old_bar: BarData = self.bars[vt_symbol]
+                bar = BarData(
+                    symbol=old_bar.symbol,
+                    exchange=old_bar.exchange,
+                    datetime=dt,
+                    open_price=old_bar.close_price,
+                    high_price=old_bar.close_price,
+                    low_price=old_bar.close_price,
+                    close_price=old_bar.close_price,
+                    gateway_name=old_bar.gateway_name,
+                )
+                self.bars[vt_symbol] = bar
+
+        self.strategy.on_bars(bars)
+        self.cross_limit_order_on_close()
+
+        if self.strategy.inited:
+            self.update_daily_close(self.bars, dt)
+
+    def cross_limit_order_on_close(self) -> None:
+        """Match active limit orders at current bar close to model same-day close execution."""
+        for order in list(self.active_limit_orders.values()):
+            bar: BarData = self.bars[order.vt_symbol]
+            close_price: float = float(bar.close_price)
+
+            if close_price <= 0:
+                continue
+
+            if order.status == Status.SUBMITTING:
+                order.status = Status.NOTTRADED
+                self.strategy.update_order(order)
+
+            # Strategy orders are generated using the same bar close as the limit price.
+            if order.price <= 0:
+                continue
+
+            order.traded = order.volume
+            order.status = Status.ALLTRADED
+            self.strategy.update_order(order)
+
+            if order.vt_orderid in self.active_limit_orders:
+                self.active_limit_orders.pop(order.vt_orderid)
+
+            self.trade_count += 1
+
+            trade: TradeData = TradeData(
+                symbol=order.symbol,
+                exchange=order.exchange,
+                orderid=order.orderid,
+                tradeid=str(self.trade_count),
+                direction=order.direction,
+                offset=order.offset,
+                price=close_price,
+                volume=order.volume,
+                datetime=self.datetime,
+                gateway_name=self.gateway_name,
+            )
+
+            self.strategy.update_trade(trade)
+            self.trades[trade.vt_tradeid] = trade
 
 
 def build_backtest_engine() -> tuple[BacktestingEngine, dict[str, Any]]:
@@ -21,7 +100,7 @@ def build_backtest_engine() -> tuple[BacktestingEngine, dict[str, Any]]:
     priceticks: dict[str, float] = metadata["priceticks"]
     margin_ratios: dict[str, float] = metadata["margin_ratios"]
 
-    engine = BacktestingEngine()
+    engine = SameDayCloseBacktestingEngine()
     engine.set_parameters(
         vt_symbols=vt_symbols,
         interval=Interval.DAILY,
@@ -88,7 +167,7 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "wick_chop_filter_enabled": True,
         "wick_chop_filter_lookback": 10,
         "wick_chop_filter_max_days": 5,
-        "enable_donchian_add_position": True,
+        "enable_donchian_add_position": False,
         "donchian_entry_period": 20,
         "donchian_add_period": 20,
         "donchian_add_max_layers": 1,

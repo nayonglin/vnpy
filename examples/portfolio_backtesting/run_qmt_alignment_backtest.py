@@ -190,6 +190,32 @@ def _build_product_pnl_curve_df(
     return product_curve_df[ordered_columns]
 
 
+def _build_daily_position_hover_df(positions_df: pd.DataFrame) -> pd.DataFrame:
+    if positions_df.empty:
+        return pd.DataFrame(columns=["date", "position_count", "position_details"])
+
+    enriched_df: pd.DataFrame = positions_df.copy()
+    enriched_df["date"] = pd.to_datetime(enriched_df["date"])
+    enriched_df["end_pos"] = pd.to_numeric(enriched_df["end_pos"], errors="coerce").fillna(0.0)
+    enriched_df = enriched_df[enriched_df["end_pos"] != 0].copy()
+
+    if enriched_df.empty:
+        return pd.DataFrame(columns=["date", "position_count", "position_details"])
+
+    enriched_df["abs_end_pos"] = enriched_df["end_pos"].abs()
+
+    enriched_df.sort_values(["date", "abs_end_pos", "vt_symbol"], ascending=[True, False, True], inplace=True)
+    detail_df: pd.DataFrame = (
+        enriched_df.assign(position_line=enriched_df.apply(lambda row: f"{row['vt_symbol']}: {row['end_pos']:,.0f}手", axis=1))
+        .groupby("date", as_index=False)
+        .agg(
+            position_count=("vt_symbol", "size"),
+            position_details=("position_line", "<br>".join),
+        )
+    )
+    return detail_df
+
+
 def _build_monthly_return_matrix(daily_df: pd.DataFrame, capital: float) -> pd.DataFrame:
     if daily_df.empty:
         return pd.DataFrame()
@@ -296,9 +322,17 @@ def _create_professional_dashboard(
     mapping_csv_path: Path | None = None,
 ) -> go.Figure:
     product_curve_df: pd.DataFrame = _build_product_pnl_curve_df(positions_df, mapping_csv_path)
+    position_hover_df: pd.DataFrame = _build_daily_position_hover_df(positions_df)
     monthly_matrix: pd.DataFrame = _build_monthly_return_matrix(daily_df, float(statistics.get("capital", 0) or 0))
     roll_df: pd.DataFrame = _build_roll_event_df(mapping_csv_path)
     roll_marker_df: pd.DataFrame = _build_roll_daily_marker_df(daily_df, roll_df)
+
+    equity_df: pd.DataFrame = daily_df.reset_index().rename(columns={"index": "date"}).copy()
+    equity_df["date"] = pd.to_datetime(equity_df["date"])
+    equity_df["equity_text"] = equity_df["balance"].map(lambda value: f"{float(value) / 1_000_000:.6g}M")
+    equity_df = equity_df.merge(position_hover_df, on="date", how="left")
+    equity_df["position_count"] = equity_df["position_count"].fillna(0).astype(int)
+    equity_df["position_details"] = equity_df["position_details"].fillna("无持仓")
 
     fig = make_subplots(
         rows=5,
@@ -323,11 +357,18 @@ def _create_professional_dashboard(
 
     fig.add_trace(
         go.Scatter(
-            x=daily_df.index,
-            y=daily_df["balance"],
+            x=equity_df["date"],
+            y=equity_df["balance"],
             mode="lines",
             name="组合权益",
             line={"color": "#2F5BEA", "width": 2},
+            customdata=equity_df[["equity_text", "position_count", "position_details"]].to_numpy(),
+            hovertemplate=(
+                "日期: %{x|%Y-%m-%d}<br>"
+                "组合权益: %{customdata[0]}<br>"
+                "当日持仓数: %{customdata[1]}<br>"
+                "持仓明细:<br>%{customdata[2]}<extra></extra>"
+            ),
         ),
         row=1,
         col=1,

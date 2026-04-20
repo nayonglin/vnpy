@@ -24,6 +24,8 @@ def load_mapping_df(mapping_path: Path | None = None) -> pd.DataFrame:
 
 def build_daily_mapping(mapping_path: Path | None = None) -> dict[str, dict[str, str]]:
     df: pd.DataFrame = load_mapping_df(mapping_path)
+    supported_symbols: set[str] = set(RATES.keys())
+    df = df[df["continuous_symbol_vt"].isin(supported_symbols)].copy()
     mapping: dict[str, dict[str, str]] = {}
 
     for row in df.itertuples(index=False):
@@ -36,6 +38,8 @@ def build_daily_mapping(mapping_path: Path | None = None) -> dict[str, dict[str,
 
 def build_contract_metadata(mapping_path: Path | None = None) -> dict[str, Any]:
     df: pd.DataFrame = load_mapping_df(mapping_path)
+    supported_symbols: set[str] = set(RATES.keys())
+    df = df[df["continuous_symbol_vt"].isin(supported_symbols)].copy()
     df = df[df["main_contract_vt"] != ""].copy()
     df = df.drop_duplicates(subset=["main_contract_vt"], keep="first")
 
