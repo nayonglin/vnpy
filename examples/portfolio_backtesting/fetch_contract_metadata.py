@@ -107,7 +107,6 @@ def fetch_metadata_rows(mapping_path: Path | None = None) -> list[dict[str, obje
         total = len(targets)
         for index, target in enumerate(targets, start=1):
             quote = api.get_quote(target["tq_symbol"])
-            api.wait_update()
 
             volume_multiple = _to_float(quote.get("volume_multiple"))
             price_tick = _to_float(quote.get("price_tick"))

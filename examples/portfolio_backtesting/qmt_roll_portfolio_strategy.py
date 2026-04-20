@@ -361,31 +361,27 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             layer_exit_reason: str = self._process_layer_stops(state, target_bar)
             if layer_exit_reason:
-                self._apply_state_target(state)
                 self.last_signal = f"{product_vt}:{layer_exit_reason}"
                 continue
 
             if self.enable_ma_trend_stop:
                 if state.direction == "long" and float(target_bar.close_price) < ma_long_value:
-                    self._close_all_layers(state, float(target_bar.close_price))
-                    self.set_target(state.contract_vt_symbol, 0)
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     self.last_signal = f"{product_vt}:long_ma_stop"
                     continue
                 if state.direction == "short" and float(target_bar.close_price) > ma_long_value:
-                    self._close_all_layers(state, float(target_bar.close_price))
-                    self.set_target(state.contract_vt_symbol, 0)
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     self.last_signal = f"{product_vt}:short_ma_stop"
                     continue
 
             if state.direction == "long":
                 if self.exit_on_alignment_break and not bullish:
-                    self._close_all_layers(state, float(target_bar.close_price))
-                    self.set_target(state.contract_vt_symbol, 0)
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     self.last_signal = f"{product_vt}:long_exit_alignment"
                     continue
 
                 if signal.startswith("short"):
-                    self._close_all_layers(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     if self.short_entry_enabled:
                         sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
                         volume = int(sizing["selected_volume"])
@@ -403,20 +399,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             )
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
-                        else:
-                            self.set_target(state.contract_vt_symbol, 0)
-                    else:
-                        self.set_target(state.contract_vt_symbol, 0)
                     continue
             else:
                 if self.exit_on_alignment_break and not bearish:
-                    self._close_all_layers(state, float(target_bar.close_price))
-                    self.set_target(state.contract_vt_symbol, 0)
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     self.last_signal = f"{product_vt}:short_exit_alignment"
                     continue
 
                 if signal.startswith("long"):
-                    self._close_all_layers(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     if self.long_entry_enabled:
                         sizing = self._calculate_entry_sizing(target_contract, "long", target_bar, history, signal_data)
                         volume = int(sizing["selected_volume"])
@@ -434,10 +425,6 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             )
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
-                        else:
-                            self.set_target(state.contract_vt_symbol, 0)
-                    else:
-                        self.set_target(state.contract_vt_symbol, 0)
                     continue
 
             can_add, add_type = self._check_regular_add_conditions(state, target_bar, history)
@@ -491,14 +478,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         history: pd.DataFrame = self._build_history_df(target_am)
         signal_data: dict[str, Any] = self._generate_signal(target_am, history)
-        signal: str = str(signal_data["signal"])
-
-        if old_direction == "long":
-            reopen_allowed: bool = bool(signal.startswith("long") and self.long_entry_enabled)
-        else:
-            reopen_allowed = bool(signal.startswith("short") and self.short_entry_enabled)
-
-        if not reopen_allowed:
+        if not self._rollover_reopen_allowed(old_direction, history, signal_data):
             return
 
         sizing: dict[str, Any] = self._calculate_entry_sizing(
@@ -950,7 +930,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 triggered_indexes.append(index)
 
         if base_triggered:
-            self._close_all_layers(state, float(bar.close_price))
+            self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
             return f"{direction}_base_stop"
 
         if not triggered_indexes:
@@ -1067,6 +1047,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return
         self._close_layers(state, list(range(len(state.layers))), exit_price)
         state.reset()
+
+    def _close_all_layers_and_set_flat_target(self, state: ProductState, exit_price: float) -> None:
+        contract_vt_symbol: str = state.contract_vt_symbol
+        if not contract_vt_symbol:
+            state.reset()
+            return
+        self._close_all_layers(state, exit_price)
+        self.set_target(contract_vt_symbol, 0)
 
     def _layer_realized_pnl(self, layer: PositionLayer, exit_price: float, size: int) -> float:
         return (exit_price - layer.entry_price) * size * layer.volume if layer.direction == "long" else (layer.entry_price - exit_price) * size * layer.volume
@@ -1424,6 +1412,32 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     return False
 
         return True
+
+    def _rollover_reopen_allowed(
+        self,
+        old_direction: str,
+        history: pd.DataFrame,
+        signal_data: dict[str, Any],
+    ) -> bool:
+        bullish_alignment: bool = bool(signal_data.get("bullish_alignment"))
+        bearish_alignment: bool = bool(signal_data.get("bearish_alignment"))
+        close = pd.to_numeric(history["close"], errors="coerce")
+        dif, dea, hist = self._calculate_macd(close)
+        if hist.empty or pd.isna(hist.iloc[-1]):
+            return False
+
+        macd_hist_t: float = float(hist.iloc[-1])
+        synthetic_signal: str = "long_rollover" if old_direction == "long" else "short_rollover"
+
+        if old_direction == "long":
+            reopen_allowed: bool = bool(self.long_entry_enabled and bullish_alignment and macd_hist_t > 0)
+        else:
+            reopen_allowed = bool(self.short_entry_enabled and bearish_alignment and macd_hist_t < 0)
+
+        if not reopen_allowed:
+            return False
+
+        return self._passes_entry_filters(synthetic_signal, history)
 
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
         close = pd.Series(am.close_array)
