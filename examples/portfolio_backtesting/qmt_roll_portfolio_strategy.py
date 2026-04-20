@@ -122,6 +122,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     risk_ratio_ma_cross_breakout: float = 0.01
     risk_ratio_open_interest_surge: float = 0.06
     risk_ratio_open_interest_decline: float = 0.02
+    risk_ratio_volume_open_interest_surge: float = 0.08
     min_risk_per_trade: float = 1000.0
     max_risk_per_trade: float = 50_000_000.0
     default_margin_ratio: float = 0.10
@@ -202,6 +203,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "risk_ratio_ma_cross_breakout",
         "risk_ratio_open_interest_surge",
         "risk_ratio_open_interest_decline",
+        "risk_ratio_volume_open_interest_surge",
         "min_risk_per_trade",
         "max_risk_per_trade",
         "default_margin_ratio",
@@ -622,8 +624,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return total_margin
 
     def _sizing_equity(self) -> float:
-        """Use at most the initial capital for sizing, while still de-risking on drawdown."""
-        return max(0.0, min(self.estimated_equity, self.base_capital))
+        """Use current estimated equity for sizing, while still de-risking on drawdown."""
+        return max(0.0, self.estimated_equity)
 
     def _limited_available_balance(self) -> float:
         sizing_equity: float = self._sizing_equity()
@@ -688,6 +690,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
             risk_ratio: float = self.risk_ratio_ma_cross_breakout
+        elif risk_mode == "volume_open_interest_surge":
+            risk_ratio = self.risk_ratio_volume_open_interest_surge
         elif risk_mode == "open_interest_surge":
             risk_ratio = self.risk_ratio_open_interest_surge
         elif risk_mode == "open_interest_decline":
@@ -1346,6 +1350,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "high": pd.Series(am.high_array, dtype="float64"),
                 "low": pd.Series(am.low_array, dtype="float64"),
                 "close": pd.Series(am.close_array, dtype="float64"),
+                "volume": pd.Series(am.volume_array, dtype="float64"),
                 "open_interest": pd.Series(am.open_interest_array, dtype="float64"),
             }
         )
@@ -1727,9 +1732,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             breakout = False
 
         if signal:
-            open_interest_risk_mode = self._open_interest_risk_mode(history)
-            if open_interest_risk_mode:
-                risk_mode = open_interest_risk_mode
+            volume_oi_risk_mode = self._volume_open_interest_risk_mode(history)
+            if volume_oi_risk_mode:
+                risk_mode = volume_oi_risk_mode
+            else:
+                open_interest_risk_mode = self._open_interest_risk_mode(history)
+                if open_interest_risk_mode:
+                    risk_mode = open_interest_risk_mode
 
         return self._signal_result(
             signal,
@@ -1758,6 +1767,27 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return "open_interest_surge"
         if latest_two_sum < previous_two_sum:
             return "open_interest_decline"
+        return ""
+
+    def _volume_open_interest_risk_mode(self, history: pd.DataFrame) -> str:
+        if "volume" not in history.columns or "open_interest" not in history.columns or len(history) < 4:
+            return ""
+
+        volume = pd.to_numeric(history["volume"], errors="coerce")
+        open_interest = pd.to_numeric(history["open_interest"], errors="coerce")
+        if volume.iloc[-4:].isna().any() or open_interest.iloc[-4:].isna().any():
+            return ""
+
+        latest_volume_sum = float(volume.iloc[-1] + volume.iloc[-2])
+        previous_volume_sum = float(volume.iloc[-3] + volume.iloc[-4])
+        latest_oi_sum = float(open_interest.iloc[-1] + open_interest.iloc[-2])
+        previous_oi_sum = float(open_interest.iloc[-3] + open_interest.iloc[-4])
+
+        if previous_volume_sum <= 0 or previous_oi_sum <= 0:
+            return ""
+
+        if latest_volume_sum > previous_volume_sum * 2.0 and latest_oi_sum > previous_oi_sum:
+            return "volume_open_interest_surge"
         return ""
 
     def _signal_result(

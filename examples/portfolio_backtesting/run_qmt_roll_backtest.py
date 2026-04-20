@@ -96,7 +96,7 @@ def build_backtest_engine(
     *,
     preload_start: datetime = PRELOAD_START_DT,
     backtest_end: datetime = END_DT,
-    capital: float = 1_000_000,
+    capital: float = 200_000,
 ) -> tuple[BacktestingEngine, dict[str, Any]]:
     metadata = build_contract_metadata()
     vt_symbols: list[str] = metadata["vt_symbols"]
@@ -134,7 +134,7 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "enable_rsi_partial_exit": True,
         "rsi_partial_exit_threshold": 95.0,
         "rsi_partial_exit_ratio": 0.5,
-        "capital_base": 1_000_000,
+        "capital_base": 200_000,
         "fixed_size": 0,
         "min_position_size": 1,
         "max_position_size": 500,
@@ -147,6 +147,7 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "risk_ratio_of_total_assets": risk_ratio,
         "risk_ratio_breakout": risk_ratio,
         "risk_ratio_ma_cross_breakout": risk_ratio,
+        "risk_ratio_volume_open_interest_surge": 0.08,
         "risk_ratio_open_interest_surge": 0.06,
         "risk_ratio_open_interest_decline": 0.02,
         "min_risk_per_trade": 1000.0,
@@ -221,7 +222,7 @@ def run_backtest(
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,
     preload_start: datetime | None = None,
-    capital: float = 1_000_000,
+    capital: float = 200_000,
     save_artifacts: bool = True,
     file_prefix: str = "qmt_roll",
     chart_title: str = "QMT Roll Portfolio Backtest",
