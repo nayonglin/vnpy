@@ -140,7 +140,7 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "max_position_size": 500,
         "max_concurrent_positions": 4,
         "long_entry_enabled": True,
-        "short_entry_enabled": False,
+        "short_entry_enabled": True,
         "rollover_reopen_enabled": True,
         "reverse_on_opposite_signal": False,
         "max_capital_usage_ratio": 0.9,

@@ -354,7 +354,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     )
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
-                elif signal.startswith("short") and self.short_entry_enabled:
+                elif signal.startswith("short") and self.short_entry_enabled and self._can_open_short_signal(signal):
                     if self._count_active_positions() >= self.max_concurrent_positions:
                         continue
 
@@ -417,7 +417,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
                 if self.reverse_on_opposite_signal and signal.startswith("short"):
                     self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
-                    if self.short_entry_enabled:
+                    if self.short_entry_enabled and self._can_open_short_signal(signal):
                         sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
                         volume = int(sizing["selected_volume"])
                         if volume > 0:
@@ -1127,9 +1127,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _process_rsi_partial_exit(self, state: ProductState, bar: BarData, rsi_value: float) -> str:
         if not self.enable_rsi_partial_exit or state.rsi_partial_exit_done:
             return ""
-        if state.direction != "long" or not state.layers:
+        if not state.layers:
             return ""
-        if rsi_value <= self.rsi_partial_exit_threshold:
+
+        trigger_partial_exit: bool = False
+        exit_reason: str = ""
+        if state.direction == "long":
+            trigger_partial_exit = rsi_value > self.rsi_partial_exit_threshold
+            exit_reason = "long_rsi_partial_exit"
+        elif state.direction == "short":
+            trigger_partial_exit = rsi_value < (100.0 - self.rsi_partial_exit_threshold)
+            exit_reason = "short_rsi_partial_exit"
+
+        if not trigger_partial_exit:
             return ""
 
         current_volume: int = state.active_volume()
@@ -1141,11 +1151,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if target_volume <= 0:
             self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
             state.rsi_partial_exit_done = True
-            return "long_rsi_partial_exit_all"
+            return f"{exit_reason}_all"
 
         self._reduce_position_to_target(state, target_volume, float(bar.close_price))
         state.rsi_partial_exit_done = True
-        return "long_rsi_partial_exit_half"
+        return f"{exit_reason}_half"
+
+    def _can_open_short_signal(self, signal: str) -> bool:
+        """Only allow fresh short entries from the MA5-down-cross bearish case."""
+        return signal == "short_case1a"
 
     def _close_layers(self, state: ProductState, indexes: list[int], exit_price: float) -> None:
         if not state.contract_vt_symbol:
