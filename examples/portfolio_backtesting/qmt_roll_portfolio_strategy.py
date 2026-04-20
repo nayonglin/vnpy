@@ -41,6 +41,8 @@ class ProductState:
     last_add_date: str = ""
     last_donchian_add_date: str = ""
     rollover_opened_today: str = ""
+    bars_since_entry: int = 0
+    prev2day_stop_price: float | None = None
 
     def reset(self) -> None:
         self.contract_vt_symbol = ""
@@ -52,6 +54,8 @@ class ProductState:
         self.last_add_date = ""
         self.last_donchian_add_date = ""
         self.rollover_opened_today = ""
+        self.bars_since_entry = 0
+        self.prev2day_stop_price = None
 
     def active_volume(self) -> int:
         return sum(layer.volume for layer in self.layers)
@@ -99,6 +103,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     exit_on_alignment_break: bool = True
     enable_ma_trend_stop: bool = True
     rollover_reopen_enabled: bool = True
+    reverse_on_opposite_signal: bool = True
+    enable_prev2day_stop: bool = False
 
     fixed_size: int = 1
     min_position_size: int = 1
@@ -173,6 +179,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "exit_on_alignment_break",
         "enable_ma_trend_stop",
         "rollover_reopen_enabled",
+        "reverse_on_opposite_signal",
+        "enable_prev2day_stop",
         "fixed_size",
         "min_position_size",
         "max_position_size",
@@ -290,9 +298,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if target_bar is None:
                 continue
 
-            if state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
-                self._handle_rollover(state, target_contract, bars)
-                continue
+            actual_contract, current_pos, actual_bar = self._resolve_actual_position(state, target_contract, bars)
+            if actual_contract and current_pos != 0:
+                state.contract_vt_symbol = actual_contract
 
             target_am: ArrayManager = self.ams[target_contract]
             if not target_am.inited:
@@ -305,8 +313,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             bearish: bool = bool(signal_data["bearish_alignment"])
             ma_long_value: float = float(signal_data["ma_long_value"])
 
-            current_pos: int = self.get_pos(state.contract_vt_symbol) if state.contract_vt_symbol else 0
-            self._reconcile_state_with_position(state, current_pos, target_bar)
+            reconcile_bar: BarData = actual_bar or target_bar
+            self._reconcile_state_with_position(state, current_pos, reconcile_bar)
+
+            if state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
+                self._handle_rollover(state, target_contract, bars)
+                continue
 
             if current_pos == 0:
                 if signal.startswith("long") and self.long_entry_enabled:
@@ -357,11 +369,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:{signal}"
                 continue
 
+            if state.entry_date and state.entry_date != self._bar_date(target_bar):
+                state.bars_since_entry += 1
+
             self._update_dynamic_stops(state, target_bar, history)
 
             layer_exit_reason: str = self._process_layer_stops(state, target_bar)
             if layer_exit_reason:
                 self.last_signal = f"{product_vt}:{layer_exit_reason}"
+                continue
+
+            prev2day_exit_reason: str = self._process_prev2day_stop(state, target_bar, history)
+            if prev2day_exit_reason:
+                self.last_signal = f"{product_vt}:{prev2day_exit_reason}"
                 continue
 
             if self.enable_ma_trend_stop:
@@ -380,7 +400,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:long_exit_alignment"
                     continue
 
-                if signal.startswith("short"):
+                if self.reverse_on_opposite_signal and signal.startswith("short"):
                     self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     if self.short_entry_enabled:
                         sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
@@ -406,7 +426,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:short_exit_alignment"
                     continue
 
-                if signal.startswith("long"):
+                if self.reverse_on_opposite_signal and signal.startswith("long"):
                     self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
                     if self.long_entry_enabled:
                         sizing = self._calculate_entry_sizing(target_contract, "long", target_bar, history, signal_data)
@@ -447,6 +467,32 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.rebalance_portfolio(bars)
         self.active_count = self._count_active_positions()
         self.put_event()
+
+    def _resolve_actual_position(
+        self,
+        state: ProductState,
+        target_contract: str,
+        bars: dict[str, BarData],
+    ) -> tuple[str, int, BarData | None]:
+        candidates: list[str] = []
+
+        def add_candidate(vt_symbol: str) -> None:
+            if vt_symbol and vt_symbol not in candidates:
+                candidates.append(vt_symbol)
+
+        add_candidate(state.contract_vt_symbol)
+        add_candidate(target_contract)
+
+        for vt_symbol in bars:
+            if self.source_symbol_by_contract.get(vt_symbol) == state.product_vt_symbol:
+                add_candidate(vt_symbol)
+
+        for vt_symbol in candidates:
+            pos: int = int(self.get_pos(vt_symbol))
+            if pos != 0:
+                return vt_symbol, pos, bars.get(vt_symbol)
+
+        return state.contract_vt_symbol or target_contract, 0, bars.get(state.contract_vt_symbol or target_contract)
 
     def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
         pricetick: float = self.get_pricetick(vt_symbol)
@@ -913,6 +959,33 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if not state.layers:
             state.reset()
 
+    def _process_prev2day_stop(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> str:
+        if not self.enable_prev2day_stop or not state.layers:
+            return ""
+        if state.bars_since_entry < 2 or len(history) < 3:
+            return ""
+
+        prev2_window = history.iloc[-3:-1]
+        if len(prev2_window) < 2:
+            return ""
+
+        if state.direction == "long":
+            raw_stop = float(prev2_window["low"].min())
+            final_stop = raw_stop if state.prev2day_stop_price is None else max(state.prev2day_stop_price, raw_stop)
+            state.prev2day_stop_price = final_stop
+            if float(bar.close_price) <= final_stop:
+                self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+                return "long_prev2day_stop"
+        else:
+            raw_stop = float(prev2_window["high"].max())
+            final_stop = raw_stop if state.prev2day_stop_price is None else min(state.prev2day_stop_price, raw_stop)
+            state.prev2day_stop_price = final_stop
+            if float(bar.close_price) >= final_stop:
+                self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+                return "short_prev2day_stop"
+
+        return ""
+
     def _process_layer_stops(self, state: ProductState, bar: BarData) -> str:
         direction: str = state.direction
         triggered_indexes: list[int] = []
@@ -1174,7 +1247,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         smart_long = max(basic_long, min_low)
         smart_short = min(basic_short, max_high)
         if use_day_extreme:
-            return max(float(bar.low_price), smart_long) if direction == "long" else min(float(bar.high_price), smart_short)
+            if direction == "long":
+                # Align with the original QMT behavior: long entries size and initialize
+                # the stop directly from the entry day's low.
+                return float(bar.low_price)
+            return min(float(bar.high_price), smart_short)
         return smart_long if direction == "long" else smart_short
 
     def _simple_stop_price(self, direction: str, close_price: float) -> float:

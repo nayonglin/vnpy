@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from vnpy.trader.constant import Interval
 from vnpy_portfoliostrategy import BacktestingEngine
@@ -11,7 +12,7 @@ from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, OUTPUT_DIR, save_backtest_artifacts
 
 
-def main() -> None:
+def build_backtest_engine() -> tuple[BacktestingEngine, dict[str, Any]]:
     metadata = build_contract_metadata()
     vt_symbols: list[str] = metadata["vt_symbols"]
     rates: dict[str, float] = metadata["rates"]
@@ -32,10 +33,12 @@ def main() -> None:
         priceticks=priceticks,
         capital=1_000_000,
     )
+    return engine, metadata
 
+
+def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04) -> dict[str, object]:
     mapping_csv_path: Path = (OUTPUT_DIR / "tqsdk_main_contract_mapping_2020_2026_04.csv").resolve()
-
-    setting: dict[str, object] = {
+    return {
         "mapping_csv_path": str(mapping_csv_path),
         "ma_short": 5,
         "ma_mid": 10,
@@ -51,10 +54,11 @@ def main() -> None:
         "long_entry_enabled": True,
         "short_entry_enabled": False,
         "rollover_reopen_enabled": True,
+        "reverse_on_opposite_signal": False,
         "max_capital_usage_ratio": 0.9,
-        "risk_ratio_of_total_assets": 0.04,
-        "risk_ratio_breakout": 0.04,
-        "risk_ratio_ma_cross_breakout": 0.04,
+        "risk_ratio_of_total_assets": risk_ratio,
+        "risk_ratio_breakout": risk_ratio,
+        "risk_ratio_ma_cross_breakout": risk_ratio,
         "min_risk_per_trade": 1000.0,
         "max_risk_per_trade": 50_000_000.0,
         "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in margin_ratios.items()),
@@ -62,9 +66,10 @@ def main() -> None:
         "stop_loss_pct": 0.02,
         "trailing_stop_enabled": True,
         "trailing_stop_pct": 0.0,
+        "enable_prev2day_stop": True,
         "add_position_min_profit": 0.001,
         "atr_2x_mid_stop_enabled": True,
-        "exit_on_alignment_break": True,
+        "exit_on_alignment_break": False,
         "enable_ma_trend_stop": True,
         "enable_add_position": False,
         "add_position_threshold": 0.01,
@@ -76,7 +81,7 @@ def main() -> None:
         "require_reversal_for_add": True,
         "ma5_extreme_filter_enabled": True,
         "ma5_extreme_compare_days": 3,
-        "ma5_angle_reversal_filter_enabled": True,
+        "ma5_angle_reversal_filter_enabled": False,
         "ma5_angle_reversal_lookback_days": 10,
         "ma5_angle_reversal_angle_threshold_deg": 45.0,
         "short_ma5_slope_filter_enabled": True,
@@ -92,6 +97,18 @@ def main() -> None:
         "tick_add": 1,
         "warmup_days": 90,
     }
+
+
+def run_backtest(
+    risk_ratio: float = 0.04,
+    *,
+    save_artifacts: bool = True,
+    file_prefix: str = "qmt_roll",
+    chart_title: str = "QMT Roll Portfolio Backtest",
+) -> tuple[BacktestingEngine, Any, dict[str, Any]]:
+    engine, metadata = build_backtest_engine()
+    margin_ratios: dict[str, float] = metadata["margin_ratios"]
+    setting: dict[str, object] = build_roll_setting(margin_ratios, risk_ratio=risk_ratio)
     engine.add_strategy(QmtRollPortfolioStrategy, setting)
 
     engine.load_data()
@@ -105,15 +122,22 @@ def main() -> None:
 
     statistics: dict = engine.calculate_statistics(analysis_df)
     engine.daily_df = analysis_df
+    if save_artifacts:
+        mapping_csv_path = Path(str(setting["mapping_csv_path"])).resolve()
+        save_backtest_artifacts(
+            engine,
+            statistics,
+            file_prefix=file_prefix,
+            chart_title=chart_title,
+            mapping_csv_path=mapping_csv_path,
+            analysis_start=START_DT,
+        )
+    return engine, analysis_df, statistics
+
+
+def main() -> None:
+    engine, _, statistics = run_backtest()
     print(statistics)
-    save_backtest_artifacts(
-        engine,
-        statistics,
-        file_prefix="qmt_roll",
-        chart_title="QMT Roll Portfolio Backtest",
-        mapping_csv_path=mapping_csv_path,
-        analysis_start=START_DT,
-    )
 
     if OPEN_BROWSER_CHART:
         engine.show_chart()
