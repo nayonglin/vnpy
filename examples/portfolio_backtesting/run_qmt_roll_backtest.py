@@ -147,6 +147,8 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "risk_ratio_of_total_assets": risk_ratio,
         "risk_ratio_breakout": risk_ratio,
         "risk_ratio_ma_cross_breakout": risk_ratio,
+        "risk_ratio_open_interest_surge": 0.06,
+        "risk_ratio_open_interest_decline": 0.02,
         "min_risk_per_trade": 1000.0,
         "max_risk_per_trade": 50_000_000.0,
         "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in margin_ratios.items()),

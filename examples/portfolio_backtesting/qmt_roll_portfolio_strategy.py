@@ -120,6 +120,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     risk_ratio_of_total_assets: float = 0.01
     risk_ratio_breakout: float = 0.01
     risk_ratio_ma_cross_breakout: float = 0.01
+    risk_ratio_open_interest_surge: float = 0.06
+    risk_ratio_open_interest_decline: float = 0.02
     min_risk_per_trade: float = 1000.0
     max_risk_per_trade: float = 50_000_000.0
     default_margin_ratio: float = 0.10
@@ -198,6 +200,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "risk_ratio_of_total_assets",
         "risk_ratio_breakout",
         "risk_ratio_ma_cross_breakout",
+        "risk_ratio_open_interest_surge",
+        "risk_ratio_open_interest_decline",
         "min_risk_per_trade",
         "max_risk_per_trade",
         "default_margin_ratio",
@@ -684,6 +688,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
             risk_ratio: float = self.risk_ratio_ma_cross_breakout
+        elif risk_mode == "open_interest_surge":
+            risk_ratio = self.risk_ratio_open_interest_surge
+        elif risk_mode == "open_interest_decline":
+            risk_ratio = self.risk_ratio_open_interest_decline
         elif risk_mode == "breakout":
             risk_ratio = self.risk_ratio_breakout
         else:
@@ -1338,6 +1346,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "high": pd.Series(am.high_array, dtype="float64"),
                 "low": pd.Series(am.low_array, dtype="float64"),
                 "close": pd.Series(am.close_array, dtype="float64"),
+                "open_interest": pd.Series(am.open_interest_array, dtype="float64"),
             }
         )
 
@@ -1717,6 +1726,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             risk_mode = "regular"
             breakout = False
 
+        if signal:
+            open_interest_risk_mode = self._open_interest_risk_mode(history)
+            if open_interest_risk_mode:
+                risk_mode = open_interest_risk_mode
+
         return self._signal_result(
             signal,
             bullish_alignment,
@@ -1726,6 +1740,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             breakout,
             rsi_value,
         )
+
+    def _open_interest_risk_mode(self, history: pd.DataFrame) -> str:
+        if "open_interest" not in history.columns or len(history) < 4:
+            return ""
+
+        open_interest = pd.to_numeric(history["open_interest"], errors="coerce")
+        if open_interest.iloc[-4:].isna().any():
+            return ""
+
+        latest_two_sum = float(open_interest.iloc[-1] + open_interest.iloc[-2])
+        previous_two_sum = float(open_interest.iloc[-3] + open_interest.iloc[-4])
+        if previous_two_sum <= 0:
+            return ""
+
+        if latest_two_sum > previous_two_sum:
+            return "open_interest_surge"
+        if latest_two_sum < previous_two_sum:
+            return "open_interest_decline"
+        return ""
 
     def _signal_result(
         self,
