@@ -43,6 +43,7 @@ class ProductState:
     rollover_opened_today: str = ""
     bars_since_entry: int = 0
     prev2day_stop_price: float | None = None
+    rsi_partial_exit_done: bool = False
 
     def reset(self) -> None:
         self.contract_vt_symbol = ""
@@ -56,6 +57,7 @@ class ProductState:
         self.rollover_opened_today = ""
         self.bars_since_entry = 0
         self.prev2day_stop_price = None
+        self.rsi_partial_exit_done = False
 
     def active_volume(self) -> int:
         return sum(layer.volume for layer in self.layers)
@@ -105,6 +107,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     rollover_reopen_enabled: bool = True
     reverse_on_opposite_signal: bool = True
     enable_prev2day_stop: bool = False
+    enable_rsi_partial_exit: bool = False
+    rsi_partial_exit_threshold: float = 95.0
+    rsi_partial_exit_ratio: float = 0.5
 
     fixed_size: int = 1
     min_position_size: int = 1
@@ -181,6 +186,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "rollover_reopen_enabled",
         "reverse_on_opposite_signal",
         "enable_prev2day_stop",
+        "enable_rsi_partial_exit",
+        "rsi_partial_exit_threshold",
+        "rsi_partial_exit_ratio",
         "fixed_size",
         "min_position_size",
         "max_position_size",
@@ -312,6 +320,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             bullish: bool = bool(signal_data["bullish_alignment"])
             bearish: bool = bool(signal_data["bearish_alignment"])
             ma_long_value: float = float(signal_data["ma_long_value"])
+            rsi_value: float = float(signal_data["rsi_value"])
 
             reconcile_bar: BarData = actual_bar or target_bar
             self._reconcile_state_with_position(state, current_pos, reconcile_bar)
@@ -382,6 +391,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             prev2day_exit_reason: str = self._process_prev2day_stop(state, target_bar, history)
             if prev2day_exit_reason:
                 self.last_signal = f"{product_vt}:{prev2day_exit_reason}"
+                continue
+
+            rsi_partial_exit_reason: str = self._process_rsi_partial_exit(state, target_bar, rsi_value)
+            if rsi_partial_exit_reason:
+                self._apply_state_target(state)
+                self.last_signal = f"{product_vt}:{rsi_partial_exit_reason}"
                 continue
 
             if self.enable_ma_trend_stop:
@@ -1010,6 +1025,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return ""
 
         self._close_layers(state, triggered_indexes, float(bar.close_price))
+        if state.layers:
+            self._apply_state_target(state)
         return f"{direction}_layer_stop_partial" if state.layers else f"{direction}_layer_stop_all"
 
     def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
@@ -1100,6 +1117,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             else:
                 layer.stop_price = min(layer.stop_price, mid_price)
 
+    def _process_rsi_partial_exit(self, state: ProductState, bar: BarData, rsi_value: float) -> str:
+        if not self.enable_rsi_partial_exit or state.rsi_partial_exit_done:
+            return ""
+        if state.direction != "long" or not state.layers:
+            return ""
+        if rsi_value <= self.rsi_partial_exit_threshold:
+            return ""
+
+        current_volume: int = state.active_volume()
+        reduce_volume: int = int(current_volume * self.rsi_partial_exit_ratio)
+        if reduce_volume <= 0:
+            return ""
+
+        target_volume: int = current_volume - reduce_volume
+        if target_volume <= 0:
+            self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+            state.rsi_partial_exit_done = True
+            return "long_rsi_partial_exit_all"
+
+        self._reduce_position_to_target(state, target_volume, float(bar.close_price))
+        state.rsi_partial_exit_done = True
+        return "long_rsi_partial_exit_half"
+
     def _close_layers(self, state: ProductState, indexes: list[int], exit_price: float) -> None:
         if not state.contract_vt_symbol:
             return
@@ -1109,6 +1149,48 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             layer = state.layers[index]
             realized += self._layer_realized_pnl(layer, exit_price, size)
             del state.layers[index]
+        self.realized_pnl += realized
+        self._update_streak_risk_state(realized)
+        if not state.layers:
+            state.reset()
+
+    def _reduce_position_to_target(self, state: ProductState, target_volume: int, exit_price: float) -> None:
+        current_volume: int = state.active_volume()
+        if target_volume >= current_volume:
+            return
+        if target_volume <= 0:
+            self._close_all_layers(state, exit_price)
+            return
+
+        size: int = self.get_size(state.contract_vt_symbol)
+        reduce_volume: int = current_volume - target_volume
+        realized: float = 0.0
+
+        while reduce_volume > 0 and state.layers:
+            last_layer: PositionLayer = state.layers[-1]
+            closed_volume: int = min(reduce_volume, last_layer.volume)
+            realized += self._layer_realized_pnl(
+                PositionLayer(
+                    kind=last_layer.kind,
+                    direction=last_layer.direction,
+                    volume=closed_volume,
+                    entry_price=last_layer.entry_price,
+                    stop_price=last_layer.stop_price,
+                    highest_price=last_layer.highest_price,
+                    lowest_price=last_layer.lowest_price,
+                    signal=last_layer.signal,
+                    entry_date=last_layer.entry_date,
+                    max_profit_pct=last_layer.max_profit_pct,
+                    margin_ratio=last_layer.margin_ratio,
+                ),
+                exit_price,
+                size,
+            )
+            last_layer.volume -= closed_volume
+            reduce_volume -= closed_volume
+            if last_layer.volume <= 0:
+                state.layers.pop()
+
         self.realized_pnl += realized
         self._update_streak_risk_state(realized)
         if not state.layers:
@@ -1614,9 +1696,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             risk_mode = "regular"
             breakout = False
 
-        return self._signal_result(signal, bullish_alignment, bearish_alignment, float(ma_long.iloc[-1]), risk_mode, breakout)
+        return self._signal_result(
+            signal,
+            bullish_alignment,
+            bearish_alignment,
+            float(ma_long.iloc[-1]),
+            risk_mode,
+            breakout,
+            rsi_value,
+        )
 
-    def _signal_result(self, signal: str, bullish_alignment: bool, bearish_alignment: bool, ma_long_value: float, risk_mode: str, breakout: bool) -> dict[str, Any]:
+    def _signal_result(
+        self,
+        signal: str,
+        bullish_alignment: bool,
+        bearish_alignment: bool,
+        ma_long_value: float,
+        risk_mode: str,
+        breakout: bool,
+        rsi_value: float = float("nan"),
+    ) -> dict[str, Any]:
         return {
             "signal": signal,
             "bullish_alignment": bullish_alignment,
@@ -1624,6 +1723,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "ma_long_value": ma_long_value,
             "risk_mode": risk_mode,
             "breakout": breakout,
+            "rsi_value": rsi_value,
         }
 
     @staticmethod
