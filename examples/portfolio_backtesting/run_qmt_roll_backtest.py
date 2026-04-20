@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -91,7 +92,12 @@ class SameDayCloseBacktestingEngine(BacktestingEngine):
             self.trades[trade.vt_tradeid] = trade
 
 
-def build_backtest_engine() -> tuple[BacktestingEngine, dict[str, Any]]:
+def build_backtest_engine(
+    *,
+    preload_start: datetime = PRELOAD_START_DT,
+    backtest_end: datetime = END_DT,
+    capital: float = 1_000_000,
+) -> tuple[BacktestingEngine, dict[str, Any]]:
     metadata = build_contract_metadata()
     vt_symbols: list[str] = metadata["vt_symbols"]
     rates: dict[str, float] = metadata["rates"]
@@ -104,13 +110,13 @@ def build_backtest_engine() -> tuple[BacktestingEngine, dict[str, Any]]:
     engine.set_parameters(
         vt_symbols=vt_symbols,
         interval=Interval.DAILY,
-        start=PRELOAD_START_DT,
-        end=END_DT,
+        start=preload_start,
+        end=backtest_end,
         rates=rates,
         slippages=slippages,
         sizes=sizes,
         priceticks=priceticks,
-        capital=1_000_000,
+        capital=capital,
     )
     return engine, metadata
 
@@ -181,16 +187,52 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
     }
 
 
+def build_summary_row(
+    statistics: dict[str, Any],
+    *,
+    analysis_start: datetime,
+    analysis_end: datetime,
+    **extra: Any,
+) -> dict[str, Any]:
+    row: dict[str, Any] = {
+        "analysis_start": analysis_start.date().isoformat(),
+        "analysis_end": analysis_end.date().isoformat(),
+        "end_balance": float(statistics.get("end_balance", 0) or 0),
+        "total_return_pct": float(statistics.get("total_return", 0) or 0),
+        "annual_return_pct": float(statistics.get("annual_return", 0) or 0),
+        "max_drawdown": float(statistics.get("max_drawdown", 0) or 0),
+        "max_dd_percent": float(statistics.get("max_ddpercent", 0) or 0),
+        "max_drawdown_duration": int(statistics.get("max_drawdown_duration", 0) or 0),
+        "sharpe_ratio": float(statistics.get("sharpe_ratio", 0) or 0),
+        "return_drawdown_ratio": float(statistics.get("return_drawdown_ratio", 0) or 0),
+        "total_trade_count": int(statistics.get("total_trade_count", 0) or 0),
+        "win_ratio_pct": float(statistics.get("win_ratio", 0) or 0),
+        "daily_trade_count": float(statistics.get("daily_trade_count", 0) or 0),
+    }
+    row.update(extra)
+    return row
+
+
 def run_backtest(
     risk_ratio: float = 0.04,
     *,
+    analysis_start: datetime = START_DT,
+    analysis_end: datetime = END_DT,
+    preload_start: datetime | None = None,
+    capital: float = 1_000_000,
     save_artifacts: bool = True,
     file_prefix: str = "qmt_roll",
     chart_title: str = "QMT Roll Portfolio Backtest",
 ) -> tuple[BacktestingEngine, Any, dict[str, Any]]:
-    engine, metadata = build_backtest_engine()
+    preload_start = preload_start or max(PRELOAD_START_DT, analysis_start - timedelta(days=365))
+    engine, metadata = build_backtest_engine(
+        preload_start=preload_start,
+        backtest_end=analysis_end,
+        capital=capital,
+    )
     margin_ratios: dict[str, float] = metadata["margin_ratios"]
     setting: dict[str, object] = build_roll_setting(margin_ratios, risk_ratio=risk_ratio)
+    setting["capital_base"] = capital
     engine.add_strategy(QmtRollPortfolioStrategy, setting)
 
     engine.load_data()
@@ -198,7 +240,10 @@ def run_backtest(
     daily_df = engine.calculate_result()
     if daily_df is not None:
         analysis_df = daily_df.copy()
-        analysis_df = analysis_df.loc[analysis_df.index >= START_DT.date()]
+        analysis_df = analysis_df.loc[
+            (analysis_df.index >= analysis_start.date())
+            & (analysis_df.index <= analysis_end.date())
+        ]
     else:
         analysis_df = None
 
@@ -212,7 +257,7 @@ def run_backtest(
             file_prefix=file_prefix,
             chart_title=chart_title,
             mapping_csv_path=mapping_csv_path,
-            analysis_start=START_DT,
+            analysis_start=analysis_start,
         )
     return engine, analysis_df, statistics
 
