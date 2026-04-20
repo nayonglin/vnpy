@@ -617,9 +617,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             total_margin += abs(close_price * size * state.active_volume() * margin_ratio)
         return total_margin
 
+    def _sizing_equity(self) -> float:
+        """Use at most the initial capital for sizing, while still de-risking on drawdown."""
+        return max(0.0, min(self.estimated_equity, self.base_capital))
+
     def _limited_available_balance(self) -> float:
-        allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
-        free_capital: float = max(0.0, self.estimated_equity - self.total_margin_in_use)
+        sizing_equity: float = self._sizing_equity()
+        allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
+        free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
         return max(0.0, min(free_capital, allowed_capital))
 
     def _risk_amount_from_ratio(self, risk_ratio: float, limited_balance: float) -> float:
@@ -650,8 +655,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
             risk_per_contract: float = max(abs(price - stop_price) * size, max(float(self.get_pricetick(vt_symbol)) * size, 1.0))
             margin_per_contract: float = price * size * margin_ratio
-            allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
-            free_capital: float = max(0.0, self.estimated_equity - self.total_margin_in_use)
+            sizing_equity: float = self._sizing_equity()
+            allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
+            free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
             limited_balance: float = max(0.0, min(free_capital, allowed_capital))
             return {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
@@ -672,8 +678,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             }
 
         limited_balance: float = self._limited_available_balance()
-        allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
-        free_capital: float = max(0.0, self.estimated_equity - self.total_margin_in_use)
+        sizing_equity: float = self._sizing_equity()
+        allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
+        free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
             risk_ratio: float = self.risk_ratio_ma_cross_breakout
@@ -838,8 +845,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_ratio": None,
                 "risk_amount": None,
                 "limited_balance": self._limited_available_balance(),
-                "allowed_capital": max(0.0, self.estimated_equity * self.max_capital_usage_ratio),
-                "free_capital": max(0.0, self.estimated_equity - self.total_margin_in_use),
+                "allowed_capital": max(0.0, self._sizing_equity() * self.max_capital_usage_ratio),
+                "free_capital": max(0.0, self._sizing_equity() - self.total_margin_in_use),
                 "stop_price": stop_price,
                 "risk_per_contract": None,
                 "margin_ratio": self._margin_ratio_for_symbol(state.contract_vt_symbol),
@@ -1307,7 +1314,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _can_allocate_margin(self, vt_symbol: str, volume: int, price: float) -> bool:
         margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
         projected_margin = price * self.get_size(vt_symbol) * volume * margin_ratio
-        allowed_capital = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
+        allowed_capital = max(0.0, self._sizing_equity() * self.max_capital_usage_ratio)
         return (self.total_margin_in_use + projected_margin) <= allowed_capital
 
     def _build_history_df(self, am: ArrayManager) -> pd.DataFrame:
