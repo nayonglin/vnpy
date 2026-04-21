@@ -275,7 +275,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
+        self.trade_event_diagnostics: list[dict[str, Any]] = []
         self.execution_price_overrides: dict[str, float] = {}
+        self.pending_margin_reservation: float = 0.0
+        self.pending_active_products: set[str] = set()
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -290,12 +293,6 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def update_trade(self, trade: TradeData) -> None:
         super().update_trade(trade)
 
-    def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
-        override_price: float | None = self.execution_price_overrides.get(vt_symbol)
-        if override_price is not None and override_price > 0:
-            return override_price
-        return super().calculate_price(vt_symbol, direction, reference)
-
     def rebalance_portfolio(self, bars: dict[str, BarData]) -> None:
         super().rebalance_portfolio(bars)
         self.execution_price_overrides.clear()
@@ -303,6 +300,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def on_bars(self, bars: dict[str, BarData]) -> None:
         if not bars:
             return
+
+        self._reset_intrabar_reservations()
 
         for vt_symbol, bar in bars.items():
             if vt_symbol in self.ams:
@@ -371,6 +370,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         signal_data,
                         sizing_snapshot=sizing,
                     )
+                    self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=True)
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
                 elif signal.startswith("short") and self.short_entry_enabled and self._can_open_short_signal(signal):
@@ -393,6 +393,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         signal_data,
                         sizing_snapshot=sizing,
                     )
+                    self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=True)
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
                 continue
@@ -421,23 +422,41 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if self.enable_ma_trend_stop:
                 if state.direction == "long" and self._stop_triggered("long", target_bar, ma_long_prev_value):
                     exit_price = self._stop_execution_price("long", target_bar, ma_long_prev_value)
-                    self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        exit_price,
+                        execution_price_override=exit_price,
+                        exit_reason="long_ma_stop",
+                    )
                     self.last_signal = f"{product_vt}:long_ma_stop"
                     continue
                 if state.direction == "short" and self._stop_triggered("short", target_bar, ma_long_prev_value):
                     exit_price = self._stop_execution_price("short", target_bar, ma_long_prev_value)
-                    self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        exit_price,
+                        execution_price_override=exit_price,
+                        exit_reason="short_ma_stop",
+                    )
                     self.last_signal = f"{product_vt}:short_ma_stop"
                     continue
 
             if state.direction == "long":
                 if self.exit_on_alignment_break and not bullish:
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        float(target_bar.close_price),
+                        exit_reason="long_exit_alignment",
+                    )
                     self.last_signal = f"{product_vt}:long_exit_alignment"
                     continue
 
                 if self.reverse_on_opposite_signal and signal.startswith("short"):
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        float(target_bar.close_price),
+                        exit_reason="long_reverse_to_short",
+                    )
                     if self.short_entry_enabled and self._can_open_short_signal(signal):
                         sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
                         volume = int(sizing["selected_volume"])
@@ -453,17 +472,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                                 signal_data,
                                 sizing_snapshot=sizing,
                             )
+                            self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=False)
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
                     continue
             else:
                 if self.exit_on_alignment_break and not bearish:
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        float(target_bar.close_price),
+                        exit_reason="short_exit_alignment",
+                    )
                     self.last_signal = f"{product_vt}:short_exit_alignment"
                     continue
 
                 if self.reverse_on_opposite_signal and signal.startswith("long"):
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        float(target_bar.close_price),
+                        exit_reason="short_reverse_to_long",
+                    )
                     if self.long_entry_enabled:
                         sizing = self._calculate_entry_sizing(target_contract, "long", target_bar, history, signal_data)
                         volume = int(sizing["selected_volume"])
@@ -479,6 +507,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                                 signal_data,
                                 sizing_snapshot=sizing,
                             )
+                            self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=False)
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
                     continue
@@ -488,6 +517,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume: int = self._calculate_regular_add_volume(state)
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
+                    self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{add_type}"
                     continue
@@ -497,6 +527,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume = self._calculate_donchian_add_volume(state)
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
+                    self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{don_add_type}"
 
@@ -531,6 +562,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return state.contract_vt_symbol or target_contract, 0, bars.get(state.contract_vt_symbol or target_contract)
 
     def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
+        override_price: float | None = self.execution_price_overrides.get(vt_symbol)
+        if override_price is not None and override_price > 0:
+            return override_price
         pricetick: float = self.get_pricetick(vt_symbol)
         if direction == Direction.LONG:
             return reference + self.tick_add * pricetick
@@ -548,6 +582,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         old_direction: str = state.direction
         old_risk_mode: str = state.risk_mode
+        self._record_trade_event(
+            bar=old_bar,
+            contract_vt_symbol=old_contract,
+            product_vt_symbol=state.product_vt_symbol,
+            position_direction=old_direction,
+            offset="Close",
+            reason="rollover_close",
+            volume=state.active_volume(),
+            price=float(old_bar.close_price),
+        )
         self._close_all_layers(state, float(old_bar.close_price))
         self.set_target(old_contract, 0)
 
@@ -597,6 +641,40 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.current_risk_per_trade = self._risk_amount_from_ratio(self.risk_ratio_of_total_assets, limited_balance)
         self.risk_multiplier = self._current_streak_multiplier()
 
+    def _reset_intrabar_reservations(self) -> None:
+        self.pending_margin_reservation = 0.0
+        self.pending_active_products.clear()
+
+    def _allowed_capital(self) -> float:
+        return max(0.0, self._sizing_equity() * self.max_capital_usage_ratio)
+
+    def _reserved_margin_in_use(self) -> float:
+        return max(0.0, self.total_margin_in_use + self.pending_margin_reservation)
+
+    def _free_capital_after_reservations(self) -> float:
+        return max(0.0, self._sizing_equity() - self._reserved_margin_in_use())
+
+    def _remaining_capital_budget(self) -> float:
+        return max(0.0, self._allowed_capital() - self._reserved_margin_in_use())
+
+    def _reserve_intrabar_entry(
+        self,
+        product_vt_symbol: str,
+        sizing_snapshot: dict[str, Any],
+        volume: int,
+        *,
+        count_active_position: bool,
+    ) -> None:
+        margin_per_contract = float(sizing_snapshot.get("margin_per_contract") or 0.0)
+        self.pending_margin_reservation += max(0.0, margin_per_contract * max(0, int(volume)))
+        if count_active_position:
+            self.pending_active_products.add(product_vt_symbol)
+
+    def _reserve_intrabar_margin(self, vt_symbol: str, volume: int, price: float) -> None:
+        margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
+        projected_margin = float(price) * self.get_size(vt_symbol) * max(0, int(volume)) * margin_ratio
+        self.pending_margin_reservation += max(0.0, projected_margin)
+
     def _resolve_base_capital(self) -> float:
         if self.capital_base > 0:
             return float(self.capital_base)
@@ -643,10 +721,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return max(0.0, self.estimated_equity)
 
     def _limited_available_balance(self) -> float:
-        sizing_equity: float = self._sizing_equity()
-        allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
-        free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
-        return max(0.0, min(free_capital, allowed_capital))
+        free_capital: float = self._free_capital_after_reservations()
+        remaining_capital_budget: float = self._remaining_capital_budget()
+        return max(0.0, min(free_capital, remaining_capital_budget))
 
     def _risk_amount_from_ratio(self, risk_ratio: float, limited_balance: float) -> float:
         dynamic_risk: float = max(self.min_risk_per_trade, limited_balance * risk_ratio)
@@ -676,10 +753,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
             risk_per_contract: float = max(abs(price - stop_price) * size, max(float(self.get_pricetick(vt_symbol)) * size, 1.0))
             margin_per_contract: float = price * size * margin_ratio
-            sizing_equity: float = self._sizing_equity()
-            allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
-            free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
-            limited_balance: float = max(0.0, min(free_capital, allowed_capital))
+            allowed_capital: float = self._allowed_capital()
+            free_capital: float = self._free_capital_after_reservations()
+            limited_balance: float = self._limited_available_balance()
             return {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
                 "risk_ratio": None,
@@ -687,6 +763,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "limited_balance": limited_balance,
                 "allowed_capital": allowed_capital,
                 "free_capital": free_capital,
+                "reserved_margin_before": self._reserved_margin_in_use(),
                 "stop_price": stop_price,
                 "risk_per_contract": risk_per_contract,
                 "margin_ratio": margin_ratio,
@@ -699,9 +776,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             }
 
         limited_balance: float = self._limited_available_balance()
-        sizing_equity: float = self._sizing_equity()
-        allowed_capital: float = max(0.0, sizing_equity * self.max_capital_usage_ratio)
-        free_capital: float = max(0.0, sizing_equity - self.total_margin_in_use)
+        allowed_capital: float = self._allowed_capital()
+        free_capital: float = self._free_capital_after_reservations()
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
             risk_ratio: float = self.risk_ratio_ma_cross_breakout
@@ -740,6 +816,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "limited_balance": limited_balance,
             "allowed_capital": allowed_capital,
             "free_capital": free_capital,
+            "reserved_margin_before": self._reserved_margin_in_use(),
             "stop_price": stop_price,
             "risk_per_contract": risk_per_contract,
             "margin_ratio": margin_ratio,
@@ -775,7 +852,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         for state in self.states.values():
             if state.contract_vt_symbol and self.get_pos(state.contract_vt_symbol) != 0:
                 count += 1
-        return count
+        return count + len(self.pending_active_products)
 
     def _open_position(
         self,
@@ -872,8 +949,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_ratio": None,
                 "risk_amount": None,
                 "limited_balance": self._limited_available_balance(),
-                "allowed_capital": max(0.0, self._sizing_equity() * self.max_capital_usage_ratio),
-                "free_capital": max(0.0, self._sizing_equity() - self.total_margin_in_use),
+                "allowed_capital": self._allowed_capital(),
+                "free_capital": self._free_capital_after_reservations(),
+                "reserved_margin_before": self._reserved_margin_in_use(),
                 "stop_price": stop_price,
                 "risk_per_contract": None,
                 "margin_ratio": self._margin_ratio_for_symbol(state.contract_vt_symbol),
@@ -894,6 +972,41 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if execution_price_override is not None and execution_price_override > 0:
             self.execution_price_overrides[state.contract_vt_symbol] = execution_price_override
         self.set_target(state.contract_vt_symbol, target)
+
+    def _record_trade_event(
+        self,
+        *,
+        bar: BarData,
+        contract_vt_symbol: str,
+        product_vt_symbol: str,
+        position_direction: str,
+        offset: str,
+        reason: str,
+        volume: int,
+        price: float,
+    ) -> None:
+        if volume <= 0 or not contract_vt_symbol:
+            return
+
+        if offset == "Close":
+            trade_direction = Direction.SHORT.value if position_direction == "long" else Direction.LONG.value
+        else:
+            trade_direction = Direction.LONG.value if position_direction == "long" else Direction.SHORT.value
+
+        self.trade_event_diagnostics.append(
+            {
+                "datetime": bar.datetime,
+                "date": bar.datetime.date(),
+                "vt_symbol": contract_vt_symbol,
+                "product_vt_symbol": product_vt_symbol,
+                "position_direction": position_direction,
+                "direction": trade_direction,
+                "offset": offset,
+                "reason": reason,
+                "volume": int(volume),
+                "price": float(price),
+            }
+        )
 
     @staticmethod
     def _stop_triggered(direction: str, bar: BarData, stop_price: float) -> bool:
@@ -938,6 +1051,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         actual_risk_amount: float = risk_per_contract * volume
         actual_margin_amount: float = margin_per_contract * volume
         estimated_equity: float = float(self.estimated_equity or self.base_capital)
+        reserved_margin_before: float = float(sizing_snapshot.get("reserved_margin_before", self._reserved_margin_in_use()) or 0.0)
 
         self.entry_risk_diagnostics.append(
             {
@@ -952,7 +1066,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_mode": risk_mode,
                 "sizing_method": sizing_snapshot.get("sizing_method", "unknown"),
                 "estimated_equity": estimated_equity,
-                "total_margin_in_use_before": float(self.total_margin_in_use),
+                "total_margin_in_use_before": reserved_margin_before,
                 "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
                 "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
                 "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
@@ -968,7 +1082,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "margin_ratio": margin_ratio,
                 "margin_per_contract": margin_per_contract,
                 "actual_margin_amount": actual_margin_amount,
-                "projected_total_margin_after": float(self.total_margin_in_use) + actual_margin_amount,
+                "projected_total_margin_after": reserved_margin_before + actual_margin_amount,
                 "volume": int(volume),
                 "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
@@ -1041,7 +1155,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             state.prev2day_stop_price = final_stop
             if self._stop_triggered("long", bar, final_stop):
                 exit_price = self._stop_execution_price("long", bar, final_stop)
-                self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
+                self._close_all_layers_and_set_flat_target(
+                    state,
+                    exit_price,
+                    execution_price_override=exit_price,
+                    exit_reason="long_prev2day_stop",
+                )
                 return "long_prev2day_stop"
         else:
             raw_stop = float(prev2_window["high"].max())
@@ -1049,7 +1168,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             state.prev2day_stop_price = final_stop
             if self._stop_triggered("short", bar, final_stop):
                 exit_price = self._stop_execution_price("short", bar, final_stop)
-                self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
+                self._close_all_layers_and_set_flat_target(
+                    state,
+                    exit_price,
+                    execution_price_override=exit_price,
+                    exit_reason="short_prev2day_stop",
+                )
                 return "short_prev2day_stop"
 
         return ""
@@ -1071,7 +1195,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         if base_triggered:
             exit_price = self._stop_execution_price(direction, bar, base_stop_price)
-            self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
+            self._close_all_layers_and_set_flat_target(
+                state,
+                exit_price,
+                execution_price_override=exit_price,
+                exit_reason=f"{direction}_base_stop",
+            )
             return f"{direction}_base_stop"
 
         if not triggered_indexes:
@@ -1079,10 +1208,22 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         stop_reference = max(triggered_stop_prices) if direction == "long" else min(triggered_stop_prices)
         exit_price = self._stop_execution_price(direction, bar, stop_reference)
+        closed_volume = sum(state.layers[index].volume for index in triggered_indexes)
         self._close_layers(state, triggered_indexes, exit_price)
+        exit_reason = f"{direction}_layer_stop_partial" if state.layers else f"{direction}_layer_stop_all"
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=state.contract_vt_symbol,
+            product_vt_symbol=state.product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
         if state.layers:
             self._apply_state_target(state, execution_price_override=exit_price)
-        return f"{direction}_layer_stop_partial" if state.layers else f"{direction}_layer_stop_all"
+        return exit_reason
 
     def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
         for layer in state.layers:
@@ -1197,10 +1338,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         target_volume: int = current_volume - reduce_volume
         if target_volume <= 0:
-            self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+            self._close_all_layers_and_set_flat_target(
+                state,
+                float(bar.close_price),
+                exit_reason=f"{exit_reason}_all",
+            )
             state.rsi_partial_exit_done = True
             return f"{exit_reason}_all"
 
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=state.contract_vt_symbol,
+            product_vt_symbol=state.product_vt_symbol,
+            position_direction=state.direction,
+            offset="Close",
+            reason=f"{exit_reason}_half",
+            volume=reduce_volume,
+            price=float(bar.close_price),
+        )
         self._reduce_position_to_target(state, target_volume, float(bar.close_price))
         state.rsi_partial_exit_done = True
         return f"{exit_reason}_half"
@@ -1277,11 +1432,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         state: ProductState,
         exit_price: float,
         execution_price_override: float | None = None,
+        exit_reason: str | None = None,
     ) -> None:
         contract_vt_symbol: str = state.contract_vt_symbol
         if not contract_vt_symbol:
             state.reset()
             return
+        if exit_reason:
+            self._record_trade_event(
+                bar=self.bars[contract_vt_symbol],
+                contract_vt_symbol=contract_vt_symbol,
+                product_vt_symbol=state.product_vt_symbol,
+                position_direction=state.direction,
+                offset="Close",
+                reason=exit_reason,
+                volume=state.active_volume(),
+                price=exit_price,
+            )
         self._close_all_layers(state, exit_price)
         if execution_price_override is not None and execution_price_override > 0:
             self.execution_price_overrides[contract_vt_symbol] = execution_price_override
@@ -1383,8 +1550,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _can_allocate_margin(self, vt_symbol: str, volume: int, price: float) -> bool:
         margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
         projected_margin = price * self.get_size(vt_symbol) * volume * margin_ratio
-        allowed_capital = max(0.0, self._sizing_equity() * self.max_capital_usage_ratio)
-        return (self.total_margin_in_use + projected_margin) <= allowed_capital
+        allowed_capital = self._allowed_capital()
+        return (self._reserved_margin_in_use() + projected_margin) <= allowed_capital
 
     def _build_history_df(self, am: ArrayManager) -> pd.DataFrame:
         return pd.DataFrame(

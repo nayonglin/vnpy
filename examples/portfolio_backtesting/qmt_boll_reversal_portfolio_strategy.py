@@ -30,6 +30,8 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
     boll_dev: float = 2.0
     entry_tr_multiplier: float = 0.5
     previous_day_stop_enabled: bool = True
+    block_short_when_all_ma_rising: bool = True
+    block_long_when_all_ma_falling: bool = True
 
     long_entry_enabled: bool = True
     short_entry_enabled: bool = True
@@ -55,6 +57,8 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
         "boll_dev",
         "entry_tr_multiplier",
         "previous_day_stop_enabled",
+        "block_short_when_all_ma_rising",
+        "block_long_when_all_ma_falling",
     ]
 
     def on_init(self) -> None:
@@ -131,9 +135,15 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
         mid_t = float(ma_mid.iloc[-1])
         long_t = float(ma_long.iloc[-1])
         extra_t = float(ma_extra_long.iloc[-1])
+        short_y = float(ma_short.iloc[-2])
+        mid_y = float(ma_mid.iloc[-2])
+        long_y = float(ma_long.iloc[-2])
+        extra_y = float(ma_extra_long.iloc[-2])
 
         bullish_alignment = short_t > mid_t > long_t > extra_t
         bearish_alignment = short_t < mid_t < long_t < extra_t
+        all_ma_rising = short_t > short_y and mid_t > mid_y and long_t > long_y and extra_t > extra_y
+        all_ma_falling = short_t < short_y and mid_t < mid_y and long_t < long_y and extra_t < extra_y
 
         close_y = float(close.iloc[-2])
         close_t = float(close.iloc[-1])
@@ -150,6 +160,11 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
             signal = "short_reversal"
         elif breakout_lower and not bearish_alignment and self.long_entry_enabled:
             signal = "long_reversal"
+
+        if signal == "short_reversal" and self.block_short_when_all_ma_rising and all_ma_rising:
+            signal = ""
+        elif signal == "long_reversal" and self.block_long_when_all_ma_falling and all_ma_falling:
+            signal = ""
 
         if signal and not self._passes_entry_filters(signal, history):
             signal = ""

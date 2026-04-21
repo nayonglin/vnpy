@@ -35,6 +35,8 @@ def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: flo
             "boll_dev": 2.0,
             "entry_tr_multiplier": 0.5,
             "previous_day_stop_enabled": True,
+            "block_short_when_all_ma_rising": True,
+            "block_long_when_all_ma_falling": True,
         }
     )
     return setting
