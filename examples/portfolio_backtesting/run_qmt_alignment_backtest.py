@@ -583,6 +583,42 @@ def _marker_style(direction: str, offset: str, is_selected: bool = False) -> tup
     return ("x", "#2563EB" if not is_selected else "#1D4ED8")
 
 
+def _build_trade_review_indicators(
+    bars_df: pd.DataFrame,
+    left: int,
+    right: int,
+) -> dict[str, list[float | None]]:
+    indicator_df = bars_df.copy()
+    close = pd.to_numeric(indicator_df["close"], errors="coerce")
+
+    for window in (5, 10, 20, 40):
+        indicator_df[f"ma{window}"] = close.rolling(window).mean()
+
+    boll_mid = close.rolling(20).mean()
+    boll_std = close.rolling(20).std(ddof=0)
+    indicator_df["boll_mid"] = boll_mid
+    indicator_df["boll_upper"] = boll_mid + 2.0 * boll_std
+    indicator_df["boll_lower"] = boll_mid - 2.0 * boll_std
+
+    window_df = indicator_df.iloc[left:right]
+
+    def _series_values(column: str) -> list[float | None]:
+        values: list[float | None] = []
+        for value in window_df[column].tolist():
+            values.append(None if pd.isna(value) else round(float(value), 4))
+        return values
+
+    return {
+        "ma5": _series_values("ma5"),
+        "ma10": _series_values("ma10"),
+        "ma20": _series_values("ma20"),
+        "ma40": _series_values("ma40"),
+        "boll_mid": _series_values("boll_mid"),
+        "boll_upper": _series_values("boll_upper"),
+        "boll_lower": _series_values("boll_lower"),
+    }
+
+
 def _build_trade_review_records(
     trades_df: pd.DataFrame,
     entry_risk_df: pd.DataFrame,
@@ -620,6 +656,7 @@ def _build_trade_review_records(
         left = max(0, center_index - TRADE_REVIEW_LOOKBACK_BARS)
         right = min(len(bars_df), center_index + TRADE_REVIEW_LOOKAHEAD_BARS + 1)
         window_df = bars_df.iloc[left:right].copy()
+        indicators = _build_trade_review_indicators(bars_df, left, right)
         window_start = pd.Timestamp(window_df["date"].iloc[0])
         window_end = pd.Timestamp(window_df["date"].iloc[-1])
 
@@ -727,6 +764,7 @@ def _build_trade_review_records(
                     "close": window_df["close"].round(4).tolist(),
                     "volume": window_df["volume"].round(4).tolist(),
                 },
+                "indicators": indicators,
                 "trade_markers": trade_markers,
                 "roll_markers": roll_markers,
                 "risk": risk_summary,
@@ -783,7 +821,7 @@ def _create_trade_review_html(
       <div class="card"><h3>成交信息</h3><div id="trade-summary" class="kv"></div></div>
       <div class="card"><h3>开仓风险快照</h3><div id="risk-summary" class="kv"></div></div>
       <div class="card"><h3>窗口信息</h3><div id="window-summary" class="kv"></div></div>
-      <div class="card"><h3>说明</h3><div class="kv"><div>绿色三角</div><div>开多</div><div>红色三角</div><div>开空</div><div>红色叉号</div><div>平多</div><div>蓝色叉号</div><div>平空</div><div>橙色虚线</div><div>开仓止损线</div><div>紫色菱形</div><div>换月事件</div></div></div>
+      <div class="card"><h3>说明</h3><div class="kv"><div>绿色三角</div><div>开多</div><div>红色三角</div><div>开空</div><div>红色叉号</div><div>平多</div><div>蓝色叉号</div><div>平空</div><div>橙色虚线</div><div>开仓止损线</div><div>紫色菱形</div><div>换月事件</div><div>均线/BOLL</div><div>MA5/10/20/40 与布林通道</div></div></div>
     </div>
     <div id="trade-chart"></div>
     <div class="footer">复盘页按每笔成交截取前后 30 根日线，叠加同窗口内全部成交点、换月事件和开仓风险快照。</div>
@@ -916,6 +954,32 @@ def _create_trade_review_html(
           name: "成交点",
         },
       ];
+
+      const overlaySeries = [
+        { key: "ma5", name: "MA5", color: "#f97316", width: 1.5 },
+        { key: "ma10", name: "MA10", color: "#0ea5e9", width: 1.5 },
+        { key: "ma20", name: "MA20", color: "#10b981", width: 1.8 },
+        { key: "ma40", name: "MA40", color: "#8b5cf6", width: 1.8 },
+        { key: "boll_upper", name: "BOLL上轨", color: "#64748b", width: 1.2, dash: "dot" },
+        { key: "boll_mid", name: "BOLL中轨", color: "#94a3b8", width: 1.2, dash: "dash" },
+        { key: "boll_lower", name: "BOLL下轨", color: "#64748b", width: 1.2, dash: "dot" },
+      ];
+
+      overlaySeries.forEach((series) => {
+        const values = record.indicators?.[series.key];
+        if (!values || !values.some(value => value !== null && value !== undefined)) {
+          return;
+        }
+        traces.push({
+          type: "scatter",
+          mode: "lines",
+          x: record.bars.date,
+          y: values,
+          name: series.name,
+          line: { color: series.color, width: series.width, dash: series.dash || "solid" },
+          hovertemplate: `${series.name}: %{y:,.2f}<extra></extra>`,
+        });
+      });
 
       if (record.stop_line) {
         traces.push({
