@@ -63,6 +63,47 @@ def build_trades_df(engine: BacktestingEngine) -> pd.DataFrame:
 
     df: pd.DataFrame = pd.DataFrame(rows)
     df.sort_values(["datetime", "vt_symbol", "trade_id"], inplace=True)
+
+    strategy = getattr(engine, "strategy", None)
+    trade_events: list[dict[str, Any]] = getattr(strategy, "trade_event_diagnostics", []) if strategy else []
+    if trade_events:
+        event_df = pd.DataFrame(trade_events)
+        event_df["datetime"] = pd.to_datetime(event_df["datetime"]).dt.tz_localize(None)
+        event_df["volume_key"] = pd.to_numeric(event_df["volume"], errors="coerce").round(8)
+        event_df.sort_values(["datetime", "vt_symbol", "offset", "direction", "reason"], inplace=True)
+
+        matched_events: dict[str, dict[str, Any]] = {}
+        grouped_events: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+        for event_row in event_df.to_dict("records"):
+            key = (str(event_row["vt_symbol"]), str(event_row["direction"]), str(event_row["offset"]))
+            grouped_events.setdefault(key, []).append(event_row)
+
+        for trade_row in df.to_dict("records"):
+            key = (str(trade_row["vt_symbol"]), str(trade_row["direction"]), str(trade_row["offset"]))
+            candidates = grouped_events.get(key, [])
+            trade_dt = pd.Timestamp(trade_row["datetime"]).tz_localize(None)
+            trade_volume = round(float(trade_row["volume"]), 8)
+
+            selected_index: int | None = None
+            for index, event_row in enumerate(candidates):
+                event_dt = pd.Timestamp(event_row["datetime"]).tz_localize(None)
+                if abs(float(event_row["volume_key"]) - trade_volume) > 1e-8:
+                    continue
+                if event_dt <= trade_dt <= event_dt + pd.Timedelta(days=1):
+                    selected_index = index
+                    break
+
+            if selected_index is None:
+                continue
+
+            matched_events[str(trade_row["trade_id"])] = candidates.pop(selected_index)
+
+        df["exit_reason"] = df["trade_id"].map(
+            lambda trade_id: matched_events.get(str(trade_id), {}).get("reason")
+        )
+    else:
+        df["exit_reason"] = None
+
     return df
 
 
@@ -583,6 +624,114 @@ def _marker_style(direction: str, offset: str, is_selected: bool = False) -> tup
     return ("x", "#2563EB" if not is_selected else "#1D4ED8")
 
 
+def _position_direction_from_trade(trade_row: dict[str, Any]) -> str | None:
+    direction = str(trade_row["direction"])
+    offset = str(trade_row["offset"])
+    if offset == "Open":
+        return "long" if direction == "Long" else "short"
+    if offset == "Close":
+        return "long" if direction == "Short" else "short"
+    return None
+
+
+def _build_trade_link_map(trades_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
+    if trades_df.empty:
+        return {}
+
+    normalized = trades_df.copy()
+    normalized.sort_values(["datetime", "vt_symbol", "trade_id"], inplace=True)
+
+    open_queues: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    links: dict[str, dict[str, Any]] = {}
+
+    for trade_row in normalized.to_dict("records"):
+        position_direction = _position_direction_from_trade(trade_row)
+        if position_direction is None:
+            continue
+
+        vt_symbol = str(trade_row["vt_symbol"])
+        trade_id = str(trade_row["trade_id"])
+        volume = float(trade_row["volume"])
+        key = (vt_symbol, position_direction)
+
+        if str(trade_row["offset"]) == "Open":
+            open_queues.setdefault(key, []).append(
+                {
+                    "trade_id": trade_id,
+                    "remaining_volume": volume,
+                    "date": pd.Timestamp(trade_row["date"]).strftime("%Y-%m-%d"),
+                    "position_direction": position_direction,
+                }
+            )
+            continue
+
+        queue = open_queues.get(key, [])
+        remaining = volume
+        consumed_trade_ids: list[str] = []
+
+        while remaining > 1e-8 and queue:
+            entry = queue[0]
+            used_volume = min(float(entry["remaining_volume"]), remaining)
+            consumed_trade_ids.append(str(entry["trade_id"]))
+            entry["remaining_volume"] = float(entry["remaining_volume"]) - used_volume
+            remaining -= used_volume
+            if float(entry["remaining_volume"]) <= 1e-8:
+                queue.pop(0)
+
+        if not consumed_trade_ids:
+            continue
+
+        links.setdefault(trade_id, {})
+        links[trade_id]["entry_trade_id"] = consumed_trade_ids[0]
+        links[trade_id]["position_direction"] = position_direction
+
+        for entry_trade_id in consumed_trade_ids:
+            entry_link = links.setdefault(entry_trade_id, {})
+            entry_link.setdefault("exit_trade_ids", []).append(trade_id)
+            entry_link["position_direction"] = position_direction
+
+    return links
+
+
+def _build_prev2day_stop_line(
+    bars_df: pd.DataFrame,
+    *,
+    entry_date: pd.Timestamp,
+    position_direction: str,
+    left: int,
+    right: int,
+) -> list[float | None] | None:
+    if bars_df.empty or position_direction not in {"long", "short"}:
+        return None
+
+    matching = bars_df.index[bars_df["date"] == entry_date].tolist()
+    if not matching:
+        return None
+
+    entry_index = int(matching[0])
+    stop_values: list[float | None] = [None] * len(bars_df)
+    trailing_stop: float | None = None
+
+    for index in range(entry_index + 2, len(bars_df)):
+        prev2_window = bars_df.iloc[index - 2:index]
+        if len(prev2_window) < 2:
+            continue
+
+        if position_direction == "long":
+            raw_stop = float(prev2_window["low"].min())
+            trailing_stop = raw_stop if trailing_stop is None else max(trailing_stop, raw_stop)
+        else:
+            raw_stop = float(prev2_window["high"].max())
+            trailing_stop = raw_stop if trailing_stop is None else min(trailing_stop, raw_stop)
+
+        stop_values[index] = round(float(trailing_stop), 4)
+
+    window_values = stop_values[left:right]
+    if not any(value is not None for value in window_values):
+        return None
+    return window_values
+
+
 def _build_trade_review_indicators(
     bars_df: pd.DataFrame,
     left: int,
@@ -631,6 +780,10 @@ def _build_trade_review_records(
     normalized_risks = _normalize_trade_review_input(entry_risk_df, "datetime") if not entry_risk_df.empty else entry_risk_df
     bars_by_contract = _load_trade_review_bars(normalized_trades)
     risk_by_trade_id = _match_entry_risk_to_trades(normalized_trades, normalized_risks) if not entry_risk_df.empty else {}
+    trade_link_map = _build_trade_link_map(normalized_trades)
+    trade_row_by_id = {
+        str(trade_row["trade_id"]): trade_row for trade_row in normalized_trades.to_dict("records")
+    }
     roll_df = _build_roll_event_df(mapping_csv_path)
     if not roll_df.empty:
         roll_df = roll_df.copy()
@@ -666,10 +819,24 @@ def _build_trade_review_records(
             & (normalized_trades["date"] <= window_end)
         ].copy()
 
+        trade_link = trade_link_map.get(str(trade_row["trade_id"]), {})
+        anchor_entry_trade_id = str(trade_row["trade_id"])
+        if str(trade_row["offset"]) == "Close":
+            anchor_entry_trade_id = str(trade_link.get("entry_trade_id") or "")
+        anchor_entry_row = trade_row_by_id.get(anchor_entry_trade_id) if anchor_entry_trade_id else None
+        anchor_risk_row = risk_by_trade_id.get(anchor_entry_trade_id) if anchor_entry_trade_id else None
+        linked_exit_reason = None
+        if str(trade_row["offset"]) == "Open":
+            linked_exit_ids = trade_link.get("exit_trade_ids", [])
+            if linked_exit_ids:
+                linked_exit_reason = trade_row_by_id.get(str(linked_exit_ids[0]), {}).get("exit_reason")
+
         trade_markers: list[dict[str, Any]] = []
         for window_trade in window_trades.to_dict("records"):
             is_selected = str(window_trade["trade_id"]) == str(trade_row["trade_id"])
             symbol, color = _marker_style(str(window_trade["direction"]), str(window_trade["offset"]), is_selected)
+            exit_reason = window_trade.get("exit_reason")
+            exit_reason_text = f"<br>exit_reason: {exit_reason}" if exit_reason else ""
             trade_markers.append(
                 {
                     "x": pd.Timestamp(window_trade["date"]).strftime("%Y-%m-%d"),
@@ -679,6 +846,7 @@ def _build_trade_review_records(
                         f"{window_trade['direction']} {window_trade['offset']}<br>"
                         f"价格: {float(window_trade['price']):,.2f}<br>"
                         f"手数: {float(window_trade['volume']):,.0f}"
+                        f"{exit_reason_text}"
                     ),
                     "symbol": symbol,
                     "color": color,
@@ -710,8 +878,11 @@ def _build_trade_review_records(
                 )
 
         risk_row = risk_by_trade_id.get(str(trade_row["trade_id"]))
+        if risk_row is None:
+            risk_row = anchor_risk_row
         risk_summary: dict[str, Any] | None = None
         stop_line: list[float] | None = None
+        prev2day_stop_line: list[float | None] | None = None
         if risk_row:
             risk_summary = {
                 "layer_kind": risk_row.get("layer_kind"),
@@ -734,6 +905,16 @@ def _build_trade_review_records(
             }
             if risk_row.get("stop_price") is not None:
                 stop_line = [float(risk_row["stop_price"])] * len(window_df)
+            if anchor_entry_row is not None:
+                position_direction = _position_direction_from_trade(anchor_entry_row)
+                if position_direction:
+                    prev2day_stop_line = _build_prev2day_stop_line(
+                        bars_df,
+                        entry_date=pd.Timestamp(anchor_entry_row["date"]),
+                        position_direction=position_direction,
+                        left=left,
+                        right=right,
+                    )
 
         product_symbol = contract_product_map.get(vt_symbol, _infer_product_symbol(vt_symbol))
         trade_date_text = pd.Timestamp(trade_row["datetime"]).strftime("%Y-%m-%d %H:%M:%S")
@@ -756,6 +937,8 @@ def _build_trade_review_records(
                 "offset": str(trade_row["offset"]),
                 "price": float(trade_row["price"]),
                 "volume": float(trade_row["volume"]),
+                "exit_reason": trade_row.get("exit_reason"),
+                "linked_exit_reason": linked_exit_reason,
                 "bars": {
                     "date": window_df["date"].dt.strftime("%Y-%m-%d").tolist(),
                     "open": window_df["open"].round(4).tolist(),
@@ -769,6 +952,7 @@ def _build_trade_review_records(
                 "roll_markers": roll_markers,
                 "risk": risk_summary,
                 "stop_line": stop_line,
+                "prev2day_stop_line": prev2day_stop_line,
             }
         )
 
@@ -821,7 +1005,7 @@ def _create_trade_review_html(
       <div class="card"><h3>成交信息</h3><div id="trade-summary" class="kv"></div></div>
       <div class="card"><h3>开仓风险快照</h3><div id="risk-summary" class="kv"></div></div>
       <div class="card"><h3>窗口信息</h3><div id="window-summary" class="kv"></div></div>
-      <div class="card"><h3>说明</h3><div class="kv"><div>绿色三角</div><div>开多</div><div>红色三角</div><div>开空</div><div>红色叉号</div><div>平多</div><div>蓝色叉号</div><div>平空</div><div>橙色虚线</div><div>开仓止损线</div><div>紫色菱形</div><div>换月事件</div><div>均线/BOLL</div><div>MA5/10/20/40 与布林通道</div></div></div>
+      <div class="card"><h3>说明</h3><div class="kv"><div>绿色三角</div><div>开多</div><div>红色三角</div><div>开空</div><div>红色叉号</div><div>平多</div><div>蓝色叉号</div><div>平空</div><div>橙色虚线</div><div>开仓止损线</div><div>酒红虚线</div><div>动态Prev2Day止损</div><div>紫色菱形</div><div>换月事件</div><div>均线/BOLL</div><div>MA5/10/20/40 与布林通道</div></div></div>
     </div>
     <div id="trade-chart"></div>
     <div class="footer">复盘页按每笔成交截取前后 30 根日线，叠加同窗口内全部成交点、换月事件和开仓风险快照。</div>
@@ -887,6 +1071,8 @@ def _create_trade_review_html(
         ["方向", `${record.direction} / ${record.offset}`],
         ["成交价", formatNumber(record.price)],
         ["手数", formatNumber(record.volume, 0)],
+        ["exit_reason", record.exit_reason || "-"],
+        ["关联平仓原因", record.linked_exit_reason || "-"],
         ["成交编号", record.trade_id],
       ]);
 
@@ -990,6 +1176,18 @@ def _create_trade_review_html(
           name: "开仓止损线",
           line: { color: "#f59e0b", width: 2, dash: "dash" },
           hovertemplate: "止损价: %{y:,.2f}<extra></extra>",
+        });
+      }
+
+      if (record.prev2day_stop_line) {
+        traces.push({
+          type: "scatter",
+          mode: "lines",
+          x: record.bars.date,
+          y: record.prev2day_stop_line,
+          name: "动态Prev2Day止损",
+          line: { color: "#7f1d1d", width: 2, dash: "dot" },
+          hovertemplate: "动态Prev2Day: %{y:,.2f}<extra></extra>",
         });
       }
 

@@ -26,7 +26,7 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
 
     author: str = "GPT-5.4"
 
-    boll_window: int = 20
+    boll_window: int = 26
     boll_dev: float = 2.0
     entry_tr_multiplier: float = 0.5
     previous_day_stop_enabled: bool = True

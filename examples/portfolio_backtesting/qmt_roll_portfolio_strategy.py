@@ -562,9 +562,6 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return state.contract_vt_symbol or target_contract, 0, bars.get(state.contract_vt_symbol or target_contract)
 
     def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
-        override_price: float | None = self.execution_price_overrides.get(vt_symbol)
-        if override_price is not None and override_price > 0:
-            return override_price
         pricetick: float = self.get_pricetick(vt_symbol)
         if direction == Direction.LONG:
             return reference + self.tick_add * pricetick
@@ -976,7 +973,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _record_trade_event(
         self,
         *,
-        bar: BarData,
+        bar: BarData | None,
         contract_vt_symbol: str,
         product_vt_symbol: str,
         position_direction: str,
@@ -985,7 +982,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         volume: int,
         price: float,
     ) -> None:
-        if volume <= 0 or not contract_vt_symbol:
+        if volume <= 0 or not contract_vt_symbol or bar is None:
             return
 
         if offset == "Close":
@@ -1439,8 +1436,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             state.reset()
             return
         if exit_reason:
+            engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
+            event_bar: BarData | None = engine_bars.get(contract_vt_symbol)
             self._record_trade_event(
-                bar=self.bars[contract_vt_symbol],
+                bar=event_bar,
                 contract_vt_symbol=contract_vt_symbol,
                 product_vt_symbol=state.product_vt_symbol,
                 position_direction=state.direction,
