@@ -35,6 +35,7 @@ PRODUCT_SPECS: list[ProductSpec] = [
     ProductSpec("cu", Exchange.SHFE, 5, 10.0, 10.0, 0.12),
     ProductSpec("MA", Exchange.CZCE, 10, 1.0, 1.0, 0.12),
     ProductSpec("OI", Exchange.CZCE, 10, 1.0, 1.0, 0.12),
+    ProductSpec("AP", Exchange.CZCE, 10, 1.0, 1.0, 0.12),
     ProductSpec("SM", Exchange.CZCE, 5, 2.0, 2.0, 0.12),
     ProductSpec("SA", Exchange.CZCE, 20, 1.0, 1.0, 0.12),
     ProductSpec("rb", Exchange.SHFE, 10, 1.0, 1.0, 0.10),
