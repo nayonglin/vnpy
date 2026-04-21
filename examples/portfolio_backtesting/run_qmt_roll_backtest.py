@@ -66,6 +66,10 @@ class SameDayCloseBacktestingEngine(BacktestingEngine):
             if order.price <= 0:
                 continue
 
+            trade_price: float = float(order.price)
+            if trade_price <= 0:
+                trade_price = close_price
+
             order.traded = order.volume
             order.status = Status.ALLTRADED
             self.strategy.update_order(order)
@@ -82,7 +86,7 @@ class SameDayCloseBacktestingEngine(BacktestingEngine):
                 tradeid=str(self.trade_count),
                 direction=order.direction,
                 offset=order.offset,
-                price=close_price,
+                price=trade_price,
                 volume=order.volume,
                 datetime=self.datetime,
                 gateway_name=self.gateway_name,

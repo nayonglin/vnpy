@@ -12,7 +12,7 @@ from run_qmt_roll_backtest import build_summary_row, run_backtest
 
 SAVE_ARTIFACTS: bool = False
 RISK_RATIO: float = 0.04
-CAPITAL: float = 1_000_000
+CAPITAL: float = 200_000
 
 PERIOD_WINDOWS: list[tuple[str, datetime, datetime]] = [
     ("full_sample", START_DT, END_DT),

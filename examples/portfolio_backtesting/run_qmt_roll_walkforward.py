@@ -15,7 +15,7 @@ TRAIN_MONTHS: int = 24
 TEST_MONTHS: int = 12
 STEP_MONTHS: int = 6
 RISK_GRID: list[float] = [0.01, 0.02, 0.03, 0.04]
-CAPITAL: float = 1_000_000
+CAPITAL: float = 200_000
 SAVE_ARTIFACTS: bool = False
 
 

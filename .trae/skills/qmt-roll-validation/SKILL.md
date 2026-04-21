@@ -1,116 +1,117 @@
 ---
 name: "qmt-roll-validation"
-description: "Runs the QMT roll backtest plus period sweep, Walk-Forward, and Monte Carlo validation. Invoke when working on this repo's portfolio strategy changes or before comparing strategy versions."
+description: "执行 QMT Roll 主回测、多周期、Walk-Forward 与蒙特卡洛验证。适用于本仓库策略改动后复验、做三个实验或版本对比时调用。"
 ---
 
-# QMT Roll Validation
+# QMT Roll 验证
 
-## Purpose
+## 目的
 
-This skill standardizes the validation workflow for the QMT roll portfolio strategy in this repository.
+这个 skill 用来标准化本仓库 `QMT Roll` 组合策略的验证流程，避免不同 agent 因口径不一致而得出不可对比的结论。
 
-Use it when:
+适用场景：
 
-- the user asks to rerun the main backtest after strategy or parameter changes
-- the user asks for multi-period validation
-- the user asks for Walk-Forward validation
-- the user asks for Monte Carlo validation
-- the user asks whether the latest version is more robust, overfit, or stable
-- a new agent needs the project-specific workflow, output files, and interpretation format
+- 用户在修改策略逻辑或参数后，要求重跑主回测
+- 用户要求做多周期验证
+- 用户要求做 Walk-Forward 验证
+- 用户要求做蒙特卡洛验证
+- 用户要求判断最新版本是否更稳健、是否可能过拟合、是否更适合实盘
+- 当用户说进行三个实验
+- 新 agent 需要快速继承本项目的验证流程、产物路径与结果解读口径
 
-This skill is specific to the workspace rooted at:
+本 skill 仅适用于以下工作区：
 
 `/Users/bytedance/Desktop/person/vnpy`
 
-## Hard Rules
+## 硬规则
 
-- Use the local interpreter: `/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
-- Always set `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
-- Run scripts from:
+- 使用本地解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- 必须设置 `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 所有脚本都从以下目录执行：
   `/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
-- Prefer the current strategy defaults defined in `run_qmt_roll_backtest.py` unless the user explicitly asks to change parameters
-- Treat the latest exported CSV/JSON files as authoritative only after the corresponding script run has finished
-- If a long batch script is still running, do not summarize from partial terminal output unless clearly marked as preliminary
+- 除非用户明确要求改参数，否则默认以 `run_qmt_roll_backtest.py` 当前配置为准
+- 只有在对应脚本运行完成后，最新导出的 `CSV/JSON` 才能作为最终结果
+- 如果批量脚本仍在运行，不要根据中途日志直接下最终结论，除非明确说明这是预览结果
 
-## Strategy Context
+## 策略上下文
 
-Important project assumptions to preserve while validating:
+验证时需要特别关注并保持一致的项目假设：
 
-- Execution model uses same-day close matching via `SameDayCloseBacktestingEngine`
-- Position additions are disabled by default
-- Sizing uses at most 1 million capital via `min(estimated_equity, base_capital)`
-- Short entries only allow `short_case1a`
-- Validation pipeline consists of:
+- 执行模型使用 `SameDayCloseBacktestingEngine`，即同一根日线收盘撮合
+- 默认关闭所有加仓
+- 当前仓位 sizing 逻辑可能随策略变更而变化，运行前必须先核对 `run_qmt_roll_backtest.py` 与 `qmt_roll_portfolio_strategy.py` 的当前实现，不能假设永远是 100 万上限
+- 新开空只允许 `short_case1a`
+- 标准验证流水线包含：
   - `run_qmt_roll_backtest.py`
   - `run_qmt_roll_period_sweep.py`
   - `run_qmt_roll_walkforward.py`
   - `run_qmt_roll_monte_carlo.py`
 
-## Canonical Commands
+## 标准命令
 
-Run all commands from:
+以下命令统一在此目录下执行：
 
 `/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
 
-Main backtest:
+主回测：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_backtest.py
 ```
 
-Period sweep:
+多周期：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_period_sweep.py
 ```
 
-Walk-Forward:
+Walk-Forward：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_walkforward.py
 ```
 
-Monte Carlo:
+蒙特卡洛：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_monte_carlo.py
 ```
 
-## Standard Workflow
+## 标准流程
 
-### 1. Verify Current Configuration
+### 1. 先确认当前配置
 
-Before running anything:
+开始跑任何实验前，先检查：
 
-- inspect `run_qmt_roll_backtest.py`
-- confirm the active defaults such as:
+- 阅读 `run_qmt_roll_backtest.py`
+- 确认当前默认参数，例如：
   - `risk_ratio_of_total_assets`
   - `risk_ratio_open_interest_surge`
   - `risk_ratio_volume_open_interest_surge`
-  - short enablement
-  - add-position flags
-  - pool/universe assumptions if changed recently
+  - 是否开启空头
+  - 是否开启加仓
+  - 如果最近改过品种池，要确认 pool / universe 假设是否变化
 
-If the user just changed logic in `qmt_roll_portfolio_strategy.py`, also inspect the relevant function.
+如果用户刚改过 `qmt_roll_portfolio_strategy.py`，还需要额外检查对应的策略函数。
 
-### 2. Run the Main Backtest
+### 2. 跑主回测
 
-Run `run_qmt_roll_backtest.py` first.
+第一步先执行 `run_qmt_roll_backtest.py`。
 
-Extract and report:
+需要提取并汇报：
 
-- end balance
-- total return
-- max drawdown percent
-- sharpe ratio
-- return-drawdown ratio
-- total trade count
+- 期末权益
+- 总收益率
+- 最大回撤百分比
+- Sharpe Ratio
+- 收益回撤比
+- 总成交笔数
 
-Primary output files:
+主要输出文件：
 
 - `backtest_outputs/qmt_roll_statistics.json`
 - `backtest_outputs/qmt_roll_daily_equity.csv`
@@ -119,122 +120,122 @@ Primary output files:
 - `backtest_outputs/qmt_roll_professional_dashboard.html`
 - `backtest_outputs/qmt_roll_trade_review.html`
 
-### 3. Run Multi-Period Validation
+### 3. 跑多周期验证
 
-Run `run_qmt_roll_period_sweep.py`.
+执行 `run_qmt_roll_period_sweep.py`。
 
-Use:
+主要读取：
 
 - `backtest_outputs/qmt_roll_period_sweep_summary.csv`
 
-Focus on:
+重点关注：
 
 - `full_sample`
 - `period_2020_2021`
 - `period_2022_2023`
 - `period_2024_2026`
-- rolling windows such as `roll_2020_2022`, `roll_2021_2023`, `roll_2022_2024`, `roll_2023_2026`
+- 各类滚动窗口，例如 `roll_2020_2022`、`roll_2021_2023`、`roll_2022_2024`、`roll_2023_2026`
 
-Interpretation rules:
+解读规则：
 
-- strong early sample + weak 2022-2024 means stage sensitivity is still present
-- if full-sample improves but weak windows degrade, say so explicitly
-- do not describe the strategy as stable unless weak windows are also acceptable
+- 如果前期样本很强、但 `2022-2024` 很弱，说明阶段敏感性依旧存在
+- 如果全样本变好，但弱窗口恶化，必须明确指出
+- 只有弱窗口也能接受时，才能把策略描述为“稳定”
 
-### 4. Run Walk-Forward Validation
+### 4. 跑 Walk-Forward 验证
 
-Run `run_qmt_roll_walkforward.py`.
+执行 `run_qmt_roll_walkforward.py`。
 
-Use:
+主要读取：
 
 - `backtest_outputs/qmt_roll_walkforward_train_summary.csv`
 - `backtest_outputs/qmt_roll_walkforward_test_summary.csv`
 
-What to summarize:
+需要汇总：
 
-- number of test windows
-- count of positive and negative test windows
-- best and worst test windows
-- selected risk ratio per window
-- whether the chosen parameter meaningfully changes across windows
+- 测试窗口总数
+- 正收益窗口数和负收益窗口数
+- 最好与最差的测试窗口
+- 每个窗口最终选中的 `risk_ratio`
+- 这些参数选择是否真的随窗口发生了有意义变化
 
-Important caution:
+重要提醒：
 
-- if all `selected_risk_ratio` values are the same, or if train rows for different `risk_ratio` values are identical, explicitly call out that the parameter grid is not producing real discrimination
-- in that case, say Walk-Forward is still useful for out-of-sample performance review, but not for proving parameter-selection effectiveness
+- 如果所有 `selected_risk_ratio` 都相同，或者训练集中不同 `risk_ratio` 的结果完全一样，必须明确指出参数网格没有形成真实区分度
+- 这种情况下，Walk-Forward 仍可用于观察样本外表现，但不能证明参数选择本身有效
 
-### 5. Run Monte Carlo Validation
+### 5. 跑蒙特卡洛验证
 
-Run `run_qmt_roll_monte_carlo.py`.
+执行 `run_qmt_roll_monte_carlo.py`。
 
-Use:
+主要读取：
 
 - `backtest_outputs/qmt_roll_monte_carlo_summary.csv`
 - `backtest_outputs/qmt_roll_monte_carlo_simulations.csv`
 
-Focus on both methods:
+两种方法都要看：
 
 - `daily_block_bootstrap`
 - `trade_block_bootstrap`
 
-Report:
+重点汇报：
 
-- loss probability
-- ruin probability
-- probability of drawdown over 20%, 30%, 40%
-- median return and median max drawdown
-- 1% worst-case drawdown tail if relevant
+- 亏损概率
+- 爆仓概率
+- 回撤超过 `20%`、`30%`、`40%` 的概率
+- 中位收益和中位最大回撤
+- 如果有必要，还要说明 `1%` 极端尾部回撤
 
-Interpretation rules:
+解读规则：
 
-- if ruin probability is near 0, say tail survival is acceptable
-- if 30%+ or 40%+ drawdown probability is still high, say tail drawdown risk remains meaningful
-- compare daily-bootstrap and trade-bootstrap tails; the worse one should drive the warning tone
+- 如果爆仓概率接近 `0`，可以说明尾部生存性尚可
+- 如果 `30%+` 或 `40%+` 回撤概率依旧很高，必须说明尾部回撤风险仍然显著
+- 要比较 `daily bootstrap` 和 `trade bootstrap` 的尾部结果，以更差的一边作为风险提示基调
 
-## Result Summary Template
+## 结果汇总模板
 
-Use a concise Chinese handoff in this shape:
+最终交付建议按下面这个中文结构输出：
 
 - `已完成`:
-  - list which scripts were rerun
+  - 列出本次重跑了哪些脚本
 - `主回测`:
-  - end balance / return / max drawdown / sharpe / return-drawdown ratio
+  - 期末权益 / 收益 / 最大回撤 / Sharpe / 收益回撤比
 - `多周期`:
-  - strongest window
-  - weakest window
-  - overall conclusion on stage sensitivity
+  - 最强窗口
+  - 最弱窗口
+  - 对阶段敏感性的整体结论
 - `Walk-Forward`:
-  - positive vs negative windows
-  - best and worst test periods
-  - whether parameter grid actually discriminates
+  - 正负窗口数量
+  - 最好和最差的测试区间
+  - 参数网格是否真的形成区分
 - `蒙特卡洛`:
-  - ruin probability
-  - tail drawdown probabilities
-  - whether path robustness is acceptable
+  - 爆仓概率
+  - 尾部回撤概率
+  - 路径鲁棒性是否可接受
 - `结论`:
-  - one paragraph stating whether the latest version improved robustness, only improved full-sample results, or still needs work
+  - 用一段话明确说明：最新版本到底是整体更稳健、只是全样本更好，还是仍需继续优化
 
-## Environment Troubleshooting
+## 环境排障
 
-If a run fails:
+如果运行失败，按以下顺序排查：
 
-- if `python: command not found`, switch to the explicit interpreter above
-- if `ModuleNotFoundError: vnpy`, make sure `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy` is set
-- if a batch script is still running, wait for completion before trusting its CSV output
-- if the terminal is busy, use another idle terminal instead of interrupting a running job
+- 如果出现 `python: command not found`，改用前面固定的解释器
+- 如果出现 `ModuleNotFoundError: vnpy`，确认 `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 如果批量脚本还在跑，不要过早相信中途写出的 CSV
+- 如果当前终端繁忙，优先切到空闲终端，不要直接打断正在运行的任务
 
-## When To Escalate
+## 何时继续深挖
 
-After running the workflow, propose a follow-up drill-down when needed:
+当主流程跑完后，如果结果异常或稳定性不足，建议继续深挖：
 
-- weak-window attribution for `2022-2024`
-- decomposition by symbol, direction, or risk mode
-- inspection of `volume_open_interest_surge` trades
-- investigation of why Walk-Forward parameter choices do not separate
+- `2022-2024` 弱势窗口归因
+- 按品种、方向、风险模式做拆解
+- 专项检查 `volume_open_interest_surge` 这类交易
+- 排查为什么 Walk-Forward 的参数选择没有形成区分度
 
-## Example Invocation
+## 调用示例
 
-Invoke this skill when the user says things like:
+当用户说出类似下面的话时，应调用本 skill：
 
 - “帮我把回测和多周期、forward、蒙特卡洛都跑一遍”
 - “这版改动后重新做完整验证”

@@ -275,6 +275,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
+        self.execution_price_overrides: dict[str, float] = {}
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -288,6 +289,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def update_trade(self, trade: TradeData) -> None:
         super().update_trade(trade)
+
+    def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
+        override_price: float | None = self.execution_price_overrides.get(vt_symbol)
+        if override_price is not None and override_price > 0:
+            return override_price
+        return super().calculate_price(vt_symbol, direction, reference)
+
+    def rebalance_portfolio(self, bars: dict[str, BarData]) -> None:
+        super().rebalance_portfolio(bars)
+        self.execution_price_overrides.clear()
 
     def on_bars(self, bars: dict[str, BarData]) -> None:
         if not bars:
@@ -325,7 +336,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             signal: str = str(signal_data["signal"])
             bullish: bool = bool(signal_data["bullish_alignment"])
             bearish: bool = bool(signal_data["bearish_alignment"])
+            ma_mid_value: float = float(signal_data["ma_mid_value"])
             ma_long_value: float = float(signal_data["ma_long_value"])
+            ma_long_prev_value: float = float(signal_data["ma_long_prev_value"])
             rsi_value: float = float(signal_data["rsi_value"])
 
             reconcile_bar: BarData = actual_bar or target_bar
@@ -406,12 +419,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 continue
 
             if self.enable_ma_trend_stop:
-                if state.direction == "long" and float(target_bar.close_price) < ma_long_value:
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                if state.direction == "long" and self._stop_triggered("long", target_bar, ma_long_prev_value):
+                    exit_price = self._stop_execution_price("long", target_bar, ma_long_prev_value)
+                    self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
                     self.last_signal = f"{product_vt}:long_ma_stop"
                     continue
-                if state.direction == "short" and float(target_bar.close_price) > ma_long_value:
-                    self._close_all_layers_and_set_flat_target(state, float(target_bar.close_price))
+                if state.direction == "short" and self._stop_triggered("short", target_bar, ma_long_prev_value):
+                    exit_price = self._stop_execution_price("short", target_bar, ma_long_prev_value)
+                    self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
                     self.last_signal = f"{product_vt}:short_ma_stop"
                     continue
 
@@ -871,12 +886,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             },
         )
 
-    def _apply_state_target(self, state: ProductState) -> None:
+    def _apply_state_target(self, state: ProductState, execution_price_override: float | None = None) -> None:
         if not state.contract_vt_symbol:
             return
         volume: int = state.active_volume()
         target: int = -volume if state.direction == "short" else volume
+        if execution_price_override is not None and execution_price_override > 0:
+            self.execution_price_overrides[state.contract_vt_symbol] = execution_price_override
         self.set_target(state.contract_vt_symbol, target)
+
+    @staticmethod
+    def _stop_triggered(direction: str, bar: BarData, stop_price: float) -> bool:
+        if stop_price <= 0:
+            return False
+        if direction == "long":
+            return float(bar.low_price) <= stop_price
+        return float(bar.high_price) >= stop_price
+
+    @staticmethod
+    def _stop_execution_price(direction: str, bar: BarData, stop_price: float) -> float:
+        open_price: float = float(bar.open_price)
+        if direction == "long":
+            return min(open_price, stop_price)
+        return max(open_price, stop_price)
 
     def _record_entry_risk_diagnostic(
         self,
@@ -1007,15 +1039,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             raw_stop = float(prev2_window["low"].min())
             final_stop = raw_stop if state.prev2day_stop_price is None else max(state.prev2day_stop_price, raw_stop)
             state.prev2day_stop_price = final_stop
-            if float(bar.close_price) <= final_stop:
-                self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+            if self._stop_triggered("long", bar, final_stop):
+                exit_price = self._stop_execution_price("long", bar, final_stop)
+                self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
                 return "long_prev2day_stop"
         else:
             raw_stop = float(prev2_window["high"].max())
             final_stop = raw_stop if state.prev2day_stop_price is None else min(state.prev2day_stop_price, raw_stop)
             state.prev2day_stop_price = final_stop
-            if float(bar.close_price) >= final_stop:
-                self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+            if self._stop_triggered("short", bar, final_stop):
+                exit_price = self._stop_execution_price("short", bar, final_stop)
+                self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
                 return "short_prev2day_stop"
 
         return ""
@@ -1024,28 +1058,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         direction: str = state.direction
         triggered_indexes: list[int] = []
         base_triggered: bool = False
+        base_stop_price: float = 0.0
+        triggered_stop_prices: list[float] = []
         for index, layer in enumerate(state.layers):
-            if direction == "long" and float(bar.close_price) <= layer.stop_price:
+            if self._stop_triggered(direction, bar, layer.stop_price):
                 if layer.kind == "base":
                     base_triggered = True
+                    base_stop_price = layer.stop_price
                     break
                 triggered_indexes.append(index)
-            elif direction == "short" and float(bar.close_price) >= layer.stop_price:
-                if layer.kind == "base":
-                    base_triggered = True
-                    break
-                triggered_indexes.append(index)
+                triggered_stop_prices.append(layer.stop_price)
 
         if base_triggered:
-            self._close_all_layers_and_set_flat_target(state, float(bar.close_price))
+            exit_price = self._stop_execution_price(direction, bar, base_stop_price)
+            self._close_all_layers_and_set_flat_target(state, exit_price, execution_price_override=exit_price)
             return f"{direction}_base_stop"
 
         if not triggered_indexes:
             return ""
 
-        self._close_layers(state, triggered_indexes, float(bar.close_price))
+        stop_reference = max(triggered_stop_prices) if direction == "long" else min(triggered_stop_prices)
+        exit_price = self._stop_execution_price(direction, bar, stop_reference)
+        self._close_layers(state, triggered_indexes, exit_price)
         if state.layers:
-            self._apply_state_target(state)
+            self._apply_state_target(state, execution_price_override=exit_price)
         return f"{direction}_layer_stop_partial" if state.layers else f"{direction}_layer_stop_all"
 
     def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
@@ -1236,12 +1272,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self._close_layers(state, list(range(len(state.layers))), exit_price)
         state.reset()
 
-    def _close_all_layers_and_set_flat_target(self, state: ProductState, exit_price: float) -> None:
+    def _close_all_layers_and_set_flat_target(
+        self,
+        state: ProductState,
+        exit_price: float,
+        execution_price_override: float | None = None,
+    ) -> None:
         contract_vt_symbol: str = state.contract_vt_symbol
         if not contract_vt_symbol:
             state.reset()
             return
         self._close_all_layers(state, exit_price)
+        if execution_price_override is not None and execution_price_override > 0:
+            self.execution_price_overrides[contract_vt_symbol] = execution_price_override
         self.set_target(contract_vt_symbol, 0)
 
     def _layer_realized_pnl(self, layer: PositionLayer, exit_price: float, size: int) -> float:
@@ -1674,7 +1717,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             hist.iloc[-1],
         ]
         if any(pd.isna(value) for value in required_values):
-            return self._signal_result("", False, False, float("nan"), "regular", False)
+            return self._signal_result(
+                "", False, False, float("nan"), float("nan"), float("nan"), float("nan"), "regular", False
+            )
 
         short_y, short_t = float(ma_short.iloc[-2]), float(ma_short.iloc[-1])
         mid_y, mid_t = float(ma_mid.iloc[-2]), float(ma_mid.iloc[-1])
@@ -1744,7 +1789,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             signal,
             bullish_alignment,
             bearish_alignment,
+            float(ma_mid.iloc[-1]),
             float(ma_long.iloc[-1]),
+            float(ma_long.iloc[-2]),
+            float(ma_mid.iloc[-2]),
             risk_mode,
             breakout,
             rsi_value,
@@ -1795,7 +1843,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         signal: str,
         bullish_alignment: bool,
         bearish_alignment: bool,
+        ma_mid_value: float,
         ma_long_value: float,
+        ma_long_prev_value: float,
+        ma_mid_prev_value: float,
         risk_mode: str,
         breakout: bool,
         rsi_value: float = float("nan"),
@@ -1804,7 +1855,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "signal": signal,
             "bullish_alignment": bullish_alignment,
             "bearish_alignment": bearish_alignment,
+            "ma_mid_value": ma_mid_value,
             "ma_long_value": ma_long_value,
+            "ma_long_prev_value": ma_long_prev_value,
+            "ma_mid_prev_value": ma_mid_prev_value,
             "risk_mode": risk_mode,
             "breakout": breakout,
             "rsi_value": rsi_value,
