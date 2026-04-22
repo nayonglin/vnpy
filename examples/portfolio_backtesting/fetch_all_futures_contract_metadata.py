@@ -99,47 +99,56 @@ def fetch_rows() -> list[dict[str, object]]:
 
     targets = build_targets()
     rows: list[dict[str, object]] = []
+    batch_size = 200
 
     api = TqApi(auth=TqAuth(username, password))
     try:
         total = len(targets)
-        for index, target in enumerate(targets, start=1):
-            quote = api.get_quote(target["tq_symbol"])
-            volume_multiple = to_float(quote.get("volume_multiple"))
-            price_tick = to_float(quote.get("price_tick"))
-            margin = to_float(quote.get("margin"))
-            ref_price = reference_price(quote)
+        for batch_start in range(0, total, batch_size):
+            batch_targets = targets[batch_start: batch_start + batch_size]
+            batch_symbols = [target["tq_symbol"] for target in batch_targets]
+            quote_list = api.get_quote_list(batch_symbols)
+            api.wait_update()
 
-            margin_ratio: float | None = None
-            if margin and ref_price and volume_multiple and volume_multiple > 0:
-                denominator = ref_price * volume_multiple
-                if denominator > 0:
-                    margin_ratio = margin / denominator
+            for offset, target in enumerate(batch_targets, start=1):
+                quote = quote_list[offset - 1]
+                volume_multiple = to_float(quote.get("volume_multiple"))
+                price_tick = to_float(quote.get("price_tick"))
+                margin = to_float(quote.get("margin"))
+                ref_price = reference_price(quote)
 
-            rows.append(
-                {
-                    "vt_symbol": target["vt_symbol"],
-                    "source_symbol_vt": target["source_symbol_vt"],
-                    "symbol_kind": target["symbol_kind"],
-                    "tq_symbol": target["tq_symbol"],
-                    "instrument_id": quote.get("instrument_id"),
-                    "exchange_id": quote.get("exchange_id"),
-                    "product_id": quote.get("product_id"),
-                    "ins_class": quote.get("ins_class"),
-                    "price_tick": price_tick,
-                    "volume_multiple": volume_multiple,
-                    "margin": margin,
-                    "last_price": to_float(quote.get("last_price")),
-                    "pre_settlement": to_float(quote.get("pre_settlement")),
-                    "reference_price": ref_price,
-                    "margin_ratio": margin_ratio,
-                    "commission": to_float(quote.get("commission")),
-                    "underlying_symbol": quote.get("underlying_symbol"),
-                    "fetched_at": datetime.now().isoformat(timespec="seconds"),
-                }
-            )
-            if index == 1 or index % 100 == 0 or index == total:
-                print(f"[{index}/{total}] fetched {target['vt_symbol']} <- {target['tq_symbol']}", flush=True)
+                margin_ratio: float | None = None
+                if margin and ref_price and volume_multiple and volume_multiple > 0:
+                    denominator = ref_price * volume_multiple
+                    if denominator > 0:
+                        margin_ratio = margin / denominator
+
+                rows.append(
+                    {
+                        "vt_symbol": target["vt_symbol"],
+                        "source_symbol_vt": target["source_symbol_vt"],
+                        "symbol_kind": target["symbol_kind"],
+                        "tq_symbol": target["tq_symbol"],
+                        "instrument_id": quote.get("instrument_id"),
+                        "exchange_id": quote.get("exchange_id"),
+                        "product_id": quote.get("product_id"),
+                        "ins_class": quote.get("ins_class"),
+                        "price_tick": price_tick,
+                        "volume_multiple": volume_multiple,
+                        "margin": margin,
+                        "last_price": to_float(quote.get("last_price")),
+                        "pre_settlement": to_float(quote.get("pre_settlement")),
+                        "reference_price": ref_price,
+                        "margin_ratio": margin_ratio,
+                        "commission": to_float(quote.get("commission")),
+                        "underlying_symbol": quote.get("underlying_symbol"),
+                        "fetched_at": datetime.now().isoformat(timespec="seconds"),
+                    }
+                )
+
+                global_index = batch_start + offset
+                if global_index == 1 or global_index % 200 == 0 or global_index == total:
+                    print(f"[{global_index}/{total}] fetched {target['vt_symbol']} <- {target['tq_symbol']}", flush=True)
     finally:
         api.close()
 
