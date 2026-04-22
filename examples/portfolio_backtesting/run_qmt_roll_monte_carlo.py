@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -11,7 +12,6 @@ from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
 FILE_PREFIX: str = "qmt_roll"
-INITIAL_CAPITAL: float = 1_000_000.0
 N_SIMULATIONS: int = 1000
 TRADE_BLOCK_SIZE: int = 5
 DAILY_BLOCK_SIZE: int = 20
@@ -31,7 +31,14 @@ def build_size_map() -> dict[str, int]:
     return size_map
 
 
-def calculate_path_metrics(values: np.ndarray) -> dict[str, float]:
+def load_initial_capital(file_prefix: str) -> float:
+    statistics_path: Path = (OUTPUT_DIR / f"{file_prefix}_statistics.json").resolve()
+    with statistics_path.open("r", encoding="utf-8") as f:
+        statistics = json.load(f)
+    return float(statistics.get("capital", 0) or 0)
+
+
+def calculate_path_metrics(values: np.ndarray, initial_capital: float) -> dict[str, float]:
     highlevel: np.ndarray = np.maximum.accumulate(values)
     drawdown: np.ndarray = values - highlevel
     dd_percent: np.ndarray = np.divide(
@@ -43,7 +50,7 @@ def calculate_path_metrics(values: np.ndarray) -> dict[str, float]:
     end_balance: float = float(values[-1])
     return {
         "end_balance": end_balance,
-        "total_return_pct": (end_balance / INITIAL_CAPITAL - 1.0) * 100.0,
+        "total_return_pct": (end_balance / initial_capital - 1.0) * 100.0 if initial_capital > 0 else 0.0,
         "max_drawdown": float(drawdown.min()),
         "max_dd_percent": float(dd_percent.min()),
     }
@@ -85,7 +92,11 @@ def build_round_trip_pnls(trades_df: pd.DataFrame) -> np.ndarray:
     return np.array(realized_pnls, dtype=float)
 
 
-def simulate_trade_bootstrap(round_trip_pnls: np.ndarray, rng: np.random.Generator) -> pd.DataFrame:
+def simulate_trade_bootstrap(
+    round_trip_pnls: np.ndarray,
+    rng: np.random.Generator,
+    initial_capital: float,
+) -> pd.DataFrame:
     n = len(round_trip_pnls)
     if n == 0:
         return pd.DataFrame(columns=["simulation", "method", "end_balance", "total_return_pct", "max_drawdown", "max_dd_percent"])
@@ -99,13 +110,17 @@ def simulate_trade_bootstrap(round_trip_pnls: np.ndarray, rng: np.random.Generat
             for offset in range(TRADE_BLOCK_SIZE):
                 sampled.append(float(round_trip_pnls[(start_idx + offset) % n]))
         pnl_path = np.array(sampled[:n], dtype=float)
-        equity_path = INITIAL_CAPITAL + np.cumsum(pnl_path)
-        metrics = calculate_path_metrics(equity_path)
+        equity_path = initial_capital + np.cumsum(pnl_path)
+        metrics = calculate_path_metrics(equity_path, initial_capital)
         rows.append({"simulation": simulation, "method": "trade_block_bootstrap", **metrics})
     return pd.DataFrame(rows)
 
 
-def simulate_daily_block_bootstrap(daily_returns: np.ndarray, rng: np.random.Generator) -> pd.DataFrame:
+def simulate_daily_block_bootstrap(
+    daily_returns: np.ndarray,
+    rng: np.random.Generator,
+    initial_capital: float,
+) -> pd.DataFrame:
     n = len(daily_returns)
     if n == 0:
         return pd.DataFrame(columns=["simulation", "method", "end_balance", "total_return_pct", "max_drawdown", "max_dd_percent"])
@@ -119,13 +134,13 @@ def simulate_daily_block_bootstrap(daily_returns: np.ndarray, rng: np.random.Gen
             for offset in range(DAILY_BLOCK_SIZE):
                 sampled.append(float(daily_returns[(start_idx + offset) % n]))
         return_path = np.array(sampled[:n], dtype=float)
-        equity_path = INITIAL_CAPITAL * np.cumprod(1.0 + return_path)
-        metrics = calculate_path_metrics(equity_path)
+        equity_path = initial_capital * np.cumprod(1.0 + return_path)
+        metrics = calculate_path_metrics(equity_path, initial_capital)
         rows.append({"simulation": simulation, "method": "daily_block_bootstrap", **metrics})
     return pd.DataFrame(rows)
 
 
-def build_quantile_summary(simulation_df: pd.DataFrame) -> pd.DataFrame:
+def build_quantile_summary(simulation_df: pd.DataFrame, initial_capital: float) -> pd.DataFrame:
     if simulation_df.empty:
         return pd.DataFrame()
 
@@ -135,7 +150,8 @@ def build_quantile_summary(simulation_df: pd.DataFrame) -> pd.DataFrame:
         row: dict[str, float | str] = {
             "method": method,
             "simulations": int(len(group)),
-            "loss_probability_pct": float((group["end_balance"] < INITIAL_CAPITAL).mean() * 100.0),
+            "initial_capital": initial_capital,
+            "loss_probability_pct": float((group["end_balance"] < initial_capital).mean() * 100.0),
             "ruin_probability_pct": float((group["end_balance"] <= 0).mean() * 100.0),
             "dd_over_20pct_probability_pct": float((group["max_dd_percent"] <= -20.0).mean() * 100.0),
             "dd_over_30pct_probability_pct": float((group["max_dd_percent"] <= -30.0).mean() * 100.0),
@@ -153,6 +169,7 @@ def build_quantile_summary(simulation_df: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     trades_path: Path = (OUTPUT_DIR / f"{FILE_PREFIX}_trades_2020_2026_04.csv").resolve()
     daily_path: Path = (OUTPUT_DIR / f"{FILE_PREFIX}_daily_equity.csv").resolve()
+    initial_capital: float = load_initial_capital(FILE_PREFIX)
 
     trades_df = pd.read_csv(trades_path)
     daily_df = pd.read_csv(daily_path)
@@ -160,10 +177,10 @@ def main() -> None:
     round_trip_pnls = build_round_trip_pnls(trades_df)
 
     rng = np.random.default_rng(RNG_SEED)
-    trade_mc_df = simulate_trade_bootstrap(round_trip_pnls, rng)
-    daily_mc_df = simulate_daily_block_bootstrap(daily_returns, rng)
+    trade_mc_df = simulate_trade_bootstrap(round_trip_pnls, rng, initial_capital)
+    daily_mc_df = simulate_daily_block_bootstrap(daily_returns, rng, initial_capital)
     simulation_df = pd.concat([trade_mc_df, daily_mc_df], ignore_index=True)
-    summary_df = build_quantile_summary(simulation_df)
+    summary_df = build_quantile_summary(simulation_df, initial_capital)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     simulation_path: Path = (OUTPUT_DIR / f"{FILE_PREFIX}_monte_carlo_simulations.csv").resolve()

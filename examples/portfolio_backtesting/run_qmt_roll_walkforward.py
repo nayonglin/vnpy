@@ -14,9 +14,60 @@ from run_qmt_roll_backtest import build_summary_row, run_backtest
 TRAIN_MONTHS: int = 24
 TEST_MONTHS: int = 12
 STEP_MONTHS: int = 6
-RISK_GRID: list[float] = [0.01, 0.02, 0.03, 0.04]
 CAPITAL: float = 200_000
 SAVE_ARTIFACTS: bool = False
+CANDIDATE_CONFIGS: list[dict[str, Any]] = [
+    {
+        "label": "champion_0045_006_006_0025",
+        "risk_ratio": 0.045,
+        "risk_overrides": {
+            "risk_ratio_of_total_assets": 0.045,
+            "risk_ratio_open_interest_surge": 0.06,
+            "risk_ratio_volume_open_interest_surge": 0.06,
+            "risk_ratio_open_interest_decline": 0.025,
+        },
+    },
+    {
+        "label": "alt_0045_006_006_0030",
+        "risk_ratio": 0.045,
+        "risk_overrides": {
+            "risk_ratio_of_total_assets": 0.045,
+            "risk_ratio_open_interest_surge": 0.06,
+            "risk_ratio_volume_open_interest_surge": 0.06,
+            "risk_ratio_open_interest_decline": 0.03,
+        },
+    },
+    {
+        "label": "alt_0040_006_006_0030",
+        "risk_ratio": 0.04,
+        "risk_overrides": {
+            "risk_ratio_of_total_assets": 0.04,
+            "risk_ratio_open_interest_surge": 0.06,
+            "risk_ratio_volume_open_interest_surge": 0.06,
+            "risk_ratio_open_interest_decline": 0.03,
+        },
+    },
+    {
+        "label": "alt_0040_0055_007_0025",
+        "risk_ratio": 0.04,
+        "risk_overrides": {
+            "risk_ratio_of_total_assets": 0.04,
+            "risk_ratio_open_interest_surge": 0.055,
+            "risk_ratio_volume_open_interest_surge": 0.07,
+            "risk_ratio_open_interest_decline": 0.025,
+        },
+    },
+    {
+        "label": "alt_0040_0055_006_0030",
+        "risk_ratio": 0.04,
+        "risk_overrides": {
+            "risk_ratio_of_total_assets": 0.04,
+            "risk_ratio_open_interest_surge": 0.055,
+            "risk_ratio_volume_open_interest_surge": 0.06,
+            "risk_ratio_open_interest_decline": 0.03,
+        },
+    },
+]
 
 
 def add_months(dt: datetime, months: int) -> datetime:
@@ -72,19 +123,22 @@ def run_walkforward() -> tuple[pd.DataFrame, pd.DataFrame]:
             f"test={test_start.date()}->{test_end.date()}",
         )
 
-        train_candidates: list[tuple[float, float, dict[str, Any]]] = []
-        for risk_ratio in RISK_GRID:
+        train_candidates: list[tuple[dict[str, Any], float, dict[str, Any]]] = []
+        for config in CANDIDATE_CONFIGS:
+            risk_ratio = float(config["risk_ratio"])
+            risk_overrides = dict(config["risk_overrides"])
             _, _, train_stats = run_backtest(
                 risk_ratio=risk_ratio,
+                risk_overrides=risk_overrides,
                 analysis_start=train_start,
                 analysis_end=train_end,
                 capital=CAPITAL,
                 save_artifacts=False,
-                file_prefix=f"qmt_roll_wf_train_{window_id}_{str(risk_ratio).replace('.', 'p')}",
+                file_prefix=f"qmt_roll_wf_train_{window_id}_{config['label']}",
                 chart_title=f"QMT Roll WF Train {window_id}",
             )
             score: float = compute_score(train_stats)
-            train_candidates.append((risk_ratio, score, train_stats))
+            train_candidates.append((config, score, train_stats))
             train_rows.append(
                 build_summary_row(
                     train_stats,
@@ -92,15 +146,23 @@ def run_walkforward() -> tuple[pd.DataFrame, pd.DataFrame]:
                     analysis_end=train_end,
                     phase="train",
                     window_id=window_id,
+                    config_label=str(config["label"]),
                     risk_ratio=risk_ratio,
+                    base_risk=risk_overrides["risk_ratio_of_total_assets"],
+                    oi_surge_risk=risk_overrides["risk_ratio_open_interest_surge"],
+                    vol_oi_surge_risk=risk_overrides["risk_ratio_volume_open_interest_surge"],
+                    oi_decline_risk=risk_overrides["risk_ratio_open_interest_decline"],
                     score=score,
                 )
             )
 
-        chosen_risk, chosen_score, chosen_train_stats = max(train_candidates, key=lambda item: item[1])
-        test_prefix: str = f"qmt_roll_wf_test_{window_id}_{str(chosen_risk).replace('.', 'p')}"
+        chosen_config, chosen_score, chosen_train_stats = max(train_candidates, key=lambda item: item[1])
+        chosen_risk: float = float(chosen_config["risk_ratio"])
+        chosen_overrides: dict[str, float] = dict(chosen_config["risk_overrides"])
+        test_prefix: str = f"qmt_roll_wf_test_{window_id}_{chosen_config['label']}"
         _, _, test_stats = run_backtest(
             risk_ratio=chosen_risk,
+            risk_overrides=chosen_overrides,
             analysis_start=test_start,
             analysis_end=test_end,
             capital=CAPITAL,
@@ -115,7 +177,12 @@ def run_walkforward() -> tuple[pd.DataFrame, pd.DataFrame]:
                 analysis_end=test_end,
                 phase="test",
                 window_id=window_id,
+                selected_config_label=str(chosen_config["label"]),
                 selected_risk_ratio=chosen_risk,
+                selected_base_risk=chosen_overrides["risk_ratio_of_total_assets"],
+                selected_oi_surge_risk=chosen_overrides["risk_ratio_open_interest_surge"],
+                selected_vol_oi_surge_risk=chosen_overrides["risk_ratio_volume_open_interest_surge"],
+                selected_oi_decline_risk=chosen_overrides["risk_ratio_open_interest_decline"],
                 train_score=chosen_score,
                 train_annual_return_pct=float(chosen_train_stats.get("annual_return", 0) or 0),
                 train_max_dd_percent=float(chosen_train_stats.get("max_ddpercent", 0) or 0),

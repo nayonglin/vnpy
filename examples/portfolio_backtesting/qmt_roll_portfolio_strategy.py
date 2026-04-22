@@ -11,7 +11,7 @@ from vnpy.trader.object import BarData, TradeData
 from vnpy.trader.utility import ArrayManager
 from vnpy_portfoliostrategy import StrategyEngine, StrategyTemplate
 
-from main_contract_mapping import DEFAULT_MAPPING_PATH, build_contract_metadata, build_daily_mapping
+from main_contract_mapping import build_contract_metadata, build_daily_mapping, get_preferred_mapping_path
 
 
 @dataclass
@@ -89,7 +89,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     author: str = "GPT-5.4"
 
-    mapping_csv_path: str = str(DEFAULT_MAPPING_PATH)
+    mapping_csv_path: str = str(get_preferred_mapping_path())
 
     ma_short: int = 5
     ma_mid: int = 10

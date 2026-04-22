@@ -6,13 +6,20 @@ from typing import Any
 import pandas as pd
 
 
-DEFAULT_CONTRACT_METADATA_PATH: Path = (
-    Path(__file__).resolve().parent / "backtest_outputs" / "tqsdk_contract_metadata.csv"
-)
+BACKTEST_OUTPUT_DIR: Path = Path(__file__).resolve().parent / "backtest_outputs"
+DEFAULT_CONTRACT_METADATA_PATH: Path = BACKTEST_OUTPUT_DIR / "tqsdk_contract_metadata.csv"
+ALL_FUTURES_CONTRACT_METADATA_PATH: Path = BACKTEST_OUTPUT_DIR / "tqsdk_all_futures_contract_metadata.csv"
 
 
 def load_contract_metadata_df(metadata_path: Path | None = None) -> pd.DataFrame:
-    path: Path = metadata_path or DEFAULT_CONTRACT_METADATA_PATH
+    path: Path
+    if metadata_path is not None:
+        path = metadata_path
+    elif ALL_FUTURES_CONTRACT_METADATA_PATH.exists():
+        path = ALL_FUTURES_CONTRACT_METADATA_PATH
+    else:
+        path = DEFAULT_CONTRACT_METADATA_PATH
+
     if not path.exists():
         return pd.DataFrame()
 

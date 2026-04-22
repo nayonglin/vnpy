@@ -11,7 +11,7 @@ from vnpy.trader.object import BarData, TradeData
 from vnpy_portfoliostrategy import BacktestingEngine
 from vnpy_portfoliostrategy.backtesting import Status
 
-from main_contract_mapping import build_contract_metadata
+from main_contract_mapping import build_contract_metadata, get_preferred_mapping_path
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, OUTPUT_DIR, save_backtest_artifacts
@@ -132,7 +132,7 @@ def build_roll_setting(
     risk_ratio: float = 0.045,
     risk_overrides: dict[str, float] | None = None,
 ) -> dict[str, object]:
-    mapping_csv_path: Path = (OUTPUT_DIR / "tqsdk_main_contract_mapping_2020_2026_04.csv").resolve()
+    mapping_csv_path: Path = get_preferred_mapping_path().resolve()
     risk_overrides = risk_overrides or {}
     default_risk_ratio: float = float(risk_overrides.get("risk_ratio_of_total_assets", risk_ratio))
     breakout_risk_ratio: float = float(risk_overrides.get("risk_ratio_breakout", default_risk_ratio))

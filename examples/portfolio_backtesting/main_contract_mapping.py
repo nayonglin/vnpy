@@ -12,10 +12,23 @@ from qmt_universe import MARGIN_RATIOS, PRICETICKS, RATES, SIZES, SLIPPAGES
 DEFAULT_MAPPING_PATH: Path = (
     Path(__file__).resolve().parent / "backtest_outputs" / "tqsdk_main_contract_mapping_2020_2026_04.csv"
 )
+ALL_FUTURES_MAPPING_PATH: Path = (
+    Path(__file__).resolve().parent / "backtest_outputs" / "tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv"
+)
+
+
+def get_preferred_mapping_path() -> Path:
+    if ALL_FUTURES_MAPPING_PATH.exists():
+        return ALL_FUTURES_MAPPING_PATH
+    return DEFAULT_MAPPING_PATH
 
 
 def load_mapping_df(mapping_path: Path | None = None) -> pd.DataFrame:
-    path: Path = mapping_path or DEFAULT_MAPPING_PATH
+    path: Path
+    if mapping_path is not None:
+        path = mapping_path
+    else:
+        path = get_preferred_mapping_path()
     df: pd.DataFrame = pd.read_csv(path)
     df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
     df["main_contract_vt"] = df["main_contract_vt"].fillna("")

@@ -11,7 +11,14 @@ from run_qmt_roll_backtest import build_summary_row, run_backtest
 
 
 SAVE_ARTIFACTS: bool = False
-RISK_RATIO: float = 0.04
+BASE_RISK_RATIO: float = 0.045
+RISK_OVERRIDES: dict[str, float] = {
+    "risk_ratio_of_total_assets": 0.045,
+    "risk_ratio_open_interest_surge": 0.06,
+    "risk_ratio_volume_open_interest_surge": 0.06,
+    "risk_ratio_open_interest_decline": 0.025,
+}
+CONFIG_LABEL: str = "global_champion_cap_1m"
 CAPITAL: float = 200_000
 
 PERIOD_WINDOWS: list[tuple[str, datetime, datetime]] = [
@@ -32,7 +39,8 @@ def run_period_sweep() -> pd.DataFrame:
     for window_name, analysis_start, analysis_end in PERIOD_WINDOWS:
         print(f"[period] running {window_name}: {analysis_start.date()} -> {analysis_end.date()}")
         _, _, statistics = run_backtest(
-            risk_ratio=RISK_RATIO,
+            risk_ratio=BASE_RISK_RATIO,
+            risk_overrides=RISK_OVERRIDES,
             analysis_start=analysis_start,
             analysis_end=analysis_end,
             capital=CAPITAL,
@@ -46,7 +54,12 @@ def run_period_sweep() -> pd.DataFrame:
                 analysis_start=analysis_start,
                 analysis_end=analysis_end,
                 window_name=window_name,
-                risk_ratio=RISK_RATIO,
+                config_label=CONFIG_LABEL,
+                risk_ratio=BASE_RISK_RATIO,
+                base_risk=RISK_OVERRIDES["risk_ratio_of_total_assets"],
+                oi_surge_risk=RISK_OVERRIDES["risk_ratio_open_interest_surge"],
+                vol_oi_surge_risk=RISK_OVERRIDES["risk_ratio_volume_open_interest_surge"],
+                oi_decline_risk=RISK_OVERRIDES["risk_ratio_open_interest_decline"],
                 capital=CAPITAL,
             )
         )
