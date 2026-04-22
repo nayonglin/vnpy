@@ -131,9 +131,11 @@ def build_roll_setting(
     margin_ratios: dict[str, float],
     risk_ratio: float = 0.045,
     risk_overrides: dict[str, float] | None = None,
+    strategy_overrides: dict[str, object] | None = None,
 ) -> dict[str, object]:
     mapping_csv_path: Path = get_preferred_mapping_path().resolve()
     risk_overrides = risk_overrides or {}
+    strategy_overrides = strategy_overrides or {}
     default_risk_ratio: float = float(risk_overrides.get("risk_ratio_of_total_assets", risk_ratio))
     breakout_risk_ratio: float = float(risk_overrides.get("risk_ratio_breakout", default_risk_ratio))
     ma_cross_risk_ratio: float = float(risk_overrides.get("risk_ratio_ma_cross_breakout", default_risk_ratio))
@@ -143,7 +145,7 @@ def build_roll_setting(
     open_interest_surge_ratio: float = float(risk_overrides.get("risk_ratio_open_interest_surge", 0.06))
     open_interest_decline_ratio: float = float(risk_overrides.get("risk_ratio_open_interest_decline", 0.025))
 
-    return {
+    setting: dict[str, object] = {
         "mapping_csv_path": str(mapping_csv_path),
         "ma_short": 5,
         "ma_mid": 10,
@@ -208,6 +210,8 @@ def build_roll_setting(
         "tick_add": 1,
         "warmup_days": 90,
     }
+    setting.update(strategy_overrides)
+    return setting
 
 
 def build_summary_row(
@@ -295,6 +299,7 @@ def run_backtest(
     risk_ratio: float = 0.045,
     *,
     risk_overrides: dict[str, float] | None = None,
+    strategy_overrides: dict[str, object] | None = None,
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,
     preload_start: datetime | None = None,
@@ -314,6 +319,7 @@ def run_backtest(
         margin_ratios,
         risk_ratio=risk_ratio,
         risk_overrides=risk_overrides,
+        strategy_overrides=strategy_overrides,
     )
     setting["capital_base"] = capital
     engine.add_strategy(QmtRollPortfolioStrategy, setting)

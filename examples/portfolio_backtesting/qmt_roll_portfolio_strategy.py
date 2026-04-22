@@ -118,6 +118,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     max_concurrent_positions: int = 10
     capital_base: float = 0.0
     max_capital_usage_ratio: float = 0.9
+    max_single_trade_capital_usage_ratio: float = 0.5
     risk_ratio_of_total_assets: float = 0.01
     risk_ratio_breakout: float = 0.01
     risk_ratio_ma_cross_breakout: float = 0.01
@@ -199,6 +200,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "max_concurrent_positions",
         "capital_base",
         "max_capital_usage_ratio",
+        "max_single_trade_capital_usage_ratio",
         "risk_ratio_of_total_assets",
         "risk_ratio_breakout",
         "risk_ratio_ma_cross_breakout",
@@ -677,6 +679,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _allowed_capital(self) -> float:
         return max(0.0, self._sizing_equity() * self.max_capital_usage_ratio)
 
+    def _single_trade_capital_limit(self) -> float:
+        return max(0.0, self._sizing_equity() * self.max_single_trade_capital_usage_ratio)
+
     def _reserved_margin_in_use(self) -> float:
         return max(0.0, self.total_margin_in_use + self.pending_margin_reservation)
 
@@ -963,7 +968,6 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         risk_mode_override: str | None = None,
     ) -> dict[str, Any]:
         if self.fixed_size > 0:
-            volume: int = int(self.fixed_size)
             price: float = float(bar.close_price)
             stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
             size: int = self.get_size(vt_symbol)
@@ -971,14 +975,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             risk_per_contract: float = max(abs(price - stop_price) * size, max(float(self.get_pricetick(vt_symbol)) * size, 1.0))
             margin_per_contract: float = price * size * margin_ratio
             allowed_capital: float = self._allowed_capital()
+            single_trade_capital_limit: float = self._single_trade_capital_limit()
             free_capital: float = self._free_capital_after_reservations()
             limited_balance: float = self._limited_available_balance()
+            contracts_by_single_trade_cap: int | None = (
+                int(single_trade_capital_limit // margin_per_contract) if margin_per_contract > 0 else None
+            )
+            volume: int = min(
+                int(self.fixed_size),
+                int(contracts_by_single_trade_cap or 0),
+                self.max_position_size,
+            )
+            if 0 < volume < self.min_position_size:
+                volume = 0
             return {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
                 "risk_ratio": None,
                 "risk_amount": None,
                 "limited_balance": limited_balance,
                 "allowed_capital": allowed_capital,
+                "single_trade_capital_limit": single_trade_capital_limit,
                 "free_capital": free_capital,
                 "reserved_margin_before": self._reserved_margin_in_use(),
                 "stop_price": stop_price,
@@ -987,6 +1003,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "margin_per_contract": margin_per_contract,
                 "contracts_by_risk": None,
                 "contracts_by_margin": None,
+                "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
                 "selected_volume": volume,
                 "risk_multiplier": self._current_streak_multiplier(),
                 "sizing_method": "fixed_size",
@@ -994,6 +1011,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         limited_balance: float = self._limited_available_balance()
         allowed_capital: float = self._allowed_capital()
+        single_trade_capital_limit: float = self._single_trade_capital_limit()
         free_capital: float = self._free_capital_after_reservations()
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
         if risk_mode == "ma_cross_breakout":
@@ -1021,8 +1039,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
         margin_per_contract: float = float(bar.close_price) * size * margin_ratio
         contracts_by_margin: int = int(limited_balance // margin_per_contract) if margin_per_contract > 0 else 0
+        contracts_by_single_trade_cap: int = (
+            int(single_trade_capital_limit // margin_per_contract) if margin_per_contract > 0 else 0
+        )
 
-        volume: int = min(contracts_by_risk, contracts_by_margin, self.max_position_size)
+        volume: int = min(
+            contracts_by_risk,
+            contracts_by_margin,
+            contracts_by_single_trade_cap,
+            self.max_position_size,
+        )
         if 0 < volume < self.min_position_size:
             volume = 0
 
@@ -1032,6 +1058,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "risk_amount": risk_amount,
             "limited_balance": limited_balance,
             "allowed_capital": allowed_capital,
+            "single_trade_capital_limit": single_trade_capital_limit,
             "free_capital": free_capital,
             "reserved_margin_before": self._reserved_margin_in_use(),
             "stop_price": stop_price,
@@ -1040,6 +1067,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "margin_per_contract": margin_per_contract,
             "contracts_by_risk": contracts_by_risk,
             "contracts_by_margin": contracts_by_margin,
+            "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
             "selected_volume": max(0, volume),
             "risk_multiplier": self._current_streak_multiplier(),
             "sizing_method": "risk_budget",
@@ -1286,6 +1314,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "estimated_equity": estimated_equity,
                 "total_margin_in_use_before": reserved_margin_before,
                 "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
+                "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
                 "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
                 "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
@@ -1306,6 +1335,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "volume": int(volume),
                 "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
+                "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
                 "selected_volume": sizing_snapshot.get("selected_volume"),
                 "loss_streak": int(self.loss_streak),
             }
