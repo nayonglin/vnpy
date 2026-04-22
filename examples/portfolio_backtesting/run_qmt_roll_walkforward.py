@@ -16,9 +16,12 @@ TEST_MONTHS: int = 12
 STEP_MONTHS: int = 6
 CAPITAL: float = 200_000
 SAVE_ARTIFACTS: bool = False
+BASE_STRATEGY_OVERRIDES: dict[str, object] = {
+    "max_single_trade_capital_usage_ratio": 0.70,
+}
 CANDIDATE_CONFIGS: list[dict[str, Any]] = [
     {
-        "label": "champion_0045_006_006_0025",
+        "label": "champion_0045_006_006_0025_cap070",
         "risk_ratio": 0.045,
         "risk_overrides": {
             "risk_ratio_of_total_assets": 0.045,
@@ -26,9 +29,10 @@ CANDIDATE_CONFIGS: list[dict[str, Any]] = [
             "risk_ratio_volume_open_interest_surge": 0.06,
             "risk_ratio_open_interest_decline": 0.025,
         },
+        "strategy_overrides": dict(BASE_STRATEGY_OVERRIDES),
     },
     {
-        "label": "alt_0045_006_006_0030",
+        "label": "alt_0045_006_006_0030_cap070",
         "risk_ratio": 0.045,
         "risk_overrides": {
             "risk_ratio_of_total_assets": 0.045,
@@ -36,9 +40,10 @@ CANDIDATE_CONFIGS: list[dict[str, Any]] = [
             "risk_ratio_volume_open_interest_surge": 0.06,
             "risk_ratio_open_interest_decline": 0.03,
         },
+        "strategy_overrides": dict(BASE_STRATEGY_OVERRIDES),
     },
     {
-        "label": "alt_0040_006_006_0030",
+        "label": "alt_0040_006_006_0030_cap070",
         "risk_ratio": 0.04,
         "risk_overrides": {
             "risk_ratio_of_total_assets": 0.04,
@@ -46,9 +51,10 @@ CANDIDATE_CONFIGS: list[dict[str, Any]] = [
             "risk_ratio_volume_open_interest_surge": 0.06,
             "risk_ratio_open_interest_decline": 0.03,
         },
+        "strategy_overrides": dict(BASE_STRATEGY_OVERRIDES),
     },
     {
-        "label": "alt_0040_0055_007_0025",
+        "label": "alt_0040_0055_007_0025_cap070",
         "risk_ratio": 0.04,
         "risk_overrides": {
             "risk_ratio_of_total_assets": 0.04,
@@ -56,9 +62,10 @@ CANDIDATE_CONFIGS: list[dict[str, Any]] = [
             "risk_ratio_volume_open_interest_surge": 0.07,
             "risk_ratio_open_interest_decline": 0.025,
         },
+        "strategy_overrides": dict(BASE_STRATEGY_OVERRIDES),
     },
     {
-        "label": "alt_0040_0055_006_0030",
+        "label": "alt_0040_0055_006_0030_cap070",
         "risk_ratio": 0.04,
         "risk_overrides": {
             "risk_ratio_of_total_assets": 0.04,
@@ -66,6 +73,7 @@ CANDIDATE_CONFIGS: list[dict[str, Any]] = [
             "risk_ratio_volume_open_interest_surge": 0.06,
             "risk_ratio_open_interest_decline": 0.03,
         },
+        "strategy_overrides": dict(BASE_STRATEGY_OVERRIDES),
     },
 ]
 
@@ -127,9 +135,11 @@ def run_walkforward() -> tuple[pd.DataFrame, pd.DataFrame]:
         for config in CANDIDATE_CONFIGS:
             risk_ratio = float(config["risk_ratio"])
             risk_overrides = dict(config["risk_overrides"])
+            strategy_overrides = dict(config.get("strategy_overrides", {}))
             _, _, train_stats = run_backtest(
                 risk_ratio=risk_ratio,
                 risk_overrides=risk_overrides,
+                strategy_overrides=strategy_overrides,
                 analysis_start=train_start,
                 analysis_end=train_end,
                 capital=CAPITAL,
@@ -159,10 +169,12 @@ def run_walkforward() -> tuple[pd.DataFrame, pd.DataFrame]:
         chosen_config, chosen_score, chosen_train_stats = max(train_candidates, key=lambda item: item[1])
         chosen_risk: float = float(chosen_config["risk_ratio"])
         chosen_overrides: dict[str, float] = dict(chosen_config["risk_overrides"])
+        chosen_strategy_overrides: dict[str, object] = dict(chosen_config.get("strategy_overrides", {}))
         test_prefix: str = f"qmt_roll_wf_test_{window_id}_{chosen_config['label']}"
         _, _, test_stats = run_backtest(
             risk_ratio=chosen_risk,
             risk_overrides=chosen_overrides,
+            strategy_overrides=chosen_strategy_overrides,
             analysis_start=test_start,
             analysis_end=test_end,
             capital=CAPITAL,

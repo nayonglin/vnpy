@@ -18,7 +18,10 @@ RISK_OVERRIDES: dict[str, float] = {
     "risk_ratio_volume_open_interest_surge": 0.06,
     "risk_ratio_open_interest_decline": 0.025,
 }
-CONFIG_LABEL: str = "global_champion_cap_1m"
+STRATEGY_OVERRIDES: dict[str, object] = {
+    "max_single_trade_capital_usage_ratio": 0.70,
+}
+CONFIG_LABEL: str = "global_champion_cap_1m_single_cap_0p70"
 CAPITAL: float = 200_000
 
 PERIOD_WINDOWS: list[tuple[str, datetime, datetime]] = [
@@ -41,6 +44,7 @@ def run_period_sweep() -> pd.DataFrame:
         _, _, statistics = run_backtest(
             risk_ratio=BASE_RISK_RATIO,
             risk_overrides=RISK_OVERRIDES,
+            strategy_overrides=STRATEGY_OVERRIDES,
             analysis_start=analysis_start,
             analysis_end=analysis_end,
             capital=CAPITAL,

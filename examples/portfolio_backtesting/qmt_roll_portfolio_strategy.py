@@ -118,7 +118,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     max_concurrent_positions: int = 10
     capital_base: float = 0.0
     max_capital_usage_ratio: float = 0.9
-    max_single_trade_capital_usage_ratio: float = 0.5
+    max_single_trade_capital_usage_ratio: float = 0.7
     risk_ratio_of_total_assets: float = 0.01
     risk_ratio_breakout: float = 0.01
     risk_ratio_ma_cross_breakout: float = 0.01
