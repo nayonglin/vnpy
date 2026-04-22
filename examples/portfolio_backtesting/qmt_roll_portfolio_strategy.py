@@ -6,7 +6,7 @@ from typing import Any
 
 import pandas as pd
 
-from vnpy.trader.constant import Direction, Interval
+from vnpy.trader.constant import Direction, Interval, Offset
 from vnpy.trader.object import BarData, TradeData
 from vnpy.trader.utility import ArrayManager
 from vnpy_portfoliostrategy import StrategyEngine, StrategyTemplate
@@ -27,6 +27,7 @@ class PositionLayer:
     entry_date: str
     max_profit_pct: float = 0.0
     margin_ratio: float = 0.1
+    entry_price_synced: bool = False
 
 
 @dataclass
@@ -276,7 +277,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
         self.trade_event_diagnostics: list[dict[str, Any]] = []
+        self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
+        self.trade_costs_total: float = 0.0
+        self.pending_close_lots: dict[str, list[dict[str, Any]]] = {}
+        self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
+        self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
+        self.settled_balance: float = self.base_capital
+        self.last_close_prices: dict[str, float] = {}
         self.pending_margin_reservation: float = 0.0
         self.pending_active_products: set[str] = set()
 
@@ -292,6 +300,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def update_trade(self, trade: TradeData) -> None:
         super().update_trade(trade)
+        self.trade_costs_total += self._trade_cost(trade)
+
+        if trade.offset == Offset.OPEN:
+            self._sync_open_trade(trade)
+            self._sync_entry_risk_diagnostic(trade)
+        elif trade.offset == Offset.CLOSE:
+            delta_realized: float = self._sync_close_trade(trade)
+            if delta_realized:
+                self.realized_pnl += delta_realized
+            close_reason: str | None = self._consume_pending_close_reason(trade)
+            if close_reason:
+                self.trade_reason_by_trade_id[trade.vt_tradeid] = close_reason
+
+        self.settled_balance += self._trade_to_close_pnl(trade)
+
+        engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
+        if engine_bars:
+            self.estimated_equity = self.settled_balance
+            self.total_margin_in_use = self._estimate_margin_usage(engine_bars)
 
     def rebalance_portfolio(self, bars: dict[str, BarData]) -> None:
         super().rebalance_portfolio(bars)
@@ -403,14 +430,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             self._update_dynamic_stops(state, target_bar, history)
 
-            layer_exit_reason: str = self._process_layer_stops(state, target_bar)
-            if layer_exit_reason:
-                self.last_signal = f"{product_vt}:{layer_exit_reason}"
-                continue
-
             prev2day_exit_reason: str = self._process_prev2day_stop(state, target_bar, history)
             if prev2day_exit_reason:
                 self.last_signal = f"{product_vt}:{prev2day_exit_reason}"
+                continue
+
+            layer_exit_reason: str = self._process_layer_stops(state, target_bar)
+            if layer_exit_reason:
+                self.last_signal = f"{product_vt}:{layer_exit_reason}"
                 continue
 
             rsi_partial_exit_reason: str = self._process_rsi_partial_exit(state, target_bar, rsi_value)
@@ -532,6 +559,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:{don_add_type}"
 
         self.rebalance_portfolio(bars)
+        self.settled_balance = self.estimated_equity
+        self.last_close_prices = {vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()}
         self.active_count = self._count_active_positions()
         self.put_event()
 
@@ -562,6 +591,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return state.contract_vt_symbol or target_contract, 0, bars.get(state.contract_vt_symbol or target_contract)
 
     def calculate_price(self, vt_symbol: str, direction: Direction, reference: float) -> float:
+        override_price: float | None = self.execution_price_overrides.get(vt_symbol)
+        if override_price is not None and override_price > 0:
+            return override_price
         pricetick: float = self.get_pricetick(vt_symbol)
         if direction == Direction.LONG:
             return reference + self.tick_add * pricetick
@@ -681,23 +713,211 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return 1_000_000.0
 
     def _estimate_equity(self, bars: dict[str, BarData]) -> float:
-        equity: float = self.base_capital + self.realized_pnl
-        for state in self.states.values():
-            if not state.contract_vt_symbol or not state.layers:
+        equity: float = self.settled_balance
+        for vt_symbol, bar in bars.items():
+            start_pos: int = int(self.get_pos(vt_symbol))
+            if not start_pos:
                 continue
-            bar: BarData | None = bars.get(state.contract_vt_symbol)
-            if not bar:
-                continue
-            size: int = self.get_size(state.contract_vt_symbol)
+            pre_close: float = float(self.last_close_prices.get(vt_symbol, float(bar.close_price)))
             close_price: float = float(bar.close_price)
-            for layer in state.layers:
-                pnl: float = (
-                    (close_price - layer.entry_price) * size * layer.volume
-                    if layer.direction == "long"
-                    else (layer.entry_price - close_price) * size * layer.volume
-                )
-                equity += pnl
+            size: int = self.get_size(vt_symbol)
+            equity += start_pos * (close_price - pre_close) * size
         return equity
+
+    def _trade_cost(self, trade: TradeData) -> float:
+        size: float = float(getattr(self.strategy_engine, "sizes", {}).get(trade.vt_symbol, self.get_size(trade.vt_symbol)))
+        rate: float = float(getattr(self.strategy_engine, "rates", {}).get(trade.vt_symbol, 0.0))
+        slippage: float = float(getattr(self.strategy_engine, "slippages", {}).get(trade.vt_symbol, 0.0))
+        turnover: float = float(trade.volume) * size * float(trade.price)
+        return turnover * rate + float(trade.volume) * size * slippage
+
+    def _trade_to_close_pnl(self, trade: TradeData) -> float:
+        engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
+        bar: BarData | None = engine_bars.get(trade.vt_symbol)
+        if bar is None:
+            return 0.0
+
+        size: int = self.get_size(trade.vt_symbol)
+        pos_change: float = float(trade.volume) if trade.direction == Direction.LONG else -float(trade.volume)
+        trading_pnl: float = pos_change * (float(bar.close_price) - float(trade.price)) * size
+        return trading_pnl - self._trade_cost(trade)
+
+    def _find_state_by_contract(self, vt_symbol: str) -> ProductState | None:
+        for state in self.states.values():
+            if state.contract_vt_symbol == vt_symbol:
+                return state
+        return None
+
+    def _sync_open_trade(self, trade: TradeData) -> None:
+        state: ProductState | None = self._find_state_by_contract(trade.vt_symbol)
+        if state is None or not state.layers:
+            return
+
+        actual_direction: str = "long" if trade.direction == Direction.LONG else "short"
+        if state.direction != actual_direction:
+            return
+
+        trade_date: str = pd.Timestamp(trade.datetime).strftime("%Y-%m-%d")
+        remaining: int = int(trade.volume)
+
+        for layer in reversed(state.layers):
+            if remaining <= 0:
+                break
+            if layer.direction != actual_direction:
+                continue
+            if layer.entry_date != trade_date or layer.entry_price_synced:
+                continue
+
+            if layer.volume == remaining:
+                layer.entry_price = float(trade.price)
+                layer.entry_price_synced = True
+                remaining = 0
+            elif layer.volume < remaining:
+                layer.entry_price = float(trade.price)
+                layer.entry_price_synced = True
+                remaining -= layer.volume
+            else:
+                synced_layer = PositionLayer(
+                    kind=layer.kind,
+                    direction=layer.direction,
+                    volume=remaining,
+                    entry_price=float(trade.price),
+                    stop_price=layer.stop_price,
+                    highest_price=layer.highest_price,
+                    lowest_price=layer.lowest_price,
+                    signal=layer.signal,
+                    entry_date=layer.entry_date,
+                    max_profit_pct=layer.max_profit_pct,
+                    margin_ratio=layer.margin_ratio,
+                    entry_price_synced=True,
+                )
+                layer.volume -= remaining
+                insert_index = state.layers.index(layer) + 1
+                state.layers.insert(insert_index, synced_layer)
+                remaining = 0
+
+    def _sync_entry_risk_diagnostic(self, trade: TradeData) -> None:
+        actual_direction: str = "long" if trade.direction == Direction.LONG else "short"
+        pending_indexes: list[int] = self.pending_entry_diagnostics.get((trade.vt_symbol, actual_direction), [])
+        if not pending_indexes:
+            return
+
+        selected_index: int | None = None
+        for offset, diagnostic_index in enumerate(pending_indexes):
+            row = self.entry_risk_diagnostics[diagnostic_index]
+            if pd.Timestamp(row["datetime"]) != pd.Timestamp(trade.datetime):
+                continue
+            if int(row.get("selected_volume") or 0) != int(trade.volume):
+                continue
+            selected_index = offset
+            break
+
+        if selected_index is None:
+            return
+
+        diagnostic_index = pending_indexes.pop(selected_index)
+        if not pending_indexes:
+            self.pending_entry_diagnostics.pop((trade.vt_symbol, actual_direction), None)
+
+        row = self.entry_risk_diagnostics[diagnostic_index]
+        filled_entry_price: float = float(trade.price)
+        stop_price: float = float(row["stop_price"])
+        size: int = int(row["size"])
+        margin_ratio: float = float(row["margin_ratio"])
+        min_risk: float = max(float(self.get_pricetick(trade.vt_symbol)) * size, 1.0)
+        risk_per_contract: float = max(abs(filled_entry_price - stop_price) * size, min_risk)
+        margin_per_contract: float = filled_entry_price * size * margin_ratio
+        volume: int = int(row["volume"])
+
+        row["filled_entry_price"] = filled_entry_price
+        row["entry_price"] = filled_entry_price
+        row["stop_distance"] = abs(filled_entry_price - stop_price)
+        row["risk_per_contract"] = risk_per_contract
+        row["actual_risk_amount"] = risk_per_contract * volume
+        row["margin_per_contract"] = margin_per_contract
+        row["actual_margin_amount"] = margin_per_contract * volume
+        row["projected_total_margin_after"] = float(row["total_margin_in_use_before"]) + float(row["actual_margin_amount"])
+
+    def _sync_close_trade(self, trade: TradeData) -> float:
+        pending_lots: list[dict[str, Any]] = self.pending_close_lots.get(trade.vt_symbol, [])
+        if not pending_lots:
+            return 0.0
+
+        size: int = self.get_size(trade.vt_symbol)
+        remaining: int = int(trade.volume)
+        delta_realized: float = 0.0
+        actual_exit_price: float = float(trade.price)
+
+        while remaining > 0 and pending_lots:
+            lot: dict[str, Any] = pending_lots[0]
+            matched_volume: int = min(remaining, int(lot["volume"]))
+            direction: str = str(lot["direction"])
+            provisional_exit_price: float = float(lot["provisional_exit_price"])
+            entry_price: float = float(lot["entry_price"])
+
+            provisional_realized: float = (
+                (provisional_exit_price - entry_price) * size * matched_volume
+                if direction == "long"
+                else (entry_price - provisional_exit_price) * size * matched_volume
+            )
+            actual_realized: float = (
+                (actual_exit_price - entry_price) * size * matched_volume
+                if direction == "long"
+                else (entry_price - actual_exit_price) * size * matched_volume
+            )
+            delta_realized += actual_realized - provisional_realized
+
+            lot["volume"] = int(lot["volume"]) - matched_volume
+            remaining -= matched_volume
+            if int(lot["volume"]) <= 0:
+                pending_lots.pop(0)
+
+        if not pending_lots:
+            self.pending_close_lots.pop(trade.vt_symbol, None)
+
+        return delta_realized
+
+    def _queue_pending_close_reason(self, vt_symbol: str, reason: str, volume: int) -> None:
+        if volume <= 0:
+            return
+        pending_reasons = self.pending_close_reasons.setdefault(vt_symbol, [])
+        pending_reasons.append({"reason": reason, "volume": int(volume)})
+
+    def _consume_pending_close_reason(self, trade: TradeData) -> str | None:
+        pending_reasons: list[dict[str, Any]] = self.pending_close_reasons.get(trade.vt_symbol, [])
+        if not pending_reasons:
+            return None
+
+        remaining: int = int(trade.volume)
+        consumed_reasons: list[str] = []
+        while remaining > 0 and pending_reasons:
+            item = pending_reasons[0]
+            matched_volume: int = min(remaining, int(item["volume"]))
+            remaining -= matched_volume
+            item["volume"] = int(item["volume"]) - matched_volume
+            consumed_reasons.append(str(item["reason"]))
+            if int(item["volume"]) <= 0:
+                pending_reasons.pop(0)
+
+        if not pending_reasons:
+            self.pending_close_reasons.pop(trade.vt_symbol, None)
+
+        if not consumed_reasons:
+            return None
+        return consumed_reasons[0]
+
+    def _queue_pending_close_lot(self, vt_symbol: str, layer: PositionLayer, exit_price: float, volume: int) -> None:
+        if volume <= 0:
+            return
+        pending_lots: list[dict[str, Any]] = self.pending_close_lots.setdefault(vt_symbol, [])
+        pending_lots.append(
+            {
+                "direction": layer.direction,
+                "entry_price": float(layer.entry_price),
+                "provisional_exit_price": float(exit_price),
+                "volume": int(volume),
+            }
+        )
 
     def _estimate_margin_usage(self, bars: dict[str, BarData]) -> float:
         total_margin: float = 0.0
@@ -714,8 +934,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return total_margin
 
     def _sizing_equity(self) -> float:
-        """Use current estimated equity for sizing, while still de-risking on drawdown."""
-        return max(0.0, self.estimated_equity)
+        """Cap sizing equity at 1,000,000 while still de-risking on drawdown."""
+        return max(0.0, min(self.estimated_equity, 1_000_000.0))
 
     def _limited_available_balance(self) -> float:
         free_capital: float = self._free_capital_after_reservations()
@@ -891,6 +1111,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 signal=signal,
                 entry_date=state.entry_date,
                 margin_ratio=self._margin_ratio_for_symbol(contract_vt_symbol),
+                entry_price_synced=False,
             )
         )
         self._record_entry_risk_diagnostic(
@@ -929,6 +1150,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 signal=signal,
                 entry_date=self._bar_date(bar),
                 margin_ratio=self._margin_ratio_for_symbol(state.contract_vt_symbol),
+                entry_price_synced=False,
             )
         )
         self._record_entry_risk_diagnostic(
@@ -1004,21 +1226,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "price": float(price),
             }
         )
+        if offset == "Close":
+            self._queue_pending_close_reason(contract_vt_symbol, reason, volume)
 
     @staticmethod
     def _stop_triggered(direction: str, bar: BarData, stop_price: float) -> bool:
         if stop_price <= 0:
             return False
         if direction == "long":
-            return float(bar.low_price) <= stop_price
-        return float(bar.high_price) >= stop_price
+            return float(bar.close_price) <= stop_price
+        return float(bar.close_price) >= stop_price
 
     @staticmethod
     def _stop_execution_price(direction: str, bar: BarData, stop_price: float) -> float:
-        open_price: float = float(bar.open_price)
-        if direction == "long":
-            return min(open_price, stop_price)
-        return max(open_price, stop_price)
+        return float(bar.close_price)
 
     def _record_entry_risk_diagnostic(
         self,
@@ -1070,6 +1291,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
+                "planned_entry_price": entry_price,
+                "filled_entry_price": None,
                 "entry_price": entry_price,
                 "stop_price": stop_price,
                 "stop_distance": abs(entry_price - stop_price),
@@ -1087,6 +1310,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "loss_streak": int(self.loss_streak),
             }
         )
+        pending_key = (contract_vt_symbol, direction)
+        pending_rows = self.pending_entry_diagnostics.setdefault(pending_key, [])
+        pending_rows.append(len(self.entry_risk_diagnostics) - 1)
 
     def _reconcile_state_with_position(self, state: ProductState, current_pos: int, bar: BarData) -> None:
         if current_pos == 0:
@@ -1112,6 +1338,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     signal="reconciled",
                     entry_date=state.entry_date,
                     margin_ratio=self._margin_ratio_for_symbol(bar.vt_symbol),
+                    entry_price_synced=True,
                 )
             )
             return
@@ -1368,6 +1595,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         realized: float = 0.0
         for index in sorted(indexes, reverse=True):
             layer = state.layers[index]
+            self._queue_pending_close_lot(state.contract_vt_symbol, layer, exit_price, layer.volume)
             realized += self._layer_realized_pnl(layer, exit_price, size)
             del state.layers[index]
         self.realized_pnl += realized
@@ -1390,6 +1618,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         while reduce_volume > 0 and state.layers:
             last_layer: PositionLayer = state.layers[-1]
             closed_volume: int = min(reduce_volume, last_layer.volume)
+            self._queue_pending_close_lot(state.contract_vt_symbol, last_layer, exit_price, closed_volume)
             realized += self._layer_realized_pnl(
                 PositionLayer(
                     kind=last_layer.kind,
@@ -1403,6 +1632,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     entry_date=last_layer.entry_date,
                     max_profit_pct=last_layer.max_profit_pct,
                     margin_ratio=last_layer.margin_ratio,
+                    entry_price_synced=last_layer.entry_price_synced,
                 ),
                 exit_price,
                 size,
@@ -1977,9 +2207,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if previous_two_sum <= 0:
             return ""
 
-        if latest_two_sum > previous_two_sum:
+        if latest_two_sum > previous_two_sum * 1.2:
             return "open_interest_surge"
-        if latest_two_sum < previous_two_sum:
+        if latest_two_sum < previous_two_sum * 0.9:
             return "open_interest_decline"
         return ""
 

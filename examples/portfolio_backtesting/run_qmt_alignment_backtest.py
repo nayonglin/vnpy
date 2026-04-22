@@ -65,42 +65,9 @@ def build_trades_df(engine: BacktestingEngine) -> pd.DataFrame:
     df.sort_values(["datetime", "vt_symbol", "trade_id"], inplace=True)
 
     strategy = getattr(engine, "strategy", None)
-    trade_events: list[dict[str, Any]] = getattr(strategy, "trade_event_diagnostics", []) if strategy else []
-    if trade_events:
-        event_df = pd.DataFrame(trade_events)
-        event_df["datetime"] = pd.to_datetime(event_df["datetime"]).dt.tz_localize(None)
-        event_df["volume_key"] = pd.to_numeric(event_df["volume"], errors="coerce").round(8)
-        event_df.sort_values(["datetime", "vt_symbol", "offset", "direction", "reason"], inplace=True)
-
-        matched_events: dict[str, dict[str, Any]] = {}
-        grouped_events: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
-        for event_row in event_df.to_dict("records"):
-            key = (str(event_row["vt_symbol"]), str(event_row["direction"]), str(event_row["offset"]))
-            grouped_events.setdefault(key, []).append(event_row)
-
-        for trade_row in df.to_dict("records"):
-            key = (str(trade_row["vt_symbol"]), str(trade_row["direction"]), str(trade_row["offset"]))
-            candidates = grouped_events.get(key, [])
-            trade_dt = pd.Timestamp(trade_row["datetime"]).tz_localize(None)
-            trade_volume = round(float(trade_row["volume"]), 8)
-
-            selected_index: int | None = None
-            for index, event_row in enumerate(candidates):
-                event_dt = pd.Timestamp(event_row["datetime"]).tz_localize(None)
-                if abs(float(event_row["volume_key"]) - trade_volume) > 1e-8:
-                    continue
-                if event_dt <= trade_dt <= event_dt + pd.Timedelta(days=1):
-                    selected_index = index
-                    break
-
-            if selected_index is None:
-                continue
-
-            matched_events[str(trade_row["trade_id"])] = candidates.pop(selected_index)
-
-        df["exit_reason"] = df["trade_id"].map(
-            lambda trade_id: matched_events.get(str(trade_id), {}).get("reason")
-        )
+    trade_reason_by_trade_id: dict[str, str] = getattr(strategy, "trade_reason_by_trade_id", {}) if strategy else {}
+    if trade_reason_by_trade_id:
+        df["exit_reason"] = df["trade_id"].map(lambda trade_id: trade_reason_by_trade_id.get(str(trade_id)))
     else:
         df["exit_reason"] = None
 
@@ -510,8 +477,18 @@ def _create_professional_dashboard(
             col=1,
         )
 
+    win_ratio: float = float(statistics.get("win_ratio", 0) or 0)
+    win_count: int = int(statistics.get("win_count", 0) or 0)
+    round_trip_count: int = int(statistics.get("round_trip_count", 0) or 0)
+    title_text: str = dashboard_title
+    if round_trip_count > 0:
+        title_text = (
+            f"{dashboard_title}"
+            f"<br><sup>胜率: {win_ratio:.2f}% | 胜场: {win_count} | 完整回合: {round_trip_count}</sup>"
+        )
+
     fig.update_layout(
-        title=dashboard_title,
+        title=title_text,
         height=1800,
         width=1400,
         hovermode="x unified",
@@ -893,6 +870,8 @@ def _build_trade_review_records(
                 "limited_balance": risk_row.get("limited_balance"),
                 "target_risk_amount": risk_row.get("target_risk_amount"),
                 "actual_risk_amount": risk_row.get("actual_risk_amount"),
+                "planned_entry_price": risk_row.get("planned_entry_price"),
+                "filled_entry_price": risk_row.get("filled_entry_price"),
                 "entry_price": risk_row.get("entry_price"),
                 "stop_price": risk_row.get("stop_price"),
                 "stop_distance": risk_row.get("stop_distance"),
@@ -1083,6 +1062,8 @@ def _create_trade_review_html(
           ["目标风险", formatNumber(record.risk.target_risk_amount)],
           ["实际风险", formatNumber(record.risk.actual_risk_amount)],
           ["保证金占用", formatNumber(record.risk.actual_margin_amount)],
+          ["真实开仓价", formatNumber(record.risk.filled_entry_price || record.risk.entry_price)],
+          ["计划开仓价", formatNumber(record.risk.planned_entry_price || record.risk.entry_price)],
           ["止损价", formatNumber(record.risk.stop_price)],
           ["单手风险", formatNumber(record.risk.risk_per_contract)],
           ["可用资金", formatNumber(record.risk.limited_balance)],

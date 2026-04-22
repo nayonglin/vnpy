@@ -26,10 +26,13 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
 
     author: str = "GPT-5.4"
 
+    risk_ratio_of_total_assets: float = 0.01
+    streak_risk_multipliers: str = "1.0,1.0,1.0,0.5"
     boll_window: int = 26
     boll_dev: float = 2.0
     entry_tr_multiplier: float = 0.5
     previous_day_stop_enabled: bool = True
+    reverse_signal_direction: bool = False
     block_short_when_all_ma_rising: bool = True
     block_long_when_all_ma_falling: bool = True
 
@@ -57,6 +60,7 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
         "boll_dev",
         "entry_tr_multiplier",
         "previous_day_stop_enabled",
+        "reverse_signal_direction",
         "block_short_when_all_ma_rising",
         "block_long_when_all_ma_falling",
     ]
@@ -156,10 +160,16 @@ class QmtBollReversalPortfolioStrategy(QmtRollPortfolioStrategy):
         breakout_lower = close_y >= lower_y and close_t < lower_t
 
         signal = ""
-        if breakout_upper and not bullish_alignment and self.short_entry_enabled:
-            signal = "short_reversal"
-        elif breakout_lower and not bearish_alignment and self.long_entry_enabled:
-            signal = "long_reversal"
+        if self.reverse_signal_direction:
+            if breakout_upper and not bullish_alignment and self.long_entry_enabled:
+                signal = "long_reversal"
+            elif breakout_lower and not bearish_alignment and self.short_entry_enabled:
+                signal = "short_reversal"
+        else:
+            if breakout_upper and not bullish_alignment and self.short_entry_enabled:
+                signal = "short_reversal"
+            elif breakout_lower and not bearish_alignment and self.long_entry_enabled:
+                signal = "long_reversal"
 
         if signal == "short_reversal" and self.block_short_when_all_ma_rising and all_ma_rising:
             signal = ""

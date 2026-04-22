@@ -10,7 +10,7 @@ from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, save_backtest_artifac
 from run_qmt_roll_backtest import build_backtest_engine, build_roll_setting
 
 
-def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.005) -> dict[str, object]:
+def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.01) -> dict[str, object]:
     setting: dict[str, object] = build_roll_setting(margin_ratios, risk_ratio=risk_ratio)
     setting.update(
         {
@@ -32,19 +32,21 @@ def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: flo
             "wick_chop_filter_enabled": False,
             "enable_donchian_add_position": False,
             "risk_ratio_of_total_assets": risk_ratio,
+            "streak_risk_multipliers": "1.0,1.0,1.0,0.5",
             "boll_window": 26,
             "boll_dev": 2.0,
             "entry_tr_multiplier": 0.5,
             "previous_day_stop_enabled": True,
-            "block_short_when_all_ma_rising": True,
-            "block_long_when_all_ma_falling": True,
+            "reverse_signal_direction": True,
+            "block_short_when_all_ma_rising": False,
+            "block_long_when_all_ma_falling": False,
         }
     )
     return setting
 
 
 def run_backtest(
-    risk_ratio: float = 0.005,
+    risk_ratio: float = 0.01,
     *,
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,

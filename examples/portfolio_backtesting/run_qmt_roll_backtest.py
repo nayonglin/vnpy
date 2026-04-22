@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from collections import deque
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from vnpy.trader.constant import Interval
 from vnpy.trader.object import BarData, TradeData
 from vnpy_portfoliostrategy import BacktestingEngine
@@ -125,8 +127,22 @@ def build_backtest_engine(
     return engine, metadata
 
 
-def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04) -> dict[str, object]:
+def build_roll_setting(
+    margin_ratios: dict[str, float],
+    risk_ratio: float = 0.045,
+    risk_overrides: dict[str, float] | None = None,
+) -> dict[str, object]:
     mapping_csv_path: Path = (OUTPUT_DIR / "tqsdk_main_contract_mapping_2020_2026_04.csv").resolve()
+    risk_overrides = risk_overrides or {}
+    default_risk_ratio: float = float(risk_overrides.get("risk_ratio_of_total_assets", risk_ratio))
+    breakout_risk_ratio: float = float(risk_overrides.get("risk_ratio_breakout", default_risk_ratio))
+    ma_cross_risk_ratio: float = float(risk_overrides.get("risk_ratio_ma_cross_breakout", default_risk_ratio))
+    volume_open_interest_surge_ratio: float = float(
+        risk_overrides.get("risk_ratio_volume_open_interest_surge", 0.06)
+    )
+    open_interest_surge_ratio: float = float(risk_overrides.get("risk_ratio_open_interest_surge", 0.06))
+    open_interest_decline_ratio: float = float(risk_overrides.get("risk_ratio_open_interest_decline", 0.025))
+
     return {
         "mapping_csv_path": str(mapping_csv_path),
         "ma_short": 5,
@@ -148,12 +164,12 @@ def build_roll_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.04
         "rollover_reopen_enabled": True,
         "reverse_on_opposite_signal": False,
         "max_capital_usage_ratio": 0.9,
-        "risk_ratio_of_total_assets": risk_ratio,
-        "risk_ratio_breakout": risk_ratio,
-        "risk_ratio_ma_cross_breakout": risk_ratio,
-        "risk_ratio_volume_open_interest_surge": 0.08,
-        "risk_ratio_open_interest_surge": 0.06,
-        "risk_ratio_open_interest_decline": 0.02,
+        "risk_ratio_of_total_assets": default_risk_ratio,
+        "risk_ratio_breakout": breakout_risk_ratio,
+        "risk_ratio_ma_cross_breakout": ma_cross_risk_ratio,
+        "risk_ratio_volume_open_interest_surge": volume_open_interest_surge_ratio,
+        "risk_ratio_open_interest_surge": open_interest_surge_ratio,
+        "risk_ratio_open_interest_decline": open_interest_decline_ratio,
         "min_risk_per_trade": 1000.0,
         "max_risk_per_trade": 50_000_000.0,
         "margin_ratio_overrides": ",".join(f"{symbol}={ratio}" for symbol, ratio in margin_ratios.items()),
@@ -220,9 +236,65 @@ def build_summary_row(
     return row
 
 
+def compute_round_trip_win_ratio(engine: BacktestingEngine) -> tuple[float, int, int]:
+    """Compute round-trip win ratio using FIFO pairing across long/short positions."""
+    trades: list[TradeData] = sorted(
+        engine.get_all_trades(),
+        key=lambda trade: (pd.Timestamp(trade.datetime), trade.vt_tradeid),
+    )
+    if not trades:
+        return 0.0, 0, 0
+
+    size_map: dict[str, int] = getattr(engine, "sizes", {})
+    open_queues: dict[tuple[str, str], deque[dict[str, float]]] = {}
+    realized_pnls: list[float] = []
+
+    for trade in trades:
+        price: float = float(trade.price)
+        volume: float = float(trade.volume)
+        vt_symbol: str = trade.vt_symbol
+        contract_size: float = float(size_map.get(vt_symbol, 1))
+
+        if trade.offset.value == "Open":
+            position_direction: str = "long" if trade.direction.value == "Long" else "short"
+            queue_key = (vt_symbol, position_direction)
+            open_queues.setdefault(queue_key, deque()).append({"price": price, "volume": volume})
+            continue
+
+        position_direction = "long" if trade.direction.value == "Short" else "short"
+        queue_key = (vt_symbol, position_direction)
+        queue = open_queues.setdefault(queue_key, deque())
+        remaining: float = volume
+
+        while remaining > 1e-9 and queue:
+            entry = queue[0]
+            matched_volume: float = min(remaining, float(entry["volume"]))
+            entry_price: float = float(entry["price"])
+            pnl: float
+            if position_direction == "long":
+                pnl = (price - entry_price) * matched_volume * contract_size
+            else:
+                pnl = (entry_price - price) * matched_volume * contract_size
+            realized_pnls.append(pnl)
+
+            entry["volume"] = float(entry["volume"]) - matched_volume
+            remaining -= matched_volume
+            if float(entry["volume"]) <= 1e-9:
+                queue.popleft()
+
+    if not realized_pnls:
+        return 0.0, 0, 0
+
+    win_count: int = sum(1 for pnl in realized_pnls if pnl > 0)
+    round_trip_count: int = len(realized_pnls)
+    win_ratio_pct: float = win_count / round_trip_count * 100.0
+    return win_ratio_pct, win_count, round_trip_count
+
+
 def run_backtest(
-    risk_ratio: float = 0.04,
+    risk_ratio: float = 0.045,
     *,
+    risk_overrides: dict[str, float] | None = None,
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,
     preload_start: datetime | None = None,
@@ -238,7 +310,11 @@ def run_backtest(
         capital=capital,
     )
     margin_ratios: dict[str, float] = metadata["margin_ratios"]
-    setting: dict[str, object] = build_roll_setting(margin_ratios, risk_ratio=risk_ratio)
+    setting: dict[str, object] = build_roll_setting(
+        margin_ratios,
+        risk_ratio=risk_ratio,
+        risk_overrides=risk_overrides,
+    )
     setting["capital_base"] = capital
     engine.add_strategy(QmtRollPortfolioStrategy, setting)
 
@@ -255,6 +331,10 @@ def run_backtest(
         analysis_df = None
 
     statistics: dict = engine.calculate_statistics(analysis_df)
+    win_ratio_pct, win_count, round_trip_count = compute_round_trip_win_ratio(engine)
+    statistics["win_ratio"] = win_ratio_pct
+    statistics["win_count"] = win_count
+    statistics["round_trip_count"] = round_trip_count
     engine.daily_df = analysis_df
     if save_artifacts:
         mapping_csv_path = Path(str(setting["mapping_csv_path"])).resolve()
