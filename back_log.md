@@ -3902,3 +3902,793 @@
 - 下一步最值得做的不是急着换模型，而是：
   - 把 refined subtype 继续前移到候选生成阶段
   - 或在保持同一标签口径下，做一次更克制的时间外稳定性验证
+
+# 2026-04-23 20:26 第十二阶段 refined 标签 walk-forward 稳定性验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 20:26`
+- 新增的文件：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_pairwise_horizon_strong_refined_walkforward.py`
+- 改动内容：
+  - 基于第十一阶段 refined 标签样本，新增 walk-forward 时间外稳定性验证脚本
+  - 固化为递增训练窗，不再复用单次固定切分结果
+  - 按三个测试分段验证：
+    - `2023`
+    - `2024`
+    - `2025+`
+  - 同时导出每段的整体指标、强弱分桶、subtype 分桶和概率分桶单调性
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = pairwise_horizon_cls_v3_strong_refined_walkforward`
+  - `WALK_FORWARD_WINDOWS`
+    - `wf_2023`: `train < 2023-01-01`, `test = 2023`
+    - `wf_2024`: `train < 2024-01-01`, `test = 2024`
+    - `wf_2025_plus`: `train < 2025-01-01`, `test >= 2025-01-01`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## Walk-forward 口径说明
+
+- 训练方式：
+  - 递增训练窗
+- 测试方式：
+  - 每个阶段只用该阶段之后不可见的数据做测试
+- 验证重点：
+  - `overall_roc_auc`
+  - `overall_weighted_accuracy`
+  - `bucket_monotonicity_pass`
+  - `strength` / `subtype` 分段结果
+
+## 新增的数据产物
+
+- Walk-forward 摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_walkforward_summary_pairwise_horizon_cls_v3_strong_refined_walkforward.json`
+- 窗口指标 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_walkforward_window_metrics_pairwise_horizon_cls_v3_strong_refined_walkforward.csv`
+- 分桶分析 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_walkforward_bucket_analysis_pairwise_horizon_cls_v3_strong_refined_walkforward.csv`
+- 逐样本预测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_walkforward_predictions_pairwise_horizon_cls_v3_strong_refined_walkforward.csv`
+
+## 新增的时间外验证结果
+
+- `wf_2023`
+  - `train_rows = 63`
+  - `test_rows = 34`
+  - `accuracy = 44.12%`
+  - `weighted_accuracy = 47.13%`
+  - `roc_auc = 0.4886`
+  - `bucket_monotonicity_pass = False`
+  - 概率分桶：
+    - `low = 36.36%`
+    - `mid = 27.27%`
+    - `high = 41.67%`
+
+- `wf_2024`
+  - `train_rows = 97`
+  - `test_rows = 49`
+  - `accuracy = 48.98%`
+  - `weighted_accuracy = 48.86%`
+  - `roc_auc = 0.4565`
+  - `bucket_monotonicity_pass = False`
+  - 概率分桶：
+    - `low = 56.25%`
+    - `mid = 43.75%`
+    - `high = 58.82%`
+
+- `wf_2025_plus`
+  - `train_rows = 146`
+  - `test_rows = 36`
+  - `accuracy = 50.00%`
+  - `weighted_accuracy = 51.75%`
+  - `roc_auc = 0.5937`
+  - `bucket_monotonicity_pass = True`
+  - 概率分桶：
+    - `low = 50.00%`
+    - `mid = 58.33%`
+    - `high = 66.67%`
+
+## 强弱分段结果
+
+- `wf_2023`
+  - `weak roc_auc = 0.4000`
+  - `medium roc_auc = 0.5938`
+  - `strong roc_auc = 0.5278`
+- `wf_2024`
+  - `weak roc_auc = 0.5400`
+  - `medium roc_auc = 0.5000`
+  - `strong roc_auc = 0.3750`
+- `wf_2025_plus`
+  - `weak roc_auc = 0.5667`
+  - `medium roc_auc = 0.7857`
+  - `strong roc_auc = 0.6667`
+
+## subtype 结果
+
+- `wf_2023`
+  - `non_strong roc_auc = 0.4904`
+  - `trend_continuation_or_structural roc_auc = 0.5278`
+- `wf_2024`
+  - `non_strong roc_auc = 0.5222`
+  - `trend_continuation_or_structural roc_auc = 0.3750`
+- `wf_2025_plus`
+  - `non_strong roc_auc = 0.5729`
+  - `trend_continuation_or_structural roc_auc = 0.6667`
+
+## 总体统计
+
+- `window_count = 3`
+- `all_bucket_monotonicity_pass = False`
+- `mean_test_auc = 0.5129`
+- `mean_test_weighted_accuracy = 49.25%`
+
+## 结果解释
+
+- 这次验证给出了一个非常关键的结论：
+  - refined 标签不是“全阶段稳定”的
+  - 它明显具有时变性，而且主要在 `2025+` 段开始变得更有效
+- 也就是说，第十一阶段的正向结果不能被简单解释成“标签已经普适可用”
+- 更准确的结论是：
+  - `2023` 和 `2024` 阶段，refined 标签还没有稳定站住
+  - 真正同时满足 `AUC > 0.5` 和分桶单调性的，是 `2025+`
+- 但这并不是坏消息，反而说明我们离本质更近了：
+  - 之前是完全不知道标签为什么时好时坏
+  - 现在已经能明确看到：
+    - `2025+` 的市场结构更匹配 refined 标签表达
+    - `2023/2024` 还存在 regime mismatch
+
+## 我的判断
+
+- 第十二阶段的价值非常高，因为它阻止了我们误把“单次切分的正向结果”当成稳定规律
+- 这一步说明：
+  - refined 标签已经不是纯噪声
+  - 但它仍然是有 regime 依赖的监督信号
+- 从穿越周期的角度看，这意味着：
+  - 不能直接把当前 refined classifier 当成统一时代码接入仓位控制
+  - 下一步更该研究的是：
+    - 为什么 `2025+` 有效而 `2023/2024` 不稳定
+    - 哪些市场环境特征决定 refined 标签是否可信
+
+## 回测结果变化说明
+
+- 新增的回测结果：
+  - 无，本次仅新增 refined 标签的 walk-forward 时间外验证结果
+- 修改的回测结果：
+  - 无
+- 删除的回测结果：
+  - 无
+
+## 快速结论
+
+- 第十二阶段不能得出“refined 标签已稳定可用”的结论
+- 但可以得出更重要的结论：
+  - refined 标签已经具备条件性有效性
+  - 它在 `2025+` 段表现出明显更强的排序和分桶能力
+- 下一步最值得做的，不是继续堆分类器，而是：
+  - 研究 refined 标签的生效环境
+  - 把环境条件显式化，再决定是否让它参与仓位调节
+
+# 2026-04-23 20:31 第十三阶段 refined 标签生效环境识别
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 20:31`
+- 新增的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_candidate_refined_environment.py`
+- 改动内容：
+  - 不再继续改标签和分类器，转而分析 refined 标签何时更可能生效
+  - 新增日度环境画像脚本，把候选样本和 refined pair 样本都按交易日聚合
+  - 把 `2025+` 定义为相对有效环境，把 `2023-2024` 定义为相对失效环境，比较两者的日度结构差异
+  - 输出环境画像表、特征迁移表和摘要 JSON，作为后续环境门控的研究底稿
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = refined_environment_v1`
+  - `EFFECTIVE_START_DATE = 2025-01-01`
+- 新增的分析维度：
+  - 候选层：
+    - `candidate_count_1d`
+    - `selected_rate_1d`
+    - `avg_atr14_pct_zscore_120_1d`
+    - `avg_range_pct_zscore_120_1d`
+    - `avg_volume_ratio_1d_20d_zscore_120_1d`
+    - `avg_oi_delta_1d_pct_zscore_120_1d`
+    - `avg_close_position_60d_1d`
+    - `avg_signal_strength_signed_1d`
+    - `avg_mid_term_momentum_signed_1d`
+    - `avg_reversal_pressure_signed_1d`
+  - Pair 层：
+    - `pair_count_1d`
+    - `avg_primary_gap_abs_1d`
+    - `avg_primary_weight_1d`
+    - `same_signal_share_1d`
+    - `same_direction_share_1d`
+    - `support_5d_share_1d`
+    - `winner_selected_rate_1d`
+    - `avg_abs_delta_trend_ma20_gap_pct_1d`
+    - `avg_abs_delta_ret_20d_zscore_120_1d`
+    - `avg_abs_delta_oi_delta_1d_pct_zscore_120_1d`
+    - `avg_abs_delta_range_pct_zscore_120_1d`
+    - `avg_abs_delta_volume_ratio_2v2_1d`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- 日度环境画像：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_refined_environment_daily_refined_environment_v1.csv`
+- 特征迁移表：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_refined_environment_feature_shift_refined_environment_v1.csv`
+- 环境摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_refined_environment_summary_refined_environment_v1.json`
+
+## 环境划分说明
+
+- 相对有效环境：
+  - `candidate_date >= 2025-01-01`
+- 相对失效环境：
+  - `2023-2024`
+- 这里的“有效 / 失效”不是市场客观标签，而是针对第十二阶段 walk-forward 结果定义的监督有效性分组
+
+## 新增的环境分析结果
+
+- 有效环境交易日：
+  - `26`
+- 相对失效环境交易日：
+  - `104`
+- 有效环境日期范围：
+  - `2025-01-03 ~ 2025-12-01`
+- 相对失效环境日期范围：
+  - `2020-05-11 ~ 2024-12-19`
+
+## Top Shift 特征
+
+- `avg_close_position_60d_1d`
+  - `ineffective = 0.5109`
+  - `effective = 0.3624`
+  - `cohen_d = -0.5407`
+- `support_5d_share_1d`
+  - `ineffective = 0.7388`
+  - `effective = 0.9231`
+  - `cohen_d = 0.4613`
+- `avg_reversal_pressure_signed_1d`
+  - `ineffective = 0.00717`
+  - `effective = 0.01093`
+  - `cohen_d = 0.3750`
+- `selected_rate_1d`
+  - `ineffective = 0.6175`
+  - `effective = 0.5224`
+  - `cohen_d = -0.2703`
+- `winner_selected_rate_1d`
+  - `ineffective = 0.6369`
+  - `effective = 0.5192`
+  - `cohen_d = -0.2475`
+- `avg_range_pct_zscore_120_1d`
+  - `ineffective = 0.1614`
+  - `effective = 0.3571`
+  - `cohen_d = 0.2455`
+- `avg_abs_delta_range_pct_zscore_120_1d`
+  - `ineffective = 1.0469`
+  - `effective = 1.2337`
+  - `cohen_d = 0.2073`
+- `avg_abs_delta_volume_ratio_2v2_1d`
+  - `ineffective = 0.3042`
+  - `effective = 0.3660`
+  - `cohen_d = 0.2054`
+
+## 关键环境画像
+
+- `candidate_count_1d`
+  - `ineffective = 2.4327`
+  - `effective = 2.3462`
+- `pair_count_1d`
+  - `ineffective = 1.4038`
+  - `effective = 1.3846`
+- `avg_primary_gap_abs_1d`
+  - `ineffective = 6.2424`
+  - `effective = 4.7596`
+- `avg_abs_delta_trend_ma20_gap_pct_1d`
+  - `ineffective = 0.0395`
+  - `effective = 0.0367`
+- `avg_abs_delta_ret_20d_zscore_120_1d`
+  - `ineffective = 1.0681`
+  - `effective = 1.0668`
+- `avg_abs_delta_oi_delta_1d_pct_zscore_120_1d`
+  - `ineffective = 0.9188`
+  - `effective = 0.9249`
+- `strength_strong_share_1d`
+  - `ineffective = 0.4022`
+  - `effective = 0.4231`
+- `support_5d_share_1d`
+  - `ineffective = 0.7388`
+  - `effective = 0.9231`
+
+## 结果解释
+
+- 这一步给出了一个非常关键、而且有点反直觉的结论：
+  - `2025+` 有效环境并不是“趋势结构差更大、gap 更大、仓位更激进”的环境
+  - 它反而更像：
+    - 候选整体所处的 `60d` 位置更低
+    - `5d` 对主标签的支持率更高
+    - 波动活跃度略高
+    - 规则层真实已选中的拥挤程度更低
+- 也就是说，refined 标签更可能在这样一种环境中生效：
+  - 市场并非高位拥挤顺风段
+  - 而是中低位、短周期确认更一致、但规则没有过度扎堆选中的阶段
+- 这和直觉上的“越强趋势越有效”并不完全一致
+- 更接近本质的解释可能是：
+  - 当候选处于更低的中期位置时，refined 标签更容易捕捉“结构性修复 / 延续”的差异
+  - 而不是在高位一致拥挤环境里被同质化信号吞没
+
+## 我的判断
+
+- 第十三阶段最大的价值，是把“为什么 2025+ 有效”从结果现象推进到环境画像层
+- 当前可以初步形成的判断是：
+  - refined 标签的生效环境，倾向于：
+    - 更低的 `60d` 价格位置
+    - 更高的 `5d` horizon 支持一致性
+    - 略高的波动活跃度
+    - 更低的规则已选中拥挤
+- 但还不能直接把这套环境画像当成实时门控器上线
+- 下一步如果要继续，就应该做两件事之一：
+  - 基于这些环境变量，构造一个前视可用的“启用条件”原型
+  - 或把环境分层带回 walk-forward，再验证 gated 与 ungated 的差异
+
+## 回测结果变化说明
+
+- 新增的回测结果：
+  - 无，本次仅新增 refined 标签的环境画像分析结果
+- 修改的回测结果：
+  - 无
+- 删除的回测结果：
+  - 无
+
+## 快速结论
+
+- refined 标签已经不只是“某一段有效”，而是开始出现可解释的生效环境
+- 这意味着下一步最值得做的，不是继续堆特征，而是：
+  - 让 refined 标签只在“更像有效环境”的时候说话
+  - 把它从统一监督，升级成“条件性监督”
+
+# 2026-04-23 20:37 第十四阶段 refined 环境门控原型
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 20:37`
+- 新增的文件：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_gated_walkforward.py`
+- 改动内容：
+  - 基于第十三阶段环境画像，新增前视可用的环境门控 prototype
+  - 不再尝试让 gate 直接选出“更高质量”的 active 样本，而是改成 `abstention gate` 思路：
+    - 环境不满足时，让 refined 模型闭嘴，预测退回 `0.5`
+  - 继续沿用第十一阶段 refined classifier，不改标签、不换模型，只比较：
+    - `ungated`
+    - `gated_blended`
+    - `gated_active`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = pairwise_horizon_cls_v3_strong_refined_env_gated_v1`
+  - `ENV_GATE_RULES`
+    - `avg_close_position_60d_1d <= 0.42`
+    - `avg_range_pct_zscore_120_1d >= 0.24`
+    - `selected_rate_1d <= 0.56`
+    - 满足以上 3 条中的至少 `2` 条，则 `gate_on = 1`
+- 规则说明：
+  - 只使用前视可用的日度环境特征
+  - 明确不使用 `support_5d_share_1d` 这类未来标签衍生变量做 gate
+
+## 新增的数据产物
+
+- Gated walk-forward 摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_gated_summary_pairwise_horizon_cls_v3_strong_refined_env_gated_v1.json`
+- 窗口指标 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_gated_window_metrics_pairwise_horizon_cls_v3_strong_refined_env_gated_v1.csv`
+- 逐样本预测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_gated_predictions_pairwise_horizon_cls_v3_strong_refined_env_gated_v1.csv`
+
+## 新增的验证结果
+
+### `wf_2023`
+
+- 覆盖率：
+  - `active_rows = 16 / 34`
+  - `active_days = 12 / 26`
+  - `active_row_coverage = 47.06%`
+- `ungated`
+  - `roc_auc = 0.4886`
+  - `weighted_accuracy = 47.13%`
+- `gated_blended`
+  - `roc_auc = 0.5303`
+  - `weighted_accuracy = 35.83%`
+- `gated_active`
+  - `roc_auc = 0.4688`
+  - `weighted_accuracy = 48.63%`
+
+### `wf_2024`
+
+- 覆盖率：
+  - `active_rows = 30 / 49`
+  - `active_days = 19 / 34`
+  - `active_row_coverage = 61.22%`
+- `ungated`
+  - `roc_auc = 0.4565`
+  - `weighted_accuracy = 48.86%`
+- `gated_blended`
+  - `roc_auc = 0.5301`
+  - `weighted_accuracy = 53.08%`
+- `gated_active`
+  - `roc_auc = 0.4286`
+  - `weighted_accuracy = 53.55%`
+
+### `wf_2025_plus`
+
+- 覆盖率：
+  - `active_rows = 23 / 36`
+  - `active_days = 16 / 26`
+  - `active_row_coverage = 63.89%`
+- `ungated`
+  - `roc_auc = 0.5937`
+  - `weighted_accuracy = 51.75%`
+- `gated_blended`
+  - `roc_auc = 0.5111`
+  - `weighted_accuracy = 47.01%`
+- `gated_active`
+  - `roc_auc = 0.5952`
+  - `weighted_accuracy = 43.50%`
+
+## 总体统计
+
+- `mean_ungated_auc = 0.5129`
+- `mean_gated_blended_auc = 0.5238`
+- `mean_active_auc = 0.4972`
+- `mean_active_row_coverage = 57.39%`
+
+## 结果解释
+
+- 这次最重要的结论是：
+  - 当前 gate 更像“防守闸门”，不是“精选 alpha 放大器”
+- 证据有两层：
+  - `gated_active` 并没有稳定优于 `ungated`
+    - 说明 gate 还不能把真正高质量样本显著筛出来
+  - 但 `gated_blended` 在 `2023/2024` 两段明显改善了 `roc_auc`
+    - 说明它确实能在坏环境里让 refined 模型少犯错
+- 同时也必须看到代价：
+  - `2025+` 是 refined 标签相对有效的阶段
+  - gate 在这一段反而削弱了表现，`roc_auc` 从 `0.5937` 降到 `0.5111`
+- 所以当前 gate 的真实角色更接近：
+  - 一个“风险约束器”
+  - 而不是一个“提高正向期收益效率”的启用器
+
+## 我的判断
+
+- 第十四阶段是有效的，但结论必须克制：
+  - 这版门控原型可以作为研究型保护层
+  - 但还不适合直接成为 refined 标签的正式启用条件
+- 更本质的问题是：
+  - 当前 gate 只学会了“什么时候别说话”
+  - 还没有学会“什么时候值得更积极地说话”
+- 换句话说：
+  - 它对失效环境有一定识别力
+  - 但对有效环境的精确召回还不够好
+
+## 回测结果变化说明
+
+- 新增的回测结果：
+  - 无，本次仅新增 refined 环境门控原型的 walk-forward 结果
+- 修改的回测结果：
+  - 无
+- 删除的回测结果：
+  - 无
+
+## 快速结论
+
+- 第十四阶段应判定为：
+  - 作为“防守门控”有研究价值
+  - 作为“正式启用门控”还不够成熟
+- 下一步更值得做的，不是继续调 gate 阈值，而是：
+  - 把“失效环境 gate”与“有效环境召回”分开建模
+  - 或让 gate 输出连续权重，而不是简单二值开关
+
+# 2026-04-23 20:48 第十五阶段 refined 连续权重环境门控
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 20:48`
+- 新增的文件：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_weighted_walkforward.py`
+- 改动内容：
+  - 把第十四阶段的二值 gate 升级为连续权重 gate
+  - 不再简单判断“说话 / 闭嘴”，而是把 refined 概率按环境质量向 `0.5` 连续回缩
+  - 同时保留三条对比线：
+    - `ungated`
+    - `binary`
+    - `weighted`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = pairwise_horizon_cls_v3_strong_refined_env_weighted_v1`
+  - `ENV_WEIGHT_RULES`
+    - `close_position_good_max = 0.25`
+    - `close_position_bad_min = 0.60`
+    - `range_good_min = 0.60`
+    - `range_bad_max = 0.00`
+    - `selected_rate_good_max = 0.35`
+    - `selected_rate_bad_min = 0.75`
+    - `weight_floor = 0.35`
+- 核心口径：
+  - `close_position` 越低，weight 越高
+  - `range_zscore` 越高，weight 越高
+  - `selected_rate` 越低，weight 越高
+  - 三个组件平均后，映射到 `[0.35, 1.0]`
+- 概率回缩公式：
+  - `weighted_probability = 0.5 + env_gate_weight * (ungated_probability - 0.5)`
+
+## 新增的数据产物
+
+- Weighted walk-forward 摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_weighted_summary_pairwise_horizon_cls_v3_strong_refined_env_weighted_v1.json`
+- 窗口指标 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_weighted_window_metrics_pairwise_horizon_cls_v3_strong_refined_env_weighted_v1.csv`
+- 逐样本预测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_pairwise_horizon_strong_refined_environment_weighted_predictions_pairwise_horizon_cls_v3_strong_refined_env_weighted_v1.csv`
+
+## 新增的验证结果
+
+### `wf_2023`
+
+- `ungated`
+  - `roc_auc = 0.4886`
+  - `weighted_accuracy = 47.13%`
+  - 分桶单调：`False`
+- `binary`
+  - `roc_auc = 0.5303`
+  - `weighted_accuracy = 35.83%`
+- `weighted`
+  - `roc_auc = 0.5492`
+  - `weighted_accuracy = 47.13%`
+  - 分桶单调：`True`
+
+### `wf_2024`
+
+- `ungated`
+  - `roc_auc = 0.4565`
+  - `weighted_accuracy = 48.86%`
+  - 分桶单调：`False`
+- `binary`
+  - `roc_auc = 0.5301`
+  - `weighted_accuracy = 53.08%`
+- `weighted`
+  - `roc_auc = 0.4866`
+  - `weighted_accuracy = 48.86%`
+  - 分桶单调：`True`
+
+### `wf_2025_plus`
+
+- `ungated`
+  - `roc_auc = 0.5937`
+  - `weighted_accuracy = 51.75%`
+  - 分桶单调：`True`
+- `binary`
+  - `roc_auc = 0.5111`
+  - `weighted_accuracy = 47.01%`
+- `weighted`
+  - `roc_auc = 0.5746`
+  - `weighted_accuracy = 51.75%`
+  - 分桶单调：`False`
+
+## 总体统计
+
+- `mean_ungated_auc = 0.5129`
+- `mean_binary_auc = 0.5238`
+- `mean_weighted_auc = 0.5368`
+
+## 权重分布
+
+- `wf_2023`
+  - `gate_weight_mean = 0.6354`
+  - `min = 0.35`
+  - `max = 1.0`
+- `wf_2024`
+  - `gate_weight_mean = 0.6851`
+  - `min = 0.4164`
+  - `max = 1.0`
+- `wf_2025_plus`
+  - `gate_weight_mean = 0.6935`
+  - `min = 0.35`
+  - `max = 1.0`
+
+## 结果解释
+
+- 第十五阶段的核心改进，不是把所有阶段都做强，而是把门控从“粗暴开关”改成了“连续收缩”
+- 这样带来的直接效果是：
+  - 相比 `binary`，`weighted` 更少伤害 `2025+`
+  - 相比 `ungated`，`weighted` 又能改善 `2023/2024` 的排序关系
+- 特别值得注意的是：
+  - `weighted` 在 `2023` 和 `2024` 都修复了概率分桶的单调性
+  - 而 `2025+` 虽然 `roc_auc` 略低于 `ungated`，但明显好于 `binary`
+- 这说明 `weighted` 的真实角色更接近：
+  - 一个“软门控权重器”
+  - 而不是“硬启停开关”
+
+## 我的判断
+
+- 目前为止，在门控方向上：
+  - `binary` 更像风险闸门
+  - `weighted` 更像均衡折中方案
+- 如果目标是“能穿越周期”而不是“某一年最好看”，那么：
+  - `weighted` 明显比 `binary` 更接近可继续投入的原型
+- 但也必须保持克制：
+  - `2025+` 的分桶单调性被部分削弱
+  - `2024` 虽然 `roc_auc` 改善，但还没有真正强到可以放心上线
+- 所以这一步还不能直接等价于“环境门控已经成熟”
+
+## 回测结果变化说明
+
+- 新增的回测结果：
+  - 无，本次仅新增连续权重门控的 walk-forward 结果
+- 修改的回测结果：
+  - 无
+- 删除的回测结果：
+  - 无
+
+## 快速结论
+
+- 第十五阶段是当前门控方向里最平衡的一步
+- 我对它的判断是：
+  - 比 `binary` 更优
+  - 比 `ungated` 更稳
+  - 但还需要进一步验证，不能直接实盘化
+- 下一步最值得做的不是继续调几个阈值，而是：
+  - 把连续权重 gate 接进回测里的仓位倍率链路
+  - 做一次最小闭环验证：`ungated vs weighted-gated` 的真实收益 / 回撤对比
+
+# 2026-04-23 21:16 第十六阶段 weighted gate 接入仓位倍率链路并完成正式回测闭环
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:16`
+- 新增的文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_weighted_env_gate_backtest.py`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 在策略内新增“日度环境权重 -> 基础开仓仓位缩放”的最小闭环链路
+  - 保持原始入场信号、风控分档、加减仓规则不变，只对 `flat_entry` 基础开仓仓位做环境权重缩放
+  - 环境权重不直接复用离线 pairwise 预测，而是改成策略内按当日候选池原位重建三类前视可用环境特征：
+    - `avg_close_position_60d`
+    - `avg_range_pct_zscore_120`
+    - `native_selected_rate`
+  - 新增正式对比脚本，统一跑：
+    - `ungated_baseline`
+    - `weighted_env_gate_v1`
+  - 输出正式主回测结果与起始年份分支结果，验证 weighted gate 是否真的提升收益/回撤，而不只是在离线 AUC 上好看
+
+## 参数变化说明
+
+- 新增的参数：
+  - `enable_weighted_env_gate = False`
+  - `weighted_env_gate_close_position_good_max = 0.25`
+  - `weighted_env_gate_close_position_bad_min = 0.60`
+  - `weighted_env_gate_range_good_min = 0.60`
+  - `weighted_env_gate_range_bad_max = 0.00`
+  - `weighted_env_gate_selected_rate_good_max = 0.35`
+  - `weighted_env_gate_selected_rate_bad_min = 0.75`
+  - `weighted_env_gate_weight_floor = 0.35`
+- 修改的参数：
+  - 无，默认主策略仍保持 `enable_weighted_env_gate = False`
+- 删除的参数：
+  - 无
+
+## 本次回测参数
+
+- 脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_weighted_env_gate_backtest.py`
+- 回测入口：
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 分析区间：`2020-01-01 ~ 2026-04-30`
+- 基础风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 仓位与风险硬约束保持不变：
+  - sizing 资金上限 `100 万`
+  - 最大并发位 `8`
+  - 单笔资金上限 `0.70`
+  - 空头初始止损仍基于开仓当日最高价
+  - 所有止损仍基于收盘价判断
+- `weighted_env_gate_v1` 的仓位缩放口径：
+  - 仅作用于 `flat_entry`
+  - `reverse_entry` 与 `rollover_reopen` 不缩放
+  - `selected_volume = floor(selected_volume_ungated * env_gate_weight)`
+
+## 新增的数据产物
+
+- 汇总 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_weighted_env_gate_v1_summary.csv`
+- 汇总 JSON：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_weighted_env_gate_v1_summary.json`
+- 基线正式回测产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ungated_baseline_statistics.json`
+- Weighted gate 正式回测产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_weighted_env_gate_v1_statistics.json`
+
+## 新增的回测结果
+
+### `ungated_baseline`
+
+- 期末权益 `3,015,735`
+- 总收益 `1407.87%`
+- 最大回撤 `-35.71%`
+- Sharpe `1.0854`
+- 总滑点 `347,080`
+- 总交易次数 `1,214`
+- 胜率 `42.00%`
+
+### `weighted_env_gate_v1`
+
+- 期末权益 `448,690`
+- 总收益 `124.35%`
+- 最大回撤 `-48.46%`
+- Sharpe `0.4033`
+- 总滑点 `73,900`
+- 总交易次数 `713`
+- 胜率 `37.09%`
+
+## 修改的回测结果
+
+- 新增正式对比口径后，确认第十五阶段离线 `weighted gate` 的 AUC 改善并没有迁移成真实组合收益改善
+- 与本次同口径基线相比，`weighted_env_gate_v1` 的正式主回测结果变化如下：
+  - 期末权益变化：`-2,567,045`
+  - 总收益变化：`-1283.52%`
+  - 最大回撤变化：`-12.76%`
+  - Sharpe 变化：`-0.6822`
+  - 总交易次数变化：`-501`
+  - 总滑点变化：`-273,180`
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 这次闭环验证给出的结论非常明确：
+  - `weighted gate` 在离线排序层面看起来更平衡
+  - 但一旦直接映射到真实仓位倍率链路，组合表现出现结构性塌缩
+- 我对其本质判断是：
+  - 这个 gate 更像“交易频率压缩器”，而不是“风险收益比优化器”
+  - 它减少了交易、压低了滑点，但没有把剩余交易的质量显著抬高
+  - 反而因为缩掉了大量本来就该拿满的强趋势仓位，导致收益和 Sharpe 被严重削弱
+- 从第一性原理看，问题不在于“0.35 floor 还不够细”，而在于：
+  - 我们把“环境层描述变量”直接映射成了“单笔仓位缩放变量”
+  - 这会把本来属于组合层节奏的问题，错误地下沉到单笔 sizing 层处理
+  - `selected_rate` 还是一个内生变量，进入实时闭环后容易形成自抑制反馈，越缩越弱
+
+## 我的判断
+
+- 第十六阶段最重要的不是“成功接回了回测”，而是正式证伪了一个很诱人的方向：
+  - `weighted gate` 不能直接作为真实仓位倍率器上线
+- 因此当前不应该继续顺着这个方向微调几个阈值、`floor` 或分段常数
+- 更合理的下一步应该二选一：
+  - 要么把环境门控上移到组合层，只控制“当天是否放宽并发 / 总风险预算”，而不是缩每一笔
+  - 要么回到更直接的 alpha 问题，只让 AI 在候选排序里决定“选谁”，而不是决定“缩多少”
+
+## 快速结论
+
+- 第十六阶段闭环实现本身是成功的
+- 第十六阶段策略结论是否定的：
+  - `weighted_env_gate_v1` 在正式主回测中显著劣于 `ungated_baseline`
+  - 当前版本不应写回默认策略
+  - 当前版本只保留为研究型反例与后续组合层门控设计的证据

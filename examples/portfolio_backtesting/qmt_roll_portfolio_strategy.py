@@ -79,6 +79,18 @@ class ProductState:
         return weighted_cost / total_volume
 
 
+@dataclass
+class DailyEntryContext:
+    product_vt_symbol: str
+    state: ProductState
+    target_contract: str
+    target_bar: BarData
+    actual_bar: BarData | None
+    current_pos: int
+    history: pd.DataFrame
+    signal_data: dict[str, Any]
+
+
 class QmtRollPortfolioStrategy(StrategyTemplate):
     """
     Main-contract switching backtest version.
@@ -131,6 +143,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     default_margin_ratio: float = 0.10
     margin_ratio_overrides: str = ""
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
+    enable_weighted_env_gate: bool = False
+    weighted_env_gate_close_position_good_max: float = 0.25
+    weighted_env_gate_close_position_bad_min: float = 0.60
+    weighted_env_gate_range_good_min: float = 0.60
+    weighted_env_gate_range_bad_max: float = 0.00
+    weighted_env_gate_selected_rate_good_max: float = 0.35
+    weighted_env_gate_selected_rate_bad_min: float = 0.75
+    weighted_env_gate_weight_floor: float = 0.35
 
     stop_loss_pct: float = 0.02
     trailing_stop_enabled: bool = True
@@ -213,6 +233,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "default_margin_ratio",
         "margin_ratio_overrides",
         "streak_risk_multipliers",
+        "enable_weighted_env_gate",
+        "weighted_env_gate_close_position_good_max",
+        "weighted_env_gate_close_position_bad_min",
+        "weighted_env_gate_range_good_min",
+        "weighted_env_gate_range_bad_max",
+        "weighted_env_gate_selected_rate_good_max",
+        "weighted_env_gate_selected_rate_bad_min",
+        "weighted_env_gate_weight_floor",
         "stop_loss_pct",
         "trailing_stop_enabled",
         "trailing_stop_pct",
@@ -291,6 +319,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.last_close_prices: dict[str, float] = {}
         self.pending_margin_reservation: float = 0.0
         self.pending_active_products: set[str] = set()
+        self.current_env_gate_snapshot: dict[str, Any] = {}
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -343,6 +372,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self._refresh_risk_state(bars)
         self.last_signal = ""
 
+        day_contexts: list[DailyEntryContext] = []
         for product_vt in self.product_symbols:
             target_contract: str = mapping_today.get(product_vt, "")
             if not target_contract:
@@ -363,6 +393,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             history: pd.DataFrame = self._build_history_df(target_am)
             signal_data: dict[str, Any] = self._generate_signal(target_am, history)
+            day_contexts.append(
+                DailyEntryContext(
+                    product_vt_symbol=product_vt,
+                    state=state,
+                    target_contract=target_contract,
+                    target_bar=target_bar,
+                    actual_bar=actual_bar,
+                    current_pos=current_pos,
+                    history=history,
+                    signal_data=signal_data,
+                )
+            )
+
+        self.current_env_gate_snapshot = self._build_daily_env_gate_snapshot(day_contexts)
+
+        for context in day_contexts:
+            product_vt = context.product_vt_symbol
+            state = context.state
+            target_contract = context.target_contract
+            target_bar = context.target_bar
+            actual_bar = context.actual_bar
+            current_pos = context.current_pos
+            history = context.history
+            signal_data = context.signal_data
             signal: str = str(signal_data["signal"])
             bullish: bool = bool(signal_data["bullish_alignment"])
             bearish: bool = bool(signal_data["bearish_alignment"])
@@ -381,7 +435,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if current_pos == 0:
                 if signal.startswith("long"):
                     sizing: dict[str, Any] = self._calculate_entry_sizing(
-                        target_contract, "long", target_bar, history, signal_data
+                        target_contract,
+                        "long",
+                        target_bar,
+                        history,
+                        signal_data,
+                        entry_context="flat_entry",
                     )
                     volume: int = int(sizing["selected_volume"])
                     active_positions_before: int = self._count_active_positions()
@@ -428,7 +487,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
                 elif signal.startswith("short"):
-                    sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
+                    sizing = self._calculate_entry_sizing(
+                        target_contract,
+                        "short",
+                        target_bar,
+                        history,
+                        signal_data,
+                        entry_context="flat_entry",
+                    )
                     volume = int(sizing["selected_volume"])
                     active_positions_before = self._count_active_positions()
                     candidate_status = "opened"
@@ -538,7 +604,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         exit_reason="long_reverse_to_short",
                     )
                     if self.short_entry_enabled and self._can_open_short_signal(signal):
-                        sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
+                        sizing = self._calculate_entry_sizing(
+                            target_contract,
+                            "short",
+                            target_bar,
+                            history,
+                            signal_data,
+                            entry_context="reverse_entry",
+                        )
                         volume = int(sizing["selected_volume"])
                         if volume > 0:
                             self._open_position(
@@ -573,7 +646,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         exit_reason="short_reverse_to_long",
                     )
                     if self.long_entry_enabled:
-                        sizing = self._calculate_entry_sizing(target_contract, "long", target_bar, history, signal_data)
+                        sizing = self._calculate_entry_sizing(
+                            target_contract,
+                            "long",
+                            target_bar,
+                            history,
+                            signal_data,
+                            entry_context="reverse_entry",
+                        )
                         volume = int(sizing["selected_volume"])
                         if volume > 0:
                             self._open_position(
@@ -696,6 +776,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             history,
             signal_data,
             risk_mode_override=old_risk_mode,
+            entry_context="rollover_reopen",
         )
         volume: int = int(sizing["selected_volume"])
         if volume <= 0:
@@ -1009,6 +1090,189 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         tier: int = min(self.loss_streak, len(multipliers) - 1)
         return max(0.0, multipliers[tier])
 
+    @staticmethod
+    def _safe_float_value(value: object, default: float = 0.0) -> float:
+        try:
+            result = float(value)
+        except (TypeError, ValueError):
+            return default
+        if pd.isna(result) or math.isinf(result):
+            return default
+        return result
+
+    @staticmethod
+    def _series_safe_ratio(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
+        denominator_series = denominator.astype("float64").replace(0.0, pd.NA)
+        result = numerator.astype("float64") / denominator_series
+        return result.replace([math.inf, -math.inf], pd.NA).fillna(0.0)
+
+    @staticmethod
+    def _rolling_zscore(series: pd.Series, window: int) -> pd.Series:
+        rolling_mean = series.rolling(window).mean()
+        rolling_std = series.rolling(window).std(ddof=0).replace(0.0, pd.NA)
+        zscore = (series - rolling_mean) / rolling_std
+        return zscore.replace([math.inf, -math.inf], pd.NA).fillna(0.0)
+
+    @staticmethod
+    def _clip01(value: float) -> float:
+        return min(max(float(value), 0.0), 1.0)
+
+    def _extract_env_gate_candidate_features(self, history: pd.DataFrame) -> dict[str, float]:
+        if history is None or history.empty or len(history) < 60:
+            return {}
+
+        close = pd.to_numeric(history["close"], errors="coerce").astype("float64")
+        high = pd.to_numeric(history["high"], errors="coerce").astype("float64")
+        low = pd.to_numeric(history["low"], errors="coerce").astype("float64")
+        if close.isna().all() or high.isna().all() or low.isna().all():
+            return {}
+
+        range_pct_series = self._series_safe_ratio(high - low, close)
+        close_position_60d_series = self._series_safe_ratio(
+            close - low.rolling(60).min(),
+            high.rolling(60).max() - low.rolling(60).min(),
+        )
+
+        return {
+            "feature_range_pct_zscore_120": self._safe_float_value(self._rolling_zscore(range_pct_series, 120).iloc[-1]),
+            "feature_close_position_60d": self._safe_float_value(close_position_60d_series.iloc[-1], default=0.5),
+        }
+
+    def _is_native_openable_candidate(self, signal: str, direction: str, selected_volume: int) -> bool:
+        if selected_volume <= 0:
+            return False
+        if direction == "long":
+            return bool(self.long_entry_enabled)
+        return bool(self.short_entry_enabled and self._can_open_short_signal(signal))
+
+    def _build_daily_env_gate_snapshot(self, day_contexts: list[DailyEntryContext]) -> dict[str, Any]:
+        snapshot: dict[str, Any] = {
+            "env_gate_enabled": int(self.enable_weighted_env_gate),
+            "env_gate_weight": 1.0,
+            "env_candidate_count": 0,
+            "env_native_selected_rate": 0.0,
+            "env_native_selected_count": 0,
+            "env_avg_close_position_60d": 0.0,
+            "env_avg_range_pct_zscore_120": 0.0,
+            "env_gate_close_component": 1.0,
+            "env_gate_range_component": 1.0,
+            "env_gate_selected_component": 1.0,
+        }
+        if not self.enable_weighted_env_gate:
+            return snapshot
+
+        candidate_rows: list[dict[str, float]] = []
+        for context in day_contexts:
+            if context.current_pos != 0:
+                continue
+
+            signal: str = str(context.signal_data.get("signal", ""))
+            if signal.startswith("long"):
+                direction = "long"
+            elif signal.startswith("short"):
+                direction = "short"
+            else:
+                continue
+
+            feature_row = self._extract_env_gate_candidate_features(context.history)
+            if not feature_row:
+                continue
+
+            sizing = self._calculate_entry_sizing(
+                context.target_contract,
+                direction,
+                context.target_bar,
+                context.history,
+                context.signal_data,
+                entry_context="env_probe",
+                apply_env_gate=False,
+            )
+            base_volume = int(sizing["selected_volume"])
+            candidate_rows.append(
+                {
+                    "feature_close_position_60d": float(feature_row["feature_close_position_60d"]),
+                    "feature_range_pct_zscore_120": float(feature_row["feature_range_pct_zscore_120"]),
+                    "native_selected_flag": float(self._is_native_openable_candidate(signal, direction, base_volume)),
+                }
+            )
+
+        if not candidate_rows:
+            return snapshot
+
+        candidate_df = pd.DataFrame(candidate_rows)
+        avg_close_position = self._safe_float_value(candidate_df["feature_close_position_60d"].mean())
+        avg_range_zscore = self._safe_float_value(candidate_df["feature_range_pct_zscore_120"].mean())
+        native_selected_rate = self._safe_float_value(candidate_df["native_selected_flag"].mean())
+
+        close_good_max = float(self.weighted_env_gate_close_position_good_max)
+        close_bad_min = float(self.weighted_env_gate_close_position_bad_min)
+        range_good_min = float(self.weighted_env_gate_range_good_min)
+        range_bad_max = float(self.weighted_env_gate_range_bad_max)
+        selected_good_max = float(self.weighted_env_gate_selected_rate_good_max)
+        selected_bad_min = float(self.weighted_env_gate_selected_rate_bad_min)
+        weight_floor = self._clip01(float(self.weighted_env_gate_weight_floor))
+
+        close_denominator = max(close_bad_min - close_good_max, 1e-9)
+        range_denominator = max(range_good_min - range_bad_max, 1e-9)
+        selected_denominator = max(selected_bad_min - selected_good_max, 1e-9)
+
+        close_component = self._clip01((close_bad_min - avg_close_position) / close_denominator)
+        range_component = self._clip01((avg_range_zscore - range_bad_max) / range_denominator)
+        selected_component = self._clip01((selected_bad_min - native_selected_rate) / selected_denominator)
+        base_weight = (close_component + range_component + selected_component) / 3.0
+        env_gate_weight = weight_floor + (1.0 - weight_floor) * base_weight
+
+        snapshot.update(
+            {
+                "env_gate_weight": self._clip01(env_gate_weight),
+                "env_candidate_count": int(len(candidate_df)),
+                "env_native_selected_rate": native_selected_rate,
+                "env_native_selected_count": int(round(float(candidate_df["native_selected_flag"].sum()))),
+                "env_avg_close_position_60d": avg_close_position,
+                "env_avg_range_pct_zscore_120": avg_range_zscore,
+                "env_gate_close_component": close_component,
+                "env_gate_range_component": range_component,
+                "env_gate_selected_component": selected_component,
+            }
+        )
+        return snapshot
+
+    def _apply_env_gate_to_volume(
+        self,
+        base_volume: int,
+        *,
+        entry_context: str,
+        apply_env_gate: bool,
+    ) -> dict[str, Any]:
+        base_selected_volume = max(0, int(base_volume))
+        snapshot = self.current_env_gate_snapshot or {}
+        env_gate_enabled = int(self.enable_weighted_env_gate and entry_context == "flat_entry")
+        env_gate_weight = 1.0
+        selected_volume = base_selected_volume
+
+        if env_gate_enabled:
+            env_gate_weight = self._clip01(float(snapshot.get("env_gate_weight", 1.0)))
+            if apply_env_gate:
+                selected_volume = int(math.floor(base_selected_volume * env_gate_weight))
+                if 0 < selected_volume < self.min_position_size:
+                    selected_volume = 0
+
+        return {
+            "selected_volume_ungated": base_selected_volume,
+            "selected_volume": max(0, int(selected_volume)),
+            "env_gate_enabled": env_gate_enabled,
+            "env_gate_weight": env_gate_weight,
+            "env_candidate_count": int(snapshot.get("env_candidate_count", 0)),
+            "env_native_selected_rate": float(snapshot.get("env_native_selected_rate", 0.0)),
+            "env_native_selected_count": int(snapshot.get("env_native_selected_count", 0)),
+            "env_avg_close_position_60d": float(snapshot.get("env_avg_close_position_60d", 0.0)),
+            "env_avg_range_pct_zscore_120": float(snapshot.get("env_avg_range_pct_zscore_120", 0.0)),
+            "env_gate_close_component": float(snapshot.get("env_gate_close_component", 1.0)),
+            "env_gate_range_component": float(snapshot.get("env_gate_range_component", 1.0)),
+            "env_gate_selected_component": float(snapshot.get("env_gate_selected_component", 1.0)),
+            "env_gate_entry_context": entry_context,
+        }
+
     def _calculate_entry_sizing(
         self,
         vt_symbol: str,
@@ -1017,6 +1281,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         history: pd.DataFrame,
         signal_data: dict[str, Any],
         risk_mode_override: str | None = None,
+        entry_context: str = "flat_entry",
+        apply_env_gate: bool = True,
     ) -> dict[str, Any]:
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
@@ -1039,6 +1305,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             if 0 < volume < self.min_position_size:
                 volume = 0
+            env_gate_fields = self._apply_env_gate_to_volume(
+                volume,
+                entry_context=entry_context,
+                apply_env_gate=apply_env_gate,
+            )
             return {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
                 "risk_ratio": None,
@@ -1055,9 +1326,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_risk": None,
                 "contracts_by_margin": None,
                 "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
-                "selected_volume": volume,
                 "risk_multiplier": self._current_streak_multiplier(),
                 "sizing_method": "fixed_size",
+                **env_gate_fields,
             }
 
         limited_balance: float = self._limited_available_balance()
@@ -1102,6 +1373,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         if 0 < volume < self.min_position_size:
             volume = 0
+        env_gate_fields = self._apply_env_gate_to_volume(
+            volume,
+            entry_context=entry_context,
+            apply_env_gate=apply_env_gate,
+        )
 
         return {
             "risk_mode": risk_mode,
@@ -1119,9 +1395,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "contracts_by_risk": contracts_by_risk,
             "contracts_by_margin": contracts_by_margin,
             "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
-            "selected_volume": max(0, volume),
             "risk_multiplier": self._current_streak_multiplier(),
             "sizing_method": "risk_budget",
+            **env_gate_fields,
         }
 
     def _calculate_entry_volume(
@@ -1132,6 +1408,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         history: pd.DataFrame,
         signal_data: dict[str, Any],
         risk_mode_override: str | None = None,
+        entry_context: str = "flat_entry",
     ) -> int:
         sizing: dict[str, Any] = self._calculate_entry_sizing(
             vt_symbol,
@@ -1140,6 +1417,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             history,
             signal_data,
             risk_mode_override=risk_mode_override,
+            entry_context=entry_context,
         )
         return int(sizing["selected_volume"])
 
@@ -1379,6 +1657,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
                 "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
                 "selected_volume": selected_volume,
+                "selected_volume_ungated": int(sizing_snapshot.get("selected_volume_ungated") or selected_volume),
+                "env_gate_enabled": int(sizing_snapshot.get("env_gate_enabled") or 0),
+                "env_gate_weight": float(sizing_snapshot.get("env_gate_weight") or 1.0),
+                "env_candidate_count": int(sizing_snapshot.get("env_candidate_count") or 0),
+                "env_native_selected_rate": float(sizing_snapshot.get("env_native_selected_rate") or 0.0),
+                "env_native_selected_count": int(sizing_snapshot.get("env_native_selected_count") or 0),
+                "env_avg_close_position_60d": float(sizing_snapshot.get("env_avg_close_position_60d") or 0.0),
+                "env_avg_range_pct_zscore_120": float(sizing_snapshot.get("env_avg_range_pct_zscore_120") or 0.0),
+                "env_gate_close_component": float(sizing_snapshot.get("env_gate_close_component") or 1.0),
+                "env_gate_range_component": float(sizing_snapshot.get("env_gate_range_component") or 1.0),
+                "env_gate_selected_component": float(sizing_snapshot.get("env_gate_selected_component") or 1.0),
+                "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
                 "active_positions_before": int(active_positions_before),
                 "max_concurrent_positions": int(self.max_concurrent_positions),
                 "remaining_position_slots": int(remaining_slots),
@@ -1477,6 +1767,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
                 "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
                 "selected_volume": sizing_snapshot.get("selected_volume"),
+                "selected_volume_ungated": sizing_snapshot.get("selected_volume_ungated"),
+                "env_gate_enabled": int(sizing_snapshot.get("env_gate_enabled") or 0),
+                "env_gate_weight": float(sizing_snapshot.get("env_gate_weight") or 1.0),
+                "env_candidate_count": int(sizing_snapshot.get("env_candidate_count") or 0),
+                "env_native_selected_rate": float(sizing_snapshot.get("env_native_selected_rate") or 0.0),
+                "env_native_selected_count": int(sizing_snapshot.get("env_native_selected_count") or 0),
+                "env_avg_close_position_60d": float(sizing_snapshot.get("env_avg_close_position_60d") or 0.0),
+                "env_avg_range_pct_zscore_120": float(sizing_snapshot.get("env_avg_range_pct_zscore_120") or 0.0),
+                "env_gate_close_component": float(sizing_snapshot.get("env_gate_close_component") or 1.0),
+                "env_gate_range_component": float(sizing_snapshot.get("env_gate_range_component") or 1.0),
+                "env_gate_selected_component": float(sizing_snapshot.get("env_gate_selected_component") or 1.0),
+                "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
                 "loss_streak": int(self.loss_streak),
             }
         )
