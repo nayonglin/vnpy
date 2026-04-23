@@ -144,6 +144,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     margin_ratio_overrides: str = ""
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
     enable_weighted_env_gate: bool = False
+    enable_portfolio_env_gate: bool = False
     weighted_env_gate_close_position_good_max: float = 0.25
     weighted_env_gate_close_position_bad_min: float = 0.60
     weighted_env_gate_range_good_min: float = 0.60
@@ -234,6 +235,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "margin_ratio_overrides",
         "streak_risk_multipliers",
         "enable_weighted_env_gate",
+        "enable_portfolio_env_gate",
         "weighted_env_gate_close_position_good_max",
         "weighted_env_gate_close_position_bad_min",
         "weighted_env_gate_range_good_min",
@@ -449,7 +451,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     if not self.long_entry_enabled:
                         candidate_status = "skipped"
                         skip_reason = "long_entry_disabled"
-                    elif active_positions_before >= self.max_concurrent_positions:
+                    elif active_positions_before >= int(
+                        sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
+                    ):
                         candidate_status = "skipped"
                         skip_reason = "concurrent_limit"
                     elif volume <= 0:
@@ -505,7 +509,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     elif not self._can_open_short_signal(signal):
                         candidate_status = "skipped"
                         skip_reason = "short_signal_rejected"
-                    elif active_positions_before >= self.max_concurrent_positions:
+                    elif active_positions_before >= int(
+                        sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
+                    ):
                         candidate_status = "skipped"
                         skip_reason = "concurrent_limit"
                     elif volume <= 0:
@@ -808,8 +814,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.pending_margin_reservation = 0.0
         self.pending_active_products.clear()
 
-    def _allowed_capital(self) -> float:
-        return max(0.0, self._sizing_equity() * self.max_capital_usage_ratio)
+    def _portfolio_env_gate_weight(self, entry_context: str) -> float:
+        if not self.enable_portfolio_env_gate or entry_context != "flat_entry":
+            return 1.0
+        snapshot = self.current_env_gate_snapshot or {}
+        return self._clip01(float(snapshot.get("env_gate_weight", 1.0)))
+
+    def _effective_capital_usage_ratio(self, entry_context: str) -> float:
+        return max(0.0, float(self.max_capital_usage_ratio) * self._portfolio_env_gate_weight(entry_context))
+
+    def _effective_max_concurrent_positions(self, entry_context: str) -> int:
+        base_limit = max(1, int(self.max_concurrent_positions))
+        if not self.enable_portfolio_env_gate or entry_context != "flat_entry":
+            return base_limit
+        weighted_limit = int(math.floor(base_limit * self._portfolio_env_gate_weight(entry_context)))
+        return max(1, min(base_limit, weighted_limit))
+
+    def _allowed_capital(self, entry_context: str = "default") -> float:
+        return max(0.0, self._sizing_equity() * self._effective_capital_usage_ratio(entry_context))
 
     def _single_trade_capital_limit(self) -> float:
         return max(0.0, self._sizing_equity() * self.max_single_trade_capital_usage_ratio)
@@ -820,8 +842,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _free_capital_after_reservations(self) -> float:
         return max(0.0, self._sizing_equity() - self._reserved_margin_in_use())
 
-    def _remaining_capital_budget(self) -> float:
-        return max(0.0, self._allowed_capital() - self._reserved_margin_in_use())
+    def _remaining_capital_budget(self, entry_context: str = "default") -> float:
+        return max(0.0, self._allowed_capital(entry_context) - self._reserved_margin_in_use())
 
     def _reserve_intrabar_entry(
         self,
@@ -1074,9 +1096,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         """Cap sizing equity at 1,000,000 while still de-risking on drawdown."""
         return max(0.0, min(self.estimated_equity, 1_000_000.0))
 
-    def _limited_available_balance(self) -> float:
+    def _limited_available_balance(self, entry_context: str = "default") -> float:
         free_capital: float = self._free_capital_after_reservations()
-        remaining_capital_budget: float = self._remaining_capital_budget()
+        remaining_capital_budget: float = self._remaining_capital_budget(entry_context)
         return max(0.0, min(free_capital, remaining_capital_budget))
 
     def _risk_amount_from_ratio(self, risk_ratio: float, limited_balance: float) -> float:
@@ -1147,7 +1169,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def _build_daily_env_gate_snapshot(self, day_contexts: list[DailyEntryContext]) -> dict[str, Any]:
         snapshot: dict[str, Any] = {
-            "env_gate_enabled": int(self.enable_weighted_env_gate),
+            "env_gate_enabled": int(self.enable_weighted_env_gate or self.enable_portfolio_env_gate),
             "env_gate_weight": 1.0,
             "env_candidate_count": 0,
             "env_native_selected_rate": 0.0,
@@ -1158,7 +1180,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "env_gate_range_component": 1.0,
             "env_gate_selected_component": 1.0,
         }
-        if not self.enable_weighted_env_gate:
+        if not (self.enable_weighted_env_gate or self.enable_portfolio_env_gate):
             return snapshot
 
         candidate_rows: list[dict[str, float]] = []
@@ -1291,10 +1313,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
             risk_per_contract: float = max(abs(price - stop_price) * size, max(float(self.get_pricetick(vt_symbol)) * size, 1.0))
             margin_per_contract: float = price * size * margin_ratio
-            allowed_capital: float = self._allowed_capital()
+            allowed_capital: float = self._allowed_capital(entry_context)
             single_trade_capital_limit: float = self._single_trade_capital_limit()
             free_capital: float = self._free_capital_after_reservations()
-            limited_balance: float = self._limited_available_balance()
+            limited_balance: float = self._limited_available_balance(entry_context)
             contracts_by_single_trade_cap: int | None = (
                 int(single_trade_capital_limit // margin_per_contract) if margin_per_contract > 0 else None
             )
@@ -1328,11 +1350,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
                 "risk_multiplier": self._current_streak_multiplier(),
                 "sizing_method": "fixed_size",
+                "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
+                "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
                 **env_gate_fields,
             }
 
-        limited_balance: float = self._limited_available_balance()
-        allowed_capital: float = self._allowed_capital()
+        limited_balance: float = self._limited_available_balance(entry_context)
+        allowed_capital: float = self._allowed_capital(entry_context)
         single_trade_capital_limit: float = self._single_trade_capital_limit()
         free_capital: float = self._free_capital_after_reservations()
         risk_mode: str = risk_mode_override or str(signal_data.get("risk_mode", "regular"))
@@ -1397,6 +1421,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
             "risk_multiplier": self._current_streak_multiplier(),
             "sizing_method": "risk_budget",
+            "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
+            "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
             **env_gate_fields,
         }
 
@@ -1618,7 +1644,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         estimated_equity: float = float(self.estimated_equity or self.base_capital)
         reserved_margin_before: float = float(sizing_snapshot.get("reserved_margin_before", self._reserved_margin_in_use()) or 0.0)
         projected_margin_after: float = reserved_margin_before + max(0, selected_volume) * float(margin_per_contract)
-        remaining_slots: int = max(0, self.max_concurrent_positions - active_positions_before)
+        effective_max_concurrent_positions: int = int(
+            sizing_snapshot.get("effective_max_concurrent_positions") or self.max_concurrent_positions
+        )
+        remaining_slots: int = max(0, effective_max_concurrent_positions - active_positions_before)
 
         self.entry_candidate_snapshots.append(
             {
@@ -1637,6 +1666,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "total_margin_in_use_before": reserved_margin_before,
                 "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
                 "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
+                "effective_capital_usage_ratio": float(
+                    sizing_snapshot.get("effective_capital_usage_ratio") or self.max_capital_usage_ratio
+                ),
                 "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
                 "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
                 "effective_single_trade_capital_usage_ratio": float(self.max_single_trade_capital_usage_ratio),
@@ -1671,6 +1703,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
                 "active_positions_before": int(active_positions_before),
                 "max_concurrent_positions": int(self.max_concurrent_positions),
+                "effective_max_concurrent_positions": effective_max_concurrent_positions,
                 "remaining_position_slots": int(remaining_slots),
                 "bullish_alignment": int(bool(signal_data.get("bullish_alignment"))),
                 "bearish_alignment": int(bool(signal_data.get("bearish_alignment"))),

@@ -4692,3 +4692,737 @@
   - `weighted_env_gate_v1` 在正式主回测中显著劣于 `ungated_baseline`
   - 当前版本不应写回默认策略
   - 当前版本只保留为研究型反例与后续组合层门控设计的证据
+
+# 2026-04-23 21:31 第十七阶段 组合层环境门控最小原型
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:31`
+- 新增的文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_portfolio_env_gate_backtest.py`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 不再让环境权重直接缩放单笔 `selected_volume`
+  - 把同一套环境权重上移到组合层，改为控制：
+    - `flat_entry` 的有效并发位上限
+    - `flat_entry` 的有效组合资本预算
+  - 保持原有入场规则、单笔资金上限、加减仓逻辑、换月重开逻辑不变
+  - 保持 `reverse_entry` 与 `rollover_reopen` 不受组合层环境门控影响
+
+## 参数变化说明
+
+- 新增的参数：
+  - `enable_portfolio_env_gate = False`
+- 复用的环境权重参数：
+  - `weighted_env_gate_close_position_good_max = 0.25`
+  - `weighted_env_gate_close_position_bad_min = 0.60`
+  - `weighted_env_gate_range_good_min = 0.60`
+  - `weighted_env_gate_range_bad_max = 0.00`
+  - `weighted_env_gate_selected_rate_good_max = 0.35`
+  - `weighted_env_gate_selected_rate_bad_min = 0.75`
+  - `weighted_env_gate_weight_floor = 0.35`
+- 修改的参数：
+  - 无，默认主策略仍保持 `enable_portfolio_env_gate = False`
+- 删除的参数：
+  - 无
+
+## 本次回测参数
+
+- 脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_portfolio_env_gate_backtest.py`
+- 回测入口：
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 分析区间：`2020-01-01 ~ 2026-04-30`
+- 基础风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 硬约束保持不变：
+  - sizing 资金上限 `100 万`
+  - 基础最大并发位 `8`
+  - 单笔资金上限 `0.70`
+  - 空头初始止损仍基于开仓当日最高价
+  - 所有止损仍基于收盘价判断
+- `portfolio_env_gate_v1` 的组合层作用口径：
+  - `effective_max_concurrent_positions = floor(max_concurrent_positions * env_gate_weight)`
+  - `effective_capital_usage_ratio = max_capital_usage_ratio * env_gate_weight`
+  - 仅对 `flat_entry` 生效
+
+## 新增的数据产物
+
+- 汇总 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_portfolio_env_gate_v1_summary.csv`
+- 汇总 JSON：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_portfolio_env_gate_v1_summary.json`
+- 基线正式回测产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_portfolio_gate_ungated_baseline_statistics.json`
+- 组合层门控正式回测产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_portfolio_env_gate_v1_statistics.json`
+
+## 新增的回测结果
+
+### `ungated_baseline`
+
+- 期末权益 `3,015,735`
+- 总收益 `1407.87%`
+- 最大回撤 `-35.71%`
+- Sharpe `1.0854`
+- 总滑点 `347,080`
+- 总交易次数 `1,214`
+- 胜率 `42.00%`
+
+### `portfolio_env_gate_v1`
+
+- 期末权益 `630,610`
+- 总收益 `215.31%`
+- 最大回撤 `-38.76%`
+- Sharpe `0.5907`
+- 总滑点 `96,280`
+- 总交易次数 `725`
+- 胜率 `40.38%`
+
+## 修改的回测结果
+
+- 与同口径基线相比，`portfolio_env_gate_v1` 的正式主回测结果变化如下：
+  - 期末权益变化：`-2,385,125`
+  - 总收益变化：`-1192.56%`
+  - 最大回撤变化：`-3.06%`
+  - Sharpe 变化：`-0.4947`
+  - 总交易次数变化：`-489`
+  - 总滑点变化：`-250,800`
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 第十七阶段比第十六阶段更接近“正确层级”：
+  - 没再直接缩每一笔
+  - 而是改成缩组合层暴露
+- 但正式回测仍然明确失败：
+  - 组合层门控虽然比第十六阶段单笔缩放版本更温和
+  - 但依旧显著跑输纯基线
+- 我对其本质判断是：
+  - 当前这套环境特征确实在描述“冷暖”
+  - 但还不足以指导真实的组合级风险开关
+  - 它更像一个解释器，而不是一个可以直接支配资金分配的控制器
+- 更关键的是：
+  - 不论门控落在单笔层还是组合层，都会显著减少交易与滑点
+  - 但减少掉的并不只是噪声交易，也包括了大量真正贡献收益的趋势仓位
+
+## 我的判断
+
+- 这一步的价值不是“找到可上线版本”，而是再次缩小问题空间：
+  - 问题已经不只是作用层级错了
+  - 更深层的问题是当前环境画像到控制变量之间没有形成足够强的因果映射
+- 因此下一步不应该继续围绕 gate 做小修小补
+- 更合理的方向是：
+  - 暂停继续投入环境门控主线
+  - 回到候选排序 / 选谁 / 为什么某些候选在不同年份失效这个 alpha 核心问题
+
+## 快速结论
+
+- 第十七阶段的组合层环境门控，比第十六阶段单笔缩放更合理，但仍然失败
+- 当前版本不应写回默认策略
+- 环境门控方向到这里可以阶段性收口，后续优先级应让位于候选排序 alpha 主线
+
+# 2026-04-23 21:37 第十八阶段 候选排序 alpha 最小验证方案
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:37`
+- 新增的文件：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights.py`
+- 修改的文件：
+  - 无
+- 改动内容：
+  - 不直接把模型接回策略
+  - 先做“选择权反事实验证”
+  - 在同样的每日候选池、同样的每日入选个数下，用现有 `ranker_v2_cs` 模型对 `flat_entry` 候选重排
+  - 比较三套选择结果：
+    - `actual`：当前规则实际选中的候选
+    - `predicted`：模型分数重排后的候选
+    - `oracle`：按真实未来质量分数排序得到的理论上限
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无新增策略参数
+- 复用的模型与样本：
+  - 模型：`qmt_roll_ai_candidate_ranker_ranker_v2_cs.joblib`
+  - 训练摘要：`qmt_roll_ai_candidate_ranker_summary_ranker_v2_cs.json`
+  - 样本：`qmt_roll_ai_candidate_training_samples.csv`
+- 样本过滤口径：
+  - `entry_context == flat_entry`
+  - 当日 `selected_count >= 1`
+  - 当日 `selected_count < candidate_count`
+
+## 本次验证口径
+
+- 脚本：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights.py`
+- 核心思想：
+  - 固定“每天最终选几个”
+  - 只验证“同一天该选谁”这件事
+- 评估窗口：
+  - `valid_2023`
+  - `test_2024`
+  - `test_2025_plus`
+  - `test_2024_plus`
+- 比较指标：
+  - `label_candidate_quality_score_v2`
+  - `label_candidate_forward_10d_r_multiple`
+  - `label_candidate_forward_20d_r_multiple`
+  - `label_candidate_20d_mfe_r`
+  - `label_candidate_20d_mae_r`
+
+## 新增的数据产物
+
+- 汇总 JSON：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_ranker_v2_cs.json`
+- 分窗口 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_ranker_v2_cs.csv`
+- 分日期明细 CSV：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_ranker_v2_cs.csv`
+
+## 新增的验证结果
+
+### `valid_2023`
+
+- 重排发生率 `38.89%`
+- 实际/预测集合重合率 `63.89%`
+- 预测相对实际：
+  - 质量分数 `+0.0789`
+  - 10d forward `+0.1439`
+  - 20d forward `+0.1390`
+
+### `test_2024`
+
+- 重排发生率 `30.00%`
+- 实际/预测集合重合率 `76.25%`
+- 预测相对实际：
+  - 质量分数 `+0.1793`
+  - 10d forward `+0.6634`
+  - 20d forward `+0.3400`
+  - 20d MFE `+0.6950`
+  - 20d MAE `-0.1973`
+- 这是当前最正向的窗口，说明“同日选谁”这件事在 2024 年确实存在可挖掘 alpha
+
+### `test_2025_plus`
+
+- 重排发生率 `38.46%`
+- 实际/预测集合重合率 `61.54%`
+- 预测相对实际：
+  - 质量分数 `+0.3102`
+  - 10d forward `-0.7055`
+  - 20d forward `-0.8982`
+  - 20d MFE `-0.3123`
+  - 20d MAE `+1.3525`
+- 说明模型虽然把“标签意义上的高质量候选”排得更靠前，但并没有抓住 2025+ 真正的收益候选
+
+### `test_2024_plus`
+
+- 重排发生率 `33.33%`
+- 实际/预测集合重合率 `70.45%`
+- 预测相对实际：
+  - 质量分数 `+0.2309`
+  - 10d forward `+0.1242`
+  - 20d forward `-0.1478`
+  - 20d MFE `+0.2982`
+  - 20d MAE `+0.4132`
+
+## 修改的回测/验证结论
+
+- 第十八阶段没有新增正式资金回测结果
+- 但新增了一条非常关键的 alpha 结论：
+  - 候选排序方向和环境门控不同，它不是被完全证伪
+  - 当前 `ranker_v2_cs` 在 2024 窗口对“同日选谁”有明显正贡献
+  - 但到了 `2025+`，模型输出和真实未来收益重新脱锚
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 这次验证说明两件事同时成立：
+  - 第一，候选排序这条主线有真实头寸，不是伪命题
+  - 第二，当前模型还没有稳到可以直接接入实盘选择权
+- 更细一点讲：
+  - `oracle` 相对 `actual` 的提升在所有窗口都非常大
+  - 说明“同日候选池内部”确实存在很厚的可优化空间
+  - 真问题不在于有没有 alpha，而在于当前 `ranker_v2_cs` 还没有把这部分 alpha 稳定抓出来
+- 2025+ 的现象尤其重要：
+  - 模型提升了 `quality_score_v2`
+  - 但真实 `forward_10d/20d` 反而下降
+  - 这说明我们当前离线标签与当前阶段真实收益口径之间，仍存在错配
+
+## 我的判断
+
+- 第十八阶段的核心结论是：
+  - 应该继续投入“候选排序 alpha 主线”
+  - 但下一步不是直接接策略回测
+  - 而是先修正“排序监督标签”和“2025+ 失效机制”
+- 最值得做的下一步不是调 LightGBM 超参，而是：
+  - 专门分析 `2025+` 里模型重排失败的日期与候选特征
+  - 找出为什么模型偏好的高分候选，真实 10d/20d 收益反而更差
+  - 再据此重构选择权标签
+
+## 快速结论
+
+- 候选排序方向没有被证伪，和环境门控不同
+- 当前 `ranker_v2_cs` 已经能在 `2024` 窗口改善“同日选谁”
+- 但 `2025+` 仍明显失效，说明还不能直接接入实盘选择权
+- 下一阶段应聚焦：
+  - `2025+` 失效日期复盘
+  - 监督标签重构
+  - 然后再决定是否进入策略闭环
+
+# 2026-04-23 21:43 第十九阶段 2025+ 失效日期复盘
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:43`
+- 新增的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_candidate_selection_failures_2025.py`
+- 修改的文件：
+  - 无
+- 改动内容：
+  - 基于第十八阶段的选择权反事实结果，专门分析 `test_2025_plus`
+  - 只保留真正有伤害的失败日期：
+    - `selection_changed = 1`
+    - `predicted_minus_actual_candidate_forward_20d_r_multiple < 0`
+  - 对每个失败日期展开：
+    - `actual / predicted / oracle` 候选对比
+    - 候选层特征差异
+    - 失败模式归因
+
+## 参数变化说明
+
+- 新增的策略参数：
+  - 无
+- 复用的输入产物：
+  - `qmt_roll_ai_candidate_selection_rights_days_ranker_v2_cs.csv`
+  - `qmt_roll_ai_candidate_training_samples.csv`
+  - `qmt_roll_ai_candidate_ranker_summary_ranker_v2_cs.json`
+- 失败筛选口径：
+  - 窗口：`test_2025_plus`
+  - `selection_changed = 1`
+  - `predicted_minus_actual_candidate_forward_20d_r_multiple < 0`
+
+## 新增的数据产物
+
+- 汇总 JSON：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_failures_2025_summary.json`
+- 失败日期明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_failures_2025_dates.csv`
+- 候选级明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_failures_2025_cases.csv`
+- 特征差异汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_failures_2025_feature_diff.csv`
+
+## 新增的验证结果
+
+- `2025+` 真正产生负面影响的失败日期只有 `2` 天：
+  - `2025-04-03`
+  - `2025-02-28`
+- 这两天的平均伤害：
+  - `predicted_minus_actual_10d_r = -9.2281`
+  - `predicted_minus_actual_20d_r = -11.5365`
+
+### 失败日期一：`2025-04-03`
+
+- 实际选择：`candidate_837`，`lc`，`short_case1a`
+- 模型选择：`candidate_836`，`CF`，`short_case3`
+- 现象：
+  - 两者 `quality_score_v2` 都是 `4.45`
+  - 但真实 `20d_r` 分别是：
+    - 实际 `18.8333`
+    - 模型/Oracle `5.5313`
+- 结论：
+  - 这一天不是模型把“高质量候选”排错了
+  - 而是当前 `quality_score_v2` 标签本身无法区分两者的未来收益差异
+  - 这是典型的**标签分辨率不足 / 同分错序**问题
+
+### 失败日期二：`2025-02-28`
+
+- 实际选择：`candidate_808`，`OI`，`long_case2`
+- 模型选择：`candidate_809`，`lh`，`short_case3`
+- 现象：
+  - 实际候选：
+    - `20d_r = 2.5210`
+    - `20d_MAE = 1.2350`
+  - 模型候选：
+    - `20d_r = -7.25`
+    - `20d_MAE = 21.25`
+  - 并且这一天 `oracle` 与 `actual` 完全一致
+- 结论：
+  - 这一天不是标签错了，而是模型真的把错误候选排到了前面
+  - 失败候选呈现出典型特征：
+    - `short_case3`
+    - 更高的 `ret_20d_zscore`
+    - 更高的 `range_pct_zscore_120`
+    - 更极端的横截面趋势/位置特征
+  - 这是典型的**模型过度偏好短期极端波动 / 极端趋势候选**问题
+
+## 特征差异结论
+
+- 失败样本里，模型相对实际更偏好的特征主要是：
+  - 更高的 `feature_ret_20d_zscore_120`
+  - 更高的 `feature_range_pct_zscore_120`
+  - 更极端的 `feature_trend_ma20_gap_pct_cs_rank_centered_1d`
+  - 更极端的 `feature_ma20_ma40_gap_pct_cs_zscore_1d`
+  - 更极端的 `feature_close_position_60d_cs_zscore_1d`
+- 这说明模型当前更容易被：
+  - 强趋势尾部
+  - 高波动尾部
+  - 极端相对位置
+  这些特征吸引
+- 但这些特征在 `2025+` 并不稳定对应更好的持有期收益
+
+## 修改的验证结论
+
+- 第十八阶段只是知道“2025+ 失效”
+- 第十九阶段把失效进一步拆成了两个本质不同的问题：
+  - `2025-04-03`：标签分辨率不足
+  - `2025-02-28`：模型偏好极端波动/极端趋势噪声候选
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 现在已经能比较明确地定义下一步标签重构方向：
+  - 不能只用当前 `quality_score_v2` 继续训练
+  - 要专门提高对“同分候选”的区分能力
+  - 同时抑制模型对极端波动/极端趋势尾部样本的错误偏好
+- 因此下一步最值得做的不是再调模型参数，而是：
+  - 重构选择权标签，让它更直接表达 `10d/20d` 持有收益与风险回撤的真实优劣
+  - 尤其要处理：
+    - 同分样本 tie-break
+    - 极端尾部候选的惩罚项
+
+## 快速结论
+
+- `2025+` 失效不是单一问题，而是“标签分辨率不足 + 模型偏好极端噪声”叠加
+- 当前已经有足够证据进入下一阶段标签重构
+- 下一步应直接做：
+  - 选择权标签重构
+  - 不再继续调原版 `ranker_v2_cs`
+
+# 2026-04-23 21:50 第20阶段 选择权标签重构 v1
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:50`
+- 新增的文件：
+  - `examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v1.py`
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_candidate_ranker_selection_v1.py`
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights_v1.py`
+- 修改的文件：
+  - 无
+- 改动内容：
+  - 基于第十九阶段复盘结果，构建选择权标签 `v1`
+  - 标签改动分成两部分：
+    - 增加 `20d` 高收益尾部 `tail bonus`，解决 `quality_score_v2` 对高分候选同分错序的问题
+    - 对高 `MAE`、高波动、高动量尾部、极端趋势横截面位置增加轻量惩罚，抑制模型继续偏好极端噪声候选
+  - 在现有样本 CSV 上增量派生 `v1` 标签，不重写候选样本生成主链
+  - 训练新的排序器 `selection_v1`，并复用第十八阶段的选择权反事实验证口径
+
+## 参数变化说明
+
+- 新增的标签：
+  - `label_selection_quality_score_v1`
+  - `label_selection_quality_bucket_v1`
+  - `label_selection_quality_score_v1_rank_pct_1d`
+  - `label_selection_quality_score_v1_rank_centered_1d`
+- `v1` 标签的核心口径：
+  - 保留 `5d / 10d / 20d` forward return 主干
+  - 保留 `20d MFE - 20d MAE` 风险收益项
+  - 新增：
+    - `forward_20d_r_multiple > 5.0` 的尾部奖励
+    - `feature_range_pct_zscore_120` 尾部惩罚
+    - `feature_ret_20d_zscore_120` 尾部惩罚
+    - `feature_trend_ma20_gap_pct_cs_rank_centered_1d` 极端惩罚
+    - `feature_ma20_ma40_gap_pct_cs_zscore_1d` 极端惩罚
+    - `feature_close_position_60d_cs_zscore_1d` 极端惩罚
+- 新增模型标签：
+  - `selection_v1`
+
+## 新增的数据产物
+
+- 重标注样本：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_training_samples_selection_v1.csv`
+- 模型：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_selection_v1.joblib`
+- 训练摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_summary_selection_v1.json`
+- 特征重要度：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_feature_importance_selection_v1.csv`
+- 预测结果：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_predictions_selection_v1.csv`
+- 分桶结果：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_bucket_analysis_selection_v1.csv`
+- 选择权验证摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_selection_v1.json`
+- 选择权分窗口：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_selection_v1.csv`
+- 选择权分日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_selection_v1.csv`
+
+## 新增的训练结果
+
+- 训练集：
+  - `Spearman = 0.8243`
+  - `R2 = 0.6023`
+- 验证集：
+  - `Spearman = -0.1867`
+  - `R2 = -0.4362`
+- 测试集：
+  - `Spearman = -0.0301`
+  - `R2 = -0.2876`
+- 测试集横截面结果：
+  - `mean_group_spearman = -0.0714`
+  - `top1_hit_rate = 0.3929`
+  - `top1_target_lift = -0.0754`
+  - `top1_quality_lift = -0.3258`
+
+## 新增的选择权验证结果
+
+### `test_2024`
+
+- `predicted_minus_actual_selection_quality_score_v1 = -0.2673`
+- `predicted_minus_actual_10d_r = +0.0792`
+- `predicted_minus_actual_20d_r = -0.2871`
+- 结论：
+  - `v1` 没有保住 2024 的正向选择权优势
+  - 反而把 2024 拉成了轻度负贡献
+
+### `test_2025_plus`
+
+- `predicted_minus_actual_selection_quality_score_v1 = +0.0269`
+- `predicted_minus_actual_10d_r = -0.7055`
+- `predicted_minus_actual_20d_r = -0.8982`
+- `predicted_minus_actual_20d_mae_r = +1.3525`
+- 结论：
+  - `v1` 虽然让模型选出的候选在新标签上略高于实际选择
+  - 但并没有把真实 `10d/20d` 收益方向拉正
+  - 说明标签对“极端噪声”的惩罚还不够精准，甚至可能把正确收益信息也一起压掉了
+
+### `test_2024_plus`
+
+- `predicted_minus_actual_selection_quality_score_v1 = -0.1514`
+- `predicted_minus_actual_10d_r = -0.2299`
+- `predicted_minus_actual_20d_r = -0.5279`
+- 结论：
+  - `v1` 作为整体版本不成立
+
+## 修改的验证结论
+
+- 第十九阶段给出的方向判断是正确的：
+  - 需要 tie-break
+  - 需要尾部惩罚
+- 但第20阶段 `v1` 证明了另一件事：
+  - 这两个机制不能直接通过一组静态线性权重硬拼在一起
+  - 否则会把一部分真实 alpha 也一起惩罚掉
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- `v1` 是一次有价值的失败：
+  - 它不是毫无作用
+  - 而是告诉我们“方向对，配方错”
+- 具体看：
+  - `2025+` 新标签分数已经略优于实际选择，说明 tie-break 与风险惩罚确实触到了问题本质
+  - 但真实收益没有同步改善，说明标签里把“未来收益”和“当前尾部特征惩罚”混得太硬
+- 这会带来两个问题：
+  - 第一，监督信号变得过于主观，模型更难学稳定
+  - 第二，标签本身开始替模型做过多结构判断，导致样本外泛化反而更差
+
+## 我的判断
+
+- 第20阶段最重要的结论不是 `v1` 失败，而是：
+  - 不能把“未来收益标签”和“当前特征惩罚”简单相加
+- 更合理的下一步应该是：
+  - 把 tie-break 部分继续保留在标签里
+  - 但把“极端尾部惩罚”从标签中拿出来，改成：
+    - 训练样本权重
+    - 或候选过滤器
+    - 或 pairwise 过滤规则
+- 换句话说：
+  - 标签负责描述未来优劣
+  - 惩罚负责调样本可信度
+  - 两者不应该继续强行混成一个分数
+
+## 快速结论
+
+- `selection_v1` 不是可用版本
+- 但它成功验证了：
+  - tie-break 是必要的
+  - 尾部惩罚不该直接写死进标签
+- 下一步更优路线应是：
+  - 做 `选择权标签 v2`
+  - 保留高收益 tie-break
+  - 把尾部惩罚迁移到样本权重或过滤层
+
+# 2026-04-23 21:58 第21阶段 选择权标签重构 v2
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 21:58`
+- 新增的文件：
+  - `examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py`
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_candidate_ranker_selection_v2.py`
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights_v2.py`
+- 修改的文件：
+  - 无
+- 改动内容：
+  - 延续第20阶段的核心判断：
+    - 标签只负责表达未来收益优劣
+    - 极端噪声处理迁移到样本权重层
+  - `v2` 标签保留：
+    - `5d/10d/20d` forward return 主干
+    - `20d tail bonus`
+    - `20d MAE` 风险项
+  - `v2` 新增样本权重：
+    - 对高波动尾部
+    - 高动量尾部
+    - 极端趋势横截面位置
+    - 极端结构横截面位置
+    - 极端 60 日位置
+    进行可信度衰减
+
+## 参数变化说明
+
+- 新增的标签：
+  - `label_selection_quality_score_v2p`
+  - `label_selection_quality_bucket_v2p`
+  - `label_selection_quality_score_v2p_rank_pct_1d`
+  - `label_selection_quality_score_v2p_rank_centered_1d`
+- 新增的样本权重：
+  - `label_selection_sample_weight_v2p`
+- 权重规则：
+  - `noise_score` 由五类尾部特征线性组合得到
+  - `sample_weight = clip(1 - 0.55 * noise_score, 0.35, 1.0)`
+
+## 新增的数据产物
+
+- 重标注样本：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_training_samples_selection_v2.csv`
+- 模型：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_selection_v2.joblib`
+- 训练摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_summary_selection_v2.json`
+- 特征重要度：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_feature_importance_selection_v2.csv`
+- 预测结果：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_predictions_selection_v2.csv`
+- 分桶结果：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_ranker_bucket_analysis_selection_v2.csv`
+- 选择权验证摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_selection_v2.json`
+- 选择权分窗口：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_selection_v2.csv`
+- 选择权分日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_selection_v2.csv`
+
+## 新增的训练结果
+
+- 训练集：
+  - `Spearman = 0.8170`
+  - `R2 = 0.5893`
+- 验证集：
+  - `Spearman = -0.1514`
+  - `R2 = -0.3874`
+- 测试集：
+  - `Spearman = -0.0359`
+  - `R2 = -0.2737`
+- 测试集横截面结果：
+  - `mean_group_spearman = -0.0512`
+  - `top1_hit_rate = 0.4048`
+  - `top1_target_lift = -0.0635`
+  - `top1_quality_lift = -0.3143`
+
+## 新增的选择权验证结果
+
+### `test_2024`
+
+- `predicted_minus_actual_selection_quality_score_v2p = -0.2603`
+- `predicted_minus_actual_10d_r = +0.0792`
+- `predicted_minus_actual_20d_r = -0.2871`
+- 结论：
+  - 与 `v1` 相比没有实质改善
+  - 仍然无法保住 2024 窗口的选择权优势
+
+### `test_2025_plus`
+
+- `predicted_minus_actual_selection_quality_score_v2p = +0.0331`
+- `predicted_minus_actual_10d_r = -0.7055`
+- `predicted_minus_actual_20d_r = -0.8982`
+- `predicted_minus_actual_20d_mae_r = +1.3525`
+- 结论：
+  - 即便把尾部惩罚迁移到样本权重层，`2025+` 仍没有转正
+  - 这说明问题不再只是“标签和权重如何拆分”
+
+### `test_2024_plus`
+
+- `predicted_minus_actual_selection_quality_score_v2p = -0.1447`
+- `predicted_minus_actual_10d_r = -0.2299`
+- `predicted_minus_actual_20d_r = -0.5279`
+- 结论：
+  - `v2` 作为整体版本依然失败
+
+## 修改的验证结论
+
+- 第20阶段结论依旧成立：
+  - 尾部惩罚不适合继续写进标签
+- 但第21阶段新增了一个更深层的结论：
+  - 即使把尾部惩罚迁到样本权重层
+  - 现有这套单点回归式 candidate ranker 仍然无法学出稳定选择权
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- `v2` 比 `v1` 方法论上更干净：
+  - 标签负责未来优劣
+  - 权重负责样本可信度
+- 但实证上依然没有救回来
+- 这说明当前瓶颈开始上移到学习范式本身：
+  - 单点分数回归虽然能表达“候选质量”
+  - 但对“同日二选一 / 三选一”的真实相对优先级学习仍然不够强
+- 换句话说：
+  - 我们现在面对的是一个更像“相对胜负”而不是“绝对分数”的问题
+  - 继续在 pointwise ranker 上修标签，边际收益正在迅速下降
+
+## 我的判断
+
+- 第21阶段之后，不建议继续迭代 `selection_v3`、`selection_v4` 这种 pointwise 标签版本
+- 更合理的下一步应该是：
+  - 转向选择权专用的 `pairwise / listwise` 监督
+  - 直接学习“同日候选之间谁应该排在谁前面”
+  - 并在 pair 构造时使用：
+    - tie-break 后的未来收益优劣
+    - 极端尾部样本的低权重或过滤
+- 也就是说：
+  - 未来收益标签继续保留
+  - 但模型范式应从 `pointwise quality regression` 升级为 `selection-rights pairwise ranking`
+
+## 快速结论
+
+- `selection_v2` 不是可用版本
+- `v2` 证明了：
+  - 问题不再只是标签配方
+  - 当前 pointwise ranker 本身已经成为主要瓶颈
+- 下一步最优路线应是：
+  - 进入 `第22阶段：选择权 pairwise / listwise 重构`
