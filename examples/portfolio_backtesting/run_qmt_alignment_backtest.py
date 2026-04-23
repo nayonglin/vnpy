@@ -122,6 +122,59 @@ def build_entry_risk_diagnostics_df(engine: BacktestingEngine) -> pd.DataFrame:
     return df
 
 
+def build_entry_candidate_snapshots_df(engine: BacktestingEngine) -> pd.DataFrame:
+    strategy = getattr(engine, "strategy", None)
+    rows: list[dict[str, Any]] = getattr(strategy, "entry_candidate_snapshots", []) if strategy else []
+    if not rows:
+        return pd.DataFrame()
+
+    df: pd.DataFrame = pd.DataFrame(rows)
+    sort_columns: list[str] = [column for column in ["candidate_index", "datetime", "contract_vt_symbol"] if column in df.columns]
+    if sort_columns:
+        df.sort_values(sort_columns, inplace=True)
+    return df
+
+
+def build_entry_candidate_snapshot_schema(candidate_df: pd.DataFrame) -> dict[str, Any]:
+    categorical_columns = [
+        column
+        for column in candidate_df.columns
+        if column
+        in {
+            "product_vt_symbol",
+            "contract_vt_symbol",
+            "entry_context",
+            "direction",
+            "signal",
+            "candidate_status",
+            "skip_reason",
+            "risk_mode",
+        }
+    ]
+    numeric_columns = [
+        column
+        for column in candidate_df.columns
+        if column not in categorical_columns and column not in {"datetime", "date", "effective_streak_risk_multipliers"}
+    ]
+    return {
+        "dataset_name": "qmt_roll_entry_candidate_snapshots",
+        "row_definition": "每一行对应一笔通过初筛信号后的基础开仓候选，无论最终是否实际开仓。",
+        "key_fields": ["candidate_index", "datetime", "product_vt_symbol", "contract_vt_symbol", "signal"],
+        "categorical_columns": categorical_columns,
+        "numeric_columns": numeric_columns,
+        "status_fields": {
+            "candidate_status": ["opened", "skipped"],
+            "skip_reason_examples": ["concurrent_limit", "sizing_zero_volume", "short_signal_rejected", "long_entry_disabled"],
+        },
+        "notes": [
+            "当前候选快照仅覆盖基础开仓候选 entry_context=flat_entry，不包含加仓与换月重开。",
+            "candidate_status=opened 表示该候选在当前策略链路下实际进入开仓流程。",
+            "candidate_status=skipped 表示通过初筛，但在并发位、做空限制或 sizing 环节被拦截。",
+            "该数据集的目标是扩大同日候选横截面宽度，为后续排序模型提供更完整的候选池。",
+        ],
+    }
+
+
 def _normalize_daily_df(daily_df: pd.DataFrame) -> pd.DataFrame:
     normalized: pd.DataFrame = daily_df.copy()
     normalized.index = pd.to_datetime(normalized.index)
@@ -1231,6 +1284,7 @@ def save_backtest_artifacts(
     positions_df: pd.DataFrame = build_positions_df(engine)
     trades_df: pd.DataFrame = build_trades_df(engine)
     entry_risk_df: pd.DataFrame = build_entry_risk_diagnostics_df(engine)
+    candidate_df: pd.DataFrame = build_entry_candidate_snapshots_df(engine)
 
     daily_df = engine.daily_df
     if daily_df is not None:
@@ -1251,6 +1305,10 @@ def save_backtest_artifacts(
     if analysis_start is not None and not entry_risk_df.empty:
         risk_dt = pd.to_datetime(entry_risk_df["datetime"]).dt.tz_localize(None)
         entry_risk_df = entry_risk_df.loc[risk_dt >= pd.Timestamp(analysis_start)].copy()
+
+    if analysis_start is not None and not candidate_df.empty:
+        candidate_dt = pd.to_datetime(candidate_df["datetime"]).dt.tz_localize(None)
+        candidate_df = candidate_df.loc[candidate_dt >= pd.Timestamp(analysis_start)].copy()
 
         daily_path: Path = OUTPUT_DIR / f"{file_prefix}_daily.csv"
         daily_df.to_csv(daily_path, encoding="utf-8-sig")
@@ -1306,6 +1364,16 @@ def save_backtest_artifacts(
         entry_risk_path: Path = OUTPUT_DIR / f"{file_prefix}_entry_risk_diagnostics_2020_2026_04.csv"
         entry_risk_df.to_csv(entry_risk_path, index=False, encoding="utf-8-sig")
         print(f"entry risk diagnostics csv: {entry_risk_path}")
+
+    if not candidate_df.empty:
+        candidate_path: Path = OUTPUT_DIR / f"{file_prefix}_entry_candidate_snapshots_2020_2026_04.csv"
+        candidate_df.to_csv(candidate_path, index=False, encoding="utf-8-sig")
+        print(f"entry candidate snapshots csv: {candidate_path}")
+
+        candidate_schema_path: Path = OUTPUT_DIR / f"{file_prefix}_entry_candidate_snapshots_schema.json"
+        candidate_schema = build_entry_candidate_snapshot_schema(candidate_df)
+        candidate_schema_path.write_text(json.dumps(candidate_schema, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"entry candidate snapshots schema json: {candidate_schema_path}")
 
     if not trades_df.empty:
         trade_review_records = _build_trade_review_records(trades_df, entry_risk_df, mapping_csv_path)

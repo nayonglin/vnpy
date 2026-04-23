@@ -279,6 +279,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
+        self.entry_candidate_snapshots: list[dict[str, Any]] = []
         self.trade_event_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
@@ -378,15 +379,38 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 continue
 
             if current_pos == 0:
-                if signal.startswith("long") and self.long_entry_enabled:
-                    if self._count_active_positions() >= self.max_concurrent_positions:
-                        continue
-
+                if signal.startswith("long"):
                     sizing: dict[str, Any] = self._calculate_entry_sizing(
                         target_contract, "long", target_bar, history, signal_data
                     )
                     volume: int = int(sizing["selected_volume"])
-                    if volume <= 0:
+                    active_positions_before: int = self._count_active_positions()
+                    candidate_status: str = "opened"
+                    skip_reason: str = ""
+                    if not self.long_entry_enabled:
+                        candidate_status = "skipped"
+                        skip_reason = "long_entry_disabled"
+                    elif active_positions_before >= self.max_concurrent_positions:
+                        candidate_status = "skipped"
+                        skip_reason = "concurrent_limit"
+                    elif volume <= 0:
+                        candidate_status = "skipped"
+                        skip_reason = "sizing_zero_volume"
+
+                    self._record_entry_candidate_snapshot(
+                        product_vt_symbol=state.product_vt_symbol,
+                        contract_vt_symbol=target_contract,
+                        direction="long",
+                        bar=target_bar,
+                        signal=signal,
+                        entry_context="flat_entry",
+                        candidate_status=candidate_status,
+                        skip_reason=skip_reason,
+                        signal_data=signal_data,
+                        sizing_snapshot=sizing,
+                        active_positions_before=active_positions_before,
+                    )
+                    if candidate_status != "opened":
                         continue
 
                     self._open_position(
@@ -403,13 +427,39 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=True)
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{signal}"
-                elif signal.startswith("short") and self.short_entry_enabled and self._can_open_short_signal(signal):
-                    if self._count_active_positions() >= self.max_concurrent_positions:
-                        continue
-
+                elif signal.startswith("short"):
                     sizing = self._calculate_entry_sizing(target_contract, "short", target_bar, history, signal_data)
                     volume = int(sizing["selected_volume"])
-                    if volume <= 0:
+                    active_positions_before = self._count_active_positions()
+                    candidate_status = "opened"
+                    skip_reason = ""
+                    if not self.short_entry_enabled:
+                        candidate_status = "skipped"
+                        skip_reason = "short_entry_disabled"
+                    elif not self._can_open_short_signal(signal):
+                        candidate_status = "skipped"
+                        skip_reason = "short_signal_rejected"
+                    elif active_positions_before >= self.max_concurrent_positions:
+                        candidate_status = "skipped"
+                        skip_reason = "concurrent_limit"
+                    elif volume <= 0:
+                        candidate_status = "skipped"
+                        skip_reason = "sizing_zero_volume"
+
+                    self._record_entry_candidate_snapshot(
+                        product_vt_symbol=state.product_vt_symbol,
+                        contract_vt_symbol=target_contract,
+                        direction="short",
+                        bar=target_bar,
+                        signal=signal,
+                        entry_context="flat_entry",
+                        candidate_status=candidate_status,
+                        skip_reason=skip_reason,
+                        signal_data=signal_data,
+                        sizing_snapshot=sizing,
+                        active_positions_before=active_positions_before,
+                    )
+                    if candidate_status != "opened":
                         continue
 
                     self._open_position(
@@ -1257,6 +1307,93 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         if offset == "Close":
             self._queue_pending_close_reason(contract_vt_symbol, reason, volume)
+
+    def _record_entry_candidate_snapshot(
+        self,
+        *,
+        product_vt_symbol: str,
+        contract_vt_symbol: str,
+        direction: str,
+        bar: BarData,
+        signal: str,
+        entry_context: str,
+        candidate_status: str,
+        skip_reason: str,
+        signal_data: dict[str, Any],
+        sizing_snapshot: dict[str, Any],
+        active_positions_before: int,
+    ) -> None:
+        entry_price: float = float(bar.close_price)
+        stop_price: float = float(sizing_snapshot.get("stop_price") or entry_price)
+        size: int = self.get_size(contract_vt_symbol)
+        margin_ratio: float = float(sizing_snapshot.get("margin_ratio", self._margin_ratio_for_symbol(contract_vt_symbol)) or 0.0)
+        risk_per_contract: float | None = sizing_snapshot.get("risk_per_contract")
+        if risk_per_contract is None:
+            min_risk: float = max(float(self.get_pricetick(contract_vt_symbol)) * size, 1.0)
+            risk_per_contract = max(abs(entry_price - stop_price) * size, min_risk)
+
+        margin_per_contract: float | None = sizing_snapshot.get("margin_per_contract")
+        if margin_per_contract is None:
+            margin_per_contract = entry_price * size * margin_ratio
+
+        selected_volume: int = int(sizing_snapshot.get("selected_volume") or 0)
+        estimated_equity: float = float(self.estimated_equity or self.base_capital)
+        reserved_margin_before: float = float(sizing_snapshot.get("reserved_margin_before", self._reserved_margin_in_use()) or 0.0)
+        projected_margin_after: float = reserved_margin_before + max(0, selected_volume) * float(margin_per_contract)
+        remaining_slots: int = max(0, self.max_concurrent_positions - active_positions_before)
+
+        self.entry_candidate_snapshots.append(
+            {
+                "candidate_index": len(self.entry_candidate_snapshots) + 1,
+                "datetime": bar.datetime,
+                "date": bar.datetime.date(),
+                "product_vt_symbol": product_vt_symbol,
+                "contract_vt_symbol": contract_vt_symbol,
+                "entry_context": entry_context,
+                "direction": direction,
+                "signal": signal,
+                "candidate_status": candidate_status,
+                "skip_reason": skip_reason,
+                "passed_initial_filter": 1,
+                "estimated_equity": estimated_equity,
+                "total_margin_in_use_before": reserved_margin_before,
+                "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
+                "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
+                "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
+                "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
+                "effective_single_trade_capital_usage_ratio": float(self.max_single_trade_capital_usage_ratio),
+                "effective_streak_risk_multipliers": self.streak_risk_multipliers,
+                "risk_mode": str(sizing_snapshot.get("risk_mode", signal_data.get("risk_mode", "regular"))),
+                "risk_ratio": sizing_snapshot.get("risk_ratio"),
+                "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "target_risk_amount": sizing_snapshot.get("risk_amount"),
+                "planned_entry_price": entry_price,
+                "stop_price": stop_price,
+                "stop_distance": abs(entry_price - stop_price),
+                "size": size,
+                "risk_per_contract": risk_per_contract,
+                "margin_ratio": margin_ratio,
+                "margin_per_contract": margin_per_contract,
+                "projected_total_margin_after": projected_margin_after,
+                "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
+                "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
+                "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
+                "selected_volume": selected_volume,
+                "active_positions_before": int(active_positions_before),
+                "max_concurrent_positions": int(self.max_concurrent_positions),
+                "remaining_position_slots": int(remaining_slots),
+                "bullish_alignment": int(bool(signal_data.get("bullish_alignment"))),
+                "bearish_alignment": int(bool(signal_data.get("bearish_alignment"))),
+                "breakout": int(bool(signal_data.get("breakout"))),
+                "rsi_value": float(signal_data.get("rsi_value", float("nan"))),
+                "ma_mid_value": signal_data.get("ma_mid_value"),
+                "ma_long_value": signal_data.get("ma_long_value"),
+                "ma_mid_prev_value": signal_data.get("ma_mid_prev_value"),
+                "ma_long_prev_value": signal_data.get("ma_long_prev_value"),
+                "is_opened": int(candidate_status == "opened"),
+                "loss_streak": int(self.loss_streak),
+            }
+        )
 
     @staticmethod
     def _stop_triggered(direction: str, bar: BarData, stop_price: float) -> bool:
