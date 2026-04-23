@@ -166,6 +166,7 @@ def build_roll_setting(
         "rollover_reopen_enabled": True,
         "reverse_on_opposite_signal": False,
         "max_capital_usage_ratio": 0.9,
+        "max_single_trade_capital_usage_ratio": 0.70,
         "risk_ratio_of_total_assets": default_risk_ratio,
         "risk_ratio_breakout": breakout_risk_ratio,
         "risk_ratio_ma_cross_breakout": ma_cross_risk_ratio,

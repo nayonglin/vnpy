@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 from pathlib import Path
 from typing import Any
 
@@ -1317,6 +1318,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
                 "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
                 "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
+                "effective_single_trade_capital_usage_ratio": float(self.max_single_trade_capital_usage_ratio),
+                "effective_streak_risk_multipliers": self.streak_risk_multipliers,
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
