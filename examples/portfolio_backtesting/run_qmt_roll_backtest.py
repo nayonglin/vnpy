@@ -14,7 +14,17 @@ from vnpy_portfoliostrategy.backtesting import Status
 from main_contract_mapping import build_contract_metadata, get_preferred_mapping_path
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
-from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, OUTPUT_DIR, save_backtest_artifacts
+from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, save_backtest_artifacts
+
+START_YEAR_WINDOWS: list[tuple[str, str, datetime, datetime]] = [
+    ("since_2020", "20年开始", datetime(2020, 1, 1), END_DT),
+    ("since_2021", "21年开始", datetime(2021, 1, 1), END_DT),
+    ("since_2022", "22年开始", datetime(2022, 1, 1), END_DT),
+    ("since_2023", "23年开始", datetime(2023, 1, 1), END_DT),
+    ("since_2024", "24年开始", datetime(2024, 1, 1), END_DT),
+    ("since_2025", "25年开始", datetime(2025, 1, 1), END_DT),
+    ("since_2026", "26年开始", datetime(2026, 1, 1), END_DT),
+]
 
 
 class SameDayCloseBacktestingEngine(BacktestingEngine):
@@ -110,8 +120,6 @@ def build_backtest_engine(
     slippages: dict[str, float] = metadata["slippages"]
     sizes: dict[str, int] = metadata["sizes"]
     priceticks: dict[str, float] = metadata["priceticks"]
-    margin_ratios: dict[str, float] = metadata["margin_ratios"]
-
     engine = SameDayCloseBacktestingEngine()
     engine.set_parameters(
         vt_symbols=vt_symbols,
@@ -296,6 +304,74 @@ def compute_round_trip_win_ratio(engine: BacktestingEngine) -> tuple[float, int,
     return win_ratio_pct, win_count, round_trip_count
 
 
+def run_start_year_sweep(
+    *,
+    risk_ratio: float,
+    risk_overrides: dict[str, float] | None,
+    strategy_overrides: dict[str, object] | None,
+    capital: float,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    rows: list[dict[str, Any]] = []
+    curve_frames: list[pd.DataFrame] = []
+
+    for window_name, display_label, analysis_start, analysis_end in START_YEAR_WINDOWS:
+        print(f"[start-year] running {window_name}: {analysis_start.date()} -> {analysis_end.date()}")
+        _, analysis_df, statistics = run_backtest(
+            risk_ratio=risk_ratio,
+            risk_overrides=risk_overrides,
+            strategy_overrides=strategy_overrides,
+            analysis_start=analysis_start,
+            analysis_end=analysis_end,
+            capital=capital,
+            save_artifacts=False,
+            include_start_year_sweep=False,
+            file_prefix=f"qmt_roll_{window_name}",
+            chart_title=f"QMT Roll {window_name}",
+        )
+        rows.append(
+            build_summary_row(
+                statistics,
+                analysis_start=analysis_start,
+                analysis_end=analysis_end,
+                window_name=window_name,
+                display_label=display_label,
+                capital=capital,
+            )
+        )
+
+        if analysis_df is not None and not analysis_df.empty:
+            curve_df = analysis_df[["balance"]].reset_index().rename(columns={"index": "date"}).copy()
+            curve_df["date"] = pd.to_datetime(curve_df["date"])
+            first_balance: float = float(curve_df["balance"].iloc[0] or capital or 1.0)
+            if abs(first_balance) < 1e-9:
+                first_balance = float(capital or 1.0)
+            curve_df["normalized_nav"] = curve_df["balance"] / first_balance
+            curve_df["window_name"] = window_name
+            curve_df["display_label"] = display_label
+            curve_df["analysis_start"] = analysis_start.date().isoformat()
+            curve_df["analysis_end"] = analysis_end.date().isoformat()
+            curve_frames.append(curve_df)
+
+    summary_df = pd.DataFrame(rows).sort_values(["analysis_start", "analysis_end"]).reset_index(drop=True)
+    if curve_frames:
+        curves_df = pd.concat(curve_frames, ignore_index=True)
+        curves_df.sort_values(["analysis_start", "date"], inplace=True)
+        curves_df.reset_index(drop=True, inplace=True)
+    else:
+        curves_df = pd.DataFrame(
+            columns=[
+                "date",
+                "balance",
+                "normalized_nav",
+                "window_name",
+                "display_label",
+                "analysis_start",
+                "analysis_end",
+            ]
+        )
+    return summary_df, curves_df
+
+
 def run_backtest(
     risk_ratio: float = 0.045,
     *,
@@ -306,6 +382,7 @@ def run_backtest(
     preload_start: datetime | None = None,
     capital: float = 200_000,
     save_artifacts: bool = True,
+    include_start_year_sweep: bool | None = None,
     file_prefix: str = "qmt_roll",
     chart_title: str = "QMT Roll Portfolio Backtest",
 ) -> tuple[BacktestingEngine, Any, dict[str, Any]]:
@@ -343,6 +420,18 @@ def run_backtest(
     statistics["win_count"] = win_count
     statistics["round_trip_count"] = round_trip_count
     engine.daily_df = analysis_df
+    if include_start_year_sweep is None:
+        include_start_year_sweep = save_artifacts
+
+    period_sweep_summary_df: pd.DataFrame | None = None
+    period_equity_curves_df: pd.DataFrame | None = None
+    if include_start_year_sweep:
+        period_sweep_summary_df, period_equity_curves_df = run_start_year_sweep(
+            risk_ratio=risk_ratio,
+            risk_overrides=risk_overrides,
+            strategy_overrides=strategy_overrides,
+            capital=capital,
+        )
     if save_artifacts:
         mapping_csv_path = Path(str(setting["mapping_csv_path"])).resolve()
         save_backtest_artifacts(
@@ -352,6 +441,8 @@ def run_backtest(
             chart_title=chart_title,
             mapping_csv_path=mapping_csv_path,
             analysis_start=analysis_start,
+            period_sweep_summary_df=period_sweep_summary_df,
+            period_equity_curves_df=period_equity_curves_df,
         )
     return engine, analysis_df, statistics
 

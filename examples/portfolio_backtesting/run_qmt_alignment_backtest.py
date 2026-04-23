@@ -311,6 +311,7 @@ def _create_professional_dashboard(
     statistics: dict,
     dashboard_title: str,
     mapping_csv_path: Path | None = None,
+    period_equity_curves_df: pd.DataFrame | None = None,
 ) -> go.Figure:
     product_curve_df: pd.DataFrame = _build_product_pnl_curve_df(positions_df, mapping_csv_path)
     position_hover_df: pd.DataFrame = _build_daily_position_hover_df(positions_df)
@@ -324,9 +325,10 @@ def _create_professional_dashboard(
     equity_df["position_details"] = equity_df["position_details"].fillna("无持仓")
 
     fig = make_subplots(
-        rows=5,
+        rows=6,
         cols=1,
         specs=[
+            [{"type": "scatter"}],
             [{"type": "scatter"}],
             [{"type": "scatter"}],
             [{"type": "scatter"}],
@@ -335,12 +337,13 @@ def _create_professional_dashboard(
         ],
         subplot_titles=[
             "组合权益曲线",
+            "多起始周期净值曲线",
             "组合回撤",
             "品种分组累计净盈亏",
             "月度收益热力图",
             "换月事件时间轴",
         ],
-        row_heights=[0.22, 0.16, 0.24, 0.18, 0.20],
+        row_heights=[0.18, 0.18, 0.14, 0.20, 0.14, 0.16],
         vertical_spacing=0.05,
     )
 
@@ -373,9 +376,33 @@ def _create_professional_dashboard(
             line={"color": "#D83A3A"},
             fillcolor="rgba(216,58,58,0.25)",
         ),
-        row=2,
+        row=3,
         col=1,
     )
+
+    if period_equity_curves_df is not None and not period_equity_curves_df.empty:
+        plot_df = period_equity_curves_df.copy()
+        plot_df["date"] = pd.to_datetime(plot_df["date"])
+        for display_label, group_df in plot_df.groupby("display_label", sort=False):
+            curve_df = group_df.sort_values("date")
+            fig.add_trace(
+                go.Scatter(
+                    x=curve_df["date"],
+                    y=curve_df["normalized_nav"],
+                    mode="lines",
+                    name=display_label,
+                    customdata=curve_df[["analysis_start", "analysis_end", "balance"]].to_numpy(),
+                    hovertemplate=(
+                        "日期: %{x|%Y-%m-%d}<br>"
+                        f"分支: {display_label}<br>"
+                        "净值: %{y:.3f}<br>"
+                        "区间: %{customdata[0]} -> %{customdata[1]}<br>"
+                        "权益: %{customdata[2]:,.0f}<extra></extra>"
+                    ),
+                ),
+                row=2,
+                col=1,
+            )
 
     if not product_curve_df.empty:
         for product_symbol in product_curve_df.columns:
@@ -391,7 +418,7 @@ def _create_professional_dashboard(
                         "累计净盈亏: %{y:,.0f}<extra></extra>"
                     ),
                 ),
-                row=3,
+                row=4,
                 col=1,
             )
 
@@ -410,7 +437,7 @@ def _create_professional_dashboard(
                 colorbar={"title": "月收益(%)"},
                 hovertemplate="年份: %{y}<br>月份: %{x}<br>月收益: %{z:.2f}%<extra></extra>",
             ),
-            row=4,
+            row=5,
             col=1,
         )
 
@@ -430,7 +457,7 @@ def _create_professional_dashboard(
                     "新主力: %{customdata[1]}<extra></extra>"
                 ),
             ),
-            row=5,
+            row=6,
             col=1,
         )
 
@@ -446,7 +473,7 @@ def _create_professional_dashboard(
 
     fig.update_layout(
         title=title_text,
-        height=1800,
+        height=2100,
         width=1400,
         hovermode="x unified",
         legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "left", "x": 0.0},
@@ -454,9 +481,10 @@ def _create_professional_dashboard(
     fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.08)")
     fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.08)")
     fig.update_yaxes(title_text="权益", row=1, col=1)
-    fig.update_yaxes(title_text="回撤", row=2, col=1)
-    fig.update_yaxes(title_text="累计净盈亏", row=3, col=1)
-    fig.update_yaxes(title_text="品种", row=5, col=1)
+    fig.update_yaxes(title_text="净值", row=2, col=1)
+    fig.update_yaxes(title_text="回撤", row=3, col=1)
+    fig.update_yaxes(title_text="累计净盈亏", row=4, col=1)
+    fig.update_yaxes(title_text="品种", row=6, col=1)
     return fig
 
 
@@ -1195,6 +1223,8 @@ def save_backtest_artifacts(
     chart_title: str = "QMT Alignment Portfolio Backtest",
     mapping_csv_path: Path | None = None,
     analysis_start: datetime | None = None,
+    period_sweep_summary_df: pd.DataFrame | None = None,
+    period_equity_curves_df: pd.DataFrame | None = None,
 ) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -1230,6 +1260,16 @@ def save_backtest_artifacts(
         daily_df.reset_index().to_csv(daily_equity_path, index=False, encoding="utf-8-sig")
         print(f"daily equity csv: {daily_equity_path}")
 
+        if period_sweep_summary_df is not None and not period_sweep_summary_df.empty:
+            period_summary_path: Path = OUTPUT_DIR / f"{file_prefix}_period_sweep_summary.csv"
+            period_sweep_summary_df.to_csv(period_summary_path, index=False, encoding="utf-8-sig")
+            print(f"period sweep summary csv: {period_summary_path}")
+
+        if period_equity_curves_df is not None and not period_equity_curves_df.empty:
+            period_curve_path: Path = OUTPUT_DIR / f"{file_prefix}_period_sweep_equity_curves.csv"
+            period_equity_curves_df.to_csv(period_curve_path, index=False, encoding="utf-8-sig")
+            print(f"period sweep equity curves csv: {period_curve_path}")
+
         classic_fig: go.Figure = _create_classic_backtest_chart(daily_df, chart_title)
         html_path: Path = OUTPUT_DIR / f"{file_prefix}_chart.html"
         classic_fig.write_html(str(html_path), include_plotlyjs="cdn", auto_open=OPEN_BROWSER_CHART)
@@ -1241,6 +1281,7 @@ def save_backtest_artifacts(
             statistics=statistics,
             dashboard_title=f"{chart_title} - Professional Dashboard",
             mapping_csv_path=mapping_csv_path,
+            period_equity_curves_df=period_equity_curves_df,
         )
         dashboard_path: Path = OUTPUT_DIR / f"{file_prefix}_professional_dashboard.html"
         professional_fig.write_html(str(dashboard_path), include_plotlyjs="cdn", auto_open=False)

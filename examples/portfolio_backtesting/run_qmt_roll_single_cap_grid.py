@@ -11,8 +11,9 @@ from run_qmt_roll_backtest import run_backtest
 SAVE_ARTIFACTS: bool = False
 CAPITAL: float = 200_000
 
-# First-round coarse grid for single-trade capital cap.
-SINGLE_CAP_GRID: list[float] = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+# First-round coarse grid for single-trade capital cap
+# under the current baseline: sp included + max_concurrent_positions=8.
+SINGLE_CAP_GRID: list[float] = [0.4, 0.5, 0.6, 0.7, 0.8]
 
 RISK_OVERRIDES: dict[str, float] = {
     "risk_ratio_of_total_assets": 0.045,
