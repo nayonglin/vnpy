@@ -916,3 +916,430 @@
 - 结果回到当前正式基线：
   - `2,515,715 / 1157.86% / -31.69% / Sharpe 1.0574`
 - 说明本次移除 `regime switch / 回撤保护` 没有把主回测逻辑改坏
+
+# 2026-04-23 13:38 复盘图换月标记渲染优化
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 13:38`
+- 修改的文件：
+  - `examples/portfolio_backtesting/run_qmt_alignment_backtest.py`
+- 改动内容：
+  - 移除专业看板第 1 行“组合权益曲线”上叠加的橙色 `换月标记` 点位
+  - 保留下方单独的“换月事件时间轴”，继续用于查看换月发生日期
+  - 删除已不再使用的 `_build_roll_daily_marker_df()` 辅助函数
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 回测参数
+
+- 解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 回测入口：`examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 本次仅重新生成图表产物，策略参数不变：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+  - `max_single_trade_capital_usage_ratio = 0.70`
+
+## 新增的回测结果
+
+- 无新增策略结果，本次核心是图表渲染优化
+- 重生成后的主回测结果保持不变：
+  - 期末权益 `2,515,715`
+  - 总收益 `1157.86%`
+  - 最大回撤 `-31.69%`
+  - Sharpe `1.0574`
+  - 总滑点 `308,750`
+  - 总交易次数 `980`
+
+## 修改的回测结果
+
+- 修改了 `qmt_roll_professional_dashboard.html` 的展示效果：
+  - 组合权益主图不再显示密集橙色换月点
+  - 权益折线细节可直接观察
+  - 换月信息仍保留在独立时间轴子图中
+
+## 删除的回测结果
+
+- 无
+
+## 快速结论
+
+- 本次是纯展示层优化，不改变策略和回测结果
+- 专业看板的主权益图可读性明显提升，换月信息没有丢失，只是从主图挪回独立子图查看
+
+# 2026-04-23 13:46 注释掉 sp 后主回测复验
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 13:46`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_universe.py`
+- 改动内容：
+  - 将 `ProductSpec("sp", Exchange.SHFE, 10, 2.0, 2.0, 0.10)` 注释掉
+  - 使 `sp.SHFE` 暂时从主回测品种池中移除
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+- 修改的品种池：
+  - 删除 `sp.SHFE`
+
+## 回测参数
+
+- 解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 回测入口：`examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 仓位参数：
+  - `max_single_trade_capital_usage_ratio = 0.70`
+  - `streak_risk_multipliers = "1.0,1.0,1.0,0.1"`
+- 其他关键口径：
+  - `100 万` sizing 资金上限保持开启
+  - 新开空仍仅允许 `short_case1a`
+  - 本次仅调整品种池，其他策略逻辑不变
+
+## 新增的回测结果
+
+- `sp` 移除后的主回测结果：
+  - 期末权益 `2,468,100`
+  - 总收益 `1134.05%`
+  - 最大回撤 `-31.66%`
+  - Sharpe `0.9768`
+  - 收益回撤比 `3.2041`
+  - 总滑点 `287,740`
+  - 总交易次数 `918`
+  - 胜率 `42.52%`
+  - 胜场 / 完整回合 `199 / 468`
+
+## 修改的回测结果
+
+- 对比上一版含 `sp` 的正式基线：
+  - 期末权益：`2,515,715 -> 2,468,100`
+  - 总收益：`1157.86% -> 1134.05%`
+  - 最大回撤：`-31.69% -> -31.66%`
+  - Sharpe：`1.0574 -> 0.9768`
+  - 收益回撤比：`2.6313 -> 3.2041`
+  - 总滑点：`308,750 -> 287,740`
+  - 总交易次数：`980 -> 918`
+  - 胜率：`41.00% -> 42.52%`
+
+## 删除的回测结果
+
+- 无
+
+## 快速结论
+
+- 去掉 `sp` 后，主回测没有报错，链路正常
+- `sp` 对当前版本更像是“提高收益与 Sharpe 的贡献品种”，而不是主要回撤来源：
+  - 去掉后总收益下降
+  - Sharpe 下降
+  - 回撤几乎不变
+- 正面变化是交易数和滑点下降、胜率略升，但整体绩效并没有改善
+- 当前结论：如果目标是穿越周期的整体收益效率，暂时不建议把 `sp` 从正式品种池里长期移除，除非后续专项归因能证明它在弱窗口存在不可接受的结构性风险
+
+# 2026-04-23 13:58 加回 sp 且并发位从 4 提到 10 后主回测复验
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 13:58`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_universe.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 改动内容：
+  - 将 `sp.SHFE` 加回主回测品种池
+  - 将 `max_concurrent_positions` 从 `4` 调整为 `10`
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - `max_concurrent_positions: 4 -> 10`
+- 删除的参数：
+  - 无
+- 修改的品种池：
+  - 恢复 `sp.SHFE`
+
+## 回测参数
+
+- 解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 回测入口：`examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 仓位参数：
+  - `max_single_trade_capital_usage_ratio = 0.70`
+  - `max_concurrent_positions = 10`
+  - `streak_risk_multipliers = "1.0,1.0,1.0,0.1"`
+- 其他关键口径：
+  - `100 万` sizing 资金上限保持开启
+  - 新开空仍仅允许 `short_case1a`
+
+## 新增的回测结果
+
+- `sp` 加回且 `max_concurrent_positions = 10` 后主回测结果：
+  - 期末权益 `2,902,960`
+  - 总收益 `1351.48%`
+  - 最大回撤 `-39.02%`
+  - Sharpe `1.0385`
+  - 收益回撤比 `3.6637`
+  - 总滑点 `348,430`
+  - 总交易次数 `1234`
+  - 胜率 `41.81%`
+  - 胜场 / 完整回合 `263 / 629`
+
+## 修改的回测结果
+
+- 对比当前正式基线（`sp` 在池内，`max_concurrent_positions = 4`）：
+  - 期末权益：`2,515,715 -> 2,902,960`
+  - 总收益：`1157.86% -> 1351.48%`
+  - 最大回撤：`-31.69% -> -39.02%`
+  - Sharpe：`1.0574 -> 1.0385`
+  - 收益回撤比：`2.6313 -> 3.6637`
+  - 总滑点：`308,750 -> 348,430`
+  - 总交易次数：`980 -> 1234`
+  - 胜率：`41.00% -> 41.81%`
+- 对比上一版（`sp` 移除，`max_concurrent_positions = 4`）：
+  - 期末权益：`2,468,100 -> 2,902,960`
+  - 总收益：`1134.05% -> 1351.48%`
+  - 最大回撤：`-31.66% -> -39.02%`
+  - Sharpe：`0.9768 -> 1.0385`
+  - 收益回撤比：`3.2041 -> 3.6637`
+  - 总滑点：`287,740 -> 348,430`
+  - 总交易次数：`918 -> 1234`
+  - 胜率：`42.52% -> 41.81%`
+
+## 删除的回测结果
+
+- 无
+
+## 快速结论
+
+- 加回 `sp` 且放宽并发位后，组合显著放大了收益能力
+- 代价是：
+  - 回撤从 `-31.69%` 放大到 `-39.02%`
+  - Sharpe 略低于当前正式基线
+  - 成交次数和滑点明显上升
+- 这说明 `max_concurrent_positions = 10` 更偏进攻型，不一定更适合“穿越周期”的正式默认配置
+
+# 2026-04-23 14:02 max_concurrent_positions 四组对比回测
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 14:02`
+- 改动内容：
+  - 无新增代码改动
+  - 基于当前版本（`sp` 在池内）执行 `max_concurrent_positions = 4 / 6 / 8 / 10` 四组主回测对比
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 仅通过 `strategy_overrides` 逐组覆盖：
+    - `max_concurrent_positions = 4`
+    - `max_concurrent_positions = 6`
+    - `max_concurrent_positions = 8`
+    - `max_concurrent_positions = 10`
+- 删除的参数：
+  - 无
+
+## 回测参数
+
+- 解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 回测入口：`examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 品种池：包含 `sp.SHFE`
+- 固定风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 固定仓位参数：
+  - `max_single_trade_capital_usage_ratio = 0.70`
+  - `streak_risk_multipliers = "1.0,1.0,1.0,0.1"`
+  - `100 万` sizing 资金上限保持开启
+- 说明：
+  - 本轮四组使用 `save_artifacts=False`
+  - 仅比较主回测统计，不覆盖正式产物文件
+
+## 新增的回测结果
+
+- `concurrent = 4`
+  - 期末权益 `2,515,715`
+  - 总收益 `1157.86%`
+  - 最大回撤 `-31.69%`
+  - Sharpe `1.0574`
+  - 收益回撤比 `2.6313`
+  - 总滑点 `308,750`
+  - 总交易次数 `980`
+  - 胜率 `41.00%`
+- `concurrent = 6`
+  - 期末权益 `2,805,720`
+  - 总收益 `1302.86%`
+  - 最大回撤 `-33.20%`
+  - Sharpe `1.0684`
+  - 收益回撤比 `3.5681`
+  - 总滑点 `333,710`
+  - 总交易次数 `1156`
+  - 胜率 `41.69%`
+- `concurrent = 8`
+  - 期末权益 `3,015,735`
+  - 总收益 `1407.87%`
+  - 最大回撤 `-35.71%`
+  - Sharpe `1.0854`
+  - 收益回撤比 `3.8166`
+  - 总滑点 `347,080`
+  - 总交易次数 `1214`
+  - 胜率 `42.00%`
+- `concurrent = 10`
+  - 期末权益 `2,902,960`
+  - 总收益 `1351.48%`
+  - 最大回撤 `-39.02%`
+  - Sharpe `1.0385`
+  - 收益回撤比 `3.6637`
+  - 总滑点 `348,430`
+  - 总交易次数 `1234`
+  - 胜率 `41.81%`
+
+## 修改的回测结果
+
+- 相对 `concurrent = 4` 基线：
+  - `concurrent = 6`
+    - 总收益：`1157.86% -> 1302.86%`
+    - 最大回撤：`-31.69% -> -33.20%`
+    - Sharpe：`1.0574 -> 1.0684`
+    - 收益回撤比：`2.6313 -> 3.5681`
+  - `concurrent = 8`
+    - 总收益：`1157.86% -> 1407.87%`
+    - 最大回撤：`-31.69% -> -35.71%`
+    - Sharpe：`1.0574 -> 1.0854`
+    - 收益回撤比：`2.6313 -> 3.8166`
+  - `concurrent = 10`
+    - 总收益：`1157.86% -> 1351.48%`
+    - 最大回撤：`-31.69% -> -39.02%`
+    - Sharpe：`1.0574 -> 1.0385`
+    - 收益回撤比：`2.6313 -> 3.6637`
+
+## 删除的回测结果
+
+- 无
+
+## 快速结论
+
+- 从“收益和回撤的平衡点”看：
+  - `concurrent = 4` 最稳，但收益释放不足
+  - `concurrent = 6` 是比较均衡的折中点
+  - `concurrent = 8` 是本轮四组里的综合最佳平衡点
+  - `concurrent = 10` 开始出现过度进攻，回撤明显放大，Sharpe 反而回落
+- 当前四组里，如果兼顾穿越周期与收益效率，优先建议：
+  - 第一选择：`max_concurrent_positions = 8`
+  - 第二选择：`max_concurrent_positions = 6`
+
+# 2026-04-23 14:14 正式默认值固化为 concurrent=8
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 14:14`
+- 修改的文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 改动内容：
+  - 将主回测默认 `max_concurrent_positions` 从 `10` 固化为 `8`
+  - 重新执行正式主回测，刷新 `statistics/json/csv/html` 全部产物
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - `max_concurrent_positions: 10 -> 8`
+- 删除的参数：
+  - 无
+
+## 回测参数
+
+- 解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
+- `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
+- 回测入口：`examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 初始资金：`200000`
+- 品种池：包含 `sp.SHFE`
+- 风险参数：
+  - `risk_ratio_of_total_assets = 0.045`
+  - `risk_ratio_open_interest_surge = 0.06`
+  - `risk_ratio_volume_open_interest_surge = 0.06`
+  - `risk_ratio_open_interest_decline = 0.025`
+- 仓位参数：
+  - `max_single_trade_capital_usage_ratio = 0.70`
+  - `max_concurrent_positions = 8`
+  - `streak_risk_multipliers = "1.0,1.0,1.0,0.1"`
+- 其他关键口径：
+  - `100 万` sizing 资金上限保持开启
+  - 新开空仍仅允许 `short_case1a`
+
+## 新增的回测结果
+
+- 正式主回测结果：
+  - 期末权益 `3,015,735`
+  - 总收益 `1407.87%`
+  - 最大回撤 `-35.71%`
+  - Sharpe `1.0854`
+  - 收益回撤比 `3.8166`
+  - 总滑点 `347,080`
+  - 总交易次数 `1214`
+  - 胜率 `42.00%`
+  - 胜场 / 完整回合 `260 / 619`
+
+## 修改的回测结果
+
+- 对比上一版正式默认值（`concurrent = 10`）：
+  - 期末权益：`2,902,960 -> 3,015,735`
+  - 总收益：`1351.48% -> 1407.87%`
+  - 最大回撤：`-39.02% -> -35.71%`
+  - Sharpe：`1.0385 -> 1.0854`
+  - 收益回撤比：`3.6637 -> 3.8166`
+  - 总滑点：`348,430 -> 347,080`
+  - 总交易次数：`1234 -> 1214`
+- 对比旧正式基线（`concurrent = 4`）：
+  - 期末权益：`2,515,715 -> 3,015,735`
+  - 总收益：`1157.86% -> 1407.87%`
+  - 最大回撤：`-31.69% -> -35.71%`
+  - Sharpe：`1.0574 -> 1.0854`
+  - 收益回撤比：`2.6313 -> 3.8166`
+
+## 删除的回测结果
+
+- 无
+
+## 快速结论
+
+- `max_concurrent_positions = 8` 已正式固化为当前默认值
+- 这版相比 `10` 更均衡：
+  - 收益更高
+  - 回撤更小
+  - Sharpe 更高
+- 这版相比旧基线 `4` 更进攻，但收益、Sharpe、收益回撤比同步改善，当前可以作为新的正式默认配置

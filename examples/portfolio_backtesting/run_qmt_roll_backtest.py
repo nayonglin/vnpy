@@ -160,7 +160,7 @@ def build_roll_setting(
         "fixed_size": 0,
         "min_position_size": 1,
         "max_position_size": 500,
-        "max_concurrent_positions": 4,
+        "max_concurrent_positions": 8,
         "long_entry_enabled": True,
         "short_entry_enabled": True,
         "rollover_reopen_enabled": True,

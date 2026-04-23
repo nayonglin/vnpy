@@ -275,23 +275,6 @@ def _build_roll_event_df(mapping_csv_path: Path | None = None) -> pd.DataFrame:
     return roll_df
 
 
-def _build_roll_daily_marker_df(daily_df: pd.DataFrame, roll_df: pd.DataFrame) -> pd.DataFrame:
-    if daily_df.empty or roll_df.empty:
-        return pd.DataFrame()
-
-    marker_df: pd.DataFrame = (
-        roll_df.groupby("date", as_index=False)
-        .agg(
-            roll_count=("continuous_symbol_vt", "count"),
-            roll_details=("roll_label", "<br>".join),
-        )
-    )
-
-    balance_df: pd.DataFrame = daily_df[["balance"]].reset_index().rename(columns={"index": "date"})
-    marker_df = marker_df.merge(balance_df, on="date", how="left")
-    return marker_df.dropna(subset=["balance"])
-
-
 def _create_classic_backtest_chart(daily_df: pd.DataFrame, chart_title: str) -> go.Figure:
     fig = make_subplots(
         rows=4,
@@ -333,8 +316,6 @@ def _create_professional_dashboard(
     position_hover_df: pd.DataFrame = _build_daily_position_hover_df(positions_df)
     monthly_matrix: pd.DataFrame = _build_monthly_return_matrix(daily_df, float(statistics.get("capital", 0) or 0))
     roll_df: pd.DataFrame = _build_roll_event_df(mapping_csv_path)
-    roll_marker_df: pd.DataFrame = _build_roll_daily_marker_df(daily_df, roll_df)
-
     equity_df: pd.DataFrame = daily_df.reset_index().rename(columns={"index": "date"}).copy()
     equity_df["date"] = pd.to_datetime(equity_df["date"])
     equity_df["equity_text"] = equity_df["balance"].map(lambda value: f"{float(value) / 1_000_000:.6g}M")
@@ -381,30 +362,6 @@ def _create_professional_dashboard(
         row=1,
         col=1,
     )
-
-    if not roll_marker_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=roll_marker_df["date"],
-                y=roll_marker_df["balance"],
-                mode="markers",
-                name="换月标记",
-                marker={
-                    "size": (roll_marker_df["roll_count"].clip(upper=6) * 2 + 6).tolist(),
-                    "color": "#FF8C00",
-                    "symbol": "diamond",
-                    "line": {"width": 1, "color": "#C76A00"},
-                },
-                customdata=roll_marker_df[["roll_count", "roll_details"]].to_numpy(),
-                hovertemplate=(
-                    "日期: %{x|%Y-%m-%d}<br>"
-                    "当日换月数: %{customdata[0]}<br>"
-                    "%{customdata[1]}<extra></extra>"
-                ),
-            ),
-            row=1,
-            col=1,
-        )
 
     fig.add_trace(
         go.Scatter(
