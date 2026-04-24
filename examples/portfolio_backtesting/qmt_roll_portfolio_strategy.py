@@ -13,6 +13,12 @@ from vnpy.trader.utility import ArrayManager
 from vnpy_portfoliostrategy import StrategyEngine, StrategyTemplate
 
 from main_contract_mapping import build_contract_metadata, build_daily_mapping, get_preferred_mapping_path
+from qmt_roll_ai_selection_pairwise_runtime import (
+    DEFAULT_MODEL_PATH,
+    DEFAULT_SUMMARY_PATH,
+    SelectionPairwiseRuntimeModel,
+    build_runtime_feature_row,
+)
 
 
 @dataclass
@@ -152,6 +158,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     weighted_env_gate_selected_rate_good_max: float = 0.35
     weighted_env_gate_selected_rate_bad_min: float = 0.75
     weighted_env_gate_weight_floor: float = 0.35
+    enable_selection_pairwise_v2: bool = False
+    enable_selection_pairwise_v2_catastrophic_veto: bool = False
+    enable_selection_pairwise_v2_catastrophic_hard_filter: bool = False
+    enable_selection_pairwise_v2_volume_tilt: bool = False
+    selection_pairwise_volume_tilt_strength: float = 0.25
+    selection_pairwise_volume_tilt_long_strength: float = -1.0
+    selection_pairwise_volume_tilt_short_strength: float = -1.0
+    selection_pairwise_volume_tilt_min_score_gap: float = 0.0
+    selection_pairwise_model_path: str = str(DEFAULT_MODEL_PATH)
+    selection_pairwise_summary_path: str = str(DEFAULT_SUMMARY_PATH)
+    selection_pairwise_veto_penalty: float = 1.5
+    array_manager_size_floor: int = 120
 
     stop_loss_pct: float = 0.02
     trailing_stop_enabled: bool = True
@@ -243,6 +261,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "weighted_env_gate_selected_rate_good_max",
         "weighted_env_gate_selected_rate_bad_min",
         "weighted_env_gate_weight_floor",
+        "enable_selection_pairwise_v2",
+        "enable_selection_pairwise_v2_catastrophic_veto",
+        "enable_selection_pairwise_v2_catastrophic_hard_filter",
+        "enable_selection_pairwise_v2_volume_tilt",
+        "selection_pairwise_volume_tilt_strength",
+        "selection_pairwise_volume_tilt_long_strength",
+        "selection_pairwise_volume_tilt_short_strength",
+        "selection_pairwise_volume_tilt_min_score_gap",
+        "selection_pairwise_model_path",
+        "selection_pairwise_summary_path",
+        "selection_pairwise_veto_penalty",
+        "array_manager_size_floor",
         "stop_loss_pct",
         "trailing_stop_enabled",
         "trailing_stop_pct",
@@ -300,7 +330,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.product_symbols: list[str] = metadata["product_symbols"]
         self.source_symbol_by_contract: dict[str, str] = metadata["source_symbol_by_contract"]
 
-        am_size: int = max(self.ma_extra_long + self.donchian_entry_period + 20, 120)
+        # Keep the core strategy history window stable; pairwise runtime loads deeper
+        # contract history separately when it needs more than the shared AM provides.
+        am_size_floor: int = max(int(self.array_manager_size_floor or 140), 1)
+        am_size: int = max(self.ma_extra_long + self.donchian_entry_period + 20, am_size_floor)
         self.ams: dict[str, ArrayManager] = {
             vt_symbol: ArrayManager(am_size) for vt_symbol in self.vt_symbols
         }
@@ -322,6 +355,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.pending_margin_reservation: float = 0.0
         self.pending_active_products: set[str] = set()
         self.current_env_gate_snapshot: dict[str, Any] = {}
+        self.selection_pairwise_runtime: SelectionPairwiseRuntimeModel | None = None
+        if self.enable_selection_pairwise_v2:
+            self.selection_pairwise_runtime = SelectionPairwiseRuntimeModel(
+                model_path=self.selection_pairwise_model_path,
+                summary_path=self.selection_pairwise_summary_path,
+                enable_catastrophic_veto=self.enable_selection_pairwise_v2_catastrophic_veto,
+                catastrophic_veto_penalty=self.selection_pairwise_veto_penalty,
+            )
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -409,6 +450,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
 
         self.current_env_gate_snapshot = self._build_daily_env_gate_snapshot(day_contexts)
+        flat_entry_plans = self._plan_flat_entry_candidates(day_contexts)
 
         for context in day_contexts:
             product_vt = context.product_vt_symbol
@@ -435,35 +477,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 continue
 
             if current_pos == 0:
-                if signal.startswith("long"):
-                    sizing: dict[str, Any] = self._calculate_entry_sizing(
-                        target_contract,
-                        "long",
-                        target_bar,
-                        history,
-                        signal_data,
-                        entry_context="flat_entry",
-                    )
-                    volume: int = int(sizing["selected_volume"])
-                    active_positions_before: int = self._count_active_positions()
-                    candidate_status: str = "opened"
-                    skip_reason: str = ""
-                    if not self.long_entry_enabled:
-                        candidate_status = "skipped"
-                        skip_reason = "long_entry_disabled"
-                    elif active_positions_before >= int(
-                        sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
-                    ):
-                        candidate_status = "skipped"
-                        skip_reason = "concurrent_limit"
-                    elif volume <= 0:
-                        candidate_status = "skipped"
-                        skip_reason = "sizing_zero_volume"
+                if signal.startswith("long") or signal.startswith("short"):
+                    plan = flat_entry_plans.get(product_vt)
+                    if plan is None:
+                        continue
+                    sizing = dict(plan["sizing"])
+                    direction = str(plan["direction"])
+                    volume = int(plan["volume"])
+                    candidate_status = str(plan["candidate_status"])
+                    skip_reason = str(plan["skip_reason"])
+                    active_positions_before = int(plan["active_positions_before"])
 
                     self._record_entry_candidate_snapshot(
                         product_vt_symbol=state.product_vt_symbol,
                         contract_vt_symbol=target_contract,
-                        direction="long",
+                        direction=direction,
                         bar=target_bar,
                         signal=signal,
                         entry_context="flat_entry",
@@ -479,65 +507,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self._open_position(
                         state,
                         target_contract,
-                        "long",
-                        volume,
-                        target_bar,
-                        signal,
-                        history,
-                        signal_data,
-                        sizing_snapshot=sizing,
-                    )
-                    self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=True)
-                    self._apply_state_target(state)
-                    self.last_signal = f"{product_vt}:{signal}"
-                elif signal.startswith("short"):
-                    sizing = self._calculate_entry_sizing(
-                        target_contract,
-                        "short",
-                        target_bar,
-                        history,
-                        signal_data,
-                        entry_context="flat_entry",
-                    )
-                    volume = int(sizing["selected_volume"])
-                    active_positions_before = self._count_active_positions()
-                    candidate_status = "opened"
-                    skip_reason = ""
-                    if not self.short_entry_enabled:
-                        candidate_status = "skipped"
-                        skip_reason = "short_entry_disabled"
-                    elif not self._can_open_short_signal(signal):
-                        candidate_status = "skipped"
-                        skip_reason = "short_signal_rejected"
-                    elif active_positions_before >= int(
-                        sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
-                    ):
-                        candidate_status = "skipped"
-                        skip_reason = "concurrent_limit"
-                    elif volume <= 0:
-                        candidate_status = "skipped"
-                        skip_reason = "sizing_zero_volume"
-
-                    self._record_entry_candidate_snapshot(
-                        product_vt_symbol=state.product_vt_symbol,
-                        contract_vt_symbol=target_contract,
-                        direction="short",
-                        bar=target_bar,
-                        signal=signal,
-                        entry_context="flat_entry",
-                        candidate_status=candidate_status,
-                        skip_reason=skip_reason,
-                        signal_data=signal_data,
-                        sizing_snapshot=sizing,
-                        active_positions_before=active_positions_before,
-                    )
-                    if candidate_status != "opened":
-                        continue
-
-                    self._open_position(
-                        state,
-                        target_contract,
-                        "short",
+                        direction,
                         volume,
                         target_bar,
                         signal,
@@ -1167,6 +1137,345 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return bool(self.long_entry_enabled)
         return bool(self.short_entry_enabled and self._can_open_short_signal(signal))
 
+    def _build_flat_entry_candidate_plan(self, context: DailyEntryContext, base_active_positions: int) -> dict[str, Any] | None:
+        signal: str = str(context.signal_data.get("signal", ""))
+        if signal.startswith("long"):
+            direction = "long"
+        elif signal.startswith("short"):
+            direction = "short"
+        else:
+            return None
+
+        sizing = self._calculate_entry_sizing(
+            context.target_contract,
+            direction,
+            context.target_bar,
+            context.history,
+            context.signal_data,
+            entry_context="flat_entry",
+        )
+        volume = int(sizing["selected_volume"])
+        native_openable = self._is_native_openable_candidate(signal, direction, volume)
+        skip_reason = ""
+        if direction == "long" and not self.long_entry_enabled:
+            skip_reason = "long_entry_disabled"
+        elif direction == "short" and not self.short_entry_enabled:
+            skip_reason = "short_entry_disabled"
+        elif direction == "short" and not self._can_open_short_signal(signal):
+            skip_reason = "short_signal_rejected"
+        elif volume <= 0:
+            skip_reason = "sizing_zero_volume"
+
+        effective_max_positions = int(sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions)
+        remaining_slots = max(0, effective_max_positions - base_active_positions)
+        candidate_plan = {
+            "product_vt_symbol": context.product_vt_symbol,
+            "state": context.state,
+            "target_contract": context.target_contract,
+            "target_bar": context.target_bar,
+            "history": context.history,
+            "signal_data": context.signal_data,
+            "direction": direction,
+            "signal": signal,
+            "sizing": sizing,
+            "volume": volume,
+            "native_openable": native_openable,
+            "skip_reason": skip_reason,
+            "active_positions_before": base_active_positions,
+            "remaining_position_slots": remaining_slots,
+            "selection_pairwise_score": 0.0,
+            "selection_pairwise_rank": 0,
+            "selection_pairwise_veto_flag": 0,
+            "selection_pairwise_model_tag": "",
+            "selection_pairwise_enabled": 0,
+            "selection_pairwise_veto_penalty": 0.0,
+            "selection_pairwise_feature_ret_20d_zscore_120": 0.0,
+            "selection_pairwise_feature_close_position_60d_cs_zscore_1d": 0.0,
+            "selection_pairwise_feature_range_pct_zscore_120": 0.0,
+            "selection_pairwise_runtime_veto_match_local": 0,
+        }
+        return candidate_plan
+
+    def _apply_selection_pairwise_scores(self, candidate_plans: list[dict[str, Any]]) -> None:
+        if not self.selection_pairwise_runtime:
+            return
+
+        scorable_candidates = [plan for plan in candidate_plans if plan["native_openable"]]
+        if len(scorable_candidates) < 2:
+            return
+
+        runtime_rows: list[dict[str, Any]] = []
+        candidate_date = pd.Timestamp(scorable_candidates[0]["target_bar"].datetime).normalize()
+        for order_index, plan in enumerate(scorable_candidates, start=1):
+            runtime_row = build_runtime_feature_row(
+                history=plan["history"],
+                contract_vt_symbol=(
+                    str(getattr(plan["target_contract"], "vt_symbol", "") or plan["target_contract"])
+                ),
+                candidate_date=candidate_date,
+                direction=str(plan["direction"]),
+                signal=str(plan["signal"]),
+                risk_mode=str(plan["sizing"].get("risk_mode", plan["signal_data"].get("risk_mode", "regular"))),
+                risk_ratio=float(plan["sizing"].get("risk_ratio") or 0.0),
+                remaining_position_slots=int(plan["remaining_position_slots"]),
+                estimated_equity=float(plan["sizing"].get("limited_balance") or self.estimated_equity or self.base_capital),
+                margin_per_contract=float(plan["sizing"].get("margin_per_contract") or 0.0),
+            )
+            if not runtime_row:
+                continue
+            runtime_row.update(
+                {
+                    "sample_id": f"runtime_{order_index}_{plan['product_vt_symbol']}",
+                    "product_vt_symbol": plan["product_vt_symbol"],
+                    "direction": plan["direction"],
+                    "signal": plan["signal"],
+                    "risk_mode": str(plan["sizing"].get("risk_mode", plan["signal_data"].get("risk_mode", "regular"))),
+                }
+            )
+            runtime_rows.append(runtime_row)
+
+        if len(runtime_rows) < 2:
+            return
+
+        scored_rows = self.selection_pairwise_runtime.score_candidate_pool(runtime_rows)
+        score_by_product = {str(row["product_vt_symbol"]): row for row in scored_rows}
+        for plan in scorable_candidates:
+            scored_row = score_by_product.get(plan["product_vt_symbol"])
+            if not scored_row:
+                continue
+            veto_flag = int(scored_row.get("selection_pairwise_veto_flag", 0))
+            score = float(scored_row.get("predicted_pairwise_score", 0.0))
+            if (
+                veto_flag == 0
+                and self.enable_selection_pairwise_v2_catastrophic_veto
+                and self._selection_pairwise_catastrophic_veto_match(scored_row)
+            ):
+                veto_flag = 1
+                score -= float(self.selection_pairwise_veto_penalty)
+            plan["selection_pairwise_score"] = score
+            plan["selection_pairwise_rank"] = int(scored_row.get("selection_pairwise_rank", 0))
+            plan["selection_pairwise_veto_flag"] = veto_flag
+            plan["selection_pairwise_model_tag"] = str(scored_row.get("selection_pairwise_model_tag", ""))
+            plan["selection_pairwise_enabled"] = int(scored_row.get("selection_pairwise_enabled", 0))
+            plan["selection_pairwise_veto_penalty"] = float(scored_row.get("selection_pairwise_veto_penalty", 0.0))
+            plan["selection_pairwise_feature_ret_20d_zscore_120"] = float(
+                scored_row.get("feature_ret_20d_zscore_120", 0.0) or 0.0
+            )
+            plan["selection_pairwise_feature_close_position_60d_cs_zscore_1d"] = float(
+                scored_row.get("feature_close_position_60d_cs_zscore_1d", 0.0) or 0.0
+            )
+            plan["selection_pairwise_feature_range_pct_zscore_120"] = float(
+                scored_row.get("feature_range_pct_zscore_120", 0.0) or 0.0
+            )
+            plan["selection_pairwise_runtime_veto_match_local"] = int(
+                self._selection_pairwise_catastrophic_veto_match(scored_row)
+            )
+            if veto_flag and self.enable_selection_pairwise_v2_catastrophic_hard_filter:
+                plan["native_openable"] = False
+                plan["skip_reason"] = "selection_pairwise_catastrophic_veto"
+
+    @staticmethod
+    def _selection_pairwise_catastrophic_veto_match(candidate_row: dict[str, Any]) -> bool:
+        return bool(
+            str(candidate_row.get("direction", "")) == "short"
+            and str(candidate_row.get("signal", "")) in {"short_case2", "short_case1a"}
+            and float(candidate_row.get("feature_ret_20d_zscore_120", 0.0) or 0.0) < -0.3
+            and float(candidate_row.get("feature_close_position_60d_cs_zscore_1d", 0.0) or 0.0) < 0.0
+            and float(candidate_row.get("feature_range_pct_zscore_120", 0.0) or 0.0) > 0.5
+        )
+
+    def _apply_selection_pairwise_volume_tilt(self, opened_plans: list[dict[str, Any]]) -> None:
+        if not self.enable_selection_pairwise_v2_volume_tilt:
+            return
+        if not self.selection_pairwise_runtime:
+            return
+
+        strength = max(0.0, float(self.selection_pairwise_volume_tilt_strength or 0.0))
+
+        direction_strengths: dict[str, float] = {
+            "long": (
+                float(self.selection_pairwise_volume_tilt_long_strength)
+                if float(self.selection_pairwise_volume_tilt_long_strength) >= 0.0
+                else strength
+            ),
+            "short": (
+                float(self.selection_pairwise_volume_tilt_short_strength)
+                if float(self.selection_pairwise_volume_tilt_short_strength) >= 0.0
+                else strength
+            ),
+        }
+        if max(direction_strengths.values(), default=0.0) <= 0.0:
+            return
+
+        for direction in ("long", "short"):
+            direction_strength = max(0.0, float(direction_strengths.get(direction, strength)))
+            if direction_strength <= 0.0:
+                continue
+            direction_plans = [plan for plan in opened_plans if str(plan.get("direction", "")) == direction]
+            if len(direction_plans) < 2:
+                continue
+
+            direction_plans.sort(
+                key=lambda item: (int(item.get("selection_pairwise_rank") or 0), str(item.get("product_vt_symbol", "")))
+            )
+            count = len(direction_plans)
+            if count <= 1:
+                continue
+
+            score_values: list[float] = [float(plan.get("selection_pairwise_score") or 0.0) for plan in direction_plans]
+            score_gap: float = max(score_values) - min(score_values)
+            top_gap: float = score_values[0] - score_values[1] if len(score_values) >= 2 else 0.0
+            min_score_gap: float = max(0.0, float(self.selection_pairwise_volume_tilt_min_score_gap or 0.0))
+            if score_gap < min_score_gap:
+                continue
+
+            center = (count - 1) / 2.0
+            for index, plan in enumerate(direction_plans):
+                base_volume = max(0, int(plan["sizing"].get("selected_volume") or 0))
+                if base_volume <= 0:
+                    continue
+
+                relative_rank = (center - float(index)) / max(center, 1.0)
+                multiplier = max(0.0, 1.0 + direction_strength * relative_rank)
+                tilted_volume = int(round(base_volume * multiplier))
+                if 0 < tilted_volume < self.min_position_size:
+                    tilted_volume = self.min_position_size
+
+                sizing = dict(plan["sizing"])
+                sizing["selection_pairwise_volume_tilt_applied"] = 1
+                sizing["selection_pairwise_volume_tilt_direction_strength"] = direction_strength
+                sizing["selection_pairwise_volume_tilt_multiplier"] = multiplier
+                sizing["selection_pairwise_volume_tilt_volume_before"] = base_volume
+                sizing["selection_pairwise_volume_tilt_group_size"] = count
+                sizing["selection_pairwise_volume_tilt_score_gap"] = score_gap
+                sizing["selection_pairwise_volume_tilt_top_gap"] = top_gap
+                sizing["selected_volume"] = max(0, tilted_volume)
+                plan["sizing"] = sizing
+                plan["volume"] = max(0, tilted_volume)
+
+    def _plan_flat_entry_candidates(self, day_contexts: list[DailyEntryContext]) -> dict[str, dict[str, Any]]:
+        base_active_positions = self._count_active_positions()
+        candidate_plans: list[dict[str, Any]] = []
+        for context in day_contexts:
+            if context.current_pos != 0:
+                continue
+            plan = self._build_flat_entry_candidate_plan(context, base_active_positions)
+            if plan is not None:
+                candidate_plans.append(plan)
+
+        self._apply_selection_pairwise_scores(candidate_plans)
+
+        openable_plans = [plan for plan in candidate_plans if plan["native_openable"]]
+        if self.selection_pairwise_runtime:
+            openable_plans.sort(
+                key=lambda item: (-float(item["selection_pairwise_score"]), str(item["product_vt_symbol"]))
+            )
+            for rank, plan in enumerate(openable_plans, start=1):
+                plan["selection_pairwise_rank"] = rank
+
+        opened_count = 0
+        for plan in openable_plans:
+            sizing = dict(plan["sizing"])
+            active_positions_before = base_active_positions + opened_count
+            effective_max_positions = int(sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions)
+            if active_positions_before >= effective_max_positions:
+                plan["candidate_status"] = "skipped"
+                plan["skip_reason"] = "concurrent_limit"
+            else:
+                plan["candidate_status"] = "opened"
+                opened_count += 1
+
+        opened_plans = [plan for plan in openable_plans if plan.get("candidate_status") == "opened"]
+        self._apply_selection_pairwise_volume_tilt(opened_plans)
+
+        for plan in openable_plans:
+            sizing = dict(plan["sizing"])
+            active_positions_before = int(plan.get("active_positions_before") or base_active_positions)
+            effective_max_positions = int(
+                sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
+            )
+            plan["active_positions_before"] = active_positions_before
+            plan["remaining_position_slots"] = max(0, effective_max_positions - active_positions_before)
+            sizing["selection_pairwise_score"] = plan["selection_pairwise_score"]
+            sizing["selection_pairwise_rank"] = plan["selection_pairwise_rank"]
+            sizing["selection_pairwise_veto_flag"] = plan["selection_pairwise_veto_flag"]
+            sizing["selection_pairwise_model_tag"] = plan["selection_pairwise_model_tag"]
+            sizing["selection_pairwise_enabled"] = plan["selection_pairwise_enabled"]
+            sizing["selection_pairwise_veto_penalty"] = plan["selection_pairwise_veto_penalty"]
+            sizing["selection_pairwise_feature_ret_20d_zscore_120"] = plan["selection_pairwise_feature_ret_20d_zscore_120"]
+            sizing["selection_pairwise_feature_close_position_60d_cs_zscore_1d"] = plan[
+                "selection_pairwise_feature_close_position_60d_cs_zscore_1d"
+            ]
+            sizing["selection_pairwise_feature_range_pct_zscore_120"] = plan["selection_pairwise_feature_range_pct_zscore_120"]
+            sizing["selection_pairwise_runtime_veto_match_local"] = plan["selection_pairwise_runtime_veto_match_local"]
+            sizing["selection_pairwise_volume_tilt_applied"] = int(
+                sizing.get("selection_pairwise_volume_tilt_applied", 0) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_direction_strength"] = float(
+                sizing.get("selection_pairwise_volume_tilt_direction_strength", 0.0) or 0.0
+            )
+            sizing["selection_pairwise_volume_tilt_multiplier"] = float(
+                sizing.get("selection_pairwise_volume_tilt_multiplier", 1.0) or 1.0
+            )
+            sizing["selection_pairwise_volume_tilt_volume_before"] = int(
+                sizing.get("selection_pairwise_volume_tilt_volume_before", sizing.get("selected_volume", 0)) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_group_size"] = int(
+                sizing.get("selection_pairwise_volume_tilt_group_size", 0) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_score_gap"] = float(
+                sizing.get("selection_pairwise_volume_tilt_score_gap", 0.0) or 0.0
+            )
+            sizing["selection_pairwise_volume_tilt_top_gap"] = float(
+                sizing.get("selection_pairwise_volume_tilt_top_gap", 0.0) or 0.0
+            )
+            sizing["remaining_position_slots"] = plan["remaining_position_slots"]
+            plan["sizing"] = sizing
+
+        for plan in candidate_plans:
+            if plan["native_openable"]:
+                continue
+            sizing = dict(plan["sizing"])
+            sizing["selection_pairwise_score"] = plan["selection_pairwise_score"]
+            sizing["selection_pairwise_rank"] = plan["selection_pairwise_rank"]
+            sizing["selection_pairwise_veto_flag"] = plan["selection_pairwise_veto_flag"]
+            sizing["selection_pairwise_model_tag"] = plan["selection_pairwise_model_tag"]
+            sizing["selection_pairwise_enabled"] = plan["selection_pairwise_enabled"]
+            sizing["selection_pairwise_veto_penalty"] = plan["selection_pairwise_veto_penalty"]
+            sizing["selection_pairwise_feature_ret_20d_zscore_120"] = plan["selection_pairwise_feature_ret_20d_zscore_120"]
+            sizing["selection_pairwise_feature_close_position_60d_cs_zscore_1d"] = plan[
+                "selection_pairwise_feature_close_position_60d_cs_zscore_1d"
+            ]
+            sizing["selection_pairwise_feature_range_pct_zscore_120"] = plan["selection_pairwise_feature_range_pct_zscore_120"]
+            sizing["selection_pairwise_runtime_veto_match_local"] = plan["selection_pairwise_runtime_veto_match_local"]
+            sizing["selection_pairwise_volume_tilt_applied"] = int(
+                sizing.get("selection_pairwise_volume_tilt_applied", 0) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_direction_strength"] = float(
+                sizing.get("selection_pairwise_volume_tilt_direction_strength", 0.0) or 0.0
+            )
+            sizing["selection_pairwise_volume_tilt_multiplier"] = float(
+                sizing.get("selection_pairwise_volume_tilt_multiplier", 1.0) or 1.0
+            )
+            sizing["selection_pairwise_volume_tilt_volume_before"] = int(
+                sizing.get("selection_pairwise_volume_tilt_volume_before", sizing.get("selected_volume", 0)) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_group_size"] = int(
+                sizing.get("selection_pairwise_volume_tilt_group_size", 0) or 0
+            )
+            sizing["selection_pairwise_volume_tilt_score_gap"] = float(
+                sizing.get("selection_pairwise_volume_tilt_score_gap", 0.0) or 0.0
+            )
+            sizing["selection_pairwise_volume_tilt_top_gap"] = float(
+                sizing.get("selection_pairwise_volume_tilt_top_gap", 0.0) or 0.0
+            )
+            sizing["remaining_position_slots"] = plan["remaining_position_slots"]
+            plan["sizing"] = sizing
+            plan["candidate_status"] = "skipped"
+            plan["active_positions_before"] = base_active_positions
+
+        return {str(plan["product_vt_symbol"]): plan for plan in candidate_plans}
+
     def _build_daily_env_gate_snapshot(self, day_contexts: list[DailyEntryContext]) -> dict[str, Any]:
         snapshot: dict[str, Any] = {
             "env_gate_enabled": int(self.enable_weighted_env_gate or self.enable_portfolio_env_gate),
@@ -1701,6 +2010,45 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "env_gate_range_component": float(sizing_snapshot.get("env_gate_range_component") or 1.0),
                 "env_gate_selected_component": float(sizing_snapshot.get("env_gate_selected_component") or 1.0),
                 "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
+                "selection_pairwise_enabled": int(sizing_snapshot.get("selection_pairwise_enabled") or 0),
+                "selection_pairwise_model_tag": str(sizing_snapshot.get("selection_pairwise_model_tag") or ""),
+                "selection_pairwise_score": float(sizing_snapshot.get("selection_pairwise_score") or 0.0),
+                "selection_pairwise_rank": int(sizing_snapshot.get("selection_pairwise_rank") or 0),
+                "selection_pairwise_veto_flag": int(sizing_snapshot.get("selection_pairwise_veto_flag") or 0),
+                "selection_pairwise_veto_penalty": float(sizing_snapshot.get("selection_pairwise_veto_penalty") or 0.0),
+                "selection_pairwise_feature_ret_20d_zscore_120": float(
+                    sizing_snapshot.get("selection_pairwise_feature_ret_20d_zscore_120") or 0.0
+                ),
+                "selection_pairwise_feature_close_position_60d_cs_zscore_1d": float(
+                    sizing_snapshot.get("selection_pairwise_feature_close_position_60d_cs_zscore_1d") or 0.0
+                ),
+                "selection_pairwise_feature_range_pct_zscore_120": float(
+                    sizing_snapshot.get("selection_pairwise_feature_range_pct_zscore_120") or 0.0
+                ),
+                "selection_pairwise_runtime_veto_match_local": int(
+                    sizing_snapshot.get("selection_pairwise_runtime_veto_match_local") or 0
+                ),
+                "selection_pairwise_volume_tilt_applied": int(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_applied") or 0
+                ),
+                "selection_pairwise_volume_tilt_direction_strength": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_direction_strength") or 0.0
+                ),
+                "selection_pairwise_volume_tilt_multiplier": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_multiplier") or 1.0
+                ),
+                "selection_pairwise_volume_tilt_volume_before": int(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_volume_before") or selected_volume
+                ),
+                "selection_pairwise_volume_tilt_group_size": int(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_group_size") or 0
+                ),
+                "selection_pairwise_volume_tilt_score_gap": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_score_gap") or 0.0
+                ),
+                "selection_pairwise_volume_tilt_top_gap": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_top_gap") or 0.0
+                ),
                 "active_positions_before": int(active_positions_before),
                 "max_concurrent_positions": int(self.max_concurrent_positions),
                 "effective_max_concurrent_positions": effective_max_concurrent_positions,

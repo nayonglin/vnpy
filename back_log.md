@@ -5426,3 +5426,2185 @@
   - 当前 pointwise ranker 本身已经成为主要瓶颈
 - 下一步最优路线应是：
   - 进入 `第22阶段：选择权 pairwise / listwise 重构`
+
+# 2026-04-23 22:47 第22阶段 选择权 pairwise 最小闭环验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 22:47`
+- 新增的文件：
+  - `examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py`
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_candidate_selection_pairwise_classifier.py`
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights_pairwise.py`
+- 改动内容：
+  - 正式停止继续扩写 `selection_v3/v4` 这类 pointwise 标签版本
+  - 新增选择权专用的 pairwise 数据层，只保留：
+    - `flat_entry`
+    - 当日 `selected_count >= 1`
+    - 当日 `selected_count < candidate_count`
+    的真实可重排候选池
+  - pair 胜负标签不再直接回归绝对分数，而是改成：
+    - 先比较 `label_selection_quality_score_v2p`
+    - 再用 `20d forward R`
+    - `10d forward R`
+    - `20d MAE`
+    做稳定 tie-break
+  - 新增低自由度 `LogisticRegression` baseline，只验证“同日候选谁更该排前”是否存在样本外方向性
+  - 新增 pairwise 版本选择权反事实验证：
+    - 先用 pairwise 概率在同日候选池内累加成排序分数
+    - 再固定每日实际入选个数，只比较“该选谁”是否优于当前规则
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = selection_pairwise_v1`
+  - `TARGET_COLUMN = label_preferred_left_wins`
+  - `WEIGHT_COLUMN = label_preferred_pair_weight`
+  - `VALID_START_DATE = 2023-01-01`
+  - `TEST_START_DATE = 2024-01-01`
+  - `C = 0.35`
+  - `max_iter = 2000`
+- 新增的特征：
+  - `feature_pair_same_direction`
+  - `feature_pair_same_signal`
+  - `feature_pair_same_risk_mode`
+  - `delta_risk_ratio`
+  - `delta_remaining_position_slots`
+  - `delta_feature_ret_signed_5d`
+  - `delta_feature_trend_ma20_gap_pct`
+  - `delta_feature_atr14_pct_zscore_120`
+  - `delta_feature_lower_wick_pct`
+  - `delta_feature_volume_ratio_2v2`
+  - `delta_feature_margin_per_contract_to_equity`
+  - `delta_feature_oi_delta_1d_pct`
+  - `delta_feature_oi_delta_1d_pct_zscore_120`
+  - `delta_feature_close_position_60d`
+  - `delta_feature_ret_20d_zscore_120`
+- 新增的样本权重规则：
+  - `base_weight = clip(abs(selection_quality_gap) / 2.0, 0.10, 1.0)`
+  - 若 pair 跨越了“实际选中 / 未选中”边界，则额外乘以 `1.25`
+  - 最终 `pair_weight` 上限为 `1.25`
+- 修改的参数：
+  - 学习范式从 `pointwise quality regression` 改为 `pairwise relative preference classification`
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- Pairwise 样本：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_samples.csv`
+- Pairwise schema：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_schema.json`
+- Pairwise 模型：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v1.joblib`
+- 训练摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v1.json`
+- 系数表：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_coefficients_selection_pairwise_v1.csv`
+- 逐样本预测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_predictions_selection_pairwise_v1.csv`
+- 测试集分桶分析：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_bucket_analysis_selection_pairwise_v1.csv`
+- 选择权验证摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_selection_pairwise_v1.json`
+- 选择权分窗口：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_selection_pairwise_v1.csv`
+- 选择权分日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_selection_pairwise_v1.csv`
+
+## 新增的数据层结果
+
+- 候选主样本：
+  - `201` 行
+- 可重排交易日：
+  - `81` 天
+- Pairwise 样本：
+  - `169` 行
+- Pairwise 交易日：
+  - `81` 天
+- `left_win_rate`：
+  - `49.11%`
+- `selection_disagreement_rate`：
+  - `71.60%`
+- `winner_selected_rate`：
+  - `55.03%`
+- `median_quality_gap_abs`：
+  - `2.6708`
+- `mean_quality_gap_abs`：
+  - `3.1550`
+- `mean_pair_weight`：
+  - `0.9432`
+
+## 新增的训练结果
+
+- 样本切分：
+  - `train = 62`
+  - `valid = 33`
+  - `test = 74`
+- 常规指标
+  - `train`
+    - `accuracy = 67.74%`
+    - `weighted_accuracy = 77.19%`
+    - `roc_auc = 0.7672`
+    - `log_loss = 0.4673`
+  - `valid`
+    - `accuracy = 45.45%`
+    - `weighted_accuracy = 48.79%`
+    - `roc_auc = 0.3593`
+    - `log_loss = 0.8283`
+  - `test`
+    - `accuracy = 50.00%`
+    - `weighted_accuracy = 49.95%`
+    - `roc_auc = 0.5070`
+    - `log_loss = 0.8372`
+- 跨实际选择边界的 pair 子集：
+  - `train weighted_accuracy = 77.90%`
+  - `valid weighted_accuracy = 47.96%`
+  - `test weighted_accuracy = 48.93%`
+
+## 新增的选择权验证结果
+
+### `valid_2023`
+
+- 重排发生率 `55.56%`
+- 实际/预测集合重合率 `47.22%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.8315`
+  - `10d forward = +1.0936`
+  - `20d forward = +2.4783`
+  - `20d MFE = +3.1247`
+  - `20d MAE = -0.6554`
+
+### `test_2024`
+
+- 重排发生率 `65.00%`
+- 实际/预测集合重合率 `43.75%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.8574`
+  - `10d forward = +3.5028`
+  - `20d forward = +4.2996`
+  - `20d MFE = +10.1618`
+  - `20d MAE = +1.9840`
+
+### `test_2025_plus`
+
+- 重排发生率 `53.85%`
+- 实际/预测集合重合率 `46.15%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.2412`
+  - `10d forward = -1.0882`
+  - `20d forward = -0.4213`
+  - `20d MFE = +0.5863`
+  - `20d MAE = +2.5037`
+
+### `test_2024_plus`
+
+- 重排发生率 `60.61%`
+- 实际/预测集合重合率 `44.70%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.6147`
+  - `10d forward = +1.6942`
+  - `20d forward = +2.4398`
+  - `20d MFE = +6.3896`
+  - `20d MAE = +2.1887`
+
+## 修改的验证结论
+
+- 第21阶段的主判断被进一步坐实：
+  - 当前 pointwise ranker 的确是主要瓶颈
+- 第22阶段新增了一个更关键的结论：
+  - 即使 pairwise classifier 自身的 `valid/test` AUC 并不强
+  - 但一旦把它放回“固定每日入选个数、只比较该选谁”的反事实框架
+  - `2024` 与 `2024+` 的真实 `10d/20d` 收益已经明显优于当前实际选择
+- 这说明：
+  - 选择权问题更接近“弱 pairwise 信号 + 日内聚合排序”
+  - 而不是“单点分数本身必须先在全样本上表现很好”
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 这一步最重要的不是 classifier 指标有多漂亮
+- 而是：
+  - `test roc_auc` 只是在随机附近微正 `0.5070`
+  - 但真正关心的“同日该选谁”在 `2024` 和 `2024+` 已经出现明显正向改善
+- 这和前面 pointwise 路线最大的区别在于：
+  - pairwise 把监督目标直接对准了真实决策边界
+  - 允许模型在局部相对优先级上有用
+  - 不再强迫模型先学出一个全局稳定的绝对分数
+- 但仍然要保持克制：
+  - `2025+` 依然没有转正
+  - 且 `20d MAE` 在所有正向窗口都恶化，说明模型现在更偏“放大利润弹性”，但还没有同时控制尾部回撤
+- 更接近本质的判断是：
+  - 第22阶段第一次证明了“pairwise 选择权”不是伪命题
+  - 但当前版本更像“收益偏进攻”的第一版原型
+  - 还不能直接接入正式资金回测或实盘选择权
+
+## 我的判断
+
+- 第22阶段应判定为：
+  - 方向正确
+  - 首次看到比 pointwise 更清晰的真实选择权改善
+  - 值得继续投入
+- 下一步最值得做的不是急着换复杂模型，而是：
+  - 把 `20d MAE` 恶化的问题显式纳入 pair 构造或 pair 权重
+  - 或把 pair 标签从“未来收益优先”扩成“收益优先但对尾部风险做软约束”的选择权监督
+  - 再对 `2025+` 失效日期做专项复盘，确认为什么 pairwise 到这里仍然失真
+
+## 快速结论
+
+- `selection_pairwise_v1` 不是可上线版本
+- 但它已经给出一条比 pointwise 更强的证据：
+  - `2024` 与 `2024+` 的“同日该选谁”确实被改善了
+  - 说明选择权主线继续投入是对的
+- 第23阶段最优路线应是：
+  - 保留 pairwise 范式
+  - 专门修正尾部回撤恶化问题
+  - 再看是否能把 `2025+` 一并拉正
+
+# 2026-04-23 22:55 第23阶段 pairwise 风险权重修正 v2
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 22:55`
+- 新增的文件：
+  - `examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py`
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_candidate_selection_pairwise_classifier_v2.py`
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights_pairwise_v2.py`
+- 改动内容：
+  - 延续第22阶段的 pairwise 选择权范式，不再回退 pointwise
+  - 不改 pair 胜负标签主干，继续保留：
+    - `selection_quality_score_v2p`
+    - `20d/10d forward R`
+    - `20d MAE`
+    的 tie-break 逻辑
+  - 把第22阶段暴露出的“极端波动 / 极端趋势尾部”问题，下沉到 pair 权重层
+  - 新增与失败模式直接相关的四列差分特征：
+    - `delta_feature_range_pct_zscore_120`
+    - `delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d`
+    - `delta_feature_ma20_ma40_gap_pct_cs_zscore_1d`
+    - `delta_feature_close_position_60d_cs_zscore_1d`
+  - 新增 `noise_score_v2`，对以下尾部进行可信度衰减：
+    - 高波动尾部
+    - 高动量尾部
+    - 极端趋势横截面尾部
+    - 极端结构尾部
+    - 极端 60 日位置尾部
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = selection_pairwise_v2_risk_weighted`
+  - `WEIGHT_COLUMN_V2 = label_preferred_pair_weight_v2`
+  - `NOISE_SCORE_COLUMN = label_preferred_noise_score_v2`
+- 新增的特征：
+  - `delta_feature_range_pct_zscore_120`
+  - `delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d`
+  - `delta_feature_ma20_ma40_gap_pct_cs_zscore_1d`
+  - `delta_feature_close_position_60d_cs_zscore_1d`
+- 新增的权重规则：
+  - `noise_score_v2` 由五类尾部特征线性组合得到
+  - `credibility_weight = clip(1 - 0.45 * noise_score_v2, 0.35, 1.0)`
+  - `pair_weight_v2 = min(pair_weight_v1 * credibility_weight, 1.25)`
+- 修改的参数：
+  - Logistic 回归参数从 `C = 0.35` 调整为 `C = 0.30`
+  - 其余训练框架保持不变，用于隔离“权重修正 + 新差分特征”的真实贡献
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- Pairwise v2 样本：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_samples_v2.csv`
+- Pairwise v2 schema：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_schema_v2.json`
+- Pairwise v2 模型：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v2_risk_weighted.joblib`
+- 训练摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v2_risk_weighted.json`
+- 系数表：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_coefficients_selection_pairwise_v2_risk_weighted.csv`
+- 逐样本预测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_predictions_selection_pairwise_v2_risk_weighted.csv`
+- 选择权验证摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_selection_pairwise_v2_risk_weighted.json`
+- 选择权分窗口：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_selection_pairwise_v2_risk_weighted.csv`
+- 选择权分日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_selection_pairwise_v2_risk_weighted.csv`
+
+## 新增的数据层结果
+
+- 候选主样本：
+  - `201` 行
+- 可重排交易日：
+  - `81` 天
+- Pairwise v2 样本：
+  - `169` 行
+- Pairwise v2 交易日：
+  - `81` 天
+- `mean_pair_weight_v1`：
+  - `0.9432`
+- `mean_pair_weight_v2`：
+  - `0.8360`
+- `mean_noise_score_v2`：
+  - `0.2496`
+
+## 新增的训练结果
+
+- 样本切分：
+  - `train = 62`
+  - `valid = 33`
+  - `test = 74`
+- 常规指标
+  - `train`
+    - `accuracy = 70.97%`
+    - `weighted_accuracy = 77.28%`
+    - `roc_auc = 0.7979`
+    - `log_loss = 0.4491`
+  - `valid`
+    - `accuracy = 51.52%`
+    - `weighted_accuracy = 57.13%`
+    - `roc_auc = 0.4074`
+    - `log_loss = 0.7888`
+  - `test`
+    - `accuracy = 54.05%`
+    - `weighted_accuracy = 54.11%`
+    - `roc_auc = 0.5344`
+    - `log_loss = 0.8088`
+
+## 新增的选择权验证结果
+
+### `valid_2023`
+
+- 重排发生率 `50.00%`
+- 实际/预测集合重合率 `52.78%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.7936`
+  - `10d forward = +0.6463`
+  - `20d forward = +2.2539`
+  - `20d MFE = +3.0346`
+  - `20d MAE = -0.0137`
+
+### `test_2024`
+
+- 重排发生率 `70.00%`
+- 实际/预测集合重合率 `41.25%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.9031`
+  - `10d forward = +3.5843`
+  - `20d forward = +4.3139`
+  - `20d MFE = +10.2263`
+  - `20d MAE = +1.9786`
+
+### `test_2025_plus`
+
+- 重排发生率 `53.85%`
+- 实际/预测集合重合率 `51.28%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.5143`
+  - `10d forward = +0.1067`
+  - `20d forward = +0.1310`
+  - `20d MFE = +0.5987`
+  - `20d MAE = +1.0169`
+
+### `test_2024_plus`
+
+- 重排发生率 `63.64%`
+- 实际/预测集合重合率 `45.20%`
+- 预测相对实际：
+  - `selection_quality_score_v2p = +0.7499`
+  - `10d forward = +2.2143`
+  - `20d forward = +2.6661`
+  - `20d MFE = +6.4336`
+  - `20d MAE = +1.5998`
+
+## 修改的验证结论
+
+- 第22阶段的正向主结论被保住：
+  - `2024`
+  - `2024+`
+  的选择权改善仍然存在
+- 第23阶段新增了一个更重要的改善：
+  - `2025+` 从第22阶段的负值
+    - `10d = -1.0882`
+    - `20d = -0.4213`
+    转成了轻微正值
+    - `10d = +0.1067`
+    - `20d = +0.1310`
+- 同时：
+  - `2025+` 的 `20d MAE` 恶化从 `+2.5037` 收敛到 `+1.0169`
+  - `2024+` 的 `20d MAE` 也从 `+2.1887` 收敛到 `+1.5998`
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 第23阶段说明上一阶段的本质判断是对的：
+  - pairwise 主线没有问题
+  - 真正需要修的不是标签主干，而是极端尾部样本在训练中的权重
+- 这一步最有信息量的地方不是 `AUC` 小幅上升本身
+- 而是：
+  - `2025+` 从负转正
+  - `MAE` 恶化被明显压缩
+  - 说明“极端波动 / 极端趋势尾部下沉到 pair 权重层”确实击中了失效根因
+- 但也不能过度乐观：
+  - `2024` 的 `MAE` 仍然偏高
+  - 当前版本依旧更偏“收益增强型选择器”，而不是“收益与尾部同时最优”的稳定控制器
+- 更接近本质的结论是：
+  - 第22阶段证明了 pairwise 方向成立
+  - 第23阶段第一次证明了这条路不仅能提升收益，还能开始修正尾部风险失真
+
+## 我的判断
+
+- 第23阶段应判定为：
+  - 真实改善
+  - 路线继续收敛
+  - 已经比 pointwise 时代明显更接近可用状态
+- 下一步最值得做的不是盲目上复杂模型，而是：
+  - 继续针对 `MAE` 最差的残余失败日期做局部复盘
+  - 再决定是否把 `MAE` 直接纳入 pair 优劣标签，还是继续留在权重层
+  - 如果后续还能再压一截 `2024` 的 `MAE`，就可以考虑接正式资金回测
+
+## 快速结论
+
+- `selection_pairwise_v2_risk_weighted` 仍不是最终上线版本
+- 但它已经完成了两个关键跨越：
+  - 保住了 `2024/2024+` 的选择权收益改善
+  - 把 `2025+` 从负值拉回到轻微正值
+- 第24阶段最优路线应是：
+  - 保留 pairwise + 风险权重主线
+  - 专门压剩余 `MAE` 尾部
+  - 然后再决定是否进入正式资金回测闭环
+
+# 2026-04-23 22:59 第24阶段 pairwise v2 残余尾部风险分型
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 22:59`
+- 新增的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_candidate_selection_pairwise_v2_tail_risk.py`
+- 改动内容：
+  - 不继续盲调模型，而是专门分析第23阶段 `pairwise_v2` 里残余的 `20d MAE` 尾部风险
+  - 聚焦 `test_2024_plus` 唯一日期口径，避免和 `test_2024 / test_2025_plus` 重复计数
+  - 只保留：
+    - `selection_changed = 1`
+    - `predicted_minus_actual_candidate_20d_mae_r > 0`
+    的真实高尾部日期
+  - 将这些日期按机制分成两类：
+    - `catastrophic_tail`
+      - `20d MAE` 变差
+      - 且 `20d forward` 也更差
+    - `aggressive_alpha`
+      - `20d MAE` 变差
+      - 但 `20d forward` 更好
+  - 导出日期明细、候选级明细、分型特征漂移表和摘要 JSON
+
+## 参数变化说明
+
+- 新增的分析口径：
+  - `focus_window = test_2024_plus`
+  - `tail_risk_filter`
+    - `selection_changed = 1`
+    - `predicted_minus_actual_candidate_20d_mae_r > 0`
+  - `tail_risk_type`
+    - `catastrophic_tail`
+      - `predicted_minus_actual_candidate_forward_20d_r_multiple <= 0`
+    - `aggressive_alpha`
+      - `predicted_minus_actual_candidate_forward_20d_r_multiple > 0`
+- 新增的分析维度：
+  - `feature_range_pct_zscore_120`
+  - `feature_ret_20d_zscore_120`
+  - `feature_volume_ratio_2v2`
+  - `feature_oi_delta_1d_pct_zscore_120`
+  - `feature_close_position_60d`
+  - `feature_trend_ma20_gap_pct_cs_rank_centered_1d`
+  - `feature_ma20_ma40_gap_pct_cs_zscore_1d`
+  - `feature_close_position_60d_cs_zscore_1d`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- 分型摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_v2_tail_risk_summary.json`
+- 分型日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_v2_tail_risk_dates.csv`
+- 候选级明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_v2_tail_risk_cases.csv`
+- 特征漂移：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_v2_tail_risk_feature_diff.csv`
+
+## 新增的分析结果
+
+- 残余尾部日期总数：
+  - `10` 天
+- 分型分布：
+  - `aggressive_alpha = 4`
+  - `catastrophic_tail = 6`
+
+### `aggressive_alpha`
+
+- 平均 `predicted_minus_actual_20d_r = +23.7853`
+- 平均 `predicted_minus_actual_20d_mae_r = +3.8798`
+- 实际候选画像：
+  - `forward_20d_r = 0.7077`
+  - `mae_20d_r = 0.9312`
+  - `mfe_20d_r = 1.9736`
+- 模型候选画像：
+  - `forward_20d_r = 24.4930`
+  - `mae_20d_r = 4.8110`
+  - `mfe_20d_r = 43.5306`
+- 结论：
+  - 这类日期不是“真错选”
+  - 而是模型选择了更高弹性、也更高回撤的候选
+  - 本质是风险偏好偏激进，而不是监督完全失真
+
+### `catastrophic_tail`
+
+- 平均 `predicted_minus_actual_20d_r = -6.8045`
+- 平均 `predicted_minus_actual_20d_mae_r = +9.2925`
+- 实际候选画像：
+  - `forward_20d_r = 1.6023`
+  - `mae_20d_r = 2.0967`
+  - `mfe_20d_r = 4.3226`
+- 模型候选画像：
+  - `forward_20d_r = -4.1488`
+  - `mae_20d_r = 9.2379`
+  - `mfe_20d_r = 5.3179`
+- 结论：
+  - 这类日期才是下一阶段真正该优先打掉的“灾难型尾部”
+  - 它们不是简单的高风险高收益
+  - 而是高回撤且真实收益也更差
+
+## 特征漂移结论
+
+- 两类尾部都仍然和以下结构差异最相关：
+  - `feature_trend_ma20_gap_pct_cs_rank_centered_1d`
+  - `feature_close_position_60d_cs_zscore_1d`
+  - `feature_ret_20d_zscore_120`
+  - `feature_ma20_ma40_gap_pct_cs_zscore_1d`
+  - `feature_oi_delta_1d_pct_zscore_120`
+- 但第24阶段最关键的新发现不是“哪些特征重要”
+- 而是：
+  - 同样是 `MAE` 变差
+  - 有一部分是值得接受的进攻型风险
+  - 另一部分则是必须压掉的灾难型风险
+
+## 修改的验证结论
+
+- 第23阶段只能看到：
+  - `MAE` 还没完全压住
+- 第24阶段进一步把这个问题拆成了两类不同机制：
+  - `aggressive_alpha`
+    - 可以容忍，甚至可能不该过度抑制
+  - `catastrophic_tail`
+    - 必须优先约束
+- 这意味着下一步不该继续做“统一 MAE 惩罚”
+- 更合理的是：
+  - 只针对灾难型尾部做更强 veto / filter / 风险约束
+  - 避免把本来有效的进攻型 alpha 一起杀掉
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第24阶段最大的价值，不是又找到一个特征
+- 而是把残余风险从“一个连续指标”推进成了“两个不同机制原型”
+- 这一步之后，下一阶段的方向已经更清楚：
+  - 不要再做统一风险惩罚
+  - 而是做灾难型尾部专用的 veto / gating / pair 过滤逻辑
+- 如果这一层再做对，才有资格进入正式资金回测
+
+## 快速结论
+
+- 当前 `pairwise_v2` 的残余问题不是“整体还不稳”
+- 更准确地说，是：
+  - 收益型进攻尾部和灾难型错误尾部还没有完全分开
+- 第25阶段最优路线应是：
+  - 保留现有 pairwise v2 主体
+  - 新增“灾难型尾部 veto”机制
+  - 只压 `catastrophic_tail`
+  - 尽量不误杀 `aggressive_alpha`
+
+# 2026-04-23 23:05 第25阶段 catastrophic tail veto 原型
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 23:05`
+- 新增的文件：
+  - `examples/portfolio_backtesting/validate_qmt_roll_ai_candidate_selection_rights_pairwise_v2_catastrophic_veto.py`
+- 改动内容：
+  - 不改第23阶段模型本体，只在决策层新增一个最小 `catastrophic tail veto` 原型
+  - veto 设计目标非常克制：
+    - 只打掉第24阶段识别出来的灾难型尾部
+    - 尽量不误伤仍然有正收益贡献的 `aggressive_alpha`
+  - 具体做法：
+    - 先复用 `selection_pairwise_v2_risk_weighted` 的同日 pairwise 排序分数
+    - 再对满足灾难型签名的候选，在最终排序分数上施加固定惩罚
+
+## 参数变化说明
+
+- 新增的参数：
+  - `MODEL_TAG = selection_pairwise_v2_catastrophic_veto_v1`
+  - `VETO_PENALTY = 1.5`
+- 新增的 veto 规则：
+  - `direction == short`
+  - `signal in {short_case2, short_case1a}`
+  - `feature_ret_20d_zscore_120 < -0.3`
+  - `feature_close_position_60d_cs_zscore_1d < 0.0`
+  - `feature_range_pct_zscore_120 > 0.5`
+- 修改的参数：
+  - 无新增模型训练参数，本阶段只验证决策层 veto 是否有效
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- 选择权验证摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_summary_selection_pairwise_v2_catastrophic_veto_v1.json`
+- 选择权分窗口：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_windows_selection_pairwise_v2_catastrophic_veto_v1.csv`
+- 选择权分日期：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_rights_days_selection_pairwise_v2_catastrophic_veto_v1.csv`
+
+## 新增的选择权验证结果
+
+### `valid_2023`
+
+- `veto_rate = 9.30%`
+- 预测相对实际：
+  - `10d forward = +0.6224`
+  - `20d forward = +2.3346`
+  - `20d MAE = +0.3362`
+
+### `test_2024`
+
+- `veto_rate = 3.77%`
+- 预测相对实际：
+  - `10d forward = +3.5843`
+  - `20d forward = +4.3139`
+  - `20d MAE = +1.9786`
+- 结论：
+  - `2024` 主体表现基本未被破坏
+
+### `test_2025_plus`
+
+- `veto_rate = 9.68%`
+- 预测相对实际：
+  - `10d forward = +0.2754`
+  - `20d forward = +0.3303`
+  - `20d MAE = +0.9641`
+- 与第23阶段相比：
+  - `10d forward`：`+0.1067 -> +0.2754`
+  - `20d forward`：`+0.1310 -> +0.3303`
+  - `20d MAE`：`+1.0169 -> +0.9641`
+
+### `test_2024_plus`
+
+- `veto_rate = 5.95%`
+- 预测相对实际：
+  - `10d forward = +2.2808`
+  - `20d forward = +2.7446`
+  - `20d MAE = +1.5790`
+- 与第23阶段相比：
+  - `20d forward`：`+2.6661 -> +2.7446`
+  - `20d MAE`：`+1.5998 -> +1.5790`
+
+## 修改的验证结论
+
+- 第24阶段提出的方向被验证为有效：
+  - “只压灾难型尾部，不统一压所有高 MAE 候选”是对的
+- 第25阶段说明：
+  - 一个非常窄的 veto 原型就已经能做到：
+    - 不明显伤害 `2024`
+    - 继续提升 `2025+`
+    - 同时再压一截 `MAE`
+- 这意味着：
+  - 第23阶段学到的 pairwise 主体已经足够好
+  - 下一步更像是在决策层做尾部修边，而不是再推翻整个学习主线
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 这一步最重要的不是 veto 命中了多少行
+- 而是：
+  - `veto_rate` 很低
+  - 但 `2025+` 的 `20d` 和 `MAE` 还能继续同步改善
+  - 说明第24阶段分出来的 `catastrophic_tail` 机制确实是可以被局部约束的
+- 更接近本质的判断是：
+  - 这类 veto 不是在“重新发明模型”
+  - 而是在给已经有效的 pairwise 主体加一个灾难保险丝
+- 当前版本仍然不能视为最终闭环：
+  - veto 规则还是人工原型
+  - 还没有做正式资金回测
+  - 但它已经非常接近“可接回策略层做最小闭环试验”的状态
+
+## 我的判断
+
+- 第25阶段应判定为：
+  - 真实有效
+  - 方向收敛
+  - 已经值得进入正式资金回测原型验证
+- 下一步最值得做的不是继续堆更多 veto 条件
+- 更合理的是：
+  - 把 `selection_pairwise_v2_risk_weighted + catastrophic_veto_v1`
+    接回策略选择权链路
+  - 用同样的每日入选数控制，先做正式资金回测闭环
+  - 再看收益、回撤、滑点是否相对当前实际选择继续改善
+
+## 快速结论
+
+- `catastrophic_veto_v1` 不是终局，但已经是一个有效原型
+- 它证明了：
+  - 灾难型尾部可以被局部压制
+  - 而不必重新牺牲整条 pairwise 选择权主线
+- 第26阶段最优路线应是：
+  - 把当前 `pairwise_v2 + veto_v1` 接回正式资金回测
+  - 做真正的收益/回撤闭环验证
+
+# 2026-04-23 23:14 第26阶段 pairwise 选择权接回正式资金回测原型
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 23:14`
+- 新增的文件：
+  - `examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_backtest.py`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 把第23阶段 `selection_pairwise_v2_risk_weighted` 的同日候选排序逻辑正式接回 `QmtRollPortfolioStrategy`
+  - 新增运行时 pairwise 打分桥接层：
+    - 复用已训练好的 `LogisticRegression pairwise` 模型
+    - 在策略内对同日 `flat_entry` 候选先做特征抽取、横截面标准化、再做排序
+  - 新增可选 `catastrophic_veto_v1` 开关：
+    - 沿用第25阶段验证过的灾难尾部 veto
+    - 只对极窄的灾难型 short 候选施加固定分数惩罚
+  - 将原策略的“按遍历顺序直接开仓”改成：
+    - 先汇总同日候选
+    - 再按 pairwise 分数重排
+    - 最后在并发位约束下决定谁真正开仓
+  - 为候选快照新增以下诊断字段：
+    - `selection_pairwise_enabled`
+    - `selection_pairwise_model_tag`
+    - `selection_pairwise_score`
+    - `selection_pairwise_rank`
+    - `selection_pairwise_veto_flag`
+    - `selection_pairwise_veto_penalty`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `enable_selection_pairwise_v2 = False`
+  - `enable_selection_pairwise_v2_catastrophic_veto = False`
+  - `selection_pairwise_model_path`
+  - `selection_pairwise_summary_path`
+  - `selection_pairwise_veto_penalty = 1.5`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- 正式资金回测汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.json`
+
+## 新增的回测结果
+
+### `ungated_baseline`
+
+- `期末权益 = 0`
+- `总收益 = 0.00%`
+- `最大回撤 = 0.00%`
+- `Sharpe = 0.000`
+- `总滑点 = 0`
+- `总交易次数 = 0`
+
+### `selection_pairwise_v2`
+
+- `期末权益 = 0`
+- `总收益 = 0.00%`
+- `最大回撤 = 0.00%`
+- `Sharpe = 0.000`
+- `总滑点 = 0`
+- `总交易次数 = 0`
+
+### `selection_pairwise_v2_catastrophic_veto_v1`
+
+- `期末权益 = 0`
+- `总收益 = 0.00%`
+- `最大回撤 = 0.00%`
+- `Sharpe = 0.000`
+- `总滑点 = 0`
+- `总交易次数 = 0`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 结果解释
+
+- 这次第26阶段不是策略报错失败，而是正式资金回测所在环境没有可用历史成交数据：
+  - 引擎日志显示所有合约 `Historical data loading completed, data count: 0`
+  - 最终三组实验都变成了：
+    - `0` 天
+    - `0` 笔交易
+    - `0` 条收益曲线
+- 因此这一版能确认的只有两件事：
+  - 代码层面的“pairwise 选择权接回策略主链路”已经完成
+  - 工程闭环已经打通，且不会因为新逻辑直接崩溃
+- 但这一版还不能回答最关键的问题：
+  - 接回正式资金后，收益/回撤/滑点是否真的优于基线
+
+## 新增的工程判断
+
+- 第26阶段当前应判定为：
+  - `工程接线完成`
+  - `正式回测口径已具备`
+  - `但数据环境为空，暂时无法形成有效资金结论`
+- 更接近本质的判断是：
+  - 现在的主要瓶颈已经不再是模型结构
+  - 而是当前回测环境没有可用行情数据，导致正式资金验证失真为全零结果
+
+## 快速结论
+
+- `pairwise_v2 + catastrophic_veto_v1` 已经成功接回正式策略
+- 但第26阶段正式资金结论目前是 `无效空结果`
+- 下一步不是继续调模型
+- 而是先恢复可用历史数据，再复跑同一套正式资金回测对比
+
+# 2026-04-23 23:38 第27阶段 回测环境修复后正式资金复跑
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 23:38`
+- 本阶段没有新增策略代码文件
+- 核心修复内容：
+  - 定位并修复了第26阶段“正式资金回测全零”的环境问题
+  - 根因不是策略逻辑，而是 `vnpy` 的数据库目录优先级：
+    - 运行目录存在 `.vntrader/` 时，会优先使用当前目录数据库
+    - 第26阶段临时生成的仓库内 `.vntrader/database.db` 是空库
+    - 导致回测误连空库，才出现 `0` 交易、`0` 收益、`0` 滑点
+  - 本阶段把仓库内 `.vntrader` 同步回用户原先一直在用的有效库后重新复跑
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 修改的环境结论
+
+- 第26阶段的“全零回测”判定为：
+  - `无效环境结果`
+  - 不能用于评估 `pairwise_v2` 本身
+- 修复后重新确认：
+  - 有效数据库概览数：`dbbaroverview = 4163`
+  - 有效数据库K线数：`dbbardata = 979812`
+  - 复跑时日志已恢复正常非零取数，例如：
+    - `ru2005.SHFE data count = 232`
+    - `si2401.GFEX data count = 242`
+    - `sp2201.SHFE data count = 243`
+
+## 修改的回测结果
+
+### `ungated_baseline`
+
+- 第26阶段错误结果：
+  - `期末权益 = 0`
+  - `总收益 = 0.00%`
+  - `最大回撤 = 0.00%`
+  - `Sharpe = 0.000`
+  - `总滑点 = 0`
+  - `总交易次数 = 0`
+- 第27阶段修复后有效结果：
+  - `期末权益 = 2,612,605`
+  - `总收益 = 1206.30%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.984`
+  - `总滑点 = 355,230`
+  - `总交易次数 = 1169`
+
+### `selection_pairwise_v2`
+
+- 第26阶段错误结果：
+  - `期末权益 = 0`
+  - `总收益 = 0.00%`
+  - `最大回撤 = 0.00%`
+  - `Sharpe = 0.000`
+  - `总滑点 = 0`
+  - `总交易次数 = 0`
+- 第27阶段修复后有效结果：
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+
+### `selection_pairwise_v2_catastrophic_veto_v1`
+
+- 第26阶段错误结果：
+  - `期末权益 = 0`
+  - `总收益 = 0.00%`
+  - `最大回撤 = 0.00%`
+  - `Sharpe = 0.000`
+  - `总滑点 = 0`
+  - `总交易次数 = 0`
+- 第27阶段修复后有效结果：
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+
+## 新增的数据产物
+
+- 正式资金复跑汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.json`
+- `selection_pairwise_v2_catastrophic_veto_v1` 全套回测产物：
+  - `daily / trades / positions / candidate_snapshots / statistics / dashboard`
+
+## 新增的比较结论
+
+- 相对 `ungated_baseline`，`selection_pairwise_v2`：
+  - `期末权益 +12,030`
+  - `总收益 +6.015%`
+  - `Sharpe +0.0022`
+  - `最大回撤百分比 近乎不变`
+  - `交易次数 不变`
+  - `总滑点 +210`
+- 相对 `ungated_baseline`，`selection_pairwise_v2_catastrophic_veto_v1`：
+  - 与 `selection_pairwise_v2` 完全相同
+  - 说明当前正式资金链路下：
+    - 要么 veto 没有触发
+    - 要么触发后没有改变最终入选集合
+- 进一步检查候选快照后确认：
+  - `selection_pairwise_enabled_sum = 230`
+  - `selection_pairwise_veto_flag_sum = 0`
+  - 所以这次正式资金回测里，`catastrophic_veto_v1` 实际上一次都没有命中
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第27阶段最重要的，不是收益多了 `12,030`
+- 而是：
+  - 现在终于拿到了有效的正式资金闭环
+  - `pairwise_v2` 的正向性在真实资金曲线里被保住了
+- 但也要实话实说：
+  - 提升幅度目前还不大
+  - `catastrophic_veto_v1` 接回正式策略后没有形成额外增益
+  - 这说明离线选择权验证里的一部分 veto 效果，在正式资金链路里被稀释了
+
+## 快速结论
+
+- 第26阶段的问题已经确认是环境误连空库，不是策略失效
+- 修复后正式回测表明：
+  - `selection_pairwise_v2` 相对基线有小幅正向增益
+  - `catastrophic_veto_v1` 暂时没有带来额外收益
+- 下一步最合理的不是继续怀疑数据
+- 而是直接复盘：
+  - 为什么 veto 在线下有效、接回正式策略后却没有增量
+
+# 2026-04-23 23:53 第28阶段 veto 正式链路失效定位
+
+## 版本改动
+
+- 改动时间点：`2026-04-23 23:53`
+- 新增的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_runtime_veto_gap.py`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 新增 `veto` 失效对账脚本，专门比较：
+    - 离线训练样本口径
+    - 运行时重建特征口径
+    - 正式回测候选快照里真实记录到的 `veto_flag`
+  - 给策略候选快照新增运行时 veto 诊断字段：
+    - `selection_pairwise_feature_ret_20d_zscore_120`
+    - `selection_pairwise_feature_close_position_60d_cs_zscore_1d`
+    - `selection_pairwise_feature_range_pct_zscore_120`
+    - `selection_pairwise_runtime_veto_match_local`
+  - 在策略侧补了一层本地 safeguard：
+    - 即使 helper 没把 `veto_flag` 传下来
+    - 也会再用运行时候选特征本地判断一次是否应命中 veto
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的数据产物
+
+- veto 失效对账摘要：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_runtime_veto_gap_summary.json`
+- veto 失效对账明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_runtime_veto_gap_cases.csv`
+
+## 新增的分析结果
+
+- 正式回测里 `selection_pairwise_enabled` 候选共：
+  - `230` 行
+  - `101` 个交易日
+- 对账后发现：
+  - 离线样本口径下满足 `veto` 条件的候选：`4`
+  - 按运行时重建特征重新计算后满足 `veto` 条件的候选：`5`
+  - 但正式回测候选快照里真实记录的 `veto_flag`：`0`
+
+## 修改的回测结果
+
+- 我又单独重跑了修补后的 `selection_pairwise_v2_catastrophic_veto_v1`
+- 结果仍然与第27阶段一致：
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+- 同时候选快照仍显示：
+  - `selection_pairwise_veto_flag_sum = 0`
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第28阶段把问题进一步收窄了：
+  - `catastrophic_veto_v1` 失效不是因为正式链路里没有这类候选
+  - 也不是因为数据库或回测环境还有问题
+  - 而是：
+    - 正式链路里存在应被 veto 的候选
+    - 但 `veto_flag` 没有真正进入最终策略决策和候选快照结果
+- 当前最接近本质的判断是：
+  - 问题不在高层研究路线
+  - 而在 `helper -> strategy -> snapshot` 这一段仍然有口径脱节
+
+## 快速结论
+
+- 第28阶段已经证明：
+  - 正式链路里确实存在应被 veto 的候选
+  - 但 `veto_flag` 仍未真正生效
+- 下一步最应该做的不是继续调 veto 条件
+- 而是直接读取这次新增的运行时诊断字段，继续把脱节点锁到具体候选和具体交易日
+
+# 2026-04-24 00:13 第29阶段 pairwise 运行时窗口修复与 veto 真正生效复盘
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 00:13`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 把正式策略 `ArrayManager` 的历史窗口从最小 `120` 提高到最小 `140`
+  - 根因是运行时 `pairwise_v2` 特征里存在 `feature_ret_20d_zscore_120`
+  - 该特征不是简单的 `120` 根窗口问题，而是：
+    - 先计算 `20d return`
+    - 再对 `20d return` 做 `zscore(120)`
+  - 因此正式现场至少需要 `140` 根历史，之前的 `120` 根会让该特征在正式策略里系统性塌成 `0.0`
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 修复前，正式候选快照里：
+  - `selection_pairwise_feature_ret_20d_zscore_120` 对全部 `selection_pairwise_enabled` 候选都等于 `0.0`
+  - 所以 `selection_pairwise_runtime_veto_match_local = 0`
+  - `selection_pairwise_veto_flag = 0`
+- 修复后，正式候选快照恢复正常：
+  - `selection_pairwise_enabled = 144`
+  - `selection_pairwise_veto_flag = 7`
+  - `selection_pairwise_runtime_veto_match_local = 7`
+  - `selection_pairwise_feature_ret_20d_zscore_120` 不再全零
+- 说明第28阶段的真正根因不是 `helper -> strategy -> snapshot` 单纯传值丢失
+- 而是更底层的运行时样本历史窗口不足，导致 veto 关键特征失真
+
+## 修改的回测结果
+
+- 在修复 `ArrayManager` 历史窗口后，重新完整回测：
+  - `selection_pairwise_v2`
+  - `selection_pairwise_v2_catastrophic_veto_v1`
+- 两组新的正式统计结果都变为：
+  - `期末权益 = 460,330`
+  - `总收益 = 130.17%`
+  - `最大回撤 = -53.76%`
+  - `Sharpe = 0.251`
+  - `总滑点 = 101,985`
+  - `总交易次数 = 824`
+- 相比第27阶段记录的旧结果：
+  - 这次结果发生了明显变化
+  - 说明之前正式策略里的 `pairwise` 运行时特征口径本身就是错的
+  - 旧的资金曲线结论不能再直接当成当前版本依据
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_catastrophic_veto_v1` 候选快照首次出现真实 veto 命中：
+  - `2020-02-03 AP.CZCE`
+  - `2022-07-06 SM.CZCE`
+  - `2024-03-05 hc.SHFE`
+  - `2024-06-27 SM.CZCE`
+  - `2024-12-18 jm.DCE`
+  - `2025-03-10 SH.CZCE`
+  - `2026-03-02 SH.CZCE`
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第29阶段最关键的不是 veto 命中了 `7` 次
+- 而是：
+  - 现在终于确认正式策略现场的 `pairwise_v2` 关键特征口径和离线研究口径重新对齐了
+  - 之前那种“veto 理论有效、正式策略完全不触发”的现象，本质上是运行时历史深度不足，不是 veto 逻辑本身错
+- 但同时也暴露了另一个更本质的事实：
+  - 即使 veto 已经真实触发
+  - `selection_pairwise_v2_catastrophic_veto_v1` 的正式资金结果仍与 `selection_pairwise_v2` 完全一致
+- 我继续逐日对账后确认：
+  - 这 `7` 次 veto 都只改变了候选分数和排序
+  - 但没有改变最终开仓集合
+  - 原因不是 veto 没生效
+  - 而是这些交易日里：
+    - 组合仓位上限没有被打满
+    - 或者其他候选本身不可开
+    - 所以 veto 没有形成真正的交易替换
+
+## 快速结论
+
+- 第29阶段已经把问题走到本质：
+  - `catastrophic_veto_v1` 现在技术上已经接通
+  - 正式策略里也确实会触发
+  - 但在当前组合约束下，它还不具备足够的“选择稀缺性”
+- 下一步不该继续怀疑接线
+- 更合理的是二选一：
+  - 要么把 veto 改造成真正能替换入选名额的 hard filter
+  - 要么只保留 `pairwise_v2`，承认当前 veto 在正式组合层没有边际价值
+
+# 2026-04-24 00:21 第30阶段 catastrophic veto hard filter 正式验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 00:21`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 改动内容：
+  - 新增实验开关 `enable_selection_pairwise_v2_catastrophic_hard_filter`
+  - 当 `selection_pairwise_veto_flag = 1` 且开启该开关时：
+    - 直接把该候选从 `native_openable` 候选集合里剔除
+    - `skip_reason` 记为 `selection_pairwise_catastrophic_veto`
+  - 这次不是继续调 `penalty`
+  - 而是专门验证：
+    - 如果把 `catastrophic veto` 升格为真正影响开仓集合的硬过滤
+    - 它到底能不能带来正式资金改进
+
+## 参数变化说明
+
+- 新增的参数：
+  - `enable_selection_pairwise_v2_catastrophic_hard_filter = True`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的回测结果
+
+- 新增正式回测版本：
+  - `qmt_roll_selection_pairwise_v2_catastrophic_hard_filter_v1`
+- 正式回测结果：
+  - `期末权益 = 267,255`
+  - `总收益 = 33.63%`
+  - `最大回撤 = -61.30%`
+  - `Sharpe = 0.088`
+  - `总滑点 = 85,085`
+  - `总交易次数 = 788`
+
+## 修改的回测结果
+
+- 对照版本 `selection_pairwise_v2`（第29阶段修正后）：
+  - `期末权益 = 460,330`
+  - `总收益 = 130.17%`
+  - `最大回撤 = -53.76%`
+  - `Sharpe = 0.251`
+  - `总滑点 = 101,985`
+  - `总交易次数 = 824`
+- `hard_filter_v1` 相对 `selection_pairwise_v2`：
+  - `期末权益 -193,075`
+  - `总收益 -96.54%`
+  - `最大回撤更差 7.54 个百分点`
+  - `Sharpe -0.163`
+  - `总交易次数 -36`
+  - `总滑点 -16,900`
+
+## 删除的回测结果
+
+- 无
+
+## 新增的分析结果
+
+- `hard filter` 版本里：
+  - `selection_pairwise_veto_flag = 7`
+  - `skip_reason = selection_pairwise_catastrophic_veto` 也是 `7`
+  - 说明这次 veto 已经真实改变了候选集合，不再只是改分数
+- 相比 `selection_pairwise_v2`：
+  - 候选状态发生变化的行数：`30`
+  - 其中：
+    - `opened -> skipped`：`23`
+    - `skipped -> opened`：`7`
+- 这 `7` 次 hard veto 对应的正式交易日是：
+  - `2020-02-03 AP.CZCE`
+  - `2022-07-06 SM.CZCE`
+  - `2024-03-05 hc.SHFE`
+  - `2024-06-27 SM.CZCE`
+  - `2024-12-18 jm.DCE`
+  - `2025-03-10 SH.CZCE`
+  - `2026-03-02 SH.CZCE`
+- 但硬过滤不仅仅少做了这 `7` 笔
+- 它还通过权益路径改变了后续仓位与开仓容量，带出更多连锁差异
+
+## 我的判断
+
+- 第30阶段已经把 `catastrophic veto` 的价值边界验证清楚了：
+  - 把它从 soft veto 升格成 hard filter 之后
+  - 它确实能改变正式开仓集合
+  - 但结果不是改善，而是明显恶化
+- 这说明：
+  - 之前的问题不是“veto 不够强”
+  - 而是这个 veto 规则本身不具备足够稳健的跨周期 alpha
+  - 一旦真的给它交易级否决权，它会误杀有效交易并破坏组合路径
+
+## 快速结论
+
+- `catastrophic_veto_v1`：
+  - 作为 soft veto，在正式组合层没有边际价值
+  - 作为 hard filter，在正式资金层明显有害
+- 所以下一步不该继续沿着 veto 这条线加码
+- 更合理的方向是：
+  - 回到 `pairwise_v2` 主线
+  - 把精力放在排序本体，而不是再发明新的 veto 规则
+
+# 2026-04-24 00:44 第31阶段 当前版本完整标准回测重跑与经验沉淀
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 00:44`
+- 新增的文件：
+  - `memory.md`
+- 改动内容：
+  - 使用标准入口 `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_backtest.py`
+  - 对当前版本重新完整重跑：
+    - `ungated_baseline`
+    - `selection_pairwise_v2`
+    - `selection_pairwise_v2_catastrophic_veto_v1`
+  - 所有实验都覆盖：
+    - `2020-01-01 -> 2026-04-30`
+    - `since_2020 ~ since_2026` 分窗结果
+  - 把这次踩到的关键经验沉淀到项目根目录 `memory.md`
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的回测结果
+
+- 新的完整汇总文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_backtest_summary.json`
+
+## 修改的回测结果
+
+- 当前版本 `ungated_baseline` 正式全样本结果：
+  - `期末权益 = 464,320`
+  - `总收益 = 132.16%`
+  - `最大回撤 = -52.86%`
+  - `Sharpe = 0.254`
+  - `总滑点 = 103,795`
+  - `总交易次数 = 828`
+- 当前版本 `selection_pairwise_v2` 正式全样本结果：
+  - `期末权益 = 460,330`
+  - `总收益 = 130.17%`
+  - `最大回撤 = -53.76%`
+  - `Sharpe = 0.251`
+  - `总滑点 = 101,985`
+  - `总交易次数 = 824`
+- 当前版本 `selection_pairwise_v2_catastrophic_veto_v1` 正式全样本结果：
+  - `期末权益 = 460,330`
+  - `总收益 = 130.17%`
+  - `最大回撤 = -53.76%`
+  - `Sharpe = 0.251`
+  - `总滑点 = 101,985`
+  - `总交易次数 = 824`
+- 相对 `ungated_baseline`：
+  - `selection_pairwise_v2`：
+    - `期末权益 -3,990`
+    - `总收益 -1.995%`
+    - `最大回撤更差 0.896 个百分点`
+    - `Sharpe -0.0033`
+    - `交易次数 -4`
+  - `selection_pairwise_v2_catastrophic_veto_v1`：
+    - 与 `selection_pairwise_v2` 完全相同
+
+## 新增的分析结果
+
+- 当前版本下，`pairwise_v2` 不再优于 `baseline`
+- 更精确地说：
+  - `2020-2026` 全样本上，当前 `baseline` 小幅优于 `pairwise_v2`
+  - `catastrophic_veto_v1` 仍然没有任何额外边际价值
+- 分窗结果显示：
+  - `since_2021`：`pairwise_v2` 明显优于 `baseline`
+  - 但 `since_2020` 全样本被拖回去
+  - `since_2022` 以后，`baseline / pairwise / soft veto` 三者结果几乎完全一致
+- 这说明：
+  - `pairwise_v2` 的增益并不稳定地分布在整个 `2020-2026`
+  - 它更像对部分时间段有用，而不是已经具备穿越周期的稳定优势
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第31阶段最重要的不是重新得到一组数字
+- 而是把当前版本的正式结论重新拉回同一口径：
+  - 在修复运行时特征窗口后
+  - 必须重跑完整标准脚本
+  - 否则旧版 `baseline` 与新版 `pairwise` 对比没有意义
+- 当前完整重跑后的结论很直接：
+  - `pairwise_v2` 不是没有价值
+  - 但它还没有稳定到足以在全样本上战胜当前 `baseline`
+  - `soft veto` 继续确认无效
+  - `hard filter` 已经在第30阶段确认有害
+
+## 快速结论
+
+- 当前版本下，应当把正式主结论更新为：
+  - `baseline` 仍是更稳的主版本
+  - `pairwise_v2` 继续保留为研究分支，但暂不应视为正式升级
+  - `catastrophic veto` 这条线可以阶段性收口
+- 这次经验也已经写入项目根目录 `memory.md`
+- 后续如果再动运行时特征口径，必须先想到：
+  - 嵌套特征需要的真实历史窗口
+  - 以及完整标准回测必须重跑
+
+# 2026-04-24 00:51 第32阶段 第27阶段与第31阶段结果断层根因审计
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 00:51`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `memory.md`
+- 改动内容：
+  - 新增审计参数 `array_manager_size_floor`
+  - 允许在同一份当前代码里直接回放：
+    - `ArrayManager = 120`
+    - `ArrayManager = 140`
+  - 目标不是做新策略优化
+  - 而是验证：
+    - 第27阶段 `1206% / 1212%`
+    - 第31阶段 `132% / 130%`
+    - 到底是不是同一个主因造成的断层
+
+## 参数变化说明
+
+- 新增的参数：
+  - `array_manager_size_floor`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的回测结果
+
+- `ungated_baseline @ array_manager_size_floor = 120`
+  - `期末权益 = 2,612,605`
+  - `总收益 = 1206.30%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.984`
+  - `总滑点 = 355,230`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2 @ array_manager_size_floor = 120`
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 对照 `array_manager_size_floor = 140` 的当前默认结果：
+  - `ungated_baseline`
+    - `期末权益 = 464,320`
+    - `总收益 = 132.16%`
+    - `最大回撤 = -52.86%`
+    - `Sharpe = 0.254`
+    - `总滑点 = 103,795`
+    - `总交易次数 = 828`
+  - `selection_pairwise_v2`
+    - `期末权益 = 460,330`
+    - `总收益 = 130.17%`
+    - `最大回撤 = -53.76%`
+    - `Sharpe = 0.251`
+    - `总滑点 = 101,985`
+    - `总交易次数 = 824`
+
+## 新增的分析结果
+
+- 在同一份当前代码里，仅仅把 `array_manager_size_floor` 从 `140` 回放到 `120`：
+  - `ungated_baseline` 就精确回到了第27阶段那组历史结果
+  - `selection_pairwise_v2` 也精确回到了第27阶段那组历史结果
+- 这说明：
+  - 第27阶段和第31阶段之间的巨大断层
+  - 主因不是数据库、不是回测区间、不是用户记忆偏差
+  - 而就是：
+    - 我们后面为了修 AI 运行时特征
+    - 把主策略共用的 `ArrayManager` 从 `120` 全局抬到了 `140`
+    - 结果把主策略定义本身也一起改坏了
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第32阶段已经把因果关系锁死了：
+  - 不是“第27阶段结果可疑”
+  - 也不是“第31阶段数据不对”
+  - 而是两者对应的是不同的主策略运行口径
+- 更本质地说：
+  - `am120` 能保住主策略原本那条高收益资金曲线
+  - `am140` 能让 AI 运行时特征不再塌成零
+  - 但把这两件事粗暴合并在同一个共享 `ArrayManager` 上，是错误设计
+
+## 快速结论
+
+- 现在真正的设计结论已经清楚：
+  - `ArrayManager = 120` 才是当前主策略历史有效口径
+  - AI 运行时如果需要更深历史，应该走独立历史供给
+  - 不应再通过全局抬高主策略共享历史窗口来修
+- 也就是说：
+  - 第27阶段那组一千多收益的非 AI 基线是对的
+  - 第31阶段那组一百多收益并不是“新发现”
+  - 而是一次错误修法把主策略定义带偏后的结果
+
+# 2026-04-24 01:23 第33阶段 正确修法落地：主策略恢复 am120，AI 改走独立历史
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 01:23`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py`
+  - `memory.md`
+- 改动内容：
+  - 把主策略默认 `array_manager_size_floor` 恢复为 `120`
+  - 保留该参数仅用于审计/实验，不再把 `140` 作为正式默认
+  - `pairwise` 运行时不再依赖共享 `ArrayManager` 提供全部历史
+  - 改为优先基于 `contract_vt_symbol` 直接加载独立合约日线历史，单独构造运行时特征
+  - 同时补齐了 `target_contract` 为字符串时的兼容逻辑，以及历史日期比较的类型兼容
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - `array_manager_size_floor` 默认值从 `140` 恢复为 `120`
+- 删除的参数：
+  - 无
+
+## 修改的回测结果
+
+- 使用正确修法后，标准完整脚本重新回到第27阶段同口径结果：
+  - `ungated_baseline`
+    - `期末权益 = 2,612,605`
+    - `总收益 = 1206.30%`
+    - `最大回撤 = -37.34%`
+    - `Sharpe = 0.984`
+    - `总滑点 = 355,230`
+    - `总交易次数 = 1169`
+  - `selection_pairwise_v2`
+    - `期末权益 = 2,624,635`
+    - `总收益 = 1212.32%`
+    - `最大回撤 = -37.34%`
+    - `Sharpe = 0.986`
+    - `总滑点 = 355,440`
+    - `总交易次数 = 1169`
+  - `selection_pairwise_v2_catastrophic_veto_v1`
+    - `期末权益 = 2,624,635`
+    - `总收益 = 1212.32%`
+    - `最大回撤 = -37.34%`
+    - `Sharpe = 0.986`
+    - `总滑点 = 355,440`
+    - `总交易次数 = 1169`
+
+## 新增的分析结果
+
+- 这次修法后的正式候选快照显示：
+  - `selection_pairwise_enabled = 230`
+  - `selection_pairwise_veto_flag = 5`
+  - `selection_pairwise_runtime_veto_match_local = 5`
+  - `selection_pairwise_feature_ret_20d_zscore_120` 不再全零
+- 说明现在已经同时满足两件事：
+  - 主策略回到原来有效的 `am120` 历史口径
+  - AI 运行时特征也恢复到正确口径
+- 但正式资金结果继续说明：
+  - `soft veto` 即使已经真实触发
+  - 仍然没有带来额外边际收益
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第33阶段才是这轮问题的真正闭环：
+  - 不是简单把 `140` 改回 `120`
+  - 也不是简单承认 AI 特征会塌零
+  - 而是把两条本来冲突的需求拆开：
+    - 主策略继续用历史有效口径
+    - AI 运行时单独补历史
+- 这样做之后：
+  - 非 AI 基线恢复到你记忆里的那组一千多收益
+  - AI 分支也恢复到之前相对基线小幅正向的结果
+
+## 快速结论
+
+- 当前正确的正式主结论应恢复为：
+  - `ungated_baseline = 1206.30%`
+  - `selection_pairwise_v2 = 1212.32%`
+  - `soft veto` 依然无额外价值
+- 后续若继续研究 AI：
+  - 应该沿 `pairwise_v2` 主线继续
+  - 但不要再通过修改主策略共享 `ArrayManager` 来满足 AI 特征需求
+
+# 2026-04-24 01:47 第34阶段 pairwise 同日仓位倾斜实验
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 01:47`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `memory.md`
+- 改动内容：
+  - 新增实验开关 `enable_selection_pairwise_v2_volume_tilt`
+  - 新增实验参数 `selection_pairwise_volume_tilt_strength`
+  - 新方案不是继续改入选集合
+  - 而是在`同日多个已开仓候选`里，按 `pairwise` 排名做对称式仓位倾斜：
+    - top rank 稍微加仓
+    - bottom rank 稍微减仓
+    - 平均权重保持在 `1`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `enable_selection_pairwise_v2_volume_tilt`
+  - `selection_pairwise_volume_tilt_strength`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 当前正式主回测里，`pairwise_v2` 真正改变开仓集合的只有：
+  - `2` 个交易日
+  - `4` 条候选状态变化
+- 这说明：
+  - 当前 rank-only 接入方式天然杠杆过低
+  - 更有潜力的方向是“同日已开仓候选之间的仓位重分配”
+- 进一步分析训练标签后发现：
+  - 在同日多个已开仓候选里，top-bottom 平均 `20d R` 差值为正
+  - 但胜率不到一半，属于“少数大胜、很多小负”的结构
+  - 更适合做温和仓位倾斜，不适合做简单硬决策
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_v015`
+  - `期末权益 = 2,652,200`
+  - `总收益 = 1226.10%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.989`
+  - `总滑点 = 352,240`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_v020`
+  - `期末权益 = 2,563,020`
+  - `总收益 = 1181.51%`
+  - `最大回撤 = -37.75%`
+  - `Sharpe = 0.958`
+  - `总滑点 = 350,970`
+  - `总交易次数 = 1172`
+- `selection_pairwise_v2_volume_tilt_v025`
+  - `期末权益 = 2,703,930`
+  - `总收益 = 1251.97%`
+  - `最大回撤 = -37.13%`
+  - `Sharpe = 0.996`
+  - `总滑点 = 354,170`
+  - `总交易次数 = 1171`
+- `selection_pairwise_v2_volume_tilt_v035`
+  - `期末权益 = 2,751,390`
+  - `总收益 = 1275.69%`
+  - `最大回撤 = -35.83%`
+  - `Sharpe = 1.018`
+  - `总滑点 = 351,110`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 对照 `selection_pairwise_v2` 基线：
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+- 相比 `pairwise_v2`：
+  - `v015`：
+    - `期末权益 +27,565`
+    - `总收益 +13.78%`
+    - `最大回撤改善 0.14 个百分点`
+    - `Sharpe +0.003`
+  - `v025`：
+    - `期末权益 +79,295`
+    - `总收益 +39.65%`
+    - `最大回撤改善 0.21 个百分点`
+    - `Sharpe +0.010`
+  - `v035`：
+    - `期末权益 +126,755`
+    - `总收益 +63.38%`
+    - `最大回撤改善 1.51 个百分点`
+    - `Sharpe +0.032`
+  - `v020`：
+    - 明显劣于 `pairwise_v2`
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第34阶段第一次给出了一条比 `rank-only` 更值得继续的 AI 主线：
+  - 同日仓位倾斜
+- 但结果也说明这条线不能简单按“强度越大越好”来理解：
+  - `0.15`、`0.25`、`0.35` 都比 `pairwise_v2` 好
+  - `0.20` 却反而更差
+  - 说明这里存在明显的整数手数阈值和权益路径反馈
+- 从穿越周期角度看：
+  - `0.35` 全样本最好
+  - 但 `since_2024` 变成了负收益
+  - 激进强度不够稳
+  - `0.15` 更像保守且跨窗口更平衡的版本
+
+## 快速结论
+
+- `pairwise` 这条线并没有走到头
+- 只是当前最优研究方向已经从：
+  - “替换谁”
+  - 转向了：
+  - “同日已开仓候选怎么分配仓位”
+- 如果现在要给一个更稳的下一步方向：
+  - 优先继续沿 `volume_tilt` 主线
+  - 首先考虑 `0.15` 这种保守强度
+  - 而不是直接用 `0.35` 这种全样本最强但窗口波动更大的版本
+
+# 2026-04-24 02:39 第35阶段 directional volume tilt 根因修复与正式复核
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 02:39`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 修复 `directional volume tilt` 的一个真实逻辑错误
+  - 原来的 `_apply_selection_pairwise_volume_tilt` 会先检查全局 `selection_pairwise_volume_tilt_strength`
+  - 当 directional 实验把全局强度显式设成 `0.0`、仅使用 `selection_pairwise_volume_tilt_long_strength/short_strength` 时
+  - 函数会在解析方向强度前提前 `return`
+  - 导致之前“directional tilt 完全不生效”的结论是伪结论
+  - 修复后，先解析 long/short 实际生效强度，再判断是否整体为 `0`
+  - 同时继续保留运行时快照诊断字段，验证策略现场是否真的触发了仓位倾斜
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- `directional tilt` 之前失效，不是引擎没有把参数写进策略
+- 也不是 `pairwise` 运行时没有进入正式链路
+- 根因就是策略内部的提前返回写错了
+- 修复后，`long015` 诊断快照里：
+  - `selection_pairwise_volume_tilt_applied = 159`
+  - 已开仓候选里实际改手数的有 `86` 行
+  - 覆盖 `56` 个交易日
+- 修复后，`short035` 正式快照里：
+  - 已开仓候选实际改手数 `34` 行
+  - 覆盖 `16` 个交易日
+- 修复后，`global035` 正式快照里：
+  - 已开仓候选实际改手数 `155` 行
+  - 覆盖 `81` 个交易日
+  - 其中 `long = 121` 行、`short = 34` 行
+- 这说明当前 `volume tilt` 的主贡献明显来自`多头侧倾斜`
+- 空头侧并非完全无效，但边际远弱于多头侧
+- 同时，第34阶段的 `global v015 / v025 / v035` 结果已经在当前正确代码口径下重新复现
+- 说明第34阶段主结论本身是对的
+- 错的是后面把 directional 假失效当成策略层结论
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_diag3`
+  - `期末权益 = 2,677,845`
+  - `总收益 = 1238.92%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.992`
+  - `总滑点 = 354,830`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_global035_fix1`
+  - `期末权益 = 2,751,390`
+  - `总收益 = 1275.69%`
+  - `最大回撤 = -35.83%`
+  - `Sharpe = 1.018`
+  - `总滑点 = 351,110`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_short035_fix1`
+  - `期末权益 = 2,631,755`
+  - `总收益 = 1215.88%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 352,260`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_short035_fix1`
+  - `期末权益 = 2,681,480`
+  - `总收益 = 1240.74%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.996`
+  - `总滑点 = 351,640`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015`
+  - 之前错误结论：与 `pairwise_v2` 完全相同
+  - 修复后正确结果：
+    - `期末权益 = 2,677,845`
+    - `总收益 = 1238.92%`
+    - `最大回撤 = -37.20%`
+    - `Sharpe = 0.992`
+    - `总滑点 = 354,830`
+    - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_short035`
+  - 之前错误结论：与 `pairwise_v2` 完全相同
+  - 修复后正确结果：
+    - `期末权益 = 2,631,755`
+    - `总收益 = 1215.88%`
+    - `最大回撤 = -37.34%`
+    - `Sharpe = 0.990`
+    - `总滑点 = 352,260`
+    - `总交易次数 = 1169`
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第35阶段最关键的不是“又找到一组更好数字”
+- 而是把一个会误导后续研究方向的伪结论纠正了：
+  - `directional tilt` 并没有失效
+  - 是代码提前返回把它短路了
+- 修复后看正式资金结果：
+  - `long015` 明显优于 `pairwise_v2`
+  - `short035` 只有小幅边际改善
+  - `long015 + short035` 比单独 `long015` 略强一点
+  - 但最强全样本结果仍然是第34阶段已经验证过的 `global035`
+- 从穿越周期和稳健性角度看：
+  - 现在真正值得继续深耕的是`多头侧主导的仓位倾斜`
+  - 而不是把 long/short 完全对称看待
+
+# 2026-04-24 09:40 第36阶段 long015 与 long015+short035 分窗验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 09:40`
+- 修改的文件：
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 没有再改策略逻辑
+  - 这一步专门做修复后 `directional tilt` 的正式分窗验证
+  - 只验证当前最值得继续推进的两组：
+    - `long015`
+    - `long015 + short035`
+  - 核心目标不是再看全样本是否更高
+  - 而是判断它们是否真的符合“穿越周期”的要求
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- `long015` 的分窗表现相对均衡：
+  - `since_2021` 明显优于 `pairwise_v2`
+  - `since_2022`、`since_2023` 仍保持小幅正向
+  - `since_2025` 提升明显
+  - 只有 `since_2024` 轻微变差
+  - `since_2026` 基本持平
+- `long015 + short035` 的问题也被正式确认：
+  - 全样本比 `long015` 再高一点
+  - `since_2022` 也明显更强
+  - 但 `since_2023` 出现显著恶化
+    - 期末权益相对基线 `-67,220`
+    - 总收益相对基线 `-33.61%`
+    - 最大回撤恶化 `6.82` 个百分点
+    - Sharpe `-0.0716`
+- 这说明：
+  - `short035` 不是单纯“加一点就更好”
+  - 它会把组合带向更强的年份依赖
+  - 不满足当前“能穿越周期”的要求
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_sweep_fix1`
+  - `期末权益 = 2,677,845`
+  - `总收益 = 1238.92%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.992`
+  - `总滑点 = 354,830`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_short035_sweep_fix1`
+  - `期末权益 = 2,681,480`
+  - `总收益 = 1240.74%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.996`
+  - `总滑点 = 351,640`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 如果只看全样本：
+  - `long015 + short035` 比 `long015` 略高
+- 但如果按“穿越周期”标准判断：
+  - `long015` 才是更值得推进的版本
+  - 因为它的提升分布更均衡
+  - 没有出现某个关键窗口被明显打坏的情况
+- 当前这条线的最优判断应该收敛成：
+  - `long side tilt` 是主线
+  - `short side tilt` 暂时不应该进入正式版本
+  - 后续若继续做正式候选，应优先从 `long015` 出发
+
+# 2026-04-24 09:53 第37阶段 long015 正式候选版本对照回测
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 09:53`
+- 修改的文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 新增 `long015` 的正式候选对照脚本
+  - 用标准入口把三组放到同一张正式汇总表里：
+    - `ungated_baseline`
+    - `selection_pairwise_v2`
+    - `selection_pairwise_v2_volume_tilt_long015`
+  - 目标是判断 `long015` 是否已经达到“比当前 pairwise 正式版更值得推进”的程度
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- `long015` 的正式候选结论已经成立：
+  - 相对 `ungated_baseline` 明显更优
+  - 相对当前 `selection_pairwise_v2` 也继续正向
+  - 且没有增加交易次数
+- 相对 `ungated_baseline`：
+  - `期末权益 +65,240`
+  - `总收益 +32.62%`
+  - `最大回撤改善 0.14` 个百分点
+  - `Sharpe +0.0081`
+  - `总滑点 -400`
+- 相对 `selection_pairwise_v2`：
+  - `期末权益 +53,210`
+  - `总收益 +26.61%`
+  - `最大回撤改善 0.14` 个百分点
+  - `Sharpe +0.0060`
+  - `总滑点 -610`
+- 这说明：
+  - `long015` 已经不只是研究上“有启发”
+  - 而是`正式版本候选`意义上的正向改进
+
+## 新增的回测结果
+
+- `ungated_baseline`
+  - `期末权益 = 2,612,605`
+  - `总收益 = 1206.30%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.984`
+  - `总滑点 = 355,230`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2`
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015`
+  - `期末权益 = 2,677,845`
+  - `总收益 = 1238.92%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.992`
+  - `总滑点 = 354,830`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 到第37阶段，`long015` 已经从“研究分支”升级成了“当前最优正式候选版本”
+- 现在如果要给出主版本推进顺序：
+  1. `selection_pairwise_v2_volume_tilt_long015`
+  2. `selection_pairwise_v2`
+  3. `ungated_baseline`
+- 也就是说：
+  - `pairwise` 主线保留
+  - `catastrophic veto` 继续关闭
+  - `short side tilt` 暂不进入正式版本
+  - 当前最值得推进的正式组合，就是 `pairwise_v2 + long015`
+
+# 2026-04-24 10:01 第38阶段 long015 随机收益检验：block bootstrap 与 rolling window
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 10:01`
+- 修改的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_bootstrap.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 新增 `long015` 相对 `pairwise_v2` 的统计检验脚本
+  - 不再只看全样本和分窗结果
+  - 直接对日度 `delta_net_pnl` 做：
+    - `moving block bootstrap`
+    - `rolling window` 稳定性统计
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 观测到的 `long015 - pairwise_v2` 全样本净增益：
+  - `delta_net_pnl = +53,210`
+  - 平均日度增益 `+34.89`
+- `block bootstrap` 结果：
+  - `5` 日块：
+    - 正收益概率 `81.0%`
+    - `p05 = -43,381`
+  - `20` 日块：
+    - 正收益概率 `86.32%`
+    - `p05 = -26,181`
+  - `60` 日块：
+    - 正收益概率 `86.30%`
+    - `p05 = -22,646`
+- 这说明：
+  - `long015` 不是只靠极少数孤立交易日抬出来的纯噪声结果
+  - 但也没有强到可以说“已经完全排除随机性”
+  - 它更像一个`中等强度、带统计优势但仍需克制看待`的改进
+- `rolling window` 结果：
+  - `126` 日窗口：
+    - 终值更优占比 `54.93%`
+    - 总收益更优占比 `49.29%`
+    - 回撤更优占比 `65.50%`
+  - `252` 日窗口：
+    - 终值更优占比 `58.95%`
+    - 总收益更优占比 `62.01%`
+    - 回撤更优占比 `70.96%`
+  - `504` 日窗口：
+    - 终值更优占比 `73.48%`
+    - 总收益更优占比 `85.81%`
+    - 回撤更优占比 `80.23%`
+- 这进一步说明：
+  - `long015` 的优势在短窗口上不算碾压
+  - 但窗口拉长后，正向占比明显提升
+  - 所以它更像`偏稳态的结构改进`
+  - 而不是短线爆发型 alpha
+
+## 新增的回测结果
+
+- 无
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 如果只问一句“这点增益是不是随机收益”：
+  - 我的答案仍然不是“确定不是”
+  - 但现在已经可以更严谨地说：
+    - `long015` 不是明显的纯随机假增益
+    - 也还没强到可以说是高度确定的统计优势
+- 当前最准确的定性应该是：
+  - `中等强度、跨长窗口更稳、短窗口不碾压` 的改进
+- 这和前面的工程结论是统一的：
+  - 它足够值得进入正式候选版本
+  - 但还不该被神化成压倒性 alpha
+
+# 2026-04-24 10:29 第39阶段 conditional long015：按 score gap 条件化验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 10:29`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_conditional_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 新增 `selection_pairwise_volume_tilt_min_score_gap`
+  - 让 `long015` 只有在同日 long 组内 `pairwise score gap` 足够大时才触发
+  - 同时把 `group_size / score_gap / top_gap` 透传进候选快照，方便后续继续定位
+  - 正式验证两档条件化版本：
+    - `gap010`
+    - `gap020`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_min_score_gap`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 从事件级分析看：
+  - `score_gap <= 0.20` 的 tilt 事件平均表现确实偏弱
+  - `score_gap > 0.20` 的事件整体更好
+- 但把这个条件直接接回正式策略后，结果并没有更好
+- 说明问题的本质不是：
+  - “低 gap 事件天然有害”
+- 而更像是：
+  - 这些低 gap 事件虽然弱
+  - 但简单删掉它们，并不能改善组合层的真实资金路径
+  - 反而会稀释 `long015` 原本已经成立的正向增益
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_gap010`
+  - `期末权益 = 2,668,575`
+  - `总收益 = 1234.29%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 355,010`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_gap020`
+  - `期末权益 = 2,669,375`
+  - `总收益 = 1234.69%`
+  - `最大回撤 = -37.17%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 355,020`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- `conditional long015` 这条“按 score gap 做硬条件过滤”的支线，当前可以先收住
+- 因为正式结果已经说明：
+  - `gap010`、`gap020` 都跑不过原始 `long015`
+  - 也没有实质性改善回撤结构
+- 所以当前结论继续保持不变：
+  - `long015` 原版仍然是最优正式候选
+  - `score gap` 条件化这个具体方向，不值得继续细抠阈值
