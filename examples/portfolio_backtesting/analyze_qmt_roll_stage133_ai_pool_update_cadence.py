@@ -134,6 +134,7 @@ def _run_full(profile_name: str, strategy_overrides: dict[str, Any], spec: Caden
         cadence_months=spec.cadence_months,
         description=spec.description,
         capital=OFFICIAL_STAGE78_CAPITAL,
+        total_slippage=_safe_float(statistics.get("total_slippage")),
     )
 
 
@@ -172,6 +173,7 @@ def _run_start_year(
             window_name=window_name,
             display_label=display_label,
             capital=OFFICIAL_STAGE78_CAPITAL,
+            total_slippage=_safe_float(statistics.get("total_slippage")),
         )
         rows.append(row)
         pd.DataFrame([*existing_rows, *rows]).to_csv(START_YEAR_CSV_PATH, index=False, encoding="utf-8-sig")
@@ -196,7 +198,7 @@ def _build_aggregate(start_year: pd.DataFrame, summary: pd.DataFrame) -> pd.Data
                 "full_max_dd_percent": _safe_float(full_row["max_dd_percent"]),
                 "full_sharpe_ratio": _safe_float(full_row["sharpe_ratio"]),
                 "full_total_trade_count": int(_safe_float(full_row["total_trade_count"])),
-                "full_total_slippage": _safe_float(full_row["total_slippage"]),
+                "full_total_slippage": _safe_float(full_row.get("total_slippage", 0.0)),
                 "start_year_positive_rate_pct": float((group["total_return_pct"] > 0).mean() * 100.0),
                 "start_year_return_win_rate_vs_monthly_pct": float(
                     (joined["total_return_pct"] > joined["total_return_pct_monthly"]).mean() * 100.0
@@ -308,15 +310,41 @@ def main() -> None:
         profile_payloads.append((spec, eligibility_path, _strategy_overrides(eligibility_path, spec.profile_name)))
     pd.DataFrame(eligibility_rows).to_csv(ELIGIBILITY_SUMMARY_CSV_PATH, index=False, encoding="utf-8-sig")
 
+    existing_summary = pd.read_csv(SUMMARY_CSV_PATH) if SUMMARY_CSV_PATH.exists() else pd.DataFrame()
+    existing_start_year = pd.read_csv(START_YEAR_CSV_PATH) if START_YEAR_CSV_PATH.exists() else pd.DataFrame()
+
     full_rows: list[dict[str, Any]] = []
+    if not existing_summary.empty and "total_slippage" in existing_summary.columns:
+        full_rows = existing_summary.to_dict(orient="records")
+
     start_year_rows: list[dict[str, Any]] = []
+    if not existing_start_year.empty:
+        start_year_rows = existing_start_year.to_dict(orient="records")
+
     start_year_frames: list[pd.DataFrame] = []
     for spec, _, overrides in profile_payloads:
-        full_rows.append(_run_full(spec.profile_name, overrides, spec))
-        pd.DataFrame(full_rows).to_csv(SUMMARY_CSV_PATH, index=False, encoding="utf-8-sig")
-        start_year_df = _run_start_year(spec.profile_name, overrides, spec, start_year_rows)
-        start_year_frames.append(start_year_df)
-        start_year_rows.extend(start_year_df.to_dict(orient="records"))
+        existing_full = [
+            row for row in full_rows
+            if str(row.get("profile_name")) == spec.profile_name and "total_slippage" in row
+        ]
+        if not existing_full:
+            full_rows = [row for row in full_rows if str(row.get("profile_name")) != spec.profile_name]
+            full_rows.append(_run_full(spec.profile_name, overrides, spec))
+            pd.DataFrame(full_rows).to_csv(SUMMARY_CSV_PATH, index=False, encoding="utf-8-sig")
+
+        profile_start_rows = [
+            row for row in start_year_rows
+            if str(row.get("profile_name")) == spec.profile_name
+        ]
+        existing_windows = {str(row.get("window_name")) for row in profile_start_rows}
+        required_windows = {window_name for window_name, _, _, _ in START_YEAR_WINDOWS}
+        if existing_windows >= required_windows:
+            start_year_frames.append(pd.DataFrame(profile_start_rows))
+        else:
+            start_year_rows = [row for row in start_year_rows if str(row.get("profile_name")) != spec.profile_name]
+            start_year_df = _run_start_year(spec.profile_name, overrides, spec, start_year_rows)
+            start_year_frames.append(start_year_df)
+            start_year_rows.extend(start_year_df.to_dict(orient="records"))
 
     summary = pd.DataFrame(full_rows).sort_values(["end_balance", "sharpe_ratio"], ascending=False).reset_index(drop=True)
     start_year = pd.concat(start_year_frames, ignore_index=True).sort_values(

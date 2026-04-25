@@ -18054,3 +18054,229 @@ Stage128相对Stage78比较：
   - 更稳健的全市场品种池更新节奏；
   - 40万本金下的容量/并发/保证金自然约束；
   - 不影响单笔趋势质量的组合层风险上限。
+
+## 2026-04-25 17:30 第133阶段：AI品种池更新节奏验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 17:30`
+- 是否是重要突破版本：否。该阶段是否定性验证，结论是Stage78月度更新仍优于降低更新频率。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage133_ai_pool_update_cadence.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_eligibility_stage78_ai_pool_monthly_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_eligibility_stage133_ai_pool_2m_hold_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_eligibility_stage133_ai_pool_3m_hold_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_eligibility_stage133_ai_pool_6m_hold_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_summary_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_start_year_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_start_year_aggregate_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_eligibility_summary_stage133_ai_pool_update_cadence_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_summary_stage133_ai_pool_update_cadence_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage133_ai_pool_update_cadence_report_stage133_ai_pool_update_cadence_v1.md`
+
+### 新增参数
+
+- 无新增策略参数。
+- 新增研究档位：
+  - `cadence_months=1`：Stage78现有月度更新
+  - `cadence_months=2`：每2个月持有一次AI品种池
+  - `cadence_months=3`：每季度持有一次AI品种池
+  - `cadence_months=6`：每半年持有一次AI品种池
+
+### 修改参数
+
+- 不修改Stage78正式策略参数。
+- 只修改AI eligibility的`eval_date`采样节奏：
+  - 月更：保留全部月度信号
+  - 2个月：保留`eval_date[::2]`
+  - 3个月：保留`eval_date[::3]`
+  - 6个月：保留`eval_date[::6]`
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+全周期`2020-01-01`到`2026-04-30`：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_ai_pool_monthly` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` | `42.1053%` |
+| `stage133_ai_pool_3m_hold` | `3,408,180` | `1604.0900%` | `-36.9907%` | `1.1796` | `240,170` | `777` | `43.2161%` |
+| `stage133_ai_pool_6m_hold` | `2,732,710` | `1266.3550%` | `-36.9907%` | `1.0710` | `227,130` | `787` | `40.4467%` |
+| `stage133_ai_pool_2m_hold` | `2,729,355` | `1264.6775%` | `-36.9907%` | `1.0530` | `247,720` | `788` | `40.9429%` |
+
+起始年份聚合：
+
+| 版本 | 正收益率 | 收益胜过月更 | Sharpe胜过月更 | 回撤胜过月更 | 最差起始收益 | 收益中位差 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_ai_pool_monthly` | `85.7143%` | `0.0000%` | `0.0000%` | `0.0000%` | `-5.6775%` | `0.0000` |
+| `stage133_ai_pool_3m_hold` | `85.7143%` | `0.0000%` | `0.0000%` | `57.1429%` | `-15.0050%` | `-564.5800` |
+| `stage133_ai_pool_6m_hold` | `85.7143%` | `0.0000%` | `0.0000%` | `28.5714%` | `-10.5500%` | `-752.3325` |
+| `stage133_ai_pool_2m_hold` | `85.7143%` | `14.2857%` | `14.2857%` | `42.8571%` | `-1.8950%` | `-747.8700` |
+
+近期窗口：
+
+| 版本 | 2024起收益 | 2025起收益 | 2026起收益 | 2026起最大回撤 | 2026起Sharpe |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `stage78_ai_pool_monthly` | `396.5775%` | `341.3275%` | `-5.6775%` | `-32.4059%` | `-0.3449` |
+| `stage133_ai_pool_2m_hold` | `82.1700%` | `41.4500%` | `-1.8950%` | `-25.8133%` | `-0.1431` |
+| `stage133_ai_pool_3m_hold` | `141.3800%` | `82.1550%` | `-15.0050%` | `-24.6523%` | `-0.9747` |
+| `stage133_ai_pool_6m_hold` | `84.7150%` | `19.5500%` | `-10.5500%` | `-36.3582%` | `-0.5000` |
+
+### 修改的回测结果
+
+- 无正式版本结果修改。
+- Stage78月更仍是当前正式品种池更新节奏。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage133_ai_pool_update_cadence.py`
+- 已完成Stage133更新节奏回测：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage133_ai_pool_update_cadence.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：只测试`1/2/3/6`个月粗粒度更新节奏，不训练新模型、不改TopN、不按品种盈亏筛选。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：更新频率是AI品种池的核心结构假设，如果慢更新能降低噪声且不牺牲趋势收益，可能提高穿越周期能力。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：慢更新没有被继续细化成`4/5`个月或特殊月份选择，结果直接作为否定证据记录。
+
+### 运行后继续价值反思
+
+- 判断：降低更新频率这一方向暂时不值得继续。
+- 原因：
+  - 所有慢更新档全周期收益和Sharpe都明显低于月更。
+  - 起始年份收益胜率没有系统优势，3个月和6个月收益胜率均为`0%`。
+  - 2个月只改善`2026`亏损幅度，但大幅牺牲`2024/2025`趋势收益，不符合趋势系统的核心收益来源。
+
+### 后续规划和TODO
+
+- 保持Stage78月更AI品种池，不改为2/3/6个月慢更新。
+- 不继续搜索`4/5`个月或特殊月份节奏，避免过拟合。
+- 下一步更值得研究：
+  - AI池信号切换的稳定性/换手约束，而不是降低全局更新频率；
+  - 或转向40万本金下的自然并发、保证金和组合层风险约束。
+
+## 2026-04-25 17:40 第134阶段研究分支决策表固化
+
+### 是否是重要突破版本
+
+- 判断：否。
+- 原因：这是研究治理版本，不是新收益突破；价值在于减少未来重复回测和过拟合。
+
+### 本次版本改动内容
+
+- 新增`research_branch_decision_table.md`，固化各阶段状态、可继续方向、禁止方向和默认开关。
+- 新增`research_branch_decision_table.csv`，便于后续脚本或表格化审阅。
+- 同步`memory.md`，记录第134阶段分支归档。
+
+### 新增参数
+
+- 无。
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 无。
+- 本阶段没有运行新回测，只做研究分支治理。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 分支决策摘要
+
+| 阶段 | 决策 | 后续处理 |
+| --- | --- | --- |
+| Stage78 | 正式基准 | 新独立研究默认对照 |
+| Stage75 | 收益上限参考 | 不替代Stage78 |
+| Stage90 | 降级/停止正式化 | 不继续恢复阈值调参 |
+| Stage105 | 候选 | 只做继任复核，不直接40万部署 |
+| Stage111 | 40万部署候选 | 资金/保证金研究使用 |
+| Stage115 | 20万研究对照 | 不和40万结论混用 |
+| Stage118/122/124-126 | 停止或降级 | 不继续资金小数阈值微调 |
+| Stage128/132 | 禁止继续调参 | 利润回吐保护线停止 |
+| Stage133 | 慢更新方向停止 | 保留Stage78月更AI池 |
+| Stage72/73全市场宽池扩张 | 停止宽扩张 | 只允许结构性卫星候选验证 |
+
+### 期末权益
+
+- 无新增回测，沿用Stage78正式基准：`4,600,090`。
+
+### 总收益
+
+- 无新增回测，沿用Stage78正式基准：`2200.0450%`。
+
+### 最大回撤
+
+- 无新增回测，沿用Stage78正式基准：`-36.9907%`。
+
+### Sharpe
+
+- 无新增回测，沿用Stage78正式基准：`1.2919`。
+
+### 总滑点
+
+- 无新增回测，沿用Stage78正式基准：`260,110`。
+
+### 总交易次数
+
+- 无新增回测，沿用Stage78正式基准：`779`。
+
+### 胜率
+
+- 无新增回测，沿用Stage78正式基准：`42.1053%`。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段不是按收益调参数，而是把已证伪分支放入停止或禁止清单。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：当前研究风险主要来自反复打开负向分支，决策表能提升研究纪律。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：新增的是约束和归档，不产生新的模型自由度，也没有扩大参数搜索空间。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：后续新分支必须先通过决策表检查，能减少无效回测和阈值微调。
+
+### 后续规划和TODO
+
+- 新研究先检查`research_branch_decision_table.md`，确认是否属于禁止清单。
+- 优先做Stage78准实盘复盘体系。
+- 若继续AI池方向，只研究切换稳定性/换手约束，不研究全局慢更新。
+- 若继续资金方向，以Stage111作为40万部署候选对照，避免和Stage78纯Alpha基准混用。
