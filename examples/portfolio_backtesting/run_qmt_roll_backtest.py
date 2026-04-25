@@ -11,7 +11,7 @@ from vnpy.trader.object import BarData, TradeData
 from vnpy_portfoliostrategy import BacktestingEngine
 from vnpy_portfoliostrategy.backtesting import Status
 
-from main_contract_mapping import build_contract_metadata, get_preferred_mapping_path
+from main_contract_mapping import build_contract_metadata, get_preferred_mapping_path, load_product_universe_symbols
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, save_backtest_artifacts
@@ -113,8 +113,10 @@ def build_backtest_engine(
     preload_start: datetime = PRELOAD_START_DT,
     backtest_end: datetime = END_DT,
     capital: float = 200_000,
+    product_universe_csv_path: str | None = None,
 ) -> tuple[BacktestingEngine, dict[str, Any]]:
-    metadata = build_contract_metadata()
+    supported_symbols = load_product_universe_symbols(product_universe_csv_path)
+    metadata = build_contract_metadata(supported_symbols=supported_symbols)
     vt_symbols: list[str] = metadata["vt_symbols"]
     rates: dict[str, float] = metadata["rates"]
     slippages: dict[str, float] = metadata["slippages"]
@@ -391,6 +393,7 @@ def run_backtest(
         preload_start=preload_start,
         backtest_end=analysis_end,
         capital=capital,
+        product_universe_csv_path=str((strategy_overrides or {}).get("product_universe_csv_path", "") or ""),
     )
     margin_ratios: dict[str, float] = metadata["margin_ratios"]
     setting: dict[str, object] = build_roll_setting(

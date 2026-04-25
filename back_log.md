@@ -7608,3 +7608,9204 @@
 - 所以当前结论继续保持不变：
   - `long015` 原版仍然是最优正式候选
   - `score gap` 条件化这个具体方向，不值得继续细抠阈值
+
+# 2026-04-24 12:20 第40阶段 cooldown3：序列型状态过滤验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 12:20`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_cooldown_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 基于失败簇分析，新增 `selection_pairwise_volume_tilt_cooldown_days`
+  - 尝试验证一种更偏序列状态的过滤：
+    - 如果近期已经发生过 long tilt
+    - 则短时间内的新 tilt 机会先冷却
+  - 正式验证 `cooldown3`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_cooldown_days`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- `cooldown3` 并没有改善 `long015`
+- 相反，它把原本已经成立的 alpha 再次稀释了
+- 说明：
+  - 失败簇里存在连续事件，不代表“加冷却期”就是正确修法
+  - 序列现象是真存在的
+  - 但把它直接翻译成硬规则后，组合层收益会受损
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_cooldown3`
+  - `期末权益 = 2,656,690`
+  - `总收益 = 1228.35%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 352,190`
+  - `总交易次数 = 1175`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 到第40阶段，结论已经足够明确：
+  - `long015` 原版仍然是最优正式候选
+  - `score gap` 条件化失败
+  - `cooldown3` 也失败
+- 这意味着：
+  - 继续在 `long015` 上叠加局部条件过滤，当前已经进入边际递减区
+  - 再往下挖，大概率只会进一步过拟合
+- 所以后续更合理的选择不是继续细化规则
+- 而是：
+  - 暂时接受 `long015` 作为当前最优解
+  - 把研究重心转向新的上层方向
+
+# 2026-04-24 13:04 第41阶段 long015：上层过热状态过滤验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 13:04`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_state_filter.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_state_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 不再继续细抠 `score gap / cooldown` 这类局部规则
+  - 改为把 `long015` 的 long-side 倾斜事件提升到“上层状态”分析：
+    - 先对真实发生的 long tilt 事件做未来 `5/10/20` 日 `delta_net_pnl` 分解
+    - 再从事件级里筛选最像“过热失效”的状态量
+  - 新增 long-side 两个正式状态参数：
+    - `selection_pairwise_volume_tilt_long_max_avg_ret20_zscore`
+    - `selection_pairwise_volume_tilt_long_max_avg_rsi`
+  - 在正式策略里验证 3 条上层状态过滤分支：
+    - `ret20cap075`
+    - `rsi68`
+    - `ret20cap075 + rsi68`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_max_avg_ret20_zscore`
+  - `selection_pairwise_volume_tilt_long_max_avg_rsi`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- `long015` 的 long tilt 事件共 `56` 个交易日、`86` 行候选改手数
+- 事件级未来 `20` 日分解里，最像“不过热更好”的信号主要有两类：
+  - `avg_ret20_zscore <= 0.748563`
+  - `avg_rsi <= 63.843676 / 67.526386`
+- 但事件级最优不等于正式组合层最优
+- 正式验证结果说明：
+  - `ret20cap075` 真实会生效，但会把 `long015` 的主要 alpha 一起削弱
+  - `rsi68` 在正式策略里完全不改变结果，属于非绑定条件
+  - `ret20cap075 + rsi68` 与 `ret20cap075` 完全一致，说明组合里真正起作用的只有 `ret20cap075`
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_ret20cap075`
+  - `期末权益 = 2,635,250`
+  - `总收益 = 1217.63%`
+  - `最大回撤 = -37.16%`
+  - `Sharpe = 0.981`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1175`
+- `selection_pairwise_v2_volume_tilt_long015_rsi68`
+  - `期末权益 = 2,677,845`
+  - `总收益 = 1238.92%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.992`
+  - `总滑点 = 354,830`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_ret20cap075_rsi68`
+  - `期末权益 = 2,635,250`
+  - `总收益 = 1217.63%`
+  - `最大回撤 = -37.16%`
+  - `Sharpe = 0.981`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1175`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 到第41阶段，这条“上层过热过滤”支线已经可以收口：
+  - `ret20cap075` 虽然比纯 `pairwise_v2` 还略好
+  - 但明显跑不过原始 `long015`
+  - `rsi68` 则完全没有边际影响
+- 这说明：
+  - 事件级的“过热失效”现象是真有的
+  - 但把它直接翻成正式 long-side 硬过滤后，组合层收益会被稀释
+  - `avg_rsi` 这条看起来合理的状态条件，在正式链路里甚至连绑定都没形成
+- 当前正式候选顺序保持不变：
+  - `selection_pairwise_v2 + long015`
+  - `selection_pairwise_v2`
+  - `ungated_baseline`
+- 后续如果继续深挖，不该再围绕 `long015` 叠加新的局部状态过滤
+- 这一层已经出现与前面 `score gap / cooldown` 同样的边际递减迹象
+
+# 2026-04-24 13:26 第42阶段 long015：连续置信度缩放验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 13:26`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_confidence_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 不再使用 `score gap` 硬过滤
+  - 新增 long-side 连续置信度缩放参数：
+    - `selection_pairwise_volume_tilt_long_score_gap_reference`
+  - 让 `long015` 的实际 tilt 强度按 `score_gap / reference` 连续缩放
+  - 正式验证两档：
+    - `gapref025`
+    - `gapref050`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_score_gap_reference`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 连续缩放比硬过滤更符合第一性原理：
+  - 保留 `long015` 的主体结构
+  - 在低置信度日期自动收缩，而不是直接一刀切掉
+- 但正式结果仍然说明：
+  - `gapref025` 只是部分保住了 `long015` 的收益
+  - `gapref050` 则明显过度收缩，正式收益进一步退步
+- 这意味着：
+  - “弱置信度缩手”这个方向不是完全错
+  - 但当前这套 `score gap` 口径，仍不足以构成优于原始 `long015` 的正式增强项
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_gapref025`
+  - `期末权益 = 2,668,655`
+  - `总收益 = 1234.33%`
+  - `最大回撤 = -37.17%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 355,020`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_gapref050`
+  - `期末权益 = 2,641,935`
+  - `总收益 = 1220.97%`
+  - `最大回撤 = -37.13%`
+  - `Sharpe = 0.986`
+  - `总滑点 = 355,050`
+  - `总交易次数 = 1173`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第42阶段的结论是：
+  - 连续缩放优于前面的 `score gap` 硬过滤
+  - 但仍然跑不过原始 `long015`
+- 具体看：
+  - `gapref025` 相对 `long015` 少了 `9,190` 权益、`4.595%` 总收益、`0.0027` Sharpe
+  - `gapref050` 退步更明显
+- 所以当前排序仍然不变：
+  - `selection_pairwise_v2 + long015`
+  - `selection_pairwise_v2 + gapref025`
+  - `selection_pairwise_v2`
+  - `ungated_baseline`
+- 这条线的真正价值在于：
+  - 它证明“平滑收缩”比“硬过滤”更接近对的方向
+  - 但当前基于 `score gap` 的置信度度量还不够强
+- 后续如果继续深挖：
+  - 可以保留“连续缩放”这个方法论
+  - 但不该继续死抠 `score gap` 本身
+
+# 2026-04-24 13:56 第43阶段 long015：组合拥挤度连续缩放验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 13:56`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_crowding_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 从事件级复盘中，发现 `long015` 的增益更偏向“组合不拥挤”的状态：
+    - 高 `active_ratio` 反而显著拖累未来 `20` 日增益
+  - 新增 long-side 拥挤度连续缩放参数：
+    - `selection_pairwise_volume_tilt_long_active_ratio_full_strength_max`
+  - 当组合当前持仓占用高于阈值时，连续缩小 long tilt 强度
+  - 正式验证两档：
+    - `crowd0375`
+    - `crowd025`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_active_ratio_full_strength_max`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 事件级分解显示：
+  - `active_ratio` 最高分位的 long tilt 事件，未来 `20` 日均值明显为负
+  - 低拥挤状态更容易保留 `long015` 的正向边际
+- 正式回测结果说明：
+  - 组合拥挤度缩放比前面的 `score gap` 连续缩放更接近“组合层本质”
+  - 但当前仍然跑不过原始 `long015`
+  - 两档 `crowd0375 / crowd025` 结果完全一样
+  - 说明当前真实生效的拥挤状态命中集合在这两个阈值下没有被进一步区分开
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_crowd0375`
+  - `期末权益 = 2,656,730`
+  - `总收益 = 1228.37%`
+  - `最大回撤 = -37.33%`
+  - `Sharpe = 0.996`
+  - `总滑点 = 352,630`
+  - `总交易次数 = 1171`
+- `selection_pairwise_v2_volume_tilt_long015_crowd025`
+  - `期末权益 = 2,656,730`
+  - `总收益 = 1228.37%`
+  - `最大回撤 = -37.33%`
+  - `Sharpe = 0.996`
+  - `总滑点 = 352,630`
+  - `总交易次数 = 1171`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第43阶段说明：
+  - “组合拥挤时少偏一点”这个方向，比“按 score gap 调置信度”更接近本质
+  - 但当前版本还没有超过原始 `long015`
+- 具体看：
+  - 相对 `long015`，`crowd0375 / crowd025` 少了 `21,115` 权益、`10.5575%` 总收益
+  - 但 `Sharpe` 反而提升了 `0.0032`
+  - 这说明它更像“收益换了一点平滑度”，不是主收益增强
+- 所以当前正式顺序仍然保持：
+  - `selection_pairwise_v2 + long015`
+  - `selection_pairwise_v2 + long015_crowding`
+  - `selection_pairwise_v2 + gapref025`
+  - `selection_pairwise_v2`
+  - `ungated_baseline`
+- 后续如果继续主导这条线：
+  - 我会优先把“组合层拥挤度”保留为方法论备选
+  - 但不会把当前 `crowding` 版本直接升格为正式候选第一名
+
+# 2026-04-24 14:30 第44阶段 long015：基础仓位浓度连续缩放验证
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 14:30`
+- 修改的文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_base_volume_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 在继续研究组合层状态时，不再盯拥挤度阈值本身
+  - 转向更直接的风险集中度问题：
+    - 如果某次 tilt 的基础手数本来就很大
+    - 再继续放大，是否反而会过度集中
+  - 新增 long-side 基础仓位浓度连续缩放参数：
+    - `selection_pairwise_volume_tilt_long_base_volume_reference`
+  - 用 `avg_base_volume_before` 相对参考值连续收缩实际 tilt 强度
+  - 正式验证两档：
+    - `volref20`
+    - `volref30`
+
+## 参数变化说明
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_base_volume_reference`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 事件级分析显示：
+  - `selected_volume_before` 最高分位的 long tilt 事件，未来 `20` 日均值为负
+  - 这说明“基础仓位越大，继续倾斜越容易过度集中”是一个真实问题
+- 正式回测结果进一步说明：
+  - `volref20` 仍然跑不过原始 `long015`
+  - `volref30` 则首次出现了比 `long015` 更优的正式结果
+  - 这不是大幅碾压，但已经不是单纯的“风格变体”
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_volref20`
+  - `期末权益 = 2,664,535`
+  - `总收益 = 1232.27%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 354,650`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_volref30`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.994`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第44阶段是目前为止最有价值的一次延伸：
+  - `基础仓位浓度连续缩放` 比前面的 `score gap` 和 `crowding` 更接近真实有效方向
+  - `volref30` 已经正式超过原始 `long015`
+- 相对 `long015`：
+  - `期末权益 +5,290`
+  - `总收益 +2.645%`
+  - `Sharpe +0.0015`
+  - `总滑点 -170`
+  - `总交易次数 +4`
+- 虽然增益不大，但结构是健康的：
+  - 没有恶化回撤
+  - Sharpe 还进一步抬高
+  - 滑点也没有变差
+- 当前正式候选顺序应更新为：
+  - `selection_pairwise_v2 + long015_volref30`
+  - `selection_pairwise_v2 + long015`
+  - `selection_pairwise_v2 + long015_crowding`
+  - `selection_pairwise_v2 + gapref025`
+  - `selection_pairwise_v2`
+  - `ungated_baseline`
+
+# 2026-04-24 14:37 第45阶段 long015_volref30：稳定性验证与随机性压测
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 14:37`
+- 修改的文件：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_bootstrap.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 不再继续往 `long015_volref30` 上叠加新规则
+  - 转而验证它相对 `long015` 的优势是否只是短期随机收益
+  - 新增 `volref30 vs long015` 的日度稳定性分析脚本
+  - 用已存在的正式资金曲线做两层验证：
+    - `moving block bootstrap`
+    - `126 / 252 / 504` 日 rolling window 稳定性统计
+  - 本阶段不把 `volref25 / volref35` 作为正式结论来源：
+    - 因为对应正式统计产物当前并不完整
+    - 先只使用可复查的 `long015 / volref30` 正式结果做判断
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_bootstrap_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_bootstrap_rolling_summary.csv`
+- `volref30` 相对 `long015` 的全样本观测净增益：
+  - `observed_total_delta_net_pnl = +58,500`
+  - `observed_mean_daily_delta_net_pnl = +38.36`
+- block bootstrap 正收益概率：
+  - `5` 日块：`85.66%`
+  - `20` 日块：`90.32%`
+  - `60` 日块：`90.74%`
+- rolling window 稳定性：
+  - `126` 日窗口：
+    - `positive_end_balance_ratio = 63.43%`
+    - `positive_total_return_ratio = 57.50%`
+    - `better_max_dd_ratio = 68.14%`
+  - `252` 日窗口：
+    - `positive_end_balance_ratio = 68.29%`
+    - `positive_total_return_ratio = 63.66%`
+    - `better_max_dd_ratio = 77.55%`
+  - `504` 日窗口：
+    - `positive_end_balance_ratio = 85.13%`
+    - `positive_total_return_ratio = 85.81%`
+    - `better_max_dd_ratio = 80.23%`
+- 多周期正式分窗对比（`volref30` 相对 `long015`）：
+  - `since_2020`：`期末权益 +58,500`，`总收益 +29.25%`，`Sharpe +0.0075`
+  - `since_2021`：`期末权益 +77,560`，`总收益 +38.78%`，`Sharpe +0.0210`
+  - `since_2022`：`期末权益 +8,520`，`总收益 +4.26%`，`Sharpe +0.0098`
+  - `since_2023`：`期末权益 +6,570`，`总收益 +3.285%`，`Sharpe +0.0009`
+  - `since_2024`：`期末权益 -1,010`，`总收益 -0.505%`，`Sharpe -0.0088`
+  - `since_2025`：`期末权益 +34,745`，`总收益 +17.3725%`，`Sharpe +0.0667`
+  - `since_2026`：`期末权益 +700`，`总收益 +0.35%`，但 `Sharpe -0.0042`
+
+## 新增的回测结果
+
+- 无
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第45阶段的结论不是“`volref30` 已经被充分证明”，而是：
+  - 它已经明显强于“纯随机一把梭”的嫌疑
+  - 但证据强度仍属于`中等偏强`，不是压倒性
+- 具体理解是：
+  - 长窗口上，`volref30` 的稳定性明显更好
+  - `20 / 60` 日块 bootstrap 已经到 `90%+`
+  - `504` 日 rolling window 里，总收益更优占比也到 `85.81%`
+- 但短中窗口仍不够碾压：
+  - `126 / 252` 日窗口里只是温和占优
+  - `since_2024` 这一个正式分窗仍然轻微跑输
+- 所以当前最稳妥的判断应更新为：
+  - `selection_pairwise_v2 + long015_volref30` 依然是正式候选第一名
+  - 但它更像“中等强度、长窗口更稳的结构增强”
+  - 还不该被夸大成“已经被完全证实的强 alpha”
+
+# 2026-04-24 15:17 第46阶段 long015_volref30：邻域正式验证（25/30/35）
+
+## 版本改动
+
+- 改动时间点：`2026-04-24 15:17`
+- 修改的文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_base_volume_neighbors_backtest.py`
+  - `back_log.md`
+  - `memory.md`
+- 改动内容：
+  - 不再继续往 `volref30` 上叠新规则
+  - 转而验证它是不是一个真正的`局部稳定中心`
+  - 新增并完善邻域正式对照脚本：
+    - `long015`
+    - `volref25`
+    - `volref30`
+    - `volref35`
+  - 这版脚本不再重复浪费时间：
+    - 直接复用已经存在的 `long015 / volref30` 正式统计
+    - 只补跑缺失的 `volref25 / volref35`
+  - 产出正式总表：
+    - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_base_volume_neighbors_backtest_summary.csv`
+    - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_base_volume_neighbors_backtest_summary.json`
+
+## 参数变化说明
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 这轮最关键的新结论不是“`30` 比 `20` 好”，而是：
+  - `25 / 35` 都没有塌掉
+  - 所以 `30` 不是孤立尖点
+  - 但 `30` 仍然是邻域里的正式最优点
+- 邻域排序非常清楚：
+  - `volref30 > volref35 > volref25 > long015`
+- 相对 `long015`：
+  - `volref25`
+    - `期末权益 +41,660`
+    - `总收益 +20.83%`
+    - `Sharpe +0.0039`
+    - `总滑点 -630`
+  - `volref30`
+    - `期末权益 +58,500`
+    - `总收益 +29.25%`
+    - `Sharpe +0.0075`
+    - `总滑点 -780`
+    - `总交易次数 +4`
+  - `volref35`
+    - `期末权益 +47,350`
+    - `总收益 +23.675%`
+    - `Sharpe +0.0050`
+    - `总滑点 -570`
+- 相对 `volref30`：
+  - `volref25`
+    - `期末权益 -16,840`
+    - `总收益 -8.42%`
+    - `Sharpe -0.0036`
+  - `volref35`
+    - `期末权益 -11,150`
+    - `总收益 -5.575%`
+    - `Sharpe -0.0025`
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_volref25`
+  - `期末权益 = 2,666,295`
+  - `总收益 = 1233.15%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.990`
+  - `总滑点 = 354,810`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_volref35`
+  - `期末权益 = 2,671,985`
+  - `总收益 = 1235.99%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.991`
+  - `总滑点 = 354,870`
+  - `总交易次数 = 1169`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第46阶段把一个很关键的问题正式回答掉了：
+  - `volref30` 不是过拟合出来的孤点
+  - 它在邻域里确实是最优中心
+- 但这个中心也不是特别尖锐：
+  - `25 / 35` 都仍然明显优于原始 `long015`
+  - 说明这条线本身是稳的
+  - 只是 `30` 的平衡最好
+- 所以当前最合理的工程结论应更新为：
+  - `selection_pairwise_v2 + long015_volref30` 继续保留为正式候选第一名
+  - `volref35` 是最接近的次优备选
+  - 后续如果继续深挖，不该再盯着 `25 / 30 / 35` 这种微调打转
+  - 应转向新的上层变量，而不是继续细抠 `base_volume_reference`
+
+# 2026-04-24 15:24 第47阶段 long015_volref30：失败簇拆解与上层状态变量可编码性评估
+
+## 本次版本改动
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_failure_clusters.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_failure_cluster_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_failure_clusters.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_failure_cluster_date_features.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_v2_volume_tilt_long015_volref30_failure_cluster_feature_diff.csv`
+- 改动说明：
+  - 不再继续微调 `base_volume_reference`
+  - 转而拆 `long015_volref30` 相对 `long015` 的剩余失败簇
+  - 目标是判断：当前是否已经存在足够强、足够稳定、值得接回正式策略层的上层状态变量
+
+## 参数变更
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 全样本 `1525` 个交易日里：
+  - `volref30 - long015` 的累计净增益仍为 `+58,500`
+  - 但拆成连续盈亏簇后：
+    - 正簇 `134` 个，累计 `+390,655`
+    - 负簇 `120` 个，累计 `-332,155`
+- 更关键的新发现不是“哪几个日期最差”，而是：
+  - 很多最大负簇根本不发生在 tilt 当天
+  - 而是发生在 `tilt` 之后的持仓传播期
+  - 说明 `volref30` 剩余问题的主矛盾，已经不是“当日是否加了这一手”，而是“放大后的后续持仓路径”
+- 只看真正发生 `tilt` 事件的簇（`event clusters = 53`）后：
+  - 负簇 `22` 个
+  - 正簇 `28` 个
+  - 事件级差异不是没有，但强度明显不够支撑直接写成新规则
+- 事件级负簇相对正簇，呈现出的偏弱特征是：
+  - `avg_rsi` 更低，约 `70.24 vs 71.31`
+  - `avg_base_volume` 更高，约 `19.93 vs 19.43`
+  - `max_base_volume` 更高，约 `24.91 vs 22.23`
+  - `avg_active_positions_before` 更高，约 `2.52 vs 2.20`
+  - `max_range_zscore` 更高，约 `0.75 vs 0.46`
+  - `avg_score_gap` 反而略高，约 `0.63 vs 0.50`
+- 这组结果非常关键：
+  - `score gap` 并不是剩余失败的核心解释变量
+  - `base volume / 持仓拥挤 / 局部极端波动` 更像真正相关的状态
+  - 但这些差异量级仍偏小，暂时还不足以直接写成一条正式过滤规则
+- 最具代表性的负簇日期包括：
+  - `2021-05-06 -> 2021-05-12`
+  - `2022-11-29 -> 2022-12-02`
+  - `2026-03-02 -> 2026-03-05`
+  - `2025-08-11 -> 2025-08-13`
+  - `2024-04-29 -> 2024-05-08`
+- 这些失败簇的共性，不是简单的“分差不够大”，而更像：
+  - `base volume` 已经不小
+  - `range` 往往偏高
+  - `RSI` 已经不低，部分样本甚至明显偏热
+  - 所以更接近“放大后暴露过多”，而不是“排序模型判断方向完全错误”
+
+## 新增的回测结果
+
+- 无
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第47阶段把一个本来容易被误判的问题正式回答清楚了：
+  - `long015_volref30` 的剩余弱点，主因不是“当日排序信息不够”
+  - 而是“放大后的仓位，在后续传播期被更差的路径放大了”
+- 这意味着下一步如果继续深挖：
+  - 不该再回去做 `score gap / top gap` 这类分数阈值规则
+  - 也不该继续在 `25 / 30 / 35` 这种参数上打转
+  - 更值得继续的，是围绕 `base volume / active positions / 局部波动极值` 做更上层的组合状态缩放
+- 但现阶段我也不会强行把这些分析差异直接写成新规则：
+  - 因为差异方向是对的
+  - 但量级还不够强
+  - 现在贸然接策略，过拟合风险偏高
+- 所以当前最稳妥的工程结论保持为：
+  - `selection_pairwise_v2 + long015_volref30` 继续保留为正式候选第一名
+  - 下一轮应优先研究“组合层状态缩放”
+  - 而不是继续追加局部硬过滤
+
+# 2026-04-24 15:41 第48阶段 long015_volref30：绝对持仓数连续缩放验证
+
+## 本次版本改动
+
+- 修改文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_active_positions_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_active_positions_fast_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_active_positions_fast_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_active_positions_fast_backtest_summary.json`
+- 改动说明：
+  - 不再沿用之前已经证伪过的 `active_ratio` 拥挤度逻辑
+  - 改为在 `long015_volref30` 上增加 `absolute active positions` 连续缩放
+  - 核心思想是：
+    - 当同日 long tilt 发生时
+    - 如果 `active_positions_before` 本来就偏高
+    - 则连续缩小 tilt 强度
+    - 但不做硬过滤
+
+## 参数变更
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_active_positions_reference`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 这轮最关键的结论是：
+  - `absolute active positions` 这条线不是完全无效
+  - 但它提供的边际非常薄
+  - 目前只能算轻微风格修正，不足以成为新的正式第一候选
+- 相对当前正式第一候选 `volref30`：
+  - `apref2`
+    - 明显更差
+    - 说明收得过早、过强
+  - `apref2.5`
+    - 期末权益几乎持平
+    - 但回撤更差
+    - 不值得替代
+  - `apref3`
+    - 出现了轻微正向
+    - 但增益量级太小
+    - 仍然不足以单独升级为新的正式最优版本
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_volref30_apref2`
+  - `期末权益 = 2,669,265`
+  - `总收益 = 1234.63%`
+  - `最大回撤 = -37.29%`
+  - `Sharpe = 0.9911`
+  - `总滑点 = 354,820`
+  - `总交易次数 = 1173`
+- `selection_pairwise_v2_volume_tilt_long015_volref30_apref25`
+  - `期末权益 = 2,683,215`
+  - `总收益 = 1241.61%`
+  - `最大回撤 = -37.43%`
+  - `Sharpe = 0.9942`
+  - `总滑点 = 354,730`
+  - `总交易次数 = 1173`
+- `selection_pairwise_v2_volume_tilt_long015_volref30_apref3`
+  - `期末权益 = 2,685,555`
+  - `总收益 = 1242.78%`
+  - `最大回撤 = -37.33%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,650`
+  - `总交易次数 = 1173`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第48阶段的答案已经够清楚：
+  - `absolute active positions` 连续缩放不是错方向
+  - 但它不像 `base_volume_reference` 那样是明显的结构增强
+- 更具体地说：
+  - `apref2` 说明过早收缩是有害的
+  - `apref2.5` 基本只是和 `volref30` 打平
+  - `apref3` 虽然略高于 `volref30`
+  - 但只多了 `+2,420` 权益、`+1.21%` 总收益
+  - 同时 `最大回撤` 还更差 `0.13` 个百分点
+- 所以当前最合理的结论是：
+  - `selection_pairwise_v2 + long015_volref30` 继续保留为正式候选第一名
+  - `volref30_apref3` 可以记为轻微正向的风格变体
+  - 但目前不值得升级为新的主版本
+- 后续如果继续研究：
+  - 不该再在 `active_positions_reference` 上做细参数打磨
+  - 这条线的边际已经很薄
+  - 应继续寻找更强、真正正交的组合层状态变量
+
+# 2026-04-24 15:56 第49阶段 long015_volref30：局部波动极值连续缩放验证
+
+## 本次版本改动
+
+- 修改文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_range_fast_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_range_fast_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_range_fast_backtest_summary.json`
+- 改动说明：
+  - 在当前正式第一候选 `selection_pairwise_v2 + long015_volref30` 上
+  - 继续验证“局部波动极值过高时，是否应连续收缩 long tilt 强度”
+  - 新逻辑不做硬过滤
+  - 而是读取同日 long 方向候选中的 `max range zscore`
+  - 再按参考值对 tilt 强度做连续缩放
+
+## 参数变更
+
+- 新增的参数：
+  - `selection_pairwise_volume_tilt_long_max_range_zscore_reference`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的分析结果
+
+- 这轮的答案已经很清楚：
+  - `max_range_zscore` 这条线不是错方向
+  - 但它当前更像“保险丝”
+  - 不是新的主增强
+- 更具体地说：
+  - `range075 / range100 / range150` 三档全部跑输 `volref30`
+  - 说明“局部波动极值过高时，适度收缩 tilt”这个直觉并非完全错误
+  - 但它削掉的是主增益，而不是剩余失败簇
+- 结构上它确实带来了一些副作用改善：
+  - 三档 `总滑点` 都低于 `volref30`
+  - `range075 / range100` 的 `最大回撤` 也略好于 `volref30`
+  - 但这些改善不足以覆盖收益与 Sharpe 的系统性回落
+
+## 新增的回测结果
+
+- `selection_pairwise_v2_volume_tilt_long015_volref30_range075`
+  - `期末权益 = 2,638,095`
+  - `总收益 = 1219.05%`
+  - `最大回撤 = -37.14%`
+  - `Sharpe = 0.9880`
+  - `总滑点 = 352,880`
+  - `总交易次数 = 1173`
+- `selection_pairwise_v2_volume_tilt_long015_volref30_range100`
+  - `期末权益 = 2,642,885`
+  - `总收益 = 1221.44%`
+  - `最大回撤 = -37.16%`
+  - `Sharpe = 0.9869`
+  - `总滑点 = 352,520`
+  - `总交易次数 = 1173`
+- `selection_pairwise_v2_volume_tilt_long015_volref30_range150`
+  - `期末权益 = 2,638,190`
+  - `总收益 = 1219.10%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9870`
+  - `总滑点 = 352,700`
+  - `总交易次数 = 1175`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第49阶段说明：
+  - `局部波动极值连续缩放` 不是新的正式第一候选
+  - 当前仍然不如 `selection_pairwise_v2 + long015_volref30`
+- 具体比较相对 `volref30`：
+  - `range075`
+    - `期末权益 -45,040`
+    - `总收益 -22.52%`
+    - `Sharpe -0.0059`
+    - `最大回撤` 仅改善 `0.06` 个百分点
+  - `range100`
+    - `期末权益 -40,250`
+    - `总收益 -20.13%`
+    - `Sharpe -0.0070`
+    - `最大回撤` 仅改善 `0.04` 个百分点
+  - `range150`
+    - `期末权益 -44,945`
+    - `总收益 -22.47%`
+    - `Sharpe -0.0069`
+    - `总交易次数` 还多了 `2` 次
+- 所以当前最合理的工程结论是：
+  - `selection_pairwise_v2 + long015_volref30` 继续保留为正式候选第一名
+  - `max_range_zscore` 这条线可以记为“保险丝型思路”
+  - 但目前不值得升级为正式增强项
+  - 下一步如果继续，应该继续寻找更正交、更接近路径暴露本质的组合层状态变量
+
+# 2026-04-24 17:35 第50阶段 long015_volref30：正式候选重跑复核
+
+## 本次版本改动
+
+- 改动时间：
+  - `2026-04-24 17:35`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_formal_backtest.py`
+- 本次没有修改策略交易逻辑。
+- 本次动作是把当前正式候选重新放回同一口径下复核：
+  - `ungated_baseline`
+  - `selection_pairwise_v2`
+  - `selection_pairwise_v2_volume_tilt_long015`
+  - `selection_pairwise_v2_volume_tilt_long015_volref30`
+- 使用解释器：
+  - `.py311/bin/python`
+- 执行命令：
+  - `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting:/Users/bytedance/Desktop/person/vnpy .py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_formal_backtest.py`
+- 输出文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_formal_backtest_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_formal_backtest_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_formal_*`
+
+## 回测参数
+
+- 基础资金：
+  - `200,000`
+- 回测区间：
+  - `2020-01-01` 至 `2026-04-30`
+- 风险参数：
+  - `risk_ratio = 0.045`
+- 保存产物：
+  - `save_artifacts = True`
+- 启动年份稳健性扫描：
+  - `include_start_year_sweep = True`
+- 复核组合：
+  - `ungated_baseline`
+    - `strategy_overrides = {}`
+  - `selection_pairwise_v2`
+    - `enable_selection_pairwise_v2 = True`
+    - `enable_selection_pairwise_v2_catastrophic_veto = False`
+  - `selection_pairwise_v2_volume_tilt_long015`
+    - `enable_selection_pairwise_v2 = True`
+    - `enable_selection_pairwise_v2_catastrophic_veto = False`
+    - `enable_selection_pairwise_v2_volume_tilt = True`
+    - `selection_pairwise_volume_tilt_long_strength = 0.15`
+    - `selection_pairwise_volume_tilt_short_strength = 0.0`
+    - `selection_pairwise_volume_tilt_strength = 0.0`
+  - `selection_pairwise_v2_volume_tilt_long015_volref30`
+    - `enable_selection_pairwise_v2 = True`
+    - `enable_selection_pairwise_v2_catastrophic_veto = False`
+    - `enable_selection_pairwise_v2_volume_tilt = True`
+    - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+    - `selection_pairwise_volume_tilt_long_strength = 0.15`
+    - `selection_pairwise_volume_tilt_short_strength = 0.0`
+    - `selection_pairwise_volume_tilt_strength = 0.0`
+
+## 参数变更
+
+- 新增的参数：
+  - 无，策略层没有新增参数。
+- 修改的参数：
+  - 无，本轮是正式复核，不做新参数探索。
+- 删除的参数：
+  - 无。
+
+## 新增的回测结果
+
+- `ungated_baseline`
+  - `期末权益 = 2,612,605`
+  - `总收益 = 1206.30%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.9843`
+  - `总滑点 = 355,230`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2`
+  - `期末权益 = 2,624,635`
+  - `总收益 = 1212.32%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 0.9864`
+  - `总滑点 = 355,440`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015`
+  - `期末权益 = 2,677,845`
+  - `总收益 = 1238.92%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9924`
+  - `总滑点 = 354,830`
+  - `总交易次数 = 1169`
+- `selection_pairwise_v2_volume_tilt_long015_volref30`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+
+## 启动年份稳健性结果
+
+- `2020-01-01` 起点：
+  - `volref30` 期末权益 `2,683,135`，高于 `long015` 的 `2,677,845`
+- `2021-01-01` 起点：
+  - `volref30` 期末权益 `2,214,410`，高于 `long015` 的 `2,209,120`
+- `2022-01-01`、`2023-01-01`、`2024-01-01`、`2025-01-01`、`2026-01-01` 起点：
+  - `volref30` 与 `long015` 结果一致或几乎一致
+- 这说明 `base_volume_reference = 30.0` 不是强行改变全局交易行为，而是在少数高容量状态下提供边际修正。
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第50阶段的核心结论：
+  - 当前正式候选第一名仍然是 `selection_pairwise_v2 + long015_volref30`
+- 相对 `ungated_baseline`：
+  - `期末权益 +70,530`
+  - `总收益 +35.27` 个百分点
+  - `Sharpe +0.0096`
+  - `最大回撤` 改善约 `0.14` 个百分点
+  - `总滑点 -570`
+- 相对 `long015`：
+  - `期末权益 +5,290`
+  - `总收益 +2.65` 个百分点
+  - `Sharpe +0.0015`
+  - `总滑点 -170`
+  - `最大回撤` 持平
+- 我的判断是：
+  - `volref30` 的价值不是“大幅提高胜率”，而是对已打开候选的容量倾斜做温和校准
+  - 它没有破坏主策略结构，也没有通过硬过滤制造样本内幻觉
+  - 但它仍然不能解决 `2024` 和 `2026` 起点的弱窗口
+  - 下一步不应该继续在入场日局部过滤上微调，而应该转向组合持仓路径暴露、净风险预算、以及跨品种拥挤度这类更本质的状态变量
+
+# 2026-04-24 17:45 第51阶段 long015_volref30：组合回撤连续缩放验证
+
+## 本次版本改动
+
+- 改动时间：
+  - `2026-04-24 17:45`
+- 修改文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_drawdown_gate_fast_backtest.py`
+- 本次设计意图：
+  - 不再继续加局部入场滤网
+  - 改为测试组合层“持仓路径暴露”是否能改善 `long015_volref30`
+  - 具体做法是当组合权益从高水位回撤后，对新开仓 `selected_volume` 做连续缩放
+- 使用解释器：
+  - `.py311/bin/python`
+- 执行命令：
+  - `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting:/Users/bytedance/Desktop/person/vnpy .py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_drawdown_gate_fast_backtest.py`
+- 输出文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_drawdown_gate_fast_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_drawdown_gate_fast_summary.json`
+
+## 回测参数
+
+- 基础资金：
+  - `200,000`
+- 回测区间：
+  - `2020-01-01` 至 `2026-04-30`
+- 风险参数：
+  - `risk_ratio = 0.045`
+- 本轮回测类型：
+  - 快速探索
+  - `save_artifacts = False`
+  - `include_start_year_sweep = False`
+- 基础候选：
+  - `selection_pairwise_v2 + long015_volref30`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+- 对照组合：
+  - `volref30_current`
+  - `volref30_ddgate_10_25_floor50`
+  - `volref30_ddgate_10_25_floor35`
+  - `volref30_ddgate_15_30_floor50`
+
+## 参数变更
+
+- 新增的参数：
+  - `enable_portfolio_drawdown_gate`
+  - `portfolio_drawdown_gate_start_pct`
+  - `portfolio_drawdown_gate_full_pct`
+  - `portfolio_drawdown_gate_weight_floor`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的回测结果
+
+- `volref30_current`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+- `volref30_ddgate_10_25_floor35`
+  - `期末权益 = 639,480`
+  - `总收益 = 219.74%`
+  - `最大回撤 = -44.08%`
+  - `Sharpe = 0.4583`
+  - `总滑点 = 151,100`
+  - `总交易次数 = 938`
+- `volref30_ddgate_10_25_floor50`
+  - `期末权益 = 474,390`
+  - `总收益 = 137.20%`
+  - `最大回撤 = -52.26%`
+  - `Sharpe = 0.3386`
+  - `总滑点 = 124,790`
+  - `总交易次数 = 937`
+- `volref30_ddgate_15_30_floor50`
+  - `期末权益 = 437,395`
+  - `总收益 = 118.70%`
+  - `最大回撤 = -52.12%`
+  - `Sharpe = 0.3031`
+  - `总滑点 = 123,710`
+  - `总交易次数 = 905`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第51阶段的结论非常明确：
+  - `portfolio_drawdown_gate` 不应该升级为正式候选
+  - 不需要继续做启动年份正式复核
+- 失败不是因为“阈值没调好”，而是这条逻辑的结构有问题：
+  - 组合已经进入回撤后再降低新仓
+  - 表面上是在降风险
+  - 实际上同时削弱了趋势系统最重要的恢复弹性
+  - 结果是绝对滑点和交易次数下降，但净值恢复能力被严重压制
+- 三档结果都明显差于 `volref30_current`：
+  - 最好的 `floor35` 也只有 `639,480` 期末权益
+  - 相对当前候选少 `2,043,655`
+  - Sharpe 从 `0.9939` 降到 `0.4583`
+  - 最大回撤百分比还从 `-37.20%` 恶化到 `-44.08%`
+- 这说明：
+  - “组合回撤后缩新仓”不是当前系统的主矛盾解法
+  - 它解决的是交易频率和滑点
+  - 但牺牲的是趋势策略穿越周期所依赖的再入场能力
+- 当前正式候选仍保持：
+  - `selection_pairwise_v2 + long015_volref30`
+- 下一步如果继续，不应该再做权益回撤型刹车：
+  - 应转向更前置的组合状态变量
+  - 例如入场前的品种相关拥挤、同方向风险预算、或持仓间收益相关性
+  - 这些变量比“回撤后再降仓”更可能接近真实风险源
+
+# 2026-04-24 17:58 第52阶段 long015_volref30：连亏风险缩放参数验证
+
+## 本次版本改动
+
+- 改动时间：
+  - `2026-04-24 17:58`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_streak_risk_fast_backtest.py`
+- 本次没有新增策略逻辑。
+- 本次先对正式候选的历史成交做了归因判断：
+  - 高 `margin_ratio_before` 并不是明显负收益源
+  - 高 `projected_margin_ratio_after` 反而不是坏组
+  - 继续做“保证金拥挤上限”大概率会误杀主趋势
+  - `loss_streak` 高位入场偏弱，值得用已有参数做一轮快速验证
+- 使用解释器：
+  - `.py311/bin/python`
+- 执行命令：
+  - `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting:/Users/bytedance/Desktop/person/vnpy .py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_streak_risk_fast_backtest.py`
+- 输出文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_streak_risk_fast_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_streak_risk_fast_summary.json`
+
+## 回测参数
+
+- 基础资金：
+  - `200,000`
+- 回测区间：
+  - `2020-01-01` 至 `2026-04-30`
+- 风险参数：
+  - `risk_ratio = 0.045`
+- 本轮回测类型：
+  - 快速探索
+  - `save_artifacts = False`
+  - `include_start_year_sweep = False`
+- 基础候选：
+  - `selection_pairwise_v2 + long015_volref30`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+- 对照组合：
+  - `volref30_current`
+    - 默认 `streak_risk_multipliers = 1.0,1.0,1.0,0.1`
+  - `volref30_streak_soft_after2`
+    - `streak_risk_multipliers = 1.0,1.0,0.5,0.1`
+  - `volref30_streak_linear`
+    - `streak_risk_multipliers = 1.0,0.7,0.3,0.1`
+  - `volref30_streak_cut_after2`
+    - `streak_risk_multipliers = 1.0,1.0,0.0,0.0`
+
+## 参数变更
+
+- 新增的参数：
+  - 无
+- 修改的参数：
+  - `streak_risk_multipliers`
+- 删除的参数：
+  - 无
+
+## 新增的回测结果
+
+- `volref30_current`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+- `volref30_streak_soft_after2`
+  - `期末权益 = 2,064,665`
+  - `总收益 = 932.33%`
+  - `最大回撤 = -36.62%`
+  - `Sharpe = 0.8193`
+  - `总滑点 = 327,810`
+  - `总交易次数 = 1167`
+- `volref30_streak_linear`
+  - `期末权益 = 1,200,535`
+  - `总收益 = 500.27%`
+  - `最大回撤 = -56.23%`
+  - `Sharpe = 0.5601`
+  - `总滑点 = 269,690`
+  - `总交易次数 = 1169`
+- `volref30_streak_cut_after2`
+  - `期末权益 = 155,810`
+  - `总收益 = -22.09%`
+  - `最大回撤 = -23.92%`
+  - `Sharpe = -0.6960`
+  - `总滑点 = 3,850`
+  - `总交易次数 = 28`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第52阶段结论：
+  - `streak_risk_multipliers` 收紧不应升级为正式候选
+- `volref30_streak_soft_after2` 是唯一有一点风险侧改善的版本：
+  - 最大回撤从 `-37.20%` 改到 `-36.62%`
+  - 但期末权益少 `618,470`
+  - Sharpe 从 `0.9939` 降到 `0.8193`
+  - 这个交换不划算
+- `volref30_streak_linear` 和 `volref30_streak_cut_after2` 说明：
+  - 连亏后过早或过强缩风险，会和第51阶段类似
+  - 容易切断系统恢复弹性
+  - 尤其 `cut_after2` 几乎让系统失去交易能力
+- 所以当前判断是：
+  - 不继续围绕连亏参数微调
+  - `soft_after2` 可以记为“轻微降回撤保险型变体”
+  - 但不能替代 `volref30_current`
+- 更重要的是本轮归因否定了一个直觉误区：
+  - 入场前保证金高，不等于风险源
+  - 在趋势系统里，高保证金往往也代表趋势机会更强
+  - 所以下一步不应做粗暴保证金拥挤上限
+  - 更应该识别“相关性拥挤”而不是“名义暴露拥挤”
+
+# 2026-04-24 18:20 第53阶段 long015_volref30：同向相关性拥挤连续缩放验证
+
+## 本次版本改动
+
+- 改动时间：
+  - `2026-04-24 18:20`
+- 修改文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_fast_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py`
+- 本次设计意图：
+  - 不再用名义保证金、权益回撤、连亏次数做粗暴刹车
+  - 改为识别更接近风险源的“同向相关性拥挤”
+  - 当新候选与当前同方向持仓的 20 日收益相关性过高时，只对新开仓 `selected_volume` 做连续缩放
+  - 不做硬过滤，避免切断趋势系统的再入场能力
+- 使用解释器：
+  - `.py311/bin/python`
+- 快速回测命令：
+  - `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting:/Users/bytedance/Desktop/person/vnpy .py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_fast_backtest.py`
+- 正式回测命令：
+  - `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting:/Users/bytedance/Desktop/person/vnpy .py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py`
+- 输出文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_fast_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_fast_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_formal_*`
+
+## 回测参数
+
+- 基础资金：
+  - `200,000`
+- 回测区间：
+  - `2020-01-01` 至 `2026-04-30`
+- 风险参数：
+  - `risk_ratio = 0.045`
+- 快速回测：
+  - `save_artifacts = False`
+  - `include_start_year_sweep = False`
+- 正式回测：
+  - `save_artifacts = True`
+  - `include_start_year_sweep = True`
+- 基础候选：
+  - `selection_pairwise_v2 + long015_volref30`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+- 相关性拥挤候选：
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35 / 0.50`
+
+## 参数变更
+
+- 新增的参数：
+  - `enable_same_direction_correlation_gate`
+  - `same_direction_correlation_gate_lookback`
+  - `same_direction_correlation_gate_start`
+  - `same_direction_correlation_gate_full`
+  - `same_direction_correlation_gate_weight_floor`
+- 修改的参数：
+  - 无
+- 删除的参数：
+  - 无
+
+## 新增的快速回测结果
+
+- `volref30_current`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+- `volref30_corr20_06_08_floor35`
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+- `volref30_corr20_06_08_floor50`
+  - `期末权益 = 2,833,090`
+  - `总收益 = 1316.55%`
+  - `最大回撤 = -37.45%`
+  - `Sharpe = 1.0168`
+  - `总滑点 = 349,640`
+  - `总交易次数 = 1150`
+- `volref30_corr20_05_08_floor50`
+  - `期末权益 = 2,677,580`
+  - `总收益 = 1238.79%`
+  - `最大回撤 = -36.92%`
+  - `Sharpe = 0.9664`
+  - `总滑点 = 339,310`
+  - `总交易次数 = 1144`
+
+## 新增的正式回测结果
+
+- `volref30_current`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+- `volref30_corr20_06_08_floor35`
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+- `volref30_corr20_06_08_floor50`
+  - `期末权益 = 2,833,090`
+  - `总收益 = 1316.55%`
+  - `最大回撤 = -37.45%`
+  - `Sharpe = 1.0168`
+  - `总滑点 = 349,640`
+  - `总交易次数 = 1150`
+
+## 启动年份稳健性结果
+
+- `volref30_corr20_06_08_floor35` 相对 `volref30_current`：
+  - `2020-01-01` 起点：
+    - 期末权益 `+219,220`
+    - 最大回撤改善 `0.21` 个百分点
+    - Sharpe `+0.0286`
+  - `2021-01-01` 起点：
+    - 期末权益 `+220,935`
+    - 最大回撤改善 `3.28` 个百分点
+    - Sharpe `+0.0454`
+  - `2022-01-01` 起点：
+    - 期末权益 `+296,480`
+    - 最大回撤改善 `4.90` 个百分点
+    - Sharpe `+0.1630`
+  - `2023-01-01` 起点：
+    - 期末权益 `+97,880`
+    - 最大回撤改善 `10.88` 个百分点
+    - Sharpe `+0.1477`
+  - `2024-01-01` 起点：
+    - 期末权益 `+9,045`
+    - 最大回撤恶化 `2.77` 个百分点
+    - Sharpe `+0.0787`
+  - `2025-01-01` 起点：
+    - 期末权益 `+56,470`
+    - 最大回撤改善 `1.62` 个百分点
+    - Sharpe `+0.1170`
+  - `2026-01-01` 起点：
+    - 期末权益 `+4,170`
+    - 最大回撤改善 `1.52` 个百分点
+    - Sharpe `+0.1142`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 我的判断
+
+- 第53阶段的结论：
+  - `volref30_corr20_06_08_floor35` 应升级为当前正式候选第一名
+- 相对 `volref30_current`：
+  - `期末权益 +219,220`
+  - `总收益 +109.61` 个百分点
+  - `最大回撤改善 0.21` 个百分点
+  - `Sharpe +0.0286`
+  - `总滑点 -5,580`
+  - `总交易次数 -15`
+- 这个增强和前几轮失败线的本质区别：
+  - 它不是回撤后刹车
+  - 不是连亏后刹车
+  - 也不是按名义保证金粗暴限仓
+  - 它识别的是“多个同向仓位正在交易相似收益路径”这类更接近真实风险因子的拥挤
+- 邻近结果也支持这个方向：
+  - `floor50` 也显著提高期末权益和 Sharpe
+  - 说明 `corr20 0.60 -> 0.80` 不是孤立点
+  - `start=0.50` 过早收缩会损失 Sharpe，说明不能太早惩罚正常趋势共振
+- 风险侧需要保留的警惕：
+  - `2024` 起点最大回撤恶化 `2.77` 个百分点
+  - 所以它不是完美风险降低器
+  - 但该起点期末权益与 Sharpe 仍改善
+- 当前最合理版本顺位：
+  - 第一名：`selection_pairwise_v2 + long015_volref30 + corr20_06_08_floor35`
+  - 第二名：`selection_pairwise_v2 + long015_volref30`
+  - 第三名：`selection_pairwise_v2 + long015`
+
+# 第54阶段：`corr20_06_08_floor35` 小邻域复核
+
+## 改动时间
+
+- `2026-04-24 18:30 CST`
+
+## 本次版本改动内容
+
+- 新增快速邻域回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_neighbors_fast_backtest.py`
+- 目的：
+  - 不再继续发明新规则
+  - 只围绕第53阶段正式第一候选 `corr20_06_08_floor35` 做小邻域复核
+  - 判断它是局部偶然点，还是参数盆地里的稳健点
+- 输出文件：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_neighbors_fast_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_neighbors_fast_summary.json`
+
+## 回测参数
+
+- 共同参数：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `enable_selection_pairwise_v2_catastrophic_veto = False`
+  - `enable_selection_pairwise_v2_volume_tilt = True`
+  - `selection_pairwise_volume_tilt_strength = 0.0`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_short_strength = 0.0`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+- 对照组：
+  - `volref30_current`
+- 同向相关性拥挤门控邻域：
+  - `corr20_060_080_floor35`
+  - `corr20_060_080_floor25`
+  - `corr20_060_080_floor50`
+  - `corr15_060_080_floor35`
+  - `corr30_060_080_floor35`
+  - `corr20_055_080_floor35`
+  - `corr20_060_085_floor35`
+
+## 新增的参数
+
+- 无新增策略参数
+- 新增回测邻域参数取值：
+  - `same_direction_correlation_gate_weight_floor = 0.25`
+  - `same_direction_correlation_gate_full = 0.85`
+  - `same_direction_correlation_gate_lookback = 15`
+  - `same_direction_correlation_gate_lookback = 30`
+  - `same_direction_correlation_gate_start = 0.55`
+
+## 修改的参数
+
+- 无生产默认参数修改
+- 仅在快速回测脚本中临时修改邻域参数
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- `corr20_060_080_floor35`
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+- `corr20_060_080_floor25`
+  - `期末权益 = 2,884,150`
+  - `总收益 = 1342.08%`
+  - `最大回撤 = -37.01%`
+  - `Sharpe = 1.0161`
+  - `总滑点 = 347,500`
+  - `总交易次数 = 1156`
+- `corr20_055_080_floor35`
+  - `期末权益 = 2,864,865`
+  - `总收益 = 1332.43%`
+  - `最大回撤 = -37.08%`
+  - `Sharpe = 1.0098`
+  - `总滑点 = 342,960`
+  - `总交易次数 = 1156`
+- `corr20_060_085_floor35`
+  - `期末权益 = 2,848,490`
+  - `总收益 = 1324.25%`
+  - `最大回撤 = -37.34%`
+  - `Sharpe = 1.0174`
+  - `总滑点 = 348,190`
+  - `总交易次数 = 1150`
+- `corr20_060_080_floor50`
+  - `期末权益 = 2,833,090`
+  - `总收益 = 1316.55%`
+  - `最大回撤 = -37.45%`
+  - `Sharpe = 1.0168`
+  - `总滑点 = 349,640`
+  - `总交易次数 = 1150`
+- `corr15_060_080_floor35`
+  - `期末权益 = 2,695,690`
+  - `总收益 = 1247.85%`
+  - `最大回撤 = -36.83%`
+  - `Sharpe = 0.9719`
+  - `总滑点 = 345,690`
+  - `总交易次数 = 1156`
+- `volref30_current`
+  - `期末权益 = 2,683,135`
+  - `总收益 = 1241.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9939`
+  - `总滑点 = 354,660`
+  - `总交易次数 = 1173`
+- `corr30_060_080_floor35`
+  - `期末权益 = 2,627,135`
+  - `总收益 = 1213.57%`
+  - `最大回撤 = -37.20%`
+  - `Sharpe = 0.9839`
+  - `总滑点 = 341,970`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 相对第53阶段锚点的判断
+
+- `corr20_060_080_floor35` 仍是邻域内第一：
+  - 期末权益最高
+  - Sharpe 最高
+  - 最大回撤没有显著牺牲
+- `floor25` 和 `floor50` 仍显著优于 `volref30_current`：
+  - 说明相关性拥挤门控不是单点过拟合
+  - 但它们都弱于 `floor35`
+- `lookback=15`：
+  - 最大回撤略好
+  - 但期末权益和 Sharpe 明显下降
+  - 说明窗口太短会把正常趋势共振误判成拥挤
+- `lookback=30`：
+  - 滑点下降
+  - 但期末权益、总收益、Sharpe 全部弱于当前对照
+  - 说明窗口太长会让拥挤识别变钝
+- `start=0.55`：
+  - 仍优于 `volref30_current`
+  - 但弱于 `start=0.60`
+  - 继续支持“不要太早惩罚正常趋势共振”
+- `full=0.85`：
+  - Sharpe 仍强
+  - 但期末权益低于 `full=0.80`
+  - 说明完全惩罚阈值放太宽会错过部分真实拥挤
+
+## 是否进入正式复测
+
+- 不进入新的正式复测
+- 原因：
+  - 本轮没有邻域参数明显战胜第53阶段正式第一候选
+  - `corr20_060_080_floor35` 已经在第53阶段完成正式回测和启动年份 sweep
+  - 继续正式复测邻域弱参数只会增加噪音，不提高决策质量
+
+## 我的判断
+
+- 维持当前正式第一候选：
+  - `selection_pairwise_v2 + long015_volref30 + corr20_06_08_floor35`
+- 第54阶段真正有价值的结论不是“又找到更高收益”，而是：
+  - `lookback=20`
+  - `start=0.60`
+  - `full=0.80`
+  - `floor=0.35`
+  - 这组参数处在一个相对合理的经验盆地中心
+- 后续不应继续在 `corr` 门控上做细粒度网格搜索：
+  - 那会开始变成过拟合
+  - 更合理的下一步是研究“相关性拥挤发生时，是哪些品种簇、方向簇、阶段簇贡献了收益和回撤”
+
+# 第55阶段：相关性拥挤门控事件归因
+
+## 改动时间
+
+- `2026-04-24 18:44 CST`
+
+## 本次版本改动内容
+
+- 新增归因分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 解释第53阶段正式第一候选 `corr20_06_08_floor35` 的收益来源
+  - 判断相关性拥挤门控是在“同日避损”，还是通过改变后续组合路径产生效果
+  - 找出门控主要作用在哪些方向、品种和阶段
+
+## 使用的数据
+
+- 对照组正式明细：
+  - `qmt_roll_selection_long015_volref30_corr_formal_current_*`
+- 门控组正式明细：
+  - `qmt_roll_selection_long015_volref30_corr_formal_floor35_*`
+- 归因输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_gate_events.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_daily_attribution.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_by_product.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_by_product_pnl.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_by_daily_regime.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_by_month.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 引用第53阶段正式回测参数：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `enable_selection_pairwise_v2_catastrophic_veto = False`
+  - `enable_selection_pairwise_v2_volume_tilt = True`
+  - `selection_pairwise_volume_tilt_strength = 0.0`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_short_strength = 0.0`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的归因结果
+
+- 门控触发开仓事件：
+  - `78` 次
+  - 分布在 `67` 个交易日
+  - 覆盖 `14` 个品种
+- 门控缩量：
+  - 触发事件未门控手数合计 `1575`
+  - 门控后手数合计 `1019`
+  - 缩量 `557`
+  - 缩量比例 `35.37%`
+- 触发时相关性特征：
+  - 平均最大相关性 `0.7345`
+  - 最高相关性 `0.9837`
+  - 平均同向活跃仓位数 `3.35`
+  - 平均门控权重 `0.6566`
+- 方向分布：
+  - 多头触发 `63` 次，缩量 `396`
+  - 空头触发 `15` 次，缩量 `161`
+- 主要缩量品种：
+  - `rb.SHFE` 缩量 `139`
+  - `hc.SHFE` 缩量 `138`
+  - `SA.CZCE` 缩量 `96`
+  - `MA.CZCE` 缩量 `68`
+  - `FG.CZCE` 缩量 `56`
+  - `jm.DCE` 缩量 `28`
+- 品种净贡献改善：
+  - `lc.GFEX +302,080`
+  - `jm.DCE +73,320`
+  - `rb.SHFE +60,640`
+  - `CF.CZCE +43,750`
+  - `lh.DCE +30,880`
+- 品种净贡献恶化：
+  - `MA.CZCE -57,370`
+  - `FG.CZCE -57,120`
+  - `hc.SHFE -56,560`
+  - `cu.SHFE -31,300`
+  - `SA.CZCE -26,360`
+- 日度路径归因：
+  - 最近 `20` 日有门控事件的日期区间贡献 `+268,745`
+  - 最近 `20` 日无门控事件的日期区间贡献 `-49,525`
+  - 同日门控事件本身只贡献 `+250`
+  - 说明门控的收益主要来自后续持仓路径改变，不是单纯同日避损
+
+## 我的判断
+
+- 这个门控不是“当天少亏一点”的工具
+- 它更像组合路径修正器：
+  - 在多头或空头同向仓位高度相似时，提前削弱新增仓位
+  - 后续组合路径因此发生改变
+  - 最大收益并不一定出现在触发当天，而是出现在之后的持仓演化
+- 最强的直接缩量发生在黑色和建材链：
+  - `rb`
+  - `hc`
+  - `SA`
+  - `MA`
+  - `FG`
+  - `jm`
+- 但最大的净利润改善来自 `lc / jm / rb`，这说明归因具有路径依赖：
+  - 不能把“触发品种”机械等同于“最终赚钱品种”
+  - 门控改变的是组合状态，而不是单笔交易的孤立盈亏
+- 这强化了第53阶段结论：
+  - 相关性拥挤确实比名义保证金和回撤刹车更接近真实风险源
+- 但也提出一个实盘风险：
+  - 如果未来某段行情的收益来自高度同步的趋势扩散，门控可能会少吃趋势
+  - 所以后续监控重点不是继续调参数，而是记录触发后的 `20` 日路径表现
+
+# 第56阶段：相关性拥挤门控触发后 20 日路径验证
+
+## 改动时间
+
+- `2026-04-24 18:51 CST`
+
+## 本次版本改动内容
+
+- 新增触发后路径归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 检查第55阶段提出的“门控是组合路径修正器”是否成立
+  - 统计每次门控触发后 `5 / 10 / 20 / 40` 个交易日的相对路径
+  - 同时保留事件级和日期级两套口径，避免单日多个事件被重复加权误导
+
+## 使用的数据
+
+- 读取第55阶段输出：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_gate_events.csv`
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_daily_attribution.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_event_paths.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_date_paths.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_by_year.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_by_direction.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_by_product.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_by_corr_bin.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的路径归因结果
+
+- 事件级口径：
+  - 事件数 `78`
+  - 触发后 `5` 日平均相对贡献 `+329`
+  - 触发后 `5` 日中位数 `-435`
+  - 触发后 `10` 日平均相对贡献 `+592`
+  - 触发后 `10` 日中位数 `+1,265`
+  - 触发后 `20` 日平均相对贡献 `+18,316`
+  - 触发后 `20` 日中位数 `+6,963`
+  - 触发后 `20` 日胜率 `67.95%`
+- 日期级口径：
+  - 触发日期数 `67`
+  - 触发后 `5` 日平均相对贡献 `+64`
+  - 触发后 `5` 日中位数 `+400`
+  - 触发后 `10` 日平均相对贡献 `+922`
+  - 触发后 `10` 日中位数 `+540`
+  - 触发后 `20` 日平均相对贡献 `+15,620`
+  - 触发后 `20` 日中位数 `+5,340`
+  - 触发后 `20` 日胜率 `68.66%`
+- 方向：
+  - 多头事件 `63` 次，触发后 `20` 日平均 `+9,944`，中位数 `+6,380`，胜率 `68.25%`
+  - 空头事件 `15` 次，触发后 `20` 日平均 `+53,482`，中位数 `+7,845`，胜率 `66.67%`
+- 年份：
+  - `2020`：平均 `+1,415`，胜率 `66.67%`
+  - `2021`：平均 `-11,662`，胜率 `30.00%`
+  - `2022`：平均 `+19,451`，胜率 `75.00%`
+  - `2023`：平均 `+10,089`，胜率 `87.50%`
+  - `2024`：平均 `+2,737`，胜率 `62.50%`
+  - `2025`：平均 `+62,453`，胜率 `62.50%`
+  - `2026`：平均 `+20,638`，胜率 `100.00%`
+- 最强正贡献日期：
+  - `2025-04-02`，`hc.SHFE/rb.SHFE`，触发后 `20` 日 `+292,720`
+  - `2025-03-31`，`ru.SHFE`，触发后 `20` 日 `+226,330`
+  - `2025-07-25`，`sp.SHFE`，触发后 `20` 日 `+86,635`
+- 最强负贡献日期：
+  - `2022-07-06`，`hc.SHFE`，触发后 `20` 日 `-99,840`
+  - `2021-04-30`，`MA.CZCE`，触发后 `20` 日 `-48,240`
+  - `2024-12-03`，`SA.CZCE`，触发后 `20` 日 `-26,935`
+
+## 我的判断
+
+- 第56阶段确认了第55阶段的核心判断：
+  - 门控优势不是触发后 `5` 日立刻显现
+  - 真正优势主要在触发后 `20` 日路径中释放
+- 这个特征更像“减少后续组合共振失效”，不是“当天风控止血”
+- `2021` 是明显反例：
+  - 平均 `-11,662`
+  - 胜率只有 `30.00%`
+  - 说明在某些趋势扩散环境中，门控会过早削弱有效趋势
+- 但跨年份看，除 `2021` 外大多数年份为正
+- 实盘监控建议：
+  - 每次门控触发后记录未来 `20` 个交易日相对路径
+  - 连续出现 `20` 日负路径时，不应马上调参数
+  - 应先判断是否处于“趋势扩散行情”，因为这正是门控可能误伤的环境
+- 后续研究方向：
+  - 不继续调 `corr` 参数
+  - 研究 `2021` 这类负样本与 `2025-04` 这类正样本的市场状态差异
+
+# 第57阶段：相关性拥挤门控正负样本市场状态对比
+
+## 改动时间
+
+- `2026-04-24 18:56 CST`
+
+## 本次版本改动内容
+
+- 新增状态对比脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 对比触发后 `20` 日正贡献样本与负贡献样本
+  - 解释为什么 `2021` 是相关性拥挤门控的负样本
+  - 找出后续实盘监控中应该关注的误伤条件
+
+## 使用的数据
+
+- 读取第56阶段输出：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_event_paths.csv`
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_forward_paths_date_paths.csv`
+- 读取第55阶段日度归因：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_attribution_daily_attribution.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_date_state.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_feature_diff_positive_vs_negative.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_feature_diff_strong_positive_vs_negative.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_year_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_period_summary.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的状态对比结果
+
+- 日期级样本：
+  - 总触发日期 `67`
+  - 触发后 `20` 日正贡献日期 `46`
+  - 触发后 `20` 日负贡献日期 `21`
+  - 正贡献均值 `+30,361`
+  - 负贡献均值 `-16,671`
+  - 强正阈值 `>= +19,790`
+  - 强负阈值 `<= -4,570`
+- `2021` 负样本：
+  - 日期数 `9`
+  - 触发后 `20` 日均值 `-12,312`
+  - 中位数 `-8,880`
+  - 胜率 `33.33%`
+  - 平均 RSI `73.13`
+  - 平均 range zscore `0.187`
+  - 触发前 `20` 日收益和 `0.0477`
+- `2025-03/04` 正样本簇：
+  - 日期数 `3`
+  - 触发后 `20` 日均值 `+194,970`
+  - 中位数 `+226,330`
+  - 胜率 `100.00%`
+  - 平均 RSI `33.94`
+  - 平均 range zscore `-0.229`
+  - 触发前 `20` 日收益和 `0.1162`
+- 正贡献样本相对负贡献样本：
+  - 平均 RSI 更低：`62.60` vs `66.63`
+  - 突破率更低：`0.297` vs `0.508`
+  - range zscore 更低：`-0.058` vs `0.200`
+  - 平均同向活跃数更低：`3.15` vs `3.62`
+  - 平均 loss_streak 更低：`1.11` vs `1.48`
+  - 触发前 `20` 日净利润更高：`71,279` vs `51,434`
+- 强正样本相对强负样本：
+  - 触发前 `20` 日净利润更高：`113,613` vs `27,993`
+  - 触发前 `20` 日权益变化更高：`106,536` vs `22,537`
+  - 平均 active_count 更低：`2.82` vs `3.65`
+  - 平均 loss_streak 更低：`0.59` vs `1.71`
+  - 平均 range zscore 更低：`-0.127` vs `0.225`
+  - 平均 ret20 zscore 更低：`0.132` vs `0.328`
+
+## 我的判断
+
+- `2021` 的失败不是因为相关性门控逻辑完全错误
+- 更本质的解释是：
+  - 当市场处在高 RSI
+  - 高突破率
+  - 波动/区间扩张
+  - 多个同向趋势同时扩散
+  - 且系统已经出现一定连亏或切换摩擦时
+  - 门控会把真实趋势扩散误判为危险拥挤
+- 正样本更像：
+  - 前 `20` 日已经有利润垫
+  - 触发时 RSI 没有过热
+  - range zscore 不高
+  - 同向活跃数没有极端拥挤
+  - 此时门控削弱的是更可能失效的重复风险因子
+- 这给实盘监控提供了比继续调参更有价值的准则：
+  - 若门控触发时 `RSI 高 / breakout 高 / range zscore 高 / ret20 zscore 高`
+  - 应警惕它可能少吃趋势扩散
+  - 但现在不应直接加开关
+  - 因为样本少，直接加状态开关会过拟合
+- 后续合理动作：
+  - 做“门控触发监控报表”
+  - 把每次触发的 RSI、breakout、range zscore、ret20 zscore、active_count、20 日后路径写出来
+  - 用未来新增样本判断是否需要状态化门控
+
+# 第58阶段：相关性拥挤门控触发监控报表
+
+## 改动时间
+
+- `2026-04-24 19:02 CST`
+
+## 本次版本改动内容
+
+- 新增监控报表脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_report.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 把第57阶段的误伤条件转成可复用监控报表
+  - 验证“趋势扩散警戒分数”是否有区分度
+  - 明确它只能用于观察和复盘，不能自动关闭门控
+
+## 使用的数据
+
+- 读取第57阶段输出：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_state_contrast_date_state.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_events.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_by_warning_label.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_by_warning_score.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_report.md`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的监控规则
+
+- `flag_rsi_hot`：
+  - `avg_rsi >= 70`
+- `flag_breakout_hot`：
+  - `breakout_rate >= 0.5`
+- `flag_range_expanding`：
+  - `avg_range_zscore >= 0`
+- `flag_ret20_hot`：
+  - `avg_ret20_zscore >= 0.25`
+- `flag_active_crowded`：
+  - `avg_active_count >= 3.5`
+- `flag_loss_streak_active`：
+  - `avg_loss_streak >= 1`
+- `trend_expansion_warning_score`：
+  - 上述 6 个 flag 的合计分数
+- `trend_expansion_warning_label`：
+  - `0-2` 分：`normal_watch`
+  - `3-4` 分：`medium_watch`
+  - `5-6` 分：`severe_watch`
+
+## 新增的监控结果
+
+- 总触发日期：
+  - `67`
+- `severe_watch`：
+  - 日期数 `9`
+  - 触发后 `20` 日均值 `-5,986`
+  - 触发后 `20` 日中位数 `-5,930`
+  - 胜率 `22.22%`
+  - 负贡献日期 `7`
+- 非 `severe_watch`：
+  - 日期数 `58`
+  - 触发后 `20` 日均值 `+18,973`
+  - 触发后 `20` 日中位数 `+9,198`
+  - 胜率 `75.86%`
+- 按标签：
+  - `normal_watch`
+    - 日期数 `32`
+    - `20` 日均值 `+24,727`
+    - 胜率 `78.13%`
+  - `medium_watch`
+    - 日期数 `26`
+    - `20` 日均值 `+11,890`
+    - 胜率 `73.08%`
+  - `severe_watch`
+    - 日期数 `9`
+    - `20` 日均值 `-5,986`
+    - 胜率 `22.22%`
+- 按分数：
+  - `score=5`
+    - 日期数 `8`
+    - `20` 日均值 `-4,944`
+    - 胜率 `25.00%`
+  - `score=6`
+    - 日期数 `1`
+    - `20` 日均值 `-14,320`
+    - 胜率 `0.00%`
+
+## 我的判断
+
+- 第58阶段把第57阶段的直觉转成了可执行监控：
+  - 高 RSI
+  - 高突破率
+  - range 扩张
+  - ret20 过热
+  - 同向活跃数高
+  - loss streak 存在
+  - 这些同时出现时，门控误伤趋势扩散的概率明显上升
+- `severe_watch` 的区分度足够用于实盘复盘：
+  - 它的 `20` 日均值为负
+  - 胜率明显低于其他标签
+- 但它仍不能直接变成交易开关：
+  - 样本只有 `9` 个 severe 日期
+  - 且 `score=4` 仍然表现不差
+  - 直接用分数关掉门控，会把监控工具过拟合成新策略
+- 当前正确用法：
+  - 每次门控触发时记录 warning score
+  - 若为 `severe_watch`，只提高复盘优先级
+  - 等未来新增样本验证后，才考虑是否做状态化门控
+
+# 第59阶段：当前候选准实盘可用性报告
+
+## 改动时间
+
+- `2026-04-24 19:07 CST`
+
+## 本次版本改动内容
+
+- 新增准实盘可用性报告脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_report.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 把第53至第58阶段的研究结果汇总成准实盘决策文档
+  - 冻结当前第一候选
+  - 生成日常复盘模板
+  - 明确哪些东西可执行，哪些东西只能监控
+
+## 使用的数据
+
+- 正式回测摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_summary.json`
+- 邻域复核摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_neighbors_fast_summary.json`
+- 监控摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_summary.json`
+- 启动年份 sweep：
+  - `qmt_roll_selection_long015_volref30_corr_formal_current_period_sweep_summary.csv`
+  - `qmt_roll_selection_long015_volref30_corr_formal_floor35_period_sweep_summary.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_report.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_start_year_comparison.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_daily_review_template.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的准实盘结论
+
+- 当前冻结候选：
+  - `selection_pairwise_v2 + long015_volref30 + corr20_06_08_floor35`
+- 准实盘状态：
+  - `ready_for_paper_trading_review_not_unattended_live`
+- 相对 `selection_pairwise_v2 + long015_volref30`：
+  - 期末权益 `+219,220`
+  - 总收益 `+109.61` 个百分点
+  - 最大回撤改善 `0.21` 个百分点
+  - Sharpe `+0.0286`
+  - 总滑点 `-5,580`
+  - 总交易次数 `-15`
+- 治理规则：
+  - 冻结当前候选参数：`True`
+  - 继续做 `corr` 微网格搜索：`False`
+  - 把 `severe_watch` 当交易开关：`False`
+  - 每次门控触发后跟踪 `20` 日路径：`True`
+  - 推荐下一阶段：`paper_trading_review`
+
+## 新增的复盘模板
+
+- 文件：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_daily_review_template.csv`
+- 关键字段：
+  - `review_date`
+  - `data_end_date`
+  - `end_balance`
+  - `daily_net_pnl`
+  - `drawdown_pct`
+  - `trade_count`
+  - `same_direction_corr_gate_trigger_count`
+  - `severe_watch_count`
+  - `max_warning_score`
+  - `manual_review_required`
+  - `followup_due_date_20d`
+  - `followup_relative_pnl_20d`
+  - `action_taken`
+
+## 我的判断
+
+- 当前研究已经从“找参数”转入“候选治理”
+- 继续在历史数据里寻找更高收益，大概率进入过拟合
+- 现在最理性的动作是：
+  - 冻结候选
+  - 进入准实盘/纸面跟踪
+  - 只记录、不干预
+  - 用未来样本检验 `severe_watch` 是否真能识别趋势扩散误伤
+- 当前版本可以作为准实盘观察对象
+- 当前版本不应该作为无人值守实盘自动系统
+
+# 第60阶段：多周期、Block Bootstrap 与滑点压力稳健性实验
+
+## 改动时间
+
+- `2026-04-24 19:14 CST`
+
+## 本次版本改动内容
+
+- 新增稳健性实验脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_experiments.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 用多周期 rolling window 检查候选是否只靠少数阶段
+  - 用 block bootstrap 检查路径重排后的生存能力
+  - 用滑点压力测试检查交易成本断点
+
+## 使用的数据
+
+- 对照组日度曲线：
+  - `qmt_roll_selection_long015_volref30_corr_formal_current_daily.csv`
+- 当前候选日度曲线：
+  - `qmt_roll_selection_long015_volref30_corr_formal_floor35_daily.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_rolling_windows.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_rolling_comparison.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_rolling_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_block_bootstrap_paths.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_block_bootstrap_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_slippage_stress.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的模拟参数
+
+- Rolling window：
+  - `240` 个交易日
+  - `480` 个交易日
+  - `720` 个交易日
+  - 步长 `20` 个交易日
+- Block Bootstrap：
+  - block length `20`
+  - block length `40`
+  - block length `60`
+  - 每组 `1000` 条路径
+  - 随机种子 `20260424`
+- 滑点压力：
+  - `1.0x`
+  - `1.5x`
+  - `2.0x`
+  - `3.0x`
+  - `5.0x`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的 Rolling 多周期结果
+
+- `240` 日窗口：
+  - 候选窗口数 `65`
+  - 正收益窗口比例 `89.23%`
+  - 候选相对基线期末权益胜率 `67.69%`
+  - 候选相对基线 Sharpe 中位差 `+0.0653`
+  - 候选最差窗口收益 `-13.13%`
+- `480` 日窗口：
+  - 候选窗口数 `53`
+  - 正收益窗口比例 `100.00%`
+  - 候选相对基线期末权益胜率 `67.92%`
+  - 候选相对基线 Sharpe 中位差 `+0.0498`
+  - 候选最差窗口收益 `+3.93%`
+- `720` 日窗口：
+  - 候选窗口数 `41`
+  - 正收益窗口比例 `100.00%`
+  - 候选相对基线期末权益胜率 `58.54%`
+  - 候选相对基线 Sharpe 中位差 `+0.0284`
+  - 候选最差窗口收益 `+7.14%`
+
+## 新增的 Block Bootstrap 结果
+
+- `block=20`：
+  - 路径数 `1000`
+  - 期末权益中位数 `1,647,469`
+  - 期末权益 `5%` 分位 `264,010`
+  - 期末权益 `1%` 分位 `137,165`
+  - 期末低于初始资金概率 `2.20%`
+  - 最大回撤中位数 `-47.61%`
+  - 最大回撤 `5%` 分位 `-68.54%`
+  - 最大回撤低于 `-50%` 概率 `41.90%`
+  - Sharpe 中位数 `1.0114`
+  - Sharpe `5%` 分位 `0.3065`
+- `block=40`：
+  - 路径数 `1000`
+  - 期末权益中位数 `1,785,411`
+  - 期末权益 `5%` 分位 `370,271`
+  - 期末权益 `1%` 分位 `195,361`
+  - 期末低于初始资金概率 `1.30%`
+  - 最大回撤中位数 `-45.50%`
+  - 最大回撤 `5%` 分位 `-65.53%`
+  - 最大回撤低于 `-50%` 概率 `32.90%`
+  - Sharpe 中位数 `1.0389`
+  - Sharpe `5%` 分位 `0.4479`
+- `block=60`：
+  - 路径数 `1000`
+  - 期末权益中位数 `2,178,158`
+  - 期末权益 `5%` 分位 `434,393`
+  - 期末权益 `1%` 分位 `224,354`
+  - 期末低于初始资金概率 `0.50%`
+  - 最大回撤中位数 `-43.28%`
+  - 最大回撤 `5%` 分位 `-59.72%`
+  - 最大回撤低于 `-50%` 概率 `23.60%`
+  - Sharpe 中位数 `1.1085`
+  - Sharpe `5%` 分位 `0.5111`
+
+## 新增的滑点压力结果
+
+- 说明：
+  - 本段为固定成交路径的滑点压力模拟
+  - Sharpe 使用脚本内日收益重算口径，不等同于 vn.py 正式统计口径
+- `1.0x`：
+  - 期末权益 `2,902,355`
+  - 总收益 `1351.18%`
+  - 最大回撤 `-36.99%`
+  - 模拟 Sharpe `1.2097`
+  - 总滑点 `349,080`
+- `1.5x`：
+  - 期末权益 `2,727,815`
+  - 总收益 `1263.91%`
+  - 最大回撤 `-37.72%`
+  - 模拟 Sharpe `1.1657`
+  - 总滑点 `523,620`
+- `2.0x`：
+  - 期末权益 `2,553,275`
+  - 总收益 `1176.64%`
+  - 最大回撤 `-38.47%`
+  - 模拟 Sharpe `1.1214`
+  - 总滑点 `698,160`
+- `3.0x`：
+  - 期末权益 `2,204,195`
+  - 总收益 `1002.10%`
+  - 最大回撤 `-40.25%`
+  - 模拟 Sharpe `1.0319`
+  - 总滑点 `1,047,240`
+- `5.0x`：
+  - 期末权益 `1,506,035`
+  - 总收益 `653.02%`
+  - 最大回撤 `-54.73%`
+  - 模拟 Sharpe `0.8468`
+  - 总滑点 `1,745,400`
+
+## 我的判断
+
+- 多周期结果支持候选进入准实盘：
+  - `480/720` 日窗口全为正收益
+  - 相对基线 Sharpe 中位数持续改善
+  - 但 `720` 日窗口相对基线胜率只有 `58.54%`
+  - 说明它不是所有阶段都更强，而是中位质量更好
+- Bootstrap 结果给出更真实的风险感：
+  - 期末亏损概率不高
+  - 但最大回撤低于 `-50%` 的概率并不低
+  - 所以资金曲线承受能力是核心约束
+- 滑点压力显示：
+  - 到 `3x` 滑点仍有较强收益
+  - 到 `5x` 滑点仍未亏损，但最大回撤接近 `-55%`
+  - 成本鲁棒性可以接受，但高成本环境下心理和资金压力会明显变大
+- 综合判断：
+  - 当前候选适合准实盘/纸面跟踪
+  - 不适合直接大资金、无人值守运行
+  - 下一阶段重点不是继续找收益，而是定义资金规模、回撤忍耐线和停用/降级规则
+
+# 第61阶段：资金规模、回撤忍耐线与降级/暂停规则
+
+## 改动时间
+
+- `2026-04-24 19:27 CST`
+
+## 本次版本改动内容
+
+- 新增风险治理报告脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_risk_governance_report.py`
+- 本阶段不新增策略规则、不调参数、不重跑回测
+- 目标：
+  - 把第60阶段的回撤分布转成准实盘治理规则
+  - 明确资金规模下的绝对回撤损失
+  - 定义人工复盘、降级、暂停和研究重置边界
+
+## 使用的数据
+
+- 准实盘可用性摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_readiness_summary.json`
+- 稳健性实验摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_robustness_summary.json`
+- 监控报表摘要：
+  - `qmt_roll_selection_pairwise_long015_volref30_corr_crowding_monitor_summary.json`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_risk_governance_report.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_risk_governance_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_risk_governance_capital_scenarios.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_risk_governance_rules.csv`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 无
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的风险刻度
+
+- 正式最大回撤：
+  - `-36.99%`
+- Bootstrap 中位回撤代表值：
+  - `-47.61%`
+- `5x` 滑点压力最大回撤：
+  - `-54.73%`
+- Bootstrap `5%` 尾部回撤代表值：
+  - `-68.54%`
+- `severe_watch` 触发后 `20` 日胜率：
+  - `22.22%`
+
+## 新增的资金情景
+
+- `200,000` 策略资金：
+  - 正式回撤损失约 `73,981`
+  - Bootstrap 中位回撤损失约 `95,228`
+  - `5x` 滑点回撤损失约 `109,466`
+  - Bootstrap `5%` 尾部回撤损失约 `137,080`
+- `500,000` 策略资金：
+  - 正式回撤损失约 `184,954`
+  - Bootstrap 中位回撤损失约 `238,070`
+  - `5x` 滑点回撤损失约 `273,666`
+  - Bootstrap `5%` 尾部回撤损失约 `342,701`
+- `1,000,000` 策略资金：
+  - 正式回撤损失约 `369,907`
+  - Bootstrap 中位回撤损失约 `476,140`
+  - `5x` 滑点回撤损失约 `547,331`
+  - Bootstrap `5%` 尾部回撤损失约 `685,402`
+- `2,000,000` 策略资金：
+  - 正式回撤损失约 `739,814`
+  - Bootstrap 中位回撤损失约 `952,279`
+  - `5x` 滑点回撤损失约 `1,094,662`
+  - Bootstrap `5%` 尾部回撤损失约 `1,370,804`
+
+## 新增的治理规则
+
+- `green`：
+  - 触发：实时/准实盘回撤 `< 30%`
+  - 动作：正常观察，不调参数
+- `yellow_review`：
+  - 触发：回撤 `>= 35%` 或 `severe_watch` 在 `20` 个交易日内出现 `>=2` 次
+  - 动作：人工复盘；禁止新增参数优化
+- `orange_degrade`：
+  - 触发：回撤 `>= 45%` 或突破 block bootstrap 中位回撤区间
+  - 动作：降低资金/暂停扩大规模；只允许继续记录
+- `red_pause`：
+  - 触发：回撤 `>= 55%` 或实际滑点压力接近 `5x` 情景
+  - 动作：暂停新资金；复核成交、滑点、品种映射和信号漂移
+- `black_research_reset`：
+  - 触发：回撤 `>= 65%` 或 `20` 日 `severe_watch` 跟踪连续显著为负
+  - 动作：停止准实盘；回到研究模式，禁止用同一参数继续解释
+
+## 我的判断
+
+- 当前候选已经不是“如何提高收益”的问题
+- 它现在的核心问题是：
+  - 使用者是否能承受 `45% ~ 55%` 的真实路径回撤
+  - 是否能在回撤时不临场调参
+  - 是否能按照规则降级/暂停
+- 如果不能接受 `200,000` 资金对应 `95,000 ~ 110,000` 级别的潜在中重度回撤，就不应该进入实盘
+- 这不是策略逻辑问题，而是资金治理问题
+- 下一步如果继续推进，应只做准实盘复盘流水，不再做策略优化
+
+# 第62阶段：K线/成交量/持仓量/均线的AI影子诊断
+
+## 改动时间
+
+- `2026-04-24 19:45 CST`
+
+## 本次版本改动内容
+
+- 新增AI影子模型训练脚本：
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_microstructure_shadow_classifier.py`
+- 使用既有候选训练样本：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_training_samples.csv`
+- 生成新的影子AI输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_samples_microstructure20d_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_schema_microstructure20d_shadow_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_microstructure20d_shadow_v1.joblib`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_summary_microstructure20d_shadow_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_coefficients_microstructure20d_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_predictions_microstructure20d_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_bucket_analysis_microstructure20d_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_shadow_classifier_group_analysis_microstructure20d_shadow_v1.csv`
+- 本阶段没有把AI分数接入策略，没有新增仓位开关，没有运行新回测
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- AI模型标签：
+  - `MODEL_TAG = microstructure20d_shadow_v1`
+- 样本目标：
+  - `target_candidate_forward_20d_positive = label_candidate_forward_20d_r_multiple > 0`
+- 样本权重：
+  - `sample_weight_forward20_abs_r = clip(abs(label_candidate_forward_20d_r_multiple), 0.25, 3.0)`
+- 时间切分：
+  - `train < 2023-01-01`
+  - `2023-01-01 <= valid < 2024-01-01`
+  - `test >= 2024-01-01`
+- 模型参数：
+  - `LogisticRegression(C=0.25, solver=lbfgs, max_iter=3000, random_state=42)`
+- 新增特征分组：
+  - `kline_size_volatility`：ATR、range、波动zscore
+  - `kline_shape_position`：上下影线、收盘位置、方向性有利/不利影线
+  - `volume`：成交量zscore、成交量比率、量仓放大标记
+  - `open_interest`：持仓量变化、持仓量比率、持仓量zscore
+  - `moving_average_trend`：均线差、均线排列、方向性均线距离、动量
+  - `portfolio_context`：方向、止损距离、保证金/权益、候选截面数量、连续亏损和持仓槽位
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的AI诊断结果
+
+- 样本覆盖：
+  - 总样本 `883`
+  - 总交易日 `630`
+  - 训练集 `359` 行 / `268` 日
+  - 验证集 `169` 行 / `121` 日
+  - 测试集 `355` 行 / `241` 日
+- 训练集：
+  - 正样本率 `55.71%`
+  - AUC `0.7486`
+  - Accuracy `67.97%`
+  - F1 `0.7332`
+  - LogLoss `0.5289`
+  - Brier `0.1770`
+- 验证集：
+  - 正样本率 `50.30%`
+  - AUC `0.4507`
+  - Accuracy `46.15%`
+  - F1 `0.4800`
+  - LogLoss `0.9072`
+  - Brier `0.3235`
+- 测试集：
+  - 正样本率 `57.18%`
+  - AUC `0.4387`
+  - Accuracy `43.38%`
+  - F1 `0.4582`
+  - LogLoss `0.9705`
+  - Brier `0.3476`
+- 测试集分桶不单调：
+  - `q1` 平均预测概率 `0.1339`，实际正样本率 `60.56%`，平均 `20d R = 2.6312`
+  - `q2` 平均预测概率 `0.2992`，实际正样本率 `67.61%`，平均 `20d R = 5.0379`
+  - `q3` 平均预测概率 `0.4711`，实际正样本率 `52.11%`，平均 `20d R = 1.2956`
+  - `q4` 平均预测概率 `0.6655`，实际正样本率 `54.93%`，平均 `20d R = 5.1117`
+  - `q5` 平均预测概率 `0.8441`，实际正样本率 `50.70%`，平均 `20d R = 0.2128`
+- 特征组平均绝对系数强度：
+  - `portfolio_context = 0.2275`
+  - `volume = 0.2181`
+  - `moving_average_trend = 0.2117`
+  - `kline_size_volatility = 0.1746`
+  - `open_interest = 0.1264`
+  - `kline_shape_position = 0.1091`
+
+## 我的判断
+
+- 这次AI实验的结论不是“AI没用”，而是“当前这种直接预测20日绝对正负的口径不稳”
+- 样本内AUC `0.7486`，但验证/测试AUC都低于 `0.5`，说明模型学到的很可能是阶段性环境关系，而不是可穿越周期的稳定规律
+- 测试集高分桶反而没有更高胜率，不能作为加仓、减仓或过滤信号
+- K线大小、形态、成交量、持仓量、均线这些变量可以继续用于诊断和候选排序研究，但目前只能做影子分数
+- 后续如果继续做AI，应该优先做：
+  - walk-forward滚动重训
+  - 只预测截面相对排序，而不是绝对涨跌
+  - 只作为候选排序的弱特征，不作为硬开关
+  - 先纸面跟踪新增样本，确认分桶单调性后再考虑接入策略
+
+# 第63阶段：AI截面相对排序走前实验
+
+## 改动时间
+
+- `2026-04-24 19:51 CST`
+
+## 本次版本改动内容
+
+- 新增AI截面相对排序走前脚本：
+  - `examples/portfolio_backtesting/train_qmt_roll_ai_microstructure_relative_walkforward.py`
+- 延续第62阶段的微观结构特征，但把标签从“20日绝对正负”改为“同日候选相对排序”
+- 使用滚动训练/测试窗口，不把未来窗口混入当前训练
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_samples_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_summary_microstructure_relative_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_predictions_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_window_metrics_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_bucket_analysis_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_top_picks_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_coefficients_microstructure_relative_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_microstructure_relative_walkforward_group_analysis_microstructure_relative_wf_v1.csv`
+- 本阶段没有把AI分数接入策略，没有新增仓位开关，没有运行新回测
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- AI模型标签：
+  - `MODEL_TAG = microstructure_relative_wf_v1`
+- 相对排序标签：
+  - `target_relative_quality_top_half = label_candidate_quality_score_v2_rank_centered_1d > 0`
+- 样本过滤：
+  - `label_candidate_cross_section_count_1d >= 2`
+- 样本权重：
+  - `sample_weight_relative_quality_rank = clip(abs(label_candidate_quality_score_v2_rank_centered_1d), 0.25, 1.0)`
+- 走前参数：
+  - `TRAIN_WINDOW_DAYS = 720`
+  - `TEST_WINDOW_DAYS = 180`
+  - `STEP_DAYS = 180`
+  - `MIN_TRAIN_ROWS = 80`
+  - `MIN_TEST_ROWS = 20`
+- 模型参数：
+  - `LogisticRegression(C=0.20, solver=lbfgs, max_iter=3000, random_state=42)`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的AI走前结果
+
+- 样本覆盖：
+  - 截面样本 `447`
+  - 截面交易日 `194`
+  - 走前窗口 `7`
+  - 样本外预测行 `323`
+  - 样本外预测日 `138`
+- 样本外整体：
+  - 正样本率 `44.89%`
+  - AUC `0.5002`
+  - Accuracy `47.99%`
+  - Precision `42.07%`
+  - Recall `42.07%`
+  - F1 `0.4207`
+  - LogLoss `0.8615`
+  - Brier `0.3046`
+- 样本外相关性：
+  - 预测概率 vs 相对排序 Spearman `0.0041`
+  - 预测概率 vs 质量分 Spearman `0.0198`
+- top-pick 结果：
+  - top-pick 天数 `138`
+  - top-pick 命中率 `47.10%`
+  - 日内候选基准命中率 `45.94%`
+  - top-pick 相对基准优势 `+1.16` 个百分点
+  - top-pick 平均相对排序 `0.0217`
+  - top-pick 平均质量分 `0.5735`
+- 分桶结果不单调：
+  - `q1` 实际top-half率 `41.54%`，平均质量分 `0.3450`
+  - `q2` 实际top-half率 `42.19%`，平均质量分 `0.5429`
+  - `q3` 实际top-half率 `52.31%`，平均质量分 `0.6975`
+  - `q4` 实际top-half率 `43.75%`，平均质量分 `0.7267`
+  - `q5` 实际top-half率 `44.62%`，平均质量分 `0.5104`
+
+## 我的判断
+
+- 相对排序口径比绝对方向口径更合理，但这次走前结果仍然接近随机
+- AUC `0.5002`、Spearman `0.0041` 说明模型没有稳定截面排序能力
+- top-pick 只比日内基准高 `+1.16` 个百分点，无法覆盖实盘复杂性，也不值得为了它增加系统复杂度
+- 分桶只有中间桶表现好，高分桶没有优势，说明模型概率不能解释成可靠置信度
+- 结论：
+  - 当前K线/成交量/持仓量/均线AI方向不应进入策略
+  - 不应继续调这个模型参数寻找历史好看结果
+  - 后续如果还做AI，应先换问题定义，例如预测“是否避开极端误伤/拥挤误杀”，而不是预测普通候选优劣
+
+# 第64阶段：极端误伤/趋势扩散告警验证
+
+## 改动时间
+
+- `2026-04-24 20:01 CST`
+
+## 本次版本改动内容
+
+- 新增极端误伤告警验证脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail.py`
+- 本阶段不训练黑箱模型
+- 原因：
+  - 相关性门控触发日期只有 `67` 个
+  - `severe_watch` 只有 `9` 个
+  - 用这类小样本训练AI会制造过拟合幻觉
+- 本阶段只验证固定告警是否能抓住真正危险的左尾事件
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_events.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_by_year.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_by_score.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_year_removal.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_permutation_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_pairwise_long015_volref30_corr_crowding_extreme_guardrail_report.md`
+- 本阶段没有把告警接入策略，没有新增仓位开关，没有运行新回测
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 极端负样本阈值：
+  - `EXTREME_NEGATIVE_THRESHOLD = -10,000`
+- 普通负样本阈值：
+  - `NEGATIVE_THRESHOLD = 0`
+- 随机置换次数：
+  - `PERMUTATION_COUNT = 10,000`
+- 随机种子：
+  - `RANDOM_SEED = 42`
+- 告警定义沿用第58阶段：
+  - `severe_watch = trend_expansion_warning_score >= 5`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的告警验证结果
+
+- 样本覆盖：
+  - 相关性门控触发日期 `67`
+  - `severe_watch` 日期 `9`
+  - 普通负样本日期 `21`
+  - 极端负样本日期 `12`
+- 对普通负样本：
+  - Precision `77.78%`
+  - Recall `33.33%`
+  - False positive rate `4.35%`
+  - 负样本基准率 `31.34%`
+  - alert lift `2.48x`
+  - `severe_watch` 20日均值 `-5,986`
+  - 非 `severe_watch` 20日均值 `+18,972`
+  - 均值差 `-24,959`
+  - `severe_watch` 20日胜率 `22.22%`
+  - 非 `severe_watch` 20日胜率 `75.86%`
+- 对极端负样本：
+  - Precision `44.44%`
+  - Recall `33.33%`
+  - False positive rate `9.09%`
+  - 极端负样本基准率 `17.91%`
+  - alert lift `2.48x`
+- 随机置换检验：
+  - observed severe/non-severe 20日均值差 `-24,959`
+  - 随机均值差 `p50 = -4,606`
+  - 随机均值差 `p05 = -23,325`
+  - `P(random_diff <= observed) = 0.0383`
+  - observed 极端负样本 precision `44.44%`
+  - `P(random_extreme_precision >= observed) = 0.0453`
+  - observed 普通负样本 precision `77.78%`
+  - `P(random_negative_precision >= observed) = 0.0038`
+- 剔除单年敏感性：
+  - 剔除 `2021` 后普通负样本 precision 仍为 `66.67%`
+  - 剔除 `2025` 后普通负样本 precision 为 `100.00%`
+  - 各剔除年份后 severe/non-severe 均值差仍为负
+  - 说明信号不完全由单一年份造成，但样本量仍小
+
+## 我的判断
+
+- 这个方向比第62/63阶段的普通AI更有价值
+- 原因不是它能赚钱，而是它抓的是“策略最怕的左尾误伤环境”
+- `severe_watch` 的优势是：
+  - precision 高
+  - 随机置换下不太像纯偶然
+  - 剔除单年后方向仍保持
+- `severe_watch` 的缺陷是：
+  - recall 只有 `33.33%`
+  - 会漏掉大部分负样本
+  - 触发样本只有 `9`
+- 因此不能做交易开关，不能自动关闭门控，也不能自动减仓
+- 正确用途：
+  - 准实盘人工复盘优先级
+  - 触发后强制跟踪未来 `20` 日路径
+  - 新样本积累标签
+  - 若未来样本继续验证，再考虑是否做“人工确认后降级”规则
+
+# 第65阶段：AI品种适配度走前影子验证
+
+## 改动时间
+
+- `2026-04-24 20:27 CST`
+
+## 本次版本改动内容
+
+- 新增AI品种适配度走前分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py`
+- 本阶段不改变正式交易逻辑，不接入品种过滤，不新增交易开关
+- 设计目标：
+  - 验证“AI是否能从全市场识别更适合当前趋势系统的品种地形”
+  - 标签不预测价格涨跌，而是预测每个品种未来 `60` 个交易日对当前正式候选的净贡献是否处于同月截面前半
+  - 先与透明的简单品种适配度分数对照，避免直接把AI历史拟合接入策略
+- 使用数据：
+  - 当前冻结候选成交/持仓变化：
+    - `qmt_roll_selection_long015_volref30_corr_formal_floor35_position_changes_2020_2026_04.csv`
+  - 当前冻结候选入场快照：
+    - `qmt_roll_selection_long015_volref30_corr_formal_floor35_entry_candidate_snapshots_2020_2026_04.csv`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_daily_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_samples_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_predictions_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_window_metrics_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_bucket_analysis_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_top_products_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_coefficients_product_suitability_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_summary_product_suitability_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_walkforward_report_product_suitability_wf_v1.md`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- AI模型标签：
+  - `MODEL_TAG = product_suitability_wf_v1`
+- 未来贡献标签：
+  - `target_future_top_half_60d = future product net contribution ranks in top half of same monthly cross-section`
+- 未来观察窗口：
+  - `FUTURE_HORIZON_DAYS = 60`
+- 滚动特征窗口：
+  - `ROLLING_WINDOWS = 20 / 60 / 120`
+- 走前参数：
+  - `TRAIN_WINDOW_DAYS = 720`
+  - `TEST_WINDOW_DAYS = 180`
+  - `STEP_DAYS = 180`
+  - `MIN_TRAIN_ROWS = 180`
+  - `MIN_TEST_ROWS = 45`
+- 模型参数：
+  - `LogisticRegression(C=0.20, solver=lbfgs, max_iter=3000, random_state=42)`
+- Top品种观察数量：
+  - `TOP_N_PRODUCTS = 5`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的AI品种适配度结果
+
+- 样本覆盖：
+  - 日度品种行 `27,450`
+  - 月度样本行 `1,332`
+  - 样本月份 `74`
+  - 样本外预测行 `900`
+  - 样本外预测月份 `50`
+  - 品种数 `18`
+  - 特征数 `108`
+  - 走前窗口 `9`
+- AI样本外整体：
+  - AUC `0.5148`
+  - Accuracy `52.89%`
+  - Precision `53.21%`
+  - Recall `66.59%`
+  - F1 `0.5915`
+  - 预测概率 vs 未来60日净贡献 Spearman `0.0171`
+  - 预测概率 vs 未来截面排名 Spearman `0.0326`
+  - 月度平均 rank IC `0.0591`
+- 简单规则分数对照：
+  - AUC `0.4745`
+  - Accuracy `49.67%`
+  - 月度平均 rank IC `-0.0489`
+- Top 5品种观察：
+  - AI Top 5 平均未来60日品种净贡献 `9,168.70`
+  - AI Top 5 相对全品种均值边际 `+4,488.83`
+  - AI Top 5 top-half率 `50.00%`
+  - AI Top 5 平均未来截面排名中心值 `0.0224`
+  - 简单分数 Top 5 平均未来60日品种净贡献 `136.38`
+  - 简单分数 Top 5 相对全品种均值边际 `-4,543.49`
+- AI分桶结果不单调：
+  - `q1` top-half率 `46.11%`，平均未来60日净贡献 `3,509`
+  - `q2` top-half率 `51.67%`，平均未来60日净贡献 `-1,058`
+  - `q3` top-half率 `52.22%`，平均未来60日净贡献 `1,580`
+  - `q4` top-half率 `57.22%`，平均未来60日净贡献 `13,547`
+  - `q5` top-half率 `48.89%`，平均未来60日净贡献 `5,820`
+- 年度拆分：
+  - `2022` AI Top 5 平均边际 `+1,051`，top-half率 `53.33%`
+  - `2023` AI Top 5 平均边际 `+15,225`，top-half率 `56.67%`
+  - `2024` AI Top 5 平均边际 `+3,730`，top-half率 `50.00%`
+  - `2025` AI Top 5 平均边际 `+3,513`，top-half率 `43.33%`
+  - `2026` AI Top 5 平均边际 `-28,890`，top-half率 `30.00%`
+
+## 我的判断
+
+- 这个方向比“AI直接预测品种涨跌方向”更接近趋势系统本质
+- 但第65阶段结果只能算弱正证据，不能接入正式交易：
+  - AUC 仅 `0.5148`
+  - 月度 rank IC 仅 `0.0591`
+  - 分桶不单调，最高分桶 `q5` 反而弱于 `q4`
+  - 年度上 `2025` 已经变弱，`2026` 明显失效
+- 它真正有价值的地方是：
+  - 证明“品种地形适配度”这条问题定义比第62/63阶段普通AI更合理
+  - AI确实比当前手写简单分数更能抓到一点品种边际
+  - 但强度还不够，不能做品种白名单/黑名单，也不能做自动过滤
+- 下一步如果继续：
+  - 不应立刻接入正式组合回测
+  - 应先改进标签和特征，例如加入主连价格趋势性、波动结构、成交量/持仓量状态、期限结构或跨品种相关性簇
+  - 同时保留透明基线，要求AI在样本外稳定胜过简单规则后，再考虑做正式品种池回测
+
+# 第66阶段：AI品种适配度加入主连市场地形特征
+
+## 改动时间
+
+- `2026-04-24 20:35 CST`
+
+## 本次版本改动内容
+
+- 新增AI品种适配度V2走前分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_market_walkforward.py`
+- 本阶段仍不改变正式交易逻辑，不接入品种过滤，不新增交易开关
+- 相比第65阶段，新增独立于系统成交路径之外的主连市场地形特征：
+  - 主连价格收益
+  - 主连实现波动
+  - 主连日内振幅
+  - 趋势效率
+  - 收盘位置
+  - 突破率
+  - 成交量相对状态
+  - 持仓量变化和标准化状态
+  - 均线结构
+- 设计目标：
+  - 检验“品种适配度”是否能由市场自身地形增强，而不是只拟合当前系统过去在哪些品种赚钱
+  - 继续保持走前样本外验证，避免把历史最优品种筛选误当成可交易能力
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_market_daily_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_featured_daily_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_samples_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_predictions_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_window_metrics_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_bucket_analysis_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_top_products_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_coefficients_product_suitability_market_wf_v2.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_summary_product_suitability_market_wf_v2.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_report_product_suitability_market_wf_v2.md`
+
+## 回测参数
+
+- 本阶段未运行新回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- AI模型标签：
+  - `MODEL_TAG = product_suitability_market_wf_v2`
+- 市场特征窗口：
+  - `ROLLING_WINDOWS = 20 / 60 / 120`
+- 新增市场地形特征：
+  - `market_ret_20d / 60d / 120d`
+  - `market_realized_vol_20d / 60d / 120d`
+  - `market_range_pct_mean_20d / 60d / 120d`
+  - `market_trend_efficiency_20d / 60d / 120d`
+  - `market_close_position_20d / 60d / 120d`
+  - `market_breakout_rate_20d / 60d / 120d`
+  - `market_volume_ratio_20d / 60d / 120d`
+  - `market_open_interest_change_20d / 60d / 120d`
+  - `market_ma20_over_ma60_60d`
+  - `market_ma60_over_ma120_120d`
+  - `market_volume_zscore_60d`
+  - `market_open_interest_zscore_60d`
+- 继续沿用第65阶段标签和走前参数：
+  - `FUTURE_HORIZON_DAYS = 60`
+  - `target_future_top_half_60d = future product net contribution ranks in top half of same monthly cross-section`
+  - `TRAIN_WINDOW_DAYS = 720`
+  - `TEST_WINDOW_DAYS = 180`
+  - `STEP_DAYS = 180`
+  - `MIN_TRAIN_ROWS = 180`
+  - `MIN_TEST_ROWS = 45`
+  - `LogisticRegression(C=0.20, solver=lbfgs, max_iter=3000, random_state=42)`
+  - `TOP_N_PRODUCTS = 5`
+
+## 修改的参数
+
+- 无正式策略参数修改
+- AI影子研究特征数从第65阶段 `108` 增加到 `136`
+- 其中新增主连市场地形特征数 `28`
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无，本阶段未运行新回测
+- 沿用第53阶段正式第一候选结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的AI品种适配度结果
+
+- 样本覆盖：
+  - 月度样本行 `1,332`
+  - 样本外预测行 `900`
+  - 样本月份 `74`
+  - 样本外预测月份 `50`
+  - 品种数 `18`
+  - 特征数 `136`
+  - 主连市场特征数 `28`
+  - 走前窗口 `9`
+- AI样本外整体：
+  - AUC `0.5180`
+  - Accuracy `51.89%`
+  - Precision `52.63%`
+  - Recall `60.74%`
+  - F1 `0.5639`
+  - 预测概率 vs 未来60日净贡献 Spearman `0.0300`
+  - 预测概率 vs 未来截面排名 Spearman `0.0444`
+  - 月度平均 rank IC `0.0622`
+- 简单规则分数对照：
+  - AUC `0.4745`
+  - Accuracy `49.67%`
+  - 月度平均 rank IC `-0.0489`
+- Top 5品种观察：
+  - AI Top 5 平均未来60日品种净贡献 `13,489.28`
+  - AI Top 5 相对全品种均值边际 `+8,809.41`
+  - AI Top 5 正贡献率 `33.20%`
+  - AI Top 5 top-half率 `50.80%`
+  - AI Top 5 平均未来截面排名中心值 `0.0412`
+  - 简单分数 Top 5 平均未来60日品种净贡献 `136.38`
+  - 简单分数 Top 5 相对全品种均值边际 `-4,543.49`
+  - 简单分数 Top 5 top-half率 `45.20%`
+- AI分桶结果：
+  - `q1` top-half率 `43.33%`，平均未来60日净贡献 `-1,159`
+  - `q2` top-half率 `54.79%`，平均未来60日净贡献 `2,256`
+  - `q3` top-half率 `57.56%`，平均未来60日净贡献 `6,092`
+  - `q4` top-half率 `50.56%`，平均未来60日净贡献 `3,765`
+  - `q5` top-half率 `50.00%`，平均未来60日净贡献 `12,615`
+- 走前窗口：
+  - `wf_01` AUC `0.5196`，月度 rank IC `0.0371`
+  - `wf_02` AUC `0.5394`，月度 rank IC `0.0647`
+  - `wf_03` AUC `0.4967`，月度 rank IC `0.0802`
+  - `wf_04` AUC `0.6133`，月度 rank IC `0.1933`
+  - `wf_05` AUC `0.4328`，月度 rank IC `-0.0254`
+  - `wf_06` AUC `0.5469`，月度 rank IC `0.1389`
+  - `wf_07` AUC `0.4623`，月度 rank IC `-0.0130`
+  - `wf_08` AUC `0.4874`，月度 rank IC `-0.0517`
+  - `wf_09` AUC `0.5693`，月度 rank IC `0.2352`
+- 年度拆分：
+  - `2022` AI Top 5 平均边际 `+11,247`，top-half率 `53.33%`
+  - `2023` AI Top 5 平均边际 `+11,542`，top-half率 `56.67%`
+  - `2024` AI Top 5 平均边际 `+12,826`，top-half率 `50.00%`
+  - `2025` AI Top 5 平均边际 `+16`，top-half率 `43.33%`
+  - `2026` AI Top 5 平均边际 `+6,446`，top-half率 `50.00%`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_market_walkforward.py`
+- 已运行V2影子分析并生成上述输出
+
+## 我的判断
+
+- 主连市场地形特征确实让问题定义更干净：
+  - 第65阶段只看系统自身路径，容易把“过去系统在某品种赚过钱”误当作适配度
+  - 第66阶段加入价格、波动、成交量、持仓量和趋势效率后，AI Top 5 边际从 `+4,489` 提高到 `+8,809`
+  - `2026` 从第65阶段的明显负边际改善为正边际
+- 但这仍然不能接入正式交易：
+  - AUC 只有 `0.5180`
+  - 月度 rank IC 只有 `0.0622`
+  - top-half率只有 `50.80%`
+  - `2025` 仍然偏弱，说明它没有稳定穿越所有环境
+  - 分桶的top-half率不单调，概率不能直接当仓位或白名单强度
+- 当前结论：
+  - “AI筛选更适合趋势系统的品种”这个方向成立为研究方向
+  - 但还没有成立为交易规则
+  - 下一步不应该立刻改正式策略，而应先做动态品种池影子组合对照，要求在不调参的前提下改善收益回撤比、减少低适配品种交易消耗，并且不能牺牲跨年度稳定性
+
+# 第67阶段：AI动态品种池影子组合归因
+
+## 改动时间
+
+- `2026-04-24 20:44 CST`
+
+## 本次版本改动内容
+
+- 新增AI动态品种池影子组合脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_shadow_portfolio.py`
+- 本阶段不改变正式交易策略，不接入正式品种过滤，不修改 `qmt_roll_portfolio_strategy.py`
+- 本阶段不是正式可执行 vn.py 回测：
+  - 它基于第53阶段冻结的逐日逐合约 `position_changes` 做归因式影子组合
+  - 不重算过滤后的资金曲线下的仓位规模
+  - 不补做被过滤后可能出现的替代交易
+  - 只用于判断AI品种池是否值得进入下一层正式回测
+- 影子组合设计：
+  - 使用第66阶段V2样本外月度预测
+  - 月末信号只在下一交易日之后生效
+  - 避免同日和未来信息泄露
+  - 只做入场过滤，不做月度强制平仓
+  - 评估起点已有仓位按原始路径持有到原始退出
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_daily_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_summary_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_yearly_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_product_attribution_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_product_year_attribution_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_eligibility_ai_product_pool_shadow_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_summary_ai_product_pool_shadow_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_report_ai_product_pool_shadow_v1.md`
+
+## 回测参数
+
+- 本阶段未运行新的正式 vn.py 回测
+- 沿用第53阶段正式第一候选口径：
+  - `risk_ratio = 0.045`
+  - `capital = 200,000`
+  - `analysis_start = 2020-01-01`
+  - `analysis_end = 2026-04-30`
+  - `enable_selection_pairwise_v2 = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.60`
+  - `same_direction_correlation_gate_full = 0.80`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+
+## 新增的参数
+
+- 影子模型标签：
+  - `MODEL_TAG = ai_product_pool_shadow_v1`
+- 信号来源：
+  - `product_suitability_market_wf_v2`
+- 第一个样本外预测日期：
+  - `first_prediction_eval_date = 2022-01-28`
+- 影子组合评估起点：
+  - `evaluation_start = 2022-02-07`
+- 影子组合初始权益：
+  - `initial_balance = 1,428,780`
+- 信号生效规则：
+  - `latest eval_date strictly earlier than trade date`
+- 既有持仓处理规则：
+  - `positions already open at evaluation_start are kept until original exit`
+- 年化交易日：
+  - `TRADING_DAYS_PER_YEAR = 240`
+- 动态品种池方案：
+  - `baseline_all_products`
+  - `ai_top5_entry_filter`
+  - `ai_top8_entry_filter`
+  - `simple_top5_entry_filter`
+
+## 修改的参数
+
+- 无正式策略参数修改
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无新的正式 vn.py 回测结果
+- 沿用第53阶段正式第一候选完整周期结果：
+  - `期末权益 = 2,902,355`
+  - `总收益 = 1351.18%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.0225`
+  - `总滑点 = 349,080`
+  - `总交易次数 = 1158`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增的影子组合结果
+
+- 评估周期：
+  - `2022-02-07` 到 `2026-04-21`
+  - 交易日 `1020`
+  - 初始权益 `1,428,780`
+- 冻结正式路径基准 `baseline_all_products`：
+  - 期末权益 `2,902,355`
+  - 区间收益 `103.14%`
+  - 最大回撤 `-28.66%`
+  - Sharpe `0.7096`
+  - 总滑点 `287,470`
+  - 总交易次数 `829`
+- `ai_top8_entry_filter`：
+  - 期末权益 `3,172,760`
+  - 相对基准 `+270,405`
+  - 区间收益 `122.06%`
+  - 最大回撤 `-21.15%`
+  - Sharpe `1.0501`
+  - 总滑点 `133,260`
+  - 总交易次数 `357`
+  - 保留交易次数比例 `43.06%`
+  - 保留滑点比例 `46.36%`
+- `ai_top5_entry_filter`：
+  - 期末权益 `2,767,185`
+  - 相对基准 `-135,170`
+  - 区间收益 `93.67%`
+  - 最大回撤 `-11.18%`
+  - Sharpe `1.0314`
+  - 总滑点 `82,240`
+  - 总交易次数 `206`
+  - 保留交易次数比例 `24.85%`
+  - 保留滑点比例 `28.61%`
+- `simple_top5_entry_filter`：
+  - 期末权益 `1,282,695`
+  - 相对基准 `-1,619,660`
+  - 区间收益 `-10.22%`
+  - 最大回撤 `-37.58%`
+  - Sharpe `0.0021`
+  - 总滑点 `76,200`
+  - 总交易次数 `215`
+- `ai_top8_entry_filter` 年度相对基准：
+  - `2022` `+162,755`
+  - `2023` `+451,955`
+  - `2024` `+114,285`
+  - `2025` `-634,140`
+  - `2026` `+175,550`
+- `ai_top5_entry_filter` 年度相对基准：
+  - `2022` `+46,455`
+  - `2023` `+346,375`
+  - `2024` `+65,830`
+  - `2025` `-740,170`
+  - `2026` `+146,340`
+- `ai_top8_entry_filter` 在 `2025` 的主要误伤：
+  - `SH.CZCE` 少赚 `501,540`
+  - `cu.SHFE` 少赚 `170,950`
+  - `SA.CZCE` 少赚 `130,420`
+  - `CF.CZCE` 少赚 `115,850`
+- `ai_top8_entry_filter` 在 `2025` 也过滤掉部分亏损：
+  - `jm.DCE` 避免 `114,690`
+  - `si.GFEX` 避免 `72,600`
+  - `AP.CZCE` 避免 `61,380`
+  - `OI.CZCE` 避免 `56,760`
+  - 但避免亏损不足以抵消错过 `SH.CZCE / cu.SHFE / SA.CZCE / CF.CZCE` 的趋势利润
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_shadow_portfolio.py`
+- 已运行影子组合归因：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_shadow_portfolio.py`
+
+## 我的判断
+
+- 第67阶段比第65/66阶段更接近“能否用于策略”的核心问题，因为它不只看排名IC，而是看组合路径
+- AI品种池显示出真实边际：
+  - `ai_top8` 提高期末权益 `270,405`
+  - 最大回撤从 `-28.66%` 改善到 `-21.15%`
+  - Sharpe 从 `0.7096` 改善到 `1.0501`
+  - 交易次数和滑点明显下降
+  - 简单规则Top5显著失败，说明不是“少交易自然变好”
+- 但它仍不能直接接入正式策略：
+  - `2025` 错过大趋势品种，年度相对基准 `-634,140`
+  - `ai_top5` 太窄，防守很好但损失收益
+  - `ai_top8` 比较合理，但仍可能把强趋势早期误判为低适配
+  - 本阶段没有重算资金规模和替代交易，只是冻结路径归因
+- 当前结论：
+  - AI品种池方向值得进入“正式回测前验证层”
+  - 不能直接实盘或直接改正式策略
+  - 下一步如果继续，应做正式动态品种池回测，但必须采用固定、低自由度规则，例如 `ai_top8` 或“只剔除低分尾部”，并且重点检验 `2025` 这类趋势爆发年份是否会被误伤
+
+# 第68阶段：AI Top8动态品种池正式回测
+
+## 改动时间
+
+- `2026-04-24 20:52 CST`
+
+## 本次版本改动内容
+
+- 在正式组合策略中新增默认关闭的AI动态品种池过滤参数：
+  - `enable_ai_product_pool_filter`
+  - `ai_product_pool_eligibility_path`
+  - `ai_product_pool_strategy`
+- 新增正式回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_formal_backtest.py`
+- 正式策略默认行为不变：
+  - 不开启 `enable_ai_product_pool_filter` 时，原策略不受影响
+- 本次正式回测固定使用第67阶段影子组合中较稳的 `ai_top8_entry_filter`
+- 信号规则：
+  - 月末AI信号只在下一交易日及之后生效
+  - 第一个样本外AI信号为 `2022-01-28`
+  - 信号前 `2020-2021` 保持原策略不过滤
+- 技术修复：
+  - 修复 `target_bar.datetime` 带时区而AI信号日期无时区导致的比较错误
+  - 统一转换为无时区日期后进行信号匹配
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_product_pool_formal_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_product_pool_formal_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_daily.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_daily_equity.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_trades_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_position_changes_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_end_positions_wide_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_entry_risk_diagnostics_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_entry_candidate_snapshots_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_entry_candidate_snapshots_schema.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_statistics.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_chart.html`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_professional_dashboard.html`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal_trade_review.html`
+
+## 回测参数
+
+- `risk_ratio = 0.045`
+- `capital = 200,000`
+- `analysis_start = 2020-01-01`
+- `analysis_end = 2026-04-30`
+- `enable_selection_pairwise_v2 = True`
+- `enable_selection_pairwise_v2_catastrophic_veto = False`
+- `enable_selection_pairwise_v2_volume_tilt = True`
+- `selection_pairwise_volume_tilt_strength = 0.0`
+- `selection_pairwise_volume_tilt_long_strength = 0.15`
+- `selection_pairwise_volume_tilt_short_strength = 0.0`
+- `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+- `enable_same_direction_correlation_gate = True`
+- `same_direction_correlation_gate_lookback = 20`
+- `same_direction_correlation_gate_start = 0.60`
+- `same_direction_correlation_gate_full = 0.80`
+- `same_direction_correlation_gate_weight_floor = 0.35`
+- `enable_ai_product_pool_filter = True`
+- `ai_product_pool_strategy = ai_top8_entry_filter`
+- `ai_product_pool_eligibility_path = examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_eligibility_ai_product_pool_shadow_v1.csv`
+
+## 新增的参数
+
+- `enable_ai_product_pool_filter`
+- `ai_product_pool_eligibility_path`
+- `ai_product_pool_strategy`
+
+## 修改的参数
+
+- 无既有正式参数修改
+- 本次仅在实验回测中开启新增AI品种池参数
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 实验名：
+  - `ai_top8_product_pool`
+- 文件前缀：
+  - `qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal`
+- 正式回测结果：
+  - `期末权益 = 3,894,190`
+  - `总收益 = 1847.09%`
+  - `年化收益 = 290.69%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.2080`
+  - `Return Drawdown Ratio = 6.8319`
+  - `总滑点 = 257,880`
+  - `总交易次数 = 720`
+  - `总净盈亏 = 3,694,190`
+  - `盈利日 = 546`
+  - `亏损日 = 595`
+- 相对第53阶段正式第一候选：
+  - 期末权益增加 `+991,835`
+  - 总收益增加 `+495.91` 个百分点
+  - 最大回撤基本持平，差值 `-0.0007` 个百分点
+  - Sharpe 增加 `+0.1855`
+  - 总滑点减少 `-91,200`
+  - 总交易次数减少 `-438`
+
+## 修改的回测结果
+
+- 无既有回测结果修改
+
+## 删除的回测结果
+
+- 无
+
+## 年度拆分
+
+- `2020`：
+  - AI Top8 与基准一致，净盈亏差 `0`
+- `2021`：
+  - AI Top8 与基准一致，净盈亏差 `0`
+- `2022`：
+  - AI Top8 净盈亏 `180,895`
+  - 基准净盈亏 `246,310`
+  - 差值 `-65,415`
+- `2023`：
+  - AI Top8 净盈亏 `702,030`
+  - 基准净盈亏 `255,635`
+  - 差值 `+446,395`
+- `2024`：
+  - AI Top8 净盈亏 `437,290`
+  - 基准净盈亏 `179,425`
+  - 差值 `+257,865`
+- `2025`：
+  - AI Top8 净盈亏 `1,243,330`
+  - 基准净盈亏 `953,360`
+  - 差值 `+289,970`
+- `2026`：
+  - AI Top8 净盈亏 `-54,260`
+  - 基准净盈亏 `-117,280`
+  - 差值 `+63,020`
+
+## AI信号生效后区间对比
+
+- 区间：
+  - `2022-02-07` 到 `2026-04-21`
+- 基准：
+  - 期末权益 `2,902,355`
+  - 区间收益 `103.14%`
+  - 最大回撤 `-28.66%`
+  - Sharpe `0.7096`
+  - 交易次数 `829`
+  - 总滑点 `287,470`
+- AI Top8：
+  - 期末权益 `3,894,190`
+  - 区间收益 `172.55%`
+  - 最大回撤 `-27.88%`
+  - Sharpe `1.0938`
+  - 交易次数 `391`
+  - 总滑点 `196,270`
+
+## AI品种池过滤统计
+
+- 候选记录总数：
+  - `1010`
+- AI品种池拦截候选：
+  - `234`
+- 最终开仓候选：
+  - `333`
+- 年度拦截数：
+  - `2020`：`0`
+  - `2021`：`0`
+  - `2022`：`49`
+  - `2023`：`61`
+  - `2024`：`59`
+  - `2025`：`48`
+  - `2026`：`17`
+- 拦截次数最多的品种：
+  - `rb.SHFE` `23`
+  - `OI.CZCE` `19`
+  - `sp.SHFE` `18`
+  - `CF.CZCE` `18`
+  - `hc.SHFE` `18`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_formal_backtest.py`
+- 已运行正式回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_formal_backtest.py`
+
+## 我的判断
+
+- 第68阶段是到目前为止AI品种池方向最有价值的一步：
+  - 影子归因的优势在正式回测中没有消失，反而更明显
+  - 全周期期末权益提高接近 `100万`
+  - 交易次数减少 `37.8%`
+  - 滑点减少 `26.1%`
+  - `2023 / 2024 / 2025 / 2026` 均优于基准
+- 但仍不能直接实盘化：
+  - 最大回撤没有改善，因为最大回撤来自 `2021`，AI信号尚未生效
+  - `2022` 生效初期表现弱于基准
+  - `ai_top8` 是经过影子验证后选出的固定规则，仍需要稳健性验证，不能继续调成更好看的 `topN`
+- 当前结论：
+  - `ai_top8` 动态品种池已经有资格成为新的正式候选版本
+  - 下一步应该做抗过拟合验证：
+    - 不改变AI模型
+    - 不继续搜索 `topN`
+    - 做年度剔除、滑点压力、低分尾部剔除对照、以及2022起点敏感性
+  - 如果这些验证仍成立，才考虑把它提升为正式第一候选
+
+# 第69阶段：AI Top8正式结果稳健性验证
+
+## 改动时间
+
+- `2026-04-24 20:55 CST`
+
+## 本次版本改动内容
+
+- 新增AI Top8正式结果稳健性分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_formal_robustness.py`
+- 本阶段不改变正式策略逻辑，不搜索新的 `topN`，不改AI模型
+- 验证目标：
+  - 判断第68阶段 `+991,835` 的优势是否依赖单一年份
+  - 判断优势是否依赖低滑点假设
+  - 判断不同起点下是否仍优于基准
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_robustness_leave_one_year_ai_top8_formal_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_robustness_slippage_stress_ai_top8_formal_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_robustness_start_date_ai_top8_formal_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_robustness_summary_ai_top8_formal_robustness_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_robustness_report_ai_top8_formal_robustness_v1.md`
+
+## 回测参数
+
+- 本阶段未运行新的正式回测
+- 使用第68阶段正式回测结果做稳健性分析：
+  - `baseline = qmt_roll_selection_long015_volref30_corr_formal_floor35`
+  - `ai = qmt_roll_selection_long015_volref30_corr_ai_top8_product_pool_formal`
+- 使用第68阶段正式AI Top8结果：
+  - `期末权益 = 3,894,190`
+  - `总收益 = 1847.09%`
+  - `最大回撤 = -36.99%`
+  - `Sharpe = 1.2080`
+  - `总滑点 = 257,880`
+  - `总交易次数 = 720`
+
+## 新增的参数
+
+- 稳健性模型标签：
+  - `MODEL_TAG = ai_top8_formal_robustness_v1`
+- AI信号生效后起点：
+  - `POST_SIGNAL_START = 2022-02-07`
+- 滑点压力倍数：
+  - `SLIPPAGE_MULTIPLIERS = 1.0 / 2.0 / 3.0 / 5.0`
+- 起点敏感性日期：
+  - `2022-02-07`
+  - `2023-01-03`
+  - `2024-01-02`
+  - `2025-01-02`
+  - `2026-01-02`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无新的正式回测结果
+- 本阶段新增的是第68阶段正式结果的稳健性分析
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 年度剔除验证
+
+- 剔除 `2022`：
+  - AI相对基准净盈亏差 `+1,057,250`
+  - Sharpe差 `+0.5884`
+- 剔除 `2023`：
+  - AI相对基准净盈亏差 `+545,440`
+  - Sharpe差 `+0.2588`
+- 剔除 `2024`：
+  - AI相对基准净盈亏差 `+733,970`
+  - Sharpe差 `+0.3799`
+- 剔除 `2025`：
+  - AI相对基准净盈亏差 `+701,865`
+  - Sharpe差 `+0.4165`
+- 剔除 `2026`：
+  - AI相对基准净盈亏差 `+928,815`
+  - Sharpe差 `+0.3837`
+
+## 滑点压力验证
+
+- 全周期 `1x` 滑点：
+  - AI相对基准期末权益差 `+991,835`
+  - Sharpe差 `+0.1665`
+- 全周期 `2x` 滑点：
+  - AI相对基准期末权益差 `+1,083,035`
+  - Sharpe差 `+0.1846`
+- 全周期 `3x` 滑点：
+  - AI相对基准期末权益差 `+1,174,235`
+  - Sharpe差 `+0.2052`
+- 全周期 `5x` 滑点：
+  - AI相对基准期末权益差 `+1,356,635`
+  - Sharpe差 `+0.2565`
+- AI信号生效后区间 `5x` 滑点：
+  - AI相对基准期末权益差 `+1,356,635`
+  - Sharpe差 `+0.4874`
+  - 说明优势不是依赖低滑点，反而来自减少交易和滑点暴露
+
+## 起点敏感性验证
+
+- 从 `2022-02-07` 开始：
+  - AI相对基准期末权益差 `+991,835`
+  - Sharpe差 `+0.3842`
+- 从 `2023-01-03` 开始：
+  - AI相对基准期末权益差 `+1,057,250`
+  - Sharpe差 `+0.5871`
+- 从 `2024-01-02` 开始：
+  - AI相对基准期末权益差 `+610,855`
+  - Sharpe差 `+0.3803`
+- 从 `2025-01-02` 开始：
+  - AI相对基准期末权益差 `+352,990`
+  - Sharpe差 `+0.3087`
+- 从 `2026-01-02` 开始：
+  - AI相对基准期末权益差 `+63,020`
+  - Sharpe差 `+0.4158`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_formal_robustness.py`
+- 已运行稳健性分析：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_formal_robustness.py`
+
+## 我的判断
+
+- 第69阶段没有推翻第68阶段结果，反而增强了可信度：
+  - 剔除任一年后AI仍然明显优于基准
+  - 滑点越高，AI相对优势越大
+  - 从 `2022/2023/2024/2025/2026` 任一测试起点开始，AI均优于基准
+- 这个结果说明AI Top8不是单纯靠某一年或低摩擦环境成立
+- 但仍要保持边界：
+  - 这还不是“AI会预测方向”
+  - 它更像一个减少低适配品种消耗的品种地形过滤器
+  - 不应该继续搜索更优 `topN`
+- 当前结论：
+  - `ai_top8` 动态品种池可以升级为新的正式第一候选版本
+  - 下一步应进入准实盘前治理：
+    - 固定模型和Top8规则
+    - 增加每日候选和拦截监控
+    - 记录被拦截品种未来路径，重点防止误杀早期大趋势
+    - 不允许在没有新增样本的情况下继续调参
+
+# 2026-04-24 21:03 第70阶段：AI Top8正式品种池准实盘监控与误杀跟踪
+
+## 改动时间点
+
+- `2026-04-24 21:03`
+
+## 本次版本改动内容
+
+- 新增AI Top8正式品种池监控脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_ai_product_pool_formal_monitor_report.py`
+- 本阶段不重新训练模型、不搜索 `topN`、不修改正式策略参数
+- 监控目标：
+  - 固定第68阶段 `ai_top8_entry_filter`
+  - 输出最新AI品种池
+  - 汇总被AI品种池拦截的候选
+  - 用基准品种日度归因标记被拦截事件后续 `20/60` 个交易日路径
+  - 重点识别“误杀早期趋势”和“规避亏损”两类事件
+
+## 新增的参数
+
+- 监控脚本内部新增阈值，不进入交易策略参数：
+  - `TOP_N = 8`
+  - `FUTURE_WINDOWS = (20, 60)`
+  - `MISSED_TREND_60D_NET_PNL_THRESHOLD = 50,000`
+  - `MISSED_TREND_60D_RUNUP_THRESHOLD = 100,000`
+  - `AVOIDED_LOSS_60D_NET_PNL_THRESHOLD = -50,000`
+  - `BORDERLINE_RANK_MAX = 12`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+- 无新增回测
+- 本阶段新增的是第68阶段正式候选的准实盘治理监控结果
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 沿用的当前正式候选结果
+
+- 期末权益 `3,894,190`
+- 总收益 `1847.09%`
+- 最大回撤 `-36.99%`
+- Sharpe `1.2080`
+- 总滑点 `257,880`
+- 总交易次数 `720`
+
+## 新增监控结果
+
+- 最新AI评估日：`2026-02-27`
+- 最新Top8品种池：
+  - `ru.SHFE`
+  - `SH.CZCE`
+  - `si.GFEX`
+  - `AP.CZCE`
+  - `lh.DCE`
+  - `OI.CZCE`
+  - `MA.CZCE`
+  - `SA.CZCE`
+- 历史AI拦截候选数：`234`
+- 其中边界排名 `9-12` 的拦截事件：`84`
+- `60` 日误杀趋势风险事件：`33`
+- `60` 日规避亏损事件：`27`
+- 年度误杀趋势风险事件：
+  - `2022`：`3`
+  - `2023`：`5`
+  - `2024`：`10`
+  - `2025`：`14`
+  - `2026`：`1`
+- 年度规避亏损事件：
+  - `2022`：`5`
+  - `2023`：`9`
+  - `2024`：`9`
+  - `2025`：`3`
+  - `2026`：`1`
+- 误杀风险最高的品种：
+  - `SH.CZCE`：拦截 `9` 次，误杀风险 `6` 次，60日后续均值 `116,687`
+  - `SA.CZCE`：拦截 `15` 次，误杀风险 `5` 次，60日后续均值 `55,785`
+  - `jm.DCE`：拦截 `13` 次，误杀风险 `3` 次，同时规避亏损 `6` 次
+  - `OI.CZCE`：拦截 `19` 次，误杀风险 `3` 次，边界排名事件 `10` 次
+  - `cu.SHFE`：拦截 `12` 次，误杀风险 `3` 次，边界排名事件 `7` 次
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_latest_pool_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_blocked_events_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_blocked_by_year_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_blocked_by_product_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_blocked_by_signal_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_review_template_ai_top8_formal_monitor_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_summary_ai_top8_formal_monitor_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_formal_monitor_report_ai_top8_formal_monitor_v1.md`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/build_qmt_roll_ai_product_pool_formal_monitor_report.py`
+- 已运行监控报告生成：
+  - `.py311/bin/python examples/portfolio_backtesting/build_qmt_roll_ai_product_pool_formal_monitor_report.py`
+
+## 我的判断
+
+- 第70阶段的本质不是继续优化收益，而是建立AI品种池的失效观测面
+- 监控结果说明：
+  - AI Top8仍然值得作为正式第一候选，因为第68和第69阶段已经证明其组合路径优势
+  - 但历史上确实存在 `33` 次后续趋势误杀风险，尤其集中在 `2024-2025`
+  - `SH.CZCE` 和 `SA.CZCE` 是最需要人工复盘的误杀风险品种
+  - `jm.DCE` 这种品种同时有误杀和规避亏损，不能简单加白名单
+- 不能把被拦截事件后续PnL直接相加当成可获得收益：
+  - 事件路径会重叠
+  - 同一品种可能被多次拦截
+  - 这些数字只能作为治理标签，不是可交易收益
+- 下一步如果继续，应做“只监控不交易”的准实盘日报：
+  - 每日记录Top8
+  - 记录被拦截候选
+  - 重点观察排名 `9-12` 且重复出现的品种
+  - 在没有新增样本前，不应修改 `topN`
+
+# 2026-04-24 21:14 第71阶段：AI Top8多周期重启回测
+
+## 改动时间点
+
+- `2026-04-24 21:14`
+
+## 本次版本改动内容
+
+- 新增多周期重启回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_multicycle_backtest.py`
+- 固定对照：
+  - `baseline_floor35`
+  - `ai_top8_product_pool`
+- 固定规则：
+  - 不重新训练AI模型
+  - 不搜索 `topN`
+  - 不修改交易策略参数
+  - 每个周期尽量保留一年预热上下文后做分析窗口统计
+- 本阶段不是简单切已有日度权益，而是重新调用 `run_backtest` 跑多周期对照
+
+## 新增的参数
+
+- 仅新增回测脚本内部周期配置，不进入交易策略：
+  - `MODEL_TAG = ai_top8_multicycle_v1`
+  - `CAPITAL = 200,000`
+  - `CYCLE_WINDOWS`：
+    - `full_2020_2026`：`2020-01-01` 至 `2026-04-30`
+    - `pre_ai_2020_2021`：`2020-01-01` 至 `2021-12-31`
+    - `post_signal_2022_2026`：`2022-02-07` 至 `2026-04-30`
+    - `early_ai_2022_2023`：`2022-02-07` 至 `2023-12-31`
+    - `trend_rich_2024_2025`：`2024-01-01` 至 `2025-12-31`
+    - `latest_2026`：`2026-01-01` 至 `2026-04-30`
+
+## 修改的参数
+
+- 无
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+### 全周期 `full_2020_2026`
+
+- AI Top8：
+  - 期末权益 `3,894,190`
+  - 总收益 `1847.09%`
+  - 最大回撤 `-36.99%`
+  - Sharpe `1.2080`
+  - 总滑点 `257,880`
+  - 总交易次数 `720`
+- 相对基准：
+  - 期末权益 `+991,835`
+  - 总收益 `+495.92` 个百分点
+  - 最大回撤差 `0.00` 个百分点
+  - Sharpe `+0.1855`
+  - 总滑点 `-91,200`
+  - 总交易次数 `-438`
+
+### AI生效前 `pre_ai_2020_2021`
+
+- AI Top8：
+  - 期末权益 `1,384,905`
+  - 总收益 `592.45%`
+  - 最大回撤 `-36.99%`
+  - Sharpe `1.6313`
+  - 总滑点 `57,190`
+  - 总交易次数 `306`
+- 相对基准：
+  - 期末权益差 `0`
+  - 总收益差 `0.00` 个百分点
+  - 最大回撤差 `0.00` 个百分点
+  - Sharpe差 `0.0000`
+  - 总滑点差 `0`
+  - 总交易次数差 `0`
+- 说明AI生效前没有产生额外路径偏差，这是一个必要的完整性校验
+
+### AI信号生效后 `post_signal_2022_2026`
+
+- AI Top8：
+  - 期末权益 `2,048,580`
+  - 总收益 `924.29%`
+  - 最大回撤 `-50.58%`
+  - Sharpe `1.0486`
+  - 总滑点 `153,630`
+  - 总交易次数 `372`
+- 相对基准：
+  - 期末权益 `+1,278,600`
+  - 总收益 `+639.30` 个百分点
+  - 最大回撤改善 `+7.80` 个百分点
+  - Sharpe `+0.5696`
+  - 总滑点 `-4,300`
+  - 总交易次数 `-359`
+
+### AI早期样本 `early_ai_2022_2023`
+
+- AI Top8：
+  - 期末权益 `562,750`
+  - 总收益 `181.38%`
+  - 最大回撤 `-50.58%`
+  - Sharpe `0.9895`
+  - 总滑点 `31,840`
+  - 总交易次数 `156`
+- 相对基准：
+  - 期末权益 `+242,825`
+  - 总收益 `+121.41` 个百分点
+  - 最大回撤改善 `+6.23` 个百分点
+  - Sharpe `+0.6001`
+  - 总滑点 `-9,865`
+  - 总交易次数 `-142`
+
+### 趋势富集期 `trend_rich_2024_2025`
+
+- AI Top8：
+  - 期末权益 `759,500`
+  - 总收益 `279.75%`
+  - 最大回撤 `-38.82%`
+  - Sharpe `1.2459`
+  - 总滑点 `38,020`
+  - 总交易次数 `147`
+- 相对基准：
+  - 期末权益 `+562,820`
+  - 总收益 `+281.41` 个百分点
+  - 最大回撤改善 `+4.96` 个百分点
+  - Sharpe `+1.2714`
+  - 总滑点 `+22,360`
+  - 总交易次数 `-61`
+- 注意：
+  - 这一段AI虽然显著优于基准，但滑点高于基准
+  - 说明AI Top8不是单纯减少交易成本，还可能集中到更大合约或更高摩擦路径
+
+### 最新尾部 `latest_2026`
+
+- AI Top8：
+  - 期末权益 `192,765`
+  - 总收益 `-3.62%`
+  - 最大回撤 `-16.17%`
+  - Sharpe `-0.5194`
+  - 总滑点 `1,390`
+  - 总交易次数 `18`
+- 相对基准：
+  - 期末权益 `+161,755`
+  - 总收益 `+80.88` 个百分点
+  - 最大回撤改善 `+71.86` 个百分点
+  - Sharpe `+3.2646`
+  - 总滑点 `-4,950`
+  - 总交易次数 `-31`
+- 注意：
+  - AI仍是亏损，只是显著少亏
+  - 不能把这一段解释为“最新环境已经恢复赚钱”
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_multicycle_backtest_summary_ai_top8_multicycle_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_multicycle_backtest_comparison_ai_top8_multicycle_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_multicycle_backtest_curves_ai_top8_multicycle_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_multicycle_backtest_summary_ai_top8_multicycle_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_multicycle_backtest_report_ai_top8_multicycle_v1.md`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_multicycle_backtest.py`
+- 已完成多周期重启回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_ai_product_pool_multicycle_backtest.py`
+
+## 我的判断
+
+- 第71阶段显著增强了AI Top8的可信度：
+  - AI生效前与基准完全一致，说明开关没有污染历史路径
+  - AI生效后整体明显优于基准
+  - `2022-2023` 早期样本优于基准
+  - `2024-2025` 趋势富集期优于基准
+  - `2026` 最新尾部虽然AI仍亏损，但比基准少亏很多
+- 这说明AI Top8不是只靠某一个年份或全周期复利路径成立
+- 但也不能过度乐观：
+  - `latest_2026` 仍为负收益
+  - `trend_rich_2024_2025` 的AI滑点高于基准
+  - AI Top8的价值更像“减少错误暴露和大回撤”，不是保证每段都盈利
+- 当前判断：
+  - AI Top8仍应保持正式第一候选
+  - 不应继续调 `topN`
+  - 下一步应做准实盘日报和滑点异常归因，尤其跟踪AI集中交易导致的摩擦成本上升
+
+# 2026-04-24 21:53 第72阶段：全市场扩池压力测试与AI筛选否决
+
+## 本次版本改动内容
+
+- 新增全市场可交易池构建脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_full_market_tradable_universe.py`
+- 新增全市场正式基线回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_backtest.py`
+- 新增全市场AI品种适配度walk-forward脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_full_market_walkforward.py`
+- 新增全市场AI品种池shadow过滤脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_full_market_shadow_portfolio.py`
+- 修改动态品种宇宙基础设施：
+  - `examples/portfolio_backtesting/main_contract_mapping.py`
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+- 核心原则：
+  - 默认仍保持原18品种，不影响既有正式AI Top8版本
+  - 只有显式传入 `product_universe_csv_path` 时才启用全市场候选池
+
+## 新增的参数
+
+- `product_universe_csv_path`
+  - 用于在回测引擎和策略内部同时切换动态品种宇宙
+  - 默认空字符串，保持原18品种逻辑不变
+- 全市场可交易池过滤参数：
+  - `recent_days = 240`
+  - `min_mapping_days = 360`
+  - `min_recent_mapping_days = 120`
+  - `min_recent_bar_coverage = 0.75`
+  - `min_recent_nonzero_volume_ratio = 0.60`
+  - `min_recent_median_volume = 100`
+  - `default_margin_ratio = 0.15`
+  - `capital = 200,000`
+  - `max_single_trade_capital_usage_ratio = 0.70`
+- 全市场shadow池预设：
+  - `ai_top8_entry_filter`
+  - `ai_top12_entry_filter`
+  - `simple_top8_entry_filter`
+
+## 修改的参数
+
+- 正式18品种AI Top8版本参数未修改
+- `main_contract_mapping.build_daily_mapping()` 和 `build_contract_metadata()` 增加可选 `supported_symbols`
+- `run_qmt_roll_backtest.build_backtest_engine()` 增加可选 `product_universe_csv_path`
+
+## 删除的参数
+
+- 无
+
+## 新增的回测结果
+
+### 全市场可交易池
+
+- 原始连续品种数：`86`
+- 可交易候选品种数：`50`
+- 原18品种保留数：`18`
+- 新增可交易候选品种数：`32`
+- 回测合约数从原18品种的 `736` 增加到全市场候选池的 `2881`
+
+### 全市场50品种正式基线回测
+
+- 回测脚本：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_backtest.py`
+- 回测参数：
+  - 基础策略：`volref30_corr20_06_08_floor35`
+  - 初始资金：`200,000`
+  - 品种池：全市场可交易候选池50品种
+  - 不启用AI品种池过滤
+- 结果：
+  - 期末权益 `113,455`
+  - 总收益 `-43.27%`
+  - 最大回撤 `-81.09%`
+  - Sharpe `-0.1812`
+  - 总滑点 `106,750`
+  - 总交易次数 `1733`
+- 对比第53阶段18品种基线：
+  - 期末权益减少 `-2,788,900`
+  - 总收益降低约 `-1394.45` 个百分点
+  - 最大回撤恶化约 `-44.10` 个百分点
+  - Sharpe降低约 `-1.2037`
+  - 总交易次数增加 `+575`
+
+### 全市场AI品种适配度walk-forward
+
+- 样本：
+  - 产品数 `50`
+  - 样本行数 `3700`
+  - 预测行数 `2500`
+  - 预测月份 `50`
+  - 特征数 `136`
+  - 市场地形特征数 `28`
+- AI结果：
+  - AUC `0.5559`
+  - 月度Rank IC `0.0626`
+  - Spearman vs 未来PnL `0.0635`
+  - Top5平均60日未来PnL `62.86`
+  - Top5相对全市场均值优势 `+227.01`
+- 简单分数结果：
+  - AUC `0.5079`
+  - 月度Rank IC `0.0132`
+- 判断：
+  - AI在全市场横截面中有弱排序信号
+  - 但排序信号强度不足以直接证明可交易
+
+### 全市场AI品种池shadow过滤
+
+- 评估起点：`2022-02-07`
+- 初始权益：`240,410`
+- 冻结路径基线：
+  - 期末权益 `113,455`
+  - 总收益 `-52.81%`
+  - 最大回撤 `-61.85%`
+  - Sharpe `-0.1332`
+  - 总滑点 `60,830`
+  - 总交易次数 `1109`
+- `ai_top8_entry_filter`：
+  - 期末权益 `156,300`
+  - 相对基线 `+42,845`
+  - 总收益 `-34.99%`
+  - 最大回撤 `-35.81%`
+  - Sharpe `-0.7386`
+  - 总滑点 `7,050`
+  - 总交易次数 `122`
+- `ai_top12_entry_filter`：
+  - 期末权益 `134,840`
+  - 相对基线 `+21,385`
+  - 总收益 `-43.91%`
+  - 最大回撤 `-51.50%`
+  - Sharpe `-0.7271`
+  - 总滑点 `11,430`
+  - 总交易次数 `198`
+- `simple_top8_entry_filter`：
+  - 期末权益 `186,470`
+  - 相对基线 `+73,015`
+  - 总收益 `-22.44%`
+  - 最大回撤 `-32.38%`
+  - Sharpe `-0.2710`
+  - 总滑点 `11,540`
+  - 总交易次数 `236`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_tradable_universe_audit_full_market_tradable_universe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_tradable_universe_eligible_full_market_tradable_universe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_tradable_universe_summary_full_market_tradable_universe_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_tradable_universe_report_full_market_tradable_universe_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_full_market_walkforward_summary_product_suitability_full_market_wf_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_full_market_walkforward_report_product_suitability_full_market_wf_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_full_market_shadow_portfolio_summary_ai_product_pool_full_market_shadow_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_full_market_shadow_portfolio_report_ai_product_pool_full_market_shadow_v1.md`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/build_qmt_roll_full_market_tradable_universe.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/main_contract_mapping.py examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_full_market_walkforward.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_full_market_shadow_portfolio.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/build_qmt_roll_full_market_tradable_universe.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_full_market_universe_formal_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_full_market_walkforward.py`
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_ai_product_pool_full_market_shadow_portfolio.py`
+
+## 我的判断
+
+- 这次结果不是“全市场扩池突破”，而是一次重要否决：
+  - 全市场50品种直接放开严重破坏原趋势系统
+  - AI在全市场横截面中确实有弱排序信号
+  - 但AI Top8/Top12 shadow仍为亏损，不能进入正式可交易版本
+- 当前不能把全市场候选池替换原18品种池
+- 第68至第71阶段的18品种AI Top8仍是当前正式第一候选
+- 全市场分支的价值是暴露了一个本质问题：
+  - 趋势系统并不是“品种越多越好”
+  - 全市场里大量品种的噪声、流动性结构、合约乘数和趋势地形会吞噬系统优势
+  - AI可以减少坏暴露，但现阶段还不能把坏扩池变成正收益
+- 下一步如果继续做全市场，不应再扩大回测，而应先做“毒性品种归因”和“两阶段品种预过滤”：
+  - 先用长期流动性、趋势效率、合约可承载性剔除明显不适合趋势系统的品种
+  - 再让AI在更干净的候选池里排序
+  - 不能直接从86或50品种里追求TopN优化
+
+## 第73阶段：全市场毒性归因与结构预过滤验证
+
+- 改动时间：`2026-04-24 22:10`
+- 本次目标：
+  - 继续第72阶段的全市场扩池否决结论
+  - 先做产品毒性归因，再做两阶段结构预过滤
+  - 验证“结构过滤后再让AI排序”是否能进入正式候选
+
+## 本次版本改动内容
+
+- 新增产品毒性归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_full_market_product_toxicity.py`
+- 新增结构预过滤品种池构建脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_full_market_structural_prefilter_universe.py`
+- 新增结构预过滤正式回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_backtest.py`
+- 没有修改原18品种正式策略默认参数
+- 没有把结构预过滤版本设为正式候选
+
+## 新增参数
+
+- `min_new_recent_median_volume = 50,000`
+- `max_new_margin_per_contract = 45,000`
+- `min_new_trend_efficiency_60d = 0.09`
+- `min_new_realized_vol_60d = 0.10`
+- `min_new_range_pct_60d = 0.018`
+- `ai_top_n = 8`
+- 新增结构预过滤动态品种池：
+  - `qmt_roll_full_market_structural_prefilter_eligible_full_market_structural_prefilter_v1.csv`
+- 新增结构池内AI资格文件：
+  - `qmt_roll_full_market_structural_prefilter_ai_eligibility_full_market_structural_prefilter_v1.csv`
+
+## 修改的参数
+
+- 全市场研究分支的候选池从第72阶段的 `50` 个可交易品种压缩为 `23` 个结构预过滤品种
+- 新增品种从 `32` 个压缩为 `5` 个：
+  - `UR.CZCE`
+  - `eb.DCE`
+  - `pg.DCE`
+  - `fu.SHFE`
+  - `sn.SHFE`
+- 结构池内AI排序从全市场50品种Top8改为结构池23品种Top8
+
+## 删除的参数
+
+- 无
+
+## 毒性归因结果
+
+- 全市场50品种中：
+  - 原18品种全周期净利润合计：`+168,270`
+  - 新增32品种全周期净利润合计：`-254,815`
+  - 原18品种评估期净利润合计：`+24,675`
+  - 新增32品种评估期净利润合计：`-151,630`
+- 高毒性产品数：`15`
+- 典型高毒性新增品种：
+  - `nr.INE`：全周期净利润 `-115,850`
+  - `zn.SHFE`：全周期净利润 `-83,450`
+  - `SF.CZCE`：全周期净利润 `-37,520`
+  - `ss.SHFE`：全周期净利润 `-30,775`
+  - `a.DCE`：全周期净利润 `-26,330`
+- 判断：
+  - 全市场失败不是随机波动，而是新增品种整体结构与当前趋势系统不匹配
+  - 历史PnL只用于归因，不能直接作为选品规则
+
+## 结构预过滤池
+
+- 输入：第72阶段全市场可交易候选 `50` 品种
+- 输出：结构预过滤 `23` 品种
+- 保留原18品种：`18`
+- 新增放行品种：`5`
+- 新增放行逻辑：
+  - 流动性足够
+  - 单合约保证金可承载
+  - 60日趋势效率足够
+  - 60日波动和振幅足够
+  - 不使用历史收益排名作为入池条件
+
+## 新增回测结果
+
+### `structural_prefilter_all`
+
+- 回测脚本：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_backtest.py`
+- 回测参数：
+  - 基础策略：`volref30_corr20_06_08_floor35`
+  - 初始资金：`200,000`
+  - 品种池：结构预过滤23品种
+  - 不启用AI品种池过滤
+- 结果：
+  - 期末权益 `2,239,105`
+  - 总收益 `1019.55%`
+  - 最大回撤 `-45.49%`
+  - Sharpe `0.7029`
+  - 总滑点 `316,180`
+  - 总交易次数 `1436`
+  - 盈利日 `711`
+  - 亏损日 `704`
+- 新增5品种在本路径中的产品归因：
+  - `fu.SHFE`：净利润 `+258,560`
+  - `sn.SHFE`：净利润 `+46,980`
+  - `eb.DCE`：净利润 `-4,550`
+  - `pg.DCE`：净利润 `-62,640`
+  - `UR.CZCE`：净利润 `-214,240`
+
+### `structural_prefilter_ai_top8`
+
+- 回测参数：
+  - 品种池：结构预过滤23品种
+  - 启用AI结构池Top8：
+    - `enable_ai_product_pool_filter = True`
+    - `ai_product_pool_strategy = ai_structural_top8_entry_filter`
+- 结果：
+  - 期末权益 `524,380`
+  - 总收益 `162.19%`
+  - 最大回撤 `-70.43%`
+  - Sharpe `0.3060`
+  - 总滑点 `118,530`
+  - 总交易次数 `786`
+  - 盈利日 `572`
+  - 亏损日 `581`
+
+### `structural_prefilter_simple_top8`
+
+- 回测参数：
+  - 品种池：结构预过滤23品种
+  - 启用简单结构池Top8：
+    - `enable_ai_product_pool_filter = True`
+    - `ai_product_pool_strategy = simple_structural_top8_entry_filter`
+- 结果：
+  - 期末权益 `552,165`
+  - 总收益 `176.08%`
+  - 最大回撤 `-48.39%`
+  - Sharpe `0.3194`
+  - 总滑点 `154,200`
+  - 总交易次数 `814`
+  - 盈利日 `565`
+  - 亏损日 `610`
+
+## 对比结论
+
+- 相比第72阶段全市场50品种基线：
+  - 结构预过滤23品种显著修复：期末权益从 `113,455` 提升到 `2,239,105`
+  - 但仍低于第53阶段原18品种基线 `2,902,355`
+  - 也远低于第68至71阶段原18品种AI Top8 `3,894,190`
+- 结构池内AI Top8和简单Top8均显著弱于结构池全开：
+  - AI Top8期末权益只有 `524,380`
+  - 简单Top8期末权益只有 `552,165`
+  - 说明当前AI排序在扩池后的可执行正式回测里不合格
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_product_toxicity_products_full_market_product_toxicity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_product_toxicity_summary_full_market_product_toxicity_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_product_toxicity_report_full_market_product_toxicity_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_audit_full_market_structural_prefilter_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_eligible_full_market_structural_prefilter_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_ai_eligibility_full_market_structural_prefilter_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_summary_full_market_structural_prefilter_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_report_full_market_structural_prefilter_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_summary.json`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_full_market_product_toxicity.py examples/portfolio_backtesting/build_qmt_roll_full_market_structural_prefilter_universe.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_backtest.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_full_market_product_toxicity.py`
+  - `.py311/bin/python examples/portfolio_backtesting/build_qmt_roll_full_market_structural_prefilter_universe.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_structural_prefilter_formal_backtest.py`
+
+## 我的判断
+
+- 两阶段结构预过滤是有价值的：
+  - 它证明全市场不是完全不能用，而是必须先做结构筛除
+  - 从50品种直接扩池的灾难性结果，被23品种结构池显著修复
+- 但这不是正式突破版本：
+  - 结构池全开仍弱于原18品种基线
+  - 结构池AI Top8和简单Top8均明显失败
+  - 当前正式第一候选仍然是原18品种AI Top8
+- 下一步不应继续调结构池TopN：
+  - 应先做新增5品种的边际贡献归因
+  - `fu.SHFE`贡献明显为正，`sn.SHFE`为正
+  - `UR.CZCE`和`pg.DCE`在正式路径中是明显拖累
+  - 需要做“新增品种逐一加入/剔除”的消融回测，确认是否存在少数可迁移新品种，而不是继续扩大池子
+
+# 第74阶段：新增品种边际贡献消融回测
+
+## 改动时间
+
+- `2026-04-24 22:22`
+
+## 本次版本改动内容
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_new_product_ablation_backtest.py`
+- 本阶段不是正式策略升级，而是对第73阶段结构预过滤放行的5个新品种做边际贡献消融：
+  - 单独把 `UR.CZCE`、`eb.DCE`、`fu.SHFE`、`pg.DCE`、`sn.SHFE` 加入原18品种池
+  - 再测试 `fu+sn`、`fu+sn+eb`
+  - 最后测试结构池剔除明显拖累品种 `UR.CZCE` 和 `pg.DCE` 后的组合
+- 消融判断原则：
+  - 不因为单品种收益高就直接纳入正式版本
+  - 必须同时看期末权益、最大回撤、Sharpe、滑点、交易次数和相对原18品种/原18 AI Top8的差距
+
+## 新增参数
+
+- 新增诊断实验配置：
+  - `experiment_name`
+  - `added_new_products`
+  - `added_new_product_count`
+- 新增诊断品种组合：
+  - `static18_plus_UR = UR.CZCE`
+  - `static18_plus_eb = eb.DCE`
+  - `static18_plus_fu = fu.SHFE`
+  - `static18_plus_pg = pg.DCE`
+  - `static18_plus_sn = sn.SHFE`
+  - `static18_plus_fu_sn = fu.SHFE,sn.SHFE`
+  - `static18_plus_fu_sn_eb = fu.SHFE,sn.SHFE,eb.DCE`
+  - `structural23_without_UR_pg = eb.DCE,fu.SHFE,sn.SHFE`
+
+## 修改的参数
+
+- 无
+- 沿用第73阶段正式回测参数：
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.6`
+  - `same_direction_correlation_gate_full = 0.8`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+  - `enable_selection_pairwise_v2 = True`
+  - `enable_selection_pairwise_v2_volume_tilt = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `selection_pairwise_volume_tilt_short_strength = 0.0`
+
+## 删除的参数
+
+- 无
+
+## 新增回测结果
+
+| 实验 | 新增品种 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `static18_plus_UR` | `UR.CZCE` | `2,405,330` | `1102.67%` | `-38.77%` | `0.8998` | `362,750` | `1214` |
+| `static18_plus_eb` | `eb.DCE` | `1,224,325` | `512.16%` | `-50.31%` | `0.5350` | `311,890` | `1235` |
+| `static18_plus_fu` | `fu.SHFE` | `3,520,720` | `1660.36%` | `-47.69%` | `0.8673` | `356,360` | `1213` |
+| `static18_plus_pg` | `pg.DCE` | `1,410,305` | `605.15%` | `-47.29%` | `0.6026` | `299,780` | `1182` |
+| `static18_plus_sn` | `sn.SHFE` | `2,188,680` | `994.34%` | `-41.39%` | `0.8381` | `342,910` | `1218` |
+| `static18_plus_fu_sn` | `fu.SHFE,sn.SHFE` | `3,558,165` | `1679.08%` | `-48.10%` | `0.9005` | `354,460` | `1270` |
+| `static18_plus_fu_sn_eb` | `fu.SHFE,sn.SHFE,eb.DCE` | `2,821,035` | `1310.52%` | `-41.65%` | `0.7892` | `315,950` | `1345` |
+| `structural23_without_UR_pg` | `eb.DCE,fu.SHFE,sn.SHFE` | `2,821,035` | `1310.52%` | `-41.65%` | `0.7892` | `315,950` | `1345` |
+
+## 对比基准
+
+- 第53阶段原18品种基线：
+  - 期末权益 `2,902,355`
+  - 总收益 `1351.18%`
+  - 最大回撤 `-36.99%`
+  - Sharpe `1.0225`
+  - 总滑点 `349,080`
+  - 总交易次数 `1158`
+- 第68至71阶段原18品种AI Top8正式第一候选：
+  - 期末权益 `3,894,190`
+  - 总收益 `1847.09%`
+  - 最大回撤 `-36.99%`
+  - Sharpe `1.2080`
+  - 总滑点 `257,880`
+  - 总交易次数 `720`
+- 第73阶段结构预过滤23品种全开：
+  - 期末权益 `2,239,105`
+  - 总收益 `1019.55%`
+  - 最大回撤 `-45.49%`
+  - Sharpe `0.7029`
+  - 总滑点 `316,180`
+  - 总交易次数 `1436`
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_new_product_ablation_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_new_product_ablation_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_new_product_ablation_universes/`
+- 每组实验对应的 `daily`、`daily_equity`、`trades`、`position_changes`、`entry_risk_diagnostics`、`entry_candidate_snapshots`、`trade_review`、`statistics`、`chart` 和 `professional_dashboard` 文件
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_new_product_ablation_backtest.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_new_product_ablation_backtest.py`
+
+## 我的判断
+
+- `fu.SHFE` 是这5个新品种里唯一有明确正向边际价值的品种：
+  - 单独加入后期末权益 `3,520,720`，高于原18品种基线 `2,902,355`
+  - 但最大回撤扩大到 `-47.69%`，Sharpe 降到 `0.8673`
+  - 所以它是候选增量，不是正式替代版本
+- `fu.SHFE + sn.SHFE` 收益略高于单独 `fu.SHFE`：
+  - 期末权益 `3,558,165`
+  - 但最大回撤扩大到 `-48.10%`
+  - 收益增加不足以补偿回撤恶化，不能直接晋级
+- `eb.DCE`、`pg.DCE`、`UR.CZCE` 不应直接纳入：
+  - `eb.DCE` 单独加入期末权益只有 `1,224,325`，最大回撤 `-50.31%`
+  - `pg.DCE` 单独加入期末权益只有 `1,410,305`
+  - `UR.CZCE` 虽比结构池全开强，但仍低于原18品种基线
+- 本阶段的价值不是找到正式新版本，而是把“全市场扩池”收敛成一个可验证方向：
+  - 不再继续扩大品种池
+  - 后续只围绕 `fu.SHFE` 做更严格的多周期、起始年份、成本敏感性和是否进入AI Top8体系的验证
+  - 当前正式第一候选仍是原18品种AI Top8，不改变
+
+# 第75阶段：`fu.SHFE` 卫星品种严测与AI信号后启用正式候选
+
+## 改动时间
+
+- `2026-04-24 22:52`
+
+## 本次版本改动内容
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_backtest.py`
+- 本阶段继续第74阶段结论，不再扩大全市场品种池，只围绕 `fu.SHFE` 做严测。
+- 核心设计边界：
+  - `static18_plus_fu`：原18品种静态加入 `fu.SHFE`
+  - `ai_top8_plus_fu_satellite`：原18 AI Top8 + 固定放行 `fu.SHFE`，但2022年前也允许 `fu.SHFE`
+  - `ai_top8_plus_fu_satellite_post_signal`：2022年前只允许原18品种，AI信号生效后再把 `fu.SHFE` 作为卫星品种放行
+- 关键判断：
+  - 静态加入 `fu.SHFE` 不合格
+  - 从2020年就放行 `fu.SHFE` 不够干净
+  - “AI信号后启用 `fu.SHFE` 卫星”符合数据可得性边界，不是收益排名拟合，是本阶段最干净的新候选
+
+## 新增参数
+
+- 新增常量：
+  - `FU_PRODUCT = fu.SHFE`
+  - `AI_SATELLITE_STRATEGY_NAME = ai_top8_plus_fu_satellite_entry_filter`
+  - `AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME = ai_top8_plus_fu_satellite_post_signal_entry_filter`
+  - `SLIPPAGE_MULTIPLIERS = 1.0,1.5,2.0,3.0,5.0`
+- 新增诊断窗口：
+  - `full_2020_2026`
+  - `pre_ai_2020_2021`
+  - `post_signal_2022_2026`
+  - `early_ai_2022_2023`
+  - `trend_rich_2024_2025`
+  - `latest_2026`
+- 新增衍生品种池：
+  - `static18_plus_fu_universe`
+- 新增衍生AI准入表：
+  - `ai_top8_plus_fu_satellite_eligibility`
+  - `ai_top8_plus_fu_satellite_post_signal_eligibility`
+- `post_signal` 版本的边界规则：
+  - `2019-12-31` 预置信号只放行原18品种
+  - 从已有AI Top8月度信号开始，放行当月AI Top8 + `fu.SHFE`
+
+## 修改的参数
+
+- 无核心策略参数修改
+- 沿用第68至第74阶段正式参数：
+  - `enable_same_direction_correlation_gate = True`
+  - `same_direction_correlation_gate_lookback = 20`
+  - `same_direction_correlation_gate_start = 0.6`
+  - `same_direction_correlation_gate_full = 0.8`
+  - `same_direction_correlation_gate_weight_floor = 0.35`
+  - `enable_selection_pairwise_v2 = True`
+  - `enable_selection_pairwise_v2_volume_tilt = True`
+  - `selection_pairwise_volume_tilt_long_strength = 0.15`
+  - `selection_pairwise_volume_tilt_long_base_volume_reference = 30.0`
+  - `selection_pairwise_volume_tilt_short_strength = 0.0`
+
+## 删除的参数
+
+- 无
+
+## 新增回测结果
+
+### 正式候选：`ai_top8_plus_fu_satellite_post_signal`
+
+- 回测区间：`2020-01-01` 至 `2026-04-30`
+- 期末权益：`4,644,365`
+- 总收益：`2222.18%`
+- 最大回撤：`-36.99%`
+- Sharpe：`1.2926`
+- 总滑点：`289,960`
+- 总交易次数：`791`
+- 盈利日：`592`
+- 亏损日：`624`
+
+### 对比第68至71阶段原18品种AI Top8
+
+- 原18品种AI Top8：
+  - 期末权益 `3,894,190`
+  - 总收益 `1847.10%`
+  - 最大回撤 `-36.99%`
+  - Sharpe `1.2080`
+  - 总滑点 `257,880`
+  - 总交易次数 `720`
+- `ai_top8_plus_fu_satellite_post_signal` 相对变化：
+  - 期末权益增加 `750,175`
+  - 总收益增加 `375.09` 个百分点
+  - 最大回撤基本持平
+  - Sharpe 增加 `0.0846`
+  - 总滑点增加 `32,080`
+  - 总交易次数增加 `71`
+
+### 多周期结果
+
+| 窗口 | 策略 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `ai_top8_plus_fu_satellite_post_signal` | `4,644,365` | `2222.18%` | `-36.99%` | `1.2926` | `289,960` | `791` |
+| `pre_ai_2020_2021` | `ai_top8_plus_fu_satellite_post_signal` | `1,384,905` | `592.45%` | `-36.99%` | `1.6313` | `57,190` | `306` |
+| `post_signal_2022_2026` | `ai_top8_plus_fu_satellite_post_signal` | `2,906,700` | `1353.35%` | `-37.54%` | `1.3176` | `196,970` | `443` |
+| `early_ai_2022_2023` | `ai_top8_plus_fu_satellite_post_signal` | `722,360` | `261.18%` | `-37.54%` | `1.3062` | `37,895` | `185` |
+| `trend_rich_2024_2025` | `ai_top8_plus_fu_satellite_post_signal` | `1,144,445` | `472.22%` | `-32.50%` | `1.3679` | `72,635` | `211` |
+| `latest_2026` | `ai_top8_plus_fu_satellite_post_signal` | `164,405` | `-17.80%` | `-40.06%` | `-0.5618` | `6,020` | `35` |
+
+### 与原18 AI Top8分段对比
+
+- `pre_ai_2020_2021`：
+  - 与原18 AI Top8完全一致，说明2022年前没有引入 `fu.SHFE` 的错误暴露
+- `post_signal_2022_2026`：
+  - 新候选期末权益 `2,906,700`
+  - 原18 AI Top8期末权益 `2,048,580`
+  - 新候选最大回撤 `-37.54%`
+  - 原18 AI Top8最大回撤 `-50.58%`
+  - 新候选Sharpe `1.3176`
+  - 原18 AI Top8 Sharpe `1.0486`
+- `latest_2026`：
+  - 新候选期末权益 `164,405`
+  - 原18 AI Top8期末权益 `192,765`
+  - 新候选最大回撤 `-40.06%`
+  - 原18 AI Top8最大回撤 `-16.17%`
+  - 这是当前新候选的主要瑕疵
+
+### 失败路径：`static18_plus_fu`
+
+- 全周期：
+  - 期末权益 `3,520,720`
+  - 总收益 `1660.36%`
+  - 最大回撤 `-47.69%`
+  - Sharpe `0.8673`
+  - 总滑点 `356,360`
+  - 总交易次数 `1213`
+- `post_signal_2022_2026`：
+  - 期末权益 `2,067,885`
+  - 最大回撤 `-65.06%`
+  - Sharpe `0.7428`
+- 起始年份敏感性：
+  - `since_2021` 最大回撤 `-53.98%`
+  - `since_2022` 最大回撤 `-66.47%`
+  - `since_2026` 出现资金小于等于0，vn.py无法计算统计指标，输出为0；这是爆仓/资金归零风险信号，不是正常0收益
+
+### 正式候选滑点压力
+
+| 滑点倍数 | 期末权益 | 总收益 | 最大回撤 | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `1.0x` | `4,644,365` | `2222.18%` | `-36.99%` | `289,960` | `791` |
+| `1.5x` | `4,499,385` | `2149.69%` | `-37.72%` | `434,940` | `791` |
+| `2.0x` | `4,354,405` | `2077.20%` | `-38.47%` | `579,920` | `791` |
+| `3.0x` | `4,064,445` | `1932.22%` | `-40.25%` | `869,880` | `791` |
+| `5.0x` | `3,484,525` | `1642.26%` | `-44.50%` | `1,449,800` | `791` |
+
+## 修改的回测结果
+
+- 无
+
+## 删除的回测结果
+
+- 无
+
+## 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_ai_top8_plus_fu_satellite_eligibility.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_ai_top8_plus_fu_satellite_post_signal_eligibility.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_start_year_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_slippage_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_combined_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_slippage_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_professional_dashboard.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_trade_review.html`
+
+## 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_backtest.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_backtest.py`
+
+## 我的判断
+
+- 这是目前最有价值的一次突破：
+  - 新候选首次在全周期期末权益、总收益、Sharpe上同时超过原18 AI Top8
+  - 最大回撤没有恶化，仍保持在 `-36.99%`
+  - 不是全市场扩池，而是“结构预过滤 + 单一卫星品种 + AI信号后启用”的窄口径扩展
+- 但它还不是无条件实盘定版：
+  - `latest_2026` 尾部弱于原18 AI Top8
+  - 2026年新候选回撤 `-40.06%`，说明 `fu.SHFE` 卫星在最近尾部可能放大风险
+  - 下一步不应继续找更多品种，而应做 `fu.SHFE` 卫星的尾部风险归因和可解释风控
+- 当前研究第一候选可以从“原18品种AI Top8”升级为：
+  - `ai_top8_plus_fu_satellite_post_signal`
+- 当前实盘前置条件：
+  - 必须再完成2026尾部亏损归因
+  - 必须确认 `fu.SHFE` 的卫星放行不是由少数极端交易贡献
+- 必须确认风控规则不是针对2026过拟合，而是可穿越周期的结构性约束
+
+## 第76阶段：`fu.SHFE`卫星2026尾部归因与核心连续亏损状态隔离验证
+
+### 改动时间
+
+- `2026-04-24 23:11`
+
+### 本次版本改动内容
+
+- 新增`fu`卫星2026尾部归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution.py`
+- 新增策略参数：
+  - `streak_risk_state_excluded_products`
+- 修改`QmtRollPortfolioStrategy`连续亏损风控状态更新逻辑：
+  - 默认行为不变
+  - 当某品种在`streak_risk_state_excluded_products`中时，该品种平仓盈亏不更新组合级`loss_streak`
+- 新增验证回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_backtest.py`
+- 设计意图：
+  - 先做归因，不直接按2026亏损拟合过滤规则
+  - 验证“`fu.SHFE`卫星是否污染组合级连续亏损状态”，而不是简单禁用`fu.SHFE`
+
+### 新增的参数
+
+- `streak_risk_state_excluded_products`
+  - 默认值：空字符串
+  - 本次验证值：`fu.SHFE`
+  - 含义：指定品种的平仓盈亏不参与组合级连续亏损风控状态更新
+
+### 修改的参数
+
+- 正式第一候选参数未修改
+- 仅新增验证路径使用：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+
+### 删除的参数
+
+- 无
+
+### 新增的归因结果
+
+- `ai_top8_plus_fu_satellite_post_signal`在正式全周期路径中，`2026`段表现：
+  - 卫星版本期初权益 `4,716,880`
+  - 卫星版本期末权益 `4,644,365`
+  - 卫星版本净损益 `-72,515`
+  - 原18 AI Top8同期净损益 `-54,260`
+  - 卫星版本相比原18 AI Top8差额 `-18,255`
+- `fu.SHFE`自身并不是2026尾部弱化主因：
+  - `fu.SHFE`净损益 `+77,280`
+  - `fu.SHFE`交易次数 `2`
+  - `fu.SHFE`总滑点 `1,120`
+  - `fu.SHFE`最差日 `2026-02-02`，净损益 `-79,520`
+- 最大负差额来自`SH.CZCE`：
+  - 卫星版本`SH.CZCE`净损益 `-209,550`
+  - 原18 AI Top8`SH.CZCE`净损益 `-87,330`
+  - 差额 `-122,220`
+  - 两个版本`SH.CZCE`入场次数同为 `4`
+  - 卫星版本`SH.CZCE`入场手数和 `77`
+  - 原18 AI Top8`SH.CZCE`入场手数和 `22`
+- 事件级诊断：
+  - `2026-02-06`，`SH.CZCE`空头，卫星版风险乘数 `1.00`，原18 AI Top8风险乘数 `0.10`
+  - `2026-03-02`，`SH.CZCE`空头，卫星版风险乘数 `1.00`，原18 AI Top8风险乘数 `0.10`
+  - 本质原因是：`fu.SHFE`卫星盈利改变了组合级`loss_streak`路径，使原本应被连续亏损风控降档的核心品种没有降档
+
+### 新增的回测结果
+
+验证路径：`ai_top8_plus_fu_satellite_post_signal_core_streak`
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,260,025` | `2030.01%` | `-36.99%` | `1.2083` | `275,900` | `787` |
+| `pre_ai_2020_2021` | `1,384,905` | `592.45%` | `-36.99%` | `1.6313` | `57,190` | `306` |
+| `post_signal_2022_2026` | `2,360,725` | `1080.36%` | `-58.14%` | `0.9817` | `155,550` | `437` |
+| `early_ai_2022_2023` | `504,620` | `152.31%` | `-58.14%` | `0.7882` | `31,710` | `189` |
+| `trend_rich_2024_2025` | `1,075,435` | `437.72%` | `-33.72%` | `1.4288` | `50,665` | `179` |
+| `latest_2026` | `188,915` | `-5.54%` | `-32.37%` | `-0.3387` | `2,340` | `24` |
+
+### 滑点压力结果
+
+| 滑点倍数 | 期末权益 | 总收益 | 最大回撤 | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `1.0x` | `4,260,025` | `2030.01%` | `-36.99%` | `275,900` | `787` |
+| `1.5x` | `4,122,075` | `1961.04%` | `-37.72%` | `413,850` | `787` |
+| `2.0x` | `3,984,125` | `1892.06%` | `-38.47%` | `551,800` | `787` |
+| `3.0x` | `3,708,225` | `1754.11%` | `-40.25%` | `827,700` | `787` |
+| `5.0x` | `3,156,425` | `1478.21%` | `-44.50%` | `1,379,500` | `787` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_product_attribution_fu_satellite_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_monthly_attribution_fu_satellite_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_worst_days_fu_satellite_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_entry_comparison_vs_ai_top8_fu_satellite_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_opened_entry_event_comparison_vs_ai_top8_fu_satellite_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_summary_fu_satellite_tail_2026_attribution_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution_report_fu_satellite_tail_2026_attribution_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_slippage_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_formal_entry_candidate_snapshots_2020_2026_04.csv`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_tail_2026_attribution.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_core_streak_backtest.py`
+
+### 我的判断
+
+- `fu.SHFE`卫星本身不是2026尾部弱化主因，主因是卫星品种改变了组合级连续亏损风控状态，使核心品种`SH.CZCE`在错误时点放大仓位。
+- `streak_risk_state_excluded_products=fu.SHFE`验证了因果链：`latest_2026`从第75阶段的`164,405`改善到`188,915`。
+- 但该隔离规则不能升级正式版本：
+  - 全周期期末权益从第75阶段`4,644,365`降至`4,260,025`
+  - Sharpe从第75阶段`1.2926`降至`1.2083`
+  - `post_signal_2022_2026`最大回撤恶化到`-58.14%`
+  - `early_ai_2022_2023`质量明显下降
+- 当前研究第一候选仍是第75阶段：
+  - `ai_top8_plus_fu_satellite_post_signal`
+- 下一步不应直接隔离`fu.SHFE`，也不应禁用`fu.SHFE`；更合理的方向是研究可穿越周期的“组合状态治理”，让卫星品种不能轻易重置核心池风险状态，但也不能机械地把卫星盈亏完全排除。
+
+## 2026-04-24 23:21 第77阶段：连续亏损状态渐进恢复验证（不升级）
+
+### 改动内容
+
+- 本阶段目标：验证“盈利不一次性清零连续亏损状态，而是逐级恢复”是否能解决第75阶段`fu.SHFE`卫星污染组合级风控状态的问题。
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_backtest.py`
+
+### 新增的参数
+
+- `streak_profit_recovery_mode`
+  - 默认值：`reset`
+  - 验证值：`decrement`
+  - 含义：盈利平仓后不把`loss_streak`直接清零，而是每次盈利只降低一级连续亏损状态。
+
+### 修改的参数
+
+- 本次验证路径在第75阶段`ai_top8_plus_fu_satellite_post_signal`基础上覆盖：
+  - `streak_profit_recovery_mode=decrement`
+- 其余核心参数延续第75阶段，不主动调参拟合。
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+验证路径：`ai_top8_plus_fu_satellite_gradual_streak`
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `292,975` | `46.49%` | `-20.25%` | `0.3863` | `13,150` | `285` |
+| `pre_ai_2020_2021` | `190,310` | `-4.85%` | `-16.69%` | `-0.2159` | `3,970` | `101` |
+| `post_signal_2022_2026` | `450,515` | `125.26%` | `-19.77%` | `0.8206` | `20,850` | `288` |
+| `early_ai_2022_2023` | `319,920` | `59.96%` | `-19.77%` | `0.9530` | `3,945` | `112` |
+| `trend_rich_2024_2025` | `241,120` | `20.56%` | `-16.64%` | `0.4553` | `6,790` | `96` |
+| `latest_2026` | `193,575` | `-3.21%` | `-6.48%` | `-0.9584` | `530` | `18` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_formal_entry_candidate_snapshots_2020_2026_04.csv`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_backtest.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_gradual_streak_backtest.py`
+
+### 我的判断
+
+- 该版本不能升级正式候选。
+- 正面信息：`latest_2026`最大回撤从第75阶段的`-40.06%`压到`-6.48%`，说明“风险状态被过快恢复”确实是尾部问题的一部分。
+- 负面代价过大：全周期期末权益从第75阶段`4,644,365`降至`292,975`，Sharpe从`1.2926`降至`0.3863`，总交易次数从`791`降至`285`。
+- 本质问题：`decrement`让`loss_streak`过度黏滞，使趋势系统长期处于低风险状态，虽然少亏了尾部，但也错过了主趋势段；这不是可穿越周期的改进。
+- 当前研究第一候选仍是第75阶段：
+  - `ai_top8_plus_fu_satellite_post_signal`
+- 后续方向应从“什么时候允许恢复风险”入手，例如要求恢复发生在组合权益、核心池贡献和波动环境同时改善之后，而不是简单慢恢复或机械隔离卫星品种。
+
+## 2026-04-24 23:40 第78阶段：卫星盈利屏蔽连续亏损恢复（升级为风险治理第一候选）
+
+### 改动内容
+
+- 本阶段目标：继续处理第75阶段`fu.SHFE`卫星污染组合级连续亏损状态的问题，但避免第77阶段“全局慢恢复/确认恢复”过度压制趋势收益。
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增验证脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_backtest.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stress.py`
+
+### 新增的参数
+
+- `streak_profit_recovery_confirm_wins`
+  - 默认值：`1`
+  - 用途：在`streak_profit_recovery_mode=confirm`时，要求连续盈利平仓达到指定次数后才清零`loss_streak`
+- `streak_risk_state_exclusion_mode`
+  - 默认值：`all`
+  - 可选验证值：`profit_only`
+  - 用途：对`streak_risk_state_excluded_products`指定品种进行非对称处理；`profit_only`表示该品种盈利不恢复`loss_streak`，但亏损仍增加`loss_streak`
+
+### 修改的参数
+
+- 验证一：全局确认恢复
+  - `streak_profit_recovery_mode=confirm`
+  - `streak_profit_recovery_confirm_wins=2`
+- 验证二：`fu.SHFE`卫星盈利屏蔽
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 其他核心参数延续第75阶段`ai_top8_plus_fu_satellite_post_signal`，不进行收益拟合。
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+验证路径一：`ai_top8_plus_fu_satellite_post_signal_confirmed_streak`
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `629,305` | `214.65%` | `-38.27%` | `0.5478` | `38,080` | `380` |
+| `pre_ai_2020_2021` | `142,330` | `-28.84%` | `-38.27%` | `-0.6546` | `7,310` | `147` |
+| `post_signal_2022_2026` | `1,368,780` | `584.39%` | `-36.74%` | `1.0118` | `92,830` | `394` |
+| `early_ai_2022_2023` | `421,780` | `110.89%` | `-36.74%` | `0.8966` | `20,635` | `169` |
+| `trend_rich_2024_2025` | `611,425` | `205.71%` | `-35.59%` | `1.2344` | `25,950` | `150` |
+| `latest_2026` | `227,705` | `13.85%` | `-18.41%` | `0.6553` | `2,180` | `24` |
+
+验证路径二：`ai_top8_plus_fu_satellite_post_signal_profit_shield_streak`
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,600,090` | `2200.05%` | `-36.99%` | `1.2919` | `260,110` | `779` |
+| `pre_ai_2020_2021` | `1,384,905` | `592.45%` | `-36.99%` | `1.6313` | `57,190` | `306` |
+| `post_signal_2022_2026` | `2,863,385` | `1331.69%` | `-37.54%` | `1.3008` | `167,710` | `431` |
+| `early_ai_2022_2023` | `721,720` | `260.86%` | `-37.54%` | `1.3070` | `36,710` | `185` |
+| `trend_rich_2024_2025` | `964,180` | `382.09%` | `-31.12%` | `1.4577` | `42,120` | `164` |
+| `latest_2026` | `188,645` | `-5.68%` | `-32.41%` | `-0.3449` | `2,360` | `24` |
+
+### 滑点压力结果
+
+| 版本 | 滑点倍数 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 第75阶段 | `1.0x` | `4,644,365` | `2222.18%` | `-36.99%` | `1.4565` | `289,960` | `791` |
+| 第75阶段 | `3.0x` | `4,064,445` | `1932.22%` | `-40.25%` | `1.3152` | `869,880` | `791` |
+| 第75阶段 | `5.0x` | `3,484,525` | `1642.26%` | `-44.50%` | `1.1792` | `1,449,800` | `791` |
+| 盈利屏蔽版 | `1.0x` | `4,600,090` | `2200.05%` | `-36.99%` | `1.4551` | `260,110` | `779` |
+| 盈利屏蔽版 | `3.0x` | `4,079,870` | `1939.94%` | `-40.25%` | `1.3191` | `780,330` | `779` |
+| 盈利屏蔽版 | `5.0x` | `3,559,650` | `1679.83%` | `-44.50%` | `1.1887` | `1,300,550` | `779` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_formal_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_formal_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stress_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_backtest.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stress.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_confirmed_streak_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stress.py`
+
+### 我的判断
+
+- `streak_profit_recovery_mode=confirm`不升级：它把2026尾部变好，但全周期收益从第75阶段`4,644,365`压到`629,305`，说明全局确认恢复仍然过度保守。
+- `streak_risk_state_exclusion_mode=profit_only`是本阶段有效突破：
+  - 全周期期末权益仅比第75阶段少`44,275`
+  - Sharpe基本持平：第75阶段`1.2926`，盈利屏蔽版`1.2919`
+  - `latest_2026`期末权益从第75阶段`164,405`改善到`188,645`
+  - `latest_2026`最大回撤从第75阶段`-40.06%`改善到`-32.41%`
+  - 总滑点从第75阶段`289,960`降到`260,110`
+  - 3倍和5倍滑点压力下，盈利屏蔽版反而超过第75阶段
+- 本质判断：趋势系统不能让卫星品种的一笔盈利替核心池“洗白”连续亏损状态；但卫星品种亏损仍是组合风险信息，应该计入降风险。这种非对称规则比完全隔离和全局慢恢复更接近交易系统的真实风险结构。
+- 当前研究状态调整：
+  - 第75阶段`ai_top8_plus_fu_satellite_post_signal`保留为收益上限基准
+  - 第78阶段`ai_top8_plus_fu_satellite_post_signal_profit_shield_streak`升级为风险治理第一候选
+- 仍不能实盘定版：下一步应做起始年份、极端交易、2026事件级归因和执行成本复核，确认该规则不是偶然改善2026。
+
+## 2026-04-24 23:56 第79阶段：第78阶段风险治理反证验证
+
+### 改动内容
+
+- 本阶段不新增策略逻辑，专门验证第78阶段`profit_shield_streak`是否只是偶然改善全周期和2026尾部。
+- 新增起始年份稳健性脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness.py`
+- 新增2026事件归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution.py`
+- 修正归因报告措辞：全周期口径下第78阶段2026期初权益低于第75阶段，因此归因报告明确优先比较2026区间净损益，而不是绝对期末权益。
+
+### 新增的参数
+
+- 无
+
+### 修改的参数
+
+- 无策略参数修改。
+- 起始年份稳健性验证沿用第75阶段和第78阶段参数，只改变回测起始年份：
+  - `since_2020`
+  - `since_2021`
+  - `since_2022`
+  - `since_2023`
+  - `since_2024`
+  - `since_2025`
+  - `since_2026`
+- 第78阶段验证参数仍为：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 事件归因参数：
+  - `TAIL_START=2026-01-01`
+  - `KEY_PRODUCT=SH.CZCE`
+  - 关键日期：`2026-02-06`、`2026-03-02`
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+起始年份稳健性：第78阶段`profit_shield_streak` vs 第75阶段`post_signal`
+
+| 起始窗口 | 第78阶段期末权益 | 第75阶段期末权益 | 权益差额 | 第78阶段最大回撤 | 第75阶段最大回撤 | 第78阶段Sharpe | 第75阶段Sharpe | 滑点差额 | 交易次数差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `since_2020` | `4,600,090` | `4,644,365` | `-44,275` | `-36.99%` | `-36.99%` | `1.2919` | `1.2926` | `-29,850` | `-12` |
+| `since_2021` | `4,125,980` | `4,170,255` | `-44,275` | `-42.32%` | `-42.32%` | `1.1929` | `1.1948` | `-29,850` | `-12` |
+| `since_2022` | `3,016,845` | `3,074,745` | `-57,900` | `-36.77%` | `-36.77%` | `1.2448` | `1.2603` | `-29,620` | `-12` |
+| `since_2023` | `1,918,185` | `2,198,170` | `-279,985` | `-39.44%` | `-35.99%` | `1.3242` | `1.4015` | `-44,870` | `-30` |
+| `since_2024` | `993,155` | `1,071,930` | `-78,775` | `-31.12%` | `-32.50%` | `1.2924` | `1.1626` | `-35,535` | `-49` |
+| `since_2025` | `882,655` | `811,485` | `71,170` | `-28.88%` | `-28.88%` | `1.6574` | `1.4266` | `-17,260` | `-6` |
+| `since_2026` | `188,645` | `164,405` | `24,240` | `-32.41%` | `-40.06%` | `-0.3449` | `-0.5618` | `-3,660` | `-11` |
+
+稳健性汇总：
+
+- 起始年份窗口数：`7`
+- 第78阶段期末权益胜出窗口：`2`
+- 第78阶段Sharpe胜出窗口：`3`
+- 平均期末权益差额：`-58,543`
+- 平均Sharpe差额：`0.0689`
+- 平均滑点差额：`-27,235`
+
+2026全周期尾部归因：
+
+| 版本 | 2026期初权益 | 2026期末权益 | 2026净损益 | 2026区间收益 | 2026最大回撤 | 2026总滑点 | 2026交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 第75阶段 | `4,716,880` | `4,644,365` | `-72,515` | `-1.54%` | `-5.31%` | `14,380` | `37` |
+| 第78阶段 | `4,571,885` | `4,600,090` | `28,205` | `0.62%` | `-5.36%` | `9,380` | `35` |
+| 差额 | `-144,995` | `-44,275` | `100,720` | `2.15%` | `-0.05pct` | `-5,000` | `-2` |
+
+关键品种归因：
+
+- `SH.CZCE`第75阶段2026净损益：`-209,550`
+- `SH.CZCE`第78阶段2026净损益：`-87,330`
+- `SH.CZCE`净损益改善：`122,220`
+- `SH.CZCE`绝对持仓变化差额：`-110`
+- `2026-02-06`空头事件：第75阶段`31`手、风险乘数`1.0`；第78阶段`3`手、风险乘数`0.1`
+- `2026-03-02`空头事件：第75阶段`31`手、风险乘数`1.0`；第78阶段`4`手、风险乘数`0.1`
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_product_comparison_profit_shield_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_entry_event_comparison_profit_shield_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_key_events_profit_shield_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_daily_comparison_profit_shield_tail_2026_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_summary_profit_shield_tail_2026_attribution_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution_report_profit_shield_tail_2026_attribution_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness.py examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_start_year_robustness.py`
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_tail_2026_attribution.py`
+
+### 我的判断
+
+- 第78阶段不能直接替代第75阶段作为收益第一候选：7个起始年份窗口中，第78阶段只在`since_2025`和`since_2026`两个窗口期末权益胜出，平均期末权益仍低`58,543`。
+- 第78阶段仍保留为风险治理第一候选：它在所有起始年份窗口都降低滑点和交易次数，2026独立窗口期末权益从`164,405`提高到`188,645`，最大回撤从`-40.06%`改善到`-32.41%`。
+- 事件归因支持第78阶段的设计逻辑：2026尾部净损益改善`100,720`，主要来自`SH.CZCE`风险乘数被压到`0.1`后少放大了两笔错误空头；这不是随机产品盈亏抵消。
+- 负面信息同样明确：`since_2023`窗口第78阶段权益少`279,985`且最大回撤更深`3.45`个百分点，说明该规则会牺牲一部分趋势再启动收益。
+- 当前版本关系保持不变：
+  - 第75阶段`ai_top8_plus_fu_satellite_post_signal`是收益上限基准
+  - 第78阶段`ai_top8_plus_fu_satellite_post_signal_profit_shield_streak`是风险治理第一候选
+- 下一步不应继续微调`fu.SHFE`单点规则；更有价值的是做统一的“组合风险状态归因层”，把卫星、核心、相关性拥挤和近期权益曲线统一到同一个可解释风控框架中。
+
+## 2026-04-25 00:09 第80阶段：组合风险状态归因层第一版
+
+### 改动内容
+
+- 本阶段按第79阶段判断推进，但不直接修改策略交易规则，先建立“组合风险状态归因层”。
+- 新增分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution.py`
+- 该脚本读取第75阶段和第78阶段既有正式产物，将开仓事件与后续`5/10/20`个交易日产品级、组合级净损益连接，生成状态桶和风险恢复分歧表。
+- 本阶段不是回测，不产生新的策略版本；目的是判断第78阶段风险治理逻辑是否具备跨周期抽象价值。
+
+### 新增的参数
+
+- 无策略参数。
+- 分析脚本使用的诊断参数：
+  - `HORIZONS=(5, 10, 20)`
+  - `SATELLITE_PRODUCTS={fu.SHFE}`
+  - 分段：`pre_ai_2020_2021`、`early_ai_2022_2023`、`trend_rich_2024_2025`、`latest_2026`
+
+### 修改的参数
+
+- 无
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+- 无。本阶段未运行新回测，只基于第75阶段和第78阶段已有正式回测产物做归因诊断。
+
+### 新增的分析结果
+
+开仓事件总体：
+
+| 版本 | 开仓事件数 | 产品数 | 卫星事件数 | 平均风险乘数 | 平均loss_streak | 20日产品级前瞻净损益 | 20日产品级亏损率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 第75阶段`post_signal` | `365` | `19` | `32` | `0.8422` | `1.5151` | `5,593,770` | `54.52%` |
+| 第78阶段`profit_shield` | `359` | `19` | `32` | `0.8019` | `1.7521` | `5,570,085` | `55.15%` |
+
+风险恢复分歧事件：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 分歧事件数 | `21` |
+| 涉及产品数 | `11` |
+| 第75阶段手数 | `722` |
+| 第78阶段手数 | `90` |
+| 第75阶段额外手数 | `632` |
+| 第75阶段20日产品级前瞻净损益 | `279,460` |
+| 第78阶段20日产品级前瞻净损益 | `235,815` |
+| 第78阶段相对差额 | `-43,645` |
+
+分阶段分歧：
+
+| 周期 | 分歧事件数 | 产品数 | 第75额外手数 | 第75阶段20日前瞻净损益 | 第78阶段20日前瞻净损益 | 第78阶段相对差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `early_ai_2022_2023` | `1` | `1` | `45` | `313,600` | `311,800` | `-1,800` |
+| `trend_rich_2024_2025` | `16` | `11` | `515` | `155,250` | `385` | `-154,865` |
+| `latest_2026` | `4` | `2` | `72` | `-189,390` | `-76,370` | `113,020` |
+
+关键事件：
+
+- 第78阶段保护最有效事件：
+  - `2026-02-06 SH.CZCE short_case1a`：第75阶段`31`手，第78阶段`3`手，20日前瞻净损益改善`122,220`
+  - `2026-03-02 SH.CZCE short_case1a`：第75阶段`31`手，第78阶段`4`手，20日前瞻净损益改善`56,700`
+- 第78阶段代价最大事件：
+  - `2024-07-22 jm.DCE short_case1a`：第75阶段`22`手，第78阶段`2`手，20日前瞻净损益差额`-194,400`
+  - `2025-11-11 lc.GFEX long_case1a`：第75阶段`25`手，第78阶段`2`手，20日前瞻净损益差额`-100,280`
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_event_table_portfolio_risk_state_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_state_bucket_summary_portfolio_risk_state_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_stage75_vs_stage78_pair_comparison_portfolio_risk_state_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_risk_recovery_divergence_portfolio_risk_state_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_summary_portfolio_risk_state_attribution_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution_report_portfolio_risk_state_attribution_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_portfolio_risk_state_attribution.py`
+
+### 我的判断
+
+- 第78阶段的`profit_shield`逻辑不能直接抽象成统一风控规则。它在`latest_2026`保护有效，20日前瞻净损益改善`113,020`；但在`trend_rich_2024_2025`明显压制趋势再启动，20日前瞻净损益损失`154,865`。
+- 风险恢复分歧不是单一品种问题：21笔分歧涉及11个产品，说明继续写`fu.SHFE`专属补丁会过拟合。
+- 当前更接近本质的方向不是“卫星盈利永不恢复风险”，而是“卫星盈利不能单独恢复风险，必须有核心池或组合权益状态确认”。
+- 下一步如果要进入策略层，应先设计一个很克制的通用候选：
+  - 不针对具体产品
+  - 不针对具体年份
+  - 只区分核心确认、卫星确认、组合权益确认
+  - 参数数量尽量少
+- 现阶段不建议立即升级第78阶段为正式版本；第75阶段继续作为收益上限基准，第78阶段继续作为风险治理候选。
+
+## 2026-04-25 00:18 第81阶段：卫星盈利屏蔽的组合权益确认候选
+
+### 改动内容
+
+- 本阶段按第80阶段结论进入策略层，但只做一个低自由度候选，不做参数扫描。
+- 在组合连亏风险恢复逻辑中新增“组合权益确认”钩子：卫星品种盈利默认不恢复风险，但当组合权益回撤已经回到指定阈值以内时，允许该盈利按正常逻辑恢复风险。
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增多周期回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_backtest.py`
+- 本阶段的核心目的不是追求更高收益，而是验证“卫星盈利不能单独恢复风险，但组合权益状态可以作为确认信号”是否能修复第78阶段在2024-2025趋势再启动中的机会成本。
+
+### 新增的参数
+
+- `streak_profit_recovery_equity_confirm_drawdown_pct`
+  - 默认值：`-1.0`
+  - 含义：小于`0`时关闭组合权益确认，保持原行为不变；大于等于`0`时，只有当`portfolio_drawdown_pct <= threshold`，被盈利屏蔽的卫星盈利才允许恢复组合风险状态。
+  - 本次候选取值：`0.01`
+  - 直觉解释：组合权益已回到距高水位`1%`以内，才承认卫星盈利可能代表组合状态恢复。
+
+### 修改的参数
+
+- 延续第78阶段风险治理候选：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 本次在第78阶段基础上新增：
+  - `streak_profit_recovery_equity_confirm_drawdown_pct=0.01`
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` |
+| `pre_ai_2020_2021` | `1,384,905` | `592.4525%` | `-36.9907%` | `1.6313` | `57,190` | `306` |
+| `post_signal_2022_2026` | `2,863,385` | `1331.6925%` | `-37.5422%` | `1.3008` | `167,710` | `431` |
+| `early_ai_2022_2023` | `721,720` | `260.8600%` | `-37.5422%` | `1.3070` | `36,710` | `185` |
+| `trend_rich_2024_2025` | `964,180` | `382.0900%` | `-31.1166%` | `1.4577` | `42,120` | `164` |
+| `latest_2026` | `188,645` | `-5.6775%` | `-32.4059%` | `-0.3449` | `2,360` | `24` |
+
+全周期补充指标：
+
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+- 总滑点：`260,110`
+- 总交易次数：`779`
+- 总净盈亏：`4,400,090`
+- 盈利天数：`583`
+- 亏损天数：`621`
+
+对比结果：
+
+| 对比对象 | 期末权益差额 | Sharpe差额 | 总滑点差额 | 总交易次数差额 |
+| --- | ---: | ---: | ---: | ---: |
+| 第75阶段收益基准 | `-44,275` | `-0.0007` | `-29,850` | `-12` |
+| 第78阶段风险治理候选 | `0` | `0.0000` | `0` | `0` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_daily_equity.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_chart.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_professional_dashboard.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_formal_trade_review.html`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_backtest.py`
+- 已完成多周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_equity_confirm_backtest.py`
+
+### 我的判断
+
+- 该候选不能升级。原因不是表现差，而是相对第78阶段完全没有产生交易层面的增量：期末权益、Sharpe、滑点、交易次数均一致。
+- 这说明`1%`组合权益确认在当前路径上过于严格或触发位置不关键，不能修复第78阶段在`trend_rich_2024_2025`压制趋势再启动的问题。
+- 这个负结果有价值：它排除了一个看似合理但实际惰性的确认条件，避免继续围绕权益阈值做过拟合式参数扫描。
+- 当前版本关系不变：
+  - 第75阶段`ai_top8_plus_fu_satellite_post_signal`仍是收益上限基准
+  - 第78阶段`ai_top8_plus_fu_satellite_post_signal_profit_shield_streak`仍是风险治理第一候选
+  - 第81阶段`profit_shield_equity_confirm`仅保留为已验证但不升级的候选
+- 下一步不应扫描`0.02/0.05/0.10`这类阈值；更应回到本质：风险恢复需要来自核心池趋势确认、全组合风险贡献下降，或入场后前瞻表现结构，而不是单一权益高水位距离。
+
+## 2026-04-25 00:26 第82阶段：风险恢复的核心池确认归因反证
+
+### 改动内容
+
+- 本阶段按第81阶段判断继续推进，但不修改交易规则、不新增回测。
+- 新增只读归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation.py`
+- 脚本读取第80阶段的风险恢复分歧事件，并对每笔事件补充事件发生前的核心池状态：
+  - 核心池近`5/10/20`日净盈亏
+  - 核心池近`20`日盈利广度
+  - 非事件核心池近`20`日净盈亏
+  - 事件品种近`20`日净盈亏
+  - 组合近`5/10/20`日净盈亏和回撤变化
+- 事件后的`20`日产品级净盈亏只作为标签和评分，不作为特征，避免未来函数。
+
+### 新增的参数
+
+- 无策略参数。
+- 分析脚本使用的诊断窗口：
+  - `LOOKBACKS=(5, 10, 20)`
+- 诊断候选条件：
+  - `core_prev10_pnl_positive`
+  - `core_prev20_pnl_positive`
+  - `core_prev20_breadth_half`
+  - `core_prev20_pnl_and_breadth`
+  - `core_prev20_and_portfolio_prev10`
+  - `core_prev20_non_event_positive`
+
+### 修改的参数
+
+- 无
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+- 无。本阶段没有运行新回测，只做第75阶段与第78阶段既有正式产物的事件级归因分析。
+
+### 新增的分析结果
+
+总体：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 风险恢复分歧事件数 | `21` |
+| 涉及产品数 | `11` |
+| 事后看应该恢复风险的事件数 | `8` |
+| 事后看继续屏蔽更好的事件数 | `13` |
+| 始终恢复的20日产品级前瞻净损益 | `279,460` |
+| 始终屏蔽的20日产品级前瞻净损益 | `235,815` |
+| 屏蔽相对始终恢复差额 | `-43,645` |
+
+核心池确认候选评分：
+
+| 候选条件 | 恢复事件数 | 命中应该恢复事件数 | 错误恢复事件数 | 候选20日前瞻净损益 | 相对第78阶段差额 | 恢复命中率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `core_prev20_pnl_positive` | `3` | `2` | `1` | `195,840` | `-39,975` | `66.67%` |
+| `core_prev20_and_portfolio_prev10` | `3` | `2` | `1` | `195,840` | `-39,975` | `66.67%` |
+| `core_prev20_breadth_half` | `2` | `1` | `1` | `194,040` | `-41,775` | `50.00%` |
+| `core_prev20_pnl_and_breadth` | `2` | `1` | `1` | `194,040` | `-41,775` | `50.00%` |
+| `core_prev10_pnl_positive` | `4` | `2` | `2` | `191,340` | `-44,475` | `50.00%` |
+| `core_prev20_non_event_positive` | `4` | `2` | `2` | `139,140` | `-96,675` | `50.00%` |
+
+分阶段结构：
+
+| 周期 | 标签 | 事件数 | 第75阶段20日前瞻净损益 | 第78阶段20日前瞻净损益 | 第78相对差额 | 第78阶段事件前核心池20日均值 | 第78阶段事件前核心池盈利广度 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `early_ai_2022_2023` | 应该恢复 | `1` | `313,600` | `311,800` | `-1,800` | `142,200` | `20.00%` |
+| `trend_rich_2024_2025` | 应该恢复 | `5` | `422,970` | `28,185` | `-394,785` | `-13,818` | `10.00%` |
+| `trend_rich_2024_2025` | 继续屏蔽更好 | `11` | `-267,720` | `-27,800` | `239,920` | `-20,411` | `7.58%` |
+| `latest_2026` | 应该恢复 | `2` | `69,600` | `3,700` | `-65,900` | `-66,385` | `0.00%` |
+| `latest_2026` | 继续屏蔽更好 | `2` | `-258,990` | `-80,070` | `178,920` | `-25,670` | `12.50%` |
+
+关键观察：
+
+- 所有“核心池确认”候选都不如第78阶段继续屏蔽，最优候选相对第78阶段仍少`39,975`。
+- 2024-2025真正应该恢复的几笔大机会，事件发生前核心池20日净盈亏通常仍为负，说明“等核心池盈利转正再恢复”在趋势启动早期太慢。
+- 2026的保护事件也不能被核心池盈利确认清晰区分：`latest_2026`中应该恢复与应该屏蔽的事件，核心池20日状态都偏弱。
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation_event_table_risk_recovery_core_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation_candidate_summary_risk_recovery_core_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation_period_summary_risk_recovery_core_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation_summary_risk_recovery_core_confirmation_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation_report_risk_recovery_core_confirmation_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_core_confirmation.py`
+
+### 我的判断
+
+- “核心池近期盈利确认”这个方向暂时不能进入策略层。它符合直觉，但事件级证据不支持：确认信号出现太晚，错过了趋势早期的有效恢复。
+- 第82阶段进一步说明，风险恢复问题不是简单的“核心池盈利了就恢复”，而是更接近“趋势信号出现时，当前风险压制是否正在阻止非拥挤、非高相关、低持仓的早期突破”。
+- 下一步不应把核心池盈利确认写进策略，也不应继续扫盈利窗口；更值得研究的是“入场结构确认”：
+  - 低相关/低拥挤
+  - 当前无同向持仓挤压
+  - 信号属于早期突破而不是亏损后的追随
+  - 产品级趋势结构足够干净
+- 当前版本关系不变：
+  - 第75阶段仍是收益上限基准
+  - 第78阶段仍是风险治理第一候选
+  - 第81阶段权益确认候选拒绝升级
+  - 第82阶段核心池确认只作为反证归因留档，不进入策略
+
+## 2026-04-25 00:34 第83阶段：风险恢复的入场结构确认归因
+
+### 改动内容
+
+- 本阶段继续第82阶段反证后的方向，仍然不修改策略、不新增回测。
+- 新增只读归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation.py`
+- 脚本读取第82阶段事件表，比较以下结构候选：
+  - 当前组合是否无持仓
+  - 是否无同向相关拥挤
+  - 是否`long_case1a/short_case1a`早期交叉
+  - 是否排除`case2`中后段均线交叉
+  - 是否方向专属
+- 本阶段的目的：验证“入场结构确认”是否比第82阶段的“核心池历史盈利确认”更接近风险恢复问题的本质。
+
+### 新增的参数
+
+- 无策略参数。
+- 分析候选：
+  - `clean_book`
+  - `clean_book_not_case2`
+  - `early_cross_clean_book`
+  - `early_cross_clean_book_top_rank`
+  - `early_cross_clean_book_not_satellite`
+  - `long_early_cross_clean_book`
+  - `short_early_cross_clean_book`
+  - `clean_book_low_drawdown`
+
+### 修改的参数
+
+- 无
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+- 无。本阶段没有运行新回测，只做第75阶段与第78阶段风险恢复分歧事件的结构归因。
+
+### 新增的分析结果
+
+总体基准：
+
+| 基准 | 20日产品级前瞻净损益 |
+| --- | ---: |
+| 始终屏蔽，即第78阶段 | `235,815` |
+| 始终恢复，即第75阶段 | `279,460` |
+
+候选评分：
+
+| 候选条件 | 恢复事件数 | 命中应该恢复事件数 | 错误恢复事件数 | 候选20日前瞻净损益 | 相对第78阶段差额 | 相对始终恢复差额 | 命中率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `early_cross_clean_book` | `7` | `4` | `3` | `470,995` | `235,180` | `191,535` | `57.14%` |
+| `early_cross_clean_book_top_rank` | `7` | `4` | `3` | `470,995` | `235,180` | `191,535` | `57.14%` |
+| `early_cross_clean_book_not_satellite` | `7` | `4` | `3` | `470,995` | `235,180` | `191,535` | `57.14%` |
+| `clean_book_not_case2` | `9` | `5` | `4` | `459,745` | `223,930` | `180,285` | `55.56%` |
+| `long_early_cross_clean_book` | `4` | `3` | `1` | `426,635` | `190,820` | `147,175` | `75.00%` |
+| `clean_book` | `15` | `6` | `9` | `394,555` | `158,740` | `115,095` | `40.00%` |
+| `short_early_cross_clean_book` | `3` | `1` | `2` | `280,175` | `44,360` | `715` | `33.33%` |
+| `always_restore` | `21` | `8` | `13` | `279,460` | `43,645` | `0` | `38.10%` |
+| `always_shield` | `0` | `0` | `0` | `235,815` | `0` | `-43,645` | `0.00%` |
+
+最优结构候选`early_cross_clean_book`分阶段：
+
+| 周期 | 恢复事件数 | 命中应该恢复事件数 | 错误恢复事件数 | 候选20日前瞻净损益 | 相对第78阶段差额 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `early_ai_2022_2023` | `0` | `0` | `0` | `311,800` | `0` |
+| `trend_rich_2024_2025` | `5` | `3` | `2` | `317,085` | `316,700` |
+| `latest_2026` | `2` | `1` | `1` | `-157,890` | `-81,520` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation_event_table_risk_recovery_entry_structure_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation_candidate_summary_risk_recovery_entry_structure_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation_period_candidate_summary_risk_recovery_entry_structure_confirmation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation_summary_risk_recovery_entry_structure_confirmation_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation_report_risk_recovery_entry_structure_confirmation_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation.py`
+
+### 我的判断
+
+- 入场结构确认明显优于第82阶段的核心池历史盈利确认。`early_cross_clean_book`不是简单方向拟合，它同时包含多空`case1a`，并要求组合无持仓、无同向拥挤。
+- 但该归因仍有明显风险：它在`trend_rich_2024_2025`贡献很大，在`latest_2026`反而损失`81,520`，说明它可能是“趋势丰富期恢复收益”的解释，而不是完整尾部保护规则。
+- 方向专属的`long_early_cross_clean_book`命中率更高，但不能优先进入策略层，因为方向专属更容易变成多头年份拟合。
+- 可以进入策略候选回测，但只能测试非方向专属的`early_cross_clean_book`，且必须用多周期反证，不能直接升级。
+
+## 2026-04-25 00:38 第84阶段：入场结构恢复策略候选回测
+
+### 改动内容
+
+- 本阶段将第83阶段最优的非方向专属结构候选写入策略层，并运行多周期回测。
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_backtest.py`
+- 策略实现要点：
+  - 默认关闭，不影响既有版本。
+  - 不清空`loss_streak`。
+  - 只在单笔入场计算风险预算时，临时把风险乘数恢复到至少`1.0`。
+  - 条件为：`flat_entry`、信号属于`long_case1a/short_case1a`、当前组合无持仓、无同向相关拥挤。
+
+### 新增的参数
+
+- `enable_streak_entry_structure_risk_recovery`
+  - 默认值：`False`
+  - 本次候选：`True`
+- `streak_entry_structure_recovery_signals`
+  - 默认值：`long_case1a,short_case1a`
+  - 本次候选：`long_case1a,short_case1a`
+- `streak_entry_structure_recovery_min_multiplier`
+  - 默认值：`1.0`
+  - 本次候选：`1.0`
+- `streak_entry_structure_recovery_require_flat_portfolio`
+  - 默认值：`True`
+  - 本次候选：`True`
+- `streak_entry_structure_recovery_max_same_direction_corr`
+  - 默认值：`0.30`
+  - 本次候选：`0.30`
+
+新增诊断字段：
+
+- `streak_entry_structure_risk_recovery_enabled`
+- `streak_entry_structure_risk_recovery_applied`
+- `streak_entry_structure_risk_recovery_reason`
+- `streak_entry_structure_risk_recovery_base_multiplier`
+- `streak_entry_structure_risk_recovery_effective_multiplier`
+
+### 修改的参数
+
+- 延续第78阶段风险治理候选：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 在第78阶段基础上新增：
+  - `enable_streak_entry_structure_risk_recovery=True`
+  - `streak_entry_structure_recovery_signals=long_case1a,short_case1a`
+  - `streak_entry_structure_recovery_min_multiplier=1.0`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,585,520` | `2192.7600%` | `-39.2924%` | `1.1193` | `289,290` | `771` |
+| `pre_ai_2020_2021` | `1,045,295` | `422.6475%` | `-39.2924%` | `1.3391` | `56,570` | `304` |
+| `post_signal_2022_2026` | `1,896,460` | `848.2300%` | `-45.4471%` | `0.9966` | `108,860` | `381` |
+| `early_ai_2022_2023` | `250,040` | `25.0200%` | `-45.4471%` | `0.3446` | `15,070` | `145` |
+| `trend_rich_2024_2025` | `1,696,160` | `748.0800%` | `-36.0518%` | `1.6452` | `75,515` | `199` |
+| `latest_2026` | `203,985` | `1.9925%` | `-38.0446%` | `-0.0081` | `6,270` | `33` |
+
+全周期补充指标：
+
+- 期末权益：`4,585,520`
+- 总收益：`2192.7600%`
+- 最大回撤：`-39.2924%`
+- Sharpe：`1.1193`
+- 总滑点：`289,290`
+- 总交易次数：`771`
+- 总净盈亏：`4,385,520`
+- 盈利天数：`589`
+- 亏损天数：`615`
+
+对比结果：
+
+| 对比对象 | 期末权益差额 | Sharpe差额 | 最大回撤差额 | 总滑点差额 | 总交易次数差额 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 第75阶段收益基准 | `-58,845` | `-0.1733` | `-2.3017` | `-670` | `-20` |
+| 第78阶段风险治理候选 | `-14,570` | `-0.1726` | `-2.3017` | `29,180` | `-8` |
+
+入场结构恢复触发统计：
+
+| 周期 | 触发事件数 | 触发手数 |
+| --- | ---: | ---: |
+| `pre_ai_2020_2021` | `5` | `148` |
+| `early_ai_2022_2023` | `10` | `511` |
+| `trend_rich_2024_2025` | `4` | `372` |
+| `latest_2026` | `2` | `48` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_daily_equity.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_chart.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_professional_dashboard.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_formal_trade_review.html`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_risk_recovery_entry_structure_confirmation.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_backtest.py`
+- 已完成多周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_recovery_backtest.py`
+
+### 我的判断
+
+- 第84阶段不能升级。它验证了第83阶段归因的危险：事件级结构信号能解释部分分歧，但写入策略后会在更宽的样本里放大错误交易。
+- 优点很明确：`trend_rich_2024_2025`从第78阶段的`964,180`提高到`1,696,160`，说明入场结构恢复确实能抓回趋势期机会成本；`latest_2026`期末权益也从第78阶段的`188,645`提高到`203,985`。
+- 但缺点更关键：全周期期末权益低于第75和第78阶段，Sharpe从第78阶段`1.2919`降到`1.1193`，最大回撤从`-36.9907%`恶化到`-39.2924%`；`early_ai_2022_2023`尤其差，期末权益只有`250,040`。
+- 本质判断：`early_cross_clean_book`是一个有效的趋势期机会恢复信号，但不是独立的风险恢复规则。它需要再叠加“不要在弱品种/弱年份/弱结构里放大”的约束，否则会把早期启动和早期假突破一起放大。
+- 当前版本关系不变：
+  - 第75阶段仍是收益上限基准
+  - 第78阶段仍是风险治理第一候选
+  - 第83阶段结构归因保留为有效线索
+  - 第84阶段策略候选拒绝升级
+- 下一步不应继续调`early_cross_clean_book`阈值；更有价值的是对第84阶段触发事件做失败归因，区分“趋势期真启动”和“早期假突破”。
+
+## 2026-04-25 01:02 第85阶段：第84触发事件失败归因
+
+### 改动内容
+
+- 本阶段不修改交易策略、不新增回测，只读取第84、第78、第75阶段正式产物，对第84阶段实际触发的入场结构恢复事件做失败归因。
+- 新增分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution.py`
+- 分析方法：
+  - 只选取第84阶段中`streak_entry_structure_risk_recovery_applied=1`且实际开仓的事件。
+  - 对同一事件匹配第78阶段和第75阶段的开仓手数、风险乘数。
+  - 计算事件后`5/10/20/40/60/120`个交易日产品级和组合级净损益。
+  - 评分标签使用第84阶段相对第78阶段的20日产品级净损益差额。
+  - 候选条件只使用入场当下已有字段，避免未来函数。
+
+### 新增的参数
+
+- 无
+
+### 修改的参数
+
+- 无
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+- 无。本阶段只做归因分析，没有运行新回测。
+
+### 新增的分析结果
+
+总体触发样本：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 触发事件数 | `21` |
+| 涉及产品数 | `13` |
+| 第84优于第78事件数 | `10` |
+| 第78优于第84事件数 | `11` |
+| 第84 20日产品级净损益 | `595,360` |
+| 第78 20日产品级净损益 | `-7,530` |
+| 第84相对第78差额 | `602,890` |
+
+多窗口稳定性：
+
+| 窗口 | 产品级差额 | 组合级差额 | 第84更优事件数 | 第78更优事件数 |
+| --- | ---: | ---: | ---: | ---: |
+| `5`日 | `350,990` | `323,665` | `11` | `10` |
+| `10`日 | `278,710` | `274,600` | `9` | `12` |
+| `20`日 | `602,890` | `360,850` | `10` | `11` |
+| `40`日 | `746,430` | `584,630` | `11` | `10` |
+| `60`日 | `748,115` | `844,875` | `11` | `10` |
+| `120`日 | `744,180` | `244,900` | `11` | `10` |
+
+分周期归因：
+
+| 周期 | 事件数 | 第84优于第78 | 第78优于第84 | 20日产品级差额 |
+| --- | ---: | ---: | ---: | ---: |
+| `pre_ai_2020_2021` | `5` | `1` | `4` | `-121,050` |
+| `early_ai_2022_2023` | `10` | `5` | `5` | `365,220` |
+| `trend_rich_2024_2025` | `4` | `3` | `1` | `393,140` |
+| `latest_2026` | `2` | `1` | `1` | `-34,420` |
+
+候选过滤条件评分：
+
+| 候选条件 | 恢复事件数 | 第84更优事件数 | 第78更优事件数 | 相对第78差额 | 命中率 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `rsi_continuation` | `17` | `9` | `8` | `705,340` | `52.94%` |
+| `all_triggers` | `21` | `10` | `11` | `602,890` | `47.62%` |
+| `no_breakout` | `12` | `7` | `5` | `476,910` | `58.33%` |
+| `direction_ret20_aligned` | `5` | `3` | `2` | `350,000` | `60.00%` |
+| `breakout_only` | `9` | `3` | `6` | `125,980` | `33.33%` |
+| `ai_rank_top5` | `12` | `3` | `9` | `-230,930` | `25.00%` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_event_table_entry_structure_recovery_trigger_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_candidate_summary_entry_structure_recovery_trigger_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_period_summary_entry_structure_recovery_trigger_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_feature_summary_entry_structure_recovery_trigger_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_horizon_summary_entry_structure_recovery_trigger_attribution_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_summary_entry_structure_recovery_trigger_attribution_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution_report_entry_structure_recovery_trigger_attribution_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution.py`
+
+### 我的判断
+
+- 第85阶段证明第84阶段不是“完全没价值”。实际触发事件在多个前瞻窗口里相对第78阶段为正，说明恢复风险本身确实能抓回一部分趋势收益。
+- 但它仍不能推翻第84阶段完整回测失败的事实。局部事件窗口为正，不等于完整组合路径更稳，因为回测最终还受仓位重叠、后续再入场、权益路径和尾部启动影响。
+- `rsi_continuation`是目前最有解释力的非方向专属线索：多头RSI较强、空头RSI较弱时，早期交叉更像趋势延续，而不是弱动量假启动。
+- `ai_rank_top5`在本归因中反而为负，说明“AI排名越靠前越适合恢复风险”这个直觉在当前触发样本上不成立，不能用排名阈值继续加补丁。
+- 下一步可以只做一个低自由度策略验证：在第84结构条件上叠加RSI方向延续确认。不能扫描阈值，先用经典且可解释的`60/40`。
+
+## 2026-04-25 01:02 第86阶段：入场结构RSI确认恢复策略候选回测
+
+### 改动内容
+
+- 本阶段把第85阶段的`rsi_continuation`线索写入策略层，并运行多周期回测。
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_backtest.py`
+- 策略实现要点：
+  - 默认关闭，不影响既有版本。
+  - 延续第84阶段：只在`flat_entry`、`long_case1a/short_case1a`、组合无持仓、无同向相关拥挤时考虑临时恢复风险。
+  - 新增RSI方向延续确认：多头要求`RSI >= 60`，空头要求`RSI <= 40`。
+  - 仍然不清空`loss_streak`，只影响单笔入场风险预算。
+
+### 新增的参数
+
+- `streak_entry_structure_recovery_require_rsi_confirmation`
+  - 默认值：`False`
+  - 本次候选：`True`
+- `streak_entry_structure_recovery_long_min_rsi`
+  - 默认值：`60.0`
+  - 本次候选：`60.0`
+- `streak_entry_structure_recovery_short_max_rsi`
+  - 默认值：`40.0`
+  - 本次候选：`40.0`
+
+新增诊断字段：
+
+- `streak_entry_structure_risk_recovery_rsi_confirmation_enabled`
+- `streak_entry_structure_risk_recovery_rsi_value`
+- `streak_entry_structure_risk_recovery_long_min_rsi`
+- `streak_entry_structure_risk_recovery_short_max_rsi`
+
+### 修改的参数
+
+- 延续第78阶段风险治理候选：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 延续第84阶段入场结构恢复：
+  - `enable_streak_entry_structure_risk_recovery=True`
+  - `streak_entry_structure_recovery_signals=long_case1a,short_case1a`
+  - `streak_entry_structure_recovery_min_multiplier=1.0`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+- 本阶段新增启用：
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+
+### 删除的参数
+
+- 无
+
+### 新增的回测结果
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,818,660` | `2309.3300%` | `-36.9688%` | `1.2293` | `285,400` | `773` |
+| `pre_ai_2020_2021` | `1,233,895` | `516.9475%` | `-36.9688%` | `1.5307` | `57,540` | `306` |
+| `post_signal_2022_2026` | `1,744,770` | `772.3850%` | `-42.6406%` | `0.9396` | `103,550` | `381` |
+| `early_ai_2022_2023` | `228,080` | `14.0400%` | `-42.6406%` | `0.2542` | `13,585` | `145` |
+| `trend_rich_2024_2025` | `1,696,160` | `748.0800%` | `-36.0518%` | `1.6452` | `75,515` | `199` |
+| `latest_2026` | `107,275` | `-46.3625%` | `-63.1338%` | `-2.0342` | `4,750` | `22` |
+
+全周期补充指标：
+
+- 期末权益：`4,818,660`
+- 总收益：`2309.3300%`
+- 最大回撤：`-36.9688%`
+- Sharpe：`1.2293`
+- 总滑点：`285,400`
+- 总交易次数：`773`
+- 总净盈亏：`4,618,660`
+- 盈利天数：`587`
+- 亏损天数：`617`
+
+对比结果：
+
+| 对比对象 | 期末权益差额 | 总收益差额 | 最大回撤差额 | Sharpe差额 | 总滑点差额 | 总交易次数差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 第75阶段收益基准 | `174,295` | `87.1475` | `0.0219` | `-0.0633` | `-4,560` | `-18` |
+| 第78阶段风险治理候选 | `218,570` | `109.2850` | `0.0219` | `-0.0626` | `25,290` | `-6` |
+| 第84阶段入场结构恢复 | `233,140` | `116.5700` | `2.3236` | `0.1100` | `-3,890` | `2` |
+
+### 修改的回测结果
+
+- 无
+
+### 删除的回测结果
+
+- 无
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_report.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_daily_equity.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_chart.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_professional_dashboard.html`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_formal_trade_review.html`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_backtest.py examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_entry_structure_recovery_trigger_attribution.py`
+- 已完成多周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_backtest.py`
+
+### 我的判断
+
+- 第86阶段是一个真实突破，但不能直接升级为正式版本。它在全周期上同时超过第75和第78阶段，且最大回撤略好于第78，说明RSI方向确认确实把第84阶段的一部分假启动过滤掉了。
+- 但它的`latest_2026`独立启动表现严重失真：期末权益只有`107,275`，最大回撤`-63.1338%`，Sharpe`-2.0342`。这说明该规则在完整历史权益路径下可赚钱，但对不利起点非常脆弱。
+- 当前定位应调整为“收益增强候选”，不是“风险治理第一候选”。第78阶段仍保留为风险治理第一候选，第86阶段进入下一轮鲁棒性反证。
+- 后续不应继续扫描RSI阈值。更有价值的是做起始年份、滑点压力、2026尾部归因和触发事件止损/暂停机制，确认它是否能在不牺牲尾部保护的情况下保留全周期收益提升。
+
+## 2026-04-25 01:12 第87阶段：第86阶段起始年份稳健性反证
+
+### 改动内容
+
+- 本阶段不修改策略参数，不改变第86阶段规则，只新增起始年份鲁棒性回测脚本。
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_robustness.py`
+- 设计目的：
+  - 对第86阶段同一套参数从`2020/2021/2022/2023/2024/2025/2026`七个起始年份分别启动回测。
+  - 第75阶段和第78阶段起始年份结果复用既有产物，不重复回测。
+  - 目标是验证第86阶段全周期创新高是否依赖单一历史起点。
+
+### 新增的参数
+
+- 无。
+
+### 修改的参数
+
+- 无。
+- 本阶段复用第86阶段参数：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+  - `enable_streak_entry_structure_risk_recovery=True`
+  - `streak_entry_structure_recovery_signals=long_case1a,short_case1a`
+  - `streak_entry_structure_recovery_min_multiplier=1.0`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+| 起始窗口 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `since_2020` | `4,818,660` | `2309.3300%` | `-36.9688%` | `1.2293` | `285,400` | `773` |
+| `since_2021` | `4,471,120` | `2135.5600%` | `-42.3203%` | `1.1558` | `264,040` | `624` |
+| `since_2022` | `3,077,440` | `1438.7200%` | `-46.1121%` | `1.0793` | `184,830` | `453` |
+| `since_2023` | `2,624,510` | `1212.2550%` | `-34.9723%` | `1.4917` | `141,560` | `345` |
+| `since_2024` | `1,647,145` | `723.5725%` | `-36.0518%` | `1.4830` | `86,875` | `234` |
+| `since_2025` | `974,635` | `387.3175%` | `-30.0946%` | `1.6592` | `55,130` | `131` |
+| `since_2026` | `107,275` | `-46.3625%` | `-63.1338%` | `-2.0342` | `4,750` | `22` |
+
+对比第78阶段：
+
+| 起始窗口 | 期末权益差额 | 总收益差额 | 最大回撤差额 | Sharpe差额 | 交易次数差额 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `since_2020` | `218,570` | `109.2850` | `0.0219` | `-0.0626` | `-6` |
+| `since_2021` | `345,140` | `172.5700` | `0.0000` | `-0.0371` | `18` |
+| `since_2022` | `60,595` | `30.2975` | `-9.3435` | `-0.1654` | `-3` |
+| `since_2023` | `706,325` | `353.1625` | `4.4674` | `0.1675` | `20` |
+| `since_2024` | `653,990` | `326.9950` | `-4.9352` | `0.1906` | `35` |
+| `since_2025` | `91,980` | `45.9900` | `-1.2133` | `0.0018` | `0` |
+| `since_2026` | `-81,370` | `-40.6850` | `-30.7279` | `-1.6893` | `-2` |
+
+汇总：
+
+- 起始年份窗口数：`7`
+- 第86阶段相对第78阶段期末权益胜出窗口：`6`
+- 第86阶段相对第78阶段Sharpe胜出窗口：`3`
+- 第86阶段相对第78阶段平均期末权益差额：`285,033`
+- 第86阶段相对第78阶段平均Sharpe差额：`-0.2278`
+- 第86阶段相对第78阶段最差期末权益差额：`-81,370`
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_robustness.py`
+- 已完成起始年份鲁棒性回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_start_year_robustness.py`
+
+### 我的判断
+
+- 第87阶段确认第86不是单一起点幻觉：从`since_2020`到`since_2025`，第86阶段有`6/6`个窗口期末权益高于第78阶段。
+- 但它仍然不能升级为正式主版本：Sharpe只赢`3/7`个窗口，且`since_2026`相对第78阶段期末权益少`81,370`、最大回撤恶化`30.7279`个百分点、Sharpe低`1.6893`。
+- 这说明第86的本质是“趋势顺风期收益释放增强”，不是“全环境风险治理增强”。它能提高上行捕获，但会在冷启动或尾部不利环境里放大假突破。
+- 当前版本排序不变：第78阶段仍是风险治理第一候选；第86阶段保留为收益增强候选；第75阶段仍是收益上限参照。
+- 下一步不应该扫描RSI阈值。更有价值的是做2026尾部归因，找出第86在冷启动窗口中具体是哪几笔触发造成破坏，再设计低自由度的暂停或冷启动保护。
+
+## 2026-04-25 01:19 第88阶段：第86阶段2026冷启动尾部归因
+
+### 改动内容
+
+- 本阶段新增2026冷启动尾部归因脚本，并重跑第78阶段、第86阶段的`since_2026`冷启动版本，保存交易、持仓、入场候选和风险诊断明细。
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution.py`
+- 设计目的：
+  - 不继续调参，不扫描RSI阈值。
+  - 解释第86阶段相对第78阶段在2026冷启动窗口的损害来源。
+  - 从组合、产品、日度、恢复风险触发事件四层做归因。
+
+### 新增的参数
+
+- 无。
+
+### 修改的参数
+
+- 无。
+- 第78阶段冷启动复用参数：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 第86阶段冷启动复用参数：
+  - `enable_streak_entry_structure_risk_recovery=True`
+  - `streak_entry_structure_recovery_signals=long_case1a,short_case1a`
+  - `streak_entry_structure_recovery_min_multiplier=1.0`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 第78阶段`since_2026`冷启动 | `188,645` | `-5.6775%` | `-32.4059%` | `-0.3449` | `2,360` | `24` |
+| 第86阶段`since_2026`冷启动 | `107,275` | `-46.3625%` | `-63.1338%` | `-2.0342` | `4,750` | `22` |
+
+第86相对第78差额：
+
+- 期末权益差额：`-81,370`
+- 总收益差额：`-40.6850`个百分点
+- 最大回撤差额：`-30.7279`个百分点
+- Sharpe差额：`-1.6893`
+- 总滑点差额：`2,390`
+- 总交易次数差额：`-2`
+
+产品归因最差项：
+
+| 产品 | 第86净盈亏 | 第78净盈亏 | 差额 | 第86仓位变动 | 第78仓位变动 | 仓位变动差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `SH.CZCE` | `-88,560` | `-6,540` | `-82,020` | `80` | `6` | `74` |
+| `AP.CZCE` | `-46,400` | `0` | `-46,400` | `16` | `0` | `16` |
+| `OI.CZCE` | `0` | `2,180` | `-2,180` | `0` | `2` | `-2` |
+| `SA.CZCE` | `-2,220` | `-740` | `-1,480` | `6` | `2` | `4` |
+| `rb.SHFE` | `-2,940` | `-2,730` | `-210` | `28` | `26` | `2` |
+
+最差日归因：
+
+| 日期 | 第86净盈亏 | 第78净盈亏 | 差额 | 第86权益 | 第78权益 | 权益差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `2026-03-23` | `-46,240` | `740` | `-46,980` | `107,275` | `234,485` | `-127,210` |
+| `2026-02-09` | `-43,320` | `-2,280` | `-41,040` | `200,135` | `234,945` | `-34,810` |
+| `2026-03-03` | `-42,840` | `-4,080` | `-38,760` | `156,035` | `230,745` | `-74,710` |
+
+第86恢复风险触发事件：
+
+| 日期 | 产品 | 方向 | 信号 | 第86手数 | 第78手数 | 手数差 | 第86风险乘数 | 第78风险乘数 | 20日前瞻产品差额 |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `2026-02-06` | `SH.CZCE` | `short` | `short_case1a` | `19` | `1` | `18` | `1.0` | `0.1` | `-82,020` |
+| `2026-03-02` | `SH.CZCE` | `short` | `short_case1a` | `21` | `2` | `19` | `1.0` | `0.1` | `-39,900` |
+| `2026-03-20` | `AP.CZCE` | `long` | `long_case1a` | `8` | `0` | `8` | `1.0` | `0.0` | `-46,400` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+归因产物：
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_product_attribution.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_daily_attribution.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_entry_event_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_recovery_events.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution_report.md`
+
+冷启动明细产物：
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_since_2026_cold_start_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_since_2026_cold_start_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_since_2026_cold_start_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_since_2026_cold_start_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_streak_since_2026_cold_start_entry_risk_diagnostics_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_since_2026_cold_start_daily.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_since_2026_cold_start_trades_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_since_2026_cold_start_position_changes_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_since_2026_cold_start_entry_candidate_snapshots_2020_2026_04.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_since_2026_cold_start_entry_risk_diagnostics_2020_2026_04.csv`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution.py`
+- 已完成2026冷启动归因回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_tail_2026_cold_start_attribution.py`
+
+### 我的判断
+
+- 第86阶段2026冷启动崩坏不是全市场普遍恶化，而是高度集中在少数恢复风险事件上。
+- 主要损害来自`SH.CZCE`两笔短空恢复：第86把第78原本`0.1`风险乘数下的`1/2`手放大到`19/21`手，两个事件合计贡献大约`-121,920`的产品级前瞻差额。
+- `AP.CZCE`的`2026-03-20`多头恢复是第二个尾部点，第78没有开仓，第86开`8`手，20日前瞻差额`-46,400`。
+- 这说明第86的问题不是RSI方向确认本身完全无效，而是“亏损连击后、组合已进入回撤时，把风险一次性恢复到1.0”过于激进。
+- 下一步不应删除第86，也不应扫描RSI阈值。更合理的方向是设计低自由度冷启动/回撤保护：例如恢复风险只允许在组合回撤很浅时生效，或把恢复乘数从`1.0`改成渐进式，而不是一次性满恢复。
+
+## 2026-04-25 01:40 第89阶段：恢复风险组合回撤硬保护反证
+
+### 改动内容
+
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_backtest.py`
+- 设计目的：
+  - 不扫描RSI阈值。
+  - 只测试一个低自由度风控假设：组合回撤超过阈值后，不允许入场结构RSI恢复风险。
+  - 目标是修复第86阶段`latest_2026`独立启动崩坏，同时尽量保留全周期收益增强。
+
+### 新增的参数
+
+- `streak_entry_structure_recovery_max_portfolio_drawdown_pct`
+  - 默认值：`-1.0`
+  - 含义：小于`0`时关闭；大于等于`0`时，组合当前回撤超过该比例则禁止恢复风险。
+- 新增诊断字段：
+  - `streak_entry_structure_risk_recovery_portfolio_drawdown_pct`
+  - `streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct`
+
+### 修改的参数
+
+- 第89阶段候选设置：
+  - `streak_entry_structure_recovery_max_portfolio_drawdown_pct=0.05`
+- 其余核心参数沿用第86阶段：
+  - `streak_entry_structure_recovery_min_multiplier=1.0`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,495,050` | `2147.5250%` | `-36.9907%` | `1.2819` | `266,370` | `779` |
+| `pre_ai_2020_2021` | `1,384,905` | `592.4525%` | `-36.9907%` | `1.6313` | `57,190` | `306` |
+| `post_signal_2022_2026` | `2,786,165` | `1293.0825%` | `-37.5422%` | `1.2874` | `169,690` | `431` |
+| `early_ai_2022_2023` | `721,720` | `260.8600%` | `-37.5422%` | `1.3070` | `36,710` | `185` |
+| `trend_rich_2024_2025` | `964,180` | `382.0900%` | `-31.1166%` | `1.4577` | `42,120` | `164` |
+| `latest_2026` | `188,645` | `-5.6775%` | `-32.4059%` | `-0.3449` | `2,360` | `24` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_backtest.py`
+- 已完成多周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_dd_guard_backtest.py`
+
+### 我的判断
+
+- 第89阶段把`latest_2026`修回第78阶段水平，但代价是全周期期末权益降到`4,495,050`，低于第78阶段`4,600,090`，也低于第75阶段`4,644,365`。
+- 这说明“组合回撤超过5%就完全禁止恢复”过于粗糙，它只是把第86收益增强机制大面积关掉，并没有提炼出更本质的有效条件。
+- 第89阶段不升级，定位为反证：硬回撤门槛能防尾部，但收益损失过大。
+
+## 2026-04-25 01:40 第90阶段：入场结构RSI恢复风险半恢复候选
+
+### 改动内容
+
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_backtest.py`
+- 策略代码复用第89阶段新增的诊断能力，本阶段不新增策略逻辑。
+- 设计目的：
+  - 不继续加过滤条件。
+  - 把第86阶段一次性恢复到`1.0`改为恢复到`0.5`，测试“恢复幅度”是不是尾部风险的主要来源。
+
+### 新增的参数
+
+- 无。
+
+### 修改的参数
+
+- 第90阶段候选设置：
+  - `streak_entry_structure_recovery_min_multiplier=0.5`
+- 对比第86阶段：
+  - 第86为`streak_entry_structure_recovery_min_multiplier=1.0`
+- 其余核心参数沿用第86阶段：
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_portfolio_drawdown_pct=-1.0`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+| 周期 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,732,125` | `2266.0625%` | `-37.0038%` | `1.2885` | `275,290` | `781` |
+| `pre_ai_2020_2021` | `1,376,130` | `588.0650%` | `-37.0038%` | `1.6250` | `58,000` | `308` |
+| `post_signal_2022_2026` | `2,602,655` | `1201.3275%` | `-41.4342%` | `1.1929` | `154,100` | `428` |
+| `early_ai_2022_2023` | `520,520` | `160.2600%` | `-41.4342%` | `1.0032` | `26,305` | `184` |
+| `trend_rich_2024_2025` | `1,388,965` | `594.4825%` | `-33.4188%` | `1.5483` | `67,825` | `199` |
+| `latest_2026` | `170,775` | `-14.6125%` | `-39.3824%` | `-0.8342` | `3,300` | `22` |
+
+关键对比：
+
+- 相对第78阶段全周期：期末权益`+132,035`，最大回撤恶化约`0.0131`个百分点，Sharpe低`0.0034`，总滑点多`15,180`，交易多`2`笔。
+- 相对第86阶段`latest_2026`：期末权益增加`63,500`，最大回撤改善约`23.75`个百分点，Sharpe改善约`1.20`。
+- 相对第78阶段`latest_2026`：期末权益少`17,870`，最大回撤恶化约`6.98`个百分点，Sharpe低`0.4894`。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_cycle_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_backtest.py`
+- 已完成多周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_backtest.py`
+
+### 我的判断
+
+- 第90阶段比第89阶段更接近本质：不是简单禁止恢复，而是承认信号有价值，但亏损连击后的恢复风险只能半开。
+- 它全周期超过第75和第78，且大幅缓解第86的2026尾部，是当前最有价值的收益增强候选。
+- 但它仍不能直接替代第78阶段，因为`latest_2026`相对第78仍亏更多、回撤更深。
+- 下一步必须做起始年份鲁棒性反证和滑点压力，不能因为全周期权益更高就升级。
+
+## 2026-04-25 01:40 第91阶段：第90阶段半恢复起始年份鲁棒性反证
+
+### 改动内容
+
+- 新增起始年份鲁棒性脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_robustness.py`
+- 本阶段不改策略、不改参数，只对第90阶段同一套规则跑`2020/2021/2022/2023/2024/2025/2026`七个起始年份窗口。
+- 第75阶段和第78阶段对照结果复用既有起始年份稳健性产物，避免重复回测和重复污染。
+
+### 新增的参数
+
+- 无。
+
+### 修改的参数
+
+- 无。
+- 复用第90阶段参数：
+  - `streak_entry_structure_recovery_min_multiplier=0.5`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_entry_structure_recovery_max_portfolio_drawdown_pct=-1.0`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+第90阶段起始年份结果：
+
+| 起始窗口 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `since_2020` | `4,732,125` | `2266.0625%` | `-37.0038%` | `1.2885` | `275,290` | `781` |
+| `since_2021` | `4,259,800` | `2029.9000%` | `-42.3203%` | `1.1893` | `252,590` | `632` |
+| `since_2022` | `2,925,655` | `1362.8275%` | `-43.1572%` | `1.1512` | `179,290` | `459` |
+| `since_2023` | `2,386,695` | `1093.3475%` | `-35.1069%` | `1.4437` | `131,850` | `347` |
+| `since_2024` | `1,382,070` | `591.0350%` | `-33.4188%` | `1.3986` | `78,105` | `234` |
+| `since_2025` | `904,095` | `352.0475%` | `-29.5044%` | `1.6473` | `49,880` | `131` |
+| `since_2026` | `170,775` | `-14.6125%` | `-39.3824%` | `-0.8342` | `3,300` | `22` |
+
+相对第78阶段：
+
+| 起始窗口 | 期末权益差额 | 最大回撤差额 | Sharpe差额 |
+| --- | ---: | ---: | ---: |
+| `since_2020` | `132,035` | `-0.0131`个百分点 | `-0.0034` |
+| `since_2021` | `133,820` | `0.0000`个百分点 | `-0.0036` |
+| `since_2022` | `-91,190` | `-6.3886`个百分点 | `-0.0935` |
+| `since_2023` | `468,510` | `4.3327`个百分点 | `0.1195` |
+| `since_2024` | `388,915` | `-2.3022`个百分点 | `0.1063` |
+| `since_2025` | `21,440` | `-0.6231`个百分点 | `-0.0101` |
+| `since_2026` | `-17,870` | `-6.9765`个百分点 | `-0.4894` |
+
+汇总：
+
+- 第90相对第78期末权益胜出窗口：`5/7`
+- 第90相对第78 Sharpe胜出窗口：`2/7`
+- 第90相对第78平均期末权益差额：`147,951`
+- 第90相对第78平均Sharpe差额：`-0.0534`
+- 第90相对第78最差期末权益差额：`-91,190`
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_robustness.py`
+- 已完成起始年份鲁棒性回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_start_year_robustness.py`
+
+### 我的判断
+
+- 第90阶段通过了“收益增强候选”的最低门槛：`5/7`个起点期末权益高于第78，且`since_2026`没有重现第86阶段`-46.36%`亏损和`-63.13%`回撤。
+- 第90阶段没有通过“正式替代第78”的门槛：Sharpe只赢`2/7`，`since_2022`和`since_2026`相对第78仍有明显回撤恶化。
+- 当前排序应保持：
+  - 第78阶段仍是风险治理正式候选。
+  - 第90阶段是比第86更干净的收益增强候选。
+  - 第89阶段拒绝升级。
+- 下一步按第一性原理不应继续调RSI或回撤阈值，而应做成本压力和交易摩擦反证。如果第90在更高滑点下仍保持多数起点收益优势，再考虑进入正式候选；否则保留为研究分支。
+
+## 2026-04-25 01:44 第92阶段：第90阶段半恢复滑点压力反证
+
+### 改动内容
+
+- 新增滑点压力脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress.py`
+- 设计目的：
+  - 不重跑策略，不改变信号、仓位路径和出入场。
+  - 基于已保存日度`net_pnl/slippage/trade_count`，对第75、第78、第90做`1/1.5/2/3/5`倍滑点重估。
+  - 验证第90阶段的收益增强是否只是来自更多交易和更高摩擦暴露。
+
+### 新增的参数
+
+- 压力测试参数：
+  - `SLIPPAGE_MULTIPLIERS=(1.0, 1.5, 2.0, 3.0, 5.0)`
+
+### 修改的参数
+
+- 无。
+- 被测策略参数仍为第90阶段：
+  - `streak_entry_structure_recovery_min_multiplier=0.5`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+第90阶段滑点压力结果：
+
+| 滑点倍数 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `4,732,125` | `2266.0625%` | `-37.0038%` | `1.4545` | `275,290` | `781` |
+| `1.5` | `4,594,480` | `2197.2400%` | `-37.7336%` | `1.4196` | `412,935` | `781` |
+| `2.0` | `4,456,835` | `2128.4175%` | `-38.4797%` | `1.3850` | `550,580` | `781` |
+| `3.0` | `4,181,545` | `1990.7725%` | `-40.0232%` | `1.3169` | `825,870` | `781` |
+| `5.0` | `3,630,965` | `1715.4825%` | `-44.1885%` | `1.1851` | `1,376,450` | `781` |
+
+第90相对第78：
+
+| 滑点倍数 | 期末权益差额 | 总收益差额 | 最大回撤差额 | Sharpe差额 | 总滑点差额 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `132,035` | `66.0175`个百分点 | `-0.0131`个百分点 | `-0.0006` | `15,180` |
+| `1.5` | `124,445` | `62.2225`个百分点 | `-0.0137`个百分点 | `-0.0010` | `22,770` |
+| `2.0` | `116,855` | `58.4275`个百分点 | `-0.0143`个百分点 | `-0.0014` | `30,360` |
+| `3.0` | `101,675` | `50.8375`个百分点 | `0.2259`个百分点 | `-0.0022` | `45,540` |
+| `5.0` | `71,315` | `35.6575`个百分点 | `0.3124`个百分点 | `-0.0036` | `75,900` |
+
+第90相对第75：
+
+| 滑点倍数 | 期末权益差额 | 总收益差额 | 最大回撤差额 | Sharpe差额 | 总滑点差额 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `87,760` | `43.8800`个百分点 | `-0.0131`个百分点 | `-0.0020` | `-14,670` |
+| `1.5` | `95,095` | `47.5475`个百分点 | `-0.0137`个百分点 | `-0.0011` | `-22,005` |
+| `2.0` | `102,430` | `51.2150`个百分点 | `-0.0143`个百分点 | `-0.0002` | `-29,340` |
+| `3.0` | `117,100` | `58.5500`个百分点 | `0.2259`个百分点 | `0.0017` | `-44,010` |
+| `5.0` | `146,440` | `73.2200`个百分点 | `0.3124`个百分点 | `0.0059` | `-73,350` |
+
+说明：
+
+- 本阶段Sharpe为日度净盈亏重估口径，用于同一压力脚本内横向比较，不与vn.py引擎原始Sharpe直接混用。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress.py`
+- 已完成滑点压力分析：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_stress.py`
+
+### 我的判断
+
+- 第90阶段没有被全周期滑点压力击穿：即使在`5`倍滑点下，期末权益仍比第78多`71,315`，比第75多`146,440`。
+- 但第90相对第78的Sharpe在所有滑点倍数下都略低，说明它的优势仍主要是收益弹性，不是风险调整收益全面改善。
+- 成本压力支持第90继续验证，但仍不支持直接替代第78。
+- 下一步最有价值的是做“起始年份 + 滑点压力”的交叉反证，尤其关注`since_2022`和`since_2026`两个薄弱起点。
+
+## 2026-04-25 01:49 第93阶段：第90阶段薄弱起点滑点压力交叉反证
+
+### 改动内容
+
+- 新增薄弱起点滑点压力脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress.py`
+- 设计目的：
+  - 不继续调参。
+  - 只重跑第91阶段暴露出的两个薄弱起点：`since_2022`和`since_2026`。
+  - 对第78和第90在同一起点下的日度路径做`1/1.5/2/3/5`倍滑点压力。
+  - 验证第90的弱点是否会被交易成本进一步放大。
+
+### 新增的参数
+
+- 压力测试参数：
+  - `WEAK_WINDOW_NAMES=("since_2022", "since_2026")`
+  - `SLIPPAGE_MULTIPLIERS=(1.0, 1.5, 2.0, 3.0, 5.0)`
+
+### 修改的参数
+
+- 无。
+- 第78复用参数：
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+- 第90复用参数：
+  - `streak_entry_structure_recovery_min_multiplier=0.5`
+  - `streak_entry_structure_recovery_require_rsi_confirmation=True`
+  - `streak_entry_structure_recovery_long_min_rsi=60.0`
+  - `streak_entry_structure_recovery_short_max_rsi=40.0`
+  - `streak_entry_structure_recovery_max_same_direction_corr=0.30`
+  - `streak_entry_structure_recovery_require_flat_portfolio=True`
+  - `streak_risk_state_excluded_products=fu.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+`since_2022`第90相对第78：
+
+| 滑点倍数 | 第90期末权益 | 第78期末权益 | 期末权益差额 | 第90最大回撤 | 第78最大回撤 | 回撤差额 | Sharpe差额 | 总滑点差额 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `2,925,655` | `3,016,845` | `-91,190` | `-43.1572%` | `-36.7687%` | `-6.3886`个百分点 | `-0.0697` | `2,540` |
+| `1.5` | `2,836,010` | `2,928,470` | `-92,460` | `-43.9209%` | `-37.2694%` | `-6.6515`个百分点 | `-0.0704` | `3,810` |
+| `2.0` | `2,746,365` | `2,840,095` | `-93,730` | `-44.6995%` | `-37.7788%` | `-6.9207`个百分点 | `-0.0709` | `5,080` |
+| `3.0` | `2,567,075` | `2,663,345` | `-96,270` | `-46.3029%` | `-38.8245%` | `-7.4783`个百分点 | `-0.0714` | `7,620` |
+| `5.0` | `2,208,495` | `2,309,845` | `-101,350` | `-50.1798%` | `-41.6050%` | `-8.5747`个百分点 | `-0.0692` | `12,700` |
+
+`since_2026`第90相对第78：
+
+| 滑点倍数 | 第90期末权益 | 第78期末权益 | 期末权益差额 | 第90最大回撤 | 第78最大回撤 | 回撤差额 | Sharpe差额 | 总滑点差额 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `170,775` | `188,645` | `-17,870` | `-39.3824%` | `-32.4059%` | `-6.9765`个百分点 | `-0.4923` | `940` |
+| `1.5` | `169,125` | `187,465` | `-18,340` | `-39.7939%` | `-32.6356%` | `-7.1583`个百分点 | `-0.5053` | `1,410` |
+| `2.0` | `167,475` | `186,285` | `-18,810` | `-40.2078%` | `-32.8666%` | `-7.3411`个百分点 | `-0.5183` | `1,880` |
+| `3.0` | `164,175` | `183,925` | `-19,750` | `-41.0429%` | `-33.3327%` | `-7.7101`个百分点 | `-0.5443` | `2,820` |
+| `5.0` | `157,575` | `179,205` | `-21,630` | `-42.7427%` | `-34.2813%` | `-8.4614`个百分点 | `-0.5960` | `4,700` |
+
+汇总：
+
+- `since_2022`：第90期末权益胜出`0/5`，Sharpe胜出`0/5`，期末权益差额区间`-101,350`到`-91,190`。
+- `since_2026`：第90期末权益胜出`0/5`，Sharpe胜出`0/5`，期末权益差额区间`-21,630`到`-17,870`。
+
+说明：
+
+- 本阶段Sharpe为日度净盈亏重估口径，用于同一压力脚本内横向比较，不与vn.py引擎原始Sharpe直接混用。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress_comparison.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress_summary.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress_report.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress.py`
+- 已完成薄弱起点滑点压力交叉验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_weak_window_stress.py`
+
+### 我的判断
+
+- 第93阶段推翻了“第90可继续走向正式升级”的想法。
+- 第90在全周期和高滑点压力下看起来不错，但在两个已知薄弱起点上，所有滑点倍数都输给第78，且滑点越高权益差距越大。
+- 这说明第90的收益增强不是稳定穿越起点的结构优势，而是依赖部分有利路径；它可以保留为研究分支，但不应作为正式版本候选继续加码。
+- 当前正式路线应回到第78阶段风险治理版本。后续如果继续研究恢复风险，应重新做事件级归因或动态进攻/防守版本切换，而不是继续在第90上微调。
+
+## 2026-04-25 01:56 第94阶段：恢复风险研究分支第一版事件级归因
+
+### 改动内容
+
+- 新增研究脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch.py`
+- 设计目的：
+  - 另开恢复风险研究分支，不继续微调第90参数。
+  - 以第90半恢复实际触发事件为样本，同时比较第90半恢复、第86满恢复、第78风险治理在事件后多窗口的产品级与组合级贡献。
+  - 只使用入场当下已有字段做分桶和候选条件，避免把事后收益直接写成规则。
+
+### 新增的参数
+
+- 研究标签：
+  - `MODEL_TAG=entry_structure_rsi_recovery_half_event_branch_v1`
+- 研究窗口：
+  - `HORIZONS=(5, 10, 20, 40, 60, 120)`
+
+### 修改的参数
+
+- 无。
+- 本阶段不改策略参数，不新增正式交易规则。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测/研究结果
+
+事件级总览：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 第90恢复事件数 | `17` |
+| 涉及产品数 | `12` |
+| 第90优于第78事件数 | `9` |
+| 第78优于第90事件数 | `8` |
+| 第90事件后20日产品净盈亏 | `342,750` |
+| 第78同事件后20日产品净盈亏 | `44,870` |
+| 第90相对第78 20日产品差额 | `297,880` |
+| 第86相对第78 20日产品差额 | `705,460` |
+| 第90相对第86 20日产品差额 | `-407,580` |
+
+多窗口稳定性：
+
+| 前瞻窗口 | 第90相对第78产品差额 | 第86相对第78产品差额 | 第90相对第86产品差额 | 第90相对第78组合差额 |
+| ---: | ---: | ---: | ---: | ---: |
+| `5` | `176,165` | `426,930` | `-250,765` | `204,485` |
+| `10` | `155,010` | `383,380` | `-228,370` | `193,195` |
+| `20` | `297,880` | `705,460` | `-407,580` | `288,895` |
+| `40` | `356,380` | `849,280` | `-492,900` | `388,085` |
+| `60` | `356,380` | `849,280` | `-492,900` | `501,015` |
+| `120` | `356,380` | `849,280` | `-492,900` | `350,505` |
+
+分周期结果：
+
+| 周期 | 事件数 | 第90优于第78 | 第78优于第90 | 第90相对第78差额 | 第86相对第78差额 | 第90相对第86差额 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `pre_ai_2020_2021` | `3` | `1` | `2` | `-20,880` | `-51,680` | `30,800` |
+| `early_ai_2022_2023` | `9` | `5` | `4` | `185,150` | `441,220` | `-256,070` |
+| `trend_rich_2024_2025` | `4` | `3` | `1` | `168,710` | `393,140` | `-224,430` |
+| `latest_2026` | `1` | `0` | `1` | `-35,100` | `-77,220` | `42,120` |
+
+候选条件线索：
+
+| 候选条件 | 事件数 | 第90优于第78 | 第78优于第90 | 第90相对第78差额 | 命中率 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `ai_rank_gt5` | `8` | `6` | `2` | `363,700` | `75.00%` |
+| `stage90_reduces_stage86_volume` | `16` | `9` | `7` | `325,700` | `56.25%` |
+| `all_stage90_recovery_events` | `17` | `9` | `8` | `297,880` | `52.94%` |
+| `no_breakout` | `8` | `6` | `2` | `251,270` | `75.00%` |
+| `direction_ret20_aligned` | `4` | `3` | `1` | `175,940` | `75.00%` |
+| `ai_rank_top5` | `9` | `3` | `6` | `-65,820` | `33.33%` |
+
+产品贡献最差和最好：
+
+| 产品 | 事件数 | 第90相对第78差额 | 第90相对第86差额 |
+| --- | ---: | ---: | ---: |
+| `cu.SHFE` | `2` | `-75,000` | `70,000` |
+| `SH.CZCE` | `1` | `-35,100` | `42,120` |
+| `sp.SHFE` | `1` | `-27,820` | `0` |
+| `jm.DCE` | `3` | `121,620` | `-140,940` |
+| `fu.SHFE` | `2` | `183,700` | `-232,000` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_event_table_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_candidate_summary_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_period_summary_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_feature_summary_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_product_summary_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_horizon_summary_entry_structure_rsi_recovery_half_event_branch_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_summary_entry_structure_rsi_recovery_half_event_branch_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch_report_entry_structure_rsi_recovery_half_event_branch_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch.py`
+- 已完成事件级研究分析：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_event_branch.py`
+
+### 我的判断
+
+- 第90不是没有价值。全周期事件级看，第90半恢复相对第78有`297,880`的20日产品级正贡献，并且多窗口都为正。
+- 但这不能推翻第93阶段结论，因为第90优势高度依赖时期和路径：`early_ai_2022_2023`与`trend_rich_2024_2025`贡献为正，`pre_ai_2020_2021`和`latest_2026`为负。
+- `ai_rank_gt5`、`no_breakout`等条件看起来很好，但样本很小，且带有明显反直觉和路径依赖，不应直接写成策略规则。
+- 研究分支的下一步不是调阈值，而是验证“进攻/防守状态切换”：第78作为默认防守版本，只在组合处于有利路径状态时短暂打开恢复风险。这个状态必须来自组合自身的已发生表现，而不是事后品种或年份标签。
+
+## 2026-04-25 01:59 第95阶段：恢复风险进攻/防守状态门反证
+
+### 改动内容
+
+- 新增研究脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate.py`
+- 设计目的：
+  - 不使用年份、产品或事后收益标签。
+  - 用第78防守版本在事件发生前已经形成的组合状态，评估是否存在可用于进攻/防守切换的低自由度状态门。
+  - 所有状态特征都用事件日前的日度结果计算，避免同日和未来信息。
+
+### 新增的参数
+
+- 研究标签：
+  - `MODEL_TAG=entry_structure_rsi_recovery_half_offense_state_gate_v1`
+- 研究状态门：
+  - `prior20/60/120_net_pnl > 0`
+  - `prior20/60/120_positive_day_rate > 50%`
+  - `balance_above_prior60/120_ma`
+  - `not_cold_120d`
+  - `prior_cum_pnl_gt0`
+  - `prior_drawdown_lte20/30`
+  - 组合门：`defense_mature_and_prior60_pnl_gt0`、`defense_mature_prior60_pnl_and_balance_gt60ma`
+
+### 修改的参数
+
+- 无。
+- 本阶段不改策略参数，不新增正式交易规则。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测/研究结果
+
+状态门评分核心结果：
+
+| 状态门 | 事件数 | 第90优于第78 | 第78优于第90 | 第90相对第78差额 | 负贡献成本 | 命中率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `all_events` | `17` | `9` | `8` | `297,880` | `-180,630` | `52.94%` |
+| `not_cold_120d` | `17` | `9` | `8` | `297,880` | `-180,630` | `52.94%` |
+| `prior_cum_pnl_gt0` | `17` | `9` | `8` | `297,880` | `-180,630` | `52.94%` |
+| `prior_drawdown_lte30` | `16` | `8` | `8` | `289,000` | `-180,630` | `50.00%` |
+| `prior120_pnl_gt0` | `15` | `8` | `7` | `257,330` | `-155,730` | `53.33%` |
+| `balance_above_120ma` | `12` | `5` | `7` | `61,170` | `-175,990` | `41.67%` |
+| `prior_drawdown_lte20` | `13` | `5` | `8` | `46,260` | `-180,630` | `38.46%` |
+| `prior20_pnl_gt0` | `4` | `1` | `3` | `-62,800` | `-71,680` | `25.00%` |
+| `balance_above_60ma` | `6` | `1` | `5` | `-122,290` | `-130,090` | `16.67%` |
+| `prior60_pnl_gt0` | `9` | `2` | `7` | `-124,590` | `-175,990` | `22.22%` |
+| `defense_mature_and_prior60_pnl_gt0` | `9` | `2` | `7` | `-124,590` | `-175,990` | `22.22%` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate_event_table_entry_structure_rsi_recovery_half_offense_state_gate_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate_gate_summary_entry_structure_rsi_recovery_half_offense_state_gate_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate_summary_entry_structure_rsi_recovery_half_offense_state_gate_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate_report_entry_structure_rsi_recovery_half_offense_state_gate_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate.py`
+- 已完成进攻/防守状态门研究：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_entry_structure_rsi_recovery_half_offense_state_gate.py`
+
+### 我的判断
+
+- 第95阶段没有找到可用的低自由度组合状态门。
+- 很多看似合理的“组合近期表现好再进攻”条件反而筛到了坏事件，例如`prior60_pnl_gt0`和`balance_above_60ma`都明显劣于全事件。
+- 这说明第90事件价值不是简单由组合近期强弱决定；若强行写进攻/防守状态切换，很可能是对17笔小样本的二次过拟合。
+- 研究分支当前结论应收敛为：第78保持正式版本；第90/第86恢复机制只保留为事件研究素材，不进入策略层。
+
+## 2026-04-25 02:09 第96阶段：第78阶段正式版本固化审查
+
+### 改动内容
+
+- 新增正式化审查脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_stage78_formal_readiness_report.py`
+- 设计目的：
+  - 不重新调参，不新增交易规则。
+  - 以第75作为收益上限基准，对第78做全周期、起始年份、滑点压力、2026尾部表现审查。
+  - 判断第78是否能固化为正式版本，以及应该以什么身份固化。
+
+### 新增的参数
+
+- 研究标签：
+  - `MODEL_TAG=stage78_formal_readiness_v1`
+
+### 修改的参数
+
+- 无。
+- 本阶段不修改策略参数。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测/研究结果
+
+第78全周期结果：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 期末权益 | `4,600,090` |
+| 总收益 | `2200.0450%` |
+| 最大回撤 | `-36.9907%` |
+| Sharpe | `1.2919` |
+| 总滑点 | `260,110` |
+| 总交易次数 | `779` |
+
+第78相对第75正式基准的关键证据：
+
+| 审查项 | 结果 | 证据 |
+| --- | --- | --- |
+| 全周期收益成本交换 | `PASS` | 第78期末权益相对第75少`44,275`，但滑点少`29,850`，交易少`12`笔 |
+| 全周期最大回撤 | `PASS` | 第78最大回撤`-36.9907%`，与第75持平 |
+| 2026尾部改善 | `PASS` | since_2026期末权益相对第75多`24,240`，最大回撤改善`7.6546`个百分点，Sharpe改善`0.2170` |
+| 起始年份收益占优 | `WARN` | 起始年份期末权益只赢`2/7`，平均期末权益差额`-58,543` |
+| 起始年份Sharpe平衡 | `WARN` | 起始年份Sharpe赢`3/7`，平均Sharpe差额`0.0689` |
+| 已知薄弱起点 | `WARN` | since_2023相对第75期末权益少`279,985`，最大回撤差`-3.4488`个百分点 |
+| 高滑点韧性 | `PASS` | 5倍滑点下第78相对第75期末权益多`75,125`，Sharpe差`0.0095` |
+| 2026绝对收益 | `WARN` | latest_2026仍为负收益：期末权益`188,645`，总收益`-5.6775%`，最大回撤`-32.4059%` |
+
+第78正式化审查结论：
+
+- `CONDITIONAL_PASS_DEFENSIVE_FORMAL`
+- 第78可以固化为“防守型风险治理正式版”。
+- 第78不能包装成“收益最高正式版”，也不能说它全维度替代第75。
+- 它的本质价值是用很小的全周期收益代价，换取更低交易成本、更好的2026尾部和更清晰的风险状态治理。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stage78_formal_readiness_summary_stage78_formal_readiness_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_satellite_profit_shield_stage78_formal_readiness_report_stage78_formal_readiness_v1.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/build_qmt_roll_stage78_formal_readiness_report.py`
+- 已生成正式化审查报告：
+  - `.py311/bin/python examples/portfolio_backtesting/build_qmt_roll_stage78_formal_readiness_report.py`
+
+### 我的判断
+
+- 第78可以固化，但必须以“防守正式版”固化，不是收益增强版。
+- 这个结论不来自单一全周期收益，而来自三点：全周期回撤不劣化、交易成本显著下降、弱环境和高滑点下韧性更好。
+- 最大风险是第78在起始年份收益上并不全面占优，尤其`since_2023`明显弱于第75；所以正式文档里必须保留第75作为收益上限参照。
+- 后续研发不应继续在第90/第86恢复风险上微调，而应以第78为冻结基准，去做全市场品种选择、样本外验证和组合容量/流动性约束。
+
+## 2026-04-25 02:29 第97阶段：第78正式版本配置化固化
+
+### 改动内容
+
+- 新增第78正式配置模块：
+  - `examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
+- 新增第78正式运行入口：
+  - `examples/portfolio_backtesting/run_qmt_roll_official_stage78_backtest.py`
+- 本阶段只做配置化固化与清单生成，不修改策略类默认参数，不重跑完整回测。
+- 固化版本名：
+  - `official_stage78_defensive_v1`
+- 固化定位：
+  - `defensive_risk_governance_formal`
+
+### 新增的参数
+
+- 正式版本常量：
+  - `OFFICIAL_STAGE78_VERSION=official_stage78_defensive_v1`
+  - `OFFICIAL_STAGE78_PROFILE_NAME=ai_top8_plus_fu_satellite_post_signal_profit_shield_streak`
+  - `OFFICIAL_STAGE78_ROLE=defensive_risk_governance_formal`
+  - `OFFICIAL_STAGE78_FORMAL_PREFIX=qmt_roll_official_stage78_defensive_formal`
+  - `OFFICIAL_STAGE78_EXPERIMENT_TAG=qmt_roll_official_stage78_defensive`
+  - `OFFICIAL_STAGE78_CAPITAL=200000`
+  - `OFFICIAL_STAGE78_PROFIT_SHIELD_MODE=profit_only`
+- 正式配置生成函数：
+  - `build_official_stage78_paths()`
+  - `build_official_stage78_overrides()`
+  - `build_official_stage78_manifest()`
+- 后续研究开关策略：
+  - 独立新研究默认不开启第78正式配置。
+  - 只有研究目标是“基于正式版做增量改进”时才开启第78正式配置。
+  - 所有新研究晋级前必须与`official_stage78_defensive_v1`对比。
+
+### 修改的参数
+
+- 无。
+- `QmtRollPortfolioStrategy`默认参数未改动。
+- 第86、第90恢复风险分支未写入正式配置。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测/研究结果
+
+- 本阶段未新增完整回测结果，只生成正式配置清单。
+- 第78正式配置引用的冻结参考结果如下：
+
+| 指标 | full_2020_2026 |
+| --- | ---: |
+| 期末权益 | `4,600,090` |
+| 总收益 | `2200.0450%` |
+| 最大回撤 | `-36.9907%` |
+| Sharpe | `1.2919` |
+| 总滑点 | `260,110` |
+| 总交易次数 | `779` |
+
+| 指标 | latest_2026 |
+| --- | ---: |
+| 期末权益 | `188,645` |
+| 总收益 | `-5.6775%` |
+| 最大回撤 | `-32.4059%` |
+| Sharpe | `-0.3449` |
+| 总滑点 | `2,360` |
+| 总交易次数 | `24` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
+- `examples/portfolio_backtesting/run_qmt_roll_official_stage78_backtest.py`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_manifest.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_manifest.md`
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_official_stage78_backtest.py`
+- 已生成正式配置清单：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_official_stage78_backtest.py --manifest-only`
+
+### 我的判断
+
+- 第78现在已经以配置形式固化，不是靠口头约定，也不是硬编码到策略默认值。
+- 后续研究不要默认开启第78正式配置；否则新想法的效果会和正式版已有收益混在一起，容易误判。
+- 正确用法是：独立新方向先单独验证本质，再与`official_stage78_defensive_v1`做晋级对比；如果研究目标是“正式版上再加一个小改动”，才显式从第78正式配置继承。
+- 这能避免沉没成本和基准污染，也能保证第78作为当前正式防守版本可复现。
+
+## 2026-04-25 02:58 第98阶段：第78正式版季度Walk-Forward与小资金流动性审计
+
+### 改动内容
+
+- 新增第78正式版季度冷启动验证脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_quarterly_walkforward_liquidity.py`
+- 本阶段验证目标：
+  - 用`official_stage78_defensive_v1`冻结配置，从每个季度起点冷启动到`2026-04-30`。
+  - 分别统计完整`63d/126d/252d`窗口表现。
+  - 对第78正式交易明细做小资金级别的日成交量占比审计。
+- 本阶段没有修改交易策略逻辑，也没有新增交易过滤器。
+- 修正一个统计口径问题：
+  - 初版报告把`2026Q1/2026Q2`等不足`126d/252d`的短窗口计入 horizon 聚合。
+  - 已新增`complete_horizon`字段，聚合只统计完整 horizon；不完整窗口保留在明细 CSV 中。
+- 修正一个非行为性实现警告：
+  - 将`fillna(method="ffill")`改为`.ffill()`，避免 pandas 未来版本兼容性警告。
+
+### 新增的参数
+
+- `MODEL_TAG=quarterly_wf_liquidity_v1`
+- `OFFICIAL_STAGE78_VERSION=official_stage78_defensive_v1`
+- `OFFICIAL_STAGE78_ROLE=defensive_risk_governance_formal`
+- `HORIZON_DAYS=(63, 126, 252)`
+- `LIQUIDITY_WARN_VOLUME_SHARE_PCT=1.0`
+- `LIQUIDITY_EXTREME_VOLUME_SHARE_PCT=5.0`
+- `complete_horizon=1`才进入对应 horizon 聚合。
+
+### 修改的参数
+
+- 无交易参数修改。
+- 修改的是报告统计口径，不是策略参数：
+  - 不完整 horizon 不参与`63d/126d/252d`聚合胜率。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+- 冻结参考全周期结果：
+
+| 指标 | full_2020_2026 |
+| --- | ---: |
+| 期末权益 | `4,600,090` |
+| 总收益 | `2200.0450%` |
+| 最大回撤 | `-36.9907%` |
+| Sharpe | `1.2919` |
+| 总滑点 | `260,110` |
+| 总交易次数 | `779` |
+
+- 季度 cold-start 汇总：
+  - 季度起点数量：`26`
+  - horizon 明细行数：`78`
+  - 完整 horizon 行数：`71`
+  - 不完整 horizon 行数：`7`，已从聚合中剔除。
+
+| Horizon | 完整窗口数 | 正收益窗口数 | 正收益率 | 中位收益 | 最差收益 | 中位最大回撤 | 最差最大回撤 | 中位Sharpe | 最差Sharpe |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `25` | `17` | `68.0000%` | `16.2975%` | `-27.7950%` | `-26.6085%` | `-44.5792%` | `1.7456` | `-3.7231` |
+| `126d` | `24` | `20` | `83.3333%` | `53.5100%` | `-15.5125%` | `-29.0193%` | `-44.5792%` | `1.5507` | `-2.6382` |
+| `252d` | `22` | `21` | `95.4545%` | `103.7725%` | `-6.8250%` | `-30.9217%` | `-44.5792%` | `1.5879` | `-0.2394` |
+
+- 典型弱窗口：
+  - `q2020_1 63d`：期末权益`144,410`，总收益`-27.7950%`，最大回撤`-31.1218%`，Sharpe`-3.7231`，交易`33`笔。
+  - `q2024_2 63d`：期末权益`156,905`，总收益`-21.5475%`，最大回撤`-43.3720%`，Sharpe`-0.6012`，交易`27`笔。
+  - `q2024_2 126d`：期末权益`168,975`，总收益`-15.5125%`，最大回撤`-43.5632%`，Sharpe`-0.1813`，交易`30`笔。
+  - `q2022_2 252d`：期末权益`186,350`，总收益`-6.8250%`，最大回撤`-19.9334%`，Sharpe`-0.2394`，交易`26`笔。
+
+- 近端季度 to-end 结果：
+  - `q2025_1`：期末权益`882,655`，总收益`341.3275%`，最大回撤`-28.8813%`，Sharpe`1.9483`，交易`131`笔。
+  - `q2025_2`：期末权益`657,840`，总收益`228.9200%`，最大回撤`-25.7486%`，Sharpe`2.2330`，交易`99`笔。
+  - `q2025_3`：期末权益`572,020`，总收益`186.0100%`，最大回撤`-30.4625%`，Sharpe`2.1148`，交易`81`笔。
+  - `q2025_4`：期末权益`303,760`，总收益`51.8800%`，最大回撤`-41.4224%`，Sharpe`1.2014`，交易`54`笔。
+  - `q2026_1`：期末权益`188,645`，总收益`-5.6775%`，最大回撤`-32.4059%`，Sharpe`0.0711`，交易`24`笔。
+  - `q2026_2`：期末权益`200,000`，总收益`0.0000%`，最大回撤`0.0000%`，Sharpe`0.0000`，交易`0`笔；样本仅`14`日，不参与完整 horizon 结论。
+
+- 小资金流动性审计：
+  - 交易数：`779`
+  - 缺失行情条数：`0`
+  - 零成交量行情条数：`0`
+  - 超过日成交量`1%`的交易数：`0`
+  - 超过日成交量`5%`的交易数：`0`
+  - 成交量占比中位数：`0.0026%`
+  - 成交量占比P95：`0.0314%`
+  - 最大成交量占比：`0.3029%`
+  - 最大占比来自`AP.CZCE`，但仍低于`1%`预警线。
+
+### 修改的回测结果
+
+- 修改了 horizon 聚合统计结果：
+  - 旧口径包含不足天数窗口。
+  - 新口径只统计完整窗口。
+- 交易明细、季度 to-end 结果、流动性审计交易级结果没有修改。
+
+### 删除的回测结果
+
+- 无。
+
+### 新增产物
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_quarter_summary_quarterly_wf_liquidity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_horizon_summary_quarterly_wf_liquidity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_horizon_aggregate_quarterly_wf_liquidity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_liquidity_trade_audit_quarterly_wf_liquidity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_liquidity_product_summary_quarterly_wf_liquidity_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_summary_quarterly_wf_liquidity_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_quarterly_walkforward_liquidity_report_quarterly_wf_liquidity_v1.md`
+
+### 验证
+
+- 已完成季度 cold-start 回测和流动性审计：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_quarterly_walkforward_liquidity.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_quarterly_walkforward_liquidity.py`
+- 已用已有明细重建完整 horizon 聚合和报告：
+  - 不重跑交易，只修正统计口径。
+
+### 我的判断
+
+- 对小资金来说，现阶段不需要做复杂容量曲线；但轻量流动性审计是必要的，这次审计通过。
+- 第78正式版通过了季度 walk-forward 的基本检验，尤其`252d`完整窗口`21/22`为正，说明它不是单靠单一年份或早期行情成立。
+- 但`63d`窗口只有`17/25`为正，且最差短窗口亏损`-27.7950%`，所以它不能被理解成“任意季度入场都平滑赚钱”的版本。
+- 最值得监控的是`q2024_2`这类短中期弱窗口：收益修复能力存在，但冷启动初期回撤很深。
+- 当前结论：第78可以继续作为正式防守基线；后续不应优先做容量模型，而应做季度复审、短窗口冷启动风险提示、以及与新研究方向的样本外对照。
+
+## 2026-04-25 03:17 第99阶段：第78正式版关闭100万Sizing上限多周期研究
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 03:17`
+- 目标：临时关闭第78正式版主策略里的`1,000,000`资金 sizing 上限，做同口径多周期对照，判断是否值得正式固化。
+- 新增策略参数：
+  - `sizing_equity_cap`：默认`1,000,000`，保持第78正式版原行为；设置为`0`表示关闭上限。
+- 修改策略逻辑：
+  - 将原本写死的`min(estimated_equity, 1_000_000)`改成可配置上限。
+  - `sizing_equity_cap <= 0`时使用完整估算权益做 sizing。
+- 删除参数：
+  - 无。
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_official_stage78_sizing_cap_multicycle_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_multicycle_summary_stage78_sizing_cap_multicycle_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_multicycle_comparison_stage78_sizing_cap_multicycle_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_multicycle_summary_stage78_sizing_cap_multicycle_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_multicycle_report_stage78_sizing_cap_multicycle_v1.md`
+
+### 新增回测参数
+
+- 基准版本：`official_stage78_defensive_v1`
+- 初始资金：`200,000`
+- 基础风险比例：`0.015`
+- 对照组一：`stage78_capped_1m`，`sizing_equity_cap=1,000,000`
+- 对照组二：`stage78_sizing_cap_off`，`sizing_equity_cap=0`
+- 多周期窗口：`full_2020_2026`、`pre_ai_2020_2021`、`post_signal_2022_2026`、`early_ai_2022_2023`、`trend_rich_2024_2025`、`latest_2026`
+
+### 新增回测结果
+
+| 窗口 | 1M封顶期末权益 | 关闭上限期末权益 | 权益差 | 1M封顶总收益 | 关闭上限总收益 | 1M封顶最大回撤 | 关闭上限最大回撤 | 1M封顶Sharpe | 关闭上限Sharpe | 1M封顶滑点 | 关闭上限滑点 | 1M封顶交易数 | 关闭上限交易数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,600,090` | `13,319,690` | `8,719,600` | `2200.0450%` | `6559.8450%` | `-36.9907%` | `-36.9907%` | `1.2919` | `1.2134` | `260,110` | `1,073,530` | `779` | `811` |
+| `pre_ai_2020_2021` | `1,384,905` | `1,345,830` | `-39,075` | `592.4525%` | `572.9150%` | `-36.9907%` | `-36.9907%` | `1.6313` | `1.5396` | `57,190` | `63,120` | `306` | `308` |
+| `post_signal_2022_2026` | `2,863,385` | `4,126,125` | `1,262,740` | `1331.6925%` | `1963.0625%` | `-37.5422%` | `-39.9498%` | `1.3008` | `1.2236` | `167,710` | `316,050` | `431` | `445` |
+| `early_ai_2022_2023` | `721,720` | `721,720` | `0` | `260.8600%` | `260.8600%` | `-37.5422%` | `-37.5422%` | `1.3070` | `1.3070` | `36,710` | `36,710` | `185` | `185` |
+| `trend_rich_2024_2025` | `964,180` | `964,180` | `0` | `382.0900%` | `382.0900%` | `-31.1166%` | `-31.1166%` | `1.4577` | `1.4577` | `42,120` | `42,120` | `164` | `164` |
+| `latest_2026` | `188,645` | `188,645` | `0` | `-5.6775%` | `-5.6775%` | `-32.4059%` | `-32.4059%` | `-0.3449` | `-0.3449` | `2,360` | `2,360` | `24` | `24` |
+
+### 修改的回测结果
+
+- 无交易结果修改。
+- 回测计算完成后，报告生成阶段因`to_markdown_table(max_rows=...)`不兼容报错；已修复脚本，且未重跑交易。
+- Markdown报告使用已生成的CSV结果重建。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成多周期对照回测计算：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_official_stage78_sizing_cap_multicycle_backtest.py`
+  - 说明：交易计算、CSV、JSON已完成；原进程在报告生成阶段退出码为`1`，原因是报告函数参数不兼容。
+- 已修复报告函数并生成报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_multicycle_report_stage78_sizing_cap_multicycle_v1.md`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_roll_official_stage78_sizing_cap_multicycle_backtest.py`
+
+### 我的判断
+
+- 关闭`1,000,000` sizing上限在全周期显著放大期末权益，但这主要来自后期权益超过上限后的复利放大，不是信号质量本身变好。
+- 关闭上限后全周期Sharpe从`1.2919`降到`1.2134`，总滑点从`260,110`升到`1,073,530`，交易数也增加；收益放大伴随交易成本放大。
+- `pre_ai_2020_2021`关闭上限反而更差，`post_signal_2022_2026`收益更高但最大回撤从`-37.5422%`恶化到`-39.9498%`，Sharpe下降。
+- 独立短窗口`early_ai_2022_2023`、`trend_rich_2024_2025`、`latest_2026`完全不变，说明关闭上限只有在权益已显著增长后才起作用，对冷启动和近端弱窗口没有帮助。
+- 当前结论：不应把“完全关闭100万上限”固化进正式主策略；正式第78继续保持`1,000,000`封顶。后续如果要研究资金上限，应做“分段/渐进式上限”而不是直接关闭，例如`1,000,000 -> 1,500,000 -> 2,000,000`的阶梯 cap，并继续用季度 walk-forward 验证。
+
+## 2026-04-25 03:37 第100阶段：第78正式版关闭100万Sizing上限季度Walk-Forward验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 03:37`
+- 目标：验证第99阶段“关闭100万 sizing 上限收益显著放大”是否能在季度冷启动、多固定持有期中成立，避免把路径依赖的复利放大误判为策略边际改善。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_sizing_cap_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_quarter_summary_stage78_sizing_cap_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_horizon_summary_stage78_sizing_cap_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_horizon_aggregate_stage78_sizing_cap_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_horizon_comparison_stage78_sizing_cap_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_horizon_comparison_aggregate_stage78_sizing_cap_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_summary_stage78_sizing_cap_quarterly_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_sizing_cap_quarterly_walkforward_report_stage78_sizing_cap_quarterly_wf_v1.md`
+- 修改策略参数：
+  - 无。本阶段只做研究验证，不修改正式第78默认配置。
+- 新增参数：
+  - 对照 profile：`stage78_capped_1m`，`sizing_equity_cap=1,000,000`
+  - 对照 profile：`stage78_sizing_cap_off`，`sizing_equity_cap=0`
+  - 固定持有期：`63d`、`126d`、`252d`
+  - 季度冷启动起点：`2020-01-01`至`2026-04-01`
+- 删除参数：
+  - 无。
+
+### 新增回测参数
+
+- 基准版本：`official_stage78_defensive_v1`
+- 初始资金：`200,000`
+- 基础风险比例：`0.045`
+- 正式角色：`defensive_risk_governance_formal`
+- 有上限组：`sizing_equity_cap=1,000,000`
+- 无上限组：`sizing_equity_cap=0`
+- 完整窗口统计口径：只统计`complete_horizon=1`的`63d/126d/252d`窗口。
+
+### 新增回测结果
+
+| profile | horizon | 完整窗口数 | 正收益数 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_capped_1m` | `63d` | `25` | `17` | `68.0000%` | `16.2975%` | `-27.7950%` | `-44.5792%` | `1.7456` | `-3.7231` |
+| `stage78_sizing_cap_off` | `63d` | `25` | `17` | `68.0000%` | `16.2975%` | `-27.7950%` | `-44.5792%` | `1.7456` | `-3.7231` |
+| `stage78_capped_1m` | `126d` | `24` | `20` | `83.3333%` | `53.5100%` | `-15.5125%` | `-44.5792%` | `1.5507` | `-2.6382` |
+| `stage78_sizing_cap_off` | `126d` | `24` | `20` | `83.3333%` | `53.5100%` | `-15.5125%` | `-44.5792%` | `1.5507` | `-2.6382` |
+| `stage78_capped_1m` | `252d` | `22` | `21` | `95.4545%` | `103.7725%` | `-6.8250%` | `-44.5792%` | `1.5879` | `-0.2394` |
+| `stage78_sizing_cap_off` | `252d` | `22` | `21` | `95.4545%` | `103.7725%` | `-6.8250%` | `-44.5792%` | `1.5879` | `-0.2394` |
+
+| horizon | 完整窗口数 | 发生差异窗口 | 无上限收益更好 | 无上限收益更差 | 无上限回撤更差 | 无上限Sharpe更差 | 中位收益差 | 最差收益差 | 最好收益差 | 最差回撤差 | 最差Sharpe差 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `25` | `0` | `0` | `0` | `0` | `0` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000` |
+| `126d` | `24` | `0` | `0` | `0` | `0` | `0` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000` |
+| `252d` | `22` | `3` | `1` | `2` | `2` | `3` | `0.0000%` | `-11.3400%` | `61.1625%` | `-7.1012%` | `-0.0887` |
+
+发生差异的完整窗口：
+
+| 窗口 | 起点 | horizon | 有上限期末权益 | 无上限期末权益 | 收益差 | 回撤差 | Sharpe差 | 滑点差 |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `q2020_3` | `2020-07-01` | `252d` | `850,670` | `850,320` | `-0.1750%` | `-0.0262%` | `-0.0007` | `40` |
+| `q2020_4` | `2020-10-01` | `252d` | `1,797,110` | `1,919,435` | `61.1625%` | `-7.1012%` | `-0.0887` | `12,990` |
+| `q2021_1` | `2021-01-01` | `252d` | `912,735` | `890,055` | `-11.3400%` | `0.0000%` | `-0.0441` | `1,760` |
+
+代表性全周期无上限结果沿用第99阶段主回测：期末权益`13,319,690`，总收益`6559.8450%`，最大回撤`-36.9907%`，Sharpe`1.2134`，总滑点`1,073,530`，总交易次数`811`。
+
+### 修改的回测结果
+
+- 无。本阶段新增季度 walk-forward 对照，不覆盖第78正式结果。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成季度 walk-forward 对照：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_sizing_cap_quarterly_walkforward.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_sizing_cap_quarterly_walkforward.py`
+
+### 我的判断
+
+- 全周期无上限期末权益从`4,600,090`放大到`13,319,690`，看起来涨了很多倍，但季度 walk-forward 说明这不是一个稳定改善冷启动窗口的参数。
+- `63d`和`126d`完整窗口完全无差异，说明关闭上限对短中期冷启动没有帮助。
+- `252d`只有`3/22`个完整窗口发生差异，且收益更差的窗口多于收益更好的窗口；无上限还带来更多回撤恶化和Sharpe恶化。
+- 这更像“权益超过100万后继续放大仓位”的路径依赖复利效应，不是信号胜率、最差窗口、风险调整收益的本质改善。
+- 当前结论：不值得关闭第78正式主策略的`1,000,000` sizing上限；正式版本继续默认开启上限。后续如果继续研究资金上限，应该研究分段或渐进式上限，并要求季度 walk-forward 的最差窗口和Sharpe不恶化。
+
+## 2026-04-25 05:08 第101阶段：第78正式版资金上限参数面研究
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 05:08`
+- 目标：验证固定`1,000,000` sizing权益上限是否应该改成按本金倍数的规则，避免只凭全周期复利放大做判断。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_capital_cap_surface.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_capital_cap_surface_summary_stage78_capital_cap_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_capital_cap_surface_comparison_stage78_capital_cap_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_capital_cap_surface_summary_stage78_capital_cap_surface_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_capital_cap_surface_report_stage78_capital_cap_surface_v1.md`
+- 修改策略参数：
+  - 无。本阶段只使用第99阶段已配置化的`sizing_equity_cap`。
+- 新增参数：
+  - 初始资金：`200,000`、`400,000`
+  - sizing上限倍数：`2.5x`、`5x`、`7.5x`、`10x`、`关闭上限`
+  - 验证窗口：`full_2020_2026`、`post_signal_2022_2026`、`latest_2026`
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+`200,000`本金：
+
+| 窗口 | 上限 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `500,000` | `2,747,755` | `1273.8775%` | `-31.5415%` | `1.3110` | `134,810` | `728` |
+| `full_2020_2026` | `1,000,000` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` |
+| `full_2020_2026` | `2,000,000` | `7,484,945` | `3642.4725%` | `-36.9907%` | `1.2771` | `469,970` | `803` |
+| `post_signal_2022_2026` | `500,000` | `1,720,650` | `760.3250%` | `-36.5518%` | `1.2924` | `89,250` | `410` |
+| `post_signal_2022_2026` | `1,000,000` | `2,863,385` | `1331.6925%` | `-37.5422%` | `1.3008` | `167,710` | `431` |
+| `post_signal_2022_2026` | `2,000,000` | `4,209,880` | `2004.9400%` | `-39.9498%` | `1.3202` | `240,800` | `443` |
+| `latest_2026` | `所有上限` | `188,645` | `-5.6775%` | `-32.4059%` | `-0.3449` | `2,360` | `24` |
+
+`400,000`本金：
+
+| 窗口 | 上限 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `1,000,000` | `5,712,450` | `1328.1125%` | `-38.8477%` | `1.2912` | `295,970` | `820` |
+| `full_2020_2026` | `2,000,000` | `9,161,070` | `2190.2675%` | `-38.8477%` | `1.2177` | `575,330` | `858` |
+| `full_2020_2026` | `3,000,000` | `11,524,430` | `2781.1075%` | `-38.8477%` | `1.1408` | `792,900` | `862` |
+| `post_signal_2022_2026` | `1,000,000` | `3,370,360` | `742.5900%` | `-43.4199%` | `1.1886` | `192,050` | `448` |
+| `post_signal_2022_2026` | `2,000,000` | `5,425,710` | `1256.4275%` | `-43.4199%` | `1.1896` | `339,280` | `466` |
+| `post_signal_2022_2026` | `3,000,000` | `6,528,885` | `1532.2212%` | `-43.4199%` | `1.1991` | `393,010` | `472` |
+| `latest_2026` | `1,000,000` | `422,315` | `5.5788%` | `-37.7378%` | `0.1275` | `9,140` | `35` |
+| `latest_2026` | `2,000,000/3,000,000/4,000,000/关闭` | `414,655` | `3.6638%` | `-38.3765%` | `0.0704` | `9,280` | `37` |
+
+### 修改的回测结果
+
+- 无。第101阶段新增资金上限参数面对照，不覆盖第78正式结果。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成资金上限参数面回测：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_capital_cap_surface.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_capital_cap_surface.py`
+
+### 我的判断
+
+- 对`200,000`本金，`1,000,000`上限仍是较合理的收益/风险折中；`500,000`更防守但收益压缩过大，`2,000,000`以上主要是增加复利和交易成本。
+- 对`400,000`本金，`2,000,000/3,000,000`上限全周期收益显著更高，但全周期Sharpe下降，`latest_2026`还比`1,000,000`上限差。
+- 这说明资金约束不能简单改成“本金固定倍数越高越好”；更高上限是杠杆扩张，不是信号质量提升。
+- 需要进一步用季度 walk-forward 检查`400,000`本金下`5x/7.5x`是否真的能穿越冷启动。
+
+## 2026-04-25 05:08 第102阶段：全市场候选`sn.SHFE`作为第二卫星的多周期反证实验
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 05:08`
+- 目标：验证全市场品种选择在第78已纳入`fu.SHFE`后，是否还有可验证的增量品种。
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_official_stage78_fu_sn_satellite_candidate_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_universe_stage78_fu_sn_satellite_candidate_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_eligibility_stage78_fu_sn_satellite_candidate_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_summary_stage78_fu_sn_satellite_candidate_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_comparison_stage78_fu_sn_satellite_candidate_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_summary_stage78_fu_sn_satellite_candidate_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_candidate_report_stage78_fu_sn_satellite_candidate_v1.md`
+- 新增参数：
+  - `sn.SHFE`作为第二个固定卫星品种，只在AI信号期后进入候选池。
+  - `streak_risk_state_excluded_products=fu.SHFE,sn.SHFE`
+  - `streak_risk_state_exclusion_mode=profit_only`
+  - `sizing_equity_cap=1,000,000`
+- 修改参数：
+  - 在第78`fu`卫星基础上，将卫星集合从`fu.SHFE`扩展为`fu.SHFE,sn.SHFE`。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+| 窗口 | Stage78期末权益 | 候选期末权益 | 权益差 | Stage78总收益 | 候选总收益 | Stage78最大回撤 | 候选最大回撤 | Stage78 Sharpe | 候选Sharpe | 滑点差 | 交易数差 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `full_2020_2026` | `4,600,090` | `4,752,645` | `152,555` | `2200.0450%` | `2276.3225%` | `-36.9907%` | `-36.9907%` | `1.2919` | `1.3067` | `-11,500` | `45` |
+| `post_signal_2022_2026` | `2,863,385` | `2,960,100` | `96,715` | `1331.6925%` | `1380.0500%` | `-37.5422%` | `-36.5869%` | `1.3008` | `1.2858` | `-10,170` | `44` |
+| `early_ai_2022_2023` | `721,720` | `754,700` | `32,980` | `260.8600%` | `277.3500%` | `-37.5422%` | `-36.5869%` | `1.3070` | `1.2913` | `275` | `21` |
+| `trend_rich_2024_2025` | `964,180` | `1,126,920` | `162,740` | `382.0900%` | `463.4600%` | `-31.1166%` | `-29.7382%` | `1.4577` | `1.6193` | `950` | `10` |
+| `latest_2026` | `188,645` | `223,145` | `34,500` | `-5.6775%` | `11.5725%` | `-32.4059%` | `-29.1299%` | `-0.3449` | `0.4188` | `-140` | `2` |
+
+### 修改的回测结果
+
+- 无。候选分支不替换第78正式版。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成多周期候选回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_official_stage78_fu_sn_satellite_candidate_backtest.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_roll_official_stage78_fu_sn_satellite_candidate_backtest.py`
+
+### 我的判断
+
+- `sn.SHFE`没有被反证掉，反而成为目前全市场品种选择方向的第一个真实增量候选。
+- 它的价值不在“扩大品种池”，而在“少数结构通过且和系统节奏互补的卫星品种”。
+- 但它增加交易次数，且`post_signal`、`early_ai` Sharpe略降，所以不能只凭多周期结果固化，必须做季度 walk-forward。
+
+## 2026-04-25 05:08 第103阶段：`fu/sn`双卫星季度Walk-Forward复核
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 05:08`
+- 目标：验证第102阶段`sn.SHFE`增量是否能穿越季度冷启动，而不是只在全周期或近端窗口好看。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_quarter_summary_stage78_fu_sn_satellite_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_horizon_summary_stage78_fu_sn_satellite_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_horizon_aggregate_stage78_fu_sn_satellite_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_horizon_comparison_stage78_fu_sn_satellite_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_horizon_comparison_aggregate_stage78_fu_sn_satellite_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_summary_stage78_fu_sn_satellite_quarterly_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward_report_stage78_fu_sn_satellite_quarterly_wf_v1.md`
+- 新增参数：
+  - 固定持有期：`63d`、`126d`、`252d`
+  - 季度冷启动起点：`2020-01-01`至`2026-04-01`
+- 修改参数：
+  - 无。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+| 版本 | horizon | 完整窗口数 | 正收益数 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `Stage78` | `63d` | `25` | `17` | `68.0000%` | `16.2975%` | `-27.7950%` | `-44.5792%` | `1.7456` | `-3.7231` |
+| `fu/sn`候选 | `63d` | `25` | `18` | `72.0000%` | `17.2250%` | `-27.7950%` | `-44.5792%` | `1.7754` | `-3.7231` |
+| `Stage78` | `126d` | `24` | `20` | `83.3333%` | `53.5100%` | `-15.5125%` | `-44.5792%` | `1.5507` | `-2.6382` |
+| `fu/sn`候选 | `126d` | `24` | `20` | `83.3333%` | `58.5675%` | `-9.9225%` | `-44.5792%` | `1.8126` | `-1.7229` |
+| `Stage78` | `252d` | `22` | `21` | `95.4545%` | `103.7725%` | `-6.8250%` | `-44.5792%` | `1.5879` | `-0.2394` |
+| `fu/sn`候选 | `252d` | `22` | `21` | `95.4545%` | `110.8075%` | `-7.2750%` | `-44.5792%` | `1.6681` | `-0.2691` |
+
+候选相对Stage78差异：
+
+| horizon | 完整窗口数 | 收益更好 | 收益更差 | 回撤更差 | Sharpe更差 | 中位收益差 | 最差收益差 | 最好收益差 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `25` | `9` | `5` | `7` | `6` | `0.0000%` | `-10.4550%` | `46.4050%` |
+| `126d` | `24` | `11` | `6` | `10` | `6` | `0.0000%` | `-8.5425%` | `80.0075%` |
+| `252d` | `22` | `13` | `4` | `6` | `5` | `1.4538%` | `-9.9050%` | `143.2800%` |
+
+### 修改的回测结果
+
+- 无。季度复核只新增候选对照。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成季度 walk-forward：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_quarterly_walkforward.py`
+
+### 我的判断
+
+- `fu/sn`候选通过“值得继续研究”的门槛：63d正收益率从`68%`升到`72%`，126d中位收益和最差收益都改善，252d中位收益也改善。
+- 但它没有达到“立即固化正式版”的门槛：部分季度窗口回撤或Sharpe变差，252d最差收益略差于Stage78。
+- 这个方向不是“全市场大池继续扩张”，而是“结构预筛后的少数卫星候选”。后续应做`sn`交易归因、滑点压力和起始年份对照，再决定是否升级为第78的后继正式候选。
+
+## 2026-04-25 05:08 第104阶段：40万本金资金上限阶梯季度Walk-Forward
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 05:08`
+- 目标：验证`400,000`本金是否应该把 sizing 上限从固定`1,000,000`提高到`2,000,000`或`3,000,000`。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_quarter_summary_stage78_400k_cap_ladder_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_horizon_summary_stage78_400k_cap_ladder_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_horizon_aggregate_stage78_400k_cap_ladder_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_horizon_comparison_stage78_400k_cap_ladder_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_horizon_comparison_aggregate_stage78_400k_cap_ladder_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_summary_stage78_400k_cap_ladder_quarterly_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward_report_stage78_400k_cap_ladder_quarterly_wf_v1.md`
+- 新增参数：
+  - 初始资金：`400,000`
+  - 上限倍数：`2.5x=1,000,000`、`5x=2,000,000`、`7.5x=3,000,000`
+  - 固定持有期：`63d`、`126d`、`252d`
+- 修改参数：
+  - 无。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+| 上限 | horizon | 完整窗口数 | 正收益数 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `2.5x` | `63d` | `25` | `21` | `84.0000%` | `23.7775%` | `-24.3137%` | `-45.9480%` | `1.8723` | `-3.2957` |
+| `5x` | `63d` | `25` | `21` | `84.0000%` | `23.7775%` | `-24.3137%` | `-45.9480%` | `1.9441` | `-3.2957` |
+| `7.5x` | `63d` | `25` | `21` | `84.0000%` | `23.7775%` | `-24.3137%` | `-45.9480%` | `1.9441` | `-3.2957` |
+| `2.5x` | `126d` | `24` | `24` | `100.0000%` | `53.2644%` | `1.6375%` | `-51.8345%` | `1.7546` | `0.2639` |
+| `5x` | `126d` | `24` | `24` | `100.0000%` | `53.2644%` | `1.6375%` | `-51.8345%` | `1.7546` | `0.2639` |
+| `7.5x` | `126d` | `24` | `24` | `100.0000%` | `53.2644%` | `1.6375%` | `-51.8345%` | `1.7546` | `0.2639` |
+| `2.5x` | `252d` | `22` | `22` | `100.0000%` | `134.5331%` | `29.9113%` | `-51.8345%` | `1.7690` | `0.6972` |
+| `5x` | `252d` | `22` | `22` | `100.0000%` | `128.4131%` | `29.9113%` | `-51.8345%` | `1.7387` | `0.6972` |
+| `7.5x` | `252d` | `22` | `22` | `100.0000%` | `128.4131%` | `29.9113%` | `-51.8345%` | `1.7387` | `0.6972` |
+
+相对`2.5x=1,000,000`的差异：
+
+| 候选上限 | horizon | 收益更好 | 收益更差 | 回撤更差 | Sharpe更差 | 中位收益差 | 最差收益差 | 最差回撤差 | 最差Sharpe差 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `5x` | `63d` | `1` | `5` | `6` | `5` | `0.0000%` | `-17.9225%` | `-7.9067%` | `-0.2525` |
+| `7.5x` | `63d` | `1` | `5` | `6` | `5` | `0.0000%` | `-17.9225%` | `-7.9067%` | `-0.2525` |
+| `5x` | `126d` | `4` | `5` | `7` | `6` | `0.0000%` | `-27.6200%` | `-10.3773%` | `-0.2529` |
+| `7.5x` | `126d` | `4` | `5` | `7` | `6` | `0.0000%` | `-27.6200%` | `-10.3773%` | `-0.2529` |
+| `5x` | `252d` | `7` | `8` | `9` | `13` | `0.0000%` | `-32.7538%` | `-11.7391%` | `-0.3016` |
+| `7.5x` | `252d` | `7` | `8` | `9` | `13` | `0.0000%` | `-43.3863%` | `-16.3920%` | `-0.3371` |
+
+### 修改的回测结果
+
+- 无。第104阶段只新增`400,000`本金上限阶梯验证。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成季度 walk-forward：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_400k_cap_ladder_quarterly_walkforward.py`
+
+### 我的判断
+
+- `400,000`本金不应把 sizing 上限从`1,000,000`提高到`2,000,000/3,000,000`。
+- 高上限在全周期能放大收益，但季度 WFA 显示它没有改善完整窗口中位收益，反而在多个窗口恶化收益、回撤和Sharpe。
+- 对小资金来说，真正有价值的规则不是“取消上限”或“按本金提高上限”，而是保留绝对上限保护；如果后续要做，只能研究更保守的动态降杠杆，而不是提高上限。
+
+## 2026-04-25 08:07 第105阶段：`fu/sn`双卫星反证归因与稳健性验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 08:07`
+- 目标：验证第102/103阶段的`sn.SHFE`候选是否只是回测偶然，重点做三件事：
+  - `sn.SHFE`真实产品归因
+  - 同口径公平滑点压力对照
+  - 年度起点迁移对照
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_robustness.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_full_summary_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_product_attribution_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_product_year_attribution_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_slippage_stress_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_slippage_comparison_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_start_year_comparison_stage78_fu_sn_satellite_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_summary_stage78_fu_sn_satellite_robustness_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_report_stage78_fu_sn_satellite_robustness_v1.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_candidate_full_daily.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_candidate_full_position_changes_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_fu_sn_satellite_robustness_candidate_full_trades_2020_2026_04.csv`
+- 新增参数：
+  - 稳健性模型标签：`stage78_fu_sn_satellite_robustness_v1`
+  - 公平滑点压力倍数：`1.0`、`1.5`、`2.0`、`3.0`、`5.0`
+  - 起点年份窗口：`q2020_1`、`q2021_1`、`q2022_1`、`q2023_1`、`q2024_1`、`q2025_1`、`q2026_1`
+  - 候选卫星品种：`fu.SHFE,sn.SHFE`
+  - 资金上限：`1,000,000`
+- 修改参数：
+  - 无。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+完整窗口正式统计：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `Stage78` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` |
+| `fu/sn`候选 | `4,752,645` | `2276.3225%` | `-36.9907%` | `1.3067` | `248,610` | `824` |
+| 差异 | `+152,555` | `+76.2775%` | `0.0000%` | `+0.0148` | `-11,500` | `+45` |
+
+`sn.SHFE`产品归因：
+
+| 品种 | 净利润 | 组合净利润贡献 | 最大产品回撤/本金 | 交易次数 | 总滑点 | 单笔净利润 | 首次交易 | 最近交易 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `sn.SHFE` | `222,720` | `4.8921%` | `-109.5350%` | `53` | `2,380` | `4,202.2642` | `2022-03-01` | `2026-01-19` |
+
+`sn.SHFE`年度归因：
+
+| 年份 | 净利润 | 交易次数 | 总滑点 | 活跃天数 |
+| --- | ---: | ---: | ---: | ---: |
+| `2020` | `0` | `0` | `0` | `0` |
+| `2021` | `0` | `0` | `0` | `0` |
+| `2022` | `134,080` | `10` | `650` | `25` |
+| `2023` | `-17,910` | `14` | `680` | `29` |
+| `2024` | `-113,550` | `13` | `550` | `21` |
+| `2025` | `100,610` | `14` | `440` | `23` |
+| `2026` | `119,490` | `2` | `60` | `7` |
+
+公平滑点压力对照：
+
+| 滑点倍数 | Stage78期末权益 | 候选期末权益 | 候选差异 | Stage78 Sharpe | 候选Sharpe | Sharpe差异 | 候选总滑点差异 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1.0` | `4,600,090` | `4,752,645` | `152,555` | `1.4551` | `1.4687` | `0.0135` | `-11,500` |
+| `1.5` | `4,470,035` | `4,628,340` | `158,305` | `1.4206` | `1.4350` | `0.0144` | `-17,250` |
+| `2.0` | `4,339,980` | `4,504,035` | `164,055` | `1.3864` | `1.4017` | `0.0152` | `-23,000` |
+| `3.0` | `4,079,870` | `4,255,425` | `175,555` | `1.3191` | `1.3360` | `0.0169` | `-34,500` |
+| `5.0` | `3,559,650` | `3,758,205` | `198,555` | `1.1887` | `1.2092` | `0.0205` | `-57,500` |
+
+年度起点迁移对照：
+
+| 起点 | Stage78期末权益 | 候选期末权益 | 候选差异 | 收益差异 | 回撤差异 | Sharpe差异 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `q2020_1` | `4,600,090` | `4,752,645` | `152,555` | `76.2775%` | `0.0000%` | `0.0135` |
+| `q2021_1` | `4,125,980` | `4,227,455` | `101,475` | `50.7375%` | `0.0000%` | `0.0091` |
+| `q2022_1` | `3,016,845` | `3,098,020` | `81,175` | `40.5875%` | `0.6629%` | `-0.0068` |
+| `q2023_1` | `1,918,185` | `1,954,595` | `36,410` | `18.2050%` | `2.6133%` | `0.0133` |
+| `q2024_1` | `993,155` | `1,263,155` | `270,000` | `135.0000%` | `1.3784%` | `0.2168` |
+| `q2025_1` | `882,655` | `1,034,575` | `151,920` | `75.9600%` | `-0.0900%` | `0.2501` |
+| `q2026_1` | `188,645` | `223,145` | `34,500` | `17.2500%` | `3.2760%` | `0.7939` |
+
+### 修改的回测结果
+
+- 无。第105阶段仍然是候选反证，不替换正式第78策略。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成完整窗口稳健性验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_robustness.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_official_stage78_fu_sn_satellite_robustness.py`
+
+### 我的判断
+
+- `sn.SHFE`没有被反证掉，反而通过了更严格的三项验证：真实产品归因为正、同口径5倍滑点压力下仍优于第78、年度起点迁移全部正向。
+- 这不属于典型参数过拟合，因为没有搜索周期参数、没有调阈值、没有按收益最优反复挑TopN；它只是把结构预筛中已经通过的第二个卫星品种做固定候选验证。
+- 但`sn.SHFE`不是无风险增量：`2023`和`2024`年度归因为负，尤其`2024`亏损`113,550`。所以它更像“跨周期净贡献为正的卫星”，不是可以无限扩展品种池的证据。
+- 方向判断：全市场品种选择方向有明确价值，但应该继续坚持“少数卫星、先验结构、反证检验”，不能回到大池扩张。
+- 下一步建议：可以把`fu/sn`作为第78的后继候选版本进入正式固化前审查；资金上限方向则继续维持第104阶段结论，不提高`1,000,000`绝对上限。
+
+## 2026-04-25 09:46 第106阶段：第105 `fu/sn`后继候选配置化固化
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 09:46`
+- 目标：把第105阶段通过反证的`fu/sn`候选固化为独立配置开关，但不覆盖第78正式防守版。
+- 新增代码：
+  - `examples/portfolio_backtesting/qmt_roll_stage105_fu_sn_config.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage105_fu_sn_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_manifest.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_manifest.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_report.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_daily.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_position_changes_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_trades_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_satellite_successor_candidate_statistics.json`
+- 新增参数：
+  - `STAGE105_VERSION=stage105_fu_sn_satellite_successor_candidate_v1`
+  - `STAGE105_ROLE=stage78_successor_candidate`
+  - `STAGE105_FORMAL_PREFIX=qmt_roll_stage105_fu_sn_satellite_successor_candidate`
+  - `STAGE105_EXPERIMENT_TAG=qmt_roll_stage105_fu_sn_satellite_successor_candidate`
+  - `STAGE105_SIZING_EQUITY_CAP=1,000,000`
+  - `satellite_products=fu.SHFE,sn.SHFE`
+  - `new_satellite_product=sn.SHFE`
+  - `research_switch_policy.default_for_new_independent_research=off`
+- 修改参数：
+  - 无。第78正式配置没有被修改。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+第105配置化入口复跑完整窗口：
+
+| 版本 | 窗口 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage105_fu_sn_satellite_successor_candidate_v1` | `full_2020_2026` | `4,752,645` | `2276.3225%` | `-36.9907%` | `1.3067` | `248,610` | `824` |
+
+与第105冻结参考值对齐检查：
+
+| 指标 | 差异 |
+| --- | ---: |
+| 期末权益差异 | `0` |
+| Sharpe差异 | `0.0000` |
+| 总滑点差异 | `0` |
+
+配置化清单记录的关键证据：
+
+| 证据 | 数值 |
+| --- | ---: |
+| `sn.SHFE`全周期净利润 | `222,720` |
+| `sn.SHFE`交易次数 | `53` |
+| `sn.SHFE`总滑点 | `2,380` |
+| 公平`5x`滑点下相对第78期末权益差异 | `198,555` |
+| 年度起点正向差异 | `7/7` |
+
+### 修改的回测结果
+
+- 无。第106阶段只是配置化固化第105候选，不改第78正式结果。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_stage105_fu_sn_config.py examples/portfolio_backtesting/run_qmt_roll_stage105_fu_sn_backtest.py`
+- 已完成配置化入口完整窗口复跑：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage105_fu_sn_backtest.py`
+
+### 我的判断
+
+- 第105候选已经完成配置化固化，可以作为第78的后继候选开关使用。
+- 但它仍不是“覆盖第78”的正式版本：第78继续是冻结防守正式版，Stage105是`opt-in`候选。
+- 后续独立新研究默认不应打开Stage105；只有当研究问题明确是在第78正式版上做增量改进，或专门审查`fu/sn`候选时，才使用这个开关。
+- 这样处理能保留`sn`带来的真实增量，同时避免把`sn`的样本内路径优势混进所有新研究，降低过拟合扩散风险。
+
+## 2026-04-25 10:10 第107阶段：Stage105小资金实盘适配审计
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 10:10`
+- 目标：验证`stage105_fu_sn_satellite_successor_candidate_v1`在`400,000`本金下是否具备实盘机械可行性。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage105_small_capital_live_readiness.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_small_capital_400k_daily.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_small_capital_400k_position_changes_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_small_capital_400k_trades_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_fu_sn_small_capital_400k_statistics.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_daily_risk_stage105_small_capital_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_product_exposure_stage105_small_capital_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_contract_granularity_stage105_small_capital_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_liquidity_trade_audit_stage105_small_capital_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_liquidity_product_summary_stage105_small_capital_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_summary_stage105_small_capital_live_readiness_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_small_capital_live_readiness_report_stage105_small_capital_live_readiness_v1.md`
+- 新增参数：
+  - 小资金审计本金：`400,000`
+  - 保证金预警阈值：`60%`权益
+  - 保证金极端阈值：`80%`权益
+  - 单品种保证金占比预警阈值：`45%`
+  - 流动性预警阈值：成交量占市场成交量`1%`
+  - 流动性极端阈值：成交量占市场成交量`5%`
+- 修改参数：
+  - 无。Stage105交易规则未改。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+`400,000`本金Stage105完整窗口：
+
+| 版本 | 本金 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage105_fu_sn_satellite_successor_candidate_v1` | `400,000` | `5,865,005` | `1366.2513%` | `-38.8477%` | `1.3040` | `284,470` | `865` |
+
+路径风险：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 最差单日净盈亏 | `-336,350` |
+| 最差单日日期 | `2025-07-28` |
+| 最差单日/前一日权益 | `-5.8750%` |
+| 最差5日净盈亏 | `-404,360` |
+| 最差5日/初始本金 | `-101.0900%` |
+| 最差20日净盈亏 | `-440,700` |
+| 最差20日/初始本金 | `-110.1750%` |
+| 最大连续亏损天数 | `7` |
+
+保证金与集中度：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 最大保证金占用 | `477,095` |
+| 最大保证金/权益 | `118.1558%` |
+| 最大保证金/初始本金 | `119.2739%` |
+| 最大名义本金/权益 | `957.6978%` |
+| 最大同时活跃品种数 | `8` |
+| 最大同时活跃合约数 | `8` |
+| 保证金超过权益`60%`天数 | `53` |
+| 保证金超过权益`80%`天数 | `14` |
+| 单品种保证金占比超过`45%`天数 | `975` |
+| 最大单手保证金品种 | `au.SHFE` |
+| 最大单手保证金 | `62,972` |
+| 最大单手保证金/初始本金 | `15.7430%` |
+
+流动性审计：
+
+| 指标 | 数值 |
+| --- | ---: |
+| 交易数 | `865` |
+| 缺失行情 | `0` |
+| 零成交量行情 | `0` |
+| 超过市场成交量`1%`交易数 | `0` |
+| 超过市场成交量`5%`交易数 | `0` |
+| 成交量占比中位数 | `0.0029%` |
+| 成交量占比P95 | `0.0303%` |
+| 最大成交量占比 | `0.3029%` |
+
+### 修改的回测结果
+
+- 无。第107阶段只新增`400,000`本金审计，不改Stage105和第78正式结果。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成小资金实盘适配审计：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage105_small_capital_live_readiness.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage105_small_capital_live_readiness.py`
+
+### 我的判断
+
+- Stage105在`400,000`本金下收益仍然很强，但不能按当前版本直接实盘部署。
+- 硬伤不是流动性，流动性审计很好；硬伤是保证金路径：最大保证金/权益达到`118.1558%`，这在真实账户里可能触发无法开仓、追加保证金或被动降风险。
+- 最差5日亏损超过初始本金`100%`，这不代表账户必然归零，因为当时权益已增长，但说明路径波动对小本金心理和风控非常不友好。
+- 结论：Stage105交易逻辑有价值，但`400,000`部署必须先做保证金感知降杠杆版本，不能直接把当前Stage105作为小资金正式版。
+
+## 2026-04-25 10:10 第108阶段：Stage105正式晋级审查
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 10:10`
+- 目标：统一审查Stage105是否能替代第78正式防守版，尤其结合第107阶段小资金实盘约束。
+- 新增脚本：
+  - `examples/portfolio_backtesting/build_qmt_roll_stage105_promotion_review.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_promotion_review_scorecard_stage105_promotion_review_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_promotion_review_comparison_stage105_promotion_review_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_promotion_review_summary_stage105_promotion_review_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_promotion_review_report_stage105_promotion_review_v1.md`
+- 新增参数：
+  - 晋级审查模型标签：`stage105_promotion_review_v1`
+  - 晋级硬阻断条件：`400k max margin/balance`超过部署阈值
+  - 估算安全资金阈值：`80%`保证金上限、`60%`保证金上限
+- 修改参数：
+  - 无。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+- 无新增回测。第108阶段复用第75、第78、第103、第105、第107阶段结果做晋级审查。
+
+核心对照：
+
+| 版本 | 定位 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 相对第78期末权益 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage75_return_ceiling` | 收益上限参考 | `4,644,365` | `2222.1825%` | `-36.9907%` | `1.2926` | `289,960` | `791` | `44,275` |
+| `official_stage78_defensive_v1` | 防守正式基线 | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` | `0` |
+| `stage105_fu_sn_satellite_successor_candidate_v1` | 第78后继候选 | `4,752,645` | `2276.3225%` | `-36.9907%` | `1.3067` | `248,610` | `824` | `152,555` |
+
+晋级评分卡：
+
+| 维度 | 状态 | 证据 |
+| --- | --- | --- |
+| 全周期收益 | `PASS` | 相对第78期末权益`+152,555` |
+| 全周期风险调整 | `PASS` | Sharpe相对第78`+0.0148`，最大回撤不变 |
+| 季度冷启动 | `PASS_WITH_WARNING` | `63d`正收益率`72%`对第78`68%`，但`252d`最差收益差`-9.9050%` |
+| 产品归因 | `PASS_WITH_WARNING` | `sn.SHFE`净利润`222,720`，但`2023/2024`为负 |
+| 公平滑点压力 | `PASS` | `5x`公平滑点下仍优于第78 |
+| 年度起点迁移 | `PASS` | 正向差异`7/7` |
+| 小资金保证金 | `FAIL` | `400k`最大保证金/权益`118.1558%`，极端保证金天数`14` |
+| 小资金路径亏损 | `WARN` | 最差5日亏损`-404,360`，约初始本金`-101.0900%` |
+| 合约粒度 | `WARN` | 最大单手保证金`62,972`，约初始本金`15.7430%` |
+| 流动性 | `PASS` | 超过市场成交量`1%`交易数为`0`，最大成交量占比`0.3029%` |
+
+晋级审查结论：
+
+| 项目 | 结果 |
+| --- | --- |
+| 决策 | `REJECT_FORMAL_REPLACEMENT_FOR_400K_AS_IS` |
+| 硬阻断数量 | `1` |
+| 主要阻断 | `400k margin occupancy exceeds deployable threshold` |
+| 估算`80%`保证金上限所需最低资金 | `596,369` |
+| 估算`60%`保证金上限所需最低资金 | `795,159` |
+
+### 修改的回测结果
+
+- 无。第108阶段是晋级审查，不重写已有回测。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成晋级审查：
+  - `.py311/bin/python examples/portfolio_backtesting/build_qmt_roll_stage105_promotion_review.py`
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/build_qmt_roll_stage105_promotion_review.py`
+
+### 我的判断
+
+- Stage105的交易逻辑值得保留，且在收益、Sharpe、滑点压力、起点迁移上明显优于第78。
+- 但对于`400,000`本金，Stage105不能按当前版本正式替代第78，因为保证金占用是硬阻断。
+- 下一步不应该继续做全市场加品种或提高资金上限，而应该做“保证金感知的Stage105部署版”：保留Stage105入场和品种逻辑，但在保证金占用过高、单手合约过粗、连续亏损或回撤状态下自动降风险。
+- 第78继续保留为正式防守基线；Stage105继续保留为后继候选和研究开关，直到保证金感知版本通过同样审查。
+
+## 2026-04-25 10:18 第109阶段：Stage105现有资金约束扫描（400k）
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 10:18`
+- 目标：先不新增复杂交易规则，只用策略已有的总资金占用上限和单笔资金占用上限，验证是否能把Stage105变成`400,000`本金可部署版本。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_constraint_surface.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_constraint_surface_summary_stage109_margin_constraint_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_constraint_surface_summary_stage109_margin_constraint_surface_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_constraint_surface_report_stage109_margin_constraint_surface_v1.md`
+- 新增参数：
+  - 扫描模型标签：`stage109_margin_constraint_surface_v1`
+  - 本金：`400,000`
+  - 扫描档位：`cap70_single35`、`cap60_single30`、`cap50_single25`、`cap45_single20`
+  - 保证金观察门槛：`60%`
+  - 保证金极端门槛：`80%`
+  - 保证金拒绝门槛：`100%`
+- 修改参数：
+  - 无。第109阶段只通过`strategy_overrides`扫描既有参数。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+| 档位 | `max_capital_usage_ratio` | `max_single_trade_capital_usage_ratio` | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 最大保证金/权益 | `>80%`天数 | `>100%`天数 | 标签 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `cap70_single35` | `0.70` | `0.35` | `4,472,335` | `1018.0838%` | `-26.2163%` | `1.4724` | `202,570` | `851` | `85.4174%` | `2` | `0` | `watch_margin_gate` |
+| `cap60_single30` | `0.60` | `0.30` | `3,923,805` | `880.9513%` | `-22.9096%` | `1.5306` | `169,280` | `815` | `72.2309%` | `0` | `0` | `pass_margin_gate` |
+| `cap50_single25` | `0.50` | `0.25` | `2,965,475` | `641.3687%` | `-23.1565%` | `1.4017` | `132,590` | `783` | `55.3008%` | `0` | `0` | `pass_margin_gate` |
+| `cap45_single20` | `0.45` | `0.20` | `2,766,945` | `591.7363%` | `-21.6475%` | `1.4757` | `118,860` | `782` | `51.7933%` | `0` | `0` | `pass_margin_gate` |
+
+路径风险补充：
+
+| 档位 | 最差5日/初始资金 | 最差20日/初始资金 | 最大连续亏损天数 |
+| --- | ---: | ---: | ---: |
+| `cap70_single35` | `-75.6175%` | `-86.0475%` | `7` |
+| `cap60_single30` | `-64.3975%` | `-74.5150%` | `7` |
+| `cap50_single25` | `-52.6263%` | `-47.9075%` | `7` |
+| `cap45_single20` | `-46.8525%` | `-45.4725%` | `7` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_constraint_surface.py`
+- 已完成扫描：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_constraint_surface.py`
+
+### 我的判断
+
+- 静态资金约束是有效方向：从原始Stage105的`400k`最大保证金/权益`118.1558%`压到了`cap45_single20`的`51.7933%`。
+- 但单次全周期不能决定正式部署。`cap60_single30`虽然收益更高，也通过完整窗口保证金门槛，但仍需要季度冷启动验证。
+- 下一步只验证`cap60_single30`和`cap45_single20`，不继续扩大网格，避免把资金限制做成参数拟合。
+
+## 2026-04-25 10:54 第110阶段：Stage105资金约束候选季度冷启动验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 10:54`
+- 目标：对第109阶段两个候选`cap60_single30`和`cap45_single20`做季度冷启动验证，防止只看全周期收益。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_profile_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_profile_quarterly_walkforward_quarter_summary_stage110_margin_profile_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_profile_quarterly_walkforward_horizon_summary_stage110_margin_profile_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_profile_quarterly_walkforward_horizon_aggregate_stage110_margin_profile_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_profile_quarterly_walkforward_summary_stage110_margin_profile_quarterly_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage105_margin_profile_quarterly_walkforward_report_stage110_margin_profile_quarterly_wf_v1.md`
+- 新增参数：
+  - 验证模型标签：`stage110_margin_profile_quarterly_wf_v1`
+  - 验证候选：`cap60_single30`、`cap45_single20`
+  - 冷启动起点：所有季度起点
+  - 观察周期：`63d`、`126d`、`252d`
+  - 本金：`400,000`
+- 修改参数：
+  - 无。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+季度冷启动聚合：
+
+| 档位 | 周期 | 窗口数 | 正收益率 | 最差收益 | 中位收益 | 最差回撤 | 最大保证金/权益 | `>80%`窗口数 | `>100%`窗口数 | 最差20日/初始资金 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `cap60_single30` | `63d` | `25` | `76.0000%` | `-10.1900%` | `12.4838%` | `-32.7572%` | `108.5602%` | `6` | `2` | `-49.2050%` |
+| `cap60_single30` | `126d` | `24` | `95.8333%` | `-2.5238%` | `42.1325%` | `-32.7572%` | `108.5602%` | `8` | `2` | `-67.9200%` |
+| `cap60_single30` | `252d` | `22` | `100.0000%` | `12.2950%` | `78.4475%` | `-32.7572%` | `103.0240%` | `7` | `1` | `-74.5150%` |
+| `cap45_single20` | `63d` | `25` | `72.0000%` | `-9.4875%` | `9.2850%` | `-26.1991%` | `60.6937%` | `0` | `0` | `-34.5575%` |
+| `cap45_single20` | `126d` | `24` | `95.8333%` | `-1.2013%` | `20.6644%` | `-26.1991%` | `63.3237%` | `0` | `0` | `-42.1325%` |
+| `cap45_single20` | `252d` | `22` | `100.0000%` | `6.0625%` | `43.7556%` | `-26.1991%` | `63.3237%` | `0` | `0` | `-44.3425%` |
+
+关键冷启动暴露：
+
+| 档位 | 冷启动窗口 | 到期收益 | 最大保证金/权益 | 结论 |
+| --- | --- | ---: | ---: | --- |
+| `cap60_single30` | `2020Q4` | `827.5838%` | `111.3877%` | 保证金硬失败 |
+| `cap60_single30` | `2025Q4` | `44.5000%` | `108.5602%` | 尾部冷启动硬失败 |
+| `cap45_single20` | `2020Q4` | `553.1212%` | `67.3967%` | 通过 |
+| `cap45_single20` | `2025Q4` | `25.0937%` | `56.0852%` | 通过 |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_profile_quarterly_walkforward.py`
+- 已完成季度冷启动验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage105_margin_profile_quarterly_walkforward.py`
+
+### 我的判断
+
+- `cap60_single30`不能作为`400k`正式部署档，原因不是收益差，而是季度冷启动存在`>100%`保证金/权益的硬失败。
+- `cap45_single20`是目前唯一通过所有季度冷启动保证金门槛的Stage105小资金候选。
+- 这个结果说明“更高收益档”不应被正式固化；对小资金实盘，生存约束优先于全周期收益最大化。
+
+## 2026-04-25 11:01 第111阶段：Stage105 400k保证金安全部署候选固化
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 11:01`
+- 目标：把第110阶段通过验证的`cap45_single20`配置化固化为独立版本，后续可以显式开关和复现。
+- 新增配置：
+  - `examples/portfolio_backtesting/qmt_roll_stage111_400k_margin_safe_config.py`
+- 新增runner：
+  - `examples/portfolio_backtesting/run_qmt_roll_stage111_400k_margin_safe_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_manifest.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_manifest.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_report.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_statistics.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_position_changes_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_trades_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_chart.html`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_400k_margin_safe_candidate_professional_dashboard.html`
+- 新增参数：
+  - 版本：`stage111_stage105_400k_margin_safe_profile_v1`
+  - 角色：`stage105_400k_deployment_candidate`
+  - 本金：`400,000`
+  - `max_capital_usage_ratio=0.45`
+  - `max_single_trade_capital_usage_ratio=0.20`
+  - 基础版本：`stage105_fu_sn_satellite_successor_candidate_v1`
+  - 使用策略：默认不开启，只在`400k`小资金部署、Stage105晋级审查或Stage111增量研究时开启
+- 修改参数：
+  - 无。主策略逻辑未改，只新增配置化profile。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+Stage111完整窗口`400k`结果：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 最大保证金/权益 | 最大保证金/初始资金 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage111_stage105_400k_margin_safe_profile_v1` | `2,766,945` | `591.7363%` | `-21.6475%` | `1.4757` | `118,860` | `782` | `51.7933%` | `51.2081%` |
+
+Stage111季度验证引用：
+
+| 周期 | 正收益率 | 最差收益 | 中位收益 | 最大保证金/权益 | `>80%`窗口数 | `>100%`窗口数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `72.0000%` | `-9.4875%` | `9.2850%` | `60.6937%` | `0` | `0` |
+| `126d` | `95.8333%` | `-1.2013%` | `20.6644%` | `63.3237%` | `0` | `0` |
+| `252d` | `100.0000%` | `6.0625%` | `43.7556%` | `63.3237%` | `0` | `0` |
+
+淘汰对照：
+
+| 档位 | 被淘汰原因 | 完整窗口收益 | 完整窗口最大保证金/权益 | 季度最大保证金/权益 |
+| --- | --- | ---: | ---: | ---: |
+| `cap60_single30` | 季度冷启动保证金超过`100%` | `880.9513%` | `72.2309%` | `108.5602%` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_stage111_400k_margin_safe_config.py examples/portfolio_backtesting/run_qmt_roll_stage111_400k_margin_safe_backtest.py`
+- 已完成正式全周期回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage111_400k_margin_safe_backtest.py`
+
+### 我的判断
+
+- Stage111是当前Stage105家族里最适合`400,000`本金的部署候选，不是最高收益版本。
+- 它牺牲了Stage105原始高收益，换来季度冷启动下不突破`80%`保证金门槛；这比追求全周期收益更符合小资金长期生存。
+- Stage78仍然是正式防守基线；Stage105仍是高收益研究候选；Stage111是小资金部署候选。
+- 后续新研究默认不应开启Stage111，除非研究主题是`400k`部署、保证金治理或Stage111本身的增量改进。
+
+## 2026-04-25 11:19 第112阶段：Stage111思路迁移到20万本金可行性审计
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 11:19`
+- 是否是重要突破版本：否。属于重要否定结论版本，确认Stage111不能原样迁移到`200,000`本金。
+- 目标：基于Stage111同一套资金约束，检查`200,000`本金是否可部署。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_live_readiness.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_live_readiness_daily_margin_stage112_stage111_200k_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_live_readiness_product_daily_stage112_stage111_200k_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_live_readiness_position_changes_2020_2026_04_stage112_stage111_200k_live_readiness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_live_readiness_summary_stage112_stage111_200k_live_readiness_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_live_readiness_report_stage112_stage111_200k_live_readiness_v1.md`
+- 新增参数：
+  - 审计模型标签：`stage112_stage111_200k_live_readiness_v1`
+  - 本金：`200,000`
+  - 继承Stage111资金约束：`max_capital_usage_ratio=0.45`
+  - 继承Stage111单笔约束：`max_single_trade_capital_usage_ratio=0.20`
+  - 单手合约预警阈值：`20%`
+  - 单手合约拒绝阈值：`25%`
+  - 最差5日亏损拒绝阈值：`-50%`初始本金
+  - 最差20日亏损拒绝阈值：`-70%`初始本金
+- 修改参数：
+  - 本次只把回测本金从Stage111的`400,000`改为`200,000`
+  - 交易逻辑、品种池、AI过滤、相关性门控、资金占用比例均未改
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+Stage111逻辑在`200,000`本金完整窗口结果：
+
+| 版本 | 本金 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 决策 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `stage112_stage111_200k_live_readiness_v1` | `200,000` | `1,355,600` | `577.8000%` | `-24.5782%` | `1.3252` | `53,120` | `555` | `39.8601%` | `REJECT_200K_AS_IS` |
+
+风险审计：
+
+| 指标 | 结果 |
+| --- | ---: |
+| 最差单日净盈亏 | `-152,725` |
+| 最差单日日期 | `2025-07-28` |
+| 最差单日/前一日权益 | `-11.2079%` |
+| 最差5日净盈亏 | `-171,625` |
+| 最差5日/初始资金 | `-85.8125%` |
+| 最差20日净盈亏 | `-112,335` |
+| 最差20日/初始资金 | `-56.1675%` |
+| 最大连续亏损天数 | `6` |
+| 最大保证金/权益 | `49.9754%` |
+| 最大保证金/初始资金 | `131.0379%` |
+| 保证金`>60%`权益天数 | `0` |
+| 保证金`>80%`权益天数 | `0` |
+| 保证金`>100%`权益天数 | `0` |
+| 最大单手合约保证金 | `64,950` |
+| 最大单手合约保证金/初始资金 | `32.4750%` |
+
+硬阻断原因：
+
+| 阻断 | 解释 |
+| --- | --- |
+| `single_contract_margin_too_coarse` | 最大单手合约保证金约占`200,000`本金`32.4750%`，超过`25%`拒绝阈值 |
+| `worst_5d_loss_too_large` | 最差5日亏损约初始本金`-85.8125%`，超过`-50%`拒绝阈值 |
+
+### 修改的回测结果
+
+- 无。第112阶段不修改Stage111的`400,000`结论。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_live_readiness.py`
+- 已完成完整窗口审计：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_live_readiness.py`
+- 未继续跑季度晋级验证：
+  - 原因：完整窗口已触发单手合约粒度和最差5日亏损两个硬阻断，季度验证不应作为晋级流程继续消耗时间。
+
+### 我的判断
+
+- Stage111的“低资金占用比例”思路在`200,000`本金下仍能压住组合保证金/权益，但压不住合约粒度和路径亏损。
+- 表面看总收益`577.8000%`很高，但真实小资金部署的第一性问题不是收益，而是单手合约太粗和短窗口损失太大。
+- 结论：`200,000`本金不能直接沿用Stage111。
+
+### 后续规划和TODO
+
+- 不建议继续对Stage111的`0.45/0.20`做季度晋级。
+- 下一步如果继续做`200,000`本金方向，应先做“20万可交易品种/合约粒度过滤”，排除单手保证金过高的品种，再重新构建小资金版本。
+- 可研究方向：
+  - 单手保证金/本金上限过滤，例如`<=15%`或`<=20%`
+  - 最大同时持仓从`8`降到更保守档位
+  - 对高保证金品种做白名单/黑名单
+  - 单独做20万版本的季度冷启动，而不是沿用40万版本结论
+
+## 2026-04-25 11:38 第113阶段：Stage111 20万单手合约粒度过滤审计
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 11:38`
+- 是否是重要突破版本：否。属于关键诊断版本，确认“过滤高单手保证金品种”能解决合约粒度问题，但完整窗口本身不足以晋级。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_contract_granularity_filter.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_contract_granularity_filter_contract_margin_audit_stage113_stage111_200k_contract_granularity_filter_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_contract_granularity_filter_universe_threshold_20p0_stage113_stage111_200k_contract_granularity_filter_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_contract_granularity_filter_summary_stage113_stage111_200k_contract_granularity_filter_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_contract_granularity_filter_report_stage113_stage111_200k_contract_granularity_filter_v1.md`
+- 新增参数：
+  - 模型标签：`stage113_stage111_200k_contract_granularity_filter_v1`
+  - 本金：`200,000`
+  - 单手合约保证金过滤阈值：`20%`、`15%`
+  - 继承Stage111资金约束：`max_capital_usage_ratio=0.45`
+  - 继承Stage111单笔约束：`max_single_trade_capital_usage_ratio=0.20`
+- 修改参数：
+  - 品种池从Stage111原始品种池改为按“历史最大单手保证金/20万本金”过滤
+  - 交易逻辑、AI品种池过滤、相关性门控、风险比例不变
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+20%与15%阈值过滤后结果一致，保留`15`个品种，剔除`5`个品种：`au.SHFE`、`cu.SHFE`、`jm.DCE`、`lh.DCE`、`sn.SHFE`。
+
+| 版本 | 本金 | 阈值 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 最大单手保证金/本金 | 决策 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `stage113_stage111_200k_contract_granularity_filter_v1` | `200,000` | `20%` | `932,280` | `366.1400%` | `-24.6971%` | `1.0501` | `53,700` | `512` | `40.3042%` | `10.7700%` | `RECHECK_BY_QUARTERLY_WF` |
+| `stage113_stage111_200k_contract_granularity_filter_v1` | `200,000` | `15%` | `932,280` | `366.1400%` | `-24.6971%` | `1.0501` | `53,700` | `512` | `40.3042%` | `10.7700%` | `RECHECK_BY_QUARTERLY_WF` |
+
+风险审计：
+
+| 指标 | 结果 |
+| --- | ---: |
+| 最大保证金/权益 | `51.3696%` |
+| 最大保证金/初始资金 | `121.1976%` |
+| 保证金`>80%`权益天数 | `0` |
+| 保证金`>100%`权益天数 | `0` |
+| 最差单日/前一日权益 | `-12.7179%` |
+| 最差5日/初始资金 | `-76.2450%` |
+| 最差20日/初始资金 | `-53.2550%` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_contract_granularity_filter.py`
+- 已完成完整窗口审计：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_contract_granularity_filter.py`
+
+### 我的判断
+
+- 20万版本的第一硬伤不是Stage111资金占用比例，而是某些品种单手保证金太粗。
+- 单手保证金过滤后，最大单手保证金/本金从Stage112的`32.4750%`降到`10.7700%`，这是结构性改善，不是收益拟合。
+- 但完整窗口最差5日按初始本金口径仍很难看，必须用季度冷启动重新判断，不能直接固化。
+
+### 后续规划和TODO
+
+- 使用`20%`过滤品种池做季度冷启动验证。
+- 如果季度验证中保证金不越线且短窗口亏损可接受，再考虑固化为20万研究候选。
+
+## 2026-04-25 11:49 第114阶段：Stage111 20万单手粒度过滤季度冷启动验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 11:49`
+- 是否是重要突破版本：是。确认20万经过单手合约粒度过滤后，保证金硬阻断消失，可作为研究候选继续推进。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_granularity_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_granularity_quarterly_walkforward_horizon_aggregate_stage114_stage111_200k_granularity_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_granularity_quarterly_walkforward_horizon_summary_stage114_stage111_200k_granularity_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_granularity_quarterly_walkforward_quarter_summary_stage114_stage111_200k_granularity_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage111_200k_granularity_quarterly_walkforward_report_stage114_stage111_200k_granularity_quarterly_wf_v1.md`
+- 新增参数：
+  - 模型标签：`stage114_stage111_200k_granularity_quarterly_wf_v1`
+  - 本金：`200,000`
+  - 品种池：Stage113 `20%`单手保证金过滤池
+  - 季度冷启动窗口：`63d`、`126d`、`252d`
+- 修改参数：
+  - 无。交易逻辑、资金约束、AI过滤、相关性门控沿用Stage111/Stage113。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+季度冷启动聚合结果：
+
+| 周期 | 窗口数 | 正收益率 | 最差收益 | 中位收益 | 最差最大回撤 | 最大保证金/权益 | `>80%`窗口数 | `>100%`窗口数 | 最差5日/本金 | 最差20日/本金 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `25` | `64.0000%` | `-3.0550%` | `5.7550%` | `-28.9600%` | `46.7592%` | `0` | `0` | `-33.7975%` | `-41.6725%` |
+| `126d` | `24` | `79.1667%` | `-5.5700%` | `11.1288%` | `-28.9600%` | `46.7592%` | `0` | `0` | `-33.7975%` | `-41.6725%` |
+| `252d` | `22` | `77.2727%` | `-5.7800%` | `24.1625%` | `-28.9600%` | `46.7592%` | `0` | `0` | `-39.9050%` | `-49.0550%` |
+
+完整到结束窗口补充观察：
+
+- 所有完整到`2026-04-30`的季度起点未出现保证金`>80%`或`>100%`硬越线。
+- `q2025_3`冷启动到结束：期末权益`252,795`，总收益`26.3975%`，最大回撤`-16.0752%`，Sharpe`1.1025`，总滑点`3,930`，总交易次数`42`。
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_granularity_quarterly_walkforward.py`
+- 已完成季度冷启动验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage111_200k_granularity_quarterly_walkforward.py`
+
+### 我的判断
+
+- Stage114解决了Stage112的两个核心硬阻断之一：单手合约粒度和保证金越线风险。
+- 但它不如Stage111的40万版本稳定：`63d/126d/252d`正收益率分别为`64.0000%/79.1667%/77.2727%`，弱于40万Stage111的`72.0000%/95.8333%/100.0000%`。
+- 因此它可以作为20万研究候选，但不能升为正式部署版本。
+
+### 后续规划和TODO
+
+- 将Stage114对应配置固化为Stage115研究候选。
+- 后续研究目标不是继续追求完整窗口收益，而是提高季度冷启动稳定性，同时不重新引入高保证金品种。
+
+## 2026-04-25 12:01 第115阶段：Stage111 20万单手粒度安全研究候选固化
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 12:01`
+- 是否是重要突破版本：否。属于候选固化版本，把Stage114结论变成可复用配置，但不晋级正式部署。
+- 新增配置：
+  - `examples/portfolio_backtesting/qmt_roll_stage115_200k_granularity_safe_config.py`
+- 新增runner：
+  - `examples/portfolio_backtesting/run_qmt_roll_stage115_200k_granularity_safe_backtest.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_manifest.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_manifest.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_summary.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_summary.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_report.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_statistics.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_trades_2020_2026_04.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_granularity_safe_candidate_position_changes_2020_2026_04.csv`
+- 新增参数：
+  - 版本：`stage115_stage111_200k_granularity_safe_candidate_v1`
+  - 定位：`stage111_200k_research_candidate`
+  - 本金：`200,000`
+  - 单手合约保证金过滤阈值：`20%`
+  - 品种池：`qmt_roll_stage111_200k_contract_granularity_filter_universe_threshold_20p0_stage113_stage111_200k_contract_granularity_filter_v1.csv`
+  - Stage111资金约束：`max_capital_usage_ratio=0.45`
+  - Stage111单笔约束：`max_single_trade_capital_usage_ratio=0.20`
+- 修改参数：
+  - 相比Stage111，仅修改本金和产品池；交易规则、AI过滤、相关性门控、sizing equity cap保持一致。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+Stage115完整窗口复现结果：
+
+| 版本 | 本金 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 定位 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `stage115_stage111_200k_granularity_safe_candidate_v1` | `200,000` | `932,280` | `366.1400%` | `-24.6971%` | `1.0501` | `53,700` | `512` | `40.3042%` | `20万研究候选，非正式部署` |
+
+引用Stage114季度验证：
+
+| 周期 | 正收益率 | 最差收益 | 中位收益 | 最大保证金/权益 | `>80%`窗口数 | `>100%`窗口数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `64.0000%` | `-3.0550%` | `5.7550%` | `46.7592%` | `0` | `0` |
+| `126d` | `79.1667%` | `-5.5700%` | `11.1288%` | `46.7592%` | `0` | `0` |
+| `252d` | `77.2727%` | `-5.7800%` | `24.1625%` | `46.7592%` | `0` | `0` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_stage115_200k_granularity_safe_config.py examples/portfolio_backtesting/run_qmt_roll_stage115_200k_granularity_safe_backtest.py`
+- 已完成完整窗口复现：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage115_200k_granularity_safe_backtest.py`
+
+### 我的判断
+
+- Stage115可以作为后续20万本金研究的“安全起点”，但不应当作为正式部署版本。
+- 它的价值在于：把20万最容易被忽视的单手合约粒度问题显式固化，避免高收益曲线掩盖生存约束。
+- 它的短板在于：季度冷启动正收益率不够强，尤其`63d`只有`64.0000%`，说明短周期启动仍可能遇到磨损期。
+
+### 后续规划和TODO
+
+- 后续20万研究默认以Stage115作为小资金安全候选对照，但新alpha发现默认不要直接打开Stage115过滤池。
+- 下一步优先研究：
+  - 提高Stage115季度冷启动稳定性，尤其`63d`窗口
+  - 对亏损季度做品种/方向/信号来源归因
+  - 不新增高保证金品种，避免用收益换回不可交易风险
+
+## 2026-04-25 12:16 第116阶段：Stage115 20万亏损冷启动窗口归因
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 12:16`
+- 是否是重要突破版本：否。属于诊断版本，明确Stage115弱点来源，暂不修改策略。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_loss_window_attribution.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_loss_window_attribution_weak_windows_stage116_stage115_200k_loss_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_loss_window_attribution_product_attribution_stage116_stage115_200k_loss_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_loss_window_attribution_top_loss_products_stage116_stage115_200k_loss_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_loss_window_attribution_report_stage116_stage115_200k_loss_window_attribution_v1.md`
+- 新增参数：
+  - 模型标签：`stage116_stage115_200k_loss_window_attribution_v1`
+  - 本金：`200,000`
+  - 归因范围：Stage114中完整窗口且收益`<=0`的弱窗口
+  - 弱窗口分类：`real_loss_window`、`mild_chop_window`、`thin_signal_friction`、`no_signal_idle`
+- 修改参数：
+  - 无。Stage115交易逻辑、资金约束、品种池均未修改。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+Stage116重跑并归因`19`个弱窗口：
+
+| 类别 | 窗口数 | 含义 |
+| --- | ---: | --- |
+| `real_loss_window` | `4` | 真正亏损窗口，收益或回撤显著变差 |
+| `mild_chop_window` | `7` | 轻微震荡磨损，不是结构性大亏 |
+| `thin_signal_friction` | `6` | 低交易次数下的滑点/小亏损 |
+| `no_signal_idle` | `2` | 无信号空窗，收益为`0` |
+
+弱窗口品种亏损聚合：
+
+| 品种 | 弱窗口亏损次数 | 聚合净盈亏 | 总滑点 | 总交易次数 | 最大单窗口亏损 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `fu.SHFE` | `5` | `-52,150` | `840` | `22` | `-23,590` |
+| `SM.CZCE` | `5` | `-30,120` | `320` | `12` | `-14,350` |
+| `rb.SHFE` | `3` | `-18,690` | `210` | `9` | `-6,230` |
+| `sp.SHFE` | `4` | `-16,960` | `400` | `10` | `-4,920` |
+| `SH.CZCE` | `3` | `-16,920` | `720` | `6` | `-5,640` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_loss_window_attribution.py`
+- 已完成弱窗口归因：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_loss_window_attribution.py`
+
+### 我的判断
+
+- Stage115的弱窗口不是单一参数失效，更多是“低交易/震荡/空窗”导致的冷启动不稳定。
+- `fu.SHFE`和`SM.CZCE`确实是弱窗口里最明显的亏损来源，但这只能说明需要消融验证，不能直接删除。
+- 继续加复杂信号过滤容易过拟合；更合理的下一步是做极简产品消融，验证删除拖累品种的机会成本。
+
+### 后续规划和TODO
+
+- 测试`exclude_fu`与`exclude_fu_sm`两个最小消融。
+- 若消融改善弱窗口但完整窗口代价过大，则不删除品种，只考虑条件性降权或冷启动节流。
+
+## 2026-04-25 12:26 第117阶段：Stage115 20万弱窗口Top亏损品种消融
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 12:26`
+- 是否是重要突破版本：否。属于否定硬删除方案的验证版本。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_top_loss_product_ablation.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_top_loss_product_ablation_full_summary_stage117_stage115_200k_top_loss_product_ablation_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_top_loss_product_ablation_weak_aggregate_stage117_stage115_200k_top_loss_product_ablation_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_top_loss_product_ablation_weak_horizon_summary_stage117_stage115_200k_top_loss_product_ablation_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage115_200k_top_loss_product_ablation_report_stage117_stage115_200k_top_loss_product_ablation_v1.md`
+- 新增参数：
+  - 模型标签：`stage117_stage115_200k_top_loss_product_ablation_v1`
+  - 消融1：`exclude_fu`，剔除`fu.SHFE`
+  - 消融2：`exclude_fu_sm`，剔除`fu.SHFE,SM.CZCE`
+  - 对照：`baseline_stage115`
+- 修改参数：
+  - 仅修改产品池，不修改交易信号、资金约束、AI过滤、相关性门控。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+完整窗口对比：
+
+| 版本 | 剔除品种 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `baseline_stage115` | 无 | `932,280` | `366.1400%` | `-24.6971%` | `1.0501` | `53,700` | `512` | `40.3042%` |
+| `exclude_fu` | `fu.SHFE` | `819,145` | `309.5725%` | `-24.6971%` | `1.0016` | `50,040` | `451` | `40.5172%` |
+| `exclude_fu_sm` | `fu.SHFE,SM.CZCE` | `618,755` | `209.3775%` | `-18.9949%` | `0.8892` | `38,680` | `371` | `38.2199%` |
+
+弱窗口聚合对比：
+
+| 版本 | 弱窗口数 | 转正窗口数 | 转正率 | 中位收益 | 最差收益 | 平均收益 | 最差最大回撤 | 最大保证金/权益 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `baseline_stage115` | `19` | `0` | `0.0000%` | `-1.0100%` | `-5.7800%` | `-1.6526%` | `-19.0625%` | `50.4867%` |
+| `exclude_fu` | `19` | `4` | `21.0526%` | `-0.9650%` | `-4.8950%` | `-0.2226%` | `-19.0246%` | `44.7737%` |
+| `exclude_fu_sm` | `19` | `2` | `10.5263%` | `-0.7400%` | `-6.8300%` | `-1.5118%` | `-14.4525%` | `40.3984%` |
+
+### 修改的回测结果
+
+- 无。Stage117只做消融验证，不修改Stage115配置。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_top_loss_product_ablation.py`
+- 已完成完整窗口和弱窗口消融：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage115_200k_top_loss_product_ablation.py`
+
+### 我的判断
+
+- 不建议硬删除`fu.SHFE`。它确实改善弱窗口平均收益，但完整窗口期末权益下降`113,135`，总收益下降`56.5675`个百分点，最大回撤没有改善。
+- 不建议硬删除`fu.SHFE+SM.CZCE`。虽然最大回撤从`-24.6971%`降到`-18.9949%`，但总收益从`366.1400%`降到`209.3775%`，Sharpe也降到`0.8892`，机会成本过大。
+- 更本质的结论：`fu`是“高贡献但冷启动伤人”的品种，不是毒性品种；应该考虑条件性节流，而不是永久剔除。
+
+### 后续规划和TODO
+
+- 不把`exclude_fu`或`exclude_fu_sm`固化进Stage115。
+- 下一步若继续改进，应研究`fu.SHFE`条件性降权/冷启动节流，例如只在冷启动前`126d`降低fu风险，或在fu短期亏损后临时降权。
+- 所有进一步改动必须继续用20万本金、季度冷启动、完整窗口三者同时验证。
+
+## 2026-04-25 14:00 第118阶段：Stage78 40万叠加Stage111资金约束直接验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 14:00`
+- 是否是重要突破版本：否。直接叠加能降风险，但把Stage78收益引擎压成接近Stage111的低收益版本。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_stage111_margin_overlay.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_stage111_margin_overlay_quarter_summary_stage118_stage78_400k_stage111_margin_overlay_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_stage111_margin_overlay_horizon_summary_stage118_stage78_400k_stage111_margin_overlay_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_stage111_margin_overlay_horizon_aggregate_stage118_stage78_400k_stage111_margin_overlay_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_stage111_margin_overlay_full_comparison_stage118_stage78_400k_stage111_margin_overlay_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_stage111_margin_overlay_report_stage118_stage78_400k_stage111_margin_overlay_v1.md`
+- 新增参数：
+  - 模型标签：`stage118_stage78_400k_stage111_margin_overlay_v1`
+  - 本金：`400,000`
+  - Stage78基础逻辑：保留`official_stage78_defensive_v1`的品种池、AI品种过滤、FU防守规则、相关性门控
+  - Stage111资金约束：`max_capital_usage_ratio=0.45`
+  - Stage111单笔约束：`max_single_trade_capital_usage_ratio=0.20`
+  - sizing资金上限：`1,000,000`
+  - 季度窗口：`63d`、`126d`、`252d`
+- 修改参数：
+  - 无。该阶段只做叠加研究，不修改正式策略配置。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+完整窗口对比：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 最大保证金/权益 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `Stage78_40w_cap2.5x参考` | `5,712,450` | `1328.1125%` | `-38.8477%` | `1.4531` | `295,970` | `820` | 不适用 | 未统计 |
+| `Stage111_40w安全参考` | `2,766,945` | `591.7363%` | `-21.6475%` | `1.4757` | `118,860` | `782` | 不适用 | `51.7933%` |
+| `Stage118_Stage78+Stage111约束` | `2,658,985` | `564.7462%` | `-21.6475%` | `1.4457` | `123,330` | `749` | `44.0104%` | `51.7933%` |
+
+季度聚合结果：
+
+| 窗口 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe | 最大保证金/权益 | 保证金>80%窗口 | 保证金>100%窗口 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `72.0000%` | `7.8250%` | `-9.4875%` | `-26.1991%` | `1.2126` | `-3.2458` | `59.9891%` | `0` | `0` |
+| `126d` | `95.8333%` | `16.2956%` | `-1.4613%` | `-26.1991%` | `1.4598` | `-0.0057` | `63.3237%` | `0` | `0` |
+| `252d` | `100.0000%` | `43.1344%` | `8.2700%` | `-26.1991%` | `1.4489` | `0.5357` | `63.3237%` | `0` | `0` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_stage111_margin_overlay.py`
+- 已完成40万本金季度滚动回测：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_stage111_margin_overlay.py`
+
+### 我的判断
+
+- Stage111的`0.45/0.20`外壳确实能显著压低Stage78回撤和保证金风险。
+- 但它也基本切掉了Stage78的收益优势：全周期收益从`1328.1125%`降到`564.7462%`，并且低于Stage111自身的`591.7363%`。
+- 直接叠加不值得固化。它证明了资金约束有效，但不是Stage78和Stage111的最佳结合方式。
+
+### 后续规划和TODO
+
+- 不把`0.45/0.20`直接叠加固化为正式版本。
+- 继续做低维资金约束曲面，验证是否存在更合理的中间档。
+
+## 2026-04-25 14:00 第119阶段：Stage78 40万资金约束曲面验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 14:00`
+- 是否是重要突破版本：否。发现`0.60/0.30`有收益价值但季度保证金越界，`0.50/0.25`安全但优势太薄。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_margin_profile_surface.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_margin_profile_surface_quarter_summary_stage119_stage78_400k_margin_profile_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_margin_profile_surface_horizon_summary_stage119_stage78_400k_margin_profile_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_margin_profile_surface_horizon_aggregate_stage119_stage78_400k_margin_profile_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_margin_profile_surface_full_comparison_stage119_stage78_400k_margin_profile_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_margin_profile_surface_report_stage119_stage78_400k_margin_profile_surface_v1.md`
+- 新增参数：
+  - 模型标签：`stage119_stage78_400k_margin_profile_surface_v1`
+  - `stage78_cap60_single30`：`max_capital_usage_ratio=0.60`，`max_single_trade_capital_usage_ratio=0.30`
+  - `stage78_cap50_single25`：`max_capital_usage_ratio=0.50`，`max_single_trade_capital_usage_ratio=0.25`
+  - 复用Stage118的`stage78_cap45_single20`
+- 修改参数：
+  - 只修改资金约束档位，不修改交易信号、品种池、AI过滤、相关性门控。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+完整窗口对比：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 最大保证金/权益 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_cap60_single30` | `3,789,405` | `847.3513%` | `-22.9096%` | `1.5116` | `177,210` | `776` | `42.7136%` | `72.2309%` |
+| `stage78_cap50_single25` | `2,851,515` | `612.8788%` | `-23.1565%` | `1.3741` | `137,910` | `750` | `42.3377%` | `55.3008%` |
+| `stage78_cap45_single20` | `2,658,985` | `564.7462%` | `-21.6475%` | `1.4457` | `123,330` | `749` | `44.0104%` | `51.7933%` |
+
+季度聚合结果：
+
+| 版本 | 窗口 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 最大保证金/权益 | 保证金>80%窗口 | 保证金>100%窗口 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_cap60_single30` | `63d` | `76.0000%` | `11.7213%` | `-10.1900%` | `-32.7572%` | `103.0240%` | `6` | `1` |
+| `stage78_cap60_single30` | `126d` | `95.8333%` | `29.3694%` | `-4.4838%` | `-32.7572%` | `103.0240%` | `8` | `1` |
+| `stage78_cap60_single30` | `252d` | `100.0000%` | `83.0163%` | `12.1475%` | `-32.7572%` | `103.0240%` | `7` | `1` |
+| `stage78_cap50_single25` | `63d` | `72.0000%` | `9.2750%` | `-11.4900%` | `-29.0256%` | `74.1755%` | `0` | `0` |
+| `stage78_cap50_single25` | `126d` | `95.8333%` | `17.2419%` | `-1.3088%` | `-29.0256%` | `74.1755%` | `0` | `0` |
+| `stage78_cap50_single25` | `252d` | `100.0000%` | `44.3019%` | `9.1913%` | `-29.0256%` | `74.1755%` | `0` | `0` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_margin_profile_surface.py`
+- 已完成40万本金资金约束曲面回测：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_margin_profile_surface.py`
+
+### 我的判断
+
+- `0.60/0.30`的收益和Sharpe有吸引力，但季度冷启动最大保证金/权益达到`103.0240%`，已经突破实盘安全边界，不能固化。
+- `0.50/0.25`安全，但相对Stage111只多`21.1425`个百分点总收益，Sharpe反而更低，不构成有价值的正式替代。
+- Stage119说明问题不只是“Stage111约束太硬”，还需要拆分总约束和单笔约束。
+
+### 后续规划和TODO
+
+- 继续做总资金约束和单笔约束拆分实验。
+- 原则上不做大网格搜索，只验证结构性档位，避免资金规则过拟合。
+
+## 2026-04-25 14:00 第120阶段：Stage78 40万总约束和单笔约束拆分验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 14:00`
+- 是否是重要突破版本：是，研究层面的结构突破，但不是正式固化版本。发现`0.55/0.25`是目前Stage78和Stage111最有结合价值的中间候选。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_decoupled_margin_surface.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_decoupled_margin_surface_quarter_summary_stage120_stage78_400k_decoupled_margin_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_decoupled_margin_surface_horizon_summary_stage120_stage78_400k_decoupled_margin_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_decoupled_margin_surface_horizon_aggregate_stage120_stage78_400k_decoupled_margin_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_decoupled_margin_surface_full_comparison_stage120_stage78_400k_decoupled_margin_surface_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage78_400k_decoupled_margin_surface_report_stage120_stage78_400k_decoupled_margin_surface_v1.md`
+- 新增参数：
+  - 模型标签：`stage120_stage78_400k_decoupled_margin_surface_v1`
+  - `stage78_cap55_single25`：`max_capital_usage_ratio=0.55`，`max_single_trade_capital_usage_ratio=0.25`
+  - `stage78_cap60_single25`：`max_capital_usage_ratio=0.60`，`max_single_trade_capital_usage_ratio=0.25`
+- 修改参数：
+  - 只拆分总资金约束和单笔约束，不修改Stage78交易逻辑。
+- 删除参数：
+  - 无。
+
+### 新增回测结果
+
+完整窗口对比：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 最大保证金/权益 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `stage78_cap60_single25` | `3,662,100` | `815.5250%` | `-23.0316%` | `1.5104` | `171,410` | `778` | `42.8571%` | `71.5269%` |
+| `stage78_cap55_single25` | `3,333,745` | `733.4363%` | `-24.1170%` | `1.4832` | `151,290` | `754` | `42.4870%` | `67.6146%` |
+
+横向关键对照：
+
+| 版本 | 总收益 | 最大回撤 | Sharpe | 季度最大保证金/权益 | 季度保证金>80%窗口 | 判断 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `Stage111_40w安全参考` | `591.7363%` | `-21.6475%` | `1.4757` | `63.3237%` | `0` | 更稳但收益低 |
+| `stage78_cap50_single25` | `612.8788%` | `-23.1565%` | `1.3741` | `74.1755%` | `0` | 安全但优势薄 |
+| `stage78_cap55_single25` | `733.4363%` | `-24.1170%` | `1.4832` | `79.9596%` | `0` | 当前最有研究价值 |
+| `stage78_cap60_single25` | `815.5250%` | `-23.0316%` | `1.5104` | `92.2344%` | `7` | 收益好但保证金越界 |
+| `stage78_cap60_single30` | `847.3513%` | `-22.9096%` | `1.5116` | `103.0240%` | `8` | 不可部署 |
+
+`stage78_cap55_single25`季度聚合：
+
+| 窗口 | 正收益率 | 中位收益 | 最差收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe | 最大保证金/权益 | 保证金>80%窗口 | 保证金>100%窗口 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `80.0000%` | `10.2300%` | `-8.8925%` | `-29.5107%` | `1.2936` | `-2.9443` | `79.9596%` | `0` | `0` |
+| `126d` | `91.6667%` | `26.0075%` | `-2.8000%` | `-30.0743%` | `1.8046` | `-0.0372` | `79.9596%` | `0` | `0` |
+| `252d` | `100.0000%` | `63.3313%` | `10.4538%` | `-30.0743%` | `1.7080` | `0.5022` | `79.9596%` | `0` | `0` |
+
+`stage78_cap55_single25`脆弱窗口：
+
+| 窗口 | 63d收益 | 63d最大回撤 | 最大保证金/权益 |
+| --- | ---: | ---: | ---: |
+| `q2020_1` | `-8.8925%` | `-11.1276%` | `32.4030%` |
+| `q2024_2` | `-6.1275%` | `-21.0907%` | `43.9658%` |
+| `q2022_2` | `-4.2100%` | `-5.4343%` | `22.6320%` |
+
+### 修改的回测结果
+
+- 无。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已通过语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_decoupled_margin_surface.py`
+- 已完成40万本金拆分资金约束回测：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage78_400k_decoupled_margin_surface.py`
+
+### 我的判断
+
+- Stage78和Stage111有结合价值，但不是直接套`0.45/0.20`。更合理的结构是保留Stage78收益引擎，同时用更严格的单笔约束控制合约粒度，再适度放宽总资金约束。
+- `stage78_cap55_single25`是当前最有研究价值的中间候选：总收益比Stage111高`141.7000`个百分点，Sharpe略高于Stage111，季度`63d`正收益率从Stage111的`72.0000%`提高到`80.0000%`，且无保证金`>80%`窗口。
+- 但它不能直接固化为正式版本，因为季度最大保证金/权益为`79.9596%`，距离`80%`红线只有`0.0404`个百分点，安全边际过薄。实盘保证金比例、滑点、跳空或主力切换误差都可能让它越线。
+- `stage78_cap60_single25`说明单笔约束从`0.30`降到`0.25`仍不能解决总仓位越界，风险源主要是多品种并发，而不是单笔过大。
+
+### 后续规划和TODO
+
+- 不立即固化`stage78_cap55_single25`。
+- 下一步应对`stage78_cap55_single25`做安全边际验证：保证金比例上浮、滑点上浮、弱窗口压力、起始年份压力。
+- 如果压力测试后仍稳，可以把它作为Stage78和Stage111结合线的候选版本；如果一加压力就破`80%`，则回退到`stage78_cap50_single25`或继续保持Stage111作为40万安全基准。

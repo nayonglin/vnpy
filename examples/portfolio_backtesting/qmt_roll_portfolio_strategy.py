@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from vnpy.trader.constant import Direction, Interval, Offset
@@ -12,7 +13,12 @@ from vnpy.trader.object import BarData, TradeData
 from vnpy.trader.utility import ArrayManager
 from vnpy_portfoliostrategy import StrategyEngine, StrategyTemplate
 
-from main_contract_mapping import build_contract_metadata, build_daily_mapping, get_preferred_mapping_path
+from main_contract_mapping import (
+    build_contract_metadata,
+    build_daily_mapping,
+    get_preferred_mapping_path,
+    load_product_universe_symbols,
+)
 from qmt_roll_ai_selection_pairwise_runtime import (
     DEFAULT_MODEL_PATH,
     DEFAULT_SUMMARY_PATH,
@@ -109,6 +115,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     author: str = "GPT-5.4"
 
     mapping_csv_path: str = str(get_preferred_mapping_path())
+    product_universe_csv_path: str = ""
 
     ma_short: int = 5
     ma_mid: int = 10
@@ -136,6 +143,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     max_position_size: int = 50000
     max_concurrent_positions: int = 10
     capital_base: float = 0.0
+    sizing_equity_cap: float = 1_000_000.0
     max_capital_usage_ratio: float = 0.9
     max_single_trade_capital_usage_ratio: float = 0.7
     risk_ratio_of_total_assets: float = 0.01
@@ -149,6 +157,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     default_margin_ratio: float = 0.10
     margin_ratio_overrides: str = ""
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
+    streak_risk_state_excluded_products: str = ""
+    streak_risk_state_exclusion_mode: str = "all"
+    streak_profit_recovery_mode: str = "reset"
+    streak_profit_recovery_confirm_wins: int = 1
+    streak_profit_recovery_equity_confirm_drawdown_pct: float = -1.0
+    enable_streak_entry_structure_risk_recovery: bool = False
+    streak_entry_structure_recovery_signals: str = "long_case1a,short_case1a"
+    streak_entry_structure_recovery_min_multiplier: float = 1.0
+    streak_entry_structure_recovery_require_flat_portfolio: bool = True
+    streak_entry_structure_recovery_max_same_direction_corr: float = 0.30
+    streak_entry_structure_recovery_require_rsi_confirmation: bool = False
+    streak_entry_structure_recovery_long_min_rsi: float = 60.0
+    streak_entry_structure_recovery_short_max_rsi: float = 40.0
+    streak_entry_structure_recovery_max_portfolio_drawdown_pct: float = -1.0
     enable_weighted_env_gate: bool = False
     enable_portfolio_env_gate: bool = False
     weighted_env_gate_close_position_good_max: float = 0.25
@@ -158,6 +180,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     weighted_env_gate_selected_rate_good_max: float = 0.35
     weighted_env_gate_selected_rate_bad_min: float = 0.75
     weighted_env_gate_weight_floor: float = 0.35
+    enable_portfolio_drawdown_gate: bool = False
+    portfolio_drawdown_gate_start_pct: float = 0.10
+    portfolio_drawdown_gate_full_pct: float = 0.25
+    portfolio_drawdown_gate_weight_floor: float = 0.50
+    enable_same_direction_correlation_gate: bool = False
+    same_direction_correlation_gate_lookback: int = 20
+    same_direction_correlation_gate_start: float = 0.60
+    same_direction_correlation_gate_full: float = 0.80
+    same_direction_correlation_gate_weight_floor: float = 0.50
     enable_selection_pairwise_v2: bool = False
     enable_selection_pairwise_v2_catastrophic_veto: bool = False
     enable_selection_pairwise_v2_catastrophic_hard_filter: bool = False
@@ -166,9 +197,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     selection_pairwise_volume_tilt_long_strength: float = -1.0
     selection_pairwise_volume_tilt_short_strength: float = -1.0
     selection_pairwise_volume_tilt_min_score_gap: float = 0.0
+    selection_pairwise_volume_tilt_cooldown_days: int = 0
+    selection_pairwise_volume_tilt_long_max_avg_ret20_zscore: float = -1.0
+    selection_pairwise_volume_tilt_long_max_avg_rsi: float = -1.0
+    selection_pairwise_volume_tilt_long_score_gap_reference: float = -1.0
+    selection_pairwise_volume_tilt_long_active_ratio_full_strength_max: float = -1.0
+    selection_pairwise_volume_tilt_long_base_volume_reference: float = -1.0
+    selection_pairwise_volume_tilt_long_active_positions_reference: float = -1.0
+    selection_pairwise_volume_tilt_long_max_range_zscore_reference: float = -1.0
     selection_pairwise_model_path: str = str(DEFAULT_MODEL_PATH)
     selection_pairwise_summary_path: str = str(DEFAULT_SUMMARY_PATH)
     selection_pairwise_veto_penalty: float = 1.5
+    enable_ai_product_pool_filter: bool = False
+    ai_product_pool_eligibility_path: str = ""
+    ai_product_pool_strategy: str = "ai_top8_entry_filter"
     array_manager_size_floor: int = 120
 
     stop_loss_pct: float = 0.02
@@ -216,6 +258,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     parameters: list[str] = [
         "mapping_csv_path",
+        "product_universe_csv_path",
         "ma_short",
         "ma_mid",
         "ma_long",
@@ -239,6 +282,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "max_position_size",
         "max_concurrent_positions",
         "capital_base",
+        "sizing_equity_cap",
         "max_capital_usage_ratio",
         "max_single_trade_capital_usage_ratio",
         "risk_ratio_of_total_assets",
@@ -252,6 +296,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "default_margin_ratio",
         "margin_ratio_overrides",
         "streak_risk_multipliers",
+        "streak_risk_state_excluded_products",
+        "streak_risk_state_exclusion_mode",
+        "streak_profit_recovery_mode",
+        "streak_profit_recovery_confirm_wins",
+        "streak_profit_recovery_equity_confirm_drawdown_pct",
+        "enable_streak_entry_structure_risk_recovery",
+        "streak_entry_structure_recovery_signals",
+        "streak_entry_structure_recovery_min_multiplier",
+        "streak_entry_structure_recovery_require_flat_portfolio",
+        "streak_entry_structure_recovery_max_same_direction_corr",
+        "streak_entry_structure_recovery_require_rsi_confirmation",
+        "streak_entry_structure_recovery_long_min_rsi",
+        "streak_entry_structure_recovery_short_max_rsi",
+        "streak_entry_structure_recovery_max_portfolio_drawdown_pct",
         "enable_weighted_env_gate",
         "enable_portfolio_env_gate",
         "weighted_env_gate_close_position_good_max",
@@ -261,6 +319,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "weighted_env_gate_selected_rate_good_max",
         "weighted_env_gate_selected_rate_bad_min",
         "weighted_env_gate_weight_floor",
+        "enable_portfolio_drawdown_gate",
+        "portfolio_drawdown_gate_start_pct",
+        "portfolio_drawdown_gate_full_pct",
+        "portfolio_drawdown_gate_weight_floor",
+        "enable_same_direction_correlation_gate",
+        "same_direction_correlation_gate_lookback",
+        "same_direction_correlation_gate_start",
+        "same_direction_correlation_gate_full",
+        "same_direction_correlation_gate_weight_floor",
         "enable_selection_pairwise_v2",
         "enable_selection_pairwise_v2_catastrophic_veto",
         "enable_selection_pairwise_v2_catastrophic_hard_filter",
@@ -269,9 +336,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "selection_pairwise_volume_tilt_long_strength",
         "selection_pairwise_volume_tilt_short_strength",
         "selection_pairwise_volume_tilt_min_score_gap",
+        "selection_pairwise_volume_tilt_cooldown_days",
+        "selection_pairwise_volume_tilt_long_max_avg_ret20_zscore",
+        "selection_pairwise_volume_tilt_long_max_avg_rsi",
+        "selection_pairwise_volume_tilt_long_score_gap_reference",
+        "selection_pairwise_volume_tilt_long_active_ratio_full_strength_max",
+        "selection_pairwise_volume_tilt_long_base_volume_reference",
+        "selection_pairwise_volume_tilt_long_active_positions_reference",
+        "selection_pairwise_volume_tilt_long_max_range_zscore_reference",
         "selection_pairwise_model_path",
         "selection_pairwise_summary_path",
         "selection_pairwise_veto_penalty",
+        "enable_ai_product_pool_filter",
+        "ai_product_pool_eligibility_path",
+        "ai_product_pool_strategy",
         "array_manager_size_floor",
         "stop_loss_pct",
         "trailing_stop_enabled",
@@ -313,6 +391,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
+        "profit_recovery_streak",
+        "portfolio_equity_high_water",
+        "portfolio_drawdown_pct",
     ]
 
     def __init__(
@@ -325,8 +406,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         super().__init__(strategy_engine, strategy_name, vt_symbols, setting)
 
         mapping_path = Path(self.mapping_csv_path)
-        self.daily_mapping: dict[str, dict[str, str]] = build_daily_mapping(mapping_path)
-        metadata: dict[str, Any] = build_contract_metadata(mapping_path)
+        supported_symbols = load_product_universe_symbols(self.product_universe_csv_path)
+        self.daily_mapping: dict[str, dict[str, str]] = build_daily_mapping(
+            mapping_path,
+            supported_symbols=supported_symbols,
+        )
+        metadata: dict[str, Any] = build_contract_metadata(
+            mapping_path,
+            supported_symbols=supported_symbols,
+        )
         self.product_symbols: list[str] = metadata["product_symbols"]
         self.source_symbol_by_contract: dict[str, str] = metadata["source_symbol_by_contract"]
 
@@ -340,6 +428,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.states: dict[str, ProductState] = {
             product_vt: ProductState(product_vt_symbol=product_vt) for product_vt in self.product_symbols
         }
+        self.streak_risk_state_excluded_product_set: set[str] = self._parse_symbol_set(
+            self.streak_risk_state_excluded_products
+        )
+        self.profit_recovery_streak: int = 0
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
         self.entry_candidate_snapshots: list[dict[str, Any]] = []
@@ -351,10 +443,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
         self.settled_balance: float = self.base_capital
+        self.portfolio_equity_high_water: float = self.base_capital
+        self.portfolio_drawdown_pct: float = 0.0
         self.last_close_prices: dict[str, float] = {}
         self.pending_margin_reservation: float = 0.0
         self.pending_active_products: set[str] = set()
         self.current_env_gate_snapshot: dict[str, Any] = {}
+        self.selection_pairwise_volume_tilt_last_date_by_direction: dict[str, pd.Timestamp] = {}
+        self.ai_product_pool_by_date: dict[pd.Timestamp, dict[str, dict[str, Any]]] = {}
+        self.ai_product_pool_eval_dates: list[pd.Timestamp] = []
+        if self.enable_ai_product_pool_filter:
+            self._load_ai_product_pool_eligibility()
         self.selection_pairwise_runtime: SelectionPairwiseRuntimeModel | None = None
         if self.enable_selection_pairwise_v2:
             self.selection_pairwise_runtime = SelectionPairwiseRuntimeModel(
@@ -363,6 +462,90 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 enable_catastrophic_veto=self.enable_selection_pairwise_v2_catastrophic_veto,
                 catastrophic_veto_penalty=self.selection_pairwise_veto_penalty,
             )
+
+    def _load_ai_product_pool_eligibility(self) -> None:
+        path = Path(str(self.ai_product_pool_eligibility_path or ""))
+        if not path.exists():
+            self.write_log(f"AI product pool eligibility file missing: {path}")
+            return
+
+        df = pd.read_csv(path)
+        required_columns = {"strategy", "eval_date", "product_vt_symbol", "score", "score_rank", "top_n"}
+        missing_columns = required_columns - set(df.columns)
+        if missing_columns:
+            self.write_log(f"AI product pool eligibility missing columns: {sorted(missing_columns)}")
+            return
+
+        df = df[df["strategy"].astype(str) == str(self.ai_product_pool_strategy)].copy()
+        if df.empty:
+            self.write_log(f"AI product pool strategy has no rows: {self.ai_product_pool_strategy}")
+            return
+
+        df["eval_date"] = pd.to_datetime(df["eval_date"]).dt.normalize()
+        for column in ["score", "score_rank", "top_n"]:
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0.0)
+
+        by_date: dict[pd.Timestamp, dict[str, dict[str, Any]]] = {}
+        for eval_date, group in df.groupby("eval_date"):
+            by_date[pd.Timestamp(eval_date)] = {
+                str(row.product_vt_symbol): {
+                    "score": float(row.score),
+                    "rank": int(row.score_rank),
+                    "top_n": int(row.top_n),
+                }
+                for row in group.itertuples(index=False)
+            }
+        self.ai_product_pool_by_date = by_date
+        self.ai_product_pool_eval_dates = sorted(by_date)
+
+    def _ai_product_pool_snapshot(self, product_vt_symbol: str, trade_date: pd.Timestamp) -> dict[str, Any]:
+        if not self.enable_ai_product_pool_filter:
+            return {
+                "ai_product_pool_enabled": 0,
+                "ai_product_pool_strategy": "",
+                "ai_product_pool_allowed": 1,
+                "ai_product_pool_signal_date": "",
+                "ai_product_pool_score": 0.0,
+                "ai_product_pool_rank": 0,
+                "ai_product_pool_top_n": 0,
+            }
+
+        snapshot: dict[str, Any] = {
+            "ai_product_pool_enabled": 1,
+            "ai_product_pool_strategy": str(self.ai_product_pool_strategy),
+            "ai_product_pool_allowed": 1,
+            "ai_product_pool_signal_date": "",
+            "ai_product_pool_score": 0.0,
+            "ai_product_pool_rank": 0,
+            "ai_product_pool_top_n": 0,
+        }
+        if not self.ai_product_pool_eval_dates:
+            snapshot["ai_product_pool_allowed"] = 1
+            return snapshot
+
+        normalized_date = pd.Timestamp(trade_date)
+        if normalized_date.tz is not None:
+            normalized_date = normalized_date.tz_localize(None)
+        normalized_date = normalized_date.normalize()
+        eval_index = pd.DatetimeIndex(self.ai_product_pool_eval_dates)
+        signal_index = int(eval_index.searchsorted(normalized_date, side="left") - 1)
+        if signal_index < 0:
+            # Before the first out-of-sample AI signal, keep the original strategy unchanged.
+            return snapshot
+
+        signal_date = pd.Timestamp(eval_index[signal_index])
+        product_rows = self.ai_product_pool_by_date.get(signal_date, {})
+        product_row = product_rows.get(product_vt_symbol)
+        snapshot["ai_product_pool_signal_date"] = signal_date.date().isoformat()
+        if product_row is None:
+            snapshot["ai_product_pool_allowed"] = 0
+            return snapshot
+
+        snapshot["ai_product_pool_allowed"] = 1
+        snapshot["ai_product_pool_score"] = float(product_row.get("score", 0.0) or 0.0)
+        snapshot["ai_product_pool_rank"] = int(product_row.get("rank", 0) or 0)
+        snapshot["ai_product_pool_top_n"] = int(product_row.get("top_n", 0) or 0)
+        return snapshot
 
     def on_init(self) -> None:
         self.write_log("Roll portfolio strategy initialized")
@@ -775,10 +958,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def _refresh_risk_state(self, bars: dict[str, BarData]) -> None:
         self.estimated_equity = self._estimate_equity(bars)
+        self._refresh_portfolio_drawdown_state()
         self.total_margin_in_use = self._estimate_margin_usage(bars)
         limited_balance: float = self._limited_available_balance()
         self.current_risk_per_trade = self._risk_amount_from_ratio(self.risk_ratio_of_total_assets, limited_balance)
         self.risk_multiplier = self._current_streak_multiplier()
+
+    def _refresh_portfolio_drawdown_state(self) -> None:
+        equity: float = max(0.0, float(self.estimated_equity or self.base_capital))
+        self.portfolio_equity_high_water = max(
+            float(self.portfolio_equity_high_water or self.base_capital),
+            equity,
+            float(self.base_capital),
+        )
+        if self.portfolio_equity_high_water <= 0:
+            self.portfolio_drawdown_pct = 0.0
+            return
+        self.portfolio_drawdown_pct = max(
+            0.0,
+            (self.portfolio_equity_high_water - equity) / self.portfolio_equity_high_water,
+        )
 
     def _reset_intrabar_reservations(self) -> None:
         self.pending_margin_reservation = 0.0
@@ -789,6 +988,138 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return 1.0
         snapshot = self.current_env_gate_snapshot or {}
         return self._clip01(float(snapshot.get("env_gate_weight", 1.0)))
+
+    def _portfolio_drawdown_gate_weight(self, entry_context: str) -> float:
+        if not self.enable_portfolio_drawdown_gate or entry_context != "flat_entry":
+            return 1.0
+
+        drawdown_pct: float = max(0.0, float(self.portfolio_drawdown_pct or 0.0))
+        start_pct: float = max(0.0, float(self.portfolio_drawdown_gate_start_pct or 0.0))
+        full_pct: float = max(start_pct + 1e-9, float(self.portfolio_drawdown_gate_full_pct or 0.0))
+        weight_floor: float = self._clip01(float(self.portfolio_drawdown_gate_weight_floor or 0.0))
+        if drawdown_pct <= start_pct:
+            return 1.0
+        if drawdown_pct >= full_pct:
+            return weight_floor
+
+        relief_ratio: float = (full_pct - drawdown_pct) / max(1e-9, full_pct - start_pct)
+        return self._clip01(weight_floor + (1.0 - weight_floor) * relief_ratio)
+
+    def _same_direction_correlation_gate_snapshot(
+        self,
+        *,
+        contract_vt_symbol: str,
+        direction: str,
+        history: pd.DataFrame,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        enabled = int(self.enable_same_direction_correlation_gate and entry_context == "flat_entry")
+        snapshot: dict[str, Any] = {
+            "same_direction_correlation_gate_enabled": enabled,
+            "same_direction_correlation_gate_weight": 1.0,
+            "same_direction_correlation_active_count": 0,
+            "same_direction_correlation_corr_count": 0,
+            "same_direction_correlation_max_corr": 0.0,
+            "same_direction_correlation_avg_corr": 0.0,
+        }
+        if not enabled:
+            return snapshot
+
+        lookback = max(5, int(self.same_direction_correlation_gate_lookback or 20))
+        candidate_returns = self._history_return_vector(history, lookback)
+        if len(candidate_returns) < max(5, lookback // 2):
+            return snapshot
+
+        active_symbols: list[str] = []
+        corr_values: list[float] = []
+        for state in self.states.values():
+            active_contract = state.contract_vt_symbol
+            if not active_contract or active_contract == contract_vt_symbol:
+                continue
+            if state.direction != direction:
+                continue
+            if self.get_pos(active_contract) == 0:
+                continue
+
+            active_symbols.append(active_contract)
+            active_am = self.ams.get(active_contract)
+            if active_am is None or not active_am.inited:
+                continue
+
+            active_returns = self._history_return_vector(self._build_history_df(active_am), lookback)
+            pair_length = min(len(candidate_returns), len(active_returns))
+            if pair_length < max(5, lookback // 2):
+                continue
+
+            candidate_slice = candidate_returns[-pair_length:]
+            active_slice = active_returns[-pair_length:]
+            corr_matrix = np.corrcoef(candidate_slice, active_slice)
+            corr_value = float(corr_matrix[0, 1])
+            if math.isfinite(corr_value):
+                corr_values.append(corr_value)
+
+        max_corr = max(corr_values) if corr_values else 0.0
+        avg_corr = float(np.mean(corr_values)) if corr_values else 0.0
+        start = float(self.same_direction_correlation_gate_start)
+        full = max(start + 1e-9, float(self.same_direction_correlation_gate_full))
+        weight_floor = self._clip01(float(self.same_direction_correlation_gate_weight_floor))
+        if max_corr <= start:
+            weight = 1.0
+        elif max_corr >= full:
+            weight = weight_floor
+        else:
+            relief_ratio = (full - max_corr) / max(1e-9, full - start)
+            weight = self._clip01(weight_floor + (1.0 - weight_floor) * relief_ratio)
+
+        snapshot.update(
+            {
+                "same_direction_correlation_gate_weight": weight,
+                "same_direction_correlation_active_count": len(active_symbols),
+                "same_direction_correlation_corr_count": len(corr_values),
+                "same_direction_correlation_max_corr": max_corr,
+                "same_direction_correlation_avg_corr": avg_corr,
+            }
+        )
+        return snapshot
+
+    @staticmethod
+    def _history_return_vector(history: pd.DataFrame, lookback: int) -> np.ndarray:
+        if history is None or history.empty or "close" not in history:
+            return np.array([], dtype="float64")
+        close = pd.to_numeric(history["close"], errors="coerce").astype("float64")
+        returns = close.pct_change().replace([math.inf, -math.inf], pd.NA).dropna()
+        if returns.empty:
+            return np.array([], dtype="float64")
+        return returns.tail(max(1, int(lookback))).to_numpy(dtype="float64")
+
+    def _apply_same_direction_correlation_gate_to_sizing(
+        self,
+        sizing: dict[str, Any],
+        *,
+        contract_vt_symbol: str,
+        direction: str,
+        history: pd.DataFrame,
+        entry_context: str,
+        correlation_snapshot: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        adjusted = dict(sizing)
+        snapshot = correlation_snapshot or self._same_direction_correlation_gate_snapshot(
+            contract_vt_symbol=contract_vt_symbol,
+            direction=direction,
+            history=history,
+            entry_context=entry_context,
+        )
+        adjusted.update(snapshot)
+        if not int(snapshot["same_direction_correlation_gate_enabled"]):
+            return adjusted
+
+        selected_volume = max(0, int(adjusted.get("selected_volume") or 0))
+        weight = self._clip01(float(snapshot["same_direction_correlation_gate_weight"]))
+        selected_volume = int(math.floor(selected_volume * weight))
+        if 0 < selected_volume < self.min_position_size:
+            selected_volume = 0
+        adjusted["selected_volume"] = max(0, selected_volume)
+        return adjusted
 
     def _effective_capital_usage_ratio(self, entry_context: str) -> float:
         return max(0.0, float(self.max_capital_usage_ratio) * self._portfolio_env_gate_weight(entry_context))
@@ -1063,24 +1394,116 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         return total_margin
 
     def _sizing_equity(self) -> float:
-        """Cap sizing equity at 1,000,000 while still de-risking on drawdown."""
-        return max(0.0, min(self.estimated_equity, 1_000_000.0))
+        """Cap sizing equity while still de-risking on drawdown; non-positive cap disables the ceiling."""
+        equity: float = max(0.0, float(self.estimated_equity))
+        cap: float = float(self.sizing_equity_cap or 0.0)
+        if cap <= 0:
+            return equity
+        return min(equity, cap)
 
     def _limited_available_balance(self, entry_context: str = "default") -> float:
         free_capital: float = self._free_capital_after_reservations()
         remaining_capital_budget: float = self._remaining_capital_budget(entry_context)
         return max(0.0, min(free_capital, remaining_capital_budget))
 
-    def _risk_amount_from_ratio(self, risk_ratio: float, limited_balance: float) -> float:
+    def _risk_amount_from_ratio(
+        self,
+        risk_ratio: float,
+        limited_balance: float,
+        risk_multiplier_override: float | None = None,
+    ) -> float:
         dynamic_risk: float = max(self.min_risk_per_trade, limited_balance * risk_ratio)
         dynamic_risk = min(self.max_risk_per_trade, dynamic_risk)
-        dynamic_risk *= self._current_streak_multiplier()
+        multiplier = self._current_streak_multiplier() if risk_multiplier_override is None else risk_multiplier_override
+        dynamic_risk *= max(0.0, float(multiplier))
         return max(0.0, dynamic_risk)
 
     def _current_streak_multiplier(self) -> float:
         multipliers: list[float] = self._parse_float_list(self.streak_risk_multipliers, [1.0, 1.0, 1.0, 0.1])
         tier: int = min(self.loss_streak, len(multipliers) - 1)
         return max(0.0, multipliers[tier])
+
+    def _entry_structure_recovery_fields(
+        self,
+        *,
+        signal: str,
+        direction: str,
+        entry_context: str,
+        rsi_value: float | None,
+        active_positions_before: int | None,
+        correlation_snapshot: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        base_multiplier = self._current_streak_multiplier()
+        rsi_number = self._safe_float_value(rsi_value, float("nan"))
+        fields: dict[str, Any] = {
+            "streak_entry_structure_risk_recovery_enabled": int(self.enable_streak_entry_structure_risk_recovery),
+            "streak_entry_structure_risk_recovery_applied": 0,
+            "streak_entry_structure_risk_recovery_reason": "",
+            "streak_entry_structure_risk_recovery_base_multiplier": base_multiplier,
+            "streak_entry_structure_risk_recovery_effective_multiplier": base_multiplier,
+            "streak_entry_structure_risk_recovery_rsi_confirmation_enabled": int(
+                self.streak_entry_structure_recovery_require_rsi_confirmation
+            ),
+            "streak_entry_structure_risk_recovery_rsi_value": rsi_number,
+            "streak_entry_structure_risk_recovery_long_min_rsi": float(
+                self.streak_entry_structure_recovery_long_min_rsi
+            ),
+            "streak_entry_structure_risk_recovery_short_max_rsi": float(
+                self.streak_entry_structure_recovery_short_max_rsi
+            ),
+            "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
+                self.portfolio_drawdown_pct or 0.0
+            ),
+            "streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct": float(
+                self.streak_entry_structure_recovery_max_portfolio_drawdown_pct
+            ),
+        }
+        if not self.enable_streak_entry_structure_risk_recovery:
+            return fields
+        if entry_context != "flat_entry":
+            fields["streak_entry_structure_risk_recovery_reason"] = "not_flat_entry"
+            return fields
+        allowed_signals = self._parse_symbol_set(self.streak_entry_structure_recovery_signals)
+        if signal not in allowed_signals:
+            fields["streak_entry_structure_risk_recovery_reason"] = "signal_not_allowed"
+            return fields
+        if bool(self.streak_entry_structure_recovery_require_flat_portfolio) and int(active_positions_before or 0) > 0:
+            fields["streak_entry_structure_risk_recovery_reason"] = "portfolio_not_flat"
+            return fields
+
+        snapshot = correlation_snapshot or {}
+        same_direction_active = int(snapshot.get("same_direction_correlation_active_count") or 0)
+        max_corr = self._safe_float_value(snapshot.get("same_direction_correlation_max_corr"), 0.0)
+        max_allowed_corr = max(0.0, float(self.streak_entry_structure_recovery_max_same_direction_corr or 0.0))
+        if same_direction_active > 0 or max_corr > max_allowed_corr:
+            fields["streak_entry_structure_risk_recovery_reason"] = "same_direction_crowding"
+            return fields
+
+        if bool(self.streak_entry_structure_recovery_require_rsi_confirmation):
+            long_min_rsi = float(self.streak_entry_structure_recovery_long_min_rsi)
+            short_max_rsi = float(self.streak_entry_structure_recovery_short_max_rsi)
+            rsi_confirmed = (
+                (direction == "long" and rsi_number >= long_min_rsi)
+                or (direction == "short" and rsi_number <= short_max_rsi)
+            )
+            if not rsi_confirmed:
+                fields["streak_entry_structure_risk_recovery_reason"] = "rsi_not_confirmed"
+                return fields
+
+        max_portfolio_drawdown = float(self.streak_entry_structure_recovery_max_portfolio_drawdown_pct)
+        if max_portfolio_drawdown >= 0.0 and float(self.portfolio_drawdown_pct or 0.0) > max_portfolio_drawdown:
+            fields["streak_entry_structure_risk_recovery_reason"] = "portfolio_drawdown_too_deep"
+            return fields
+
+        min_multiplier = max(0.0, float(self.streak_entry_structure_recovery_min_multiplier or 0.0))
+        effective_multiplier = max(base_multiplier, min_multiplier)
+        fields["streak_entry_structure_risk_recovery_effective_multiplier"] = effective_multiplier
+        if effective_multiplier > base_multiplier + 1e-12:
+            fields["streak_entry_structure_risk_recovery_applied"] = 1
+            fields["streak_entry_structure_risk_recovery_reason"] = "early_cross_clean_book"
+        else:
+            fields["streak_entry_structure_risk_recovery_reason"] = "no_multiplier_lift"
+        return fields
 
     @staticmethod
     def _safe_float_value(value: object, default: float = 0.0) -> float:
@@ -1146,6 +1569,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         else:
             return None
 
+        correlation_snapshot = self._same_direction_correlation_gate_snapshot(
+            contract_vt_symbol=context.target_contract,
+            direction=direction,
+            history=context.history,
+            entry_context="flat_entry",
+        )
         sizing = self._calculate_entry_sizing(
             context.target_contract,
             direction,
@@ -1153,10 +1582,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             context.history,
             context.signal_data,
             entry_context="flat_entry",
+            active_positions_before=base_active_positions,
+            correlation_snapshot=correlation_snapshot,
+        )
+        sizing = self._apply_same_direction_correlation_gate_to_sizing(
+            sizing,
+            contract_vt_symbol=context.target_contract,
+            direction=direction,
+            history=context.history,
+            entry_context="flat_entry",
+            correlation_snapshot=correlation_snapshot,
         )
         volume = int(sizing["selected_volume"])
         native_openable = self._is_native_openable_candidate(signal, direction, volume)
         skip_reason = ""
+        ai_product_pool_snapshot = self._ai_product_pool_snapshot(
+            context.product_vt_symbol,
+            pd.Timestamp(context.target_bar.datetime).normalize(),
+        )
+        sizing.update(ai_product_pool_snapshot)
         if direction == "long" and not self.long_entry_enabled:
             skip_reason = "long_entry_disabled"
         elif direction == "short" and not self.short_entry_enabled:
@@ -1165,6 +1609,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             skip_reason = "short_signal_rejected"
         elif volume <= 0:
             skip_reason = "sizing_zero_volume"
+        elif (
+            self.enable_ai_product_pool_filter
+            and int(ai_product_pool_snapshot.get("ai_product_pool_allowed", 1) or 0) == 0
+        ):
+            native_openable = False
+            skip_reason = "ai_product_pool_blocked"
 
         effective_max_positions = int(sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions)
         remaining_slots = max(0, effective_max_positions - base_active_positions)
@@ -1315,6 +1765,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if len(direction_plans) < 2:
                 continue
 
+            direction_date: pd.Timestamp | None = None
+            first_plan_target_bar: BarData | None = direction_plans[0].get("target_bar")
+            if first_plan_target_bar is not None:
+                direction_date = pd.Timestamp(first_plan_target_bar.datetime.date())
+
+            cooldown_days: int = max(0, int(self.selection_pairwise_volume_tilt_cooldown_days or 0))
+            if cooldown_days > 0 and direction_date is not None:
+                last_tilt_date: pd.Timestamp | None = self.selection_pairwise_volume_tilt_last_date_by_direction.get(direction)
+                if last_tilt_date is not None and (direction_date - last_tilt_date).days <= cooldown_days:
+                    continue
+
             direction_plans.sort(
                 key=lambda item: (int(item.get("selection_pairwise_rank") or 0), str(item.get("product_vt_symbol", "")))
             )
@@ -1329,6 +1790,126 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if score_gap < min_score_gap:
                 continue
 
+            avg_ret20_zscore: float = float(
+                np.mean(
+                    [
+                        float(plan.get("selection_pairwise_feature_ret_20d_zscore_120") or 0.0)
+                        for plan in direction_plans
+                    ]
+                )
+            )
+            avg_rsi_value: float = float(
+                np.mean([float(plan.get("rsi_value") or 0.0) for plan in direction_plans])
+            )
+            long_max_avg_ret20_zscore: float = float(
+                self.selection_pairwise_volume_tilt_long_max_avg_ret20_zscore
+            )
+            long_max_avg_rsi: float = float(self.selection_pairwise_volume_tilt_long_max_avg_rsi)
+            long_score_gap_reference: float = float(self.selection_pairwise_volume_tilt_long_score_gap_reference)
+            long_active_ratio_full_strength_max: float = float(
+                self.selection_pairwise_volume_tilt_long_active_ratio_full_strength_max
+            )
+            long_base_volume_reference: float = float(
+                self.selection_pairwise_volume_tilt_long_base_volume_reference
+            )
+            long_active_positions_reference: float = float(
+                self.selection_pairwise_volume_tilt_long_active_positions_reference
+            )
+            long_max_range_zscore_reference: float = float(
+                self.selection_pairwise_volume_tilt_long_max_range_zscore_reference
+            )
+            max_range_zscore: float = float(
+                np.max(
+                    [
+                        float(plan.get("selection_pairwise_feature_range_pct_zscore_120") or 0.0)
+                        for plan in direction_plans
+                    ]
+                )
+            )
+            blocked_by_state: bool = bool(
+                direction == "long"
+                and (
+                    (
+                        long_max_avg_ret20_zscore >= 0.0
+                        and avg_ret20_zscore > long_max_avg_ret20_zscore
+                    )
+                    or (long_max_avg_rsi >= 0.0 and avg_rsi_value > long_max_avg_rsi)
+                )
+            )
+            confidence_scale: float = 1.0
+            if direction == "long" and long_score_gap_reference > 0.0:
+                confidence_scale = min(1.0, max(0.0, score_gap / long_score_gap_reference))
+            active_ratio: float = float(
+                np.mean(
+                    [
+                        float(plan.get("active_positions_before") or 0.0)
+                        / max(1.0, float(plan.get("effective_max_concurrent_positions") or 0.0))
+                        for plan in direction_plans
+                    ]
+                    )
+            )
+            avg_active_positions_before: float = float(
+                np.mean([float(plan.get("active_positions_before") or 0.0) for plan in direction_plans])
+            )
+            avg_base_volume_before: float = float(
+                np.mean(
+                    [
+                        max(0.0, float(plan["sizing"].get("selected_volume") or 0.0))
+                        for plan in direction_plans
+                    ]
+                )
+            )
+            crowding_scale: float = 1.0
+            if direction == "long" and 0.0 <= long_active_ratio_full_strength_max < 1.0:
+                if active_ratio > long_active_ratio_full_strength_max:
+                    crowding_scale = max(
+                        0.0,
+                        (1.0 - active_ratio) / max(1e-9, 1.0 - long_active_ratio_full_strength_max),
+                    )
+            base_volume_scale: float = 1.0
+            if direction == "long" and long_base_volume_reference > 0.0:
+                base_volume_scale = min(1.0, long_base_volume_reference / max(1e-9, avg_base_volume_before))
+            active_positions_scale: float = 1.0
+            if direction == "long" and long_active_positions_reference > 0.0:
+                active_positions_scale = min(
+                    1.0,
+                    long_active_positions_reference / max(1e-9, avg_active_positions_before),
+                )
+            range_scale: float = 1.0
+            if direction == "long" and long_max_range_zscore_reference > 0.0:
+                range_scale = min(
+                    1.0,
+                    long_max_range_zscore_reference / max(1e-9, max_range_zscore),
+                )
+            effective_direction_strength: float = (
+                direction_strength
+                * confidence_scale
+                * crowding_scale
+                * base_volume_scale
+                * active_positions_scale
+                * range_scale
+            )
+
+            for plan in direction_plans:
+                sizing = dict(plan["sizing"])
+                sizing["selection_pairwise_volume_tilt_state_avg_ret20_zscore"] = avg_ret20_zscore
+                sizing["selection_pairwise_volume_tilt_state_avg_rsi"] = avg_rsi_value
+                sizing["selection_pairwise_volume_tilt_state_max_range_zscore"] = max_range_zscore
+                sizing["selection_pairwise_volume_tilt_state_blocked"] = int(blocked_by_state)
+                sizing["selection_pairwise_volume_tilt_active_ratio"] = active_ratio
+                sizing["selection_pairwise_volume_tilt_avg_active_positions_before"] = avg_active_positions_before
+                sizing["selection_pairwise_volume_tilt_crowding_scale"] = crowding_scale
+                sizing["selection_pairwise_volume_tilt_avg_base_volume_before"] = avg_base_volume_before
+                sizing["selection_pairwise_volume_tilt_base_volume_scale"] = base_volume_scale
+                sizing["selection_pairwise_volume_tilt_active_positions_scale"] = active_positions_scale
+                sizing["selection_pairwise_volume_tilt_range_scale"] = range_scale
+                sizing["selection_pairwise_volume_tilt_confidence_scale"] = confidence_scale
+                sizing["selection_pairwise_volume_tilt_effective_direction_strength"] = effective_direction_strength
+                plan["sizing"] = sizing
+
+            if blocked_by_state:
+                continue
+
             center = (count - 1) / 2.0
             for index, plan in enumerate(direction_plans):
                 base_volume = max(0, int(plan["sizing"].get("selected_volume") or 0))
@@ -1336,7 +1917,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     continue
 
                 relative_rank = (center - float(index)) / max(center, 1.0)
-                multiplier = max(0.0, 1.0 + direction_strength * relative_rank)
+                multiplier = max(0.0, 1.0 + effective_direction_strength * relative_rank)
                 tilted_volume = int(round(base_volume * multiplier))
                 if 0 < tilted_volume < self.min_position_size:
                     tilted_volume = self.min_position_size
@@ -1344,14 +1925,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 sizing = dict(plan["sizing"])
                 sizing["selection_pairwise_volume_tilt_applied"] = 1
                 sizing["selection_pairwise_volume_tilt_direction_strength"] = direction_strength
+                sizing["selection_pairwise_volume_tilt_effective_direction_strength"] = effective_direction_strength
+                sizing["selection_pairwise_volume_tilt_confidence_scale"] = confidence_scale
+                sizing["selection_pairwise_volume_tilt_active_ratio"] = active_ratio
+                sizing["selection_pairwise_volume_tilt_avg_active_positions_before"] = avg_active_positions_before
+                sizing["selection_pairwise_volume_tilt_crowding_scale"] = crowding_scale
+                sizing["selection_pairwise_volume_tilt_avg_base_volume_before"] = avg_base_volume_before
+                sizing["selection_pairwise_volume_tilt_base_volume_scale"] = base_volume_scale
+                sizing["selection_pairwise_volume_tilt_active_positions_scale"] = active_positions_scale
                 sizing["selection_pairwise_volume_tilt_multiplier"] = multiplier
                 sizing["selection_pairwise_volume_tilt_volume_before"] = base_volume
                 sizing["selection_pairwise_volume_tilt_group_size"] = count
                 sizing["selection_pairwise_volume_tilt_score_gap"] = score_gap
                 sizing["selection_pairwise_volume_tilt_top_gap"] = top_gap
+                sizing["selection_pairwise_volume_tilt_state_avg_ret20_zscore"] = avg_ret20_zscore
+                sizing["selection_pairwise_volume_tilt_state_avg_rsi"] = avg_rsi_value
+                sizing["selection_pairwise_volume_tilt_state_max_range_zscore"] = max_range_zscore
+                sizing["selection_pairwise_volume_tilt_state_blocked"] = 0
+                sizing["selection_pairwise_volume_tilt_range_scale"] = range_scale
                 sizing["selected_volume"] = max(0, tilted_volume)
                 plan["sizing"] = sizing
                 plan["volume"] = max(0, tilted_volume)
+
+            if direction_date is not None:
+                self.selection_pairwise_volume_tilt_last_date_by_direction[direction] = direction_date
 
     def _plan_flat_entry_candidates(self, day_contexts: list[DailyEntryContext]) -> dict[str, dict[str, Any]]:
         base_active_positions = self._count_active_positions()
@@ -1588,6 +2185,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 if 0 < selected_volume < self.min_position_size:
                     selected_volume = 0
 
+        portfolio_drawdown_gate_enabled = int(
+            self.enable_portfolio_drawdown_gate and entry_context == "flat_entry"
+        )
+        portfolio_drawdown_gate_weight = self._portfolio_drawdown_gate_weight(entry_context)
+        if portfolio_drawdown_gate_enabled and apply_env_gate:
+            selected_volume = int(math.floor(selected_volume * portfolio_drawdown_gate_weight))
+            if 0 < selected_volume < self.min_position_size:
+                selected_volume = 0
+
         return {
             "selected_volume_ungated": base_selected_volume,
             "selected_volume": max(0, int(selected_volume)),
@@ -1602,6 +2208,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "env_gate_range_component": float(snapshot.get("env_gate_range_component", 1.0)),
             "env_gate_selected_component": float(snapshot.get("env_gate_selected_component", 1.0)),
             "env_gate_entry_context": entry_context,
+            "portfolio_drawdown_gate_enabled": portfolio_drawdown_gate_enabled,
+            "portfolio_drawdown_gate_weight": portfolio_drawdown_gate_weight,
+            "portfolio_drawdown_pct": float(self.portfolio_drawdown_pct or 0.0),
+            "portfolio_equity_high_water": float(self.portfolio_equity_high_water or self.base_capital),
         }
 
     def _calculate_entry_sizing(
@@ -1614,7 +2224,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         risk_mode_override: str | None = None,
         entry_context: str = "flat_entry",
         apply_env_gate: bool = True,
+        active_positions_before: int | None = None,
+        correlation_snapshot: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        signal = str(signal_data.get("signal", ""))
+        recovery_fields = self._entry_structure_recovery_fields(
+            signal=signal,
+            direction=direction,
+            entry_context=entry_context,
+            rsi_value=signal_data.get("rsi_value"),
+            active_positions_before=active_positions_before,
+            correlation_snapshot=correlation_snapshot,
+        )
+        effective_risk_multiplier = float(
+            recovery_fields.get(
+                "streak_entry_structure_risk_recovery_effective_multiplier",
+                self._current_streak_multiplier(),
+            )
+        )
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
             stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
@@ -1657,10 +2284,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_risk": None,
                 "contracts_by_margin": None,
                 "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
-                "risk_multiplier": self._current_streak_multiplier(),
+                "risk_multiplier": effective_risk_multiplier,
                 "sizing_method": "fixed_size",
                 "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
                 "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
+                **recovery_fields,
                 **env_gate_fields,
             }
 
@@ -1682,7 +2310,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         else:
             risk_ratio = self.risk_ratio_of_total_assets
 
-        risk_amount: float = self._risk_amount_from_ratio(risk_ratio, limited_balance)
+        risk_amount: float = self._risk_amount_from_ratio(
+            risk_ratio,
+            limited_balance,
+            risk_multiplier_override=effective_risk_multiplier,
+        )
         stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
         size: int = self.get_size(vt_symbol)
         risk_per_contract: float = abs(float(bar.close_price) - stop_price) * size
@@ -1728,10 +2360,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "contracts_by_risk": contracts_by_risk,
             "contracts_by_margin": contracts_by_margin,
             "contracts_by_single_trade_cap": contracts_by_single_trade_cap,
-            "risk_multiplier": self._current_streak_multiplier(),
+            "risk_multiplier": effective_risk_multiplier,
             "sizing_method": "risk_budget",
             "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
             "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
+            **recovery_fields,
             **env_gate_fields,
         }
 
@@ -1985,6 +2618,50 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_mode": str(sizing_snapshot.get("risk_mode", signal_data.get("risk_mode", "regular"))),
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "streak_entry_structure_risk_recovery_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_applied": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_applied") or 0
+                ),
+                "streak_entry_structure_risk_recovery_reason": str(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_reason") or ""
+                ),
+                "streak_entry_structure_risk_recovery_base_multiplier": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_base_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "streak_entry_structure_risk_recovery_effective_multiplier": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_effective_multiplier")
+                    or sizing_snapshot.get("risk_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "streak_entry_structure_risk_recovery_rsi_confirmation_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_confirmation_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_rsi_value": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_value")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_value") is not None
+                    else float("nan")
+                ),
+                "streak_entry_structure_risk_recovery_long_min_rsi": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_long_min_rsi")
+                    or self.streak_entry_structure_recovery_long_min_rsi
+                ),
+                "streak_entry_structure_risk_recovery_short_max_rsi": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_short_max_rsi")
+                    or self.streak_entry_structure_recovery_short_max_rsi
+                ),
+                "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_portfolio_drawdown_pct")
+                    or self.portfolio_drawdown_pct
+                    or 0.0
+                ),
+                "streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct") is not None
+                    else self.streak_entry_structure_recovery_max_portfolio_drawdown_pct
+                ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
                 "stop_price": stop_price,
@@ -2010,6 +2687,34 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "env_gate_range_component": float(sizing_snapshot.get("env_gate_range_component") or 1.0),
                 "env_gate_selected_component": float(sizing_snapshot.get("env_gate_selected_component") or 1.0),
                 "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
+                "portfolio_drawdown_gate_enabled": int(
+                    sizing_snapshot.get("portfolio_drawdown_gate_enabled") or 0
+                ),
+                "portfolio_drawdown_gate_weight": float(
+                    sizing_snapshot.get("portfolio_drawdown_gate_weight") or 1.0
+                ),
+                "portfolio_drawdown_pct": float(sizing_snapshot.get("portfolio_drawdown_pct") or 0.0),
+                "portfolio_equity_high_water": float(
+                    sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
+                ),
+                "same_direction_correlation_gate_enabled": int(
+                    sizing_snapshot.get("same_direction_correlation_gate_enabled") or 0
+                ),
+                "same_direction_correlation_gate_weight": float(
+                    sizing_snapshot.get("same_direction_correlation_gate_weight") or 1.0
+                ),
+                "same_direction_correlation_active_count": int(
+                    sizing_snapshot.get("same_direction_correlation_active_count") or 0
+                ),
+                "same_direction_correlation_corr_count": int(
+                    sizing_snapshot.get("same_direction_correlation_corr_count") or 0
+                ),
+                "same_direction_correlation_max_corr": float(
+                    sizing_snapshot.get("same_direction_correlation_max_corr") or 0.0
+                ),
+                "same_direction_correlation_avg_corr": float(
+                    sizing_snapshot.get("same_direction_correlation_avg_corr") or 0.0
+                ),
                 "selection_pairwise_enabled": int(sizing_snapshot.get("selection_pairwise_enabled") or 0),
                 "selection_pairwise_model_tag": str(sizing_snapshot.get("selection_pairwise_model_tag") or ""),
                 "selection_pairwise_score": float(sizing_snapshot.get("selection_pairwise_score") or 0.0),
@@ -2049,6 +2754,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "selection_pairwise_volume_tilt_top_gap": float(
                     sizing_snapshot.get("selection_pairwise_volume_tilt_top_gap") or 0.0
                 ),
+                "selection_pairwise_volume_tilt_avg_active_positions_before": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_avg_active_positions_before") or 0.0
+                ),
+                "selection_pairwise_volume_tilt_active_positions_scale": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_active_positions_scale") or 1.0
+                ),
+                "selection_pairwise_volume_tilt_state_max_range_zscore": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_state_max_range_zscore") or 0.0
+                ),
+                "selection_pairwise_volume_tilt_range_scale": float(
+                    sizing_snapshot.get("selection_pairwise_volume_tilt_range_scale") or 1.0
+                ),
+                "ai_product_pool_enabled": int(sizing_snapshot.get("ai_product_pool_enabled") or 0),
+                "ai_product_pool_strategy": str(sizing_snapshot.get("ai_product_pool_strategy") or ""),
+                "ai_product_pool_allowed": int(sizing_snapshot.get("ai_product_pool_allowed") or 0),
+                "ai_product_pool_signal_date": str(sizing_snapshot.get("ai_product_pool_signal_date") or ""),
+                "ai_product_pool_score": float(sizing_snapshot.get("ai_product_pool_score") or 0.0),
+                "ai_product_pool_rank": int(sizing_snapshot.get("ai_product_pool_rank") or 0),
+                "ai_product_pool_top_n": int(sizing_snapshot.get("ai_product_pool_top_n") or 0),
                 "active_positions_before": int(active_positions_before),
                 "max_concurrent_positions": int(self.max_concurrent_positions),
                 "effective_max_concurrent_positions": effective_max_concurrent_positions,
@@ -2063,6 +2787,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "ma_long_prev_value": signal_data.get("ma_long_prev_value"),
                 "is_opened": int(candidate_status == "opened"),
                 "loss_streak": int(self.loss_streak),
+                "profit_recovery_streak": int(self.profit_recovery_streak),
             }
         )
 
@@ -2130,6 +2855,50 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "effective_streak_risk_multipliers": self.streak_risk_multipliers,
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "streak_entry_structure_risk_recovery_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_applied": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_applied") or 0
+                ),
+                "streak_entry_structure_risk_recovery_reason": str(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_reason") or ""
+                ),
+                "streak_entry_structure_risk_recovery_base_multiplier": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_base_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "streak_entry_structure_risk_recovery_effective_multiplier": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_effective_multiplier")
+                    or sizing_snapshot.get("risk_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "streak_entry_structure_risk_recovery_rsi_confirmation_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_confirmation_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_rsi_value": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_value")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_rsi_value") is not None
+                    else float("nan")
+                ),
+                "streak_entry_structure_risk_recovery_long_min_rsi": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_long_min_rsi")
+                    or self.streak_entry_structure_recovery_long_min_rsi
+                ),
+                "streak_entry_structure_risk_recovery_short_max_rsi": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_short_max_rsi")
+                    or self.streak_entry_structure_recovery_short_max_rsi
+                ),
+                "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_portfolio_drawdown_pct")
+                    or self.portfolio_drawdown_pct
+                    or 0.0
+                ),
+                "streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct") is not None
+                    else self.streak_entry_structure_recovery_max_portfolio_drawdown_pct
+                ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
                 "filled_entry_price": None,
@@ -2160,7 +2929,36 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "env_gate_range_component": float(sizing_snapshot.get("env_gate_range_component") or 1.0),
                 "env_gate_selected_component": float(sizing_snapshot.get("env_gate_selected_component") or 1.0),
                 "env_gate_entry_context": str(sizing_snapshot.get("env_gate_entry_context") or ""),
+                "portfolio_drawdown_gate_enabled": int(
+                    sizing_snapshot.get("portfolio_drawdown_gate_enabled") or 0
+                ),
+                "portfolio_drawdown_gate_weight": float(
+                    sizing_snapshot.get("portfolio_drawdown_gate_weight") or 1.0
+                ),
+                "portfolio_drawdown_pct": float(sizing_snapshot.get("portfolio_drawdown_pct") or 0.0),
+                "portfolio_equity_high_water": float(
+                    sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
+                ),
+                "same_direction_correlation_gate_enabled": int(
+                    sizing_snapshot.get("same_direction_correlation_gate_enabled") or 0
+                ),
+                "same_direction_correlation_gate_weight": float(
+                    sizing_snapshot.get("same_direction_correlation_gate_weight") or 1.0
+                ),
+                "same_direction_correlation_active_count": int(
+                    sizing_snapshot.get("same_direction_correlation_active_count") or 0
+                ),
+                "same_direction_correlation_corr_count": int(
+                    sizing_snapshot.get("same_direction_correlation_corr_count") or 0
+                ),
+                "same_direction_correlation_max_corr": float(
+                    sizing_snapshot.get("same_direction_correlation_max_corr") or 0.0
+                ),
+                "same_direction_correlation_avg_corr": float(
+                    sizing_snapshot.get("same_direction_correlation_avg_corr") or 0.0
+                ),
                 "loss_streak": int(self.loss_streak),
+                "profit_recovery_streak": int(self.profit_recovery_streak),
             }
         )
         pending_key = (contract_vt_symbol, direction)
@@ -2452,7 +3250,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             realized += self._layer_realized_pnl(layer, exit_price, size)
             del state.layers[index]
         self.realized_pnl += realized
-        self._update_streak_risk_state(realized)
+        self._update_streak_risk_state(realized, state.product_vt_symbol)
         if not state.layers:
             state.reset()
 
@@ -2496,7 +3294,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 state.layers.pop()
 
         self.realized_pnl += realized
-        self._update_streak_risk_state(realized)
+        self._update_streak_risk_state(realized, state.product_vt_symbol)
         if not state.layers:
             state.reset()
 
@@ -2539,11 +3337,47 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _layer_realized_pnl(self, layer: PositionLayer, exit_price: float, size: int) -> float:
         return (exit_price - layer.entry_price) * size * layer.volume if layer.direction == "long" else (layer.entry_price - exit_price) * size * layer.volume
 
-    def _update_streak_risk_state(self, realized_pnl: float) -> None:
+    def _update_streak_risk_state(self, realized_pnl: float, product_vt_symbol: str | None = None) -> None:
+        if product_vt_symbol and product_vt_symbol in self.streak_risk_state_excluded_product_set:
+            exclusion_mode = str(self.streak_risk_state_exclusion_mode or "all").strip().lower()
+            if exclusion_mode in {"all", "both", "true", "1"}:
+                self.risk_multiplier = self._current_streak_multiplier()
+                return
+            if realized_pnl > 0 and exclusion_mode in {"profit", "profit_only", "positive", "positive_only"}:
+                equity_confirm_threshold = self._safe_float_value(
+                    self.streak_profit_recovery_equity_confirm_drawdown_pct,
+                    -1.0,
+                )
+                equity_confirmed = (
+                    equity_confirm_threshold >= 0.0
+                    and self.portfolio_drawdown_pct <= equity_confirm_threshold
+                )
+                if not equity_confirmed:
+                    self.risk_multiplier = self._current_streak_multiplier()
+                    return
+            if realized_pnl < 0 and exclusion_mode in {"loss", "loss_only", "negative", "negative_only"}:
+                self.risk_multiplier = self._current_streak_multiplier()
+                return
         if realized_pnl < 0:
             self.loss_streak += 1
+            self.profit_recovery_streak = 0
         elif realized_pnl > 0:
-            self.loss_streak = 0
+            recovery_mode = str(self.streak_profit_recovery_mode or "reset").strip().lower()
+            if recovery_mode in {"decrement", "step", "gradual"}:
+                self.loss_streak = max(0, self.loss_streak - 1)
+                self.profit_recovery_streak = 0
+            elif recovery_mode in {"confirm", "confirmed", "confirmation"}:
+                required_wins = max(1, int(self._safe_float_value(self.streak_profit_recovery_confirm_wins, 1.0)))
+                if self.loss_streak > 0:
+                    self.profit_recovery_streak += 1
+                    if self.profit_recovery_streak >= required_wins:
+                        self.loss_streak = 0
+                        self.profit_recovery_streak = 0
+                else:
+                    self.profit_recovery_streak = 0
+            else:
+                self.loss_streak = 0
+                self.profit_recovery_streak = 0
         self.risk_multiplier = self._current_streak_multiplier()
 
     def _check_regular_add_conditions(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> tuple[bool, str | None]:
@@ -2708,6 +3542,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             except ValueError:
                 continue
         return values or default
+
+    @staticmethod
+    def _parse_symbol_set(raw: str) -> set[str]:
+        symbols: set[str] = set()
+        normalized = str(raw or "").replace(";", ",").replace("|", ",")
+        for part in normalized.split(","):
+            symbol = part.strip()
+            if symbol:
+                symbols.add(symbol)
+        return symbols
 
     def _bar_date(self, bar: BarData) -> str:
         return bar.datetime.strftime("%Y%m%d")
