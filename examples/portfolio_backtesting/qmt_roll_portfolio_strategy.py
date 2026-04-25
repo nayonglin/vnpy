@@ -146,6 +146,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     sizing_equity_cap: float = 1_000_000.0
     max_capital_usage_ratio: float = 0.9
     max_single_trade_capital_usage_ratio: float = 0.7
+    enable_incremental_margin_budget_gate: bool = False
+    incremental_margin_budget_gate_usage_ratio: float = -1.0
+    incremental_margin_budget_gate_min_openable_candidates: int = 1
+    incremental_margin_budget_gate_protected_selection_rank: int = 0
     risk_ratio_of_total_assets: float = 0.01
     risk_ratio_breakout: float = 0.01
     risk_ratio_ma_cross_breakout: float = 0.01
@@ -216,6 +220,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     stop_loss_pct: float = 0.02
     trailing_stop_enabled: bool = True
     trailing_stop_pct: float = 0.0
+    enable_profit_giveback_stop: bool = False
+    profit_giveback_trigger_pct: float = 0.08
+    profit_giveback_retain_ratio: float = 0.70
+    profit_giveback_min_lock_pct: float = 0.03
     add_position_min_profit: float = 0.001
     atr_2x_mid_stop_enabled: bool = True
 
@@ -285,6 +293,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "sizing_equity_cap",
         "max_capital_usage_ratio",
         "max_single_trade_capital_usage_ratio",
+        "enable_incremental_margin_budget_gate",
+        "incremental_margin_budget_gate_usage_ratio",
+        "incremental_margin_budget_gate_min_openable_candidates",
+        "incremental_margin_budget_gate_protected_selection_rank",
         "risk_ratio_of_total_assets",
         "risk_ratio_breakout",
         "risk_ratio_ma_cross_breakout",
@@ -354,6 +366,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "stop_loss_pct",
         "trailing_stop_enabled",
         "trailing_stop_pct",
+        "enable_profit_giveback_stop",
+        "profit_giveback_trigger_pct",
+        "profit_giveback_retain_ratio",
+        "profit_giveback_min_lock_pct",
         "add_position_min_profit",
         "atr_2x_mid_stop_enabled",
         "enable_add_position",
@@ -439,6 +455,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
+        self.profit_giveback_stop_update_count: int = 0
         self.pending_close_lots: dict[str, list[dict[str, Any]]] = {}
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
@@ -1133,6 +1150,56 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def _allowed_capital(self, entry_context: str = "default") -> float:
         return max(0.0, self._sizing_equity() * self._effective_capital_usage_ratio(entry_context))
+
+    def _incremental_margin_budget_gate_allowed_capital(self, entry_context: str = "flat_entry") -> float:
+        ratio = float(self.incremental_margin_budget_gate_usage_ratio or 0.0)
+        if ratio <= 0:
+            ratio = self._effective_capital_usage_ratio(entry_context)
+        return max(0.0, self._sizing_equity() * ratio)
+
+    def _incremental_margin_budget_gate_fields(
+        self,
+        *,
+        planned_intraday_margin_before: float,
+        selected_volume: int,
+        margin_per_contract: float,
+        openable_candidate_count: int = 1,
+        selection_pairwise_rank: int = 0,
+        entry_context: str = "flat_entry",
+    ) -> dict[str, Any]:
+        min_candidates = max(1, int(self.incremental_margin_budget_gate_min_openable_candidates or 1))
+        protected_rank = max(0, int(self.incremental_margin_budget_gate_protected_selection_rank or 0))
+        selection_rank = max(0, int(selection_pairwise_rank or 0))
+        protected_by_rank = int(protected_rank > 0 and 0 < selection_rank <= protected_rank)
+        gate_enabled = int(
+            self.enable_incremental_margin_budget_gate
+            and entry_context == "flat_entry"
+            and int(openable_candidate_count) >= min_candidates
+        )
+        reserved_margin_before = self._reserved_margin_in_use()
+        planned_margin = max(0.0, float(margin_per_contract) * max(0, int(selected_volume)))
+        budget = self._incremental_margin_budget_gate_allowed_capital(entry_context)
+        projected_before = reserved_margin_before + max(0.0, float(planned_intraday_margin_before))
+        projected_after = projected_before + planned_margin
+        passed = (not gate_enabled) or bool(protected_by_rank) or projected_after <= budget + 1e-9
+        return {
+            "incremental_margin_budget_gate_enabled": gate_enabled,
+            "incremental_margin_budget_gate_min_openable_candidates": min_candidates,
+            "incremental_margin_budget_gate_openable_candidate_count": int(openable_candidate_count),
+            "incremental_margin_budget_gate_protected_selection_rank": protected_rank,
+            "incremental_margin_budget_gate_candidate_selection_rank": selection_rank,
+            "incremental_margin_budget_gate_protected_by_rank": protected_by_rank,
+            "incremental_margin_budget_gate_budget": budget,
+            "incremental_margin_budget_gate_reserved_margin_before": reserved_margin_before,
+            "incremental_margin_budget_gate_planned_intraday_margin_before": max(
+                0.0,
+                float(planned_intraday_margin_before),
+            ),
+            "incremental_margin_budget_gate_planned_entry_margin": planned_margin,
+            "incremental_margin_budget_gate_projected_margin_before": projected_before,
+            "incremental_margin_budget_gate_projected_margin_after": projected_after,
+            "incremental_margin_budget_gate_passed": int(passed),
+        }
 
     def _single_trade_capital_limit(self) -> float:
         return max(0.0, self._sizing_equity() * self.max_single_trade_capital_usage_ratio)
@@ -1985,6 +2052,48 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         opened_plans = [plan for plan in openable_plans if plan.get("candidate_status") == "opened"]
         self._apply_selection_pairwise_volume_tilt(opened_plans)
 
+        opened_count = 0
+        planned_intraday_margin = 0.0
+        openable_candidate_count = len(openable_plans)
+        for plan in openable_plans:
+            sizing = dict(plan["sizing"])
+            active_positions_before = base_active_positions + opened_count
+            effective_max_positions = int(
+                sizing.get("effective_max_concurrent_positions") or self.max_concurrent_positions
+            )
+            selected_volume = max(0, int(sizing.get("selected_volume") or plan.get("volume") or 0))
+            margin_per_contract = float(sizing.get("margin_per_contract") or 0.0)
+            gate_fields = self._incremental_margin_budget_gate_fields(
+                planned_intraday_margin_before=planned_intraday_margin,
+                selected_volume=selected_volume,
+                margin_per_contract=margin_per_contract,
+                openable_candidate_count=openable_candidate_count,
+                selection_pairwise_rank=int(plan.get("selection_pairwise_rank") or 0),
+                entry_context="flat_entry",
+            )
+            sizing.update(gate_fields)
+            plan["active_positions_before"] = active_positions_before
+            plan["remaining_position_slots"] = max(0, effective_max_positions - active_positions_before)
+            plan["volume"] = selected_volume
+            if selected_volume <= 0:
+                plan["candidate_status"] = "skipped"
+                plan["skip_reason"] = "sizing_zero_volume"
+            elif active_positions_before >= effective_max_positions:
+                plan["candidate_status"] = "skipped"
+                plan["skip_reason"] = "concurrent_limit"
+            elif int(gate_fields["incremental_margin_budget_gate_enabled"]) and not int(
+                gate_fields["incremental_margin_budget_gate_passed"]
+            ):
+                plan["candidate_status"] = "skipped"
+                plan["skip_reason"] = "incremental_margin_budget_gate"
+            else:
+                plan["candidate_status"] = "opened"
+                opened_count += 1
+                planned_intraday_margin += float(
+                    gate_fields["incremental_margin_budget_gate_planned_entry_margin"]
+                )
+            plan["sizing"] = sizing
+
         for plan in openable_plans:
             sizing = dict(plan["sizing"])
             active_positions_before = int(plan.get("active_positions_before") or base_active_positions)
@@ -2671,6 +2780,45 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "margin_ratio": margin_ratio,
                 "margin_per_contract": margin_per_contract,
                 "projected_total_margin_after": projected_margin_after,
+                "incremental_margin_budget_gate_enabled": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_enabled") or 0
+                ),
+                "incremental_margin_budget_gate_min_openable_candidates": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_min_openable_candidates") or 0
+                ),
+                "incremental_margin_budget_gate_openable_candidate_count": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_openable_candidate_count") or 0
+                ),
+                "incremental_margin_budget_gate_protected_selection_rank": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_protected_selection_rank") or 0
+                ),
+                "incremental_margin_budget_gate_candidate_selection_rank": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_candidate_selection_rank") or 0
+                ),
+                "incremental_margin_budget_gate_protected_by_rank": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_protected_by_rank") or 0
+                ),
+                "incremental_margin_budget_gate_budget": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_budget") or 0.0
+                ),
+                "incremental_margin_budget_gate_reserved_margin_before": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_reserved_margin_before") or 0.0
+                ),
+                "incremental_margin_budget_gate_planned_intraday_margin_before": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_planned_intraday_margin_before") or 0.0
+                ),
+                "incremental_margin_budget_gate_planned_entry_margin": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_planned_entry_margin") or 0.0
+                ),
+                "incremental_margin_budget_gate_projected_margin_before": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_projected_margin_before") or 0.0
+                ),
+                "incremental_margin_budget_gate_projected_margin_after": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_projected_margin_after") or 0.0
+                ),
+                "incremental_margin_budget_gate_passed": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_passed", 1) or 0
+                ),
                 "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
                 "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
@@ -3134,6 +3282,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 else:
                     layer.stop_price = min(layer.stop_price, lock_price)
 
+        if self.enable_profit_giveback_stop:
+            giveback_price = self._profit_giveback_stop_price(layer)
+            if giveback_price is not None:
+                previous_stop = layer.stop_price
+                if layer.direction == "long":
+                    layer.stop_price = max(layer.stop_price, giveback_price)
+                    if layer.stop_price > previous_stop:
+                        self.profit_giveback_stop_update_count += 1
+                else:
+                    layer.stop_price = min(layer.stop_price, giveback_price)
+                    if layer.stop_price < previous_stop:
+                        self.profit_giveback_stop_update_count += 1
+
         if self.trailing_stop_pct > 0:
             if layer.direction == "long":
                 layer.stop_price = max(layer.stop_price, layer.highest_price * (1 - self.trailing_stop_pct))
@@ -3153,6 +3314,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if layer.max_profit_pct >= trigger_pct:
                 return layer.entry_price * (1 + lock_pct) if layer.direction == "long" else layer.entry_price * (1 - lock_pct)
         return None
+
+    def _profit_giveback_stop_price(self, layer: PositionLayer) -> float | None:
+        trigger_pct = max(float(self.profit_giveback_trigger_pct), 0.0)
+        if layer.max_profit_pct < trigger_pct:
+            return None
+
+        retain_ratio = min(max(float(self.profit_giveback_retain_ratio), 0.0), 1.0)
+        min_lock_pct = max(float(self.profit_giveback_min_lock_pct), 0.0)
+        lock_pct = max(min_lock_pct, layer.max_profit_pct * retain_ratio)
+        if lock_pct <= 0:
+            return None
+
+        if layer.direction == "long":
+            return layer.entry_price * (1 + lock_pct)
+        return layer.entry_price * (1 - lock_pct)
 
     def _apply_add_position_profit_lock(self, state: ProductState) -> None:
         avg_price: float = state.avg_entry_price()
