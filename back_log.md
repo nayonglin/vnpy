@@ -17678,3 +17678,379 @@ Stage116重跑并归因`19`个弱窗口：
 - Stage131做滑点压力：
   - `1.0x`、`1.5x`、`2.0x`、`3.0x`滑点。
 - 如果Stage130/131都通过，再考虑正式候选；否则保留为研究分支，不固化。
+
+## 2026-04-25 16:03 第130阶段：Stage128利润回吐保护季度Walk-Forward
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 16:03`
+- 是否是重要突破版本：否。该阶段是稳健性验证，结论为“保留研究价值，但不能固化”。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage130_profit_giveback_quarterly_walkforward.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_quarter_summary_stage130_profit_giveback_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_horizon_summary_stage130_profit_giveback_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_horizon_aggregate_stage130_profit_giveback_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_horizon_comparison_stage130_profit_giveback_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_horizon_comparison_aggregate_stage130_profit_giveback_quarterly_wf_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_summary_stage130_profit_giveback_quarterly_wf_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage130_profit_giveback_quarterly_walkforward_report_stage130_profit_giveback_quarterly_wf_v1.md`
+
+### 新增参数
+
+- 无。沿用Stage128候选：
+  - `enable_profit_giveback_stop=True`
+  - `profit_giveback_trigger_pct=0.10`
+  - `profit_giveback_retain_ratio=0.80`
+  - `profit_giveback_min_lock_pct=0.03`
+- 验证窗口：
+  - 季度冷启动起点：从`2020Q1`到`2026Q2`
+  - Horizon：`63d`、`126d`、`252d`
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+完整窗口参考：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `official_stage78_reference` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` | `42.1053%` |
+| `stage78_giveback10_retain80_min03` | `4,935,450` | `2367.7250%` | `-31.5415%` | `1.3730` | `253,490` | `775` | `42.3174%` |
+
+Horizon聚合：
+
+| Horizon | 版本 | 窗口数 | 正收益率 | 最差收益 | 中位收益 | 最差最大回撤 | 中位Sharpe | 最差Sharpe |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | Stage78 | `25` | `68.0000%` | `-27.7950%` | `16.2975%` | `-44.5792%` | `1.7456` | `-3.7231` |
+| `63d` | Stage128 | `25` | `68.0000%` | `-27.7950%` | `16.9050%` | `-42.1658%` | `1.7754` | `-3.7231` |
+| `126d` | Stage78 | `24` | `83.3333%` | `-15.5125%` | `53.5100%` | `-44.5792%` | `1.5507` | `-2.6382` |
+| `126d` | Stage128 | `24` | `87.5000%` | `-9.9625%` | `54.4475%` | `-42.3565%` | `1.6201` | `-2.6382` |
+| `252d` | Stage78 | `22` | `95.4545%` | `-6.8250%` | `103.7725%` | `-44.5792%` | `1.5879` | `-0.2394` |
+| `252d` | Stage128 | `22` | `90.9091%` | `-11.6600%` | `112.7250%` | `-42.3565%` | `1.7013` | `-1.2756` |
+
+Stage128相对Stage78比较：
+
+| Horizon | 收益胜率 | 回撤胜率 | Sharpe胜率 | 中位收益差 | 最差收益差 | 中位Sharpe差 | 最差Sharpe差 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `63d` | `28.0000%` | `24.0000%` | `32.0000%` | `0.0000` | `-1.8000` | `0.0000` | `-0.1224` |
+| `126d` | `50.0000%` | `33.3333%` | `50.0000%` | `+0.1538` | `-3.5200` | `+0.0048` | `-0.1541` |
+| `252d` | `72.7273%` | `45.4545%` | `72.7273%` | `+3.7963` | `-16.3950` | `+0.0528` | `-1.6501` |
+
+最差相对窗口：
+
+| 窗口 | Horizon | Stage128收益 | Stage78收益 | 差额 | 最大回撤差 | Sharpe差 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `q2022_4` | `252d` | `-11.6600%` | `4.7350%` | `-16.3950` | `-4.7320` | `-1.6501` |
+| `q2023_1` | `252d` | `60.0250%` | `64.8250%` | `-4.8000` | `-0.9100` | `-0.0962` |
+| `q2023_1` | `126d` | `67.6600%` | `71.1800%` | `-3.5200` | `-2.3468` | `-0.1541` |
+| `q2025_1` | `252d` | `355.9350%` | `359.2900%` | `-3.3550` | `-1.5480` | `-0.0374` |
+
+### 修改的回测结果
+
+- 无正式版本结果修改。本阶段为季度冷启动验证。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage130_profit_giveback_quarterly_walkforward.py`
+- 已完成Stage130季度walk-forward：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage130_profit_giveback_quarterly_walkforward.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定候选、固定全季度起点、固定`63/126/252d`窗口，不根据结果挑窗口或调参数。
+
+### 运行后过拟合反思
+
+- 判断：不是明显过拟合，但正式固化证据不足。
+- 原因：
+  - `252d`窗口收益和Sharpe胜率均为`72.7273%`，支持中长期持仓改善。
+  - `126d`窗口中性偏好，正收益率和中位指标略改善。
+  - `63d`窗口没有优势，收益胜率仅`28.0000%`，说明短冷启动阶段并不能证明Stage128更好。
+  - `q2022_4 252d`出现明显恶化：收益差`-16.3950`个百分点，Sharpe差`-1.6501`，这是必须解释的弱点。
+- 结论：
+  - Stage128不是曲线拟合出来的单点幻觉，但还不是稳健到能固化。
+  - 下一步不应立刻做滑点压力，而应先做`q2022_4 252d`弱窗口归因。
+
+### 我的判断
+
+- Stage128的本质更像“中长持仓收益再分配”：在`252d`更有效，在`63d`冷启动不明显。
+- 这符合利润回吐保护的机制特征：它不提高入场质量，只有当持仓进入较大浮盈后才发挥作用。
+- 但正式策略必须能解释最差窗口，否则可能是在牺牲某类趋势延续结构。
+
+### 后续规划和TODO
+
+- Stage131优先做弱窗口归因，而不是滑点压力：
+  - 聚焦`q2022_4 252d`；
+  - 对比Stage78和Stage128的交易差异、产品差异、退出原因差异；
+  - 判断恶化是偶然少数交易，还是利润回吐机制天然会伤害某类行情。
+- 如果弱窗口可解释且非结构性，再做Stage132滑点压力。
+- 如果弱窗口显示利润回吐保护系统性切掉关键趋势，Stage128不固化，停止调参。
+
+## 2026-04-25 16:14 第131阶段：Stage128利润回吐保护弱窗口归因
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 16:14`
+- 是否是重要突破版本：否。该阶段是关键否定证据，结论是不建议原始Stage128继续走正式固化路径。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage131_profit_giveback_weak_window_attribution.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_summary_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_product_delta_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_direction_delta_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_exit_reason_delta_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_daily_delta_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_top_roundtrips_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_candidate_summary_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_skip_reason_summary_stage131_profit_giveback_weak_window_attribution_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_summary_stage131_profit_giveback_weak_window_attribution_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage131_profit_giveback_weak_window_attribution_report_stage131_profit_giveback_weak_window_attribution_v1.md`
+
+### 新增参数
+
+- 无。沿用Stage128候选参数：
+  - `enable_profit_giveback_stop=True`
+  - `profit_giveback_trigger_pct=0.10`
+  - `profit_giveback_retain_ratio=0.80`
+  - `profit_giveback_min_lock_pct=0.03`
+- 固定分析窗口：
+  - `q2022_4`
+  - 起点：`2022-10-01`
+  - Horizon：`252`个交易日
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+`q2022_4 252d`弱窗口结果：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 回合数 | 回合胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `official_stage78_reference` | `209,470` | `4.7350%` | `-8.3363%` | `0.3745` | `2,020` | `45` | `23` | `43.4783%` |
+| `stage78_giveback10_retain80_min03` | `176,680` | `-11.6600%` | `-13.0683%` | `-1.2756` | `760` | `12` | `6` | `16.6667%` |
+
+产品差异：
+
+| 品种 | Stage128净利润 | Stage78净利润 | 差额 | 交易次数差 |
+| --- | ---: | ---: | ---: | ---: |
+| `OI.CZCE` | `0` | `21,080` | `-21,080` | `-2` |
+| `SM.CZCE` | `-11,400` | `3,370` | `-14,770` | `-4` |
+| `fu.SHFE` | `0` | `7,680` | `-7,680` | `-11` |
+| `rb.SHFE` | `-1,470` | `0` | `-1,470` | `+2` |
+| `SA.CZCE` | `0` | `520` | `-520` | `-2` |
+| `FG.CZCE` | `2,300` | `-2,540` | `+4,840` | `-2` |
+
+方向归因：
+
+| 方向 | Stage128回合毛利润 | Stage78回合毛利润 | 差额 | 回合数差 |
+| --- | ---: | ---: | ---: | ---: |
+| 多头 | `2,490` | `25,130` | `-22,640` | `-18` |
+| 空头 | `-25,050` | `-13,640` | `-11,410` | `+1` |
+
+退出原因归因：
+
+| 退出原因 | Stage128回合毛利润 | Stage78回合毛利润 | 差额 | 回合数差 |
+| --- | ---: | ---: | ---: | ---: |
+| `long_base_stop` | `3,220` | `-1,530` | `+4,750` | `-1` |
+| `long_rsi_partial_exit_half` | `0` | `6,980` | `-6,980` | `-1` |
+| `rollover_close` | `0` | `10,120` | `-10,120` | `-2` |
+| `long_prev2day_stop` | `-730` | `9,560` | `-10,290` | `-14` |
+| `short_prev2day_stop` | `-12,530` | `-1,120` | `-11,410` | `+1` |
+
+候选和风险状态归因：
+
+| 指标 | Stage78 | Stage128 |
+| --- | ---: | ---: |
+| 候选数 | `184` | `184` |
+| 开仓候选数 | `20` | `6` |
+| 实际开仓诊断数 | `22` | `6` |
+| 开仓率 | `10.8696%` | `3.2609%` |
+| 候选selected_volume合计 | `270` | `160` |
+| 已开仓selected_volume合计 | `56` | `25` |
+| 已开仓中位risk_multiplier | `1.00` | `0.55` |
+| `sizing_zero_volume`跳过数 | `80` | `110` |
+| `ai_product_pool_blocked`跳过数 | `22` | `6` |
+
+### 修改的回测结果
+
+- 无正式版本结果修改。本阶段为失败窗口归因。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage131_profit_giveback_weak_window_attribution.py`
+- 已完成Stage131弱窗口归因：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage131_profit_giveback_weak_window_attribution.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定分析Stage130暴露出的最差反证窗口，不调参、不删窗口、不新增规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：`q2022_4 252d`决定Stage128是否还能继续做滑点压力；如果该窗口是机制性缺陷，就应停止原分支。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是负面归因，不是为了优化参数；没有用失败窗口反推新阈值。
+
+### 运行后继续价值反思
+
+- 判断：原始Stage128分支不值得继续直接做滑点压力；利润回吐概念仍可保留为新分支研究。
+- 原因：
+  - 弱窗口问题不是滑点或单笔执行成本，而是路径依赖和风险状态问题。
+  - Stage128开仓数从`20`降到`6`，`sizing_zero_volume`从`80`升到`110`，说明利润回吐改变了前置路径后，仓位 sizing 和风险倍率抑制了后续恢复交易。
+  - 它错过了`OI.CZCE`、`fu.SHFE`等Stage78贡献的恢复段利润。
+
+### 我的判断
+
+- 原始Stage128不能固化，也不应继续做滑点压力。
+- 它的全周期改善是真的，但弱窗口显示它可能通过改变前序风险状态，让系统在后续恢复段“没有足够子弹”。
+- 这不是简单参数问题。继续调`trigger/retain/min_lock`会过拟合。
+
+### 后续规划和TODO
+
+- 停止原始`stage78_giveback10_retain80_min03`正式化路线。
+- 如果继续利润回吐方向，只能开新研究分支，核心不是调阈值，而是研究：
+  - 利润保护退出是否应该影响亏损/恢复状态；
+  - 是否需要把“保护性止盈退出”和“真正止损退出”在风险状态里分开计数；
+  - 是否能在不伤害恢复段开仓能力的前提下保留利润回吐保护。
+- 如果不做新分支，回到Stage78正式版本，优先研究其他不改变风险状态路径的方向。
+
+## 2026-04-25 16:31 第132阶段：利润回吐保护与连亏惩罚解耦验证
+
+### 本次版本改动
+
+- 改动时间点：`2026-04-25 16:31`
+- 是否是重要突破版本：否。该阶段是关键否定证据，说明“保护性止损亏损不进入连亏惩罚”无法修复Stage128弱窗口。
+- 修改策略：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage132_profit_giveback_streak_decouple.py`
+- 新增产物：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_summary_stage132_profit_giveback_streak_decouple_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_comparison_stage132_profit_giveback_streak_decouple_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_candidate_summary_stage132_profit_giveback_streak_decouple_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_skip_reason_summary_stage132_profit_giveback_streak_decouple_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_summary_stage132_profit_giveback_streak_decouple_v1.json`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage132_profit_giveback_streak_decouple_report_stage132_profit_giveback_streak_decouple_v1.md`
+
+### 新增参数
+
+- `profit_giveback_streak_update_mode`
+  - 默认值：`normal`
+  - 本次验证值：`loss_neutral`
+  - 含义：当利润回吐止损曾经实际抬高止损，且最终该保护性止损变成亏损退出时，不把该笔退出计入连亏惩罚。
+- 新增诊断变量：
+  - `profit_giveback_streak_neutral_count`
+  - 含义：记录利润回吐保护退出被风险状态中性化的次数。
+
+### 修改参数
+
+- Stage132验证组合在Stage128 best基础上只增加：
+  - `profit_giveback_streak_update_mode=loss_neutral`
+- Stage128原参数保持不变：
+  - `enable_profit_giveback_stop=True`
+  - `profit_giveback_trigger_pct=0.10`
+  - `profit_giveback_retain_ratio=0.80`
+  - `profit_giveback_min_lock_pct=0.03`
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+全周期`2020-01-01`到`2026-04-21`：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 利润保护抬止损次数 | 风险中性化次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `official_stage78_reference` | `4,600,090` | `2200.0450%` | `-36.9907%` | `1.2919` | `260,110` | `779` | `42.1053%` | `0` | `0` |
+| `stage128_giveback_normal` | `4,935,450` | `2367.7250%` | `-31.5415%` | `1.3730` | `253,490` | `775` | `42.3174%` | `125` | `0` |
+| `stage132_giveback_loss_neutral` | `4,883,250` | `2341.6250%` | `-31.5415%` | `1.3684` | `253,670` | `775` | `42.3174%` | `125` | `1` |
+
+`q2022_4 252d`弱窗口：
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 回合数 | 回合毛利润 | 风险中性化次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `official_stage78_reference` | `209,470` | `4.7350%` | `-8.3363%` | `0.3745` | `2,020` | `45` | `43.4783%` | `23` | `11,490` | `0` |
+| `stage128_giveback_normal` | `176,680` | `-11.6600%` | `-13.0683%` | `-1.2756` | `760` | `12` | `16.6667%` | `6` | `-22,560` | `0` |
+| `stage132_giveback_loss_neutral` | `176,680` | `-11.6600%` | `-13.0683%` | `-1.2756` | `760` | `12` | `16.6667%` | `6` | `-22,560` | `1` |
+
+弱窗口候选状态：
+
+| 版本 | 候选数 | 开仓候选数 | 开仓率 | 已开仓中位risk_multiplier | 实际开仓诊断数 | 开仓诊断中位risk_multiplier |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `official_stage78_reference` | `184` | `20` | `10.8696%` | `1.00` | `22` | `1.00` |
+| `stage128_giveback_normal` | `184` | `6` | `3.2609%` | `0.55` | `6` | `0.55` |
+| `stage132_giveback_loss_neutral` | `184` | `6` | `3.2609%` | `0.55` | `6` | `0.55` |
+
+### 修改的回测结果
+
+- 无正式版本结果修改。本阶段是新增研究分支验证。
+
+### 删除的回测结果
+
+- 无。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py examples/portfolio_backtesting/analyze_qmt_roll_stage132_profit_giveback_streak_decouple.py`
+- 已完成Stage132验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage132_profit_giveback_streak_decouple.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定一个由Stage131失败归因推出的机制假设，只验证`loss_neutral`，不调利润保护阈值，不新增品种或窗口筛选。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果`loss_neutral`能修复`q2022_4 252d`且全周期不塌，利润保护思想仍可能进入季度walk-forward。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是负向证据，没有继续根据结果改参数；风险中性化只触发`1`次，说明该假设本身不是主要矛盾。
+
+### 运行后继续价值反思
+
+- 判断：否。
+- 原因：`q2022_4 252d`完全没有改善，全周期还较Stage128 normal少`52,200`权益；继续围绕`profit_giveback_streak_update_mode`调更多模式会变成过拟合。
+
+### 后续规划和TODO
+
+- 停止Stage132的`loss_neutral`分支。
+- 利润保护方向暂时降级，不再优先投入。
+- 下一步更值得回到Stage78正式基准，研究不改变退出后风险状态的方向，例如：
+  - 更稳健的全市场品种池更新节奏；
+  - 40万本金下的容量/并发/保证金自然约束；
+  - 不影响单笔趋势质量的组合层风险上限。

@@ -41,6 +41,7 @@ class PositionLayer:
     max_profit_pct: float = 0.0
     margin_ratio: float = 0.1
     entry_price_synced: bool = False
+    profit_giveback_stop_active: bool = False
 
 
 @dataclass
@@ -224,6 +225,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     profit_giveback_trigger_pct: float = 0.08
     profit_giveback_retain_ratio: float = 0.70
     profit_giveback_min_lock_pct: float = 0.03
+    profit_giveback_streak_update_mode: str = "normal"
     add_position_min_profit: float = 0.001
     atr_2x_mid_stop_enabled: bool = True
 
@@ -370,6 +372,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "profit_giveback_trigger_pct",
         "profit_giveback_retain_ratio",
         "profit_giveback_min_lock_pct",
+        "profit_giveback_streak_update_mode",
         "add_position_min_profit",
         "atr_2x_mid_stop_enabled",
         "enable_add_position",
@@ -410,6 +413,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "profit_recovery_streak",
         "portfolio_equity_high_water",
         "portfolio_drawdown_pct",
+        "profit_giveback_streak_neutral_count",
     ]
 
     def __init__(
@@ -456,6 +460,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
         self.profit_giveback_stop_update_count: int = 0
+        self.profit_giveback_streak_neutral_count: int = 0
         self.pending_close_lots: dict[str, list[dict[str, Any]]] = {}
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
@@ -1317,6 +1322,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     max_profit_pct=layer.max_profit_pct,
                     margin_ratio=layer.margin_ratio,
                     entry_price_synced=True,
+                    profit_giveback_stop_active=layer.profit_giveback_stop_active,
                 )
                 layer.volume -= remaining
                 insert_index = state.layers.index(layer) + 1
@@ -3206,12 +3212,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         triggered_indexes: list[int] = []
         base_triggered: bool = False
         base_stop_price: float = 0.0
+        base_profit_giveback_context: bool = False
         triggered_stop_prices: list[float] = []
         for index, layer in enumerate(state.layers):
             if self._stop_triggered(direction, bar, layer.stop_price):
                 if layer.kind == "base":
                     base_triggered = True
                     base_stop_price = layer.stop_price
+                    base_profit_giveback_context = bool(layer.profit_giveback_stop_active)
                     break
                 triggered_indexes.append(index)
                 triggered_stop_prices.append(layer.stop_price)
@@ -3223,6 +3231,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 exit_price,
                 execution_price_override=exit_price,
                 exit_reason=f"{direction}_base_stop",
+                profit_giveback_context=base_profit_giveback_context,
             )
             return f"{direction}_base_stop"
 
@@ -3232,8 +3241,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         stop_reference = max(triggered_stop_prices) if direction == "long" else min(triggered_stop_prices)
         exit_price = self._stop_execution_price(direction, bar, stop_reference)
         closed_volume = sum(state.layers[index].volume for index in triggered_indexes)
-        self._close_layers(state, triggered_indexes, exit_price)
-        exit_reason = f"{direction}_layer_stop_partial" if state.layers else f"{direction}_layer_stop_all"
+        profit_giveback_context = all(
+            bool(state.layers[index].profit_giveback_stop_active) for index in triggered_indexes
+        )
+        exit_reason = f"{direction}_layer_stop_partial" if len(state.layers) > len(triggered_indexes) else f"{direction}_layer_stop_all"
+        self._close_layers(
+            state,
+            triggered_indexes,
+            exit_price,
+            exit_reason=exit_reason,
+            profit_giveback_context=profit_giveback_context,
+        )
         self._record_trade_event(
             bar=bar,
             contract_vt_symbol=state.contract_vt_symbol,
@@ -3289,10 +3307,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 if layer.direction == "long":
                     layer.stop_price = max(layer.stop_price, giveback_price)
                     if layer.stop_price > previous_stop:
+                        layer.profit_giveback_stop_active = True
                         self.profit_giveback_stop_update_count += 1
                 else:
                     layer.stop_price = min(layer.stop_price, giveback_price)
                     if layer.stop_price < previous_stop:
+                        layer.profit_giveback_stop_active = True
                         self.profit_giveback_stop_update_count += 1
 
         if self.trailing_stop_pct > 0:
@@ -3415,7 +3435,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         """Only allow fresh short entries from the MA5-down-cross bearish case."""
         return signal == "short_case1a"
 
-    def _close_layers(self, state: ProductState, indexes: list[int], exit_price: float) -> None:
+    def _close_layers(
+        self,
+        state: ProductState,
+        indexes: list[int],
+        exit_price: float,
+        *,
+        exit_reason: str | None = None,
+        profit_giveback_context: bool = False,
+    ) -> None:
         if not state.contract_vt_symbol:
             return
         size: int = self.get_size(state.contract_vt_symbol)
@@ -3426,7 +3454,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             realized += self._layer_realized_pnl(layer, exit_price, size)
             del state.layers[index]
         self.realized_pnl += realized
-        self._update_streak_risk_state(realized, state.product_vt_symbol)
+        self._update_streak_risk_state(
+            realized,
+            state.product_vt_symbol,
+            exit_reason=exit_reason,
+            profit_giveback_context=profit_giveback_context,
+        )
         if not state.layers:
             state.reset()
 
@@ -3460,6 +3493,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     max_profit_pct=last_layer.max_profit_pct,
                     margin_ratio=last_layer.margin_ratio,
                     entry_price_synced=last_layer.entry_price_synced,
+                    profit_giveback_stop_active=last_layer.profit_giveback_stop_active,
                 ),
                 exit_price,
                 size,
@@ -3474,11 +3508,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if not state.layers:
             state.reset()
 
-    def _close_all_layers(self, state: ProductState, exit_price: float) -> None:
+    def _close_all_layers(
+        self,
+        state: ProductState,
+        exit_price: float,
+        *,
+        exit_reason: str | None = None,
+        profit_giveback_context: bool = False,
+    ) -> None:
         if not state.layers:
             state.reset()
             return
-        self._close_layers(state, list(range(len(state.layers))), exit_price)
+        self._close_layers(
+            state,
+            list(range(len(state.layers))),
+            exit_price,
+            exit_reason=exit_reason,
+            profit_giveback_context=profit_giveback_context,
+        )
         state.reset()
 
     def _close_all_layers_and_set_flat_target(
@@ -3487,6 +3534,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         exit_price: float,
         execution_price_override: float | None = None,
         exit_reason: str | None = None,
+        profit_giveback_context: bool = False,
     ) -> None:
         contract_vt_symbol: str = state.contract_vt_symbol
         if not contract_vt_symbol:
@@ -3505,7 +3553,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 volume=state.active_volume(),
                 price=exit_price,
             )
-        self._close_all_layers(state, exit_price)
+        self._close_all_layers(
+            state,
+            exit_price,
+            exit_reason=exit_reason,
+            profit_giveback_context=profit_giveback_context,
+        )
         if execution_price_override is not None and execution_price_override > 0:
             self.execution_price_overrides[contract_vt_symbol] = execution_price_override
         self.set_target(contract_vt_symbol, 0)
@@ -3513,7 +3566,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _layer_realized_pnl(self, layer: PositionLayer, exit_price: float, size: int) -> float:
         return (exit_price - layer.entry_price) * size * layer.volume if layer.direction == "long" else (layer.entry_price - exit_price) * size * layer.volume
 
-    def _update_streak_risk_state(self, realized_pnl: float, product_vt_symbol: str | None = None) -> None:
+    def _update_streak_risk_state(
+        self,
+        realized_pnl: float,
+        product_vt_symbol: str | None = None,
+        *,
+        exit_reason: str | None = None,
+        profit_giveback_context: bool = False,
+    ) -> None:
+        if self._skip_profit_giveback_streak_update(realized_pnl, exit_reason, profit_giveback_context):
+            self.profit_giveback_streak_neutral_count += 1
+            self.risk_multiplier = self._current_streak_multiplier()
+            return
         if product_vt_symbol and product_vt_symbol in self.streak_risk_state_excluded_product_set:
             exclusion_mode = str(self.streak_risk_state_exclusion_mode or "all").strip().lower()
             if exclusion_mode in {"all", "both", "true", "1"}:
@@ -3555,6 +3619,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.loss_streak = 0
                 self.profit_recovery_streak = 0
         self.risk_multiplier = self._current_streak_multiplier()
+
+    def _skip_profit_giveback_streak_update(
+        self,
+        realized_pnl: float,
+        exit_reason: str | None,
+        profit_giveback_context: bool,
+    ) -> bool:
+        if not self.enable_profit_giveback_stop or not profit_giveback_context:
+            return False
+        mode = str(self.profit_giveback_streak_update_mode or "normal").strip().lower()
+        if mode in {"normal", "default", ""}:
+            return False
+        if mode in {"neutral", "all_neutral", "ignore", "skip"}:
+            return True
+        if mode in {"loss_neutral", "loss_only_neutral", "negative_neutral"}:
+            return realized_pnl < 0
+        return False
 
     def _check_regular_add_conditions(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> tuple[bool, str | None]:
         if not self.enable_add_position:
