@@ -24,6 +24,7 @@ class QmtRangeReversionDirectedPortfolioStrategy(QmtRangeReversionPortfolioStrat
     range_soft_rsi_long_min: float = 25.0
     range_soft_rsi_short_max: float = 75.0
     range_use_product_continuous_signal: bool = False
+    range_product_signal_adjustment_mode: str = "none"
 
     parameters: list[str] = QmtRangeReversionPortfolioStrategy.parameters + [
         "range_direction_hints_path",
@@ -32,6 +33,7 @@ class QmtRangeReversionDirectedPortfolioStrategy(QmtRangeReversionPortfolioStrat
         "range_soft_rsi_long_min",
         "range_soft_rsi_short_max",
         "range_use_product_continuous_signal",
+        "range_product_signal_adjustment_mode",
     ]
 
     def __init__(self, strategy_engine, strategy_name: str, vt_symbols: list[str], setting: dict) -> None:
@@ -43,6 +45,7 @@ class QmtRangeReversionDirectedPortfolioStrategy(QmtRangeReversionPortfolioStrat
         self.product_ams: dict[str, ArrayManager] = {
             product_vt: ArrayManager(am_size) for product_vt in self.product_symbols
         }
+        self.product_signal_last_contract_by_product: dict[str, str] = {}
 
     def on_bars(self, bars) -> None:
         if not self.range_use_product_continuous_signal or not bars:
@@ -55,6 +58,7 @@ class QmtRangeReversionDirectedPortfolioStrategy(QmtRangeReversionPortfolioStrat
         for product_vt, target_contract in mapping_today.items():
             product_am = self.product_ams.get(product_vt)
             if product_am is not None and target_contract in temporary_ams:
+                self._maybe_adjust_product_signal_series(product_vt, target_contract, product_am)
                 temporary_ams[target_contract] = product_am
 
         original_ams = self.ams
@@ -63,6 +67,55 @@ class QmtRangeReversionDirectedPortfolioStrategy(QmtRangeReversionPortfolioStrat
             super().on_bars(bars)
         finally:
             self.ams = original_ams
+
+    def _maybe_adjust_product_signal_series(
+        self,
+        product_vt: str,
+        target_contract: str,
+        product_am: ArrayManager,
+    ) -> None:
+        mode = str(self.range_product_signal_adjustment_mode or "none").strip().lower()
+        last_contract = self.product_signal_last_contract_by_product.get(product_vt, "")
+        if not last_contract:
+            self.product_signal_last_contract_by_product[product_vt] = target_contract
+            return
+        if last_contract == target_contract:
+            return
+
+        self.product_signal_last_contract_by_product[product_vt] = target_contract
+        if mode not in {"back_adjust_additive", "additive", "back_adjust"}:
+            return
+
+        valid_count = min(int(product_am.count), int(product_am.size))
+        if valid_count <= 0:
+            return
+
+        old_last_close = float(product_am.close_array[-1])
+        new_contract_am = self.contract_ams.get(target_contract)
+        new_prev_close = self._last_valid_contract_close(new_contract_am)
+        if pd.isna(old_last_close) or pd.isna(new_prev_close):
+            return
+        if old_last_close <= 0 or new_prev_close <= 0:
+            return
+
+        offset = float(new_prev_close) - old_last_close
+        if abs(offset) <= 1e-12:
+            return
+
+        valid_slice = slice(-valid_count, None)
+        product_am.open_array[valid_slice] += offset
+        product_am.high_array[valid_slice] += offset
+        product_am.low_array[valid_slice] += offset
+        product_am.close_array[valid_slice] += offset
+
+    @staticmethod
+    def _last_valid_contract_close(am: ArrayManager | None) -> float:
+        if am is None:
+            return float("nan")
+        valid_count = min(int(am.count), int(am.size))
+        if valid_count <= 0:
+            return float("nan")
+        return float(am.close_array[-1])
 
     def _load_range_direction_hints(self) -> dict[str, str]:
         path_text = str(self.range_direction_hints_path or "").strip()

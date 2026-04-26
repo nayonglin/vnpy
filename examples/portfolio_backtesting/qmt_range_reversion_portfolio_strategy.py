@@ -45,6 +45,9 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
     range_efficiency_max: float = 0.35
     range_intraday_stop_enabled: bool = False
     range_intraday_stop_gap_open_enabled: bool = True
+    range_two_stage_stop_enabled: bool = False
+    range_soft_stop_confirm_bars: int = 1
+    range_hard_stop_r_multiple: float = 2.0
     exit_on_channel_middle_touch: bool = True
     range_previous_day_stop_long_enabled: bool = True
     range_previous_day_stop_short_enabled: bool = True
@@ -71,10 +74,44 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
         "range_efficiency_max",
         "range_intraday_stop_enabled",
         "range_intraday_stop_gap_open_enabled",
+        "range_two_stage_stop_enabled",
+        "range_soft_stop_confirm_bars",
+        "range_hard_stop_r_multiple",
         "exit_on_channel_middle_touch",
         "range_previous_day_stop_long_enabled",
         "range_previous_day_stop_short_enabled",
     ]
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.range_initial_base_stop_by_product: dict[str, float] = {}
+        self.range_soft_stop_confirm_count_by_product: dict[str, int] = {}
+
+    def _open_position(
+        self,
+        state: ProductState,
+        contract_vt_symbol: str,
+        direction: str,
+        volume: int,
+        bar: BarData,
+        signal: str,
+        history: pd.DataFrame,
+        signal_data: dict[str, Any],
+        sizing_snapshot: dict[str, Any] | None = None,
+    ) -> None:
+        super()._open_position(
+            state,
+            contract_vt_symbol,
+            direction,
+            volume,
+            bar,
+            signal,
+            history,
+            signal_data,
+            sizing_snapshot=sizing_snapshot,
+        )
+        self._reset_range_two_stage_stop_state(state.product_vt_symbol)
+        self._capture_range_initial_base_stop(state)
 
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
         close = pd.Series(am.close_array, dtype="float64")
@@ -319,6 +356,182 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
             stop_price = float(prev_day["high"])
             for layer in state.layers:
                 layer.stop_price = min(layer.stop_price, stop_price)
+
+    def _process_layer_stops(self, state: ProductState, bar: BarData) -> str:
+        if not self.range_two_stage_stop_enabled:
+            return super()._process_layer_stops(state, bar)
+
+        stop_reason = self._process_range_two_stage_stops(state, bar)
+        if stop_reason or not state.layers:
+            return stop_reason
+
+        middle_exit_reason = self._process_boll_middle_exit(state, bar)
+        if middle_exit_reason:
+            return middle_exit_reason
+
+        time_exit_reason = self._process_max_holding_exit(state, bar)
+        if time_exit_reason:
+            return time_exit_reason
+
+        return ""
+
+    def _process_range_two_stage_stops(self, state: ProductState, bar: BarData) -> str:
+        if not state.layers:
+            self._reset_range_two_stage_stop_state(state.product_vt_symbol)
+            return ""
+
+        direction = state.direction
+        base_index = -1
+        base_layer = None
+        for index, layer in enumerate(state.layers):
+            if layer.kind == "base":
+                base_index = index
+                base_layer = layer
+                break
+
+        if base_layer is not None:
+            self._capture_range_initial_base_stop(state)
+            if self._range_hard_stop_triggered(state, base_layer, bar):
+                hard_stop_price = self._range_hard_stop_price(state, base_layer)
+                exit_price = self._stop_execution_price(direction, bar, hard_stop_price)
+                exit_reason = f"{direction}_hard_base_stop"
+                self._reset_range_two_stage_stop_state(state.product_vt_symbol)
+                self._close_all_layers_and_set_flat_target(
+                    state,
+                    exit_price,
+                    execution_price_override=exit_price,
+                    exit_reason=exit_reason,
+                    profit_giveback_context=bool(base_layer.profit_giveback_stop_active),
+                )
+                return exit_reason
+
+            if base_layer.profit_giveback_stop_active and self._stop_triggered(direction, bar, base_layer.stop_price):
+                exit_price = self._stop_execution_price(direction, bar, base_layer.stop_price)
+                exit_reason = f"{direction}_base_stop"
+                self._reset_range_two_stage_stop_state(state.product_vt_symbol)
+                self._close_all_layers_and_set_flat_target(
+                    state,
+                    exit_price,
+                    execution_price_override=exit_price,
+                    exit_reason=exit_reason,
+                    profit_giveback_context=True,
+                )
+                return exit_reason
+
+            if self._range_soft_stop_close_confirmed(direction, bar, base_layer.stop_price):
+                product = state.product_vt_symbol
+                confirm_count = self.range_soft_stop_confirm_count_by_product.get(product, 0) + 1
+                self.range_soft_stop_confirm_count_by_product[product] = confirm_count
+                if confirm_count >= max(1, int(self.range_soft_stop_confirm_bars)):
+                    exit_price = float(bar.close_price)
+                    exit_reason = f"{direction}_soft_base_stop_confirmed"
+                    self._reset_range_two_stage_stop_state(product)
+                    self._close_all_layers_and_set_flat_target(
+                        state,
+                        exit_price,
+                        execution_price_override=exit_price,
+                        exit_reason=exit_reason,
+                        profit_giveback_context=False,
+                    )
+                    return exit_reason
+            else:
+                self.range_soft_stop_confirm_count_by_product[state.product_vt_symbol] = 0
+
+        return self._process_range_non_base_layer_stops(state, bar, base_index)
+
+    def _process_range_non_base_layer_stops(self, state: ProductState, bar: BarData, base_index: int) -> str:
+        direction = state.direction
+        triggered_indexes: list[int] = []
+        triggered_stop_prices: list[float] = []
+        for index, layer in enumerate(state.layers):
+            if index == base_index:
+                continue
+            if self._stop_triggered(direction, bar, layer.stop_price):
+                triggered_indexes.append(index)
+                triggered_stop_prices.append(layer.stop_price)
+
+        if not triggered_indexes:
+            return ""
+
+        stop_reference = max(triggered_stop_prices) if direction == "long" else min(triggered_stop_prices)
+        exit_price = self._stop_execution_price(direction, bar, stop_reference)
+        closed_volume = sum(state.layers[index].volume for index in triggered_indexes)
+        profit_giveback_context = all(
+            bool(state.layers[index].profit_giveback_stop_active) for index in triggered_indexes
+        )
+        exit_reason = (
+            f"{direction}_layer_stop_partial"
+            if len(state.layers) > len(triggered_indexes)
+            else f"{direction}_layer_stop_all"
+        )
+        self._close_layers(
+            state,
+            triggered_indexes,
+            exit_price,
+            exit_reason=exit_reason,
+            profit_giveback_context=profit_giveback_context,
+        )
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=state.contract_vt_symbol,
+            product_vt_symbol=state.product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            self._reset_range_two_stage_stop_state(state.product_vt_symbol)
+        return exit_reason
+
+    def _capture_range_initial_base_stop(self, state: ProductState) -> None:
+        if not state.product_vt_symbol or not state.layers:
+            return
+        if state.product_vt_symbol in self.range_initial_base_stop_by_product:
+            return
+        for layer in state.layers:
+            if layer.kind == "base":
+                self.range_initial_base_stop_by_product[state.product_vt_symbol] = float(layer.stop_price)
+                self.range_soft_stop_confirm_count_by_product[state.product_vt_symbol] = 0
+                return
+
+    def _reset_range_two_stage_stop_state(self, product_vt_symbol: str) -> None:
+        if not product_vt_symbol:
+            return
+        self.range_initial_base_stop_by_product.pop(product_vt_symbol, None)
+        self.range_soft_stop_confirm_count_by_product.pop(product_vt_symbol, None)
+
+    def _range_hard_stop_triggered(self, state: ProductState, base_layer, bar: BarData) -> bool:
+        hard_stop_price = self._range_hard_stop_price(state, base_layer)
+        if pd.isna(hard_stop_price) or hard_stop_price <= 0:
+            return False
+        return self._stop_triggered(state.direction, bar, hard_stop_price)
+
+    def _range_hard_stop_price(self, state: ProductState, base_layer) -> float:
+        entry_price = float(base_layer.entry_price)
+        initial_stop = self.range_initial_base_stop_by_product.get(state.product_vt_symbol, float(base_layer.stop_price))
+        risk_distance = abs(entry_price - float(initial_stop))
+        if risk_distance <= 0:
+            risk_distance = abs(entry_price - float(base_layer.stop_price))
+        if entry_price <= 0 or risk_distance <= 0:
+            return float("nan")
+
+        hard_multiple = max(1.0, float(self.range_hard_stop_r_multiple))
+        if state.direction == "long":
+            return entry_price - hard_multiple * risk_distance
+        return entry_price + hard_multiple * risk_distance
+
+    @staticmethod
+    def _range_soft_stop_close_confirmed(direction: str, bar: BarData, stop_price: float) -> bool:
+        if stop_price <= 0:
+            return False
+        close_price = float(bar.close_price)
+        if direction == "long":
+            return close_price <= stop_price
+        return close_price >= stop_price
 
     def _process_boll_middle_exit(self, state: ProductState, bar: BarData) -> str:
         if not self.exit_on_channel_middle_touch or not state.contract_vt_symbol:

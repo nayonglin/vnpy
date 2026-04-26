@@ -5081,3 +5081,179 @@
 - 下一步：
   - 对v6做起始年份、年度、季度/滚动窗口验证。
   - 重点检查2023年大亏、长仓初始TR灾损、以及v6是否只靠2024-2025改善。
+
+### 162. 第189阶段完成v6稳健性分段审计，结论为有机制价值但稳健性不足
+
+- 当前模式：`day`。
+- 第78影响：
+  - 无。没有修改第78正式趋势策略、正式配置、正式入口或18品种趋势池。
+- 本阶段未跑新回测：
+  - 只读取v6既有`daily_equity.csv`、成交和诊断文件做分段审计。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v6_robustness.py`
+- 年度结论：
+  - 负收益年份：`2021`、`2023`、`2026`。
+  - 2024贡献最大：净PnL`+5,850`，收益`+2.966%`，Sharpe-like`1.981`。
+  - 2025明显转弱：净PnL`+700`，收益`+0.345%`。
+  - 2026当前为`-20`，样本少但未证明延续。
+- 起始年份结论：
+  - since_2024净PnL`+6,530`，收益`3.311%`，是主要优势期。
+  - since_2025净PnL仅`+680`，说明后段延续性不足。
+- 最大回撤：
+  - 峰值`2022-09-02`，谷底`2023-06-01`，修复到`2024-11-04`。
+  - 回撤金额`-4,550`，回撤比例`-2.266%`。
+  - 最差252日窗口为`2022-05-23`到`2023-06-01`，净PnL`-3,790`。
+- 产品-年份归因：
+  - 2023：`nr.INE +2,250`，`cs.DCE -930`，`PF.CZCE -2,010`。
+  - 2024：`cs.DCE +5,000`，`PF.CZCE +1,370`。
+  - 2025：`y.DCE +2,320`，`PF.CZCE +40`，`cs.DCE -1,120`。
+- 决策：
+  - `range_reversion_core4_v6_has_mechanism_value_but_robustness_not_enough`
+  - v6保留为震荡内部研究基准，但不接入第78、不进入A/B/C、不作为正式震荡策略。
+- 下一步：
+  - 只做弱窗归因，不直接调参。
+  - 拆`2022-05-23`到`2023-06-01`窗口，重点看PF 2023两笔大亏和CS在2021/2023/2025的持续亏损。
+
+### 163. 第190阶段完成震荡策略v7后复权产品连续信号实验，逻辑修复有效但未正式化
+
+- 当前模式：`day`。
+- 第78影响：
+  - 无。没有修改第78正式趋势策略、正式配置、正式入口或18品种趋势池。
+- 本阶段判断出的核心逻辑问题：
+  - v6的`range_use_product_continuous_signal=True`会把不同主力合约价格直接拼入同一个产品AM，未做复权。
+  - 震荡策略依赖区间位置、RSI、ADX、通道中轨，未复权换月会把合约价差误当成市场波动。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_product_signal_logic_audit.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_backtest.py`
+- 修改：
+  - `examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py`
+  - 新增`range_product_signal_adjustment_mode`，默认`none`；仅震荡策略v7启用`back_adjust_additive`。
+- 逻辑审计结果：
+  - Core4换月事件`219`次。
+  - 未复权换月跳变中位数约`0.68%`，90分位约`2.93%`，最大约`6.83%`。
+  - v6回合中约`22.2%`发生在换月后5天内。
+- v7回测结果：
+  - 期末权益`206,140`，总收益`3.07%`，最大回撤`-2.20%`，Sharpe`0.421`。
+  - 总滑点`2,000`，总交易次数`76`，回合数`38`，胜率`42.11%`。
+  - 相比v6：期末权益`203,760 -> 206,140`，Sharpe`0.260 -> 0.421`，最大回撤略降。
+- 决策：
+  - `range_reversion_core4_back_adjusted_product_signal_v7_logic_fix_improves_but_not_formal`
+  - v7是震荡路线新的内部研究候选。
+  - 不接入第78，不进入A/B/C，不作为正式震荡策略。
+- 下一步：
+  - 对v7做年度、季度、起始年份和滚动窗口稳健性审计。
+  - 重点复盘2023亏损和换月附近交易，先确认逻辑修复后的弱点，再决定是否调整交易规则。
+
+### 164. 第191阶段完成v7稳健性分段审计，结论为逻辑修复有效但弱窗仍存在
+
+- 当前模式：`day`。
+- 第78影响：
+  - 无。没有修改第78正式趋势策略、正式配置、正式入口或18品种趋势池。
+- 本阶段未跑新回测：
+  - 只读取v7既有`daily_equity.csv`、成交和入场诊断文件做分段审计。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_robustness.py`
+- 年度结论：
+  - 负收益年份：`2021`、`2023`。
+  - 2021净PnL`-2,030`，主要来自`cs.DCE short`五笔全亏。
+  - 2023净PnL`-2,520`，主要来自`PF.CZCE long -1,940`和`cs.DCE short -380`。
+  - 2024净PnL`+3,780`，2025净PnL`+3,560`，v7后段延续性好于v6。
+- 最大回撤：
+  - 峰值`2023-03-08`，谷底`2023-06-29`，修复到`2024-11-05`。
+  - 回撤金额`-4,430`，回撤比例`-2.201%`。
+- 最差窗口：
+  - 最差252日窗口：`2023-01-03`到`2024-01-15`，净PnL`-3,600`。
+  - 最差126日窗口：`2022-12-20`到`2023-06-29`，净PnL`-4,430`。
+- 起始年份结论：
+  - since_2024净PnL`+7,480`，收益`3.765%`，Sharpe-like`1.069`。
+  - since_2025净PnL`+3,700`，收益`1.828%`，Sharpe-like`1.078`。
+- 决策：
+  - `range_reversion_core4_v7_logic_fix_valid_but_weak_window_persists`
+  - v7保留为震荡路线新的内部研究候选。
+  - 不接入第78，不进入A/B/C，不作为正式震荡策略。
+- 下一步：
+  - 不直接调参。
+  - 拆`2022-12-20`到`2023-06-29`弱窗，逐笔复盘2023 PF长仓亏损和2021 cs短仓全亏，先判断失败类型。
+
+### 165. 第192阶段完成v7弱窗逐笔复盘，主要矛盾定位为止损结构
+
+- 当前模式：`day`。
+- 第78影响：
+  - 无。未修改第78正式趋势策略、正式配置、正式入口或18品种趋势池。
+- 本阶段未跑新回测：
+  - 只读取v7既有成交、入场诊断和K线历史。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_weak_window_trade_replay.py`
+- 复盘范围：
+  - `2022-12-20`到`2023-06-29`最差126日窗口。
+  - `2023 PF.CZCE long`亏损。
+  - `2021 cs.DCE short`五笔全亏。
+- 复盘结果：
+  - 回合数`12`，合计PnL`-4,870`。
+  - 弱窗7笔PnL`-3,040`，胜率`14.29%`，止损后10日平均有利波动/初始风险`2.995`。
+  - 2021 cs short 5笔PnL`-1,830`，胜率`0%`，止损后10日平均有利波动/初始风险`2.010`。
+- 失败类型：
+  - `stop_too_early_then_recovered`：6笔，PnL`-3,210`，是最大亏损类型。
+  - `wrong_direction_or_bad_timing`：2笔，PnL`-1,480`，说明不能粗暴放宽止损。
+  - `rollover_reopen_loss`：1笔，PnL`-360`，换月重开需要独立处理。
+- 核心判断：
+  - v7弱窗不是简单证明震荡方向不可做；更像是基础止损落在正常噪声里，导致部分均值回归单过早出场。
+  - 下一步不应全局放大止损，而应做震荡策略独立v8两段式止损：
+    - 实时硬止损防极端行情。
+    - 普通基础止损改为收盘确认或短确认期。
+    - 换月重开单独限制。
+- 决策：
+  - `range_reversion_core4_v7_failure_mode_stop_structure_dominates`
+  - 不接入第78，不进入A/B/C，不作为正式震荡策略。
+
+### 166. 第193阶段完成震荡策略v8两段式止损回测，成为内部研究基准候选
+
+- 当前模式：`day`。
+- 第78影响：
+  - 无。未修改第78正式趋势策略、正式配置、正式入口或18品种趋势池。
+- 已读取`skills/version-ab-experiment/SKILL.md`：
+  - 本阶段不做第78 A/B/C，只作为震荡策略独立路线B臂内部验证。
+  - 当前正式基准仍为`official_stage78_defensive_v1`。
+- 修改：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+  - 新增默认关闭的震荡专用参数：
+    - `range_two_stage_stop_enabled`
+    - `range_soft_stop_confirm_bars`
+    - `range_hard_stop_r_multiple`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_two_stage_stop_backtest.py`
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_two_stage_stop_robustness.py`
+- v8参数：
+  - 后复权产品连续信号沿用v7。
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+- v8实现修正：
+  - 发现同产品上一笔通道中轴退出后，初始硬止损参考价可能残留到下一笔。
+  - 已修正为每次新开仓先清理再记录本笔初始止损。
+  - `15:36`初跑结果不采纳，以下以`15:41`修正版为准。
+- v8回测结果：
+  - 期末权益`211,530`，总收益`5.76%`，最大回撤`-1.98%`，Sharpe`0.617`。
+  - 总滑点`1,980`，总交易次数`76`，回合数`38`，胜率`52.63%`。
+- 相比v7：
+  - 期末权益`206,140 -> 211,530`
+  - Sharpe`0.421 -> 0.617`
+  - 最大回撤`-4,430 -> -4,020`
+  - 最大回撤周期`224 -> 107`
+  - 胜率`42.11% -> 52.63%`
+- 稳健性：
+  - 2021净PnL`-670`，较v7的`-2,030`改善。
+  - 2023净PnL`-1,820`，较v7的`-2,520`改善但仍为最弱年份。
+  - 2024净PnL`+7,020`，2025净PnL`+3,650`。
+  - 最差126日窗口仍是`2022-12-20`到`2023-06-29`，净PnL`-3,740`。
+- 出场结构：
+  - 通道中轴退出成为主要盈利来源：长仓`+10,000`、短仓`+8,950`。
+  - `short_soft_base_stop_confirmed`仍亏`-6,040`，是下一步主要问题。
+- 决策：
+  - `range_reversion_core4_v8_two_stage_stop_internal_breakthrough_not_formal`
+  - v8成为震荡路线内部研究基准候选。
+  - 不接入第78，不进入第78 A/B/C，不作为正式震荡策略。
+- 下一步：
+  - 复盘`short_soft_base_stop_confirmed`的11笔亏损。
+  - 重点检查`2025 cs.DCE short -1,740`。
+  - 不做单品种黑名单，优先寻找跨品种可解释的短仓状态变量。

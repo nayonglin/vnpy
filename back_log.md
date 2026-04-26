@@ -25422,3 +25422,732 @@ to-end季度冷启动：
   - v6的`long_base_stop`虽然次数降到`6`，但亏损达到`-5,860`，是否需要“长仓初始TR灾损保护”或更快失败识别。
 - Polanyi式经验判断：
   - v6的手感比前面版本顺了：它没有强行删掉PF，而是让PF有机会走到中轨；同时没有把短仓的护栏拆掉。这个变化像是在把震荡策略从“趋势策略的止损习惯”里剥离出来，但还需要用更多时间切片确认它不是某几年运气好。
+
+## 2026-04-26 15:00 第189阶段：震荡Core4 v6稳健性分段审计
+
+### 本阶段性质
+
+- 当前模式：`day`。
+- 研究对象：独立震荡策略路线。
+- 当前正式基准：`official_stage78_defensive_v1`。
+- 第78趋势策略影响：无。没有修改第78正式趋势策略、正式配置、正式回测入口或18品种趋势池。
+- 是否新回测：否。本阶段只读取v6既有资金曲线、成交和诊断文件做稳健性审计。
+- 是否重要突破版本：否。
+- 原因：本阶段降低了对v6的乐观程度，确认v6有机制价值，但收益集中和长回撤修复问题仍明显。
+
+### 代码变更
+
+- 新增分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v6_robustness.py`
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_year_summary_range_reversion_core4_v6_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_quarter_summary_range_reversion_core4_v6_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_start_year_summary_range_reversion_core4_v6_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_rolling_summary_range_reversion_core4_v6_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_product_year_summary_range_reversion_core4_v6_robustness_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v6_robustness_report_range_reversion_core4_v6_robustness_v1.md`
+
+### 参数变更
+
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+
+### 新增回测结果
+
+- 无新增回测。
+- 本阶段新增的是v6既有回测曲线的分段审计结果。
+
+### 年度稳健性
+
+| 年份 | 净PnL | 收益 | 最大回撤 | Sharpe-like | 滑点 | 交易次数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2020 | `0` | `0.000%` | `0` | `0.000` | `0` | `0` |
+| 2021 | `-1,620` | `-0.810%` | `-1,700` | `-1.494` | `100` | `8` |
+| 2022 | `0` | `0.000%` | `-2,380` | `0.006` | `180` | `10` |
+| 2023 | `-1,150` | `-0.580%` | `-2,170` | `-0.495` | `460` | `14` |
+| 2024 | `+5,850` | `+2.966%` | `-1,620` | `1.981` | `520` | `16` |
+| 2025 | `+700` | `+0.345%` | `-2,340` | `0.222` | `540` | `20` |
+| 2026 | `-20` | `-0.010%` | `-1,240` | `-0.017` | `100` | `4` |
+
+### 起始年份稳健性
+
+| 起点 | 净PnL | 收益 | 最大回撤 | Sharpe-like | 判断 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| since_2020 | `+3,760` | `1.880%` | `-4,550` | `0.265` | 全样本弱正 |
+| since_2021 | `+3,760` | `1.880%` | `-4,550` | `0.288` | 与全样本相同 |
+| since_2022 | `+5,380` | `2.712%` | `-4,550` | `0.465` | 去掉2021后改善 |
+| since_2023 | `+5,380` | `2.712%` | `-2,740` | `0.577` | 仍依赖2024修复 |
+| since_2024 | `+6,530` | `3.311%` | `-2,740` | `0.939` | 主要优势期 |
+| since_2025 | `+680` | `0.335%` | `-2,740` | `0.174` | 后段明显变弱 |
+| since_2026 | `-20` | `-0.010%` | `-1,240` | `-0.017` | 样本少，未证明延续 |
+
+### 最大回撤与滚动弱窗
+
+- 最大回撤事件：
+  - 峰值日期：`2022-09-02`
+  - 谷底日期：`2023-06-01`
+  - 修复日期：`2024-11-04`
+  - 回撤金额：`-4,550`
+  - 回撤比例：`-2.266%`
+- 最差252交易日窗口：
+  - `2022-05-23`到`2023-06-01`
+  - 净PnL：`-3,790`
+  - 收益：`-1.895%`
+  - 最大回撤：`-4,550`
+  - Sharpe-like：`-1.855`
+  - 滑点：`270`
+  - 交易次数：`13`
+
+### 产品-年份归因
+
+- 2021：
+  - `cs.DCE short`：`-670`
+  - `PF.CZCE long`：`-850`
+- 2023：
+  - `nr.INE long`：`+2,250`
+  - `cs.DCE short`：`-930`
+  - `PF.CZCE long`：`-2,010`
+- 2024：
+  - `cs.DCE short`：`+5,000`
+  - `PF.CZCE long`：`+1,370`
+- 2025：
+  - `y.DCE long`：`+2,320`
+  - `PF.CZCE long`：`+40`
+  - `cs.DCE short`：`-1,120`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v6_robustness.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v6_robustness.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段没有改规则、没有调参、没有选品，只是对v6既有资金曲线做分段审计。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第188阶段v6看起来像机制突破，但必须确认是否只靠2024-2025少数窗口撑起来。
+
+### 运行后过拟合反思
+
+- 判断：没有新增过拟合，但v6本身不能立即正式化。
+- 原因：审计显示v6收益高度依赖2024，且最大回撤从2022-09到2024-11才修复；如果现在继续围绕某个年份补丁调参，会进入过拟合。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要收窄。
+- 原因：v6机制仍有价值，不过下一步不是继续追收益，而是解释并降低`2022-05到2023-06`弱窗和2023 PF/CS亏损。
+
+### 决策
+
+- `range_reversion_core4_v6_has_mechanism_value_but_robustness_not_enough`
+- v6仍是震荡路线内部研究基准。
+- 不接入第78。
+- 不进入A/B/C。
+- 不作为正式震荡策略。
+
+### 后续规划和TODO
+
+- 下一步只做弱窗归因，不直接调参：
+  - 拆`2022-05-23`到`2023-06-01`最差252日窗口。
+  - 对比PF 2023两笔大亏与CS 2021/2023/2025持续亏损。
+  - 判断弱窗来自商品状态、方向假设、入场过早、还是退出机制。
+- 暂停新增复杂过滤器，避免为了修2023而牺牲2024主优势期。
+- Polanyi式经验判断：
+  - v6不像假信号，但也不像成熟系统。它像一辆终于能转弯的车，但底盘还会在特定路面打滑；现在最重要的不是继续加马力，而是找到2022-2023这段路为什么打滑。
+
+## 第190阶段：震荡策略v7产品连续信号加法后复权实验
+
+- 改动时间点：`2026-04-26 15:17 CST`
+- 当前模式：`day`
+- 策略路线：震荡策略独立路线
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 是否重要突破版本：否，但属于逻辑口径修复后的有效改善版本。
+
+### 本次版本改动内容
+
+- 新增参数：
+  - `range_product_signal_adjustment_mode`
+    - 默认值：`none`
+    - 本次v7启用值：`back_adjust_additive`
+- 修改参数：
+  - 无收益参数修改，v7沿用v6核心参数：
+    - `range_use_product_continuous_signal=True`
+    - `streak_risk_multipliers=1.0,1.0,1.0,1.0`
+    - `range_previous_day_stop_long_enabled=False`
+    - `range_previous_day_stop_short_enabled=True`
+- 删除参数：
+  - 无
+- 新增代码：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_backtest.py`
+- 修改代码：
+  - `examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py`
+    - 仅在震荡策略`range_use_product_continuous_signal=True`且`range_product_signal_adjustment_mode=back_adjust_additive`时，对产品连续信号AM在换月点做加法后复权。
+    - 不改变默认行为，不影响趋势策略。
+
+### 回测命令
+
+- 语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_backtest.py`
+- 回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_backtest.py`
+
+### 新增回测结果
+
+- 版本：`range_reversion_core4_directed_product_signal_back_adjusted_v7`
+- 区间：`2020-02-05` 到 `2026-04-15`
+- 初始资金：`200,000`
+- 期末权益：`206,140`
+- 总收益：`3.07%`
+- 年化收益：`0.49%`
+- 最大回撤：`-4,430`
+- 最大回撤比例：`-2.20%`
+- Sharpe：`0.421`
+- 总滑点：`2,000`
+- 总交易次数：`76`
+- 回合数：`38`
+- 胜率：`42.11%`
+- 总净PnL：`6,140`
+- 原始回合PnL：`8,140`
+- 产品贡献：
+  - `y.DCE long`：`+3,900`
+  - `PF.CZCE long`：`+3,070`
+  - `cs.DCE short`：`+870`
+  - `nr.INE long`：`+300`
+- 年度回合PnL：
+  - `2021`：`-1,830`
+  - `2022`：`+3,350`
+  - `2023`：`-2,020`
+  - `2024`：`+4,400`
+  - `2025`：`+4,000`
+  - `2026`：`+240`
+
+### 对比v6
+
+- v6期末权益：`203,760`
+- v6总收益：`1.88%`
+- v6最大回撤：`-2.266%`
+- v6 Sharpe：`0.260`
+- v6总滑点：`1,900`
+- v6总交易次数：`72`
+- v6胜率：`41.67%`
+- v7相对改善：
+  - 期末权益提高`+2,380`
+  - 总收益提高`+1.19个百分点`
+  - 最大回撤略降到`-2.20%`
+  - Sharpe提高到`0.421`
+
+### 修改/删除回测结果
+
+- 修改回测结果：
+  - 无，v7为新增独立结果。
+- 删除回测结果：
+  - 无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本次没有按收益搜索参数，也没有新增品种筛选；只是修复产品连续信号在换月处未复权、将合约价差误当成行情波动的逻辑口径问题。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：震荡策略依赖区间、RSI、ADX、通道中轨等绝对价格序列，未复权换月会破坏策略第一性假设；先修数据口径比继续调参数更有价值。
+
+### 运行后过拟合反思
+
+- 判断：否，但不能因此正式化。
+- 原因：v7只改变数据口径，收益改善是逻辑修复后的自然结果；但年度仍有`2021`和`2023`亏损，说明还不是稳定穿越周期的正式版本。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：在不调收益参数的情况下，v7相对v6同时提升期末权益和Sharpe，且回撤略降，证明“后复权产品信号”方向值得继续；但下一步应做稳健性分段和换月附近交易复盘，而不是继续堆过滤器。
+
+### 决策
+
+- `range_reversion_core4_back_adjusted_product_signal_v7_logic_fix_improves_but_not_formal`
+- v7可作为震荡路线新的内部研究候选。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不作为正式震荡策略。
+
+### 后续规划和TODO
+
+- 对v7做与v6同口径的稳健性分段：
+  - 年度、季度、起始年份、滚动252日窗口。
+  - 重点确认`2023`亏损是否仍由PF/CS结构性弱点造成。
+- 做换月附近成交复盘：
+  - 确认后复权后，换月0-5天交易是否仍异常集中。
+  - 分清“真实换月机会”与“复权后仍然过早入场”。
+- 如果v7稳健性仍不足，下一步不调RSI/ADX阈值，优先考虑：
+  - 用复权后序列只做信号；
+  - 止损和执行价始终使用真实合约价；
+  - 入场后避免在换月当天强制重开造成额外噪音。
+
+## 第191阶段：震荡策略v7稳健性分段审计
+
+- 改动时间点：`2026-04-26 15:23 CST`
+- 当前模式：`day`
+- 策略路线：震荡策略独立路线
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 是否重要突破版本：否。本阶段是v7既有回测结果的稳健性审计，不是新策略版本。
+
+### 本次版本改动内容
+
+- 新增参数：
+  - 无
+- 修改参数：
+  - 无
+- 删除参数：
+  - 无
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_robustness.py`
+- 修改代码：
+  - 无策略代码修改
+
+### 回测/审计命令
+
+- 语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_robustness.py`
+- 审计运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_robustness.py`
+- 说明：
+  - 本阶段未跑新回测，只读取v7既有`daily_equity.csv`、成交和入场诊断文件。
+
+### 新增回测结果
+
+- 无新增回测结果。
+- 复核对象仍为第190阶段v7：
+  - 期末权益：`206,140`
+  - 总收益：`3.07%`
+  - 最大回撤：`-2.20%`
+  - Sharpe：`0.421`
+  - 总滑点：`2,000`
+  - 总交易次数：`76`
+  - 回合胜率：`42.11%`
+
+### 稳健性审计结果
+
+- 负收益年份：
+  - `2021`：净PnL`-2,030`，收益`-1.015%`，Sharpe-like`-2.239`
+  - `2023`：净PnL`-2,520`，收益`-1.252%`，Sharpe-like`-1.025`
+- 正收益年份：
+  - `2022`：净PnL`+3,270`
+  - `2024`：净PnL`+3,780`
+  - `2025`：净PnL`+3,560`
+  - `2026`：净PnL`+140`，样本少
+- 最大回撤事件：
+  - 峰值日期：`2023-03-08`
+  - 谷底日期：`2023-06-29`
+  - 修复日期：`2024-11-05`
+  - 回撤金额：`-4,430`
+  - 回撤比例：`-2.201%`
+- 最差252日窗口：
+  - `2023-01-03` 到 `2024-01-15`
+  - 净PnL：`-3,600`
+  - 收益：`-1.789%`
+  - 最大回撤：`-4,430`
+  - Sharpe-like：`-1.389`
+  - 滑点：`620`
+  - 交易次数：`22`
+- 最差126日窗口：
+  - `2022-12-20` 到 `2023-06-29`
+  - 净PnL：`-4,430`
+  - 最大回撤：`-4,430`
+  - Sharpe-like：`-3.976`
+- 起始年份表现：
+  - since_2024：净PnL`+7,480`，收益`3.765%`，最大回撤`-0.944%`，Sharpe-like`1.069`
+  - since_2025：净PnL`+3,700`，收益`1.828%`，最大回撤`-0.643%`，Sharpe-like`1.078`
+- 产品-年份关键归因：
+  - `2021 cs.DCE short`：`-1,830`，5回合全亏
+  - `2023 PF.CZCE long`：`-1,940`，2回合全亏
+  - `2023 cs.DCE short`：`-380`
+  - `2024 cs.DCE short`：`+2,320`
+  - `2025 PF.CZCE long`：`+2,630`
+  - `2025 y.DCE long`：`+2,320`
+
+### 修改/删除回测结果
+
+- 修改回测结果：
+  - 无
+- 删除回测结果：
+  - 无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只读取v7既有曲线和成交做年度、季度、起始年份、滚动窗口切片，不调参、不新增过滤器、不选择性剔除交易。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v7总指标改善，但必须确认改善是否来自少数年份；如果优势只在2024-2025，正式化风险仍高。
+
+### 运行后过拟合反思
+
+- 判断：没有新增过拟合，但v7还不能正式化。
+- 原因：后复权逻辑修复是真问题，改善也真实；但2021和2023仍亏，最大回撤修复周期从2023-06到2024-11，说明还没有形成稳定的全周期震荡系统。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步必须聚焦弱窗结构。
+- 原因：v7相对v6提高了总收益和Sharpe，并改善2025；但最差窗口仍集中在`2022-12`到`2023-06`，主要来自`2023 PF长仓`和`2021/2023 cs短仓`，继续泛化调阈值容易过拟合。
+
+### 决策
+
+- `range_reversion_core4_v7_logic_fix_valid_but_weak_window_persists`
+- v7保留为震荡路线新的内部研究候选。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不作为正式震荡策略。
+
+### 后续规划和TODO
+
+- 下一步只做弱窗交易级复盘，不直接调参：
+  - 拆`2022-12-20`到`2023-06-29`最差126日窗口。
+  - 逐笔复盘`2023 PF.CZCE long`两笔亏损。
+  - 逐笔复盘`2021 cs.DCE short`五笔全亏。
+  - 判断失败来自入场信号、换月重开、止损位置、方向假设，还是品种状态不适合震荡。
+- 暂不新增复杂AI过滤器；先把错误类型归因清楚。
+
+## 2026-04-26 15:30 CST - 第192阶段：v7弱窗逐笔复盘，确认主要矛盾在止损结构而非单纯入场方向
+
+### 基本信息
+
+- 当前模式：`day`
+- 策略路线：震荡策略独立路线
+- 策略版本：`range_reversion_core4_v7_weak_window_trade_replay_v1`
+- 是否影响第78正式趋势策略：否
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否，但属于重要诊断结论
+
+### 本次改动内容
+
+- 新增分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v7_weak_window_trade_replay.py`
+- 只读取v7既有成交、入场诊断和K线历史，未跑新回测，未修改交易规则。
+- 聚焦三类样本：
+  - `2022-12-20`到`2023-06-29`最差126日窗口。
+  - `2023 PF.CZCE long`亏损。
+  - `2021 cs.DCE short`五笔全亏。
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 读取基准：
+  - `qmt_range_reversion_core4_directed_product_signal_back_adjusted_v7`
+  - 期末权益：`206,140`
+  - 总收益：`3.07%`
+  - 最大回撤：`-2.20%`
+  - Sharpe：`0.421`
+  - 总滑点：`2,000`
+  - 总交易次数：`76`
+  - 回合数：`38`
+  - 胜率：`42.11%`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段为交易复盘分析。
+- 新增分析结果：
+  - 复盘回合数：`12`
+  - 复盘合计PnL：`-4,870`
+  - 弱窗`2022-12-20`到`2023-06-29`：
+    - 回合数：`7`
+    - PnL：`-3,040`
+    - 胜率：`14.29%`
+    - 平均MFE/初始风险：`0.732`
+    - 平均MAE/初始风险：`1.005`
+    - 止损后10日平均有利波动/初始风险：`2.995`
+  - `2021 cs.DCE short`：
+    - 回合数：`5`
+    - PnL：`-1,830`
+    - 胜率：`0%`
+    - 平均MFE/初始风险：`0.533`
+    - 平均MAE/初始风险：`0.479`
+    - 止损后10日平均有利波动/初始风险：`2.010`
+
+### 失败类型归因
+
+- `stop_too_early_then_recovered`：
+  - 回合数：`6`
+  - PnL：`-3,210`
+  - 胜率：`0%`
+  - 平均止损后10日有利波动/初始风险：`2.722`
+  - 结论：这类交易不是简单方向全错，而是止损位置或止损执行方式落在正常噪声内，出场后市场又回到有利方向。
+- `wrong_direction_or_bad_timing`：
+  - 回合数：`2`
+  - PnL：`-1,480`
+  - 平均MFE/初始风险：`0.271`
+  - 平均MAE/初始风险：`1.284`
+  - 结论：这部分是真正的入场方向或时机问题，不能靠简单放宽止损解决。
+- `rollover_reopen_loss`：
+  - 回合数：`1`
+  - PnL：`-360`
+  - 结论：换月重开仍需单独风控，不能和普通入场失败混在一起。
+- 其他：
+  - `base_stop_no_fast_recovery`：`1`笔，PnL`-70`
+  - `unclassified_loss`：`1`笔，PnL`-50`
+  - `not_failure`：`1`笔，PnL`+300`
+
+### 输出文件
+
+- 明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v7_weak_window_roundtrips_range_reversion_core4_v7_weak_window_trade_replay_v1.csv`
+- 分组汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v7_weak_window_group_summary_range_reversion_core4_v7_weak_window_trade_replay_v1.csv`
+- 失败类型汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v7_weak_window_failure_summary_range_reversion_core4_v7_weak_window_trade_replay_v1.csv`
+- 报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v7_weak_window_trade_replay_report_range_reversion_core4_v7_weak_window_trade_replay_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只复盘预先指定的弱窗和亏损簇，不调参数、不新增规则、不选择性优化收益。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v7的弱点集中在少数时期和品种方向，逐笔复盘可以判断下一步该修止损、修换月、修入场，还是停止这个方向。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段没有根据结果改规则，只把12笔预先定义的交易按MFE、MAE和止损后有利波动分类；结论是机制归因，不是参数寻优。
+
+### 运行后继续价值反思
+
+- 判断：是，但继续方向必须收敛。
+- 原因：最大亏损类型是`stop_too_early_then_recovered`，说明震荡策略存在“方向大体可用但止损太贴近噪声”的结构问题；同时仍有`wrong_direction_or_bad_timing`，所以不能粗暴放宽止损，必须做双层止损或确认式止损实验。
+
+### 决策
+
+- `range_reversion_core4_v7_failure_mode_stop_structure_dominates`
+- v7弱窗的主要矛盾不是“震荡方向完全不可做”，而是普通止损在一部分均值回归交易中过早触发。
+- 不直接全局加大止损。
+- 不直接降低入场标准。
+- 下一步优先做震荡策略专用的两段式止损实验：
+  - 保留实时硬止损，用于防极端单边行情。
+  - 普通基础止损改为收盘确认或短确认期，减少被日内噪声洗出。
+  - 换月重开单独限制，避免把换月造成的二次入场当成正常信号。
+
+### 后续规划和TODO
+
+- 设计v8实验，不影响第78：
+  - 新增震荡策略独立参数，例如`range_two_stage_stop_enabled`、`range_soft_stop_confirm_bars`、`range_hard_stop_r_multiple`。
+  - 对`long_base_stop`和`short_base_stop`拆分为软止损与硬止损。
+  - 只在v8专用入口开启，v7和第78均保持不变。
+- 回测后必须重点比较：
+  - 期末权益是否提高。
+  - 最大回撤是否扩大。
+  - 2021 cs short、2023 PF long是否改善。
+  - 2024-2025盈利是否被牺牲。
+  - 交易次数和滑点是否异常增加。
+
+## 2026-04-26 15:41 CST - 第193阶段：震荡策略v8两段式止损回测，内部阶段性突破但不正式化
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 策略版本：`range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop`
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：是，属于震荡路线内部止损结构阶段性突破；不是第78正式接入突破
+- 已读取并遵循：`skills/version-ab-experiment/SKILL.md`
+  - 判断：本阶段只做震荡策略独立B臂内部验证，不做`A=第78`、`C=第78+震荡`的A/B/C。
+  - 原因：v8虽然有价值，但震荡路线还没有达到可与第78组合接入的稳定性；当前仍应先独立验证。
+
+### 候选假设
+
+- 候选假设：震荡策略的普通基础止损落在正常日内噪声内，导致均值回归单过早出场；用“收盘确认软止损 + 实时硬止损”的两段式结构，可以减少噪声止损，同时保留极端行情防线。
+- 泛化理由：
+  - 这是从交易微观结构和上一阶段逐笔复盘得到的机制性问题，不是为了修某个单一品种或单一窗口。
+  - 不降低入场门槛，不新增品种黑名单，不调小数阈值。
+
+### 本次改动内容
+
+- 修改震荡策略独立基类：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+  - 实现过程中发现并修正状态管理问题：同产品上一笔通道中轴退出后，初始硬止损参考价不能残留到下一笔；修正为每次新开仓先清理再记录本笔初始止损。
+  - `15:36`初跑结果因该状态残留不采纳，已于`15:41`重跑，以下结果均以修正版为准。
+- 新增v8回测入口：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_two_stage_stop_backtest.py`
+- 新增v8稳健性审计脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_two_stage_stop_robustness.py`
+- 代码隔离：
+  - 新参数默认关闭，因此v7和其他震荡入口默认行为不变。
+  - 第78趋势策略未引用这些参数，未受影响。
+
+### 参数记录
+
+- 新增参数：
+  - `range_two_stage_stop_enabled: bool = False`
+  - `range_soft_stop_confirm_bars: int = 1`
+  - `range_hard_stop_r_multiple: float = 2.0`
+- v8启用参数：
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+  - `range_use_product_continuous_signal=True`
+  - `range_product_signal_adjustment_mode=back_adjust_additive`
+  - `streak_risk_multipliers=1.0,1.0,1.0,1.0`
+  - `range_previous_day_stop_long_enabled=False`
+  - `range_previous_day_stop_short_enabled=True`
+- 修改参数：
+  - 无全局修改；仅v8专用入口开启新增参数。
+- 删除参数：
+  - 无
+
+### 新增回测结果
+
+- 回测区间：`2020-02-05` 到 `2026-04-15`
+- 初始资金：`200,000`
+- 期末权益：`211,530`
+- 总收益：`5.76%`
+- 年化收益：`0.92%`
+- 最大回撤：`-4,020`
+- 最大回撤比例：`-1.98%`
+- 最大回撤周期：`107`
+- Sharpe：`0.617`
+- 总滑点：`1,980`
+- 总交易次数：`76`
+- 回合数：`38`
+- 胜率：`52.63%`
+- 胜利回合数：`20`
+- 净PnL：`11,530`
+
+### 与v7对比
+
+- 期末权益：`206,140 -> 211,530`，改善`+5,390`
+- 总收益：`3.07% -> 5.76%`
+- 最大回撤：`-4,430 -> -4,020`
+- 最大回撤比例：`-2.20% -> -1.98%`
+- 最大回撤周期：`224 -> 107`
+- Sharpe：`0.421 -> 0.617`
+- 总滑点：`2,000 -> 1,980`
+- 总交易次数：`76 -> 76`
+- 回合数：`38 -> 38`
+- 胜率：`42.11% -> 52.63%`
+
+### 稳健性审计结果
+
+- 负收益年份仍为：
+  - `2021`：净PnL`-670`，较v7的`-2,030`明显改善。
+  - `2023`：净PnL`-1,820`，较v7的`-2,520`改善，但仍是最弱年份。
+- 正收益年份：
+  - `2022`：净PnL`+3,270`
+  - `2024`：净PnL`+7,020`，较v7的`+3,780`明显改善。
+  - `2025`：净PnL`+3,650`，与v7的`+3,560`接近。
+  - `2026`：净PnL`+140`，样本少。
+- 最大回撤事件：
+  - 峰值日期：`2023-03-14`
+  - 谷底日期：`2023-06-29`
+  - 修复日期：`2024-04-24`
+  - 回撤金额：`-4,020`
+  - 回撤比例：`-1.981%`
+- 最差252日窗口：
+  - `2022-06-17` 到 `2023-06-29`
+  - 净PnL：`-2,540`
+  - 最大回撤：`-4,020`
+  - Sharpe-like：`-0.600`
+- 最差126日窗口：
+  - `2022-12-20` 到 `2023-06-29`
+  - 净PnL：`-3,740`
+  - 最大回撤：`-4,020`
+  - Sharpe-like：`-1.334`
+- 起始年份：
+  - since_2024：净PnL`+10,810`，最大回撤`-0.767%`，Sharpe-like`1.353`
+  - since_2025：净PnL`+3,790`，最大回撤`-0.684%`，Sharpe-like`1.004`
+- 产品-年份关键变化：
+  - `2021 cs.DCE short`：`-1,830 -> -530`，明显改善。
+  - `2023 PF.CZCE long`：`-1,940 -> -1,510`，改善但仍亏。
+  - `2023 cs.DCE short`：约`-380 -> -110`，改善。
+  - `2025 cs.DCE short`：`-1,740`，仍是后续需要关注的压力点。
+
+### 出场结构
+
+- `long_channel_middle_exit`：8回合，PnL`+10,000`，胜率`100%`
+- `short_channel_middle_exit`：6回合，PnL`+8,950`，胜率`100%`
+- `long_boll_time_exit`：7回合，PnL`+1,080`，胜率`57.14%`
+- `short_soft_base_stop_confirmed`：11回合，PnL`-6,040`，胜率`0%`
+- `long_soft_base_stop_confirmed`：1回合，PnL`-1,220`
+- 解释：
+  - 两段式止损把部分原本过早止损的交易留到了通道中轴退出，收益显著改善。
+  - 但软止损确认后的短仓仍是亏损主源，说明短方向的入场/状态过滤仍未解决。
+
+### 输出文件
+
+- 回测统计：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_statistics.json`
+- 日度权益：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_daily_equity.csv`
+- 成交：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_trades_2020_2026_04.csv`
+- 入场风险诊断：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_entry_risk_diagnostics_2020_2026_04.csv`
+- 稳健性报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_robustness_report_range_reversion_core4_v8_two_stage_stop_robustness_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：
+  - 无
+- 删除回测结果：
+  - 无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v8来自上一阶段逐笔复盘的最大失败类型`stop_too_early_then_recovered`，改的是止损执行结构，不是调入场阈值、品种名单或某个弱窗专属条件。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果两段式止损能改善2021/2023弱年且不放大回撤，就说明震荡策略还有机制修复空间；如果只提高收益但扩大回撤，则应停止该方向。
+
+### 运行后过拟合反思
+
+- 判断：暂未出现明显过拟合，但不能正式化。
+- 原因：v8改善了总收益、Sharpe、胜率、最大回撤和回撤修复时间，且没有增加交易次数；同时2021、2023两个亏损年份均改善。风险在于最差126日窗口仍亏`-3,740`，并且`short_soft_base_stop_confirmed`仍是稳定亏损源，不能因为全周期改善就直接推正式。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：v8验证了“震荡策略止损结构有修复价值”，但下一步必须聚焦短仓软止损亏损簇和2025 cs短仓压力，而不是继续随意叠指标。
+
+### 决策
+
+- `range_reversion_core4_v8_two_stage_stop_internal_breakthrough_not_formal`
+- v8成为震荡策略新的内部研究基准候选。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不作为正式震荡策略。
+
+### 后续规划和TODO
+
+- 下一步只做v8弱点复盘，不直接调参：
+  - 拆`short_soft_base_stop_confirmed`的11笔亏损。
+  - 重点复盘`2025 cs.DCE short -1,740`。
+  - 判断短仓亏损是品种状态、入场位置、确认止损滞后，还是方向提示本身不稳。
+- 若下一步发现短仓亏损来自单一品种/单一年份，不做品种黑名单；优先寻找可跨品种解释的状态变量。
