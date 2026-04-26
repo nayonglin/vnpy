@@ -46,6 +46,8 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
     range_intraday_stop_enabled: bool = False
     range_intraday_stop_gap_open_enabled: bool = True
     exit_on_channel_middle_touch: bool = True
+    range_previous_day_stop_long_enabled: bool = True
+    range_previous_day_stop_short_enabled: bool = True
 
     parameters: list[str] = QmtBollReversalPortfolioStrategy.parameters + [
         "channel_window",
@@ -70,6 +72,8 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
         "range_intraday_stop_enabled",
         "range_intraday_stop_gap_open_enabled",
         "exit_on_channel_middle_touch",
+        "range_previous_day_stop_long_enabled",
+        "range_previous_day_stop_short_enabled",
     ]
 
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
@@ -294,6 +298,27 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
             if direction == "short" and open_price >= stop_price:
                 return open_price
         return float(stop_price)
+
+    def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
+        for layer in state.layers:
+            self._update_layer_metrics(layer, bar)
+
+        if not self.previous_day_stop_enabled or len(history) < 2:
+            return
+
+        prev_day = history.iloc[-2]
+        if state.direction == "long":
+            if not self.range_previous_day_stop_long_enabled:
+                return
+            stop_price = float(prev_day["low"])
+            for layer in state.layers:
+                layer.stop_price = max(layer.stop_price, stop_price)
+        else:
+            if not self.range_previous_day_stop_short_enabled:
+                return
+            stop_price = float(prev_day["high"])
+            for layer in state.layers:
+                layer.stop_price = min(layer.stop_price, stop_price)
 
     def _process_boll_middle_exit(self, state: ProductState, bar: BarData) -> str:
         if not self.exit_on_channel_middle_touch or not state.contract_vt_symbol:

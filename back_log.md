@@ -24751,3 +24751,674 @@ to-end季度冷启动：
   - 通过后再生成独立`range_reversion`产品宇宙CSV，不修改第78趋势宇宙。
 - Polanyi式经验判断：
   - 这次结果像是方向终于换对了：不是在趋势池里找反转，而是在全市场找天生更愿意来回摆动的合约。它还不是策略，但比前面硬调18品种震荡线更接近问题本质。
+
+## 2026-04-26 13:48 第184阶段：震荡非18商品候选滚动分段验证v1
+
+### 背景
+
+- 当前模式：`day`。
+- 延续第183阶段结论：
+  - 全市场震荡扫描找到`36`个候选方向。
+  - 其中包含金融期货、原18趋势池品种和非18商品品种。
+- 本阶段目标：
+  - 排除金融期货。
+  - 排除原18趋势池。
+  - 对非18商品候选做固定滚动分段验证。
+  - 只生成独立震荡候选宇宙，不修改第78趋势策略。
+- 本阶段性质：非交易回测，是候选品种/方向的稳定性验证。
+
+### 本次改动内容
+
+- 新增验证脚本：
+  - `examples/portfolio_backtesting/validate_qmt_range_reversion_commodity_candidates.py`
+- 输入文件：
+  - `qmt_range_reversion_full_market_universe_scout_top_candidates_range_reversion_full_market_universe_scout_v1.csv`
+  - `qmt_range_reversion_full_market_universe_scout_year_direction_range_reversion_full_market_universe_scout_v1.csv`
+- 输出独立震荡候选宇宙：
+  - `qmt_range_reversion_commodity_candidate_universe_range_reversion_commodity_candidate_validation_v1.csv`
+- 第78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78正式趋势策略配置。
+
+### 验证方法
+
+- 输入候选：第183阶段全市场扫描的`36`个候选方向。
+- 固定排除：
+  - 排除`CFFEX`金融期货候选。
+  - 排除原18趋势品种池候选。
+- 固定窗口：
+  - `early_2020_2022`
+  - `mid_2023_2024`
+  - `stress_2024_2025`
+  - `recent_2025_2026`
+- 核心候选要求：
+  - 信号数不少于`50`
+  - 年份数不少于`5`
+  - 正年份率不少于`75%`
+  - 5日ATR收益均值不少于`0.25`
+  - 5日胜率不少于`58%`
+  - 5日坏尾率不高于`22%`
+  - 近期窗口为正
+  - 压力窗口为正
+  - 单年份信号集中度不高于`40%`
+
+### 参数变更
+
+- 新增参数：
+  - `EXCLUDED_EXCHANGES = {"CFFEX"}`
+  - `MIN_RECENT_BARS = 120`
+  - `MIN_CORE_SIGNALS = 50`
+  - `MIN_CORE_YEARS = 5`
+  - `MIN_CORE_POSITIVE_YEAR_RATE = 0.75`
+  - `MIN_CORE_AVG_FWD_5D_ATR = 0.25`
+  - `MIN_CORE_POSITIVE_5D_RATE = 0.58`
+  - `MAX_CORE_BAD_TAIL_5D_RATE = 0.22`
+  - `MAX_CORE_YEAR_SIGNAL_SHARE = 0.40`
+  - `MIN_WATCH_SIGNALS = 30`
+  - `MIN_WATCH_YEARS = 4`
+  - `MIN_WATCH_POSITIVE_YEAR_RATE = 0.66`
+  - `MIN_WATCH_AVG_FWD_5D_ATR = 0.20`
+  - `MAX_WATCH_BAD_TAIL_5D_RATE = 0.28`
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段不是交易回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 验证结果
+
+- 输入候选方向：`36`
+- 排除金融期货方向：`6`
+- 排除原18趋势池方向：`2`
+- 核心商品候选：`4`
+- 观察商品候选：`14`
+- 拒绝商品候选：`10`
+
+### 核心商品候选宇宙
+
+| 品种 | 方向 | 信号数 | 年份数 | 正年份率 | 5日ATR收益均值 | 5日胜率 | 5日坏尾率 | 2025-2026近期窗口 | 2024-2025压力窗口 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `y.DCE` | long | `52` | `5` | `80.00%` | `0.6244` | `75.00%` | `9.62%` | `1.0430` | `0.5576` |
+| `cs.DCE` | short | `62` | `7` | `85.71%` | `0.5661` | `66.13%` | `17.74%` | `0.2887` | `0.8293` |
+| `PF.CZCE` | long | `67` | `5` | `100.00%` | `0.4596` | `58.21%` | `13.43%` | `1.1608` | `0.7795` |
+| `nr.INE` | long | `72` | `6` | `83.33%` | `0.3462` | `69.44%` | `5.56%` | `0.4755` | `0.3399` |
+
+### 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_commodity_candidate_validation_range_reversion_commodity_candidate_validation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_commodity_candidate_windows_range_reversion_commodity_candidate_validation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_commodity_candidate_universe_range_reversion_commodity_candidate_validation_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_commodity_candidate_summary_range_reversion_commodity_candidate_validation_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_commodity_candidate_report_range_reversion_commodity_candidate_validation_v1.md`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/validate_qmt_range_reversion_commodity_candidates.py`
+- 已完成候选分段验证：
+  - `.py311/bin/python examples/portfolio_backtesting/validate_qmt_range_reversion_commodity_candidates.py`
+
+### 运行前过拟合反思
+
+- 判断：有风险，但可控。
+- 原因：候选来自上一轮全市场扫描，天然有多重比较风险；本阶段控制方式是使用固定分段、固定门槛，不新增参数搜索，不直接形成交易版本。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果全市场候选在近期和压力窗口都站不住，就不应继续写震荡策略；如果少数商品候选能留下，才值得做独立回测。
+
+### 运行后过拟合反思
+
+- 判断：有轻微风险，但结果没有明显放水。
+- 原因：36个候选方向最终只留下4个核心商品方向，且同时要求近期和压力窗口为正；这比直接拿Top排序做宇宙更克制。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：`y.DCE long`、`cs.DCE short`、`PF.CZCE long`、`nr.INE long`在固定分段下仍保留一定均值回归边际，值得进入下一步独立震荡回测；但仍不能接入第78。
+
+### 决策
+
+- `range_reversion_commodity_candidate_validation_v1_core_universe_found_not_integratable`
+- 不接入第78。
+- 不进入A/B实验。
+- 不修改趋势策略代码或配置。
+- 可以基于4个核心商品方向做下一步独立震荡策略回测。
+
+### 后续规划和TODO
+
+- 下一步只允许建立独立震荡回测入口：
+  - 使用`qmt_range_reversion_commodity_candidate_universe_range_reversion_commodity_candidate_validation_v1.csv`
+  - 只跑`y.DCE long`、`cs.DCE short`、`PF.CZCE long`、`nr.INE long`
+  - 不复用第78正式配置，不修改第78策略。
+- 观察候选暂不进入交易回测，只保留为后续备选。
+- Polanyi式经验判断：
+  - 这4个方向不像“全市场里挑出来的漂亮噪音”那么松散，至少在近期和压力窗口都还能站住；但样本仍不大，下一步必须让真实交易规则和成本来验尸。
+
+## 2026-04-26 13:59 第185阶段：震荡全市场商品动态TopN选择器无交易验证v1
+
+### 背景
+
+- 当前模式：`day`。
+- 用户问题：震荡策略能否像趋势策略一样，当天或当周筛选Top10品种来交易。
+- 本阶段目标：
+  - 验证“动态TopN震荡选品”是否能提高信号前瞻质量。
+  - 不生成订单，不计算资金曲线，不写正式策略。
+  - 不修改第78趋势策略。
+- 本阶段性质：非交易回测，是动态选择器归因验证。
+
+### 本次改动内容
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_dynamic_topn_selector.py`
+- 数据来源：
+  - 全市场主力映射与本地TqSdk日线CSV。
+  - 复用第183阶段固定震荡信号定义。
+- 选择范围：
+  - 排除`CFFEX`金融期货。
+  - 排除原18趋势品种池。
+  - 只看非18商品品种。
+- 第78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78正式趋势策略配置。
+
+### 方法
+
+- 对每个非18商品产品方向计算固定震荡状态评分：
+  - 低趋势：ADX越低越好。
+  - 低效率：efficiency越低越好。
+  - 区间边界：越靠近通道边界越好。
+  - 温和RSI极值：接近震荡反转区越好。
+  - 单日反转确认。
+  - 流动性。
+- Daily TopN：
+  - 同一交易日候选信号按当日可见评分排序，取Top5/Top10。
+- Weekly TopN：
+  - 使用上一周最后可见状态选出下一周候选产品方向，避免周内偷看未来。
+- 只统计前瞻ATR收益，不生成订单和资金曲线。
+
+### 参数变更
+
+- 新增参数：
+  - `EXCLUDED_EXCHANGES = {"CFFEX"}`
+  - `MIN_RECENT_BARS = 120`
+  - `TOP_N_VALUES = (5, 10)`
+  - `WEEKLY_STATE_SCORE_MIN = 0.50`
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段不是交易回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 验证结果
+
+| 选择器 | 信号数 | 产品数 | 5日ATR收益均值 | 5日中位数 | 5日胜率 | 5日坏尾率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 全部信号 | `5,925` | `46` | `0.0023` | `0.0076` | `50.01%` | `22.68%` |
+| daily_top5 | `4,805` | `46` | `0.0231` | `0.0307` | `50.66%` | `22.27%` |
+| daily_top10 | `5,830` | `46` | `0.0048` | `0.0147` | `50.17%` | `22.69%` |
+| weekly_top5 | `972` | `46` | `-0.0449` | `-0.0155` | `49.49%` | `22.53%` |
+| weekly_top10 | `1,546` | `46` | `0.0112` | `0.0236` | `50.19%` | `21.93%` |
+
+### 年份稳定性发现
+
+- daily_top5相对全部信号有轻微改善，但幅度很薄：
+  - 2022：`0.0815`
+  - 2023：`0.0927`
+  - 2024：`0.0815`
+  - 2025：`0.0153`
+  - 2020：`-0.2100`
+  - 2026：`-0.4639`
+- weekly_top5整体为负：
+  - 全样本5日ATR收益均值`-0.0449`
+  - 2024也为负：`-0.1356`
+- weekly_top10略正但极弱：
+  - 全样本5日ATR收益均值`0.0112`
+  - 年份分布不稳定。
+
+### 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_signals_range_reversion_dynamic_topn_selector_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_summary_range_reversion_dynamic_topn_selector_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_by_year_range_reversion_dynamic_topn_selector_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_by_product_range_reversion_dynamic_topn_selector_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_summary_range_reversion_dynamic_topn_selector_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_dynamic_topn_selector_report_range_reversion_dynamic_topn_selector_v1.md`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_dynamic_topn_selector.py`
+- 已完成动态TopN无交易验证：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_dynamic_topn_selector.py`
+
+### 运行前过拟合反思
+
+- 判断：有风险，但可控。
+- 原因：TopN选择天然容易把历史噪音筛出来；本阶段控制方式是固定评分公式、只用当时可见数据，并先做无资金曲线验证。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果动态TopN能显著提升信号质量，它可能比固定4品种更符合震荡策略的状态驱动本质。
+
+### 运行后过拟合反思
+
+- 判断：没有继续放大过拟合。
+- 原因：结果没有被解释成突破；daily_top5只是从`0.0023`提高到`0.0231` ATR，weekly_top5反而为负，说明当前动态评分不具备足够稳定边际。
+
+### 运行后继续价值反思
+
+- 判断：动态TopN这条线作为直接交易版本价值不高；作为监控/状态辅助仍有一点价值。
+- 原因：daily_top5改善太薄，不能覆盖真实交易成本、滑点和执行损耗；周度选择不稳定，暂不应写动态Top10交易版本。
+
+### 决策
+
+- `range_reversion_dynamic_topn_selector_v1_not_trade_ready`
+- 不接入第78。
+- 不进入A/B实验。
+- 不写动态Top10交易版本。
+- 下一步回到第184阶段留下的4个核心商品方向，先做独立震荡回测更务实。
+
+### 后续规划和TODO
+
+- 暂停“全市场动态Top10直接交易”。
+- 可以保留daily_top5评分作为后续监控特征，但不作为主交易入口。
+- 下一步建议：
+  - 新建独立震荡回测入口；
+  - 使用第184阶段4个核心方向；
+  - 验证真实资金曲线、滑点、交易次数、胜率和最大回撤。
+- Polanyi式经验判断：
+  - 动态TopN像是听起来聪明，但市场没有给足反馈；固定的强候选反而更像有边界的东西。这个阶段不该追求“像趋势策略一样选Top10”，而该先证明少数震荡方向能真实赚钱。
+
+## 2026-04-26 14:22 第186阶段：震荡Core4独立真实回测v1-v4
+
+### 本次版本结论
+
+- 结论：没有重大突破。
+- 但有两个重要结构发现：
+  - 第184阶段筛出的4个方向不是完全无效，恢复可交易性后v3小幅盈利。
+  - 当前震荡策略仍远未达到“高胜率、稳定盈利”的目标，胜率只有`22.22%`，Sharpe只有`0.038`。
+- 本阶段不接入第78，不进入A/B实验。
+- 第78正式趋势策略无影响。
+
+### 改动内容
+
+- 新增独立震荡配置：
+  - `examples/portfolio_backtesting/qmt_range_reversion_core4_directed_universe_v1.csv`
+- 新增独立震荡策略子类：
+  - `examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py`
+- 新增独立震荡回测入口：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_streak_kill_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_wide_stop_backtest.py`
+
+### 参数变更
+
+- 新增参数：
+  - `range_direction_hints_path`
+  - `range_direction_hints_required`
+  - `range_reversion_rsi_band_filter_enabled`
+  - `range_soft_rsi_long_min`
+  - `range_soft_rsi_short_max`
+  - `range_use_product_continuous_signal`
+- v1参数：
+  - 4核心方向：`y.DCE long`、`cs.DCE short`、`PF.CZCE long`、`nr.INE long`
+  - `risk_ratio=0.008`
+  - `entry_tr_multiplier=0.8`
+  - `streak_risk_multipliers=1.0,0.75,0.5,0.0`
+  - 使用合约自身历史算信号。
+- v2修改参数：
+  - `range_use_product_continuous_signal=True`
+  - 改为产品主力连续历史算信号，当前主力合约下单。
+- v3修改参数：
+  - `streak_risk_multipliers=1.0,1.0,1.0,1.0`
+  - 移除3连亏后风险预算归零的研究熄火机制。
+- v4修改参数：
+  - `entry_tr_multiplier=1.5`
+  - 保留实时止损，但放宽入场TR止损距离。
+- 删除参数：无。
+
+### 新增回测结果
+
+| 版本 | 说明 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 回合胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v1 | Core4方向约束，合约历史信号 | `199,190` | `-0.405%` | `-0.405%` | `-0.602` | `80` | `6` | `0.00%` |
+| v2 | 产品连续历史信号 | `199,490` | `-0.255%` | `-0.255%` | `-0.693` | `60` | `6` | `0.00%` |
+| v3 | 产品连续历史信号 + 不熄火 | `200,460` | `0.230%` | `-1.939%` | `0.038` | `1,920` | `72` | `22.22%` |
+| v4 | v3基础上放宽止损到`1.5TR` | `199,700` | `-0.150%` | `-1.425%` | `-0.042` | `1,020` | `58` | `20.69%` |
+
+### 交易归因
+
+- v1/v2失败主因：
+  - 不是没有信号，而是`streak_risk_multipliers=1.0,0.75,0.5,0.0`在早期连续亏损后把后续风险预算压成0。
+  - v2候选`77`个，但大多数被`selected_volume=0`跳过。
+- v3恢复可交易性：
+  - 候选`71`个。
+  - 实际入场`36`个回合。
+  - 产品贡献：
+    - `PF.CZCE long`：`17`回合，合计`-3,060`
+    - `cs.DCE short`：`15`回合，合计`+1,720`
+    - `nr.INE long`：`2`回合，合计`+1,400`
+    - `y.DCE long`：`2`回合，合计`+2,320`
+- v4放宽止损后没有改善：
+  - 交易次数下降到`58`笔。
+  - 总收益转为`-0.150%`。
+  - 说明单纯把实时止损放宽不是核心答案。
+
+### 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_v1_statistics.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_v2_statistics.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_no_streak_kill_v3_statistics.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_wide_stop_v4_statistics.json`
+- 对应`daily_equity.csv`、`trades_2020_2026_04.csv`、`entry_risk_diagnostics_2020_2026_04.csv`、`entry_candidate_snapshots_2020_2026_04.csv`均已生成。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_streak_kill_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_wide_stop_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_streak_kill_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_wide_stop_backtest.py`
+
+### 运行前过拟合反思
+
+- 判断：有风险，但可控。
+- 原因：4个产品方向来自第184阶段筛选，天然有样本选择风险；本阶段只做交易实现口径、风控熄火机制和一个结构性止损假设，不做多参数网格。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：此前只有信号前瞻验证，没有真实订单、资金曲线、滑点和胜率；必须跑独立真实回测才能判断震荡方向是否成立。
+
+### 运行后过拟合反思
+
+- 判断：没有明显放大过拟合。
+- 原因：v3虽然最好，但没有被包装成突破；v4验证了“放宽止损”并不改善结果，说明没有为了追求收益继续调参。
+
+### 运行后继续价值反思
+
+- 判断：当前Core4这一版不值得接入正式，但震荡研究仍有继续价值。
+- 原因：v3小幅盈利但胜率和Sharpe很弱；不过归因显示问题集中在资金熄火、止损/退出结构和PF品种贡献，而不是整个震荡方向完全失效。
+
+### 决策
+
+- `range_reversion_core4_directed_v3_tradeable_but_not_breakthrough`
+- 不接入第78。
+- 不进入A/B实验。
+- 不作为正式震荡策略。
+- v3可作为下一轮震荡研究的临时基准。
+
+### 后续规划和TODO
+
+- 不建议继续盲目调单个参数。
+- 下一步建议做两个归因型实验：
+  - leave-one-out产品归因，确认`PF.CZCE long`是否只是本轮偶然拖累，还是真实不适合当前执行规则。
+  - 退出结构复盘，把`base_stop`、`channel_middle_exit`、`time_exit`分开看，判断震荡策略到底该以高胜率小止盈为核心，还是以少数反弹大收益为核心。
+- Polanyi式经验判断：
+  - 这次不像“找到了策略”，更像把之前错接的管线接正了：信号有，但交易系统还没有学会用它。尤其是PF，看起来像前瞻信号漂亮、实际下单手感发涩的品种，不能马上删，也不能继续相信。
+
+## 2026-04-26 14:34 第187阶段：震荡Core4 leave-one-out与退出结构归因
+
+### 本阶段性质
+
+- 当前模式：`day`。
+- 研究对象：独立震荡策略路线。
+- 第78趋势策略影响：无。没有修改第78正式趋势策略、正式配置、正式回测入口或18品种趋势池。
+- 是否重要突破版本：否。
+- 原因：本阶段是归因和结构复盘，不是可接入正式版本的策略突破；`without_pf_czce`表现最好，但属于样本内剔除验证，不能直接升格为正式规则。
+
+### 版本与代码变更
+
+- 新增归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_leave_one_out.py`
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v3_exit_structure.py`
+- 修改震荡Core4独立回测入口：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py`
+  - 允许传入`product_universe_path`，用于独立生成leave-one-out变体，不改变第78趋势策略。
+- 新增输出：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_leave_one_out_summary_range_reversion_core4_leave_one_out_v1.csv`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_leave_one_out_report_range_reversion_core4_leave_one_out_v1.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v3_exit_structure_report_range_reversion_core4_v3_exit_structure_v1.md`
+
+### 参数变更
+
+- 新增策略参数：无。
+- 新增分析参数：
+  - `product_universe_path`：用于指定本轮归因的临时产品宇宙文件。
+  - `excluded_product`：leave-one-out分析标签，分别剔除`y.DCE`、`cs.DCE`、`PF.CZCE`、`nr.INE`。
+- 修改参数：
+  - leave-one-out统一沿用第186阶段v3结构：产品连续历史信号、方向约束、无连亏熄火、`entry_tr_multiplier=0.8`。
+- 删除参数：无。
+
+### 新增回测结果
+
+| 版本 | 产品范围 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 回合胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| core4_all | `y.DCE,cs.DCE,PF.CZCE,nr.INE` | `200,460` | `0.23%` | `-1.939%` | `0.038` | `1,920` | `72` | `22.22%` |
+| without_y_dce | 剔除`y.DCE` | `198,180` | `-0.91%` | `-1.939%` | `-0.158` | `1,880` | `68` | `17.65%` |
+| without_cs_dce | 剔除`cs.DCE` | `199,680` | `-0.16%` | `-1.348%` | `-0.036` | `980` | `42` | `28.57%` |
+| without_pf_czce | 剔除`PF.CZCE` | `204,260` | `2.13%` | `-0.780%` | `0.430` | `1,180` | `38` | `26.32%` |
+| without_nr_ine | 剔除`nr.INE` | `198,720` | `-0.64%` | `-2.494%` | `-0.118` | `1,700` | `68` | `20.59%` |
+
+### 退出结构归因
+
+- v3总回合：`36`。
+- 原始PnL：`+2,380`。
+- 总滑点：`1,920`。
+- 净PnL：`+460`。
+- 结论：滑点吞掉约`80.7%`的原始利润，说明当前震荡边际太薄，不能靠微调入场解决。
+
+| 退出原因 | 回合数 | 原始PnL | 胜率 | 判断 |
+| --- | ---: | ---: | ---: | --- |
+| `short_channel_middle_exit` | `2` | `+5,080` | `100.00%` | 主要利润来源之一 |
+| `long_channel_middle_exit` | `4` | `+4,710` | `100.00%` | 主要利润来源之一 |
+| `long_boll_time_exit` | `1` | `+690` | `100.00%` | 样本少，仅作参考 |
+| `rollover_close` | `3` | `-150` | `33.33%` | 中性偏弱 |
+| `short_base_stop` | `12` | `-3,310` | `0.00%` | 亏损核心来源 |
+| `long_base_stop` | `14` | `-4,640` | `0.00%` | 亏损核心来源 |
+
+### 产品归因
+
+| 产品方向 | 回合数 | 原始PnL | 胜率 | 判断 |
+| --- | ---: | ---: | ---: | --- |
+| `y.DCE long` | `2` | `+2,320` | `100.00%` | 小样本正贡献，不能删 |
+| `cs.DCE short` | `15` | `+1,720` | `13.33%` | 胜率低但贡献为正，可能是震荡空头核心 |
+| `nr.INE long` | `2` | `+1,400` | `50.00%` | 小样本正贡献，不能删 |
+| `PF.CZCE long` | `17` | `-3,060` | `17.65%` | 当前执行规则下最大拖累 |
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_leave_one_out.py examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v3_exit_structure.py`
+- 已完成归因运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v3_exit_structure.py`
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_leave_one_out.py`
+
+### 运行前过拟合反思
+
+- 判断：是，有风险，但这轮风险可控。
+- 原因：leave-one-out容易诱导“删掉亏损品种就是优化”的过拟合；但本轮定位为归因，不把剔除PF直接作为正式规则，因此没有把样本内结果硬编码进正式策略。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第186阶段已经显示v3有微弱正收益，但不知道收益来自哪里、亏损从哪里泄漏；先复盘交易结构比继续调参数更接近问题本质。
+
+### 运行后过拟合反思
+
+- 判断：没有明显扩大过拟合，但不能掉以轻心。
+- 原因：`without_pf_czce`显著改善资金曲线，但它仍是样本内产品剔除；下一步必须做分年度、分市场状态、PF单品交易回放，而不是直接把PF删除写入正式版本。
+
+### 运行后继续价值反思
+
+- 判断：是，继续有价值。
+- 原因：这轮给出了清晰的下一步：PF是执行层拖累，base_stop是亏损集中出口，channel_middle_exit是利润集中出口；这比无目标调参更有研究密度。
+
+### 决策
+
+- `range_reversion_core4_attribution_v1_pf_drag_confirmed_not_formal`
+- 不接入第78。
+- 不进入A/B实验。
+- 不作为正式震荡策略。
+- 不直接删除PF形成正式版本。
+
+### 后续规划和TODO
+
+- 先做`PF.CZCE long`单品失败回放：
+  - 按年份、波动状态、入场后最大有利/不利浮动拆解。
+  - 判断PF是方向错、入场太早、止损太紧，还是均值回归假设本身不成立。
+- 再做退出规则重构：
+  - 重点不是放宽止损，而是减少`base_stop`吞噬利润。
+  - 优先评估“更早失败识别”和“中轨退出后的再入场冷却”，不做大规模参数网格。
+- Polanyi式经验判断：
+  - 现在不像是“震荡策略没戏”，更像是一个薄边际系统被成本和劣质品种磨没了。手感上，PF这类信号看起来顺眼、落到账上别扭的品种，要先被单独审问；而中轨退出这种真正赚钱的动作，应该成为下一轮规则重构的骨架。
+
+## 2026-04-26 14:52 第188阶段：PF失败回放与长仓前一日止损解耦验证
+
+### 本阶段性质
+
+- 当前模式：`day`。
+- 研究对象：独立震荡策略路线。
+- 当前正式基准：`official_stage78_defensive_v1`。
+- 第78趋势策略影响：无。没有修改第78正式趋势策略、正式配置、正式回测入口或18品种趋势池。
+- 是否读取A/B规程：是，已读取`skills/version-ab-experiment/SKILL.md`。
+- 是否进入A/B/C：否。
+- 原因：v6是震荡路线内部的阶段性突破，但独立收益、Sharpe和稳健性还不足以讨论与第78组合接入；本阶段只保留为震荡内部新基准。
+- 是否重要突破版本：是，作为震荡研究的机制级阶段性突破；不是第78正式接入突破。
+
+### 候选假设
+
+- PF亏损的核心不是“方向彻底错”，而是长仓使用前一日低点抬升止损时，均值回归还没到中轨就被踢出。
+- 这个假设有结构理由：震荡长仓需要给反弹路径留空间，短仓`cs.DCE`仍依赖前一日高点止损来控制风险，因此不能粗暴关闭全部前一日止损。
+
+### 代码变更
+
+- 新增PF路径归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_pf_failure_replay.py`
+- 新增回测入口：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_prevday_stop_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_long_prevday_stop_backtest.py`
+- 修改震荡策略基类：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+  - 增加长/短方向可独立控制前一日止损的能力。
+
+### 参数变更
+
+- 新增参数：
+  - `range_previous_day_stop_long_enabled`
+  - `range_previous_day_stop_short_enabled`
+- 修改参数：
+  - v5：`previous_day_stop_enabled=False`，全方向关闭前一日动态止损。
+  - v6：`range_previous_day_stop_long_enabled=False`，`range_previous_day_stop_short_enabled=True`，只关闭长仓前一日动态止损，短仓保留。
+- 删除参数：无。
+
+### PF失败回放结论
+
+- PF回合数：`17`。
+- PF原始PnL：`-3,060`。
+- PF回合胜率：`17.65%`。
+- PF base stop比例：`76.47%`。
+- 动态前一日止损先于中轨的比例：`82.35%`。
+- PF `long_base_stop`：`13`回合，原始PnL`-4,490`，胜率`0.00%`。
+- 13笔PF base stop里，只有`2`笔真正打到初始TR止损，其余主要是前一日低点抬升止损过早触发。
+
+### 新增回测结果
+
+| 版本 | 说明 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 回合胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v3 | 原临时基准：产品连续信号，不熄火 | `200,460` | `0.230%` | `-1.939%` | `0.038` | `1,920` | `72` | `22.22%` |
+| v5 | 全方向关闭前一日止损 | `200,810` | `0.405%` | `-3.208%` | `0.050` | `1,660` | `68` | `47.06%` |
+| v6 | 只关闭长仓前一日止损，短仓保留 | `203,760` | `1.880%` | `-2.266%` | `0.260` | `1,900` | `72` | `41.67%` |
+
+### v5归因
+
+- v5不是答案：
+  - PF从`-3,060`改善到`-630`。
+  - 但`cs.DCE short`从`+1,720`恶化到`-1,470`。
+  - 最大回撤扩大到`-3.208%`。
+- 结论：全部关闭前一日止损会破坏短仓风险控制，不能作为主线。
+
+### v6归因
+
+- 原始PnL：`+5,660`。
+- 总滑点：`1,900`。
+- 净PnL：`+3,760`。
+- 产品贡献：
+  - `y.DCE long`：`2`回合，`+2,320`，胜率`100.00%`
+  - `nr.INE long`：`2`回合，`+2,250`，胜率`100.00%`
+  - `cs.DCE short`：`15`回合，`+1,720`，胜率`13.33%`
+  - `PF.CZCE long`：`17`回合，`-630`，胜率`52.94%`
+- 退出结构：
+  - `long_channel_middle_exit`：`8`回合，`+8,600`，胜率`100.00%`
+  - `short_channel_middle_exit`：`2`回合，`+5,080`，胜率`100.00%`
+  - `long_boll_time_exit`：`4`回合，`+1,870`，胜率`100.00%`
+  - `rollover_close`：`4`回合，`-720`
+  - `short_base_stop`：`12`回合，`-3,310`
+  - `long_base_stop`：`6`回合，`-5,860`
+
+### 输出文件
+
+- PF归因：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_pf_failure_report_range_reversion_pf_failure_replay_v1.md`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_pf_failure_roundtrips_range_reversion_pf_failure_replay_v1.csv`
+- v5回测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_no_prevday_stop_v5_statistics.json`
+  - 对应`daily_equity.csv`、`trades_2020_2026_04.csv`、`entry_risk_diagnostics_2020_2026_04.csv`已生成。
+- v6回测：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_no_long_prevday_stop_v6_statistics.json`
+  - 对应`daily_equity.csv`、`trades_2020_2026_04.csv`、`entry_risk_diagnostics_2020_2026_04.csv`已生成。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_pf_failure_replay.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_prevday_stop_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_long_prevday_stop_backtest.py`
+- 已完成运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_pf_failure_replay.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_prevday_stop_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_no_long_prevday_stop_backtest.py`
+
+### 运行前过拟合反思
+
+- 判断：有风险，但低于产品剔除。
+- 原因：这次不是删除历史亏损品种，也不是调小数阈值，而是从PF路径复盘中发现“长仓前一日止损过早触发”的机制问题，并且用全Core4统一验证。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：PF归因显示13笔base stop里只有2笔是初始TR止损，说明退出机制本身有结构错配；验证止损方向解耦比继续调入场指标更有价值。
+
+### 运行后过拟合反思
+
+- 判断：仍有过拟合风险，不能直接正式化。
+- 原因：v6改善明显，但样本仍是Core4样本内验证，且总收益和Sharpe仍不高；下一步必须做起始年份、分年度和压力窗口验证，不能马上接入正式。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：v6同时保留了`cs.DCE short`的正贡献，又把PF从`-3,060`修复到`-630`，说明“长仓放空间、短仓留保护”是有第一性结构支持的方向。
+
+### 决策
+
+- `range_reversion_core4_no_long_prevday_stop_v6_internal_breakthrough_not_formal`
+- v6升级为震荡路线新的内部研究基准。
+- 不接入第78。
+- 不进入A/B/C。
+- 不作为正式震荡策略。
+
+### 后续规划和TODO
+
+- 对v6做起始年份分段、年度、季度/滚动窗口验证。
+- 重点检查：
+  - 2023年大亏是否仍集中在PF初始TR止损。
+  - 长仓关闭前一日止损是否只靠2024-2025改善。
+  - v6的`long_base_stop`虽然次数降到`6`，但亏损达到`-5,860`，是否需要“长仓初始TR灾损保护”或更快失败识别。
+- Polanyi式经验判断：
+  - v6的手感比前面版本顺了：它没有强行删掉PF，而是让PF有机会走到中轨；同时没有把短仓的护栏拆掉。这个变化像是在把震荡策略从“趋势策略的止损习惯”里剥离出来，但还需要用更多时间切片确认它不是某几年运气好。
