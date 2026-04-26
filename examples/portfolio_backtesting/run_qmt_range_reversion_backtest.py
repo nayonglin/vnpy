@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from qmt_boll_reversal_portfolio_strategy import QmtBollReversalPortfolioStrategy
+from qmt_range_reversion_portfolio_strategy import QmtRangeReversionPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, save_backtest_artifacts
 from run_qmt_roll_backtest import build_backtest_engine, build_roll_setting
 
 
-def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.01) -> dict[str, object]:
+def build_range_reversion_setting(margin_ratios: dict[str, float], risk_ratio: float = 0.008) -> dict[str, object]:
     setting: dict[str, object] = build_roll_setting(margin_ratios, risk_ratio=risk_ratio)
     setting.update(
         {
@@ -32,29 +32,36 @@ def build_boll_reversal_setting(margin_ratios: dict[str, float], risk_ratio: flo
             "wick_chop_filter_enabled": False,
             "enable_donchian_add_position": False,
             "risk_ratio_of_total_assets": risk_ratio,
-            "streak_risk_multipliers": "1.0,1.0,1.0,0.5",
-            "boll_window": 26,
-            "boll_dev": 2.0,
-            "entry_tr_multiplier": 0.5,
+            "streak_risk_multipliers": "1.0,0.75,0.5,0.0",
+            "entry_tr_multiplier": 0.8,
             "previous_day_stop_enabled": True,
-            "reverse_signal_direction": False,
-            "block_short_when_all_ma_rising": False,
-            "block_long_when_all_ma_falling": False,
+            "exit_on_channel_middle_touch": True,
+            "max_holding_days": 5,
+            "channel_window": 20,
+            "adx_filter_enabled": True,
+            "adx_window": 14,
+            "adx_max": 25.0,
+            "range_position_long_max": 0.25,
+            "range_position_short_min": 0.75,
+            "range_rsi_long_max": 35.0,
+            "range_rsi_short_min": 65.0,
+            "block_short_when_all_ma_rising": True,
+            "block_long_when_all_ma_falling": True,
         }
     )
     return setting
 
 
 def run_backtest(
-    risk_ratio: float = 0.01,
+    risk_ratio: float = 0.008,
     *,
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,
     preload_start: datetime | None = None,
     capital: float = 200_000,
     save_artifacts: bool = True,
-    file_prefix: str = "qmt_boll_reversal_corrected_direction",
-    chart_title: str = "QMT Boll Reversal Corrected Direction Backtest",
+    file_prefix: str = "qmt_range_reversion_v1_oscillator_adx",
+    chart_title: str = "QMT Range Reversion V1 Oscillator ADX Backtest",
     strategy_overrides: dict[str, object] | None = None,
 ) -> tuple[Any, Any, dict[str, Any]]:
     preload_start = preload_start or max(PRELOAD_START_DT, analysis_start - timedelta(days=365))
@@ -64,11 +71,11 @@ def run_backtest(
         capital=capital,
     )
     margin_ratios: dict[str, float] = metadata["margin_ratios"]
-    setting: dict[str, object] = build_boll_reversal_setting(margin_ratios, risk_ratio=risk_ratio)
+    setting: dict[str, object] = build_range_reversion_setting(margin_ratios, risk_ratio=risk_ratio)
     if strategy_overrides:
         setting.update(strategy_overrides)
     setting["capital_base"] = capital
-    engine.add_strategy(QmtBollReversalPortfolioStrategy, setting)
+    engine.add_strategy(QmtRangeReversionPortfolioStrategy, setting)
 
     engine.load_data()
     engine.run_backtesting()

@@ -23261,3 +23261,1493 @@ to-end季度冷启动：
   - 不用回撤阈值做硬挡板。
 - 另一条可并行但需谨慎的方向：
   - 同日多候选开仓排队，把执行节奏从“同日全开”改成“按质量/相关性/保证金压力排队”，这更接近机构容量治理，也比回撤后刹车更不容易过拟合。
+
+## 2026-04-26 11:28 第167阶段：Boll震荡反转策略方向矫正回测
+
+### 改动的时间点
+
+- 2026-04-26 11:24-11:28
+
+### 是否是重要突破版本
+
+- 否。
+- 这是一次必要的纠错回测，不是突破版本；结论偏负面：真正的布林反转方向在当前配置下明显亏损，说明不能把“方向反了”理解成“修正后会更好”。
+
+### 当前正式基准
+
+- A：`official_stage78_defensive_v1`
+- 本阶段没有把震荡策略接入第78，也没有做A/C晋级实验。
+- 已读取`skills/version-ab-experiment/SKILL.md`；本阶段被归类为独立策略纠错验证，不满足直接接入第78的条件。
+
+### 本次版本改动内容
+
+- 修改回测配置脚本：
+  - `examples/portfolio_backtesting/run_qmt_boll_reversal_backtest.py`
+- 只做方向矫正：
+  - `reverse_signal_direction: True -> False`
+- 为避免覆盖旧的“反向突破版”结果，修改输出前缀：
+  - `file_prefix: qmt_boll_reversal -> qmt_boll_reversal_corrected_direction`
+  - `chart_title: QMT Boll Reversal Backtest -> QMT Boll Reversal Corrected Direction Backtest`
+
+### 新增的参数
+
+- 无新增策略参数。
+
+### 修改的参数
+
+- `reverse_signal_direction: True -> False`
+- 说明：
+  - `True`时，布林上轨突破被翻成顺突破方向；
+  - `False`时，恢复策略类注释中的原始均值回归逻辑：上轨突破做空、下轨跌破做多。
+
+### 删除的参数
+
+- 无。
+
+### 新增的回测结果
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `qmt_boll_reversal_corrected_direction` | `144,490` | `-27.7550%` | `-29.8933%` | `-0.9917` | `8,880` | `349` | 日胜率`38.00%` |
+
+补充：
+
+- 引擎统计未直接输出逐笔胜率；本处胜率使用日度胜率：
+  - 盈利日`209`
+  - 亏损日`341`
+  - 日胜率=`209/(209+341)=38.00%`
+
+### 与旧方向结果对照
+
+| 版本 | 方向含义 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `qmt_boll_reversal` | 反向突破版，`reverse_signal_direction=True` | `206,635` | `3.3175%` | `-6.3293%` | `0.2125` | `4,180` | `191` |
+| `qmt_boll_reversal_corrected_direction` | 真均值回归版，`reverse_signal_direction=False` | `144,490` | `-27.7550%` | `-29.8933%` | `-0.9917` | `8,880` | `349` |
+
+### 修改的回测结果
+
+- 无修改既有回测结果。
+- 旧`qmt_boll_reversal`产物未覆盖；新结果使用`qmt_boll_reversal_corrected_direction`前缀保存。
+
+### 删除的回测结果
+
+- 无。
+
+### 期末权益
+
+- `144,490`
+
+### 总收益
+
+- `-27.7550%`
+
+### 最大回撤
+
+- `-29.8933%`
+
+### Sharpe
+
+- `-0.9917`
+
+### 总滑点
+
+- `8,880`
+
+### 总交易次数
+
+- `349`
+
+### 胜率
+
+- 日胜率：`38.00%`
+- 说明：逐笔胜率需另做成交配对归因，本阶段不为失败版本追加复杂归因。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_boll_reversal_backtest.py examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py`
+- 已完成纠正方向回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_corrected_direction_statistics.json`
+  - `qmt_boll_reversal_corrected_direction_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_corrected_direction_daily.csv`
+  - `qmt_boll_reversal_corrected_direction_chart.html`
+  - `qmt_boll_reversal_corrected_direction_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只修正一个明显的方向配置错误，不调`boll_window`、`boll_dev`、止损倍数、品种池或资金参数；这是纠错，不是拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果震荡策略要作为78的低相关卫星，必须先确认纯均值回归方向是否有基础生命力；否则不应继续假设它能平滑趋势策略。
+
+### 运行后过拟合反思
+
+- 判断：若继续围绕该均值回归版本调参，过拟合风险高。
+- 原因：修正方向后的基础结果已经是负收益、深回撤、负Sharpe；如果继续用布林周期、标准差、止损倍数去救，很容易变成历史噪声拟合。
+
+### 运行后继续价值反思
+
+- 判断：该“纯布林均值回归方向”单独继续价值低；震荡策略研究仍有价值，但要换问题定义。
+- 原因：当前结果说明期货日线布林反转直接接刀并不稳，尤其容易在趋势延续里被打穿；真正值得研究的不是“单一布林反转”，而是“先识别震荡状态，再小仓位做短持有反转”。
+
+### 决策
+
+- `corrected_boll_reversal_direction_failed`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 不继续围绕`boll_window/boll_dev/entry_tr_multiplier`做参数网格。
+
+### 我的判断
+
+- 之前“方向反了”的判断是对的，但更关键的结论是：反过来后不是更好，而是更差。
+- 这说明旧版本能小赚，可能不是因为震荡反转有效，而是因为被翻成了某种弱突破/趋势跟随逻辑。
+- Polanyi式手感：这个纯反转版本像在快速河流里捞回摆，偶尔能捞到，但主流一加速就会被拖走；如果没有明确的震荡状态识别，它不该独立上场。
+
+### 后续规划和TODO
+
+- 停止把当前`qmt_boll_reversal_corrected_direction`当作可接入78的候选。
+- 若继续震荡策略方向，应先做监控/归因而不是交易优化：
+  - 找出哪些品种/时期是真震荡；
+  - 识别布林反转盈利是否集中在低趋势强度、低ATR扩张、窄通道状态；
+  - 先做状态标签，再考虑小仓位卫星，而不是直接调布林参数。
+
+## 2026-04-26 11:37 第168阶段：Boll震荡策略规则重构v1回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_boll_reversal_refactor_v1`
+- 类型：独立震荡卫星策略规则重构，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：规则重构显著降低亏损和回撤，但仍未转正；说明“先等收回带内、再短持有退出”的方向比旧纯反转健康，但还缺少震荡环境识别。
+
+### 改动内容
+
+- 新增布林入场模式参数：`boll_entry_mode`
+- 新增中轨退出参数：`exit_on_boll_middle_touch`
+- 新增最大持仓天数参数：`max_holding_days`
+- 新增回测覆盖入口：`strategy_overrides`
+- 新增独立回测脚本：`examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v1_backtest.py`
+- 修改v1参数：
+  - `boll_entry_mode = "reentry_confirmed"`
+  - `exit_on_boll_middle_touch = True`
+  - `max_holding_days = 5`
+  - `block_short_when_all_ma_rising = True`
+  - `block_long_when_all_ma_falling = True`
+- 删除参数：无。
+
+### 新增回测结果
+
+- 期末权益：`191,810`
+- 总收益：`-4.0950%`
+- 最大回撤：`-5.6735%`
+- Sharpe：`-0.2733`
+- 总滑点：`2,870`
+- 总交易次数：`131`
+- 胜率：日胜率 `39.42%`（盈利日82 / 盈亏日208）
+- 对比纠正方向旧版：
+  - `qmt_boll_reversal_corrected_direction`：期末权益 `144,490`，总收益 `-27.7550%`，最大回撤 `-29.8933%`，Sharpe `-0.9917`
+  - v1显著改善亏损、回撤和交易次数，但仍为负收益。
+
+### 复盘归因
+
+- 平仓65笔中，基础止损占43笔：
+  - `short_base_stop = 27`
+  - `long_base_stop = 16`
+- 中轨/时间退出仅19笔：
+  - `long_boll_time_exit = 8`
+  - `long_boll_middle_exit = 5`
+  - `short_boll_middle_exit = 4`
+  - `short_boll_time_exit = 2`
+- 产品归因中，`OI`贡献明显正收益，但`si/sp/SM/rb/FG/hc`等拖累较大。
+- 直觉判断：v1不是出场逻辑主导亏损，而是“没有先识别震荡环境”，导致在趋势延续中接刀。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_boll_reversal_backtest.py examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v1_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v1_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_refactor_v1_statistics.json`
+  - `qmt_boll_reversal_refactor_v1_daily.csv`
+  - `qmt_boll_reversal_refactor_v1_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_refactor_v1_chart.html`
+  - `qmt_boll_reversal_refactor_v1_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v1没有调布林窗口、标准差、止损倍数或品种池，只把策略从“碰带就反手”改成“收回带内才反转，并用中轨/时间做退出”，属于规则结构修正，不是参数拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：纠正方向旧版大亏，但v1能明显降低回撤和亏损，说明震荡策略不是完全无效，问题在于状态识别缺失。
+
+### 运行后过拟合反思
+
+- 判断：目前否，但若继续调`boll_window/boll_dev/max_holding_days`会变成高风险过拟合。
+- 原因：主要失败来自趋势行情中的反转入场，而不是某个数值参数不准；下一步应改“是否允许交易”的环境规则。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：v1已经把最大回撤压到`-5.67%`，但仍被止损主导；下一步加入横盘/低趋势强度过滤，有明确的一阶逻辑。
+
+### 后续规划和TODO
+
+- v2不做参数网格。
+- v2新增自适应震荡状态过滤：
+  - 当前布林带宽不能处于自身近端高位；
+  - 均线间距不能处于自身近端高位；
+  - 用滚动分位而不是固定阈值，减少品种尺度过拟合。
+
+## 2026-04-26 11:41 第169阶段：Boll震荡策略规则重构v2横盘过滤回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_boll_reversal_refactor_v2_range_filter`
+- 类型：独立震荡卫星策略，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：失败。横盘过滤降低了交易次数和滑点，但收益、最大回撤、Sharpe均弱于v1。
+
+### 改动内容
+
+- 新增参数：
+  - `range_filter_enabled`
+  - `range_filter_lookback`
+  - `range_filter_min_observations`
+  - `range_max_bandwidth_quantile`
+  - `range_max_ma_spread_quantile`
+- 新增规则：
+  - 当前布林带宽必须低于自身滚动分位阈值；
+  - 当前均线离散度必须低于自身滚动分位阈值。
+- 新增回测脚本：`examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v2_backtest.py`
+- 修改v2参数：
+  - `range_filter_enabled = True`
+  - `range_filter_lookback = 120`
+  - `range_filter_min_observations = 60`
+  - `range_max_bandwidth_quantile = 0.60`
+  - `range_max_ma_spread_quantile = 0.70`
+- 删除参数：无。
+
+### 新增回测结果
+
+- 期末权益：`187,265`
+- 总收益：`-6.3675%`
+- 最大回撤：`-8.3725%`
+- Sharpe：`-0.4261`
+- 总滑点：`2,400`
+- 总交易次数：`93`
+- 胜率：日胜率 `39.47%`（盈利日60 / 盈亏日152）
+
+### 对比
+
+- v1：期末权益 `191,810`，总收益 `-4.0950%`，最大回撤 `-5.6735%`，Sharpe `-0.2733`，交易 `131`
+- v2：期末权益 `187,265`，总收益 `-6.3675%`，最大回撤 `-8.3725%`，Sharpe `-0.4261`，交易 `93`
+- 结论：v2不是改进，过滤器减少交易但没有提高质量。
+
+### 复盘归因
+
+- v2平仓46笔中，基础止损仍有32笔：
+  - `short_base_stop = 20`
+  - `long_base_stop = 12`
+- v2保留下来的交易仍然被止损主导，说明“低带宽/均线压缩”并不等于有均值回归修复力。
+- 产品层面：
+  - OI仍正贡献，但从v1的`6,400`降到`4,760`
+  - AP从v1正贡献`600`变为v2亏损`-1,020`
+  - FG、sp、si、SM、rb继续拖累
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v2_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v2_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_refactor_v2_range_filter_statistics.json`
+  - `qmt_boll_reversal_refactor_v2_range_filter_daily.csv`
+  - `qmt_boll_reversal_refactor_v2_range_filter_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_refactor_v2_range_filter_chart.html`
+  - `qmt_boll_reversal_refactor_v2_range_filter_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v2用的是每个品种自身滚动分位识别状态，不是对固定阈值或品种名单做拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v1显示主要亏损来自趋势环境中的反转止损，横盘过滤是针对病灶的一阶规则。
+
+### 运行后过拟合反思
+
+- 判断：否，但出现“规则过粗”的问题。
+- 原因：v2不是把结果调好，而是变差；问题不在过拟合，而在横盘定义过于表层，低波动压缩不等于反转胜率提高。
+
+### 运行后继续价值反思
+
+- 判断：是，但不能沿着“低带宽/均线压缩过滤”继续深调。
+- 原因：如果继续调`0.60/0.70`分位阈值，会迅速进入过拟合；更有价值的是回到成交行为本身，要求过度偏离后出现反向K线确认。
+
+### 决策
+
+- `range_filter_v2_failed`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 停止继续微调横盘分位阈值。
+
+### 后续规划和TODO
+
+- v3尝试“反向K线确认”：
+  - 上轨外回落后，只在当日收盘低于前收或弱收盘时做空；
+  - 下轨外收回后，只在当日收盘高于前收或强收盘时做多；
+  - 目标是过滤掉只是轻微收回布林带、但趋势惯性仍强的假反转。
+
+## 2026-04-26 11:43 第170阶段：Boll震荡策略规则重构v3反向K线确认回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_boll_reversal_refactor_v3_reversal_bar`
+- 类型：独立震荡卫星策略，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：相对v1/v2有改进，但仍未转正；反向K线确认有效提高入场质量，但止损仍主导亏损。
+
+### 改动内容
+
+- 新增布林入场模式：`boll_entry_mode = "reentry_reversal_bar"`
+- 新增规则：
+  - 上轨外回落后，只有`close_t < close_y`才允许做空；
+  - 下轨外收回后，只有`close_t > close_y`才允许做多。
+- 新增回测脚本：`examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v3_backtest.py`
+- 修改v3参数：
+  - `boll_entry_mode = "reentry_reversal_bar"`
+  - `exit_on_boll_middle_touch = True`
+  - `max_holding_days = 5`
+  - `range_filter_enabled = False`
+- 删除参数：无。
+
+### 新增回测结果
+
+- 期末权益：`193,980`
+- 总收益：`-3.0100%`
+- 最大回撤：`-5.5207%`
+- Sharpe：`-0.2086`
+- 总滑点：`2,110`
+- 总交易次数：`109`
+- 胜率：日胜率 `39.89%`（盈利日73 / 盈亏日183）
+
+### 对比
+
+- v1：期末权益 `191,810`，总收益 `-4.0950%`，最大回撤 `-5.6735%`，Sharpe `-0.2733`，交易 `131`
+- v2：期末权益 `187,265`，总收益 `-6.3675%`，最大回撤 `-8.3725%`，Sharpe `-0.4261`，交易 `93`
+- v3：期末权益 `193,980`，总收益 `-3.0100%`，最大回撤 `-5.5207%`，Sharpe `-0.2086`，交易 `109`
+- 结论：v3是当前重构最佳版本，但还不具备实盘接入价值。
+
+### 复盘归因
+
+- v3平仓54笔中，基础止损仍有37笔：
+  - `short_base_stop = 21`
+  - `long_base_stop = 16`
+- 盈利贡献主要集中在：
+  - `OI = 6,400`
+  - `CF = 925`
+  - `AP = 600`
+- 拖累集中在：
+  - `si = -3,175`
+  - `SM = -2,070`
+  - `hc = -1,950`
+  - `SH = -1,800`
+  - `FG = -1,500`
+- Polanyi式判断：v3像是终于等到了“手往回缩”的迹象再进场，但止损像趋势策略的贴身防守，用在震荡反转里太容易被正常回摆噪声打掉。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v3_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v3_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_refactor_v3_reversal_bar_statistics.json`
+  - `qmt_boll_reversal_refactor_v3_reversal_bar_daily.csv`
+  - `qmt_boll_reversal_refactor_v3_reversal_bar_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_refactor_v3_reversal_bar_chart.html`
+  - `qmt_boll_reversal_refactor_v3_reversal_bar_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v3只要求收回布林带时出现反向K线确认，不根据历史收益调参数，也不筛选品种。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v2证明横盘过滤太粗，v3直接针对“假反转”这一交易层面问题，逻辑更贴近震荡策略本质。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：v3相对v1/v2改善，但仍未转正；结果没有被调到漂亮，说明规则没有贴合收益曲线硬拟合。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：v3是当前最佳，且失败点变得更清晰：不是入场完全无效，而是止损机制可能不适合均值回归。
+
+### 决策
+
+- `reversal_bar_v3_best_so_far_but_not_integratable`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 继续下一步只测试止损结构，不调布林窗口和品种池。
+
+### 后续规划和TODO
+
+- v4测试“关闭前一日高低点移动止损”：
+  - 保留初始止损和5日时间退出；
+  - 不让趋势策略式前日高低点追踪止损过早打掉震荡回归仓位；
+  - 若回撤明显扩大且收益不改善，则说明问题不是止损太紧，而是入场边际仍不足。
+
+## 2026-04-26 11:45 第171阶段：Boll震荡策略规则重构v4关闭前日移动止损回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_boll_reversal_refactor_v4_no_prev_day_stop`
+- 类型：独立震荡卫星策略，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：失败。关闭前日移动止损没有改善收益，且明显放大回撤。
+
+### 改动内容
+
+- 新增回测脚本：`examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v4_backtest.py`
+- 修改v4参数：
+  - `previous_day_stop_enabled = False`
+  - 其余沿用v3：
+    - `boll_entry_mode = "reentry_reversal_bar"`
+    - `exit_on_boll_middle_touch = True`
+    - `max_holding_days = 5`
+    - `range_filter_enabled = False`
+- 新增参数：无。
+- 删除参数：无。
+
+### 新增回测结果
+
+- 期末权益：`193,670`
+- 总收益：`-3.1650%`
+- 最大回撤：`-8.9695%`
+- Sharpe：`-0.1669`
+- 总滑点：`2,430`
+- 总交易次数：`121`
+- 胜率：日胜率 `41.22%`（盈利日101 / 盈亏日245）
+
+### 对比
+
+- v3：期末权益 `193,980`，总收益 `-3.0100%`，最大回撤 `-5.5207%`，Sharpe `-0.2086`，交易 `109`
+- v4：期末权益 `193,670`，总收益 `-3.1650%`，最大回撤 `-8.9695%`，Sharpe `-0.1669`，交易 `121`
+- 结论：v4不是改进。止损放松后收益没有改善，回撤明显变差。
+
+### 复盘归因
+
+- v4说明亏损主因不是“前日高低点移动止损太紧”。
+- 均值回归仓位获得更多呼吸空间后，并没有转为正收益，说明入场边际仍不足。
+- 继续沿止损宽度、止损倍数调参，容易过拟合，不应继续。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v4_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v4_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_refactor_v4_no_prev_day_stop_statistics.json`
+  - `qmt_boll_reversal_refactor_v4_no_prev_day_stop_daily.csv`
+  - `qmt_boll_reversal_refactor_v4_no_prev_day_stop_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_refactor_v4_no_prev_day_stop_chart.html`
+  - `qmt_boll_reversal_refactor_v4_no_prev_day_stop_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v4是机制归因实验，只关闭一类移动止损，不调数值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v3止损占比高，必须确认止损结构是否误伤均值回归。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果变差，没有被调优；实验提供的是反证。
+
+### 运行后继续价值反思
+
+- 判断：是，但不应继续沿止损宽度微调。
+- 原因：关闭移动止损后回撤变差，说明问题主要仍在入场质量；下一步应增加过热/过冷确认，而不是放宽风控。
+
+### 决策
+
+- `no_prev_day_stop_v4_failed`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 回退到v3的止损结构。
+
+### 后续规划和TODO
+
+- v5测试RSI极值确认：
+  - 做多要求当前RSI足够低；
+  - 做空要求当前RSI足够高；
+  - 使用经典阈值而非收益拟合阈值，避免把少数历史交易调漂亮。
+
+## 2026-04-26 11:47 第172阶段：Boll震荡策略规则重构v5 RSI极值确认回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_boll_reversal_refactor_v5_rsi_extreme`
+- 类型：独立震荡卫星策略，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：v5是当前收益最接近转正的一版，但仍是负收益、负Sharpe，不能接入正式版本。
+
+### 改动内容
+
+- 新增参数：
+  - `reversal_rsi_filter_enabled`
+  - `reversal_rsi_long_max`
+  - `reversal_rsi_short_min`
+- 新增规则：
+  - 做多要求当前RSI不高于`35`
+  - 做空要求当前RSI不低于`65`
+  - RSI仅作为震荡反转极值确认，不复用趋势策略的RSI语义。
+- 新增回测脚本：`examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v5_backtest.py`
+- 修改v5参数：
+  - `reversal_rsi_filter_enabled = True`
+  - `reversal_rsi_long_max = 35.0`
+  - `reversal_rsi_short_min = 65.0`
+  - 其他回到v3止损结构。
+- 删除参数：无。
+
+### 新增回测结果
+
+- 期末权益：`195,315`
+- 总收益：`-2.3425%`
+- 最大回撤：`-6.6139%`
+- Sharpe：`-0.1605`
+- 总滑点：`1,650`
+- 总交易次数：`65`
+- 胜率：日胜率 `42.42%`（盈利日56 / 盈亏日132）
+
+### 对比
+
+- v1：期末权益 `191,810`，总收益 `-4.0950%`，最大回撤 `-5.6735%`，Sharpe `-0.2733`，交易 `131`
+- v2：期末权益 `187,265`，总收益 `-6.3675%`，最大回撤 `-8.3725%`，Sharpe `-0.4261`，交易 `93`
+- v3：期末权益 `193,980`，总收益 `-3.0100%`，最大回撤 `-5.5207%`，Sharpe `-0.2086`，交易 `109`
+- v4：期末权益 `193,670`，总收益 `-3.1650%`，最大回撤 `-8.9695%`，Sharpe `-0.1669`，交易 `121`
+- v5：期末权益 `195,315`，总收益 `-2.3425%`，最大回撤 `-6.6139%`，Sharpe `-0.1605`，交易 `65`
+
+### 复盘归因
+
+- v5平仓32笔中，基础止损仍有21笔：
+  - `short_base_stop = 12`
+  - `long_base_stop = 9`
+- 盈利贡献：
+  - `OI = 4,760`
+  - `FG = 3,400`
+  - `AP = 2,430`
+  - `CF = 925`
+- 主要拖累：
+  - `MA = -4,300`
+  - `hc = -3,860`
+  - `rb = -2,660`
+  - `SH = -1,800`
+  - `SM = -1,800`
+- RSI过滤让交易数量显著下降，FG从前面版本的拖累品种变为正贡献，说明极值确认有效；但MA/hc/rb仍会在极值后继续趋势延伸，说明单一布林反转对部分工业/黑色品种天然不适配。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v5_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_boll_reversal_refactor_v5_backtest.py`
+- 新增输出：
+  - `qmt_boll_reversal_refactor_v5_rsi_extreme_statistics.json`
+  - `qmt_boll_reversal_refactor_v5_rsi_extreme_daily.csv`
+  - `qmt_boll_reversal_refactor_v5_rsi_extreme_trades_2020_2026_04.csv`
+  - `qmt_boll_reversal_refactor_v5_rsi_extreme_chart.html`
+  - `qmt_boll_reversal_refactor_v5_rsi_extreme_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否到中低。
+- 原因：`35/65`是常见极值确认，不是对当前样本网格搜索；但任何指标阈值都有一定样本依赖，因此不能继续细调到`34/66`或类似形式。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v4反证止损放松不是主线，必须提高入场质量；RSI极值确认符合震荡反转的一阶逻辑。
+
+### 运行后过拟合反思
+
+- 判断：当前不是过拟合，但继续微调RSI阈值会进入过拟合。
+- 原因：v5改善来自减少低质量交易，而不是参数被调到正收益；但若继续围绕`35/65`微调，很可能是在拟合少量交易。
+
+### 运行后继续价值反思
+
+- 判断：作为单一震荡策略，继续价值有限；作为“特定品种/状态的低相关卫星”，还有研究价值。
+- 原因：v5仍负收益、负Sharpe，不能证明震荡策略独立有效；但盈利和亏损已经明显呈现品种结构分化，下一步如果继续，应做跨品种结构分类，而不是继续改同一套布林规则。
+
+### 决策
+
+- `rsi_extreme_v5_best_but_not_integratable`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 不继续调布林窗口、RSI阈值、止损倍数。
+
+### 后续规划和TODO
+
+- 当前Boll震荡策略最佳候选暂定为v5，但只作为研究样本，不作为可上线版本。
+- 下一步若继续震荡方向，建议不再沿“单一布林反转”深调，而是拆成两条更本质的研究：
+  - 品种结构：哪些品种天然更均值回归，哪些品种天然更趋势延伸；
+  - 状态结构：极值后是否出现成交/波动收缩、二次确认、或者跨品种共振减弱。
+
+## 2026-04-26 11:56 第173阶段：非Boll震荡策略v1重构回测
+
+### 当前正式基准
+
+- `official_stage78_defensive_v1`
+- 期末权益：`4,600,090`
+- 总收益：`2200.0450%`
+- 最大回撤：`-36.9907%`
+- Sharpe：`1.2919`
+
+### 本次版本定位
+
+- 候选：`qmt_range_reversion_v1_oscillator_adx`
+- 类型：独立非Boll震荡策略研究，不接入78正式版本，不做A/C组合。
+- 是否重要突破版本：否。
+- 核心结论：不是有效突破。风险压得很低，但交易数量过少，不能证明震荡策略有稳定收益边际。
+
+### 改动内容
+
+- 新增策略文件：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_backtest.py`
+- 78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78相关正式脚本。
+- 新增参数：
+  - `channel_window`
+  - `adx_filter_enabled`
+  - `adx_window`
+  - `adx_max`
+  - `range_position_long_max`
+  - `range_position_short_min`
+  - `range_rsi_long_max`
+  - `range_rsi_short_min`
+  - `exit_on_channel_middle_touch`
+- 修改参数：
+  - `risk_ratio_of_total_assets = 0.008`
+  - `streak_risk_multipliers = "1.0,0.75,0.5,0.0"`
+  - `entry_tr_multiplier = 0.8`
+  - `max_holding_days = 5`
+  - `previous_day_stop_enabled = True`
+- 删除参数：无。
+
+### 新策略规则
+
+- 不使用布林带入场。
+- 做多条件：
+  - ADX低于`25`
+  - 收盘处于20日Donchian通道低位`<= 0.25`
+  - RSI低于`35`
+  - 当日收盘高于前收，出现反向确认
+  - 不处于均线空头强排列
+- 做空条件：
+  - ADX低于`25`
+  - 收盘处于20日Donchian通道高位`>= 0.75`
+  - RSI高于`65`
+  - 当日收盘低于前收，出现反向确认
+  - 不处于均线多头强排列
+- 出场：
+  - 触及Donchian中线退出
+  - 最长持仓5日退出
+  - 保留基础止损和前日高低点移动止损
+- 资金管理：
+  - 单笔风险从常规`1%`降为`0.8%`
+  - 连亏后按`1.0/0.75/0.5/0.0`递减，避免震荡假设失效时连续接刀。
+
+### 新增回测结果
+
+- 期末权益：`199,010`
+- 总收益：`-0.4950%`
+- 最大回撤：`-0.8075%`
+- Sharpe：`-0.5581`
+- 总滑点：`240`
+- 总交易次数：`7`
+- 胜率：日胜率 `27.27%`（盈利日3 / 盈亏日11）
+- 交易结构：
+  - 开仓3笔
+  - 平仓4笔
+  - `short_base_stop = 2`
+  - `long_base_stop = 1`
+  - `long_channel_middle_exit = 1`
+- 交易品种：
+  - `jm = -390`
+  - `SA = -300`
+  - `SM = -300`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_backtest.py`
+- 新增输出：
+  - `qmt_range_reversion_v1_oscillator_adx_statistics.json`
+  - `qmt_range_reversion_v1_oscillator_adx_daily.csv`
+  - `qmt_range_reversion_v1_oscillator_adx_trades_2020_2026_04.csv`
+  - `qmt_range_reversion_v1_oscillator_adx_chart.html`
+  - `qmt_range_reversion_v1_oscillator_adx_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v1不是从回测结果反推参数，而是采用通用震荡策略定义：ADX低趋势、Donchian区间位置、RSI极值、反向K线确认、保守递减仓位。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：前5轮Boll实验说明单一布林触发器不够，必须测试更完整的震荡系统定义。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有被调漂亮，反而因条件过严导致几乎不交易；这不是拟合收益曲线。
+
+### 运行后继续价值反思
+
+- 判断：是，但v1本身不值得接入或继续微调。
+- 原因：v1证明完整震荡定义能压低回撤，但交易密度太低，无法形成收益曲线；下一步应改为“评分制/分层确认”，而不是简单调大仓位或细调阈值。
+
+### 决策
+
+- `range_reversion_v1_too_strict_not_integratable`
+- 不接入第78。
+- 不进入A/C组合实验。
+- 不通过加杠杆修饰收益。
+
+### 后续规划和TODO
+
+- 下一步建议v2从硬条件AND改成评分制：
+  - ADX低趋势、区间边缘、RSI偏离、反向K线、均线非强趋势各给分；
+  - 达到分数才开仓；
+  - 保持保守资金管理，不通过提高风险比例制造收益。
+
+## 2026-04-26 12:13 第174-178阶段：非Boll震荡策略v2-v6评分制、风险地板、方向对照、ER过滤与强信号验证
+
+### 版本变更记录
+
+- 改动时间点：`2026-04-26 12:01-12:13`
+- 当前模式：`day`
+- 候选版本：
+  - `qmt_range_reversion_v2_score`
+  - `qmt_range_reversion_v3_score_risk_floor`
+  - `qmt_range_reversion_v4_edge_continuation`
+  - `qmt_range_reversion_v5_efficiency_filter`
+  - `qmt_range_reversion_v6_strong_score`
+- 类型：独立非Boll震荡策略研究，不影响第78正式版本。
+- 是否重要突破版本：否。
+- 是否接入第78或做A/B实验：否。全部版本仍为负收益或无交易，不满足接入正式版本或A/B实验条件。
+
+### 改动内容
+
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v2_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v3_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v4_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v5_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v6_backtest.py`
+- 78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78相关正式配置。
+- 新增参数：
+  - `range_entry_mode`
+  - `range_score_threshold`
+  - `range_soft_adx_max`
+  - `range_soft_position_long_max`
+  - `range_soft_position_short_min`
+  - `range_soft_rsi_long_max`
+  - `range_soft_rsi_short_min`
+  - `range_signal_style`
+  - `range_efficiency_filter_enabled`
+  - `range_efficiency_window`
+  - `range_efficiency_max`
+- 修改参数：
+  - v2：`range_entry_mode = "score"`，`range_score_threshold = 3.0`
+  - v3：`streak_risk_multipliers = "1.0,0.75,0.5,0.5"`
+  - v4：`range_signal_style = "continuation"`
+  - v5：`range_efficiency_filter_enabled = True`，`range_efficiency_window = 20`，`range_efficiency_max = 0.35`
+  - v6：`range_score_threshold = 4.0`
+- 删除参数：无。
+
+### 新增回测结果
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v2 score | `200,000` | `0.0000%` | `0.0000%` | `0.0000` | `0` | `0` | 无交易 |
+| v3 score+risk floor | `150,835` | `-24.5825%` | `-28.2840%` | `-0.8295` | `20,320` | `1,097` | 日胜率`40.13%` |
+| v4 edge continuation | `141,525` | `-29.2375%` | `-29.9503%` | `-0.7756` | `69,890` | `3,804` | 日胜率`32.46%` |
+| v5 efficiency filter | `153,940` | `-23.0300%` | `-26.9650%` | `-0.8230` | `19,360` | `1,051` | 日胜率`39.50%` |
+| v6 strong score | `190,755` | `-4.6225%` | `-6.1016%` | `-0.3250` | `5,670` | `283` | 日胜率`36.96%` |
+
+### 关键诊断
+
+- v2不是没有信号，而是候选`3,833`条全部被`streak_risk_multipliers = "1.0,0.75,0.5,0.0"`导致的`risk_multiplier = 0`挡掉，正式统计期全部`skipped/sizing_zero_volume`。
+- v3把连亏风控改成非零地板后，有`536`条候选实际开仓，但收益显著为负，说明评分制放宽后没有直接产生正边际。
+- v4测试“边缘延续/方向反转”假设，交易数放大到`3,804`，结果更差，说明不是简单方向做反的问题。
+- v5加入ER效率比横盘过滤，略好于v3但仍负，说明只靠“低效率震荡状态”不够。
+- v6要求4/4强信号，亏损收敛到`-4.6225%`、回撤降到`-6.1016%`，但扣除滑点前仍不是明显正期望。
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v2_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v3_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v4_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v5_backtest.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v6_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v2_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v3_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v4_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v5_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v6_backtest.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v2-v6不是围绕单个收益曲线扫参数，而是按机制顺序测试：硬条件改评分、永久停机风控改风险地板、反向假设对照、横盘状态过滤、强信号过滤。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v1交易太少，只能说明规则保守；必须把样本量打开并检验信号方向、状态过滤和风险管理，否则不能判断震荡策略是否有独立边际。
+
+### 运行后过拟合反思
+
+- 判断：总体否，但v6开始接近“质量门槛调节”，后续不能继续扫阈值。
+- 原因：本轮没有剔除亏损品种、没有挑年份、没有做网格优化；而且最终最好版本仍是负收益，不存在把曲线调漂亮的过拟合收益。继续细调`ADX/RSI/ER`阈值就会转向过拟合。
+
+### 运行后继续价值反思
+
+- 判断：有研究价值，但当前非Boll震荡反转策略不值得接入或交易化。
+- 原因：v6证明强信号能显著降低亏损和回撤，但未形成正期望；下一步价值不在调参，而在做结构归因：品种是否天然均值回归、状态标签是否能提前识别“真横盘而非趋势暂停”。
+
+### 决策
+
+- `range_reversion_v2_v6_not_integratable`
+- 不接入第78。
+- 不进入A/B实验。
+- 不通过剔除亏损品种、美化阈值或提高杠杆继续推进。
+
+### 后续规划和TODO
+
+- 暂停把震荡策略作为第78的平滑卫星。
+- 若继续研究震荡方向，下一步只做归因，不做新交易版本：
+  - 按品种统计均值回归/趋势延续倾向；
+  - 按状态统计ER、ADX、ATR扩张、通道宽度与后续1-5日反转收益；
+  - 判断是否存在少数品种/少数状态的稳定震荡边际。
+
+## 2026-04-26 12:51 第179阶段：非Boll震荡策略v7日内止损触发验证
+
+### 版本变更记录
+
+- 改动时间点：`2026-04-26 12:49-12:51`
+- 当前模式：`day`
+- 候选版本：`qmt_range_reversion_v7_intraday_stop`
+- 类型：独立非Boll震荡策略执行机制验证，不影响第78正式版本。
+- 是否重要突破版本：否。
+- 是否接入第78或做A/B实验：否。v7相对v6没有改善收益、回撤或Sharpe。
+
+### 改动内容
+
+- 修改策略文件：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v7_intraday_stop_backtest.py`
+- 78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78相关正式配置。
+- 新增参数：
+  - `range_intraday_stop_enabled`
+  - `range_intraday_stop_gap_open_enabled`
+- 修改参数：
+  - v7沿用v6强信号配置：
+    - `range_entry_mode = "score"`
+    - `range_signal_style = "reversion"`
+    - `range_score_threshold = 4.0`
+    - `range_efficiency_filter_enabled = True`
+    - `range_efficiency_window = 20`
+    - `range_efficiency_max = 0.35`
+    - `streak_risk_multipliers = "1.0,0.75,0.5,0.5"`
+  - v7新增打开：
+    - `range_intraday_stop_enabled = True`
+    - `range_intraday_stop_gap_open_enabled = True`
+- 删除参数：无。
+
+### 止损机制说明
+
+- 原始底层止损为收盘价触发：
+  - 多头：`close <= stop_price`
+  - 空头：`close >= stop_price`
+  - 成交价：`close`
+- v7震荡分支改为日内穿透触发：
+  - 多头：`low <= stop_price`
+  - 空头：`high >= stop_price`
+  - 如果开盘已经跳过止损，按开盘价成交；否则按止损价成交。
+- 中轨止盈、时间退出等非硬止损仍保留收盘价逻辑，避免把普通离场也变成日内噪声触发。
+
+### 新增回测结果
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v6 strong score 基准 | `190,755` | `-4.6225%` | `-6.1016%` | `-0.3250` | `5,670` | `283` | 日胜率`36.96%` |
+| v7 intraday stop | `189,915` | `-5.0425%` | `-6.5189%` | `-0.7500` | `4,830` | `261` | 日胜率`25.57%` |
+
+### 修改回测结果
+
+- 无。v7为新增独立版本，未覆盖v1-v6结果。
+
+### 删除回测结果
+
+- 无。
+
+### 退出原因对比
+
+- v6主要退出：
+  - `long_base_stop`: `58`
+  - `short_base_stop`: `38`
+  - `short_channel_middle_exit`: `21`
+  - `long_channel_middle_exit`: `14`
+  - `long_boll_time_exit`: `6`
+  - `rollover_close`: `5`
+- v7主要退出：
+  - `long_base_stop`: `61`
+  - `short_base_stop`: `43`
+  - `short_channel_middle_exit`: `11`
+  - `long_channel_middle_exit`: `9`
+  - `rollover_close`: `5`
+  - `long_boll_time_exit`: `2`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_v7_intraday_stop_backtest.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v7_intraday_stop_backtest.py`
+- 新增输出：
+  - `qmt_range_reversion_v7_intraday_stop_statistics.json`
+  - `qmt_range_reversion_v7_intraday_stop_daily.csv`
+  - `qmt_range_reversion_v7_intraday_stop_trades_2020_2026_04.csv`
+  - `qmt_range_reversion_v7_intraday_stop_chart.html`
+  - `qmt_range_reversion_v7_intraday_stop_professional_dashboard.html`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本次只改变硬止损的执行触发粒度，没有筛选品种、没有调整入场阈值、没有针对收益曲线做参数搜索；它是交易执行机制修正，不是历史曲线拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：震荡策略的逻辑前提是价格偏离后尽快回归；如果价格日内穿透止损却等到收盘，确实可能放大单笔亏损。必须先确认这个机制问题，再判断震荡策略是否仍有研究价值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果变差，没有把曲线调漂亮；v7反而暴露出更多止损触发，说明这次实验更接近风险真实暴露，而不是美化回测。
+
+### 运行后继续价值反思
+
+- 判断：作为交易版本继续推进价值不高；作为诊断有价值。
+- 原因：日内止损没有救活v6，说明主要问题不是“收盘止损放大亏损”，而是入场后的均值回归边际不足。v7更像风险真实性校准，不是突破版本。
+
+### 决策
+
+- `range_reversion_v7_intraday_stop_not_integratable`
+- 不接入第78。
+- 不进入A/B实验。
+- 不继续沿着“止损触发粒度”做参数化微调。
+
+### 后续规划和TODO
+
+- 震荡交易版本继续暂停。
+- 若继续震荡方向，优先做非交易归因：
+  - 对每个品种统计极值后1/3/5日反转概率和平均收益；
+  - 区分ADX、ER、ATR扩张、通道宽度状态；
+  - 找出是否存在真实均值回归资产/状态，再决定是否重写交易规则。
+
+## 2026-04-26 13:14 第180-181阶段：震荡策略交易复盘归因与short-only方向过滤验证
+
+### 版本变更记录
+
+- 改动时间点：`2026-04-26 13:02-13:14`
+- 当前模式：`day`
+- 类型：
+  - 第180阶段：非交易复盘归因，不新增交易版本。
+  - 第181阶段：基于归因的short-only最小规则验证。
+- 候选版本：
+  - `qmt_range_reversion_v8_short_only`
+  - `qmt_range_reversion_v9_short_only_intraday_stop`
+- 是否重要突破版本：否。
+- 是否接入第78或做A/B实验：否。v8/v9仍为负收益，不满足接入正式版本或A/B实验条件。
+
+### 改动内容
+
+- 新增归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_trade_attribution.py`
+- 新增回测脚本：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v8_short_only_backtest.py`
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_v9_short_only_intraday_stop_backtest.py`
+- 78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78相关正式配置。
+- 新增参数：无。
+- 修改参数：
+  - v8：
+    - `long_entry_enabled = False`
+    - `short_entry_enabled = True`
+    - `range_intraday_stop_enabled = False`
+    - 其余沿用v6强信号配置。
+  - v9：
+    - `long_entry_enabled = False`
+    - `short_entry_enabled = True`
+    - `range_intraday_stop_enabled = True`
+    - `range_intraday_stop_gap_open_enabled = True`
+    - 其余沿用v6强信号配置。
+- 删除参数：无。
+
+### 复盘归因结果
+
+- 归因对象：
+  - `qmt_range_reversion_v6_strong_score`
+  - `qmt_range_reversion_v7_intraday_stop`
+- 归因输出：
+  - `qmt_range_reversion_trade_attribution_roundtrips.csv`
+  - `qmt_range_reversion_trade_attribution_summary.csv`
+  - `qmt_range_reversion_trade_attribution_by_exit_reason.csv`
+  - `qmt_range_reversion_trade_attribution_by_product.csv`
+  - `qmt_range_reversion_trade_attribution_by_direction.csv`
+  - `qmt_range_reversion_trade_attribution_by_failure_type.csv`
+  - `qmt_range_reversion_trade_attribution_by_year.csv`
+  - `qmt_range_reversion_trade_attribution_by_rsi_bucket.csv`
+  - `qmt_range_reversion_trade_attribution_by_stop_distance_bucket.csv`
+  - `qmt_range_reversion_trade_attribution_report.md`
+- 关键发现：
+  - v6 roundtrip `141`笔，总PnL `-4,265`，交易胜率`36.17%`，硬止损率`68.09%`，入场后没有`0.5R`顺向空间的失败率`30.50%`。
+  - v7 roundtrip `130`笔，总PnL `-5,945`，交易胜率`25.38%`，硬止损率`80.00%`，入场后没有`0.5R`顺向空间的失败率`40.77%`。
+  - v6方向拆分：多头`-7,855`，空头`+3,590`。
+  - v7方向拆分：多头`-7,100`，空头`+1,155`。
+  - RSI `<35`的多头底部反转明显弱，v7中该桶交易胜率为`0%`，总PnL`-5,915`。
+  - 止损距离`<1%`桶在v6/v7中相对最好，说明“结构足够近”的信号质量更高，但不能直接据此扫阈值。
+
+### 新增回测结果
+
+| 版本 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v6 strong score 基准 | `190,755` | `-4.6225%` | `-6.1016%` | `-0.3250` | `5,670` | `283` | 日胜率`36.96%` |
+| v7 intraday stop | `189,915` | `-5.0425%` | `-6.5189%` | `-0.7500` | `4,830` | `261` | 日胜率`25.57%` |
+| v8 short-only | `198,220` | `-0.8900%` | `-4.3209%` | `-0.0953` | `2,500` | `118` | 日胜率`33.33%` |
+| v9 short-only intraday stop | `196,820` | `-1.5900%` | `-2.4074%` | `-0.3152` | `2,460` | `122` | 日胜率`25.60%` |
+
+### 修改回测结果
+
+- 无。v8/v9为新增独立版本，未覆盖v1-v7结果。
+
+### 删除回测结果
+
+- 无。
+
+### 退出原因对比
+
+- v8：
+  - `short_base_stop`: `39`
+  - `short_channel_middle_exit`: `19`
+  - `rollover_close`: `1`
+- v9：
+  - `short_base_stop`: `49`
+  - `short_channel_middle_exit`: `11`
+  - `rollover_close`: `1`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_trade_attribution.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/run_qmt_range_reversion_v8_short_only_backtest.py examples/portfolio_backtesting/run_qmt_range_reversion_v9_short_only_intraday_stop_backtest.py examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+- 已完成归因：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_trade_attribution.py`
+- 已完成回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v8_short_only_backtest.py`
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_v9_short_only_intraday_stop_backtest.py`
+
+### 运行前过拟合反思
+
+- 判断：有轻微风险，但可控。
+- 原因：short-only来自同一批复盘样本，存在数据挖掘风险；但它是低自由度、可解释的方向结构假设，不是多参数网格搜索，也没有筛年份或挑品种。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果v6/v7都显示空头侧明显强于多头侧，必须用真实回测验证方向过滤是否能把震荡策略从亏损中拉回，而不是停留在表格归因。
+
+### 运行后过拟合反思
+
+- 判断：否，结果没有被美化成正收益。
+- 原因：v8/v9都仍为负收益；v8显著降噪但未转正，v9在更真实的日内止损下收益更差。这说明方向过滤是诊断线索，不是可交易突破。
+
+### 运行后继续价值反思
+
+- 判断：作为交易版本继续推进价值不高；作为归因研究仍有价值。
+- 原因：short-only把v6的亏损从`-4.62%`收敛到v8的`-0.89%`，说明复盘确实找到了一个真实弱点；但日内止损版本v9仍为`-1.59%`，说明边际不足以覆盖成本和执行约束。
+
+### 决策
+
+- `range_reversion_trade_attribution_direction_edge_found_but_not_integratable`
+- `range_reversion_v8_v9_not_integratable`
+- 不接入第78。
+- 不进入A/B实验。
+- 不继续围绕short-only直接加杠杆或扫阈值。
+
+### 后续规划和TODO
+
+- 不建议继续用交易版本硬调震荡策略。
+- 若继续研究，只做两个低过拟合方向：
+  - 先做“品种/年份/状态”的均值回归稳定性证明；
+  - 再测试“空头-only + 结构近止损 + 状态过滤”的极简组合，但必须做分段验证，不能直接凭全样本结果接入。
+
+## 2026-04-26 13:23 第182阶段：震荡强信号前瞻稳定性归因
+
+### 背景
+
+- 当前模式：`day`。
+- 用户要求：继续通过复盘回测交易优化规则，但不要影响第78正式版本。
+- 本阶段性质：非交易回测，是信号前瞻归因研究。
+- 核心问题：震荡策略亏损到底是资金管理/止损规则问题，还是信号本身缺少稳定均值回归边际。
+
+### 本次改动内容
+
+- 新增归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_signal_forward_stability.py`
+- 使用输入：
+  - `qmt_range_reversion_v6_strong_score_entry_candidate_snapshots_2020_2026_04.csv`
+- 使用对象：
+  - v6 strong score全部`597`条候选信号，不只看实际成交信号。
+- 分析维度：
+  - 方向：long/short。
+  - 年份：2020-2026。
+  - 品种方向：product + direction。
+  - RSI分桶。
+  - 止损距离分桶。
+  - 入场后1/3/5日方向R收益。
+  - 5日MFE/MAE、触及0.5R、触及1R、触及止损、好反转比例。
+- 第78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78正式策略相关配置。
+
+### 参数变更
+
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段不是交易回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 前瞻归因结果
+
+| 维度 | 样本数 | 5日方向R均值 | 5日方向胜率 | 触及0.5R | 触及1R | 触及止损 | 好反转比例 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 全部信号 | `597` | `0.0106` | `48.07%` | `65.33%` | `40.87%` | `46.40%` | `43.89%` |
+| short | `245` | `0.1060` | `51.84%` | `66.53%` | `42.86%` | `44.90%` | `45.31%` |
+| long | `352` | `-0.0558` | `45.45%` | `64.49%` | `39.49%` | `47.44%` | `42.90%` |
+
+### 年份稳定性
+
+- 表现较好的年份：
+  - 2023：5日方向R均值`0.3052`，5日方向胜率`63.29%`。
+  - 2021：5日方向R均值`0.2161`，5日方向胜率`54.81%`。
+  - 2022：5日方向R均值`0.1940`，5日方向胜率`49.49%`。
+- 表现较差的年份：
+  - 2024：5日方向R均值`-0.2048`，5日方向胜率`39.84%`。
+  - 2025：5日方向R均值`-0.3785`，5日方向胜率`32.61%`。
+- 判断：
+  - 震荡信号不是跨年份稳定宽边际；2024/2025明显失效。
+
+### 状态发现
+
+- 方向：
+  - short明显强于long，但只是一条窄边际，不是强交易系统。
+  - long底部反转整体为负，继续做多头抄底需要非常谨慎。
+- RSI：
+  - `55-65 short`样本`173`条，5日方向R均值`0.1508`，5日方向胜率`53.76%`，触及止损`39.88%`。
+  - `>=65 short`样本`72`条，5日方向R均值`-0.0016`，触及止损`56.94%`。
+  - 极端超买并不比中度超买更好，说明“越极端越该反转”的直觉在这批数据里不成立。
+- 止损距离：
+  - `<1% short`样本`20`条，5日方向R均值`0.7646`，5日方向胜率`65.00%`。
+  - `1%-2% short`样本`81`条，5日方向R均值`0.2540`，5日方向胜率`58.02%`。
+  - `2%-4% short`样本`100`条，5日方向R均值`-0.0737`。
+  - `>=4% short`样本`44`条，5日方向R均值`-0.0572`。
+  - 结构足够近的入场更有价值，但不能直接把`1%`或`2%`当作优化阈值接入。
+- 品种方向：
+  - `SM short`连续4个年份为正，但总样本只有`15`条。
+  - `cu short`、`lh short`、`SA short`前瞻效果较好，但样本和年份覆盖不足。
+  - 大部分品种方向不稳定，直接做品种白名单有强过拟合风险。
+
+### 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_rows.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_summary.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_direction.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_year.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_product.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_product_year.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_rsi_bucket.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_by_stop_bucket.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_product_stability.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_signal_forward_stability_report.md`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_signal_forward_stability.py`
+- 已完成归因运行：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_signal_forward_stability.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段没有根据收益曲线改交易规则，也没有扫参数；只是把全部候选信号做前瞻归因，用来判断信号层是否有天然边际。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果全候选信号都没有稳定前瞻优势，继续写交易版本、加止损、加资金管理都可能是在优化噪音。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有被包装成新版本；整体信号5日方向R均值只有`0.0106`，胜率低于50%，并且2024/2025显著失效，结论主动否定了继续硬调的冲动。
+
+### 运行后继续价值反思
+
+- 判断：作为交易版本继续推进价值不高；作为诊断研究仍有价值。
+- 原因：空头、近止损、中度RSI区域确实有一点边际，但边际窄、年份不稳、样本不足，不足以支撑正式v10或接入第78。
+
+### 决策
+
+- `range_reversion_signal_forward_edge_too_thin_no_v10_yet`
+- 不接入第78。
+- 不进入A/B实验。
+- 暂不写正式交易版本v10。
+- 不做品种白名单，不直接用`<1%`或`<2%`止损距离作为硬阈值。
+
+### 后续规划和TODO
+
+- 若继续震荡线，只做低过拟合分段验证：
+  - 先验证“short-only + 结构近止损 + RSI 55-65”在分年份/分品种/滚动样本中是否仍为正。
+  - 不用全样本最佳阈值写正式版。
+  - 若分段验证仍不稳定，震荡策略应暂停，不再消耗主要研究资源。
+- Polanyi式经验判断：
+  - 这条震荡线现在不像一套成熟系统，更像一堆局部市场的短暂反应模式。真正能留下来的不是“高胜率震荡”，而可能只是某些品种在特定状态下的空头均值回归小边际。
+
+## 2026-04-26 13:40 第183阶段：震荡策略全市场品种适配扫描v1
+
+### 背景
+
+- 当前模式：`day`。
+- 用户判断：原18个品种本来偏趋势，震荡策略不应继续从这个趋势池里硬找。
+- 用户要求：
+  - 震荡策略从全市场找品种出发。
+  - 趋势策略和震荡策略保持独立，震荡研究不得影响第78趋势策略。
+  - 在`AGENTS.md`补充隔离要求。
+- 本阶段性质：非交易回测，是全市场震荡品种/方向适配扫描。
+
+### 本次改动内容
+
+- 修改`AGENTS.md`：
+  - 新增第9条：趋势策略和震荡策略必须保持代码、配置、回测入口、输出命名隔离；震荡策略研究不得修改第78正式趋势策略及其配置；只有震荡策略独立跑出稳定、可复验、低过拟合效果后，才允许讨论与第78结合、A/B实验或组合接入。
+- 新增全市场震荡适配扫描脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_full_market_universe_scout.py`
+- 数据来源：
+  - 全市场产品列表：`tqsdk_all_futures_products_2010_2026_04.csv`
+  - 全市场主力映射：`tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv`
+  - 本地TqSdk日线CSV：`downloaded_futures/tqsdk_daily_2010_2026_04`
+- 第78正式版本影响：
+  - 无。未修改`qmt_roll_official_stage78_config.py`、`run_qmt_roll_official_stage78_backtest.py`或第78正式趋势策略配置。
+
+### 扫描方法
+
+- 本阶段不是交易系统，不计算资金曲线。
+- 对每个全市场产品构造主力连续样本。
+- 为降低换月跳价污染，前瞻1/3/5日收益要求信号日和未来日仍为同一主力合约。
+- 使用固定、非优化的震荡候选定义：
+  - 低趋势：`ADX <= 32`
+  - 低效率：`efficiency <= 0.40`
+  - 通道边缘：20日Donchian位置
+  - 温和RSI极值：short为`55-75`，long为`25-45`
+  - 单日反转确认：short要求当日收低，long要求当日收高
+- 使用ATR归一化前瞻收益做产品/方向排序。
+
+### 参数变更
+
+- 新增参数：
+  - `CHANNEL_WINDOW = 20`
+  - `RSI_WINDOW = 14`
+  - `ADX_WINDOW = 14`
+  - `EFFICIENCY_WINDOW = 20`
+  - `ATR_WINDOW = 20`
+  - `RANGE_SOFT_ADX_MAX = 32.0`
+  - `RANGE_EFFICIENCY_MAX = 0.40`
+  - `SHORT_RANGE_POSITION_MIN = 0.65`
+  - `LONG_RANGE_POSITION_MAX = 0.35`
+  - `SHORT_RSI_MIN = 55.0`
+  - `SHORT_RSI_MAX = 75.0`
+  - `LONG_RSI_MIN = 25.0`
+  - `LONG_RSI_MAX = 45.0`
+  - `MIN_BARS = 500`
+  - `MIN_DIRECTION_SIGNALS = 20`
+  - `MIN_YEARS = 3`
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段不是交易回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 扫描结果
+
+- 全市场产品数：`86`
+- 可计算产品数：`73`
+- 产品方向行数：`146`
+- 通过基础稳定性门槛的方向数：`36`
+- 通过门槛且不在原18趋势品种池的方向数：`34`
+- 通过门槛且在原18趋势品种池的方向数：`2`
+
+### Top候选方向
+
+| 排名 | 品种方向 | 是否原18品种 | 信号数 | 年份数 | 正年份率 | 5日ATR收益均值 | 5日胜率 | 5日坏尾率 |
+| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | `IC.CFFEX long` | 否 | `39` | `6` | `100.00%` | `0.6944` | `64.10%` | `20.51%` |
+| 2 | `y.DCE long` | 否 | `52` | `5` | `80.00%` | `0.6244` | `75.00%` | `9.62%` |
+| 3 | `T.CFFEX long` | 否 | `50` | `6` | `83.33%` | `0.6188` | `72.00%` | `8.00%` |
+| 4 | `IM.CFFEX long` | 否 | `31` | `4` | `100.00%` | `0.6590` | `58.06%` | `22.58%` |
+| 5 | `au.SHFE long` | 是 | `30` | `6` | `100.00%` | `0.5059` | `66.67%` | `10.00%` |
+| 6 | `cs.DCE short` | 否 | `62` | `7` | `85.71%` | `0.5661` | `66.13%` | `17.74%` |
+| 7 | `IF.CFFEX long` | 否 | `66` | `6` | `66.67%` | `0.6815` | `57.58%` | `19.70%` |
+| 8 | `zn.SHFE long` | 否 | `47` | `6` | `83.33%` | `0.4779` | `72.34%` | `12.77%` |
+| 9 | `PX.CZCE short` | 否 | `24` | `3` | `66.67%` | `0.5904` | `66.67%` | `8.33%` |
+| 10 | `PF.CZCE long` | 否 | `67` | `5` | `100.00%` | `0.4596` | `58.21%` | `13.43%` |
+
+### 对原18品种池的判断
+
+- 原18品种池里只有`au.SHFE long`和`OI.CZCE long`通过本次基础门槛。
+- 大部分原18趋势品种在震荡适配上不理想。
+- 这支持用户判断：用趋势强品种池做震荡策略，本身就有样本选择偏差。
+
+### 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_full_market_universe_scout_product_direction_range_reversion_full_market_universe_scout_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_full_market_universe_scout_top_candidates_range_reversion_full_market_universe_scout_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_full_market_universe_scout_year_direction_range_reversion_full_market_universe_scout_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_full_market_universe_scout_summary_range_reversion_full_market_universe_scout_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_full_market_universe_scout_report_range_reversion_full_market_universe_scout_v1.md`
+
+### 验证
+
+- 已完成语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_full_market_universe_scout.py`
+- 已完成全市场扫描：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_full_market_universe_scout.py`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段不是用全市场直接挑收益最好的交易版本，而是先做固定规则、固定阈值的品种/方向适配扫描；没有修改交易逻辑，也没有接入资金管理。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：原18品种带有趋势偏好，若继续在原18里研究震荡策略，会把品种选择偏差误认为策略失效；全市场扫描能先回答“哪些品种天然更适合震荡”。
+
+### 运行后过拟合反思
+
+- 判断：有轻微风险，但可控。
+- 原因：全市场扫描天然存在多重比较风险；但本次没有把候选直接写成交易系统，且记录了样本数、年份数、正年份率和坏尾率。下一步必须做分段验证，不能直接拿Top列表做正式策略。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：36个候选方向中34个不在原18趋势池，说明“全市场找震荡品种”明显比“趋势池里硬做震荡”更有研究价值。
+
+### 决策
+
+- `range_reversion_full_market_universe_scout_v1_has_research_value_not_integratable`
+- 不接入第78。
+- 不进入A/B实验。
+- 不写正式震荡交易版本。
+- 下一步只做候选品种的分段稳定性和交易可行性验证。
+
+### 后续规划和TODO
+
+- 对Top候选先分组：
+  - 金融期货候选：`IC/IF/IM/T`等，需要单独检查账户权限、保证金、滑点、日内执行约束。
+  - 商品期货候选：`y/cs/zn/PX/PF/nr/lu/ag/bc/a/pp/PK/pg/SR`等，更适合先做震荡交易线验证。
+- 下一步建议：
+  - 先排除或单独标记金融期货，避免把指数/国债期货的特性混入商品期货策略。
+  - 对非18商品候选做滚动分段验证。
+  - 通过后再生成独立`range_reversion`产品宇宙CSV，不修改第78趋势宇宙。
+- Polanyi式经验判断：
+  - 这次结果像是方向终于换对了：不是在趋势池里找反转，而是在全市场找天生更愿意来回摆动的合约。它还不是策略，但比前面硬调18品种震荡线更接近问题本质。
