@@ -1,0 +1,20 @@
+ M AGENTS.md
+ M back_log.md
+ M memory.md
+ M work-type.txt
+?? .codex_backups/
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage135_stage78_live_review.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage136_ai_pool_switch_stability.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage137_satellite_principle_audit.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage138_satellite_shadow_replay.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage140_full_market_product_fit_audit.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage141_blind_pool_walkforward_validation.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage142_stage78_live_monitor_guardrails.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage143_stage78_live_review_pack.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage144_recent_loss_mechanism_audit.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage145_extreme_loss_event_ledger.py
+?? examples/portfolio_backtesting/analyze_qmt_roll_stage146_portfolio_tail_risk_monitor.py
+?? examples/portfolio_backtesting/build_qmt_roll_stage147_stage78_live_weekly_report.py
+?? examples/portfolio_backtesting/build_qmt_roll_stage148_stage78_live_go_no_go_audit.py
+?? skills/

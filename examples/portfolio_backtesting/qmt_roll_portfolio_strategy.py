@@ -25,6 +25,13 @@ from qmt_roll_ai_selection_pairwise_runtime import (
     SelectionPairwiseRuntimeModel,
     build_runtime_feature_row,
 )
+from qmt_roll_ai_path_damage_runtime import (
+    DEFAULT_MODEL_PATH as DEFAULT_PATH_DAMAGE_MODEL_PATH,
+    DEFAULT_SUMMARY_PATH as DEFAULT_PATH_DAMAGE_SUMMARY_PATH,
+    PREDICTION_COLUMN as PATH_DAMAGE_PREDICTION_COLUMN,
+    PathDamageRuntimeModel,
+    build_path_damage_runtime_feature_row,
+)
 
 
 @dataclass
@@ -133,6 +140,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     exit_on_alignment_break: bool = True
     enable_ma_trend_stop: bool = True
     rollover_reopen_enabled: bool = True
+    enable_rollover_reopen_drawdown_guard: bool = False
+    rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
     enable_prev2day_stop: bool = False
     enable_rsi_partial_exit: bool = False
@@ -145,6 +154,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     max_concurrent_positions: int = 10
     capital_base: float = 0.0
     sizing_equity_cap: float = 1_000_000.0
+    enable_dynamic_sizing_equity_soft_cap: bool = False
+    dynamic_sizing_equity_soft_cap_base: float = 1_000_000.0
+    dynamic_sizing_equity_soft_cap_max: float = 1_500_000.0
+    dynamic_sizing_equity_soft_cap_participation: float = 0.25
+    dynamic_sizing_equity_soft_cap_margin_start_ratio: float = 0.60
+    dynamic_sizing_equity_soft_cap_margin_full_ratio: float = 0.80
+    dynamic_sizing_equity_soft_cap_drawdown_start_ratio: float = 0.05
+    dynamic_sizing_equity_soft_cap_drawdown_full_ratio: float = 0.20
     max_capital_usage_ratio: float = 0.9
     max_single_trade_capital_usage_ratio: float = 0.7
     enable_incremental_margin_budget_gate: bool = False
@@ -213,6 +230,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     selection_pairwise_model_path: str = str(DEFAULT_MODEL_PATH)
     selection_pairwise_summary_path: str = str(DEFAULT_SUMMARY_PATH)
     selection_pairwise_veto_penalty: float = 1.5
+    enable_ai_path_damage_risk_discount: bool = False
+    ai_path_damage_model_path: str = str(DEFAULT_PATH_DAMAGE_MODEL_PATH)
+    ai_path_damage_summary_path: str = str(DEFAULT_PATH_DAMAGE_SUMMARY_PATH)
+    ai_path_damage_discount_start_date: str = "2023-01-01"
+    ai_path_damage_discount_probability_start: float = 0.25
+    ai_path_damage_discount_probability_full: float = 0.75
+    ai_path_damage_discount_weight_floor: float = 0.80
     enable_ai_product_pool_filter: bool = False
     ai_product_pool_eligibility_path: str = ""
     ai_product_pool_strategy: str = "ai_top8_entry_filter"
@@ -282,6 +306,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "exit_on_alignment_break",
         "enable_ma_trend_stop",
         "rollover_reopen_enabled",
+        "enable_rollover_reopen_drawdown_guard",
+        "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
         "enable_prev2day_stop",
         "enable_rsi_partial_exit",
@@ -293,6 +319,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "max_concurrent_positions",
         "capital_base",
         "sizing_equity_cap",
+        "enable_dynamic_sizing_equity_soft_cap",
+        "dynamic_sizing_equity_soft_cap_base",
+        "dynamic_sizing_equity_soft_cap_max",
+        "dynamic_sizing_equity_soft_cap_participation",
+        "dynamic_sizing_equity_soft_cap_margin_start_ratio",
+        "dynamic_sizing_equity_soft_cap_margin_full_ratio",
+        "dynamic_sizing_equity_soft_cap_drawdown_start_ratio",
+        "dynamic_sizing_equity_soft_cap_drawdown_full_ratio",
         "max_capital_usage_ratio",
         "max_single_trade_capital_usage_ratio",
         "enable_incremental_margin_budget_gate",
@@ -361,6 +395,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "selection_pairwise_model_path",
         "selection_pairwise_summary_path",
         "selection_pairwise_veto_penalty",
+        "enable_ai_path_damage_risk_discount",
+        "ai_path_damage_model_path",
+        "ai_path_damage_summary_path",
+        "ai_path_damage_discount_start_date",
+        "ai_path_damage_discount_probability_start",
+        "ai_path_damage_discount_probability_full",
+        "ai_path_damage_discount_weight_floor",
         "enable_ai_product_pool_filter",
         "ai_product_pool_eligibility_path",
         "ai_product_pool_strategy",
@@ -456,6 +497,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
         self.entry_candidate_snapshots: list[dict[str, Any]] = []
         self.trade_event_diagnostics: list[dict[str, Any]] = []
+        self.rollover_reopen_guard_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
@@ -483,6 +525,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 summary_path=self.selection_pairwise_summary_path,
                 enable_catastrophic_veto=self.enable_selection_pairwise_v2_catastrophic_veto,
                 catastrophic_veto_penalty=self.selection_pairwise_veto_penalty,
+            )
+        self.ai_path_damage_runtime: PathDamageRuntimeModel | None = None
+        if self.enable_ai_path_damage_risk_discount:
+            self.ai_path_damage_runtime = PathDamageRuntimeModel(
+                model_path=self.ai_path_damage_model_path,
+                summary_path=self.ai_path_damage_summary_path,
             )
 
     def _load_ai_product_pool_eligibility(self) -> None:
@@ -950,6 +998,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if not self._rollover_reopen_allowed(old_direction, history, signal_data):
             return
 
+        guard_fields = self._rollover_reopen_drawdown_guard_fields()
+        if int(guard_fields["rollover_reopen_drawdown_guard_enabled"]) and not int(
+            guard_fields["rollover_reopen_drawdown_guard_passed"]
+        ):
+            self._record_rollover_reopen_guard_skip(
+                state=state,
+                old_contract=old_contract,
+                target_contract=target_contract,
+                old_direction=old_direction,
+                old_risk_mode=old_risk_mode,
+                bar=new_bar,
+                guard_fields=guard_fields,
+            )
+            return
+
         sizing: dict[str, Any] = self._calculate_entry_sizing(
             target_contract,
             old_direction,
@@ -959,6 +1022,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             risk_mode_override=old_risk_mode,
             entry_context="rollover_reopen",
         )
+        sizing.update(guard_fields)
         volume: int = int(sizing["selected_volume"])
         if volume <= 0:
             return
@@ -1026,6 +1090,51 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         relief_ratio: float = (full_pct - drawdown_pct) / max(1e-9, full_pct - start_pct)
         return self._clip01(weight_floor + (1.0 - weight_floor) * relief_ratio)
+
+    def _rollover_reopen_drawdown_guard_fields(self) -> dict[str, Any]:
+        guard_enabled = int(bool(self.enable_rollover_reopen_drawdown_guard))
+        max_drawdown_pct = max(0.0, float(self.rollover_reopen_max_portfolio_drawdown_pct or 0.0))
+        current_drawdown_pct = max(0.0, float(self.portfolio_drawdown_pct or 0.0))
+        passed = (not guard_enabled) or current_drawdown_pct <= max_drawdown_pct
+        return {
+            "rollover_reopen_drawdown_guard_enabled": guard_enabled,
+            "rollover_reopen_drawdown_guard_passed": int(passed),
+            "rollover_reopen_drawdown_guard_max_pct": max_drawdown_pct,
+            "rollover_reopen_drawdown_guard_portfolio_drawdown_pct": current_drawdown_pct,
+        }
+
+    def _record_rollover_reopen_guard_skip(
+        self,
+        *,
+        state: ProductState,
+        old_contract: str,
+        target_contract: str,
+        old_direction: str,
+        old_risk_mode: str,
+        bar: BarData,
+        guard_fields: dict[str, Any],
+    ) -> None:
+        self.rollover_reopen_guard_diagnostics.append(
+            {
+                "skip_index": len(self.rollover_reopen_guard_diagnostics) + 1,
+                "datetime": bar.datetime,
+                "date": bar.datetime.date(),
+                "product_vt_symbol": state.product_vt_symbol,
+                "old_contract_vt_symbol": old_contract,
+                "target_contract_vt_symbol": target_contract,
+                "direction": old_direction,
+                "risk_mode": old_risk_mode,
+                "skip_reason": "rollover_reopen_portfolio_drawdown_guard",
+                "estimated_equity": float(self.estimated_equity or self.base_capital),
+                "portfolio_equity_high_water": float(self.portfolio_equity_high_water or self.base_capital),
+                "portfolio_drawdown_pct": float(
+                    guard_fields.get("rollover_reopen_drawdown_guard_portfolio_drawdown_pct") or 0.0
+                ),
+                "rollover_reopen_max_portfolio_drawdown_pct": float(
+                    guard_fields.get("rollover_reopen_drawdown_guard_max_pct") or 0.0
+                ),
+            }
+        )
 
     def _same_direction_correlation_gate_snapshot(
         self,
@@ -1466,13 +1575,73 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             total_margin += abs(close_price * size * state.active_volume() * margin_ratio)
         return total_margin
 
+    def _sizing_equity_soft_cap_release_weight(self, value: float, start: float, full: float) -> float:
+        start = max(0.0, float(start))
+        full = max(start + 1e-9, float(full))
+        value = max(0.0, float(value))
+        if value <= start:
+            return 1.0
+        if value >= full:
+            return 0.0
+        return self._clip01((full - value) / max(1e-9, full - start))
+
+    def _sizing_equity_snapshot(self) -> dict[str, float | int]:
+        """Return the active sizing cap and diagnostics for static or dynamic cap modes."""
+        equity: float = max(0.0, float(self.estimated_equity or self.base_capital))
+        static_cap: float = float(self.sizing_equity_cap or 0.0)
+        static_effective_cap: float = equity if static_cap <= 0 else min(equity, static_cap)
+
+        base_cap: float = float(self.dynamic_sizing_equity_soft_cap_base or 0.0)
+        if base_cap <= 0:
+            base_cap = static_cap if static_cap > 0 else equity
+        max_cap: float = float(self.dynamic_sizing_equity_soft_cap_max or 0.0)
+        if max_cap <= 0:
+            max_cap = equity
+        max_cap = max(base_cap, max_cap)
+        participation: float = self._clip01(float(self.dynamic_sizing_equity_soft_cap_participation or 0.0))
+
+        reserved_margin: float = self._reserved_margin_in_use()
+        margin_pressure_ratio: float = reserved_margin / equity if equity > 0 else 0.0
+        drawdown_ratio: float = max(0.0, float(self.portfolio_drawdown_pct or 0.0))
+        margin_weight = self._sizing_equity_soft_cap_release_weight(
+            margin_pressure_ratio,
+            float(self.dynamic_sizing_equity_soft_cap_margin_start_ratio),
+            float(self.dynamic_sizing_equity_soft_cap_margin_full_ratio),
+        )
+        drawdown_weight = self._sizing_equity_soft_cap_release_weight(
+            drawdown_ratio,
+            float(self.dynamic_sizing_equity_soft_cap_drawdown_start_ratio),
+            float(self.dynamic_sizing_equity_soft_cap_drawdown_full_ratio),
+        )
+        release_weight = min(margin_weight, drawdown_weight)
+
+        raw_dynamic_cap: float = min(max_cap, base_cap + max(0.0, equity - base_cap) * participation)
+        dynamic_effective_cap: float = base_cap + max(0.0, raw_dynamic_cap - base_cap) * release_weight
+        dynamic_sizing_equity: float = min(equity, dynamic_effective_cap)
+
+        enabled = int(bool(self.enable_dynamic_sizing_equity_soft_cap))
+        sizing_equity = dynamic_sizing_equity if enabled else static_effective_cap
+        effective_cap = dynamic_effective_cap if enabled else (static_cap if static_cap > 0 else equity)
+
+        return {
+            "sizing_equity": sizing_equity,
+            "static_sizing_equity_cap": static_cap,
+            "effective_sizing_equity_cap": effective_cap,
+            "dynamic_sizing_equity_soft_cap_enabled": enabled,
+            "dynamic_sizing_equity_soft_cap_base": base_cap,
+            "dynamic_sizing_equity_soft_cap_max": max_cap,
+            "dynamic_sizing_equity_soft_cap_participation": participation,
+            "dynamic_sizing_equity_soft_cap_raw_cap": raw_dynamic_cap,
+            "dynamic_sizing_equity_soft_cap_margin_pressure_ratio": margin_pressure_ratio,
+            "dynamic_sizing_equity_soft_cap_drawdown_ratio": drawdown_ratio,
+            "dynamic_sizing_equity_soft_cap_margin_weight": margin_weight,
+            "dynamic_sizing_equity_soft_cap_drawdown_weight": drawdown_weight,
+            "dynamic_sizing_equity_soft_cap_release_weight": release_weight,
+        }
+
     def _sizing_equity(self) -> float:
         """Cap sizing equity while still de-risking on drawdown; non-positive cap disables the ceiling."""
-        equity: float = max(0.0, float(self.estimated_equity))
-        cap: float = float(self.sizing_equity_cap or 0.0)
-        if cap <= 0:
-            return equity
-        return min(equity, cap)
+        return float(self._sizing_equity_snapshot()["sizing_equity"])
 
     def _limited_available_balance(self, entry_context: str = "default") -> float:
         free_capital: float = self._free_capital_after_reservations()
@@ -1797,6 +1966,136 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 plan["native_openable"] = False
                 plan["skip_reason"] = "selection_pairwise_catastrophic_veto"
 
+    def _ai_path_damage_discount_weight(self, probability: float) -> float:
+        start = self._clip01(float(self.ai_path_damage_discount_probability_start or 0.0))
+        full = self._clip01(float(self.ai_path_damage_discount_probability_full or 0.0))
+        if full <= start:
+            full = min(1.0, start + 1e-9)
+        floor = self._clip01(float(self.ai_path_damage_discount_weight_floor or 0.0))
+        probability = self._clip01(float(probability))
+        if probability <= start:
+            return 1.0
+        if probability >= full:
+            return floor
+        progress = (probability - start) / max(1e-9, full - start)
+        return 1.0 - (1.0 - floor) * progress
+
+    def _ai_path_damage_discount_start_timestamp(self) -> pd.Timestamp | None:
+        start_text = str(self.ai_path_damage_discount_start_date or "").strip()
+        if not start_text:
+            return None
+        try:
+            return pd.Timestamp(start_text).normalize()
+        except (TypeError, ValueError):
+            return None
+
+    def _apply_ai_path_damage_risk_discount(self, candidate_plans: list[dict[str, Any]]) -> None:
+        if not self.enable_ai_path_damage_risk_discount:
+            return
+        if not self.ai_path_damage_runtime:
+            return
+
+        scorable_plans = [
+            plan
+            for plan in candidate_plans
+            if plan["native_openable"] and int(plan["sizing"].get("selected_volume") or plan.get("volume") or 0) > 0
+        ]
+        if not scorable_plans:
+            return
+
+        start_timestamp = self._ai_path_damage_discount_start_timestamp()
+        runtime_rows: list[dict[str, Any]] = []
+        plan_by_sample_id: dict[str, dict[str, Any]] = {}
+        cross_section_count = len(scorable_plans)
+        for order_index, plan in enumerate(scorable_plans, start=1):
+            sizing = dict(plan["sizing"])
+            target_bar: BarData | None = plan.get("target_bar")
+            candidate_date = (
+                pd.Timestamp(target_bar.datetime).tz_localize(None).normalize()
+                if target_bar is not None
+                else pd.Timestamp.min
+            )
+            base_volume = max(0, int(sizing.get("selected_volume") or plan.get("volume") or 0))
+            sizing.update(
+                {
+                    "ai_path_damage_enabled": 1,
+                    "ai_path_damage_model_tag": self.ai_path_damage_runtime.model_tag,
+                    "ai_path_damage_probability": 0.0,
+                    "ai_path_damage_discount_weight": 1.0,
+                    "ai_path_damage_discount_applied": 0,
+                    "ai_path_damage_feature_available": 0,
+                    "ai_path_damage_selected_volume_before": base_volume,
+                    "ai_path_damage_selected_volume_after": base_volume,
+                }
+            )
+            plan["sizing"] = sizing
+            if start_timestamp is not None and candidate_date < start_timestamp:
+                continue
+
+            estimated_equity = float(self.estimated_equity or self.base_capital)
+            runtime_row = build_path_damage_runtime_feature_row(
+                history=plan["history"],
+                contract_vt_symbol=str(plan.get("target_contract", "")),
+                candidate_date=candidate_date,
+                direction=str(plan["direction"]),
+                signal=str(plan["signal"]),
+                risk_mode=str(sizing.get("risk_mode", plan["signal_data"].get("risk_mode", "regular"))),
+                risk_ratio=float(sizing.get("risk_ratio") or 0.0),
+                risk_multiplier=float(sizing.get("risk_multiplier") or self._current_streak_multiplier()),
+                active_positions_before=int(plan.get("active_positions_before") or 0),
+                remaining_position_slots=int(plan.get("remaining_position_slots") or 0),
+                loss_streak=int(self.loss_streak),
+                estimated_equity=estimated_equity,
+                margin_per_contract=float(sizing.get("margin_per_contract") or 0.0),
+                risk_amount=float(sizing.get("risk_amount") or 0.0),
+                allowed_capital=float(sizing.get("allowed_capital") or 0.0),
+                single_trade_capital_limit=float(sizing.get("single_trade_capital_limit") or 0.0),
+                feature_candidate_cross_section_count_1d=cross_section_count,
+            )
+            if not runtime_row:
+                continue
+            sample_id = f"path_damage_runtime_{order_index}_{plan['product_vt_symbol']}"
+            runtime_row.update(
+                {
+                    "sample_id": sample_id,
+                    "product_vt_symbol": plan["product_vt_symbol"],
+                }
+            )
+            runtime_rows.append(runtime_row)
+            plan_by_sample_id[sample_id] = plan
+
+        if not runtime_rows:
+            return
+
+        scored_rows = self.ai_path_damage_runtime.score_candidate_pool(runtime_rows)
+        for scored_row in scored_rows:
+            plan = plan_by_sample_id.get(str(scored_row.get("sample_id", "")))
+            if not plan:
+                continue
+            sizing = dict(plan["sizing"])
+            base_volume = max(0, int(sizing.get("selected_volume") or plan.get("volume") or 0))
+            probability = float(scored_row.get(PATH_DAMAGE_PREDICTION_COLUMN, 0.0) or 0.0)
+            weight = self._ai_path_damage_discount_weight(probability)
+            discounted_volume = int(round(base_volume * weight))
+            if 0 < discounted_volume < self.min_position_size:
+                discounted_volume = 0
+            sizing.update(
+                {
+                    "ai_path_damage_probability": probability,
+                    "ai_path_damage_discount_weight": weight,
+                    "ai_path_damage_discount_applied": int(discounted_volume != base_volume),
+                    "ai_path_damage_feature_available": 1,
+                    "ai_path_damage_selected_volume_before": base_volume,
+                    "ai_path_damage_selected_volume_after": max(0, discounted_volume),
+                }
+            )
+            sizing["selected_volume"] = max(0, discounted_volume)
+            plan["sizing"] = sizing
+            plan["volume"] = max(0, discounted_volume)
+            if discounted_volume <= 0:
+                plan["native_openable"] = False
+                plan["skip_reason"] = "ai_path_damage_risk_discount_zero_volume"
+
     @staticmethod
     def _selection_pairwise_catastrophic_veto_match(candidate_row: dict[str, Any]) -> bool:
         return bool(
@@ -2034,6 +2333,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 candidate_plans.append(plan)
 
         self._apply_selection_pairwise_scores(candidate_plans)
+        self._apply_ai_path_damage_risk_discount(candidate_plans)
 
         openable_plans = [plan for plan in candidate_plans if plan["native_openable"]]
         if self.selection_pairwise_runtime:
@@ -2357,6 +2657,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self._current_streak_multiplier(),
             )
         )
+        sizing_equity_fields = self._sizing_equity_snapshot()
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
             stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
@@ -2403,6 +2704,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "sizing_method": "fixed_size",
                 "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
                 "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
+                **sizing_equity_fields,
                 **recovery_fields,
                 **env_gate_fields,
             }
@@ -2479,6 +2781,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "sizing_method": "risk_budget",
             "effective_capital_usage_ratio": self._effective_capital_usage_ratio(entry_context),
             "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
+            **sizing_equity_fields,
             **recovery_fields,
             **env_gate_fields,
         }
@@ -2723,6 +3026,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "total_margin_in_use_before": reserved_margin_before,
                 "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
                 "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
+                "sizing_equity": float(sizing_snapshot.get("sizing_equity") or 0.0),
+                "effective_sizing_equity_cap": float(sizing_snapshot.get("effective_sizing_equity_cap") or 0.0),
+                "dynamic_sizing_equity_soft_cap_enabled": int(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_enabled") or 0
+                ),
+                "dynamic_sizing_equity_soft_cap_base": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_base") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_max": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_max") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_raw_cap": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_raw_cap") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_margin_pressure_ratio": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_margin_pressure_ratio") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_drawdown_ratio": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_drawdown_ratio") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_release_weight": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_release_weight") or 0.0
+                ),
                 "effective_capital_usage_ratio": float(
                     sizing_snapshot.get("effective_capital_usage_ratio") or self.max_capital_usage_ratio
                 ),
@@ -2851,6 +3177,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "portfolio_equity_high_water": float(
                     sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
                 ),
+                "rollover_reopen_drawdown_guard_enabled": int(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_enabled") or 0
+                ),
+                "rollover_reopen_drawdown_guard_passed": int(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_passed", 1) or 0
+                ),
+                "rollover_reopen_drawdown_guard_max_pct": float(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_max_pct") or 0.0
+                ),
+                "rollover_reopen_drawdown_guard_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_portfolio_drawdown_pct")
+                    or sizing_snapshot.get("portfolio_drawdown_pct")
+                    or 0.0
+                ),
                 "same_direction_correlation_gate_enabled": int(
                     sizing_snapshot.get("same_direction_correlation_gate_enabled") or 0
                 ),
@@ -2919,6 +3259,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "selection_pairwise_volume_tilt_range_scale": float(
                     sizing_snapshot.get("selection_pairwise_volume_tilt_range_scale") or 1.0
+                ),
+                "ai_path_damage_enabled": int(sizing_snapshot.get("ai_path_damage_enabled") or 0),
+                "ai_path_damage_model_tag": str(sizing_snapshot.get("ai_path_damage_model_tag") or ""),
+                "ai_path_damage_probability": float(sizing_snapshot.get("ai_path_damage_probability") or 0.0),
+                "ai_path_damage_discount_weight": float(
+                    sizing_snapshot.get("ai_path_damage_discount_weight") or 1.0
+                ),
+                "ai_path_damage_discount_applied": int(
+                    sizing_snapshot.get("ai_path_damage_discount_applied") or 0
+                ),
+                "ai_path_damage_feature_available": int(
+                    sizing_snapshot.get("ai_path_damage_feature_available") or 0
+                ),
+                "ai_path_damage_selected_volume_before": int(
+                    sizing_snapshot.get("ai_path_damage_selected_volume_before") or selected_volume
+                ),
+                "ai_path_damage_selected_volume_after": int(
+                    sizing_snapshot.get("ai_path_damage_selected_volume_after") or selected_volume
                 ),
                 "ai_product_pool_enabled": int(sizing_snapshot.get("ai_product_pool_enabled") or 0),
                 "ai_product_pool_strategy": str(sizing_snapshot.get("ai_product_pool_strategy") or ""),
@@ -3003,6 +3361,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "total_margin_in_use_before": reserved_margin_before,
                 "allowed_capital": float(sizing_snapshot.get("allowed_capital") or 0.0),
                 "single_trade_capital_limit": float(sizing_snapshot.get("single_trade_capital_limit") or 0.0),
+                "sizing_equity": float(sizing_snapshot.get("sizing_equity") or 0.0),
+                "effective_sizing_equity_cap": float(sizing_snapshot.get("effective_sizing_equity_cap") or 0.0),
+                "dynamic_sizing_equity_soft_cap_enabled": int(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_enabled") or 0
+                ),
+                "dynamic_sizing_equity_soft_cap_base": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_base") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_max": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_max") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_raw_cap": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_raw_cap") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_margin_pressure_ratio": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_margin_pressure_ratio") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_drawdown_ratio": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_drawdown_ratio") or 0.0
+                ),
+                "dynamic_sizing_equity_soft_cap_release_weight": float(
+                    sizing_snapshot.get("dynamic_sizing_equity_soft_cap_release_weight") or 0.0
+                ),
                 "free_capital": float(sizing_snapshot.get("free_capital") or 0.0),
                 "limited_balance": float(sizing_snapshot.get("limited_balance") or 0.0),
                 "effective_single_trade_capital_usage_ratio": float(self.max_single_trade_capital_usage_ratio),
@@ -3092,6 +3473,20 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "portfolio_drawdown_pct": float(sizing_snapshot.get("portfolio_drawdown_pct") or 0.0),
                 "portfolio_equity_high_water": float(
                     sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
+                ),
+                "rollover_reopen_drawdown_guard_enabled": int(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_enabled") or 0
+                ),
+                "rollover_reopen_drawdown_guard_passed": int(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_passed", 1) or 0
+                ),
+                "rollover_reopen_drawdown_guard_max_pct": float(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_max_pct") or 0.0
+                ),
+                "rollover_reopen_drawdown_guard_portfolio_drawdown_pct": float(
+                    sizing_snapshot.get("rollover_reopen_drawdown_guard_portfolio_drawdown_pct")
+                    or sizing_snapshot.get("portfolio_drawdown_pct")
+                    or 0.0
                 ),
                 "same_direction_correlation_gate_enabled": int(
                     sizing_snapshot.get("same_direction_correlation_gate_enabled") or 0

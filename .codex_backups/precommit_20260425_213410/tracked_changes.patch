@@ -1,0 +1,3074 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index c6777343..73b7295c 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -6,6 +6,7 @@
+ 6. 当前仓库带了python3 和vnpy环境，.py311/bin/python，用这个环境和解释器
+ 7. 所有回测都要把当前版本变更和回测参数记录和结果记录在 back\_log.md 中
+    （都要用中文记录），并且简单说明本次版本的改动内容，包括但不限于：
++8. 当你判断某个新策略版本“有价值、可能接入正式版本、需要与第78正式基准结合或做A/B实验”时，先读取并遵循 `skills/version-ab-experiment/SKILL.md`；不是所有新版本都触发，纯归因、监控、明显低价值想法不触发。
+ 
+ - 改动的时间点，具体到分钟级别
+ - 是否是重要突破版本
+@@ -30,4 +31,3 @@
+ 
+ 1. 每次开始运行和运行完你都要反思我们现在做的事情是不是在过拟合，明确告诉我，是或否，以及原因逻辑是什么
+ 2. 每次开始运行和运行完你都要反思我们现在做的事情是不是还有价值继续做下去，明确告诉我，是或否，以及原因逻辑是什么
+-
+diff --git a/back_log.md b/back_log.md
+index 27d440e7..32224fc2 100644
+--- a/back_log.md
++++ b/back_log.md
+@@ -18280,3 +18280,2138 @@ Stage128相对Stage78比较：
+ - 优先做Stage78准实盘复盘体系。
+ - 若继续AI池方向，只研究切换稳定性/换手约束，不研究全局慢更新。
+ - 若继续资金方向，以Stage111作为40万部署候选对照，避免和Stage78纯Alpha基准混用。
++
++## 2026-04-25 18:09 第135阶段Stage78准实盘复盘体系
++
++### 是否是重要突破版本
++
++- 判断：是，复盘体系层面的重要版本。
++- 原因：本阶段没有创造新收益，但把Stage78正式基准的收益来源、风险来源、执行成本、候选漏斗、并发质量和准实盘检查项整合为统一报告，后续研究可以基于它判断方向，而不是凭单个亏损窗口调参。
++
++### 本次版本改动内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage135_stage78_live_review.py`
++- 新增复盘产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_report_stage135_stage78_live_review_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_summary_stage135_stage78_live_review_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_monthly_summary_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_yearly_summary_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_candidate_funnel_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_live_checklist_stage135_stage78_live_review_v1.csv`
++- 同步`memory.md`记录第135阶段结论。
++
++### 新增参数
++
++- 无。
++
++### 修改参数
++
++- 无。
++
++### 删除参数
++
++- 无。
++
++### 新增回测结果
++
++- 无。
++- 本阶段没有运行新策略回测，只读取Stage78既有产物生成复盘报告。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 无新增回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 无新增回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 无新增回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 无新增回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 无新增回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 无新增回测，沿用Stage78正式基准：`42.1053%`。
++
++### 年度复盘结果
++
++| 年份 | 起始权益 | 期末权益 | 净损益 | 收益率 | 年内最大回撤 | 交易次数 | 滑点 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
++| `2020` | `200,000` | `444,265` | `244,265` | `122.1325%` | `-31.5415%` | `146` | `16,135` |
++| `2021` | `444,265` | `1,384,905` | `940,640` | `211.7295%` | `-36.9907%` | `160` | `41,055` |
++| `2022` | `1,384,905` | `1,650,260` | `265,355` | `19.1605%` | `-21.9519%` | `114` | `31,310` |
++| `2023` | `1,650,260` | `2,429,120` | `778,860` | `47.1962%` | `-13.7172%` | `113` | `38,745` |
++| `2024` | `2,429,120` | `2,910,545` | `481,425` | `19.8189%` | `-13.9445%` | `107` | `62,095` |
++| `2025` | `2,910,545` | `4,571,885` | `1,661,340` | `57.0800%` | `-9.5119%` | `104` | `61,390` |
++| `2026` | `4,571,885` | `4,600,090` | `28,205` | `0.6169%` | `-5.3600%` | `35` | `9,380` |
++
++### 关键复盘结论
++
++- Stage78可以作为正式防守基准继续使用，但它不是低回撤平滑曲线；收益和回撤都来自趋势暴露。
++- 高并发不是天然问题，`7+`并发样本历史总净利润`212,260`，不能简单砍最大持仓。
++- 最差月度为`2024-06`，净损益`-170,760`。
++- 最好月度为`2025-07`，净损益`850,200`。
++- 最大回撤段为`2021-05-12`到`2021-07-02`，谷底亏损`-463,930`，最大回撤`-36.9907%`。
++- 第一盈利品种为`jm.DCE`，全周期净利润`1,140,930`。
++- 最差品种为`MA.CZCE`，全周期净利润`-141,160`，但不能据此做单品种黑名单。
++- 候选漏斗：总候选`1,070`，开仓`359`，开仓率约`33.55%`。
++- 全周期平均每笔滑点约`333.90`。
++
++### 准实盘检查清单
++
++- 每日：检查权益回撤是否进入`-20%`以下；接近`-30%`时必须复核是否处于历史极端段。
++- 每周：检查滚动亏损窗口是否来自趋势反转后的同方向暴露，而不是先找单品种黑名单。
++- 每月：检查利润是否仍来自趋势段，避免被低质量换手稀释。
++- 每月：检查实盘滑点和成交是否偏离回测口径。
++- 盘后：记录候选漏斗，观察AI池、相关性门控、资金约束是否异常收紧。
++
++### 验证
++
++- 已完成语法检查：
++  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage135_stage78_live_review.py`
++- 已完成Stage135准实盘复盘报告生成：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage135_stage78_live_review.py`
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段只读取Stage78既有产物，不新增交易规则、不搜索阈值、不按亏损品种做黑名单。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：正式基准需要可持续复盘体系，否则后续优化容易变成凭局部亏损打补丁。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：输出的是准实盘复盘框架和风险检查清单，没有增加策略自由度。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：报告明确了后续不应做简单并发硬砍、亏损品种黑名单或弱窗口补丁，而应优先看AI池切换稳定性、执行成本和资金约束。
++
++### 后续规划和TODO
++
++- 若继续Stage78方向，优先研究“AI池切换稳定性/换手约束”。
++- 若继续资金方向，以Stage111作为40万部署候选对照。
++- 若继续降低并发，只能研究低质量增量仓过滤，不能做简单最大持仓上限。
++
++## 2026-04-25 18:23 第136阶段AI池切换稳定性归因
++
++### 是否是重要突破版本
++
++- 判断：是，否定性突破。
++- 原因：本阶段证明“池级降低换手/强行稳定旧池”不适合作为下一条正式研究线；AI池方向应收窄为新增品种质量审计，而不是继续慢更新或硬稳定。
++
++### 本次版本改动内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage136_ai_pool_switch_stability.py`
++- 新增归因产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_report_stage136_ai_pool_switch_stability_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_summary_stage136_ai_pool_switch_stability_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_signal_period_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_transition_events_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_transition_type_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_product_transition_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_turnover_bucket_summary_stage136_ai_pool_switch_stability_v1.csv`
++- 同步`memory.md`记录第136阶段结论。
++
++### 新增参数
++
++- 无。
++
++### 修改参数
++
++- 无。
++
++### 删除参数
++
++- 无。
++
++### 新增回测结果
++
++- 无。
++- 本阶段没有运行新策略回测，只做Stage78 AI池切换归因。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 无新增回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 无新增回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 无新增回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 无新增回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 无新增回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 无新增回测，沿用Stage78正式基准：`42.1053%`。
++
++### 稳态AI切换结果
++
++| 指标 | 数值 |
++| --- | ---: |
++| 稳态信号期数量 | `49` |
++| 信号期总净损益 | `3,084,550` |
++| 新增品种贡献 | `1,573,730` |
++| 保留品种贡献 | `1,547,965` |
++| 剔除品种后续贡献 | `-37,145` |
++| 平均每期新增品种数 | `2.80` |
++| 平均Jaccard稳定度 | `0.5355` |
++
++### 换手桶表现
++
++| 换手桶 | 信号期数量 | 平均新增数 | 平均Jaccard | 总净损益 | 平均每期净损益 | 新增品种贡献 | 保留品种贡献 | 剔除品种后续贡献 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
++| `low_1_2_adds` | `18` | `1.7778` | `0.6727` | `58,230` | `3,235` | `370,030` | `-217,000` | `-94,800` |
++| `normal_3_adds` | `20` | `3.0000` | `0.5000` | `1,003,725` | `50,186` | `193,250` | `866,220` | `-55,745` |
++| `high_4_plus_adds` | `11` | `4.0909` | `0.3756` | `2,022,595` | `183,872` | `1,010,450` | `898,745` | `113,400` |
++
++### 关键归因结论
++
++- 池级“降低换手/强行稳定”暂时停止，不建议作为正式研究线。
++- 新增品种贡献`1,573,730`，保留品种贡献`1,547,965`，新增并不是纯噪声。
++- 高换手桶`high_4_plus_adds`总净损益`2,022,595`，明显高于低换手桶，说明强行稳定旧池可能伤害趋势响应。
++- `jaccard_similarity`与信号期净损益相关性约`-0.3419`，不能用“更稳定=更好”作为一阶假设。
++- 新增品种贡献与信号期净损益相关性约`0.7485`。
++- 不能反向过拟合成“高换手越高越好”，相关性只是描述，不是可交易因果。
++
++### 验证
++
++- 已完成语法检查：
++  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage136_ai_pool_switch_stability.py`
++- 已完成Stage136切换稳定性归因：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage136_ai_pool_switch_stability.py`
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：按自然`eval_date`信号期做归因，不按结果挑月份，不改TopN和规则。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：Stage133否定慢更新后，需要判断AI池切换本身是不是噪声。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果是停止池级稳定规则，没有新增策略自由度。
++
++### 运行后继续价值反思
++
++- 判断：池级稳定方向否；AI池新增质量审计方向是。
++- 原因：池级稳定证据与收益方向相反，但新增品种质量、成交和候选漏斗仍可能存在可解释风险。
++
++### 后续规划和TODO
++
++- 不做全局慢更新、旧池强制保留、新增品种冷却。
++- 如果继续AI池方向，做新增品种质量审计，重点看新增品种的分数跳变、成交量、相关性、候选漏斗和滑点。
++
++## 2026-04-25 18:44 第137阶段卫星品种原则审计
++
++### 是否是重要突破版本
++
++- 是。
++- 这是防过拟合边界突破，不是收益突破：`fu.SHFE`通过名字无关结构审计，但卫星原则只能作为候选生成器，不能升级为自动交易规则。
++
++### 本次版本改动内容
++
++- 新增卫星品种原则审计脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage137_satellite_principle_audit.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_report_stage137_satellite_principle_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_summary_stage137_satellite_principle_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_name_blind_structural_rank_stage137_satellite_principle_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_product_evidence_stage137_satellite_principle_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_satellite_candidates_stage137_satellite_principle_audit_v1.csv`
++- 同步`memory.md`记录第137阶段结论。
++- 本阶段不修改Stage78正式策略，不新增交易规则，不跑新策略回测。
++
++### 新增参数
++
++- 无新增交易参数。
++- 新增审计口径：
++  - 名字无关结构分数：流动性、单手保证金可承受性、60日趋势效率、60日波动、60日区间、数据覆盖度的分位均值。
++  - 结构预筛：沿用全市场结构预筛结果。
++  - 事后审计字段：未来60日净损益、Stage78全周期品种贡献、Stage136切换归因贡献。
++
++### 修改参数
++
++- 无。
++
++### 删除参数
++
++- 无。
++
++### 新增回测结果
++
++- 无。
++- 本阶段没有运行新策略回测，只做Stage78卫星品种原则审计。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 无新增回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 无新增回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 无新增回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 无新增回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 无新增回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 无新增回测，沿用Stage78正式基准：`42.1053%`。
++
++### 卫星原则审计结果
++
++- 卫星原则判定：`PARTIAL_PASS_CANDIDATE_GENERATOR_NOT_TRADE_RULE`。
++- 含义：结构卫星原则能作为候选生成器，但不能作为自动交易规则。
++- `fu.SHFE`不是纯粹事后指定：名字无关结构排名第`2`，结构分数`0.7734`，结构预筛通过。
++- 但原则不只选出`fu.SHFE`，还会选出`UR.CZCE`、`pg.DCE`、`eb.DCE`、`sn.SHFE`等候选；最终只采用`fu`仍含历史经验成分。
++- 更准确定位：`fu`是Stage78冻结版里的结构性工程例外，不是可无限推广的普适品种规律。
++
++### `fu.SHFE`证据
++
++| 指标 | 数值 |
++| --- | ---: |
++| 名字无关结构排名 | `2` |
++| 名字无关结构分数 | `0.7734` |
++| 结构预筛 | `1` |
++| 近期中位成交量 | `446,932` |
++| 单手估算保证金 | `4,186` |
++| 60日趋势效率中位数 | `0.0996` |
++| 60日波动中位数 | `0.1640` |
++| 全市场AI平均概率排名 | `46` |
++| AI Top5频率 | `10.00%` |
++| 未来60日审计总净损益 | `122,040` |
++| Stage78全周期品种贡献 | `414,710` |
++| Stage136切换归因贡献 | `416,350` |
++
++### 名字无关结构候选
++
++| 品种 | 结构排名 | 结构分数 | 未来60日审计总净损益 | Stage78全周期品种贡献 |
++| --- | ---: | ---: | ---: | ---: |
++| `UR.CZCE` | `1` | `0.8047` | `-56,440` | `0` |
++| `fu.SHFE` | `2` | `0.7734` | `122,040` | `414,710` |
++| `pg.DCE` | `3` | `0.6979` | `-21,800` | `0` |
++| `eb.DCE` | `4` | `0.6875` | `3,780` | `0` |
++| `sn.SHFE` | `8` | `0.6354` | `-6,410` | `0` |
++
++### 判断
++
++- `fu`通过名字无关结构审计，因此不是完全凭品种名硬塞进正式版。
++- 卫星原则只能证明“候选池合理”，不能证明“只选`fu`且给`fu`特殊风险状态处理”是普适规则。
++- Stage78可以继续冻结保留`fu`，但后续不应继续优化`fu`专属逻辑。
++- 如果继续卫星方向，必须先做影子审计：用结构候选池观察，不直接交易，不扩大正式池。
++
++### 验证
++
++- 已完成语法检查：
++  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage137_satellite_principle_audit.py`
++- 已完成Stage137卫星原则审计：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage137_satellite_principle_audit.py`
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：目标是审计原则边界，特征不含品种名和未来收益，不调交易参数。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：需要判断`fu`到底是结构性例外还是单品种过拟合，否则后续容易围绕品种名打补丁。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结论把卫星原则降级为候选生成器，并明确禁止继续`fu`专属补丁，没有增加策略自由度。
++
++### 运行后继续价值反思
++
++- 判断：有限继续。
++- 原因：正式版保留Stage78冻结逻辑有价值，但卫星扩展只能作为影子审计，不应直接进入交易规则。
++
++### 后续规划和TODO
++
++- 不继续做`fu`专属阈值、专属风险状态、专属开关。
++- 若继续卫星方向，先做结构候选影子组合复盘，观察`UR/pg/eb/sn/fu`是否有跨周期稳定性。
++- 正式研究仍以Stage78准实盘复盘、AI新增品种质量审计、40万资金约束为主线。
++
++## 2026-04-25 18:55 第138阶段结构卫星影子复盘
++
++### 是否是重要突破版本
++
++- 是。
++- 这是方向收敛版本：确认“结构卫星原则”当前依赖`fu`，不具备正式扩池的普适性。
++
++### 本次版本改动内容
++
++- 新增结构卫星影子复盘脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage138_satellite_shadow_replay.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_report_stage138_satellite_shadow_replay_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_summary_stage138_satellite_shadow_replay_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_label_aggregate_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_monthly_label_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_product_label_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_summary_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_yearly_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_product_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_eligibility_stage138_satellite_shadow_replay_v1.csv`
++- 同步`memory.md`记录第138阶段结论。
++- 本阶段不修改Stage78正式策略，不新增交易规则。
++
++### 新增参数
++
++- 无新增交易参数。
++- 新增审计分组：
++  - `all_full_market_reference`
++  - `ai_top8_all_products_reference`
++  - `structural_candidates_all`
++  - `structural_candidates_without_fu`
++  - `structural_candidates_ai_top8`
++  - `structural_candidates_ai_top12`
++  - `fu_only_diagnostic`
++- 新增影子开仓过滤分组：
++  - `baseline_all_products`
++  - `structural_candidates_all`
++  - `structural_candidates_without_fu`
++  - `structural_candidates_ai_top8`
++  - `structural_candidates_ai_top12`
++  - `fu_only_diagnostic`
++
++### 修改参数
++
++- 无。
++
++### 删除参数
++
++- 无。
++
++### 新增回测结果
++
++- 无新增正式vn.py回测。
++- 新增影子复盘结果：固定Stage137结构候选的未来60日标签审计，以及全市场冻结持仓路径开仓过滤影子复盘。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`281,200`
++  - `structural_candidates_all`：`256,600`
++  - `structural_candidates_without_fu`：`214,400`
++  - `baseline_all_products`：`113,455`
++
++### 总收益
++
++- 无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`16.9668%`
++  - `structural_candidates_all`：`6.7343%`
++  - `structural_candidates_without_fu`：`-10.8190%`
++  - `baseline_all_products`：`-52.8077%`
++
++### 最大回撤
++
++- 无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`-8.7761%`
++  - `structural_candidates_all`：`-19.1409%`
++  - `structural_candidates_without_fu`：`-23.3136%`
++  - `baseline_all_products`：`-61.8459%`
++
++### Sharpe
++
++- 无新增正式回测，沿用Stage78正式基准：`1.2919`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`0.4620`
++  - `structural_candidates_all`：`0.1765`
++  - `structural_candidates_without_fu`：`-0.1663`
++  - `baseline_all_products`：`-0.1332`
++
++### 总滑点
++
++- 无新增正式回测，沿用Stage78正式基准：`260,110`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`2,030`
++  - `structural_candidates_all`：`7,030`
++  - `structural_candidates_without_fu`：`5,030`
++  - `baseline_all_products`：`60,830`
++
++### 总交易次数
++
++- 无新增正式回测，沿用Stage78正式基准：`779`。
++- 影子复盘诊断：
++  - `fu_only_diagnostic`：`50`
++  - `structural_candidates_all`：`158`
++  - `structural_candidates_without_fu`：`111`
++  - `baseline_all_products`：`1,109`
++
++### 胜率
++
++- 无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++- 影子复盘未重新计算逐笔胜率，因为它是冻结持仓路径开仓过滤审计，不是可执行策略回测。
++
++### 第138阶段判定
++
++- `FU_DEPENDENT_NOT_GENERAL_KEEP_STAGE78_FROZEN`
++- 含义：结构卫星候选的正向证据主要依赖`fu`，当前不能推广为正式卫星扩池原则。
++
++### 固定结构候选
++
++| 品种 | 结构排名 | 结构分数 | 未来60日标签总净损益 | Stage78全周期贡献 |
++| --- | ---: | ---: | ---: | ---: |
++| `UR.CZCE` | `1` | `0.8047` | `-56,440` | `0` |
++| `fu.SHFE` | `2` | `0.7734` | `122,040` | `414,710` |
++| `pg.DCE` | `3` | `0.6979` | `-21,800` | `0` |
++| `eb.DCE` | `4` | `0.6875` | `3,780` | `0` |
++| `sn.SHFE` | `8` | `0.6354` | `-6,410` | `0` |
++
++### 标签聚合审计
++
++| 分组 | 未来60日标签总净损益 | 正收益期占比 | 最差期 | 平均入选数 |
++| --- | ---: | ---: | ---: | ---: |
++| `fu_only_diagnostic` | `122,040` | `54.00%` | `-14,200` | `1.00` |
++| `structural_candidates_all` | `41,170` | `42.00%` | `-26,775` | `5.00` |
++| `structural_candidates_without_fu` | `-80,870` | `38.00%` | `-22,365` | `4.00` |
++| `structural_candidates_ai_top8` | `-28,000` | `8.00%` | `-12,570` | `0.76` |
++| `structural_candidates_ai_top12` | `-45,750` | `6.00%` | `-12,570` | `1.00` |
++
++### 影子开仓过滤结果
++
++| 分组 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 交易次数 | 滑点 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: |
++| `fu_only_diagnostic` | `281,200` | `16.9668%` | `-8.7761%` | `0.4620` | `50` | `2,030` |
++| `structural_candidates_all` | `256,600` | `6.7343%` | `-19.1409%` | `0.1765` | `158` | `7,030` |
++| `structural_candidates_ai_top8` | `232,540` | `-3.2736%` | `-4.3176%` | `-0.2927` | `11` | `430` |
++| `structural_candidates_ai_top12` | `221,990` | `-7.6619%` | `-8.6311%` | `-0.5683` | `19` | `930` |
++| `structural_candidates_without_fu` | `214,400` | `-10.8190%` | `-23.3136%` | `-0.1663` | `111` | `5,030` |
++| `baseline_all_products` | `113,455` | `-52.8077%` | `-61.8459%` | `-0.1332` | `1,109` | `60,830` |
++
++### 关键判断
++
++- 结构候选全体正收益`41,170`，但`fu_only_diagnostic`单独贡献`122,040`，剔除`fu`后变成`-80,870`。
++- 这说明卫星原则目前不是普适原则，而是`fu`这个冻结例外贡献明显。
++- 全市场影子过滤相对`baseline_all_products`改善，主要是减少大量差品种交易和滑点，不等于结构候选具备正式交易质量。
++- 正式策略继续使用Stage78冻结版，不扩大到`UR/pg/eb/sn`。
++
++### 验证
++
++- 已完成语法检查：
++  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage138_satellite_shadow_replay.py`
++- 已完成Stage138影子复盘：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage138_satellite_shadow_replay.py`
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：候选来自Stage137固定名字无关结构审计，诊断组在运行前固定，不按结果调阈值或增删品种。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：需要确认卫星原则是否离开`fu`仍成立，避免继续沿单品种经验扩张。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果是否定扩池，没有把`UR/pg/eb/sn`包装成新规则，也没有新增策略自由度。
++
++### 运行后继续价值反思
++
++- 判断：卫星扩池方向否；影子监控方向有限继续。
++- 原因：正式扩池证据不足，但保留影子月报可监控结构候选是否未来持续改善。
++
++### 后续规划和TODO
++
++- 停止`UR/pg/eb/sn`进入正式池的研究。
++- 不继续做`fu`专属优化，Stage78冻结保留即可。
++- 后续优先回到Stage78准实盘复盘、AI新增品种质量审计、40万资金约束和执行成本审计。
++
++## 2026-04-25 19:03 第139阶段AI新增品种质量审计
++
++### 是否是重要突破版本
++
++- 是。
++- 这是方向边界突破：确认AI新增品种确实有贡献，但贡献集中度高，暂时不能规则化接入正式版。
++
++### 本次版本改动内容
++
++- 新增AI新增品种质量审计脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_report_stage139_ai_added_product_quality_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_summary_stage139_ai_added_product_quality_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_enriched_events_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_transition_type_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_bucket_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_product_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_signal_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_tail_events_stage139_ai_added_product_quality_audit_v1.csv`
++- 同步`memory.md`记录第139阶段结论。
++- 本阶段不修改Stage78正式策略，不提出阈值，不做A/B接入，因此不触发`version-ab-experiment`。
++
++### 新增参数
++
++- 无新增交易参数。
++- 新增审计分组：
++  - `transition_type`
++  - `rank_bucket`
++  - `candidate_bucket`
++  - `opened_bucket`
++  - `pnl_bucket`
++  - `score_type_bucket`
++- 新增固定诊断桶：
++  - `rank_1_3`
++  - `rank_4_6`
++  - `rank_7_9`
++  - `no_candidate`
++  - `one_candidate`
++  - `two_plus_candidates`
++  - `opened`
++  - `not_opened`
++
++### 修改参数
++
++- 无。
++
++### 删除参数
++
++- 无。
++
++### 新增回测结果
++
++- 无新增正式vn.py回测。
++- 新增Stage78月度AI池新增品种质量审计。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第139阶段判定
++
++- `VALUABLE_BUT_CONCENTRATED_SHADOW_ONLY`
++- 含义：AI新增方向有贡献，但集中度偏高，只能继续影子审计，不能直接转成新增品种过滤规则。
++
++### 切换类型对照
++
++| 类型 | 事件数 | 品种数 | 总贡献 | 正收益事件率 | 开仓率 | 交易次数 | 滑点 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
++| `added` | `137` | `18` | `1,573,730` | `18.9781%` | `41.6058%` | `123` | `60,160` |
++| `retained` | `304` | `19` | `1,547,965` | `19.7368%` | `40.7895%` | `293` | `121,790` |
++| `dropped` | `137` | `18` | `-37,145` | `2.1898%` | `0.0000%` | `21` | `11,220` |
++
++### 新增贡献集中度
++
++| 指标 | 数值 |
++| --- | ---: |
++| 新增稳态总贡献 | `1,573,730` |
++| 新增事件数 | `137` |
++| 新增品种数 | `18` |
++| 新增正收益事件率 | `18.9781%` |
++| 新增零贡献事件率 | `58.3942%` |
++| 新增负收益事件率 | `22.6277%` |
++| 第一大正贡献品种 | `jm.DCE` |
++| `jm.DCE`贡献 | `908,580` |
++| `jm.DCE`占新增总贡献 | `57.7342%` |
++| Top3正贡献占新增总贡献 | `80.9878%` |
++
++### 新增品种贡献排行
++
++| 品种 | 事件数 | 总贡献 | 正收益事件率 | 开仓率 | 平均当前排名 | 交易次数 | 滑点 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
++| `jm.DCE` | `9` | `908,580` | `44.4444%` | `66.6667%` | `5.6667` | `13` | `8,100` |
++| `OI.CZCE` | `10` | `233,490` | `30.0000%` | `50.0000%` | `5.7000` | `9` | `1,630` |
++| `SA.CZCE` | `9` | `132,460` | `11.1111%` | `44.4444%` | `5.6667` | `8` | `13,960` |
++| `SH.CZCE` | `7` | `87,690` | `14.2857%` | `28.5714%` | `6.2857` | `3` | `840` |
++| `hc.SHFE` | `8` | `63,220` | `25.0000%` | `25.0000%` | `5.8750` | `6` | `2,510` |
++| `MA.CZCE` | `7` | `-65,250` | `0.0000%` | `57.1429%` | `5.7143` | `9` | `6,730` |
++
++### 新增品种分组审计
++
++| 分组 | 总贡献 | 正收益事件率 | 开仓率 | 备注 |
++| --- | ---: | ---: | ---: | --- |
++| `rank_7_9` | `1,081,010` | `22.4490%` | `48.9796%` | 低排名新增贡献反而最大，不能做简单高分阈值 |
++| `rank_4_6` | `377,780` | `19.0476%` | `38.0952%` | 中段排名有贡献 |
++| `rank_1_3` | `114,940` | `12.0000%` | `36.0000%` | 高排名不是新增收益主来源 |
++| `one_candidate` | `1,647,420` | `32.3077%` | `60.0000%` | 单候选触发较强 |
++| `two_plus_candidates` | `-73,690` | `23.8095%` | `85.7143%` | 多候选并不更好 |
++| `opened` | `1,573,730` | `45.6140%` | `100.0000%` | 贡献来自真实开仓事件 |
++
++### 关键判断
++
++- Stage136“新增品种贡献大”成立。
++- 但新增贡献不是稳定逐事件胜率模型，而是少数真实开仓捕捉到大趋势。
++- `jm.DCE`单品种贡献占新增总贡献`57.7342%`，Top3占`80.9878%`，规则化风险很高。
++- 当前不能做新增品种排名阈值、分数阈值、候选数阈值过滤，否则大概率会过拟合。
++- 后续AI方向应做影子预警/归因看板，不直接接正式策略。
++
++### 验证
++
++- 第一次运行失败：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py`
++  - 失败原因：`added_products`字段与Stage136信号期表已有字段重名。
++- 已修复字段名为`audited_added_products`。
++- 已完成语法检查：
++  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py`
++- 已完成Stage139审计：
++  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py`
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：分组只使用运行前可见字段，不按收益倒推阈值。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：需要确认新增品种贡献是否可转化为稳健规则。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果没有产生正式规则，反而将AI新增方向限制为影子审计。
++
++### 运行后继续价值反思
++
++- 判断：有限继续。
++- 原因：新增方向有贡献，但集中度高，适合做监控和归因，不适合直接规则化。
++
++### 后续规划和TODO
++
++- 不做新增品种排名阈值、分数阈值、候选数阈值过滤规则。
++- 若继续AI方向，做Stage78准实盘AI新增品种影子预警看板。
++- 同时推进40万资金约束和执行成本审计，优先服务正式版稳定运行。
++
++## 2026-04-25 19:19 第140阶段：全市场品种适配度审计
++
++### 改动时间点
++
++- `2026-04-25 19:19`
++
++### 是否是重要突破版本
++
++- 判断：否，属于重要审计和决策约束版本，不是正式策略突破版本。
++- 原因：本阶段没有接入新交易规则，也没有改变Stage78正式基准；价值在于把“肉眼18品种、fu卫星、全市场候选、AI适配度、样本外标签、相关性”统一到一个可复验框架里，避免继续凭单品种结果扩池。
++
++### 新增内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage140_full_market_product_fit_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_product_scores_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_layer_summary_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_origin_summary_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_top_candidates_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_summary_stage140_full_market_product_fit_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_report_stage140_full_market_product_fit_audit_v1.md`
++
++### 新增的参数
++
++- 审计分，不是交易参数：
++  - `audit_score = 0.40 * structure_score + 0.25 * mechanism_score + 0.20 * oos_evidence_score + 0.15 * diversification_score`
++  - `structure_score = 0.45 * trend_structure_score + 0.35 * liquidity_score + 0.20 * capital_friendliness_score`
++  - `core_candidate`约束：结构分、机制分、样本外证据分同时较高，并且未来60日聚合标签不能为负。
++  - `satellite_candidate`约束：结构分较好，机制或样本外证据有一项较好，并且有正的样本外标签、Stage78正贡献或fu卫星身份支撑。
++
++### 修改的参数
++
++- 无正式策略参数修改。
++- 无Stage78交易池、AI池、风控、仓位、止损止盈参数修改。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无正式回测，只有全市场审计结果。
++- 审计覆盖：
++  - 全市场品种数：`50`
++  - 预测样本数：`2,500`
++  - 市场日线样本数：`76,250`
++  - Stage78原始宇宙品种数：`19`
++- 分层结果：
++  - `core_candidate`：`0`
++  - `satellite_candidate`：`7`
++  - `watchlist`：`15`
++  - `reject`：`28`
++- 卫星候选：
++  - `SA.CZCE`
++  - `FG.CZCE`
++  - `CF.CZCE`
++  - `OI.CZCE`
++  - `fu.SHFE`
++  - `jm.DCE`
++  - `eb.DCE`
++- 来源组结果：
++  - `manual_static18`：`18`个品种，`5`个进入卫星候选，未来60日标签合计`45,910`，Stage78实际贡献`3,985,380`
++  - `fu_satellite`：`1`个品种，进入卫星候选，未来60日标签合计`122,040`，Stage78实际贡献`414,710`
++  - `full_market_other_eligible`：`31`个品种，只有`eb.DCE`进入卫星候选，未来60日标签合计`-578,315`
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第140阶段判定
++
++- `AUDIT_ONLY_STAGE78_REMAINS_FROZEN`
++- 含义：全市场可以用AI/统计学找“更适合策略机制的品种”，但当前审计没有证明存在可以直接替换或扩展Stage78的全市场新品种池。
++- 肉眼18品种不是随便选的：18个里有`5`个进入卫星候选，Stage78实际贡献集中在原始池；这说明肉眼经验包含有效默会知识。
++- 全市场新增部分证据弱：31个非Stage78合格品种中只有`eb.DCE`进入卫星候选，不能据此正式扩池。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段预先固定结构分、机制分、样本外证据分、相关性分，没有按历史收益TopN直接生成交易池。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：需要验证原始18品种和全市场候选的结构适配差异，这是资产池质量问题，不是普通参数微调。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果没有被包装成正式规则，反而得出“核心候选为0、非Stage78只有eb一个卫星候选”的克制结论。
++
++### 运行后继续价值反思
++
++- 判断：有限继续。
++- 原因：全市场扩池不能直接继续推进正式化；但`eb.DCE`、`sn.SHFE`、`UR.CZCE`等可以做影子观察，且Stage78原始池的准实盘复盘仍有价值。
++
++### 后续规划和TODO
++
++- 不直接替换或扩大Stage78正式品种池。
++- 下一步若继续此方向，只做Stage141影子候选观察，不做正式A/B接入。
++- 继续维护Stage78正式冻结基准，优先做准实盘复盘、执行成本、池子低频更新节奏和40万资金约束审计。
++- 禁止把`eb.DCE`或其他单品种候选写成特例规则。
++
++## 2026-04-25 19:31 第141阶段：盲选滚动品种池标签级A/B验证
++
++### 改动时间点
++
++- `2026-04-25 19:31`
++
++### 是否是重要突破版本
++
++- 判断：是，属于重要否定性突破。
++- 原因：本阶段直接检验“原始18品种是否只是肉眼过拟合”的核心问题。结果显示原始Stage78品种池不是全市场随机幸运池，盲选AI Top19、简单趋势Top19、Stage78+AI额外5个卫星都没有超过Stage78标签级基准。
++
++### A/B技能触发记录
++
++- 已读取并遵循`skills/version-ab-experiment/SKILL.md`。
++- 触发原因：本阶段验证的是可能影响正式策略的品种池选择方法，需要与Stage78正式基准做A/B/C式对照。
++- 当前基准：
++  - `A = official_stage78_defensive_v1 / A_stage78_static19`
++- 实验臂：
++  - `B = B_blind_ai_top19`
++  - `B2 = B2_blind_simple_top19`
++  - `C = C_stage78_plus_ai_extra5`
++- 本阶段只跑最小有效标签级验证，不直接做真实组合回测。
++
++### 新增内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage141_blind_pool_walkforward_validation.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_report_stage141_blind_pool_walkforward_validation_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_summary_stage141_blind_pool_walkforward_validation_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_arm_summary_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_monthly_selection_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_product_contribution_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_random_distribution_stage141_blind_pool_walkforward_validation_v1.csv`
++
++### 新增的参数
++
++- 标签级验证参数，不是正式交易参数：
++  - `POOL_SIZE = 19`
++  - `HYBRID_EXTRA_SIZE = 5`
++  - `RANDOM_TRIALS = 300`
++  - `RANDOM_SEED = 20260425`
++- 通过门槛：
++  - 候选臂必须超过Stage78标签级总贡献。
++  - 不得明显恶化弱窗口。
++  - 正收益月份占比不得明显低于Stage78。
++  - 必须超过同规模随机池75分位。
++  - 正贡献不能过度集中于单一品种。
++
++### 修改的参数
++
++- 无正式策略参数修改。
++- 无Stage78正式交易池修改。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无正式组合回测；新增的是全市场walk-forward标签级A/B验证。
++- 标签定义：
++  - 使用每个评估月之后60日产品净贡献`future_net_pnl_60d`。
++  - 每个月只用当期可见AI概率或简单趋势分选下一期池子。
++- 标签级结果：
++
++| 实验臂 | 池大小 | 50个月总标签贡献 | 相对Stage78 | 正收益月份占比 | 最差月份 | Sharpe-like | 决策 |
++| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
++| `A_stage78_static19` | `19` | `167,950` | `0` | `50.0000%` | `-65,670` | `0.4381` | 基准 |
++| `B2_blind_simple_top19` | `19` | `162,460` | `-5,490` | `58.0000%` | `-36,870` | `0.5731` | 未超过Stage78，拒绝正式化 |
++| `C_stage78_plus_ai_extra5` | `24` | `100,900` | `-67,050` | `54.0000%` | `-65,670` | `0.2762` | 未超过Stage78，拒绝正式化 |
++| `B_blind_ai_top19` | `19` | `-55,235` | `-223,185` | `36.0000%` | `-31,230` | `-0.2094` | 未超过Stage78，拒绝正式化 |
++
++### 随机池对照
++
++- 同规模随机池`300`次：
++  - 19品种随机池中位数：`-145,345`
++  - 19品种随机池75分位：`-71,615`
++  - 19品种随机池90分位：`4,245.5`
++- 结论：
++  - Stage78原始19品种显著强于同规模随机池。
++  - 肉眼18品种不是“证明最优”，但也不是普通随机幸存者组合。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第141阶段判定
++
++- `NO_PROMOTION_KEEP_STAGE78`
++- 含义：
++  - 没有任何盲选品种池进入`candidate_for_real_backtest`。
++  - 盲选AI Top19不是更好的池子，标签级总贡献为负。
++  - 简单趋势Top19接近Stage78，且路径更平滑，但总贡献仍低于Stage78，只能作为观察样本，不能正式化。
++  - Stage78+额外AI卫星反而降低标签贡献，说明简单扩池会稀释质量。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：实验臂、池大小、随机次数和通过门槛在运行前固定，没有按结果调TopN、调阈值或加单品种黑名单。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：这是检验原始18品种是否过拟合的关键问题，必须用盲选滚动对照而不是肉眼争论。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果没有被强行解释为新规则；盲选池失败即停止，不继续通过阈值救模型。
++
++### 运行后继续价值反思
++
++- 判断：正式扩池方向否；观察方向有限继续。
++- 原因：标签级A/B没有给出真实回测候选。后续不应继续“全市场替换18品种”的正式化，但可保留B2作为长期观察指标。
++
++### 后续规划和TODO
++
++- 不推进全市场盲选Top19正式回测。
++- 不推进Stage78+AI额外5卫星正式回测。
++- Stage78正式品种池继续冻结。
++- 后续优先做Stage78准实盘复盘、执行成本审计、40万资金约束和实盘监控体系。
++- 若继续全市场方向，只做观察型报告，不做接入正式策略。
++
++## 2026-04-25 19:41 第142阶段：Stage78准实盘监控阈值审计
++
++### 改动时间点
++
++- `2026-04-25 19:41`
++
++### 是否是重要突破版本
++
++- 判断：否，属于正式版运行监控基础设施版本。
++- 原因：本阶段不创造新收益，也不修改策略；价值在于为Stage78正式基准建立“什么是正常波动、什么是需要复盘”的准实盘边界。
++
++### A/B技能触发记录
++
++- 未触发`version-ab-experiment`。
++- 原因：本阶段是监控阈值审计，不是新策略版本，不改变入场、出场、仓位、风控或品种池。
++
++### 新增内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage142_stage78_live_monitor_guardrails.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_report_stage142_stage78_live_monitor_guardrails_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_summary_stage142_stage78_live_monitor_guardrails_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_thresholds_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_current_status_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_monthly_state_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_execution_cost_stage142_stage78_live_monitor_guardrails_v1.csv`
++
++### 新增的参数
++
++- 监控阈值分位，不是交易参数：
++  - 低值异常：`watch=10%分位`，`alert=5%分位`，`severe=1%分位`
++  - 高值异常：`watch=90%分位`，`alert=95%分位`，`severe=99%分位`
++  - 恒定策略约束标记为`constant_policy`，不作为风险异常。
++
++### 修改的参数
++
++- 无正式策略参数修改。
++- 无交易阈值修改。
++- 无Stage78正式配置修改。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测；新增的是Stage78既有正式回测产物的监控阈值审计。
++- 当前状态：
++  - 最新交易日：`2026-04-21`
++  - 全周期权益：`4,600,090`
++  - 当前回撤：`-5.3600%`，状态`normal`
++  - 20日净损益：`-144,080`，状态`alert`
++  - 63日净损益：`-10,425`，状态`normal`
++  - 最近入场后预计保证金占权益：`2.9431%`，状态`normal`
++- 阈值状态计数：
++  - `alert`：`1`
++  - `normal`：`10`
++  - `constant_policy`：`1`
++- 关键阈值：
++  - 20日净损益`watch=-95,647`，`alert=-127,455`，`severe=-202,655`
++  - 回撤`watch=-20.8521%`，`alert=-27.4809%`，`severe=-36.0870%`
++  - 20日单笔滑点`watch=720`，`alert=886.2222`，`severe=1,465.5556`
++  - 入场后预计保证金占权益`watch=57.9714%`，`alert=65.4744%`，`severe=83.4008%`
++- 最近12个月状态：
++  - 2026-04净损益`-73,120`
++  - 2026-04交易次数`3`
++  - 2026-04滑点`640`
++  - 2026-04月度回撤低点`-5.3600%`
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第142阶段判定
++
++- `MONITOR_ONLY_KEEP_STAGE78`
++- 含义：
++  - Stage78正式基准继续冻结。
++  - 当前不是回撤异常，当前不是滑点异常，当前不是保证金异常。
++  - 当前主要风险提示是20日净损益进入`alert`区间，应进入复盘观察，但不自动降仓、不自动停机。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段只做分布监控阈值，不改变策略，也不根据当前结果调整阈值。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：正式版本如果没有监控边界，后续容易把正常回撤误判成策略失效，或者把异常滑点误认为策略问题。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果只生成监控状态；20日净损益为`alert`也没有被用来新增交易规则。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：Stage78已经有可执行的准实盘观察表；后续可把这套监控转成日常复盘流程。
++
++### 后续规划和TODO
++
++- 不把监控阈值写入交易策略。
++- 下一步可做Stage78准实盘日报/周报模板，固定输出当前状态、异常项、候选复盘项。
++- 若继续研究策略，只在监控状态正常时推进；若20日净损益继续恶化到`severe`，优先复盘而不是继续开发新规则。
++
++## 2026-04-25 19:49 第143阶段：Stage78准实盘复盘包
++
++### 改动时间点
++
++- `2026-04-25 19:49`
++
++### 是否是重要突破版本
++
++- 判断：否，属于正式版运营复盘流程版本。
++- 原因：本阶段不改变策略，不增加收益来源；价值在于把Stage142的`alert`状态转成可执行复盘任务，避免短期亏损时凭感觉调参。
++
++### A/B技能触发记录
++
++- 未触发`version-ab-experiment`。
++- 原因：本阶段是复盘包和行动项生成，不是新策略版本，不改变Stage78正式基准。
++
++### 新增内容
++
++- 新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage143_stage78_live_review_pack.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_brief_stage143_stage78_live_review_pack_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_summary_stage143_stage78_live_review_pack_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_action_items_stage143_stage78_live_review_pack_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_recent_product_attribution_stage143_stage78_live_review_pack_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_recent_trade_summary_stage143_stage78_live_review_pack_v1.csv`
++
++### 新增的参数
++
++- 无交易参数。
++- 复盘口径：
++  - 最近`20`个交易日品种归因。
++  - 使用Stage142监控状态生成行动项。
++  - `alert`只触发复盘，不触发调参。
++
++### 修改的参数
++
++- 无正式策略参数修改。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测；新增的是Stage78当前复盘包。
++- 当前决策：
++  - `review_first_keep_stage78`
++- 当前状态：
++  - 最新交易日：`2026-04-21`
++  - 当前权益：`4,600,090`
++  - 当前回撤：`-5.3600%`
++  - 20日净损益：`-144,080`
++  - 20日交易次数：`6`
++  - 20日滑点：`1,220`
++  - 20日品种亏损合计：`-167,840`
++- 最近20日主要亏损来源：
++  - `MA.CZCE`：`-86,800`
++  - `OI.CZCE`：`-53,680`
++  - `SH.CZCE`：`-27,360`
++- 最近20日正贡献：
++  - `lh.DCE`：`23,760`
++- 复盘行动项：
++  - 复盘最近20个交易日的品种贡献、开平仓原因和是否存在集中亏损。
++  - 禁止为了修复20日亏损去调止损、调品种黑名单或新增单窗口补丁。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第143阶段判定
++
++- `REVIEW_FIRST_KEEP_STAGE78`
++- 含义：
++  - Stage78继续冻结。
++  - 当前不是策略修改时点，而是复盘时点。
++  - 当前20日亏损主要集中在`MA/OI/SH`，需要做交易级归因，不允许直接转化为品种黑名单。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段是运营复盘，不筛品种、不调阈值、不改策略。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：20日净损益处于`alert`，继续开发新规则之前应该先完成归因。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果只生成一个复盘行动项，没有创建任何交易规则。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：复盘包定位了`MA/OI/SH`为近期亏损来源，后续可以进入交易级复盘。
++
++### 后续规划和TODO
++
++- 不修改Stage78策略。
++- 下一步若继续，应做`MA/OI/SH`最近20日交易级复盘，看亏损是否来自正常止损、信号失效、换月、流动性或相关性。
++- 如果复盘显示只是正常趋势系统亏损，不做任何策略改动。
++- 如果复盘显示数据或执行异常，优先修复数据/执行，而不是调策略。
++
++## 2026-04-25 20:10 第144阶段：Stage78最近亏损单机制审计
++
++### 改动内容
++
++- 新增Stage144审计脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage144_recent_loss_mechanism_audit.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_report_stage144_recent_loss_mechanism_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_summary_stage144_recent_loss_mechanism_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_product_distribution_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_roundtrip_audit_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_entry_context_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_exit_reason_comparison_stage144_recent_loss_mechanism_audit_v1.csv`
++- 本阶段不是策略版本，不修改Stage78正式策略，不触发`skills/version-ab-experiment/SKILL.md`。
++- 本阶段目标：
++  - 把Stage143定位出的`MA/OI/SH`最近20日亏损继续拆成“窗口亏损”和“完整交易生命周期亏损”。
++  - 判断亏损是否来自执行成本、正常趋势试错、极端尾部单笔亏损或窗口利润回吐错觉。
++
++### 是否是重要突破版本
++
++- 否。
++- 原因：
++  - 不是可接入正式版本的新策略。
++  - 但这是重要的归因进展：确认最近20日亏损不能简单等价为策略失效，也不能直接转成品种黑名单或利润保护补丁。
++
++### 新增的参数
++
++- 无新增交易参数。
++- 新增审计口径：
++  - 最近20个交易日滚动窗口。
++  - 单品种历史20日滚动净损益分位。
++  - 最近平仓的完整生命周期净损益。
++  - 窗口内净损益与窗口前净损益拆分。
++  - 入场上下文：信号、手数、风险金额、预计保证金占用、组合回撤、同向相关性。
++
++### 修改的参数
++
++- 无。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测，只新增Stage78正式基准的审计结果。
++- 最近20日区间：
++  - `2026-03-24` 至 `2026-04-21`
++- 最近20日组合净损益：
++  - `-144,080`
++- 最近20日亏损品种数：
++  - `3`
++- 亏损品种：
++  - `MA.CZCE`：最近20日`-86,800`，历史20日滚动低分位`0.7304%`，完整生命周期`-86,800`，机制为`extreme_tail_failed_trade`。
++  - `OI.CZCE`：最近20日`-53,680`，历史20日滚动低分位`0.1992%`，完整生命周期`47,960`，窗口前已赚`101,640`，机制为`window_profit_giveback_not_failed_trade`。
++  - `SH.CZCE`：最近20日`-27,360`，历史20日滚动低分位`7.9208%`，完整生命周期`-27,360`，机制为`normal_or_moderate_failed_trade`。
++- 关键结论：
++  - `MA.CZCE`是真实极端尾部失败单，但单笔极端事件不足以支持单品种黑名单或止损补丁。
++  - `OI.CZCE`不是失败交易，而是完整盈利交易在最近窗口内发生利润回吐；这不能重新证明利润保护线有效，因为前序Stage128/132已显示利润保护会破坏后续恢复段持仓。
++  - `SH.CZCE`更像趋势系统正常试错成本，不构成独立优化理由。
++  - 三笔最近平仓均为多头止损，滑点相对亏损规模很小，当前证据不支持把问题归因为成交成本。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第144阶段判定
++
++- `AUDIT_ONLY_KEEP_STAGE78`
++- 含义：
++  - Stage78继续冻结。
++  - 当前亏损需要继续监控和复盘，但不应转化为交易规则修改。
++  - 如果后续继续做，应做“极端单笔亏损事件账本”和“完整生命周期 vs 滚动窗口”的准实盘监控，而不是调止损、调利润保护或黑名单。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段只做归因审计，不新增策略参数、不筛选品种、不补弱窗口。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：Stage143只定位了亏损来源，Stage144进一步确认亏损机制，能避免把窗口亏损误判成策略失效。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：审计结果没有生成任何交易规则，且明确禁止按`MA/OI/SH`做黑名单、重启利润保护或为了最近20日调止损。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：已确认最近亏损的三个机制不同：`MA`是真实极端尾部失败单，`OI`是盈利单窗口利润回吐，`SH`是普通试错成本；后续可以建设准实盘事件账本，而不是继续参数微调。
++
++### 后续规划和TODO
++
++- 不修改Stage78策略。
++- 建议下一步做“极端单笔亏损事件账本”：
++  - 统计全历史所有单笔生命周期亏损的尾部事件。
++  - 区分跳空/断崖、正常止损、利润回吐、换月和执行异常。
++  - 只做监控阈值，不写入交易逻辑。
++- 如果事件账本显示MA类尾部事件是系统性、跨品种、跨年份反复出现，再考虑组合层风险预算或准实盘告警；否则不做策略改动。
++
++## 2026-04-25 20:19 第145阶段：Stage78极端单笔亏损事件账本
++
++### 改动内容
++
++- 新增Stage145事件账本脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage145_extreme_loss_event_ledger.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_report_stage145_extreme_loss_event_ledger_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_summary_stage145_extreme_loss_event_ledger_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_ledger_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_tail_events_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_product_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_year_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_exit_reason_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_signal_summary_stage145_extreme_loss_event_ledger_v1.csv`
++- 本阶段不是策略版本，不修改Stage78正式策略，不触发`skills/version-ab-experiment/SKILL.md`。
++- 本阶段目标：
++  - 对Stage78全历史平仓事件做完整交易生命周期配对。
++  - 用全样本生命周期净损益分位识别极端尾部亏损。
++  - 验证Stage144发现的`MA.CZCE`极端亏损是否是系统性、反复性问题。
++
++### 是否是重要突破版本
++
++- 否。
++- 原因：
++  - 不是可接入正式版本的新交易规则。
++  - 但这是重要监控基建：它把“极端单笔亏损”从直觉判断变成全历史事件账本。
++
++### 新增的参数
++
++- 无新增交易参数。
++- 新增审计口径：
++  - 完整交易生命周期净损益。
++  - Bottom 1%、Bottom 5%、Bottom 10%生命周期亏损分位。
++  - 按品种、年份、退出原因、入场信号统计尾部事件。
++
++### 修改的参数
++
++- 无。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测，只新增Stage78正式基准的生命周期事件账本。
++- 全历史完整交易事件数：
++  - `384`
++- 亏损事件数：
++  - `228`
++- 生命周期净损益合计：
++  - `4,269,830`
++- 尾部阈值：
++  - Bottom 1%：`-81,288.8`
++  - Bottom 5%：`-42,555.25`
++  - Bottom 10%：`-31,815.0`
++- Bottom 5%尾部事件数：
++  - `19`
++- Bottom 1%尾部事件数：
++  - `3`
++- 最差完整生命周期事件：
++  - `ru.SHFE ru2201.SHFE Short 2021-09-24 -> 2021-09-27`，生命周期净损益`-145,550`，退出原因`short_base_stop`。
++- 多次进入Bottom 5%的品种：
++  - `fu.SHFE`：`5`次，最差`-89,200`。
++  - `lh.DCE`：`3`次，最差`-80,160`。
++  - `jm.DCE`：`3`次，最差`-73,530`。
++  - `ru.SHFE`：`2`次，最差`-145,550`。
++  - `SH.CZCE`：`2`次，最差`-101,520`。
++- `MA.CZCE`结论：
++  - 事件数`28`。
++  - 亏损事件数`20`。
++  - Bottom 5%次数`1`。
++  - Bottom 1%次数`0`。
++  - 最差事件为Stage144的`2026-04-07 -> 2026-04-08`，生命周期净损益`-86,800`。
++  - 判断：`MA.CZCE`不是反复尾部亏损源，单独黑名单没有证据。
++- 退出原因尾部：
++  - `long_prev2day_stop`：Bottom 5%尾部`12`次。
++  - `short_base_stop`：Bottom 5%尾部`2`次，含全历史最差事件。
++  - `short_prev2day_stop`：Bottom 5%尾部`2`次。
++  - `long_base_stop`：Bottom 5%尾部`2`次。
++- 入场信号尾部：
++  - `long_case1a`：Bottom 5%尾部`6`次。
++  - `long_case2`：Bottom 5%尾部`5`次。
++  - `short_case1a`：Bottom 5%尾部`4`次。
++  - `long_case3`：Bottom 5%尾部`2`次。
++  - `rollover_reopen`：Bottom 5%尾部`2`次。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第145阶段判定
++
++- `LEDGER_MONITOR_ONLY_KEEP_STAGE78`
++- 含义：
++  - Stage78继续冻结。
++  - 不对`MA.CZCE`做黑名单。
++  - 不基于尾部账本直接调止损或利润保护。
++  - 尾部风险应进入组合层监控，而不是品种特例。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段用全历史完整交易生命周期做账本，不围绕最近单笔亏损调参。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：Stage144只能说明MA是极端失败单，Stage145可以验证它是否具备跨年份、跨品种的系统性。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：结果没有生成黑名单、利润保护、止损微调或入场过滤，只形成监控账本。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：已经确认尾部亏损不是单一MA问题，而是跨品种的组合尾部风险；后续更应该研究组合层尾部监控，而不是微调单品种。
++
++### 后续规划和TODO
++
++- 不修改Stage78策略。
++- 下一步建议做“组合层尾部风险监控规则”：
++  - 只用于准实盘告警，不直接改变交易。
++  - 监控Bottom 5%生命周期亏损事件是否在短期内聚集。
++  - 监控是否出现同方向、同板块、同退出原因的尾部聚集。
++- 如果未来要研究风控，也应从组合层预算/告警开始，而不是单品种黑名单。
++
++## 2026-04-25 20:30 第146阶段：Stage78组合层尾部风险监控
++
++### 改动内容
++
++- 新增Stage146组合层尾部风险监控脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage146_portfolio_tail_risk_monitor.py`
++- 新增监控产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_report_stage146_portfolio_tail_risk_monitor_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_summary_stage146_portfolio_tail_risk_monitor_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_window_state_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_current_status_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_recent_tail_events_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_worst_windows_stage146_portfolio_tail_risk_monitor_v1.csv`
++- 本阶段不是策略版本，不修改Stage78正式策略，不触发`skills/version-ab-experiment/SKILL.md`。
++- 本阶段目标：
++  - 把Stage145全历史生命周期尾部账本转成20日/63日组合层监控。
++  - 识别尾部事件是否短期聚集、是否集中在同方向、同板块、同退出原因。
++  - 只形成准实盘告警，不形成交易规则。
++
++### 是否是重要突破版本
++
++- 否。
++- 原因：
++  - 不是可接入正式版本的新策略。
++  - 但这是正式版运维监控的重要补全：从“看单笔亏损”升级到“看组合尾部聚集”。
++
++### 新增的参数
++
++- 无新增交易参数。
++- 新增监控口径：
++  - 20日Bottom 5%尾部事件数。
++  - 20日尾部亏损绝对值合计。
++  - 63日Bottom 5%尾部事件数。
++  - 63日尾部亏损绝对值合计。
++  - 20日/63日主导方向、主导板块、主导退出原因。
++  - 阈值来自全历史监控分布的`p90/p95/p99`，只用于告警。
++
++### 修改的参数
++
++- 无。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测，只新增Stage78正式基准的尾部风险监控结果。
++- 最新日期：
++  - `2026-04-21`
++- 当前决策：
++  - `monitor_only_keep_stage78`
++- 当前状态计数：
++  - `normal`：`15`
++  - `watch`：`3`
++  - `alert`：`0`
++  - `severe`：`0`
++- 近20日：
++  - Bottom 5%尾部事件数：`1`
++  - 尾部亏损绝对值合计：`86,800`
++  - `tail20_loss_abs_sum`状态：`watch`
++  - 近20日尾部事件：`MA.CZCE MA605.CZCE Long 2026-04-07 -> 2026-04-08`，生命周期净损益`-86,800`
++- 近63日：
++  - Bottom 5%尾部事件数：`2`
++  - 尾部亏损绝对值合计：`131,350`
++  - 主导板块：`chemical`，占比`100%`
++  - 主导方向：`Long`，占比`100%`
++  - 主导退出原因：`long_base_stop`，占比`50%`
++  - 近63日尾部事件：
++    - `MA.CZCE MA605.CZCE Long 2026-04-07 -> 2026-04-08`，生命周期净损益`-86,800`
++    - `SH.CZCE SH605.CZCE Long 2026-03-13 -> 2026-03-18`，生命周期净损益`-44,550`
++- 当前watch项：
++  - `tail20_loss_abs_sum`
++  - `tail63_direction_cluster`
++  - `tail63_family_cluster`
++- 当前未进入alert/severe：
++  - `tail20_loss_abs_sum`最新`86,800`，alert阈值`101,520`，severe阈值`145,550`
++  - `tail63_loss_abs_sum`最新`131,350`，watch阈值`133,480`，alert阈值`225,710`，severe阈值`336,710`
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第146阶段判定
++
++- `MONITOR_ONLY_KEEP_STAGE78`
++- 含义：
++  - Stage78继续冻结。
++  - 当前只有watch，没有alert/severe。
++  - 近63日确实有化工类多头尾部事件聚集迹象，但历史分布不支持立即改策略。
++  - 尾部监控只能触发复盘，不直接触发交易规则。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段只把全历史尾部事件账本转成监控阈值，不改交易参数、不筛品种。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：Stage145已确认尾部亏损是组合层问题，需要转成准实盘可跟踪状态。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：当前watch状态没有被用于降低仓位、黑名单、止损调整或利润保护。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：监控已识别当前`chemical + Long`尾部聚集，但还没到alert/severe；这给后续复盘提供边界，而不是推动立即调参。
++
++### 后续规划和TODO
++
++- 不修改Stage78策略。
++- 下一步可以把Stage142、Stage143、Stage146合并成“Stage78准实盘周报”：
++  - 资金曲线/回撤状态。
++  - 20日净损益alert。
++  - 最近亏损品种贡献。
++  - 生命周期尾部事件聚集。
++  - 明确是否允许继续研究、是否需要暂停新研究。
++- 只有当尾部监控进入`alert/severe`，才进入人工复盘；仍不直接自动改策略。
++
++## 2026-04-25 20:51 第147阶段：Stage78准实盘周报
++
++### 改动内容
++
++- 新增Stage147准实盘周报脚本：
++  - `examples/portfolio_backtesting/build_qmt_roll_stage147_stage78_live_weekly_report.py`
++- 新增周报产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_report_stage147_stage78_live_weekly_report_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_summary_stage147_stage78_live_weekly_report_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_decision_table_stage147_stage78_live_weekly_report_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_status_matrix_stage147_stage78_live_weekly_report_v1.csv`
++- 本阶段不是策略版本，不修改Stage78正式策略，不触发`skills/version-ab-experiment/SKILL.md`。
++- 本阶段目标：
++  - 合并Stage142资金/风险监控、Stage143复盘包、Stage146组合尾部监控。
++  - 输出统一准实盘决策：是否继续运行、是否需要复盘、是否允许新策略研究。
++  - 明确禁止动作，避免单点亏损驱动参数微调。
++
++### 是否是重要突破版本
++
++- 否。
++- 原因：
++  - 不是新交易规则。
++  - 但这是正式版运维纪律的重要补全：把多个监控报告压缩成统一决策。
++
++### 新增的参数
++
++- 无新增交易参数。
++- 新增周报决策口径：
++  - 若存在`severe`：暂停新研究，先复盘。
++  - 若存在`alert`：Stage78继续运行，但只允许监控和归因研究。
++  - 若只有`watch`：Stage78继续运行，允许低风险研究。
++  - 若全部正常：允许进入A/B边界下的新研究。
++- 本阶段将`threshold_count_*`元指标标记为`info`，避免重复计算alert。
++
++### 修改的参数
++
++- 无。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测，只新增Stage78正式基准的准实盘周报。
++- 最新日期：
++  - `2026-04-21`
++- 当前总决策：
++  - `review_first_keep_stage78`
++- 运行许可：
++  - `keep_stage78_with_review`
++- 研究许可：
++  - `monitoring_and_attribution_only`
++- 当前状态计数：
++  - `severe=0`
++  - `alert=1`
++  - `watch=3`
++- 当前Stage142状态：
++  - `rolling_20d_net_pnl=-144,080`，状态`alert`
++  - 当前回撤`-5.3600%`，状态`normal`
++  - 预计保证金占用`2.9431%`，状态`normal`
++- 当前Stage143复盘：
++  - 最近20日主要亏损品种：`MA.CZCE`、`OI.CZCE`、`SH.CZCE`
++  - 结论：复盘优先，不调策略
++- 当前Stage146尾部风险：
++  - 近20日尾部事件数`1`
++  - 近63日尾部事件数`2`
++  - 近63日主导尾部板块`chemical`，占比`100%`
++  - `tail20_loss_abs_sum`为`watch`
++  - `tail63_direction_cluster`为`watch`
++  - `tail63_family_cluster`为`watch`
++- 周报禁止动作：
++  - 不做单品种黑名单。
++  - 不做止损补丁。
++  - 不重启利润保护。
++  - 不为最近20日亏损调参数。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第147阶段判定
++
++- `REVIEW_FIRST_KEEP_STAGE78`
++- 含义：
++  - Stage78继续冻结运行。
++  - 当前没有severe，不需要暂停Stage78。
++  - 当前有20日净损益alert和尾部watch，不允许继续参数型新策略研究。
++  - 后续只做监控、归因、周报，不做交易规则修改。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段只汇总已有监控，不新增参数、不筛品种、不新回测。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：多个监控报告分散，容易被单点数据牵引，需要统一成准实盘决策表。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：周报总决策仍然是复盘优先和Stage78冻结，没有生成任何交易动作。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：周报明确了当前边界：Stage78可继续运行，但新策略研究只限监控和归因，禁止参数微调。
++
++### 后续规划和TODO
++
++- 不修改Stage78策略。
++- 短期后续只做：
++  - 准实盘周报自动化。
++  - 当前`chemical + Long`尾部聚集复盘。
++  - 20日净损益alert的持续观察。
++- 暂停：
++  - 新止损、新利润保护、新品种黑名单、短窗口参数优化。
++- 如果后续状态回到normal，再考虑是否恢复全市场品种池或其他A/B研究。
++
++## 2026-04-25 21:16 第148阶段：Stage78实盘准入GO/NO-GO审计
++
++### 改动内容
++
++- 新增Stage148实盘准入审计脚本：
++  - `examples/portfolio_backtesting/build_qmt_roll_stage148_stage78_live_go_no_go_audit.py`
++- 新增审计产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_report_stage148_stage78_live_go_no_go_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_summary_stage148_stage78_live_go_no_go_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_gate_table_stage148_stage78_live_go_no_go_audit_v1.csv`
++- 本阶段不是策略版本，不修改Stage78正式策略，不触发`skills/version-ab-experiment/SKILL.md`。
++- 本阶段目标：
++  - 用现有正式版、walk-forward、流动性、40万本金、Stage147周报做实盘准入审计。
++  - 明确回答：现在能不能上真实资金。
++
++### 是否是重要突破版本
++
++- 是，属于实盘准入里程碑结论。
++- 原因：
++  - 不是策略收益突破，而是部署决策突破。
++  - 明确结论为`NO_GO_REAL_MONEY_SHADOW_ONLY`。
++
++### 新增的参数
++
++- 无新增交易参数。
++- 新增准入门槛：
++  - 正式版本冻结。
++  - 全周期回测质量。
++  - 252日滚动稳健性。
++  - 63日短窗口冷启动风险。
++  - 40万本金约束。
++  - 流动性与成交量占比。
++  - 当前准实盘健康状态。
++  - 真实执行演练。
++  - 实盘事故预案。
++
++### 修改的参数
++
++- 无。
++
++### 删除的参数
++
++- 无。
++
++### 新增的回测结果
++
++- 本阶段无新增正式回测，只新增实盘准入审计结果。
++- 最终结论：
++  - `NO_GO_REAL_MONEY_SHADOW_ONLY`
++- 是否可以现在上真实资金实盘：
++  - `否`
++- 允许的下一步：
++  - `shadow_or_simulated_trading_only`
++- 阻断项数量：
++  - `3`
++- 阻断项：
++  - 当前准实盘健康状态。
++  - 真实执行演练。
++  - 实盘事故预案。
++- 非阻断观察项：
++  - `63d`短窗口冷启动风险。
++- 已通过项：
++  - Stage78正式版本冻结。
++  - 全周期回测质量。
++  - 252日滚动稳健性。
++  - 40万本金约束。
++  - 流动性与成交量占比。
++- 关键证据：
++  - Stage147当前决策`review_first_keep_stage78`。
++  - 当前`alert=1`、`watch=3`。
++  - 最近20日净损益`-144,080`。
++  - 仓库未见真实柜台/模拟盘订单回报、成交回报、撤单、断线重连、换月执行闭环验收记录。
++  - 仓库未见可执行的实盘熔断、手工接管、数据异常停机、夜盘异常处理SOP。
++
++### 修改的回测结果
++
++- 无。
++
++### 删除的回测结果
++
++- 无。
++
++### 期末权益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`4,600,090`。
++
++### 总收益
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`2200.0450%`。
++
++### 最大回撤
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`-36.9907%`。
++
++### Sharpe
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`1.2919`。
++
++### 总滑点
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`260,110`。
++
++### 总交易次数
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`779`。
++
++### 胜率
++
++- 本阶段无新增正式回测，沿用Stage78正式基准：`42.1053%`。
++
++### 第148阶段判定
++
++- `NO_GO_REAL_MONEY_SHADOW_ONLY`
++- 含义：
++  - 当前不能直接上真实资金实盘。
++  - 只能进入影子盘或模拟盘。
++  - 不是因为Stage78历史表现不行，而是当前健康状态和实盘执行闭环没有过门槛。
++
++### 运行前过拟合反思
++
++- 判断：否。
++- 原因：本阶段做实盘准入门槛审计，不优化收益、不新增交易参数、不筛品种。
++
++### 运行前继续价值反思
++
++- 判断：是。
++- 原因：用户要求明确能否实盘，本阶段必须给出硬结论。
++
++### 运行后过拟合反思
++
++- 判断：否。
++- 原因：NO-GO结论没有被用于反推策略补丁，且明确禁止为通过准入去调参数。
++
++### 运行后继续价值反思
++
++- 判断：是。
++- 原因：已经得到里程碑结论；后续若继续，只应做影子盘/模拟盘执行闭环和实盘SOP，不应继续策略参数优化。
++
++### 后续规划和TODO
++
++- 不上真实资金。
++- 下一步只允许：
++  - 影子盘或模拟盘。
++  - 订单/成交/撤单/持仓/权益对账闭环验收。
++  - 实盘SOP：熔断、手工接管、数据异常停机、夜盘异常处理。
++  - 等20日净损益alert解除，并完成`chemical + Long`尾部聚集复盘。
++- 禁止：
++  - 为了通过准入调参数。
++  - 用黑名单、止损补丁、利润保护重启粉饰当前alert。
+diff --git a/memory.md b/memory.md
+index 5a6c0c71..2b0c6713 100644
+--- a/memory.md
++++ b/memory.md
+@@ -3033,3 +3033,899 @@
+ - 后续：
+   - 新研究默认先看`research_branch_decision_table.md`
+   - 更值得继续的方向：Stage78准实盘复盘、AI池切换稳定性/换手约束、40万本金自然容量
++
++### 119. 第135阶段Stage78准实盘复盘体系
++
++- 第135阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage135_stage78_live_review.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_report_stage135_stage78_live_review_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_summary_stage135_stage78_live_review_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_monthly_summary_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_yearly_summary_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_candidate_funnel_stage135_stage78_live_review_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage135_stage78_live_review_live_checklist_stage135_stage78_live_review_v1.csv`
++- 研究目标：
++  - 不修改Stage78策略、不新增参数、不做新回测优化
++  - 把Stage78正式基准的收益来源、风险来源、执行成本、候选漏斗、并发质量和日常检查项整合为准实盘复盘报告
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 年度复盘摘要：
++  - `2020`收益`122.1325%`
++  - `2021`收益`211.7295%`
++  - `2022`收益`19.1605%`
++  - `2023`收益`47.1962%`
++  - `2024`收益`19.8189%`
++  - `2025`收益`57.0800%`
++  - `2026`截至数据末端收益`0.6169%`
++- 核心发现：
++  - Stage78不是低回撤平滑曲线，收益和回撤都来自趋势暴露
++  - 高并发不是天然问题，`7+`并发样本历史总净利润`212,260`
++  - 简单砍最大持仓会破坏趋势系统收益来源
++  - 最差月度为`2024-06`，净损益`-170,760`
++  - 最大回撤段为`2021-05-12`到`2021-07-02`，谷底亏损`-463,930`
++  - 第一盈利品种为`jm.DCE`，全周期净利润`1,140,930`
++  - 最差品种为`MA.CZCE`，全周期净利润`-141,160`
++  - 候选开仓率约`33.55%`，总候选`1,070`，开仓`359`
++  - 全周期平均每笔滑点约`333.90`
++- 准实盘重点检查项：
++  - 每日检查权益回撤是否进入历史极端区
++  - 每周检查滚动亏损窗口是否来自趋势反转后的同方向暴露
++  - 每月检查利润来源是否仍来自趋势段，而不是被低质量换手稀释
++  - 每月检查滑点和成交是否偏离回测口径
++  - 盘后记录候选漏斗，观察AI池、相关性门控、资金约束是否异常收紧
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：只聚合Stage78既有产物，不新增交易规则、不搜索阈值、不按亏损品种做黑名单
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：输出的是准实盘复盘框架和风险检查清单，没有增加策略自由度
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：正式基准需要可持续复盘体系，否则后续优化容易变成凭局部亏损打补丁
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：报告明确了后续不应做简单并发硬砍、亏损品种黑名单或弱窗口补丁，而应优先看AI池切换稳定性、执行成本和资金约束
++- 后续：
++  - 若继续Stage78方向，优先研究“AI池切换稳定性/换手约束”
++  - 若继续资金方向，以Stage111作为40万部署候选对照
++  - 若继续降低并发，只能研究低质量增量仓过滤，不能做简单最大持仓上限
++
++### 120. 第136阶段AI池切换稳定性归因
++
++- 第136阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage136_ai_pool_switch_stability.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_report_stage136_ai_pool_switch_stability_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_summary_stage136_ai_pool_switch_stability_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_signal_period_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_transition_events_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_transition_type_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_product_transition_summary_stage136_ai_pool_switch_stability_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage136_ai_pool_switch_stability_turnover_bucket_summary_stage136_ai_pool_switch_stability_v1.csv`
++- 研究目标：
++  - 验证Stage78月更AI池是否应该做池级稳定/降低换手/旧池强制保留
++  - 不修改TopN、不训练模型、不新增交易规则、不跑新策略回测
++  - 以每个AI池`eval_date`到下一个`eval_date`之间作为自然信号期
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 稳态AI切换结果：
++  - 稳态信号期数量`49`
++  - 信号期总净损益`3,084,550`
++  - 新增品种贡献`1,573,730`
++  - 保留品种贡献`1,547,965`
++  - 剔除品种在后续期间贡献`-37,145`
++  - 平均每期新增品种数`2.80`
++  - 平均Jaccard稳定度`0.5355`
++- 换手桶结果：
++  - `low_1_2_adds`：`18`期，总净损益`58,230`，平均每期`3,235`
++  - `normal_3_adds`：`20`期，总净损益`1,003,725`，平均每期`50,186`
++  - `high_4_plus_adds`：`11`期，总净损益`2,022,595`，平均每期`183,872`
++- 关键发现：
++  - 池级“降低换手/强行稳定”暂时停止，不建议作为正式研究线
++  - 新增品种贡献和保留品种贡献几乎同量级，说明切换不是纯噪声
++  - 高换手月份历史贡献反而更强，说明强行稳定旧池可能伤害趋势响应
++  - `jaccard_similarity`与信号期净损益相关性约`-0.3419`，不能用“更稳定=更好”作为一阶假设
++  - 新增品种贡献与信号期净损益相关性约`0.7485`
++  - 不能反向过拟合成“高换手越高越好”，这些只是描述性证据，不是因果交易规则
++- 判断：
++  - Stage133慢更新失败的底层原因进一步明确：问题不是月更太频繁，而是低频持有会降低对趋势地形变化的响应
++  - AI池方向仍有价值，但要收窄为“新增品种质量审计/执行约束”，不是池级慢更新或旧池保留
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：按自然`eval_date`信号期做归因，不按结果挑月份，不改TopN和规则
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结果是停止池级稳定规则，没有新增策略自由度
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：Stage133否定慢更新后，需要判断AI池切换本身是不是噪声
++- 运行后继续价值判断：
++  - 判断：池级稳定方向否；AI池新增质量审计方向是
++  - 原因：池级稳定证据与收益方向相反，但新增品种质量、成交和候选漏斗仍可能存在可解释风险
++- 后续：
++  - 不做全局慢更新、旧池强制保留、新增品种冷却
++  - 如果继续AI池方向，做新增品种质量审计，重点看新增品种的分数跳变、成交量、相关性、候选漏斗和滑点
++
++### 121. 第137阶段卫星品种原则审计
++
++- 第137阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage137_satellite_principle_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_report_stage137_satellite_principle_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_summary_stage137_satellite_principle_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_name_blind_structural_rank_stage137_satellite_principle_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_product_evidence_stage137_satellite_principle_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage137_satellite_principle_audit_satellite_candidates_stage137_satellite_principle_audit_v1.csv`
++- 研究目标：
++  - 回答`fu.SHFE`作为卫星品种是否只是品种级过拟合
++  - 用名字无关结构分数审计，而不是继续调`fu`专属参数
++  - 本阶段不跑新策略回测、不新增卫星、不修改Stage78
++- 名字无关结构审计口径：
++  - 只使用流动性、单手保证金可承受性、60日趋势效率、60日波动/区间、数据覆盖度
++  - 不使用品种名、不使用未来收益、不使用Stage78贡献生成候选
++  - 未来60日收益、Stage78贡献、Stage136切换归因只做事后审计
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 卫星原则判定：
++  - `PARTIAL_PASS_CANDIDATE_GENERATOR_NOT_TRADE_RULE`
++  - 含义：结构卫星原则可以作为候选生成器，但不能作为自动交易规则
++- `fu.SHFE`证据：
++  - 名字无关结构排名`2`
++  - 名字无关结构分数`0.7734`
++  - 结构预筛`1`
++  - 近期中位成交量`446,932`
++  - 单手估算保证金`4,186`
++  - 60日趋势效率中位数`0.0996`
++  - 60日波动中位数`0.1640`
++  - 全市场AI平均概率排名`46`
++  - AI Top5频率`10.00%`
++  - 未来60日审计总净损益`122,040`
++  - Stage78全周期品种贡献`414,710`
++  - Stage136切换归因贡献`416,350`
++- 对照发现：
++  - 名字无关结构候选还包括`UR.CZCE`、`pg.DCE`、`eb.DCE`、`sn.SHFE`
++  - `sn.SHFE`结构排名`8`且AI平均概率排名`4`，但未来60日审计总净损益为`-6,410`，Stage78贡献为`0`
++  - 说明“结构候选”只能解释候选合理性，不能直接证明交易可行性
++- 判断：
++  - `fu`不是完全凭品种名硬塞进去，它能通过名字无关结构审计
++  - 但只采用`fu`并给予特殊风险状态处理仍包含历史经验成分
++  - Stage78可以冻结保留`fu`，但后续不应继续优化`fu`专属逻辑
++  - 若继续卫星方向，只能先做影子审计，不直接扩大正式交易池
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：目标是审计原则边界，特征不含品种名和未来收益，不调交易参数
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结论把卫星原则降级为候选生成器，并明确禁止继续`fu`专属补丁，没有增加策略自由度
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：需要判断`fu`到底是结构性例外还是单品种过拟合，否则后续容易围绕品种名打补丁
++- 运行后继续价值判断：
++  - 判断：有限继续
++  - 原因：正式版保留Stage78冻结逻辑有价值，但卫星扩展只能作为影子审计，不应直接进入交易规则
++- 后续：
++  - 不继续做`fu`专属阈值、专属风险状态、专属开关
++  - 若继续卫星方向，先做结构候选影子组合复盘，观察`UR/pg/eb/sn/fu`是否有跨周期稳定性
++  - 正式研究仍以Stage78准实盘复盘、AI新增品种质量审计、40万资金约束为主线
++
++### 122. 第138阶段结构卫星影子复盘
++
++- 第138阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage138_satellite_shadow_replay.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_report_stage138_satellite_shadow_replay_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_summary_stage138_satellite_shadow_replay_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_label_aggregate_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_monthly_label_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_product_label_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_summary_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_yearly_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_product_stage138_satellite_shadow_replay_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage138_satellite_shadow_replay_shadow_eligibility_stage138_satellite_shadow_replay_v1.csv`
++- 研究目标：
++  - 验证Stage137结构卫星候选离开`fu`后是否仍有普适价值
++  - 不修改Stage78正式策略，不新增交易规则
++  - 用两层影子审计：固定候选未来60日标签审计 + 全市场冻结持仓路径开仓过滤影子复盘
++- 固定结构候选：
++  - `UR.CZCE`
++  - `fu.SHFE`
++  - `pg.DCE`
++  - `eb.DCE`
++  - `sn.SHFE`
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 第138阶段判定：
++  - `FU_DEPENDENT_NOT_GENERAL_KEEP_STAGE78_FROZEN`
++  - 含义：结构卫星候选的正向证据主要依赖`fu`，当前不能推广为正式卫星扩池原则
++- 标签聚合审计：
++  - `fu_only_diagnostic`：未来60日标签总净损益`122,040`，正收益期占比`54.00%`，最差期`-14,200`
++  - `structural_candidates_all`：总净损益`41,170`，正收益期占比`42.00%`，最差期`-26,775`
++  - `structural_candidates_without_fu`：总净损益`-80,870`，正收益期占比`38.00%`，最差期`-22,365`
++  - `structural_candidates_ai_top8`：总净损益`-28,000`，正收益期占比`8.00%`
++  - `structural_candidates_ai_top12`：总净损益`-45,750`，正收益期占比`6.00%`
++- 影子开仓过滤结果：
++  - `fu_only_diagnostic`：期末权益`281,200`，总收益`16.9668%`，最大回撤`-8.7761%`，Sharpe`0.4620`，交易`50`，滑点`2,030`
++  - `structural_candidates_all`：期末权益`256,600`，总收益`6.7343%`，最大回撤`-19.1409%`，Sharpe`0.1765`，交易`158`，滑点`7,030`
++  - `structural_candidates_without_fu`：期末权益`214,400`，总收益`-10.8190%`，最大回撤`-23.3136%`，Sharpe`-0.1663`，交易`111`，滑点`5,030`
++  - `baseline_all_products`：期末权益`113,455`，总收益`-52.8077%`，最大回撤`-61.8459%`，Sharpe`-0.1332`，交易`1,109`，滑点`60,830`
++- 判断：
++  - 结构候选全体看起来有正收益，但主要由`fu`贡献托住
++  - 剔除`fu`后，标签审计和影子收益都不能证明卫星原则有普适扩展能力
++  - 全市场影子过滤改善基准，更多来自减少大量差品种交易和成本，不等于候选池质量足以正式交易
++  - Stage78继续冻结保留`fu`，但`UR/pg/eb/sn`不能进入正式策略
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：候选来自Stage137固定名字无关结构审计，诊断组在运行前固定，不按结果调阈值或增删品种
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结果是否定扩池，没有把`UR/pg/eb/sn`包装成新规则，也没有新增策略自由度
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：需要确认卫星原则是否离开`fu`仍成立，避免继续沿单品种经验扩张
++- 运行后继续价值判断：
++  - 判断：卫星扩池方向否；影子监控方向有限继续
++  - 原因：正式扩池证据不足，但保留影子月报可监控结构候选是否未来持续改善
++- 后续：
++  - 停止`UR/pg/eb/sn`进入正式池的研究
++  - 不继续做`fu`专属优化，Stage78冻结保留即可
++  - 后续优先回到Stage78准实盘复盘、AI新增品种质量审计、40万资金约束和执行成本审计
++
++### 123. 第139阶段AI新增品种质量审计
++
++- 第139阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage139_ai_added_product_quality_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_report_stage139_ai_added_product_quality_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_summary_stage139_ai_added_product_quality_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_enriched_events_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_transition_type_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_bucket_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_product_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_signal_summary_stage139_ai_added_product_quality_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage139_ai_added_product_quality_audit_added_tail_events_stage139_ai_added_product_quality_audit_v1.csv`
++- 研究目标：
++  - 审计Stage136中“AI新增品种贡献大”的底层质量
++  - 判断新增品种贡献是普遍能力，还是少数品种/少数月份集中贡献
++  - 本阶段不修改正式策略，不提出阈值，不做A/B接入，因此不触发`version-ab-experiment`
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 第139阶段判定：
++  - `VALUABLE_BUT_CONCENTRATED_SHADOW_ONLY`
++  - 含义：AI新增方向有贡献，但贡献集中度高，只能继续影子审计，不能直接转成正式新增品种过滤规则
++- 切换类型对照：
++  - `added`：事件`137`，品种`18`，总贡献`1,573,730`，正收益事件率`18.9781%`，开仓率`41.6058%`，交易`123`，滑点`60,160`
++  - `retained`：事件`304`，品种`19`，总贡献`1,547,965`，正收益事件率`19.7368%`，开仓率`40.7895%`，交易`293`，滑点`121,790`
++  - `dropped`：事件`137`，品种`18`，后续贡献`-37,145`，正收益事件率`2.1898%`
++- 新增贡献集中度：
++  - 第一大正贡献品种`jm.DCE`，贡献`908,580`
++  - `jm.DCE`占新增总贡献`57.7342%`
++  - Top3正贡献品种占新增总贡献`80.9878%`
++  - 新增品种正收益事件率只有`18.9781%`，中位数贡献为`0`
++- 新增品种分组发现：
++  - `rank_7_9`新增贡献`1,081,010`，高于`rank_1_3`的`114,940`
++  - `one_candidate`贡献`1,647,420`
++  - `two_plus_candidates`贡献`-73,690`
++  - `opened`事件贡献`1,573,730`，未开仓事件贡献`0`
++  - 这些分组说明新增贡献来自少数真实开仓捕捉到的大趋势，不是简单“排名越高越好”
++- 关键尾部：
++  - 最强事件：`2025-06-30`新增`jm.DCE`贡献`727,800`
++  - 最差事件：`2024-12-31`新增`cu.SHFE`贡献`-43,750`
++  - 第二差事件：`2025-01-27`新增`MA.CZCE`贡献`-36,480`
++- 判断：
++  - Stage136“新增品种有价值”成立
++  - 但Stage139显示它是趋势地形响应器，不是稳定逐事件胜率模型
++  - 当前不能做新增品种阈值过滤，否则容易把`jm.DCE`大趋势拟合成规则
++  - 后续AI方向应做影子预警/归因看板，不直接接正式策略
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：分组只使用运行前可见字段，不按收益倒推阈值
++- 第一次运行失败记录：
++  - 原因：`added_products`字段与Stage136信号期表原字段重名
++  - 修复：新聚合字段改名为`audited_added_products`
++  - 判断：工程列名问题，不影响研究逻辑
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结果没有产生正式规则，反而将AI新增方向限制为影子审计
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：需要确认新增品种贡献是否可转化为稳健规则
++- 运行后继续价值判断：
++  - 判断：有限继续
++  - 原因：新增方向有贡献，但集中度高，适合做监控和归因，不适合直接规则化
++- 后续：
++  - 不做新增品种排名阈值、分数阈值、候选数阈值过滤规则
++  - 若继续AI方向，做Stage78准实盘AI新增品种影子预警看板
++  - 同时推进40万资金约束和执行成本审计，优先服务正式版稳定运行
++
++### 124. 第140阶段全市场品种适配度审计
++
++- 第140阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage140_full_market_product_fit_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_report_stage140_full_market_product_fit_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_summary_stage140_full_market_product_fit_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_product_scores_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_layer_summary_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_origin_summary_stage140_full_market_product_fit_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage140_full_market_product_fit_audit_top_candidates_stage140_full_market_product_fit_audit_v1.csv`
++- 研究目标：
++  - 验证Stage78原始18品种是否包含可量化的结构优势
++  - 将肉眼经验、全市场结构、AI适配度、样本外60日标签、Stage78实际归因、相关性放入同一审计框架
++  - 本阶段不修改正式策略，不做正式A/B，因此不触发`version-ab-experiment`
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 分层结果：
++  - `core_candidate`：`0`
++  - `satellite_candidate`：`7`
++  - `watchlist`：`15`
++  - `reject`：`28`
++- 卫星候选：
++  - `SA.CZCE`
++  - `FG.CZCE`
++  - `CF.CZCE`
++  - `OI.CZCE`
++  - `fu.SHFE`
++  - `jm.DCE`
++  - `eb.DCE`
++- 来源组结论：
++  - `manual_static18`共`18`个，`5`个进入卫星候选，Stage78实际贡献`3,985,380`
++  - `fu_satellite`继续是卫星候选，Stage78实际贡献`414,710`
++  - `full_market_other_eligible`共`31`个，只有`eb.DCE`进入卫星候选，全组未来60日标签合计`-578,315`
++- 判断：
++  - 第140阶段没有证明“全市场扩池可以正式替换Stage78”
++  - 肉眼18品种不是随意选择，里面确实包含有效默会经验
++  - 全市场AI/统计筛选有价值，但当前只能作为影子候选生成器，不能直接变成正式交易池
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：框架预先固定，不按历史收益TopN直接选池
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结论没有扩张自由度，反而限制为审计和影子观察
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：这是资产池质量审计，比继续微调参数更接近本质
++- 运行后继续价值判断：
++  - 判断：有限继续
++  - 原因：正式扩池证据不足，但影子候选监控和Stage78准实盘复盘仍有价值
++- 后续：
++  - Stage78正式品种池继续冻结
++  - 不把`eb.DCE`或其他单品种写成特例规则
++  - 若继续全市场方向，做Stage141影子观察，不做正式接入
++
++### 125. 第141阶段盲选滚动品种池标签级A/B验证
++
++- 第141阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage141_blind_pool_walkforward_validation.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_report_stage141_blind_pool_walkforward_validation_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_summary_stage141_blind_pool_walkforward_validation_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_arm_summary_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_monthly_selection_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_product_contribution_stage141_blind_pool_walkforward_validation_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage141_blind_pool_walkforward_validation_random_distribution_stage141_blind_pool_walkforward_validation_v1.csv`
++- A/B技能：
++  - 已读取并遵循`skills/version-ab-experiment/SKILL.md`
++  - 原因：本阶段验证可能影响正式策略的品种池选择方法
++- 实验臂：
++  - `A_stage78_static19`：Stage78原始19品种
++  - `B_blind_ai_top19`：全市场AI概率盲选Top19
++  - `B2_blind_simple_top19`：全市场简单趋势分盲选Top19
++  - `C_stage78_plus_ai_extra5`：Stage78原池加非原池AI Top5卫星
++  - 同规模随机池`300`次作为对照
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 标签级结果：
++  - `A_stage78_static19`：总标签贡献`167,950`，正收益月份`50.0000%`，最差月份`-65,670`
++  - `B2_blind_simple_top19`：总标签贡献`162,460`，相对Stage78`-5,490`，正收益月份`58.0000%`，最差月份`-36,870`
++  - `C_stage78_plus_ai_extra5`：总标签贡献`100,900`，相对Stage78`-67,050`
++  - `B_blind_ai_top19`：总标签贡献`-55,235`，相对Stage78`-223,185`
++- 随机池对照：
++  - 19品种随机池中位数`-145,345`
++  - 19品种随机池75分位`-71,615`
++  - 19品种随机池90分位`4,245.5`
++- 关键判断：
++  - 原始18品种不一定是全市场最优，但明显不是普通随机池
++  - 全市场AI概率盲选Top19没有打过Stage78，且标签贡献为负
++  - 简单趋势Top19接近Stage78且路径更好，但总贡献仍低，不能进入真实回测候选
++  - Stage78+额外5个AI卫星降低标签贡献，说明扩池会稀释质量
++- 第141阶段判定：
++  - `NO_PROMOTION_KEEP_STAGE78`
++  - 没有任何盲选品种池进入`candidate_for_real_backtest`
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：实验臂、池大小、随机次数和通过门槛在运行前固定
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：失败臂没有继续救参，没有新增正式规则
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：必须用盲选滚动验证回答原始18是否过拟合
++- 运行后继续价值判断：
++  - 判断：正式扩池方向否；观察方向有限继续
++  - 原因：没有真实回测候选，B2只能作为观察指标
++- 后续：
++  - Stage78正式品种池继续冻结
++  - 不推进全市场盲选Top19或Stage78+AI额外5卫星真实回测
++  - 后续优先做准实盘复盘、执行成本审计、40万资金约束和监控体系
++
++### 126. 第142阶段Stage78准实盘监控阈值审计
++
++- 第142阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage142_stage78_live_monitor_guardrails.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_report_stage142_stage78_live_monitor_guardrails_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_summary_stage142_stage78_live_monitor_guardrails_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_thresholds_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_current_status_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_monthly_state_stage142_stage78_live_monitor_guardrails_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage142_stage78_live_monitor_guardrails_execution_cost_stage142_stage78_live_monitor_guardrails_v1.csv`
++- 研究目标：
++  - 为Stage78正式基准建立准实盘监控边界
++  - 区分正常波动、需要复盘的异常、执行成本异常、保证金异常
++  - 本阶段不修改策略，不触发A/B技能
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 当前状态：
++  - 最新交易日`2026-04-21`
++  - 当前回撤`-5.3600%`，状态`normal`
++  - 20日净损益`-144,080`，状态`alert`
++  - 63日净损益`-10,425`，状态`normal`
++  - 最近入场后预计保证金占权益`2.9431%`，状态`normal`
++- 阈值状态：
++  - `alert`：`1`
++  - `normal`：`10`
++  - `constant_policy`：`1`
++- 关键判断：
++  - 当前不是回撤异常，不是滑点异常，不是保证金异常
++  - 当前主要问题是20日净损益进入`alert`区间，应进入复盘观察
++  - `effective_single_trade_capital_usage_ratio=0.7`是恒定策略约束，标记为`constant_policy`，不是风险异常
++- 第142阶段判定：
++  - `MONITOR_ONLY_KEEP_STAGE78`
++  - Stage78继续冻结，监控阈值不写入交易逻辑
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：阈值来自历史分布，只用于监控
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：20日净损益alert没有被用于新增交易规则
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：正式版需要准实盘监控边界
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：已形成可执行的监控表，后续可做日报/周报模板
++- 后续：
++  - 不把监控阈值写入策略
++  - 可继续做Stage78准实盘日报/周报模板
++  - 若20日净损益继续恶化到`severe`，优先复盘，不继续开发新规则
++
++### 127. 第143阶段Stage78准实盘复盘包
++
++- 第143阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage143_stage78_live_review_pack.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_brief_stage143_stage78_live_review_pack_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_summary_stage143_stage78_live_review_pack_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_action_items_stage143_stage78_live_review_pack_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_recent_product_attribution_stage143_stage78_live_review_pack_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage143_stage78_live_review_pack_recent_trade_summary_stage143_stage78_live_review_pack_v1.csv`
++- 研究目标：
++  - 将Stage142的20日净损益`alert`转成可执行复盘任务
++  - 定位最近20日亏损来源
++  - 本阶段不改策略，不触发A/B技能
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 当前决策：
++  - `review_first_keep_stage78`
++- 最近20日复盘：
++  - 20日净损益`-144,080`
++  - 20日交易次数`6`
++  - 20日滑点`1,220`
++  - 20日品种亏损合计`-167,840`
++  - 主要亏损来源：`MA.CZCE -86,800`、`OI.CZCE -53,680`、`SH.CZCE -27,360`
++  - 正贡献：`lh.DCE 23,760`
++- 行动项：
++  - 复盘最近20个交易日的品种贡献、开平仓原因和是否存在集中亏损
++  - 禁止为了修复20日亏损去调止损、调品种黑名单或新增单窗口补丁
++- 第143阶段判定：
++  - `REVIEW_FIRST_KEEP_STAGE78`
++  - 现在不是策略修改时点，而是复盘时点
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：本阶段不筛品种、不调阈值、不改策略
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：结果只生成复盘行动项
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：20日净损益处于alert，需要先归因
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：已定位`MA/OI/SH`为近期亏损来源
++- 后续：
++  - 下一步可做`MA/OI/SH`最近20日交易级复盘
++  - 若只是趋势系统正常止损，不改策略
++  - 若是数据或执行异常，优先修复数据/执行
++
++### 128. 第144阶段Stage78最近亏损单机制审计
++
++- 第144阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage144_recent_loss_mechanism_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_report_stage144_recent_loss_mechanism_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_summary_stage144_recent_loss_mechanism_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_product_distribution_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_roundtrip_audit_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_entry_context_stage144_recent_loss_mechanism_audit_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage144_recent_loss_mechanism_audit_exit_reason_comparison_stage144_recent_loss_mechanism_audit_v1.csv`
++- 研究目标：
++  - 继续Stage143，不改策略，只拆解最近20日`MA/OI/SH`亏损机制。
++  - 区分最近窗口亏损与完整交易生命周期亏损。
++  - 判断是否有执行异常、品种失效、普通试错成本或利润回吐错觉。
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 最近20日区间：
++  - `2026-03-24`至`2026-04-21`
++- 最近20日组合净损益：
++  - `-144,080`
++- 亏损机制：
++  - `MA.CZCE`：最近20日`-86,800`，历史20日滚动低分位`0.7304%`，完整生命周期`-86,800`，机制为极端尾部失败单。
++  - `OI.CZCE`：最近20日`-53,680`，历史20日滚动低分位`0.1992%`，完整生命周期`47,960`，窗口前已赚`101,640`，机制为完整盈利交易的窗口利润回吐。
++  - `SH.CZCE`：最近20日`-27,360`，历史20日滚动低分位`7.9208%`，完整生命周期`-27,360`，机制为普通偏弱试错成本。
++- 关键判断：
++  - Stage78继续冻结。
++  - `OI`不能作为重启利润保护线的证据，因为前序利润保护线已经证明会破坏后续恢复段持仓。
++  - `MA`值得进入极端单笔亏损事件账本，但单笔极端事件不足以支持品种黑名单或止损补丁。
++  - `SH`不构成独立优化理由。
++  - 当前证据不支持把最近亏损归因为成交成本。
++- 第144阶段判定：
++  - `AUDIT_ONLY_KEEP_STAGE78`
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：只做归因审计，不新增交易参数、不筛品种、不改规则
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：审计结果没有生成任何交易规则，并明确禁止黑名单、利润保护补丁和止损微调
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：Stage143只定位亏损来源，Stage144进一步确认亏损机制
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：已把最近亏损拆成三个不同机制，后续应做事件账本而不是继续参数微调
++- 后续：
++  - 不修改Stage78策略
++  - 建议做“极端单笔亏损事件账本”
++  - 如果MA类尾部事件跨品种、跨年份反复出现，再考虑组合层监控或风险预算；否则不改策略
++
++### 129. 第145阶段Stage78极端单笔亏损事件账本
++
++- 第145阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage145_extreme_loss_event_ledger.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_report_stage145_extreme_loss_event_ledger_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_summary_stage145_extreme_loss_event_ledger_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_ledger_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_tail_events_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_product_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_year_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_exit_reason_summary_stage145_extreme_loss_event_ledger_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage145_extreme_loss_event_ledger_signal_summary_stage145_extreme_loss_event_ledger_v1.csv`
++- 研究目标：
++  - 继续Stage144，构建全历史完整交易生命周期亏损账本。
++  - 验证`MA.CZCE`最近极端失败单是否是系统性、反复性问题。
++  - 判断后续是否应该进入组合层尾部风险监控，而不是单品种修补。
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 全历史生命周期统计：
++  - 完整交易事件数`384`
++  - 亏损事件数`228`
++  - 生命周期净损益合计`4,269,830`
++  - Bottom 1%阈值`-81,288.8`
++  - Bottom 5%阈值`-42,555.25`
++  - Bottom 10%阈值`-31,815.0`
++  - Bottom 5%事件数`19`
++  - Bottom 1%事件数`3`
++- 最差事件：
++  - `ru.SHFE ru2201.SHFE Short 2021-09-24 -> 2021-09-27`
++  - 生命周期净损益`-145,550`
++  - 退出原因`short_base_stop`
++- 多次进入Bottom 5%的品种：
++  - `fu.SHFE`：`5`次
++  - `lh.DCE`：`3`次
++  - `jm.DCE`：`3`次
++  - `ru.SHFE`：`2`次
++  - `SH.CZCE`：`2`次
++- `MA.CZCE`判断：
++  - 事件数`28`
++  - 亏损事件数`20`
++  - Bottom 5%次数`1`
++  - Bottom 1%次数`0`
++  - 不构成反复尾部亏损源，单独黑名单没有证据
++- 第145阶段判定：
++  - `LEDGER_MONITOR_ONLY_KEEP_STAGE78`
++- 关键判断：
++  - Stage78继续冻结
++  - 不对`MA.CZCE`做黑名单
++  - 不基于尾部账本直接调止损或利润保护
++  - 尾部风险应进入组合层监控，而不是品种特例
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：全历史完整交易生命周期账本，不围绕最近单笔亏损调参
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：没有生成任何交易规则，只形成监控账本
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：需要验证MA极端失败单是否系统性
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：确认尾部亏损不是单一MA问题，而是跨品种组合尾部风险
++- 后续：
++  - 不修改Stage78策略
++  - 下一步建议做“组合层尾部风险监控规则”
++  - 只用于准实盘告警，不直接改变交易
++  - 监控Bottom 5%生命周期亏损事件是否短期聚集
++  - 监控是否出现同方向、同板块、同退出原因的尾部聚集
++
++### 130. 第146阶段Stage78组合层尾部风险监控
++
++- 第146阶段新增脚本：
++  - `examples/portfolio_backtesting/analyze_qmt_roll_stage146_portfolio_tail_risk_monitor.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_report_stage146_portfolio_tail_risk_monitor_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_summary_stage146_portfolio_tail_risk_monitor_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_window_state_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_current_status_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_recent_tail_events_stage146_portfolio_tail_risk_monitor_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage146_portfolio_tail_risk_monitor_worst_windows_stage146_portfolio_tail_risk_monitor_v1.csv`
++- 研究目标：
++  - 继续Stage145，把全历史生命周期尾部事件账本转成20日/63日组合层监控。
++  - 识别尾部事件是否短期聚集、是否集中在同方向、同板块、同退出原因。
++  - 只用于准实盘告警，不写入交易逻辑。
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 当前最新日期：
++  - `2026-04-21`
++- 当前决策：
++  - `monitor_only_keep_stage78`
++- 当前状态：
++  - `normal`：`15`
++  - `watch`：`3`
++  - `alert`：`0`
++  - `severe`：`0`
++- 近20日尾部状态：
++  - Bottom 5%尾部事件数`1`
++  - 尾部亏损绝对值合计`86,800`
++  - `tail20_loss_abs_sum`为`watch`
++  - 对应事件：`MA.CZCE MA605.CZCE Long 2026-04-07 -> 2026-04-08`，生命周期净损益`-86,800`
++- 近63日尾部状态：
++  - Bottom 5%尾部事件数`2`
++  - 尾部亏损绝对值合计`131,350`
++  - 主导板块`chemical`，占比`100%`
++  - 主导方向`Long`，占比`100%`
++  - 事件为`MA.CZCE`和`SH.CZCE`
++- 第146阶段判定：
++  - `MONITOR_ONLY_KEEP_STAGE78`
++- 关键判断：
++  - Stage78继续冻结
++  - 当前只有watch，没有alert/severe
++  - 近63日确实有`chemical + Long`尾部事件聚集，但历史分布不支持立即改策略
++  - 尾部监控只能触发复盘，不直接触发交易规则
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：监控阈值来自全历史生命周期尾部事件分布，不改参数、不筛品种
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：watch状态没有被转化为仓位、黑名单、止损或利润保护
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：需要把组合尾部风险转成准实盘可跟踪状态
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：已识别当前`chemical + Long`尾部聚集但未达alert/severe，给后续复盘提供边界
++- 后续：
++  - 不修改Stage78策略
++  - 下一步可以合并Stage142、Stage143、Stage146成Stage78准实盘周报
++  - 周报只给复盘和暂停研究建议，不直接生成交易动作
++
++### 131. 第147阶段Stage78准实盘周报
++
++- 第147阶段新增脚本：
++  - `examples/portfolio_backtesting/build_qmt_roll_stage147_stage78_live_weekly_report.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_report_stage147_stage78_live_weekly_report_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_summary_stage147_stage78_live_weekly_report_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_decision_table_stage147_stage78_live_weekly_report_v1.csv`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage147_stage78_live_weekly_report_status_matrix_stage147_stage78_live_weekly_report_v1.csv`
++- 研究目标：
++  - 合并Stage142资金/风险监控、Stage143复盘包、Stage146组合尾部监控。
++  - 输出统一准实盘决策：是否继续运行、是否需要复盘、是否允许新策略研究。
++  - 明确禁止动作，避免单点亏损驱动参数微调。
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 当前总决策：
++  - `review_first_keep_stage78`
++- 运行许可：
++  - `keep_stage78_with_review`
++- 研究许可：
++  - `monitoring_and_attribution_only`
++- 当前状态：
++  - `severe=0`
++  - `alert=1`
++  - `watch=3`
++- 核心状态：
++  - `rolling_20d_net_pnl=-144,080`，状态`alert`
++  - 当前回撤`-5.3600%`，状态`normal`
++  - 预计保证金占用`2.9431%`，状态`normal`
++  - 最近20日主要亏损品种：`MA.CZCE`、`OI.CZCE`、`SH.CZCE`
++  - 近63日尾部主导板块`chemical`，占比`100%`
++- 第147阶段判定：
++  - `REVIEW_FIRST_KEEP_STAGE78`
++- 关键判断：
++  - Stage78继续冻结运行
++  - 当前没有severe，不需要暂停Stage78
++  - 当前有20日净损益alert和尾部watch，不允许继续参数型新策略研究
++  - 后续只做监控、归因、周报，不做交易规则修改
++- 禁止动作：
++  - 不做单品种黑名单
++  - 不做止损补丁
++  - 不重启利润保护
++  - 不为最近20日亏损调参数
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：只汇总已有监控，不新增参数、不筛品种、不新回测
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：周报只给运行纪律和研究纪律，没有生成交易动作
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：多个监控报告分散，需要统一决策表
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：明确当前边界：Stage78可继续运行，但新策略研究只限监控和归因
++- 后续：
++  - 不修改Stage78策略
++  - 短期只做准实盘周报自动化、`chemical + Long`尾部聚集复盘、20日净损益alert持续观察
++  - 暂停新止损、新利润保护、新品种黑名单、短窗口参数优化
++  - 若状态回到normal，再考虑恢复全市场品种池或其他A/B研究
++
++### 132. 第148阶段Stage78实盘准入GO/NO-GO审计
++
++- 第148阶段新增脚本：
++  - `examples/portfolio_backtesting/build_qmt_roll_stage148_stage78_live_go_no_go_audit.py`
++- 新增产物：
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_report_stage148_stage78_live_go_no_go_audit_v1.md`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_summary_stage148_stage78_live_go_no_go_audit_v1.json`
++  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage148_stage78_live_go_no_go_audit_gate_table_stage148_stage78_live_go_no_go_audit_v1.csv`
++- 研究目标：
++  - 明确回答当前Stage78是否可以直接上真实资金实盘。
++  - 用正式版、walk-forward、流动性、40万本金、Stage147周报做准入门槛审计。
++- Stage78正式基准：
++  - 期末权益`4,600,090`
++  - 总收益`2200.0450%`
++  - 最大回撤`-36.9907%`
++  - Sharpe`1.2919`
++  - 总滑点`260,110`
++  - 总交易次数`779`
++  - 胜率`42.1053%`
++- 最终结论：
++  - `NO_GO_REAL_MONEY_SHADOW_ONLY`
++- 是否可以现在上真实资金实盘：
++  - `否`
++- 允许的下一步：
++  - `shadow_or_simulated_trading_only`
++- 通过项：
++  - Stage78正式版本冻结
++  - 全周期回测质量
++  - 252日滚动稳健性
++  - 40万本金约束
++  - 流动性与成交量占比
++- 观察项：
++  - `63d`短窗口冷启动风险
++- 阻断项：
++  - 当前准实盘健康状态：Stage147仍为`review_first_keep_stage78`，`alert=1`、`watch=3`，最近20日净损益`-144,080`
++  - 真实执行演练：未见真实柜台/模拟盘订单回报、成交回报、撤单、断线重连、换月执行闭环验收记录
++  - 实盘事故预案：未见可执行的熔断、手工接管、数据异常停机、夜盘异常处理SOP
++- 第148阶段判定：
++  - `NO_GO_REAL_MONEY_SHADOW_ONLY`
++- 关键判断：
++  - 不是Stage78历史表现不行
++  - 是当前健康状态和实盘执行闭环没有过门槛
++  - 当前不能直接上真实资金，只能影子盘或模拟盘
++- 运行前过拟合判断：
++  - 判断：否
++  - 原因：实盘准入门槛审计，不优化收益、不新增参数、不筛品种
++- 运行后过拟合判断：
++  - 判断：否
++  - 原因：NO-GO结论没有被用于反推策略补丁，并明确禁止为通过准入去调参
++- 运行前继续价值判断：
++  - 判断：是
++  - 原因：用户要求明确能否实盘，必须给硬结论
++- 运行后继续价值判断：
++  - 判断：是
++  - 原因：已得到里程碑结论；后续只应做影子盘/模拟盘执行闭环和实盘SOP
++- 后续：
++  - 不上真实资金
++  - 只允许影子盘或模拟盘
++  - 补齐订单/成交/撤单/持仓/权益对账闭环验收
++  - 补齐实盘SOP
++  - 等20日净损益alert解除，并完成`chemical + Long`尾部聚集复盘
+diff --git a/work-type.txt b/work-type.txt
+index b790c59a..ca3c44d7 100644
+--- a/work-type.txt
++++ b/work-type.txt
+@@ -1,4 +1,4 @@
+-当前模式=day
++当前模式=night
+ 
+ day(每个版本都要告诉我结论和进一步规划，我们一起决定下一步的方向)
+ night(深度自主工作模式，有重大版本或突破才告诉我，否则agent一直自主思考决策探索，过程中记录好memory和back_log就行)

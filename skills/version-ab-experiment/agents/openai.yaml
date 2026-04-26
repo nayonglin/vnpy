@@ -1,0 +1,4 @@
+interface:
+  display_name: "版本A/B/C实验"
+  short_description: "为有价值的新策略版本生成Stage78基准、单独版本、组合版本的A/B/C实验流程。"
+  default_prompt: "对这个有价值的新策略版本运行A/B/C实验设计：Stage78基准、单独版本、Stage78+新模块，并给出过拟合和值得继续判断。"
