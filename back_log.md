@@ -27086,3 +27086,615 @@ to-end季度冷启动：
   - 不做`y/nr`强制交易版本。
   - 不删除`cs.DCE`。
   - 不扩大品种池稀释问题。
+
+## 2026-04-27 11:17 CST - 第199阶段：股票震荡数据可用性审计，确认有研究脚手架但不能直接严肃回测
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：股票震荡独立研究线
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是数据审计，不是策略版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不讨论接入正式版本。
+
+### 本次改动内容
+
+- 新增股票数据可用性审计脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+- 只读取现有股票 alpha 缓存：
+  - `examples/alpha_research/native_results/cache/stock_panel.parquet`
+  - `examples/alpha_research/native_results/cache/benchmark.parquet`
+- 未修改期货第78趋势策略、期货震荡策略、配置或回测入口。
+- 未新增、修改或删除交易参数。
+- 未跑策略回测。
+
+### 审计口径
+
+- 检查股票缓存的：
+  - symbol/date覆盖率
+  - OHLCV字段质量
+  - 停牌、ST、成交量/成交额缺失
+  - 次日入场一字涨停、持有5日退出一字跌停
+  - 5日标签可用性
+  - 幸存者偏差、复权和历史长度风险
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 审计固定口径：
+  - `HOLDING_DAYS=5`
+  - 股票缓存范围：`2025-01-02`到`2026-04-17`
+  - 股票数量：`300`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 当前仓库没有发现已经落地的“股票震荡/股票均值回归”研究历史。
+- 已有股票相关资产主要是：
+  - `vnpy/alpha`股票 alpha 研究框架
+  - `examples/alpha_research`成交量因子研究脚本
+  - CSI1000/Tushare/Baostock 数据准备脚手架
+  - 现有 parquet 缓存与信号示例
+- 数据覆盖：
+  - 原始行：`93,285`
+  - 股票数：`300`
+  - 基准交易日：`311`
+  - 预期 symbol-date 行：`93,300`
+  - 缺口：`15`
+  - 覆盖率：`99.98%`
+- 数据质量：
+  - 重复 symbol-date 行：`0`
+  - OHLC不一致行：`0`
+  - 非正价格行：`0`
+  - 零或空成交量行：`73`
+  - 零或空成交额行：`73`
+  - 停牌行：`73`
+  - ST行：`70`
+- 交易/标签过滤：
+  - 5日标签与交易过滤后保留：`91,509`行
+  - 保留比例：`98.10%`
+  - 有效标签日期：`306`
+  - 有效日期每日可交易横截面最小/中位/最大：`295 / 299 / 300`
+
+### 核心判断
+
+- 可以做股票震荡方向的第一轮信号层研究，但不能直接做严肃正式回测。
+- 主要风险：
+  - 幸存者偏差高：现有脚本使用最新中证1000成分，且缓存只有`300`只，不是历史成分全量面板。
+  - 复权风险高：生成脚本使用 baostock `adjustflag="3"`，从代码看是不复权口径，缺复权因子。
+  - 历史长度短：只有约一年多，不能证明穿越牛熊/风格周期。
+- Polanyi式经验判断：
+  - 这份数据适合闻股票横截面反弹有没有“气味”，但不是能上正式战场的地图。
+
+### 输出文件
+
+- 脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+- 报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_report.md`
+- 覆盖率：
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_symbol_coverage.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_date_coverage.csv`
+- 数据质量：
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_quality_summary.csv`
+- 过滤损耗：
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_filter_summary.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_daily_tradable_width.csv`
+- 汇总：
+  - `examples/alpha_research/native_results/stock_range_reversion_data_audit_v1_summary.json`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做数据边界和交易约束审计，不评价收益阈值，不选择策略参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：股票震荡策略若不先确认数据覆盖、复权、停牌/ST/涨跌停处理，后续很容易得到漂亮但虚假的结果。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出是数据层事实和风险清单，不产生交易规则。
+
+### 运行后继续价值反思
+
+- 判断：是，但只适合继续做信号层 smoke test。
+- 原因：横截面宽度和基础交易过滤足够做第一轮归因，但幸存者偏差、复权和历史长度仍不足以支持正式回测。
+
+### 决策
+
+- `stock_range_reversion_data_audit_smoke_only`
+- 股票震荡路线与期货趋势/期货震荡路线隔离。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不直接写股票组合回测。
+- 下一步做固定口径横截面超跌反弹信号层归因。
+
+### 后续规划和TODO
+
+- 优先做股票长侧超跌反弹信号层归因。
+- 信号必须先用横截面rank，不用固定RSI阈值。
+- 同步规划数据修复：
+  - 复权口径确认
+  - 历史成分扩展
+  - 更长年份覆盖
+  - 退市、新股和上市天数处理
+
+## 2026-04-27 11:18 CST - 第200阶段：股票横截面超跌反弹信号层归因，初步有边际但只能作为smoke test
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：股票震荡独立研究线
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是信号层归因，不是交易策略版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不讨论接入正式版本。
+
+### 本次改动内容
+
+- 新增股票横截面超跌反弹信号层归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 只读取现有股票 alpha 缓存和中证1000基准缓存。
+- 未修改期货第78趋势策略、期货震荡策略、配置或回测入口。
+- 未新增、修改或删除交易参数。
+- 未跑策略回测。
+
+### 归因口径
+
+- 信号日收盘后，按次日收盘入场。
+- 持有`1/3/5/10`个交易日。
+- 收益口径为股票未来收益减中证1000同期收益。
+- 每日横截面分为五组：
+  - group 5为分数最高，即更超跌/更低于均线/更强放量下跌压力。
+- 固定朴素信号：
+  - `score_oversold_ret_5`
+  - `score_oversold_ret_10`
+  - `score_oversold_ret_20`
+  - `score_below_ma20`
+  - `score_down_volume_pressure`
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 归因固定参数：
+  - `HORIZONS=(1, 3, 5, 10)`
+  - `N_GROUPS=5`
+  - `MIN_DAILY_WIDTH=50`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 5日持有口径：
+  - `score_below_ma20`：top-bottom平均超额收益`0.2656%`，Rank IC均值`0.0652`，t值`1.88`，正向日占比`56.29%`。
+  - `score_oversold_ret_20`：top-bottom平均超额收益`0.2464%`，Rank IC均值`0.0671`，t值`1.59`，正向日占比`54.74%`。
+  - `score_oversold_ret_10`：top-bottom平均超额收益`0.1864%`，Rank IC均值`0.0556`。
+  - `score_oversold_ret_5`：top-bottom平均超额收益`0.0454%`，Rank IC均值`0.0329`。
+- 全部 horizon 中：
+  - top-bottom平均最高的是`score_below_ma20`/`10日`：平均`0.5633%`，t值`2.84`。
+  - `score_oversold_ret_20`/`10日`：平均`0.4663%`，t值`2.15`。
+- 市场状态粗分：
+  - 5日`score_below_ma20`在`market_down_20d`中 top-bottom均值`0.5637%`，正向日占比`64.21%`。
+  - 5日`score_below_ma20`在`market_up_20d`中 top-bottom均值`0.1334%`，正向日占比`52.63%`。
+  - 5日`score_oversold_ret_20`在`market_down_20d`中 top-bottom均值`0.6109%`。
+
+### 核心判断
+
+- 股票横截面超跌反弹有初步边际，尤其是低于20日均线和20日超跌方向。
+- 但这不是正式策略证据：
+  - 样本只有`300`只当前成分股。
+  - 历史只有`2025-01-02`到`2026-04-17`。
+  - 数据可能是不复权口径。
+  - 存在幸存者偏差。
+- 不应把`score_below_ma20`直接交易化，也不应围绕当前样本调阈值。
+- Polanyi式经验判断：
+  - 这一步看的是“水温”，不是下水游泳；有温度，但水域还没探清。
+
+### 输出文件
+
+- 脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_signal_attribution_v1_report.md`
+- 汇总：
+  - `examples/alpha_research/native_results/stock_range_reversion_signal_attribution_v1_summary.csv`
+- 分组收益：
+  - `examples/alpha_research/native_results/stock_range_reversion_signal_attribution_v1_group_returns.csv`
+- 市场状态分层：
+  - `examples/alpha_research/native_results/stock_range_reversion_signal_attribution_v1_market_state_summary.csv`
+- 元信息：
+  - `examples/alpha_research/native_results/stock_range_reversion_signal_attribution_v1_meta.json`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：轻微但受控。
+- 原因：固定测试多个朴素信号会天然带来“看最好结果”的诱惑；但本阶段不改参数、不调阈值、不写策略，只作为方向 smoke test。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果固定朴素超跌信号都没有方向，股票震荡路线应优先停止策略设计、回到数据建设；如果有初步方向，则值得在更长更干净的数据上复验。
+
+### 运行后过拟合反思
+
+- 判断：轻微但未越界。
+- 原因：`score_below_ma20`表现最好，但不能直接交易化；当前样本短、可能未复权、有幸存者偏差。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步不是策略化，而是复验和数据修复。
+- 原因：初步信号边际为正，说明股票震荡路线有研究价值；但数据质量不足以支持资金曲线或正式版本。
+
+### 决策
+
+- `stock_range_reversion_signal_attribution_smoke_positive_not_tradable`
+- 不把`score_below_ma20`直接交易化。
+- 不做阈值调参。
+- 不做股票组合回测。
+- 不接入第78。
+- 不进入第78 A/B/C。
+
+### 后续规划和TODO
+
+- 优先补股票数据：
+  - 确认/改造复权口径。
+  - 扩展历史中证1000成分和更长年份。
+  - 增加退市、新股、上市天数、流动性过滤。
+- 在数据修复前，若继续研究，只做固定口径归因：
+  - 分行业/市值/流动性层归因。
+  - 熊市/震荡/上涨市场状态分层。
+  - 不做交易规则和资金曲线。
+
+## 2026-04-27 11:41 CST - 第201阶段：股票震荡研究面板v1，补齐前复权价、原始交易约束、上市天数和流动性字段
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：股票震荡独立研究线
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是数据底座升级，不是交易策略版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不讨论接入正式版本。
+
+### 本次改动内容
+
+- 新增股票震荡研究面板构建脚本：
+  - `examples/alpha_research/build_stock_range_reversion_research_panel.py`
+- 修改股票数据审计脚本，使其可通过环境变量读取新面板：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+- 修改股票信号归因脚本，使其可通过环境变量读取新面板：
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 构建新研究面板：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache/`
+- 未修改期货第78趋势策略、期货震荡策略、配置或回测入口。
+- 未新增、修改或删除交易参数。
+- 未跑策略回测。
+
+### 数据口径
+
+- 股票池：
+  - `UNIVERSE_SOURCE=existing_cache`
+  - 股票数：`300`
+  - 由于当前环境缺少`TUSHARE_TOKEN`，历史成分数据不可用。
+  - 当前面板仍为静态股票池，不能完全消除幸存者偏差。
+- 价格口径：
+  - `raw_adjustflag=3`：原始价，用于停牌、涨跌停、成交量、成交额、交易约束。
+  - `qfq_adjustflag=2`：前复权价，用于信号和收益研究。
+- 新增字段：
+  - `raw_open/high/low/close/preclose`
+  - `qfq_open/high/low/close/preclose`
+  - `raw_up_limit/raw_down_limit`
+  - `is_oneword_limit_up/is_oneword_limit_down`
+  - `listing_days`
+  - `adv20_turnover/adv20_volume`
+  - `eligible_research_row`
+  - `has_historical_component_source`
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 数据构建参数：
+  - `START_DATE=20250101`
+  - `END_DATE=20260417`
+  - `UNIVERSE_SOURCE=existing_cache`
+  - `MIN_LISTING_DAYS=120`
+  - `MIN_ADV20_TURNOVER=20,000,000`
+  - `RAW_ADJUST_FLAG=3`
+  - `QFQ_ADJUST_FLAG=2`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 新面板构建结果：
+  - 股票行数：`93,285`
+  - 股票数：`300`
+  - 日期范围：`2025-01-02`到`2026-04-17`
+  - 基准行数：`311`
+  - 下载失败股票：`0`
+  - `eligible_research_row`：`80,221`
+  - 可研究行占比：`86.00%`
+- 新面板数据审计：
+  - 覆盖率：`99.98%`
+  - 重复 symbol-date 行：`0`
+  - OHLC不一致行：`0`
+  - 非正价格行：`0`
+  - 停牌行：`73`
+  - ST行：`70`
+- 新面板固定信号归因：
+  - 5日`score_oversold_ret_20`：top-bottom平均超额收益`0.2220%`，Rank IC`0.0664`，t值`1.41`，正向日占比`54.04%`。
+  - 5日`score_oversold_ret_10`：top-bottom平均超额收益`0.2158%`，Rank IC`0.0582`，t值`1.65`，正向日占比`53.85%`。
+  - 5日`score_below_ma20`：top-bottom平均超额收益`0.2019%`，Rank IC`0.0637`，t值`1.42`，正向日占比`53.50%`。
+  - 10日`score_below_ma20`：top-bottom平均超额收益`0.5052%`，Rank IC`0.0763`，t值`2.53`。
+
+### 核心判断
+
+- 复权和交易约束补齐后，股票横截面超跌反弹信号仍有初步边际，但强度比旧缓存口径略降。
+- 这说明旧口径可能存在一定乐观成分，新口径更接近真实可研究状态。
+- 当前最强结论不是“可以交易”，而是：
+  - 20日超跌/低于20日均线方向值得在更长、更干净的数据上复验。
+  - 放量下跌压力信号在新口径下表现弱，不应优先推进。
+- 最大剩余缺口仍是历史成分：
+  - 没有`TUSHARE_TOKEN`和`index_weight`权限时，无法完全消除中证1000历史成分幸存者偏差。
+- Polanyi式经验判断：
+  - 这不是一条强到可以马上下场的 alpha，更像真实市场里微弱但可重复闻到的回摆气味；继续价值在数据补齐和分层归因，不在马上写策略。
+
+### 输出文件
+
+- 新增脚本：
+  - `examples/alpha_research/build_stock_range_reversion_research_panel.py`
+- 修改脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 新面板：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_research_panel.parquet`
+- 基准：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_benchmark.parquet`
+- 股票基础信息：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_stock_basic.parquet`
+- 成分记录：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_components.parquet`
+- 构建报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_research_manifest.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/stock_range_reversion_research_manifest.json`
+- 新面板审计：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/audit/stock_range_reversion_data_audit_v1_report.md`
+- 新面板信号归因：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/signal/stock_range_reversion_signal_attribution_v1_report.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache/signal/stock_range_reversion_signal_attribution_v1_summary.csv`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是数据口径补齐和固定口径复验，不调收益阈值、不选择交易参数、不产生资金曲线。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第200阶段已显示股票超跌信号有初步边际，但原数据存在复权、上市天数、流动性和交易约束缺口；补齐这些口径比继续做策略更有价值。
+
+### 运行后过拟合反思
+
+- 判断：否，但不能交易化。
+- 原因：新口径下只是复验固定信号；信号边际保留但变弱，不能据此调阈值或写交易版本。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：数据补齐后信号仍未消失，说明股票震荡路线值得继续；但继续方向应是历史成分和更长样本，而不是组合回测。
+
+### 决策
+
+- `stock_range_reversion_research_panel_v1_data_foundation`
+- 后续股票震荡归因优先使用新面板。
+- 不把当前信号直接交易化。
+- 不做股票组合回测。
+- 不接入第78。
+- 不进入第78 A/B/C。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 配置`TUSHARE_TOKEN`并验证`index_weight`权限，补历史中证1000成分，消除核心幸存者偏差。
+- 第二优先级：
+  - 将同一固定信号口径扩展到更长历史。
+  - 做市场状态、行业、市值、流动性分层归因。
+- 暂不做：
+  - 不写股票策略资金曲线。
+  - 不扫阈值。
+  - 不把`score_oversold_ret_20`或`score_below_ma20`直接作为交易规则。
+
+## 2026-04-27 13:33 - 第202阶段：Tushare历史成分权限验证与IP限制归因
+
+### 本次版本变更
+
+- 工作模式：`day`
+- 研究线：股票震荡独立研究线。
+- 与期货第78趋势策略关系：
+  - 无关。
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 与期货震荡策略关系：
+  - 无关。
+  - 股票震荡继续作为独立数据研究线。
+- 本阶段目标：
+  - 使用用户提供的 Tushare token 验证 `index_weight` 权限。
+  - 补强历史成分失败保护，避免数据构建失败时静默退回静态股票池。
+  - 验证历史成分 snapshot 映射是否可用于后续消除幸存者偏差。
+- 本阶段未跑策略回测。
+
+### 代码改动
+
+- 修改股票研究面板构建脚本：
+  - `examples/alpha_research/build_stock_range_reversion_research_panel.py`
+- 修改股票数据审计脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+- 修改股票信号归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 关键补强：
+  - 新增 `ALLOW_UNIVERSE_FALLBACK`，默认值为`0`，Tushare历史成分失败时不再静默退回静态股票池。
+  - 新增 `TUSHARE_RETRIES`，默认值为`3`。
+  - 新增 `TUSHARE_RETRY_SLEEP`，默认值为`2.0`秒。
+  - 新增历史成分 snapshot 映射，研究日只使用当日之前最近一次已知指数成分。
+  - 新增 `is_index_component`、`component_weight`、`component_snapshot_date`、`eligible_component_row`。
+  - 审计和归因脚本在存在 `eligible_component_row` 时优先使用成分内可研究样本。
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 新增数据构建参数：
+  - `ALLOW_UNIVERSE_FALLBACK=0`
+  - `TUSHARE_RETRIES=3`
+  - `TUSHARE_RETRY_SLEEP=2.0`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+- 修改数据构建参数：无
+- 删除数据构建参数：无
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- Tushare `index_weight` 单月轻量查询成功：
+  - 说明 token 可用。
+  - 说明当前积分层级可访问 `index_weight`。
+- 官方权限口径：
+  - `index_weight` 需要至少`2000`积分。
+  - 用户当前已充值到`5000`积分，积分不是当前阻断点。
+- 小样本历史成分 smoke 成功：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache_tushare_smoke/`
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `MAX_SYMBOLS=5`
+  - 日期范围：`2025-01-01`到`2025-02-28`
+  - `historical_components_available=true`
+  - `stock_rows=180`
+  - `component_rows=144`
+  - `component_ratio=0.8`
+  - snapshot 日期可映射到研究日。
+- 全量历史成分构建失败原因：
+  - Tushare 返回：`您的IP数量超限，最大数量为10个！`
+  - 当前出口 IP 观测值：`203.208.189.11`
+  - 判断：账号/IP侧限制，不是积分不足，也不是脚本逻辑失败。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只是验证数据权限、历史成分口径和失败保护，不触碰策略参数与收益优化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第201阶段最大残缺是历史成分；如果不补这一层，后续股票震荡信号很容易被幸存者偏差污染。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段没有选择收益更好的参数，也没有根据结果调信号；反而增加了失败中断保护，防止静态股票池假装历史成分。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步要先解决 Tushare IP 数量限制。
+- 原因：小样本 smoke 已证明接入逻辑可行；全量运行被外部账号/IP限制挡住，解除后应继续跑历史成分全量面板。
+
+### 决策
+
+- 不继续用静态300只股票池推进策略化。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 待 Tushare IP 限制解除后，优先运行全量历史成分面板构建。
+
+### 后续规划和TODO
+
+- 用户侧处理 Tushare IP 数量限制：
+  - 在 Tushare 账户后台查看 token/IP 相关状态。
+  - 如无法自助清理，联系 Tushare 管理员/客服处理“IP数量超限，最大数量为10个”。
+  - 建议使用固定网络出口运行全量数据构建。
+- 安全建议：
+  - 由于 token 已在聊天里明文出现，后续建议在 Tushare `接口TOKEN` 页面刷新 token，并只通过本机环境变量提供。
+- 解除限制后执行：
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `START_DATE=20250101`
+  - `END_DATE=20260417`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+  - 生成带历史中证1000成分过滤的正式股票震荡研究面板。
