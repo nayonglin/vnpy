@@ -48,6 +48,8 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
     range_two_stage_stop_enabled: bool = False
     range_soft_stop_confirm_bars: int = 1
     range_hard_stop_r_multiple: float = 2.0
+    range_short_soft_stop_floor_enabled: bool = False
+    range_short_soft_stop_min_r_multiple: float = 0.5
     exit_on_channel_middle_touch: bool = True
     range_previous_day_stop_long_enabled: bool = True
     range_previous_day_stop_short_enabled: bool = True
@@ -77,6 +79,8 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
         "range_two_stage_stop_enabled",
         "range_soft_stop_confirm_bars",
         "range_hard_stop_r_multiple",
+        "range_short_soft_stop_floor_enabled",
+        "range_short_soft_stop_min_r_multiple",
         "exit_on_channel_middle_touch",
         "range_previous_day_stop_long_enabled",
         "range_previous_day_stop_short_enabled",
@@ -418,7 +422,8 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
                 )
                 return exit_reason
 
-            if self._range_soft_stop_close_confirmed(direction, bar, base_layer.stop_price):
+            soft_stop_price = self._range_effective_soft_stop_price(state, base_layer)
+            if self._range_soft_stop_close_confirmed(direction, bar, soft_stop_price):
                 product = state.product_vt_symbol
                 confirm_count = self.range_soft_stop_confirm_count_by_product.get(product, 0) + 1
                 self.range_soft_stop_confirm_count_by_product[product] = confirm_count
@@ -523,6 +528,23 @@ class QmtRangeReversionPortfolioStrategy(QmtBollReversalPortfolioStrategy):
         if state.direction == "long":
             return entry_price - hard_multiple * risk_distance
         return entry_price + hard_multiple * risk_distance
+
+    def _range_effective_soft_stop_price(self, state: ProductState, base_layer) -> float:
+        soft_stop_price = float(base_layer.stop_price)
+        if not self.range_short_soft_stop_floor_enabled or state.direction != "short":
+            return soft_stop_price
+
+        entry_price = float(base_layer.entry_price)
+        initial_stop = self.range_initial_base_stop_by_product.get(state.product_vt_symbol, soft_stop_price)
+        risk_distance = abs(entry_price - float(initial_stop))
+        if risk_distance <= 0:
+            risk_distance = abs(entry_price - soft_stop_price)
+        if entry_price <= 0 or risk_distance <= 0:
+            return soft_stop_price
+
+        floor_multiple = min(max(0.0, float(self.range_short_soft_stop_min_r_multiple)), 1.0)
+        floor_price = entry_price + floor_multiple * risk_distance
+        return max(soft_stop_price, floor_price)
 
     @staticmethod
     def _range_soft_stop_close_confirmed(direction: str, bar: BarData, stop_price: float) -> bool:

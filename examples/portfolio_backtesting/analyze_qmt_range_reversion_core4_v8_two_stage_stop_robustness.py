@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,46 @@ PRODUCT_YEAR_SUMMARY_PATH: Path = OUTPUT_DIR / f"qmt_range_reversion_core4_v8_pr
 EXIT_SUMMARY_PATH: Path = OUTPUT_DIR / f"qmt_range_reversion_core4_v8_exit_summary_{MODEL_TAG}.csv"
 SUMMARY_JSON_PATH: Path = OUTPUT_DIR / f"qmt_range_reversion_core4_v8_robustness_summary_{MODEL_TAG}.json"
 REPORT_PATH: Path = OUTPUT_DIR / f"qmt_range_reversion_core4_v8_robustness_report_{MODEL_TAG}.md"
+
+
+def _configure_paths(source_prefix: str | None = None, model_tag: str | None = None) -> None:
+    global SOURCE_PREFIX
+    global MODEL_TAG
+    global DAILY_PATH
+    global TRADES_PATH
+    global ENTRY_RISK_PATH
+    global YEAR_SUMMARY_PATH
+    global QUARTER_SUMMARY_PATH
+    global START_YEAR_SUMMARY_PATH
+    global ROLLING_SUMMARY_PATH
+    global PRODUCT_YEAR_SUMMARY_PATH
+    global EXIT_SUMMARY_PATH
+    global SUMMARY_JSON_PATH
+    global REPORT_PATH
+
+    if source_prefix:
+        SOURCE_PREFIX = source_prefix
+    if model_tag:
+        MODEL_TAG = model_tag
+
+    report_prefix = "qmt_range_reversion_core4"
+    if "_v9_" in SOURCE_PREFIX:
+        report_prefix = "qmt_range_reversion_core4_v9"
+    elif "_v8_" in SOURCE_PREFIX:
+        report_prefix = "qmt_range_reversion_core4_v8"
+
+    DAILY_PATH = OUTPUT_DIR / f"{SOURCE_PREFIX}_daily_equity.csv"
+    TRADES_PATH = OUTPUT_DIR / f"{SOURCE_PREFIX}_trades_2020_2026_04.csv"
+    ENTRY_RISK_PATH = OUTPUT_DIR / f"{SOURCE_PREFIX}_entry_risk_diagnostics_2020_2026_04.csv"
+
+    YEAR_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_year_summary_{MODEL_TAG}.csv"
+    QUARTER_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_quarter_summary_{MODEL_TAG}.csv"
+    START_YEAR_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_start_year_summary_{MODEL_TAG}.csv"
+    ROLLING_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_rolling_summary_{MODEL_TAG}.csv"
+    PRODUCT_YEAR_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_product_year_summary_{MODEL_TAG}.csv"
+    EXIT_SUMMARY_PATH = OUTPUT_DIR / f"{report_prefix}_exit_summary_{MODEL_TAG}.csv"
+    SUMMARY_JSON_PATH = OUTPUT_DIR / f"{report_prefix}_robustness_summary_{MODEL_TAG}.json"
+    REPORT_PATH = OUTPUT_DIR / f"{report_prefix}_robustness_report_{MODEL_TAG}.md"
 
 
 def _load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -113,6 +154,12 @@ def _write_report(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-prefix", default=SOURCE_PREFIX)
+    parser.add_argument("--model-tag", default=MODEL_TAG)
+    args = parser.parse_args()
+    _configure_paths(args.source_prefix, args.model_tag)
+
     daily, round_trips = _load_inputs()
     year_summary = _year_summary(daily)
     quarter_summary = _quarter_summary(daily)

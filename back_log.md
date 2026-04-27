@@ -26151,3 +26151,938 @@ to-end季度冷启动：
   - 重点复盘`2025 cs.DCE short -1,740`。
   - 判断短仓亏损是品种状态、入场位置、确认止损滞后，还是方向提示本身不稳。
 - 若下一步发现短仓亏损来自单一品种/单一年份，不做品种黑名单；优先寻找可跨品种解释的状态变量。
+
+## 2026-04-26 22:01 CST - 第194阶段：震荡策略v8短仓软止损亏损复盘，确认主矛盾是移动软止损过紧与收盘确认滞后
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 复盘对象：`range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop`
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是v8既有交易的归因审计，不是新策略版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有提出可接入正式版本的新策略，也没有做第78组合A/B/C；只做震荡路线内部亏损归因。
+
+### 本次改动内容
+
+- 新增分析脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py`
+- 只读取既有v8成交、入场诊断、候选快照和K线历史。
+- 未修改策略代码。
+- 未新增、修改或删除交易参数。
+- 未跑新回测。
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 读取的v8参数口径：
+  - `range_use_product_continuous_signal=True`
+  - `range_product_signal_adjustment_mode=back_adjust_additive`
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+  - `range_previous_day_stop_long_enabled=False`
+  - `range_previous_day_stop_short_enabled=True`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新回测。
+- 读取的v8基准结果：
+  - 期末权益：`211,530`
+  - 总收益：`5.76%`
+  - 最大回撤比例：`-1.98%`
+  - Sharpe：`0.617`
+  - 总滑点：`1,980`
+  - 总交易次数：`76`
+  - 回合数：`38`
+  - 胜率：`52.63%`
+
+### 新增分析结果
+
+- v8短仓回合数：`18`
+- `short_soft_base_stop_confirmed`：
+  - 回合数：`11`
+  - PnL：`-6,040`
+  - 胜率：`0%`
+  - 平均持仓：`3.27`日
+  - 平均入场RSI：`62.31`
+  - 平均初始止损距离：`1.44%`
+  - 平均动态止损距离/初始止损距离：`0.147`
+  - 平均收盘确认越过动态止损幅度：`0.338R`
+  - 平均MFE：`0.622R`
+  - 平均MAE：`0.837R`
+  - 止损后10日平均有利波动：`2.136R`
+  - 止损后10日回到入场价以下比例：`90.91%`
+- 对比`short_channel_middle_exit`：
+  - 回合数：`6`
+  - PnL：`+8,950`
+  - 胜率：`100%`
+  - 平均MFE：`1.381R`
+  - 平均MAE：`0.485R`
+  - 说明短仓不是完全没有均值回归边际，问题集中在软止损出场簇。
+
+### 年份拆分
+
+- `2025`：2笔，PnL`-1,740`，平均10日后有利波动`0.473R`
+- `2021`：2笔，PnL`-1,660`，平均10日后有利波动`2.472R`
+- `2024`：2笔，PnL`-1,390`，平均10日后有利波动`2.786R`
+- `2023`：5笔，PnL`-1,250`，平均10日后有利波动`2.408R`
+
+### 失败类型归因
+
+- `trailing_soft_stop_too_tight_then_recovered`：
+  - 6笔，PnL`-3,690`
+  - 平均动态止损距离/初始止损距离仅`0.091`
+  - 平均止损后10日有利波动`3.322R`
+  - 10日后回到入场价以下比例`100%`
+  - 解释：短仓前一日高点移动止损很快把止损收得过紧，随后收盘确认退出；但退出后价格又明显回落。
+- `soft_stop_then_later_recovered`：
+  - 1笔，PnL`-1,260`
+  - 主要对应`2025-04-23 cs2507.DCE short`，10日后未恢复，但20日后出现`2.609R`有利波动。
+- `soft_stop_no_clear_recovery`：
+  - 3笔，PnL`-690`
+  - 损失较小，10日后有利波动较弱，不适合作为主要修复目标。
+- `rollover_reopen_soft_stop_loss`：
+  - 1笔，PnL`-400`
+  - 换月重开造成的软止损亏损，仍应独立处理。
+
+### 核心判断
+
+- 不能把本次结果简单解释为“cs.DCE short应该删除”。
+  - 11笔软止损亏损全是`cs.DCE short`，但当前Core4里短方向本来就只有`cs.DCE short`，缺少跨品种短仓样本。
+  - 若直接删除cs短仓，本质是样本内剔除亏损源，过拟合风险高。
+- 更本质的问题是：
+  - `range_previous_day_stop_short_enabled=True`让短仓止损快速跟随前一日高点下移；
+  - 两段式止损把普通止损改成收盘确认后，动态止损过紧时会被收盘价反穿；
+  - 其中6笔之后10日平均出现`3.322R`有利波动，说明部分退出不是方向失效，而是止损结构把短仓的正常回摆提前截断。
+- 2025压力不完全同质：
+  - `2025 cs.DCE short -1,740`里有一笔10日内未恢复，说明不能只靠“放宽短仓软止损”粗暴修复。
+  - 下一步需要把“短仓动态止损是否允许收进成本以内/过近”与“短仓入场状态强弱”分开验证。
+
+### 输出文件
+
+- 归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py`
+- 全部短仓明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_roundtrip_detail_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- 短仓软止损明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_detail_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- 短仓退出汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_exit_summary_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- 年份汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_year_summary_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- RSI汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_rsi_summary_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- 失败类型汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_failure_summary_range_reversion_core4_v8_short_soft_stop_replay_v1.csv`
+- 报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_replay_report_range_reversion_core4_v8_short_soft_stop_replay_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只读取v8既有交易做归因，不改入场阈值、不删品种、不新增策略规则；目标是定位亏损机制。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v8最大剩余亏损源正是`short_soft_base_stop_confirmed`，如果不拆清楚就直接写v9，会大概率变成围绕少数亏损单调参。
+
+### 运行后过拟合反思
+
+- 判断：否，但下一步有过拟合风险。
+- 原因：本阶段没有交易规则优化；但结果显示亏损全部来自`cs.DCE short`，如果下一步直接删除cs或按2025单笔亏损加黑名单，就是典型样本内修补。
+
+### 运行后继续价值反思
+
+- 判断：是，但必须窄化为机制验证。
+- 原因：6笔主要亏损表现为“移动软止损过紧后恢复”，这是可解释的执行结构问题；同时2025有一笔短期未恢复，说明不能简单放宽止损，必须做小范围机制实验。
+
+### 决策
+
+- `range_reversion_core4_v8_short_soft_stop_failure_attribution_trailing_stop_too_tight`
+- v8仍保留为震荡策略内部研究基准候选。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不作为正式震荡策略。
+- 不删除`cs.DCE short`。
+
+### 后续规划和TODO
+
+- 下一步可以设计v9候选，但必须只验证一个机制：
+  - 短仓软止损使用“初始止损锚 + 最小距离地板”，避免前一日高点移动止损过快收进正常噪声。
+  - 或者短仓前一日移动止损只作为盈利保护，不作为亏损区软止损确认线。
+- 不做以下动作：
+  - 不做`cs.DCE`黑名单。
+  - 不扫RSI小阈值。
+  - 不扩大产品池来稀释当前亏损。
+- v9若实施，必须独立入口、独立输出命名，并重点比较：
+  - `short_soft_base_stop_confirmed`是否减少亏损。
+  - `short_channel_middle_exit +8,950`是否被破坏。
+  - 2025两笔`cs.DCE short`是否继续恶化。
+  - 最大回撤是否扩大。
+
+## 2026-04-26 22:10 CST - 第195阶段：震荡策略v9短仓软止损距离地板回测，回撤改善但收益与短仓盈利结构受损，不晋级
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 策略版本：`range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor`
+- 是否读取并遵循：`skills/version-ab-experiment/SKILL.md`：是
+- 是否进入第78 A/B/C：否
+  - A：`official_stage78_defensive_v1`，仅作为正式基准记录，不重跑。
+  - B：v9震荡策略独立候选，本阶段实际运行。
+  - C：第78 + v9，不运行。
+  - 原因：震荡策略还没有达到可与第78组合接入的稳定性；本阶段只验证震荡路线内部B臂。
+- 是否重要突破版本：否。v9属于机制验证失败/风格变弱版本。
+
+### 候选假设
+
+- 候选假设：v8短仓软止损亏损主要来自前一日高点移动止损过快收进正常噪声；给短仓软止损确认线增加“初始风险距离地板”，可以减少过紧移动止损导致的过早退出。
+- 泛化理由：
+  - 改的是止损执行几何结构，不是单一年份、单一品种黑名单或RSI小阈值。
+  - 参数默认关闭，只在v9独立入口开启。
+- 预声明通过标准：
+  - `short_soft_base_stop_confirmed`亏损明显减少。
+  - `short_channel_middle_exit`盈利结构不能被明显破坏。
+  - 最大回撤不能扩大。
+  - 2025两笔`cs.DCE short`不能继续恶化。
+  - 若收益、Sharpe明显低于v8，即使回撤下降也不晋级。
+
+### 本次改动内容
+
+- 修改震荡策略独立基类：
+  - `examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py`
+  - 新增短仓软止损距离地板逻辑；默认关闭。
+  - 只影响`range_two_stage_stop_enabled=True`且显式开启新参数的震荡策略入口。
+- 新增v9回测入口：
+  - `examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_two_stage_stop_short_floor_backtest.py`
+- 修改v8归因脚本为可传参复用：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py`
+  - 默认仍保持v8口径；本阶段用参数生成v9复盘输出。
+- 修改v8稳健性脚本为可传参复用：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_two_stage_stop_robustness.py`
+  - 默认仍保持v8口径；本阶段用参数生成v9稳健性输出。
+
+### 参数记录
+
+- 新增参数：
+  - `range_short_soft_stop_floor_enabled: bool = False`
+  - `range_short_soft_stop_min_r_multiple: float = 0.5`
+- v9启用参数：
+  - `range_short_soft_stop_floor_enabled=True`
+  - `range_short_soft_stop_min_r_multiple=0.5`
+  - `range_use_product_continuous_signal=True`
+  - `range_product_signal_adjustment_mode=back_adjust_additive`
+  - `streak_risk_multipliers=1.0,1.0,1.0,1.0`
+  - `range_previous_day_stop_long_enabled=False`
+  - `range_previous_day_stop_short_enabled=True`
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+- 修改参数：
+  - 无全局参数修改；仅v9专用入口启用新参数。
+- 删除参数：
+  - 无
+
+### 回测命令
+
+- 语法检查：
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_two_stage_stop_short_floor_backtest.py examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py`
+  - `.py311/bin/python -m py_compile examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_two_stage_stop_robustness.py examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py`
+- 回测：
+  - `.py311/bin/python examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_product_signal_back_adjusted_two_stage_stop_short_floor_backtest.py`
+- v9短仓软止损复盘：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_replay.py --source-prefix qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor --model-tag range_reversion_core4_v9_short_soft_floor_replay_v1`
+- v9稳健性审计：
+  - `.py311/bin/python examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_two_stage_stop_robustness.py --source-prefix qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor --model-tag range_reversion_core4_v9_short_soft_floor_robustness_v1`
+
+### 新增回测结果
+
+- 回测区间：`2020-02-05` 到 `2026-04-15`
+- 初始资金：`200,000`
+- 期末权益：`209,490`
+- 总收益：`4.745%`
+- 年化收益：`0.758%`
+- 最大回撤：`-3,510`
+- 最大回撤比例：`-1.739%`
+- 最大回撤周期：`107`
+- Sharpe：`0.515`
+- 总滑点：`1,920`
+- 总交易次数：`72`
+- 回合数：`36`
+- 胜率：`52.78%`
+- 胜利回合数：`19`
+- 净PnL：`9,490`
+
+### 与v8对比
+
+- 期末权益：`211,530 -> 209,490`，下降`-2,040`
+- 总收益：`5.765% -> 4.745%`
+- 最大回撤：`-4,020 -> -3,510`，改善`+510`
+- 最大回撤比例：`-1.981% -> -1.739%`
+- 最大回撤周期：`107 -> 107`
+- Sharpe：`0.617 -> 0.515`
+- 总滑点：`1,980 -> 1,920`
+- 总交易次数：`76 -> 72`
+- 回合数：`38 -> 36`
+- 胜率：`52.63% -> 52.78%`
+
+### 稳健性审计结果
+
+- 负收益年份：
+  - `2021`：净PnL`-1,730`，弱于v8的`-670`
+  - `2023`：净PnL`-1,320`，优于v8的`-1,820`
+- 正收益年份：
+  - `2022`：净PnL`+3,270`
+  - `2024`：净PnL`+7,080`
+  - `2025`：净PnL`+2,110`，弱于v8的`+3,650`
+  - `2026`：净PnL`+140`
+- 最大回撤事件：
+  - 峰值日期：`2023-03-14`
+  - 谷底日期：`2023-06-29`
+  - 修复日期：`2024-04-23`
+  - 回撤金额：`-3,510`
+  - 回撤比例：`-1.739%`
+- 最差252日窗口：
+  - `2022-06-17` 到 `2023-06-29`
+  - 净PnL：`-2,030`
+  - 最大回撤：`-3,510`
+  - Sharpe-like：`-0.486`
+- 最差126日窗口：
+  - `2022-12-20` 到 `2023-06-29`
+  - 净PnL：`-3,230`
+  - 最大回撤：`-3,510`
+  - Sharpe-like：`-1.173`
+- 起始年份：
+  - since_2024：净PnL`+9,330`，最大回撤`-0.769%`，Sharpe-like`1.163`
+  - since_2025：净PnL`+2,250`，最大回撤`-0.686%`，Sharpe-like`0.602`
+
+### 出场结构变化
+
+- `short_soft_base_stop_confirmed`：
+  - v8：11笔，PnL`-6,040`
+  - v9：6笔，PnL`-5,360`
+  - 表面改善`+680`，但平均亏损从`-549`扩大到`-893`。
+- `short_channel_middle_exit`：
+  - v8：6笔，PnL`+8,950`
+  - v9：5笔，PnL`+7,770`
+  - 下降`-1,180`，破坏了部分短仓盈利结构。
+- 新增/转移出的弱退出：
+  - `short_boll_time_exit`：4笔，PnL`-890`
+- 关键产品年份：
+  - `2025 cs.DCE short`：v8为`-1,740`，v9恶化为`-2,380`
+  - `2023 cs.DCE short`：v9为`+390`，改善弱窗
+  - `2021 cs.DCE short`：v9为`-1,630`，显著弱于v8
+
+### 修改/删除回测结果
+
+- 修改回测结果：无，v9为新增独立结果。
+- 删除回测结果：无
+
+### 输出文件
+
+- 回测统计：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor_statistics.json`
+- 日度权益：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor_daily_equity.csv`
+- 成交：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor_trades_2020_2026_04.csv`
+- 入场风险诊断：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_directed_product_signal_back_adjusted_v9_short_soft_floor_entry_risk_diagnostics_2020_2026_04.csv`
+- 短仓软止损复盘报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v9_short_soft_stop_replay_report_range_reversion_core4_v9_short_soft_floor_replay_v1.md`
+- 稳健性报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v9_robustness_report_range_reversion_core4_v9_short_soft_floor_robustness_v1.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：v9来自第194阶段明确归因，只验证“短仓软止损最小距离地板”一个机制；没有删除cs、没有扫RSI阈值、没有新增年份过滤。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v8最大剩余亏损源是短仓软止损，且归因显示移动止损过紧有机制证据；用一个默认关闭的结构参数验证，成本低且能快速决定是否继续。
+
+### 运行后过拟合反思
+
+- 判断：没有新增明显过拟合，但继续调这个参数会进入过拟合。
+- 原因：v9只跑了一个预声明值`0.5R`，不是网格搜索；但结果已经显示收益和Sharpe低于v8、2025 cs短仓恶化，如果继续改成`0.3/0.4/0.6`逐格找最优，就是对少数cs短仓路径拟合。
+
+### 运行后继续价值反思
+
+- 判断：v9本身无继续价值；短仓止损结构研究仍有有限价值。
+- 原因：v9确实降低最大回撤，但代价是总收益、Sharpe和2025表现下降，并且破坏`short_channel_middle_exit`盈利结构；后续如果继续，应换机制，不应继续调`range_short_soft_stop_min_r_multiple`。
+
+### 决策
+
+- `range_reversion_core4_v9_short_soft_floor_not_promoted`
+- v9不晋级为震荡内部新基准。
+- v8仍是震荡策略内部研究基准候选。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 不作为正式震荡策略。
+- 不继续围绕`range_short_soft_stop_min_r_multiple`做网格调参。
+
+### 后续规划和TODO
+
+- 暂停短仓软止损距离地板调参。
+- 若继续研究短仓，不从“距离阈值”入手，而改做更结构化的两类验证：
+  - 把短仓前一日移动止损仅作为盈利保护，不参与亏损区软止损确认。
+  - 或者对短仓软止损后的“是否等待到通道中轴/时间退出”做反事实归因，而不是直接改规则。
+- 在没有新归因证据前，不写v10交易版本。
+
+## 2026-04-26 22:16 CST - 第196阶段：v8短仓软止损亏损区反事实归因，不支持直接写v10
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 复盘对象：v8的`short_soft_base_stop_confirmed` 11笔亏损
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是反事实归因，不是新策略版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不做正式接入；只做v10是否值得写的前置归因。
+
+### 本次改动内容
+
+- 新增反事实归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_counterfactual.py`
+- 只读取v8既有成交、入场诊断和K线历史。
+- 未修改策略代码。
+- 未新增、修改或删除交易参数。
+- 未跑新策略回测。
+
+### 反事实口径
+
+- 目标问题：
+  - 如果v8短仓在亏损区不使用前一日移动软止损确认，继续持有到硬止损、通道中轴或最大持仓退出，结果是否更好？
+- 近似规则：
+  - 从v8实际`short_soft_base_stop_confirmed`交易出发。
+  - 忽略实际软止损出场。
+  - 后续按以下顺序近似退出：
+    - 硬止损：`entry_price + 2R`
+    - 通道中轴：20日通道中轴触达
+    - 最大持仓：最多6根K线
+- 注意：
+  - 通道中轴用合约K线近似，不等同于完整产品后复权AM现场回测。
+  - 本阶段是归因证据，不作为正式回测结果。
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 读取v8参数口径：
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+  - `range_previous_day_stop_short_enabled=True`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新策略回测。
+- 读取的v8基准结果：
+  - 期末权益：`211,530`
+  - 总收益：`5.765%`
+  - 最大回撤比例：`-1.981%`
+  - Sharpe：`0.617`
+  - 总滑点：`1,980`
+  - 总交易次数：`76`
+  - 胜率：`52.63%`
+
+### 新增分析结果
+
+- 复盘笔数：`11`
+- 实际PnL：`-6,040`
+- 反事实PnL：`-4,290`
+- 反事实改善：`+1,750`
+- 改善比例：`72.73%`的交易改善
+- 按反事实退出原因：
+  - `counterfactual_time_exit`：9笔，实际PnL`-4,400`，反事实PnL`-2,610`，改善`+1,790`
+  - `counterfactual_channel_middle_exit`：1笔，实际PnL`-380`，反事实PnL`+1,080`，改善`+1,460`
+  - `counterfactual_hard_stop`：1笔，实际PnL`-1,260`，反事实PnL`-2,760`，恶化`-1,500`
+- 按年份：
+  - `2021`：2笔，实际PnL`-1,660`，反事实PnL`-1,060`，改善`+600`
+  - `2023`：5笔，实际PnL`-1,250`，反事实PnL`+1,270`，改善`+2,520`
+  - `2024`：2笔，实际PnL`-1,390`，反事实PnL`+260`，改善`+1,650`
+  - `2025`：2笔，实际PnL`-1,740`，反事实PnL`-4,760`，恶化`-3,020`
+
+### 核心判断
+
+- 反事实证明：
+  - “亏损区动态软止损过早截断”确实存在，尤其是2023和2024。
+  - 但直接取消亏损区软止损不具备穿越周期能力，因为2025两笔会显著恶化。
+- 这解释了v9为什么失败：
+  - v9把部分软止损往后推，弱窗改善了一些；
+  - 但当行情不是短暂噪声而是真正继续上冲时，亏损扩大，2025被打坏。
+- 因此不能直接写v10交易版本。
+- 更本质的问题已经从“止损距离”转向“识别短仓软止损触发后，市场是在噪声回摆还是趋势继续”。
+
+### 输出文件
+
+- 反事实脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_short_soft_stop_counterfactual.py`
+- 明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_counterfactual_detail_range_reversion_core4_v8_short_soft_stop_counterfactual_v1.csv`
+- 汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_counterfactual_summary_range_reversion_core4_v8_short_soft_stop_counterfactual_v1.csv`
+- 年份汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_counterfactual_year_summary_range_reversion_core4_v8_short_soft_stop_counterfactual_v1.csv`
+- 报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_short_soft_stop_counterfactual_report_range_reversion_core4_v8_short_soft_stop_counterfactual_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做反事实归因，不新增交易规则、不调参数、不做品种剔除。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v9失败后，必须先确认“盈利保护/亏损区软止损”这个机制是否有方向性，再决定是否写v10；否则继续写交易版本会变成盲试。
+
+### 运行后过拟合反思
+
+- 判断：否，但交易化风险高。
+- 原因：反事实不是回测交易规则；结果同时显示2023/2024改善和2025恶化。如果只拿改善年份写规则，就会过拟合。
+
+### 运行后继续价值反思
+
+- 判断：短仓出场直接交易化暂时无价值；短仓状态归因仍有价值。
+- 原因：单纯改止损结构无法区分噪声回摆和趋势继续。继续研究应转向触发软止损时的状态判别，而不是继续改止损执行。
+
+### 决策
+
+- `range_reversion_core4_v8_short_soft_stop_counterfactual_no_v10`
+- 不写v10交易版本。
+- v8仍保留为震荡内部研究基准候选。
+- v9不晋级。
+- 不接入第78。
+- 不进入第78 A/B/C。
+
+### 后续规划和TODO
+
+- 下一步若继续震荡短仓研究，只做状态归因：
+  - 比较2023/2024软止损后恢复样本 vs 2025继续恶化样本。
+  - 观察入场前5/20日收益、通道位置、RSI、波动宽度、换月上下文、持仓后MFE/MAE。
+  - 先找“软止损触发后恢复/不恢复”的状态差异，不写交易规则。
+- 若状态差异仍不稳定，暂停短仓出场研究，回到震荡策略整体是否值得继续的问题。
+
+## 2026-04-26 22:38 CST - 第197阶段：v8信号层归因，确认信号有回归边际但不支持直接写v10
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 研究对象：v8 Core4候选信号
+  - `y.DCE long`
+  - `PF.CZCE long`
+  - `nr.INE long`
+  - `cs.DCE short`
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是信号层归因，不是新交易版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不做正式接入；只做v10是否值得写的前置归因。
+
+### 本次改动内容
+
+- 新增信号层归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_signal_attribution.py`
+- 只读取v8既有候选信号快照和K线历史。
+- 未修改策略代码。
+- 未修改第78趋势策略、配置或入口。
+- 未新增、修改或删除交易参数。
+- 未跑新策略回测。
+- 实现注意：
+  - 第一次运行在滚动区间宽度缺失值上因`pd.NA`导致数值列变成object失败。
+  - 已修正为浮点NaN处理，并于`22:38`重新运行成功。
+
+### 归因口径
+
+- 输入：
+  - v8候选信号快照：`qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_entry_candidate_snapshots_2020_2026_04.csv`
+  - 合约K线历史。
+- 统计方式：
+  - 从信号日之后的K线开始计算未来路径，避免把信号日本身高低点当作事后优势。
+  - 统计未来3/5/10/20日方向有利收盘收益、MFE、MAE、是否先触达20日通道中轴、是否先触发初始止损和2R硬止损。
+- 标签：
+  - `clean_reversion`：5日内先触达通道中轴，且未先触发初始止损。
+  - `delayed_reversion`：20日内先于硬止损触达通道中轴，但速度不够快。
+  - `stop_first_delayed_reversion`：先触发初始止损，再触达中轴，说明交易止损会早于信号修复。
+  - `trend_continuation`：先触发2R硬止损，或明显先进入趋势延续。
+  - `weak_or_no_edge`：20日内没有清晰均值回归，也没有极端趋势延续。
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 读取v8参数口径：
+  - `range_two_stage_stop_enabled=True`
+  - `range_soft_stop_confirm_bars=1`
+  - `range_hard_stop_r_multiple=2.0`
+  - `range_previous_day_stop_short_enabled=True`
+  - `channel_window=20`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新策略回测。
+- 读取的v8基准结果：
+  - 期末权益：`211,530`
+  - 总收益：`5.765%`
+  - 最大回撤比例：`-1.981%`
+  - Sharpe：`0.617`
+  - 总滑点：`1,980`
+  - 总交易次数：`76`
+  - 胜率：`52.63%`
+
+### 新增分析结果
+
+- 候选信号：`67`
+- 实际开仓信号：`33`
+- 开仓率：`49.25%`
+- 标签分布：
+  - `clean_reversion`：`52.24%`
+  - `delayed_reversion`：`14.93%`
+  - `stop_first_delayed_reversion`：`25.37%`
+  - `trend_continuation`：`5.97%`
+  - `weak_or_no_edge`：`1.49%`
+- 全体信号路径：
+  - 10日平均方向有利收盘收益：`+0.770R`
+  - 10日平均MFE：`1.911R`
+  - 10日平均MAE：`1.045R`
+  - 20日平均MFE：`2.759R`
+  - 20日平均MAE：`1.786R`
+  - 20日内先触达中轴再触发初始止损比例：`67.16%`
+  - 20日内先触发初始止损再触达中轴比例：`32.84%`
+- 按品种方向：
+  - `PF.CZCE long`：12个信号，11个开仓，10日方向有利收盘`+1.259R`，10日MFE`2.108R`，10日MAE`0.840R`。
+  - `y.DCE long`：20个信号，4个开仓，10日方向有利收盘`+0.592R`，10日MFE`1.793R`。
+  - `nr.INE long`：18个信号，1个开仓，10日方向有利收盘`+0.943R`，10日MFE`2.036R`。
+  - `cs.DCE short`：17个信号，17个开仓，10日方向有利收盘`+0.453R`，10日MFE`1.778R`，10日MAE`1.273R`，20日MAE`2.720R`。
+- 关键年份：
+  - 2025年`cs.DCE short`：2个信号，全部`trend_continuation`，10日方向收益`-2.183R`，10日MFE`0.180R`，10日MAE`3.201R`。
+  - 这支持“2025短仓不是止损太紧，而是状态错了/趋势继续”的判断。
+- 开仓状态：
+  - `skipped/sizing_zero_volume`信号34个，10日方向有利收盘`+0.823R`，10日MFE`1.798R`。
+  - 这说明被资金/合约约束跳过的长侧信号并不弱，当前v8交易结果可能低估了长侧信号边际。
+
+### 核心判断
+
+- 信号层并不是没有均值回归边际：
+  - 全体信号超过一半是快速回归，另有一部分是延迟回归。
+- 当前主要问题不是“继续微调RSI/止损参数”，而是三类问题混在一起：
+  - 长侧可交易性：`y/nr`有信号但200,000资金规模下大量`sizing_zero_volume`。
+  - 短侧状态识别：`cs.DCE short`有回归边际，但少数趋势延续样本杀伤力大，尤其2025。
+  - 交易层止损：约四分之一信号属于先触发止损再回归，说明止损会提前截断一部分真实信号。
+- Polanyi式经验判断：
+  - 这条震荡线不像“没有气味”，它有回摆气味；但一落到真实交易，就被合约粒度、资金规模和短仓趋势延续搅在一起。现在不该急着写新规则，而要先把“能不能交易”和“是不是状态错了”拆干净。
+
+### 输出文件
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_signal_attribution.py`
+- 明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_detail_range_reversion_core4_v8_signal_attribution_v1.csv`
+- 品种方向汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_product_direction_range_reversion_core4_v8_signal_attribution_v1.csv`
+- 年份方向汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_year_direction_range_reversion_core4_v8_signal_attribution_v1.csv`
+- 开仓状态汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_status_range_reversion_core4_v8_signal_attribution_v1.csv`
+- 标签汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_label_range_reversion_core4_v8_signal_attribution_v1.csv`
+- 报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_signal_attribution_report_range_reversion_core4_v8_signal_attribution_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做固定口径信号归因，不新增交易规则、不调参数、不做品种剔除、不扩大品种池。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：v9和反事实已经证明继续改止损线风险高，必须先确认信号层是否有均值回归边际，以及交易层到底哪里在损耗信号。
+
+### 运行后过拟合反思
+
+- 判断：否，但直接交易化会过拟合。
+- 原因：本阶段没有优化参数；但`trend_continuation`尤其2025短仓只有2个样本，不能拿它马上写年份/阈值过滤规则。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要收敛。
+- 原因：信号层整体有回归边际，说明震荡策略不是完全无效；后续价值在长侧可交易性归因和短侧状态判别，不在继续写v10止损变体。
+
+### 决策
+
+- `range_reversion_core4_v8_signal_attribution_no_v10`
+- 不写v10交易版本。
+- v8仍保留为震荡内部研究基准候选。
+- v9不晋级。
+- 不接入第78。
+- 不进入第78 A/B/C。
+
+### 后续规划和TODO
+
+- 下一步优先做长侧可交易性归因：
+  - 检查`y.DCE long`和`nr.INE long`为什么大量`sizing_zero_volume`。
+  - 判断这是200,000资金规模和合约粒度导致，还是止损距离/风险预算导致。
+  - 只做可交易性归因，不直接提高风险、不直接改交易参数。
+- 第二优先级做短侧状态归因：
+  - 对比2025 `cs.DCE short`的`trend_continuation`样本与2023/2024 `cs.DCE short`的回归样本。
+  - 观察入场前20日收益、通道位置、波动宽度zscore、RSI和中轴距离。
+- 暂不做：
+  - 不扫RSI/ADX阈值。
+  - 不删除`cs.DCE`。
+  - 不扩大品种池来稀释问题。
+  - 不继续改短仓止损线。
+
+## 2026-04-26 22:46 CST - 第198阶段：v8长侧可交易性归因，确认y/nr主要受单合约风险预算约束
+
+### 基本信息
+
+- 当前模式：`day`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 第78正式趋势策略影响：无
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+  - 第78正式基准仍为：期末权益`1,610,900`，总收益`705.45%`，最大回撤`-54.93%`，Sharpe`0.661`，总滑点`100`，总交易次数`1000`。
+- 策略路线：震荡策略独立路线
+- 研究对象：v8 Core4长侧候选信号可交易性
+  - `y.DCE long`
+  - `PF.CZCE long`
+  - `nr.INE long`
+- 是否进入第78 A/B/C：否
+- 是否重要突破版本：否。本阶段是可交易性归因，不是新交易版本。
+- 是否读取`skills/version-ab-experiment/SKILL.md`：否
+  - 原因：本阶段没有新交易规则落地，也不做正式接入；只解释长侧信号为何大量零仓。
+
+### 本次改动内容
+
+- 新增长侧可交易性归因脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_long_tradability.py`
+- 只读取：
+  - v8候选信号快照。
+  - 第197阶段v8信号层归因明细。
+  - 候选信号中的仓位测算字段。
+- 未修改策略代码。
+- 未修改第78趋势策略、配置或入口。
+- 未新增、修改或删除交易参数。
+- 未跑新策略回测。
+
+### 归因口径
+
+- 核心问题：
+  - `y.DCE long`和`nr.INE long`信号层不弱，为什么实际开仓很少？
+- 判断逻辑：
+  - 若`selected_volume=0`、`contracts_by_risk=0`，但`contracts_by_margin>=1`且`contracts_by_single_trade_cap>=1`，则标记为`risk_budget_below_one_contract`。
+  - 这代表目标风险预算不足以覆盖一手合约风险，而不是保证金或单笔资金上限不足。
+- 计算指标：
+  - 单合约风险：`risk_per_contract`
+  - 当前目标风险预算：`target_risk_amount`
+  - 单合约风险/风险预算：`risk_contract_to_budget`
+  - 当前风险预算口径下至少交易一手所需权益：`required_sizing_equity_for_1_contract`
+  - 不同资金规模下能覆盖的一手信号数量。
+
+### 参数记录
+
+- 新增参数：无
+- 修改参数：无
+- 删除参数：无
+- 读取v8参数口径：
+  - `risk_ratio=0.008`
+  - `entry_tr_multiplier=0.8`
+  - 当前有效目标风险预算约为权益的`0.64%`
+  - 初始资金基准：`200,000`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新策略回测。
+- 读取的v8基准结果：
+  - 期末权益：`211,530`
+  - 总收益：`5.765%`
+  - 最大回撤比例：`-1.981%`
+  - Sharpe：`0.617`
+  - 总滑点：`1,980`
+  - 总交易次数：`76`
+  - 胜率：`52.63%`
+
+### 新增分析结果
+
+- 长侧候选信号：`50`
+- 实际开仓信号：`16`
+- 未开仓信号：`34`
+- 未开仓原因：
+  - `risk_budget_below_one_contract`：`34`
+  - 其他原因：`0`
+- 未开仓信号质量：
+  - 10日方向有利收盘收益：`+0.823R`
+  - 10日MFE：`1.798R`
+  - 10日MAE：`0.936R`
+  - `clean_reversion`占比：`47.06%`
+  - `trend_continuation`占比：`2.94%`
+- 这说明被跳过信号不是明显低质量信号。
+
+### 按品种结果
+
+- `PF.CZCE long`
+  - 信号数：`12`
+  - 开仓数：`11`
+  - 风险预算零仓：`1`
+  - 中位单合约所需权益：`76,968`
+  - 最大单合约所需权益：`305,625`
+  - 10日方向有利收盘：`+1.259R`
+  - 10日MFE：`2.108R`
+  - 结论：当前200,000资金基准下基本可交易。
+- `y.DCE long`
+  - 信号数：`20`
+  - 开仓数：`4`
+  - 风险预算零仓：`16`
+  - 全样本中位单合约所需权益：`357,187`
+  - 被跳过样本中位单合约所需权益：`412,188`
+  - 最大单合约所需权益：`1,311,250`
+  - 10日方向有利收盘：`+0.592R`
+  - 10日MFE：`1.793R`
+  - 结论：信号不弱，但在200,000资金下合约粒度偏重。
+- `nr.INE long`
+  - 信号数：`18`
+  - 开仓数：`1`
+  - 风险预算零仓：`17`
+  - 全样本中位单合约所需权益：`506,287`
+  - 被跳过样本中位单合约所需权益：`523,511`
+  - 最大单合约所需权益：`1,037,500`
+  - 10日方向有利收盘：`+0.943R`
+  - 10日MFE：`2.036R`
+  - 结论：信号层有边际，但在200,000资金下更不适合直接交易。
+
+### 资金覆盖观察
+
+- `PF.CZCE long`
+  - `200,000`资金覆盖`11/12`
+  - `400,000`资金覆盖`12/12`
+- `y.DCE long`
+  - `200,000`资金覆盖`3/20`
+  - `300,000`资金覆盖`9/20`
+  - `400,000`资金覆盖`11/20`
+  - `500,000`资金覆盖`16/20`
+  - `800,000`资金覆盖`18/20`
+- `nr.INE long`
+  - `200,000`资金覆盖`1/18`
+  - `300,000`资金覆盖`3/18`
+  - `400,000`资金覆盖`5/18`
+  - `500,000`资金覆盖`9/18`
+  - `800,000`资金覆盖`16/18`
+
+### 核心判断
+
+- 当前v8长侧不是“信号没用”，而是合约粒度与200,000资金基准不匹配：
+  - `PF`每手风险较小，能自然交易。
+  - `y/nr`每手风险较大，当前风险预算经常买不起一手。
+- 不应该为了让`y/nr`交易而简单提高`risk_ratio`：
+  - 那会把风险预算从系统级风控参数变成“为了某些品种能开仓”的适配器，容易破坏穿越周期能力。
+- 更合理的定位：
+  - `PF.CZCE long`是当前资金体量下的可交易长侧核心。
+  - `y/nr`可以保留为信号观察对象；若资金规模或合约工具改变，再讨论交易化。
+- Polanyi式经验判断：
+  - `PF`像是现在账户规模能自然呼吸的品种；`y/nr`不是没有回摆味道，而是每一手太重，强行做会让仓位管理变形。
+
+### 输出文件
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_range_reversion_core4_v8_long_tradability.py`
+- 明细：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_long_tradability_detail_range_reversion_core4_v8_long_tradability_v1.csv`
+- 品种汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_long_tradability_product_range_reversion_core4_v8_long_tradability_v1.csv`
+- 原因汇总：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_long_tradability_reason_range_reversion_core4_v8_long_tradability_v1.csv`
+- 资金覆盖：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_long_tradability_capital_range_reversion_core4_v8_long_tradability_v1.csv`
+- 报告：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_range_reversion_core4_v8_long_tradability_report_range_reversion_core4_v8_long_tradability_v1.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做可交易性约束归因，不新增交易规则、不提高风险、不调参数，也不根据结果剔除品种。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第197阶段显示`y/nr`信号层不弱但大量零仓，必须确认是信号问题还是仓位可交易性问题，否则后续容易误判长侧价值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果解释的是一手合约风险与目标风险预算的硬约束，不是从收益里反推阈值；但不能据此直接提高风险参数。
+
+### 运行后继续价值反思
+
+- 判断：长侧仓位参数方向暂时无继续价值；震荡整体仍有继续价值。
+- 原因：长侧可交易性问题已经清楚，继续调风险预算会把风控变成适配器；更有价值的是做短侧状态判别，或把`y/nr`作为监控信号保留。
+
+### 决策
+
+- `range_reversion_core4_v8_long_tradability_no_param_change`
+- 不提高`risk_ratio`。
+- 不为了让`y/nr`开仓而改仓位参数。
+- 不写长侧v10交易版本。
+- `PF.CZCE long`保留为当前资金基准下主要可交易长侧对象。
+- `y/nr`在200,000资金基准下更适合作为观察信号，不强行交易。
+- 不接入第78。
+- 不进入第78 A/B/C。
+
+### 后续规划和TODO
+
+- 下一步优先做短侧状态归因：
+  - 对比2025 `cs.DCE short`趋势延续样本与2023/2024回归样本。
+  - 观察入场前20日收益、通道位置、波动宽度zscore、RSI、中轴距离和止损距离。
+  - 目标是判断短侧是否有可解释的状态过滤方向。
+- 暂不做：
+  - 不提高风险预算。
+  - 不做`y/nr`强制交易版本。
+  - 不删除`cs.DCE`。
+  - 不扩大品种池稀释问题。
