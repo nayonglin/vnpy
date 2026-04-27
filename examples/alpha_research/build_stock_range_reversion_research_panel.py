@@ -28,6 +28,7 @@ TUSHARE_INDEX_CODE: str = os.getenv("TUSHARE_INDEX_CODE", "000852.SH")
 BENCHMARK_CODE: str = os.getenv("BENCHMARK_CODE", "sh.000852")
 MAX_SYMBOLS: int = int(os.getenv("MAX_SYMBOLS", "0") or 0)
 SLEEP_SECONDS: float = float(os.getenv("SLEEP_SECONDS", "0.05") or 0.0)
+TUSHARE_SLEEP_SECONDS: float = float(os.getenv("TUSHARE_SLEEP_SECONDS", str(SLEEP_SECONDS)) or 0.0)
 MIN_LISTING_DAYS: int = int(os.getenv("MIN_LISTING_DAYS", "120") or 0)
 MIN_ADV20_TURNOVER: float = float(os.getenv("MIN_ADV20_TURNOVER", "20000000") or 0.0)
 COMPONENT_LOOKBACK_DAYS: int = int(os.getenv("COMPONENT_LOOKBACK_DAYS", "370") or 0)
@@ -214,8 +215,8 @@ def fetch_tushare_historical_components() -> tuple[list[str], pl.DataFrame, str]
             raise RuntimeError(f"Tushare index_weight failed after retries for {start}->{end}: {last_error}")
 
         if df is None or df.empty:
-            if SLEEP_SECONDS:
-                time.sleep(SLEEP_SECONDS)
+            if TUSHARE_SLEEP_SECONDS:
+                time.sleep(TUSHARE_SLEEP_SECONDS)
             continue
         for row in df.itertuples(index=False):
             symbol = str(row.con_code).split(".")[0]
@@ -228,8 +229,8 @@ def fetch_tushare_historical_components() -> tuple[list[str], pl.DataFrame, str]
                     "source": "tushare_index_weight",
                 }
             )
-        if SLEEP_SECONDS:
-            time.sleep(SLEEP_SECONDS)
+        if TUSHARE_SLEEP_SECONDS:
+            time.sleep(TUSHARE_SLEEP_SECONDS)
 
     if not rows:
         raise RuntimeError("Tushare returned no index_weight component rows")

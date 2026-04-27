@@ -343,7 +343,12 @@ def evaluate_feature(df: pl.DataFrame, feature: str, horizon: int) -> tuple[dict
     return summary, grouped, state_summary
 
 
-def write_report(summary_df: pl.DataFrame, state_df: pl.DataFrame, output_paths: dict[str, Path]) -> Path:
+def write_report(
+    summary_df: pl.DataFrame,
+    state_df: pl.DataFrame,
+    output_paths: dict[str, Path],
+    sample_meta: dict[str, Any],
+) -> Path:
     """Write Chinese signal attribution report."""
     report_path = OUTPUT_DIR / f"{PREFIX}_report.md"
 
@@ -373,9 +378,31 @@ def write_report(summary_df: pl.DataFrame, state_df: pl.DataFrame, output_paths:
             f"- 全部 horizon 中 top-bottom 平均最高的是`{best_all['feature']}`/`{best_all['horizon']}日`，均值`{best_all['top_minus_bottom_mean']:.4%}`，t值`{best_all['top_minus_bottom_t']:.2f}`。"
         )
 
+    if sample_meta["has_historical_components"]:
+        sample_line = (
+            f"- 样本范围为`{sample_meta['date_min']}`到`{sample_meta['date_max']}`，"
+            f"`{sample_meta['symbol_count']}`只历史出现过的成分股；本次已使用 Tushare 历史成分过滤，"
+            "幸存者偏差较静态当前成分口径明显降低，但历史长度仍只有一年多。"
+        )
+        judgment_line = (
+            "- 如果top-bottom均值和Rank IC同向为正，说明股票横截面超跌反弹有初步方向；"
+            "但因为历史短，仍不能进入正式策略设计。"
+        )
+        next_step_line = "- 下一步不应直接调阈值，而应把同一套固定口径扩展到更长历史，并做行业、市值、流动性分层。"
+    else:
+        sample_line = (
+            f"- 样本范围为`{sample_meta['date_min']}`到`{sample_meta['date_max']}`，"
+            f"`{sample_meta['symbol_count']}`只股票；若未使用历史成分字段，结论只能作为 smoke test，不能当作正式策略证据。"
+        )
+        judgment_line = (
+            "- 如果top-bottom均值和Rank IC同向为正，说明股票横截面超跌反弹有初步方向；"
+            "但因为历史短、当前成分样本和历史成分缺口，不能进入正式策略设计。"
+        )
+        next_step_line = "- 下一步不应直接调阈值，而应补历史成分，或把同一套固定口径跑到更长、更干净的数据上。"
+
     lines.extend(
         [
-        "- 但样本只有2025-01-02到2026-04-17、300只当前成分股；结论只能作为股票震荡路线的 smoke test，不能当作正式策略证据。",
+            sample_line,
             "",
             "## 5日持有摘要",
             "",
@@ -409,9 +436,9 @@ def write_report(summary_df: pl.DataFrame, state_df: pl.DataFrame, output_paths:
             "",
             "## 判断",
             "",
-            "- 如果top-bottom均值和Rank IC同向为正，说明股票横截面超跌反弹有初步方向；但因为历史短、当前成分样本和历史成分缺口，不能进入正式策略设计。",
+            judgment_line,
             "- 如果输入为双口径研究面板，信号和收益使用前复权价，停牌、涨跌停和成交约束使用原始价。",
-            "- 下一步不应直接调阈值，而应补历史成分，或把同一套固定口径跑到更长、更干净的数据上。",
+            next_step_line,
             "- Polanyi式手感：这一步看的是“水温”，不是下水游泳；如果水温都不对，就别急着设计泳姿。",
             "",
             "## 输出文件",
@@ -433,6 +460,16 @@ def main() -> None:
     stock_df, benchmark_df = load_inputs()
     df = add_price_features(stock_df)
     df = add_forward_returns(df, benchmark_df)
+    sample_meta = {
+        "symbol_count": df["symbol"].n_unique(),
+        "date_min": str(df["datetime"].min()),
+        "date_max": str(df["datetime"].max()),
+        "has_historical_components": (
+            bool(df.select(pl.col("is_index_component").fill_null(False).any()).item())
+            if "is_index_component" in df.columns
+            else False
+        ),
+    }
 
     summaries: list[dict[str, Any]] = []
     group_frames: list[pl.DataFrame] = []
@@ -466,6 +503,7 @@ def main() -> None:
                 "min_daily_width": MIN_DAILY_WIDTH,
                 "entry": "next close",
                 "return": "stock forward return minus benchmark forward return",
+                "sample": sample_meta,
             },
             ensure_ascii=False,
             indent=2,
@@ -481,7 +519,7 @@ def main() -> None:
         "market_state_summary": state_path,
         "meta": meta_path,
     }
-    report_path = write_report(summary_df, state_df, output_paths)
+    report_path = write_report(summary_df, state_df, output_paths, sample_meta)
 
     print(summary_df)
     print(f"report={report_path}")

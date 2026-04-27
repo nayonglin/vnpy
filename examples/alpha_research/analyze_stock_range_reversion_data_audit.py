@@ -117,6 +117,17 @@ def audit_calendar(stock_df: pl.DataFrame, benchmark_df: pl.DataFrame) -> tuple[
         "benchmark_date_count": benchmark_date_count,
         "date_min": str(stock_df["datetime"].min()),
         "date_max": str(stock_df["datetime"].max()),
+        "has_qfq_price": "qfq_close" in stock_df.columns,
+        "has_historical_components": (
+            bool(stock_df.select(pl.col("is_index_component").fill_null(False).any()).item())
+            if "is_index_component" in stock_df.columns
+            else False
+        ),
+        "component_rows": (
+            int(stock_df.select(pl.col("is_index_component").fill_null(False).sum()).item())
+            if "is_index_component" in stock_df.columns
+            else 0
+        ),
         "expected_symbol_date_rows": expected_rows,
         "missing_symbol_date_rows": expected_rows - stock_df.height,
         "calendar_coverage_ratio": pct(stock_df.height, expected_rows),
@@ -326,23 +337,50 @@ def write_report(
     filter_items = {row["item"]: row for row in filter_summary_df.iter_rows(named=True)}
 
     report_path = OUTPUT_DIR / f"{PREFIX}_report.md"
+    if calendar_summary["has_historical_components"]:
+        survivor_risk = (
+            f"- 幸存者偏差风险已明显降低：本面板包含历史成分字段，成分内行数"
+            f"`{calendar_summary['component_rows']}`；但历史长度仍短，不能替代跨周期复验。"
+        )
+        route_scope = (
+            "- 第一性原理上，股票震荡的优势来自横截面宽度和仓位粒度；本轮历史成分面板已经能做更严肃的信号层归因，"
+            "但还不足以证明可穿越周期。"
+        )
+        data_todo = "3. 同步补数据问题：优先扩展更长年份和行业/市值字段；在这之前不做正式策略接入。"
+    else:
+        survivor_risk = (
+            "- 幸存者偏差风险高：现有 `public_zz1000_volume_research.py` 使用最新中证1000成分，"
+            "且 `MAX_SYMBOLS` 默认只取300只；不是历史成分全量面板。"
+        )
+        route_scope = (
+            "- 第一性原理上，股票震荡的优势来自横截面宽度和仓位粒度；当前缓存的300只股票已经足够做 smoke test，"
+            "但不足以证明可穿越周期。"
+        )
+        data_todo = "3. 同步补数据问题：确认复权口径，尽量扩展历史成分和更长年份；在这之前不做正式策略接入。"
+
+    if calendar_summary["has_qfq_price"]:
+        price_risk = "- 复权口径已有改进：信号/收益使用前复权价，停牌、涨跌停和成交约束使用原始价；后续仍需抽查除权除息异常。"
+    else:
+        price_risk = "- 复权风险高：现有 baostock 下载脚本使用 `adjustflag=\"3\"`，从生成逻辑看是不复权口径；没有复权因子列，股票震荡信号会被除权除息跳变污染。"
+
     lines = [
         "# 股票震荡研究数据可用性审计 v1",
         "",
         "## 核心结论",
         "",
         "- 当前仓库没有发现已经落地的“股票震荡/股票均值回归”研究历史；已有的是股票 alpha 示例、成交量因子研究和 CSI1000 数据准备脚手架。",
-        "- 现有股票缓存可以支撑股票震荡方向的第一轮信号层研究，但还不能支撑严肃正式回测。",
+        "- 现有股票面板可以支撑股票震荡方向的信号层研究，但还不能支撑正式策略接入。",
         f"- 数据覆盖：`{calendar_summary['symbol_count']}`只股票，`{calendar_summary['benchmark_date_count']}`个交易日，范围`{calendar_summary['date_min']}`到`{calendar_summary['date_max']}`。",
+        f"- 历史成分来源：`{calendar_summary['has_historical_components']}`；前复权研究价：`{calendar_summary['has_qfq_price']}`。",
         f"- 样本完整度：预期 symbol-date 行`{calendar_summary['expected_symbol_date_rows']}`，实际`{calendar_summary['raw_rows']}`，缺口`{calendar_summary['missing_symbol_date_rows']}`，覆盖率`{calendar_summary['calendar_coverage_ratio']:.2%}`。",
         f"- 5日标签/交易过滤后保留`{filter_summary['final_keep_rows']}`行，占原始行`{filter_summary['final_keep_ratio']:.2%}`；有效标签日期中位每日可交易横截面宽度`{filter_summary['median_effective_tradable_symbols_per_day']}`。",
         "",
         "## 主要风险",
         "",
-        "- 幸存者偏差风险高：现有 `public_zz1000_volume_research.py` 使用最新中证1000成分，且 `MAX_SYMBOLS` 默认只取300只；不是历史成分全量面板。",
-        "- 复权风险高：现有 baostock 下载脚本使用 `adjustflag=\"3\"`，从生成逻辑看是不复权口径；没有复权因子列，股票震荡信号会被除权除息跳变污染。",
+        survivor_risk,
+        price_risk,
         "- 历史长度短：缓存只有2025-01-02到2026-04-17，只有约一年多数据，无法证明跨牛熊、跨风格有效。",
-        "- 股票交易约束已有初步处理：停牌、ST、入场一字涨停、退出一字跌停和成交额/成交量过滤已经能重建，但还缺退市、上市天数、历史成分和复权确认。",
+        "- 股票交易约束已有初步处理：停牌、ST、入场一字涨停、退出一字跌停、上市天数和成交额/成交量过滤已经能重建；仍需补退市和行业/市值分层。",
         "",
         "## 数据质量观察",
         "",
@@ -368,14 +406,14 @@ def write_report(
         "## 对股票震荡路线的判断",
         "",
         "- 可以继续，但下一步应是“信号层归因”，不是马上写组合回测或优化参数。",
-        "- 第一性原理上，股票震荡的优势来自横截面宽度和仓位粒度；当前缓存的300只股票已经足够做 smoke test，但不足以证明可穿越周期。",
+        route_scope,
         "- Polanyi式手感：这份数据像一张能闻到市场气味的试纸，但还不是能上战场的地图；它适合验证超跌反弹有没有基本方向，不适合宣称策略可用。",
         "",
         "## 建议下一步",
         "",
         "1. 先做股票长侧超跌反弹的信号层归因：只看横截面排名后的未来1/3/5/10日收益分布，不做资金曲线。",
         "2. 信号必须用横截面 rank，而不是固定 RSI 阈值；先看分组单调性、Rank IC、市场状态分层。",
-        "3. 同步补数据问题：确认复权口径，尽量扩展历史成分和更长年份；在这之前不做正式策略接入。",
+        data_todo,
         "",
         "## 输出文件",
         "",

@@ -27698,3 +27698,166 @@ to-end季度冷启动：
   - `END_DATE=20260417`
   - `COMPONENT_LOOKBACK_DAYS=370`
   - 生成带历史中证1000成分过滤的正式股票震荡研究面板。
+
+## 2026-04-27 14:03 - 第203阶段：Tushare慢速重试跑通历史成分全量面板并复验股票震荡信号
+
+### 本次版本变更
+
+- 工作模式：`day`
+- 研究线：股票震荡独立研究线。
+- 与期货第78趋势策略关系：
+  - 无关。
+  - 未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 与期货震荡策略关系：
+  - 无关。
+  - 股票震荡继续作为独立数据研究线。
+- 本阶段目标：
+  - 验证“请求慢一点 + 重试”是否能缓解 Tushare `IP数量超限`。
+  - 构建带 Tushare 历史中证1000成分的股票震荡研究面板。
+  - 用历史成分口径复跑数据审计和固定信号层归因。
+- 本阶段未跑策略回测。
+
+### 代码改动
+
+- 修改股票研究面板构建脚本：
+  - `examples/alpha_research/build_stock_range_reversion_research_panel.py`
+- 修改股票数据审计脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_data_audit.py`
+- 修改股票信号归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_signal_attribution.py`
+- 关键补强：
+  - 新增 `TUSHARE_SLEEP_SECONDS`，让 Tushare 成分请求节奏独立于 Baostock 股票日线下载节奏。
+  - 审计报告动态识别历史成分来源和前复权口径。
+  - 信号归因报告动态识别历史成分来源，避免继续写“300只当前成分股”的旧文案。
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 新增数据构建参数：
+  - `TUSHARE_SLEEP_SECONDS=2`
+- 本次数据构建参数：
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `START_DATE=20250101`
+  - `END_DATE=20260417`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+  - `TUSHARE_RETRIES=5`
+  - `TUSHARE_RETRY_SLEEP=30`
+  - `TUSHARE_SLEEP_SECONDS=2`
+  - `SLEEP_SECONDS=0.02`
+  - `REFRESH=1`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- Tushare节奏验证：
+  - 单月 `index_weight` 查询成功。
+  - 全量历史成分解析最终成功。
+  - 过程中少数月份首轮触发`IP数量超限`，重试后成功。
+  - 结论：慢速请求和重试能缓解，但不能证明 IP 限制已经从账号侧根治。
+- 历史成分解析：
+  - 来源：`tushare_historical`
+  - 历史成分并集：`1,401`只
+  - 成分记录：`28,000`条
+  - snapshot日期数：`28`
+  - snapshot范围：`2023-12-29`到`2026-03-31`
+- 全量研究面板：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/`
+  - 股票行数：`432,439`
+  - 股票数：`1,397`
+  - 日期范围：`2025-01-02`到`2026-04-17`
+  - 基准行数：`311`
+  - 成分内行数：`311,000`，占比`71.92%`
+  - 成分内可研究行数：`282,528`，占比`65.33%`
+  - 下载失败股票：`4`只，分别为`000982`、`002610`、`600277`、`600297`。
+- 数据审计：
+  - 覆盖率：`99.53%`
+  - 重复 symbol-date 行：`0`
+  - OHLC不一致行：`0`
+  - 非正价格行：`0`
+  - 零或空成交量行：`818`
+  - 停牌行：`818`
+  - ST行：`4,737`
+  - 5日标签/交易过滤后保留`277,234`行，占原始行`64.11%`
+  - 有效标签日期中位每日可交易横截面宽度：`967`
+- 固定信号归因：
+  - 5日`score_oversold_ret_10`：top-bottom平均超额收益`0.3069%`，Rank IC`0.0564`，t值`2.40`，正向日占比`53.85%`。
+  - 5日`score_below_ma20`：top-bottom平均超额收益`0.2119%`，Rank IC`0.0581`，t值`1.53`。
+  - 5日`score_oversold_ret_20`：top-bottom平均超额收益`0.1542%`，Rank IC`0.0614`，t值`1.06`。
+  - 10日`score_oversold_ret_10`：top-bottom平均超额收益`0.4866%`，Rank IC`0.0586`，t值`2.87`，正向日占比`56.58%`。
+  - 10日`score_oversold_ret_5`：top-bottom平均超额收益`0.4699%`，Rank IC`0.0440`，t值`2.77`。
+  - 10日`score_below_ma20`：top-bottom平均超额收益`0.3898%`，Rank IC`0.0635`，t值`2.10`。
+
+### 输出文件
+
+- 历史成分研究面板：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_research_panel.parquet`
+- 基准：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_benchmark.parquet`
+- 历史成分：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_components.parquet`
+- 构建报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_research_manifest.md`
+- 数据审计：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_data_audit_v1_report.md`
+- 信号归因：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_signal_attribution_v1_report.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_full/stock_range_reversion_signal_attribution_v1_summary.csv`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段目标是补历史成分口径和复验固定信号，不优化收益参数、不生成资金曲线。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：历史成分是股票震荡路线从 smoke test 走向严肃研究的关键前置；不补这一层，后续结果都可能被幸存者偏差污染。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：信号定义沿用第200阶段固定口径，没有根据历史成分结果改公式、扫阈值或选择交易参数；补历史成分是在降低偏差。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：历史成分、前复权和交易约束补齐后，固定超跌信号仍保留正向边际；但样本仍短，下一步应扩展更长历史和做分层归因，而不是直接策略化。
+
+### 决策
+
+- 历史成分全量面板成为后续股票震荡研究优先输入。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 保留 Tushare 慢速请求和重试机制。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 扩展到更长历史，至少覆盖不同市场风格阶段。
+  - 补行业、市值、成交额分层，判断超跌反弹是否集中在某些不可交易或风格暴露中。
+- 第二优先级：
+  - 抽查4只失败股票是否为退市/特殊状态，并记录是否需要专门处理。
+  - 对除权除息附近的前复权收益做抽样检查。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把`score_oversold_ret_10`直接变成交易策略。
