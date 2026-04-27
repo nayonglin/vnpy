@@ -117,6 +117,14 @@ def audit_calendar(stock_df: pl.DataFrame, benchmark_df: pl.DataFrame) -> tuple[
         "benchmark_date_count": benchmark_date_count,
         "date_min": str(stock_df["datetime"].min()),
         "date_max": str(stock_df["datetime"].max()),
+        "sample_years": (
+            (
+                stock_df["datetime"].max() - stock_df["datetime"].min()
+            ).days
+            / 365.25
+            if stock_df["datetime"].min() and stock_df["datetime"].max()
+            else 0.0
+        ),
         "has_qfq_price": "qfq_close" in stock_df.columns,
         "has_historical_components": (
             bool(stock_df.select(pl.col("is_index_component").fill_null(False).any()).item())
@@ -363,12 +371,17 @@ def write_report(
     else:
         price_risk = "- 复权风险高：现有 baostock 下载脚本使用 `adjustflag=\"3\"`，从生成逻辑看是不复权口径；没有复权因子列，股票震荡信号会被除权除息跳变污染。"
 
+    if calendar_summary["has_historical_components"]:
+        history_line = "- 已生成股票震荡研究面板，并接入历史成分字段；本阶段关注数据可用性与信号层研究，不代表策略可交易。"
+    else:
+        history_line = "- 当前仓库没有发现已经落地的“股票震荡/股票均值回归”研究历史；已有的是股票 alpha 示例、成交量因子研究和 CSI1000 数据准备脚手架。"
+
     lines = [
         "# 股票震荡研究数据可用性审计 v1",
         "",
         "## 核心结论",
         "",
-        "- 当前仓库没有发现已经落地的“股票震荡/股票均值回归”研究历史；已有的是股票 alpha 示例、成交量因子研究和 CSI1000 数据准备脚手架。",
+        history_line,
         "- 现有股票面板可以支撑股票震荡方向的信号层研究，但还不能支撑正式策略接入。",
         f"- 数据覆盖：`{calendar_summary['symbol_count']}`只股票，`{calendar_summary['benchmark_date_count']}`个交易日，范围`{calendar_summary['date_min']}`到`{calendar_summary['date_max']}`。",
         f"- 历史成分来源：`{calendar_summary['has_historical_components']}`；前复权研究价：`{calendar_summary['has_qfq_price']}`。",
@@ -379,7 +392,7 @@ def write_report(
         "",
         survivor_risk,
         price_risk,
-        "- 历史长度短：缓存只有2025-01-02到2026-04-17，只有约一年多数据，无法证明跨牛熊、跨风格有效。",
+        f"- 历史长度：约`{calendar_summary['sample_years']:.1f}`年；如果不足覆盖多轮风格变化，仍不能证明跨牛熊、跨风格有效。",
         "- 股票交易约束已有初步处理：停牌、ST、入场一字涨停、退出一字跌停、上市天数和成交额/成交量过滤已经能重建；仍需补退市和行业/市值分层。",
         "",
         "## 数据质量观察",

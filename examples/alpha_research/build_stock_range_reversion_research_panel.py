@@ -29,6 +29,8 @@ BENCHMARK_CODE: str = os.getenv("BENCHMARK_CODE", "sh.000852")
 MAX_SYMBOLS: int = int(os.getenv("MAX_SYMBOLS", "0") or 0)
 SLEEP_SECONDS: float = float(os.getenv("SLEEP_SECONDS", "0.05") or 0.0)
 TUSHARE_SLEEP_SECONDS: float = float(os.getenv("TUSHARE_SLEEP_SECONDS", str(SLEEP_SECONDS)) or 0.0)
+BAR_WORKERS: int = int(os.getenv("BAR_WORKERS", "1") or 1)
+BAR_CACHE_REFRESH: bool = os.getenv("BAR_CACHE_REFRESH", "0").strip() == "1"
 MIN_LISTING_DAYS: int = int(os.getenv("MIN_LISTING_DAYS", "120") or 0)
 MIN_ADV20_TURNOVER: float = float(os.getenv("MIN_ADV20_TURNOVER", "20000000") or 0.0)
 COMPONENT_LOOKBACK_DAYS: int = int(os.getenv("COMPONENT_LOOKBACK_DAYS", "370") or 0)
@@ -465,31 +467,88 @@ def normalize_history(raw_pdf: pd.DataFrame, qfq_pdf: pd.DataFrame, symbol: str)
     )
 
 
+def bar_cache_dir() -> Path:
+    """Return the per-symbol Baostock cache directory for this date/price schema."""
+    return OUTPUT_DIR / "bar_cache" / f"{START_DATE}_{END_DATE}_{RAW_ADJUST_FLAG}_{QFQ_ADJUST_FLAG}"
+
+
+def bar_cache_path(cache_dir: Path, symbol: str) -> Path:
+    """Return one symbol's cached parquet path."""
+    return cache_dir / f"{symbol}.parquet"
+
+
+def download_symbol_history(symbol: str) -> pl.DataFrame:
+    """Download and normalize one symbol history."""
+    bs_code = symbol_to_bs_code(symbol)
+    raw_pdf = query_history(bs_code, RAW_ADJUST_FLAG)
+    qfq_pdf = query_history(bs_code, QFQ_ADJUST_FLAG)
+    return normalize_history(raw_pdf, qfq_pdf, symbol)
+
+
+def download_symbol_to_cache(symbol: str, cache_dir: Path) -> tuple[str, int, str]:
+    """Download one symbol and persist it to cache."""
+    path = bar_cache_path(cache_dir, symbol)
+    if path.exists() and not BAR_CACHE_REFRESH:
+        try:
+            return symbol, pl.read_parquet(path).height, ""
+        except Exception:
+            path.unlink(missing_ok=True)
+
+    try:
+        frame = download_symbol_history(symbol)
+        if frame.is_empty():
+            return symbol, 0, "empty"
+        frame.write_parquet(path)
+        return symbol, frame.height, ""
+    except Exception as exc:
+        return symbol, 0, str(exc)
+
+
 def build_stock_panel(symbols: list[str]) -> tuple[pl.DataFrame, list[str]]:
     """Download stock raw and qfq histories and build the research panel."""
-    frames: list[pl.DataFrame] = []
-    failed: list[str] = []
-
     if MAX_SYMBOLS:
         symbols = symbols[:MAX_SYMBOLS]
 
-    for index, symbol in enumerate(symbols, start=1):
+    cache_dir = bar_cache_dir()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    failed: list[str] = []
+
+    missing_symbols = [
+        symbol
+        for symbol in symbols
+        if BAR_CACHE_REFRESH or not bar_cache_path(cache_dir, symbol).exists()
+    ]
+    cached_count = len(symbols) - len(missing_symbols)
+    log(f"[bar] cache_dir={cache_dir}")
+    log(f"[bar] cached={cached_count} missing={len(missing_symbols)} workers=1")
+    if BAR_WORKERS > 1:
+        log("[bar] BAR_WORKERS>1 is disabled because Baostock login state is not process-safe")
+
+    for index, symbol in enumerate(missing_symbols, start=1):
         bs_code = symbol_to_bs_code(symbol)
-        log(f"[bar] {index}/{len(symbols)} {bs_code}")
-        try:
-            raw_pdf = query_history(bs_code, RAW_ADJUST_FLAG)
-            qfq_pdf = query_history(bs_code, QFQ_ADJUST_FLAG)
-            frame = normalize_history(raw_pdf, qfq_pdf, symbol)
-            if frame.is_empty():
-                failed.append(symbol)
-            else:
-                frames.append(frame)
-        except Exception as exc:
-            failed.append(symbol)
-            log(f"[bar] failed {symbol}: {exc}")
+        log(f"[bar] {index}/{len(missing_symbols)} {bs_code}")
+        downloaded_symbol, rows, error = download_symbol_to_cache(symbol, cache_dir)
+        if error:
+            failed.append(downloaded_symbol)
+            log(f"[bar] failed {downloaded_symbol}: {error}")
+        elif rows == 0:
+            failed.append(downloaded_symbol)
 
         if SLEEP_SECONDS:
             time.sleep(SLEEP_SECONDS)
+
+    frames: list[pl.DataFrame] = []
+    for symbol in symbols:
+        path = bar_cache_path(cache_dir, symbol)
+        if not path.exists():
+            if symbol not in failed:
+                failed.append(symbol)
+            continue
+        try:
+            frames.append(pl.read_parquet(path))
+        except Exception as exc:
+            failed.append(symbol)
+            log(f"[bar] failed to read cache {symbol}: {exc}")
 
     if not frames:
         raise RuntimeError("No stock history was downloaded")

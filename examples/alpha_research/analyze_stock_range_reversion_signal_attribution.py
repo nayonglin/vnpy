@@ -382,7 +382,7 @@ def write_report(
         sample_line = (
             f"- 样本范围为`{sample_meta['date_min']}`到`{sample_meta['date_max']}`，"
             f"`{sample_meta['symbol_count']}`只历史出现过的成分股；本次已使用 Tushare 历史成分过滤，"
-            "幸存者偏差较静态当前成分口径明显降低，但历史长度仍只有一年多。"
+            f"幸存者偏差较静态当前成分口径明显降低，样本长度约`{sample_meta['sample_years']:.1f}`年。"
         )
         judgment_line = (
             "- 如果top-bottom均值和Rank IC同向为正，说明股票横截面超跌反弹有初步方向；"
@@ -464,6 +464,11 @@ def main() -> None:
         "symbol_count": df["symbol"].n_unique(),
         "date_min": str(df["datetime"].min()),
         "date_max": str(df["datetime"].max()),
+        "sample_years": (
+            (df["datetime"].max() - df["datetime"].min()).days / 365.25
+            if df["datetime"].min() and df["datetime"].max()
+            else 0.0
+        ),
         "has_historical_components": (
             bool(df.select(pl.col("is_index_component").fill_null(False).any()).item())
             if "is_index_component" in df.columns
