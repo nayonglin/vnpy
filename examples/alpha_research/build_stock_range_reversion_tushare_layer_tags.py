@@ -43,6 +43,7 @@ TUSHARE_CALL_SLEEP_SECONDS: float = float(os.getenv("TUSHARE_CALL_SLEEP_SECONDS"
 TUSHARE_DATE_SLEEP_SECONDS: float = float(os.getenv("TUSHARE_DATE_SLEEP_SECONDS", "0.5") or 0.0)
 REFRESH: bool = os.getenv("REFRESH", "0").strip() == "1"
 BASIC_REFRESH: bool = os.getenv("BASIC_REFRESH", "0").strip() == "1"
+DAILY_BASIC_CACHE_REFRESH: bool = os.getenv("DAILY_BASIC_CACHE_REFRESH", "0").strip() == "1"
 MAX_DATES: int = int(os.getenv("MAX_DATES", "0") or 0)
 N_GROUPS: int = int(os.getenv("N_GROUPS", "5") or 5)
 
@@ -228,7 +229,7 @@ def daily_basic_cache_dir() -> Path:
 def fetch_one_daily_basic(pro: Any, trade_date: str, symbols: set[str], cache_dir: Path) -> pl.DataFrame:
     """Fetch one trade_date's daily_basic rows and cache them."""
     path = cache_dir / f"{trade_date}.parquet"
-    if path.exists() and not REFRESH:
+    if path.exists() and not DAILY_BASIC_CACHE_REFRESH:
         return pl.read_parquet(path)
 
     df = call_with_retry(

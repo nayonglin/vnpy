@@ -8307,3 +8307,358 @@
   - 不做第78 A/B/C。
   - 不调`volume_ratio_20 <= 0.70`阈值。
   - 下一步整理候选版本说明，并做新增交易日纸面跟踪可重复运行入口。
+
+### 224. 第251阶段完成纸面跟踪ADV缺失阻断审计
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 20:58 CST`。
+- 本阶段审计第250阶段纸面订单中最大的阻断来源`missing_adv20_turnover`，不新增信号、不调参数、不改写纸面跟踪净值。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：是，发现第250阶段最大阻断更像数据字段口径问题，而不是策略真实不可交易。
+- 外部调研判断：
+  - 交易数据质量资料强调成交量/成交额缺失会直接扭曲流动性与可成交性判断。
+  - 缺失字段不能静默跳过，也不能事后乐观补齐；必须先打质量标签并量化影响边界。
+  - fallback只能作为诊断，不得直接进入正式纸面跟踪口径。
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_paper_tracking_adv_missing_audit.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_tracking_adv_missing_audit_2018_2026/`
+- 核心结果：
+  - 缺ADV阻断订单`2313`行，涉及股票`108`只，时间范围`2020-06-19`到`2025-12-24`。
+  - 缺ADV阻断权重合计`25.4878`，约占全部目标换仓权重`17.25%`。
+  - 缺失分类中，`adv_field_missing_full_20d_history`占`2261`行、`105`只股票、权重`24.4016`。
+  - `adv_field_missing_partial_history`占`52`行、`6`只股票、权重`1.0862`。
+  - 若仅用同日可见成交额滚动均值作诊断fallback，可恢复缺ADV阻断权重`100.00%`。
+  - 原纸面成交填充率`82.48%`，fallback诊断口径理论填充率可提升到`99.73%`。
+- 关键判断：
+  - `missing_adv20_turnover`不是涨跌停/停牌问题，也不是明显无日线记录问题。
+  - 大部分样本有完整20日成交额历史，只是`adv20_turnover`字段缺失或纸面执行读取口径没有使用可替代字段。
+  - 这说明第250阶段纸面填充率偏保守，但不能直接把fallback写入正式结果；要先做预注册的数据质量前置规则。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：fallback只测量数据缺失影响边界，没有改写策略规则、净值或参数。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：ADV缺失是最大阻断来源，且存在可量化的恢复空间，值得继续做数据质量前置检查和候选版本整理。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 下一步应把数据质量前置检查写入纸面跟踪入口，并整理候选版本说明。
+
+### 225. 第252阶段完成纸面跟踪v2 ADV质量前置
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:07 CST`。
+- 本阶段将第251阶段ADV缺失审计转成预注册数据质量规则，生成独立v2纸面跟踪输出，不覆盖v1。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：是，纸面执行口径从“缺字段即阻断”升级为“原生ADV优先、fallback带质量标签”的可审计口径；但不是正式策略。
+- 外部调研判断：
+  - 平均成交额/成交量可以作为成交上限基础，但必须记录字段来源和数据质量标签。
+  - 缺失字段不能事后为了改善净值而补；必须先在入口处预注册规则。
+  - 本阶段只修执行数据质量口径，不改股票池、信号和`volume_ratio_20 <= 0.70`过滤阈值。
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_paper_tracking_v2_adv_quality.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_tracking_v2_adv_quality_2018_2026/`
+- v2数据质量规则：
+  - 原生`adv20_turnover > 0`时使用原生字段，`adv_source=native_adv20_turnover`，`adv_quality_flag=native_ok`。
+  - 原生ADV缺失时，若最近20日内至少有`5`个有效成交额日，则允许使用同日可见成交额滚动均值fallback。
+  - fallback保留`adv_source=fallback_turnover_ma_min1`，并区分`fallback_full_20d_history`和`fallback_partial_history`。
+  - fallback只修复执行成交额上限，不参与信号和过滤。
+- 核心结果：
+  - v2期末权益`2.2381`，总收益`123.81%`，最大回撤`-15.16%`，Sharpe`0.75`。
+  - 整体成交填充率`99.72%`，订单行数`28297`，阻断订单行数`44`，部分成交订单行数`0`。
+  - fallback允许订单`860`行，fallback成交权重`5.3106`。
+  - 最新目标执行日`2026-04-16`，订单`22`行，阻断`0`行。
+  - ADV质量来源：原生ADV订单`27437`行，成交权重`120.2614`；full 20d fallback订单`830`行，成交权重`5.1536`；partial fallback订单`30`行，成交权重`0.1570`。
+  - v2剩余阻断只剩真实执行约束：一字跌停卖出`28`行、一字涨停买入`14`行、停牌/缺开盘`2`行。
+- 关键判断：
+  - v1的主要损失来自ADV字段缺失导致持仓卡住，不是策略真实失效。
+  - v2结果接近第248阶段无ADV上限回放，说明执行口径修复是合理方向。
+  - 这仍不是正式策略，因为fallback规则还需要进入候选版本说明并在新增交易日持续验证。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：v2只改变ADV字段读取和质量标签，规则来自第251阶段预先审计，没有根据收益曲线挑参数。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：ADV质量前置后填充率恢复，候选仍为正收益、正Sharpe，值得整理候选版本说明。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 下一步整理股票震荡候选版本说明，并保留v1/v2执行口径差异。
+
+### 226. 第253阶段完成纸面跟踪v3 ex-ante ADV质量前置
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:12 CST`。
+- 本阶段发现v2的fallback与原生面板`adv20_turnover`都沿用“含当日成交额”的研究口径；为了让纸面执行更贴近开盘前可知信息，新增v3 ex-ante口径。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：是，v3消除了纸面成交容量里潜在的同日成交额前视风险；但仍不是正式策略版本。
+- 外部调研判断：
+  - 成交上限应使用平均成交额/成交量，但实盘口径必须避免使用交易日当日尚不可知的成交额。
+  - 数据质量标签仍然必要：要区分原生ADV、fallback ADV、缺失或历史不足。
+  - 本阶段只修执行数据口径，不改变股票池、信号和`volume_ratio_20 <= 0.70`过滤阈值。
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_paper_tracking_v3_exante_adv_quality.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_tracking_v3_exante_adv_quality_2018_2026/`
+- v3数据质量规则：
+  - 原生`adv20_turnover`先按股票右移一日，交易日只使用上一交易日及更早的原生ADV。
+  - fallback成交额也先按股票右移一日，再计算20/10/5日滚动均值。
+  - 原生ex-ante ADV优先；原生缺失且最近20日内至少`5`个有效ex-ante成交额日时，允许fallback。
+  - fallback只修复执行成交额上限，不参与信号和过滤。
+- 核心结果：
+  - v3期末权益`2.2381`，总收益`123.81%`，最大回撤`-15.16%`，Sharpe`0.75`。
+  - 整体成交填充率`99.72%`，订单行数`28297`，阻断订单行数`44`，部分成交订单行数`0`。
+  - fallback允许订单`794`行，fallback成交权重`5.0369`。
+  - 最新目标执行日`2026-04-16`，订单`22`行，阻断`0`行。
+  - ADV质量来源：ex-ante原生ADV订单`27503`行，成交权重`120.5352`；ex-ante full 20d fallback订单`766`行，成交权重`4.8798`；ex-ante partial fallback订单`28`行，成交权重`0.1570`。
+  - 剩余阻断仍只是真实执行约束：一字跌停卖出`28`行、一字涨停买入`14`行、停牌/缺开盘`2`行。
+- 关键判断：
+  - v3与v2收益、回撤、Sharpe、成交填充率基本一致，说明第252阶段改善不是靠同日成交额“偷看”撑起来的。
+  - fallback订单从`860`降到`794`，说明更保守口径改变了来源标签，但没有改变核心交易可执行性结论。
+  - 后续新增交易日纸面跟踪应优先采用v3口径，而不是v2。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：v3是反前视、更保守的执行口径校验，不新增预测变量、不调收益阈值。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：ex-ante口径仍保持正收益、正Sharpe和高成交填充率，值得作为后续纸面跟踪主口径继续验证。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - v3作为当前股票震荡纸面跟踪主口径；v2保留为研究对照。
+
+### 227. 第254阶段完成股票震荡候选版本包v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:18 CST`。
+- 本阶段没有新增回测、没有调参、没有改变策略信号，只把已有证据链整理成独立候选版本包。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于候选工程化沉淀；但对后续纸面跟踪很重要。
+- 外部调研判断：
+  - Backtrader的volume filler/slippage和Zipline的volume-share slippage都把成交模型作为独立执行层，而不是混在信号层。
+  - 因此本候选包同时记录信号、过滤、成本、容量、延迟、纸面订单和数据质量标签，不只记录收益。
+- 新增脚本：
+  - `examples/alpha_research/summarize_stock_range_reversion_liquid_q3_candidate_pack.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_candidate_pack_2018_2026/`
+- 输出文件：
+  - `stock_range_reversion_liquid_q3_candidate_pack_v1_report.md`
+  - `stock_range_reversion_liquid_q3_candidate_pack_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_candidate_pack_v1_artifact_manifest.csv`
+- 候选版本：
+  - `stock_range_reversion_liquid_q3_age4_exclude_volume_dry_paper_v3`
+  - 场景：`age4_daily_exclude_volume_dry`
+  - 状态：纸面候选，不是正式策略，不做第78 A/B/C。
+- 核心证据：
+  - 50bp基础回测期末权益`2.4490`，总收益`144.90%`，最大回撤`-12.25%`，Sharpe`0.88`。
+  - 盈亏平衡往返成本约`192.1bp`；100bp期末权益`1.7873`，150bp期末权益`1.3043`。
+  - 样本保留：信号行`64.11%`，信号日`99.31%`，篮子权重`63.86%`。
+  - 起始年滚动：50bp下`7/9`个起始年同时胜出收益和回撤，回撤胜出率`100.00%`。
+  - 252日滚动：50bp下收益胜出率`72.22%`，回撤胜出率`100.00%`，Sharpe胜出率`93.14%`。
+  - 年度稳健性：50bp下`6/9`个年份收益胜出，平均年度收益增量`1.36%`。
+  - 纸面v3：期末权益`2.2381`，最大回撤`-15.16%`，Sharpe`0.75`，成交填充率`99.72%`。
+- 风险边界：
+  - 2025基础回测接近持平，说明策略不是每年线性赚钱。
+  - 日线级开盘模拟仍缺订单簿排队、盘口冲击和真实券商成交反馈。
+  - v3解决ADV前视问题，但fallback样本仍需抽样人工审计。
+  - A股T+1、涨跌停、停牌、ST变化、指数成分历史偏差仍需继续跟踪。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：候选包只是固化已有证据链，不新增信号、不调阈值、不把纸面候选包装成正式策略。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：候选证据链已闭合到信号、过滤、成本、容量、延迟和纸面订单，下一步适合建立新增交易日入口。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 下一步建立新增交易日纸面跟踪入口，默认使用v3 ex-ante ADV质量口径。
+
+### 228. 第255阶段完成最新纸面交易包入口v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:22 CST`。
+- 本阶段新增一键最新纸面交易包入口，默认使用第253阶段v3 ex-ante ADV质量口径；不新增信号、不调参数。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于纸面跟踪工程化入口；但它是后续样本外新增交易日记录的主入口。
+- 外部调研判断：
+  - Backtrader/Zipline类框架都把成交量、滑点和订单成交放在执行层。
+  - 最新纸面入口也应只做目标权重、订单、成交约束、阻断原因和质量标签输出，不改信号层。
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_latest_paper_packet.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_latest_paper_packet_2018_2026/`
+- 输出文件：
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_report.md`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_signals.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_targets.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_orders.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_tradable_orders.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_blocked_orders.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_block_summary.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_adv_summary.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_latest_side_summary.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_recent_daily.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_curves.csv`
+  - `stock_range_reversion_liquid_q3_latest_paper_packet_v1_meta.json`
+- 最新纸面结果：
+  - 最新信号日`2026-04-17`；最新目标执行日`2026-04-16`。
+  - 尾部对齐提示：本地数据尾部存在信号审计日晚于可执行目标日的情况；下单/纸面执行以`latest_target_date`为准，`latest_signal_date`只作为尾部信号审计。
+  - 最新信号候选`24`只，保留`15`只，过滤`9`只。
+  - 最新目标持仓`31`只，目标总权重`35.94%`。
+  - 最新订单`22`行，可交易`22`行，阻断`0`行。
+  - 最新计划换仓权重`9.11%`，可成交权重`9.11%`，未成交权重`0.00%`。
+  - 最新ADV质量来源全部为`exante_native_adv20_turnover/exante_native_ok`，无fallback订单。
+  - 全历史v3参考：期末权益`2.2381`，最大回撤`-15.16%`，Sharpe`0.75`，填充率`99.72%`。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：入口只输出可对账流水，不能提升历史收益；它降低的是操作混乱和事后解释空间。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：最新目标、订单、阻断、ADV质量和信号审计已经分表输出，后续可直接用于样本外纸面跟踪。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 后续每次数据更新后优先运行本入口，再记录新增交易日结果。
+
+### 229. 第256阶段完成v3 fallback全量事前口径审计
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:28 CST`。
+- 本阶段新增v3 fallback订单全量审计；不新增信号、不调参数、不跑新收益回测。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于候选版本执行口径质量审计；但它补上了v3默认纸面入口的重要数据可信度证据。
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_v3_fallback_audit.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_v3_fallback_audit_2018_2026/`
+- 核心结果：
+  - fallback订单`794`行，涉及股票`99`只，日期`2020-06-19`到`2025-12-25`。
+  - fallback目标权重合计`5.1219`，成交权重合计`5.0369`。
+  - 审计通过`794`行，失败`0`行，通过率`100.00%`。
+  - fallback复算匹配`794`行，有效成交额天数匹配`794`行。
+  - 上一交易日早于订单日`794`行，原生ADV按预期缺失`794`行。
+  - fallback精确等于当日成交额且不等于上一交易日成交额的可疑样本`0`行。
+- 质量分类：
+  - `exante_fallback_full_20d_history`：`766`行，审计通过率`100.00%`。
+  - `exante_fallback_partial_history`：`28`行，审计通过率`100.00%`。
+- 外部调研判断：
+  - 滚动窗口/执行约束要避免前视，交易点使用的成交额、ADV等变量应确认在当时可知。
+  - 本阶段使用上一交易日成交额和右移后的滚动成交额复算fallback，属于时间戳审计，不是收益优化。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：本阶段只做执行数据口径复算，不新增预测变量、不调整阈值，不可能通过调参提高历史收益。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：v3 fallback全量复算通过，默认纸面入口的数据时间戳风险下降，适合继续做新增交易日样本外纸面跟踪。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 下一步优先把最新纸面入口作为新增交易日跟踪主流程；若数据更新后fallback样本增加，则重新运行本审计。
+
+### 230. 第257阶段完成股票震荡paper ledger v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:34 CST`。
+- 本阶段新增股票震荡独立paper ledger入口；不新增信号、不调参数、不跑新策略回测。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于纸面跟踪基础设施；但它把后续新增交易日跟踪从“报告快照”推进到“可复验账本”。
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_paper_ledger.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_ledger_2018_2026/`
+- 输出文件：
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_report.md`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_daily_ledger.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_order_ledger.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_monthly_ledger.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_yearly_ledger.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_latest_snapshot.csv`
+  - `stock_range_reversion_liquid_q3_paper_ledger_v1_meta.json`
+- 核心结果：
+  - 日账本`1985`行，订单账本`28297`行，月账本`99`行，年账本`9`行。
+  - 最新目标执行日`2026-04-16`，最新信号审计日`2026-04-17`。
+  - v3参考期末权益`2.2381`，总收益`123.81%`，最大回撤`-15.16%`，Sharpe`0.75`。
+  - 整体成交填充率`99.72%`，全历史阻断订单`44`行。
+  - 最新目标日订单`22`行，阻断`0`行，计划换仓`9.11%`，可成交`9.11%`。
+  - 质量检查`7`项通过，`2`项警告，`0`项失败。
+- 两个警告：
+  - `latest_signal_after_target_warning`：信号审计日`2026-04-17`晚于目标执行日`2026-04-16`，执行仍以目标执行日为准。
+  - `data_tail_calendar_lag`：当前数据尾部距系统日期`12`个自然日，提示下一步优先补数据。
+- 外部调研判断：
+  - Zipline/Backtrader类框架都把订单、成交、持仓、收益和分析器分层。
+  - 本阶段不复用外部框架，只吸收账本思想：订单流水、日收益流水、周期汇总、质量检查点分开落盘。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：ledger只整理既有v3纸面结果，不能改善历史收益，也没有选择新参数或更优样本窗口。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：后续每次数据更新都能用同一账本入口比较新增样本外表现；当前质量检查失败项为`0`。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 下一步优先补齐最新行情数据，然后重新运行latest packet和paper ledger，追加新增交易日纸面记录。
+
+### 231. 第258阶段完成股票震荡数据尾部更新和纸面回放
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 21:44 CST`。
+- 本阶段性质：补齐Tushare行情和daily_basic尾部数据，重跑repairability filter、v3纸面跟踪、latest packet、fallback audit和paper ledger；不新增信号、不调策略参数。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于新增数据后的样本外纸面跟踪更新。
+- 工程改动：
+  - `examples/alpha_research/build_stock_range_reversion_tushare_layer_tags.py`新增`DAILY_BASIC_CACHE_REFRESH`开关。
+  - 目的：允许`REFRESH=1`重建汇总layer tags，同时复用已有单日daily_basic缓存，只请求新增日期，降低限流和重复拉取风险。
+- 数据更新：
+  - 2025-2026行情面板更新到`2026-04-28`。
+  - 2025-2026股票行数从`435711`增至`445518`，交易日从`311`增至`318`。
+  - benchmark日期更新到`2026-04-28`。
+  - layer tags更新到`2026-04-28`，交易日从`2010`增至`2017`。
+  - 成分内可研究行daily_basic覆盖仍为`100.00%`。
+- 更新后核心结果：
+  - repairability filter 50bp `age4_daily_exclude_volume_dry`：期末权益`2.4025`，总收益`140.25%`，最大回撤`-12.25%`，Sharpe`0.86`，年化单边换手`8.02x`。
+  - v3纸面跟踪：日数`1992`，订单`28450`行，期末权益`2.2225`，总收益`122.25%`，最大回撤`-15.16%`，Sharpe`0.7373`，填充率`99.73%`。
+  - 最新信号日`2026-04-28`；最新目标执行日`2026-04-27`。
+  - 最新信号候选`19`只，保留`15`只，过滤`4`只。
+  - 最新目标持仓`46`只，目标总权重`53.33%`。
+  - 最新订单`24`行，可交易`24`行，阻断`0`行。
+  - 最新计划换仓`8.65%`，可成交`8.65%`，未成交`0.00%`。
+  - paper ledger：日账本`1992`行，订单账本`28450`行，质量检查`8`项通过、`1`项警告、`0`项失败。
+- 唯一警告：
+  - `latest_signal_after_target_warning`：信号审计日`2026-04-28`晚于目标执行日`2026-04-27`，执行仍以`latest_target_date`为准。
+  - `data_tail_calendar_lag`已从警告变为通过，当前尾部滞后`1`个自然日。
+- fallback审计：
+  - fallback订单仍为`794`行，审计通过率`100.00%`，失败`0`行。
+- 外部调研判断：
+  - 本阶段按`tushare-data`技能做环境检查、token存在性检查和慢速请求。
+  - 工程参考仍是订单/成交/账本分层思想；本阶段只更新数据和复验，不引入外部策略。
+- 运行后过拟合反思：
+  - 判断：否。
+  - 原因：新增数据导致历史尾部自然变化，结果略有回落但没有据此调参数、删样本或改信号。
+- 运行后继续价值反思：
+  - 判断：是。
+  - 原因：新增7个交易日后latest目标无阻断、ledger无失败项、填充率仍高，适合继续按paper ledger滚动跟踪。
+- 决策：
+  - 不接入第78。
+  - 不进入正式股票策略。
+  - 不做第78 A/B/C。
+  - 不调`volume_ratio_20 <= 0.70`阈值。
+  - 后续继续定期补数据并追加paper ledger；若连续出现阻断、填充率下滑或新增回撤扩大，再做执行归因，不先调信号。
