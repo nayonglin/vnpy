@@ -28339,3 +28339,623 @@ to-end季度冷启动：
   - 不写资金曲线。
   - 不调阈值。
   - 不把2022强信号直接变成策略规则。
+
+## 2026-04-27 22:17 - 第207阶段：股票震荡2023年度分段面板与固定信号归因
+
+### 本次版本变更
+
+- 当前模式：`day`
+- 是否重要突破版本：否。不是交易突破版本；是股票震荡长历史年度扩展与结构市复验。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段未跑策略回测：
+  - 只构建2023年度历史成分股票研究面板。
+  - 复跑数据审计和固定信号层归因。
+  - 不写交易规则、不调阈值、不做资金曲线、不接入第78、不进入第78 A/B/C。
+- 数据全部更新后的计划：
+  - 先做2018-2026跨年度稳定性地图。
+  - 拆分年份、市场状态、行业、市值、成交额/流动性。
+  - 判断超跌修复是普适横截面边际，还是只在特定环境中存在。
+  - 稳定性地图通过后，才考虑最小组合回测。
+
+### 代码改动
+
+- 新增代码改动：无。
+- 沿用年度分段、Tushare成功调用节流、按交易日 parquet 缓存机制。
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 新增数据构建参数：无
+- 本次数据构建参数：
+  - `START_DATE=20230101`
+  - `END_DATE=20231231`
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+  - `TUSHARE_RETRIES=6`
+  - `TUSHARE_RETRY_SLEEP=45`
+  - `TUSHARE_SLEEP_SECONDS=2`
+  - `TUSHARE_DAILY_RETRIES=8`
+  - `TUSHARE_DAILY_RETRY_SLEEP=90`
+  - `TUSHARE_DAILY_SLEEP_SECONDS=0.5`
+  - `TUSHARE_CALL_SLEEP_SECONDS=2.5`
+  - `FETCH_STK_LIMIT=0`
+  - `MIN_LISTING_DAYS=120`
+  - `MIN_ADV20_TURNOVER=20000000`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 2023年度历史成分面板：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/`
+  - 股票行数：`338,558`
+  - 股票数：`1,399`
+  - 日期范围：`2023-01-03`到`2023-12-29`
+  - 基准行数：`242`
+  - 历史成分来源：`tushare_historical`
+  - 成分内行数：`242,021`，占比`71.49%`
+  - 成分内可研究行数：`220,011`，占比`65.02%`
+  - 下载失败股票：`0`
+- 数据审计：
+  - 预期 symbol-date 行与实际行均为`338,558`，覆盖率`100.00%`
+  - 重复 symbol-date 行：`0`
+  - OHLC不一致行：`0`
+  - 非正价格行：`0`
+  - 零或空成交量/成交额行：`1,840`
+  - 停牌行：`1,840`
+  - ST行：`4,308`
+  - 5日标签/交易过滤后保留`214,930`行，占原始行`63.48%`
+  - 有效标签日期中位每日可交易横截面宽度：`988`
+- 固定信号归因：
+  - 5日`score_oversold_ret_10`：top-bottom平均超额收益`0.5089%`，Rank IC`0.0560`，t值`4.07`，正向日占比`61.75%`。
+  - 5日`score_below_ma20`：top-bottom平均超额收益`0.4505%`，Rank IC`0.0485`，t值`3.49`。
+  - 5日`score_oversold_ret_20`：top-bottom平均超额收益`0.3434%`，Rank IC`0.0369`，t值`2.52`。
+  - 10日`score_oversold_ret_10`：top-bottom平均超额收益`0.9114%`，Rank IC`0.0616`，t值`4.85`，正向日占比`64.62%`。
+  - 10日`score_below_ma20`：top-bottom平均超额收益`0.8339%`，Rank IC`0.0577`，t值`4.21`。
+  - 10日`score_oversold_ret_20`：top-bottom平均超额收益`0.5465%`，Rank IC`0.0360`，t值`2.64`。
+  - `score_down_volume_pressure`在2023不再突出，5日 top-bottom 为`-0.0152%`。
+- 市场状态分层：
+  - `score_oversold_ret_10` 5日在`market_down_20d`下 top-bottom 为`0.5564%`，在`market_up_20d`下为`0.3853%`。
+  - `score_oversold_ret_10` 10日在`market_down_20d`下 top-bottom 为`1.1805%`，在`market_up_20d`下为`0.3667%`。
+  - 2023并非只在熊市压力下有效，但下跌状态仍明显更强。
+- 2018-2023年度对比：
+  - `score_oversold_ret_10` 5日 top-bottom：2018年`0.3686%`，2019年`0.6741%`，2020年`0.1165%`，2021年`0.1734%`，2022年`0.1272%`，2023年`0.5089%`。
+  - `score_oversold_ret_10` 10日 top-bottom：2018年`0.8252%`，2019年`1.2861%`，2020年`0.1022%`，2021年`0.2716%`，2022年`0.2537%`，2023年`0.9114%`。
+  - `score_oversold_ret_20` 10日 top-bottom：2018年`1.5785%`，2019年`1.3584%`，2020年`0.1650%`，2021年`0.2304%`，2022年`0.7611%`，2023年`0.5465%`。
+  - 结论：2023使10日超跌重新成为主线，而20日超跌仍有效但不是最强。
+
+### 输出文件
+
+- 2023研究面板：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_research_panel.parquet`
+- 基准：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_benchmark.parquet`
+- 历史成分：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_components.parquet`
+- 构建报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_research_manifest.md`
+- 数据审计：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_data_audit_v1_report.md`
+- 信号归因：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_signal_attribution_v1_report.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_signal_attribution_v1_summary.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2023/stock_range_reversion_signal_attribution_v1_2018_2023_year_compare.csv`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：补`2023`是继续外推验证，不改信号或阈值，不做交易参数优化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：2023是反弹/结构市，能检验2022的压力修复是不是只在熊市有效。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段继续年度外推复验，固定信号、固定过滤、无参数搜索；2023显示窗口主线变化，这是结构信息，不是拟合。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：2018-2023已经出现清晰年份差异，说明股票震荡研究有继续价值，但必须做状态/风格分层，不能直接固定单一窗口交易。
+
+### 决策
+
+- 保留股票震荡与期货第78趋势策略隔离。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 后续继续年度分段，下一段补`2024`。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 继续跑`2024`年度分段，验证弱市/结构市后段中10日和20日超跌谁更稳。
+  - 整合2018-2024年度对比，准备稳定性地图。
+- 第二优先级：
+  - 补行业、市值、成交额分层。
+  - 区分短期恐慌反转和中期超跌修复，不把多个不同机理揉成一个信号。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把2023强信号直接变成策略规则。
+
+## 2026-04-27 23:26 - 第208阶段：股票震荡2024年度分段面板与固定信号归因
+
+### 本次版本变更
+
+- 当前模式：`day`
+- 是否重要突破版本：否。不是交易突破版本；是股票震荡长历史年度扩展与近年弱市/事件反弹复验。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段未跑策略回测：
+  - 只构建2024年度历史成分股票研究面板。
+  - 复跑数据审计和固定信号层归因。
+  - 不写交易规则、不调阈值、不做资金曲线、不接入第78、不进入第78 A/B/C。
+
+### 代码改动
+
+- 新增代码改动：无。
+- 沿用年度分段、Tushare成功调用节流、按交易日 parquet 缓存机制。
+
+### 参数记录
+
+- 新增交易参数：无
+- 修改交易参数：无
+- 删除交易参数：无
+- 新增数据构建参数：无
+- 本次数据构建参数：
+  - `START_DATE=20240101`
+  - `END_DATE=20241231`
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+  - `TUSHARE_RETRIES=6`
+  - `TUSHARE_RETRY_SLEEP=45`
+  - `TUSHARE_SLEEP_SECONDS=2`
+  - `TUSHARE_DAILY_RETRIES=8`
+  - `TUSHARE_DAILY_RETRY_SLEEP=90`
+  - `TUSHARE_DAILY_SLEEP_SECONDS=0.5`
+  - `TUSHARE_CALL_SLEEP_SECONDS=2.5`
+  - `FETCH_STK_LIMIT=0`
+  - `MIN_LISTING_DAYS=120`
+  - `MIN_ADV20_TURNOVER=20000000`
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 2024年度历史成分面板：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/`
+  - 股票行数：`338,074`
+  - 股票数：`1,397`
+  - 日期范围：`2024-01-02`到`2024-12-31`
+  - 基准行数：`242`
+  - 历史成分来源：`tushare_historical`
+  - 成分内行数：`242,000`，占比`71.58%`
+  - 成分内可研究行数：`219,200`，占比`64.84%`
+  - 下载失败股票：`1`只，`601258`。
+- 数据审计：
+  - 预期 symbol-date 行与实际行均为`338,074`，覆盖率`100.00%`
+  - 重复 symbol-date 行：`0`
+  - OHLC不一致行：`0`
+  - 非正价格行：`0`
+  - 零或空成交量/成交额行：`2,205`
+  - 停牌行：`2,205`
+  - ST行：`7,743`
+  - 5日标签/交易过滤后保留`213,931`行，占原始行`63.28%`
+  - 有效标签日期中位每日可交易横截面宽度：`983`
+- 固定信号归因：
+  - 5日`score_oversold_ret_5`：top-bottom平均超额收益`0.5275%`，Rank IC`0.0464`，t值`2.61`，正向日占比`56.68%`。
+  - 5日`score_oversold_ret_20`：top-bottom平均超额收益`0.5209%`，Rank IC`0.0564`，t值`2.51`。
+  - 5日`score_below_ma20`：top-bottom平均超额收益`0.4782%`，Rank IC`0.0523`，t值`2.30`。
+  - 10日`score_oversold_ret_20`：top-bottom平均超额收益`0.9065%`，Rank IC`0.0657`，t值`3.39`，正向日占比`57.82%`。
+  - 10日`score_oversold_ret_5`：top-bottom平均超额收益`0.6608%`，Rank IC`0.0492`，t值`2.51`。
+  - 10日`score_below_ma20`：top-bottom平均超额收益`0.6150%`，Rank IC`0.0558`，t值`2.23`。
+- 市场状态分层：
+  - `score_oversold_ret_20` 5日在`market_down_20d`下 top-bottom 为`1.0032%`，在`market_up_20d`下为`-0.0385%`。
+  - `score_oversold_ret_20` 10日在`market_down_20d`下 top-bottom 为`1.7130%`，在`market_up_20d`下为`-0.0413%`。
+  - `score_oversold_ret_5` 5日在`market_down_20d`下 top-bottom 为`0.5624%`，在`market_up_20d`下为`0.5151%`。
+  - 2024说明短期超跌更像普遍修复，20日超跌则高度依赖下跌状态。
+- 2018-2024年度对比：
+  - `score_oversold_ret_20` 10日 top-bottom：2018年`1.5785%`，2019年`1.3584%`，2020年`0.1650%`，2021年`0.2304%`，2022年`0.7611%`，2023年`0.5465%`，2024年`0.9065%`。
+  - `score_oversold_ret_5` 5日 top-bottom：2023年`0.1431%`，2024年`0.5275%`。
+  - 结论：2024超跌修复很强，但不同窗口背后的状态依赖差异更明显。
+
+### 输出文件
+
+- 2024研究面板：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_research_panel.parquet`
+- 基准：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_benchmark.parquet`
+- 历史成分：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_components.parquet`
+- 构建报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_research_manifest.md`
+- 数据审计：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_data_audit_v1_report.md`
+- 信号归因：
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_signal_attribution_v1_report.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_signal_attribution_v1_summary.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2024/stock_range_reversion_signal_attribution_v1_2018_2024_year_compare.csv`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：补`2024`是继续外推验证，不改信号或阈值，不做交易参数优化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：2024能检验弱市/结构市后段中10日和20日超跌谁更稳。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段继续年度外推复验，固定信号、固定过滤、无参数搜索；2024强化了状态依赖的反证。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：2018-2024已足够显示股票震荡信号不是单窗口问题，而是状态和周期长度共同决定；下一步补2025-2026后应进入稳定性地图与分层归因。
+
+### 决策
+
+- 保留股票震荡与期货第78趋势策略隔离。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 后续继续补`2025-2026`，完成年度数据更新闭环。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 跑`2025-2026`新版按交易日 Tushare 分段，替换旧版2025-2026构建口径。
+  - 整合2018-2026年度对比，进入稳定性地图。
+- 第二优先级：
+  - 补行业、市值、成交额分层。
+  - 区分短期急跌修复、10日节奏修复、20日压力修复。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把2024强信号直接变成策略规则。
+## 第209阶段：股票震荡2025-2026新版Tushare日频面板补齐、审计、归因与2018-2026稳定性汇总
+
+### 基本信息
+
+- 时间：`2026-04-28 01:04 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 数据研究层面：是，2018-2026历史样本已经完成新版日频口径闭环
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增2025-2026新版Tushare按交易日构建结果：
+  - `daily + adj_factor`按交易日缓存
+  - 历史中证1000成分来自`index_weight`
+  - 复权价格用于信号和收益，原始价格用于可交易性与涨跌停判断
+- 新增2018-2026年度稳定性汇总：
+  - `stock_range_reversion_signal_attribution_v1_2018_2026_year_compare.csv`
+  - `stock_range_reversion_signal_attribution_v1_2018_2026_key_signal_map.csv`
+  - `stock_range_reversion_signal_attribution_v1_2018_2026_top_bottom_pivot.csv`
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易规则。
+- 未做策略资金曲线。
+
+### 新增参数
+
+- 无新增策略参数。
+- 本次运行使用的构建环境参数：
+  - `START_DATE=20250101`
+  - `END_DATE=20260417`
+  - `UNIVERSE_SOURCE=tushare_csi1000`
+  - `COMPONENT_LOOKBACK_DAYS=370`
+  - `TUSHARE_RETRIES=6`
+  - `TUSHARE_RETRY_SLEEP=45`
+  - `TUSHARE_SLEEP_SECONDS=2`
+  - `TUSHARE_DAILY_RETRIES=8`
+  - `TUSHARE_DAILY_RETRY_SLEEP=90`
+  - `TUSHARE_DAILY_SLEEP_SECONDS=0.5`
+  - `TUSHARE_CALL_SLEEP_SECONDS=2.5`
+  - `FETCH_STK_LIMIT=0`
+  - `MIN_LISTING_DAYS=120`
+  - `MIN_ADV20_TURNOVER=20000000`
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 2025-2026新版研究面板：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cache_tushare_daily_2025_2026/`
+  - 股票行数：`435,711`
+  - 股票数：`1,401`
+  - 日期范围：`2025-01-02`到`2026-04-17`
+  - 基准行数：`311`
+  - 历史成分来源：`tushare_historical`
+  - 成分内行数：`311,000`，占比`71.38%`
+  - 成分内可研究行数：`286,822`，占比`65.83%`
+  - 下载失败股票：`4`只，`000982`、`002610`、`600277`、`600297`
+- 数据审计：
+  - 预期 symbol-date 行与实际行均为`435,711`，覆盖率`100.00%`
+  - 缺失 symbol-date 行：`0`
+  - 基准交易日：`311`
+  - 5日标签/交易过滤后保留`281,467`行，占原始行`64.60%`
+  - 有效标签日期中位每日可交易横截面宽度：`981`
+- 2025-2026固定信号归因：
+  - 5日`score_oversold_ret_10`：top-bottom平均超额收益`0.3286%`，Rank IC`0.0574`，t值`2.58`，正向日占比`53.15%`
+  - 5日`score_below_ma20`：top-bottom平均超额收益`0.2431%`，Rank IC`0.0592`，t值`1.77`
+  - 5日`score_oversold_ret_20`：top-bottom平均超额收益`0.1752%`，Rank IC`0.0621`，t值`1.21`
+  - 10日`score_oversold_ret_10`：top-bottom平均超额收益`0.5310%`，Rank IC`0.0599`，t值`3.14`，正向日占比`58.01%`
+  - 10日`score_oversold_ret_5`：top-bottom平均超额收益`0.5305%`，Rank IC`0.0449`，t值`3.12`
+  - 10日`score_below_ma20`：top-bottom平均超额收益`0.4432%`，Rank IC`0.0647`，t值`2.40`
+  - 10日`score_oversold_ret_20`：top-bottom平均超额收益`0.3332%`，Rank IC`0.0666`，t值`1.69`
+- 市场状态分层：
+  - `score_oversold_ret_10` 10日在`market_down_20d`下 top-bottom 为`0.6932%`，在`market_up_20d`下为`0.5054%`
+  - `score_oversold_ret_20` 10日在`market_down_20d`下 top-bottom 为`0.9838%`，在`market_up_20d`下为`0.0251%`
+  - `score_oversold_ret_5` 10日在`market_down_20d`下 top-bottom 为`0.1889%`，在`market_up_20d`下为`0.7346%`
+- 2018-2026年度对比：
+  - `score_oversold_ret_10` 10日 top-bottom：2018年`0.8252%`，2019年`1.2861%`，2020年`0.1022%`，2021年`0.2716%`，2022年`0.2537%`，2023年`0.9114%`，2024年`0.4964%`，2025年`0.5236%`，2026年截至4月17日`0.5598%`
+  - `score_oversold_ret_20` 10日 top-bottom：2018年`1.5785%`，2019年`1.3584%`，2020年`0.1650%`，2021年`0.2304%`，2022年`0.7611%`，2023年`0.5465%`，2024年`0.9065%`，2025年`0.4899%`，2026年截至4月17日`-0.2795%`
+  - `2026`样本只有`57`个10日有效日期，应视为近端观察，不视为完整年度结论。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：补`2025-2026`是固定口径扩样本，不改变信号、不扫阈值、不写交易规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：2025-2026能检验近端是否仍存在横截面超跌修复，决定股票震荡路线是继续深化还是降级为观察信号。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做数据补齐和固定信号外推复验；2026中20日压力修复转弱没有被调参掩盖，说明流程保持了反证能力。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：2018-2026显示10日节奏修复在2023-2025仍有延续，20日压力修复更依赖下跌状态；这说明股票震荡研究还有价值，但必须进入状态/行业/市值/流动性分层，不能直接写组合策略。
+
+### 决策
+
+- 保留股票震荡与期货第78趋势策略隔离。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 下一步做2018-2026稳定性地图与分层归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 基于2018-2026年度表做稳定性地图，识别短周期、10日节奏、20日压力三类修复机制。
+- 第二优先级：
+  - 补行业、市值、成交额/换手分层，判断收益来自普遍回归还是结构性偏差。
+- 第三优先级：
+  - 若分层后仍稳定，再做最小可交易股票组合回测。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把2025/2026近端信号直接变成策略规则。
+## 第210阶段：股票震荡2018-2026分层标签补齐与第一版市值/流动性/行业分层归因
+
+### 基本信息
+
+- 时间：`2026-04-28 14:50 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，首次把2018-2026股票震荡信号拆到市值、换手、市场板块和行业层
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增分层标签构建脚本：
+  - `examples/alpha_research/build_stock_range_reversion_tushare_layer_tags.py`
+- 新增分层归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_layer_attribution.py`
+- 新增Tushare标签数据：
+  - `daily_basic`：市值、流通市值、自由流通股、换手率、估值等
+  - `stock_basic`：行业、市场板块、地域、上市状态等
+- 新增分层字段：
+  - `circ_mv_q`
+  - `total_mv_q`
+  - `free_share_q`
+  - `turnover_rate_q`
+  - `turnover_rate_f_q`
+  - `pb_q`
+  - `pe_ttm_q`
+  - `adv20_turnover_q`
+  - `market`
+  - `industry`
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易规则。
+- 未做策略资金曲线。
+
+### 新增参数
+
+- 标签构建：
+  - `TUSHARE_RETRIES=8`
+  - `TUSHARE_RETRY_SLEEP=90`
+  - `TUSHARE_CALL_SLEEP_SECONDS=6`
+  - `TUSHARE_DATE_SLEEP_SECONDS=0.5`
+  - `N_GROUPS=5`
+- 分层归因：
+  - `HORIZONS=5,10`
+  - `FEATURES=score_oversold_ret_5,score_oversold_ret_10,score_oversold_ret_20,score_below_ma20`
+  - `LAYER_COLUMNS=circ_mv_q,total_mv_q,turnover_rate_f_q,adv20_turnover_q,market,industry`
+  - `MIN_LAYER_DAILY_WIDTH=20`
+  - `MIN_LAYER_DAYS=60`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 分层标签输出：
+  - 输出目录：`examples/alpha_research/native_results/stock_range_reversion_layer_tags_tushare_2018_2026/`
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 标签行数：`3,076,624`
+  - 股票数：`2,519`
+  - 交易日：`2,010`
+  - `daily_basic`原始行数：`4,486,876`
+  - `stock_basic`行数：`5,835`
+  - 全体研究网格`daily_basic`覆盖率：`96.94%`
+  - 成分内可研究行`daily_basic`覆盖率：`100.00%`
+  - 行业标签非空率：`96.31%`
+  - 市场板块标签非空率：`99.90%`
+  - `circ_mv`非空率：`96.94%`
+  - `turnover_rate_f`非空率：`96.94%`
+  - `pb`非空率：`96.57%`
+  - `pe_ttm`非空率：`81.03%`
+- 第一版分层归因：
+  - `score_oversold_ret_10` 10日在`turnover_rate_f_q=5`中 top-bottom 为`1.1878%`，t值`11.37`，正向日占比`61.42%`
+  - `score_oversold_ret_10` 10日在`turnover_rate_f_q=1/2/3`中分别为`0.1271%`、`0.0507%`、`0.0070%`
+  - `score_oversold_ret_20` 10日在`turnover_rate_f_q=5`中 top-bottom 为`1.4467%`，t值`13.06`，正向日占比`63.04%`
+  - `score_oversold_ret_20` 10日在`turnover_rate_f_q=1/2/3`中分别为`0.1339%`、`0.0947%`、`0.0916%`
+  - `score_oversold_ret_20` 10日在`circ_mv_q=1`中 top-bottom 为`1.2438%`，t值`13.72`
+  - `score_oversold_ret_10` 10日在`circ_mv_q=1`中为`0.8588%`，在`circ_mv_q=3/4`中分别为`0.5695%`和`0.6254%`
+  - `score_oversold_ret_10` 10日在创业板为`0.7305%`，主板为`0.5172%`，科创板为`0.3518%`
+  - `score_oversold_ret_20` 10日在创业板为`0.8660%`，主板为`0.6600%`，科创板为`0.5267%`
+  - 行业层面较强的方向包括软件服务、通信设备、半导体、专用机械、电气设备等，但行业标签为静态字段，暂不做强因果解释。
+
+### 输出文件
+
+- 分层标签：
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_tags_tushare_2018_2026/stock_range_reversion_daily_basic.parquet`
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_tags_tushare_2018_2026/stock_range_reversion_stock_basic_layer.parquet`
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_tags_tushare_2018_2026/stock_range_reversion_layer_tags.parquet`
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_tags_tushare_2018_2026/stock_range_reversion_layer_tags_report.md`
+- 分层归因：
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_attribution_2018_2026/stock_range_reversion_layer_attribution_v1_summary.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_attribution_2018_2026/stock_range_reversion_layer_attribution_v1_year_summary.csv`
+  - `examples/alpha_research/native_results/stock_range_reversion_layer_attribution_2018_2026/stock_range_reversion_layer_attribution_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：补的是外生标签数据和固定信号分层，不改变信号窗口、过滤阈值或交易规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：没有市值、换手和行业分层，就无法判断股票震荡信号是普适均值回归，还是小盘/活跃度/行业结构偏差。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：分层结果没有反向改规则；高换手桶明显更强、低换手桶接近无效，是风险提示而不是参数优化。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：分层归因揭示信号核心更接近活跃资金回补后的超跌修复，继续研究应聚焦年度稳定性、流动性容量和交易成本。
+
+### 决策
+
+- 保留股票震荡与期货第78趋势策略隔离。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 下一步先做高换手/高成交活跃桶的年度稳定性和行业集中度归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 对`turnover_rate_f_q=5`、`adv20_turnover_q=5`做年度稳定性，确认不是单一年份贡献。
+- 第二优先级：
+  - 做`circ_mv_q × market`交叉分层，区分小盘弹性与创业板弹性。
+- 第三优先级：
+  - 加入交易成本、冲击成本和容量约束后，再考虑最小组合回测。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把高换手分层直接变成交易规则。
