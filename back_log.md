@@ -37671,6 +37671,449 @@ to-end季度冷启动：
   - 等30万OOS满`20`个交易日，再决定是否进入更长期paper或小额实盘前审计。
 - 第三优先级：
   - 若suite出现失败、阻断订单或未成交金额，先修执行链路，不改信号。
+## 第275阶段：股票震荡liquid_q3 30万 ST/不可研究买入守门回放 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-29 00:07 CST`。
+- 本阶段性质：交易可行性硬约束回放；不新增alpha信号、不调收益参数、不修改正式paper入口。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：是，属于实盘一致性层面的明确修复候选，但仍需阻断样本复核后再考虑并入paper入口。
+- A/B判断：股票震荡独立执行约束压力测试，不做第78 A/B/C。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_st_buy_guard_replay.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_scorecard.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_guard_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_guard_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_guard_block_audit.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_guard_block_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_buy_guard_replay_v1_state_summary.csv`
+
+### 新增参数
+
+- 无新增收益参数。
+- 新增执行守门逻辑：交易日`is_st/namechange-ST`或`eligible_research_row=false`时禁止新增买入/增持。
+- 该逻辑是事前可知交易可行性约束，不是拟合阈值。
+
+### 修改参数
+
+- 无。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、信号、持有期、成本、账户规模、ADV上限、整手规则或正式paper入口。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万账户ST/不可研究买入守门影子回放。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 基准期末权益倍数：`2.0177`，折算期末权益约`605,313`元。
+- 基准总收益：`101.77%`。
+- 基准最大回撤：`-12.38%`。
+- 基准Sharpe：`0.8475`。
+- 基准总交易次数：订单`16,642`行，成交订单`16,617`行，阻断订单`25`行。
+- 基准胜率：日胜率`50.25%`。
+- ST/不可研究守门期末权益倍数：`2.0093`，折算期末权益约`602,790`元。
+- ST/不可研究守门总收益：`100.93%`。
+- ST/不可研究守门最大回撤：`-11.59%`。
+- ST/不可研究守门Sharpe：`0.8482`。
+- ST/不可研究守门总交易次数：订单`16,783`行，成交订单`16,273`行，阻断订单`510`行。
+- ST/不可研究守门胜率：日胜率`50.30%`。
+- 相对基准：总收益下降`0.84`个百分点，最大回撤改善`0.79`个百分点，Sharpe提升`0.0007`。
+- 守门阻断新增买入/增持：`486`笔，金额`1,905,524`元，涉及`71`只。
+- 阻断拆解：真实ST/namechange-ST `17`笔、`66,818`元；非ST但当日不可研究`469`笔、`1,838,706`元。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 成本：基准最低佣金成本约`98,266.82`元；守门后约`95,007.40`元。
+- 质量检查：`4`项通过、`0`项警告、`0`项失败。
+
+### 核心结论
+
+- 这是一个有价值的执行层修复候选：它不是通过收益曲线倒推阈值，而是把实盘不会主动新增买入ST/不可研究股票的约束前置。
+- 收益牺牲很小，回撤略改善，Sharpe基本持平；说明这个修复不会破坏策略主体。
+- 压力桶`mr_liquidity_stress`收益几乎不变，说明本修复主要提高交易一致性，并不是解决全部压力尾部。
+- 下一步不能直接并入正式paper入口；需要复核最新订单和全历史阻断明细，确认`eligible_research_row=false`的469笔没有误伤正常可交易股票。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：ST/不可研究买入守门来自交易可行性审计，不来自收益搜索。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：守门规则事前可知，只禁止新增买入/增持，不按收益表现选择阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：ST事前审计发现执行层真实缺口，需要看修复后的资金曲线影响。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：如果阻断样本复核无误，该守门可以提高实盘一致性；但仍需先检查最新订单和误伤风险。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 下一步检查最新订单与全历史阻断样本，确认ST/不可研究买入守门是否可作为执行层默认约束。
+
+### 后续规划和TODO
+
+- 第一优先级：复核`guard_block_audit`中469笔非ST但不可研究阻断，拆清是上市天数、成交额、停牌、还是面板字段口径导致。
+- 第二优先级：检查最新目标日订单在守门后是否仍能生成可执行清单。
+- 第三优先级：若阻断样本合理，再讨论把守门逻辑接入股票paper跟踪入口；仍不触碰第78趋势策略。
+
+## 第274阶段：股票震荡liquid_q3 30万 ST事前审计 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-29 00:01 CST`。
+- 本阶段性质：ST/特殊处理交易约束审计；不新增信号、不调参数、不生成正式策略版本。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：是，发现执行层少量真实ST日买入缺口。
+- A/B判断：纯审计，不做第78 A/B/C。
+- 外部调研判断：
+  - Tushare `stock_basic`适合做当前基础信息映射，但当前名称不能替代历史当日名称。
+  - Tushare `namechange`的`start_date/end_date`更适合审计历史交易日是否处在ST名称区间。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_st_exante_audit.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_st_exante_audit_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_order_audit.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_st_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_stress_position_audit.csv`
+  - `stock_range_reversion_liquid_q3_300k_st_exante_audit_v1_position_scope_summary.csv`
+
+### 新增参数
+
+- 无新增策略参数。
+- 新增审计标签：
+  - `panel_is_st_on_date`
+  - `namechange_st_on_date`
+  - `looks_st_but_not_exante_st`
+  - `exante_st_on_date_any_source`
+
+### 修改参数
+
+- 无。
+- 未修改`volume_ratio_20 <= 0.70`。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增结果：ST事前可交易性审计。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 全历史订单：`16,642`行，涉及`617`只，订单面板回查缺失`0`行。
+- 交易日真实ST/namechange-ST订单：`31`行。
+- 真实ST/namechange-ST买入/增持：`8`行，成交额`14,437`元。
+- 真实ST/namechange-ST卖出：`23`行，其中`7`行因一字跌停卖出阻断。
+- 全持仓：`33,023`个position-day，真实ST/namechange-ST `30`行，贡献合计`-0.97%`。
+- 压力持仓：`6,822`个position-day，真实ST/namechange-ST `4`行，贡献合计`+0.05%`。
+- 压力持仓展示名称带ST但交易日非ST：`537`行。
+- 总滑点、期末权益、总收益、最大回撤、Sharpe、总交易次数、胜率：本阶段为审计，不新增资金曲线；沿用30万基准口径时为期末权益倍数`2.0177`、总收益`101.77%`、最大回撤`-12.38%`、Sharpe`0.8475`、订单`16,642`行、日胜率约`50.25%`。
+- 质量检查：`3`项通过、`2`项警告、`0`项失败。
+
+### 核心结论
+
+- 最差压力个股表里大量ST名称主要是当前名称泄漏，不是历史当日真实ST，不能用当前`code_name`做未来函数过滤。
+- 压力尾部不由ST持仓单独解释，主要仍来自市场/行业同步下跌和锁流动性。
+- 但执行层确实存在真实缺口：已ST交易日仍出现少量买入/增持。金额小，但实盘规则应该零容忍。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：ST审计是交易可行性约束核查，不搜索收益参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果指向事前可交易性缺口，而不是收益最大化阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：压力归因发现ST名称集中出现在最差个股表，需要区分后视名称泄漏和真实ST交易风险。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：审计发现少量真实ST日买入，下一步可以做非参数化执行守门回放。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 下一步只做执行约束修复压力测试：ST/不可研究日禁止新增买入/增持。
+
+### 后续规划和TODO
+
+- 第一优先级：做ST/不可研究日禁止新增买入回放。
+- 第二优先级：若回放影响可控，复核全历史阻断明细，确认是否适合并入股票paper执行层。
+
+## 第273阶段：股票震荡liquid_q3 30万压力状态内部归因 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 23:56 CST`。
+- 本阶段性质：`mr_liquidity_stress`内部归因；不新增信号、不调参数、不生成新策略版本。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否，属于归因阶段；但它把下一步方向从总仓调整收敛到结构和执行约束。
+- A/B判断：纯归因，不做第78 A/B/C。
+- 外部调研判断：
+  - 短期反转常被解释为提供流动性的补偿，压力环境可能贡献收益。
+  - 短期反转也会暴露于波动冲击和流动性真空；A股涨跌停机制会放大这种尾部。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_stress_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_subtype_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_stress_industry.csv`
+  - `stock_range_reversion_liquid_q3_300k_liquidity_stress_attribution_v1_worst_stress_symbol.csv`
+
+### 新增参数
+
+- 无新增策略参数。
+- 新增归因标签：
+  - `stress_lockdown`
+  - `stress_trend_breakdown_overlap`
+  - `stress_broad_capitulation`
+  - `stress_liquidity_premium_window`
+  - `stress_mixed_pressure`
+
+### 修改参数
+
+- 无。
+- 未修改`volume_ratio_20 <= 0.70`。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增结果：压力状态内部归因。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 压力日：`400`天，占全样本`20.08%`。
+- 压力日净收益合计：`31.77%`。
+- 压力日复合收益：`35.00%`。
+- 压力日最差单日：`-5.55%`。
+- 压力日日胜率：`54.25%`。
+- 压力日平均实际暴露：`23.81%`。
+- 压力日平均持仓：`17.1`只。
+- 收益贡献最高子类型：`stress_trend_breakdown_overlap`，`133`天，净收益`12.51%`，复合收益`13.00%`。
+- 尾部最差子类型：`stress_lockdown`，`101`天，净收益`10.95%`，最差单日`-5.55%`。
+- 负贡献子类型：`stress_mixed_pressure`，`25`天，净收益`-2.70%`。
+- 总滑点、期末权益、总收益、最大回撤、Sharpe、总交易次数、胜率：本阶段不新增资金曲线；沿用30万基准口径时为期末权益倍数`2.0177`、总收益`101.77%`、最大回撤`-12.38%`、Sharpe`0.8475`、订单`16,642`行、日胜率约`50.25%`。
+- 质量检查：`5`项通过、`0`项警告、`0`项失败。
+
+### 核心结论
+
+- 压力状态不是单一坏环境；它同时包含流动性补偿窗口和尾部锁死风险。
+- 不能简单回避`mr_liquidity_stress`，因为它贡献了非常重要的收益。
+- 下一步应优先从行业/个股结构切尾、ST事前字段审计和执行约束入手，而不是继续搜索市场状态加仓/降仓倍率。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只拆解压力状态，不搜索参数、不修改交易规则。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：归因结果只用于确定下一步风险来源，不把子类型直接固化为过滤器。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：上一阶段显示收益和尾部都集中在压力状态，必须拆清压力内部结构。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：压力桶归因能决定下一步该做行业暴露上限、ST审计，还是压力子类型OOS切片。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 下一步优先做`ST/is_st`事前字段审计。
+
+### 后续规划和TODO
+
+- 第一优先级：审计最差个股中的ST名称是否是当前名称泄漏，还是交易日真实ST。
+- 第二优先级：若存在真实ST/不可研究日买入，做非参数化执行守门回放。
+- 第三优先级：继续研究行业实际暴露上限，但不要先动总仓。
+
+## 第272阶段：股票震荡liquid_q3 30万可修复环境定义与压力测试 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 23:50 CST`。
+- 本阶段性质：严谨版事前可修复环境定义、归因和小幅进攻压力测试；不修改核心alpha信号。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。该阶段否决了“可修复好环境全局加仓”，但形成了重要风险认知。
+- A/B判断：不触发。该版本不具备接入正式版本或与第78做A/B实验的价值。
+- 外部调研判断：
+  - 均值回归策略的环境判断应围绕流动性、趋势破位、宽度修复和极端风险，而不是单日指数涨跌。
+  - 公开资料和开源实现都支持regime意识，但也提醒不要把表面舒适环境直接当成alpha增强。
+  - 本阶段用固定经验条件构造状态，不搜索阈值；结果显示“舒服的好环境”不是当前策略收益来源。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_repairable_state_overlay.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_repairable_state_overlay_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_repairable_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_state_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_latest_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_repairable_state_overlay_v1_equity_curves.png`
+  - 各变体的`daily/orders/targets/date_scale`明细文件。
+
+### 新增参数
+
+- 新增事前环境标签，不作为正式策略参数：
+  - `mr_repairable_good`：跌停/一字跌停/大面积下跌风险低，市场宽度处于修复区间，指数没有20日趋势破位，候选池深度足够。
+  - `mr_liquidity_stress`：跌停比例、一字跌停比例或大跌股票比例偏高。
+  - `mr_trend_breakdown`：指数20日跌幅过大、连续下跌过长，或前一日出现大跌。
+  - `mr_euphoric_extension`：市场过度亢奋，可能不是均值回归好买点。
+  - `mr_mixed`：没有落入以上清晰状态。
+- 新增诊断变体，不作为正式策略参数：
+  - `base_rerun`：不加仓。
+  - `repairable_state_115`：仅在`mr_repairable_good`目标权重乘`1.15`。
+  - `repairable_state_125`：仅在`mr_repairable_good`目标权重乘`1.25`。
+- 新增风险约束：
+  - `MAX_TARGET_GROSS_WEIGHT = 1.0`，目标总权重不允许超过`100%`。
+
+### 修改参数
+
+- 无核心策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、信号、持有期、成本、账户规模、ADV上限或整手规则。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万可修复环境归因和小幅进攻压力测试。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 基准`base_rerun`：
+  - 期末权益倍数`2.0177`，按30万折算期末权益约`605,313`元。
+  - 总收益`101.77%`。
+  - 最大回撤`-12.38%`。
+  - Sharpe`0.8475`。
+  - 平均实际暴露`23.87%`。
+  - 最差单日`-5.55%`。
+- `repairable_state_115`：
+  - 期末权益`1.9169`，总收益`91.69%`。
+  - 最大回撤`-13.43%`。
+  - Sharpe`0.7647`。
+  - 平均实际暴露`25.35%`。
+- `repairable_state_125`：
+  - 期末权益`1.8348`，总收益`83.48%`。
+  - 最大回撤`-14.17%`。
+  - Sharpe`0.7005`。
+  - 平均实际暴露`26.32%`。
+- 按状态归因：
+  - `mr_repairable_good`：`535`天，复合收益`2.51%`，日均收益约`0.0064%`，不是收益来源。
+  - `mr_liquidity_stress`：`400`天，复合收益`35.00%`，但最差单日`-5.55%`，收益和尾部风险同源。
+  - `mr_trend_breakdown`：`166`天，复合收益`14.35%`。
+  - `mr_euphoric_extension`：`510`天，复合收益`14.97%`。
+  - `mr_mixed`：`381`天，复合收益`10.91%`。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：基准订单`16,642`行；进攻变体订单最高`20,879`行，最低佣金成本上升。
+- 胜率：本阶段未新增全局胜率口径；状态日胜率见输出报告。
+- 质量检查：`5`项通过、`0`项警告、`0`项失败。
+
+### 核心结论
+
+- 用户质疑“涨超1%等于好环境不严谨”是正确的。
+- 更严谨的`mr_repairable_good`定义也没有支持全局加仓；加仓后收益、回撤、Sharpe全部弱于基准。
+- 更关键的发现是：当前股票震荡策略的收益并不来自表面舒服的好环境，而是更多来自压力后的反弹；这符合均值回归的默会经验，但也解释了曲线为什么会粗糙。
+- 因此，继续做“好环境加仓”不是好方向；更应该处理压力状态里的尾部风险来源，如行业集中和ST/问题股。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段使用预先定义的可修复环境条件和两档小幅进攻倍率，不扫描阈值、不改核心信号。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有被包装成正式策略；反而否决了继续在好环境加仓上调参。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：前一版`涨超1%`定义过粗，必须回到震荡策略的生存条件。
+
+### 运行后继续价值反思
+
+- 判断：是，但不在可修复好环境加仓分支继续。
+- 原因：状态归因显示收益并不来自舒服的可修复环境；继续加仓会扩大回撤，后续应处理行业和个股尾部风险。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 暂时否决可修复好环境全局加仓，不进入OOS切片。
+
+### 后续规划和TODO
+
+- 第一优先级：测试行业实际暴露上限，目标是限制压力反弹策略里的行业集中尾部，而不是调整总仓。
+- 第二优先级：审计`ST/is_st`是否为交易日前可知字段；如果可用，再做事前ST过滤压力测试。
+- 第三优先级：继续30万paper流程，观察压力状态收益是否在真实OOS中延续。
+
 ## 第271阶段：股票震荡liquid_q3 30万好环境进攻压力测试 v1
 
 - 当前模式：`day`。

@@ -511,6 +511,10 @@ def write_report(
     best_non_base = summary.filter(pl.col("variant") != "base_rerun").sort("sharpe_min_fee", descending=True).row(
         0, named=True
     )
+    repairable_rows = state_summary.filter(pl.col("mr_environment_state") == "mr_repairable_good")
+    stress_rows = state_summary.filter(pl.col("mr_environment_state") == "mr_liquidity_stress")
+    repairable_state_row = repairable_rows.row(0, named=True) if not repairable_rows.is_empty() else {}
+    stress_state_row = stress_rows.row(0, named=True) if not stress_rows.is_empty() else {}
     lines = [
         "# 股票震荡liquid_q3 30万可修复环境压力测试 v1",
         "",
@@ -547,7 +551,10 @@ def write_report(
             f"- Sharpe最高变体：`{best_sharpe['variant']}`，Sharpe`{best_sharpe['sharpe_min_fee']:.4f}`，总收益`{pct(best_sharpe['total_return_min_fee'])}`，最大回撤`{pct(best_sharpe['max_drawdown_min_fee'])}`。",
             f"- 总收益最高变体：`{best_return['variant']}`，总收益`{pct(best_return['total_return_min_fee'])}`，最大回撤`{pct(best_return['max_drawdown_min_fee'])}`，Sharpe`{best_return['sharpe_min_fee']:.4f}`。",
             f"- 非基准里Sharpe最高的是`{best_non_base['variant']}`，总收益变化`{pct(best_non_base['delta_total_return_min_fee'])}`，最大回撤变化`{pct(best_non_base['delta_max_drawdown_min_fee'])}`，Sharpe变化`{best_non_base['delta_sharpe_min_fee']:.4f}`。",
-            "- 判断标准：只有状态归因和加仓压力测试同时支持，才有继续做OOS切片的价值。",
+            f"- `mr_repairable_good`状态本身复合收益`{pct(to_float(repairable_state_row.get('compounded_return')))}`，日均收益`{pct(to_float(repairable_state_row.get('avg_daily_ret')))}`，并没有表现出更好的收益质量。",
+            f"- `mr_liquidity_stress`状态复合收益`{pct(to_float(stress_state_row.get('compounded_return')))}`，但最差单日`{pct(to_float(stress_state_row.get('worst_daily_ret')))}`，说明收益来自更难受的风险状态，而不是来自舒服的好环境。",
+            "- 本阶段结论：严谨版“可修复好环境”有归因价值，但不适合全局加仓；它揭示的是策略边际收益更像来自压力后的反弹，而不是来自表面稳定环境。",
+            "- 下一步不应继续在环境标签上加仓；应转向行业实际暴露上限和`ST/is_st`事前审计，处理尾部风险来源。",
             "",
             "## 基准按可修复状态归因",
             "",
@@ -667,8 +674,8 @@ def write_report(
             "",
             "## 运行后继续价值反思",
             "",
-            "- 判断：待根据本报告结果裁决。",
-            "- 原因：若可修复状态本身没有更好收益质量，则应转向行业暴露和ST审计；若有，则做OOS切片。",
+            "- 判断：是，但不在可修复好环境加仓分支继续。",
+            "- 原因：状态归因显示收益并不来自舒服的可修复环境；继续加仓会扩大回撤，后续应处理行业和个股尾部风险。",
             "",
             "## 决策",
             "",
@@ -676,7 +683,7 @@ def write_report(
             "- 不进入正式股票策略。",
             "- 不做第78 A/B/C。",
             "- 不调`volume_ratio_20 <= 0.70`阈值。",
-            "- 不能直接上线；必须先裁决状态定义是否有效。",
+            "- 暂时否决可修复好环境全局加仓，不进入OOS切片。",
             "",
             "## 输出文件",
             "",
