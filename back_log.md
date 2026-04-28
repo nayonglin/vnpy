@@ -32626,3 +32626,1984 @@ to-end季度冷启动：
   - 保留行业内超跌信号研究价值，下一步若继续股票线，应做外生状态归因或更低频信号，而不是交易账本调参。
 - 第三优先级：
   - 另一路可考虑ETF/指数震荡，先验证低换手结构，再考虑个股扩展。
+
+## 第234阶段：ETF业界模板震荡验证与数据口径修正
+
+### 基本信息
+
+- 当前模式：`day`。
+- 运行时间：`2026-04-28 18:11 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。阶段性有价值，但不是正式策略版本。
+- 触发背景：
+  - 用户询问是否可以参考业界已有震荡系统写策略。
+  - 本阶段将常见ETF均值回归模板落成可复验回测，用来判断“照业界骨架做A股ETF震荡”是否比个股日频路线更可交易。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_etf_industry_template.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_report.md`
+- 修改正式策略：无。
+- 修改第78：无。
+- 删除内容：无。
+
+### 数据与执行口径
+
+- 输入数据：
+  - `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_selected_daily.csv`
+- 样本ETF：
+  - `512100.SH`
+  - `159845.SZ`
+  - `560010.SH`
+  - `159629.SZ`
+  - `159633.SZ`
+  - `516300.SH`
+  - `560110.SH`
+- 数据口径修正：
+  - 原始ETF开盘价存在份额折算跳变，基于原始open-to-open的漂亮结果作废。
+  - 本阶段统一使用Tushare `pct_chg`/`daily_ret`计算收益。
+- 执行口径：
+  - 收盘生成信号。
+  - 次日收盘换仓。
+  - ETF long-only，不做空，不加杠杆。
+- 成本口径：
+  - 往返成本`10bp/20bp/50bp`。
+- 总滑点：
+  - 不适用。本阶段为ETF日线模板回测，没有单独模拟期货滑点。
+
+### 新增参数
+
+- 策略模板：
+  - `connors_rsi2_no_filter`：RSI(2)<=10买入，收盘站上MA5退出，无MA200过滤，最长10日。
+  - `connors_rsi2_ma200`：RSI(2)<=10买入，收盘站上MA5退出，要求收盘在MA200上方，最长10日。
+  - `bollinger20_2_no_filter`：20日z-score<=-2买入，回到MA20退出，无MA200过滤，最长15日。
+  - `bollinger20_2_ma200`：20日z-score<=-2买入，回到MA20退出，要求收盘在MA200上方，最长15日。
+- 成本档：
+  - `10bp`
+  - `20bp`
+  - `50bp`
+
+### 修改参数
+
+- 无。本阶段不是在既有策略上调参，而是新增ETF业界模板验证脚本。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `512100.SH`全历史，20bp，`bollinger20_2_no_filter`：
+  - 期末权益：`1.2002`
+  - 总收益：`20.02%`
+  - 最大回撤：`-28.63%`
+  - Sharpe：`0.24`
+  - 总交易次数：`43`
+  - 胜率：`69.77%`
+  - 年化绝对换手：`10.90x`
+  - 成本拖累：`8.60%`
+  - 买入持有期末权益：`1.5155`
+  - 买入持有最大回撤：`-46.31%`
+- `512100.SH`全历史，20bp，`bollinger20_2_ma200`：
+  - 期末权益：`1.1293`
+  - 总收益：`12.93%`
+  - 最大回撤：`-9.46%`
+  - Sharpe：`0.23`
+  - 总交易次数：`18`
+  - 胜率：`72.22%`
+  - 年化绝对换手：`4.56x`
+  - 成本拖累：`3.60%`
+  - 买入持有期末权益：`1.5155`
+  - 买入持有最大回撤：`-46.31%`
+- `512100.SH`全历史，50bp，`bollinger20_2_ma200`：
+  - 期末权益：`1.0697`
+  - 总收益：`6.97%`
+  - 最大回撤：`-9.74%`
+  - Sharpe：`0.15`
+  - 总交易次数：`18`
+  - 胜率：`72.22%`
+  - 年化绝对换手：`4.56x`
+  - 成本拖累：`9.00%`
+- 后半段高流动ETF，20bp，`bollinger20_2_ma200`：
+  - `560010.SH`：期末权益`1.1360`，总收益`13.60%`，最大回撤`-5.14%`，Sharpe`0.63`，总交易次数`5`，胜率`100.00%`
+  - `560110.SH`：期末权益`1.1232`，总收益`12.32%`，最大回撤`-5.31%`，Sharpe`0.56`，总交易次数`5`，胜率`100.00%`
+  - `516300.SH`：期末权益`1.1459`，总收益`14.59%`，最大回撤`-6.49%`，Sharpe`0.52`，总交易次数`8`，胜率`75.00%`
+  - `159633.SZ`：期末权益`1.1127`，总收益`11.27%`，最大回撤`-10.34%`，Sharpe`0.45`，总交易次数`8`，胜率`75.00%`
+  - `159629.SZ`：期末权益`1.0751`，总收益`7.51%`，最大回撤`-10.46%`，Sharpe`0.31`，总交易次数`9`，胜率`77.78%`
+  - `159845.SZ`：期末权益`1.0489`，总收益`4.89%`，最大回撤`-12.11%`，Sharpe`0.18`，总交易次数`10`，胜率`60.00%`
+
+### 修改/删除回测结果
+
+- 修改回测结果：
+  - 原始open-to-open口径下的ETF漂亮结果被判定为数据污染，不再采用。
+  - 最终报告只保留Tushare `pct_chg`收益口径。
+- 删除回测结果：
+  - 无文件删除。
+
+### 核心结论
+
+- 参考业界已有震荡系统可以写策略，但不能照搬后直接正式化。
+- Connors RSI(2)模板在本样本中成本敏感，50bp下大多变弱或转负。
+- Bollinger 20/2σ + MA200趋势过滤是本阶段最干净的骨架：收益不厚，但回撤、换手、成本承受力明显好于日频个股篮子。
+- ETF模板的优势不是收益高，而是交易动作少、结构简单、long-only约束自然。
+- 单一中证1000 ETF模板还不能证明可穿越周期；下一步必须扩展到宽基ETF池和市场状态归因。
+
+### 经验判断
+
+- Polanyi式手感：这条ETF路线不是靠每天从几千只股票里翻波动，而是等指数跌到统计护栏边再轻轻接一次。动作少，伤口少，但单靠它也不会长出厚收益；它更适合作为低回撤部件，而不是现在就当主发动机。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_daily_curves.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_trades.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_etf_industry_template_2018_2026/stock_range_reversion_etf_industry_template_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：策略模板来自业界常见ETF均值回归规则，参数固定为RSI(2)<=10、MA5退出、Bollinger 20/2σ、MA200趋势过滤；本阶段不是扫参，而是验证骨架和数据口径。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：前面`liquid_q3`日频个股路线被成本和换手卡住，ETF模板天然低换手、低执行复杂度，值得作为独立路线验证。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段保留全部ETF、全部模板和10/20/50bp成本；发现原始open-to-open被ETF折算污染后，主动改用`pct_chg`并放弃污染后的漂亮结果，没有按收益调参。
+
+### 运行后继续价值反思
+
+- 判断：是，但它只是低回撤ETF择时骨架，不是正式策略。
+- 原因：`bollinger20_2_ma200`在50bp下仍能保持正收益和低回撤，说明结构有交易价值；但收益明显低于买入持有，不能直接作为正式版本。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 不把单一ETF/单一模板作为正式候选。
+- 下一步优先扩展到沪深300、中证500、中证1000、创业板、科创等宽基ETF池，并做状态归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 补齐宽基ETF池数据，至少覆盖沪深300、中证500、中证1000、创业板、科创、红利、全A/中证A500等代表性指数ETF。
+- 第二优先级：
+  - 对`Bollinger 20/2σ + MA200`做状态归因：牛市回撤、熊市反抽、震荡市、趋势下跌分别表现如何。
+- 第三优先级：
+  - 若跨ETF和跨状态都稳，再考虑做ETF池组合版本；暂不回到日频个股参数微调。
+
+## 第235阶段：宽基ETF池补齐与模板状态归因
+
+### 基本信息
+
+- 当前模式：`day`。
+- 运行时间：`2026-04-28 18:22 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是ETF路线从单一中证1000扩展到多宽基指数后的结构验证。
+- 本阶段运行内容：
+  - 宽基ETF池数据补齐与数据审计。
+  - 固定ETF业界模板跨指数状态归因。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/download_stock_range_reversion_broad_etf_data.py`
+  - `examples/alpha_research/analyze_stock_range_reversion_broad_etf_template_state.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/`
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_report.md`
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_report.md`
+- 修改正式策略：无。
+- 修改第78：无。
+- 删除内容：无。
+
+### 数据补齐结果
+
+- Tushare请求节奏：
+  - 默认逐只基金拉取，间隔`1.20`秒，失败重试`5`次。
+  - 运行中一度遇到`IP数量超限`提示，重试后恢复，最终全部下载成功。
+- 固定宽基ETF候选：
+  - 候选ETF数量：`19`
+  - 成功下载：`19`
+  - 失败：`0`
+- 覆盖5年以上的primary宽基/风格ETF：
+  - 数量：`10`
+  - 包含上证50、沪深300、中证500、中证1000、深证100、创业板、科创50、上证红利、中证800、国证2000。
+- 短样本ETF：
+  - A500、中证2000保留为观察样本，不作为全历史证据。
+- 数据口径：
+  - 原始价格收益与Tushare `pct_chg`偏离超过5%的ETF数量：`8`
+  - 后续继续统一使用Tushare `pct_chg`/`daily_ret`，不使用原始价格比值。
+
+### 新增参数
+
+- ETF候选池：
+  - `510050.SH` 上证50
+  - `510300.SH` 沪深300
+  - `159919.SZ` 沪深300对照
+  - `510500.SH` 中证500
+  - `159922.SZ` 中证500对照
+  - `512100.SH` 中证1000
+  - `159845.SZ` 中证1000对照
+  - `159901.SZ` 深证100
+  - `159915.SZ` 创业板
+  - `159908.SZ` 创业板对照
+  - `588000.SH` 科创50
+  - `588080.SH` 科创50对照
+  - `510880.SH` 上证红利
+  - `515080.SH` 中证红利对照
+  - `515810.SH` 中证800
+  - `159907.SZ` 国证2000
+  - `159531.SZ` 中证2000短样本
+  - `159338.SZ` 中证A500短样本
+  - `159339.SZ` 中证A500对照短样本
+- 策略模板：
+  - `connors_rsi2_no_filter`
+  - `connors_rsi2_ma200`
+  - `bollinger20_2_no_filter`
+  - `bollinger20_2_ma200`
+- 状态定义：
+  - 趋势状态：`above_ma200_up60`、`above_ma200_down60`、`below_ma200_recover60`、`below_ma200_down60`、`warmup`
+  - 回撤状态：`shallow_dd`、`medium_dd`、`deep_dd`、`warmup`
+- 成本档：
+  - `10bp`
+  - `20bp`
+  - `50bp`
+
+### 修改参数
+
+- 无。本阶段不是在既有正式策略上调参。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/归因结果
+
+- 全ETF等权池20bp：
+  - `connors_rsi2_ma200`：期末权益`1.1460`，总收益`14.60%`，最大回撤`-9.27%`，Sharpe`0.36`，平均持有ETF数`1.31`
+  - `bollinger20_2_ma200`：期末权益`1.0672`，总收益`6.72%`，最大回撤`-7.82%`，Sharpe`0.19`，平均持有ETF数`1.10`
+  - `connors_rsi2_no_filter`：期末权益`1.0690`，总收益`6.90%`，最大回撤`-19.07%`，Sharpe`0.14`
+  - `bollinger20_2_no_filter`：期末权益`1.0385`，总收益`3.85%`，最大回撤`-20.03%`，Sharpe`0.10`
+- 全ETF等权池50bp：
+  - `bollinger20_2_ma200`：期末权益`1.0265`，总收益`2.65%`，最大回撤`-8.02%`，Sharpe`0.09`
+  - `connors_rsi2_ma200`：期末权益`0.9978`，总收益`-0.22%`，最大回撤`-11.55%`，Sharpe`0.02`
+  - `bollinger20_2_no_filter`：期末权益`0.9165`，总收益`-8.35%`，最大回撤`-23.74%`，Sharpe`-0.07`
+  - `connors_rsi2_no_filter`：期末权益`0.7704`，总收益`-22.96%`，最大回撤`-26.52%`，Sharpe`-0.31`
+- primary ETF `bollinger20_2_ma200` 20bp：
+  - `510300.SH` 沪深300：期末权益`1.2648`，总收益`26.48%`，最大回撤`-8.83%`，Sharpe`0.60`，交易`13`次，胜率`84.62%`
+  - `515810.SH` 中证800：期末权益`1.1840`，总收益`18.40%`，最大回撤`-3.98%`，Sharpe`0.67`，交易`8`次，胜率`87.50%`
+  - `159901.SZ` 深证100：期末权益`1.1762`，总收益`17.62%`，最大回撤`-9.47%`，Sharpe`0.34`，交易`12`次，胜率`83.33%`
+  - `159907.SZ` 国证2000：期末权益`1.1390`，总收益`13.90%`，最大回撤`-13.99%`，Sharpe`0.24`，交易`15`次，胜率`60.00%`
+  - `512100.SH` 中证1000：期末权益`1.1293`，总收益`12.93%`，最大回撤`-9.46%`，Sharpe`0.23`，交易`18`次，胜率`72.22%`
+  - `510050.SH` 上证50：期末权益`1.0547`，总收益`5.47%`，最大回撤`-6.64%`，Sharpe`0.20`
+  - `588000.SH` 科创50：期末权益`1.0104`，总收益`1.04%`，最大回撤`-12.50%`，Sharpe`0.06`
+  - `159915.SZ` 创业板：期末权益`0.9783`，总收益`-2.17%`，最大回撤`-22.96%`，Sharpe`0.02`
+  - `510880.SH` 上证红利：期末权益`0.9504`，总收益`-4.96%`，最大回撤`-6.69%`，Sharpe`-0.14`
+  - `510500.SH` 中证500：期末权益`0.9131`，总收益`-8.69%`，最大回撤`-19.73%`，Sharpe`-0.12`
+- primary ETF `connors_rsi2_ma200` 20bp观察：
+  - `510300.SH` 沪深300：期末权益`1.4541`，最大回撤`-10.08%`，Sharpe`0.78`
+  - `588000.SH` 科创50：期末权益`1.3475`，最大回撤`-5.02%`，Sharpe`0.90`
+  - 但池层50bp期末权益降到`0.9978`，说明成本边际过薄。
+
+### 状态归因结果
+
+- `bollinger20_2_ma200` 20bp入口状态：
+  - `above_ma200_up60 + deep_dd`：交易`9`笔，胜率`100.00%`，平均净收益`+3.23%`
+  - `above_ma200_up60 + medium_dd`：交易`130`笔，胜率`62.31%`，平均净收益`+0.31%`
+  - `above_ma200_up60 + shallow_dd`：交易`41`笔，胜率`65.85%`，平均净收益`+1.05%`
+  - `above_ma200_down60 + deep_dd`：交易`3`笔，胜率`33.33%`，平均净收益`-3.11%`
+  - `above_ma200_down60 + medium_dd`：交易`19`笔，胜率`68.42%`，平均净收益`+1.14%`
+- `connors_rsi2_ma200` 20bp入口状态：
+  - `above_ma200_up60 + deep_dd`：交易`36`笔，胜率`69.44%`，平均净收益`+1.10%`
+  - `above_ma200_up60 + medium_dd`：交易`321`笔，胜率`53.27%`，平均净收益`+0.18%`
+  - `above_ma200_down60 + deep_dd`：交易`7`笔，胜率`14.29%`，平均净收益`-4.99%`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为ETF日线策略模板回测，没有模拟期货滑点。
+- 成本口径：`10bp/20bp/50bp`往返成本。
+- 关键成本结论：
+  - `Bollinger+MA200`虽然收益薄，但50bp后仍小幅为正。
+  - `Connors+MA200`在20bp更强，但50bp几乎归零，更像成本敏感短打模板。
+
+### 核心结论
+
+- ETF震荡路线继续有价值，但不是高收益版本，而是低换手、低回撤、动作清晰的ETF择时骨架。
+- `Bollinger 20/2σ + MA200`更适合作为可交易骨架继续研究。
+- `Connors RSI(2)+MA200`有短打弹性，但成本敏感，不能因为20bp表现好就优先正式化。
+- 状态归因显示MA200本身不够，MA60方向有经验区分力；但不能立刻把好状态改成过滤器，否则就是状态层过拟合。
+
+### 经验判断
+
+- Polanyi式手感：宽基ETF像几个不同体型的人一起走路，沪深300和中证800脚步更稳，中证500/创业板更容易在下坡时踩空；RSI(2)像短促反射，反应快但摩擦大，Bollinger+MA200像慢一点的刹车，赚得少但不容易甩出去。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_fund_basic_all.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_selected_basic.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_selected_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_download_status.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_data_2018_2026/stock_range_reversion_broad_etf_data_v1_report.md`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_daily_curves.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_trades.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_pool_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_pool_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_entry_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_holding_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_template_state_2018_2026/stock_range_reversion_broad_etf_template_state_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：沿用固定业界模板、固定宽基ETF池、固定状态定义；本阶段目标是扩大样本和做归因，不是按结果挑参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：单一中证1000 ETF只能说明局部现象，必须跨宽基指数验证ETF震荡骨架是否具有更接近穿越周期的结构。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：状态结果只做归因记录，没有即时新增过滤器、删除弱指数、选择单一ETF正式化，也没有用短样本A500/中证2000包装结论。
+
+### 运行后继续价值反思
+
+- 判断：是，但仍不是正式策略。
+- 原因：跨ETF结果证明低回撤骨架存在，但池层收益薄，下一步应该做ETF池组合和容量/流动性约束，而不是回到单ETF参数微调。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段新增状态过滤器。
+- 不把`Connors RSI(2)+MA200`作为正式候选，先视作成本敏感观察项。
+- 下一步优先做primary ETF池组合版本，剔除短样本证据口径，但不是删除弱ETF调参。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做primary ETF池组合版本，只使用覆盖较长、普通、非增强ETF，避免短样本A500/中证2000主导结论。
+- 第二优先级：
+  - 加入组合层约束：最多同时持有`1-3`只ETF、单ETF权重上限、低流动性ETF降权或观察。
+- 第三优先级：
+  - 只把`above_ma200_up60`这类状态作为预注册观察变量，先做稳定性验证，不立即转成交易过滤器。
+
+## 第236阶段：宽基ETF primary池topN组合反证
+
+### 基本信息
+
+- 当前模式：`day`。
+- 运行时间：`2026-04-28 19:21 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。这是一个组合层负向反证，不是候选版本。
+- 本阶段运行内容：
+  - 将上一阶段宽基ETF单品种模板信号组合成primary ETF池topN账本。
+  - 检查单ETF低回撤骨架是否能通过组合层变成可交易模块。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_broad_etf_primary_pool.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_report.md`
+- 修改正式策略：无。
+- 修改第78：无。
+- 删除内容：无。
+
+### 新增参数
+
+- 组合宇宙：
+  - `primary_long_all`：primary且样本不少于5年，不按流动性再过滤。
+  - `primary_tradable_p10_2000`：primary且样本不少于5年，p10成交额原始口径不少于`2000`。
+  - `primary_core_liquid_p10_50000`：primary且样本不少于5年，p10成交额原始口径不少于`50000`。
+- 策略模板：
+  - `bollinger20_2_ma200`
+  - `connors_rsi2_ma200`
+- 最大持仓数：
+  - `1`
+  - `2`
+  - `3`
+- 成本档：
+  - `10bp`
+  - `20bp`
+  - `50bp`
+- 组合规则：
+  - 收盘生成信号，次日收盘换仓。
+  - 保留未触发退出的旧持仓。
+  - 空位按超跌程度补入新信号。
+  - 持仓数不超过固定上限，空仓时保留现金。
+
+### 修改参数
+
+- 无。本阶段不是在正式策略上调参。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `primary_core_liquid_p10_50000 + bollinger20_2_ma200 + top1 + 20bp`：
+  - 期末权益：`1.0764`
+  - 总收益：`7.64%`
+  - 最大回撤：`-29.88%`
+  - Sharpe：`0.14`
+  - 平均持有ETF数：`0.15`
+  - 平均总暴露：`14.97%`
+  - 年化换手：`7.00x`
+  - 成本拖累：`5.60%`
+  - 交易次数：`28`
+  - 胜率：`64.29%`
+- `primary_tradable_p10_2000 + bollinger20_2_ma200 + top1 + 20bp`：
+  - 期末权益：`1.0753`
+  - 总收益：`7.53%`
+  - 最大回撤：`-28.74%`
+  - Sharpe：`0.14`
+  - 平均总暴露：`21.12%`
+  - 年化换手：`9.25x`
+  - 交易次数：`37`
+  - 胜率：`59.46%`
+- `primary_core_liquid_p10_50000 + bollinger20_2_ma200 + top1 + 50bp`：
+  - 期末权益：`0.9896`
+  - 总收益：`-1.04%`
+  - 最大回撤：`-31.68%`
+  - Sharpe：`0.04`
+- `primary_core_liquid_p10_50000 + connors_rsi2_ma200 + top3 + 20bp`：
+  - 期末权益：`1.4065`
+  - 总收益：`40.65%`
+  - 最大回撤：`-22.07%`
+  - Sharpe：`0.46`
+  - 平均总暴露：`18.10%`
+  - 年化换手：`32.23x`
+  - 成本拖累：`25.80%`
+  - 交易次数：`195`
+  - 胜率：`62.05%`
+- 同一Connors组合50bp：
+  - 期末权益：`0.9548`
+  - 总收益：`-4.52%`
+  - 最大回撤：`-29.49%`
+  - Sharpe：`0.00`
+
+### 年度样本摘录
+
+- `primary_tradable_p10_2000 + bollinger20_2_ma200 + top2 + 20bp`：
+  - 2018：`0.00%`
+  - 2019：`+3.91%`
+  - 2020：`+14.47%`
+  - 2021：`-3.37%`
+  - 2022：`-7.60%`
+  - 2023：`-3.71%`
+  - 2024：`-0.67%`
+  - 2025：`+0.58%`
+  - 2026：`-1.20%`
+- 关键年度判断：
+  - 2019/2020可赚钱，但2021之后资金使用效率明显不足。
+  - 2022/2023虽然比等权持有少亏，但策略本身仍连续回撤。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为ETF日线组合账本，没有模拟期货滑点。
+- 成本口径：`10bp/20bp/50bp`往返成本。
+- 关键成本结论：
+  - `Bollinger+MA200`换手较低，但收益太薄，50bp下多数转负。
+  - `Connors+MA200`20bp有收益，但换手高，50bp后失效，成本边际不可接受。
+
+### 核心结论
+
+- 单ETF `Bollinger+MA200`的低回撤特征没有被topN组合继承。
+- “ETF池内选最超跌者”会把策略变成指数轮动风险，尤其容易选到正在失速的创业板、中证500等。
+- 当前topN组合账本应淘汰。
+- 不能继续调topN、流动性阈值或状态过滤器；那会把组合层变成适配器。
+
+### 经验判断
+
+- Polanyi式手感：单ETF像在一条路上等车慢下来再上车；topN池像每次都追最急刹的那辆车，看起来机会最大，实际最容易被惯性甩出去。这里的问题不是筛得不够精，而是“追最疼的那个”本身不稳。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_trades.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_targets.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_universe_inventory.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_primary_pool_2018_2026/stock_range_reversion_broad_etf_primary_pool_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段使用事先固定的primary长样本/成交额分层、固定最大持仓数和固定MA200模板，不按回测收益删除ETF或新增状态过滤器。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：上一阶段只证明单ETF模板有低回撤骨架，组合层才能判断它是否能作为可交易模块。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出保留全部宇宙、全部持仓上限、10/20/50bp成本；结论是淘汰账本，没有挑单一最优组合包装成正式版本。
+
+### 运行后继续价值反思
+
+- 判断：有研究价值，但当前topN组合路线应暂停。
+- 原因：组合层没有保留单ETF低回撤优势，最大回撤被最超跌轮动放大；继续微调topN或流动性阈值容易变成组合选择过拟合。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 淘汰当前“ETF池内按最超跌程度topN切换”的组合账本。
+- 下一步若继续，应比较小权重全信号分散账本或固定指数袖珍仓，而不是微调topN、流动性阈值或新增状态过滤器。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 不再沿当前topN最超跌选择规则继续调参。
+- 第二优先级：
+  - 如果继续ETF路线，先做小权重全信号分散账本，验证低回撤来自分散还是来自模板。
+- 第三优先级：
+  - 也可以做固定指数袖珍仓，即每个指数独立小仓位，不在指数之间按超跌程度竞争。
+
+## 第237阶段：宽基ETF小权重全信号袖珍仓验证
+
+### 基本信息
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 19:28 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它验证了ETF池组合结构，但不构成正式策略候选。
+- 过拟合预判：否。本阶段验证的是组合组织方式，不是按结果寻找更优参数。
+- 继续价值预判：是。上一阶段topN组合失败后，需要确认低回撤能否通过不抢仓位的小权重分散账本保留。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_broad_etf_signal_sleeve.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_report.md`
+- 改动说明：
+  - 新增ETF池小权重全信号账本。
+  - 每个ETF信号独立获得固定小权重。
+  - 若总暴露超过上限，所有活跃信号等比例缩放。
+  - 不按超跌程度排名，不让指数之间抢仓位。
+  - 继续使用Tushare `pct_chg`收益口径，避免ETF复权/拆分污染。
+
+### 新增参数
+
+- 组合宇宙：
+  - `primary_long_all`
+  - `primary_tradable_p10_2000`
+  - `primary_core_liquid_p10_50000`
+- 策略模板：
+  - `bollinger20_2_ma200`
+  - `connors_rsi2_ma200`
+- 单信号袖珍仓权重：
+  - `5%`
+  - `10%`
+- 总暴露上限：
+  - `30%`
+  - `50%`
+- 成本档：
+  - `10bp`
+  - `20bp`
+  - `50bp`
+- 执行规则：
+  - 收盘生成信号，次日收盘换仓。
+  - 空仓部分保留现金。
+
+### 修改参数
+
+- 无。本阶段未修改第78、期货震荡策略或既有股票/ETF脚本参数。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `primary_tradable_p10_2000 + bollinger20_2_ma200 + sleeve10 + cap50 + 20bp`：
+  - 期末权益：`1.0573`
+  - 总收益：`5.73%`
+  - 最大回撤：`-5.41%`
+  - Sharpe：`0.23`
+  - 平均持有ETF数：`0.56`
+  - 平均总暴露：`5.05%`
+  - 最大总暴露：`50.00%`
+  - 年化换手：`2.65x`
+  - 成本拖累：`2.12%`
+  - 总交易次数：`106`
+  - 胜率：`67.92%`
+- 同一组合`50bp`：
+  - 期末权益：`1.0241`
+  - 总收益：`2.41%`
+  - 最大回撤：`-6.24%`
+  - Sharpe：`0.11`
+  - 年化换手：`2.65x`
+  - 成本拖累：`5.31%`
+  - 总交易次数：`106`
+  - 胜率：`66.04%`
+- `primary_tradable_p10_2000 + bollinger20_2_ma200 + sleeve5 + cap30 + 20bp`：
+  - 期末权益：`1.0294`
+  - 总收益：`2.94%`
+  - 最大回撤：`-2.62%`
+  - Sharpe：`0.22`
+  - 平均总暴露：`2.65%`
+  - 年化换手：`1.34x`
+  - 总交易次数：`106`
+  - 胜率：`67.92%`
+- `primary_core_liquid_p10_50000 + connors_rsi2_ma200 + sleeve10 + cap50 + 20bp`：
+  - 期末权益：`1.1053`
+  - 总收益：`10.53%`
+  - 最大回撤：`-6.07%`
+  - Sharpe：`0.40`
+  - 平均总暴露：`4.28%`
+  - 年化换手：`6.26x`
+  - 成本拖累：`5.01%`
+  - 总交易次数：`251`
+  - 胜率：`60.96%`
+- Connors压力判断：
+  - `primary_tradable_p10_2000 + connors_rsi2_ma200 + sleeve10 + cap50 + 50bp`：期末权益`0.9718`，最大回撤`-11.34%`，Sharpe`-0.08`。
+  - `primary_long_all + connors_rsi2_ma200 + sleeve10 + cap50 + 50bp`：期末权益`0.9665`，最大回撤`-11.50%`，Sharpe`-0.09`。
+
+### 年度样本摘录
+
+- `primary_tradable_p10_2000 + bollinger20_2_ma200 + sleeve5 + cap30 + 20bp`：
+  - 2018：`0.00%`
+  - 2019：`-0.98%`
+  - 2020：`+1.81%`
+  - 2021：`+0.86%`
+  - 2022：`-0.64%`
+  - 2023：`-0.19%`
+  - 2024：`+0.04%`
+  - 2025：`+1.65%`
+  - 2026：`+0.39%`
+- 判断：
+  - 年度收益很平，说明这是防守型小账本，不是独立收益引擎。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为ETF日线账本，没有模拟期货滑点。
+- 成本口径：`10bp/20bp/50bp`往返成本。
+- 成本结论：
+  - Bollinger版本在50bp下仍有部分组合维持微弱正收益，但边际很薄。
+  - Connors版本20bp收益较高，但50bp压力下多数组合转弱或转负，仍不适合正式化。
+
+### 核心结论
+
+- 小权重全信号明显修复了topN组合的回撤问题。
+- 这说明ETF震荡组合里，“指数之间不抢仓位”比“选择最超跌ETF”更接近策略本质。
+- 但收益厚度不足，50bp后只剩很薄边际。
+- 当前ETF池账本不适合作为正式策略候选。
+- ETF路线更适合作为固定指数袖珍仓/市场状态观察工具，而不是主动轮动组合。
+
+### 经验判断
+
+- Polanyi式手感：小权重全信号像把每次接刀的手缩小，只在多个指数同时给信号时铺开一点；伤口小了，但力道也轻了。它证明了“少抢、轻拿”是对的，却还没证明这条路能自己养活组合。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_trades.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_targets.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_index_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_signal_sleeve_2018_2026/stock_range_reversion_broad_etf_signal_sleeve_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段固定primary宇宙、固定策略模板、固定袖珍仓权重、固定总暴露上限和固定成本档；目标是验证组合组织方式，不是寻找更漂亮的参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：topN组合已经证明“最超跌优先”有害，小权重全信号能检验单ETF低回撤是否来自分散和低暴露。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出保留全部宇宙、全部权重档、全部暴露上限和10/20/50bp成本；结论是不正式化、不继续调权重，也不按指数贡献删除ETF。
+
+### 运行后继续价值反思
+
+- 判断：有研究价值，但不适合作为正式策略候选继续参数化。
+- 原因：组合结构结论清楚，继续微调袖珍仓权重/暴露上限会滑向参数适配；下一步应研究固定指数画像或回到行业内残差/个股横截面，而不是优化ETF池账本。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 不继续围绕ETF池权重、暴露上限或成本档调参。
+- 下一步优先做固定指数袖珍仓/指数画像，确认哪些宽基指数天然适合震荡接刀；若收益厚度仍不足，再转向行业内残差/个股横截面路线。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 固定指数袖珍仓/指数画像，不让指数之间竞争仓位。
+- 第二优先级：
+  - 对沪深300、中证800、深证100、中证1000、中证500、红利等指数分别做信号画像，确认哪些是天然正贡献、哪些只是阶段性拖累。
+- 第三优先级：
+  - 若ETF路线收益厚度仍不足，切回行业内残差/个股横截面震荡路线。
+
+## 第238阶段：宽基ETF固定指数袖珍仓画像
+
+### 基本信息
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 19:32 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是ETF路线的指数画像与路线收敛，不是正式策略候选。
+- 过拟合预判：否。本阶段做固定指数画像，不按结果删指数或新增过滤器。
+- 继续价值预判：是。小权重全信号证明不抢仓位能压回撤，但还需要确认强弱来自哪些指数天然结构。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_broad_etf_fixed_index_sleeve.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_report.md`
+- 改动说明：
+  - 每个宽基ETF独立建立5%/10%袖珍仓账本。
+  - 不做ETF池组合，不做指数间竞争。
+  - 输出summary、daily、trades、yearly、state_summary和meta。
+
+### 新增参数
+
+- 样本过滤：
+  - primary ETF。
+  - 样本不少于`5`年。
+  - p10成交额原始口径不少于`2000`。
+- 策略模板：
+  - `bollinger20_2_ma200`
+  - `connors_rsi2_ma200`
+- 袖珍仓权重：
+  - `5%`
+  - `10%`
+- 成本档：
+  - `10bp`
+  - `20bp`
+  - `50bp`
+- 执行规则：
+  - 收盘生成信号，次日收盘换仓。
+  - 每个指数独立账本。
+
+### 修改参数
+
+- 无。本阶段未修改第78、期货震荡策略或既有ETF池回测参数。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `沪深300 + bollinger20_2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`1.0247`
+  - 总收益：`2.47%`
+  - 最大回撤：`-0.89%`
+  - Sharpe：`0.60`
+  - 活跃天数比例：`6.10%`
+  - 年化换手：`0.32x`
+  - 总交易次数：`13`
+  - 胜率：`84.62%`
+- 同一沪深300Bollinger组合`50bp`：
+  - 期末权益：`1.0207`
+  - 总收益：`2.07%`
+  - 最大回撤：`-0.93%`
+  - Sharpe：`0.51`
+- `中证800 + bollinger20_2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`1.0175`
+  - 总收益：`1.75%`
+  - 最大回撤：`-0.40%`
+  - Sharpe：`0.67`
+  - 总交易次数：`8`
+  - 胜率：`87.50%`
+- `中证500 + bollinger20_2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`0.9930`
+  - 总收益：`-0.70%`
+  - 最大回撤：`-2.08%`
+  - Sharpe：`-0.12`
+  - 总交易次数：`13`
+  - 胜率：`61.54%`
+- `上证红利 + bollinger20_2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`0.9955`
+  - 总收益：`-0.45%`
+  - 最大回撤：`-0.66%`
+  - Sharpe：`-0.14`
+  - 总交易次数：`11`
+  - 胜率：`36.36%`
+- `沪深300 + connors_rsi2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`1.0396`
+  - 总收益：`3.96%`
+  - 最大回撤：`-1.03%`
+  - Sharpe：`0.78`
+  - 年化换手：`1.15x`
+  - 总交易次数：`46`
+  - 胜率：`71.74%`
+- `科创50 + connors_rsi2_ma200 + 10%袖珍仓 + 20bp`：
+  - 期末权益：`1.0313`
+  - 总收益：`3.13%`
+  - 最大回撤：`-0.51%`
+  - Sharpe：`0.90`
+  - 总交易次数：`22`
+  - 胜率：`63.64%`
+- Connors 50bp压力：
+  - 沪深300：期末权益`1.0254`，最大回撤`-1.14%`。
+  - 科创50：期末权益`1.0245`，最大回撤`-0.57%`。
+  - 中证500：期末权益`0.9817`，最大回撤`-2.73%`。
+  - 上证红利：期末权益`0.9718`，最大回撤`-3.35%`。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为ETF日线账本，没有模拟期货滑点。
+- 成本口径：`10bp/20bp/50bp`往返成本。
+- 成本结论：
+  - Bollinger在沪深300/中证800上50bp后仍能小幅为正，但收益厚度极薄。
+  - Connors在沪深300/科创50上50bp仍为正，但其他指数明显退化，不能作为泛化模板。
+
+### 核心结论
+
+- ETF震荡路线的低回撤是真实结构，主要来自大宽基指数更稳的反转特征。
+- 沪深300、中证800更适合Bollinger低频接刀。
+- 中证500、上证红利在同一模板下系统性拖累。
+- Connors在沪深300/科创50有弹性，但并不适合推广到全ETF池。
+- ETF路线不应继续作为正式股票震荡主线参数化；它更适合保留为固定指数监控画像。
+
+### 经验判断
+
+- Polanyi式手感：沪深300/中证800像车速稳定的大路，偶尔偏离后回到中线；中证500、红利像路面纹理不同，同样的刹车距离不适配；创业板和科创50有弹性，但风一大就容易把短反弹变成噪音。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_trades.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_broad_etf_fixed_index_sleeve_2018_2026/stock_range_reversion_broad_etf_fixed_index_sleeve_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是固定指数画像，使用同一模板、同一成本档和同一袖珍仓权重，不按结果删指数或新增过滤器。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：小权重全信号证明不抢仓位可以压回撤，但需要知道低回撤来自哪些指数的天然结构。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：画像保留全部长样本primary ETF、两套模板和三档成本；结论是停止ETF参数化，而不是挑沪深300/科创50包装成正式版本。
+
+### 运行后继续价值反思
+
+- 判断：有价值，但ETF主线应暂停。
+- 原因：ETF低回撤骨架已被确认，继续研究可以作为监控画像；若目标是独立策略收益，下一步应回到行业内残差/个股横截面。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- ETF路线保留为固定指数监控画像。
+- 下一步切回行业内残差/个股横截面震荡路线。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 回到行业内残差/个股横截面震荡路线。
+- 第二优先级：
+  - 用已有股票面板和行业/指数成分数据做残差超跌信号归因。
+- 第三优先级：
+  - ETF仅保留为市场状态观察与防守小模块画像，不再做池权重调参。
+
+## 第239阶段：行业内信号生命周期归因
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 19:49 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。这是信号归因，不是正式交易版本。
+- 过拟合预判：否。本阶段固定既有行业内top20信号做生命周期归因，不试交易参数。
+- 继续价值预判：是。第230-233阶段的核心瓶颈是换手，必须先判断收益来自新进榜还是持续在榜。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_industry_signal_lifecycle.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_report.md`
+- 改动说明：
+  - 对行业内top20信号按连续在榜年龄、进入来源、市场状态、年度、行业做归因。
+  - 不做交易组合，不修改第78，不修改既有股票策略脚本。
+
+### 新增参数
+
+- 固定信号：`score_oversold_ret_20`。
+- 行业内分组：五分位，top20为`feature_group=5`。
+- 样本桶：
+  - `all_component`
+  - `liquid_q3`
+  - `active_q4_q5`
+- 生命周期桶：
+  - `age_01_new`
+  - `age_02_03`
+  - `age_04_07`
+  - `age_08_15`
+  - `age_16_plus`
+- 前瞻周期：`5/10`日。
+- 成本观察：`20bp/50bp`。
+- 行业最小宽度：`20`。
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 本阶段不是交易回测，没有期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数或胜率。
+- 新增归因结果：
+  - 样本：`2018-01-02`到`2026-04-17`，股票数`2519`，top信号行`244701`。
+  - `liquid_q3` 10日`age_08_15`：top绝对均值`1.48%`，top超额均值`1.13%`，50bp后绝对均值约`0.98%`，平均股票数`4.6`。
+  - `liquid_q3` 10日`age_01_new`：top绝对均值`0.99%`，top超额均值`0.63%`，50bp后约`0.49%`。
+  - `liquid_q3` 10日`age_02_03`：top绝对均值`1.11%`，top超额均值`0.75%`，50bp后约`0.61%`。
+  - `liquid_q3` 10日`age_04_07`：top绝对均值`1.04%`，top超额均值`0.66%`，50bp后约`0.54%`。
+  - `liquid_q3` 10日`age_16_plus`：top绝对均值`1.40%`，top超额均值`1.04%`，50bp后约`0.90%`，但平均股票数只有`1.9`。
+  - `liquid_q3` 10日`persistent_top`进入来源：绝对均值`1.21%`，超额均值`0.85%`，50bp后约`0.71%`。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 总滑点：不适用，本阶段没有交易。
+- 成本口径：只做`20bp/50bp`收益压力观察，不从净值扣费。
+
+### 核心结论
+
+- 行业内残差信号不是只有新进入top20有效；持续在榜样本更值得研究。
+- `age_08_15`最厚，但不能直接变成交易规则，否则是归因后拟合。
+- `age_16_plus`集中度明显偏高，只能作为风险提示。
+- 下一步应做粗粒度持续确认账本，而不是继续调生命周期桶。
+
+### 经验判断
+
+- Polanyi式手感：新进top20是市场刚打错的一下，持续top20是卖压变钝后的修复区。后者更像能交易的均值回归，但越往后越容易变成少数行业/少数票的拥挤故事。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_top_rows.parquet`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_daily_series.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_age_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_transition_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_industry_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_signal_lifecycle_2018_2026/stock_range_reversion_industry_signal_lifecycle_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定已有信号做归因，不扫描交易阈值、持仓天数或权重上限。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：换手是当前个股震荡线的硬瓶颈，生命周期能判断低频化是否有结构基础。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出保留全部生命周期、年度和状态结果，没有把最强桶直接包装为交易参数。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：持续在榜样本仍强，值得做固定确认逻辑账本；但不能继续沿生命周期桶调参。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 下一步测试`2天/4天`粗粒度持续确认，而不是选择`8-15天`最优桶。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做`liquid_q3`持续确认低频账本。
+- 第二优先级：
+  - 若确认能降低换手，再做市场状态过滤。
+- 第三优先级：
+  - 若确认只是降暴露不改善净收益/换手比，则回到信号层寻找更低换手的横截面定义。
+
+## 第240阶段：liquid_q3持续确认低频账本
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 19:49 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。这是交易化压力测试，不是正式候选版本。
+- 过拟合预判：否。确认门槛只测试`2/4`天粗粒度条件，不直接使用上一阶段最强`8-15天`桶。
+- 继续价值预判：是。第239阶段显示持续top信号没有快速衰减，值得验证能否降低换手。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_persistent_confirmation.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_report.md`
+- 改动说明：
+  - 使用第239阶段生命周期信息，构造`liquid_q3`持续确认组合账本。
+  - 保留每日和5日节奏，5日节奏保留全部相位，不挑单一相位。
+
+### 新增参数
+
+- 入场确认：
+  - `entry_age_min=2`
+  - `entry_age_min=4`
+- 建篮节奏：
+  - `cadence_step=1`
+  - `cadence_step=5`，相位`0/1/2/3/4`
+- 固定持有期：`10`日。
+- 单篮子行业上限：`20%`。
+- 单票上限：`5%`。
+- 成本档：`20bp/50bp`。
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `4天确认+每日建篮+50bp`：
+  - 期末权益：`2.1344`
+  - 总收益：`113.44%`
+  - 最大回撤：`-27.48%`
+  - Sharpe：`0.58`
+  - 平均暴露：`55.13%`
+  - 年化单边换手：`11.28x`
+  - 总滑点/成本拖累：`0.4445`
+  - 总交易次数：不直接适用，本账本按目标权重路径统计换手。
+  - 胜率：净活跃日胜率约`52.80%`
+- `4天确认+每日建篮+20bp`：
+  - 期末权益：`2.7864`
+  - 总收益：`178.64%`
+  - 最大回撤：`-26.55%`
+  - Sharpe：`0.74`
+  - 年化单边换手：`11.28x`
+- `2天确认+每日建篮+50bp`：
+  - 期末权益：`1.9499`
+  - 总收益：`94.99%`
+  - 最大回撤：`-34.10%`
+  - Sharpe：`0.45`
+  - 平均暴露：`76.56%`
+  - 年化单边换手：`15.35x`
+- `4天确认+5日建篮+50bp`五相位均值：
+  - 平均期末权益：`2.0352`
+  - 最低期末权益：`1.6126`
+  - 最高期末权益：`2.3485`
+  - 平均最大回撤：`-28.36%`
+  - 平均Sharpe：`0.54`
+  - 平均年化单边换手：`11.05x`
+- 5日最优相位`liquid_q3_age4plus_cadence5d_p1+50bp`：
+  - 期末权益：`2.3485`
+  - 总收益：`134.85%`
+  - 最大回撤：`-26.83%`
+  - Sharpe：`0.63`
+  - 年化单边换手：`11.19x`
+  - 说明：仅作为相位上界观察，不能作为可交易结论。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 成本口径：`20bp/50bp`往返成本，按目标权重变动扣费。
+- `4天确认+每日建篮+50bp`成本拖累合计：`0.4445`。
+- `4天确认+5日建篮+50bp`五相位平均成本拖累：`0.4352`。
+- 成本结论：4天确认能降低换手与成本，但仍不是低换手策略。
+
+### 核心结论
+
+- 4天确认是有交易化价值的：换手从第230阶段`liquid_q3_capped`约`15.6x`降至约`11.3x`，回撤也有所收窄。
+- 但它没有超过原始`liquid_q3_capped`收益，因此不是新alpha突破。
+- 5日节奏相位风险明显，不能继续挑相位。
+- 下一步应以`4天确认+每日建篮`为底稿做市场状态过滤，不继续扫描确认天数。
+
+### 经验判断
+
+- Polanyi式手感：4天确认像等刀落地后再听一秒回声，少接了一些飞刀，也少吃了一些最快的反弹；它让手稳一点，但没有让刀变钝。5日相位像每周固定某天才开门，运气味太重。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_phase_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_selected_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_age_bucket_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_confirmation_2018_2026/stock_range_reversion_liquid_q3_persistent_confirmation_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：确认门槛是粗粒度解释型条件，且5日节奏保留全部相位，不拿最优生命周期桶直接建策略。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第239阶段已经证明持续top样本有边际，本阶段验证它能否降低换手。
+
+### 运行后过拟合反思
+
+- 判断：否，但不能引用最优相位作为策略结论。
+- 原因：真实可用结论来自`4天确认+每日建篮`；`5日p1`只是相位上界，不能挑出来正式化。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要收窄。
+- 原因：确认机制实质降低换手和回撤，但没有收益突破；继续扫描确认天数/相位会过拟合。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 下一步转向`4天确认+每日建篮`的市场状态过滤和失效年份归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做`4天确认+每日建篮`的市场状态过滤归因，重点看2018、2022、2025。
+- 第二优先级：
+  - 判断过滤器能否降低2025这种上行市场中的失效。
+- 第三优先级：
+  - 若外生状态过滤没有改善净收益/回撤/换手比，回到信号层寻找更低换手的行业内残差定义。
+
+## 第241阶段：liquid_q3持续确认状态归因
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 19:57 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是状态归因和固定过滤压力测试，不是正式候选版本。
+- 过拟合预判：否。本阶段固定`4天确认+每日建篮`底稿，只用信号日前可知状态，不扫描确认天数、相位或权重。
+- 继续价值预判：是。第240阶段仍有2018/2022/2025失效，需要判断是否能被外生状态解释。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_persistent_state_filter.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_report.md`
+- 改动说明：
+  - 对`4天确认+每日建篮`做信号日状态归因、持仓日状态归因和少数固定过滤压力测试。
+  - 不修改第240底稿，不修改第78，不接入正式策略。
+
+### 新增参数
+
+- 固定底稿：
+  - `entry_age_min=4`
+  - `cadence_step=1`
+  - `HORIZON=10`
+  - 单篮子行业上限`20%`
+  - 单票上限`5%`
+- 状态变量：
+  - `market_state_20d`
+  - `bm_ret_5_band`
+  - `bm_ret_20_band`
+  - `bm_drawdown_60_band`
+  - `bm_down_streak_band`
+  - `bm_vol20_q`
+  - `breadth_pos_20d_band`
+  - `breadth_pos_20d_q`
+  - `component_turnover_20_60_band`
+  - `component_turnover_20_60_q`
+  - `active_q4_q5_share_q`
+  - `limit_down_close_ratio_q`
+- 固定过滤场景：
+  - `age4_daily_all`
+  - `age4_daily_market_down20`
+  - `age4_daily_exclude_hot_breadth`
+  - `age4_daily_exclude_up20_hot_breadth`
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `age4_daily_all + 50bp`：
+  - 期末权益：`2.1344`
+  - 总收益：`113.44%`
+  - 最大回撤：`-27.48%`
+  - Sharpe：`0.58`
+  - 平均暴露：`55.13%`
+  - 年化单边换手：`11.28x`
+  - 总滑点/成本拖累：`0.4445`
+- `age4_daily_exclude_hot_breadth + 50bp`：
+  - 期末权益：`1.9621`
+  - 总收益：`96.21%`
+  - 最大回撤：`-26.99%`
+  - Sharpe：`0.54`
+  - 平均暴露：`47.75%`
+  - 年化单边换手：`11.17x`
+  - 总滑点/成本拖累：`0.4402`
+- `age4_daily_exclude_up20_hot_breadth + 50bp`：
+  - 期末权益：`1.9605`
+  - 总收益：`96.05%`
+  - 最大回撤：`-26.99%`
+  - Sharpe：`0.54`
+  - 平均暴露：`47.75%`
+  - 年化单边换手：`11.15x`
+  - 总滑点/成本拖累：`0.4394`
+- `age4_daily_market_down20 + 50bp`：
+  - 期末权益：`1.7071`
+  - 总收益：`70.71%`
+  - 最大回撤：`-27.93%`
+  - Sharpe：`0.47`
+  - 平均暴露：`38.74%`
+  - 年化单边换手：`9.57x`
+  - 总滑点/成本拖累：`0.3771`
+- 20bp下同样没有过滤器超过基线：
+  - 基线期末权益`2.7864`。
+  - 排除高宽度期末权益`2.5553`。
+  - 排除上涨且高宽度期末权益`2.5519`。
+  - 只做20日下跌期末权益`2.1405`。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 总滑点/成本
+
+- 成本口径：`20bp/50bp`往返成本，按目标权重变动扣费。
+- 过滤器虽然降低部分暴露，但没有显著降低换手/收益损耗比。
+- `market_down20_only`年化单边换手降到`9.57x`，但收益损失更大。
+
+### 状态归因结果
+
+- 信号日前：
+  - `market_down_20d` 10日篮子资本口径均值`0.776%`，胜率`51.80%`，部署资金口径均值`1.365%`。
+  - `market_up_20d` 10日篮子资本口径均值`0.470%`，胜率`51.93%`，部署资金口径均值`0.708%`。
+  - 因此信号日前市场下跌不是坏状态，反而更像机会来源。
+- 持仓日：
+  - `market_down_20d` 50bp日净收益`-0.098%`。
+  - `market_up_20d` 50bp日净收益`+0.200%`。
+  - 最弱持仓状态集中于急跌/连续下跌/跌停压力：
+    - `bm_ret_5_band=ret5_le_-5pct`：日净收益`-1.004%`。
+    - `bm_down_streak_band=streak_3_4`：日净收益`-0.948%`。
+    - `limit_down_close_ratio_q=q5_high_limit_down`：日净收益`-0.821%`。
+
+### 核心结论
+
+- 信号日前过滤没有价值：固定过滤全部弱于不过滤基线。
+- 下跌信号日不是问题，持仓期间遇到急跌才是问题。
+- 不应继续拼接信号日前状态开关。
+- 下一步更合理的是持仓日急跌保护/降杠杆压力测试。
+
+### 经验判断
+
+- Polanyi式手感：信号出现时市场下跌像“鱼被浪打到岸边”，反而有机会；真正危险的是持仓后浪还在加速往下拍，鱼没站稳就被第二波卷走。该挡的是持仓路径里的急浪，不是岸边出现鱼这个事实。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_date_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_signal_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_signal_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_year_state_mix.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_path_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_path_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_filter_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_filter_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_filter_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_filter_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_filter_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_weak_signal_states.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_weak_path_states.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_state_filter_2018_2026/stock_range_reversion_liquid_q3_persistent_state_filter_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定第240阶段底稿，只测试少数可解释的信号日前状态，不扫描确认天数、相位或权重。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第240阶段有明确失效年份，必须判断是否能用外生状态解释。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是负向收敛，未挑选或组合任何过滤器包装为正式参数。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要切换。
+- 原因：信号日前过滤无效，但持仓日急跌风险清晰；下一步只应测试少数事前可知的急跌保护。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 不采用`market_down20_only`、`exclude_hot_breadth`或`exclude_up20_hot_breadth`。
+- 下一步转向持仓日急跌保护压力测试。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 测试持仓日急跌保护，例如`ret5 <= -5%`或连续下跌状态下的次日降杠杆/空仓。
+- 第二优先级：
+  - 检查保护是否只是降低暴露，还是改善净收益/回撤/换手比。
+- 第三优先级：
+  - 若急跌保护仍无效，则回到信号层寻找更低换手、更低路径暴露的行业内残差定义。
+
+## 第242阶段：liquid_q3持续确认持仓急跌保护压力测试
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 20:05 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是风险保护压力测试，结果为负向收敛，不是正式候选版本。
+- 过拟合预判：否。本阶段只测试第241阶段已经暴露的少数持仓期弱状态，不扫描阈值网格。
+- 继续价值预判：是。第241阶段显示持仓日急跌是路径伤害来源，需要验证保护是否真能改善净值路径。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_persistent_crash_guard.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_report.md`
+- 改动说明：
+  - 在`4天确认+每日建篮`底稿上增加持仓期急跌保护压力测试。
+  - 不修改第240/241底稿，不修改第78，不接入正式策略。
+
+### 新增参数
+
+- 固定底稿：
+  - `entry_age_min=4`
+  - `cadence_step=1`
+  - `HORIZON=10`
+  - 单篮子行业上限`20%`
+  - 单票上限`5%`
+- 急跌保护条件：
+  - `bm_ret_5 <= -5%`
+  - `bm_down_streak >= 3`
+  - `limit_down_close_ratio_q = q5_high_limit_down`
+  - 上述任一触发的`panic_combo`
+- 保护动作：
+  - `none`
+  - `half`
+  - `flat`
+- 成本：
+  - `20bp/50bp`往返成本。
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `age4_daily_no_guard + 50bp`：
+  - 期末权益：`2.1344`
+  - 总收益：`113.44%`
+  - 最大回撤：`-27.48%`
+  - Sharpe：`0.58`
+  - 总滑点/成本拖累：`0.4445`
+  - 总交易次数：股票往返样本`23865`，目标持仓调整路径`177.8012`净权重变化和。
+  - 胜率：净值活跃日胜率`52.80%`
+  - 年化单边换手：`11.28x`
+- `age4_daily_ret5_crash_half + 50bp`：
+  - 期末权益：`1.6873`
+  - 总收益：`68.73%`
+  - 最大回撤：`-28.84%`
+  - Sharpe：`0.44`
+  - 总滑点/成本拖累：`0.4767`
+  - 总交易次数：股票往返样本`23865`，目标持仓调整路径`190.6994`净权重变化和。
+  - 胜率：净值活跃日胜率`52.75%`
+  - 年化单边换手：`12.10x`
+- `age4_daily_ret5_crash_flat + 50bp`：
+  - 期末权益：`1.3036`
+  - 总收益：`30.36%`
+  - 最大回撤：`-33.13%`
+  - Sharpe：`0.27`
+  - 总滑点/成本拖累：`0.5235`
+  - 年化单边换手：`13.31x`
+- `age4_daily_down_streak3_flat + 50bp`：
+  - 期末权益：`1.5805`
+  - 总收益：`58.05%`
+  - 最大回撤：`-26.45%`
+  - Sharpe：`0.40`
+  - 总滑点/成本拖累：`0.6626`
+  - 年化单边换手：`16.83x`
+- `age4_daily_limit_down_q5_flat + 50bp`：
+  - 期末权益：`0.8557`
+  - 总收益：`-14.43%`
+  - 最大回撤：`-35.05%`
+  - Sharpe：`-0.02`
+  - 总滑点/成本拖累：`0.9006`
+  - 年化单边换手：`22.91x`
+- `age4_daily_panic_combo_half + 50bp`：
+  - 期末权益：`1.3729`
+  - 总收益：`37.29%`
+  - 最大回撤：`-27.54%`
+  - Sharpe：`0.31`
+  - 总滑点/成本拖累：`0.6606`
+  - 年化单边换手：`16.77x`
+- `age4_daily_panic_combo_flat + 50bp`：
+  - 期末权益：`0.7869`
+  - 总收益：`-21.31%`
+  - 最大回撤：`-42.45%`
+  - Sharpe：`-0.09`
+  - 总滑点/成本拖累：`0.9644`
+  - 年化单边换手：`24.54x`
+- 20bp结果：
+  - 不保护期末权益`2.7864`，总收益`178.64%`，最大回撤`-26.55%`，Sharpe`0.74`。
+  - 所有保护版本期末权益均低于不保护版本。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 保护触发统计
+
+- `ret5_le_-5pct`触发`108/1920`天，触发率`5.63%`。
+- `down_streak_ge3`触发`193/1920`天，触发率`10.05%`。
+- `limit_down_q5`触发`365/1920`天，触发率`19.01%`。
+- `panic_combo`触发`496/1920`天，触发率`25.83%`。
+
+### 核心结论
+
+- 持仓期急跌保护没有通过。
+- 50bp现实成本下，期末权益最高的是不保护基线。
+- 最轻的五日急跌半仓保护也将期末权益从`2.1344`降到`1.6873`，最大回撤从`-27.48%`恶化到`-28.84%`。
+- 粗暴半仓/空仓会砍掉恐慌后的修复收益，并通过额外调仓增加成本。
+- 不应继续围绕急跌保护做阈值网格。
+
+### 外部/GitHub调研判断
+
+- 均值回归止损/保护并非天然有效，已有研究与开源回测实现都提示止损可能制造whipsaw并伤害长期收益。
+- 本阶段没有复制现成RSI/布林止损系统，而是只验证第241阶段暴露出的少数持仓期弱状态。
+
+### 经验判断
+
+- Polanyi式手感：急跌保护像看到水面发黑就立刻收网，但均值回归的鱼常常也在那一片浑水里。能穿越周期的保护不能只怕黑水，而要识别水下面是短期挤兑还是池塘变臭。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_guard_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_guard_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_protected_lots.parquet`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_persistent_crash_guard_2018_2026/stock_range_reversion_liquid_q3_persistent_crash_guard_v1_report.md`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：保护条件来自第241阶段已暴露的持仓期弱状态，只测试空仓/半仓两个粗动作，不扫描止损阈值、确认天数、相位或权重。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第241阶段显示信号日前过滤无效，持仓期急跌才是净值路径伤害，本阶段需要验证风险保护是否有用。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有选择出更优保护参数；50bp和20bp下均是不保护最好，这更像反证而非拟合。
+
+### 运行后继续价值反思
+
+- 判断：股票震荡主线仍有价值；本轮粗持仓期急跌保护方向暂时没有继续扩参价值。
+- 原因：风险来自持仓路径没错，但粗暴半仓/空仓会切走反弹且增加交易成本，不能作为可穿越周期的风险管理。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 不采用任何本阶段急跌保护规则。
+- 不继续做急跌保护阈值网格。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 回到信号层，区分“可修复的超跌”和“基本面/流动性恶化导致的继续下跌”。
+- 第二优先级：
+  - 对持仓路径做归因，检查亏损是否集中在个股层面流动性/成交额恶化、新股/小市值、行业拥挤或极端跌停链条。
+- 第三优先级：
+  - 若能找到非价格自身、低换手、事前可知的劣质超跌特征，再做固定剔除压力测试；否则保留`4天确认+每日建篮`为研究底稿，不急于正式化。
+
+## 第243阶段：liquid_q3可修复/恶化超跌归因
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 20:14 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是信号层归因，不是交易版本。
+- 过拟合预判：否。只使用固定事前可知变量做归因，不生成交易规则。
+- 继续价值预判：是。第242阶段已否决粗急跌保护，需要回到信号层区分可修复和继续恶化。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_repairability_attribution.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_attribution_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_attribution_2018_2026/stock_range_reversion_liquid_q3_repairability_attribution_v1_report.md`
+- 改动说明：
+  - 对`4天确认+每日建篮`样本做可修复/恶化超跌归因。
+  - 不新增回测交易规则，不接入正式策略。
+
+### 新增参数
+
+- 固定底稿：
+  - `entry_age_min=4`
+  - `HORIZON=10`
+  - `MIN_DAILY_STATE_DAYS=40`
+  - `MIN_STOCK_SIGNALS=120`
+- 新增归因层：
+  - 价格跌幅：`stock_ret20_band`、`stock_ret10_band`、`stock_ret5_band`、`stock_ret1_band`
+  - 均线偏离：`dist_ma20_band`
+  - 成交状态：`volume_ratio20_band`
+  - 换手状态：`turnover_5_20_band`、`turnover_20_60_band`
+  - 放量下跌：`down_volume_pressure_band`
+  - 跌停链：`recent_limit_down_5_band`、`signal_limit_state`
+  - 流动性/规模：`adv20_turnover_q`、`turnover_rate_f_q`、`circ_mv_q`、`total_mv_q`
+  - 生命周期：`top_age_bucket`、`transition_from`
+  - 市场状态：`market_state_20d`、`bm_ret_5_band`、`bm_down_streak_band`、`breadth_pos_20d_band`、`limit_down_close_ratio_q`
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增归因结果
+
+- 全样本：
+  - 信号行：`23865`
+  - 信号日：`1876`
+  - 股票数：`758`
+  - 10日资本口径均值：`0.62%`
+  - 10日部署资金口径均值：`1.04%`
+  - 股票胜率：`48.85%`
+- 未来结果画像：
+  - `severe_loss`：`4085`条，10日均值`-12.70%`，超额`-8.85%`，路径最小收益均值`-14.01%`。
+  - `small_loss`：`8221`条，10日均值`-3.81%`。
+  - `repair_win`：`6585`条，10日均值`3.66%`。
+  - `big_rebound`：`4974`条，10日均值`16.84%`，超额`12.38%`。
+- 关键对比：
+  - `big_rebound`的20日跌幅更深：`avg_ret_20=-12.73%`，`severe_loss=-11.91%`。
+  - `big_rebound`的成交更活跃：`avg_volume_ratio_20=0.973`，`severe_loss=0.879`。
+  - `big_rebound`短期换手更高：`turnover_5_20_ratio=0.922`，`severe_loss=0.854`。
+  - `big_rebound`近5日跌停次数更高：`0.049`，`severe_loss=0.023`，说明跌停压力不是简单坏状态。
+- 最强状态：
+  - `bm_down_streak_band=streak_ge_5`：10日资本口径均值`2.88%`。
+  - `bm_ret_5_band=ret5_le_-5pct`：10日资本口径均值`2.07%`。
+  - `breadth_pos_20d_band=breadth20_le_20pct`：10日资本口径均值`1.99%`。
+  - `limit_down_close_ratio_q=q5_high_limit_down`：10日资本口径均值`1.64%`。
+- 最弱线索：
+  - 行业弱项如`互联网`、`汽车配件`、`化工原料`靠前，但不能做行业黑名单。
+  - `volume_ratio20_band=volume_dry`和`turnover_5_20_band=turnover_5_20_contract`是更适合固定验证的非价格恶化线索。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 核心结论
+
+- 不应过滤市场恐慌、深度超跌、高跌停压力。
+- 深度超跌本身不是恶化标签。
+- 成交干枯/短期换手收缩更像“没有承接”的恶化标签，下一步值得固定压力测试。
+
+### 外部/GitHub调研判断
+
+- 短期反转通常与流动性供给有关，收益对流动性冲击和波动冲击敏感。
+- 因此本阶段不复制RSI/布林系统，而从成交承接和可修复性角度做归因。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：只做固定解释变量归因，不生成交易规则，不扫描阈值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：没有把最弱状态变成交易规则，也没有挑行业黑名单，只输出下一步固定验证线索。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第242阶段说明粗急跌保护无效，必须回到信号层。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：归因指出成交干枯/换手收缩两个非价格线索，值得做固定压力测试。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不使用行业黑名单。
+- 不过滤市场急跌/高跌停压力。
+- 下一步测试成交干枯、短期换手收缩和二者组合。
+
+## 第244阶段：liquid_q3可修复性过滤压力测试
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 20:16 CST`。
+- 本阶段为独立股市震荡策略研究，与第78趋势策略隔离。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否，但`exclude_volume_dry`成为股票震荡独立路线的候选规则。
+- 已读取：`skills/version-ab-experiment/SKILL.md`。
+- A/B判断：不做第78 A/B/C，因为股票震荡线与第78趋势策略必须隔离。
+- 过拟合预判：否。只测试第243阶段预先指出的两个非价格线索，不扫描阈值。
+- 继续价值预判：是。需要验证成交干枯/换手收缩是否真能改善账本。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_repairability_filter.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_filter_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_filter_2018_2026/stock_range_reversion_liquid_q3_repairability_filter_v1_report.md`
+
+### 新增参数
+
+- 固定过滤器：
+  - `exclude_volume_dry`：排除`volume_ratio_20 <= 0.70`。
+  - `exclude_turnover_contract`：排除`turnover_ma5 / turnover_ma20 <= 0.70`。
+  - `exclude_dry_or_contract`：排除二者任一触发。
+  - `exclude_dry_and_contract`：只排除二者同时触发。
+- 成本：
+  - `20bp/50bp`往返成本。
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- `age4_daily_all + 50bp`：
+  - 期末权益：`2.1344`
+  - 总收益：`113.44%`
+  - 最大回撤：`-27.48%`
+  - Sharpe：`0.58`
+  - 总滑点/成本拖累：`0.4445`
+  - 总交易次数：股票往返样本`23865`，目标持仓调整路径`177.8012`净权重变化和。
+  - 胜率：净值活跃日胜率`52.80%`
+  - 年化单边换手：`11.28x`
+- `exclude_volume_dry + 50bp`：
+  - 期末权益：`2.4490`
+  - 总收益：`144.90%`
+  - 最大回撤：`-12.25%`
+  - Sharpe：`0.88`
+  - 总滑点/成本拖累：`0.3151`
+  - 总交易次数：股票往返样本`15301`，目标持仓调整路径`126.0487`净权重变化和。
+  - 胜率：净值活跃日胜率`52.96%`
+  - 年化单边换手：`8.00x`
+- `exclude_dry_and_contract + 50bp`：
+  - 期末权益：`2.3837`
+  - 总收益：`138.37%`
+  - 最大回撤：`-15.61%`
+  - Sharpe：`0.76`
+  - 总滑点/成本拖累：`0.3650`
+  - 年化单边换手：`9.26x`
+- `exclude_dry_or_contract + 50bp`：
+  - 期末权益：`2.2853`
+  - 总收益：`128.53%`
+  - 最大回撤：`-11.72%`
+  - Sharpe：`0.88`
+  - 总滑点/成本拖累：`0.2821`
+  - 年化单边换手：`7.16x`
+- `exclude_turnover_contract + 50bp`：
+  - 期末权益：`2.2253`
+  - 总收益：`122.53%`
+  - 最大回撤：`-15.01%`
+  - Sharpe：`0.75`
+  - 总滑点/成本拖累：`0.3341`
+  - 年化单边换手：`8.48x`
+- 20bp结果：
+  - 基线期末权益`2.7864`，最大回撤`-26.55%`，Sharpe`0.74`。
+  - `exclude_volume_dry`期末权益`2.9584`，最大回撤`-11.85%`，Sharpe`1.05`。
+  - `exclude_dry_and_contract`期末权益`2.9671`，最大回撤`-14.39%`，Sharpe`0.93`。
+
+### 样本保留
+
+- `exclude_volume_dry`：
+  - 行保留率：`64.11%`
+  - 信号日保留率：`99.31%`
+  - 篮子权重保留率：`63.86%`
+- `exclude_dry_or_contract`：
+  - 行保留率：`56.28%`
+  - 信号日保留率：`98.51%`
+  - 篮子权重保留率：`55.96%`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 核心结论
+
+- `exclude_volume_dry`是目前股票震荡线里最值得继续验证的候选规则。
+- 它同时改善收益、回撤、Sharpe、换手和成本。
+- 不能继续调`0.70`阈值，不能叠加行业黑名单，不能过滤市场恐慌状态。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：过滤器来自第243阶段非价格恶化线索，只测试固定粗规则。
+
+### 运行后过拟合反思
+
+- 判断：暂时否，但存在研究选择偏差。
+- 原因：过滤器非阈值扫描，但来自看完归因后的候选选择，必须继续做稳健性验证。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第243阶段只留下成交干枯/换手收缩两个可验证方向。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：`exclude_volume_dry`改善幅度足够大，且符合“有成交承接的超跌更容易修复”的第一性原理。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- `exclude_volume_dry`进入下一阶段稳健性验证候选。
+- 下一步只验证，不调阈值。
+
+## 第245阶段：成交干枯过滤稳健性初验
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 20:18 CST`。
+- 本阶段为第244阶段候选`exclude_volume_dry`的稳健性验证。
+- 第78影响：无。未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是候选验证，不是正式接入。
+- 过拟合预判：仍需警惕研究选择偏差；本阶段只验证，不新增过滤器。
+- 继续价值预判：是。第244阶段结果足够强，必须做前后半段和年度胜负验证。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_repairability_filter_robustness.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_filter_robustness_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_repairability_filter_robustness_2018_2026/stock_range_reversion_liquid_q3_repairability_filter_robustness_v1_report.md`
+
+### 新增参数
+
+- 验证对象：
+  - `BASELINE_SCENARIO=age4_daily_all`
+  - `CANDIDATE_SCENARIO=age4_daily_exclude_volume_dry`
+- 时间切分：
+  - `early_2018_2021`
+  - `late_2022_2026`
+
+### 修改参数
+
+- 无。
+
+### 删除参数
+
+- 无。
+
+### 新增验证结果
+
+- 年度胜负：
+  - `exclude_volume_dry + 50bp`跑赢基线`6/9`年。
+  - 平均年度超额`+1.36%`。
+  - 最差年度相对差`-6.26%`。
+  - 跑赢年份：`2018`、`2020`、`2022`、`2023`、`2024`、`2025`。
+  - 跑输年份：`2019`、`2021`、`2026`。
+- 前后半段50bp：
+  - 基线`2018-2021`：收益`57.49%`，最大回撤`-17.06%`，Sharpe`0.73`。
+  - 候选`2018-2021`：收益`60.77%`，最大回撤`-12.23%`，Sharpe`1.01`。
+  - 基线`2022-2026`：收益`35.52%`，最大回撤`-27.48%`，Sharpe`0.45`。
+  - 候选`2022-2026`：收益`52.33%`，最大回撤`-12.25%`，Sharpe`0.77`。
+- 前后半段20bp：
+  - 基线`2018-2021`：收益`77.92%`，最大回撤`-16.30%`，Sharpe`0.90`。
+  - 候选`2018-2021`：收益`75.10%`，最大回撤`-11.21%`，Sharpe`1.18`。
+  - 基线`2022-2026`：收益`56.61%`，最大回撤`-26.55%`，Sharpe`0.62`。
+  - 候选`2022-2026`：收益`68.96%`，最大回撤`-11.85%`，Sharpe`0.94`。
+- 年度保留率：
+  - 行保留率稳定在约`60.5%-67.3%`。
+  - 信号日保留率稳定在约`98.35%-100%`。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 核心结论
+
+- `exclude_volume_dry`不是只靠单一年份；前后半段都改善回撤和Sharpe。
+- 50bp下后半段收益提升也明显。
+- 仍不能正式化，因为尚未做启动年份/滚动窗口验证。
+
+### 运行前过拟合反思
+
+- 判断：仍需警惕。
+- 原因：候选来自归因后的选择，本阶段只能验证稳定性，不能优化。
+
+### 运行后过拟合反思
+
+- 判断：仍不能排除研究选择偏差。
+- 原因：尚未做启动年份/滚动窗口验证。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第244阶段候选同时改善收益、回撤、成本和换手。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：候选不是只靠一个年度，且保留率稳定，值得继续验证。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- `exclude_volume_dry`保留为股票震荡独立路线候选规则。
+- 下一步只做验证，不调阈值，不叠加新过滤器。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做启动年份验证：从2018、2019、2020、2021、2022分别开始，比较基线与候选。
+- 第二优先级：
+  - 做滚动窗口验证：2年/3年窗口收益、回撤、Sharpe、年度胜负。
+- 第三优先级：
+  - 若仍稳定，再讨论是否把`exclude_volume_dry`升级为股票震荡候选版本；仍不得接入第78。
