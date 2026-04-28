@@ -32057,3 +32057,572 @@ to-end季度冷启动：
   - 对比`all_component`分散版与`active_q4_q5`高流动窄行业版，判断收益来自真实行业内反转还是行业集中。
 - 第三优先级：
   - 对2025弱化做状态归因，但不写年份过滤器。
+
+## 第230阶段：独立股市震荡行业内排序合并持仓路径压力测试
+
+- 当前模式：`day`
+- 记录时间：`2026-04-28 17:41 CST`
+- 本阶段为股票震荡独立研究，未修改第78趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。属于组合路径层面的阶段性验证，不是正式策略突破。
+- 是否触发`skills/version-ab-experiment`：否。本阶段不接入第78、不做A/B/C、不选择正式版本。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_industry_neutral_merged_portfolio.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_report.md`
+- 本阶段从第229阶段的信号归因进入组合路径压力测试，重点检查合并持仓、净换手、行业上限、单票上限和成本压力。
+
+### 新增参数
+
+- `LOOKBACK=20`
+- `HOLD_DAYS=10`
+- `ROUNDTRIP_COST_BPS=(20,50)`
+- `TOP_QUANTILE=0.2`
+- `MIN_INDUSTRY_DAILY_WIDTH=20`
+- `MAX_INDUSTRY_WEIGHT_PER_BASKET=0.20`
+- `MAX_STOCK_WEIGHT_PER_BASKET=0.05`
+- 场景：
+  - `all_component_equal_stock`
+  - `all_component_capped`
+  - `liquid_q3_capped`
+  - `active_q4_q5_capped`
+
+### 修改参数
+
+- 无正式策略参数修改。
+- 本阶段只新增独立股票研究脚本和输出。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 合并持仓交易日：`1,989`
+  - 信号：`score_oversold_ret_20`
+  - 入场/持有：次日close入场，持有`10`个交易日
+  - 成本：`20bp`和`50bp`往返成本
+- `active_q4_q5_capped`：
+  - 20bp：期末权益`1.7092`，总收益`70.92%`，最大回撤`-20.09%`，Sharpe`0.50`，同暴露基准`40.65%`
+  - 50bp：期末权益`1.4420`，总收益`44.20%`，最大回撤`-22.62%`，Sharpe`0.37`
+  - 平均暴露`36.26%`，平均活跃股票`31.8`，平均活跃行业`2.94`，平均有效股票数`20.6`
+  - 年化单边换手`7.18x`，20bp成本拖累`11.34%`，50bp成本拖累`28.34%`
+  - 股票轮转次数：`18,453`
+  - 胜率：20bp活跃日胜率`52.55%`，50bp活跃日胜率`52.01%`
+- `all_component_capped`：
+  - 20bp：期末权益`3.3309`，总收益`233.09%`，最大回撤`-37.33%`，Sharpe`0.70`，同暴露基准`57.26%`
+  - 50bp：期末权益`2.3265`，总收益`132.65%`，最大回撤`-39.17%`，Sharpe`0.53`
+  - 平均暴露`91.93%`，平均活跃股票`182.2`，平均活跃行业`12.78`，平均有效股票数`113.0`
+  - 年化单边换手`15.16x`，20bp成本拖累`23.94%`，50bp成本拖累`59.84%`
+  - 股票轮转次数：`153,507`
+  - 胜率：20bp活跃日胜率`53.57%`，50bp活跃日胜率`53.10%`
+- `all_component_equal_stock`：
+  - 20bp：期末权益`3.3961`，总收益`239.61%`，最大回撤`-37.55%`，Sharpe`0.70`，同暴露基准`56.10%`
+  - 50bp：期末权益`2.3795`，总收益`137.95%`，最大回撤`-39.35%`，Sharpe`0.54`
+  - 平均有效股票数`126.8`，平均最大行业权重`14.65%`，最大行业权重`26.60%`
+  - 年化单边换手`15.03x`，20bp成本拖累`23.72%`，50bp成本拖累`59.31%`
+  - 股票轮转次数：`153,507`
+  - 胜率：20bp活跃日胜率`53.79%`，50bp活跃日胜率`53.04%`
+- `liquid_q3_capped`：
+  - 20bp：期末权益`3.5066`，总收益`250.66%`，最大回撤`-28.61%`，Sharpe`0.71`，同暴露基准`70.54%`
+  - 50bp：期末权益`2.4236`，总收益`142.36%`，最大回撤`-29.52%`，Sharpe`0.54`
+  - 平均暴露`82.80%`，平均活跃股票`82.0`，平均活跃行业`6.69`，平均有效股票数`52.1`
+  - 平均最大行业权重`17.12%`，最大行业权重`20.00%`
+  - 年化单边换手`15.61x`，20bp成本拖累`24.64%`，50bp成本拖累`61.59%`
+  - 股票轮转次数：`55,866`
+  - 胜率：20bp活跃日胜率`53.15%`，50bp活跃日胜率`52.57%`
+- `liquid_q3_capped` 20bp年度结果：
+  - 2018：净收益`-14.65%`，同暴露基准`-20.55%`，平均暴露`58.70%`
+  - 2019：净收益`41.80%`，同暴露基准`27.58%`，平均暴露`90.02%`
+  - 2020：净收益`16.28%`，同暴露基准`18.87%`，平均暴露`97.63%`
+  - 2021：净收益`45.19%`，同暴露基准`24.08%`，平均暴露`84.12%`
+  - 2022：净收益`-8.77%`，同暴露基准`-14.45%`，平均暴露`74.05%`
+  - 2023：净收益`-0.80%`，同暴露基准`-17.15%`，平均暴露`83.06%`
+  - 2024：净收益`49.83%`，同暴露基准`26.74%`，平均暴露`81.32%`
+  - 2025：净收益`14.17%`，同暴露基准`20.83%`，平均暴露`88.35%`
+  - 2026：净收益`10.85%`，同暴露基准`5.09%`，平均暴露`93.38%`
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为股票组合路径回测，没有模拟期货滑点。
+- 成本口径：使用`20bp`与`50bp`往返成本压力。
+- 关键成本结论：`liquid_q3_capped`在50bp下仍为正，但成本拖累达到`61.59%`，说明换手是下一阶段硬约束。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_industry_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_symbol_exposure.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_selected_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_industry_neutral_merged_portfolio_2018_2026/stock_range_reversion_industry_neutral_merged_portfolio_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改；仅刷新本阶段报告中的运行后判断文本。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：只把第229阶段固定的行业内排序放入合并持仓账本，约束为事前固定分散/容量边界，不扫信号阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第229阶段确认行业内排序信号有边际，但信号边际必须经受合并持仓、净换手、行业上限和成本压力。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段保留四个事前设定场景与20bp/50bp成本压力，没有按结果反向调阈值；`liquid_q3_capped`只作为下一步归因候选，不作为正式策略参数。
+
+### 运行后继续价值反思
+
+- 判断：是，但还不能正式化。
+- 原因：`liquid_q3_capped`在收益、回撤、流动性和分散度之间最均衡，但15倍左右年化单边换手和成本拖累仍是硬瓶颈；下一步应研究换仓频率、状态贡献和回撤来源，而不是接入实盘。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- `liquid_q3_capped`作为下一步归因候选，不作为正式参数。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做`liquid_q3_capped`换手/换仓频率压力测试，比较每日、隔日、每周、信号冷却等少参数版本。
+- 第二优先级：
+  - 对2018、2022、2023回撤做状态归因，优先使用外生市场状态变量，不写年份过滤器。
+- 第三优先级：
+  - 检查收益是否来自少数行业或少数年份，若一降频就失效，应回退为信号研究，不进入正式策略。
+
+## 第231阶段：liquid_q3换仓节奏压力测试
+
+- 当前模式：`day`
+- 记录时间：`2026-04-28 17:46 CST`
+- 本阶段为股票震荡独立研究，未修改第78趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它否定了“简单降频即可解决换手”的假设，没有形成正式参数。
+- 是否触发`skills/version-ab-experiment`：否。本阶段不接入第78、不做A/B/C、不选择正式版本。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_rebalance_cadence.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/`
+- 本阶段沿用第230阶段`liquid_q3_capped`方向，只测试换仓节奏与相位鲁棒性。
+
+### 新增参数
+
+- `CADENCE_STEPS=(1,2,5,10)`
+- `DRAWDOWN_YEARS=(2018,2022,2023)`
+- 资金归一方式：
+  - 同一交易日多个信号篮子有效时，按有效篮子数均分资金。
+- 成本：
+  - 继续使用`20bp/50bp`往返成本。
+- 相位：
+  - `2/5/10`日节奏保留所有相位，不挑起始日。
+
+### 修改参数
+
+- 无正式策略参数修改。
+- 未改变信号、股票池、行业上限、单票上限或持有期。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- `1d`每日节奏：
+  - 20bp：平均期末权益`3.4630`，总收益`246.30%`，最大回撤`-28.50%`，Sharpe`0.69`，平均暴露`85.22%`，年化单边换手`16.85x`，成本拖累`26.60%`
+  - 50bp：平均期末权益`2.3238`，总收益`132.38%`，最大回撤`-32.60%`，Sharpe`0.52`，年化单边换手`16.85x`，成本拖累`66.51%`
+- `2d`节奏：
+  - 20bp：相位数`2`，平均期末权益`3.4339`，区间`3.2658`到`3.6020`，平均总收益`243.39%`，最差回撤`-31.06%`，平均Sharpe`0.69`，平均年化单边换手`16.51x`
+  - 50bp：平均期末权益`2.3231`，区间`2.2123`到`2.4340`，最差回撤`-32.65%`，平均Sharpe`0.52`，平均年化单边换手`16.51x`
+- `5d`节奏：
+  - 20bp：相位数`5`，平均期末权益`3.5562`，区间`3.0873`到`4.0203`，平均总收益`255.62%`，最差回撤`-31.03%`，平均Sharpe`0.70`，平均年化单边换手`16.03x`
+  - 50bp：平均期末权益`2.4346`，区间`2.1070`到`2.7660`，平均总收益`143.46%`，最差回撤`-36.32%`，平均Sharpe`0.54`，平均年化单边换手`16.03x`
+- `10d`节奏：
+  - 20bp：相位数`10`，平均期末权益`3.4799`，区间`2.8150`到`4.1369`，平均总收益`247.99%`，最差回撤`-36.20%`，平均Sharpe`0.69`，平均年化单边换手`15.68x`
+  - 50bp：平均期末权益`2.4034`，区间`1.9365`到`2.8464`，平均总收益`140.34%`，最差回撤`-37.98%`，平均Sharpe`0.53`，平均年化单边换手`15.68x`
+- 关键结论：
+  - 同资本归一后，简单降频对换手的改善很小：每日`16.85x`，10日`15.68x`，只下降约`7%`。
+  - 5日节奏均值略好，但相位区间很宽，不能挑相位作为参数。
+  - 10日节奏相位分化更明显，最差回撤恶化到约`-36%/-38%`。
+  - 这说明换手来自持仓替换结构，而不是单纯来自每日生成信号。
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为股票组合路径回测，没有模拟期货滑点。
+- 成本口径：`20bp/50bp`往返成本。
+- 关键成本结论：
+  - 50bp下各节奏仍有正收益，但成本拖累仍在`61.59%`到`66.51%`之间，粗降频无法把成本问题降到舒适区。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_phase_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_selected_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_year_industry_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_rebalance_cadence_2018_2026/stock_range_reversion_liquid_q3_rebalance_cadence_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只测试预先定义的换仓节奏和所有相位，不按结果挑起始日，也不改信号、股票池、行业上限或单票上限。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第230阶段的主要硬约束是15倍左右年化单边换手和高成本拖累，换仓节奏是进入正式化前必须回答的问题。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：报告同时保留所有节奏、所有相位和20bp/50bp成本；任何更优节奏只作为下一步归因对象，不作为正式参数。
+
+### 运行后继续价值反思
+
+- 判断：是，但粗降频本身不是答案。
+- 原因：同资本归一后，10日节奏平均年化单边换手只比每日节奏下降约`7%`，相位差异反而扩大；下一步应研究持仓延续、阈值滞后和只替换弱腿，而不是把某个降频相位当参数。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 简单降频不作为正式候选。
+- 下一步转向turnover-aware持仓延续/替换账本。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做固定滞后机制：进入行业内top20%，若仍在top40%且流动性未失效则延续持仓，只替换跌出保留区的弱腿。
+- 第二优先级：
+  - 对比滞后机制在20bp/50bp下的换手下降幅度、收益保留率和回撤变化。
+- 第三优先级：
+  - 若滞后机制仍不能显著降换手，暂停交易化，回到信号归因和状态过滤。
+
+## 第232阶段：liquid_q3持仓延续/每日重配账本反证
+
+- 当前模式：`day`
+- 记录时间：`2026-04-28 17:53 CST`
+- 本阶段为股票震荡独立研究，未修改第78趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。该阶段是淘汰机制的负向反证。
+- 是否触发`skills/version-ab-experiment`：否。本阶段不接入第78、不做A/B/C、不选择正式版本。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_hysteresis_replacement.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/`
+- 本阶段测试第231阶段提出的“进入top20、保留到top40”的固定滞后机制，但采用每日对活跃持仓重新计算目标权重的账本。
+
+### 新增参数
+
+- `ENTRY_GROUP=5`
+- `RETAIN_MIN_GROUP=4`
+- `MAX_INDUSTRY_WEIGHT_PER_BASKET=20%`
+- `MAX_STOCK_WEIGHT_PER_BASKET=5%`
+- 成本：继续使用`20bp/50bp`往返成本
+
+### 修改参数
+
+- 无正式策略参数修改。
+- 未改变第78趋势策略、期货震荡策略或第230/231阶段输出。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- 20bp：
+  - 期末权益`1.6414`
+  - 总收益`64.14%`
+  - 最大回撤`-39.21%`
+  - Sharpe`0.36`
+  - 同暴露基准收益`60.94%`
+  - 活跃日胜率`52.21%`
+  - 平均暴露`83.17%`
+  - 年化单边换手`56.85x`
+  - 成本拖累`89.33%`
+- 50bp：
+  - 期末权益`0.4296`
+  - 总收益`-57.04%`
+  - 最大回撤`-67.71%`
+  - Sharpe`-0.22`
+  - 活跃日胜率`50.25%`
+  - 成本拖累`223.33%`
+- 持仓状态：
+  - 平均活跃股票`41.2`
+  - 平均活跃行业`5.3`
+  - 平均每日新增`7.7`
+  - 平均每日退出`7.7`
+  - 平均持仓信号日`7.1`
+  - 中位持仓信号日`5`
+  - 最大持仓信号日`75`
+- 20bp年度结果：
+  - 2018：`-17.59%`
+  - 2019：`+34.31%`
+  - 2020：`+7.57%`
+  - 2021：`+29.68%`
+  - 2022：`-17.30%`
+  - 2023：`-6.25%`
+  - 2024：`+30.04%`
+  - 2025：`+8.12%`
+  - 2026：`-2.47%`
+- 分组贡献：
+  - 保留组`4`：股票日`19,531`，平均权重`1.96%`，次日股票收益均值`0.08%`
+  - 进入组`5`：股票日`55,866`，平均权重`2.26%`，次日股票收益均值`0.12%`
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为股票组合路径回测，没有模拟期货滑点。
+- 成本口径：`20bp/50bp`往返成本。
+- 关键成本结论：
+  - 每日重配使年化单边换手升至`56.85x`，明显高于第230阶段`liquid_q3_capped`的`15.61x`。
+  - 这说明“保留股票名单”不等于“降低交易成本”；如果权重每日全量重算，保留下来的股票仍会被反复交易。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_daily_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_events.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_feature_group.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_industry_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_selected.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_hysteresis_replacement_2018_2026/stock_range_reversion_liquid_q3_hysteresis_replacement_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：规则来自第231阶段预先确定的滞后机制，进入top20、保留top40、行业/单票上限全部固定；没有扫描保留阈值或持仓天数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第231阶段已经确认粗降频无法解决换手，真正值得测试的是减少不必要替换的账本结构。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是负向反证，没有因为某个局部指标包装成有效版本；规则固定为top20进入/top40保留，未继续扫描阈值。
+
+### 运行后继续价值反思
+
+- 判断：有价值，但本机制本身应淘汰。
+- 原因：持仓延续并没有降低换手，反而因每日重算权重把年化单边换手推高到约`57x`；下一步如果继续，只能做sticky slot/只替换退出腿的账本，而不是每日全组合重配。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 淘汰每日重算权重的hysteresis版本。
+- 下一步只允许测试sticky slot/只替换退出腿机制，避免保留股票被反复再平衡。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做sticky slot账本：持有股票权重尽量不变，只在退出腿释放资金后补入新top20。
+- 第二优先级：
+  - 维持行业上限和单票上限，但避免每天全组合重配。
+- 第三优先级：
+  - 若sticky slot仍无法把换手压回可接受区间，股票震荡交易化暂停，保留信号研究价值。
+
+## 第233阶段：liquid_q3 sticky slot账本压力测试
+
+- 当前模式：`day`
+- 记录时间：`2026-04-28 17:56 CST`
+- 本阶段为股票震荡独立研究，未修改第78趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。该阶段完成当前`liquid_q3`日频交易化路线的边界判断。
+- 是否触发`skills/version-ab-experiment`：否。本阶段不接入第78、不做A/B/C、不选择正式版本。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_liquid_q3_sticky_slot.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/`
+- 本阶段从第232阶段的负向反证继续，测试只替换退出腿的sticky slot账本。
+
+### 新增参数
+
+- `ENTRY_GROUP=5`
+- `RETAIN_MIN_GROUP=4`
+- `MAX_INDUSTRY_WEIGHT_PER_BASKET=20%`
+- `MAX_STOCK_WEIGHT_PER_BASKET=5%`
+- 权重政策：
+  - 保留股票保持原目标权重。
+  - 只用退出腿释放的资金补入当日top20新候选。
+  - 新增股票遵守行业上限和单票上限，无法使用的资金留现金。
+- 成本：继续使用`20bp/50bp`往返成本。
+
+### 修改参数
+
+- 无正式策略参数修改。
+- 未改变第78趋势策略、期货震荡策略或前序研究输出。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- 20bp：
+  - 期末权益`1.8264`
+  - 总收益`82.64%`
+  - 最大回撤`-37.30%`
+  - Sharpe`0.41`
+  - 同暴露基准收益`59.47%`
+  - 活跃日胜率`51.72%`
+  - 平均暴露`82.97%`
+  - 年化单边换手`36.81x`
+  - 成本拖累`57.84%`
+- 50bp：
+  - 期末权益`0.7668`
+  - 总收益`-23.32%`
+  - 最大回撤`-54.61%`
+  - Sharpe`0.04`
+  - 活跃日胜率`50.57%`
+  - 成本拖累`144.61%`
+- 持仓状态：
+  - 平均活跃股票`25.5`
+  - 平均活跃行业`5.3`
+  - 平均每日新增`4.2`
+  - 平均每日退出`4.2`
+  - 平均释放权重`15.69%`
+  - 平均剩余现金`10.19%`
+  - 平均持仓信号日`7.7`
+  - 中位持仓信号日`5`
+  - 最大持仓信号日`75`
+- 20bp年度结果：
+  - 2018：`-20.92%`
+  - 2019：`+45.06%`
+  - 2020：`+14.33%`
+  - 2021：`+23.89%`
+  - 2022：`-17.64%`
+  - 2023：`-2.18%`
+  - 2024：`+28.56%`
+  - 2025：`+6.66%`
+  - 2026：`+1.75%`
+- 50bp年度结果：
+  - 2018：`-27.11%`
+  - 2019：`+30.68%`
+  - 2020：`+2.21%`
+  - 2021：`+10.39%`
+  - 2022：`-26.73%`
+  - 2023：`-11.95%`
+  - 2024：`+16.91%`
+  - 2025：`-4.51%`
+  - 2026：`-0.94%`
+- 分组贡献：
+  - 保留组`4`：股票日`9,882`，平均权重`3.46%`，次日股票收益均值`0.01%`
+  - 进入组`5`：股票日`36,826`，平均权重`3.53%`，次日股票收益均值`0.12%`
+
+### 总滑点/成本
+
+- 总滑点：不适用。本阶段为股票组合路径回测，没有模拟期货滑点。
+- 成本口径：`20bp/50bp`往返成本。
+- 关键成本结论：
+  - sticky slot把年化单边换手从第232阶段每日重配的`56.85x`降到`36.81x`，方向正确。
+  - 但仍远高于第230阶段`liquid_q3_capped`的`15.61x`，且50bp后总收益为`-23.32%`。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_daily_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_events.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_feature_group.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_industry_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_selected.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_sticky_slot_2018_2026/stock_range_reversion_liquid_q3_sticky_slot_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无正式策略结果修改。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：这是第232阶段负向结论后的结构修正，只改变账本是否每日全组合重配，不扫描信号阈值、持仓天数或行业上限。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第232阶段证明每日重配账本错误，sticky slot是同一研究方向下更符合交易成本本质的最后一类账本。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有被包装成候选版本；sticky slot虽然比每日重配少换手，但50bp后亏损，不能继续围绕它调参数。
+
+### 运行后继续价值反思
+
+- 判断：有研究价值，但当前交易化路线应暂停。
+- 原因：换手从每日重配的约`57x`降到约`37x`，但仍远高于第230阶段，50bp后期末权益低于1；继续微调持仓账本容易变成成本适配器。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- `sticky slot`不作为正式候选。
+- 暂停当前`liquid_q3`日频股票震荡交易化。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 不再围绕`liquid_q3`日频个股账本做参数微调。
+- 第二优先级：
+  - 保留行业内超跌信号研究价值，下一步若继续股票线，应做外生状态归因或更低频信号，而不是交易账本调参。
+- 第三优先级：
+  - 另一路可考虑ETF/指数震荡，先验证低换手结构，再考虑个股扩展。
