@@ -28959,3 +28959,3101 @@ to-end季度冷启动：
   - 不写资金曲线。
   - 不调阈值。
   - 不把高换手分层直接变成交易规则。
+## 第211阶段：股票震荡高活跃桶年度稳定性、市场市值交叉与行业集中度归因
+
+### 基本信息
+
+- 时间：`2026-04-28 14:56 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，高活跃桶年度稳定性首次确认
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增高活跃桶稳定性归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_active_bucket_stability.py`
+- 新增归因内容：
+  - `turnover_f_q5`
+  - `adv20_turnover_q5`
+  - `dual_turnover_q5`
+  - `active_q4_q5`
+  - `market × circ_mv_q`
+  - 高自由换手桶行业集中度
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易规则。
+- 未做策略资金曲线。
+
+### 新增参数
+
+- `FEATURES=score_oversold_ret_5,score_oversold_ret_10,score_oversold_ret_20`
+- `HORIZONS=5,10`
+- 高活跃桶定义：
+  - `turnover_f_q5`：自由换手最高20%
+  - `adv20_turnover_q5`：20日成交额最高20%
+  - `dual_turnover_q5`：自由换手和20日成交额同时最高20%
+  - `active_q4_q5`：自由换手和20日成交额都在前40%
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/`
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 股票数：`2,519`
+  - 行数：`3,076,624`
+- 高活跃桶年度稳定性：
+  - `score_oversold_ret_10` 10日：
+    - `turnover_f_q5` 正收益年份`9/9`，年度中位 top-bottom `1.0037%`，最差年份`0.1411%`
+    - `adv20_turnover_q5` 正收益年份`9/9`，年度中位 top-bottom `1.0620%`，最差年份`0.2734%`
+    - `dual_turnover_q5` 正收益年份`9/9`，年度中位 top-bottom `1.3842%`，最差年份`0.0209%`
+    - `active_q4_q5` 正收益年份`9/9`，年度中位 top-bottom `1.0285%`，最差年份`0.1658%`
+  - `score_oversold_ret_20` 10日：
+    - `turnover_f_q5` 正收益年份`9/9`，年度中位 top-bottom `1.3671%`，最差年份`0.0901%`
+    - `adv20_turnover_q5` 正收益年份`9/9`，年度中位 top-bottom `1.1100%`，最差年份`0.0439%`
+    - `dual_turnover_q5` 正收益年份`8/9`，年度中位 top-bottom `1.7938%`，最差年份`-0.2275%`
+    - `active_q4_q5` 正收益年份`9/9`，年度中位 top-bottom `1.1950%`，最差年份`0.1164%`
+- 近端年份：
+  - `turnover_f_q5`中`score_oversold_ret_10` 10日：2024年`1.0037%`，2025年`0.9700%`，2026截至4月17日`2.0455%`
+  - `turnover_f_q5`中`score_oversold_ret_20` 10日：2024年`1.8171%`，2025年`0.8544%`，2026截至4月17日`1.3155%`
+  - `dual_turnover_q5`中`score_oversold_ret_20` 10日：2024年`2.0012%`，2025年`1.2764%`，2026截至4月17日`1.6730%`
+- 市场板块 × 流通市值交叉：
+  - `score_oversold_ret_20` 10日最强为`主板_circ_mv_q1`：top-bottom `1.2496%`，t值`12.48`
+  - `score_oversold_ret_10` 10日较强包括`创业板_circ_mv_q4`：`0.9539%`，`创业板_circ_mv_q1`：`0.9077%`，`主板_circ_mv_q1`：`0.7726%`
+- 高自由换手桶行业集中度：
+  - `score_oversold_ret_20` 10日：
+    - 电气设备：`2.5358%`
+    - 软件服务：`2.4087%`
+    - 半导体：`0.0860%`
+    - 元器件：`-0.4352%`
+  - `score_oversold_ret_10` 10日：
+    - 电气设备：`2.4435%`
+    - 软件服务：`1.4683%`
+    - 半导体：`0.5437%`
+    - 元器件：`-0.6774%`
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_stability.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_market_size_cross.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_active_industry.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_active_bucket_stability_2018_2026/stock_range_reversion_active_bucket_stability_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只对上一步发现的高活跃桶做年度稳定性验证，没有改信号窗口、阈值、过滤规则或交易规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：高活跃桶如果不能逐年稳定，就不应进入成本容量；如果逐年稳定，下一步才有必要做可交易性约束。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：高活跃桶多数组合在`9/9`年份为正是固定口径验证结果；同时行业集中度显示并非无条件普适，提供了后续约束。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：高活跃桶近端2024-2026仍保持正向，说明股票震荡研究值得继续；但强结果与活跃度、行业和小市值有关，下一步必须先做交易成本、冲击成本和容量压力。
+
+### 决策
+
+- 保留股票震荡与期货第78趋势策略隔离。
+- 不写股票组合回测。
+- 不扫阈值。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 下一步进入成本/容量压力估算，而不是直接组合化。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 对`turnover_f_q5`、`adv20_turnover_q5`、`dual_turnover_q5`估算交易成本和容量。
+- 第二优先级：
+  - 计算候选日均持仓数量、单票平均成交额、可成交金额上限、换手率。
+- 第三优先级：
+  - 成本容量后仍有边际，再做最小组合回测。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不把高活跃桶稳定性直接变成交易策略。
+## 第212阶段：股票震荡高活跃桶成本容量压力估算，确认top-bottom强但long-only top腿成本后不够厚
+
+### 基本信息
+
+- 时间：`2026-04-28 15:03 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，这是一个重要反证，阻止过早进入股票组合回测
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增成本容量压力估算脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_cost_capacity.py`
+- 新增分析内容：
+  - 高活跃桶 top quintile 的 long-only top腿毛超额
+  - roundtrip 成本情景：`10/20/50/100/150bp`
+  - 20日平均成交额参与率容量情景：`1%/2%/5%/10%`
+  - 年度成本后净超额
+  - 候选池行业集中度
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易规则。
+- 未做策略资金曲线。
+
+### 新增参数
+
+- `COST_BPS=10,20,50,100,150`
+- `PARTICIPATION_RATES=0.01,0.02,0.05,0.10`
+- `FEATURES=score_oversold_ret_5,score_oversold_ret_10,score_oversold_ret_20`
+- `HORIZONS=5,10`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/`
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 股票数：`2,519`
+  - 行数：`3,076,624`
+- long-only top腿毛超额：
+  - `score_oversold_ret_10` 10日：
+    - `active_q4_q5`：`0.1204%`
+    - `adv20_turnover_q5`：`0.0340%`
+    - `dual_turnover_q5`：`-0.1902%`
+    - `turnover_f_q5`：`-0.0844%`
+  - `score_oversold_ret_20` 10日：
+    - `active_q4_q5`：`0.2675%`
+    - `adv20_turnover_q5`：`0.2024%`
+    - `dual_turnover_q5`：`0.0412%`
+    - `turnover_f_q5`：`0.1366%`
+- 成本压力：
+  - 20bp roundtrip 后：
+    - `score_oversold_ret_10` 10日各高活跃桶净超额全部为负。
+    - `score_oversold_ret_20` 10日只有`active_q4_q5`约`0.0675%`，`adv20_turnover_q5`约`0.0024%`，其余为负。
+  - 50bp roundtrip 后：
+    - `score_oversold_ret_10`和`score_oversold_ret_20` 10日各高活跃桶净超额全部为负。
+  - 100bp roundtrip 后：
+    - 2024-2026近端年份所有关注组合净超额均为负。
+- 容量估算：
+  - 5% ADV参与率下，`score_oversold_ret_10` 10日：
+    - `active_q4_q5`候选池合计容量中位约`11.46`亿元，等权p20容量中位约`5.22`亿元，单票p20仓位上限中位约`1009`万元。
+    - `adv20_turnover_q5`候选池合计容量中位约`10.09`亿元，等权p20容量中位约`5.74`亿元，单票p20仓位上限中位约`1492`万元。
+    - `dual_turnover_q5`候选池合计容量中位约`6.41`亿元，等权p20容量中位约`3.37`亿元，单票p20仓位上限中位约`1784`万元。
+    - `turnover_f_q5`候选池合计容量中位约`8.75`亿元，等权p20容量中位约`3.33`亿元，单票p20仓位上限中位约`947`万元。
+  - 容量不是当前最大问题；成本后alpha厚度才是当前主要问题。
+- 候选池行业集中：
+  - `dual_turnover_q5`中，软件服务候选占比较高但`score_oversold_ret_10`毛超额为`-0.3747%`。
+  - 电气设备、半导体、通信设备等部分行业毛超额为正，但行业贡献不均衡。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_cost_grid.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_capacity_grid.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_year_cost_grid.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_industry_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_cost_capacity_2018_2026/stock_range_reversion_cost_capacity_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只把固定信号和固定高活跃桶放入成本/容量情景，不根据结果调整信号或阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：高活跃桶毛归因若扛不住成本，就不应进入组合回测；成本容量是进入交易化前必须过的一关。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：成本后结果偏负是对前序top-bottom归因的重要反证，没有被调参掩盖。
+
+### 运行后继续价值反思
+
+- 判断：有，但方向要收窄。
+- 原因：横截面排序价值存在，但long-only top腿不够厚；下一步应研究top腿绝对收益、市场状态过滤或对冲结构，而不是直接写股票组合回测。
+
+### 决策
+
+- 不进入股票组合回测。
+- 不把高活跃桶直接转成交易规则。
+- 不接入第78。
+- 不进入第78 A/B/C。
+- 下一步做`top腿绝对收益/市场状态/成本敏感性`归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 对top腿做绝对收益、基准状态、市场涨跌、波动状态分层。
+- 第二优先级：
+  - 检查是否存在低成本可对冲结构，而不是只做long-only。
+- 第三优先级：
+  - 只有成本后long-only仍有稳定边际，才进入最小组合回测。
+- 暂不做：
+  - 不写资金曲线。
+  - 不调阈值。
+  - 不做股票组合策略。
+## 第213阶段：股票震荡top腿市场状态归因，确认下跌后修复窗口存在但仍带强beta暴露
+
+### 基本信息
+
+- 时间：`2026-04-28 15:10 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认long-only top腿不是全时段可做，而是在过去20日市场下跌后才有成本后厚度
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增top腿市场状态归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_top_leg_state.py`
+- 新增分析内容：
+  - 高活跃桶top quintile的长侧绝对收益
+  - 高活跃桶top quintile相对中证1000的超额收益
+  - 信号日前可知的`market_state_20d`分层
+  - 信号日前可知的中证1000过去20日涨跌幅固定区间分层
+  - 未来基准方向事后诊断
+  - `10/20/50/100bp` roundtrip成本情景
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易规则。
+- 未做策略资金曲线。
+
+### 新增参数
+
+- `COST_BPS=10,20,50,100`
+- `MIN_STATE_DAYS=40`
+- `FEATURES=score_oversold_ret_5,score_oversold_ret_10,score_oversold_ret_20`
+- `HORIZONS=5,10`
+- 固定中证1000过去20日状态区间：
+  - `sharp_down_le_-8pct`
+  - `down_-8pct_to_-3pct`
+  - `flat_-3pct_to_3pct`
+  - `up_3pct_to_8pct`
+  - `strong_up_ge_8pct`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/`
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 股票数：`2,519`
+  - 行数：`3,076,624`
+  - top-leg日序列：`44,269`行
+- 可提前识别状态下的10日长侧：
+  - `score_oversold_ret_20`、`active_q4_q5`、`market_down_20d`：
+    - 毛绝对收益：`0.9521%`
+    - 毛超额收益：`0.7258%`
+    - 超额t值：`8.17`
+    - 超额正向日：`61.14%`
+  - `score_oversold_ret_20`、`active_q4_q5`、`market_up_20d`：
+    - 毛绝对收益：`0.3194%`
+    - 毛超额收益：`-0.1745%`
+    - 超额t值：`-2.43`
+    - 超额正向日：`43.82%`
+  - `score_oversold_ret_10`、`active_q4_q5`、`market_down_20d`：
+    - 毛绝对收益：`0.7094%`
+    - 毛超额收益：`0.4831%`
+    - 超额t值：`5.90`
+  - `score_oversold_ret_10`、`active_q4_q5`、`market_up_20d`：
+    - 毛绝对收益：`0.2653%`
+    - 毛超额收益：`-0.2286%`
+    - 超额t值：`-2.95`
+- 成本后状态压力：
+  - `score_oversold_ret_20`、`active_q4_q5`、`market_down_20d`：
+    - 20bp后净绝对收益`0.7521%`，净超额`0.5258%`，净超额t值`5.92`
+    - 50bp后净绝对收益`0.4521%`，净超额`0.2258%`，净超额t值`2.54`
+  - `score_oversold_ret_10`、`active_q4_q5`、`market_down_20d`：
+    - 20bp后净绝对收益`0.5094%`，净超额`0.2831%`，净超额t值`3.46`
+    - 50bp后净绝对收益`0.2094%`，净超额`-0.0169%`，净超额t值`-0.21`
+- 过去20日基准幅度分层：
+  - `score_oversold_ret_20`、`active_q4_q5`在`sharp_down_le_-8pct`中，毛绝对收益`4.2300%`，毛超额`1.9065%`
+  - 同组在`down_-8pct_to_-3pct`中，毛绝对收益`0.5570%`，毛超额`0.7887%`
+  - 同组在`flat_-3pct_to_3pct`中，毛绝对收益`-0.0950%`，毛超额`0.0191%`
+  - 同组在`strong_up_ge_8pct`中，毛绝对收益`0.4221%`，毛超额`-0.6019%`
+- 未来基准方向诊断：
+  - `score_oversold_ret_20`、`active_q4_q5`在未来基准上涨时，毛绝对收益`4.7878%`，毛超额`0.9249%`，同期基准`3.8629%`
+  - 同组在未来基准下跌时，毛绝对收益`-3.7953%`，毛超额`-0.4322%`，同期基准`-3.3630%`
+  - 结论：top腿仍有强市场beta暴露，未来基准方向只能作为风险诊断，不能用作交易过滤。
+- 近端年份：
+  - `score_oversold_ret_20`、`active_q4_q5`、`market_down_20d`：
+    - 2024：毛绝对`3.4408%`，毛超额`1.3011%`
+    - 2025：毛绝对`1.2491%`，毛超额`0.6538%`
+  - `score_oversold_ret_20`、`active_q4_q5`、`market_up_20d`：
+    - 2024：毛绝对`0.2937%`，毛超额`-0.2816%`
+    - 2025：毛绝对`1.2949%`，毛超额`-0.2826%`
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/stock_range_reversion_top_leg_state_v1_daily_top_series.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/stock_range_reversion_top_leg_state_v1_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/stock_range_reversion_top_leg_state_v1_state_cost_grid.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/stock_range_reversion_top_leg_state_v1_year_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_top_leg_state_2018_2026/stock_range_reversion_top_leg_state_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做固定信号、固定高活跃桶、外生市场状态的归因，不根据结果扫参数或新增交易过滤规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第212阶段显示全时段long-only top腿不够厚，必须判断是否存在可提前识别的市场窗口，否则不应进入组合回测。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结论来自信号日前可知的`market_state_20d`和固定中证1000过去20日涨跌幅区间；未来基准方向只作为明确标注的事后诊断，没有被用来生成交易规则。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向继续收窄。
+- 原因：`market_down_20d + score_oversold_ret_20 + active_q4_q5`在20/50bp后仍有边际，说明股票震荡long-only不是完全不可做；但强beta暴露意味着只能进入最小路径回测，不能全时段组合化。
+
+### 决策
+
+- 不进入第78 A/B/C。
+- 不修改期货趋势/震荡路线。
+- 不做全时段股票long-only组合。
+- 下一步只做“市场过去20日下跌状态下”的最小股票组合路径验证。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做`market_down_20d`下`score_oversold_ret_20`、`active_q4_q5`的最小组合路径回测，使用固定持仓数和固定成本，不扫参数。
+- 第二优先级：
+  - 检查持仓重叠、调仓冲突、单票成交额占比、涨跌停无法成交对收益的影响。
+- 第三优先级：
+  - 如果路径回测不稳，回到状态归因层，而不是调信号阈值。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第228阶段：股票震荡long-only小仓位卫星边界归因，确认不适合占用第78资金
+
+### 基本信息
+
+- 时间：`2026-04-28 17:10 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认股票震荡与第78相关性很低，但作为固定资金替换会明显稀释第78收益厚度
+- 第78正式趋势策略影响：无。只读取第78正式冻结日度权益，不重跑、不修改第78。
+- 期货震荡策略影响：无。
+- 本阶段不是正式策略版本，不触发第78 A/B/C。
+
+### 本次版本改动内容
+
+- 新增研究脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_long_only_satellite_boundary.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/`
+- 输入：
+  - 第78日度权益：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_official_stage78_defensive_formal_daily_equity.csv`
+  - 股票震荡合并持仓路径：`examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_equity_curve.csv`
+- 方法：
+  - 组合日收益按固定资金权重每日再平衡：`(1-w) * 第78日收益 + w * 股票震荡日收益`
+  - 只做`0%/5%/10%/15%/20%`固定边界，不按结果择优。
+
+### 新增参数
+
+- `STAGE78_INITIAL_CAPITAL=200000`
+- `STOCK_COST_BPS_LIST=(20,50)`
+- `SATELLITE_WEIGHTS=(0,0.05,0.10,0.15,0.20)`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- 样本：
+  - 日期范围：`2020-01-02`到`2026-04-21`
+  - 交易日：`1525`
+  - 本阶段未新增交易，只合成已有第78路径和股票震荡路径。
+- 相关性：
+  - 股票震荡与第78日收益相关：约`0.009`
+  - 股票震荡与中证1000 benchmark相关：约`0.699`
+- 20bp股票成本：
+  - 第78同窗口：期末权益`23.0005`，总收益`2200.05%`，最大回撤`-36.99%`，Sharpe`1.491`
+  - 5%卫星：期末权益`20.6964`，总收益`1969.64%`，最大回撤`-35.41%`，Sharpe`1.503`
+  - 10%卫星：期末权益`18.5712`，总收益`1757.12%`，最大回撤`-33.80%`，Sharpe`1.516`
+  - 15%卫星：期末权益`16.6178`，总收益`1561.78%`，最大回撤`-32.15%`，Sharpe`1.528`
+  - 20%卫星：期末权益`14.8283`，总收益`1382.83%`，最大回撤`-30.47%`，Sharpe`1.540`
+- 50bp股票成本：
+  - 10%卫星：期末权益`18.2958`，总收益`1729.58%`，最大回撤`-33.80%`，Sharpe`1.509`
+  - 20%卫星：期末权益`14.3917`，总收益`1339.17%`，最大回撤`-30.48%`，Sharpe`1.525`
+- 10%卫星相对第78同窗口：
+  - 20bp成本：期末权益变化`-4.4292`，最大回撤改善`+3.19pct`，Sharpe提升`+0.0246`
+  - 50bp成本：期末权益变化`-4.7047`，最大回撤改善`+3.19pct`，Sharpe提升`+0.0177`
+- 10%卫星年度贡献：
+  - 2020：相对第78年度收益`-12.94pct`
+  - 2021：相对第78年度收益`-26.70pct`
+  - 2022：相对第78年度收益`-2.49pct`
+  - 2023：相对第78年度收益`-4.17pct`
+  - 2024：相对第78年度收益`+2.35pct`
+  - 2025：相对第78年度收益`-5.41pct`
+  - 2026：相对第78年度收益`+0.11pct`
+- 最大回撤窗口：
+  - 第78最大回撤窗口为`2021-05-12`到`2021-07-02`
+  - 股票震荡在该窗口原始复合收益约`+1.56%`
+  - 10%卫星把组合最大回撤从`-36.99%`降至`-33.80%`
+- 总滑点/成本：
+  - 本阶段未产生新交易，股票路径沿用`20bp/50bp roundtrip`成本压力。
+- 总交易次数：
+  - 本阶段不适用，未产生新交易。
+- 胜率：
+  - 本阶段不适用，未新增逐笔交易统计。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_delta_vs_stage78.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_daily_curves.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_drawdown_windows.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_metadata.json`
+- `examples/alpha_research/native_results/stock_range_reversion_long_only_satellite_boundary_2020_2026/stock_range_reversion_long_only_satellite_boundary_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做固定小仓位比例边界，不扫描最优权重，也不改股票信号、第78配置或成本参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：ETF/IM市场中性化都遇到现实约束，股票震荡更自然的候选形态是long-only小资金卫星；必须先确认它和第78的组合关系。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：报告保留`0%/5%/10%/15%/20%`全边界和20bp/50bp成本压力，没有选择某个权重作为正式参数；结论是“不接入第78”，不是挑选最优。
+
+### 运行后继续价值反思
+
+- 判断：有，但不适合作为占用第78资金的正式卫星。
+- 原因：股票震荡与第78相关性很低，能线性降低组合最大回撤并略微抬高Sharpe；但第78本身收益厚度远高于当前股票震荡路径，固定资金替换会明显牺牲期末权益。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不在本阶段选择正式卫星权重。
+- 股票震荡后续若继续，应研究独立小资金/闲置资金口径下的状态过滤，而不是用第78资金替换。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做股票震荡独立资金口径的状态过滤归因，重点判断2022这类连续下跌期能否被外生市场状态降权。
+- 第二优先级：
+  - 检查状态过滤是否只是事后避开2018/2022；必须用少参数、可解释、穿越周期的市场状态变量。
+- 第三优先级：
+  - 若状态过滤只能牺牲大部分收益换一点回撤，则股票震荡暂停正式化，只保留数据与信号研究。
+
+## 第224阶段：股票震荡对冲数据可用性审计
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 16:50 CST`。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段不是正式策略版本，不触发第78 A/B/C；性质是数据审计，不是新策略回测。
+
+### 版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/audit_stock_range_reversion_hedge_data.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_hedge_data_audit_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_hedge_data_audit_2018_2026/stock_range_reversion_hedge_data_audit_v1_report.md`
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段未运行策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 本阶段审计口径
+
+- 输入股票路径：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_equity_curve.csv`
+- 输入期货数据：
+  - `examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CFFEX/`
+- 审计品种：
+  - `IM`、`IC`、`IF`、`IH`
+- 主力代理：
+  - `dominant_by_close_oi`
+  - `dominant_by_volume`
+
+### 核心结果
+
+- 本地CFFEX数据：
+  - `IC`：68个合约，`2020-01-20`到`2026-04-17`，1511个交易日。
+  - `IF`：68个合约，`2020-01-20`到`2026-04-17`，1511个交易日。
+  - `IH`：68个合约，`2020-01-20`到`2026-04-17`，1511个交易日。
+  - `IM`：45个合约，`2022-07-22`到`2026-04-17`，905个交易日。
+- 股票震荡第218阶段路径：
+  - 全样本交易日：1989天。
+  - 有股票暴露交易日：1320天。
+- IM覆盖：
+  - 覆盖全样本交易日：905天，覆盖率`45.50%`。
+  - 覆盖有股票暴露交易日：600天，覆盖率`45.45%`。
+  - IM上市前有股票暴露交易日：720天。
+- IC/IF/IH覆盖：
+  - 覆盖全样本交易日：1511天，覆盖率`75.97%`。
+  - 覆盖有股票暴露交易日：942天，覆盖率`71.36%`。
+  - 但IC是中证500、IF是沪深300、IH是上证50，均不是中证1000同标的对冲。
+- 本地字段：
+  - 有：`open/high/low/close/volume/open_oi/close_oi`。
+  - 缺：合约乘数、保证金比例、手续费、滑点、基差、展期成本。
+- ETF/基金：
+  - 仓库内暂未发现可直接复用的中证1000 ETF/基金历史行情文件。
+
+### 跟踪关系
+
+- IM `dominant_by_close_oi` 同合约日收益：
+  - 样本天数：873。
+  - 与中证1000 benchmark 相关：`0.964`。
+  - beta：`1.050`。
+  - 年化跟踪误差：`7.20%`。
+- IM `dominant_by_volume` 同合约日收益：
+  - 样本天数：870。
+  - 与中证1000 benchmark 相关：`0.973`。
+  - beta：`1.009`。
+  - 年化跟踪误差：`5.82%`。
+- IC `dominant_by_close_oi` 同合约日收益：
+  - 与中证1000 benchmark 相关：`0.912`。
+  - beta：`0.871`。
+  - 年化跟踪误差：`10.23%`。
+- 判断：
+  - IM作为2022-07之后中证1000方向性对冲工具有研究价值。
+  - IC可做替代proxy观察，但不能自然替代IM做2018-2022中证1000对冲。
+
+### 本阶段非回测指标
+
+- 期末权益：不适用，本阶段未回测策略。
+- 总收益：不适用。
+- 最大回撤：不适用。
+- Sharpe：不适用。
+- 总滑点：不适用。
+- 总交易次数：不适用。
+- 胜率：不适用。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只审计已有数据覆盖、字段和粗跟踪关系，不扫描对冲比例、换月规则或成本参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第222/223阶段已经显示股票震荡的残差alpha较健康，主要矛盾是市场beta承载；对冲数据审计是继续研究的必要前置条件。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出保留了IM覆盖不足、ETF缺失、成本字段缺失等反证，没有把无成本对冲归因包装成可交易收益。
+
+### 运行后继续价值反思
+
+- 判断：有，但必须降级为分段研究。
+- 原因：2022-07之后IM数据足以做一段保守对冲压力测试；2018-2022前半段缺少同标的期货对冲，只能保持long-only归因或另补ETF/指数替代数据。
+
+### 决策
+
+- 不接入第78。
+- 不进入股票正式策略。
+- 不做第78 A/B/C。
+- 不采用第223阶段无成本对冲结果作为实盘结果。
+- 不使用IC替代IM做正式中证1000对冲结论。
+- 下一步只允许做`2022-07`之后IM可交易对冲压力测试，并把期货腿成本、换月和资金占用写成显式假设。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做`2022-07-22`之后“股票篮子 + IM主力代理”的保守对冲压力测试。
+  - 对冲成本必须显式：期货手续费/滑点、主力切换日处理、保证金占用、现金占用。
+- 第二优先级：
+  - 另行补充中证1000 ETF/基金历史行情，审计ETF跟踪误差、成交额、冲击成本和申赎/停牌影响。
+- 第三优先级：
+  - 对2018-2022前半段保持long-only归因，不用IC的较高相关性替代真实中证1000对冲。
+
+## 第225阶段：股票震荡2022-07之后IM对冲压力测试
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 16:54 CST`。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段不是正式策略版本，不触发第78 A/B/C。
+- 合约规格来源：
+  - 中金所中证1000股指期货合约表：`https://www.cffex.com.cn/zz1000/`
+  - 中金所2022-07-18上市通知：`https://www.cffex.com.cn/en_new/NoticesGuidelinesandOther/20220718/28907.html`
+
+### 版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_im_hedge_pressure.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_report.md`
+- 新增参数：
+  - IM合约乘数：每点人民币`200`元。
+  - 分段样本：`2022-07-25`到`2026-04-17`。
+  - 对冲比例：`0%`、`50%`、`100%`。
+  - 期货单边成本压力：`2bp`、`5bp`。
+  - 保证金压力：`15%`、`20%`。
+  - 资金颗粒度审计：`20万`、`50万`、`100万`、`200万`、`500万`。
+- 修改参数：无。
+- 删除参数：无。
+- 修改/删除旧回测结果：无。
+
+### 运行逻辑
+
+- 股票腿：
+  - 继续使用第218阶段合并持仓路径。
+  - 保留股票`20bp`和`50bp`往返成本两条路径。
+- IM腿：
+  - 使用本地IM日线合约CSV。
+  - 先持有前一日目标主力到当日收盘，再在收盘后切换到新目标主力，避免把跨合约价差跳变当成日内收益。
+  - `dominant_by_volume`和`dominant_by_close_oi`作为主力代理。
+- 成本：
+  - 期货按名义成交额扣单边成本。
+  - 换月日按平旧仓、开新仓计算期货成交名义。
+  - 保证金只做资金压力观测，不从收益中扣减。
+- 一手颗粒度：
+  - 按`IM点位 * 200`估算单合约名义。
+  - 额外输出目标手数、四舍五入为0的日期比例、单合约名义/账户权益比例、单合约保证金/账户权益比例。
+
+### 新增回测结果
+
+- 20bp股票成本，`baseline_no_hedge`：
+  - 期末权益：`1.5646`
+  - 总收益：`56.46%`
+  - 最大回撤：`-21.78%`
+  - Sharpe：`0.716`
+  - 胜率：`52.50%`
+  - 总滑点/成本：股票成本已包含于第218路径；本阶段新增期货成本`0`
+  - 总交易次数：本阶段未重算股票交易次数；期货对冲交易不适用
+- 20bp股票成本，`im_volume_50_cost2_margin15`：
+  - 期末权益：`1.3500`
+  - 总收益：`35.00%`
+  - 最大回撤：`-14.48%`
+  - Sharpe：`0.691`
+  - 胜率：`51.83%`
+  - 新增期货总成本收益扣减：`0.631%`
+  - 期货换月持仓日：`25`
+  - beta降至：`0.370`
+- 20bp股票成本，`im_volume_100_cost2_margin15`：
+  - 期末权益：`1.1397`
+  - 总收益：`13.97%`
+  - 最大回撤：`-10.51%`
+  - Sharpe：`0.484`
+  - 胜率：`50.17%`
+  - 新增期货总成本收益扣减：`1.262%`
+  - 期货换月持仓日：`25`
+  - beta降至：`0.130`
+- 20bp股票成本，`im_volume_100_cost5_margin20`：
+  - 期末权益：`1.1183`
+  - 总收益：`11.83%`
+  - 最大回撤：`-10.89%`
+  - Sharpe：`0.420`
+  - 胜率：`49.83%`
+  - 新增期货总成本收益扣减：`3.155%`
+  - beta降至：`0.130`
+- 50bp股票成本，`baseline_no_hedge`：
+  - 期末权益：`1.4230`
+  - 总收益：`42.30%`
+  - 最大回撤：`-22.16%`
+  - Sharpe：`0.586`
+  - 胜率：`52.00%`
+- 50bp股票成本，`im_volume_100_cost2_margin15`：
+  - 期末权益：`1.0365`
+  - 总收益：`3.65%`
+  - 最大回撤：`-12.53%`
+  - Sharpe：`0.163`
+  - 胜率：`48.33%`
+  - 新增期货总成本收益扣减：`1.262%`
+- 50bp股票成本，`im_volume_100_cost5_margin20`：
+  - 期末权益：`1.0171`
+  - 总收益：`1.71%`
+  - 最大回撤：`-12.97%`
+  - Sharpe：`0.098`
+  - 胜率：`48.00%`
+  - 新增期货总成本收益扣减：`3.155%`
+
+### 一手颗粒度审计
+
+- 20万资金，100%同暴露IM对冲：
+  - 目标手数中位数：`0.112`手。
+  - 最大目标手数：`0.227`手。
+  - 目标小于1手日期比例：`100%`。
+  - 四舍五入后为0手日期比例：`100%`。
+  - 一手IM名义/账户权益中位数：`6.26倍`。
+  - 15%保证金下，一手保证金/账户权益中位数：`93.83%`。
+- 100万资金，100%同暴露IM对冲：
+  - 目标手数中位数：`0.560`手。
+  - 目标小于1手日期比例：`90.67%`。
+  - 四舍五入后为0手日期比例：`47.17%`。
+  - 一手IM名义/账户权益中位数：`1.25倍`。
+- 500万资金，100%同暴露IM对冲：
+  - 目标手数中位数：`2.798`手。
+  - 目标小于1手日期比例：`15.17%`。
+  - 四舍五入后为0手日期比例：`7.00%`。
+
+### 核心判断
+
+- 分数名义IM对冲能明显降低beta和回撤，但收益被大量吃掉。
+- 2022-07之后股票震荡收益本身包含较多市场beta红利；100%对冲把beta从约`0.609`压到约`0.130`，也把20bp期末权益从`1.5646`压到`1.1397`。
+- 50bp路径下100%对冲几乎只剩微利，说明在真实交易摩擦下，对冲版并不是自然优于long-only。
+- 一手IM名义太大，20万到100万资金都难以平滑执行；这与第198阶段期货一手颗粒度问题在本质上相同。
+
+### 本阶段输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_daily_curves.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_lot_feasibility.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_im_roll_returns.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_im_tracking.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_im_hedge_pressure_2022_2026/stock_range_reversion_market_down_im_hedge_pressure_v1_metadata.json`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只在第224阶段确定的2022-07后IM可用区间做粗压力场景；对冲比例只使用`50%/100%`两个解释性档位，成本/保证金为外生压力，不根据结果择优。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第224阶段证明IM对中证1000跟踪足够好，但只覆盖2022-07以后；必须先看真实对冲腿会怎样改变后半段路径。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果同时输出分数名义收益和一手颗粒度约束；没有因为理论对冲改善就忽略小账户无法细粒度执行的硬约束。
+
+### 运行后继续价值反思
+
+- 判断：有，但不适合当前小资金直接做。
+- 原因：分数名义IM对冲明显压低beta和回撤，说明风险结构上成立；但一手IM名义过大，20万到100万资金下多数日期目标手数小于1，无法平滑执行。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不把分数名义IM结果当成实盘结果。
+- 不继续优化IM对冲比例。
+- 股票震荡若继续，优先补中证1000 ETF/基金历史行情，或者明确资金规模达到可交易IM颗粒度后再研究期货对冲版。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 补中证1000 ETF/基金历史行情，审计ETF跟踪误差、成交额、冲击成本和费用。
+- 第二优先级：
+  - 如果ETF数据可用，做“股票篮子 + ETF对冲/现金替代”的低颗粒度压力测试。
+- 第三优先级：
+  - 期货IM路线只在资金规模至少约`200万-500万`以上时重新考虑；当前20万级别不作为主线。
+
+## 第226阶段：股票震荡中证1000 ETF数据补齐审计
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 17:01 CST`。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段不是正式策略版本，不触发第78 A/B/C。
+- 本阶段性质：Tushare数据下载与ETF可用性审计，不是策略回测。
+
+### 版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/download_stock_range_reversion_csi1000_etf_data.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_report.md`
+- 新增数据：
+  - Tushare基金基础表全量导出。
+  - 中证1000相关基金/ETF候选表。
+  - 7只普通中证1000ETF日线行情。
+- 新增参数：
+  - 普通中证1000ETF候选：`512100.SH`、`516300.SH`、`159845.SZ`、`560010.SH`、`159633.SZ`、`159629.SZ`、`560110.SH`。
+  - Tushare请求间隔：`0.6`秒。
+  - 下载区间：`20180131`到`20260417`。
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：无，本阶段未运行策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 下载结果
+
+- Tushare基金基础表：
+  - 全部ETF/基金记录：`2560`。
+  - 中证1000相关候选：`21`。
+- 普通中证1000ETF日线下载：
+  - `512100.SH`：`1988`行，`2018-01-31`到`2026-04-17`。
+  - `516300.SH`：`1228`行，`2021-03-24`到`2026-04-17`。
+  - `159845.SZ`：`1223`行，`2021-03-31`到`2026-04-17`。
+  - `560010.SH`：`895`行，`2022-08-04`到`2026-04-17`。
+  - `159633.SZ`：`896`行，`2022-08-04`到`2026-04-17`。
+  - `159629.SZ`：`897`行，`2022-08-03`到`2026-04-17`。
+  - `560110.SH`：`894`行，`2022-08-08`到`2026-04-17`。
+
+### 覆盖与流动性
+
+- `512100.SH 中证1000ETF南方`：
+  - 覆盖股票震荡全样本交易日：`1988`天，覆盖率`99.95%`。
+  - 覆盖有股票暴露交易日：`1319`天，覆盖率`99.92%`。
+  - Tushare原始成交额中位数：`218997.19`。
+  - Tushare原始成交额10分位：`3166.76`。
+- `159845.SZ 中证1000ETF华夏`：
+  - 覆盖交易日：`1223`天。
+  - Tushare原始成交额中位数：`627971.40`。
+  - 原始成交额10分位：`46029.90`。
+- `560010.SH 中证1000ETF广发`：
+  - 覆盖交易日：`895`天。
+  - Tushare原始成交额中位数：`493115.53`。
+  - 原始成交额10分位：`133925.76`。
+- `159629.SZ 中证1000ETF富国`：
+  - 覆盖交易日：`897`天。
+  - Tushare原始成交额中位数：`298904.71`。
+  - 原始成交额10分位：`114359.21`。
+
+### 跟踪结果
+
+- `512100.SH`：
+  - 与中证1000 benchmark 相关：`0.9880`。
+  - beta：`0.9965`。
+  - 年化跟踪误差：`3.86%`。
+  - 年化平均收益差：`3.21%`。
+- `159845.SZ`：
+  - 与中证1000 benchmark 相关：`0.9896`。
+  - beta：`0.9765`。
+  - 年化跟踪误差：`3.47%`。
+  - 年化平均收益差：`1.48%`。
+- `560010.SH`：
+  - 与中证1000 benchmark 相关：`0.9902`。
+  - beta：`0.9737`。
+  - 年化跟踪误差：`3.43%`。
+  - 年化平均收益差：`0.70%`。
+- `159629.SZ`：
+  - 与中证1000 benchmark 相关：`0.9903`。
+  - beta：`0.9806`。
+  - 年化跟踪误差：`3.41%`。
+  - 年化平均收益差：`0.77%`。
+
+### 本阶段非回测指标
+
+- 期末权益：不适用，本阶段未回测策略。
+- 总收益：不适用。
+- 最大回撤：不适用。
+- Sharpe：不适用。
+- 总滑点：不适用。
+- 总交易次数：不适用。
+- 胜率：不适用。
+
+### 核心判断
+
+- `512100.SH`是唯一能几乎覆盖2018-2026股票震荡全样本的普通中证1000ETF，但早期成交额10分位很低，必须做流动性压力。
+- `159845.SZ`、`560010.SH`、`159629.SZ`在2021/2022之后流动性更好、跟踪误差也低，但不能覆盖2018-2020早期样本。
+- ETF路线比IM更适合当前20万级别资金，因为没有一手合约名义颗粒度问题；但ETF对冲仍然有T+1、印花税/费率、买卖冲击、跟踪误差和容量约束。
+
+### 本阶段输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_fund_basic_all.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_csi1000_candidates.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_selected_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_etf_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_tracking_metrics.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_download_status.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_csi1000_etf_data_2018_2026/stock_range_reversion_csi1000_etf_data_v1_metadata.json`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只补数据并做覆盖、流动性、跟踪误差审计，不生成交易参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：IM对冲被一手颗粒度约束挡住后，ETF是更适合当前资金体量的低颗粒度工具。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：没有选择最优ETF进入策略，只标记候选优先级，并保留了上市时间、费用和成交额差异。
+
+### 运行后继续价值反思
+
+- 判断：有。
+- 原因：ETF数据已补齐，且存在能覆盖2018后的普通中证1000ETF；下一步可以做ETF对冲/替代的低颗粒度压力测试，但必须纳入ETF跟踪误差和成交额约束。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 下一步优先做“股票篮子 + 普通中证1000ETF”的低颗粒度压力测试，而不是继续优化IM对冲比例。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做ETF对冲压力测试：全样本优先用`512100.SH`，2021/2022后增加`159845.SZ`、`560010.SH`、`159629.SZ`作为流动性改善对照。
+- 第二优先级：
+  - 对ETF腿加入成交额参与率约束和跟踪误差归因。
+- 第三优先级：
+  - 如果ETF对冲仍显著吃掉收益，则股票震荡路线应收敛为小仓位long-only卫星，而不是强行市场中性化。
+
+## 第227阶段：股票震荡ETF空头腿压力测试
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 17:04 CST`。
+- 本阶段为股票震荡独立研究线，与期货第78趋势策略、期货震荡策略隔离。
+- 第78影响：无。未修改第78正式趋势策略、配置、回测入口或18品种趋势池。
+- 本阶段不是正式策略版本，不触发第78 A/B/C。
+- 本阶段性质：ETF空头腿归因/压力测试，不是普通账户可直接交易策略。
+
+### 版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_etf_hedge_pressure.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/`
+- 新增报告：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_report.md`
+- 新增参数：
+  - ETF候选：`512100.SH`、`159845.SZ`、`560010.SH`、`159629.SZ`、`159633.SZ`。
+  - ETF空头对冲比例：`50%`、`100%`。
+  - ETF单边交易成本：`5bp`、`10bp`。
+  - 融券/借券压力：`0%`、`3%`年化。
+  - 流动性压力资金：`20万`、`50万`、`100万`、`500万`。
+  - 成交额估算：`amount * 1000`。
+- 修改参数：无。
+- 删除参数：无。
+- 修改/删除旧回测结果：无。
+
+### 关键边界
+
+- A股普通账户不能天然做空ETF，本阶段`ETF short`只表示归因或需要融券/借券条件的压力测试。
+- ETF成交额参与率按`amount * 1000`估算成交额人民币；最终实盘前必须再次核对Tushare金额单位、盘口深度和融券可得性。
+- 不做ETF选择优化：
+  - `512100.SH`用于全历史覆盖观察。
+  - `159845.SZ`、`560010.SH`、`159629.SZ`用于2021/2022后流动性改善对照。
+
+### 新增回测结果
+
+- 20bp股票成本，`512100.SH`全样本同窗口baseline：
+  - 样本：`2018-01-31`到`2026-04-17`，`1988`天。
+  - 期末权益：`1.7319`
+  - 总收益：`73.19%`
+  - 最大回撤：`-30.46%`
+  - Sharpe：`0.447`
+  - beta：`0.575`
+- 20bp股票成本，`512100.SH` 50% ETF空头、5bp单边成本、不计融券：
+  - 期末权益：`1.6024`
+  - 总收益：`60.24%`
+  - 最大回撤：`-20.52%`
+  - Sharpe：`0.518`
+  - beta：`0.348`
+  - ETF交易成本收益扣减：`1.5825%`
+- 20bp股票成本，`512100.SH` 100% ETF空头、5bp单边成本、不计融券：
+  - 期末权益：`1.4152`
+  - 总收益：`41.52%`
+  - 最大回撤：`-17.17%`
+  - Sharpe：`0.604`
+  - beta：`0.120`
+  - ETF交易成本收益扣减：`3.1650%`
+- 20bp股票成本，`512100.SH` 100% ETF空头、10bp单边成本、3%年化融券压力：
+  - 期末权益：`1.2322`
+  - 总收益：`23.22%`
+  - 最大回撤：`-21.38%`
+  - Sharpe：`0.379`
+  - beta：`0.120`
+  - ETF交易成本收益扣减：`6.3300%`
+  - 融券成本收益扣减：`10.6845%`
+- 20bp股票成本，`159845.SZ`同窗口baseline：
+  - 样本：`2021-03-31`到`2026-04-17`，`1223`天。
+  - 期末权益：`1.4739`
+  - 最大回撤：`-30.46%`
+  - Sharpe：`0.500`
+  - beta：`0.599`
+- 20bp股票成本，`159845.SZ` 100% ETF空头、5bp单边成本、不计融券：
+  - 期末权益：`1.3032`
+  - 总收益：`30.32%`
+  - 最大回撤：`-9.86%`
+  - Sharpe：`0.732`
+  - beta：`0.136`
+- 20bp股票成本，`560010.SH`同窗口baseline：
+  - 样本：`2022-08-04`到`2026-04-17`，`895`天。
+  - 期末权益：`1.5694`
+  - 最大回撤：`-21.78%`
+  - Sharpe：`0.724`
+  - beta：`0.612`
+- 20bp股票成本，`560010.SH` 100% ETF空头、5bp单边成本、不计融券：
+  - 期末权益：`1.3328`
+  - 总收益：`33.28%`
+  - 最大回撤：`-6.72%`
+  - Sharpe：`1.024`
+  - beta：`0.146`
+- 20bp股票成本，`159629.SZ` 100% ETF空头、5bp单边成本、不计融券：
+  - 期末权益：`1.3389`
+  - 总收益：`33.89%`
+  - 最大回撤：`-6.76%`
+  - Sharpe：`1.040`
+  - beta：`0.144`
+- 50bp股票成本，`512100.SH` 100% ETF空头、10bp单边成本、3%年化融券压力：
+  - 期末权益：`0.9942`
+  - 总收益：`-0.58%`
+  - 最大回撤：`-27.38%`
+  - Sharpe：`0.029`
+  - 说明：真实摩擦稍重时，全样本ETF空头对冲容易把收益厚度吃光。
+
+### 流动性压力
+
+- `512100.SH` 100% ETF空头、5bp单边成本：
+  - 20万资金：p95参与率约`2.22%`，参与率超过1%的调仓日占`8.59%`。
+  - 100万资金：p95参与率约`11.09%`，参与率超过5%的调仓日占`8.59%`。
+  - 500万资金：p95参与率约`55.46%`，参与率超过5%的调仓日占`16.56%`。
+  - 结论：`512100.SH`覆盖全历史，但早期成交额偏薄，容量要谨慎。
+- `560010.SH` 100% ETF空头、5bp单边成本：
+  - 100万资金：p95参与率约`0.12%`。
+  - 500万资金：p95参与率约`0.61%`。
+  - 后半段流动性明显更舒适。
+- `159629.SZ` 100% ETF空头、5bp单边成本：
+  - 100万资金：p95参与率约`0.12%`。
+  - 500万资金：p95参与率约`0.61%`。
+
+### 核心判断
+
+- ETF空头归因能降低beta和回撤，且没有IM一手合约颗粒度问题。
+- 但ETF空头不等于普通账户可交易；融券/借券可得性和成本是硬约束。
+- 100%对冲会显著吃掉收益，特别是在加入3%年化融券压力后，全样本收益厚度明显变薄。
+- ETF更像“beta风险归因尺子”，不应该继续被优化成正式空头腿。
+- 股票震荡当前更自然的落地形态，是小仓位long-only卫星，而不是强行市场中性化。
+
+### 本阶段输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_delta_vs_baseline.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_daily_curves.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_liquidity_pressure.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_etf_hedge_pressure_2018_2026/stock_range_reversion_market_down_etf_hedge_pressure_v1_metadata.json`
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段使用第226阶段固定ETF候选，只测试`50%/100%`两个解释性对冲档和外生成本，没有按结果选择最优ETF或最优参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：ETF能绕开IM一手合约颗粒度问题，是当前资金体量下更现实的beta工具候选。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：报告同时保留收益被对冲吃掉、普通账户不可天然做空ETF、融券成本未确权、成交额参与率等反证。
+
+### 运行后继续价值反思
+
+- 判断：有，但方向应从“对冲”转成“beta预算/小仓位卫星”。
+- 原因：ETF空头归因能降低回撤和beta，但收益同样被明显吃掉，且真实做空条件不稳定；普通账户更自然的落地形态仍是控制股票篮子仓位，而不是强行市场中性。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不把ETF空头归因当成可交易结果。
+- 暂不继续优化ETF对冲比例。
+- 下一步应做股票震荡long-only的小仓位卫星版本边界：固定仓位上限、年度回撤贡献、与第78趋势策略相关性，而不是继续追求市场中性。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做股票震荡long-only小仓位卫星边界测试，固定仓位比例，不扫最优比例。
+- 第二优先级：
+  - 检查股票震荡路径与第78趋势策略的相关性、年度互补性和组合回撤贡献。
+- 第三优先级：
+  - 若小仓位卫星仍改善有限，则股票震荡路线暂停正式化，只保留为研究候选。
+
+## 第221阶段：股票震荡market_down入场节奏归因，确认简单延迟不是主要风控答案
+
+### 基本信息
+
+- 时间：`2026-04-28 16:29 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，完成第220阶段后续的入场节奏归因，并否定了简单等待/延迟作为主解法
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增研究脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_entry_timing.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/`
+- 固定研究口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile等权篮子
+  - 第218阶段合并持仓、净换手记账
+  - 固定持有`10`个交易日
+- 本阶段只比较入场节奏，不改变股票信号定义、不调超跌阈值、不接入正式策略、不触发第78 A/B/C。
+
+### 新增参数
+
+- 新增归因场景：
+  - `baseline_next_close`：信号后第1个交易日收盘入场
+  - `delay_1d`：固定延迟1个交易日
+  - `delay_2d`：固定延迟2个交易日
+  - `delay_3d`：固定延迟3个交易日
+  - `wait_ret1_nonnegative_max3`：最多等3个交易日，直到中证1000单日收益转正；未确认跳过
+  - `wait_down_streak_break_max3`：最多等3个交易日，直到中证1000连续下跌中断；未确认跳过
+  - `wait_ret5_decelerate_max3`：最多等3个交易日，直到中证1000五日跌速放缓；未确认跳过
+- 新增固定等待上限：
+  - `MAX_DELAY_DAYS=3`
+
+### 修改参数
+
+- 无策略参数修改。
+- 无第78参数修改。
+- 无期货震荡参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/`
+- 样本：
+  - 信号篮子数：`898`
+  - 股票往返回合：`46,777`
+  - 成本情景：`20bp`、`50bp`
+  - 初始权益：`1.0`
+- 20bp roundtrip成本：
+  - `baseline_next_close`：期末权益`1.7437`，总收益`74.37%`，年化`7.30%`，最大回撤`-30.46%`，Sharpe`0.45`，总滑点/成本假设`20bp roundtrip`，年化单边换手`9.07`倍，总交易次数`46,777`个股票往返回合，活跃/交易日净胜率`51.82%`。
+  - `delay_1d`：期末权益`1.7962`，总收益`79.62%`，最大回撤`-30.47%`，Sharpe`0.47`，平均暴露`45.14%`。
+  - `delay_2d`：期末权益`1.7523`，总收益`75.23%`，最大回撤`-30.99%`，Sharpe`0.45`。
+  - `delay_3d`：期末权益`1.7240`，总收益`72.40%`，最大回撤`-31.46%`，Sharpe`0.44`。
+  - `wait_ret1_nonnegative_max3`：接受`849`个篮子，期末权益`1.5840`，总收益`58.40%`，最大回撤`-28.52%`，Sharpe`0.40`，股票往返回合`44,231`。
+  - `wait_down_streak_break_max3`：与`wait_ret1_nonnegative_max3`一致，原因是本口径下连续下跌中断与单日非负收益等价。
+  - `wait_ret5_decelerate_max3`：接受`852`个篮子，期末权益`1.7616`，总收益`76.16%`，最大回撤`-30.70%`，Sharpe`0.47`，股票往返回合`44,408`。
+- 50bp roundtrip成本：
+  - `baseline_next_close`：期末权益`1.4066`，总收益`40.66%`，年化`4.42%`，最大回撤`-32.99%`，Sharpe`0.32`，总滑点/成本假设`50bp roundtrip`，年化单边换手`9.07`倍，总交易次数`46,777`个股票往返回合，活跃/交易日净胜率`51.37%`。
+  - `delay_1d`：期末权益`1.4490`，总收益`44.90%`，最大回撤`-34.04%`，Sharpe`0.33`。
+  - `delay_2d`：期末权益`1.4136`，总收益`41.36%`，最大回撤`-36.88%`，Sharpe`0.32`。
+  - `delay_3d`：期末权益`1.3907`，总收益`39.07%`，最大回撤`-37.64%`，Sharpe`0.31`。
+  - `wait_ret1_nonnegative_max3`：期末权益`1.2562`，总收益`25.62%`，最大回撤`-33.68%`，Sharpe`0.25`。
+  - `wait_down_streak_break_max3`：同上。
+  - `wait_ret5_decelerate_max3`：期末权益`1.3994`，总收益`39.94%`，最大回撤`-35.40%`，Sharpe`0.32`。
+
+### 新增分析结果
+
+- `baseline_next_close`已复现第218阶段合并持仓结果：
+  - 20bp：期末权益`1.7437`，总收益`74.37%`，最大回撤`-30.46%`。
+  - 50bp：期末权益`1.4066`，总收益`40.66%`，最大回撤`-32.99%`。
+- 相对baseline：
+  - 20bp `delay_1d`总收益提升`5.25`个百分点，Sharpe提升`0.018`，但最大回撤基本不变。
+  - 50bp `delay_1d`总收益提升`4.24`个百分点，但最大回撤恶化`1.05`个百分点。
+  - `delay_2d`和`delay_3d`没有稳定优势，尤其50bp下回撤明显恶化。
+  - `wait_ret1_nonnegative_max3`/`wait_down_streak_break_max3`在20bp下回撤改善`1.94`个百分点，但总收益减少`15.97`个百分点，Sharpe下降`0.05`；50bp下收益和回撤均不理想。
+  - `wait_ret5_decelerate_max3`在20bp下总收益提升`1.79`个百分点、Sharpe提升`0.019`，但最大回撤略恶化；50bp下收益和回撤均不稳。
+- 压力年份：
+  - 2018年20bp baseline收益`-2.87%`，`wait_ret1_nonnegative_max3`为`-1.15%`，但这类确认牺牲了后续修复期收益。
+  - 2022年20bp baseline收益`-9.79%`，`wait_ret1_nonnegative_max3`为`-11.38%`，说明等待转正并不能稳定处理2022型下跌。
+  - 2024年20bp baseline收益`38.80%`，`wait_ret1_nonnegative_max3`仅`24.77%`，确认规则会错杀深跌修复收益。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_baseline_delta.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_entry_decisions.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_decision_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_symbol_exposure.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_entry_timing_2018_2026/stock_range_reversion_market_down_entry_timing_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：
+  - 覆盖了第221脚本初跑的错误输出。
+  - 错误原因：延迟路径列误在已筛选候选集上生成，导致`shift`沿稀疏候选信号跳转，权益异常放大。
+  - 修正方式：先在完整股票日线面板上生成延迟路径列，再筛选固定候选集。
+  - 修正验证：`baseline_next_close`重新复现第218阶段合并持仓baseline。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：第221阶段在运行前固定了所有入场节奏场景，目标是解释第220阶段“信号收益厚但持仓路径痛”的矛盾，不是按结果调阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第220阶段显示深跌/弱宽度信号最终反弹更厚，但持仓日急跌很痛；必须先检查入场节奏是否能缓解路径风险。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：没有把`delay_1d`或`wait_ret5_decelerate_max3`提升为正式参数；所有场景和成本都保留，结论偏向否定继续调入场天数。
+
+### 运行后继续价值反思
+
+- 判断：有，但方向要换。
+- 原因：简单入场延迟无法显著解决最大回撤；继续搜索等待天数会滑向过拟合。下一步更有价值的是拆分市场beta、同暴露基准和残差alpha，确认回撤来源。
+
+### 决策
+
+- 不进入第78 A/B/C。
+- 不接入正式股票策略。
+- 不采用`delay_1d`作为正式股票震荡规则。
+- 不继续搜索入场延迟天数或等待确认阈值。
+- 下一步做合并持仓baseline的beta/residual归因。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 分解baseline日收益为中证1000市场beta、同暴露基准收益和残差alpha。
+- 第二优先级：
+  - 对最大回撤段拆分亏损来源，判断是市场风险预算问题还是信号alpha塌陷问题。
+- 第三优先级：
+  - 如果残差alpha健康，只研究市场beta预算；如果残差alpha也深回撤，股票震荡路线应停在研究候选。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第222阶段：股票震荡market_down beta/residual归因，确认主要瓶颈是市场beta预算
+
+### 基本信息
+
+- 时间：`2026-04-28 16:33 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认回撤主要来自同暴露市场beta，而不是横截面alpha完全失效
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_market_down_beta_residual.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/`
+- 输入数据：
+  - 第218阶段合并持仓baseline曲线：
+    - `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_equity_curve.csv`
+- 固定研究口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile
+  - 固定持有`10`个交易日
+  - 合并持仓、净换手成本
+- 本阶段不新增交易规则、不做指数对冲实盘假设、不调股票信号阈值、不触发第78 A/B/C。
+
+### 新增参数
+
+- 无新增策略参数。
+- 新增归因路径：
+  - `strategy_net`：组合净收益
+  - `same_exposure_benchmark`：组合当日暴露乘以中证1000日收益
+  - `active_excess_net`：组合净收益减同暴露中证1000收益
+  - `beta_residual_net`：组合净收益减回归拟合的市场项
+  - `strategy_gross`：组合毛收益
+- 新增回归口径：
+  - 组合净收益 vs 原始中证1000日收益
+  - 组合净收益 vs 同暴露中证1000日收益
+  - 毛收益 vs 同暴露中证1000日收益
+
+### 修改参数
+
+- 无策略参数修改。
+- 无第78参数修改。
+- 无期货震荡参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/归因结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/`
+- 20bp roundtrip成本：
+  - `strategy_net`：期末权益`1.7437`，总收益`74.37%`，最大回撤`-30.46%`，Sharpe`0.45`，总滑点/成本假设`20bp roundtrip`。
+  - `same_exposure_benchmark`：期末权益`1.1048`，总收益`10.48%`，最大回撤`-34.16%`，Sharpe`0.16`。
+  - `active_excess_net`：期末权益`1.6545`，总收益`65.45%`，最大回撤`-9.08%`，Sharpe`0.91`，活跃日胜率`52.35%`。
+  - `beta_residual_net`：期末权益`1.5851`，总收益`58.51%`，最大回撤`-13.53%`，Sharpe`0.97`，活跃日胜率`49.70%`。
+  - `strategy_gross`：期末权益`2.0121`，总收益`101.21%`，最大回撤`-29.81%`，Sharpe`0.54`。
+- 50bp roundtrip成本：
+  - `strategy_net`：期末权益`1.4066`，总收益`40.66%`，最大回撤`-32.99%`，Sharpe`0.32`，总滑点/成本假设`50bp roundtrip`。
+  - `same_exposure_benchmark`：期末权益`1.1048`，总收益`10.48%`，最大回撤`-34.16%`，Sharpe`0.16`。
+  - `active_excess_net`：期末权益`1.3347`，总收益`33.47%`，最大回撤`-15.36%`，Sharpe`0.54`，活跃日胜率`49.92%`。
+  - `beta_residual_net`：期末权益`1.2787`，总收益`27.87%`，最大回撤`-19.44%`，Sharpe`0.53`，活跃日胜率`47.27%`。
+  - `strategy_gross`：期末权益`2.0121`，总收益`101.21%`，最大回撤`-29.81%`，Sharpe`0.54`。
+
+### 新增分析结果
+
+- 回归归因：
+  - 组合净收益 vs 同暴露中证1000：
+    - beta约`1.254`
+    - 相关性约`0.951`
+    - R2约`90.4%`
+  - 活跃日组合净收益 vs 原始中证1000：
+    - beta约`0.842`
+    - 相关性约`0.858`
+    - R2约`73.6%`
+  - 全样本组合净收益 vs 原始中证1000：
+    - beta约`0.575`
+    - 相关性约`0.709`
+    - R2约`50.2%`
+- 最大回撤窗口拆分：
+  - 20bp组合最大回撤窗口：`2021-10-21`到`2022-04-26`
+    - 组合净收益：`-30.46%`
+    - 同暴露基准：`-23.47%`
+    - active_excess：`-8.79%`
+    - beta_residual：`-2.59%`
+    - 原始中证1000：`-29.81%`
+  - 50bp组合最大回撤窗口：`2018-03-12`到`2022-04-26`
+    - 组合净收益：`-32.99%`
+    - 同暴露基准：`-27.71%`
+    - active_excess：`-5.38%`
+    - beta_residual：`+1.77%`
+    - 原始中证1000：`-24.19%`
+- 年度观察：
+  - 2018年20bp active_excess为`22.19%`，而同暴露基准为`-19.72%`。
+  - 2022年20bp active_excess为`4.36%`，而同暴露基准为`-12.97%`。
+  - 2024年20bp strategy_net为`38.80%`，其中同暴露基准贡献`23.98%`，active_excess贡献`13.08%`。
+- 核心结论：
+  - 横截面残差alpha有价值，且比原始组合路径健康得多。
+  - 原始组合的大回撤主要是市场beta承载问题，不是股票超跌信号本身在压力段完全失效。
+  - 后续不应继续打磨超跌阈值、入场延迟或简单确认规则，应转向beta预算、可交易对冲或现金化降速。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_regression_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_drawdown_windows.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_residual_2018_2026/stock_range_reversion_market_down_beta_residual_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只读取第218阶段固定baseline曲线做收益拆分，不新增交易规则，不调参数，不选择对冲比例作为策略配置。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第221阶段说明入场节奏不是主解法；必须判断回撤究竟来自市场beta还是alpha残差，否则继续改信号会偏离本质。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：没有基于结果生成新阈值，也没有把beta对冲口径包装成可交易策略；结论只是风险来源归因。
+
+### 运行后继续价值反思
+
+- 判断：有，但方向应切换为风险承载设计。
+- 原因：active_excess路径20bp最大回撤仅`-9.08%`、50bp为`-15.36%`，说明信号有价值；但原始long-only组合承担太多中证1000路径风险。
+
+### 决策
+
+- 不进入第78 A/B/C。
+- 不接入正式股票策略。
+- 不继续优化股票超跌信号。
+- 不继续搜索入场等待天数。
+- 下一步只研究市场beta预算、可交易对冲或现金化降速。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做beta预算压力测试，比较固定现金缩放、波动目标缩放、同暴露指数对冲归因三类方案。
+- 第二优先级：
+  - 标清每个方案是“真实可交易”还是“纯归因”，避免把不可交易对冲误当实盘结果。
+- 第三优先级：
+  - 如果beta预算只能靠大幅降暴露换回撤，则股票震荡路线继续停留在研究候选。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第223阶段：股票震荡market_down beta预算压力测试，确认long-only降速只是降仓，对冲才解释质量改善
+
+### 基本信息
+
+- 时间：`2026-04-28 16:41 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认真实long-only降速不能提升Sharpe，而对冲归因能显著改善路径
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增压力测试脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_beta_budget.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/`
+- 输入数据：
+  - 第218阶段合并持仓baseline曲线：
+    - `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_equity_curve.csv`
+- 固定研究口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile
+  - 固定持有`10`个交易日
+  - 合并持仓、净换手成本
+- 本阶段不新增股票alpha、不调信号阈值、不接入正式策略、不触发第78 A/B/C。
+
+### 新增参数
+
+- 新增固定beta预算场景：
+  - `baseline_long_only`
+  - `cash_scale_75`
+  - `cash_scale_50`
+  - `vol_target_15_max1`
+  - `vol_target_10_max1`
+  - `hedge_same_exposure_50_no_cost`
+  - `hedge_same_exposure_100_no_cost`
+- 参数含义：
+  - `cash_scale_75/50`：真实long-only可交易仓位缩放。
+  - `vol_target_15/10`：用前20日中证1000年化波动做目标波动缩放，最大1倍股票仓位。
+  - `hedge_same_exposure_*`：同暴露指数对冲归因，不计对冲成本，不作为实盘结果。
+
+### 修改参数
+
+- 无策略参数修改。
+- 无第78参数修改。
+- 无期货震荡参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/`
+- 20bp roundtrip成本：
+  - `baseline_long_only`：期末权益`1.7437`，总收益`74.37%`，年化`7.30%`，最大回撤`-30.46%`，Sharpe`0.45`，总滑点/成本假设`20bp roundtrip`，年化单边换手`9.07`倍，股票成本拖累合计`14.32%`。
+  - `cash_scale_75`：期末权益`1.5641`，总收益`56.41%`，最大回撤`-23.63%`，Sharpe`0.45`，平均股票暴露`33.86%`。
+  - `cash_scale_50`：期末权益`1.3749`，总收益`37.49%`，最大回撤`-16.29%`，Sharpe`0.45`，平均股票暴露`22.57%`。
+  - `vol_target_15_max1`：期末权益`1.0473`，总收益`4.73%`，最大回撤`-23.69%`，Sharpe`0.11`，平均股票缩放`72.16%`。
+  - `vol_target_10_max1`：期末权益`1.0770`，总收益`7.70%`，最大回撤`-16.08%`，Sharpe`0.15`，平均股票缩放`50.11%`。
+  - `hedge_same_exposure_50_no_cost`：期末权益`1.7385`，总收益`73.85%`，最大回撤`-20.16%`，Sharpe`0.60`，平均对冲名义`22.57%`。
+  - `hedge_same_exposure_100_no_cost`：期末权益`1.6545`，总收益`65.45%`，最大回撤`-9.08%`，Sharpe`0.91`，平均对冲名义`45.15%`。
+- 50bp roundtrip成本：
+  - `baseline_long_only`：期末权益`1.4066`，总收益`40.66%`，年化`4.42%`，最大回撤`-32.99%`，Sharpe`0.32`，总滑点/成本假设`50bp roundtrip`，年化单边换手`9.07`倍，股票成本拖累合计`35.81%`。
+  - `cash_scale_75`：期末权益`1.3314`，总收益`33.14%`，最大回撤`-24.87%`，Sharpe`0.32`。
+  - `cash_scale_50`：期末权益`1.2348`，总收益`23.48%`，最大回撤`-16.87%`，Sharpe`0.32`。
+  - `vol_target_15_max1`：期末权益`0.9011`，总收益`-9.89%`，最大回撤`-29.54%`，Sharpe`-0.03`。
+  - `vol_target_10_max1`：期末权益`0.9704`，总收益`-2.96%`，最大回撤`-20.93%`，Sharpe`0.01`。
+  - `hedge_same_exposure_50_no_cost`：期末权益`1.4024`，总收益`40.24%`，最大回撤`-21.64%`，Sharpe`0.39`。
+  - `hedge_same_exposure_100_no_cost`：期末权益`1.3347`，总收益`33.47%`，最大回撤`-15.36%`，Sharpe`0.54`。
+
+### 新增分析结果
+
+- 真实long-only现金缩放：
+  - `cash_scale_50`将回撤压到约`-16%~-17%`，但Sharpe不变。
+  - 说明它是线性降风险，不是提升策略质量。
+- 波动目标缩放：
+  - 20bp下`vol_target_15_max1`总收益仅`4.73%`，`vol_target_10_max1`仅`7.70%`。
+  - 50bp下两个波动目标缩放均为负收益。
+  - 原因判断：该策略收益来自深跌后的修复，高波动时降低仓位会错杀收益厚度。
+- 对冲归因：
+  - 100%同暴露对冲归因在20bp下总收益`65.45%`、最大回撤`-9.08%`、Sharpe`0.91`。
+  - 100%同暴露对冲归因在50bp下总收益`33.47%`、最大回撤`-15.36%`、Sharpe`0.54`。
+  - 这证明市场beta是核心风险源，但还不能证明实盘可交易，因为未计入股指期货/ETF对冲成本、保证金、基差、展期、滑点和可卖空约束。
+- 压力年份：
+  - 20bp baseline 2022收益`-9.79%`，`cash_scale_50`为`-4.38%`，`hedge_same_exposure_100_no_cost`为`4.36%`。
+  - 50bp baseline 2022收益`-12.23%`，`cash_scale_50`为`-5.68%`，`hedge_same_exposure_100_no_cost`为`1.54%`。
+  - 2024年20bp baseline收益`38.80%`，`cash_scale_50`只剩`18.78%`，而100%对冲归因为`13.08%`，说明对冲会牺牲部分beta上涨收益，但保留alpha。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_baseline_delta.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_drawdown_windows.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_scale_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_beta_budget_2018_2026/stock_range_reversion_market_down_beta_budget_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段场景在运行前固定为粗粒度预算，不搜索现金比例、目标波动或对冲比例；对冲场景明确是归因，不是策略版本。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第222阶段已经说明市场beta是主要回撤来源；必须确认可交易long-only预算能否改善质量，以及对冲归因和真实降仓之间的差距。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：没有选择最优场景接入正式版本；`cash_scale_50`、`vol_target_10/15`和对冲场景都保留在报告中，并明确否定波动目标缩放。
+
+### 运行后继续价值反思
+
+- 判断：有，但只能继续做对冲可行性审计。
+- 原因：long-only缩放不能提升Sharpe，波动目标缩放破坏收益结构；只有对冲归因显示质量改善，因此下一步必须看仓库是否具备真实可交易对冲数据和成本口径。
+
+### 决策
+
+- 不进入第78 A/B/C。
+- 不接入正式股票策略。
+- 不采用`cash_scale_50`或`cash_scale_75`作为正式规则。
+- 不采用`vol_target_10/15`。
+- 不把`hedge_same_exposure_100_no_cost`当成实盘结果。
+- 下一步先审计中证1000股指期货/ETF对冲数据和成本口径。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 检查仓库是否有中证1000股指期货或ETF历史数据、合约乘数、保证金、基差/展期成本口径。
+- 第二优先级：
+  - 若有数据，做“股票篮子 + 可交易对冲腿”的保守成本压力测试。
+- 第三优先级：
+  - 若没有可靠对冲数据，股票震荡路线暂时停留在研究候选和小仓位long-only压力测试。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第220阶段：股票震荡market_down状态变量归因，发现信号收益和持仓痛点不在同一层
+
+### 基本信息
+
+- 时间：`2026-04-28 16:18 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，首次把合并持仓baseline拆到信号日前可知市场状态变量
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增状态变量归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_market_down_state_variables.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/`
+- 固定研究口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile等权篮子
+  - 第218阶段合并持仓baseline
+  - 持有`10`个交易日
+- 状态变量：
+  - 指数5/20/60日收益
+  - 指数60日回撤
+  - 指数20日波动
+  - 指数连续下跌天数
+  - 成分20日上涨宽度
+  - 成分成交活跃收缩
+  - 涨跌停压力
+  - 活跃股票占比
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未新增交易开关。
+- 未接入正式股票策略。
+- 未触发第78 A/B/C。
+
+### 新增参数
+
+- 无新增alpha参数。
+- 新增归因阈值均为固定粗分层或描述性分位：
+  - 指数5日跌幅分层：`ret5_le_-5pct`、`ret5_-5_to_-2pct`、`ret5_-2_to_0pct`、`ret5_ge_0pct`
+  - 指数20日跌幅分层：`ret20_le_-8pct`、`ret20_-8_to_-3pct`、`ret20_-3_to_0pct`
+  - 60日回撤分层：`dd60_le_-20pct`、`dd60_-20_to_-10pct`、`dd60_-10_to_-5pct`、`dd60_gt_-5pct`
+  - 市场宽度分层：`breadth20_le_20pct`、`breadth20_20_to_40pct`、`breadth20_40_to_60pct`等
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增分析结果
+
+- 样本：
+  - 信号日：`898`
+  - 路径活跃/交易日历日：`1,349`
+  - 成本情景：`20bp`、`50bp`
+- 信号日前最弱状态：
+  - `bm_drawdown_60_band=dd60_gt_-5pct`：
+    - 信号日：`135`
+    - 10日毛收益：`-1.5907%`
+    - 20bp后：`-1.7907%`
+    - 毛胜率：`40.00%`
+  - `breadth_pos_20d_band=breadth20_40_to_60pct`：
+    - 信号日：`153`
+    - 10日毛收益：`-1.0863%`
+    - 20bp后：`-1.2863%`
+    - 毛胜率：`37.25%`
+  - `bm_ret_20_band=ret20_-3_to_0pct`：
+    - 信号日：`362`
+    - 10日毛收益：`-0.1979%`
+    - 20bp后：`-0.3979%`
+- 信号日前最强状态：
+  - `bm_ret_5_band=ret5_le_-5pct`：
+    - 信号日：`90`
+    - 10日毛收益：`4.8670%`
+    - 20bp后：`4.6670%`
+  - `bm_ret_20_band=ret20_le_-8pct`：
+    - 信号日：`171`
+    - 10日毛收益：`4.2300%`
+    - 20bp后：`4.0300%`
+  - `bm_drawdown_60_band=dd60_le_-20pct`：
+    - 信号日：`50`
+    - 10日毛收益：`7.4506%`
+    - 20bp后：`7.2506%`
+  - `breadth20_le_20pct`：
+    - 信号日：`231`
+    - 10日毛收益：`3.5226%`
+    - 20bp后：`3.3226%`
+- 持仓日最弱状态，20bp口径：
+  - `bm_down_streak_band=streak_3_4`：
+    - 活跃日：`113`
+    - 日净收益：`-1.0773%`
+    - 胜率：`13.27%`
+    - 平均暴露：`67.61%`
+  - `bm_ret_5_band=ret5_le_-5pct`：
+    - 活跃日：`88`
+    - 日净收益：`-0.9864%`
+    - 胜率：`30.68%`
+    - 回撤<-20%日占比：`17.05%`
+  - `limit_down_close_ratio_q=q5_high_limit_down`：
+    - 活跃日：`276`
+    - 日净收益：`-0.9688%`
+    - 胜率：`25.00%`
+- 关键矛盾：
+  - 急跌、极弱宽度、深回撤在信号日维度通常对应更厚的10日反弹收益。
+  - 同一类急跌/跌停压力在持仓日维度又是最痛的mark-to-market来源。
+  - 因此不能把“深跌/低宽度/跌停多”直接做成过滤条件，否则可能错杀最大收益来源。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_date_state.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_signal_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_path_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_signal_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_path_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_year_state_mix.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_weak_signal_states.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_weak_path_states.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_state_variables_2018_2026/stock_range_reversion_market_down_state_variables_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是固定状态变量归因，不产生交易规则，不搜索阈值，不使用收益结果选择过滤器。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第219阶段证明机械风控主要是降暴露；若要继续组合化，必须知道坏路径能否被事前市场状态解释。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果反而显示“深跌状态是收益最厚状态”，不支持简单过滤；本阶段没有把任何状态包装成交易开关。
+
+### 运行后继续价值反思
+
+- 判断：有，但下一步不是市场状态硬过滤。
+- 原因：状态变量能解释路径痛点，但深跌状态也是反弹收益来源；下一步应研究入场节奏、延迟确认或下跌减速，而不是粗暴避开深跌。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不把深跌、低宽度、高跌停压力直接当成过滤条件。
+- 下一步研究入场节奏/下跌减速确认。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 在固定信号上做入场时机归因，比较次日入场、延迟1/2/3日入场、等待指数5日跌速放缓、等待连续下跌中断的路径差异。
+- 第二优先级：
+  - 检查延迟确认是否改善回撤而不过度牺牲深跌反弹收益。
+- 第三优先级：
+  - 如果延迟确认仍只是线性降暴露，则股票震荡路线停在研究候选。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第219阶段：股票震荡market_down合并持仓风险预算压力测试，确认机械风控主要是降暴露
+
+### 基本信息
+
+- 时间：`2026-04-28 16:08 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，首次在真实合并持仓和净换手账本上复验第216阶段机械风控
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增合并持仓风险预算压力测试脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_merged_risk_budget.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/`
+- 固定回测口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile等权篮子
+  - 信号日收盘后，次日收盘入场
+  - 固定持有`10`个交易日
+  - 同一股票多次入选时合并为真实日度目标权重
+  - 成本按净买卖权重计算
+- 压力测试场景：
+  - `baseline`
+  - `max_sleeves_5`
+  - `max_sleeves_3`
+  - `cooldown_2d`
+  - `max_sleeves_5_cooldown_2d`
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未扫新的层数或冷却天数。
+- 未接入正式股票策略。
+- 未触发第78 A/B/C。
+
+### 新增参数
+
+- 无新增alpha参数。
+- 新增测试场景来自第216阶段既有机械约束：
+  - `max_active_sleeves=5`
+  - `max_active_sleeves=3`
+  - `cooldown_trading_days=2`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+#### 20bp roundtrip净换手成本
+
+- `baseline`：
+  - 接受篮子：`898`
+  - 接受率：`100.00%`
+  - 期末权益：`1.7437`
+  - 总收益：`74.37%`
+  - 最大回撤：`-30.46%`
+  - Sharpe：`0.45`
+  - 平均暴露：`45.15%`
+  - 年化单边换手：`9.07`倍
+  - 胜率：`51.82%`，按活跃或有交易日净日收益计算
+- `max_sleeves_5`：
+  - 接受篮子：`517`
+  - 接受率：`57.57%`
+  - 期末权益：`1.2791`
+  - 总收益：`27.91%`
+  - 最大回撤：`-16.29%`
+  - Sharpe：`0.34`
+  - 平均暴露：`25.99%`
+  - 年化单边换手：`5.22`倍
+- `max_sleeves_3`：
+  - 接受篮子：`327`
+  - 接受率：`36.41%`
+  - 期末权益：`1.1133`
+  - 总收益：`11.33%`
+  - 最大回撤：`-11.12%`
+  - Sharpe：`0.23`
+  - 平均暴露：`16.44%`
+  - 年化单边换手：`3.32`倍
+- `cooldown_2d`：
+  - 接受篮子：`325`
+  - 接受率：`36.19%`
+  - 期末权益：`1.2291`
+  - 总收益：`22.91%`
+  - 最大回撤：`-11.76%`
+  - Sharpe：`0.41`
+  - 平均暴露：`16.34%`
+  - 年化单边换手：`4.01`倍
+- `max_sleeves_5_cooldown_2d`：
+  - 与`cooldown_2d`一致。
+
+#### 50bp roundtrip净换手成本
+
+- `baseline`：
+  - 期末权益：`1.4066`
+  - 总收益：`40.66%`
+  - 最大回撤：`-32.99%`
+  - Sharpe：`0.32`
+  - 胜率：`51.37%`，按活跃或有交易日净日收益计算
+- `max_sleeves_5`：
+  - 期末权益：`1.1304`
+  - 总收益：`13.04%`
+  - 最大回撤：`-17.69%`
+  - Sharpe：`0.20`
+- `max_sleeves_3`：
+  - 期末权益：`1.0291`
+  - 总收益：`2.91%`
+  - 最大回撤：`-12.33%`
+  - Sharpe：`0.09`
+- `cooldown_2d`：
+  - 期末权益：`1.1178`
+  - 总收益：`11.78%`
+  - 最大回撤：`-12.06%`
+  - Sharpe：`0.24`
+- `max_sleeves_5_cooldown_2d`：
+  - 与`cooldown_2d`一致。
+
+### 相对baseline变化
+
+- 20bp：
+  - `max_sleeves_5`：总收益变化`-46.46%`，最大回撤改善`14.17`个百分点，平均暴露变化`-19.16%`。
+  - `max_sleeves_3`：总收益变化`-63.04%`，最大回撤改善`19.34`个百分点，平均暴露变化`-28.71%`。
+  - `cooldown_2d`：总收益变化`-51.46%`，最大回撤改善`18.70`个百分点，平均暴露变化`-28.81%`。
+- 50bp：
+  - `max_sleeves_5`：总收益变化`-27.62%`，最大回撤改善`15.30`个百分点，平均暴露变化`-19.16%`。
+  - `max_sleeves_3`：总收益变化`-37.75%`，最大回撤改善`20.66`个百分点，平均暴露变化`-28.71%`。
+  - `cooldown_2d`：总收益变化`-28.88%`，最大回撤改善`20.94`个百分点，平均暴露变化`-28.81%`。
+- 结论：
+  - 简单机械风控降回撤有效，但它主要是降低暴露、降低信号数和降低换手。
+  - Sharpe没有出现稳定跃迁，不能把`cooldown_2d`或`max_sleeves_5`包装成正式优化版本。
+
+### 压力年份
+
+- 20bp：
+  - `baseline` 2018最低回撤`-28.41%`，2022最低回撤`-30.46%`
+  - `cooldown_2d` 2018最低回撤`-9.27%`，2022最低回撤`-11.76%`
+  - `max_sleeves_3` 2018最低回撤`-10.02%`，2022最低回撤`-11.12%`
+- 50bp：
+  - `baseline` 2018最低回撤`-30.22%`，2022最低回撤`-32.99%`
+  - `cooldown_2d` 2018最低回撤`-10.24%`，2022最低回撤`-12.06%`
+  - `max_sleeves_3` 2018最低回撤`-10.76%`，2022最低回撤`-11.71%`
+- 信号拒绝：
+  - `max_sleeves_5`拒绝`381`个信号篮子
+  - `max_sleeves_3`拒绝`571`个信号篮子
+  - `cooldown_2d`拒绝`573`个信号篮子
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_baseline_delta.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_signal_decisions.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_symbol_exposure.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_risk_budget_2018_2026/stock_range_reversion_market_down_merged_risk_budget_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只把第216阶段预设机械约束迁移到第218阶段合并持仓账本，不根据新结果新增或挑选阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第218阶段确认真实净换手没有推翻收益，但回撤仍深；必须确认简单风控到底能否改善策略质量，而不只是降低仓位。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：保留所有预设场景和20/50bp成本，不选择最优参数，也不将`cooldown_2d`包装成正式版本。
+
+### 运行后继续价值反思
+
+- 判断：有，但方向应切换。
+- 原因：机械风控只能用收益换回撤，不能明显提升Sharpe；继续调“最多几层/冷却几天”会变成路径拟合，下一步应研究市场状态变量能否区分可反弹下跌和继续下跌。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不选择`cooldown_2d`或`max_sleeves_5`作为正式版本。
+- 暂停继续搜索机械风控参数。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做合并持仓baseline的状态变量归因，检查2018/2022亏损段能否被指数波动、跌速、下跌持续时间、市场宽度或成交活跃收缩区分。
+- 第二优先级：
+  - 如果状态变量有区分度，再设计少参数市场状态开关。
+- 第三优先级：
+  - 如果状态变量无区分度，股票震荡路线暂时停在研究候选，不进入组合化。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第218阶段：股票震荡market_down合并持仓组合记账，确认净换手改善成本但回撤仍深
+
+### 基本信息
+
+- 时间：`2026-04-28 16:00 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，首次把第214阶段独立袖珍篮子路径改成真实合并持仓、净换手和集中度口径
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增合并持仓组合记账脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_merged_portfolio.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/`
+- 固定回测口径：
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `FEATURE=score_oversold_ret_20`
+  - top quintile等权篮子
+  - 信号日收盘后，次日收盘入场
+  - 固定持有`10`个交易日
+  - 每个信号日使用`1/10`资金
+  - 同一股票多次入选时合并为真实日度目标权重
+  - 成本按净买卖权重计算，`roundtrip_cost_bps/2`作为单边成本
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未扫持仓数。
+- 未接入正式股票策略。
+- 未触发第78 A/B/C。
+
+### 新增参数
+
+- 无新增alpha参数。
+- 新增记账口径：
+  - `path_model=merged daily target holdings with net-turnover costs`
+  - `net_turnover_cost=abs(target_weight_delta) * roundtrip_cost_bps / 2`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 样本：
+  - 信号日：`898`
+  - 股票回合：`46,777`
+  - 涉及股票：`1,754`
+  - 日度袖珍持仓腿：`467,770`
+  - 合并后日度股票持仓行：`149,024`
+  - 活跃或交易日占比：`67.82%`
+  - 平均总暴露：`45.15%`
+  - 最大总暴露：`100.00%`
+  - 有持仓日平均活跃股票：`112.9`
+  - 有持仓日活跃股票中位：`119.0`
+  - 平均Top5权重：`4.35%`
+  - 平均Top10权重：`8.56%`
+  - 平均有效持仓数：`53.1`
+  - 历史单票最大权重：`2.51%`
+  - 单票最大重叠腿数：`10`
+  - 年化单边换手：`9.07`倍
+  - 日均净权重变动：`7.20%`
+- 20bp roundtrip净换手成本：
+  - 期末权益：`1.7437`
+  - 总收益：`74.37%`
+  - 年化收益：`7.30%`
+  - 最大回撤：`-30.46%`
+  - Sharpe：`0.45`
+  - 总滑点/成本假设：`20bp roundtrip`，按净买卖单边`10bp`计算
+  - 总交易次数：
+    - 原始股票回合：`46,777`
+    - 合并后日度持仓行：`149,024`
+    - 净权重变动总和：`143.2422`
+  - 胜率：`51.82%`，按活跃或有交易日净日收益计算
+  - 毛收益口径期末权益：`2.0121`
+  - 毛收益口径总收益：`101.21%`
+  - 毛收益口径最大回撤：`-29.81%`
+  - 同暴露基准期末权益：`1.1048`
+  - 同暴露基准总收益：`10.48%`
+  - 同暴露基准最大回撤：`-34.16%`
+- 50bp roundtrip净换手成本：
+  - 期末权益：`1.4066`
+  - 总收益：`40.66%`
+  - 年化收益：`4.42%`
+  - 最大回撤：`-32.99%`
+  - Sharpe：`0.32`
+  - 总滑点/成本假设：`50bp roundtrip`，按净买卖单边`25bp`计算
+  - 总交易次数：
+    - 原始股票回合：`46,777`
+    - 合并后日度持仓行：`149,024`
+    - 净权重变动总和：`143.2422`
+  - 胜率：`51.37%`，按活跃或有交易日净日收益计算
+  - 毛收益口径期末权益：`2.0121`
+  - 毛收益口径总收益：`101.21%`
+  - 毛收益口径最大回撤：`-29.81%`
+  - 同暴露基准期末权益：`1.1048`
+  - 同暴露基准总收益：`10.48%`
+  - 同暴露基准最大回撤：`-34.16%`
+
+### 与第214独立篮子路径比较
+
+- 20bp：
+  - 独立篮子期末权益`1.6815`，合并持仓期末权益`1.7437`
+  - 独立篮子最大回撤`-30.64%`，合并持仓最大回撤`-30.46%`
+- 50bp：
+  - 独立篮子期末权益`1.2845`，合并持仓期末权益`1.4066`
+  - 独立篮子最大回撤`-36.13%`，合并持仓最大回撤`-32.99%`
+- 净换手成本名义占独立篮子成本约`79.76%`
+- 结论：
+  - 同股重叠主要降低重复交易成本，尤其在高成本情景下有帮助。
+  - 但它没有解决核心回撤，说明风险主要来自连续下跌时的反弹暴露，而不是独立篮子记账的成本误差。
+
+### 年度结果
+
+- 20bp：
+  - `2018`：净收益`-2.87%`，毛收益`-0.46%`，同暴露基准`-19.72%`，成本拖累`2.45%`
+  - `2019`：净收益`10.51%`，毛收益`12.63%`，同暴露基准`11.65%`
+  - `2020`：净收益`7.26%`，毛收益`8.97%`，同暴露基准`9.97%`
+  - `2021`：净收益`5.00%`，毛收益`6.11%`，同暴露基准`6.78%`
+  - `2022`：净收益`-9.79%`，毛收益`-8.12%`，同暴露基准`-12.97%`
+  - `2023`：净收益`7.49%`，毛收益`9.86%`，同暴露基准`-6.28%`
+  - `2024`：净收益`38.80%`，毛收益`41.35%`，同暴露基准`23.98%`
+  - `2025`：净收益`6.08%`，毛收益`7.30%`，同暴露基准`3.10%`
+  - `2026`：净收益`1.02%`，毛收益`1.40%`，同暴露基准`0.68%`
+- 50bp：
+  - `2018`：净收益`-6.38%`
+  - `2022`：净收益`-12.23%`
+  - `2024`：净收益`35.07%`
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_yearly.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_daily_concentration.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_turnover.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_target_weights.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_symbol_exposure.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_merged_portfolio_2018_2026/stock_range_reversion_market_down_merged_portfolio_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段不改变股票信号、状态、持有期、成本档或风控规则，只把同一批信号从独立篮子记账改成真实合并持仓记账。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第217阶段发现同股重叠严重；如果不先做合并持仓和净换手，后续任何风控讨论都会建立在不真实的交易账本上。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段只用固定信号和固定成本档重算交易账本，没有根据结果筛行业、调阈值、调持有期或选择风控参数。
+
+### 运行后继续价值反思
+
+- 判断：是，但不能直接策略化。
+- 原因：合并持仓后20bp/50bp收益均改善，说明股票震荡线没有被真实净换手成本推翻；但最大回撤仍在`-30%`级别，下一步必须处理暴露节奏，而不是继续追收益。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不选择任何风控参数作为正式版本。
+- 下一步在合并持仓口径上复验简单风险预算/暂停新增篮子机制。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 把第216阶段机械风控压力测试迁移到合并持仓口径，比较收益、回撤、净换手和集中度是否同步下降。
+- 第二优先级：
+  - 对合并持仓路径做最大回撤归因，确认2018/2022是否仍是主要风险源。
+- 第三优先级：
+  - 如风控只能线性砍暴露，则暂停组合化，回到市场状态变量识别。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+## 第217阶段：股票震荡market_down交易摩擦归因，确认硬摩擦不重但同股重叠很重
+
+### 基本信息
+
+- 时间：`2026-04-28 15:46 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认当前最大工程问题不是硬性不可交易，而是同股重叠和真实组合记账缺失
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增交易摩擦归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_market_down_friction.py`
+- 新增分析内容：
+  - 原始top候选到最终可交易候选的过滤归因
+  - 已入选候选的入场/退出边缘涨跌停风险
+  - 持有期停牌、一字涨跌停、涨跌停收盘状态
+  - ADV参与率容量估算
+  - 同股重叠、相邻信号篮子重合率和换手冲突
+- 未新增交易规则。
+- 未调超跌阈值。
+- 未改风控参数。
+- 未跑新策略版本。
+
+### 新增参数
+
+- 无新增交易参数。
+- 固定归因口径沿用：
+  - `FEATURE=score_oversold_ret_20`
+  - `HORIZON=10`
+  - `MARKET_STATE=market_down_20d`
+  - `BUCKET=active_q4_q5`
+  - `PARTICIPATION_RATES=1%,2%,5%,10%`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新策略回测。
+- 期末权益：不适用
+- 总收益：不适用
+- 最大回撤：不适用
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/`
+- 样本：
+  - 原始top候选：`50,377`
+  - 最终回测候选：`46,777`
+  - 信号日：`898`
+- 原始top候选过滤：
+  - 通过`final_keep`：`46,776`，占比`92.85%`
+  - 入场停牌：`77`，占比`0.15%`
+  - 入场一字涨停：`59`，占比`0.12%`
+  - 退出停牌：`633`，占比`1.26%`
+  - 退出一字跌停：`610`，占比`1.21%`
+  - 退出不符合研究资格：`3,508`，占比`6.96%`
+  - 结论：硬性不可交易过滤存在，但不是压倒性问题。
+- 已入选候选入场/退出边缘风险：
+  - 入场一字涨停：`0`
+  - 退出一字跌停：`0`
+  - 入场停牌：`0`
+  - 退出停牌：`0`
+  - 入场涨停收盘：`600`，占比`1.28%`
+  - 入场跌停收盘：`287`，占比`0.61%`
+  - 退出跌停收盘：`168`，占比`0.36%`
+  - 退出涨停收盘：`770`，占比`1.65%`
+- 持有期状态：
+  - 停牌：`0`
+  - 一字涨停：`372`，占比`0.0795%`
+  - 一字跌停：`207`，占比`0.0443%`
+  - 涨停收盘：`6,977`，占比`1.4915%`
+  - 跌停收盘：`2,208`，占比`0.4720%`
+  - 成交额为0或缺失：`0`
+- 容量估算：
+  - ADV参与率`1%`：策略合计容量中位约`17.76`亿元，等权p20容量中位约`8.36`亿元，等权p10容量中位约`7.22`亿元
+  - ADV参与率`2%`：策略合计容量中位约`35.51`亿元，等权p20容量中位约`16.72`亿元
+  - ADV参与率`5%`：策略合计容量中位约`88.79`亿元，等权p20容量中位约`41.80`亿元
+  - 结论：当前研究尺度下，容量不是主要瓶颈。
+- 重叠与调仓冲突：
+  - 平均活跃股票数：`112.9`
+  - 平均持仓腿数：`354.4`
+  - 平均重复股票数：`73.8`
+  - 重复腿占比：`59.55%`
+  - 单只股票最大重叠腿数：`10`
+  - 相邻信号篮子对下一篮子的重合率中位：`69.81%`
+  - 相邻信号篮子换手率中位：`30.19%`
+  - 结论：独立袖珍篮子记账会掩盖真实合并持仓、净买卖、单票集中度和换手成本。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_raw_candidate_friction.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_entry_exit_friction.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_holding_friction.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_capacity.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_overlap_daily_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_overlap_symbols.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_adjacent_signal_overlap.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_trade_friction_2018_2026/stock_range_reversion_market_down_trade_friction_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是交易摩擦审计，不生成新交易规则，不优化任何信号或风控参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第216阶段风控只能降低暴露；在继续研究风控前，必须确认基础交易摩擦和真实组合记账是否会推翻前序曲线。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段只记录硬摩擦、容量和重叠结构，没有根据结果调参；同股重叠是工程约束，不是收益优化线索。
+
+### 运行后继续价值反思
+
+- 判断：是，但组合化前必须补真实持仓模型。
+- 原因：硬性不可交易和容量没有否定这条线，但同股重叠过高；下一步必须做合并持仓、净换手、集中度和真实成本模型。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不继续调超跌阈值或风控阈值。
+- 下一步做合并持仓和净换手口径的真实组合记账。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 把重叠篮子合并为真实日度目标持仓，计算净买卖、单票目标权重、组合集中度和真实换手成本。
+- 第二优先级：
+  - 比较独立袖珍篮子路径和合并持仓路径的收益/回撤差异。
+- 第三优先级：
+  - 如合并持仓后风险仍过高，回到信号层或风控层，不直接实盘化。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+## 第216阶段：股票震荡market_down机械风控压力测试，确认回撤可降但收益同步被砍
+
+### 基本信息
+
+- 时间：`2026-04-28 15:36 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认简单风控能压低回撤，但主要来自降低暴露，不是alpha质量跃迁
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增机械风控压力测试脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_risk_budget.py`
+- 测试内容：
+  - 沿用第214阶段固定信号路径。
+  - 只测试重叠篮子上限和信号间隔冷却。
+  - 不使用未来收益、行业收益或最大回撤段信息生成规则。
+  - 不选择最优参数作为策略版本。
+- 未改股票信号定义。
+- 未改超跌阈值。
+- 未按行业收益筛选行业。
+- 未接入正式股票策略。
+
+### 新增参数
+
+- 风控压力测试场景：
+  - `baseline`
+  - `max_sleeves_5`
+  - `max_sleeves_3`
+  - `cooldown_2d`
+  - `max_sleeves_5_cooldown_2d`
+- 沿用第214阶段参数：
+  - `FEATURE=score_oversold_ret_20`
+  - `HORIZON=10`
+  - `MARKET_STATE=market_down_20d`
+  - `COST_BPS=20,50`
+
+### 修改参数
+
+- 无正式策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/`
+- 20bp roundtrip成本：
+  - `baseline`：
+    - 期末权益：`1.6815`
+    - 总收益：`68.15%`
+    - 最大回撤：`-30.64%`
+    - Sharpe：`0.43`
+    - 总滑点/成本假设：`20bp roundtrip`
+    - 总交易次数：`898`个信号篮子
+    - 胜率：`50.78%`
+  - `cooldown_2d`：
+    - 期末权益：`1.2270`
+    - 总收益：`22.70%`
+    - 最大回撤：`-11.77%`
+    - Sharpe：`0.40`
+    - 接受篮子：`325`
+    - 接受率：`36.19%`
+    - 平均暴露：`16.35%`
+  - `max_sleeves_3`：
+    - 期末权益：`1.0990`
+    - 总收益：`9.90%`
+    - 最大回撤：`-11.21%`
+    - Sharpe：`0.21`
+    - 接受篮子：`327`
+  - `max_sleeves_5`：
+    - 期末权益：`1.2524`
+    - 总收益：`25.24%`
+    - 最大回撤：`-16.37%`
+    - Sharpe：`0.31`
+    - 接受篮子：`517`
+- 50bp roundtrip成本：
+  - `baseline`：
+    - 期末权益：`1.2845`
+    - 总收益：`28.45%`
+    - 最大回撤：`-36.13%`
+    - Sharpe：`0.26`
+  - `cooldown_2d`：
+    - 期末权益：`1.1130`
+    - 总收益：`11.30%`
+    - 最大回撤：`-12.07%`
+    - Sharpe：`0.23`
+  - `max_sleeves_3`：
+    - 期末权益：`0.9963`
+    - 总收益：`-0.37%`
+    - 最大回撤：`-13.45%`
+    - Sharpe：`0.03`
+  - `max_sleeves_5`：
+    - 期末权益：`1.0725`
+    - 总收益：`7.25%`
+    - 最大回撤：`-18.46%`
+    - Sharpe：`0.14`
+
+### 新增分析结果
+
+- 信号接受情况：
+  - `baseline`接受`898/898`个信号篮子。
+  - `cooldown_2d`接受`325/898`个信号篮子，拒绝`573`个。
+  - `max_sleeves_3`接受`327/898`个信号篮子，拒绝`571`个。
+  - `max_sleeves_5`接受`517/898`个信号篮子，拒绝`381`个。
+  - `max_sleeves_5_cooldown_2d`与`cooldown_2d`结果一致，因为冷却约束已经把最大重叠压到`4`。
+- 压力年份：
+  - 2018年20bp：
+    - `baseline`路径收益`-3.19%`，最低回撤`-28.79%`，平均暴露`72.17%`
+    - `cooldown_2d`路径收益`1.08%`，最低回撤`-9.27%`，平均暴露`24.98%`
+  - 2022年20bp：
+    - `baseline`路径收益`-10.20%`，最低回撤`-30.64%`，平均暴露`47.11%`
+    - `cooldown_2d`路径收益`-4.27%`，最低回撤`-11.77%`，平均暴露`16.94%`
+  - 2024年收益也同步被压缩，说明机械风控并不是只切掉坏暴露。
+- 关键判断：
+  - 风控有效降低回撤，但主要方式是降低信号接受率和平均暴露。
+  - `cooldown_2d`比单纯`max_sleeves_3/5`的风险收益形态更稳一点，但不能把它选为正式策略参数；它只是后续风控研究候选。
+  - 收益和风险来自同一类反弹暴露，简单风控不能把策略质量变成高Sharpe。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/stock_range_reversion_market_down_risk_budget_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/stock_range_reversion_market_down_risk_budget_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/stock_range_reversion_market_down_risk_budget_v1_signal_decisions.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/stock_range_reversion_market_down_risk_budget_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_risk_budget_2018_2026/stock_range_reversion_market_down_risk_budget_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段预先限定为少数机械风控压力测试，不使用未来收益或行业收益生成规则，不以收益最大化选择参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第215阶段已确认最大回撤来自连续下跌中的重叠暴露；必须验证简单约束是否能实质降低回撤。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：测试结果没有被挑选为正式参数；同时明确记录了收益同步被砍的反证。
+
+### 运行后继续价值反思
+
+- 判断：有，但仍不能接入正式策略。
+- 原因：`cooldown_2d`能把最大回撤从`-30%~-36%`降到约`-12%`，但收益、暴露、信号数同步下降；后续应先检查真实交易摩擦，而不是继续调风控阈值。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不选择“最优”风控参数作为策略版本。
+- 下一步检查交易摩擦是否被低估。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做股票震荡路径交易摩擦归因，检查入场/退出涨跌停、停牌、成交额容量、连续信号日调仓冲突。
+- 第二优先级：
+  - 如摩擦可接受，再研究`cooldown_2d`这类简单风控的稳健性。
+- 第三优先级：
+  - 若摩擦显著恶化结果，应回到信号归因层，暂缓组合化。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+## 第215阶段：股票震荡market_down路径最大回撤归因，确认核心风险是连续下跌中的重叠暴露
+
+### 基本信息
+
+- 时间：`2026-04-28 15:30 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，明确第214阶段最大回撤主要不是单个信号错误，而是连续下跌中重叠篮子暴露累积
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增回撤归因脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_market_down_drawdowns.py`
+- 新增分析内容：
+  - 第214阶段路径最大回撤段识别
+  - 最大回撤段的同暴露基准对比
+  - 信号日篮子贡献拆解
+  - 行业贡献拆解
+  - 市场板块贡献拆解
+  - 年度路径摘要
+- 未新增交易规则。
+- 未调超跌阈值。
+- 未改持仓数。
+- 未跑新的策略版本。
+
+### 新增参数
+
+- 无新增交易参数。
+- 归因脚本沿用第214阶段固定口径：
+  - `FEATURE=score_oversold_ret_20`
+  - `HORIZON=10`
+  - `MARKET_STATE=market_down_20d`
+  - `COST_BPS=20,50`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 新增回测结果：无，本阶段未跑新策略回测。
+- 期末权益：不适用，本阶段引用第214阶段结果
+- 总收益：不适用，本阶段引用第214阶段结果
+- 最大回撤：不适用，本阶段拆解第214阶段最大回撤
+- Sharpe：不适用
+- 总滑点：不适用
+- 总交易次数：不适用
+- 胜率：不适用
+
+### 新增分析结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/`
+- 最大回撤段：
+  - 20bp成本：
+    - 峰值日期：`2021-10-21`
+    - 谷底日期：`2022-04-26`
+    - 最大回撤：`-30.64%`
+    - 峰谷交易日：`126`
+    - 恢复日期：`2024-02-22`
+    - 段内同暴露基准收益：`-23.47%`
+    - 平均暴露：`47.62%`
+    - 最大重叠篮子：`10`
+    - 平均活跃股票腿数量：`252.4`
+  - 50bp成本：
+    - 峰值日期：`2018-03-12`
+    - 谷底日期：`2022-04-26`
+    - 最大回撤：`-36.13%`
+    - 峰谷交易日：`1003`
+    - 恢复日期：`2024-04-29`
+    - 段内同暴露基准收益：`-27.71%`
+    - 平均暴露：`46.46%`
+    - 最大重叠篮子：`10`
+    - 平均活跃股票腿数量：`254.0`
+- 信号日篮子拖累：
+  - 最大拖累集中在`2022-04-08`到`2022-04-20`附近。
+  - 20bp成本下：
+    - `2022-04-11`信号篮子贡献`-2.2660%`，10日篮子毛收益`-20.6329%`，同期基准`-17.8951%`
+    - `2022-04-15`信号篮子贡献`-2.1877%`，10日篮子毛收益`-9.6370%`
+    - `2022-04-18`信号篮子贡献`-2.1872%`，10日篮子毛收益`-10.3402%`
+    - `2022-04-13`信号篮子贡献`-1.9590%`，10日篮子毛收益`-13.5130%`
+  - 结论：回撤不是单日事件，而是连续下跌期间旧篮子未退出、新篮子继续进入导致的重叠暴露。
+- 行业拖累：
+  - 20bp最大回撤段：
+    - 软件服务：贡献`-6.6642%`，持仓行占比`10.11%`
+    - 电气设备：贡献`-6.0088%`，持仓行占比`9.08%`
+    - 化工原料：贡献`-3.0196%`，持仓行占比`6.34%`
+    - 汽车配件：贡献`-1.7895%`
+    - 小金属：贡献`-1.6715%`
+  - 50bp最大回撤段：
+    - 软件服务：贡献`-8.8677%`
+    - 化工原料：贡献`-4.1436%`
+    - 电气设备：贡献`-3.7876%`
+    - 半导体：贡献`-2.3948%`
+    - 汽车配件：贡献`-2.2475%`
+    - 通信设备：贡献`-2.1338%`
+- 市场板块拖累：
+  - 20bp最大回撤段：
+    - 主板：贡献`-22.4768%`，持仓行占比`65.36%`
+    - 创业板：贡献`-10.3918%`，持仓行占比`30.82%`
+    - 科创板：贡献`-1.6128%`
+  - 50bp最大回撤段：
+    - 主板：贡献`-20.1122%`
+    - 创业板：贡献`-13.2803%`
+    - 科创板：贡献`-1.7350%`
+- 年度路径复核：
+  - 20bp路径：
+    - 2018：路径收益`-3.19%`，年内最低回撤`-28.79%`，平均暴露`72.17%`
+    - 2022：路径收益`-10.20%`，年内最低回撤`-30.64%`，平均暴露`47.11%`
+    - 2024：路径收益`38.14%`，年内最低回撤`-17.98%`
+  - 50bp路径：
+    - 2018：路径收益`-7.71%`，年内最低回撤`-31.15%`
+    - 2022：路径收益`-13.22%`，年内最低回撤`-36.13%`
+    - 2024：路径收益`33.47%`，年内最低回撤`-26.68%`
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_drawdown_segments.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_cohort_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_industry_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_market_contribution.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_year_path_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_drawdown_attribution_2018_2026/stock_range_reversion_market_down_drawdown_attribution_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是对第214阶段固定路径的回撤拆解，不产生新交易规则，也不优化任何参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第214阶段确认有收益但回撤过深；如果不先解释回撤来源，后续风控设计会非常容易变成对2018/2022的过拟合。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段只把既有回撤拆到时间、篮子、行业和市场板块，不根据结果选择行业或调整阈值。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步必须是风控归因而非收益优化。
+- 原因：风险集中在连续下跌时的重叠篮子和行业暴露；有必要测试少参数、外生的风险预算，但不应做信号参数搜索。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不因2022回撤反向拟合精细阈值。
+- 下一步只研究固定、外生、少参数的风险预算或暂停新增篮子机制。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 评估简单的重叠篮子上限/新增篮子暂停机制，把它定义为风控压力测试，不作为收益优化。
+- 第二优先级：
+  - 检查软件服务、电气设备等行业暴露上限是否能降低回撤，但不按行业收益排名筛行业。
+- 第三优先级：
+  - 检查涨跌停、停牌、成交额占比，避免低估真实交易摩擦。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+## 第214阶段：股票震荡market_down最小路径回测，确认有收益但回撤过深
+
+### 基本信息
+
+- 时间：`2026-04-28 15:15 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立研究线
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，第一次把股票震荡的可提前识别窗口放进资金路径检验
+- 第78正式趋势策略影响：无
+- 期货震荡策略影响：无
+
+### 本次版本改动内容
+
+- 新增研究用最小路径回测脚本：
+  - `examples/alpha_research/backtest_stock_range_reversion_market_down_long_only.py`
+- 回测口径：
+  - `market_down_20d`
+  - `active_q4_q5`
+  - `score_oversold_ret_20`
+  - top quintile等权篮子
+  - 信号日收盘后，次日收盘入场
+  - 固定持有`10`个交易日
+  - 每个信号日使用`1/10`资金，最多约1倍总暴露
+  - 无信号时资金留现金
+- 未改股票信号定义。
+- 未改过滤阈值。
+- 未扫持仓数。
+- 未接入正式股票策略。
+
+### 新增参数
+
+- `FEATURE=score_oversold_ret_20`
+- `HORIZON=10`
+- `BUCKET=active_q4_q5`
+- `MARKET_STATE=market_down_20d`
+- `COST_BPS=20,50`
+- `INITIAL_EQUITY=1.0`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测结果
+
+- 输出目录：`examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/`
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 股票数：`2,519`
+  - 信号篮子数：`898`
+  - 股票往返回合：`46,777`
+  - 平均候选数：`52.1`
+  - 候选数中位：`52.0`
+  - 活跃交易日占比：`66.40%`
+  - 平均总暴露：`45.17%`
+  - 最大总暴露：`100.00%`
+  - 最大重叠篮子数：`10`
+- 20bp roundtrip成本：
+  - 期末权益：`1.6815`
+  - 总收益：`68.15%`
+  - 年化收益：`6.81%`
+  - 最大回撤：`-30.64%`
+  - Sharpe：`0.43`
+  - 总滑点/成本假设：`20bp roundtrip`
+  - 总交易次数：`46,777`个股票往返回合
+  - 胜率：`50.78%`，按10日篮子净绝对收益计算
+  - 同暴露基准期末权益：`1.1048`
+  - 同暴露基准总收益：`10.48%`
+  - 同暴露基准最大回撤：`-34.16%`
+- 50bp roundtrip成本：
+  - 期末权益：`1.2845`
+  - 总收益：`28.45%`
+  - 年化收益：`3.22%`
+  - 最大回撤：`-36.13%`
+  - Sharpe：`0.26`
+  - 总滑点/成本假设：`50bp roundtrip`
+  - 总交易次数：`46,777`个股票往返回合
+  - 胜率：`47.77%`，按10日篮子净绝对收益计算
+  - 同暴露基准期末权益：`1.1048`
+  - 同暴露基准总收益：`10.48%`
+  - 同暴露基准最大回撤：`-34.16%`
+
+### 新增分析结果
+
+- 年度篮子毛收益：
+  - 2018：篮子`166`个，毛绝对`0.3354%`，毛超额`1.3195%`
+  - 2019：篮子`118`个，毛绝对`0.8325%`，毛超额`0.1049%`
+  - 2020：篮子`93`个，毛绝对`0.9895%`，毛超额`-0.1037%`
+  - 2021：篮子`63`个，毛绝对`1.0819%`，毛超额`0.0145%`
+  - 2022：篮子`114`个，毛绝对`-0.4840%`，毛超额`0.5526%`
+  - 2023：篮子`139`个，毛绝对`0.7453%`，毛超额`1.1744%`
+  - 2024：篮子`115`个，毛绝对`3.4408%`，毛超额`1.3011%`
+  - 2025：篮子`69`个，毛绝对`1.2491%`，毛超额`0.6538%`
+  - 2026：篮子`21`个，毛绝对`0.5054%`，毛超额`0.3857%`
+- 路径年度观察：
+  - 20bp路径下，2018约`-3.19%`，2022约`-10.20%`，2024约`38.14%`
+  - 50bp路径下，2018约`-7.71%`，2022约`-13.22%`，2024约`33.47%`
+  - 收益明显依赖深跌修复年份，不能直接理解成平滑稳态alpha。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/stock_range_reversion_market_down_long_only_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/stock_range_reversion_market_down_long_only_v1_equity_curve.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/stock_range_reversion_market_down_long_only_v1_basket_daily.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/stock_range_reversion_market_down_long_only_v1_basket_horizon.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_market_down_long_only_2018_2026/stock_range_reversion_market_down_long_only_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只验证第213阶段留下的唯一固定窗口，不新增过滤器、不扫阈值、不扫持仓数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：归因只能说明候选收益厚度，不能说明资金路径；必须用最小路径回测暴露最大回撤、暴露重叠和成本后曲线。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：20bp和50bp都是成本压力情景；脚本没有根据结果选择最优成本或最优参数，且保留了回撤过深的反证。
+
+### 运行后继续价值反思
+
+- 判断：有，但不能接入正式策略。
+- 原因：20bp和50bp后均跑赢同暴露基准，说明窗口有研究价值；但Sharpe低、最大回撤在`-30%`到`-36%`，说明当前形态不可直接实盘化。
+
+### 决策
+
+- 不进入第78 A/B/C。
+- 不接入正式股票策略。
+- 不扩大股票池。
+- 不提高集中度。
+- 不扫阈值。
+- 下一步研究回撤来源和暴露节奏。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 对2018、2022和最大回撤段做归因，检查亏损来自连续市场下跌、入场过早、行业集中还是持仓重叠。
+- 第二优先级：
+  - 研究固定外生风险预算，例如中证1000波动/跌幅限制新增篮子数量，而不是优化超跌阈值。
+- 第三优先级：
+  - 检查涨跌停、停牌、调仓冲突和单票成交额占比，确认路径回测没有低估交易摩擦。
+- 暂不做：
+  - 不接入第78。
+  - 不写正式股票策略。
+  - 不做多参数搜索。
+
+## 第228阶段最终收口索引：股票震荡不接入第78，暂停组合接入方向
+
+- 时间：`2026-04-28 17:10 CST`
+- 详细记录位置：本文件前文`第228阶段：股票震荡long-only小仓位卫星边界归因，确认不适合占用第78资金`。
+- 当前结论：
+  - 股票震荡与第78日收益相关约`0.009`，确实有分散信息。
+  - 20bp成本、10%卫星能把最大回撤从`-36.99%`降到`-33.80%`，Sharpe从`1.491`升到`1.516`。
+  - 但同口径期末权益从`23.0005`降到`18.5712`，机会成本太高。
+- 决策：
+  - 不接入第78。
+  - 不做第78 A/B/C。
+  - 不选择正式股票卫星权重。
+  - 不继续优化ETF/IM对冲比例。
+  - 不追加“过滤2022”的新规则，避免把状态过滤做成年份过拟合。
+- 下一步判断：
+  - 股票震荡仍有研究价值，但应降级为独立小资金/闲置资金候选。
+  - 若再继续，只能做外生状态变量的反证式归因；在第220阶段已显示“深跌状态也是收益最厚状态”的前提下，不应急着写交易开关。
+
+## 第229阶段：独立股市震荡策略路线记录与残差/行业内信号归因
+
+### 基本信息
+
+- 时间：`2026-04-28 17:33 CST`
+- 当前模式：`day`
+- 路线：股票震荡独立策略研究
+- 是否重要突破版本：
+  - 策略层面：否
+  - 研究层面：是，确认“行业内排序”比裸全市场超跌更接近股市震荡的本质，但组合化前必须处理行业集中
+- 第78正式趋势策略影响：无。未修改第78策略、配置、回测入口或输出。
+- 期货震荡策略影响：无。
+- 本阶段不是正式股票策略版本，不触发第78 A/B/C。
+
+### 独立股市震荡策略思路记录
+
+- 策略形态：
+  - A股第一版不做多空对称，不做配对交易，不做ETF融券假设。
+  - 优先做`long-only`横截面超跌修复，独立小资金/闲置资金口径研究。
+- 理论/业界参考：
+  - 短期反转/contrarian reversal：解释短期流动性冲击后可能修复。
+  - 残差统计套利：借鉴“先解释市场/行业，再看残差偏离”的思想，但不照搬美股多空。
+  - 行业内反转：更接近“同类资产里谁被错杀”，比全市场裸跌幅更有可穿越周期的味道。
+  - 流动性冲击修复：策略不应理解为预测底部，而是分散提供短期流动性。
+- 第一性原理判断：
+  - 股市震荡不是单只股票抄底，而是大量股票中寻找短期错杀的横截面概率优势。
+  - “深跌状态”不能被粗暴过滤，因为前序第220阶段显示深跌往往也是收益最厚的来源。
+  - 更稳的路线是行业内排序、流动性下限、行业上限、成交额参与率和市场状态反证。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_residual_industry_signal.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/`
+- 本阶段只做信号归因，不做组合回测、不产生交易订单、不写正式策略。
+
+### 新增参数
+
+- `LOOKBACKS=(5,10,20)`
+- `HORIZONS=(5,10)`
+- `COST_BPS=(20,50)`
+- `MIN_GLOBAL_DAILY_WIDTH=50`
+- `MIN_INDUSTRY_DAILY_WIDTH=20`
+- `MIN_SUMMARY_DAYS=60`
+- 信号变体：
+  - `raw_global`
+  - `market_residual_global`
+  - `industry_residual_global`
+  - `industry_neutral_raw`
+
+### 修改参数
+
+- 无策略参数修改。
+
+### 删除参数
+
+- 无。
+
+### 新增回测/分析结果
+
+- 样本：
+  - 日期范围：`2018-01-02`到`2026-04-17`
+  - 股票数：`2,519`
+  - 行数：`3,076,624`
+- `active_q4_q5 + lookback20 + horizon10`：
+  - `raw_global`：top绝对`0.63%`，top超额`0.27%`，top-bottom超额`1.20%`，t=`11.97`，20bp后top绝对`0.43%`，50bp后`0.13%`，平均top股票`52.6`，平均top行业`25.7`
+  - `market_residual_global`：与`raw_global`完全等价，符合“同日减指数常数不改变全市场排序”的预期
+  - `industry_residual_global`：top绝对`0.66%`，top超额`0.30%`，top-bottom超额`1.20%`，t=`15.67`，20bp后`0.46%`，50bp后`0.16%`，相对raw改善很小
+  - `industry_neutral_raw`：top绝对`1.15%`，top超额`0.78%`，top-bottom超额`1.43%`，t=`10.51`，20bp后`0.95%`，50bp后`0.65%`，相对raw top绝对提升`0.52%`
+  - 关键风险：`industry_neutral_raw`在`active_q4_q5`中平均top股票约`10.9`只、平均top行业约`2.1`个，收益最厚但行业集中度过高。
+- `all_component + lookback20 + horizon10`对照：
+  - `raw_global`：top绝对`0.71%`，top超额`0.35%`，top-bottom超额`0.73%`，20bp后`0.51%`，50bp后`0.21%`，平均top股票`182.8`，平均top行业`54.6`
+  - `industry_residual_global`：top绝对`0.81%`，top超额`0.44%`，top-bottom超额`0.80%`，20bp后`0.61%`，50bp后`0.31%`，平均top股票`182.0`，平均top行业`59.1`
+  - `industry_neutral_raw`：top绝对`0.96%`，top超额`0.60%`，top-bottom超额`0.76%`，20bp后`0.76%`，50bp后`0.46%`，平均top股票`83.9`，平均top行业`12.4`
+- 年度稳定性：
+  - `active_q4_q5`的`industry_neutral_raw`：top绝对正收益年份`8/8`，top超额正年份`7/8`，年度top绝对中位`0.88%`，最差年份`0.05%`
+  - `all_component`的`industry_neutral_raw`：top绝对正收益年份`6/8`，top超额正年份`8/8`，年度top绝对中位`1.28%`，最差年份`-0.34%`
+  - 2025年`active_q4_q5 industry_neutral_raw` top超额为`-0.31%`、spread为`-0.54%`，说明近端并非无瑕，需要组合路径和状态复验。
+- 总滑点/成本：
+  - 本阶段无真实交易，只用`20bp/50bp`静态成本压力估算top组边际。
+- 总交易次数：
+  - 不适用，本阶段是信号归因。
+- 胜率：
+  - 不适用，本阶段未生成逐笔交易。
+
+### 输出文件
+
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_daily_series.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_delta_vs_raw.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_year_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_state_summary.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_stability.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_top_industry.csv`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_meta.json`
+- `examples/alpha_research/native_results/stock_range_reversion_residual_industry_signal_2018_2026/stock_range_reversion_residual_industry_signal_v1_report.md`
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只把既有裸超跌拆成市场残差、行业残差和行业内排序；不新增交易规则、不扫阈值、不选择正式参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：独立股市震荡策略的第一性原理不是裸抄底，而是识别同类资产里的流动性错杀；残差/行业内归因是进入组合回测前的必要门槛。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：报告保留全部四类信号、年度明细、all_component与active_q4_q5对照，并明确记录行业集中风险；没有把收益最高的口径直接包装成交易策略。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步必须先做分散度/行业上限约束，再做组合路径。
+- 原因：`industry_neutral_raw`在全成分口径更分散且优于raw；在`active_q4_q5`口径更厚，但平均top行业只有约`2`个。更可穿越周期的方向是行业内排序 + 流动性下限 + 行业上限 + 容量约束，而不是直接追active高收益。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不基于本阶段选择正式参数。
+- 下一步做“行业内排序 + 分散/行业上限”的最小组合路径压力测试。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 设计最小组合路径：`industry_neutral_raw`、lookback20、horizon10，加入单行业上限、单票上限、流动性下限和20bp/50bp成本。
+- 第二优先级：
+  - 对比`all_component`分散版与`active_q4_q5`高流动窄行业版，判断收益来自真实行业内反转还是行业集中。
+- 第三优先级：
+  - 对2025弱化做状态归因，但不写年份过滤器。
