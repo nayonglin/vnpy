@@ -36326,3 +36326,1723 @@ to-end季度冷启动：
   - 后续新交易日继续按同一流程更新数据、latest packet和paper ledger。
 - 第三优先级：
   - 累积足够新增样本外交易日后，单独做paper ledger样本外段归因，不与历史回测混在一起。
+
+## 第259阶段：股票震荡paper OOS归因 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 21:55 CST`。
+- 本阶段性质：新增冻结后纸面样本外归因；不新增信号、不调策略参数、不跑新策略回测。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是纸面跟踪解释层，不是可接入正式版本；但它能防止用7天新增样本反向调参。
+- 过拟合预判：否。本阶段只切分冻结后的ledger做归因，不新增预测变量、不选择更优窗口、不调整阈值。
+- 继续价值预判：是。新增数据后需要判断权益回落来自执行问题、正常波动，还是信号/市场需要观察。
+- 外部调研判断：
+  - Walk-forward / out-of-sample的核心是冻结后样本不能反过来参与参数选择。
+  - 订单、交易、组合状态和分析器分层有利于可对账纸面跟踪。
+  - 本阶段吸收的是样本外归因和账本分层思想，不引入外部交易系统参数。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_paper_oos_attribution.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_oos_attribution_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_segment_daily.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_segment_orders.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_position_daily.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_industry_contribution.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_symbol_contribution.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_action_contribution.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_latest_industry_exposure.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_order_summary.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_attribution_v1_meta.json`
+- 改动说明：
+  - 从paper ledger中切出`2026-04-16`冻结日之后的新增目标执行日。
+  - 重建逐日实际持仓，并用开盘到次开盘收益拆解持仓贡献。
+  - 输出日级、订单、持仓、行业、股票、买入/卖出/持有动作和质量检查。
+
+### 新增参数
+
+- 新增环境参数：
+  - `PAPER_OOS_FREEZE_TARGET_DATE`，默认`20260416`。
+  - `PAPER_OOS_MIN_DAYS`，默认`20`。
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段不跑新策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 新增纸面样本外归因结果：
+  - 冻结目标执行日`2026-04-16`
+  - 样本外目标日`2026-04-17`到`2026-04-27`
+  - 样本外交易日`7`
+  - 期末权益`2.2225`
+  - 新增段总收益`-0.70%`
+  - 新增段最大回撤`-2.00%`
+  - 新增段Sharpe`-1.7660`
+  - 总滑点：不适用；股票线使用往返成本`50bp`模拟，本段成本拖累`0.14%`
+  - 总交易次数：新增段订单`153`行
+  - 胜率：本阶段未新增胜率口径，OOS段样本过短暂不使用胜率判断
+  - 毛收益合计`-0.53%`
+  - 计划换仓`57.10%`
+  - 实际成交`57.10%`
+  - 成交填充率`100.00%`
+  - 阻断订单`0`
+  - 部分成交订单`0`
+  - 质量检查`6`项通过、`1`项警告、`0`项失败
+
+### 归因结果
+
+- 状态标签：`normal_paper_noise`。
+- 买入/卖出/持有动作：
+  - 买入贡献`-0.664%`
+  - 持有贡献`+0.004%`
+  - 卖出贡献`+0.128%`
+- 行业贡献：
+  - 半导体`+0.666%`
+  - 专用机械`+0.093%`
+  - 化工原料`-0.048%`
+  - 通信设备`-0.129%`
+  - 电气设备`-0.223%`
+  - 软件服务`-0.316%`
+  - 元器件`-0.575%`
+- 最新行业暴露：
+  - 元器件`14.00%`
+  - 半导体`12.50%`
+  - 电气设备`9.58%`
+  - 软件服务`4.98%`
+  - 专用机械`4.45%`
+  - 化工原料`4.33%`
+  - 通信设备`3.50%`
+- 贡献最差股票主要为利亚德、南都电源、神州信息；贡献最好股票主要为东芯股份、良信股份、潍柴重机。
+
+### 核心结论
+
+- 冻结后新增段权益回落`-0.70%`，但执行链路健康：无阻断、无部分成交、无收益缺失。
+- 持仓贡献能复原日级毛收益，说明归因口径可对账。
+- 当前更像正常纸面波动，不像执行系统损坏，也不足以证明策略失效。
+- 唯一警告是样本只有`7`天，小于稳定判断阈值`20`天；不足20天前不做策略有效性结论。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只切出冻结后的新增样本做归因，不新增变量、不调阈值、不选择更好窗口。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：新增段收益为负也没有触发任何参数修改；报告保留样本太短警告。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：paper ledger已经建立，下一步应把冻结后的新增样本单独解释，避免和历史回测混在一起。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：新增段执行质量健康，回落主要不是阻断/成交问题，值得继续滚动积累样本外ledger。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 样本外段不足20天前，只看执行和风险，不做策略有效性结论。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续新交易日继续补数据，重跑latest packet、paper ledger和OOS归因。
+- 第二优先级：
+  - 当OOS样本达到`20`个交易日后，做一次冻结后状态评估，重点看回撤、行业集中、填充率和买入动作贡献是否持续恶化。
+- 第三优先级：
+  - 若执行继续健康但收益恶化，再做市场状态归因；在状态归因前不调信号阈值。
+
+## 第260阶段：股票震荡paper OOS市场状态归因 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:03 CST`。
+- 本阶段性质：新增冻结后paper OOS市场状态归因；不新增信号、不调策略参数、不跑新策略回测。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是样本外解释层，不是可接入正式版本；价值在于防止把7天亏损误判成可调参问题。
+- 过拟合预判：否。本阶段只解释冻结后OOS段的市场状态，不新增预测变量、不调阈值、不做窗口选择。
+- 继续价值预判：是。第259阶段确认执行链路健康后，必须区分市场拖累、宽度拖累和选股/时点残差。
+- 外部调研判断：
+  - 均值回归股票策略需要近期数据、交易成本和样本外检验；不能只看历史回测。
+  - Zipline等开源回测框架把algorithm return、benchmark return、risk、exposure拆开记录；本阶段采用同暴露benchmark解释口径。
+  - OOS衰减可能来自市场状态变化，因此先做状态归因，不直接调参。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_paper_oos_market_state.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_oos_market_state_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_report.md`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_market_summary.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_breadth_summary.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_trend_summary.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_vol_summary.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_paper_oos_market_state_v1_meta.json`
+- 改动说明：
+  - 读取第259阶段OOS日账本。
+  - 计算中证1000开盘到次开盘收益、同暴露中证1000收益、成分股等权开盘到次开盘收益、市场宽度、事前20日趋势和事前20日波动。
+  - 输出日级状态归因、指数状态汇总、市场宽度汇总、趋势汇总、波动汇总和质量检查。
+
+### 新增参数
+
+- 新增环境参数：
+  - `PAPER_OOS_FREEZE_TARGET_DATE`，默认`20260416`。
+  - `PAPER_OOS_MIN_DAYS`，默认`20`。
+- 状态标签阈值仅用于描述，不用于交易：
+  - 指数开盘到次开盘收益`<= -1%`标记为`index_down_gt_1pct`。
+  - 指数开盘到次开盘收益`>= +1%`标记为`index_up_gt_1pct`。
+  - 成分股上涨比例`<45%`标记为`weak_breadth`。
+  - 成分股上涨比例`>55%`标记为`strong_breadth`。
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段不跑新策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 新增纸面样本外市场状态归因结果：
+  - 样本外交易日`7`
+  - 期末权益：沿用第259阶段纸面段末权益`2.2225`
+  - 策略毛收益合计`-0.53%`
+  - 策略净收益合计`-0.68%`
+  - 同暴露中证1000收益合计`+0.40%`
+  - 同暴露成分股等权收益合计`-0.10%`
+  - 相对同暴露中证1000残差`-0.93%`
+  - 相对同暴露成分股等权残差`-0.43%`
+  - 指数下跌超过`1%`的天数`1`
+  - 市场宽度弱的天数`3`
+  - 总滑点：不适用；股票线使用往返成本`50bp`模拟，本阶段不新增滑点口径
+  - 总交易次数：沿用第259阶段新增段订单`153`行
+  - 胜率：本阶段未新增胜率口径，样本过短暂不使用胜率判断
+  - 质量检查`5`项通过、`1`项警告、`0`项失败
+
+### 归因结果
+
+- 拖累诊断：`selection_or_reversal_timing_drag`。
+- 指数状态：
+  - `index_down_gt_1pct`：`1`天，策略净收益`-1.72%`，同暴露中证1000`-0.99%`，残差`-0.71%`。
+  - `index_flat`：`4`天，策略净收益`-0.17%`，同暴露中证1000`-0.03%`，残差`-0.06%`。
+  - `index_up_gt_1pct`：`2`天，策略净收益`+1.21%`，同暴露中证1000`+1.42%`，残差`-0.17%`。
+- 市场宽度：
+  - `weak_breadth`：`3`天，策略净收益`-2.59%`，成分股同暴露等权`-1.15%`，残差`-1.37%`。
+  - `mixed_breadth`：`2`天，策略净收益`+0.76%`。
+  - `strong_breadth`：`2`天，策略净收益`+1.15%`。
+- 事前20日趋势：
+  - 多数样本处于`exante_20d_uptrend`，但策略残差仍为负，提示当前不是简单“大盘趋势坏了”。
+
+### 核心结论
+
+- 新增段亏损不能简单归因为大盘下跌，因为同暴露中证1000本段为正。
+- 成分股等权同暴露略负，说明市场宽度有扰动，但不足以解释全部亏损。
+- 更可能的解释是：短期买入后反转节奏不顺，叠加元器件、软件服务、电气设备等局部行业风格拖累。
+- 样本只有`7`天，小于稳定判断阈值`20`天；不允许据此新增过滤器或调阈值。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只解释冻结后paper OOS段的市场状态，不新增交易规则、不调阈值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：即使发现策略残差偏负，也没有把市场状态直接改成过滤器；报告保留样本过短警告。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：上一阶段确认执行健康后，下一步应区分市场拖累和选股/时点残差。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：本段同暴露指数偏正而策略残差偏负，提示后续OOS达到20天后要重点看买入后反转节奏和行业风格，而不是先怪成交。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 不把本阶段状态标签改成交易过滤器；先继续积累OOS样本。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续新交易日继续补数据，重跑latest packet、paper ledger、OOS归因和OOS市场状态归因。
+- 第二优先级：
+  - 当OOS样本达到`20`个交易日后，复查策略残差是否仍持续为负，尤其观察`weak_breadth`天和买入动作贡献。
+- 第三优先级：
+  - 若20日后仍表现为同暴露指数为正、策略残差持续为负，再做“买入后1/2/3日反转节奏”归因；在那之前不调信号阈值。
+
+## 第261阶段：股票震荡历史市场状态基线 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:13 CST`。
+- 本阶段性质：新增历史市场状态基线和最新7日窗口分位对照；不新增信号、不调策略参数、不跑新策略回测。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是paper OOS监控坐标系，不是可接入正式版本；但给出了当前OOS窗口是否异常的明确判断。
+- 过拟合预判：否。本阶段只把当前OOS窗口放入历史滚动窗口分布中定位，不新增预测变量、不调阈值、不筛选新窗口。
+- 继续价值预判：是。第260阶段提示当前OOS残差偏负，需要知道它是历史常见波动还是尾部风险。
+- 外部调研判断：
+  - 均值回归策略的样本外表现需要在市场状态、相对基准和成本下拆开看。
+  - 滚动OOS窗口可以作为监控坐标，但不能被反向用来挑过滤器。
+  - 本阶段借鉴regime-conditional performance decomposition和benchmark-relative performance思想，仅用于解释。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_market_state_baseline.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_market_state_baseline_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_report.md`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_index_summary.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_breadth_summary.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_trend_summary.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_vol_summary.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_cross_summary.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_rolling_windows.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_analog_windows.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_market_state_baseline_v1_meta.json`
+- 改动说明：
+  - 读取paper ledger全历史日账本。
+  - 计算全历史中证1000同暴露收益、成分股等权同暴露收益、市场宽度、事前趋势和事前波动。
+  - 生成全历史状态汇总、交叉状态汇总、7日滚动窗口、同类状态窗口和最新窗口分位。
+
+### 新增参数
+
+- 新增环境参数：
+  - `MARKET_STATE_BASELINE_WINDOW_DAYS`，默认`7`。
+  - `MARKET_STATE_BASELINE_MIN_ANALOG_WINDOWS`，默认`30`。
+- 这些参数只用于监控窗口和质量检查，不是策略交易参数。
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段不跑新策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 新增历史状态基线结果：
+  - 历史日样本`1992`天
+  - 7日滚动窗口`1986`个
+  - 同类状态窗口`196`个
+  - 最新窗口`2026-04-17`到`2026-04-27`
+  - 期末权益：沿用paper ledger最新权益`2.2225`
+  - 最新窗口策略净收益`-0.68%`
+  - 最新窗口策略毛收益`-0.53%`
+  - 最新窗口同暴露中证1000收益`+0.40%`
+  - 最新窗口同暴露成分股等权收益`-0.10%`
+  - 最新窗口相对同暴露中证1000残差`-0.93%`
+  - 最新窗口净收益历史分位`31.42%`
+  - 最新窗口残差历史分位`12.59%`
+  - 最新窗口残差同类状态分位`14.80%`
+  - 总滑点：不适用；股票线使用往返成本`50bp`模拟，本阶段不新增滑点口径
+  - 总交易次数：沿用第259阶段新增段订单`153`行
+  - 胜率：本阶段未新增胜率口径
+  - 质量检查`5`项通过、`1`项警告、`0`项失败
+
+### 历史状态结果
+
+- 指数状态：
+  - `index_down_gt_1pct`：`431`天，策略净收益合计`-406.73%`。
+  - `index_flat`：`1102`天，策略净收益合计`+22.77%`。
+  - `index_up_gt_1pct`：`459`天，策略净收益合计`+473.00%`。
+- 市场宽度：
+  - `weak_breadth`：`911`天，策略净收益合计`-479.66%`。
+  - `mixed_breadth`：`264`天，策略净收益合计`+36.87%`。
+  - `strong_breadth`：`722`天，策略净收益合计`+534.77%`。
+- 事前趋势：
+  - `exante_20d_uptrend`：`443`天，策略净收益合计`+14.62%`。
+  - `exante_20d_neutral`：`1143`天，策略净收益合计`+32.76%`。
+  - `exante_20d_downtrend`：`406`天，策略净收益合计`+41.66%`。
+
+### 质量警告
+
+- `universe_breadth_coverage`：早期市场宽度缺失`95`天，占`4.77%`。
+- 处理方式：
+  - 宽度缺失日期标记为`missing_breadth`。
+  - 宽度汇总和交叉状态汇总避开`missing_breadth`。
+  - 最新OOS窗口宽度完整，不影响当前7日结论。
+
+### 核心结论
+
+- 最新7日窗口确实偏弱：残差历史分位`12.59%`，同类状态分位`14.80%`。
+- 但它还没有进入历史最差`10%`尾部，因此不支持立刻调参。
+- 历史状态显示，弱宽度是本策略最主要的风险状态；这可以作为paper OOS监控项，但不能直接变成过滤器。
+- 当前最稳妥的动作是继续积累样本；如果后续残差分位跌入最差10%并持续，再升级到买入后反转节奏归因。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只用历史状态基线解释当前OOS窗口，不产生交易过滤器。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：所有阈值只用于状态描述和分位定位，未修改策略参数或筛选条件。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第260阶段指出当前OOS残差偏负，需要知道它在历史同类状态中是否异常。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：历史分位能给后续paper OOS监控提供风险坐标，避免只凭最近7天直觉行动。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 不把历史状态分位改成交易规则；先作为paper OOS监控指标。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续新交易日继续补数据，重跑latest packet、paper ledger、OOS归因、OOS市场状态归因和历史状态基线。
+- 第二优先级：
+  - 若最新滚动窗口残差分位跌入历史最差`10%`并持续，再做买入后`1/2/3`日反转节奏归因。
+- 第三优先级：
+  - 若OOS满`20`个交易日仍表现为同暴露指数为正但策略残差持续为负，再讨论是否有必要设计“风险降速”监控，而不是直接做交易过滤器。
+
+## 第262阶段：股票震荡paper监控入口 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:18 CST`。
+- 本阶段性质：新增paper监控汇总入口；不新增信号、不调策略参数、不跑新策略回测。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是paper OOS监控基础设施，不是可接入正式版本；但把分散报告合并成统一红黄灯。
+- 过拟合预判：否。本阶段只整合已有paper报告和质量检查，不新增预测变量、不调阈值。
+- 继续价值预判：是。后续每次补数据后需要一个固定入口判断是否继续观察、修执行链路或升级归因。
+- 外部调研判断：
+  - paper/live监控应同时看执行健康、回撤、基准相对表现、样本外漂移和数据质量。
+  - 开源回测/监控实践通常把收益、benchmark、风险、执行和dashboard分层呈现。
+  - 本阶段把这些思想落成监控入口，不添加交易规则。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_paper_monitor.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_monitor_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_paper_monitor_v1_report.md`
+  - `stock_range_reversion_liquid_q3_paper_monitor_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_paper_monitor_v1_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_paper_monitor_v1_recommendations.csv`
+  - `stock_range_reversion_liquid_q3_paper_monitor_v1_meta.json`
+- 改动说明：
+  - 汇总latest packet、paper ledger、OOS归因、OOS市场状态归因、历史状态基线。
+  - 输出监控红黄灯、检查点和推荐动作。
+  - 监控状态只用于后续研究流程分叉，不用于交易过滤。
+
+### 新增参数
+
+- 新增监控阈值：
+  - `MIN_FILL_RATIO=0.99`
+  - `TAIL_ALPHA_PERCENTILE=0.10`
+  - `CAUTION_ALPHA_PERCENTILE=0.15`
+  - `MIN_OOS_DAYS_FOR_STABLE_JUDGMENT=20`
+- 这些阈值只用于监控状态，不是策略交易参数。
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段不跑新策略回测。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 新增监控结果：
+  - 监控状态`yellow_caution_continue_paper`
+  - 最新信号日`2026-04-28`
+  - 最新目标执行日`2026-04-27`
+  - 最新目标持仓`46`只
+  - 最新目标总权重`53.33%`
+  - 最新订单`24`行
+  - 最新阻断订单`0`行
+  - 最新未成交权重`0.00%`
+  - 期末权益`2.2225`
+  - 总收益`122.25%`
+  - 最大回撤`-15.16%`
+  - Sharpe`0.7373`
+  - 全历史成交填充率`99.73%`
+  - OOS新增段`7`天
+  - OOS新增段收益`-0.70%`
+  - OOS新增段回撤`-2.00%`
+  - OOS状态`normal_paper_noise`
+  - 市场状态诊断`selection_or_reversal_timing_drag`
+  - 相对同暴露中证1000残差`-0.93%`
+  - 残差全历史分位`12.59%`
+  - 残差同类状态分位`14.80%`
+  - 总滑点：不适用；股票线使用往返成本`50bp`模拟，本阶段不新增滑点口径
+  - 总交易次数：沿用第259阶段新增段订单`153`行
+  - 胜率：本阶段未新增胜率口径
+  - 监控检查`9`项通过、`1`项警告、`0`项失败
+
+### 监控检查结果
+
+- 通过：
+  - 最新目标日无阻断订单。
+  - 最新未成交权重为`0`。
+  - 全历史成交填充率`99.73%`，高于`99%`阈值。
+  - ledger、OOS归因、市场状态归因、历史基线均无失败项。
+  - 残差全历史分位`12.59%`，高于最差`10%`风险事件阈值。
+  - 残差同类状态分位`14.80%`，高于最差`10%`风险事件阈值。
+- 警告：
+  - OOS样本只有`7`天，小于`20`天稳定判断阈值。
+
+### 核心结论
+
+- 当前监控状态为黄灯：偏弱但不是红色风险事件。
+- 执行链路健康，最新目标无阻断、无未成交。
+- 残差偏弱但尚未跌入历史最差`10%`。
+- 继续paper监控，不调策略参数；若后续残差分位跌入最差`10%`并持续，再升级买入后反转节奏归因。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只整合已有paper报告和质量检查，不新增预测变量、不调阈值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：监控状态只决定继续观察或升级归因，不产生交易过滤器或参数修改。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：paper链路已经有多份报告，需要统一入口避免后续监控依赖人工记忆。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：监控入口给出了明确黄灯状态和升级条件，后续补数据后可直接复跑。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 当前状态为`yellow_caution_continue_paper`：继续paper，不升级交易规则。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续新交易日继续补数据后，固定重跑latest packet、paper ledger、OOS归因、OOS市场状态归因、历史状态基线和paper monitor。
+- 第二优先级：
+  - 若paper monitor变为`orange_risk_event_watch`，再做买入后`1/2/3`日反转节奏归因。
+- 第三优先级：
+  - 若paper monitor出现`red_fix_data_or_execution_first`，暂停策略判断，先修数据或执行链路。
+
+## 第263阶段：股票震荡paper监控套件 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:24 CST`。
+- 本阶段性质：新增paper监控流程编排入口；不新增信号、不调策略参数、不跑新策略回测。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是流程可复验基础设施，不是可接入正式版本；但它把后续补数据后的固定复跑顺序固化。
+- 过拟合预判：否。本阶段只编排既有paper监控脚本，不新增预测变量、不调阈值。
+- 继续价值预判：是。paper监控已经形成多份报告，需要固定suite降低漏跑和人为选择性解释。
+- 外部调研判断：
+  - 可复验研究流程需要记录计算步骤、脚本顺序、输入输出和失败点。
+  - 交易监控流程需要统一查看执行健康、基准相对表现、回撤和漂移。
+  - 本阶段只固化复跑顺序，不引入交易规则。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/run_stock_range_reversion_liquid_q3_paper_monitor_suite.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_paper_monitor_suite_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_paper_monitor_suite_v1_report.md`
+  - `stock_range_reversion_liquid_q3_paper_monitor_suite_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_paper_monitor_suite_v1_steps.csv`
+  - `stock_range_reversion_liquid_q3_paper_monitor_suite_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_paper_monitor_suite_v1_meta.json`
+- 默认复跑步骤：
+  - `latest_paper_packet`
+  - `paper_ledger`
+  - `paper_oos_attribution`
+  - `paper_oos_market_state`
+  - `market_state_baseline`
+  - `paper_monitor`
+- 可选步骤：
+  - `--include-paper-replay`会在默认步骤前先重跑v3 paper tracking。
+  - `--dry-run`只列步骤，不执行。
+
+### 新增参数
+
+- 新增命令行参数：
+  - `--include-paper-replay`
+  - `--dry-run`
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段不跑新策略回测。
+- 修改回测结果：无。复跑结果与第262阶段一致，仍为黄灯paper观察。
+- 删除回测结果：无。
+- 新增suite运行结果：
+  - 子步骤`6`个
+  - 失败步骤`0`个
+  - 缺失summary `0`个
+  - suite状态`pass`
+  - monitor状态`yellow_caution_continue_paper`
+  - 总耗时`67.076`秒
+  - 最新信号日`2026-04-28`
+  - 最新目标执行日`2026-04-27`
+  - 最新订单`24`行
+  - 最新阻断订单`0`行
+  - 最新未成交权重`0.00%`
+  - 期末权益`2.2225`
+  - 总收益`122.25%`
+  - 最大回撤`-15.16%`
+  - Sharpe`0.7373`
+  - 全历史成交填充率`99.73%`
+  - 总滑点：不适用；股票线使用往返成本`50bp`模拟，本阶段不新增滑点口径
+  - 总交易次数：沿用第259阶段新增段订单`153`行
+  - 胜率：本阶段未新增胜率口径
+  - 质量检查`6`项通过、`0`项警告、`0`项失败
+
+### 子步骤耗时
+
+- `latest_paper_packet`：`29.676`秒。
+- `paper_ledger`：`1.588`秒。
+- `paper_oos_attribution`：`27.731`秒。
+- `paper_oos_market_state`：`3.378`秒。
+- `market_state_baseline`：`3.173`秒。
+- `paper_monitor`：`1.530`秒。
+
+### 核心结论
+
+- paper监控套件已可一键复跑。
+- 默认套件在当前数据下全部通过，最终状态仍为`yellow_caution_continue_paper`。
+- 这不是策略突破，而是流程突破：后续补数据后先跑suite，再看monitor红黄灯，避免人工漏跑或选择性解释。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只编排既有paper监控脚本，不新增变量、不调参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：复跑结果仍为黄灯观察，没有触发任何交易规则或阈值变化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：paper监控已形成多份报告，固定套件能降低漏跑和人为选择性解释。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：suite已能一次生成最新packet、ledger、OOS归因、市场状态基线和monitor，后续可作为固定入口。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 后续补数据后优先运行本suite，再看paper monitor状态。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 下次补数据后运行：`.py311/bin/python examples/alpha_research/run_stock_range_reversion_liquid_q3_paper_monitor_suite.py`。
+- 第二优先级：
+  - 若新数据已经重建v3 paper tracking需求，则运行：`.py311/bin/python examples/alpha_research/run_stock_range_reversion_liquid_q3_paper_monitor_suite.py --include-paper-replay`。
+- 第三优先级：
+  - 若suite状态为`fail`，先修流程；若monitor状态转为`orange_risk_event_watch`，再做买入后`1/2/3`日反转节奏归因。
+
+## 第264阶段：股票震荡30万账户整手可交易性归因 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:55 CST`。
+- 本阶段性质：按用户要求把账户规模改成`30万`做影子回放；新增整手/最低佣金可交易性归因，不新增信号、不调策略参数、不覆盖原1000万paper口径。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它不是收益突破，也不是可接入正式版本；但它给出了30万账户是否能直接迁移1000万paper结论的硬约束答案。
+- 过拟合预判：否。本阶段只改变账户规模和交易单位模拟，不新增预测变量、不调阈值。
+- 继续价值预判：是。30万账户下整手和最低佣金会直接改变策略可交易形态。
+- 外部调研判断：
+  - 上交所英文交易机制页面说明主板股票买入委托需为`100`股整数倍。
+  - 深交所英文互联互通交易规则也列明买入为`100`股或其整数倍。
+  - 因此30万账户不能只看目标权重，需要做100股整手回放和最低佣金压力测试。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_lot_feasibility.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_lot_feasibility_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_curves.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_order_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_latest_holdings.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_lot_feasibility_v1_meta.json`
+
+### 新增参数
+
+- `LOT_ACCOUNT_SIZE_CNY`，默认`300000`。
+- `LOT_BOARD_LOT_SHARES`，默认`100`。
+- `LOT_MIN_COMMISSION_CNY`，默认`5`。
+- `LOT_APPLY_MIN_COMMISSION_STRESS`，默认开启。
+
+### 修改参数
+
+- 研究账户规模从原paper默认`10,000,000`影子切换为`300,000`。
+- 未修改任何信号参数。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、持有期、ADV上限或往返成本`50bp`。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万整手账户影子回放。
+- 修改回测结果：无，原1000万paper结果保留。
+- 删除回测结果：无。
+- 回放区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 全历史订单`16642`行。
+- 成交订单`16617`行。
+- 阻断订单`25`行。
+- 部分成交`0`行。
+- 目标股票被一手取整为0比例`35.01%`。
+- 最新目标日`2026-04-27`：目标`46`只，实际持仓`24`只，目标取整为0的股票`22`只。
+- 最新目标金额`160,000`元。
+- 最新取整后目标市值`93,987`元。
+- 最新实际暴露`31.33%`。
+- 最新调仓成交金额`27,050`元。
+- 最新未成交金额`0`元。
+- bps成本口径：
+  - 期末权益`2.1702`
+  - 总收益`117.02%`
+  - 最大回撤`-12.26%`
+  - Sharpe`0.9294`
+- 最低佣金压力口径：
+  - 期末权益`2.0177`
+  - 总收益`101.77%`
+  - 最大回撤`-12.38%`
+  - Sharpe`0.8475`
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：成交订单`16617`行。
+- 胜率：主动持仓日最低佣金压力口径胜率`51.95%`，bps成本口径胜率`52.21%`。
+- 质量检查：`3`项通过、`3`项警告、`0`项失败。
+
+### 核心结论
+
+- 30万账户不是1000万paper的线性缩放。
+- 原始目标在30万下有`35.01%`的目标股票买不到一手，最新目标日`46`只里`22`只买不到一手。
+- 即便如此，按整手自然取整后的30万账户仍有正收益，最低佣金压力后期末权益`2.0177`，Sharpe`0.8475`。
+- 但组合形态已变成低暴露、少持仓、被整手自然筛选的版本，不能直接用1000万paper结论指导30万实盘。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只改变账户规模和交易单位模拟，不新增变量、不调策略参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果只用于硬约束归因，没有据此改信号或阈值。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：30万账户下整手和最低佣金是不可忽略的一阶约束。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：30万版本需要独立OOS和paper packet，不能沿用原1000万paper。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 下一步研究30万专用组合构造，但不能为了满仓而调信号。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 做30万组合构造初筛，看减少持仓数量能否降低一手失真。
+- 第二优先级：
+  - 若组合构造无法提升收益质量，则保留原始整手自然取整口径。
+- 第三优先级：
+  - 为30万口径补OOS归因和最新paper packet。
+
+## 第265阶段：股票震荡30万稀疏组合构造初筛 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 22:55 CST`。
+- 本阶段性质：30万账户组合构造初筛；不新增信号，不调`volume_ratio_20 <= 0.70`，不修改原1000万paper口径。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是一个否定性研究结论：稀疏满仓化不如原始30万整手自然筛选。
+- 过拟合预判：否。预设变体来自30万账户交易颗粒度，不是按历史收益反推。
+- 继续价值预判：是。必须验证“减少持仓、提高单票金额”是否是30万账户正确方向。
+- 外部调研判断：
+  - A股买入100股整数手约束要求小账户先处理单票金额和持仓数量。
+  - 稀疏组合构造应该先验证可交易性，不应先追求回测收益。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_sparse_variants.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_sparse_variants_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_targets.csv`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_latest_targets.csv`
+  - `stock_range_reversion_liquid_q3_300k_sparse_variants_v1_meta.json`
+- 工程修复：
+  - 初次运行输出0订单，定位为Polars行迭代器被总暴露计算提前消耗。
+  - 修复为显式列表后复跑通过。
+
+### 新增参数
+
+- 预设稀疏组合变体：
+  - `sparse_14_w4pct_ind4`：最多14只，单票目标`4%`，同业最多4只。
+  - `sparse_18_w3pct_ind4`：最多18只，单票目标`3%`，同业最多4只。
+  - `sparse_22_w2_5pct_ind5`：最多22只，单票目标`2.5%`，同业最多5只。
+
+### 修改参数
+
+- 仅在稀疏组合构造脚本内改变持仓数量和单票目标金额。
+- 未修改原始信号参数。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改原1000万paper监控。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万稀疏组合三变体影子回放。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- `sparse_14_w4pct_ind4`：
+  - 一手取整为0比例`0.00%`
+  - 平均目标持仓`12.30`只
+  - 平均目标暴露`35.75%`
+  - 最新实际持仓`14`只
+  - 最新实际暴露`46.68%`
+  - 期末权益`1.7958`
+  - 总收益`79.58%`
+  - 最大回撤`-13.26%`
+  - Sharpe`0.6314`
+  - 成交订单`11395`行
+  - 阻断订单`9`行
+- `sparse_18_w3pct_ind4`：
+  - 一手取整为0比例`0.00%`
+  - 平均目标持仓`14.49`只
+  - 平均目标暴露`35.16%`
+  - 最新实际持仓`18`只
+  - 最新实际暴露`47.48%`
+  - 期末权益`1.7648`
+  - 总收益`76.48%`
+  - 最大回撤`-11.39%`
+  - Sharpe`0.6441`
+  - 成交订单`12206`行
+  - 阻断订单`6`行
+- `sparse_22_w2_5pct_ind5`：
+  - 一手取整为0比例`0.00%`
+  - 平均目标持仓`16.71`只
+  - 平均目标暴露`34.95%`
+  - 最新实际持仓`22`只
+  - 最新实际暴露`46.55%`
+  - 期末权益`1.6437`
+  - 总收益`64.37%`
+  - 最大回撤`-13.17%`
+  - Sharpe`0.5894`
+  - 成交订单`12389`行
+  - 阻断订单`8`行
+- 原始30万整手自然取整基准：
+  - 期末权益`2.0177`
+  - 总收益`101.77%`
+  - 最大回撤`-12.38%`
+  - Sharpe`0.8475`
+  - 最新实际持仓`24`只
+  - 最新实际暴露`31.33%`
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：
+  - `sparse_14_w4pct_ind4`成交订单`11395`行。
+  - `sparse_18_w3pct_ind4`成交订单`12206`行。
+  - `sparse_22_w2_5pct_ind5`成交订单`12389`行。
+- 胜率：
+  - `sparse_14_w4pct_ind4`主动持仓日胜率`51.69%`。
+  - `sparse_18_w3pct_ind4`主动持仓日胜率`51.17%`。
+  - `sparse_22_w2_5pct_ind5`主动持仓日胜率`51.79%`。
+
+### 核心结论
+
+- 稀疏组合确实把一手取整为0比例从原始30万的`35.01%`降到`0.00%`。
+- 但三个稀疏变体的期末权益和Sharpe都低于原始30万整手自然取整。
+- 这说明“让组合更满仓、更整齐”不是正确方向；30万账户下，整手自然筛选虽然让暴露较低，但可能保留了更好的分散和路径稳定性。
+- 不能用稀疏变体替代原始30万整手口径。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：三个变体由账户颗粒度推导，不是按结果搜索。
+
+### 运行后过拟合反思
+
+- 判断：暂时否，但需要警惕。
+- 原因：本阶段只跑预设三变体并记录结果，没有继续搜索；不能按最高收益直接定版。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：原始30万有大量目标买不到一手，必须验证组合构造能否改善。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要收敛。
+- 原因：稀疏满仓化方向被初步否定，后续应围绕原始30万整手口径做OOS和paper监控。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 暂不采用稀疏组合变体。
+- 30万研究保留原始整手自然取整作为当前主线。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 给原始30万整手口径补OOS归因和最新paper packet。
+- 第二优先级：
+  - 检查30万最新订单是否存在过小成交金额、最低佣金过高或无法实际下单的问题。
+- 第三优先级：
+  - 暂停继续搜索稀疏持仓数量，除非后续OOS证明原始整手口径失效。
+
+## 第266阶段：股票震荡30万整手口径OOS归因 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 23:11 CST`。
+- 本阶段性质：30万整手口径OOS归因；不新增信号、不调策略参数、不覆盖1000万paper口径。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是30万paper监控基础设施，不是可接入正式版本。
+- 过拟合预判：否。本阶段只切冻结后新增样本，不新增预测变量、不调阈值、不选择更优窗口。
+- 继续价值预判：是。30万口径必须独立确认样本外执行和归因。
+- 外部调研判断：
+  - 30万账户的一阶约束来自A股100股整数手和小额订单最低佣金。
+  - Walk-forward/OOS的核心是冻结后样本只能解释，不能反过来参与参数选择。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_oos_attribution.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_oos_attribution_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_segment_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_segment_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_position_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_industry_contribution.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_symbol_contribution.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_action_contribution.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_order_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_oos_attribution_v1_meta.json`
+- 工程修复：
+  - 修复卖出到0仓位订单空行业覆盖历史行业元数据的问题。
+
+### 新增参数
+
+- `STOCK_300K_OOS_FREEZE_TARGET_DATE`，默认`20260416`。
+- `STOCK_300K_OOS_MIN_DAYS`，默认`20`。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万整手口径OOS段归因。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 冻结目标执行日：`2026-04-16`。
+- OOS目标日：`2026-04-17`到`2026-04-27`。
+- OOS交易日：`7`天。
+- OOS订单：`70`行。
+- 阻断订单：`0`行。
+- 部分成交：`0`行。
+- 计划成交金额：`150,216`元。
+- 实际成交金额：`150,216`元。
+- 未成交金额：`0`元。
+- 最低佣金压力口径：
+  - 期末权益：段内权益`0.9939`
+  - 总收益`-0.61%`
+  - 最大回撤`-1.31%`
+  - Sharpe`-2.4166`
+- bps成本口径：
+  - 总收益`-0.57%`
+  - 最大回撤`-1.30%`
+  - Sharpe`-2.2824`
+- 毛收益合计`-0.44%`。
+- 最低佣金成本拖累`0.16%`。
+- 最新目标`46`只，实际持仓`24`只，买不到一手目标`22`只，最新实际暴露`31.33%`。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：OOS成交订单`70`行。
+- 胜率：本阶段未新增OOS胜率口径。
+- 质量检查：`7`项通过、`2`项警告、`0`项失败。
+
+### 核心结论
+
+- 30万OOS短段收益偏弱，但执行链路健康。
+- 当前状态为`normal_300k_paper_noise`。
+- 样本只有`7`天，不能证明策略有效或失效。
+- 30万口径应继续paper跟踪，等OOS至少满`20`个交易日再做稳定性判断。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：只切冻结后样本做归因，不新增变量、不调阈值。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：OOS为负也没有触发任何参数修改。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：30万口径需要独立确认样本外整手账本和最低佣金压力。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：执行链路健康且可复验，继续积累OOS样本有价值。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 30万样本外不足20天前，只做paper跟踪，不做实盘上线判断。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续补数据后继续重跑30万OOS归因，直到OOS满`20`个交易日。
+- 第二优先级：
+  - 若30万OOS跌入更大回撤或出现执行阻断，再做买入后反转节奏归因。
+- 第三优先级：
+  - 暂不搜索仓位/持仓数参数。
+
+## 第267阶段：股票震荡30万最新paper交易包 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 23:11 CST`。
+- 本阶段性质：30万最新paper交易包；不新增信号、不调策略参数。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是30万paper执行监控入口，不是可接入正式版本。
+- 过拟合预判：否。本阶段只输出目标、订单、持仓和整手约束，不调信号。
+- 继续价值预判：是。30万是否能做，需要每天拆清楚买不到一手目标和实际委托金额。
+- 外部调研判断：
+  - 30万账户必须把目标权重翻译成100股整数手后的目标股数。
+  - 交易包应拆出目标、订单、持仓和买不到一手目标，便于后续和真实委托对账。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/generate_stock_range_reversion_liquid_q3_300k_latest_packet.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_latest_packet_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_latest_targets.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_latest_orders.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_latest_holdings.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_industry_exposure.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_status_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_latest_packet_v1_meta.json`
+
+### 新增参数
+
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无，本阶段输出最新paper交易包。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 最新目标执行日：`2026-04-27`。
+- 原始目标：`46`只。
+- 原始目标总金额：`160,000`元。
+- 原始目标总权重：`53.33%`。
+- 100股取整后目标市值：`93,987`元。
+- 取整后目标权重：`31.33%`。
+- 买不到一手目标：`22`只，占`47.83%`。
+- 最新订单：`10`行。
+- 成交订单：`10`行。
+- 阻断订单：`0`行。
+- 计划成交金额：`27,050`元。
+- 实际成交金额：`27,050`元。
+- 未成交金额：`0`元。
+- 最新实际持仓：`24`只。
+- 最新实际市值：`93,987`元。
+- 最新实际暴露：`31.33%`。
+- 最新订单金额：最小`866`元，中位`1,764`元，最大`12,692`元。
+- 总滑点：不适用；本阶段为交易包输出。
+- 总交易次数：最新订单`10`行。
+- 胜率：不适用。
+- 质量检查：`5`项通过、`1`项警告、`0`项失败。
+
+### 核心结论
+
+- 最新30万订单包执行健康：无阻断、无未成交。
+- 但最新`47.83%`目标买不到一手，说明30万真实形态仍是低暴露、被整手自然筛选的组合。
+- 最新订单金额很小，最低佣金压力不能忽略。
+- 继续paper跟踪，不直接实盘上线。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：只生成最新30万执行包，不新增变量、不调参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：交易包只暴露整手约束和订单明细，没有修改信号。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：30万能做与否，必须每天拆清楚能买、不能买、实际持仓和订单金额。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：最新执行健康，但买不到一手目标仍多，适合继续paper跟踪并积累OOS。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 30万口径继续paper，不采用稀疏满仓变体。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续补数据后同步重跑30万整手可交易性、30万OOS归因和30万最新交易包。
+- 第二优先级：
+  - 等30万OOS满`20`个交易日，再判断是否进入更长期paper。
+- 第三优先级：
+  - 如出现阻断订单、未成交金额或最低佣金拖累异常，再做执行规则修复。
+
+## 第268阶段：股票震荡30万paper套件 v1
+
+- 当前模式：`day`。
+- 改动时间点：`2026-04-28 23:14 CST`。
+- 本阶段性质：新增30万paper套件，一键复跑30万整手回放、30万OOS归因和30万最新交易包；不新增信号、不调策略参数。
+- 第78影响：无。股票震荡策略继续与第78正式趋势策略隔离，未修改第78策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是流程可复验入口，不是可接入正式版本。
+- 过拟合预判：否。suite只编排已有30万脚本，不新增变量、不调阈值。
+- 继续价值预判：是。后续补数据需要固定入口，避免手工漏跑。
+- 外部调研判断：
+  - 可复验研究应固化运行顺序、输入输出和失败点。
+  - 30万账户必须把100股整手约束放进固定流程，而不是靠人工临时换算。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/run_stock_range_reversion_liquid_q3_300k_suite.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_suite_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_suite_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_suite_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_suite_v1_steps.csv`
+  - `stock_range_reversion_liquid_q3_300k_suite_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_suite_v1_meta.json`
+- 默认步骤：
+  - `lot_feasibility`
+  - `oos_attribution`
+  - `latest_packet`
+
+### 新增参数
+
+- 新增命令行参数：
+  - `--dry-run`
+- 无新增策略参数。
+
+### 修改参数
+
+- 无策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改信号、股票池、持有周期、成本、账户规模或ADV上限。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：无。本阶段是流程编排入口，会复跑既有30万结果。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- suite状态：`pass`。
+- 子步骤：`3`个。
+- 失败步骤：`0`个。
+- 缺失summary：`0`个。
+- 总耗时：`63.299`秒。
+- 全历史最低佣金口径：
+  - 期末权益`2.0177`
+  - 总收益`101.77%`
+  - 最大回撤`-12.38%`
+  - Sharpe`0.8475`
+- OOS：
+  - 状态`normal_300k_paper_noise`
+  - 天数`7`
+  - 收益`-0.61%`
+  - 回撤`-1.31%`
+  - 订单`70`行
+  - 阻断`0`行
+- 最新交易包：
+  - 最新目标执行日`2026-04-27`
+  - 目标`46`只
+  - 买不到一手`22`只
+  - 实际持仓`24`只
+  - 实际暴露`31.33%`
+  - 最新订单`10`行
+  - 阻断`0`行
+  - 未成交金额`0`元
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：最新订单`10`行，OOS订单`70`行。
+- 胜率：本阶段未新增胜率口径。
+- 质量检查：`6`项通过、`2`项警告、`0`项失败。
+
+### 核心结论
+
+- 30万paper流程已可一键复跑。
+- 当前30万口径执行健康，但OOS样本仍短、买不到一手目标仍多。
+- 这不是实盘上线信号，而是继续paper观察信号。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：suite只编排30万既有脚本，不新增信号、不调参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：复跑只是确认30万整手口径的最新状态，没有产生交易规则修改。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：后续补数据需要固定入口，避免漏跑30万整手、OOS和交易包。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：suite通过，后续可用同一入口持续积累30万paper样本。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 30万OOS不足20天前继续paper。
+
+### 后续规划和TODO
+
+- 第一优先级：
+  - 后续补数据后运行：`.py311/bin/python examples/alpha_research/run_stock_range_reversion_liquid_q3_300k_suite.py`。
+- 第二优先级：
+  - 等30万OOS满`20`个交易日，再决定是否进入更长期paper或小额实盘前审计。
+- 第三优先级：
+  - 若suite出现失败、阻断订单或未成交金额，先修执行链路，不改信号。
+## 第271阶段：股票震荡liquid_q3 30万好环境进攻压力测试 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 23:41 CST`。
+- 本阶段性质：事前好环境小幅加仓压力测试；不修改核心alpha信号。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。该阶段明确否决了“好环境全局加仓”作为正式规则的方向。
+- A/B判断：不触发。该版本不具备接入正式版本或与第78做A/B实验的价值。
+- 外部调研判断：
+  - 业界常见做法会根据regime调整暴露，理论上市场环境好时增加风险预算是合理假设。
+  - 但公开研究也提示，波动/状态管理不是免费午餐；若结果只是更高风险暴露，不能当成alpha增强。
+  - 本仓库当前实证显示，前一日好环境全局加仓没有改善风险收益交换。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_exante_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_latest_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_good_state_aggressive_overlay_v1_equity_curves.png`
+  - 各变体的`daily/orders/targets/date_scale`明细文件。
+
+### 新增参数
+
+- 新增诊断变体，不作为正式策略参数：
+  - `base_rerun`：不加仓。
+  - `prev_close_strong_breadth_125`：若前一交易日收盘市场宽度强，下一目标日目标权重乘`1.25`。
+  - `prev_close_index_up_125`：若前一交易日中证1000收盘涨幅超过`1%`，下一目标日目标权重乘`1.25`。
+  - `prev_close_breadth_or_index_up_125`：若前一交易日市场宽度强或指数涨幅超过`1%`，下一目标日目标权重乘`1.25`。
+  - `prev_close_breadth_index_up_tiered`：若前一交易日宽度强且指数涨超`1%`，权重乘`1.50`；仅命中一个好环境条件则乘`1.25`。
+- 新增风险约束：
+  - `MAX_TARGET_GROSS_WEIGHT = 1.0`，目标总权重不允许超过`100%`，避免隐性杠杆。
+
+### 修改参数
+
+- 无核心策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、信号、持有期、成本、账户规模、ADV上限或整手规则。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万好环境进攻压力测试。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 基准`base_rerun`：
+  - 期末权益倍数`2.0177`，按30万折算期末权益约`605,313`元。
+  - 总收益`101.77%`。
+  - 最大回撤`-12.38%`。
+  - Sharpe`0.8475`。
+  - 平均实际暴露`23.87%`，最大实际暴露`66.87%`。
+  - 最差单日`-5.55%`。
+- `prev_close_index_up_125`：
+  - 期末权益`2.0165`，总收益`101.65%`。
+  - 最大回撤`-12.81%`。
+  - Sharpe`0.7813`。
+  - 平均实际暴露`25.78%`。
+  - 这是非基准里最接近基准的变体，但收益略低、回撤更深、Sharpe更差。
+- `prev_close_strong_breadth_125`：
+  - 期末权益`1.9861`，总收益`98.61%`。
+  - 最大回撤`-14.14%`。
+  - Sharpe`0.7151`。
+  - 平均实际暴露`28.65%`。
+- `prev_close_breadth_or_index_up_125`：
+  - 期末权益`1.9685`，总收益`96.85%`。
+  - 最大回撤`-14.25%`。
+  - Sharpe`0.7064`。
+  - 平均实际暴露`28.68%`。
+- `prev_close_breadth_index_up_tiered`：
+  - 期末权益`1.9625`，总收益`96.25%`。
+  - 最大回撤`-14.51%`。
+  - Sharpe`0.6517`。
+  - 平均实际暴露`30.57%`，最大实际暴露`94.33%`。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：基准订单`16,642`行；进攻变体订单最高`24,266`行，最低佣金成本上升。
+- 胜率：本阶段未新增胜率口径。
+- 质量检查：`5`项通过、`0`项警告、`0`项失败。
+
+### 核心结论
+
+- 理论上可以在市场环境好时更激进，但当前这套股票震荡信号不支持“前一日好环境全局加仓”作为正式规则。
+- 所有进攻变体的Sharpe都低于基准；收益最高和Sharpe最高仍是`base_rerun`。
+- `prev_close_index_up_125`几乎维持收益，但回撤从`-12.38%`扩大到`-12.81%`，Sharpe从`0.8475`降到`0.7813`，没有足够收益补偿。
+- 强宽度加仓和组合加仓明显扩大回撤，说明好环境后追加强暴露会在后续回撤段里被反向放大。
+- 最新目标日`2026-04-27`前一日是`weak_breadth`，所有进攻变体当日不触发加仓，仍保持实际暴露`31.33%`。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只测预注册的少数好环境进攻档位，不扫描倍率、不改核心信号。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有被包装成正式策略；反而明确否决该分支，降低了后续过拟合风险。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：粗降权失败后，验证好环境是否能承接更多反弹暴露，是更贴近策略本性的下一步。
+
+### 运行后继续价值反思
+
+- 判断：是，但不在好环境全局加仓分支继续。
+- 原因：基准仍是收益和Sharpe最好的版本；好环境加仓没有提供更好的风险收益交换。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 暂时否决好环境全局加仓，不进入OOS切片。
+
+### 后续规划和TODO
+
+- 第一优先级：测试行业实际暴露上限，目标是限制最差10%单日的行业集中拖累，而不是调总仓。
+- 第二优先级：审计`ST/is_st`是否是交易日前可知字段；若可用，再做事前ST过滤压力测试。
+- 第三优先级：保持30万基准paper流程，继续积累真实OOS，不因状态加/减仓失败而否定原始基准。
+
+## 第270阶段：股票震荡liquid_q3 30万事前市场状态降权压力测试 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 23:36 CST`。
+- 本阶段性质：事前市场状态风控压力测试；不修改核心alpha信号。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。该阶段明确否决了粗粒度全局市场状态降权作为正式规则的方向。
+- A/B判断：不触发。该版本不具备接入正式版本或与第78做A/B实验的价值。
+- 外部调研判断：
+  - 均值回归策略可以参考市场状态/宽度做暴露管理，但风险是用事后状态或过多阈值把历史曲线抹平。
+  - 波动/状态降权会改变换手、最低佣金和整手约束，必须重新跑账户回放，不能直接把收益乘缩放系数。
+  - GitHub和公开策略资料里常见regime filter，但本仓库当前结果显示，A股横截面超跌反弹线如果粗暴全局降权，会错过大量反弹暴露。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_market_state_overlay.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_market_state_overlay_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_exante_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_latest_state.csv`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_300k_market_state_overlay_v1_equity_curves.png`
+  - 各变体的`daily/orders/targets`明细文件。
+
+### 新增参数
+
+- 新增诊断变体，不作为正式策略参数：
+  - `base_rerun`：不降权。
+  - `prev_close_weak_breadth_half`：若前一交易日收盘市场宽度弱，下一目标日目标权重乘`0.50`。
+  - `prev_close_index_down_half`：若前一交易日中证1000收盘跌幅超过`1%`，下一目标日目标权重乘`0.50`。
+  - `prev_close_breadth_or_index_half`：若前一交易日市场宽度弱或指数跌幅超过`1%`，下一目标日目标权重乘`0.50`。
+  - `prev_close_breadth_index_tiered`：若前一交易日宽度弱且指数跌超`1%`，权重乘`0.25`；仅命中一个风险条件则乘`0.50`。
+
+### 修改参数
+
+- 无核心策略参数修改。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、信号、持有期、成本、账户规模、ADV上限或整手规则。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万事前市场状态降权压力测试。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 基准`base_rerun`：
+  - 期末权益倍数`2.0177`，按30万折算期末权益约`605,313`元。
+  - 总收益`101.77%`。
+  - 最大回撤`-12.38%`。
+  - Sharpe`0.8475`。
+  - 平均实际暴露`23.87%`。
+  - 最差单日`-5.55%`。
+  - 订单`16,642`行，成交`16,617`行，阻断`25`行。
+- `prev_close_weak_breadth_half`：
+  - 期末权益`1.3375`，总收益`33.75%`。
+  - 最大回撤`-11.76%`，相对基准只改善约`0.62`个百分点。
+  - Sharpe`0.4226`。
+  - 平均实际暴露`19.94%`。
+- `prev_close_index_down_half`：
+  - 期末权益`1.4264`，总收益`42.64%`。
+  - 最大回撤`-11.48%`，相对基准改善约`0.89`个百分点。
+  - Sharpe`0.5008`。
+  - 平均实际暴露`20.90%`。
+- `prev_close_breadth_or_index_half`：
+  - 期末权益`1.2933`，总收益`29.33%`。
+  - 最大回撤`-11.48%`，相对基准改善约`0.89`个百分点。
+  - Sharpe`0.3867`。
+  - 平均实际暴露`19.15%`。
+- `prev_close_breadth_index_tiered`：
+  - 期末权益`1.1297`，总收益`12.97%`。
+  - 最大回撤`-12.09%`，相对基准只改善约`0.29`个百分点。
+  - Sharpe`0.2106`。
+  - 平均实际暴露`18.32%`。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：基准订单`16,642`行；降权变体订单最高`22,413`行，最低佣金成本反而上升。
+- 胜率：本阶段未新增胜率口径。
+- 质量检查：`4`项通过、`0`项警告、`0`项失败。
+
+### 核心结论
+
+- 粗粒度全局市场状态降权不值得继续推进为正式规则。
+- 最好回撤变体只把最大回撤从`-12.38%`改善到`-11.48%`，但总收益从`101.77%`降到`29.33%`，Sharpe从`0.8475`降到`0.3867`。
+- 这说明事前市场状态确实有一点尾部削减能力，但它砍掉了更多均值回归策略赖以盈利的反弹暴露。
+- 最新目标日`2026-04-27`处于前一日`weak_breadth`，若采用宽度降权，实际暴露会从`31.33%`降到`10.45%`，实际持仓从`24`只降到`15`只，买不到一手目标从`22`只升到`31`只；这会让30万账户更加碎片化。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只测预注册的少数事前状态降权规则，不扫描阈值、不改核心信号。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：即使看到回撤略有改善，也没有选择最优阈值或宣布正式接入；结论是方向暂时否决。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：上一阶段已定位曲线粗糙与市场状态有关，必须验证事前状态是否真的能改善账户曲线。
+
+### 运行后继续价值反思
+
+- 判断：是，但不在“粗粒度全局市场状态降权”这条分支继续。
+- 原因：该分支风险收益交换太差；后续更值得测试行业实际暴露上限或做`ST/is_st`事前可用性审计。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 暂时否决粗粒度全局市场状态降权。
+
+### 后续规划和TODO
+
+- 第一优先级：测试行业实际暴露上限，目标不是降总仓，而是防止最差10%单日里`软件服务/元器件/电气设备/半导体/通信设备`集中拖累。
+- 第二优先级：审计`ST/is_st`是否是交易日前可知字段；如果是，再做“事前ST过滤”的非参数压力测试。
+- 第三优先级：继续积累30万paper OOS，不因本次粗降权失败而否定原始基准。
+
+## 第269阶段：股票震荡liquid_q3 30万曲线平滑归因 v1
+
+- 当前模式：`day`。
+- 记录时间：`2026-04-28 23:29 CST`。
+- 本阶段性质：曲线不平滑来源归因；不新增信号、不调参数、不生成新策略版本。
+- 第78影响：无。股票震荡独立研究线，未修改第78正式趋势策略、配置、回测入口或输出。
+- 是否重要突破版本：否。它是风险来源归因，不是可接入正式版本。
+- A/B判断：纯归因，不做第78 A/B/C。
+- 外部调研判断：
+  - 波动目标和风险平滑可能降低下行风险，但不是对所有因子都稳定有效，也可能引入换手与成本问题。
+  - 因此本阶段只做曲线归因，不直接把波动目标、行业上限或市场状态降权固化成交易规则。
+
+### 本次版本改动内容
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution.py`
+- 新增输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_2018_2026/`
+- 新增输出文件：
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_summary.json`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_position_daily.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_drawdown_episodes.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_worst_days.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_worst_day_industry.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_worst_day_symbol.csv`
+  - `stock_range_reversion_liquid_q3_300k_curve_smoothness_attribution_v1_overview.png`
+
+### 新增参数
+
+- 无新增策略参数。
+- 无新增交易参数。
+
+### 修改参数
+
+- 无。
+- 未修改`volume_ratio_20 <= 0.70`。
+- 未修改股票池、信号、持有期、成本、账户规模、ADV上限或整手规则。
+
+### 删除参数
+
+- 无。
+
+### 新增/修改/删除回测结果
+
+- 新增回测结果：30万最低佣金口径曲线平滑归因。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 回测区间：`2018-02-05`到`2026-04-27`，交易日`1992`天。
+- 账户规模：`300,000`元。
+- 期末权益倍数：`2.0177`。
+- 按30万本金折算期末权益：约`605,313`元。
+- 总收益：`101.77%`。
+- 最大回撤：`-12.38%`。
+- Sharpe：`0.8475`，沿用30万最低佣金全历史回放口径。
+- 年化波动：`11.22%`。
+- 下行波动：`6.33%`。
+- 最差单日：`-5.55%`。
+- 平均实际暴露：`23.87%`。
+- 平均实际持仓：`16.6`只。
+- 平均买不到一手目标：`8.9`只。
+- 回撤段数量：`54`个。
+- 最大回撤段：`2023-11-14`到`2024-02-05`，深度`-12.38%`，到谷底`58`个交易日，平均实际暴露`17.07%`。
+- 总滑点：不适用；股票线使用往返成本`50bp`和最低佣金压力口径。
+- 总交易次数：本阶段不新增交易；归因使用30万整手回放订单`16,642`行、成交`16,617`行。
+- 胜率：本阶段未新增胜率口径；沿用30万最低佣金活跃日胜率约`51.95%`。
+- 质量检查：`6`项通过、`0`项警告、`0`项失败。
+
+### 核心归因结论
+
+- 曲线有可能更平滑，但粗糙主要来自市场状态、行业贡献和30万整手暴露形态共同作用，不应靠搜索持仓数量或单票权重解决。
+- 最差单日几乎集中在`index_down_gt_1pct`叠加`weak_breadth`环境；`index_down_gt_1pct`共`431`天，复合收益`-93.52%`，日胜率`2.55%`。
+- `weak_breadth`共`911`天，复合收益`-96.25%`；`strong_breadth`共`722`天，复合收益`4269.61%`，说明市场宽度比单纯波动状态更像关键风险变量。
+- 不能简单降仓：`gross_high`分组复合收益`112.23%`，是主要收益来源；最大回撤段平均暴露只有`17.07%`，说明回撤并不等价于仓位过高。
+- 不能简单过滤高波动：`exante_high_vol`分组复合收益`59.07%`，高波动状态并非天然坏。
+- 最差10%单日行业拖累集中在`软件服务`、`元器件`、`电气设备`、`半导体`、`通信设备`；下一步可以测试行业实际暴露约束，但必须保持为风控层，不动核心信号。
+- 最差10%单日个股里出现多个当前名称含`ST`的标的；但名称可能有事后污染，必须先做交易日当时的`ST/is_st`字段审计，不能用当前名称直接过滤。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做曲线不平滑来源归因，不测试新参数，不选择更好曲线。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：报告只给出风险来源，不把任何风险层直接固化为交易规则。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：30万曲线是否能更平滑，必须先知道不平滑来自哪里。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：归因能把下一步收敛到市场状态降权、行业实际暴露约束和ST字段审计，而不是盲目调参。
+
+### 决策
+
+- 不接入第78。
+- 不进入正式股票策略。
+- 不做第78 A/B/C。
+- 不调`volume_ratio_20 <= 0.70`阈值。
+- 下一步只允许测试少数第一性原理风控层：优先`市场宽度/指数状态`的事前降权，其次`行业实际暴露上限`，并先审计`ST/is_st`是否可用且无未来函数。
+
+### 后续规划和TODO
+
+- 第一优先级：做`市场状态降权`压力测试，规则必须只使用交易日前可知数据，重点看是否降低最差单日和最大回撤，同时不明显牺牲高暴露段收益。
+- 第二优先级：做`行业实际暴露约束`压力测试，只限制集中拖累行业的组合暴露，不重排核心alpha。
+- 第三优先级：做`ST/is_st`事前字段审计，确认是否可用于股票池过滤；若不可用，不能根据当前名称做过滤。
