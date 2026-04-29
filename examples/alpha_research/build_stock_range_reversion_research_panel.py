@@ -181,6 +181,56 @@ def fetch_akshare_current_csi_symbols() -> list[str]:
     return sorted(cons["成分券代码"].astype(str).unique().tolist())
 
 
+def query_baostock_hs300_components(date_str: str) -> list[dict[str, Any]]:
+    """Query one historical HS300 constituent snapshot from Baostock."""
+    rs = bs.query_hs300_stocks(date=date_str)
+    if rs.error_code != "0":
+        raise RuntimeError(f"query_hs300_stocks failed for {date_str}: {rs.error_msg}")
+
+    rows: list[dict[str, Any]] = []
+    while rs.next():
+        item = dict(zip(rs.fields, rs.get_row_data(), strict=False))
+        symbol = code_to_symbol(item["code"])
+        update_date = item.get("updateDate") or date_str
+        rows.append(
+            {
+                "snapshot_date": datetime.strptime(update_date, "%Y-%m-%d").date(),
+                "symbol": symbol,
+                "vt_symbol": symbol_to_vt_symbol(symbol),
+                "weight": None,
+                "source": "baostock_hs300",
+            }
+        )
+    return rows
+
+
+def fetch_baostock_hs300_historical_components() -> tuple[list[str], pl.DataFrame, str]:
+    """Fetch historical HS300 constituent snapshots from Baostock month-end queries."""
+    component_start = shift_yyyymmdd(START_DATE, -COMPONENT_LOOKBACK_DAYS)
+    rows: list[dict[str, Any]] = []
+
+    login_result = bs.login()
+    if login_result.error_code != "0":
+        raise RuntimeError(f"baostock login failed: {login_result.error_msg}")
+
+    try:
+        for start, end in month_windows(component_start, END_DATE):
+            query_date = normalize_date(end)
+            log(f"[component] baostock hs300 {query_date}")
+            rows.extend(query_baostock_hs300_components(query_date))
+            if SLEEP_SECONDS:
+                time.sleep(SLEEP_SECONDS)
+    finally:
+        bs.logout()
+
+    if not rows:
+        raise RuntimeError("Baostock returned no HS300 component rows")
+
+    component_df = pl.DataFrame(rows).unique(["snapshot_date", "symbol"]).sort(["snapshot_date", "symbol"])
+    symbols = sorted(component_df["symbol"].unique().to_list())
+    return symbols, component_df, "baostock_hs300_historical"
+
+
 def fetch_tushare_historical_components() -> tuple[list[str], pl.DataFrame, str]:
     """Fetch historical CSI constituent snapshots from Tushare when token exists."""
     token = os.getenv("TUSHARE_TOKEN", "").strip()
@@ -265,6 +315,11 @@ def resolve_universe() -> tuple[list[str], pl.DataFrame, dict[str, Any]]:
                 "fallback to existing_cache static universe."
             )
             symbols = load_existing_cache_symbols()
+    elif UNIVERSE_SOURCE == "baostock_hs300":
+        symbols, component_df, source = fetch_baostock_hs300_historical_components()
+        meta["historical_components_available"] = True
+        meta["universe_source_actual"] = source
+        return symbols, component_df, meta
     elif UNIVERSE_SOURCE == "akshare_csi1000":
         symbols = fetch_akshare_current_csi_symbols()
         meta["universe_warning"] = "Akshare current CSI constituents are not historical membership."
@@ -728,7 +783,7 @@ def summarize(panel: pl.DataFrame, benchmark: pl.DataFrame, failed: list[str], u
         "min_adv20_turnover": MIN_ADV20_TURNOVER,
         "component_lookback_days": COMPONENT_LOOKBACK_DAYS,
         "known_limitations": [
-            "Historical component membership is only available when UNIVERSE_SOURCE=tushare_csi1000 and TUSHARE_TOKEN has index_weight permission.",
+            "Historical component membership is only available when the selected UNIVERSE_SOURCE provides point-in-time constituent snapshots.",
             "Raw prices are used for tradability and limit checks; qfq prices are used for signal and return research.",
             "This builder prepares research data only; it does not run a trading backtest.",
         ],

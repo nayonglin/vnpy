@@ -46,6 +46,7 @@ BASIC_REFRESH: bool = os.getenv("BASIC_REFRESH", "0").strip() == "1"
 DAILY_BASIC_CACHE_REFRESH: bool = os.getenv("DAILY_BASIC_CACHE_REFRESH", "0").strip() == "1"
 MAX_DATES: int = int(os.getenv("MAX_DATES", "0") or 0)
 N_GROUPS: int = int(os.getenv("N_GROUPS", "5") or 5)
+DAILY_BASIC_FETCH_MODE: str = os.getenv("DAILY_BASIC_FETCH_MODE", "date").strip().lower()
 
 DAILY_BASIC_FIELDS: str = ",".join(
     [
@@ -106,6 +107,18 @@ def get_pro() -> Any:
 def ts_code_to_symbol(ts_code: str) -> str:
     """Convert a Tushare code like 000001.SZ to 000001."""
     return str(ts_code).split(".")[0]
+
+
+def vt_symbol_to_ts_code(vt_symbol: str) -> str:
+    """Convert a vn.py vt_symbol into Tushare ts_code."""
+    symbol, exchange = str(vt_symbol).split(".")
+    if exchange == "SSE":
+        return f"{symbol}.SH"
+    if exchange == "SZSE":
+        return f"{symbol}.SZ"
+    if exchange == "BSE":
+        return f"{symbol}.BJ"
+    raise ValueError(f"Unsupported vt_symbol exchange: {vt_symbol}")
 
 
 def call_with_retry(name: str, func: Any, **kwargs: Any) -> pd.DataFrame:
@@ -226,6 +239,11 @@ def daily_basic_cache_dir() -> Path:
     return OUTPUT_DIR / "tushare_daily_basic_cache"
 
 
+def daily_basic_symbol_cache_dir() -> Path:
+    """Return cache directory for per-symbol daily_basic data."""
+    return OUTPUT_DIR / "tushare_daily_basic_symbol_cache"
+
+
 def fetch_one_daily_basic(pro: Any, trade_date: str, symbols: set[str], cache_dir: Path) -> pl.DataFrame:
     """Fetch one trade_date's daily_basic rows and cache them."""
     path = cache_dir / f"{trade_date}.parquet"
@@ -251,6 +269,59 @@ def fetch_one_daily_basic(pro: Any, trade_date: str, symbols: set[str], cache_di
         out.write_parquet(path)
         return out
 
+    out = pl.from_pandas(pdf).with_columns(
+        pl.col("trade_date").str.strptime(pl.Date, "%Y%m%d", strict=False).alias("datetime"),
+        pl.col("symbol").cast(pl.String),
+        pl.col("ts_code").cast(pl.String),
+        *[
+            pl.col(col).cast(pl.Float64, strict=False)
+            for col in [
+                "close",
+                "turnover_rate",
+                "turnover_rate_f",
+                "volume_ratio",
+                "pe",
+                "pe_ttm",
+                "pb",
+                "ps",
+                "ps_ttm",
+                "dv_ratio",
+                "dv_ttm",
+                "total_share",
+                "float_share",
+                "free_share",
+                "total_mv",
+                "circ_mv",
+            ]
+            if col in pdf.columns
+        ],
+    )
+    out = out.select(empty_daily_basic_frame().columns)
+    out.write_parquet(path)
+    return out
+
+
+def fetch_one_daily_basic_symbol(pro: Any, ts_code: str, start_date: str, end_date: str, cache_dir: Path) -> pl.DataFrame:
+    """Fetch one symbol's daily_basic history and cache it."""
+    path = cache_dir / f"{ts_code}_{start_date}_{end_date}.parquet"
+    if path.exists() and not DAILY_BASIC_CACHE_REFRESH:
+        return pl.read_parquet(path)
+
+    df = call_with_retry(
+        f"daily_basic_{ts_code}",
+        pro.daily_basic,
+        ts_code=ts_code,
+        start_date=start_date,
+        end_date=end_date,
+        fields=DAILY_BASIC_FIELDS,
+    )
+    if df is None or df.empty:
+        out = empty_daily_basic_frame()
+        out.write_parquet(path)
+        return out
+
+    pdf = df.copy()
+    pdf["symbol"] = pdf["ts_code"].astype(str).str.split(".").str[0]
     out = pl.from_pandas(pdf).with_columns(
         pl.col("trade_date").str.strptime(pl.Date, "%Y%m%d", strict=False).alias("datetime"),
         pl.col("symbol").cast(pl.String),
@@ -326,6 +397,40 @@ def fetch_daily_basic_panel(pro: Any, dates: list[Any], symbols: set[str], path:
     for index, trade_date in enumerate(trade_dates, start=1):
         log(f"[daily_basic] {index}/{len(trade_dates)} {trade_date}")
         frame = fetch_one_daily_basic(pro, trade_date, symbols, cache_dir)
+        if not frame.is_empty():
+            frames.append(frame)
+        if TUSHARE_DATE_SLEEP_SECONDS:
+            time.sleep(TUSHARE_DATE_SLEEP_SECONDS)
+
+    out = pl.concat(frames, how="vertical") if frames else empty_daily_basic_frame()
+    out = out.unique(["datetime", "symbol"]).sort(["datetime", "symbol"])
+    out.write_parquet(path)
+    return out
+
+
+def fetch_daily_basic_panel_by_symbol(pro: Any, panel_rows: pl.DataFrame, path: Path) -> pl.DataFrame:
+    """Fetch or load daily_basic panel by symbol, useful for smaller custom universes."""
+    if path.exists() and not REFRESH:
+        return pl.read_parquet(path)
+
+    cache_dir = daily_basic_symbol_cache_dir()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    symbol_map = (
+        panel_rows.select(["symbol", "vt_symbol"])
+        .drop_nulls(["symbol", "vt_symbol"])
+        .unique("symbol")
+        .with_columns(pl.col("vt_symbol").map_elements(vt_symbol_to_ts_code, return_dtype=pl.String).alias("ts_code"))
+        .sort("ts_code")
+    )
+    ts_codes = symbol_map["ts_code"].to_list()
+    start_date = panel_rows["datetime"].min().strftime("%Y%m%d")
+    end_date = panel_rows["datetime"].max().strftime("%Y%m%d")
+
+    frames: list[pl.DataFrame] = []
+    for index, ts_code in enumerate(ts_codes, start=1):
+        log(f"[daily_basic_symbol] {index}/{len(ts_codes)} {ts_code}")
+        frame = fetch_one_daily_basic_symbol(pro, ts_code, start_date, end_date, cache_dir)
         if not frame.is_empty():
             frames.append(frame)
         if TUSHARE_DATE_SLEEP_SECONDS:
@@ -516,7 +621,12 @@ def main() -> None:
 
     pro = get_pro()
     stock_basic = fetch_stock_basic(pro, stock_basic_path)
-    daily_basic = fetch_daily_basic_panel(pro, dates, symbols, daily_basic_path)
+    if DAILY_BASIC_FETCH_MODE == "symbol":
+        daily_basic = fetch_daily_basic_panel_by_symbol(pro, panel_rows, daily_basic_path)
+    elif DAILY_BASIC_FETCH_MODE == "date":
+        daily_basic = fetch_daily_basic_panel(pro, dates, symbols, daily_basic_path)
+    else:
+        raise ValueError(f"Unsupported DAILY_BASIC_FETCH_MODE: {DAILY_BASIC_FETCH_MODE}")
     tags = build_layer_tags(panel_rows, daily_basic, stock_basic)
     daily_coverage = build_daily_coverage(tags)
     summary = summarize(tags, stock_basic, daily_basic)
