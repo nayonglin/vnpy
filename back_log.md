@@ -42315,3 +42315,2032 @@ to-end季度冷启动：
 - 第二优先级：做30万账户的显式退出归因，先分析亏损尾部是否来自少数持仓日、跳空或连续下跌。
 - 第三优先级：启动ETF/行业轮动路线，验证是否更适合30万本金和20%回撤约束。
 - 第四优先级：若两者都不满足，再考虑趋势/反转混合状态机，而不是回到单纯均值回归阈值网格。
+
+## 2026-04-29 14:54 CST 第303阶段：股票震荡30万显式退出归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：是，方法论突破。它没有给出可交易突破，但抓到了一个未来函数陷阱，并否决了朴素止损修补路线。
+- 本阶段性质：30万账户、固定弱势修复入场、显式退出归因。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_30w_exit_rule_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 组合形状：`(5,0.70,2)`、`(8,0.70,2)`、`(5,1.00,1)`、`(8,1.00,2)`。
+  - 退出规则：`hold10_base`、`hold5_same_tranche`、`hold5_renorm`、`stop3_hold10`、`stop5_hold10`、`take5_hold10`、`take8_hold10`、`stop3_take6_hold10`、`stop5_take5_hold10`、`stop5_take8_hold10`。
+  - 退出执行滞后：触发信号至少滞后一个可交易目标日才生效，避免未来函数。
+- 修改参数：无alpha参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_30w_exit_rule_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_exit_summary.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_target_weights.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_30w_exit_rule_attribution_v1_meta.json`
+
+### 外部调研判断
+
+- 止损/止盈不是天然收益增强器；它们的价值取决于亏损路径是否有趋势延续、尾部聚集或交易制度约束。
+- 随机游走或短期强均值回归结构下，机械止损可能降低期望。
+- 因此本阶段只做少数朴素退出归因，不做大规模止损/止盈阈值搜索。
+
+### 实现审计
+
+- 初版非滞后退出曾出现不可信的极高收益：
+  - `top5_gross100_ind1_stop3_hold10`：总收益约`2153.82%`，最大回撤约`-11.55%`。
+- 复核发现：该结果用未来收盘触发并在同一后续开盘前卖出，存在未来函数风险。
+- 决策：否决非滞后结果；最终报告只保留保守滞后退出口径。
+
+### 新增回测/复放结果
+
+- 收益100%以上候选：无。
+- 回撤20%以内最高收益候选：`top8_gross70_ind2_hold5_same_tranche`
+  - 期末权益：`1.2443`
+  - 总收益：`24.43%`
+  - 最大回撤：`-17.53%`
+  - Sharpe：`0.333`
+  - 总交易次数：见`orders.csv`按场景明细。
+  - 胜率：活跃日胜率`51.49%`
+  - 总滑点/成本口径：股票整手复放最低佣金压力口径，沿用现有股票线。
+- 次优回撤20%以内候选：`top5_gross70_ind2_hold5_same_tranche`
+  - 期末权益：`1.2234`
+  - 总收益：`22.34%`
+  - 最大回撤：`-17.25%`
+  - Sharpe：`0.295`
+  - 活跃日胜率：`50.85%`
+- 全场收益最高：`top8_gross100_ind2_hold10_base`
+  - 期末权益：`1.9260`
+  - 总收益：`92.60%`
+  - 最大回撤：`-43.02%`
+  - Sharpe：`0.428`
+- 代表性止损结果：
+  - `top8_gross70_ind2_stop3_hold10`：总收益`6.34%`，最大回撤`-22.10%`。
+  - `top8_gross70_ind2_stop5_hold10`：总收益`12.38%`，最大回撤`-23.99%`。
+  - `top8_gross100_ind2_stop3_hold10`：总收益`3.57%`，最大回撤`-31.64%`。
+- 质量检查：
+  - fail：`42`
+  - warn：`67`
+
+### 结论
+
+- 保守、无未来函数的朴素止损/止盈不能实现30万高收益且回撤20%以内。
+- 进入20%回撤的候选本质是缩短持有期并降低有效暴露，收益只剩`22%-24%`，不是用户目标中的高收益形态。
+- 机械止损在滞后生效后大幅牺牲收益，说明这条单名股票均值回归线的亏损尾部不能靠简单日线止损修掉。
+- 下一步不应继续扫止损/止盈阈值，应转向ETF/行业轮动或趋势/反转混合状态机。
+
+### 运行前过拟合反思
+
+- 判断：有风险。
+- 原因：止损/止盈参数非常容易被样本内调成漂亮曲线；本阶段预先限定为少数朴素规则，并保留滞后执行约束。
+
+### 运行后过拟合反思
+
+- 判断：最终结果没有过拟合，但开发过程暴露了未来函数陷阱。
+- 原因：非滞后漂亮结果被主动否决；最终版本采用保守滞后执行，结论反而是否定朴素退出路线。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第300-302阶段显示入场和组合形状都不能满足目标，退出归因是自然的最后修补路径。
+
+### 运行后继续价值反思
+
+- 判断：30万研究仍有价值，但单名股票均值回归的止损修补路线暂停。
+- 原因：已经反证集中加暴露、弱市降权、强势回调和朴素退出；下一步要换系统形态。
+
+### 后续规划和TODO
+
+- 第一优先级：启动ETF/行业轮动路线，先做数据可用性与候选标的池审计。
+- 第二优先级：研究趋势/反转混合状态机，避免单纯日线均值回归被系统性下跌击穿。
+- 第三优先级：暂不再扫单名股票止损/止盈阈值，除非先获得更细粒度、可事前执行的日内/高低价路径数据。
+
+## 2026-04-29 15:10 CST 第304阶段：股票震荡替代强势回调定义归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：是，定义层突破。它确认上一版强势股短期反转定义确实过粗。
+- 本阶段性质：强势股短期回调定义比较，只做信号归因，不做30万整手复放。
+- A/B判断：纯信号归因，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_alt_strong_pullback_definitions.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增定义：
+  - `old_market60_ret20_proxy`
+  - `mom120_skip20_ret5_pullback`
+  - `mom252_skip20_ret10_pullback`
+  - `industry120_resid5_pullback`
+  - `industry252_resid10_pullback`
+  - `near_252_high_low_ibs`
+  - `trend_ma_lowvol_ret5_pullback`
+  - `mom120_lowvol_ret10_pullback`
+  - `strong_industry_near_high_resid5`
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_report.md`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_selected.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_definitions_v1_meta.json`
+
+### 外部调研判断
+
+- 短期反转和中长期动量应分开定义，强势最好跳过最近一个月或数周。
+- 52周高点、换手/成交量、行业动量都会改变短期反转是否成立。
+- 本阶段选择中期动量、强行业残差、接近高点、均线结构、缩量回踩等定义做归因，不继续沿用单一60日强度。
+
+### 新增归因结果
+
+- 日均10日超额最高定义：`strong_industry_near_high_resid5`
+  - 日均10日超额：`0.59%`
+  - 样本10日超额：`0.48%`
+  - 正超额比例：`43.25%`
+  - t值：`3.665`
+  - 平均10日MFE：`6.95%`
+  - 平均10日MAE：`-5.54%`
+- 第二定义：`industry252_resid10_pullback`
+  - 日均10日超额：`0.43%`
+  - t值：`4.268`
+  - 平均10日MAE：`-5.25%`
+- `industry120_resid5_pullback`
+  - 日均10日超额：`0.21%`
+  - t值：`2.139`
+- `mom120_lowvol_ret10_pullback`
+  - 日均10日超额：`0.20%`
+  - t值：`2.021`
+- 旧定义近似`old_market60_ret20_proxy`
+  - 日均10日超额：`0.05%`
+  - t值：`0.551`
+- `near_252_high_low_ibs`和`trend_ma_lowvol_ret5_pullback`为负。
+
+### 结论
+
+- 上一版强势股短期反转定义确实不够好。
+- 单纯60日强度 + 20日超跌不是最佳表达；更有效的是强行业、个股相对行业回调、且股价仍接近长期高点。
+- 但这只是信号层结论，不代表30万账户可交易。
+
+### 运行前过拟合反思
+
+- 判断：有风险。
+- 原因：用户提出“定义可能不对”，容易引发大量定义搜索；本阶段只测试有外部逻辑支撑的少数定义。
+
+### 运行后过拟合反思
+
+- 判断：有风险但可控。
+- 原因：新定义优于旧定义，但仍需独立执行复放，不能直接交易化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：上一版强势回调失败不能否定整条路线，必须先确认定义是否错误。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：新定义在信号层显著优于旧定义，值得进入30万整手复放。
+
+### 后续规划和TODO
+
+- 第一优先级：只选归因Top定义做30万整手复放。
+- 第二优先级：如果复放仍不达标，暂停单名股票强势回调路线。
+
+## 2026-04-29 15:10 CST 第305阶段：股票震荡替代强势回调定义30万复放 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是对第304阶段信号归因Top定义的执行约束反证。
+- 本阶段性质：30万账户、整手复放、强势回调替代定义。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增复放定义：
+  - `strong_industry_near_high_resid5`
+  - `industry252_resid10_pullback`
+  - `mom120_lowvol_ret10_pullback`
+- 新增复放参数：
+  - 持有期：`5`日、`10`日。
+  - top_k：`3`、`5`。
+  - gross：`70%`、`100%`。
+  - 单行业最多：`1`、`2`只。
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_target_weights.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_alt_strong_pullback_30w_replay_v1_meta.json`
+
+### 新增回测/复放结果
+
+- 回撤20%以内候选：无。
+- 收益100%以上候选：无。
+- 全场收益最高：`industry252_resid10_pullback_h10_top3_gross100_ind1`
+  - 期末权益：`1.3920`
+  - 总收益：`39.20%`
+  - 最大回撤：`-43.33%`
+  - Sharpe：`0.309`
+  - zero-lot：`4.51%`
+  - 最新暴露捕获：`61.84%`
+  - 活跃日胜率：`50.21%`
+  - 总滑点/成本口径：股票整手复放最低佣金压力口径。
+- 次优：`industry252_resid10_pullback_h10_top5_gross70_ind2`
+  - 期末权益：`1.3793`
+  - 总收益：`37.93%`
+  - 最大回撤：`-29.77%`
+  - Sharpe：`0.333`
+  - 活跃日胜率：`50.76%`
+- `strong_industry_near_high_resid5`最好约`23.64%`收益，但最大回撤约`-48.06%`。
+- `mom120_lowvol_ret10_pullback`复放后多数为负收益。
+- 质量检查：
+  - fail：`50`
+  - warn：`82`
+
+### 结论
+
+- 替代定义修正了信号层问题，但仍不能满足30万高收益且回撤20%以内。
+- 当前瓶颈不是买不到一手，zero-lot并不严重；瓶颈是真实持仓路径和回撤簇。
+- 单名股票强势回调路线暂时不适合继续微调。
+- 更合理的下一步是ETF/行业轮动，或把行业强弱作为资产选择层，而不是继续在单票层做短反。
+
+### 运行前过拟合反思
+
+- 判断：有风险。
+- 原因：第304阶段已发现更优定义，容易继续扫组合形状。本阶段只选前三个定义和少数组合形状。
+
+### 运行后过拟合反思
+
+- 判断：继续微调本线会过拟合。
+- 原因：信号层通过但交易复放不达标，继续扫top_k/gross/行业上限会变成样本内修补。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第304阶段显示定义有改进，必须检验30万可交易性。
+
+### 运行后继续价值反思
+
+- 判断：30万研究仍有价值，但单名股票强势回调路线暂停。
+- 原因：路线已经得到充分验证和反证，下一步应切换到ETF/行业轮动。
+
+### 后续规划和TODO
+
+- 第一优先级：启动ETF/行业轮动数据审计和候选池构建。
+- 第二优先级：把“强行业”作为轮动对象，而不是单名股票过滤器。
+- 第三优先级：暂不继续扫描单票强势回调参数。
+
+## 2026-04-29 15:49 CST 第306阶段：股票震荡技术面复合回踩因子归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是第304/305阶段之后的信号结构归因，不是可交易版本。
+- 本阶段性质：把用户列出的8个强势回踩技术面定义统一成复合因子，做信号层归因。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_technical_pullback_composite_factor.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增因子结构：
+  - `technical_context_score`：中期跳月动量、近52周高点、强行业、残差强势、均线趋势结构、突破后回踩背景。
+  - `technical_pullback_quality`：5/10日回撤、残差回撤、缩量回调、均线回踩、RSI2/RSI3/IBS短周期回调。
+  - `technical_damage_penalty`：远离高点、趋势破坏、放量下跌、弱行业、成交真空。
+  - 主因子：`technical_pullback_score = technical_context_score * technical_pullback_quality - 0.75 * technical_damage_penalty`。
+- 新增归因模型：
+  - `composite_all8_product_damage`
+  - `strict_context_pullback_low_damage`
+  - `industry_resid_core`
+  - `context_weighted`
+  - `pullback_weighted`
+- 新增参数：
+  - 每日top样本数：`20`
+  - 最低信号日：`120`
+  - 最低日度截面宽度：`50`
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_technical_pullback_composite_factor_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_report.md`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_quintiles.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_components.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_selected.csv`
+  - `stock_range_reversion_liquid_q3_technical_pullback_composite_factor_v1_meta.json`
+
+### 外部调研判断
+
+- Alpha Architect短周期信号资料显示，短期反转单独使用通常换手高、成本敏感；复合多个短周期信号、并配合高效交易规则，比单一短反转更合理。
+- 52周高点、换手、行业相对反转会改变短期反转/动量方向，因此8个点应分层组合，而不是简单相加。
+- GitHub开源多为动量/技术指标教学或框架样例，可借鉴工程形态，不能替代A股复权、涨跌停、ST、成本和30万整手约束。
+
+### 新增回测/归因结果
+
+- 本阶段不是组合回测，无期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率等组合指标。
+- top样本最优模型：`industry_resid_core`
+  - 日均10日超额：`0.31%`
+  - 样本10日超额：`0.31%`
+  - 正超额比例：`43.55%`
+  - t值：`3.744`
+  - 平均10日MFE：`6.86%`
+  - 平均10日MAE：`-5.35%`
+- `context_weighted`：
+  - 日均10日超额：`0.21%`
+  - t值：`2.626`
+  - 平均10日MAE：`-5.58%`
+- `strict_context_pullback_low_damage`：
+  - 样本10日超额：`0.25%`
+  - 日均10日超额：`0.14%`
+  - t值：`1.758`
+- `pullback_weighted`：
+  - 日均10日超额：`0.13%`
+  - t值：`1.758`
+- `composite_all8_product_damage`：
+  - 日均10日超额：`0.05%`
+  - t值：`0.713`
+- 统一因子分位：
+  - q5日均10日超额：`0.06%`
+  - q1日均10日超额：`-0.02%`
+  - q5-q1差：`0.08%`
+  - 最强分位不是q5，而是q3，q3日均10日超额约`0.15%`。
+- 质量检查：
+  - fail：`0`
+  - warn：`2`
+
+### 结论
+
+- 8个点可以统一成一个技术面复合因子，但不能粗暴压成单一“越高越好”的总分。
+- 最有信息量的是“强行业 + 近高点 + 残差回调 + 缩量”的核心子因子。
+- 全量复合因子出现非单调黄灯：最高分位不如中间分位，说明过强趋势/过完整结构可能反而降低短期反弹弹性。
+- 这不是30万可交易突破版，只是确认技术面复合状态有信号信息。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段目标是把8个外部逻辑明确的技术面线索统一成固定结构因子，不根据收益反推权重。
+
+### 运行后过拟合反思
+
+- 判断：否，但有结构过度混合风险。
+- 原因：本阶段没有根据结果调权重；但全量复合因子非单调，说明不能继续调权重刷收益，否则会进入样本内拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第304阶段已经证明旧强势回调定义太粗，统一因子可以检验是否存在更稳的技术面状态。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：`industry_resid_core`信号层显著强于全量复合因子，值得做行业集中、年度稳定和30万整手复放；但全量复合因子暂不应交易化。
+
+### 后续规划和TODO
+
+- 第一优先级：对`industry_resid_core`做行业集中、年度稳定、年份×行业和样本贡献审计。
+- 第二优先级：若审计不过度集中，再做30万整手复放。
+- 第三优先级：不要继续调全量复合因子的权重；如果要改，只能从机制拆分入手，而不是收益拟合。
+
+## 2026-04-29 15:58 CST 第307阶段：股票震荡industry_resid_core反证审计 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是第306阶段最优子因子的反证审计，不是可交易版本。
+- 本阶段性质：行业集中、年度稳定、行业留一、单票贡献和每日行业宽度审计。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_audit.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增审计口径：
+  - 年度稳定
+  - 行业贡献
+  - 行业留一
+  - 单票贡献
+  - 每日行业集中度
+  - 年份×行业交叉
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_audit_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_industry_contribution.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_symbol_contribution.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_daily_industry_concentration.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_industry_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_concentration_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_industry_leave_one_out.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_year_industry_cross.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_audit_v1_meta.json`
+
+### 外部调研判断
+
+- Alphalens类因子研究强调分位、行业/组别、换手和稳定性检查。
+- 因子组合存在集中度陷阱，强因子暴露不等于更稳；行业分层和行业留一是必要反证。
+- GitHub工具可借鉴tear sheet思路，但A股必须单独处理复权、涨跌停、ST、流动性和小账户整手约束。
+
+### 新增回测/归因结果
+
+- 本阶段不是组合回测，无期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率等组合指标。
+- 样本区间：`2019-01-14` 到 `2026-04-13`。
+- 信号日：`1605`。
+- 样本行：`32100`。
+- 股票数：`1306`。
+- 行业数：`91`。
+- 日均10日超额：`0.31%`。
+- t值：`3.744`。
+- 年度正向：`6/8`。
+- top5行业正贡献占比：`48.02%`。
+- top5行业绝对贡献占比：`48.46%`。
+- top10股票绝对贡献占比：`5.19%`。
+- top20股票绝对贡献占比：`9.28%`。
+- 平均活跃行业：`7.71`。
+- 5%分位活跃行业：`5`。
+- 行业留一：
+  - 去掉半导体后日均10日超额仍为`0.24%`，Sharpe下降约`24.32%`。
+  - 去掉电气设备后日均10日超额仍为`0.28%`。
+  - 去掉top5核心行业后日均10日超额仍为`0.34%`。
+- 质量检查：
+  - fail：`0`
+  - warn：`0`
+
+### 结论
+
+- `industry_resid_core`没有被行业集中、少数股票或单一年份直接击穿。
+- 它不是明显的行业簇伪象，具备进入30万整手复放的资格。
+- 但2018样本缺失、2022和2025为负，说明周期稳定性仍不是无条件强。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做反证审计，不用结果筛行业白名单或调权重。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：审计没有改规则；行业留一和单票贡献是为了否决伪象，不是为了拟合收益。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第306阶段信号层最优，需要确认是否行业/股票伪象。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：审计无红灯，应该做有限形状30万整手复放；但若复放失败，应暂停单票强势回踩交易化。
+
+### 后续规划和TODO
+
+- 第一优先级：对`industry_resid_core`做有限形状30万整手复放。
+- 第二优先级：若复放不达标，停止单票强势回踩路线。
+
+## 2026-04-29 15:58 CST 第308阶段：股票震荡industry_resid_core 30万整手复放 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是通过反证审计后的执行约束检验，但没有跑出可交易目标。
+- 本阶段性质：30万账户、真实整手复放、`industry_resid_core`有限形状测试。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_replay.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增复放参数：
+  - 持有期：`5`日、`10`日。
+  - top_k：`3`、`5`、`8`。
+  - gross：`70%`、`100%`。
+  - 单行业最多：`1`、`2`只。
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_target_weights.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_replay_v1_meta.json`
+
+### 新增回测/复放结果
+
+- 回撤20%以内候选：无。
+- 收益100%以上候选：无。
+- 全场收益最高：`industry_resid_core_h10_top8_gross100_ind2`
+  - 期末权益：`1.4927`
+  - 总收益：`49.27%`
+  - 最大回撤：`-39.15%`
+  - Sharpe：`0.348`
+  - zero-lot：`12.81%`
+  - 最新暴露捕获：`45.36%`
+  - 活跃日胜率：`51.26%`
+- 次高收益：`industry_resid_core_h10_top5_gross100_ind1`
+  - 期末权益：`1.4915`
+  - 总收益：`49.15%`
+  - 最大回撤：`-40.64%`
+  - Sharpe：`0.345`
+  - zero-lot：`6.93%`
+  - 最新暴露捕获：`52.58%`
+  - 活跃日胜率：`51.62%`
+- 10日70% gross中回撤较低候选：
+  - `industry_resid_core_h10_top8_gross70_ind2`：总收益`37.04%`，最大回撤`-26.39%`，Sharpe`0.349`，zero-lot`21.01%`。
+  - `industry_resid_core_h10_top5_gross70_ind1`：总收益`34.60%`，最大回撤`-26.88%`，Sharpe`0.323`。
+- 5日持有版本整体失败，多数为负收益且回撤更深。
+- 质量检查：
+  - fail：`31`
+  - warn：`41`
+
+### 结论
+
+- `industry_resid_core`信号层和反证审计都不错，但30万真实整手复放仍不满足“高收益且20%以内回撤”。
+- 问题不是纯粹买不到整手：zero-lot多数不严重；真正瓶颈是持仓路径、回撤簇和最新暴露捕获不足。
+- 单名股票强势回踩路线应暂停交易化，不能继续扫top_k/gross/行业上限。
+- 更合理的下一步仍是ETF/行业轮动，或把强行业作为资产选择层而不是单票开仓过滤器。
+
+### 运行前过拟合反思
+
+- 判断：有风险但可控。
+- 原因：审计通过后容易继续扫形状；本阶段仅做固定有限形状，不根据结果新增参数。
+
+### 运行后过拟合反思
+
+- 判断：继续微调会过拟合。
+- 原因：有限形状复放已经覆盖最自然的持有期、集中度和gross，且没有接近目标；继续扫会变成样本内路径修补。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第307阶段无红灯，必须检验30万真实账户是否能承接。
+
+### 运行后继续价值反思
+
+- 判断：股票震荡30万研究仍有价值，但单票强势回踩交易化价值不足。
+- 原因：信号信息存在，但小账户真实路径不达标；下一步更有价值的是ETF/行业轮动或资产层系统形态。
+
+### 后续规划和TODO
+
+- 第一优先级：停止单票强势回踩继续微调。
+- 第二优先级：启动ETF/行业轮动候选池和数据审计，优先测试强行业作为资产选择层。
+- 第三优先级：保留`industry_resid_core`为研究特征，不作为当前交易策略入口。
+
+## 2026-04-29 16:08 CST 第309阶段：股票震荡ETF/行业轮动路线体检 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是路线体检和数据缺口确认，不是策略收益突破。
+- 本阶段性质：ETF/行业轮动路线体检，不是正式交易版本。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- SystemTrader等ETF轮动资料显示，行业/板块ETF轮动的经典底层更偏`6-12个月`中期相对动量、趋势过滤和月度/低频再平衡。
+- arXiv均值回归研究提示，股票组合均值回归在真实交易成本下容易失效，不能直接把信号层优势包装成策略。
+- arXiv行业轮动研究也强调行业轮动里动量和短期反转都重要，但应先区分资产选择层和入场层。
+- 我的判断：后续应做“强行业/强ETF池 + 短期回撤入场 + 状态过滤”的信号归因，不继续在宽基ETF超跌模板上调参。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_etf_industry_rotation_readiness.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：无交易参数；仅新增路线审计阈值`总收益>=100%`、`最大回撤>=-20%`作为用户目标检查。
+- 修改参数：无。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_etf_industry_rotation_readiness_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_report.md`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_sector_candidate_inventory.csv`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_sector_bucket_summary.csv`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_existing_route_summary.csv`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_readiness_checkpoints.csv`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_route_decision.csv`
+  - `stock_range_reversion_etf_industry_rotation_readiness_v1_meta.json`
+
+### 新增回测/归因结果
+
+- 本阶段不是组合回测，无新增期末权益曲线、总滑点、总交易次数、胜率等正式策略指标。
+- 宽基ETF旧路线目标检查：
+  - 命中“总收益>=100%且最大回撤>=-20%”的路线：`0`条。
+  - `broad_etf_template_state` 20bp最佳：期末权益`1.4541`，总收益`45.41%`，最大回撤`-10.08%`，Sharpe`0.780`。
+  - `broad_etf_primary_pool_topn` 20bp最佳：期末权益`1.4065`，总收益`40.65%`，最大回撤`-22.07%`，Sharpe`0.464`。
+  - `broad_etf_signal_sleeve` 20bp最佳：期末权益`1.1053`，总收益`10.53%`，最大回撤`-6.07%`，Sharpe`0.403`。
+  - `broad_etf_fixed_index_sleeve` 20bp最佳：期末权益`1.0396`，总收益`3.96%`，最大回撤`-1.03%`，Sharpe`0.780`。
+- 行业/主题ETF候选池：
+  - 当前上市候选：`523`只。
+  - 2019年前上市候选：`38`只。
+  - 本地行业/主题ETF日线缓存：`0`只。
+
+### 结论
+
+- 暂停继续扫宽基ETF topN、权重、暴露上限。
+- ETF空头/对冲只保留为压力归因，不作为普通账户可交易假设。
+- 下一步应补行业/主题ETF日线数据包，再做行业中期强势+短期回撤归因。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只做既有结果盘点和数据覆盖审计，不新增交易阈值。
+
+### 运行后过拟合反思
+
+- 判断：否，但继续扫宽基ETF参数会过拟合。
+- 原因：宽基ETF旧路线已经显示收益厚度不足，继续微调会变成样本内路径修补。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：单票强势回踩30万复放失败后，需要验证资产层/行业层是否更适合小账户承载。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：行业/主题ETF候选存在且有一批长历史标的，但必须先补本地日线。
+
+### 后续规划和TODO
+
+- 第一优先级：补行业/主题ETF核心数据包。
+- 第二优先级：补齐后先做行业中期强势+短期回撤信号归因。
+- 第三优先级：若ETF样本不足，转向行业指数做信号层，ETF只作为可交易映射。
+
+## 2026-04-29 16:11 CST 第310阶段：股票震荡行业/主题ETF第一批数据包 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是数据补齐阶段，暴露了Tushare/IP边界。
+- 本阶段性质：行业/主题ETF数据补齐和数据体检，不是正式交易版本。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/download_stock_range_reversion_sector_etf_data.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增数据参数：
+  - `SECTOR_ETF_START_DATE=20180101`
+  - `SECTOR_ETF_END_DATE=20260429`
+  - `SECTOR_ETF_MAX_DOWNLOADS=84`计划值，最终因Tushare限制只整理`13`只成功缓存。
+  - `SECTOR_ETF_PER_BUCKET_LIMIT=12`
+  - `TUSHARE_FUND_DAILY_SLEEP_SECONDS=2.2`
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_sector_etf_data_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_sector_etf_data_v1_report.md`
+  - `stock_range_reversion_sector_etf_data_v1_selected_basic.csv`
+  - `stock_range_reversion_sector_etf_data_v1_download_status.csv`
+  - `stock_range_reversion_sector_etf_data_v1_selected_daily.csv`
+  - `stock_range_reversion_sector_etf_data_v1_summary.csv`
+  - `stock_range_reversion_sector_etf_data_v1_bucket_summary.csv`
+  - `stock_range_reversion_sector_etf_data_v1_meta.json`
+
+### 新增数据结果
+
+- 下载成功：`13`只长历史行业/主题ETF。
+- 行业桶覆盖：金融地产、科技、先进制造、医药、消费、周期、防御。
+- 日线覆盖：多数`2018-01-02`到`2026-04-29`，约`2005`到`2018`行。
+- 5年以上历史：`13/13`。
+- 数据体检摘录：
+  - 周期ETF样本中位总收益`135.94%`，最差最大回撤`-42.16%`。
+  - 先进制造ETF样本中位总收益`80.21%`，最差最大回撤`-50.95%`。
+  - 金融地产ETF样本中位总收益`42.04%`，最差最大回撤`-35.36%`。
+  - 科技样本最差最大回撤`-68.25%`，医药样本最差最大回撤`-60.66%`。
+- Tushare边界：
+  - 全量下载到第14只时返回`IP数量超限，最大数量为10个`。
+  - 已中断全量下载，避免无效重试；保留并整理已成功缓存的`13`只。
+
+### 结论
+
+- 第一批数据足够做小样本行业ETF信号归因，不足以做完整行业轮动策略结论。
+- 下一步可以先用13只长历史ETF验证“中期强行业 + 短期回撤”是否有方向。
+- 完整行业ETF路线需要处理Tushare/IP限制后继续补数，或切换到行业指数做信号层。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只按事前行业桶分散规则补数据，不根据收益挑ETF。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：输出保留全部成功样本的覆盖、流动性和异常价格差异，不做参数选择。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第309阶段确认行业/主题ETF候选存在，但本地日线缺失。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步应控制范围。
+- 原因：第一批标的横跨主要行业，能先验证行业层信号方向；但完整结论仍需要更多ETF或行业指数。
+
+### 后续规划和TODO
+
+- 第一优先级：基于13只长历史ETF做“行业中期强势 + 短期回撤”信号归因雏形。
+- 第二优先级：处理Tushare IP数量限制后补齐更多行业/主题ETF。
+- 第三优先级：若ETF补数受限，使用行业指数作为信号层，ETF作为交易映射层。
+
+## 2026-04-29 16:14 CST 第311阶段：股票震荡行业/主题ETF信号归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它出现正向气息，但样本太小且分数不单调，不能算突破。
+- 本阶段性质：13只长历史行业/主题ETF信号层归因，不是正式交易版本。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 继续沿用第309阶段外部调研结论：行业/ETF轮动更适合用中期行业强弱做资产选择层，短期回撤只做入场层。
+- 本阶段将该判断落成信号归因，而不是直接写交易系统。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_sector_etf_signal_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增信号参数：
+  - 前瞻周期：`5`、`10`、`20`日。
+  - 中期强势：`63/126/252日跳过近21日动量`、`接近252日高点`、`MA200上方`。
+  - 短期回撤：`5/10日回撤`、`短期波动收缩`。
+  - 每日每模型最多保留`3`只ETF。
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_sector_etf_signal_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_report.md`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_feature_panel.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_selected.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_summary.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_yearly.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_score_bucket.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_sector_etf_signal_attribution_v1_meta.json`
+
+### 新增归因结果
+
+- 本阶段不是组合回测，无期末权益、最大回撤、Sharpe、总滑点、总交易次数、胜率等正式策略指标。
+- 样本ETF数：`13`。
+- 样本区间：`2018-01-02`到`2026-04-29`。
+- `strong_industry_pullback_core`：
+  - 5日平均超额：`0.11%`，t值`1.412`，正超额日`48.90%`。
+  - 10日平均超额：`0.21%`，t值`1.909`，正超额日`51.83%`。
+  - 20日平均超额：`0.37%`，t值`2.146`，正超额日`48.17%`。
+- `near_high_pullback`：
+  - 10日平均超额：`0.19%`，t值`1.481`。
+  - 20日平均超额：`0.41%`，t值`2.305`。
+- `weak_oversold_negative_control`：
+  - 10日平均超额：`0.17%`，t值`1.780`。
+  - 20日平均超额：`0.34%`，t值`2.500`。
+- `momentum_only_control`：
+  - 10日平均超额：`-0.18%`。
+  - 20日平均超额：`-0.45%`。
+- 综合分数三分位：
+  - low：10日平均超额`-0.05%`。
+  - mid：10日平均超额`0.05%`。
+  - high：10日平均超额约`0.00%`。
+- 质量检查：
+  - `core_10d_excess_positive`：pass。
+  - `core_10d_t_stat`：pass。
+  - `negative_control_weaker`：pass。
+  - `signal_span_days`：pass。
+
+### 结论
+
+- 行业ETF方向有正向气息：强行业短回撤优于纯动量，也略强于弱行业超跌负对照。
+- 但优势很薄，综合分数不单调，样本只有13只ETF；不能策略化，更不能宣称重大突破。
+- 下一步应扩样本到更多行业ETF或行业指数，再做同一套归因反证。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只验证事前定义的行业强势和短期回撤是否有方向，不做交易参数搜索。
+
+### 运行后过拟合反思
+
+- 判断：暂不构成过拟合，但不能策略化。
+- 原因：模型定义没有扫参，但样本只有13只ETF，任何交易化都会过拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：行业ETF数据包已覆盖主要行业，能先验证强行业回撤逻辑是否优于弱行业超跌。
+
+### 运行后继续价值反思
+
+- 判断：是，但需要扩样本。
+- 原因：核心模型10/20日超额为正并通过负对照，但强度不足；继续价值在扩展数据和反证，而不是下单回测。
+
+### 后续规划和TODO
+
+- 第一优先级：解决Tushare IP数量限制，继续补更多行业/主题ETF日线。
+- 第二优先级：如果补数受限，使用行业指数做信号层，ETF作为交易映射层。
+- 第三优先级：扩样本后重新检查综合分数是否单调；不单调则暂停行业ETF路线。
+
+## 2026-04-29 16:27 CST 第312阶段：股票震荡合成行业指数信号归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是重要否决版本：否决了第311阶段13只ETF小样本里的强行业短回撤正向现象。
+- 本阶段性质：本地股票面板合成行业指数信号归因，不是正式交易版本。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- StockSharp行业ETF轮动示例代表的业界口径，是按多个回看窗口做行业ETF中期动量排名、低频换仓、long-only。
+- arXiv行业轮动研究强调动量与短期反转共同影响行业切换。
+- NY Fed短期反转分解研究提示：跨行业存在动量，短期反转更自然的利润来源通常在行业内，而不是买弱行业。
+- 我的判断：行业层应该先被当作状态/分层变量，而不是直接作为“买强行业回撤”的交易资产层。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_synthetic_industry_signal_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增归因参数：
+  - 前瞻周期：`5`、`10`、`20`日。
+  - 股票过滤：历史中证1000成分、非ST、非停牌、成交额和自由换手均不低于Q3。
+  - 行业日收益：行业内股票等权平均日收益。
+  - 每行业每日最少股票数：`5`。
+  - 每日最少行业数：`20`。
+  - 每日每模型最多行业数：`5`。
+- 修改参数：无正式交易参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_synthetic_industry_signal_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_report.md`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_industry_daily.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_feature_panel.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_selected.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_summary.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_yearly.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_score_bucket.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_industry_contribution.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_synthetic_industry_signal_attribution_v1_meta.json`
+
+### 新增归因结果
+
+- 本阶段不是组合回测，无期末权益、最大回撤、Sharpe、总滑点、总交易次数、胜率等正式策略指标。
+- 合成行业数：`67`。
+- 合成行业日线行数：`49342`。
+- 样本区间：`2018-01-29`到`2026-04-28`。
+- `strong_industry_pullback_core`：
+  - 5日平均超额：`-0.06%`，t值`-0.601`。
+  - 10日平均超额：`-0.06%`，t值`-0.438`。
+  - 20日平均超额：`-0.10%`，t值`-0.516`。
+- `industry_momentum_control`：
+  - 10日平均超额：`-0.42%`，t值`-2.542`。
+  - 20日平均超额：`-0.74%`，t值`-3.194`。
+- `pure_cross_industry_reversal`：
+  - 10日平均超额：`-0.01%`，t值`-0.196`。
+  - 20日平均超额：`0.30%`，t值`3.243`。
+- 综合分数五分位：
+  - q1低分10日平均超额：`0.05%`。
+  - q5高分10日平均超额：`-0.12%`。
+- 质量检查：
+  - `core_10d_excess_positive`：fail。
+  - `core_10d_t_stat`：fail。
+  - `core_beats_weak_oversold`：pass，但两者都为负。
+  - `core_beats_pure_reversal`：warn。
+  - `momentum_control_nonnegative`：warn。
+  - `score_q5_beats_q1`：warn。
+  - `signal_span_days`：pass。
+
+### 结论
+
+- 第311阶段13只ETF小样本看到的强行业短回撤正超额，没有被更宽的合成行业指数支持。
+- 不能把“强行业/强ETF + 短期回撤”作为当前30万高收益策略主线。
+- 跨行业层面更像是20日纯反转有一点信号，但这不是当前长侧强行业逻辑，且需要单独做状态/年份反证。
+- 更合理的回归方向是行业内个股残差/行业内反转，而不是跨行业资产选择层。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段用本地股票面板合成行业指数，验证事前定义的行业强弱/回撤关系，不做交易参数搜索。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：这是扩样本反证，并且结果否决了上一阶段小样本正向现象；没有筛参数包装结果。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：13只ETF样本太小，必须用合成行业指数扩大信号层样本。
+
+### 运行后继续价值反思
+
+- 判断：行业ETF强行业短回撤路线继续价值不足；股票震荡整体仍有价值。
+- 原因：跨行业强势回撤不稳，但行业内反转、残差回归仍符合外部文献和此前单票信号层结果。
+
+### 后续规划和TODO
+
+- 第一优先级：暂停“强行业/强ETF + 短期回撤”作为交易主线。
+- 第二优先级：回到行业内个股残差/行业内反转，重点研究如何降低30万复放回撤。
+- 第三优先级：如果继续看行业层，只做20日纯跨行业反转状态归因，不直接策略化。
+
+## 2026-04-29 16:36 CST 第313阶段：股票震荡industry_resid_core 30万回撤簇归因 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是重要归因/否决版本，用来解释第308阶段30万复放为什么仍不达标。
+- 本阶段性质：对第308阶段`industry_resid_core`30万整手复放做回撤簇归因。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 均值回归策略的核心失效常来自市场状态切换、流动性冲击、风格拥挤和交易成本。
+- A股反转效应存在，但在牛熊/风格状态下稳定性变化明显。
+- 因此应该先做回撤来源归因，不应直接上止损或调持仓参数。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增归因参数：
+  - 聚焦场景：`h10_top8_gross100_ind2`、`h10_top5_gross100_ind1`、`h10_top8_gross70_ind2`、`h10_top5_gross70_ind1`。
+  - 回撤段归因：最大回撤段、状态拆分、最差交易日、最差行业/个股贡献。
+- 修改参数：无核心信号/组合参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_scenario_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_position_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_drawdown_episodes.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_drawdown_period_industry.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_worst_days.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_worst_day_industry.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_worst_day_symbol.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_drawdown_attribution_v1_meta.json`
+
+### 新增归因结果
+
+- `h10_top5_gross100_ind1`：期末权益`1.4915`，总收益`49.15%`，最大回撤`-40.64%`，年化波动`27.54%`，下行波动`16.52%`，最差单日`-10.93%`。
+- `h10_top8_gross100_ind2`：期末权益`1.4927`，总收益`49.27%`，最大回撤`-39.15%`，年化波动`26.44%`，下行波动`15.80%`。
+- `h10_top5_gross70_ind1`：期末权益`1.3460`，总收益`34.60%`，最大回撤`-26.88%`，年化波动`18.28%`，下行波动`10.95%`。
+- `h10_top8_gross70_ind2`：期末权益`1.3704`，总收益`37.04%`，最大回撤`-26.39%`，年化波动`17.01%`，下行波动`10.17%`。
+- 四个代表场景最大回撤段完全同源：
+  - 见顶：`2022-03-02`附近。
+  - 见底：`2024-09-20`。
+  - 到谷底：`622`个交易日。
+  - 恢复：大多在`2026-01`。
+- `weak_breadth`状态极端致命：
+  - `top5_gross100_ind1`在`weak_breadth`下净收益和约`-837%`，日胜率`21.13%`。
+  - `top8_gross100_ind2`在`weak_breadth`下净收益和约`-812%`，日胜率`19.38%`。
+  - 70% gross版本仍在`weak_breadth`下净收益和约`-523%`到`-555%`。
+- `strong_breadth`状态贡献极强，说明信号不是完全无效，而是高度依赖市场宽度。
+- 最大回撤段主要亏损行业反复出现：元器件、软件服务、通信设备、环境保护、小金属、电气设备、中成药等。
+- 质量检查全部pass；实际持仓贡献复原日级毛收益最大误差`4.16e-17`。
+
+### 结论
+
+- 回撤不是某个top_k/gross参数导致，而是长期弱宽度/风格逆风下保持较高实际暴露导致。
+- 买不到一手不是主因；70% gross可降低回撤但仍无法进20%以内。
+- 下一步如果继续，只能测试少数外生风控层：前一日弱宽度降权、实际暴露上限、行业实际暴露约束。
+- 不应继续扫top_k、gross、持有期。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只解释第308失败路径，不测试新过滤器。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果指向状态风险而非参数最优，没有包装新候选。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第308阶段的回撤超过目标，需要先知道回撤来自哪里。
+
+### 运行后继续价值反思
+
+- 判断：是，但下一步必须非常克制。
+- 原因：weak_breadth暴露出清晰风险来源，值得做少数第一性原理风控反证；若风控仍失败，应暂停交易化。
+
+### 后续规划和TODO
+
+- 第一优先级：不要继续扫top_k、gross、持有期。
+- 第二优先级：测试少数第一性原理风控层：前一日弱宽度降权、实际暴露上限、行业实际暴露约束。
+- 第三优先级：若这些风控无法把回撤压入20%以内且收益保留不充分，应暂停交易化，回到信号层。
+
+## 2026-04-29 16:45 CST 第314阶段：股票震荡industry_resid_core 30万前一日弱广度风控回放 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是重要否决版本：否决“前一日弱市场宽度全局降仓”这个看似自然的风控方向。
+- 本阶段性质：固定第308阶段`industry_resid_core`30万整手复放目标权重，只做事前弱广度风控回放。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 残差短期反转和行业内个股反转有文献支撑，说明当前`industry_resid_core`路线不是凭空拟合。
+- 行业动量+个股反转的研究也提示：行业/市场状态应作为分层或风控变量，而不是简单跨行业追强。
+- 回撤控制文献强调 drawdown 作为独立风险目标有意义，但不能用事后标签；本阶段只使用前一交易日收盘后已知的市场宽度。
+- GitHub公开均值回归策略多是RSI/布林/配对交易教学示例，不能直接复制为A股30万实盘系统。
+
+参考资料：
+
+- `Short-term residual reversal`：`https://www.sciencedirect.com/science/article/pii/S1386418112000468`
+- `Short-Term Residual Reversal SSRN page`：`https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1911449`
+- `Combining return reversal and industry momentum`：`https://www.cxoadvisory.com/technical-trading/combining-return-reversal-and-industry-momentum/`
+- `On Inefficiency of Markowitz-Style Investment Strategies When Drawdown is Important`：`https://arxiv.org/abs/1710.01501`
+- `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 代表场景：第313阶段4个`h10`代表形状。
+  - 风控变体：
+    - `base_rerun`：不降权。
+    - `prev_close_weak_breadth_half`：前一日弱广度，下一目标日目标权重乘`0.50`。
+    - `prev_close_weak_breadth_zero`：前一日弱广度，下一目标日目标权重乘`0.00`。
+- 修改参数：无核心信号参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_scaled_targets.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_exante_state.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_breadth_throttle_v1_meta.json`
+
+### 新增回测结果
+
+- 质量检查：
+  - `focus_scenario_count`：pass，4个代表场景。
+  - `throttle_count`：pass，3个预注册风控。
+  - `base_rerun_matches_stage308`：pass，误差`0.0`。
+  - `state_coverage`：pass。
+  - `best_drawdown_within_20pct`：warn，最浅仍为`-26.39%`。
+  - `high_return_target_seen`：warn，最高收益仍为`49.27%`。
+- 原始代表场景：
+  - `top5_gross100_ind1_base`：期末权益`1.4915`，总收益`49.15%`，最大回撤`-40.64%`，Sharpe`0.345`。
+  - `top8_gross100_ind2_base`：期末权益`1.4927`，总收益`49.27%`，最大回撤`-39.15%`，Sharpe`0.348`。
+  - `top5_gross70_ind1_base`：期末权益`1.3460`，总收益`34.60%`，最大回撤`-26.88%`，Sharpe`0.323`。
+  - `top8_gross70_ind2_base`：期末权益`1.3704`，总收益`37.04%`，最大回撤`-26.39%`，Sharpe`0.349`。
+- 前一日弱广度半仓：
+  - `top5_gross100_ind1_half`：期末权益`0.6631`，总收益`-33.69%`，最大回撤`-61.61%`，Sharpe`-0.126`。
+  - `top8_gross100_ind2_half`：期末权益`0.6788`，总收益`-32.12%`，最大回撤`-58.77%`，Sharpe`-0.126`。
+  - `top5_gross70_ind1_half`：期末权益`0.7582`，总收益`-24.18%`，最大回撤`-46.81%`，Sharpe`-0.170`。
+  - `top8_gross70_ind2_half`：期末权益`0.7760`，总收益`-22.40%`，最大回撤`-44.41%`，Sharpe`-0.172`。
+- 前一日弱广度清仓：
+  - `top5_gross100_ind1_zero`：期末权益`0.2864`，总收益`-71.36%`，最大回撤`-78.69%`。
+  - `top8_gross100_ind2_zero`：期末权益`0.3108`，总收益`-68.92%`，最大回撤`-76.35%`。
+  - `top5_gross70_ind1_zero`：期末权益`0.4471`，总收益`-55.29%`，最大回撤`-63.25%`。
+  - `top8_gross70_ind2_zero`：期末权益`0.4882`，总收益`-51.18%`，最大回撤`-59.49%`。
+- 全部弱广度降权变体都未进入`20%`最大回撤以内，也全部低于原始基准收益。
+
+### 关键解释
+
+- 第313阶段的`weak_breadth`是同日风险归因变量，不等于前一日弱广度可作为次日降仓信号。
+- 在前一日弱广度后的目标日，原始策略经常捕获均值回归反弹；半仓/清仓砍掉了这部分正收益，但交易摩擦和其他状态亏损仍然存在。
+- 因此，弱广度不能作为简单全局风险开关。
+
+### 结论
+
+- 否决“前一日弱广度半仓/清仓”作为当前30万高收益股票震荡策略的风控层。
+- 不应继续搜索弱广度阈值、连续弱广度天数、指数跌幅阈值等全局状态降权；这会把策略推向样本内修补。
+- 下一步更合理：研究行业实际暴露上限、行业亏损集中度控制，或回到信号层提升单票质量。
+
+### 运行前过拟合反思
+
+- 判断：否，但需要克制。
+- 原因：本阶段只测试第313归因后指向的单一事前状态变量，并且只有半仓/清仓两个粗粒度规则。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是否定，不是筛选最优；base复现误差为`0.0`，说明回放口径一致。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第313阶段明确指出弱广度是风险来源，必须验证它能否被事前风控使用。
+
+### 运行后继续价值反思
+
+- 判断：股票震荡整体仍有价值，但弱广度降权路线继续价值不足。
+- 原因：风控验证失败，继续调市场状态阈值只会增加过拟合风险；下一步应转向行业暴露约束或信号层。
+
+### 后续规划和TODO
+
+- 第一优先级：不要继续做全局弱广度阈值搜索。
+- 第二优先级：做行业实际暴露上限/行业亏损集中度归因，验证是否能减少2022-2024长回撤而不砍掉弱广度后的反弹。
+- 第三优先级：若行业约束也失败，回到`industry_resid_core`信号层，重新审计哪些行业/股票形态贡献了不可恢复亏损。
+
+## 2026-04-29 16:52 CST 第315阶段：股票震荡industry_resid_core 30万行业目标暴露上限回放 v1
+
+### 基本信息
+
+- 当前模式：`day`。
+- 是否重要突破版本：否。它是重要收敛版本：行业上限能削风险，但不足以成为30万高收益候选。
+- 本阶段性质：固定第308阶段`industry_resid_core`30万整手复放目标权重，只做行业目标权重上限回放。
+- A/B判断：股票震荡独立研究，不接入第78，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 行业/资产暴露上限是组合构建里常见的硬约束，适合处理单一行业风险集中。
+- 对均值回归策略，行业上限如果只降总暴露、不重分配权重，可能同时砍掉反弹收益；因此本阶段只作为风险层反证，不作为优化候选。
+- GitHub公开实现更多是组合约束/优化框架或教学策略，不能直接复制为A股30万交易系统。
+
+参考资料：
+
+- `Portfolio constraints and regularization`：`https://bookdown.org/palomar/portfoliooptimizationbook/6.2-portfolio-constraints.html`
+- `cvxportfolio constraints API`：`https://www.cvxportfolio.com/en/stable/constraints.html`
+- `GitHub sector exposure portfolio constraints search`：`https://github.com/search?q=sector+exposure+constraint+portfolio+python&type=repositories`
+- `Short-term residual reversal`：`https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1911449`
+- `Combining return reversal and industry momentum`：`https://www.cxoadvisory.com/technical-trading/combining-return-reversal-and-industry-momentum/`
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 代表场景：第313阶段4个`h10`代表形状。
+  - 行业上限变体：
+    - `base_rerun`：不设行业上限。
+    - `industry_cap20`：同一目标日同一行业目标权重上限`20%`。
+    - `industry_cap15`：同一目标日同一行业目标权重上限`15%`。
+    - `industry_cap10_stress`：同一目标日同一行业目标权重上限`10%`，仅作为压力反证。
+  - 削掉的权重不重分配到其他股票。
+- 修改参数：无核心信号参数修改。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_cap_effect.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_position_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_actual_industry_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_actual_industry_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_quality_checkpoints.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_capped_targets.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_industry_cap_v1_meta.json`
+
+### 新增回测结果
+
+- 质量检查：
+  - `focus_scenario_count`：pass，4个代表场景。
+  - `cap_variant_count`：pass，4个预注册变体。
+  - `base_rerun_matches_stage308`：pass，误差`0.0`。
+  - `best_drawdown_within_20pct`：warn，最浅仍为`-23.78%`。
+  - `high_return_target_seen`：warn，最高收益`49.85%`，未达100%目标。
+- 原始代表场景：
+  - `top5_gross100_ind1_base`：期末权益`1.4915`，总收益`49.15%`，最大回撤`-40.64%`，Sharpe`0.345`。
+  - `top8_gross100_ind2_base`：期末权益`1.4927`，总收益`49.27%`，最大回撤`-39.15%`，Sharpe`0.348`。
+  - `top5_gross70_ind1_base`：期末权益`1.3460`，总收益`34.60%`，最大回撤`-26.88%`，Sharpe`0.323`。
+  - `top8_gross70_ind2_base`：期末权益`1.3704`，总收益`37.04%`，最大回撤`-26.39%`，Sharpe`0.349`。
+- 行业上限20%：
+  - `top5_gross100_ind1_cap20`：期末权益`1.4985`，总收益`49.85%`，最大回撤`-40.58%`，Sharpe`0.347`。
+  - `top8_gross100_ind2_cap20`：期末权益`1.4725`，总收益`47.25%`，最大回撤`-39.01%`，Sharpe`0.346`。
+  - 两个70% gross场景几乎不变。
+- 行业上限15%：
+  - `top5_gross100_ind1_cap15`：期末权益`1.4118`，总收益`41.18%`，最大回撤`-37.58%`。
+  - `top8_gross100_ind2_cap15`：期末权益`1.3872`，总收益`38.72%`，最大回撤`-36.38%`。
+  - `top8_gross70_ind2_cap15`：期末权益`1.3508`，总收益`35.08%`，最大回撤`-26.54%`，略差于base。
+- 行业上限10%压力：
+  - `top5_gross100_ind1_cap10`：期末权益`1.3139`，总收益`31.39%`，最大回撤`-30.96%`。
+  - `top8_gross100_ind2_cap10`：期末权益`1.3056`，总收益`30.56%`，最大回撤`-27.52%`。
+  - `top5_gross70_ind1_cap10`：期末权益`1.2520`，总收益`25.20%`，最大回撤`-25.46%`。
+  - `top8_gross70_ind2_cap10`：期末权益`1.2315`，总收益`23.15%`，最大回撤`-23.78%`，为本阶段最浅回撤。
+- 行业暴露效果：
+  - `top8_gross100_ind2` base目标行业最大权重最高`28.10%`；10% cap后目标行业最大权重压到`10%`。
+  - `top8_gross100_ind2` 10% cap目标总gross平均缩到`68.38%`，实际平均gross从`75.13%`降到`47.38%`。
+  - `top8_gross70_ind2` 10% cap目标总gross平均缩到`83.61%`，实际平均gross从`48.39%`降到`38.62%`。
+  - 实际持仓行业暴露被成功压住，但回撤仍未达标。
+
+### 结论
+
+- 行业上限是有效的风险缓冲，但不是当前30万高收益目标的充分修复。
+- 20%上限几乎不改变最佳70% gross形状；15%影响有限；10%能改善回撤但收益下降，且仍未进20%以内。
+- 不应继续扫12%、13%、14%这种行业上限；那会变成样本内调参。
+- 下一步应转向信号层/亏损样本层：拆解2022-2024长回撤中哪些股票形态、行业、流动性和技术结构造成不可恢复亏损。
+
+### 运行前过拟合反思
+
+- 判断：否，但要防止把行业上限当成新一轮参数扫。
+- 原因：本阶段只测20/15/10三个结构性暴露边界，不改变选股信号，也不把削掉的权重重分配。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果未包装为候选，且base复现误差为`0.0`；本阶段主要是反证行业上限是否足够。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第313阶段显示亏损行业反复集中，行业暴露上限是比弱广度降权更贴近组合风险的下一步。
+
+### 运行后继续价值反思
+
+- 判断：股票震荡整体仍有价值，但行业上限路线不能单独继续。
+- 原因：行业上限证明了部分风险集中，但不足以满足30万高收益+20%以内回撤目标；继续价值在信号层亏损归因，而非继续微调上限。
+
+### 后续规划和TODO
+
+- 第一优先级：不要继续微调行业上限百分比。
+- 第二优先级：做2022-2024长回撤亏损样本归因，按行业、个股技术结构、残差分数、流动性、成交额、短期跌幅、长期趋势结构拆解不可恢复亏损来源。
+- 第三优先级：若能找到稳定坏样本特征，再做信号层剔除；否则应降低30万高收益目标或换策略周期。
+
+## 2026-04-29 17:07 CST：第316阶段股票震荡industry_resid_core 30万长回撤亏损样本归因 v1
+
+- 当前模式：`day`。
+- 是否重要突破版本：是，属于风险形成机制突破；它确认2022-2024长回撤有稳定持仓日坏状态，但多数不是建仓前可直接使用的信息。
+- 本阶段性质：纯归因，不是新策略回测；不改参数、不接入第78、不触发A/B。
+- A/B判断：股票震荡独立研究，纯归因，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 残差短期反转有文献支持，但收益会受到动态风险暴露、流动性成本和趋势延续环境影响。
+- 公开横截面均值回归示例可参考研究流程，但不能直接解释本仓库30万整手账户里的长回撤。
+- 本阶段应先找亏损样本的稳定指纹，再决定是否值得进入信号层剔除测试。
+
+参考资料：
+
+- `Short-term residual reversal`：`https://www.sciencedirect.com/science/article/pii/S1386418112000468`
+- `Short-term reversals, returns to liquidity provision and the costs of immediacy`：`https://www.sciencedirect.com/science/article/pii/S0378426622000309`
+- `Understanding momentum and reversal`：`https://www.sciencedirect.com/science/article/pii/S0304405X21000878`
+- `Backtesting a Cross-Sectional Mean Reversion Strategy in Python`：`https://teddykoker.com/2019/04/backtesting-a-cross-sectional-mean-reversion-strategy-in-python/`
+- `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 代表场景：第308阶段4个`industry_resid_core` h10代表形状。
+  - 归因窗口：各场景最大回撤窗口，峰值`2022-03-02`、回撤起点`2022-03-03`、谷底`2024-09-20`。
+  - 分桶特征：持仓目标日价格结构、成交量、技术损坏、行业、个股。
+- 修改参数：无。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_window_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_industry_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_symbol_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_feature_bucket_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_consistent_bad_buckets.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_loss_sample_attribution_v1_quality_checkpoints.csv`
+
+### 新增回测/归因结果
+
+- 这不是新策略回测，期末权益/总收益/最大回撤/Sharpe沿用第308阶段代表场景，不新增候选：
+  - `top8_gross100_ind2`：总收益`49.27%`，最大回撤`-39.15%`，Sharpe`0.348`。
+  - `top5_gross100_ind1`：总收益`49.15%`，最大回撤`-40.64%`，Sharpe`0.345`。
+  - `top8_gross70_ind2`：总收益`37.04%`，最大回撤`-26.39%`，Sharpe`0.349`。
+  - `top5_gross70_ind1`：总收益`34.60%`，最大回撤`-26.88%`，Sharpe`0.323`。
+- 主观察场景`industry_resid_core_h10_top8_gross70_ind2`回撤窗口持仓归因：
+  - 持仓日`16,702`，股票`497`只。
+  - 毛贡献合计`-0.100243`，负贡献`-3.73930`，正贡献`3.63906`。
+  - 亏损持仓日占比`52.64%`，平均实际权重`1.8877%`。
+- 质量检查：
+  - `drawdown_window_count`：pass，4/4。
+  - `drawdown_position_days_available`：pass，61,596。
+  - `target_feature_join_coverage`：pass，缺失`0.00%`。
+  - `feature_bucket_summary_available`：pass，408行。
+- 关键坏状态：
+  - 目标日`stock_intraday_ret_low`和`stock_ibs_low`解释力最强，但属于日内/收盘后信息，不能作为建仓过滤。
+  - 可事前观察但仍是目标日状态的坏特征：`stock_ret_5_low`、`stock_dist_ma20_low`、`stock_ret_10_low`、`stock_dist_ma60_low`、`volume_dry`。
+  - 主观察行业亏损Top：元器件`-0.04595`、软件服务`-0.03237`、小金属`-0.02837`、环境保护`-0.02797`、中成药`-0.02097`、通信设备`-0.01858`。
+- 交易统计：
+  - 总滑点：N/A，本阶段不产生新交易。
+  - 总交易次数：N/A，本阶段不产生新交易。
+  - 胜率：N/A，本阶段是持仓日贡献归因。
+
+### 结论
+
+- 长回撤确实有稳定坏状态，但多数坏状态发生在持仓过程中。
+- 不能直接把目标日低IBS、低日内收益、短期破位改成建仓过滤。
+- 下一步必须做信号日归因，验证这些坏状态在建仓前是否已经存在。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：固定代表场景和最大回撤窗口做归因，没有新增交易参数。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：本阶段只解释亏损来源，没有包装候选策略。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：行业上限/弱广度已被否决后，需要知道长回撤是建仓问题还是持仓恶化问题。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：已发现坏状态，但需要第317阶段确认是否为建仓前可见特征。
+
+### 后续规划和TODO
+
+- 第一优先级：做信号日亏损归因，避免把目标日事后信息误用为建仓过滤。
+- 第二优先级：如果信号日坏指纹成立，再做一个单一事前过滤；如果不成立，转向持仓期恶化/退出。
+
+## 2026-04-29 17:07 CST：第317阶段股票震荡industry_resid_core 30万信号日亏损归因 v1
+
+- 当前模式：`day`。
+- 是否重要突破版本：是，属于方向性突破；它否决了“简单建仓过滤”路线，把下一步指向持仓期恶化/退出。
+- 本阶段性质：纯归因，不是新策略回测；不改参数、不接入第78、不触发A/B。
+- A/B判断：股票震荡独立研究，纯归因，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 残差短反/横截面均值回归的本质不是买所有跌幅，而是识别可修复的错杀；趋势破坏后的继续下跌会吞掉优势。
+- 第316阶段的目标日坏特征必须回溯到信号日验证，否则会产生事后过滤。
+- 本阶段不参考日内/目标日收盘后信息，只看信号日已经可见的价格结构、成交量、残差回调和技术损坏特征。
+
+参考资料：
+
+- `Short-term residual reversal`：`https://www.sciencedirect.com/science/article/pii/S1386418112000468`
+- `Short-term reversals, returns to liquidity provision and the costs of immediacy`：`https://www.sciencedirect.com/science/article/pii/S0378426622000309`
+- `Understanding momentum and reversal`：`https://www.sciencedirect.com/science/article/pii/S0304405X21000878`
+- `Backtesting a Cross-Sectional Mean Reversion Strategy in Python`：`https://teddykoker.com/2019/04/backtesting-a-cross-sectional-mean-reversion-strategy-in-python/`
+- `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 代表形状：`h10_top8_gross100_ind2`、`h10_top5_gross100_ind1`、`h10_top8_gross70_ind2`、`h10_top5_gross70_ind1`。
+  - 信号日分桶：`ret5/ret10`、残差回调、252日高点位置、MA20/MA50距离、成交量比、技术损坏惩罚、趋势破坏惩罚等。
+  - 归因口径：最大回撤窗口内信号lot级目标日毛贡献。
+- 修改参数：无。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_window_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_signal_lots.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_feature_bucket_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_consistent_bad_buckets.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_signal_date_loss_attribution_v1_quality_checkpoints.csv`
+
+### 新增回测/归因结果
+
+- 这不是新策略回测，期末权益/总收益/最大回撤/Sharpe不新增；交易统计N/A。
+- 质量检查：
+  - `drawdown_window_count`：pass，4/4。
+  - `signal_lots_available`：pass，`145,540`。
+  - `target_return_join_coverage`：pass，缺失`0.00%`。
+  - `signal_feature_coverage`：pass，最大缺失`8.98%`。
+  - `feature_bucket_summary_available`：pass，`715`行。
+- 主观察场景`industry_resid_core_h10_top8_gross70_ind2`：
+  - 信号lot日`44,820`，信号`4,554`，目标日`580`，股票`542`只。
+  - 毛贡献合计`-0.222027`，负贡献`-4.74102`，正贡献`4.51900`。
+  - 亏损lot占比`52.66%`。
+- 关键反直觉结果：
+  - 信号日`damage_high`贡献`+0.093487`，`trend_penalty_high`贡献`+0.116315`。
+  - 信号日`ret10_deep_down`贡献`+0.053193`，`far_from_252_high`贡献`+0.049088`。
+  - 信号日`damage_none`贡献`-0.312350`，`trend_penalty_none`贡献`-0.338342`，`volume_dry`贡献`-0.204708`。
+  - 跨场景一致坏分桶集中在`volume_dry`、`mid_252_high`、`ret5_flat`、`above/near_ma50`等正常回调形态，而不是入场时已经破位的形态。
+- 交易统计：
+  - 总滑点：N/A，本阶段不产生新交易。
+  - 总交易次数：N/A，本阶段不产生新交易。
+  - 胜率：N/A，本阶段是信号lot贡献归因。
+
+### 结论
+
+- 否决简单建仓过滤：不能把第316阶段目标日低短期收益、破位、低IBS直接前移成入场过滤。
+- 坏样本更像“入场时正常，持仓期逐步恶化”，而不是“入场时已经烂”。
+- 下一步应做持仓期恶化确认/退出归因，不应继续扫入场阈值。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段只验证第316坏状态是否在信号日可见，不改变交易规则。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果是否定了一个直觉优化方向，没有包装成候选参数。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：如果信号日坏指纹成立，可以做事前过滤；如果不成立，就要转向退出机制。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向改变。
+- 原因：简单建仓过滤继续价值不足；持仓期恶化/退出才更贴近亏损形成机制。
+
+### 后续规划和TODO
+
+- 第一优先级：做入场后第1-3天恶化确认归因。
+- 第二优先级：测试是否存在低过拟合的退出规则，例如连续目标日弱势、跌破MA20/MA60、放量下杀、低IBS延续后的次日退出。
+- 第三优先级：若退出规则只在2022-2024有效、其他年份伤害收益，则否决退出路线，重新评估30万高收益+20%回撤目标是否现实。
+
+## 2026-04-29 17:15 CST：第318阶段股票震荡industry_resid_core 30万持仓期恶化退出回放 v1
+
+- 当前模式：`day`。
+- 是否重要突破版本：是，属于方向性反证版本；它否决了普通持仓期恶化退出路线。
+- 本阶段性质：第317阶段后的少量预注册退出规则真实30万整手回放。
+- A/B判断：股票震荡独立研究，不接入第78；本阶段无候选策略，不触发`skills/version-ab-experiment/SKILL.md`。
+
+### 外部调研判断
+
+- 均值回归不是无条件死扛，有限持有期和交易成本下，退出时机是策略设计的一部分。
+- 但短反策略常被普通止损/快速退出破坏，因为深跌和初期恶化也可能是后续修复来源。
+- 因此本阶段不测试固定百分比止损，也不扫阈值，只测试第316/317阶段导出的少量“持仓期恶化确认”规则。
+
+参考资料：
+
+- `Optimal Mean Reversion Trading with Transaction Costs and Stop-Loss Exit`：`https://arxiv.org/abs/1411.5062`
+- `Mean Reversion Trading with Sequential Deadlines and Transaction Costs`：`https://arxiv.org/abs/1707.03498`
+- `Short-term reversals, returns to liquidity provision and the costs of immediacy`：`https://www.sciencedirect.com/science/article/pii/S0378426622000309`
+- `Connors Research: Does Mean Reversion Still Work?`：`https://connorsresearch.com/connors-research-traders-journal-volume-1-does-mean-reversion-still-work/`
+- `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay.py`
+- 修改脚本：无正式策略脚本修改。
+- 删除脚本：无。
+- 新增参数：
+  - 观察窗口：入场后前`3`个持仓目标日。
+  - `base_no_exit`：不退出。
+  - `exit_watch3_no_bounce`：第2或第3天累计收益`<=-3%`，次日移除剩余lot。
+  - `exit_watch3_ma20_shortweak`：收盘低于MA20超过`3%`且5日收益`<=-5%`，次日移除剩余lot。
+  - `exit_watch3_volume_selloff`：日内跌超`2%`、IBS`<=0.25`且量比`>=1.3`，次日移除剩余lot。
+  - `exit_watch3_composite_2of3`：无反弹、MA20短弱、放量低IBS下杀三类恶化中至少两类同时出现，次日移除剩余lot。
+- 修改参数：无。
+- 删除参数：无。
+
+### 输出文件
+
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_impact_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_event_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_exit_deterioration_replay_v1_quality_checkpoints.csv`
+
+### 新增回测结果
+
+- 质量检查：
+  - `base_rerun_matches_stage308`：pass，误差`0.0`。
+  - `focus_scenario_count`：pass，4。
+  - `exit_rule_count`：pass，5。
+  - `any_exit_improves_drawdown_and_return`：warn，最佳回撤改善`1.83%`但收益下降`34.83%`。
+  - `any_exit_within_20pct_drawdown`：warn，0。
+  - `any_exit_high_return_target`：warn，0。
+- 主观察场景`industry_resid_core_h10_top8_gross70_ind2`：
+  - `base_no_exit`：期末权益`1.3704`，总收益`37.04%`，最大回撤`-26.39%`，Sharpe`0.349`，订单`21,902`行。
+  - `exit_watch3_volume_selloff`：期末权益`1.3305`，总收益`33.05%`，最大回撤`-26.12%`，Sharpe`0.330`；收益变化`-3.99%`，回撤变化`+0.27%`，触发率`4.18%`。
+  - `exit_watch3_ma20_shortweak`：期末权益`1.1023`，总收益`10.23%`，最大回撤`-26.50%`，Sharpe`0.179`；收益变化`-26.81%`，回撤变化`-0.11%`，触发率`38.72%`。
+  - `exit_watch3_no_bounce`：期末权益`1.0249`，总收益`2.49%`，最大回撤`-30.20%`，Sharpe`0.090`；收益变化`-34.56%`，回撤变化`-3.81%`。
+  - `exit_watch3_composite_2of3`：期末权益`1.0868`，总收益`8.68%`，最大回撤`-30.62%`，Sharpe`0.155`；收益变化`-28.37%`，回撤变化`-4.24%`。
+- 全场最佳回撤改善：
+  - `top5_gross100_ind1 + exit_watch3_ma20_shortweak`：期末权益`1.1432`，总收益`14.32%`，最大回撤`-38.81%`，收益变化`-34.83%`，回撤改善`+1.83%`。
+  - 该结果回撤仍远超20%，且收益被大幅砍掉，不可作为候选。
+- 事件归因：
+  - 主观察场景全历史`exit_watch3_volume_selloff`触发`536`个信号，触发率`4.18%`，退出帮助率`50.56%`，`exit_delta_sum=-0.043331`，说明全历史移除的是正未来贡献。
+  - 回撤窗口内`volume_selloff`的确有正delta，但窗口外伤害收益；不是可穿越周期的交易规则。
+- 交易统计：
+  - 总滑点：沿用回放成本口径，未单独统计滑点字段。
+  - 总交易次数：以订单行计，主观察base为`21,902`行，`volume_selloff`为`21,658`行。
+  - 胜率：活跃日胜率主观察base约`51.20%`，`volume_selloff`约`51.44%`，改善很小。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无，新增独立输出。
+- 删除回测结果：无。
+
+### 结论
+
+- 普通持仓期恶化退出不成立。
+- `volume_selloff`只能作为风险观察标签，不是交易规则候选。
+- 不应继续扫前3天退出阈值；继续这么做会过拟合2022-2024长回撤窗口。
+- 下一步应转向组合层慢变量：风险预算、暴露节奏、策略组合，或者重新评估30万高收益+20%回撤目标是否现实。
+
+### 运行前过拟合反思
+
+- 判断：否，但需要控制规则数量。
+- 原因：规则来自第316/317阶段的失败机理，不是随意搜索；本阶段限制为4个退出规则加base。
+
+### 运行后过拟合反思
+
+- 判断：否。
+- 原因：结果没有包装为候选，反而否决了退出路线；base复现误差`0.0`。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第317指出坏样本是持仓期恶化，需要真实回放验证退出是否能解决。
+
+### 运行后继续价值反思
+
+- 判断：股票震荡整体仍有价值，但单票短期退出路线继续价值不足。
+- 原因：退出规则在全历史中普遍砍掉未来正贡献；下一步价值在组合层结构，而不是继续微调单票退出。
+
+### 后续规划和TODO
+
+- 第一优先级：停止继续扫描前3天退出阈值。
+- 第二优先级：做组合层慢变量风险预算归因，优先看是否存在低过拟合的“整体暴露节奏”而不是单票退出。
+- 第三优先级：考虑策略组合：把industry_resid_core作为低相关子策略，而不是单独追求30万账户高收益+20%以内回撤。
+
+## 2026-04-29 17:27 CST - 第319/320阶段股票震荡industry_resid_core 30万慢变量归因与路径依赖慢节奏暴露回放
+
+### 当前模式
+
+- 当前模式：`day`。
+- 当前研究线：股票震荡独立策略研究。
+- 趋势/震荡隔离：未修改第78正式趋势策略，未接入趋势组合，未触发A/B。
+
+### 外部调研与判断
+
+- 本阶段参考：
+  - `Volatility Managed Portfolios`：`https://conference.nber.org/confer/2016/LTAMs16/Moreira_Muir.pdf`
+  - `Smoothing volatility targeting`：`https://arxiv.org/abs/2212.07288`
+  - `Statistical Proxy based Mean-Reverting Portfolios with Sparsity and Volatility Constraints`：`https://arxiv.org/abs/2305.00203`
+  - `Backtesting a Cross-Sectional Mean Reversion Strategy in Python`：`https://teddykoker.com/2019/04/backtesting-a-cross-sectional-mean-reversion-strategy-in-python/`
+  - `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+- 调研判断：
+  - 业界波动目标/风险预算适合做组合层风险调节，但需要低频、平滑、少参数，不能用快速止损破坏均值回归。
+  - 第318阶段已经否决普通单票退出，本阶段应看组合层慢变量和路径依赖暴露节奏。
+
+### 第319阶段版本变更：组合层慢变量归因
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_scenario_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_feature_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_cross_bad_regimes.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_interaction_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_regime_attribution_v1_quality_checkpoints.csv`
+- 新增参数：
+  - 指数慢状态：20/60/120日收益、120日均线距离、120日回撤、60日波动。
+  - 市场宽度慢状态：个股在60/120日均线上方比例、20日正收益比例。
+  - 策略自身慢状态：60/120日收益、120日回撤、60日波动。
+- 修改参数：无。
+- 删除参数：无。
+- 新增回测结果：
+  - 本阶段不是新策略回测，收益/回撤沿用第308阶段四个代表场景，只做状态归因。
+  - 质量检查全部通过：fail `0`，warn `0`。
+  - 四个场景最大回撤窗口一致：peak `2022-03-02`，trough `2024-09-20`。
+  - 主观察`top8_gross70_ind2`中`prev_strategy_ret60_state=ret60_up`复合收益`-18.80%`。
+  - 跨场景一致最坏状态为`prev_strategy_ret60_state=ret60_up`，四个代表场景全部为负，复合收益合计`-129.06%`。
+  - `prev_index_drawdown_120_state=dd120_deep`同样四场景为负，但样本较少，仅`280`天。
+- 修改/删除回测结果：无。
+- 结论：
+  - 慢变量继续价值明确，且优先级高于继续做单票退出。
+  - 下一步应测试路径依赖慢节奏暴露，而不是继续扫单票建仓/退出阈值。
+
+### 第320阶段版本变更：路径依赖慢节奏暴露回放
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_drawdowns.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_state_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_orders.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_replay_v1_quality_checkpoints.csv`
+- 新增参数：
+  - 慢节奏状态：本变体自身前一日60日收益。
+  - `ret60_up`阈值：`>=5%`。
+  - `base_rerun`：不调整。
+  - `strategy_ret60_up_half`：若前一日自身60日收益`>=5%`，下一目标日目标权重乘`0.50`。
+  - `strategy_ret60_up_zero`：若前一日自身60日收益`>=5%`，下一目标日目标权重乘`0.00`。
+- 修改参数：无。
+- 删除参数：无。
+
+### 第320阶段新增回测结果
+
+- 质量检查：
+  - `focus_scenario_count`：pass，4。
+  - `slow_rhythm_count`：pass，3。
+  - `base_rerun_matches_stage308`：pass，误差`0.0`。
+  - `any_slow_rhythm_improves_drawdown_and_return`：pass，8个慢节奏变体全部同时提高收益并改善回撤。
+  - `best_drawdown_within_20pct`：pass，最佳最大回撤`-17.67%`。
+  - `high_return_target_seen`：pass，最高总收益`132.29%`。
+  - `path_dependent_state`：pass，每天使用该变体自身截至前一日权益计算60日状态。
+- 当前最像候选的30万版本：
+  - 场景：`industry_resid_core_h10_top5_gross70_ind1_strategy_ret60_up_zero`
+  - 期末权益：`2.0698`
+  - 总收益：`106.98%`
+  - 最大回撤：`-17.67%`
+  - Sharpe：`0.799`
+  - 年度：2019-2024均为正收益，2025为`-1.02%`，2026截至当前为`+3.34%`。
+  - 总滑点：沿用整手回放成本口径，未单独统计滑点字段。
+  - 总交易次数：以订单行计，详见`orders.csv`。
+  - 胜率：详见`state_daily.csv`和`summary.csv`，候选全局Sharpe改善显著。
+- 相对同形状base：
+  - base总收益：`34.60%`
+  - base最大回撤：`-26.88%`
+  - 收益改善：`+72.39%`
+  - 回撤改善：`+9.21%`
+- 总收益最高版本：
+  - 场景：`industry_resid_core_h10_top5_gross100_ind1_strategy_ret60_up_zero`
+  - 期末权益：`2.3229`
+  - 总收益：`132.29%`
+  - 最大回撤：`-26.63%`
+  - Sharpe：`0.690`
+  - 结论：收益高但回撤不满足用户20%以内边界，不作为当前30万主候选。
+- 主观察场景：
+  - `industry_resid_core_h10_top8_gross70_ind2_strategy_ret60_up_zero`：总收益`71.64%`，最大回撤`-23.07%`，Sharpe`0.656`，未进入20%以内。
+
+### 重要突破判断
+
+- 判断：是，属于股票震荡线的阶段性重要突破。
+- 原因：
+  - 首次出现30万账户、总收益超过100%、最大回撤低于20%的候选。
+  - 该候选不是通过新alpha扫参得到，而是由第319阶段跨场景一致坏状态推导出的组合层慢节奏规则。
+  - base复现误差为`0.0`，说明回放框架没有偏离第308阶段。
+
+### 运行前过拟合反思
+
+- 判断：第319阶段否；第320阶段风险可控但上升。
+- 原因：
+  - 第319阶段只是归因。
+  - 第320阶段开始形成交易规则，但只测试`half/zero`两个粗粒度动作，且状态来自第319阶段跨场景一致坏状态。
+
+### 运行后过拟合反思
+
+- 判断：暂时否，但不能直接实盘。
+- 原因：
+  - 四个代表场景的慢节奏变体全部同向改善，不是只挑一个场景。
+  - 但`60日/5%/清仓`仍然可能是样本内舒适点，必须做邻域稳健性、分段反证和执行影响复核。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第318阶段否决单票退出后，组合层慢变量是更贴近均值回归本质的路线。
+
+### 运行后继续价值反思
+
+- 判断：是，而且优先级很高。
+- 原因：第320阶段出现满足用户30万本金、高收益、20%以内回撤目标的候选；下一步应做稳健性反证，而不是继续扩大搜索。
+
+### 后续规划和TODO
+
+- 第一优先级：做第321阶段邻域稳健性反证，固定不选择最优，只检查`40/60/80日`、`3%/5%/8%`附近是否仍有同方向改善。
+- 第二优先级：做分段/滚动验证，重点看2019-2021、2022-2024、2025-2026是否都能保持逻辑。
+- 第三优先级：复核实盘执行含义，尤其`ret60_up_zero`会在约三成目标日暂停交易，需确认监控和订单生成能稳定处理空仓日。
+
+## 2026-04-29 17:31 CST - 第321阶段股票震荡industry_resid_core 30万慢节奏邻域稳健性反证
+
+### 当前模式
+
+- 当前模式：`day`。
+- 当前研究线：股票震荡独立策略研究。
+- 趋势/震荡隔离：未修改第78正式趋势策略，未接入趋势组合，未触发A/B。
+
+### 外部调研与判断
+
+- 继续沿用第319/320阶段调研：
+  - `Volatility Managed Portfolios`：`https://conference.nber.org/confer/2016/LTAMs16/Moreira_Muir.pdf`
+  - `Smoothing volatility targeting`：`https://arxiv.org/abs/2212.07288`
+  - `Statistical Proxy based Mean-Reverting Portfolios with Sparsity and Volatility Constraints`：`https://arxiv.org/abs/2305.00203`
+  - `Backtesting a Cross-Sectional Mean Reversion Strategy in Python`：`https://teddykoker.com/2019/04/backtesting-a-cross-sectional-mean-reversion-strategy-in-python/`
+  - `GitHub mean-reversion-trading topic`：`https://github.com/topics/mean-reversion-trading`
+- 调研判断：
+  - 风险预算/波动目标类方法最怕参数孤点，候选出现后必须做邻域反证。
+  - 本阶段不从邻域里挑新最优，只检查第320候选`60日/5%/清仓`是否稳定。
+
+### 本次版本变更
+
+- 新增脚本：
+  - `examples/alpha_research/analyze_stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability.py`
+- 输出目录：
+  - `examples/alpha_research/native_results/stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_2018_2026/`
+- 主要文件：
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_report.md`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_summary.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_parameter_grid.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_yearly.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_daily.csv`
+  - `stock_range_reversion_liquid_q3_industry_resid_core_30w_slow_rhythm_stability_v1_quality_checkpoints.csv`
+- 新增参数：
+  - lookback邻域：`40/60/80`日。
+  - up阈值邻域：`3%/5%/8%`。
+  - 动作：触发后目标权重乘`0.00`。
+- 修改参数：无。
+- 删除参数：无。
+
+### 新增回测结果
+
+- 质量检查：
+  - `stress_variant_count`：pass，`36/36`。
+  - `base_summary_count`：pass，`4/4`。
+  - `original_candidate_present`：pass，包含第320候选`60日/5%/清仓`。
+  - `all_stress_improve_both_ratio`：warn，`20/36`，低于预期`>=75%`。
+  - `candidate_neighborhood_improve_both_ratio`：warn，`3/9`，低于预期`>=7/9`。
+  - `candidate_neighborhood_within_20pct_count`：warn，`1/9`，低于预期`>=3/9`。
+  - `candidate_best_dd`：pass，`-17.67%`。
+  - `candidate_best_return`：pass，`106.98%`。
+- 第320原候选点复核：
+  - 场景：`industry_resid_core_h10_top5_gross70_ind1 + lookback60_up500bp_zero`
+  - 期末权益：`2.0698`
+  - 总收益：`106.98%`
+  - 最大回撤：`-17.67%`
+  - Sharpe：`0.799`
+- 候选形状邻域：
+  - `40日/3%`：总收益`6.63%`，最大回撤`-32.40%`。
+  - `40日/5%`：总收益`12.35%`，最大回撤`-25.14%`。
+  - `40日/8%`：总收益`9.03%`，最大回撤`-28.79%`。
+  - `60日/3%`：总收益`52.55%`，最大回撤`-28.17%`。
+  - `60日/5%`：总收益`106.98%`，最大回撤`-17.67%`。
+  - `60日/8%`：总收益`60.25%`，最大回撤`-29.34%`。
+  - `80日/3%`：总收益`34.24%`，最大回撤`-21.27%`。
+  - `80日/5%`：总收益`44.82%`，最大回撤`-20.18%`。
+  - `80日/8%`：总收益`73.27%`，最大回撤`-21.75%`。
+- 全场观察：
+  - 全部36个邻域变体中，`20`个同时改善收益和回撤。
+  - `top8_gross70_ind2`有`3/9`个邻域进入20%以内回撤，但收益最高约`71.68%`，不满足100%高收益目标。
+  - `top5_gross100_ind1`邻域收益最高`141.35%`，但最大回撤仍`-30.51%`，不满足风险目标。
+- 总滑点：
+  - 沿用整手回放成本口径，未单独统计滑点字段。
+- 总交易次数：
+  - 以订单行计，详见`daily.csv`和后续如需可补充`orders`级压力输出。
+- 胜率：
+  - 本阶段以年度、收益/回撤和Sharpe为主；详细日胜率可由`daily.csv`计算。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无，新增独立输出。
+- 删除回测结果：无。
+
+### 结论
+
+- 第320是重要线索，但不能升级为正式候选。
+- `60日/5%/清仓`表现过于集中，候选形状只有`1/9`个邻域进入20%以内回撤，参数敏感性偏高。
+- 慢节奏思想仍有继续价值：全场`20/36`个邻域同向改善，说明“赚钱后冷却/降暴露”不是纯噪音。
+- 下一步不应该继续找更漂亮的窗口/阈值，而应该转向更平滑的风险预算函数，或者先做分段/滚动反证。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本阶段是候选后的预注册邻域反证，不用结果替换候选。
+
+### 运行后过拟合反思
+
+- 判断：第320候选存在明显过拟合疑虑。
+- 原因：候选形状只有`3/9`邻域同时改善收益和回撤，只有`1/9`进入20%以内回撤，说明`60日/5%`是敏感点。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：第320首次出现满足目标的候选，必须做稳健性反证。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向要收敛。
+- 原因：慢节奏思想仍然有全局改善迹象，但硬阈值清仓不够稳；下一步要做平滑化或分段反证，不应继续扫参数。
+
+### 后续规划和TODO
+
+- 第一优先级：做分段/滚动反证，确认`60日/5%`是否只是某个大周期偶然合拍。
+- 第二优先级：研究平滑风险预算函数，例如把scale从`0/1`改成随策略自身慢收益连续变化，但只测试少量形状。
+- 第三优先级：如果平滑规则仍不稳，则把慢节奏降级为监控指标，不进入实盘候选。
+
+## 2026-04-29 17:36 CST - 并行研究记录体系迁移 v1
+
+### 当前模式
+
+- 当前模式：`day`。
+- 本阶段性质：研究记录结构优化，不涉及策略回测。
+
+### 外部调研与判断
+
+- 调研参考：
+  - MLflow/ML实验跟踪强调实验元数据、参数、指标、产物可检索。
+  - 多agent并行实践普遍建议用git worktree和按任务/分支隔离文件，减少上下文污染和合并冲突。
+  - Markdown实验记录可以保留，但需要从“单一大流水账”升级为“独立实验文件 + 总索引”。
+- 我的判断：
+  - 当前`memory.md`和`back_log.md`已经过大，不适合并行研究。
+  - 最小可行改法不是引入重型实验平台，而是在仓库内建立轻量`research/`目录。
+
+### 本次版本变更
+
+- 新增文件：
+  - `research/README.md`
+  - `research/registry.md`
+  - `research/merge_log.md`
+  - `research/templates/stage_record.md`
+  - `research/lines/futures_trend/LINE.md`
+  - `research/lines/futures_range/LINE.md`
+  - `research/lines/stock_range_paper_v1/LINE.md`
+  - `research/lines/stock_range_30w_industry_resid_core/LINE.md`
+- 修改文件：
+  - `AGENTS.md`
+  - `memory.md`
+  - `back_log.md`
+- 删除文件：无。
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+
+### 记录规则变化
+
+- 日常研究阶段记录写入：
+  - `research/lines/<line_id>/stages/YYYYMMDD_HHMM_stageNNN_short_slug.md`
+- 当前线状态写入：
+  - `research/lines/<line_id>/LINE.md`
+- 总索引：
+  - `research/registry.md`
+- 合入日志：
+  - `research/merge_log.md`
+- 根目录`memory.md/back_log.md`：
+  - 作为历史总账和重要合入摘要，不再要求每条并行研究日常追加。
+
+### 当前研究线拆分
+
+- `futures_trend`：期货趋势策略，第78正式基准/资金约束研究。
+- `futures_range`：期货震荡策略，下一步是`cs.DCE short`短侧状态归因。
+- `stock_range_paper_v1`：股票震荡paper监控线，权益`2.2225`、总收益`122.25%`、最大回撤`-15.16%`、Sharpe`0.7373`、状态`yellow_caution_continue_paper`。
+- `stock_range_30w_industry_resid_core`：当前30万industry_resid_core研究线，第320有强线索，第321显示参数敏感，下一步做分段/滚动或平滑风险预算。
+
+### 新增回测结果
+
+- 无。本阶段没有运行策略回测。
+
+### 修改/删除回测结果
+
+- 无。
+
+### 运行前过拟合反思
+
+- 判断：不涉及。
+- 原因：本阶段是记录结构和协作流程调整，不新增策略规则。
+
+### 运行后过拟合反思
+
+- 判断：不涉及。
+- 原因：没有改变任何交易信号、参数或回测结果。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：当前研究线已经分叉，继续用单一`memory/back_log`会增加合并冲突和结论串线。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：新结构支持不同worktree独立推进，最后通过`registry`和`merge_log`合入。
+
+### 后续规划和TODO
+
+- 后续新研究先确认`line_id`。
+- 日常阶段结果优先写对应研究线`stages/`。
+- 重要里程碑再合入根目录总账。

@@ -124,11 +124,14 @@ def build_exit_lots(selected: pl.DataFrame, rule: ExitRule) -> tuple[pl.DataFram
         shape_scenario = str(row["scenario"])
         scenario = f"{shape_scenario}_{rule.name}"
         cumulative = 0.0
-        exit_day: int | None = None
+        trigger_day: int | None = None
+        effective_exit_start_day: int | None = None
         exit_reason = ""
         valid_path_days = 0
         common = {col: row.get(col) for col in meta_cols}
         for day in range(1, min(rule.max_holding_days, HORIZON) + 1):
+            if effective_exit_start_day is not None and day >= effective_exit_start_day:
+                break
             start_date = row.get(f"start_date_{day}")
             pnl_date = row.get(f"pnl_date_{day}")
             daily_ret = row.get(f"stock_daily_ret_{day}")
@@ -170,14 +173,21 @@ def build_exit_lots(selected: pl.DataFrame, rule: ExitRule) -> tuple[pl.DataFram
                     "path_cum_ret_after_day": cumulative,
                     "exit_triggered_after_day": triggered,
                     "exit_reason_after_day": trigger_reason,
+                    "effective_exit_start_day_after_trigger": day + 2 if triggered else None,
                 }
             )
 
-            if triggered:
-                exit_day = day
+            if triggered and trigger_day is None:
+                trigger_day = day
                 exit_reason = trigger_reason
-                break
+                # The path return is only known after the next close in this daily panel.
+                # To avoid using that future close to sell at the same next open, exits
+                # start two holding-day slots after the trigger observation.
+                effective_exit_start_day = day + 2
 
+        exit_effective = (
+            effective_exit_start_day is not None and effective_exit_start_day <= min(rule.max_holding_days, HORIZON)
+        )
         event_rows.append(
             {
                 "scenario": scenario,
@@ -188,15 +198,25 @@ def build_exit_lots(selected: pl.DataFrame, rule: ExitRule) -> tuple[pl.DataFram
                 "industry": row.get("industry", ""),
                 FEATURE: row[FEATURE],
                 "valid_path_days": valid_path_days,
-                "exit_day": exit_day,
+                "trigger_day": trigger_day,
+                "effective_exit_start_day": effective_exit_start_day,
                 "exit_reason": exit_reason or ("time_exit" if rule.max_holding_days < HORIZON else "horizon_exit"),
+                "exit_effective": exit_effective,
                 "path_cum_ret_at_exit_or_horizon": cumulative,
-                "stopped_or_took_profit": exit_day is not None,
+                "stopped_or_took_profit": trigger_day is not None,
             }
         )
 
-    lots = pl.DataFrame(lot_rows).sort(["scenario", "target_date", "signal_date", "symbol"]) if lot_rows else pl.DataFrame()
-    events = pl.DataFrame(event_rows).sort(["scenario", "signal_date", "symbol"]) if event_rows else pl.DataFrame()
+    lots = (
+        pl.DataFrame(lot_rows, infer_schema_length=None).sort(["scenario", "target_date", "signal_date", "symbol"])
+        if lot_rows
+        else pl.DataFrame()
+    )
+    events = (
+        pl.DataFrame(event_rows, infer_schema_length=None).sort(["scenario", "signal_date", "symbol"])
+        if event_rows
+        else pl.DataFrame()
+    )
     return lots, events
 
 
@@ -263,7 +283,9 @@ def summarize_exit_events(events: pl.DataFrame) -> pl.DataFrame:
         .agg(
             pl.len().alias("signals"),
             pl.col("stopped_or_took_profit").mean().alias("trigger_ratio"),
-            pl.col("exit_day").mean().alias("avg_exit_day"),
+            pl.col("exit_effective").mean().alias("effective_exit_ratio"),
+            pl.col("trigger_day").mean().alias("avg_trigger_day"),
+            pl.col("effective_exit_start_day").mean().alias("avg_effective_exit_start_day"),
             pl.col("path_cum_ret_at_exit_or_horizon").mean().alias("avg_path_cum_ret_at_exit_or_horizon"),
             pl.col("path_cum_ret_at_exit_or_horizon").median().alias("median_path_cum_ret_at_exit_or_horizon"),
         )
@@ -367,7 +389,9 @@ def replay_variant(
     if not events.is_empty():
         scenario_events = events.filter(pl.col("scenario") == scenario)
         triggered = scenario_events.filter(pl.col("stopped_or_took_profit"))
+        effective = scenario_events.filter(pl.col("exit_effective"))
         summary["exit_trigger_ratio"] = triggered.height / scenario_events.height if scenario_events.height else 0.0
+        summary["effective_exit_ratio"] = effective.height / scenario_events.height if scenario_events.height else 0.0
         summary["avg_signal_path_ret_at_exit_or_horizon"] = to_float(
             scenario_events["path_cum_ret_at_exit_or_horizon"].mean()
         )
@@ -386,6 +410,7 @@ def write_report(
     paths: dict[str, Path],
 ) -> Path:
     report_path = paths["report"]
+    top_yearly_scenarios = summary.sort("total_return_min_fee", descending=True)["scenario"].head(5).to_list()
     pass_dd = summary.filter(pl.col("max_drawdown_min_fee") >= MAX_DRAWDOWN_LIMIT).sort(
         ["total_return_min_fee", "sharpe_min_fee"], descending=[True, True]
     )
@@ -404,6 +429,8 @@ def write_report(
         f"- 记录时间：{datetime.now().strftime('%Y-%m-%d %H:%M CST')}",
         "- 当前研究线：股票震荡独立策略研究，不接入第78。",
         "- 本阶段性质：固定弱势修复入场，只测试朴素止损、止盈和持有期退出对尾部风险的影响。",
+        "- 退出执行口径：触发信号至少滞后一个可交易目标日后才生效，避免用未来收盘决定同一开盘卖出。",
+        "- 实现审计：非滞后退出曾产生不可信的极高收益，已作为未来函数风险否决，不纳入结论。",
         f"- 账户规模：`{ACCOUNT_SIZE_CNY:,.0f}`元；最大回撤目标：`20%`以内；高收益目标：`100%+`。",
         f"- 形状：`{SHAPES}`；退出规则数量：`{len(EXIT_RULES)}`。",
         "- A/B判断：退出归因研究，不接入第78，不触发A/B。",
@@ -413,6 +440,7 @@ def write_report(
         "- 止损和止盈是风险分布改造工具，不是天然收益增强工具；如果价格更接近随机游走或强均值回归，机械止损可能降低期望。",
         "- 只有当亏损路径存在趋势延续、尾部聚集或交易制度约束时，退出规则才可能改善回撤。",
         "- 因此本阶段不做大规模阈值搜索，只测试少数朴素退出规则，看是否存在结构性尾部改善。",
+        "- 注意：本脚本采用保守滞后退出，避免把未来函数误判为突破。",
         "",
         "参考资料：",
     ]
@@ -450,6 +478,7 @@ def write_report(
         "sharpe_min_fee",
         "return_over_max_dd",
         "exit_trigger_ratio",
+        "effective_exit_ratio",
         "zero_lot_target_ratio",
         "latest_exposure_capture_ratio",
         "avg_actual_gross_weight",
@@ -467,33 +496,38 @@ def write_report(
                     ["total_return_min_fee", "max_drawdown_min_fee", "sharpe_min_fee"],
                     descending=[True, True, True],
                 )
-                .select([col for col in display_cols if col in summary.columns])
-                .head(80)
+                .select([col for col in display_cols if col in summary.columns]),
+                [col for col in display_cols if col in summary.columns],
+                max_rows=80,
             ),
             "",
             "## 回撤20%以内候选",
             "",
-            markdown_table(pass_dd.select([col for col in display_cols if col in pass_dd.columns]).head(40))
+            markdown_table(
+                pass_dd.select([col for col in display_cols if col in pass_dd.columns]),
+                [col for col in display_cols if col in pass_dd.columns],
+                max_rows=40,
+            )
             if pass_dd.height
             else "无数据",
             "",
             "## 退出事件摘要Top80",
             "",
-            markdown_table(exit_summary.head(80)) if not exit_summary.is_empty() else "无数据",
+            markdown_table(exit_summary, exit_summary.columns, max_rows=80) if not exit_summary.is_empty() else "无数据",
             "",
             "## 年度拆分Top候选",
             "",
             markdown_table(
-                yearly.filter(pl.col("scenario").is_in(summary.sort("total_return_min_fee", descending=True)["scenario"].head(5)))
-                .sort(["scenario", "year"])
-                .head(80)
+                yearly.filter(pl.col("scenario").is_in(top_yearly_scenarios)).sort(["scenario", "year"]),
+                yearly.columns,
+                max_rows=80,
             )
             if not yearly.is_empty()
             else "无数据",
             "",
             "## 质量检查",
             "",
-            markdown_table(quality.head(120)) if not quality.is_empty() else "无数据",
+            markdown_table(quality, quality.columns, max_rows=120) if not quality.is_empty() else "无数据",
             "",
             "## 结论",
             "",
@@ -556,11 +590,11 @@ def main() -> None:
         ["total_return_min_fee", "max_drawdown_min_fee", "sharpe_min_fee"],
         descending=[True, True, True],
     )
-    orders_df = pl.concat(all_orders, how="vertical") if all_orders else pl.DataFrame()
-    daily_df = pl.concat(all_daily, how="vertical") if all_daily else pl.DataFrame()
-    yearly_df = pl.concat(all_yearly, how="vertical") if all_yearly else pl.DataFrame()
-    target_df = pl.concat(all_targets, how="vertical") if all_targets else pl.DataFrame()
-    events_df = pl.concat(all_events, how="vertical") if all_events else pl.DataFrame()
+    orders_df = pl.concat(all_orders, how="diagonal_relaxed") if all_orders else pl.DataFrame()
+    daily_df = pl.concat(all_daily, how="diagonal_relaxed") if all_daily else pl.DataFrame()
+    yearly_df = pl.concat(all_yearly, how="diagonal_relaxed") if all_yearly else pl.DataFrame()
+    target_df = pl.concat(all_targets, how="diagonal_relaxed") if all_targets else pl.DataFrame()
+    events_df = pl.concat(all_events, how="diagonal_relaxed") if all_events else pl.DataFrame()
     exit_summary_df = summarize_exit_events(events_df)
     quality_df = build_quality(summary_df)
 
