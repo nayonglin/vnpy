@@ -1,6 +1,6 @@
 # 研究线总索引
 
-更新时间：2026-04-29 17:36 CST
+更新时间：2026-04-29 23:52 CST
 
 ## 当前研究线
 
@@ -9,7 +9,7 @@
 | `futures_trend` | 期货趋势策略 | 商品期货趋势/第78正式基准 | 正式基准与资金约束研究线 | Stage78正式基准；Stage111为40万部署候选 | `research/lines/futures_trend/` | 准实盘复盘、执行/滑点审计、AI池切换稳定性 |
 | `futures_range` | 期货震荡策略 | 商品期货震荡/区间回归 | 独立研究线，暂不接第78 | 第198阶段v8长侧可交易性归因 | `research/lines/futures_range/` | 做`cs.DCE short`短侧状态归因 |
 | `stock_range_paper_v1` | 股票震荡paper线 | A股横截面震荡/liquid_q3 paper | paper监控线，黄灯继续观察 | paper monitor suite：权益`2.2225`、回撤`-15.16%`、Sharpe`0.7373` | `research/lines/stock_range_paper_v1/` | 定期补数据、跑paper suite、积累OOS |
-| `stock_range_30w_industry_resid_core` | 股票震荡30万industry_resid_core线 | A股30万账户/行业残差核心 | 强线索但未正式候选 | Stage321邻域反证：第320候选敏感，不能升级正式候选 | `research/lines/stock_range_30w_industry_resid_core/` | 做分段/滚动反证或平滑风险预算 |
+| `stock_range_30w_industry_resid_core` | 股票震荡30万industry_resid_core线 | A股30万账户/行业残差核心 | 持有期硬规则被反证，转向组合风险归因 | Stage339未确认退出反证：第4-10日仍为正收益 | `research/lines/stock_range_30w_industry_resid_core/` | 做简单母本日期层/组合层风险归因 |
 
 ## 状态定义
 
