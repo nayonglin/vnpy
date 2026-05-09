@@ -44344,3 +44344,436 @@ to-end季度冷启动：
 - 后续新研究先确认`line_id`。
 - 日常阶段结果优先写对应研究线`stages/`。
 - 重要里程碑再合入根目录总账。
+
+## 2026-05-09 17:23 CST Stage190 第78结构基础池A/B实验
+
+### 当前模式与基准
+
+- 当前模式：`day`
+- line_id：`futures_trend`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 是否重要突破：否
+- 是否触发A/B：是，品种基础池候选可能影响第78正式路径。
+
+### 外部调研与判断
+
+- 外部趋势跟踪/managed futures 实践通常先做流动性、成本、保证金、波动和可交易性过滤，再谈策略层动态筛选。
+- vn.py 是交易框架，不替策略决定品种池。
+- 我的判断：全市场基础池研究有价值，但不能用历史收益TopN替代正式池；本阶段必须以预注册A/B结果决定是否继续。
+
+### 本次版本变更
+
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage190_stage78_structural_universe_ab.py`
+- 修改脚本：同上，补充 B 臂关闭 AI 时展示字段保护。
+- 删除脚本：无
+- 新增参数：无正式策略参数；新增实验臂 A/B/C/D。
+- 修改参数：无正式第78参数修改。
+- 删除参数：无。
+
+### 回测参数
+
+- 数据区间：2020-01-01 至 2026-04-30
+- 账户规模：200,000
+- 成本口径：沿用当前期货元数据滑点/手续费口径
+- A：官方第78
+- B：第78机制 + 结构基础池，关闭月度AI过滤
+- C：第78机制 + 结构基础池 + AI top8
+- D：第78机制 + 结构基础池 + simple top8
+
+### 新增回测结果
+
+| 实验臂 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| A 官方第78 | 4,637,530 | 2218.765% | -36.9907% | 1.2922 | 261,740 | 782 | 42.1053% |
+| B 结构池全开无AI | 672,750 | 236.375% | -52.8883% | 0.3328 | 254,020 | 1,431 | 40.4138% |
+| C 结构池+AI top8 | 515,780 | 157.890% | -70.4333% | 0.3000 | 118,730 | 788 | 41.4392% |
+| D 结构池+simple top8 | 519,070 | 159.535% | -51.5058% | 0.3042 | 144,400 | 806 | 41.1192% |
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 结论
+
+- C 未通过晋级：相对 A，期末权益低 `4,121,750`，总收益低 `2060.875` 个百分点，最大回撤恶化 `33.4426` 个百分点，Sharpe 低 `0.9922`。
+- B 交易次数大幅增加到 `1,431`，路径质量也明显弱于 A。
+- D 虽比 C 回撤好，但仍远弱于 A。
+- 结论：结构基础池候选保持 research-only，不替换第78正式池，不进入实盘影子主路径。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：预先固定 A/B/C/D 和通过规则，验证的是结构基础池是否能泛化承接第78。
+
+### 运行后过拟合反思
+
+- 判断：当前实验否；若继续调 TopN/阈值救结果则会过拟合。
+- 原因：失败后应停止，不应针对历史路径补丁式优化。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：人工品种池可能有遗漏，结构基础池可以检验这种遗漏是否真实。
+
+### 运行后继续价值反思
+
+- 判断：作为正式晋级路线暂时否；作为失败归因仍有价值。
+- 原因：结构池显著弱于官方第78，继续推进替代会降低实盘准备质量。
+
+### 输出文件
+
+- stage记录：`research/lines/futures_trend/stages/20260509_1723_stage190_stage78_structural_universe_ab.md`
+- report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage190_stage78_structural_universe_ab_report.md`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage190_stage78_structural_universe_ab_summary.csv`
+- summary_json：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage190_stage78_structural_universe_ab_summary.json`
+
+### 后续规划和TODO
+
+- 不继续做结构池 TopN/阈值扫描。
+- 如要继续，只做失败归因：新增品种是否带来长回撤、低趋势持续性、保证金/跳空/合约切换问题。
+- 实盘准备继续沿用官方第78与最新月度AI影子池流程。
+
+## 2026-05-09 17:44 CST Stage192 手工池 add-one 候选验证
+
+### 当前模式与基准
+
+- 当前模式：`day`
+- line_id：`futures_trend`
+- 当前正式基准：`official_stage78_defensive_v1`
+- 是否重要突破：否
+- 是否触发A/B：是，候选卫星品种可能影响第78正式池/影子盘路径。
+
+### 外部调研与判断
+
+- 外部趋势跟踪和 time-series momentum 资料强调：期货趋势策略应优先保证可交易性、流动性、波动/趋势地形和成本可控，而不是只按历史收益挑品种。
+- 我的判断：本阶段只能作为候选筛查；add-one 胜出不等于可以直接实盘，仍需分窗、冷启动和30万约束复验。
+
+### 本次版本变更
+
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage192_manual_pool_add_one_validation.py`
+- 修改脚本：无
+- 删除脚本：无
+- 新增参数：
+  - 实验标签：`qmt_roll_stage192_manual_pool_add_one_validation`
+  - 对照：`manual18_no_fixed_satellite`
+  - 候选：`UR.CZCE`、`pg.DCE`、`sn.SHFE`、`eb.DCE`、`fu.SHFE`
+  - AI口径：原月度 `ai_top8_entry_filter` 后固定追加一个候选卫星品种
+  - 卫星品种风控排除：`streak_risk_state_exclusion_mode=profit_only`
+- 修改参数：无正式第78参数修改
+- 删除参数：无
+
+### 回测参数
+
+- 数据区间：2020-01-01 至 2026-04-30
+- 账户规模：200,000
+- 成本口径：沿用当前元数据滑点口径；本轮 `total_commission=0`
+- 策略口径：第78当前核心机制，包含 pairwise v2、long015 volume tilt、同向相关性门控、月度AI品种过滤。
+
+### 新增回测结果
+
+| 实验臂 | 候选 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| manual18_no_fixed_satellite | - | 3,931,630 | 1865.8150% | -36.9907% | 1.2091 | 259,510 | 723 | 41.4634% |
+| manual18_plus_UR_CZCE | UR.CZCE | 3,511,495 | 1655.7475% | -36.9907% | 1.1374 | 278,640 | 781 | 40.9548% |
+| manual18_plus_pg_DCE | pg.DCE | 3,616,590 | 1708.2950% | -36.9907% | 1.1500 | 261,000 | 772 | 40.6091% |
+| manual18_plus_sn_SHFE | sn.SHFE | 4,016,850 | 1908.4250% | -36.9907% | 1.2160 | 247,770 | 772 | 42.6396% |
+| manual18_plus_eb_DCE | eb.DCE | 3,895,580 | 1847.7900% | -36.9907% | 1.2022 | 259,710 | 787 | 40.8978% |
+| manual18_plus_fu_SHFE | fu.SHFE | 4,637,530 | 2218.7650% | -36.9907% | 1.2922 | 261,740 | 782 | 42.1053% |
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 结论
+
+- `fu.SHFE` 是唯一明显胜出的 add-one：相对手工18池，期末权益增加 `705,900`，总收益增加 `352.95` 个百分点，Sharpe 增加 `0.0831`，最大回撤百分比未恶化。
+- `sn.SHFE` 只有小幅改善：期末权益增加 `85,220`，Sharpe 增加 `0.0069`，只能作为下一轮组合观察候选。
+- `UR.CZCE`、`pg.DCE`、`eb.DCE` 本轮不通过，不应继续做参数补丁。
+
+### 运行前过拟合反思
+
+- 判断：轻度风险，但可控。
+- 原因：候选来自手工池相似性探测，存在历史偏好学习风险；但本轮预先固定逐个 add-one，不在结果后调参。
+
+### 运行后过拟合反思
+
+- 判断：本轮实验本身不过拟合；若继续调 TopN/阈值救失败候选，则会过拟合。
+- 原因：结果清楚支持保留 `fu.SHFE`，`sn.SHFE` 仅进入反证，不应把 UR/pg/eb 的失败再调成成功。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：它直接回答“像手工池的候选是否真的适合第78资金路径”。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向收窄。
+- 原因：继续价值集中在 `fu.SHFE` 正式保留与 `fu + sn` 组合反证；其余候选边际价值低。
+
+### 输出文件
+
+- stage记录：`research/lines/futures_trend/stages/20260509_1744_stage192_manual_pool_add_one_validation.md`
+- report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage192_manual_pool_add_one_validation_report.md`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage192_manual_pool_add_one_validation_summary.csv`
+- summary_json：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage192_manual_pool_add_one_validation_summary.json`
+- 资金曲线HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage192_manual_pool_add_one_validation_equity_curves.html`
+- 资金曲线CSV：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage192_manual_pool_add_one_validation_equity_curves.csv`
+
+### 后续规划和TODO
+
+- 下一步如继续，跑 `manual18 + fu + sn` 对官方第78的分窗、冷启动、30万实盘约束验证。
+- 不继续推进 UR/pg/eb。
+- 实盘影子盘主路径暂时仍以当前 `fu.SHFE` 官方卫星口径为准。
+
+## 2026-05-09 18:07 Stage193：fu.SHFE 固定卫星品种深度验证
+
+### 调研和判断结论
+
+- 外部趋势跟踪、time-series momentum 和商品期货趋势研究共同指向：期货趋势策略应看重跨品种分散、可交易性、成本压力和分窗稳定性，不能只按历史全样本收益加品种。
+- 本轮判断：`fu.SHFE` 不是因为 Stage192 全样本最好就直接加入，而是通过 `no_fu` vs `with_fu` 的周期拆分、起始年份、年度收益和滑点压力验证后，确认它更像适合第78趋势结构的固定卫星品种。
+
+### 本次版本变更
+
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage193_fu_satellite_deep_validation.py`
+- 修改脚本：无
+- 删除脚本：无
+- 新增参数：
+  - 实验标签：`stage193_fu_satellite_deep_validation_v1`
+  - 对照组：`manual18_ai_top8_no_fu`
+  - 候选组：`manual18_ai_top8_plus_fu`
+  - 候选组继承官方第78 `fu.SHFE` 固定卫星口径
+  - 候选组继承 `streak_risk_state_excluded_products=fu.SHFE`
+  - 候选组继承 `streak_risk_state_exclusion_mode=profit_only`
+  - 滑点压力倍数：`1.0 / 1.5 / 2.0 / 3.0 / 5.0`
+- 修改参数：无正式第78参数修改
+- 删除参数：无
+
+### 回测参数
+
+- 数据区间：2020-01-01 至 2026-04-30
+- 账户规模：200,000
+- 成本口径：沿用当前元数据滑点口径；本轮 `total_commission=0`
+- 策略口径：第78当前核心机制，包含 pairwise v2、long015 volume tilt、同向相关性门控、月度AI品种过滤。
+
+### 新增回测结果
+
+| 口径 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| manual18_ai_top8_no_fu | 3,931,630 | 1865.8150% | -36.9907% | 1.2091 | 259,510 | 723 | 41.4634% |
+| manual18_ai_top8_plus_fu | 4,637,530 | 2218.7650% | -36.9907% | 1.2922 | 261,740 | 782 | 42.1053% |
+
+关键增量：
+
+- 全样本：`with_fu` 期末权益增加 `705,900`，总收益增加 `352.9500` 个百分点，Sharpe 增加 `0.0831`，最大回撤百分比不变。
+- post_signal_2022_2026：总收益从 `943.0100%` 提升到 `1350.4125%`，最大回撤从 `-50.5791%` 改善到 `-37.5422%`。
+- 起始年份 since_2020 至 since_2025：`with_fu` 全部收益和 Sharpe 更好，且回撤不恶化或改善。
+- 起始年份 since_2026：`with_fu` 收益从 `-3.6675%` 转为 `2.8325%`，但最大回撤从 `-16.2144%` 恶化到 `-35.4516%`，标记为黄灯。
+- 5x 滑点压力：`with_fu` 仍比 `no_fu` 多 `696,980` 期末权益，收益优势 `+348.4900` 个百分点，最大回撤不恶化。
+
+历史正式基准字段：旧第78参考口径曾记录期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮不是复跑该旧基准，而是在当前 Stage78 / 月度 AI Top8 / 手工18基础池口径下验证 `fu.SHFE` 固定卫星。
+
+### 修改/删除回测结果
+
+- 修改回测结果：无
+- 删除回测结果：无
+
+### 结论
+
+- `fu.SHFE` 可以保留为第78正式趋势策略固定卫星品种。
+- 但应标记为“通过，带 2026 冷启动黄灯”：长期和多窗口证据强，短期冷启动路径回撤会明显更深。
+- 下一步不继续为 `fu` 调参；转入 30万、T+1 成交、真实成本和影子盘日报归因。
+
+### 运行前过拟合反思
+
+- 判断：有过拟合风险，但可控。
+- 原因：`fu` 已在 Stage192 中胜出，本轮若继续调参会过拟合；因此只固定两组口径做反证验证。
+
+### 运行后过拟合反思
+
+- 判断：本轮结果本身不像过拟合，但不能把结论扩大成“fu 永远有效”。
+- 原因：多窗口和成本压力都支持 `fu`，但 2026 冷启动回撤恶化说明必须继续做实盘影子盘验证。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：`fu` 是否保留直接影响第78正式品种池和实盘信号。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向改变。
+- 原因：研究价值从“要不要加 fu”转向“实盘中如何监控 fu 的短期回撤、滑点和换月风险”。
+
+### 输出文件
+
+- stage记录：`research/lines/futures_trend/stages/20260509_1807_stage193_fu_satellite_deep_validation.md`
+- 脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage193_fu_satellite_deep_validation.py`
+- report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage193_fu_satellite_deep_validation_report_stage193_fu_satellite_deep_validation_v1.md`
+- 资金曲线HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage193_fu_satellite_deep_validation_equity_curves_stage193_fu_satellite_deep_validation_v1.html`
+- 年度收益：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage193_fu_satellite_deep_validation_annual_returns_stage193_fu_satellite_deep_validation_v1.csv`
+- 滑点压力：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage193_fu_satellite_deep_validation_slippage_comparison_stage193_fu_satellite_deep_validation_v1.csv`
+
+### 后续规划和TODO
+
+- 第78影子盘继续采用当前官方 `official_stage78_defensive_v1` 中的 `fu.SHFE` 固定卫星设置。
+- 在影子盘日报中补充 `fu` 单品种归因字段：持仓、PnL、滑点、换月、是否触发风控。
+- 若后续研究 `sn.SHFE`，必须作为独立 Stage，不与 `fu` 结果混合。
+
+## 2026-05-10 00:09 Stage194：第78版本2015起点多周期可行性审计
+
+### 调研和判断结论
+
+- 外部趋势跟踪和 time-series momentum 研究支持期货趋势策略用长样本、分阶段、成本压力和稳定性检验，但前提是样本数据完整。
+- 本轮判断：当前数据库不能诚实支持“第78从2015开始已经完成可信回测”的结论，因为2015-2019主力映射后的K线覆盖严重不足。
+- 第78在2020以后覆盖通过窗口仍有可行性证据，但不是完全绿灯，仍需T+1执行审计、真实成本和影子盘验证。
+
+### 本次版本变更
+
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage194_stage78_2015_multicycle_viability.py`
+- 新增阶段记录：`research/lines/futures_trend/stages/20260510_0009_stage194_stage78_2015_multicycle_viability.md`
+- 修改脚本：无
+- 删除脚本：无
+- 新增参数：
+  - 请求起点：`2015-01-05`
+  - 回测终点：`2026-04-30`
+  - 覆盖率通过阈值：`95%`
+  - 滑点压力倍数：`1.0 / 1.5 / 2.0 / 3.0 / 5.0`
+- 修改参数：无正式第78参数修改
+- 删除参数：无
+
+### 回测参数
+
+- 正式版本：`official_stage78_defensive_v1`
+- 数据区间：请求2015-01-05至2026-04-30；可信主窗口为2020-01-01至2026-04-30
+- 账户规模：200,000
+- 成本口径：沿用当前元数据滑点口径；本轮 `total_commission=0`
+- 样本过滤：窗口覆盖率低于 `95%` 时只记录覆盖门禁，不输出策略收益判断。
+
+### 新增回测结果
+
+| 窗口 | 区间 | 覆盖率 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| requested_since_2015 | 2015-01-05至2026-04-30 | 63.5276% | - | - | - | - | - | - | - |
+| full_2020_2026 | 2020-01-01至2026-04-30 | 99.2722% | 4,637,530 | 2218.7650% | -36.9907% | 1.2922 | 261,740 | 782 | 42.1053% |
+| pre_ai_2020_2021 | 2020-01-01至2021-12-31 | 98.0608% | 1,384,905 | 592.4525% | -36.9907% | 1.6313 | 57,190 | 306 | 43.7500% |
+| post_signal_2022_2026 | 2022-02-07至2026-04-30 | 99.7520% | 2,900,825 | 1350.4125% | -37.5422% | 1.3023 | 169,340 | 434 | 42.3387% |
+| since_2021 | 2021-01-01至2026-04-30 | 99.7977% | 4,163,420 | 1981.7100% | -42.3203% | 1.1931 | 239,170 | 633 | 43.5135% |
+| latest_2026 | 2026-01-01至2026-04-30 | 96.8558% | 205,665 | 2.8325% | -35.4516% | 0.0629 | 3,100 | 27 | 36.3636% |
+
+年度收益拆分：2020至2026各年均为正收益，分别为 `122.1325% / 211.7295% / 19.1605% / 47.1962% / 19.8189% / 57.0800% / 1.4358%`。
+
+全样本滑点压力：1x期末权益 `4,637,530`，3x期末权益 `4,114,050`、最大回撤 `-40.2491%`，5x期末权益 `3,590,570`、最大回撤 `-44.5009%`。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮不是复跑旧口径，而是当前正式Stage78口径的多周期审计。
+
+### 结论
+
+- 第78当前不能被宣称“已通过2015以来可信回测”；这是数据覆盖问题，不是策略收益问题。
+- 第78可继续作为实盘候选与影子盘主线，但必须标记为黄灯：2020+结果强，然而 `since_2021` 回撤 `-42.3203%` 和3x滑点回撤 `-40.2491%` 都略超用户40%实盘边界。
+- 下一步优先级：如果要证明2015以来，先补2015-2019数据；如果要推进实盘，先做30万资金、T+1成交、真实成本、影子盘日报和账户级硬止损。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本轮固定第78，不调参，不降覆盖率门槛。
+
+### 运行后过拟合反思
+
+- 判断：以覆盖通过窗口为准，否；把2020以后结果外推到2015-2019则不严谨。
+- 原因：结果来自固定配置和覆盖门禁，主要限制是数据覆盖，而非参数寻优。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：它直接回答第78是否能做更长样本审计，以及当前数据能否支持2015起点。
+
+### 运行后继续价值反思
+
+- 判断：是，但方向收敛。
+- 原因：继续价值在补数据或实盘影子盘执行验证，不在缺失数据上继续优化。
+
+### 输出文件
+
+- report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_report_stage194_stage78_2015_multicycle_viability_v1.md`
+- 资金曲线HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_equity_curves_stage194_stage78_2015_multicycle_viability_v1.html`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_summary_stage194_stage78_2015_multicycle_viability_v1.csv`
+- 年度收益：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_annual_returns_stage194_stage78_2015_multicycle_viability_v1.csv`
+- 滑点压力：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_slippage_stress_stage194_stage78_2015_multicycle_viability_v1.csv`
+
+## 2026-05-10 01:27 Stage196：第78版本2015-2019 Tushare早期合约数据修复与复跑
+
+### 调研和判断结论
+
+- TqSdk 当前环境下直接拉部分2015老合约会超时或返回不存在；AkShare/Sina 可拉较早连续合约，但大量2015真实交割合约为空；RQData 本地有包但未配置账号；Tushare `fut_daily` 可成功拉取 `RB1505.SHF`、`JM1505.DCE`、`FU1604.SHF`、`MA1506.ZCE` 等老合约。
+- 本轮判断：2015-2020覆盖差主要是早期真实主力合约K线缺失和郑商所三位合约年代歧义，不是第78策略逻辑问题。
+- 本轮只做数据修复和固定第78复跑，不调参，不按收益选择性补数据。
+
+### 本次版本变更
+
+- 新增脚本：`examples/portfolio_backtesting/repair_qmt_roll_stage196_stage78_2015_tushare_data.py`
+- 修改脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage194_stage78_2015_multicycle_viability.py`
+- 新增阶段记录：`research/lines/futures_trend/stages/20260510_0127_stage196_stage78_2015_tushare_data_repair.md`
+- 新增参数：
+  - 修复窗口：`2015-01-05` 至 `2019-12-31`
+  - 数据源：Tushare `fut_daily`
+  - 郑商所三位合约按映射日期推断完整年份
+- 修改参数：无第78策略参数修改
+- 删除参数：无
+
+### 数据修复结果
+
+- 修复前缺失合约：`223`
+- 修复前缺失映射日：`14,514`
+- 下载/导入状态：`imported=230`，`empty=1`
+- Tushare拉取后覆盖缺失日：`14,368`
+- 残留主要风险：`fu.SHFE` 早期燃油合约仍有较多空洞，`fu1805.SHFE / FU1805.SHF` 返回空。
+
+### 新增回测结果
+
+| 窗口 | 区间 | 覆盖率 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| requested_since_2015 | 2015-01-05至2026-04-30 | 98.1151% | 4,412,810 | 2106.4050% | -36.1290% | 0.9581 | 255,590 | 785 | 41.5190% |
+| early_data_2015_2017 | 2015-01-05至2017-12-29 | 94.5927% | - | - | - | - | - | - | - |
+| transition_2018_2019 | 2018-01-02至2019-12-31 | 98.0505% | 190,420 | -4.7900% | -9.3439% | -0.4241 | 1,440 | 16 | 28.5714% |
+| full_2020_2026 | 2020-01-01至2026-04-30 | 99.2722% | 4,637,530 | 2218.7650% | -36.9907% | 1.2922 | 261,740 | 782 | 42.1053% |
+| latest_2026 | 2026-01-01至2026-04-30 | 96.8558% | 205,665 | 2.8325% | -35.4516% | 0.0629 | 3,100 | 27 | 36.3636% |
+
+年度收益拆分：2020至2026各年均为正收益，分别为 `122.1325% / 211.7295% / 19.1605% / 47.1962% / 19.8189% / 57.0800% / 1.4358%`。
+
+全样本滑点压力：1x期末权益 `4,637,530`，3x期末权益 `4,114,050`、最大回撤 `-40.2491%`，5x期末权益 `3,590,570`、最大回撤 `-44.5009%`。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮不是复跑旧口径，而是当前正式Stage78口径的数据修复复验。
+
+### 结论
+
+- 数据已补到“2015总窗口可参考”的程度，但不是100%补齐：2015-2017早期子段仍为 `94.5927% FAIL`，不能单独作为早期周期可信收益结论。
+- 第78当前判断从Stage194的“2015不能诚实回测”推进为“长样本总窗口通过、早期子段黄灯、2020后主样本仍强”。
+- 对实盘准备而言，这提高了策略可行性证据，但不替代T+1成交审计、真实成本、影子盘对账和40%回撤硬约束。
+
+### 运行前过拟合反思
+
+- 判断：否。
+- 原因：本轮按主力映射缺口补历史数据，不调第78参数，不根据收益挑选合约。
+
+### 运行后过拟合反思
+
+- 判断：否，但有数据覆盖外推风险。
+- 原因：2015总窗口通过不等于2015-2017子段完全可信，报告标签已修正为 `yellow_long_sample_supported_early_segment_gap`。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：它直接回答“15年到20年覆盖差是否要重新下载处理”。
+
+### 运行后继续价值反思
+
+- 判断：是。
+- 原因：下一步价值已经从数据可行性转向执行可行性：T+1、真实成本、影子盘和风控闸门。
+
+### 输出文件
+
+- repair report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage196_stage78_2015_2019_tushare_data_repair_report_stage196_stage78_2015_2019_tushare_data_repair_v1.md`
+- repair status：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage196_stage78_2015_2019_tushare_data_repair_repair_status_stage196_stage78_2015_2019_tushare_data_repair_v1.csv`
+- Stage194 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_report_stage194_stage78_2015_multicycle_viability_v1.md`
+- Stage194 equity HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_equity_curves_stage194_stage78_2015_multicycle_viability_v1.html`
