@@ -12,6 +12,7 @@ from vnpy_portfoliostrategy import BacktestingEngine
 from vnpy_portfoliostrategy.backtesting import Status
 
 from main_contract_mapping import build_contract_metadata, get_preferred_mapping_path, load_product_universe_symbols
+from qmt_backtest_runtime_guard import assert_stage196_database_sentinels
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
 from qmt_universe import END_DT, PRELOAD_START_DT, START_DT
 from run_qmt_alignment_backtest import OPEN_BROWSER_CHART, save_backtest_artifacts
@@ -115,6 +116,7 @@ def build_backtest_engine(
     capital: float = 200_000,
     product_universe_csv_path: str | None = None,
 ) -> tuple[BacktestingEngine, dict[str, Any]]:
+    assert_stage196_database_sentinels()
     supported_symbols = load_product_universe_symbols(product_universe_csv_path)
     metadata = build_contract_metadata(supported_symbols=supported_symbols)
     vt_symbols: list[str] = metadata["vt_symbols"]

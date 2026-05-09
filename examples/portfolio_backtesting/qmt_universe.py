@@ -8,6 +8,10 @@ import pandas as pd
 
 from vnpy.trader.constant import Exchange
 
+from qmt_backtest_runtime_guard import assert_project_trader_dir
+
+
+assert_project_trader_dir()
 
 PRELOAD_START_DT: datetime = datetime(2019, 6, 1)
 START_DT: datetime = datetime(2020, 1, 1)

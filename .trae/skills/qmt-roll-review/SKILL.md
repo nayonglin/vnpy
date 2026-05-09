@@ -40,8 +40,8 @@ description: "执行 QMT Roll 回测复盘、结果审计与 bug 排查。用户
   `/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
 - 必须设置：
   `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
-- 默认执行目录：
-  `/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
+- 默认执行目录为仓库根目录，避免 vn.py 误读用户级 `.vntrader`：
+  `/Users/bytedance/Desktop/person/vnpy`
 - 除非用户明确要求，不要顺手修改策略逻辑；先做审计和定位，再给出修复建议
 - 如果用户要求“直接修”，先完成一轮最小闭环验证，再修改
 - 复盘结论必须基于代码和产物双证据，不能只凭曲线形状主观判断
@@ -70,7 +70,7 @@ description: "执行 QMT Roll 回测复盘、结果审计与 bug 排查。用户
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_backtest.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_backtest.py
 ```
 
 ## 标准流程

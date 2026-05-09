@@ -50,8 +50,8 @@ description: "执行 QMT Roll 四参数风险网格实验与结果汇总。用�
   `/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
 - 必须设置：
   `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
-- 默认执行目录：
-  `/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
+- 默认执行目录为仓库根目录，避免 vn.py 误读用户级 `.vntrader`：
+  `/Users/bytedance/Desktop/person/vnpy`
 - 除非用户明确要求，不要在扫参过程中顺手改其他策略逻辑
 - 如果用户刚改过风险模式阈值，必须先检查当前策略代码，再决定是直接跑粗网格还是先做 spot check
 - 网格结论必须同时基于：
@@ -116,20 +116,20 @@ description: "执行 QMT Roll 四参数风险网格实验与结果汇总。用�
 
 统一在以下目录执行：
 
-`/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
+`/Users/bytedance/Desktop/person/vnpy`
 
 粗网格：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_risk_4param_grid.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_risk_4param_grid.py
 ```
 
 精细网格：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_risk_4param_grid_refined.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_risk_4param_grid_refined.py
 ```
 
 ## 标准流程

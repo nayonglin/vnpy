@@ -27,8 +27,8 @@ description: "执行 QMT Roll 主回测、多周期、Walk-Forward 与蒙特卡�
 
 - 使用本地解释器：`/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`
 - 必须设置 `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy`
-- 所有脚本都从以下目录执行：
-  `/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
+- 所有脚本都从仓库根目录执行，避免 vn.py 误读用户级 `.vntrader`：
+  `/Users/bytedance/Desktop/person/vnpy`
 - 除非用户明确要求改参数，否则默认以 `run_qmt_roll_backtest.py` 当前配置为准
 - 只有在对应脚本运行完成后，最新导出的 `CSV/JSON` 才能作为最终结果
 - 如果批量脚本仍在运行，不要根据中途日志直接下最终结论，除非明确说明这是预览结果
@@ -49,36 +49,36 @@ description: "执行 QMT Roll 主回测、多周期、Walk-Forward 与蒙特卡�
 
 ## 标准命令
 
-以下命令统一在此目录下执行：
+以下命令统一在仓库根目录下执行：
 
-`/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting`
+`/Users/bytedance/Desktop/person/vnpy`
 
 主回测：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_backtest.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_backtest.py
 ```
 
 多周期：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_period_sweep.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_period_sweep.py
 ```
 
 Walk-Forward：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_walkforward.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_walkforward.py
 ```
 
 蒙特卡洛：
 
 ```bash
 PYTHONPATH=/Users/bytedance/Desktop/person/vnpy \
-/Users/bytedance/Desktop/person/vnpy/.py311/bin/python run_qmt_roll_monte_carlo.py
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_monte_carlo.py
 ```
 
 ## 标准流程
