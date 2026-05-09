@@ -137,6 +137,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     long_entry_enabled: bool = True
     short_entry_enabled: bool = False
+    trade_start_date: str = ""
     exit_on_alignment_break: bool = True
     enable_ma_trend_stop: bool = True
     rollover_reopen_enabled: bool = True
@@ -303,6 +304,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "rsi_short_min",
         "long_entry_enabled",
         "short_entry_enabled",
+        "trade_start_date",
         "exit_on_alignment_break",
         "enable_ma_trend_stop",
         "rollover_reopen_enabled",
@@ -703,7 +705,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
 
         self.current_env_gate_snapshot = self._build_daily_env_gate_snapshot(day_contexts)
-        flat_entry_plans = self._plan_flat_entry_candidates(day_contexts)
+        entry_allowed_today = self._entry_allowed_today(current_date)
+        flat_entry_plans = self._plan_flat_entry_candidates(day_contexts) if entry_allowed_today else {}
 
         for context in day_contexts:
             product_vt = context.product_vt_symbol
@@ -730,6 +733,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 continue
 
             if current_pos == 0:
+                if not entry_allowed_today:
+                    continue
                 if signal.startswith("long") or signal.startswith("short"):
                     plan = flat_entry_plans.get(product_vt)
                     if plan is None:
@@ -832,7 +837,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         float(target_bar.close_price),
                         exit_reason="long_reverse_to_short",
                     )
-                    if self.short_entry_enabled and self._can_open_short_signal(signal):
+                    if entry_allowed_today and self.short_entry_enabled and self._can_open_short_signal(signal):
                         sizing = self._calculate_entry_sizing(
                             target_contract,
                             "short",
@@ -874,7 +879,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         float(target_bar.close_price),
                         exit_reason="short_reverse_to_long",
                     )
-                    if self.long_entry_enabled:
+                    if entry_allowed_today and self.long_entry_enabled:
                         sizing = self._calculate_entry_sizing(
                             target_contract,
                             "long",
@@ -902,7 +907,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     continue
 
             can_add, add_type = self._check_regular_add_conditions(state, target_bar, history)
-            if can_add and add_type:
+            if entry_allowed_today and can_add and add_type:
                 add_volume: int = self._calculate_regular_add_volume(state)
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
@@ -912,7 +917,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     continue
 
             can_don_add, don_add_type = self._check_donchian_add_conditions(state, target_bar, history)
-            if can_don_add and don_add_type:
+            if entry_allowed_today and can_don_add and don_add_type:
                 add_volume = self._calculate_donchian_add_volume(state)
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
@@ -925,6 +930,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.last_close_prices = {vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()}
         self.active_count = self._count_active_positions()
         self.put_event()
+
+    def _entry_allowed_today(self, current_date: str) -> bool:
+        start_text = str(self.trade_start_date or "").strip()
+        if not start_text:
+            return True
+        try:
+            return pd.Timestamp(current_date).normalize() >= pd.Timestamp(start_text).normalize()
+        except Exception:
+            return True
 
     def _resolve_actual_position(
         self,

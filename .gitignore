@@ -31,6 +31,7 @@ x64/
 build/
 dist/
 *.local
+*.local.env
 
 # VeighNa
 .vntrader/

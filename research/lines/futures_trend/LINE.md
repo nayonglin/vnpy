@@ -28,6 +28,7 @@
 - Stage78准实盘复盘。
 - 执行、滑点、成交稳定性。
 - AI品种池切换稳定性。
+- 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - 40万资金约束研究以Stage111为部署候选对照。
 
 ## 禁止事项
