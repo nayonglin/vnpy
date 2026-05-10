@@ -27,8 +27,8 @@ OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 MODEL_TAG: str = "stage172_stage78_forward_shadow_report_v1"
 OUTPUT_PREFIX: str = "qmt_roll_stage172_stage78_forward_shadow_report"
 BACKTEST_PREFIX: str = "qmt_roll_stage172_stage78_forward_20260507"
-STAGE168_PREFIX: str = "qmt_roll_stage168_30w_qmt_shadow_startup"
-STAGE168_TAG: str = "stage168_30w_qmt_shadow_startup_v1"
+STAGE168_PREFIX: str = "qmt_roll_stage168_50w_qmt_shadow_startup"
+STAGE168_TAG: str = "stage168_50w_qmt_shadow_startup_v1"
 
 STAGE168_CONFIG_PATH: Path = OUTPUT_DIR / f"{STAGE168_PREFIX}_config_{STAGE168_TAG}.json"
 

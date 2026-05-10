@@ -20,8 +20,8 @@ from qmt_roll_official_stage78_config import (
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-MODEL_TAG: str = "stage168_30w_qmt_shadow_startup_v1"
-OUTPUT_PREFIX: str = "qmt_roll_stage168_30w_qmt_shadow_startup"
+MODEL_TAG: str = "stage168_50w_qmt_shadow_startup_v1"
+OUTPUT_PREFIX: str = "qmt_roll_stage168_50w_qmt_shadow_startup"
 STAGE155_PREFIX: str = "qmt_roll_stage155_stage78_shadow_daily_protocol"
 STAGE155_TAG: str = "stage155_stage78_shadow_daily_protocol_v1"
 
@@ -38,7 +38,7 @@ RUNBOOK_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_runbook_{MODEL_TAG}.md"
 SUMMARY_JSON_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.json"
 REPORT_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 
-SHADOW_CAPITAL: float = 300_000.0
+SHADOW_CAPITAL: float = OFFICIAL_STAGE78_CAPITAL
 MAX_TOLERABLE_DRAWDOWN_PCT: float = 40.0
 DRAW_DOWN_WARN_PCT: float = 20.0
 DRAW_DOWN_REVIEW_PCT: float = 30.0
@@ -398,15 +398,15 @@ def _build_startup_gates(config: dict[str, Any], daily_control: pd.DataFrame) ->
             "required_action": "不改Stage78参数。",
         },
         {
-            "gate": "30w drawdown boundary",
+            "gate": "50w drawdown boundary",
             "status": "WATCH" if dd_buffer < 5 else "PASS",
             "evidence": f"历史最大回撤约{reference_dd:.2f}%，用户硬边界{allowed_dd:.2f}%，缓冲{dd_buffer:.2f}个百分点。",
             "required_action": "只允许影子盘或小风险试运行前置验证；不得满风险直接实盘。",
         },
         {
-            "gate": "30w margin proxy",
+            "gate": "50w margin proxy",
             "status": "PASS" if capital_adjusted_margin < MARGIN_WATCH_PCT else "WATCH",
-            "evidence": f"Stage155最大计划保证金占用折算30万约{capital_adjusted_margin:.2f}%。",
+            "evidence": f"Stage155最大计划保证金占用折算50万约{capital_adjusted_margin:.2f}%。",
             "required_action": "影子盘日报继续跟踪真实保证金占用。",
         },
         {
@@ -439,7 +439,7 @@ def _build_startup_gates(config: dict[str, Any], daily_control: pd.DataFrame) ->
 
 def _write_daily_report_template(config: dict[str, Any]) -> None:
     lines = [
-        "# Stage78 30w QMT影子盘日报",
+        "# Stage78 50w QMT影子盘日报",
         "",
         "- 交易日：`YYYY-MM-DD`",
         f"- 策略版本：`{config['strategy']['version']}`",
@@ -492,13 +492,13 @@ def _write_daily_report_template(config: dict[str, Any]) -> None:
 
 def _write_runbook(config: dict[str, Any], field_map: pd.DataFrame, risk_policy: pd.DataFrame) -> None:
     lines = [
-        "# Stage168 30w QMT影子盘启动Runbook",
+        "# Stage168 50w QMT影子盘启动Runbook",
         "",
         "## 定位",
         "",
         "- 本启动包不是新策略，不修改Stage78正式信号和参数。",
         "- 当前只允许影子盘和QMT只读查询；真实报单开关保持关闭。",
-        "- 目标是把30万资金、40%最大容忍回撤、夜盘交易日口径和QMT对账字段固定下来。",
+        "- 目标是把50万资金、40%最大容忍回撤、夜盘交易日口径和QMT对账字段固定下来。",
         "",
         "## 本机私有配置",
         "",
@@ -527,7 +527,7 @@ def _write_runbook(config: dict[str, Any], field_map: pd.DataFrame, risk_policy:
         "## 当前判断",
         "",
         f"- Stage78历史最大回撤约`{abs(config['strategy']['reference_metrics']['full_2020_2026']['max_dd_percent']):.2f}%`，低于用户`40%`硬边界但缓冲很薄。",
-        f"- 30万最大容忍亏损约`{config['account_boundary']['max_tolerable_loss_cash']:,.0f}`。",
+        f"- 50万最大容忍亏损约`{config['account_boundary']['max_tolerable_loss_cash']:,.0f}`。",
         "- 现阶段结论是可进入影子盘启动，不可直接实盘。",
     ]
     RUNBOOK_PATH.write_text("\n".join(lines), encoding="utf-8")
@@ -551,7 +551,7 @@ def _build_summary(
         "shadow_capital": SHADOW_CAPITAL,
         "max_tolerable_drawdown_pct": MAX_TOLERABLE_DRAWDOWN_PCT,
         "max_tolerable_loss_cash": _cash_threshold(MAX_TOLERABLE_DRAWDOWN_PCT),
-        "allowed_next_mode": "30w_qmt_shadow_read_only",
+        "allowed_next_mode": "50w_qmt_shadow_read_only",
         "real_order_enabled": False,
         "real_money_night_auto_order": False,
         "startup_gate_status_counts": {str(key): int(value) for key, value in status_counts.items()},
@@ -582,12 +582,12 @@ def _write_report(summary: dict[str, Any], config: dict[str, Any], gates: pd.Dat
     latest = config["strategy"]["reference_metrics"]["latest_2026"]
     gate_cols = ["gate", "status", "evidence", "required_action"]
     lines = [
-        "# Stage168 30w QMT影子盘启动包",
+        "# Stage168 50w QMT影子盘启动包",
         "",
         "## 定位",
         "",
         "- 本阶段不是新策略版本，不修改Stage78正式参数，不触发A/B。",
-        "- 目标是把30万资金、40%最大容忍回撤、QMT只读接入、安全边界和夜盘执行口径固化为可运行启动包。",
+        "- 目标是把50万资金、40%最大容忍回撤、QMT只读接入、安全边界和夜盘执行口径固化为可运行启动包。",
         "",
         "## Stage78冻结基准",
         "",
@@ -596,7 +596,7 @@ def _write_report(summary: dict[str, Any], config: dict[str, Any], gates: pd.Dat
         f"- 全周期：期末权益`{reference['end_balance']:,.0f}`，总收益`{reference['total_return_pct']:.4f}%`，最大回撤`{reference['max_dd_percent']:.4f}%`，Sharpe`{reference['sharpe_ratio']:.4f}`，总滑点`{reference['total_slippage']:,.0f}`，交易`{reference['total_trade_count']:,.0f}`。",
         f"- latest_2026：期末权益`{latest['end_balance']:,.0f}`，总收益`{latest['total_return_pct']:.4f}%`，最大回撤`{latest['max_dd_percent']:.4f}%`，Sharpe`{latest['sharpe_ratio']:.4f}`。",
         "",
-        "## 30万实盘边界",
+        "## 50万实盘边界",
         "",
         f"- 资金规模：`{SHADOW_CAPITAL:,.0f}`",
         f"- 最大可接受回撤：`{MAX_TOLERABLE_DRAWDOWN_PCT:.0f}%`，约`{_cash_threshold(MAX_TOLERABLE_DRAWDOWN_PCT):,.0f}`。",
@@ -627,7 +627,7 @@ def _write_report(summary: dict[str, Any], config: dict[str, Any], gates: pd.Dat
         "",
         "## 结论",
         "",
-        "- 可以进入`30w_qmt_shadow_read_only`。",
+        "- 可以进入`50w_qmt_shadow_read_only`。",
         "- 不能直接进入真钱自动交易。",
         "- 下一步应实现每日runner：生成信号、补夜盘/日盘代理价、读取QMT账户与持仓、生成日报。",
     ]

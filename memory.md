@@ -1,5 +1,36 @@
 # 项目经验沉淀
 
+## 2026-05-10 第78正式基准资金治理口径更新
+
+- 当前正式基准短别名已固化为 `78-1`。
+- `78-1` 官方版本名：`official_stage78_1_defensive_50w_no_sizing_cap`
+- 旧 `official_stage78_defensive_v1` 作为策略家族名保留。
+- 第78正式基准已从“30万本金 + 关闭sizing资金封顶”进一步调整为“50万本金 + 关闭sizing资金封顶”。
+- 代码口径：
+  - `OFFICIAL_STAGE78_CAPITAL = 500_000.0`
+  - `OFFICIAL_STAGE78_SIZING_EQUITY_CAP = 0.0`
+  - `OFFICIAL_STAGE78_SHORT_ALIAS = "78-1"`
+  - 第78官方 `build_official_stage78_overrides()` 会自动带上 `"sizing_equity_cap": 0.0`
+- 新Agent入口：
+  - 主回测：`examples/portfolio_backtesting/run_qmt_roll_official_stage78_1.py`
+  - 影子盘日报：`examples/portfolio_backtesting/build_qmt_roll_stage78_1_shadow_daily_runner.py`
+  - 说明文档：`research/lines/futures_trend/STAGE78_1.md`
+- 旧30万口径不是删除，而是保留为对照基线：
+  - `stage78_30w_no_sizing_cap_previous_formal`
+  - `stage78_30w_sizing_cap_1m_previous_formal`
+- 新50万无封顶全样本参考结果：
+  - 期末权益 `25,542,885`
+  - 总收益 `5,008.5770%`
+  - 最大回撤 `-40.0607%`
+  - Sharpe `1.1295`
+  - 总滑点 `1,968,150`
+  - 总交易次数 `880`
+- 重要经验：
+  - 100万sizing cap确实显著压制了第78的复利效率。
+  - 关闭cap后百分比最大回撤未明显恶化，但总滑点和绝对回撤显著放大。
+  - 后续任何“78-1”验证都应默认使用50万本金、无封顶官方覆盖项，并额外关注执行容量和滑点压力。
+  - 用户只说“最新第78正式基准”时，默认等同于`78-1`；若只说“78版本”且语境不清，应追问是否指`78-1`。
+
 ## 2026-04-24 回测与运行时特征口径经验
 
 ### 1. 运行时历史窗口不能只看表面窗口，要看嵌套特征的真实需求

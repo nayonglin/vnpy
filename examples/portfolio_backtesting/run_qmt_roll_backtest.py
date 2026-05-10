@@ -112,8 +112,7 @@ class SameDayCloseBacktestingEngine(BacktestingEngine):
 def build_backtest_engine(
     *,
     preload_start: datetime = PRELOAD_START_DT,
-    backtest_end: datetime = END_DT,
-    capital: float = 200_000,
+    capital: float = 500_000,
     product_universe_csv_path: str | None = None,
 ) -> tuple[BacktestingEngine, dict[str, Any]]:
     assert_stage196_database_sentinels()
@@ -168,7 +167,7 @@ def build_roll_setting(
         "enable_rsi_partial_exit": True,
         "rsi_partial_exit_threshold": 95.0,
         "rsi_partial_exit_ratio": 0.5,
-        "capital_base": 200_000,
+        "capital_base": 500_000,
         "fixed_size": 0,
         "min_position_size": 1,
         "max_position_size": 500,
@@ -384,7 +383,7 @@ def run_backtest(
     analysis_start: datetime = START_DT,
     analysis_end: datetime = END_DT,
     preload_start: datetime | None = None,
-    capital: float = 200_000,
+    capital: float = 500_000,
     save_artifacts: bool = True,
     include_start_year_sweep: bool | None = None,
     file_prefix: str = "qmt_roll",

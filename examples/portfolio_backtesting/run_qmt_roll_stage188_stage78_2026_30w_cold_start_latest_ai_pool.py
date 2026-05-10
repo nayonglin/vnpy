@@ -10,6 +10,7 @@ from typing import Any
 import pandas as pd
 
 from qmt_roll_official_stage78_config import (
+    OFFICIAL_STAGE78_CAPITAL,
     OFFICIAL_STAGE78_REFERENCE_METRICS,
     OFFICIAL_STAGE78_ROLE,
     OFFICIAL_STAGE78_VERSION,
@@ -29,8 +30,8 @@ from run_qmt_roll_stage172_stage78_forward_shadow_report import (
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-MODEL_TAG: str = "stage188_stage78_2026_30w_latest_ai_pool_v1"
-OUTPUT_PREFIX: str = "qmt_roll_stage188_stage78_2026_30w_latest_ai_pool"
+MODEL_TAG: str = "stage188_stage78_2026_50w_latest_ai_pool_v1"
+OUTPUT_PREFIX: str = "qmt_roll_stage188_stage78_2026_50w_latest_ai_pool"
 
 DEFAULT_LATEST_AI_ELIGIBILITY_PATH: Path = (
     OUTPUT_DIR
@@ -39,7 +40,7 @@ DEFAULT_LATEST_AI_ELIGIBILITY_PATH: Path = (
 )
 STAGE186_SUMMARY_PATH: Path = (
     OUTPUT_DIR
-    / "qmt_roll_stage186_stage78_2026_30w_cold_start_summary_stage186_stage78_2026_30w_cold_start_v1.json"
+    / "qmt_roll_stage186_stage78_2026_50w_cold_start_summary_stage186_stage78_2026_50w_cold_start_v1.json"
 )
 
 SUMMARY_JSON_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.json"
@@ -145,7 +146,7 @@ def _write_daily_report(
     comparison: pd.DataFrame,
 ) -> None:
     lines = [
-        "# Stage188 Stage78 2026冷启动30万最新AI池影子日报",
+        "# Stage188 Stage78 2026冷启动50万最新AI池影子日报",
         "",
         f"- 目标交易日：`{summary['target_date']}`",
         f"- 冷启动日期：`{summary['analysis_start']}`",
@@ -207,12 +208,12 @@ def _write_daily_report(
 
 def _write_report(summary: dict[str, Any], signal_plan: pd.DataFrame, comparison: pd.DataFrame) -> None:
     lines = [
-        "# Stage188 Stage78 2026冷启动30万最新AI池回放",
+        "# Stage188 Stage78 2026冷启动50万最新AI池回放",
         "",
         "## 定位",
         "",
         "- 本阶段不是新策略，不修改Stage78参数，不触发A/B。",
-        "- 目标是回答：如果把Stage182生成的最新月度AI池接入，2026-01-01以来30万冷启动回放是否变化。",
+        "- 目标是回答：如果把Stage182生成的最新月度AI池接入，2026-01-01以来50万冷启动回放是否变化。",
         "",
         "## AI池审计",
         "",
@@ -258,10 +259,10 @@ def _write_report(summary: dict[str, Any], signal_plan: pd.DataFrame, comparison
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Stage78 2026 30w cold-start with latest monthly AI pool.")
+    parser = argparse.ArgumentParser(description="Run Stage78 2026 50w cold-start with latest monthly AI pool.")
     parser.add_argument("--analysis-start", default="2026-01-01")
     parser.add_argument("--target-date", default="2026-05-08")
-    parser.add_argument("--capital", type=float, default=300_000.0)
+    parser.add_argument("--capital", type=float, default=OFFICIAL_STAGE78_CAPITAL)
     parser.add_argument("--ai-eligibility-path", default=str(DEFAULT_LATEST_AI_ELIGIBILITY_PATH))
     args = parser.parse_args()
 
@@ -292,7 +293,7 @@ def main() -> None:
         save_artifacts=True,
         include_start_year_sweep=False,
         file_prefix=backtest_prefix,
-        chart_title="Stage188 Stage78 2026 30w Latest AI Pool",
+        chart_title="Stage188 Stage78 2026 50w Latest AI Pool",
     )
 
     summary_row = build_summary_row(
@@ -301,7 +302,7 @@ def main() -> None:
         analysis_end=analysis_end,
         official_version=OFFICIAL_STAGE78_VERSION,
         official_role=OFFICIAL_STAGE78_ROLE,
-        window_name="stage188_2026_30w_latest_ai_pool",
+        window_name="stage188_2026_50w_latest_ai_pool",
         display_label="stage188_latest_ai_pool",
         strategy_overrides_json=json.dumps(strategy_overrides, ensure_ascii=False, sort_keys=True),
         capital=capital,

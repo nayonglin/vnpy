@@ -15,10 +15,10 @@ import pandas as pd
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-MODEL_TAG: str = "stage169_30w_qmt_shadow_daily_runner_v1"
-OUTPUT_PREFIX: str = "qmt_roll_stage169_30w_qmt_shadow_daily_runner"
-STAGE168_PREFIX: str = "qmt_roll_stage168_30w_qmt_shadow_startup"
-STAGE168_TAG: str = "stage168_30w_qmt_shadow_startup_v1"
+MODEL_TAG: str = "stage169_50w_qmt_shadow_daily_runner_v1"
+OUTPUT_PREFIX: str = "qmt_roll_stage169_50w_qmt_shadow_daily_runner"
+STAGE168_PREFIX: str = "qmt_roll_stage168_50w_qmt_shadow_startup"
+STAGE168_TAG: str = "stage168_50w_qmt_shadow_startup_v1"
 STAGE155_PREFIX: str = "qmt_roll_stage155_stage78_shadow_daily_protocol"
 STAGE155_TAG: str = "stage155_stage78_shadow_daily_protocol_v1"
 
@@ -296,7 +296,7 @@ def _write_report(
     paths: dict[str, Path],
 ) -> None:
     lines = [
-        "# Stage169 30w QMT影子盘日报",
+        "# Stage169 50w QMT影子盘日报",
         "",
         f"- 交易日：`{trade_date}`",
         f"- 策略版本：`{config['strategy']['version']}`",
@@ -370,7 +370,7 @@ def _write_report(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build one Stage169 30w QMT shadow daily report.")
+    parser = argparse.ArgumentParser(description="Build one Stage169 50w QMT shadow daily report.")
     parser.add_argument("--trade-date", default="", help="Decision date to report, YYYY-MM-DD. Defaults to latest signal date.")
     args = parser.parse_args()
 

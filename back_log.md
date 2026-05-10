@@ -1,3 +1,206 @@
+# 2026-05-10 15:32 Stage223 固化Stage78-1正式别名
+
+## 版本改动
+
+- 是否重要突破：是，当前正式第78口径有了明确短别名`78-1`。
+- 新增参数/常量：
+  - `OFFICIAL_STAGE78_FAMILY_VERSION = "official_stage78_defensive_v1"`
+  - `OFFICIAL_STAGE78_VERSION = "official_stage78_1_defensive_50w_no_sizing_cap"`
+  - `OFFICIAL_STAGE78_SHORT_ALIAS = "78-1"`
+- 修改参数：
+  - `OFFICIAL_STAGE78_PROFILE_NAME` 改为 `stage78_1_ai_top8_plus_fu_satellite_post_signal_50w_no_sizing_cap`
+- 删除参数：无。
+- 新增文件：
+  - `examples/portfolio_backtesting/run_qmt_roll_official_stage78_1.py`
+  - `examples/portfolio_backtesting/build_qmt_roll_stage78_1_shadow_daily_runner.py`
+  - `research/lines/futures_trend/STAGE78_1.md`
+  - `research/lines/futures_trend/stages/20260510_1532_stage223_stage78_1_alias_formalization.md`
+
+## 回测参数
+
+- 本阶段不改变交易逻辑，不跑新回测。
+- `78-1`固定口径：
+  - 初始资金：`500,000`
+  - sizing资金封顶：`0.0`
+  - AI选品：开启
+  - FU卫星规则：开启
+  - 新开空门禁：只允许`short_case1a`
+
+## 回测结果
+
+- 新增回测结果：无。
+- 修改回测结果：无。
+- 删除回测结果：无。
+- 沿用Stage220/Stage222参考：
+  - 期末权益：`25,542,885`
+  - 总收益：`5,008.5770%`
+  - 最大回撤：`-40.0607%`
+  - Sharpe：`1.1295`
+  - 总滑点：`1,968,150`
+  - 总交易次数：`880`
+  - 胜率：待后续专项复跑确认
+
+## 使用约定
+
+- 用户说“回测78-1”：运行 `examples/portfolio_backtesting/run_qmt_roll_official_stage78_1.py`
+- 用户说“用78-1做影子盘”：运行 `examples/portfolio_backtesting/build_qmt_roll_stage78_1_shadow_daily_runner.py`
+- 用户说“最新第78正式基准”：默认等同于`78-1`
+- 用户只说“78版本”且上下文不清：应追问是否指`78-1`
+
+## 反思
+
+- 过拟合反思：否。命名固化不改变信号、资金、品种池或风控参数。
+- 继续价值反思：有。新agent不再需要从聊天历史猜测当前第78口径。
+
+## 后续规划
+
+- 用`78-1`入口重跑主回测，生成正式summary产物。
+- 用`78-1`口径重跑三件套和多周期曲线。
+
+# 2026-05-10 15:03 Stage222 第78正式基准与影子盘口径切换为50万
+
+## 版本改动
+
+- 是否重要突破：是，第78正式初始资金与影子盘边界统一为50万。
+- 新增参数：无。
+- 修改参数：
+  - `OFFICIAL_STAGE78_CAPITAL`：`300,000` -> `500,000`
+  - `run_qmt_roll_backtest.py` 默认 `capital/capital_base`：`300,000` -> `500,000`
+  - Stage168影子盘 `SHADOW_CAPITAL` 改为跟随 `OFFICIAL_STAGE78_CAPITAL`
+  - Stage186/188冷启动默认本金改为 `OFFICIAL_STAGE78_CAPITAL`
+- 删除参数：无。
+- 修改脚本：
+  - `examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+  - `examples/portfolio_backtesting/build_qmt_roll_stage168_30w_qmt_shadow_startup_pack.py`
+  - `examples/portfolio_backtesting/build_qmt_roll_stage169_30w_qmt_shadow_daily_runner.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage172_stage78_forward_shadow_report.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage186_stage78_2026_30w_cold_start.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage188_stage78_2026_30w_cold_start_latest_ai_pool.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage217_stage78_30w_execution_slippage_mc_suite.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage218_stage78_30w_multiperiod_equity_curves.py`
+- 新增50万wrapper入口：
+  - `examples/portfolio_backtesting/build_qmt_roll_stage168_50w_qmt_shadow_startup_pack.py`
+  - `examples/portfolio_backtesting/build_qmt_roll_stage169_50w_qmt_shadow_daily_runner.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage186_stage78_2026_50w_cold_start.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage188_stage78_2026_50w_cold_start_latest_ai_pool.py`
+
+## 回测参数
+
+- 策略版本：`official_stage78_defensive_v1`
+- 初始资金：`500,000`
+- sizing资金封顶：关闭，`sizing_equity_cap=0.0`
+- 基础风险：`0.045`
+- AI选品：开启
+- 执行模型：同日收盘撮合
+- 数据库：项目级 `.vntrader/database.db`
+
+## 新增/修改回测结果
+
+- 本轮未新跑完整主回测，参考指标来自前序Stage220的50万无封顶多周期结果，并已写入第78官方参考指标。
+- 全样本 `2020-01-01` 至 `2026-04-30`
+  - 期末权益：`25,542,885`
+  - 总收益：`5,008.5770%`
+  - 最大回撤：`-40.0607%`
+  - Sharpe：`1.1295`
+  - 总滑点：`1,968,150`
+  - 总交易次数：`880`
+  - 胜率：待后续三件套复跑确认
+- 2026冷启动 `2026-01-01` 至 `2026-04-30`
+  - 期末权益：`450,540`
+  - 总收益：`-9.8920%`
+  - 最大回撤：`-28.5861%`
+  - Sharpe：`-0.6975`
+  - 总滑点：`4,660`
+  - 总交易次数：`27`
+  - 胜率：待后续三件套复跑确认
+- 删除结果：无。
+
+## 影子盘输出
+
+- 已生成50万Stage168启动包：
+  - `qmt_roll_stage168_50w_qmt_shadow_startup_config_stage168_50w_qmt_shadow_startup_v1.json`
+  - `qmt_roll_stage168_50w_qmt_shadow_startup_report_stage168_50w_qmt_shadow_startup_v1.md`
+  - `qmt_roll_stage168_50w_qmt_shadow_startup_runbook_stage168_50w_qmt_shadow_startup_v1.md`
+- 已生成50万Stage169影子日报：
+  - `qmt_roll_stage169_50w_qmt_shadow_daily_runner_summary_20260415_stage169_50w_qmt_shadow_daily_runner_v1.json`
+  - `qmt_roll_stage169_50w_qmt_shadow_daily_runner_daily_report_20260415_stage169_50w_qmt_shadow_daily_runner_v1.md`
+- 影子盘边界：
+  - 资金：`500,000`
+  - 最大容忍回撤：`40%`
+  - 最大容忍亏损现金：`200,000`
+  - 下一模式：`50w_qmt_shadow_read_only`
+
+## 反思
+
+- 过拟合反思：有一定风险。资金规模选择会被历史收益路径诱导，不能反复按收益选本金。
+- 继续价值反思：有价值。第78正式基准、主回测默认值、影子盘启动包已统一到50万，后续新agent更不容易误跑旧口径。
+
+## 后续规划
+
+- 重跑50万无封顶第78三件套：T+1、滑点压力、Monte Carlo。
+- 重跑50万无封顶正式多周期资金曲线。
+- 重点审计绝对回撤、滑点与保证金峰值。
+
+# 2026-05-10 14:50 Stage221 第78正式基准关闭100万sizing封顶
+
+## 版本改动
+
+- 是否重要突破：是，第78正式基准资金治理口径改变。
+- 新增参数：`OFFICIAL_STAGE78_SIZING_EQUITY_CAP = 0.0`
+- 修改参数：第78官方 `strategy_overrides` 新增 `"sizing_equity_cap": 0.0`
+- 删除参数：无
+- 修改脚本：
+  - `examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_satellite_post_signal_formal_backtest.py`
+
+## 回测参数
+
+- 策略版本：`official_stage78_defensive_v1`
+- 初始资金：`300,000`
+- sizing资金封顶：关闭，`sizing_equity_cap=0.0`
+- 基础风险：`0.045`
+- AI选品：开启
+- 执行模型：同日收盘撮合
+- 数据库：项目级 `.vntrader/database.db`
+
+## 新增回测结果
+
+- 全样本 `2020-01-01` 至 `2026-04-30`
+  - 期末权益：`16,607,885`
+  - 总收益：`5,435.9617%`
+  - 最大回撤：`-39.7620%`
+  - Sharpe：`1.1235`
+  - 总滑点：`1,358,150`
+  - 总交易次数：`863`
+  - 胜率：`43.2127%`
+- 2026冷启动 `2026-01-01` 至 `2026-04-30`
+  - 期末权益：`295,430`
+  - 总收益：`-1.5233%`
+  - 最大回撤：`-38.5290%`
+  - Sharpe：`-0.1212`
+  - 总滑点：`4,830`
+  - 总交易次数：`29`
+  - 胜率：`32.5000%`
+
+## 修改/删除结果
+
+- 修改第78官方参考指标：
+  - 旧30万有100万封顶全样本：期末权益 `5,388,370`，总收益 `1,696.1233%`，最大回撤 `-39.5952%`，Sharpe `1.3113`
+  - 新30万无封顶全样本：期末权益 `16,607,885`，总收益 `5,435.9617%`，最大回撤 `-39.7620%`，Sharpe `1.1235`
+- 删除结果：无，旧口径保留在 `stage78_30w_sizing_cap_1m_previous_formal` 对照基线中。
+
+## 反思
+
+- 过拟合反思：有风险但可接受。关闭封顶显著提高收益，容易被收益诱导；但这是结构性资金效率修复，不是针对单一窗口调参。
+- 继续价值反思：有价值。第78正式口径更贴近权益复利，但必须继续验证滑点压力、T+1执行和Monte Carlo尾部风险。
+
+## 后续规划
+
+- 重跑新第78无封顶口径下的三件套：T+1、滑点压力、Monte Carlo。
+- 重跑新第78无封顶口径下的30万多周期资金曲线。
+- 对滑点放大和绝对回撤放大做执行容量审计。
+
 # 2026-04-22 QMT Roll Backtest
 
 ## Version Change

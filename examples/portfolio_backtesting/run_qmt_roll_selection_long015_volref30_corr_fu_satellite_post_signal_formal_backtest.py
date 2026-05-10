@@ -7,16 +7,14 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from qmt_roll_official_stage78_config import OFFICIAL_STAGE78_CAPITAL, build_official_stage78_overrides
 from qmt_universe import END_DT, START_DT
 from run_qmt_roll_backtest import build_summary_row, run_backtest
 from run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest import (
     AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
-    build_ai_satellite_post_signal_eligibility,
-    build_static18_plus_fu_universe,
 )
 from run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest import (
     BASE_RISK_RATIO,
-    CORR20_06_08_FLOOR35_OVERRIDES,
 )
 
 
@@ -31,7 +29,11 @@ SLIPPAGE_STRESS_CSV_PATH: Path = OUTPUT_DIR / f"{EXPERIMENT_TAG}_slippage_stress
 SLIPPAGE_MULTIPLIERS: tuple[float, ...] = (1.0, 1.5, 2.0, 3.0, 5.0)
 
 
-def calculate_metrics_from_net_pnl(net_pnl: np.ndarray, *, initial_capital: float = 200_000.0) -> dict[str, float]:
+def calculate_metrics_from_net_pnl(
+    net_pnl: np.ndarray,
+    *,
+    initial_capital: float = OFFICIAL_STAGE78_CAPITAL,
+) -> dict[str, float]:
     if len(net_pnl) == 0:
         return {
             "end_balance": 0.0,
@@ -79,22 +81,14 @@ def build_slippage_stress(analysis_df: pd.DataFrame | None) -> pd.DataFrame:
 
 
 def run_formal() -> tuple[pd.DataFrame, pd.DataFrame]:
-    universe_path = build_static18_plus_fu_universe()
-    eligibility_path = build_ai_satellite_post_signal_eligibility()
-    strategy_overrides: dict[str, Any] = {
-        **CORR20_06_08_FLOOR35_OVERRIDES,
-        "product_universe_csv_path": str(universe_path),
-        "enable_ai_product_pool_filter": True,
-        "ai_product_pool_eligibility_path": str(eligibility_path),
-        "ai_product_pool_strategy": AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
-    }
+    strategy_overrides: dict[str, Any] = build_official_stage78_overrides()
     print("[fu-satellite-post-signal-formal] running formal backtest")
     _, analysis_df, statistics = run_backtest(
         risk_ratio=BASE_RISK_RATIO,
         strategy_overrides=strategy_overrides,
         analysis_start=START_DT,
         analysis_end=END_DT,
-        capital=200_000,
+        capital=OFFICIAL_STAGE78_CAPITAL,
         save_artifacts=True,
         include_start_year_sweep=False,
         file_prefix=EXPERIMENT_TAG,
@@ -105,9 +99,10 @@ def run_formal() -> tuple[pd.DataFrame, pd.DataFrame]:
         analysis_start=START_DT,
         analysis_end=END_DT,
         experiment_name="ai_top8_plus_fu_satellite_post_signal",
-        universe_path=str(universe_path),
-        ai_product_pool_eligibility_path=str(eligibility_path),
+        universe_path=str(strategy_overrides.get("product_universe_csv_path", "")),
+        ai_product_pool_eligibility_path=str(strategy_overrides.get("ai_product_pool_eligibility_path", "")),
         ai_product_pool_strategy=AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
+        sizing_equity_cap=float(strategy_overrides.get("sizing_equity_cap", 0.0) or 0.0),
         strategy_overrides_json=json.dumps(strategy_overrides, ensure_ascii=False, sort_keys=True),
         total_net_pnl=float(statistics.get("total_net_pnl", 0) or 0),
         total_slippage=float(statistics.get("total_slippage", 0) or 0),

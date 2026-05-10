@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from qmt_roll_official_stage78_config import (
+    OFFICIAL_STAGE78_CAPITAL,
     OFFICIAL_STAGE78_REFERENCE_METRICS,
     OFFICIAL_STAGE78_ROLE,
     OFFICIAL_STAGE78_VERSION,
@@ -30,8 +31,8 @@ from run_qmt_roll_stage172_stage78_forward_shadow_report import (
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-MODEL_TAG: str = "stage186_stage78_2026_30w_cold_start_v1"
-OUTPUT_PREFIX: str = "qmt_roll_stage186_stage78_2026_30w_cold_start"
+MODEL_TAG: str = "stage186_stage78_2026_50w_cold_start_v1"
+OUTPUT_PREFIX: str = "qmt_roll_stage186_stage78_2026_50w_cold_start"
 
 SUMMARY_JSON_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.json"
 SUMMARY_CSV_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.csv"
@@ -68,7 +69,7 @@ def _write_daily_report(
     signal_plan: pd.DataFrame,
 ) -> None:
     lines = [
-        "# Stage186 Stage78 2026冷启动30万影子日报",
+        "# Stage186 Stage78 2026冷启动50万影子日报",
         "",
         f"- 目标交易日：`{summary['target_date']}`",
         f"- 冷启动日期：`{summary['analysis_start']}`",
@@ -116,7 +117,7 @@ def _write_daily_report(
         "",
         "- 运行前过拟合反思：否。固定Stage78，只改变冷启动日期和初始资金。",
         "- 运行后过拟合反思：否。没有根据2026结果调参数。",
-        "- 运行前继续价值反思：是。30万冷启动更贴近当前实盘准备。",
+        "- 运行前继续价值反思：是。50万冷启动更贴近当前实盘准备。",
         "- 运行后继续价值反思：是。可与全周期继承状态口径对照。",
     ]
     DAILY_REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")
@@ -124,12 +125,12 @@ def _write_daily_report(
 
 def _write_report(summary: dict[str, Any], signal_plan: pd.DataFrame) -> None:
     lines = [
-        "# Stage186 Stage78 2026冷启动30万回放",
+        "# Stage186 Stage78 2026冷启动50万回放",
         "",
         "## 定位",
         "",
         "- 本阶段不是新策略，不修改Stage78参数，不触发A/B。",
-        "- 目标是回答：若2026-01-01以30万资金冷启动，第78到目标日会是什么持仓、信号和风控状态。",
+        "- 目标是回答：若2026-01-01以50万资金冷启动，第78到目标日会是什么持仓、信号和风控状态。",
         "",
         "## 汇总",
         "",
@@ -163,10 +164,10 @@ def _write_report(summary: dict[str, Any], signal_plan: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Stage78 from 2026-01-01 with 300k capital as cold-start shadow.")
+    parser = argparse.ArgumentParser(description="Run Stage78 from 2026-01-01 with 500k capital as cold-start shadow.")
     parser.add_argument("--analysis-start", default="2026-01-01")
     parser.add_argument("--target-date", default="2026-05-08")
-    parser.add_argument("--capital", type=float, default=300_000.0)
+    parser.add_argument("--capital", type=float, default=OFFICIAL_STAGE78_CAPITAL)
     args = parser.parse_args()
 
     analysis_start = datetime.strptime(str(args.analysis_start), "%Y-%m-%d")
@@ -192,7 +193,7 @@ def main() -> None:
         save_artifacts=True,
         include_start_year_sweep=False,
         file_prefix=backtest_prefix,
-        chart_title="Stage186 Stage78 2026 30w Cold Start",
+        chart_title="Stage186 Stage78 2026 50w Cold Start",
     )
 
     summary_row = build_summary_row(
@@ -201,7 +202,7 @@ def main() -> None:
         analysis_end=analysis_end,
         official_version=OFFICIAL_STAGE78_VERSION,
         official_role=OFFICIAL_STAGE78_ROLE,
-        window_name="stage186_2026_30w_cold_start",
+        window_name="stage186_2026_50w_cold_start",
         display_label="stage186_cold_start",
         strategy_overrides_json=json.dumps(strategy_overrides, ensure_ascii=False, sort_keys=True),
         capital=capital,
@@ -247,7 +248,7 @@ def main() -> None:
         "reference_metrics": OFFICIAL_STAGE78_REFERENCE_METRICS,
         "judgement": {
             "overfit_before": "否。固定Stage78，只改变冷启动日期和初始资金。",
-            "continue_before": "是。30万冷启动更贴近当前实盘准备。",
+            "continue_before": "是。50万冷启动更贴近当前实盘准备。",
             "overfit_after": "否。本阶段没有根据2026结果调参。",
             "continue_after": "是。可与全周期继承状态口径对照，并继续做T+1代理价。",
         },
