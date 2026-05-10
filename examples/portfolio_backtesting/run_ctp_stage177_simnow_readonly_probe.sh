@@ -20,20 +20,20 @@ export CTP_PRODUCT_INFO="${CTP_PRODUCT_INFO:-}"
 
 case "${SIMNOW_FRONT}" in
   7x24)
-    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://180.168.146.187:10130}"
-    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://180.168.146.187:10131}"
+    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://182.254.243.31:40001}"
+    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://182.254.243.31:40011}"
     ;;
   trading)
-    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://180.168.146.187:10201}"
-    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://180.168.146.187:10211}"
+    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://182.254.243.31:30001}"
+    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://182.254.243.31:30011}"
     ;;
   trading2)
-    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://180.168.146.187:10202}"
-    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://180.168.146.187:10212}"
+    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://182.254.243.31:30002}"
+    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://182.254.243.31:30012}"
     ;;
   trading_mobile)
-    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://218.202.237.33:10203}"
-    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://218.202.237.33:10213}"
+    export CTP_TD_ADDRESS="${CTP_TD_ADDRESS:-tcp://182.254.243.31:30003}"
+    export CTP_MD_ADDRESS="${CTP_MD_ADDRESS:-tcp://182.254.243.31:30013}"
     ;;
   *)
     echo "Unknown SIMNOW_FRONT=${SIMNOW_FRONT}. Use 7x24, trading, trading2, or trading_mobile." >&2
