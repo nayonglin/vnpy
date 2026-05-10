@@ -112,6 +112,7 @@ class SameDayCloseBacktestingEngine(BacktestingEngine):
 def build_backtest_engine(
     *,
     preload_start: datetime = PRELOAD_START_DT,
+    backtest_end: datetime = END_DT,
     capital: float = 500_000,
     product_universe_csv_path: str | None = None,
 ) -> tuple[BacktestingEngine, dict[str, Any]]:

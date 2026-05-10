@@ -163,6 +163,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     dynamic_sizing_equity_soft_cap_margin_full_ratio: float = 0.80
     dynamic_sizing_equity_soft_cap_drawdown_start_ratio: float = 0.05
     dynamic_sizing_equity_soft_cap_drawdown_full_ratio: float = 0.20
+    enable_layered_profit_lock_sizing: bool = False
+    layered_profit_lock_base_equity: float = 1_000_000.0
+    layered_profit_lock_start_equity: float = 2_000_000.0
+    layered_profit_lock_ratio: float = 0.50
+    layered_profit_lock_tiers: str = ""
     max_capital_usage_ratio: float = 0.9
     max_single_trade_capital_usage_ratio: float = 0.7
     enable_incremental_margin_budget_gate: bool = False
@@ -329,6 +334,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "dynamic_sizing_equity_soft_cap_margin_full_ratio",
         "dynamic_sizing_equity_soft_cap_drawdown_start_ratio",
         "dynamic_sizing_equity_soft_cap_drawdown_full_ratio",
+        "enable_layered_profit_lock_sizing",
+        "layered_profit_lock_base_equity",
+        "layered_profit_lock_start_equity",
+        "layered_profit_lock_ratio",
+        "layered_profit_lock_tiers",
         "max_capital_usage_ratio",
         "max_single_trade_capital_usage_ratio",
         "enable_incremental_margin_budget_gate",
@@ -1637,6 +1647,36 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         sizing_equity = dynamic_sizing_equity if enabled else static_effective_cap
         effective_cap = dynamic_effective_cap if enabled else (static_cap if static_cap > 0 else equity)
 
+        layered_enabled = int(bool(self.enable_layered_profit_lock_sizing))
+        layered_base: float = max(0.0, float(self.layered_profit_lock_base_equity or 0.0))
+        layered_start: float = max(layered_base, float(self.layered_profit_lock_start_equity or 0.0))
+        layered_lock_ratio: float = self._clip01(float(self.layered_profit_lock_ratio or 0.0))
+        layered_high_water: float = max(float(self.portfolio_equity_high_water or self.base_capital), equity, float(self.base_capital))
+        layered_tiers: list[tuple[float, float]] = [(layered_start, layered_lock_ratio)]
+        for raw_tier in str(self.layered_profit_lock_tiers or "").split(","):
+            raw_tier = raw_tier.strip()
+            if not raw_tier or ":" not in raw_tier:
+                continue
+            threshold_text, ratio_text = raw_tier.split(":", 1)
+            try:
+                threshold = max(layered_start, float(threshold_text.strip()))
+                ratio = self._clip01(float(ratio_text.strip()))
+            except ValueError:
+                continue
+            layered_tiers.append((threshold, ratio))
+        layered_tiers = sorted({threshold: ratio for threshold, ratio in layered_tiers}.items())
+        layered_locked_equity: float = 0.0
+        for index, (threshold, ratio) in enumerate(layered_tiers):
+            next_threshold = layered_tiers[index + 1][0] if index + 1 < len(layered_tiers) else float("inf")
+            lockable_amount = max(0.0, min(layered_high_water, next_threshold) - threshold)
+            layered_locked_equity += lockable_amount * ratio
+        layered_raw_sizing_equity: float = max(0.0, equity - layered_locked_equity)
+        layered_floor: float = min(equity, layered_base)
+        layered_sizing_equity: float = min(equity, max(layered_floor, layered_raw_sizing_equity))
+        if layered_enabled:
+            sizing_equity = min(sizing_equity, layered_sizing_equity)
+            effective_cap = min(effective_cap, layered_sizing_equity)
+
         return {
             "sizing_equity": sizing_equity,
             "static_sizing_equity_cap": static_cap,
@@ -1651,6 +1691,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "dynamic_sizing_equity_soft_cap_margin_weight": margin_weight,
             "dynamic_sizing_equity_soft_cap_drawdown_weight": drawdown_weight,
             "dynamic_sizing_equity_soft_cap_release_weight": release_weight,
+            "layered_profit_lock_sizing_enabled": layered_enabled,
+            "layered_profit_lock_base_equity": layered_base,
+            "layered_profit_lock_start_equity": layered_start,
+            "layered_profit_lock_ratio": layered_lock_ratio,
+            "layered_profit_lock_high_water": layered_high_water,
+            "layered_profit_lock_locked_equity": layered_locked_equity,
+            "layered_profit_lock_sizing_equity": layered_sizing_equity,
+            "layered_profit_lock_tier_count": len(layered_tiers),
         }
 
     def _sizing_equity(self) -> float:

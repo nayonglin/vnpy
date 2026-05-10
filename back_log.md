@@ -1,3 +1,494 @@
+# 2026-05-10 23:55 Stage232 部署资金分层账户层验证
+
+## 版本改动
+
+- 是否重要突破：是，确认账户部署层资金分层比继续策略参数优化更有价值。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage232_deployment_capital_tranching.py`
+- 修改脚本：无正式策略修改。
+- 新增参数：无策略参数。
+- 修改参数：无。
+- 删除参数：无。
+
+## 回测参数
+
+- 输入：`78-1 AI ON`独立多周期日收益路径。
+- 数据源：`qmt_roll_stage225_stage78_1_ai_ablation_suite_multiperiod_curves_stage225_stage78_1_ai_ablation_suite_v1.csv`
+- A：`baseline_full_reinvest`，全部权益继续复利。
+- C1：`profit_tranche_v1`，月末超过`3,000,000`的生产资金，提取`70%`；其中`70%`进锁盈，`30%`进扩张储备。
+- C2：`balanced_tranche_v1`，月末超过`5,000,000`的生产资金，提取`50%`；其中`60%`进锁盈，`40%`进扩张储备。
+- 初始资金：`500,000`
+- Monte Carlo：daily-block `1000`次。
+- 注意：这是账户部署层模拟，不是撮合级回测。
+
+## 新增回测结果
+
+- A since_2020：期末总权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.4218`，期末锁盈`0`。
+- C1 since_2020：期末总权益`10,770,830`，总收益`2054.1661%`，最大回撤`-39.2765%`，Sharpe`1.3450`，期末锁盈`5,480,758`。
+- C2 since_2020：期末总权益`15,473,580`，总收益`2994.7161%`，最大回撤`-40.0607%`，Sharpe`1.3726`，期末锁盈`6,289,672`。
+- Monte Carlo daily-block：A回撤超过40%概率`89.9%`；C1为`58.3%`；C2为`66.6%`。
+- Monte Carlo daily-block：C2中位收益`3063.0174%`，中位锁盈`6,553,148`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- `balanced_tranche_v1`是当前账户部署层候选：不改`78-1`策略，保留接近`3000%`收益，同时显性锁出约`629万`利润。
+- `profit_tranche_v1`太保守，不作为默认部署口径。
+- 账户层分层不能解决触发前的早期回撤；它解决的是高水位后不要把全部利润继续暴露。
+- 下一步做`balanced_tranche_v1`部署规则草案与影子盘资金分层账本模板。
+
+## 反思
+
+- 过拟合反思：否。资金分层是账户制度，不依赖品种、信号或窗口参数。
+- 继续价值反思：有。该方向比继续调策略内覆盖层参数更贴近实盘部署。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2355_stage232_deployment_capital_tranching.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage232_deployment_capital_tranching_report_stage232_deployment_capital_tranching_v1.md`
+
+# 2026-05-10 23:32 Stage231 轻量动态软上限收益恢复版v2验证
+
+## 版本改动
+
+- 是否重要突破：否，收益恢复不足且尾部风险回升。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage231_risk_overlay_light_dynamic_soft_cap_gate_v2.py`
+- 修改脚本：无。
+- 新增参数：无。
+- 修改参数：无正式参数修改；实验覆盖收益恢复版动态软上限参数。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`light_dynamic_soft_cap_gate_v2`
+- C覆盖项：
+  - `enable_dynamic_sizing_equity_soft_cap=True`
+  - `dynamic_sizing_equity_soft_cap_base=2,000,000`
+  - `dynamic_sizing_equity_soft_cap_max=7,500,000`
+  - `dynamic_sizing_equity_soft_cap_participation=0.60`
+  - `dynamic_sizing_equity_soft_cap_margin_start_ratio=0.55`
+  - `dynamic_sizing_equity_soft_cap_margin_full_ratio=0.80`
+  - `dynamic_sizing_equity_soft_cap_drawdown_start_ratio=0.08`
+  - `dynamic_sizing_equity_soft_cap_drawdown_full_ratio=0.22`
+  - `enable_incremental_margin_budget_gate=True`
+  - `incremental_margin_budget_gate_usage_ratio=0.90`
+  - `incremental_margin_budget_gate_min_openable_candidates=2`
+  - `incremental_margin_budget_gate_protected_selection_rank=1`
+- 初始资金：`500,000`
+- 多周期：`2020`至`2026`多起点，另含`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：daily与trade-block各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`13,528,570`，总收益`2605.7140%`，最大回撤`-33.8956%`，Sharpe`1.2466`，总滑点`976,260`，总交易次数`866`，胜率`43.4783%`。
+- 多周期：C在`2020-2021`、`2022-2023`独立阶段略优于A；对`2026`冷启动无改善。
+- 滑点压力：C在`5x`滑点下总收益`1824.7060%`、最大回撤`-41.3505%`；A为`3434.0570%`、`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从`52.6%`降到`26.2%`，但弱于Stage230的`16.5%`；daily回撤超过40%概率从`95.9%`降到`51.4%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- Stage231未达预声明目标：收益未恢复到`3000%+`，尾部风险从Stage230的`16.5%`回升到`26.2%`。
+- 不合入`78-1`，也不继续调`base/max/participation`。
+- 停止本轮覆盖层参数优化；转向部署资金分层方案。
+
+## 反思
+
+- 过拟合反思：继续调参将进入过拟合区。收益恢复和尾部风险回升高度同步。
+- 继续价值反思：本轮参数优化继续价值低；账户部署层治理更值得做。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2332_stage231_light_dynamic_soft_cap_gate_v2.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage231_risk_overlay_light_dynamic_soft_cap_gate_v2_report_stage231_risk_overlay_light_dynamic_soft_cap_gate_v2.md`
+
+# 2026-05-10 23:12 Stage230 轻量动态软上限+保证金门禁v1验证
+
+## 版本改动
+
+- 是否重要突破：是，首次把trade-block破产/穿仓概率压到接近目标区间。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage230_risk_overlay_light_dynamic_soft_cap_gate.py`
+- 修改脚本：无。
+- 新增参数：无。
+- 修改参数：无正式参数修改；实验覆盖动态软上限与保证金门禁参数。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`light_dynamic_soft_cap_gate_v1`
+- C覆盖项：
+  - `enable_dynamic_sizing_equity_soft_cap=True`
+  - `dynamic_sizing_equity_soft_cap_base=1,500,000`
+  - `dynamic_sizing_equity_soft_cap_max=5,000,000`
+  - `dynamic_sizing_equity_soft_cap_participation=0.45`
+  - `dynamic_sizing_equity_soft_cap_margin_start_ratio=0.55`
+  - `dynamic_sizing_equity_soft_cap_margin_full_ratio=0.80`
+  - `dynamic_sizing_equity_soft_cap_drawdown_start_ratio=0.08`
+  - `dynamic_sizing_equity_soft_cap_drawdown_full_ratio=0.22`
+  - `enable_incremental_margin_budget_gate=True`
+  - `incremental_margin_budget_gate_usage_ratio=0.90`
+  - `incremental_margin_budget_gate_min_openable_candidates=2`
+  - `incremental_margin_budget_gate_protected_selection_rank=1`
+- 初始资金：`500,000`
+- 多周期：`2020`至`2026`多起点，另含`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：daily与trade-block各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`11,461,100`，总收益`2192.2200%`，最大回撤`-29.3274%`，Sharpe`1.3048`，总滑点`774,080`，总交易次数`860`，胜率`43.3180%`。
+- 多周期：C在`2022-2023`独立阶段收益略优于A；对`2026`冷启动无改善。
+- 滑点压力：C在`5x`滑点下总收益`1572.9560%`、最大回撤`-37.1980%`；A为`3434.0570%`、`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从`52.6%`降到`16.5%`，把daily回撤超过40%概率从`95.9%`降到`32.6%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- Stage230是目前最接近风险目标的候选，但收益低于`3000%+`目标。
+- 不合入`78-1`；允许一轮结构性收益恢复版v2。
+- 如果v2不能同时满足收益和尾部风险，停止本轮覆盖层参数优化，转向部署资金分层方案。
+
+## 反思
+
+- 过拟合反思：仍可控。本次参数来自风险结构，不是回看收益拟合。
+- 继续价值反思：有，但必须设停止条件；下一步只做一轮收益恢复，不做网格扫参。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2312_stage230_light_dynamic_soft_cap_gate.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage230_risk_overlay_light_dynamic_soft_cap_gate_v1_report_stage230_risk_overlay_light_dynamic_soft_cap_gate_v1.md`
+
+# 2026-05-10 22:32 Stage229 保证金预算门禁v1验证
+
+## 版本改动
+
+- 是否重要突破：否，收益保留优秀但尾部风险改善不足。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage229_risk_overlay_margin_budget_gate.py`
+- 修改脚本：无。
+- 新增参数：无。
+- 修改参数：无正式参数修改；实验覆盖`enable_incremental_margin_budget_gate=True`等门禁参数。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`margin_budget_gate_v1`
+- C覆盖项：
+  - `enable_incremental_margin_budget_gate=True`
+  - `incremental_margin_budget_gate_usage_ratio=0.90`
+  - `incremental_margin_budget_gate_min_openable_candidates=2`
+  - `incremental_margin_budget_gate_protected_selection_rank=1`
+- 初始资金：`500,000`
+- 多周期：`2020`至`2026`多起点，另含`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：daily与trade-block各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`23,570,400`，总收益`4614.0800%`，最大回撤`-39.9534%`，Sharpe`1.1442`，总滑点`1,873,970`，总交易次数`878`，胜率`43.7923%`。
+- 多周期：C在`2020-2021`和`2022-2023`独立阶段略优于A，但在`2024-2025`弱于A；对`2026`无改善。
+- 滑点压力：C在`5x`滑点下总收益`3114.9040%`、最大回撤`-67.0281%`；A为`3434.0570%`、`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从`52.6%`降到`48.6%`，改善很弱；daily回撤超过40%概率从`95.9%`降到`90.5%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- 保证金预算门禁v1保留收益能力很好，但没有解决核心尾部风险。
+- 单独门禁不合入`78-1`；继续压低门禁比例可能只是收益劣化。
+- 下一步转向“轻量动态软上限 + 保证金/回撤触发”，治理长期暴露曲线。
+
+## 反思
+
+- 过拟合反思：否。本次是结构性门禁，不是回看收益调参。
+- 继续价值反思：有，但方向要修正。结果反证了“同日新增仓拥挤是主要穿仓源”的假设。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2232_stage229_margin_budget_gate.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage229_risk_overlay_margin_budget_gate_v1_report_stage229_risk_overlay_margin_budget_gate_v1.md`
+
+# 2026-05-10 21:50 Stage228 多层阶梯分层出金v2验证
+
+## 版本改动
+
+- 是否重要突破：否，v2收益保留改善但尾部风险未达标。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage228_risk_overlay_layered_profit_lock_v2.py`
+- 修改脚本：`examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增参数：`layered_profit_lock_tiers`
+- 修改参数：无正式参数修改；新增参数默认空。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`layered_profit_lock_v2`
+- C覆盖项：
+  - `enable_layered_profit_lock_sizing=True`
+  - `layered_profit_lock_base_equity=1,000,000`
+  - `layered_profit_lock_start_equity=2,000,000`
+  - `layered_profit_lock_ratio=0.25`
+  - `layered_profit_lock_tiers="5000000:0.50,10000000:0.75"`
+- 初始资金：`500,000`
+- 多周期：`2020`至`2026`多起点，另含`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：daily与trade-block各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`15,205,135`，总收益`2941.0270%`，最大回撤`-39.2765%`，Sharpe`1.1484`，总滑点`1,116,230`，总交易次数`876`，胜率`42.9864%`。
+- 多周期：C在`11/11`个窗口不扩大最大回撤；对`2026`冷启动无改善。
+- 滑点压力：C在`5x`滑点下总收益`2048.0430%`、最大回撤`-49.2967%`；A为`3434.0570%`、`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从A的`52.6%`降到`31.3%`，但弱于Stage227 v1的`24.3%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- v2比v1收益更好，但尾部风险回升，未达到`10%-15%`破产/穿仓概率目标。
+- 不把v2合入`78-1`，也不继续微调分层比例。
+- 下一步转向保证金预算门禁，避免分层出金参数拟合。
+
+## 反思
+
+- 过拟合反思：开始出现风险苗头。继续调整`0.25/0.50/0.75`这类比例容易围绕收益和MC指标找平衡点。
+- 继续价值反思：有，但方向应切换。保证金压力触发比静态高水位触发更贴近穿仓风险来源。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2150_stage228_layered_profit_lock_v2.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage228_risk_overlay_layered_profit_lock_v2_report_stage228_risk_overlay_layered_profit_lock_v2.md`
+
+# 2026-05-10 21:17 Stage227 分层出金/权益锁定v1多周期验证
+
+## 版本改动
+
+- 是否重要突破：是，分层出金v1成为风险覆盖层强线索，但不直接合入`78-1`。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage227_risk_overlay_layered_profit_lock.py`
+- 修改脚本：`examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增参数：
+  - `enable_layered_profit_lock_sizing`
+  - `layered_profit_lock_base_equity`
+  - `layered_profit_lock_start_equity`
+  - `layered_profit_lock_ratio`
+- 修改参数：无正式参数修改；新增参数默认关闭。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`layered_profit_lock_v1`
+- C覆盖项：
+  - `enable_layered_profit_lock_sizing=True`
+  - `layered_profit_lock_base_equity=1,000,000`
+  - `layered_profit_lock_start_equity=2,000,000`
+  - `layered_profit_lock_ratio=0.50`
+- 初始资金：`500,000`
+- 多周期：`2020`至`2026`多起点，另含`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：daily与trade-block各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`13,085,060`，总收益`2517.0120%`，最大回撤`-39.2765%`，Sharpe`1.1704`，总滑点`959,140`，总交易次数`866`，胜率`42.7918%`。
+- 多周期：C在`11/11`个窗口不扩大最大回撤；`since_2025`收益略优于A；早期强复利窗口收益低于A但Sharpe多数更高。
+- 滑点压力：C在`5x`滑点下总收益`1749.7000%`、最大回撤`-48.6547%`；A为`3434.0570%`、`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从`52.6%`降到`24.3%`，把daily回撤超过40%概率从`95.9%`降到`75.7%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- 分层出金v1比Stage226动态软上限更接近目标：收益保留更多，尾部风险显著下降。
+- 分层出金v1仍不应合入正式`78-1`：全样本收益约减半，trade-block破产/穿仓概率仍有`24.3%`。
+- 下一步做分层出金v2，多层阶梯锁定，目标是保留`3000%+`收益并把trade-block破产/穿仓概率压到`10%-15%`以下。
+
+## 反思
+
+- 过拟合反思：否。分层出金是账户治理逻辑，不依赖具体品种、信号或单一窗口。
+- 继续价值反思：有。C证明收益锁定型覆盖层优于硬压sizing，值得继续做结构化v2。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_2117_stage227_layered_profit_lock.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage227_risk_overlay_layered_profit_lock_report_stage227_risk_overlay_layered_profit_lock_v1.md`
+
+# 2026-05-10 19:20 Stage226 新线futures_trend_risk_overlay与动态sizing软上限最小验证
+
+## 版本改动
+
+- 是否重要突破：是，新开`futures_trend_risk_overlay`研究线，方向从AI/alpha转为资金暴露和尾部路径风险治理。
+- 新增研究线：`research/lines/futures_trend_risk_overlay/`
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage226_risk_overlay_dynamic_soft_cap.py`
+- 新增参数：`enable_dynamic_sizing_equity_soft_cap=True`及其base/max/participation/margin/drawdown参数。
+- 修改参数：无正式参数修改，仅实验覆盖项。
+- 删除参数：无。
+
+## 回测参数
+
+- A：`baseline_78_1`
+- C：`dynamic_soft_cap_v1`
+- 初始资金：`500,000`
+- 全样本：`2020-01-01`至`2026-04-30`
+- 冷启动：`2026-01-01`至`2026-04-30`
+- AI选品：开启，沿用`78-1`
+- sizing资金封顶：A为`0.0`；C启用动态软上限覆盖层
+- 滑点压力：`1x/2x/3x/5x`
+- Monte Carlo：daily与trade-block各`1000`次
+
+## 新增回测结果
+
+- A全样本：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- C全样本：期末权益`8,482,695`，总收益`1596.5390%`，最大回撤`-39.2765%`，Sharpe`1.2663`，总滑点`519,270`，总交易次数`846`，胜率`42.8571%`。
+- 2026冷启动：A与C结果相同，均为期末权益`450,540`、总收益`-9.8920%`、最大回撤`-28.5861%`、Sharpe`-0.6975`。
+- 滑点压力：C在`5x`滑点下总收益`1181.1230%`、最大回撤`-48.6547%`；A在`5x`滑点下总收益`3434.0570%`、最大回撤`-66.4314%`。
+- Monte Carlo：C把trade-block破产/穿仓概率从A的`52.6%`降到`4.5%`，把daily回撤超过40%概率从`95.9%`降到`50.4%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- 风险覆盖层方向成立，但`dynamic_soft_cap_v1`收益牺牲过大，不直接合入`78-1`。
+- 后续不围绕v1微调小数阈值，转向更结构化的“分层出金/权益锁定”或“保证金预算门禁”覆盖层。
+
+## 反思
+
+- 过拟合反思：否。候选是结构性资金暴露规则，没有针对单一品种或弱窗口做补丁。
+- 继续价值反思：有。候选把trade-block破产/穿仓概率从`52.6%`降到`4.5%`，证明尾部风险可通过覆盖层治理。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend_risk_overlay/stages/20260510_1920_stage226_dynamic_sizing_soft_cap_minimal.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage226_risk_overlay_dynamic_soft_cap_report_stage226_risk_overlay_dynamic_soft_cap_v1.md`
+
+# 2026-05-10 18:47 Stage225 Stage78-1 AI选品开关A/B消融
+
+## 版本改动
+
+- 是否重要突破：是，确认AI选品是`78-1`正式基准的有效组成。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage225_stage78_1_ai_ablation_suite.py`
+- 新增参数：无。
+- 修改参数：仅实验变量`enable_ai_product_pool_filter=True/False`。
+- 删除参数：无。
+
+## 回测参数
+
+- 版本：`78-1`
+- 初始资金：`500,000`
+- sizing资金封顶：`0.0`
+- AI ON/OFF之外，其余产品宇宙、FU卫星、风险四档、短空门禁和撮合口径保持一致。
+- 多周期：`2020`至`2026`多起点和`2020-2021`、`2022-2023`、`2024-2025`、`2026`独立阶段。
+- Monte Carlo：`daily_block_bootstrap`和`trade_block_bootstrap`各`1000`次。
+- 滑点压力：`1x/2x/3x/5x`。
+
+## 新增回测结果
+
+- AI ON主回测：期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`，总滑点`1,968,150`，总交易次数`880`，胜率`43.2432%`。
+- AI OFF主回测：期末权益`7,588,545`，总收益`1417.7090%`，最大回撤`-46.6939%`，Sharpe`0.7214`，总滑点`1,270,300`，总交易次数`1,358`，胜率`40.5839%`。
+- 多周期：AI ON在`11/11`个窗口收益优于AI OFF，`2026`冷启动从AI OFF的`-39.9220%`改善到AI ON的`-9.8920%`。
+- 滑点压力：AI ON在`5x`滑点下总收益仍有`3434.0570%`，高于AI OFF在`1x`滑点的`1417.7090%`。
+- Monte Carlo：AI ON的daily bootstrap亏损概率`2.0%`，AI OFF为`15.5%`；AI ON的trade bootstrap亏损概率`0.2%`，AI OFF为`2.8%`。
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 结论
+
+- AI选品在`78-1`当前框架内有真实价值，主要表现为过滤低质量交易、减少交易频率、提高多周期收益和风险调整收益。
+- AI没有消除尾部路径风险；trade-block Monte Carlo下AI ON爆仓/穿仓概率仍为`52.6%`，后续优化重点应转向资金暴露治理，而不是继续微调AI名单追收益。
+
+## 记录
+
+- 阶段记录：`research/lines/futures_trend/stages/20260510_1847_stage225_stage78_1_ai_ablation.md`
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage225_stage78_1_ai_ablation_suite_report_stage225_stage78_1_ai_ablation_suite_v1.md`
+
+# 2026-05-10 16:34 Stage224 Stage78-1 2026年初至今影子盘回放
+
+## 版本改动
+
+- 是否重要突破：否，固定78-1口径做影子盘回放。
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+- 修复入口bug：
+  - `examples/portfolio_backtesting/run_qmt_roll_backtest.py`
+  - `build_backtest_engine()` 签名恢复 `backtest_end: datetime = END_DT`
+
+## 回测参数
+
+- 版本：`78-1`
+- 官方版本：`official_stage78_1_defensive_50w_no_sizing_cap`
+- 初始资金：`500,000`
+- sizing资金封顶：`0.0`
+- 分析起点：`2026-01-01`
+- 本地最新数据日：`2026-04-30`
+- 预热起点：`2025-01-01`
+- 执行模型：同日收盘撮合
+- AI选品：开启
+- 真实报单：`false`
+
+## 新增回测结果
+
+- 期末权益：`450,540`
+- 总收益：`-9.8920%`
+- 最大回撤：`-28.5861%`
+- Sharpe：`-0.6975`
+- 总滑点：`4,660`
+- 总交易次数：`27`
+- 胜率：`16.6667%`
+- 目标日风险级别：`watch`
+- 目标日触发原因：`drawdown_watch`
+- 目标日信号：`MA609.CZCE Long Open 16手`
+
+## 修改/删除结果
+
+- 修改结果：无。
+- 删除结果：无。
+
+## 反思
+
+- 过拟合反思：否。固定78-1做2026冷启动影子回放，没有根据结果调参。
+- 继续价值反思：有。年初冷启动仍处于回撤压力带，应继续影子盘观察并补T+1代理价/分钟线验证。
+
+## 后续规划
+
+- 补目标日 `MA609.CZCE` 的下一交易时段代理价。
+- 用78-1重跑T+1、滑点压力、Monte Carlo三件套。
+- 做2026回撤来源复核，但不直接调参。
+
 # 2026-05-10 15:32 Stage223 固化Stage78-1正式别名
 
 ## 版本改动
