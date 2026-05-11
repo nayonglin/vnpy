@@ -111,6 +111,22 @@
   - 后续任何“78-1”验证都应默认使用50万本金、无封顶官方覆盖项，并额外关注执行容量和滑点压力。
   - 用户只说“最新第78正式基准”时，默认等同于`78-1`；若只说“78版本”且语境不清，应追问是否指`78-1`。
 
+## 2026-05-11 Phase B 半自动执行经验
+
+- `Phase B` 的正确边界不是“人工敲单”，而是“人工 approve/reject，系统执行并对账”。
+- 已形成最小原型：
+  - `Stage242` 生成 `order_draft`
+  - `Stage243` 跑通 `approve/reject/defer`
+  - `Stage244` 跑通 `pre-submit broker-state check`
+- `Stage245` 进一步补齐两道执行边界：
+  - `same-intent duplicate order check`
+  - `target position already reached check`
+- `pre-submit check` 必须默认 `fail-closed`：
+  - 只要真实账户快照缺失、连接状态不明、存在未完成委托，`can_submit` 必须为 `0`
+  - 当前已验证的失败原因：`broker_account_snapshot_missing`
+- 即使 `duplicate_check` 已通过，只要真实 `position snapshot` 缺失，`target position` 也只能是 `not_checked`，仍不得放行提交。
+- 在拿到真实账户可用快照前，禁止接入真实 `submit_order()`。
+
 ## 2026-04-24 回测与运行时特征口径经验
 
 ### 1. 运行时历史窗口不能只看表面窗口，要看嵌套特征的真实需求

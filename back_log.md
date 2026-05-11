@@ -1,3 +1,63 @@
+# 2026-05-11 15:12 Stage244 Phase B 提交前 broker-state 校验
+
+## 版本改动
+
+- 是否重要突破：是，`Phase B` 已具备 `fail-closed` 的提交前安全闸门。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage244_phaseb_pre_submit_check.py`
+- 修改正式策略：无，`78-1` 默认逻辑不变。
+
+## 验证口径
+
+- 输入：`Stage243 approval ledger` + `Stage174 readonly probe` 快照。
+- 样例交易日：`2026-04-30`
+- 样例委托：`PHASEB-20260430-001`
+- 校验目标：在真实提交前判断 `can_submit`，默认 `fail-closed`。
+
+## 新增结果
+
+- `PHASEB-20260430-001` 的检查结果：
+  - `pre_submit_check_status=failed`
+  - `can_submit=0`
+  - `failure_reason=broker_account_snapshot_missing`
+- 只读探针状态为 `connected_or_attempted_readonly`，但仍未形成可用账户快照。
+
+## 结论与后续
+
+- 当前系统已经具备 `draft -> approve -> precheck -> fail-closed` 的 `Phase B` 执行骨架。
+- 在真实账户快照打通前，仍禁止接入真实 `submit_order()`。
+- 下一步应继续完善 SimNow/CTP 账户快照抓取，再补重复委托与目标持仓已达成校验。
+
+# 2026-05-11 15:27 Stage245 Phase B 重复委托与目标持仓校验
+
+## 版本改动
+
+- 是否重要突破：是，`Phase B` 已补齐幂等与仓位一致性两道核心边界。
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage245_phaseb_duplicate_and_target_checks.py`
+- 修改正式策略：无，`78-1` 默认逻辑不变。
+
+## 验证口径
+
+- 输入：`Stage243 approval ledger` + `Stage244 pre-submit result` + `Stage174 readonly probe positions/orders`。
+- 样例交易日：`2026-04-30`
+- 样例委托：`PHASEB-20260430-001`
+
+## 新增结果
+
+- `duplicate_check_status=passed`
+- `target_position_check_status=not_checked`
+- `target_position_check_reason=position_snapshot_missing`
+- `final_can_submit=0`
+- `final_failure_reason=broker_account_snapshot_missing`
+
+## 结论与后续
+
+- 当前系统已经能区分：
+  - 账户/环境/连接是否允许提交
+  - 是否存在重复送单风险
+  - 是否已达到目标仓位
+- 由于真实持仓快照仍缺失，`target position` 只能标记为 `not_checked`，因此仍禁止接真实 `submit_order()`。
+- 下一步应继续优先打通 SimNow/CTP 账户与持仓快照。
+
 # 2026-05-11 11:18 Stage238 balanced_tranche 进入日更部署日报
 
 ## 版本改动

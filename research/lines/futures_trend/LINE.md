@@ -33,6 +33,28 @@
 - Stage78-1准实盘复盘，默认使用50万本金、无sizing封顶口径。
 - 执行、滑点、成交稳定性。
 - AI品种池切换稳定性。
+- Stage240 已明确最小可上线真实执行架构：
+  - `Signal Scheduler -> Deployment Gate -> Broker Adapter/Executor -> Reconcile Worker -> Supervisor`
+  - 推荐先做 `Phase A 只读常驻` 和 `Phase B 半自动执行`
+  - 不允许把回测/影子盘脚本直接改成真实发单脚本
+- Stage241 已明确 `Phase B` 半自动执行流程：
+  - `自动生成信号 + 自动生成委托草案 + 人工 approve/reject + 系统执行 + 系统对账`
+  - Phase B 不是人工去柜台手敲单，而是“人工放行，系统执行”
+- Stage242/243 已落地 `Phase B` 原型：
+  - 新增 `build_qmt_roll_stage242_phaseb_order_draft.py`
+  - 新增 `run_qmt_roll_stage243_phaseb_approval.py`
+  - 已用 `2026-04-30` 样例信号把状态从 `pending_manual_approval` 跑到 `approved_waiting_precheck`
+  - 当前仍未接真实 submit，下一步应先做 `pre-submit broker-state check`
+- Stage244 已落地 `pre-submit broker-state check`：
+  - 新增 `run_qmt_roll_stage244_phaseb_pre_submit_check.py`
+  - 已对 `PHASEB-20260430-001` 执行提交前校验
+  - 结果为 `failed / can_submit=0 / broker_account_snapshot_missing`
+  - 说明当前系统具备 `fail-closed` 能力，但还不能接真实 `submit_order()`
+- Stage245 已补齐 `Phase B` 两道附加安全校验：
+  - 新增 `run_qmt_roll_stage245_phaseb_duplicate_and_target_checks.py`
+  - `same-intent duplicate order check` 已通过
+  - `target position already reached check` 因真实持仓快照缺失暂为 `not_checked`
+  - 当前最终阻断原因仍为 `broker_account_snapshot_missing`
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
 
