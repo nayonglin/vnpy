@@ -58,6 +58,31 @@
 - 由于真实持仓快照仍缺失，`target position` 只能标记为 `not_checked`，因此仍禁止接真实 `submit_order()`。
 - 下一步应继续优先打通 SimNow/CTP 账户与持仓快照。
 
+# 2026-05-11 15:52 Stage246 SimNow 快照根因收敛
+
+## 版本改动
+
+- 是否重要突破：是，SimNow 接线问题从“静默不明”收敛到明确根因。
+- 新增调试会话：`debug-simnow-snapshot-probe.md`
+- 修复脚本：`examples/portfolio_backtesting/run_ctp_stage177_simnow_readonly_probe.sh`
+- 增强脚本：`examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py`
+
+## 新增结果
+
+- 已确认 `Stage177` wrapper 原先会把调用方传入的 `SIMNOW_FRONT=trading` 覆盖回本地 `ctp_simnow.local.env` 中的 `7x24`。
+- 修复后，probe 已能真正命中：
+  - `td_address=tcp://182.254.243.31:30001`
+  - `md_address=tcp://182.254.243.31:30011`
+- 在正确 `trading` 前置下，`CTP` 返回明确错误：
+  - `交易服务器登录失败，代码：140，信息：首次登录必须修改密码`
+
+## 结论与后续
+
+- 当前拿不到 `account/position` 快照的主要原因，不再是 probe 逻辑不明，而是：
+  - 本地 wrapper 覆盖前置
+  - 外部 SimNow 账号首次改密未完成
+- 下一步不应继续扩 `submit_order()`，而应先完成 SimNow 首次改密，再重跑只读探针。
+
 # 2026-05-11 11:18 Stage238 balanced_tranche 进入日更部署日报
 
 ## 版本改动

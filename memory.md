@@ -127,6 +127,17 @@
 - 即使 `duplicate_check` 已通过，只要真实 `position snapshot` 缺失，`target position` 也只能是 `not_checked`，仍不得放行提交。
 - 在拿到真实账户可用快照前，禁止接入真实 `submit_order()`。
 
+## 2026-05-11 SimNow 调试经验
+
+- `Stage177` wrapper 原先会把调用方传入的 `SIMNOW_FRONT/CTP_TD_ADDRESS/CTP_MD_ADDRESS` 覆盖回 `ctp_simnow.local.env`，导致“以为在测 trading，实际一直在测 7x24”。
+- 修复 wrapper 优先级后，SimNow 问题已从“静默无快照”收敛为明确的外部阻塞：
+  - `交易服务器登录失败 code 140`
+  - `首次登录必须修改密码`
+- `Stage174` probe 需要输出结构化状态，而不是只给模糊的 `connected_or_attempted_readonly`：
+  - `connection_target`
+  - `log_analysis`
+  - 明确的 `failure_reason`
+
 ## 2026-04-24 回测与运行时特征口径经验
 
 ### 1. 运行时历史窗口不能只看表面窗口，要看嵌套特征的真实需求

@@ -55,6 +55,11 @@
   - `same-intent duplicate order check` 已通过
   - `target position already reached check` 因真实持仓快照缺失暂为 `not_checked`
   - 当前最终阻断原因仍为 `broker_account_snapshot_missing`
+- Stage246 已收敛 SimNow 快照根因：
+  - 新增 `debug-simnow-snapshot-probe.md` 调试会话
+  - `run_ctp_stage177_simnow_readonly_probe.sh` 已修复外部 `SIMNOW_FRONT/CTP_TD_ADDRESS/CTP_MD_ADDRESS` 被本地 env 覆盖的问题
+  - `run_ctp_stage174_readonly_probe.py` 已增强 `connection_target + log_analysis` 输出
+  - 当前外部阻塞已明确为：`交易服务器登录失败 code 140：首次登录必须修改密码`
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
 
