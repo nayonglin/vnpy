@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 import time
+import urllib.request
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -41,6 +42,43 @@ CTP_ENV_KEYS: dict[str, str] = {
     "auth_code": "CTP_AUTH_CODE",
     "product_info": "CTP_PRODUCT_INFO",
 }
+
+
+# #region debug-point A:reporting
+def _debug_report(hypothesis_id: str, location: str, msg: str, data: dict[str, Any] | None = None) -> None:
+    payload = {
+        "sessionId": "simnow-snapshot-probe",
+        "runId": "pre-fix",
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "msg": msg,
+        "data": data or {},
+    }
+    url = "http://127.0.0.1:7777/event"
+    env_path = PROJECT_DIR.parent / ".dbg" / "simnow-snapshot-probe.env"
+    try:
+        env_text = env_path.read_text(encoding="utf-8")
+        for line in env_text.splitlines():
+            if line.startswith("DEBUG_SERVER_URL="):
+                url = line.split("=", 1)[1].strip() or url
+            elif line.startswith("DEBUG_SESSION_ID="):
+                payload["sessionId"] = line.split("=", 1)[1].strip() or payload["sessionId"]
+    except Exception:
+        pass
+    try:
+        urllib.request.urlopen(
+            urllib.request.Request(
+                url,
+                data=json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+            ),
+            timeout=1.5,
+        ).read()
+    except Exception:
+        pass
+
+
+# #endregion
 
 
 def _mask(value: str) -> str:
@@ -132,10 +170,61 @@ def _write_df(path: Path, rows: list[dict[str, Any]]) -> None:
     frame.to_csv(path, index=False, encoding="utf-8-sig")
 
 
+def _analyze_logs(log_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    messages = [str(row.get("msg", "")).strip() for row in log_rows]
+    analysis: dict[str, Any] = {
+        "td_connected": False,
+        "md_connected": False,
+        "td_auth_success": False,
+        "md_login_success": False,
+        "td_login_success": False,
+        "td_login_failed": False,
+        "td_login_failed_message": "",
+        "status_hint": "no_logs",
+    }
+    for message in messages:
+        if "交易服务器连接成功" in message:
+            analysis["td_connected"] = True
+        if "行情服务器连接成功" in message:
+            analysis["md_connected"] = True
+        if "交易服务器授权验证成功" in message:
+            analysis["td_auth_success"] = True
+        if "行情服务器登录成功" in message:
+            analysis["md_login_success"] = True
+        if "交易服务器登录成功" in message:
+            analysis["td_login_success"] = True
+        if "交易服务器登录失败" in message:
+            analysis["td_login_failed"] = True
+            analysis["td_login_failed_message"] = message
+
+    if analysis["td_login_success"]:
+        analysis["status_hint"] = "trading_login_success"
+    elif analysis["td_login_failed"]:
+        analysis["status_hint"] = "trading_login_failed"
+    elif analysis["td_connected"] or analysis["md_connected"]:
+        analysis["status_hint"] = "connected_but_no_trading_login_outcome"
+    elif messages:
+        analysis["status_hint"] = "logs_present_without_ctp_progress"
+    return analysis
+
+
 def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     gateway_import = _gateway_import_status()
     import_available = bool(gateway_import["ctp_gateway_import_available"])
+    # #region debug-point A:probe-start
+    _debug_report(
+        "A",
+        "run_ctp_stage174_readonly_probe.py:_run_probe:start",
+        "[DEBUG] probe started",
+        {
+            "connect": bool(connect),
+            "wait_seconds": int(wait_seconds),
+            "import_available": import_available,
+            "missing_env": _required_env_missing(),
+        },
+    )
+    # #endregion
     rows: dict[str, list[dict[str, Any]]] = {
         "accounts": [],
         "positions": [],
@@ -157,6 +246,10 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         "real_order_enabled": False,
         "order_api_called": False,
         "status": "dry_run_not_connected",
+        "connection_target": {
+            "td_address": os.getenv("CTP_TD_ADDRESS", ""),
+            "md_address": os.getenv("CTP_MD_ADDRESS", ""),
+        },
         "outputs": {
             "summary": str(SUMMARY_PATH),
             "accounts": str(ACCOUNT_PATH),
@@ -170,15 +263,24 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
 
     if not connect:
         summary["status"] = "dry_run_not_connected"
+        # #region debug-point A:dry-run
+        _debug_report("A", "run_ctp_stage174_readonly_probe.py:_run_probe:dry_run", "[DEBUG] probe exited dry-run", {"status": summary["status"]})
+        # #endregion
         return summary | {"rows": rows}
 
     if not import_available:
         summary["status"] = "blocked_missing_vnpy_ctp"
+        # #region debug-point A:import-blocked
+        _debug_report("A", "run_ctp_stage174_readonly_probe.py:_run_probe:import_blocked", "[DEBUG] probe blocked by missing vnpy_ctp", {"status": summary["status"], "gateway_import": gateway_import})
+        # #endregion
         return summary | {"rows": rows}
 
     missing = _required_env_missing()
     if missing:
         summary["status"] = "blocked_missing_env"
+        # #region debug-point A:env-blocked
+        _debug_report("A", "run_ctp_stage174_readonly_probe.py:_run_probe:env_blocked", "[DEBUG] probe blocked by missing env", {"status": summary["status"], "missing": missing})
+        # #endregion
         return summary | {"rows": rows}
 
     from vnpy_ctp import CtpGateway
@@ -189,21 +291,39 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
 
     def on_account(event: Any) -> None:
         rows["accounts"].append(_object_to_row(event.data))
+        # #region debug-point C:account-event
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_account", "[DEBUG] account callback received", {"account_rows": len(rows["accounts"])})
+        # #endregion
 
     def on_position(event: Any) -> None:
         rows["positions"].append(_object_to_row(event.data))
+        # #region debug-point C:position-event
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_position", "[DEBUG] position callback received", {"position_rows": len(rows["positions"])})
+        # #endregion
 
     def on_order(event: Any) -> None:
         rows["orders"].append(_object_to_row(event.data))
+        # #region debug-point C:order-event
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_order", "[DEBUG] order callback received", {"order_rows": len(rows["orders"])})
+        # #endregion
 
     def on_trade(event: Any) -> None:
         rows["trades"].append(_object_to_row(event.data))
+        # #region debug-point C:trade-event
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_trade", "[DEBUG] trade callback received", {"trade_rows": len(rows["trades"])})
+        # #endregion
 
     def on_contract(event: Any) -> None:
         rows["contracts"].append(_object_to_row(event.data))
+        # #region debug-point C:contract-event
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_contract", "[DEBUG] contract callback received", {"contract_rows": len(rows["contracts"])})
+        # #endregion
 
     def on_log(event: Any) -> None:
         rows["logs"].append(_object_to_row(event.data))
+        # #region debug-point B:log-event
+        _debug_report("B", "run_ctp_stage174_readonly_probe.py:on_log", "[DEBUG] log callback received", {"log_rows": len(rows["logs"]), "last_log": rows["logs"][-1] if rows["logs"] else {}})
+        # #endregion
 
     event_engine.register(EVENT_ACCOUNT, on_account)
     event_engine.register(EVENT_POSITION, on_position)
@@ -213,13 +333,67 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     event_engine.register(EVENT_LOG, on_log)
 
     try:
+        # #region debug-point A:before-connect
+        _debug_report("A", "run_ctp_stage174_readonly_probe.py:_run_probe:before_connect", "[DEBUG] connecting readonly probe", {"td_address": os.getenv("CTP_TD_ADDRESS", ""), "md_address": os.getenv("CTP_MD_ADDRESS", "")})
+        # #endregion
         main_engine.connect(_ctp_setting_from_env(), "CTP")
+        # #region debug-point D:after-connect-call
+        _debug_report("D", "run_ctp_stage174_readonly_probe.py:_run_probe:after_connect", "[DEBUG] main_engine.connect returned", {"wait_seconds": int(wait_seconds)})
+        # #endregion
         time.sleep(max(wait_seconds, 1))
         summary["status"] = "connected_or_attempted_readonly"
+        log_analysis = _analyze_logs(rows["logs"])
+        summary["log_analysis"] = log_analysis
+        if rows["accounts"] or rows["positions"]:
+            summary["status"] = "readonly_snapshots_received"
+        elif log_analysis["status_hint"] == "trading_login_failed":
+            summary["status"] = "readonly_trading_login_failed"
+            summary["failure_reason"] = log_analysis["td_login_failed_message"]
+        elif log_analysis["status_hint"] == "connected_but_no_trading_login_outcome":
+            summary["status"] = "readonly_connected_no_login_outcome"
+        elif log_analysis["status_hint"] == "logs_present_without_ctp_progress":
+            summary["status"] = "readonly_logs_without_ctp_progress"
+        # #region debug-point D:after-wait
+        _debug_report(
+            "D",
+            "run_ctp_stage174_readonly_probe.py:_run_probe:after_wait",
+            "[DEBUG] readonly wait finished",
+            {
+                "status": summary["status"],
+                "account_rows": len(rows["accounts"]),
+                "position_rows": len(rows["positions"]),
+                "order_rows": len(rows["orders"]),
+                "trade_rows": len(rows["trades"]),
+                "contract_rows": len(rows["contracts"]),
+                "log_rows": len(rows["logs"]),
+            },
+        )
+        # #endregion
     except Exception as exc:
         summary["status"] = "connect_exception"
         summary["exception"] = repr(exc)
+        # #region debug-point B:connect-exception
+        _debug_report("B", "run_ctp_stage174_readonly_probe.py:_run_probe:exception", "[DEBUG] connect raised exception", {"exception": repr(exc)})
+        # #endregion
     finally:
+        if "log_analysis" not in summary:
+            summary["log_analysis"] = _analyze_logs(rows["logs"])
+        # #region debug-point D:before-close
+        _debug_report(
+            "D",
+            "run_ctp_stage174_readonly_probe.py:_run_probe:finally",
+            "[DEBUG] probe closing main_engine",
+            {
+                "status": summary["status"],
+                "account_rows": len(rows["accounts"]),
+                "position_rows": len(rows["positions"]),
+                "order_rows": len(rows["orders"]),
+                "trade_rows": len(rows["trades"]),
+                "contract_rows": len(rows["contracts"]),
+                "log_rows": len(rows["logs"]),
+            },
+        )
+        # #endregion
         main_engine.close()
 
     return summary | {"rows": rows}

@@ -3,12 +3,25 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_ENV="${SCRIPT_DIR}/ctp_simnow.local.env"
+INPUT_SIMNOW_FRONT="${SIMNOW_FRONT-}"
+INPUT_CTP_TD_ADDRESS="${CTP_TD_ADDRESS-}"
+INPUT_CTP_MD_ADDRESS="${CTP_MD_ADDRESS-}"
 
 if [[ -f "${LOCAL_ENV}" ]]; then
   set -a
   # shellcheck source=/dev/null
   source "${LOCAL_ENV}"
   set +a
+fi
+
+if [[ -n "${INPUT_SIMNOW_FRONT}" ]]; then
+  SIMNOW_FRONT="${INPUT_SIMNOW_FRONT}"
+fi
+if [[ -n "${INPUT_CTP_TD_ADDRESS}" ]]; then
+  CTP_TD_ADDRESS="${INPUT_CTP_TD_ADDRESS}"
+fi
+if [[ -n "${INPUT_CTP_MD_ADDRESS}" ]]; then
+  CTP_MD_ADDRESS="${INPUT_CTP_MD_ADDRESS}"
 fi
 
 SIMNOW_FRONT="${SIMNOW_FRONT:-7x24}"
