@@ -128,6 +128,23 @@
   - Stage251 Fresh Pre-submit Gate 已通过，且真实 `submit/send_order` 调用次数仍为 `0`
   - 7x24 前置当前仍不可用，但不影响交易时段第一套 SimNow 虚拟盘路径
   - 下一步可以做 SimNow-only 最小委托链路测试；若策略信号是平仓，必须先确认 SimNow 账户有对应持仓，否则不能对空仓发送平仓单
+- Stage257 已新增 `skills/stage78-simnow-shadow-sop/SKILL.md`：
+  - `AGENTS.md` 已加入触发规则，后续涉及Stage78-1每日影子盘、SimNow虚拟盘、Phase B闸门、AI池月更、`review`风险解释和每日对账时应先读取该skill
+  - skill 固化50万口径、月度AI池、`review`只允许降风险、SimNow空仓不得平仓、默认dry-run、账号密码不入库等规则
+  - 本阶段不改策略、不跑回测、不发单；下一步仍是 SimNow-only 最小委托链路测试
+- Stage258 已落地 SimNow-only 1手 smoke order 脚本并完成 dry-run：
+  - 新增 `run_ctp_stage258_simnow_smoke_order.py/.sh`
+  - `trading` 前置可达，120秒只读探针确认 `confirmed_flat`
+  - `rb2610.SHFE` dry-run 已拿到实时tick并构造 `1手买开` 被动限价测试委托，价格 `3229`
+  - 本阶段没有调用 `send_order` 或 `cancel_order`
+  - 实际 submit-cancel 前必须重新刷300秒内只读快照，并需要用户明确确认
+- Stage259 已完成 SimNow 1手 submit-cancel 链路实测：
+  - `rb2610.SHFE` 买开1手被动限价单成功送出，委托编号 `CTP.1_281656631_1`
+  - 委托价格 `3234`，随后发出撤单请求，提交后复核最终状态为 `Cancelled`
+  - 成交行数 `0`，非零持仓行数 `0`，账户实际仍为空仓
+  - 修复 Stage174 只读探针零持仓行语义，全部 `volume=0/frozen=0` 时归为 `confirmed_flat`
+  - 修复 Stage245 重复委托检查：按同一订单最新状态判断，避免已撤单前的 `Not Traded` 中间态误判为活跃委托
+  - 下一步进入“虚拟盘日常SOP的真实策略委托草案 -> SimNow执行 -> 对账”闭环，而不是直接上正常策略手数
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
 - Stage78相关 `*30w*.py` 可运行入口已禁用或仅保留历史提示；未来如需30万账户，应新增独立部署变体。

@@ -154,6 +154,9 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
         row = dict(obj.__dict__)
     else:
         row = {"value": str(obj)}
+    for attr in ["vt_symbol", "vt_orderid", "vt_accountid"]:
+        if hasattr(obj, attr):
+            row[attr] = getattr(obj, attr)
     for key, value in list(row.items()):
         if isinstance(value, (datetime, pd.Timestamp)):
             row[key] = value.isoformat()
@@ -215,13 +218,21 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
     data_callbacks = [row for row in callbacks if row.get("has_data")]
     error_callbacks = [row for row in callbacks if int(row.get("error_id") or 0) != 0]
     last_seen = any(bool(row.get("last")) for row in callbacks)
+    nonzero_position_rows = []
+    for row in position_rows:
+        volume = pd.to_numeric(row.get("volume", row.get("position", 0)), errors="coerce")
+        frozen = pd.to_numeric(row.get("frozen", 0), errors="coerce")
+        if pd.notna(volume) and abs(float(volume)) > 1e-12:
+            nonzero_position_rows.append(row)
+        elif pd.notna(frozen) and abs(float(frozen)) > 1e-12:
+            nonzero_position_rows.append(row)
 
     state = "position_query_not_available"
-    if position_rows:
+    if nonzero_position_rows:
         state = "positions_received"
     elif error_callbacks:
         state = "position_query_error"
-    elif last_seen and not data_callbacks and log_analysis.get("td_login_success"):
+    elif last_seen and log_analysis.get("td_login_success"):
         state = "confirmed_flat"
     elif last_seen and data_callbacks and not position_rows:
         state = "position_payload_without_position_rows"
@@ -231,6 +242,7 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
     return {
         "position_snapshot_state": state,
         "position_rows": len(position_rows),
+        "nonzero_position_rows": len(nonzero_position_rows),
         "position_query_callback_rows": len(callbacks),
         "position_query_data_callback_rows": len(data_callbacks),
         "position_query_last_seen": bool(last_seen),

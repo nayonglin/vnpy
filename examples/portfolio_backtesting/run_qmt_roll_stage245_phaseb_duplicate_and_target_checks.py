@@ -19,7 +19,18 @@ PRECHECK_TAG = "stage244_phaseb_pre_submit_check_v1"
 PRECHECK_PREFIX = "qmt_roll_stage244_phaseb_pre_submit_check"
 READONLY_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
 
-ACTIVE_ORDER_STATUSES = {"submitting", "submitted", "nottraded", "parttraded", "partial_filled"}
+ACTIVE_ORDER_STATUSES = {
+    "submitting",
+    "submitted",
+    "nottraded",
+    "not traded",
+    "parttraded",
+    "part traded",
+    "partial_filled",
+    "提交中",
+    "未成交",
+    "部分成交",
+}
 
 
 def _paths(trade_date: str) -> dict[str, Path]:
@@ -106,6 +117,44 @@ def _column(df: pd.DataFrame, *candidates: str) -> pd.Series:
     return pd.Series([""] * len(df), index=df.index)
 
 
+def _vt_symbol_series(df: pd.DataFrame) -> pd.Series:
+    if "vt_symbol" in df.columns:
+        vt_symbol = df["vt_symbol"].fillna("").astype(str).str.strip()
+    else:
+        vt_symbol = pd.Series([""] * len(df), index=df.index)
+
+    if "symbol" in df.columns and "exchange" in df.columns:
+        fallback = (
+            df["symbol"].fillna("").astype(str).str.strip()
+            + "."
+            + df["exchange"].fillna("").astype(str).str.strip()
+        )
+    else:
+        fallback = _column(df, "symbol")
+    return vt_symbol.where(vt_symbol.ne(""), fallback)
+
+
+def _latest_order_rows(orders: pd.DataFrame) -> pd.DataFrame:
+    if orders.empty:
+        return orders
+    latest = orders.copy().reset_index(drop=False).rename(columns={"index": "_event_index"})
+    if "vt_orderid" in latest.columns:
+        key = latest["vt_orderid"].fillna("").astype(str).str.strip()
+    else:
+        key = pd.Series([""] * len(latest), index=latest.index)
+    if "gateway_name" in latest.columns and "orderid" in latest.columns:
+        fallback = (
+            latest["gateway_name"].fillna("").astype(str).str.strip()
+            + "."
+            + latest["orderid"].fillna("").astype(str).str.strip()
+        )
+    else:
+        fallback = _column(latest, "orderid")
+    latest["_order_key"] = key.where(key.ne(""), fallback)
+    latest = latest.sort_values("_event_index").groupby("_order_key", as_index=False, dropna=False).tail(1)
+    return latest.drop(columns=["_event_index", "_order_key"], errors="ignore")
+
+
 def _duplicate_order_check(current: dict[str, Any], approval: pd.DataFrame, orders: pd.DataFrame) -> tuple[str, str]:
     reasons: list[str] = []
     current_intent = _clean_scalar(current.get("intent_id", ""))
@@ -121,11 +170,12 @@ def _duplicate_order_check(current: dict[str, Any], approval: pd.DataFrame, orde
     if submit_status not in {"", "not_submitted"}:
         reasons.append(f"intent_submit_status={submit_status}")
 
-    if not orders.empty:
-        order_vt_symbol = _normalize_text(_column(orders, "vt_symbol", "symbol"))
-        order_direction = _column(orders, "direction").map(_normalize_direction)
-        order_offset = _column(orders, "offset").map(_normalize_offset)
-        order_status = _normalize_text(_column(orders, "status"))
+    latest_orders = _latest_order_rows(orders)
+    if not latest_orders.empty:
+        order_vt_symbol = _normalize_text(_vt_symbol_series(latest_orders))
+        order_direction = _column(latest_orders, "direction").map(_normalize_direction)
+        order_offset = _column(latest_orders, "offset").map(_normalize_offset)
+        order_status = _normalize_text(_column(latest_orders, "status"))
         same_active = (
             order_vt_symbol.eq(str(current.get("vt_symbol", "")).lower())
             & order_direction.eq(_normalize_direction(current.get("direction", "")))
@@ -157,18 +207,19 @@ def _target_position_check(
     if confirmed_flat and positions.empty:
         current_volume = 0.0
     else:
-        pos_vt_symbol = _normalize_text(_column(positions, "vt_symbol", "symbol"))
+        pos_vt_symbol = _normalize_text(_vt_symbol_series(positions))
         pos_direction = _column(positions, "direction").map(_normalize_direction)
         pos_volume = pd.to_numeric(_column(positions, "volume", "pos", "position"), errors="coerce").fillna(0.0)
         current_volume = float(pos_volume[pos_vt_symbol.eq(vt_symbol.lower()) & pos_direction.eq(target_direction)].sum())
 
     pending_same_direction = 0.0
-    if not orders.empty:
-        order_vt_symbol = _normalize_text(_column(orders, "vt_symbol", "symbol"))
-        order_direction = _column(orders, "direction").map(_normalize_direction)
-        order_offset = _column(orders, "offset").map(_normalize_offset)
-        order_status = _normalize_text(_column(orders, "status"))
-        order_volume = pd.to_numeric(_column(orders, "volume", "traded_volume"), errors="coerce").fillna(0.0)
+    latest_orders = _latest_order_rows(orders)
+    if not latest_orders.empty:
+        order_vt_symbol = _normalize_text(_vt_symbol_series(latest_orders))
+        order_direction = _column(latest_orders, "direction").map(_normalize_direction)
+        order_offset = _column(latest_orders, "offset").map(_normalize_offset)
+        order_status = _normalize_text(_column(latest_orders, "status"))
+        order_volume = pd.to_numeric(_column(latest_orders, "volume", "traded_volume"), errors="coerce").fillna(0.0)
         pending_same_direction = float(
             order_volume[
                 order_vt_symbol.eq(vt_symbol.lower())
