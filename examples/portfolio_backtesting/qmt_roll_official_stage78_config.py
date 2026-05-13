@@ -23,8 +23,16 @@ OFFICIAL_STAGE78_ROLE: str = "defensive_risk_governance_formal"
 OFFICIAL_STAGE78_FORMAL_PREFIX: str = "qmt_roll_official_stage78_defensive_formal"
 OFFICIAL_STAGE78_EXPERIMENT_TAG: str = "qmt_roll_official_stage78_defensive"
 OFFICIAL_STAGE78_CAPITAL: float = 500_000.0
+OFFICIAL_STAGE78_CAPITAL_LABEL: str = "50w"
 OFFICIAL_STAGE78_SIZING_EQUITY_CAP: float = 0.0
 OFFICIAL_STAGE78_PROFIT_SHIELD_MODE: str = "profit_only"
+OFFICIAL_STAGE78_CAPITAL_POLICY: dict[str, str] = {
+    "current_deployment_capital": "500000",
+    "current_label": OFFICIAL_STAGE78_CAPITAL_LABEL,
+    "legacy_30w_status": "historical_reference_only",
+    "legacy_30w_entrypoints": "disabled; do not run for current shadow, SimNow, or live workflows",
+    "override_rule": "Use a new explicit deployment variant if real account capital is not 500000.",
+}
 
 RESEARCH_SWITCH_POLICY: dict[str, str] = {
     "default_for_new_independent_research": "off",

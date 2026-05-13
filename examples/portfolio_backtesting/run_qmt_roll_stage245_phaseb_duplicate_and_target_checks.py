@@ -64,6 +64,13 @@ def _clean_scalar(value: Any) -> str:
     return text
 
 
+def _to_float(value: Any, default: float = 0.0) -> float:
+    number = pd.to_numeric(value, errors="coerce")
+    if pd.isna(number):
+        return default
+    return float(number)
+
+
 def _normalize_direction(value: Any) -> str:
     text = _clean_scalar(value).lower()
     mapping = {
@@ -133,18 +140,27 @@ def _duplicate_order_check(current: dict[str, Any], approval: pd.DataFrame, orde
     return "passed", ""
 
 
-def _target_position_check(current: dict[str, Any], positions: pd.DataFrame, orders: pd.DataFrame) -> tuple[str, str]:
-    if positions.empty:
-        return "not_checked", "position_snapshot_missing"
+def _target_position_check(
+    current: dict[str, Any],
+    positions: pd.DataFrame,
+    orders: pd.DataFrame,
+    position_snapshot_state: str,
+) -> tuple[str, str]:
+    confirmed_flat = position_snapshot_state == "confirmed_flat"
+    if positions.empty and not confirmed_flat:
+        return "not_checked", f"position_snapshot_missing:{position_snapshot_state or 'unknown'}"
 
     vt_symbol = str(current.get("vt_symbol", ""))
     target_direction = _normalize_direction(current.get("direction", ""))
-    target_volume = float(pd.to_numeric(current.get("planned_volume"), errors="coerce") or 0.0)
+    target_volume = _to_float(current.get("planned_volume"), 0.0)
 
-    pos_vt_symbol = _normalize_text(_column(positions, "vt_symbol", "symbol"))
-    pos_direction = _column(positions, "direction").map(_normalize_direction)
-    pos_volume = pd.to_numeric(_column(positions, "volume", "pos", "position"), errors="coerce").fillna(0.0)
-    current_volume = float(pos_volume[pos_vt_symbol.eq(vt_symbol.lower()) & pos_direction.eq(target_direction)].sum())
+    if confirmed_flat and positions.empty:
+        current_volume = 0.0
+    else:
+        pos_vt_symbol = _normalize_text(_column(positions, "vt_symbol", "symbol"))
+        pos_direction = _column(positions, "direction").map(_normalize_direction)
+        pos_volume = pd.to_numeric(_column(positions, "volume", "pos", "position"), errors="coerce").fillna(0.0)
+        current_volume = float(pos_volume[pos_vt_symbol.eq(vt_symbol.lower()) & pos_direction.eq(target_direction)].sum())
 
     pending_same_direction = 0.0
     if not orders.empty:
@@ -188,6 +204,8 @@ def main() -> None:
     precheck = pd.read_csv(paths["precheck_csv"], encoding="utf-8-sig")
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     outputs = readonly_summary.get("outputs", {})
+    broker_snapshot = readonly_summary.get("broker_snapshot", {})
+    position_snapshot_state = str(broker_snapshot.get("position_snapshot_state", ""))
     positions = _read_csv_maybe(outputs.get("positions"))
     orders = _read_csv_maybe(outputs.get("orders"))
 
@@ -197,6 +215,7 @@ def main() -> None:
         how="left",
         suffixes=("", "_stage244"),
     )
+    merged = merged[merged["approval_status"].astype(str).eq("approved_waiting_precheck")].copy()
 
     rows: list[dict[str, Any]] = []
     approval = approval.copy()
@@ -217,10 +236,10 @@ def main() -> None:
 
     for record in merged.to_dict(orient="records"):
         duplicate_status, duplicate_reason = _duplicate_order_check(record, approval, orders)
-        target_status, target_reason = _target_position_check(record, positions, orders)
-        base_can_submit = int(pd.to_numeric(record.get("can_submit"), errors="coerce") or 0)
-        reasons = [str(record.get("failure_reason", "")).strip(), duplicate_reason.strip()]
-        if target_status == "failed":
+        target_status, target_reason = _target_position_check(record, positions, orders, position_snapshot_state)
+        base_can_submit = int(_to_float(record.get("can_submit"), 0.0))
+        reasons = [_clean_scalar(record.get("failure_reason", "")), duplicate_reason.strip()]
+        if target_status != "passed":
             reasons.append(target_reason.strip())
         final_reasons = ";".join([reason for reason in reasons if reason])
         final_can_submit = 1 if (base_can_submit == 1 and duplicate_status == "passed" and target_status == "passed") else 0
@@ -233,6 +252,7 @@ def main() -> None:
                 "base_can_submit": base_can_submit,
                 "duplicate_check_status": duplicate_status,
                 "duplicate_check_reason": duplicate_reason,
+                "position_snapshot_state": position_snapshot_state,
                 "target_position_check_status": target_status,
                 "target_position_check_reason": target_reason,
                 "final_can_submit": final_can_submit,
@@ -270,7 +290,7 @@ def main() -> None:
             "overfit_before": "否。重复委托和目标持仓校验是执行安全边界，不改策略参数。",
             "continue_before": "是。没有这两道校验，真实执行很容易出现重单和重复开仓事故。",
             "overfit_after": "否。校验只决定能否提交，不会反向修改信号。",
-            "continue_after": "是。接下来应继续打通账户快照，而不是急着接真实 submit。",
+            "continue_after": "是。账户与空持仓确认已打通，下一步应做真实提交 adapter 的 dry-run/显式开关层。",
         },
     }
     paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
@@ -290,6 +310,7 @@ def main() -> None:
                 "base_can_submit",
                 "duplicate_check_status",
                 "duplicate_check_reason",
+                "position_snapshot_state",
                 "target_position_check_status",
                 "target_position_check_reason",
                 "final_can_submit",
@@ -301,7 +322,8 @@ def main() -> None:
         "",
         "- `duplicate_check_status=failed` 表示本地账本或真实委托快照已显示可能重复提交。",
         "- `target_position_check_status=failed` 表示真实持仓加未完成开仓量已经达到目标，不得再次开仓。",
-        "- `target_position_check_status=not_checked` 表示当前缺少真实持仓快照，仍不能放行提交。",
+        "- `position_snapshot_state=confirmed_flat` 表示 CTP 持仓查询已收到 last 回调且无持仓行，可按空仓处理。",
+        "- `target_position_check_status=not_checked` 表示当前缺少已完成的真实持仓快照，仍不能放行提交。",
         "",
     ]
     paths["report_md"].write_text("\n".join(report_lines), encoding="utf-8")

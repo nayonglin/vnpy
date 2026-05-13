@@ -17,6 +17,8 @@
   - 总滑点`1,968,150`
   - 交易`880`
   - 胜率待专项复跑确认
+- 30万口径已从当前执行入口隔离：只能作为历史对照，不能用于78-1影子盘、SimNow、Phase B或实盘默认流程。
+- 当前可运行入口必须读取 `OFFICIAL_STAGE78_CAPITAL=500000`，优先使用不含`30w`的 `stage78_1` canonical runner。
 - Stage225已完成`78-1` AI选品开/关消融：
   - AI ON主回测期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`
   - AI OFF主回测期末权益`7,588,545`，总收益`1417.7090%`，最大回撤`-46.6939%`，Sharpe`0.7214`
@@ -60,8 +62,75 @@
   - `run_ctp_stage177_simnow_readonly_probe.sh` 已修复外部 `SIMNOW_FRONT/CTP_TD_ADDRESS/CTP_MD_ADDRESS` 被本地 env 覆盖的问题
   - `run_ctp_stage174_readonly_probe.py` 已增强 `connection_target + log_analysis` 输出
   - 当前外部阻塞已明确为：`交易服务器登录失败 code 140：首次登录必须修改密码`
+- Stage247 已验证用户修正 SimNow 密码后只读链路恢复：
+  - `run_ctp_stage177_simnow_readonly_probe.sh` 已取得 `readonly_snapshots_received`
+  - 交易/行情登录、结算确认、合约信息、账户快照均成功；真实下单仍为 `real_order_enabled=false / order_api_called=false`
+  - Stage244 已修正成功状态识别并通过 `pre-submit broker-state check`
+  - Stage245 重复委托检查通过，但仍因 `position_snapshot_missing` 阻断最终提交
+  - 下一步应补齐“空持仓即确认为 flat”与“持仓事件未回调”的语义区分，不急着接真实 `submit_order()`
+- Stage248 已补齐 CTP 空持仓确认语义：
+  - Stage174 现在捕获 CTP 原始持仓查询回调并输出 `position_query_callbacks`
+  - 本次 SimNow 复跑得到 `position_snapshot_state=confirmed_flat`：22 次持仓查询回调、0 次 data 回调、已收到 `last=True`、无错误
+  - Stage245 只在 `confirmed_flat` 时把空持仓视为 0 仓位，否则继续 fail-closed
+  - Phase B 样例委托已通过 Stage244/245：`final_can_submit=1`
+  - 仍未真实下单；下一步是做 `submit_order` adapter 的 dry-run/显式开关层
+- Stage249 已落地 Phase B submit adapter dry-run 保险层：
+  - 新增 `run_qmt_roll_stage249_phaseb_submit_adapter.py`
+  - 默认 `--mode dry-run`，即使 `final_can_submit=1` 也不调用真实下单 API
+  - 本次样例得到 `dry_run_ready_count=1 / submit_api_called_count=0`
+  - `real` 模式需要 `PHASEB_REAL_ORDER_ENABLED=1` 和确认文本，但当前真实 submit adapter 尚未实现，仍会阻断
+  - 下一步若继续，必须实现真实 broker adapter，并保留环境变量、命令行确认、提交前快照三重保险
+- Stage250 已落地 Phase B 标准 vn.py `OrderRequest` 构造层：
+  - 新增 `run_qmt_roll_stage250_phaseb_vnpy_order_request_builder.py`
+  - dry-run 已把样例委托映射为 `MA609.CZCE / Long Open / Limit / 16手 / 3010 / CTP`
+  - 已校验合约存在、价格在 tick 上、手数在合约上下限内
+  - real 模式默认阻断，原因包含 `phaseb_real_order_env_disabled`、`real_submit_confirmation_missing`、`stage250_never_calls_send_order`
+  - 本阶段仍不导入 CTP gateway、不连接服务器、不调用 `send_order`
+  - 下一步应补“提交前即时再探针”，真实 submit 不能复用陈旧账户快照
+- Stage251 已落地提交前即时再探针闸门：
+  - 新增 `run_qmt_roll_stage251_phaseb_fresh_pre_submit_gate.py`
+  - 串行流程：新鲜只读探针 -> Stage244 -> Stage245 -> Stage249 dry-run -> Stage250 dry-run -> Stage250 real 阻断测试
+  - 若新鲜只读探针未拿到 `readonly_snapshots_received` 和可确认持仓状态，立即停止后续步骤
+  - 当前 `trading` 前置在 16:22 复验为 `readonly_logs_without_ctp_progress`
+  - 当前 `7x24` 前置复验为 `readonly_trading_login_failed / CTP:不合法的登录`
+  - 最新 Stage251 状态：`fresh_pre_submit_gate_blocked`，真实 submit/send_order 调用次数仍为 `0`
+  - 下一步不是写真实 submit，而是在交易前置可用时段重跑并排查 SimNow 前置/账号/AppID/AuthCode 匹配问题
+- Stage252 已完成 SimNow 前置与账号环境审计：
+  - Stage179 网络探针扩展到 182.* 当前前置和 180.* 历史/官方文档前置
+  - 当前仅 `7x24_182` 的 `40001/40011` 可达
+  - `trading/trading2/trading_mobile` 的 `30001/30011/30002/30012/30003/30013` 当前均 `Connection refused`
+  - `180.168.146.187` 的 `10130/10131/10201/10211/10202/10212` 当前均超时
+  - 本地 SimNow 配置已填齐，但 `7x24` 登录仍提示 `CTP:不合法的登录`
+  - 当前阻塞从工程代码收敛到 SimNow 账号/前置/7x24生效状态；应避免连续错误登录
+- Stage253 已完成 SimNow 登录失败根因细分：
+  - 新增 `run_ctp_stage253_simnow_failure_triage.py`
+  - 基本排除本地 Mac/vn.py/vnpy_ctp wrapper 主因：同一链路历史已成功拿到账户、合约和持仓确认
+  - 大概率排除 AppID/AuthCode 主因：最新 7x24 探针已到 `交易服务器授权验证成功`
+  - 当前第一嫌疑：`7x24` 账号/密码/环境生效状态不匹配
+  - 第一套交易环境账号历史曾成功，但当前 `30001/30011` 网络不可达，无法复验
+  - 下一步需要用户确认 SimNow 资金账号是否已开通/生效 7x24 或第二套环境，或等待第一套交易前置恢复后重跑 `SIMNOW_FRONT=trading`
+- Stage254 已完成 Stage78-1 资金口径去30万化：
+  - 新增不含 `30w` 的 Stage78-1 canonical 启动包、日报、冷启动、执行三件套和多周期曲线入口
+  - `50w`兼容入口已改为导入 canonical 入口，不再经过旧`30w`模块
+  - 旧`30w`可运行入口已改成明确阻断提示，防止后续agent误把历史口径当当前部署口径
+  - Stage170数据缺口检查已切到`50w`启动包/日报产物路径
+  - 当前结论：78-1默认资金口径只认`500,000`；30万只能作为历史对照或未来独立部署变体
+- Stage255 已生成 2026-01-01 至 2026-05-12 的50万最新AI池影子盘：
+  - Stage173 已补齐 `2026-05-12` 主力映射和19个当前主力合约日线
+  - 期末权益`407,220`，总收益`-18.5560%`，最大回撤`-31.5769%`，Sharpe`-1.3035`，交易`31`
+  - 目标日信号为 `si2609.GFEX Short Close 1手`，原因 `long_prev2day_stop`
+  - 工业硅无夜盘，今晚不交易；若进入虚拟盘执行，应在下一日盘确认持仓后卖平 `si2609` 多 `1` 手
+  - 当前风险层级 `review/drawdown_review`，禁止新增开仓，但平仓属于降风险动作
+- Stage256 已在交易时段复验 SimNow 第一套 `trading` 通路恢复：
+  - Stage179 网络探针显示 `trading/trading2/trading_mobile` 前置均可达，当前建议使用 `trading`
+  - Stage174 只读探针已通过：行情登录、交易授权、交易登录、结算确认、合约查询、账户快照、持仓确认均成功
+  - SimNow 当前账户持仓语义为 `confirmed_flat`，即已确认空仓
+  - Stage251 Fresh Pre-submit Gate 已通过，且真实 `submit/send_order` 调用次数仍为 `0`
+  - 7x24 前置当前仍不可用，但不影响交易时段第一套 SimNow 虚拟盘路径
+  - 下一步可以做 SimNow-only 最小委托链路测试；若策略信号是平仓，必须先确认 SimNow 账户有对应持仓，否则不能对空仓发送平仓单
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
+- Stage78相关 `*30w*.py` 可运行入口已禁用或仅保留历史提示；未来如需30万账户，应新增独立部署变体。
 
 ## 禁止事项
 

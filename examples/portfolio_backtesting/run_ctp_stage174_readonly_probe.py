@@ -31,6 +31,7 @@ ORDER_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_orders_{MODEL_TAG}.csv"
 TRADE_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_trades_{MODEL_TAG}.csv"
 CONTRACT_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_contracts_{MODEL_TAG}.csv"
 LOG_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_logs_{MODEL_TAG}.csv"
+POSITION_QUERY_CALLBACK_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_position_query_callbacks_{MODEL_TAG}.csv"
 
 CTP_ENV_KEYS: dict[str, str] = {
     "userid": "CTP_USERID",
@@ -208,6 +209,35 @@ def _analyze_logs(log_rows: list[dict[str, Any]]) -> dict[str, Any]:
     return analysis
 
 
+def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analysis: dict[str, Any]) -> dict[str, Any]:
+    callbacks = rows.get("position_query_callbacks", [])
+    position_rows = rows.get("positions", [])
+    data_callbacks = [row for row in callbacks if row.get("has_data")]
+    error_callbacks = [row for row in callbacks if int(row.get("error_id") or 0) != 0]
+    last_seen = any(bool(row.get("last")) for row in callbacks)
+
+    state = "position_query_not_available"
+    if position_rows:
+        state = "positions_received"
+    elif error_callbacks:
+        state = "position_query_error"
+    elif last_seen and not data_callbacks and log_analysis.get("td_login_success"):
+        state = "confirmed_flat"
+    elif last_seen and data_callbacks and not position_rows:
+        state = "position_payload_without_position_rows"
+    elif log_analysis.get("td_login_success"):
+        state = "position_query_not_completed"
+
+    return {
+        "position_snapshot_state": state,
+        "position_rows": len(position_rows),
+        "position_query_callback_rows": len(callbacks),
+        "position_query_data_callback_rows": len(data_callbacks),
+        "position_query_last_seen": bool(last_seen),
+        "position_query_error_rows": len(error_callbacks),
+    }
+
+
 def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     gateway_import = _gateway_import_status()
@@ -232,6 +262,7 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         "trades": [],
         "contracts": [],
         "logs": [],
+        "position_query_callbacks": [],
     }
 
     summary: dict[str, Any] = {
@@ -258,6 +289,7 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
             "trades": str(TRADE_PATH),
             "contracts": str(CONTRACT_PATH),
             "logs": str(LOG_PATH),
+            "position_query_callbacks": str(POSITION_QUERY_CALLBACK_PATH),
         },
     }
 
@@ -284,6 +316,26 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         return summary | {"rows": rows}
 
     from vnpy_ctp import CtpGateway
+    from vnpy_ctp.gateway import ctp_gateway as ctp_gateway_module
+
+    original_position_rsp = ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition
+
+    def instrumented_position_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> None:
+        rows["position_query_callbacks"].append(
+            {
+                "reqid": reqid,
+                "last": bool(last),
+                "has_data": bool(data),
+                "instrument": str(data.get("InstrumentID", "")) if isinstance(data, dict) else "",
+                "position": data.get("Position", "") if isinstance(data, dict) else "",
+                "error_id": error.get("ErrorID", 0) if isinstance(error, dict) else 0,
+                "error_msg": error.get("ErrorMsg", "") if isinstance(error, dict) else "",
+                "received_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+        return original_position_rsp(self, data, error, reqid, last)
+
+    ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = instrumented_position_rsp
 
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
@@ -378,6 +430,7 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     finally:
         if "log_analysis" not in summary:
             summary["log_analysis"] = _analyze_logs(rows["logs"])
+        summary["broker_snapshot"] = _analyze_position_snapshot(rows, summary["log_analysis"])
         # #region debug-point D:before-close
         _debug_report(
             "D",
@@ -391,10 +444,13 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
                 "trade_rows": len(rows["trades"]),
                 "contract_rows": len(rows["contracts"]),
                 "log_rows": len(rows["logs"]),
+                "position_snapshot_state": summary["broker_snapshot"]["position_snapshot_state"],
+                "position_query_callback_rows": len(rows["position_query_callbacks"]),
             },
         )
         # #endregion
         main_engine.close()
+        ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = original_position_rsp
 
     return summary | {"rows": rows}
 
@@ -413,6 +469,7 @@ def main() -> None:
     _write_df(TRADE_PATH, rows["trades"])
     _write_df(CONTRACT_PATH, rows["contracts"])
     _write_df(LOG_PATH, rows["logs"])
+    _write_df(POSITION_QUERY_CALLBACK_PATH, rows["position_query_callbacks"])
     SUMMARY_PATH.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(json.dumps(result, ensure_ascii=False, indent=2))

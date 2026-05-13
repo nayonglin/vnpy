@@ -10,6 +10,8 @@
 ## 固定口径
 
 - 初始资金：`500,000`
+- 资金口径状态：`50万` 是当前唯一正式/影子盘/SimNow默认口径。
+- 旧`30万`状态：仅为历史研究对照；不得用于当前78-1影子盘、虚拟盘、Phase B或实盘流程。
 - sizing资金封顶：`0.0`，即关闭100万sizing cap
 - AI选品：开启
 - FU卫星规则：开启
@@ -43,17 +45,32 @@ PYTHONPATH=/Users/bytedance/Desktop/person/vnpy:/Users/bytedance/Desktop/person/
 examples/portfolio_backtesting/build_qmt_roll_stage78_1_shadow_daily_runner.py
 ```
 
+## 影子盘启动包入口
+
+```bash
+PYTHONPATH=/Users/bytedance/Desktop/person/vnpy:/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting \
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python \
+examples/portfolio_backtesting/build_qmt_roll_stage168_stage78_1_shadow_startup_pack.py
+```
+
 ## 关键代码
 
 - 官方配置：`examples/portfolio_backtesting/qmt_roll_official_stage78_config.py`
 - 主回测入口：`examples/portfolio_backtesting/run_qmt_roll_official_stage78_1.py`
+- 影子盘启动包入口：`examples/portfolio_backtesting/build_qmt_roll_stage168_stage78_1_shadow_startup_pack.py`
 - 影子盘日报入口：`examples/portfolio_backtesting/build_qmt_roll_stage78_1_shadow_daily_runner.py`
-- 50万影子盘启动包入口：`examples/portfolio_backtesting/build_qmt_roll_stage168_50w_qmt_shadow_startup_pack.py`
+- 50万兼容入口：`examples/portfolio_backtesting/build_qmt_roll_stage168_50w_qmt_shadow_startup_pack.py`
+
+## 旧30万口径隔离
+
+- `examples/portfolio_backtesting/*30w*.py` 中与Stage78趋势线相关的可运行入口已改为禁用提示，不再作为当前工作流入口。
+- 历史stage文件里的30万描述只表示当时的研究记录，不代表当前正式基准。
+- 如真实账户资金不是50万，必须新增明确命名的部署变体，不能把78-1资金口径临时改回30万。
 
 ## 对照版本
 
-- 旧30万无封顶：`stage78_30w_no_sizing_cap_previous_formal`
-- 旧30万有100万封顶：`stage78_30w_sizing_cap_1m_previous_formal`
+- 历史对照，旧30万无封顶：`stage78_30w_no_sizing_cap_previous_formal`
+- 历史对照，旧30万有100万封顶：`stage78_30w_sizing_cap_1m_previous_formal`
 - Stage75收益上限参考：`stage75_return_ceiling`
 
 ## 参考指标

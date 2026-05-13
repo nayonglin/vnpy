@@ -22,16 +22,16 @@ REPORT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 
 FRONTS = [
     {
-        "front": "7x24",
+        "front": "7x24_182",
         "role": "td",
         "address": "tcp://182.254.243.31:40001",
-        "note": "SimNow 7x24 test trade front",
+        "note": "SimNow 7x24 test trade front, 182 profile",
     },
     {
-        "front": "7x24",
+        "front": "7x24_182",
         "role": "md",
         "address": "tcp://182.254.243.31:40011",
-        "note": "SimNow 7x24 test market front",
+        "note": "SimNow 7x24 test market front, 182 profile",
     },
     {
         "front": "trading",
@@ -68,6 +68,42 @@ FRONTS = [
         "role": "md",
         "address": "tcp://182.254.243.31:30013",
         "note": "SimNow first environment, group 3 market front",
+    },
+    {
+        "front": "7x24_180",
+        "role": "td",
+        "address": "tcp://180.168.146.187:10130",
+        "note": "SimNow 7x24 trade front from official/legacy docs",
+    },
+    {
+        "front": "7x24_180",
+        "role": "md",
+        "address": "tcp://180.168.146.187:10131",
+        "note": "SimNow 7x24 market front from official/legacy docs",
+    },
+    {
+        "front": "first_180_group1",
+        "role": "td",
+        "address": "tcp://180.168.146.187:10201",
+        "note": "SimNow first environment group 1 trade front from deployment pack",
+    },
+    {
+        "front": "first_180_group1",
+        "role": "md",
+        "address": "tcp://180.168.146.187:10211",
+        "note": "SimNow first environment group 1 market front from deployment pack",
+    },
+    {
+        "front": "first_180_group2",
+        "role": "td",
+        "address": "tcp://180.168.146.187:10202",
+        "note": "SimNow first environment group 2 trade front from deployment pack",
+    },
+    {
+        "front": "first_180_group2",
+        "role": "md",
+        "address": "tcp://180.168.146.187:10212",
+        "note": "SimNow first environment group 2 market front from deployment pack",
     },
 ]
 

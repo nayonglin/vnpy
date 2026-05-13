@@ -17,6 +17,7 @@ APPROVAL_TAG = "stage243_phaseb_approval_v1"
 APPROVAL_PREFIX = "qmt_roll_stage243_phaseb_approval"
 
 READONLY_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
+READONLY_SUCCESS_STATUSES = {"connected_or_attempted_readonly", "readonly_snapshots_received"}
 
 
 def _paths(trade_date: str) -> dict[str, Path]:
@@ -78,9 +79,10 @@ def _build_result_row(row: dict[str, Any], readonly_summary: dict[str, Any], acc
         can_submit = False
         reasons.append("deployment_gate_blocked")
 
-    if readonly_summary.get("status") != "connected_or_attempted_readonly":
+    readonly_status = str(readonly_summary.get("status", ""))
+    if readonly_status not in READONLY_SUCCESS_STATUSES:
         can_submit = False
-        reasons.append("readonly_probe_not_connected")
+        reasons.append(f"readonly_probe_not_ready:{readonly_status or 'missing'}")
 
     if readonly_summary.get("missing_required_env"):
         can_submit = False
@@ -219,7 +221,7 @@ def main() -> None:
         "",
         "## 说明",
         "",
-        "- 只要 `broker_account_snapshot_missing`、`readonly_probe_not_connected`、`existing_live_open_orders` 任一出现，就不得提交。",
+        "- 只要 `broker_account_snapshot_missing`、`readonly_probe_not_ready`、`existing_live_open_orders` 任一出现，就不得提交。",
         "- 本阶段仍不触发真实 submit_order()。",
         "",
     ]
