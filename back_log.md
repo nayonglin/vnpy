@@ -45754,3 +45754,598 @@ to-end季度冷启动：
 - repair status：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage196_stage78_2015_2019_tushare_data_repair_repair_status_stage196_stage78_2015_2019_tushare_data_repair_v1.csv`
 - Stage194 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_report_stage194_stage78_2015_multicycle_viability_v1.md`
 - Stage194 equity HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage194_stage78_2015_multicycle_viability_equity_curves_stage194_stage78_2015_multicycle_viability_v1.html`
+
+## 2026-05-14 21:34 Stage267：热门缺口品种数据修复与第78-1逐个 add-one 验证
+
+### 调研和判断结论
+
+- 外部参考：vn.py/VeighNa 官方仓库、vn.py CTA 策略模块、vnpy_tqsdk 数据服务、趋势跟踪长期研究。
+- 判断：趋势策略扩池的本质是寻找有流动性、有波动、有趋势结构、且不破坏组合风险路径的独立风险来源；热门品种本身不是加入理由。
+
+### 本次版本变更
+
+- 是否重要突破：是，反证了“热门且结构预筛通过即可加入”的简单扩池逻辑，并把下一步收缩到 `y/ag` 两条线索。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage264_hot_product_gap_audit.py`
+  - `examples/portfolio_backtesting/repair_qmt_roll_stage265_hot_products_recent_tushare_data.py`
+  - `examples/portfolio_backtesting/repair_qmt_roll_stage266_hot_products_recent_tqsdk_data.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage267_hot_product_official_add_one_validation.py`
+- 修改脚本：无正式第78-1策略脚本修改。
+- 删除脚本：无。
+- 新增参数：热门目标品种 `ag/sc/fu/TA/m/p/y/i/v/c/ao`；Stage267 候选 `TA/ag/sc/m/p/y/i/v/c/ao`；账户规模50万；A=`official_stage78_1_static18_plus_fu`；C=A+单一候选。
+- 修改参数：无正式执行参数修改。
+- 删除参数：无。
+
+### 数据修复与结构审计
+
+- Tushare Stage265：缺失合约14、缺失映射日636，因当前 token 无效全部失败。
+- TQSDK Stage266：成功保存14/14个近端主力合约，覆盖636/636个缺失映射日，修复后缺失合约0。
+- 重建 full-market tradable universe：57个合格产品，11个热门目标全部覆盖。
+- Structural prefilter：结构池24个，新入选 `TA.CZCE, UR.CZCE, eb.DCE, pg.DCE, fu.SHFE, sn.SHFE`；目标11个里除已在基准的 `fu.SHFE` 外，仅 `TA.CZCE` 直接通过。
+- 直接全市场57品种回测：期末权益 `740,055`，总收益 `270.0275%`，最大回撤 `-70.1846%`，Sharpe `0.3579`，总滑点 `234,425`，总交易次数 `2,175`，胜率 `37.8871%`。结论是“全市场热门全加”会显著破坏第78-1。
+
+### 新增回测结果
+
+| 版本 | 层级 | 期末权益 | 总收益 | 最大回撤 | Sharpe | 总滑点 | 总交易次数 | 胜率 | 结论 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| A static18+fu | baseline | 26,353,935 | 5170.7870% | -40.1659% | 1.1374 | 2,057,380 | 883 | 43.3628% | 本轮新数据口径基准 |
+| +TA.CZCE | direct | 17,826,270 | 3465.2540% | -42.5307% | 1.0210 | 1,690,550 | 949 | 42.6804% | 结构过筛但失败 |
+| +ag.SHFE | counterfactual | 45,602,735 | 9020.5470% | -45.6781% | 1.2803 | 2,151,570 | 939 | 42.9167% | 收益强但回撤越界 |
+| +sc.INE | counterfactual | 23,821,000 | 4664.2000% | -39.7260% | 1.1137 | 2,118,540 | 947 | 43.3884% | 不升级 |
+| +m.DCE | counterfactual | 22,564,665 | 4412.9330% | -42.6489% | 1.1023 | 2,015,030 | 957 | 42.9448% | 不升级 |
+| +p.DCE | counterfactual | 21,854,590 | 4270.9180% | -45.5700% | 1.0705 | 1,781,750 | 945 | 41.8219% | 不升级 |
+| +y.DCE | counterfactual | 29,058,645 | 5711.7290% | -39.7260% | 1.1798 | 2,218,170 | 933 | 43.6059% | 最干净正向线索 |
+| +i.DCE | counterfactual | 16,512,270 | 3202.4540% | -53.7439% | 0.9665 | 2,049,260 | 958 | 41.8367% | 强反证 |
+| +v.DCE | counterfactual | 22,488,415 | 4397.6830% | -39.7260% | 1.1030 | 1,961,420 | 917 | 44.1365% | 不升级 |
+| +c.DCE | counterfactual | 26,381,750 | 5176.3500% | -40.3146% | 1.1485 | 2,138,230 | 941 | 42.8274% | 近似中性 |
+| +ao.SHFE | counterfactual | 25,697,685 | 5039.5370% | -40.1659% | 1.1253 | 2,124,610 | 917 | 43.8298% | 小幅伤害 |
+
+修改回测结果：无。删除回测结果：无。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮为当前第78-1/50万口径的热门扩池验证，不是旧口径复跑。
+
+### 结论
+
+- 不升级正式第78-1。
+- `TA.CZCE` 虽然是目标里唯一 direct add-one ready 的新增品种，但回测显著伤害 A，直接候选被反证。
+- `y.DCE` 是当前最值得继续反证的低调线索：收益、回撤、Sharpe 同时改善，但因结构预筛未过，不能直接升级。
+- `ag.SHFE` 收益很强，但最大回撤扩大到 `-45.6781%`，超过40%风险边界，只能作为高收益高回撤研究分支。
+- `c.DCE` 接近中性，优先级低；`m/p/i/TA` 明确反证；`sc/v/ao` 暂不值得进入正式候选。
+
+### 运行前过拟合反思
+
+- 判断：有受控风险。
+- 原因：本轮是固定 A/C add-one，不调参数；但一次性比较10个候选，天然存在多重比较风险。
+
+### 运行后过拟合反思
+
+- 判断：有受控风险，不能直接 promotion。
+- 原因：`y/ag` 只能作为下一轮反证线索；若直接因为全样本赢就升级，会变成品种选择过拟合。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：它回答原始18+fu是否漏掉热门大品种，以及哪些品种真正适配第78-1。
+
+### 运行后继续价值反思
+
+- 判断：是，但范围收缩。
+- 原因：下一步只值得做 `y.DCE` 分段/滑点/弱窗口验证，以及 `ag.SHFE` 回撤归因；其他直接 add-one 暂停。
+
+### 输出文件
+
+- Stage267 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage267_hot_product_official_add_one_validation_report.md`
+- Stage267 comparison：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage267_hot_product_official_add_one_validation_comparison.csv`
+- Stage267 equity HTML：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage267_hot_product_official_add_one_validation_equity_curves.html`
+- 阶段记录：`research/lines/futures_trend_hot_universe_expansion/stages/20260514_2134_stage002_hot_data_repair_add_one_validation.md`
+
+## 2026-05-14 22:23 CST - Stage003 `y.DCE`鲁棒性反证与`ag.SHFE`回撤来源拆解
+
+### 外部调研与判断
+
+- 外部参考：vn.py/VeighNa、vn.py CTA Strategy、vnpy_tqsdk、趋势跟踪长期研究。
+- 判断：趋势策略扩池必须证明新增品种不会破坏路径风险；热门、全样本收益、单年暴利都不是正式升级理由。
+
+### 本次版本变更
+
+- 是否重要突破：是。`y.DCE`从“最干净正向线索”降为“继续研究但不promotion”；`ag.SHFE`确认高收益背后不是单一ag回撤主因，但仍不满足40%风险边界。
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage268_y_dce_robustness_ag_drawdown.py`
+- 修改脚本：同上，新增静默日志与逐窗口缓存。
+- 删除脚本：无。
+- 新增参数：`y.DCE` A/C验证；`ag.SHFE`回撤拆解；起始年份2020-2026；季度路径重置26个；最差季度真实重跑4个；滑点1x/3x/5x；滚动窗口63/126/252日。
+- 修改参数：无正式Stage78-1参数修改。
+- 删除参数：无。
+
+### 新增回测/归因结果
+
+- A=`official_stage78_1_static18_plus_fu`：期末权益 `26,353,935`，总收益 `5170.7870%`，最大回撤 `-40.1659%`，Sharpe `1.1374`，总滑点 `2,057,380`，总交易次数 `883`，胜率 `43.3628%`。
+- C_y=`A + y.DCE`：期末权益 `29,058,645`，总收益 `5711.7290%`，最大回撤 `-39.7260%`，Sharpe `1.1798`，总滑点 `2,218,170`，总交易次数 `933`，胜率 `43.6059%`。
+- 起始年份：C_y收益优于A为6/7，Sharpe优于A为5/7，回撤差不差于-2pct为6/7；2026起点期末权益少 `3,130`、回撤差 `-2.0135pct`、Sharpe差 `-0.0262`。
+- 季度路径重置：C_y收益优于A为25/26，回撤差不差于-5pct为21/26；2025Q4收益差 `-177.597pct`、回撤差 `-18.8832pct`、Sharpe差 `-2.8519`。
+- 最差季度真实重跑：2025Q4、2025Q1、2026Q2、2026Q1中，2026Q1 C_y收益/回撤/Sharpe均略差；2025Q4和2025Q1虽收益略好，但回撤或Sharpe不够干净。
+- 弱窗口：2022-02-07至2026-04-30 C_y收益差 `+380.699pct`、回撤改善 `+2.4991pct`、Sharpe差 `+0.0960`；2026窗口收益差 `-0.626pct`、回撤差 `-2.0135pct`。
+- 滑点压力：全周期5x滑点 C_y期末权益 `20,185,965` vs A `18,124,415`，收益差 `+412.310pct`，回撤改善 `+10.7357pct`，Sharpe差 `+0.0405`。
+- 滚动弱窗口：4158个滚动窗口中C_y净Pnl弱于A为393个；最差63日窗口是2025-08-14至2025-11-18，C_y相对A少 `2,328,350`。
+- ag回撤：+ag组合最大回撤事件2025-07-25至2025-08-27，事件期+ag组合净Pnl `-5,279,010`、A净Pnl `-5,057,120`，相对A多亏 `221,890`；ag自身事件期亏 `-300,210`，不是主因，主要亏损来自 `si.GFEX -1,544,400`、`jm.DCE -1,485,000`、`lh.DCE -1,364,000`。
+
+修改回测结果：无。删除回测结果：无。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮为当前第78-1/50万口径，不是旧口径复跑。
+
+### 结论
+
+- 不升级正式第78-1。
+- `y.DCE` 通过弱窗口和滑点压力，但没有通过起始年份和季度冷启动闸门，只能保留为研究线索。
+- `ag.SHFE` 不能因为2024-2025贡献大就升级；最大回撤不是ag单独造成，但+ag事件期相对A多亏且全周期回撤越界。
+
+### 运行前过拟合反思
+
+- 判断：不是直接过拟合，但有品种筛选后的验证风险。
+- 原因：本轮固定A/C，不调参；但 `y/ag` 是从Stage267多品种比较中挑出来的强线索，必须反证。
+
+### 运行后过拟合反思
+
+- 判断：没有新增策略过拟合。
+- 原因：结果没有被拿来调阈值或补丁，反而因为近期窗口不稳而阻止直接promotion。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：能回答 `y.DCE` 是否适合进入正式池，以及 `ag.SHFE` 回撤究竟是不是单品种问题。
+
+### 运行后继续价值反思
+
+- 判断：是，但继续方向应收缩。
+- 原因：下一步若做，只值得拆2025-08至2025-11的组合风险暴露；不值得继续盲目扩池或为单品种调参。
+
+### 输出文件
+
+- Stage268 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage268_y_dce_robustness_ag_drawdown_report_stage268_y_dce_robustness_ag_drawdown_v1.md`
+- Stage268 summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage268_y_dce_robustness_ag_drawdown_summary_stage268_y_dce_robustness_ag_drawdown_v1.json`
+- 阶段记录：`research/lines/futures_trend_hot_universe_expansion/stages/20260514_2223_stage003_y_dce_robustness_ag_drawdown.md`
+
+## 2026-05-14 22:37 CST - Stage004 / Stage269 2025-08至2025-11共同风险暴露拆解
+
+### 外部调研与判断
+
+- 外部参考：商品期货组合压力测试、商品期货相关性/依赖结构研究、vn.py/VeighNa CTA策略与风险管理实践。
+- 判断：本轮弱窗口不能简单归咎于单个候选品种；更合理的解释是多品种异步回吐叠加尖锐尾部日，下一步只能研究组合层风控，不能给单品种打补丁。
+
+### 本次版本变更
+
+- 是否重要突破：是。热门扩池线从继续验证 `y/ag`，收缩为 alpha 不变的组合层 profit-giveback / heat-reduction gate 研究。
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage269_common_risk_drawdown_2025.py`
+- 修改正式Stage78-1配置：无。
+- 删除参数：无。
+- 新增窗口：`2025-08-01`至`2025-11-30`、`ag_peak_to_trough`、`y_worst_63d`、`post_trough_recovery`。
+- 新增归因层级：daily、product、sector、candidate delta、entry risk、PnL correlation、PCA common mode。
+
+### 新增归因结果
+
+- A=`static18+fu` 主窗口净 PnL `2,141,290`、收益 `9.0933%`、局部回撤 `-4,181,660` / `-13.9991%`、交易次数 `28`、滑点 `245,660`，最差日 `2025-11-21 -4,021,020`。
+- C_y=`A+y.DCE` 主窗口净 PnL `1,475,020`、收益 `5.5458%`、局部回撤 `-4,181,660` / `-12.9650%`、交易次数 `33`、滑点 `268,540`，相对A少 `666,270`；`y.DCE`自身主窗口贡献 `-479,040`。
+- C_ag=`A+ag.SHFE` 主窗口净 PnL `4,548,020`、收益 `19.3032%`、局部回撤 `-5,665,130` / `-17.0863%`、交易次数 `37`、滑点 `267,820`；收益更高但局部回撤更深。
+- A主窗口最亏品种：`lh.DCE -1,054,320`、`sp.SHFE -538,360`、`jm.DCE -349,440`、`FG.CZCE -240,000`。
+- 最差日由 `lc.GFEX` 尾部回吐主导：`2025-11-21 -4,021,020`；PnL PCA第一主成分解释比例仅 `0.1474`，不支持高度相关同步崩盘。
+- `ag_peak_to_trough`：A `-5,057,120`，C_y `-4,390,790`，C_ag `-5,279,010`，C_ag相对A多亏 `221,890`。
+- `y_worst_63d`：A `3,502,310`，C_y `1,173,960`，C_y相对A少 `2,328,350`。
+
+修改回测结果：无。删除回测结果：无。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮为当前第78-1/50万口径，不是旧口径复跑。
+
+### 结论
+
+- 不升级 `y.DCE`，不升级 `ag.SHFE`，不修改Stage78-1正式执行池。
+- 继续有价值，但只应测试 alpha 不变的组合层 profit-giveback / heat-reduction gate；不得为 `y/ag/lc` 单品种调参。
+
+### 运行前过拟合反思
+
+- 判断：不是过拟合。
+- 原因：本轮只读固定历史产物做归因，不调参、不新增品种。
+
+### 运行后过拟合反思
+
+- 判断：不是过拟合，并降低了过拟合风险。
+- 原因：结论阻止单品种补丁，转向组合层风险问题。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：能回答Stage268暴露的弱窗口到底是单品种、候选品种还是组合层问题。
+
+### 运行后继续价值反思
+
+- 判断：是，但必须克制。
+- 原因：下一步只值得验证组合层风险覆盖，不值得继续盲目扩池。
+
+### 输出文件
+
+- Stage269 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage269_common_risk_drawdown_2025_report_stage269_common_risk_drawdown_2025_v1.md`
+- Stage269 summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage269_common_risk_drawdown_2025_summary_stage269_common_risk_drawdown_2025_v1.json`
+- 阶段记录：`research/lines/futures_trend_hot_universe_expansion/stages/20260514_2237_stage004_common_risk_drawdown_2025.md`
+
+## 2026-05-14 22:46 CST - Stage005 / Stage270 组合层Heat/Giveback风险倍率最小回放
+
+### 外部调研与判断
+
+- 外部参考：趋势跟踪组合风险管理、commodity futures stress testing、portfolio heat 风险预算实践、vn.py/VeighNa CTA组合框架。
+- 判断：组合级风险倍率有第一性原理价值，但不能复活Stage128已反证的持仓利润保护；本轮只测前一日组合权益状态驱动的日级资本倍率。
+
+### 本次版本变更
+
+- 是否触发A/B：是，风险覆盖层可能与Stage78-1结合；本轮做最小A vs C。
+- 是否重要突破：否。结论失败，不进入撮合级/引擎级回测。
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage270_portfolio_heat_giveback_overlay.py`
+- 修改正式Stage78-1配置：无。
+- 删除参数：无。
+- 新增候选：`portfolio_heat_giveback_v1`
+  - `heat_return_60_soft=0.20`
+  - `heat_return_60_hard=0.25`
+  - `giveback_20_soft=-0.03`
+  - `giveback_20_hard=-0.06`
+  - `soft_scale=0.75`
+  - `hard_scale=0.50`
+- 口径说明：日级资本倍率回放；窗口表均按对应窗口从 `500,000` 独立回放，不是撮合级回测。
+
+### 新增结果
+
+- A基准全周期：C期末权益 `25,371,181.25` vs A `26,353,935`，少 `982,753.75`；收益差 `-196.5507pct`；最大回撤改善 `+4.3203pct`；Sharpe差 `+0.0799`；风险降档 `397` 天，平均风险倍率 `0.8918`。
+- A基准5x滑点：C期末权益 `17,819,451.25` vs A `18,124,415`，仍为正但低于A；最大回撤由 A `-67.2151%` 改为 C `-54.6536%`。
+- 2026独立回放：C期末权益 `2,775,412.5` vs A `1,969,895`，多 `805,517.5`；最大回撤改善 `+18.7654pct`，但Sharpe低 `-0.1016`。
+- Stage269主弱窗口独立回放 `2025-08-01`至`2025-11-30`：C期末权益 `531,495` vs A `2,641,290`，少 `2,109,795`；收益差 `-421.9590pct`；回撤不改善，Sharpe差 `-0.1066`。
+- Stage269 `y_worst_63d`：C期末权益 `2,304,350` vs A `4,002,310`，少 `1,697,960`；收益差 `-339.5920pct`；回撤不改善。
+- Stage269 `ag_peak_to_trough` 与 `post_trough_recovery`：无触发、无改善。
+- Stage131 `q2022_4_252d`：C期末权益 `2,315,617.5` vs A `2,705,890`，少 `390,272.5`；收益差 `-78.0545pct`；回撤不改善。
+- 判定：`promotion_decision=fail_do_not_promote`，`pass_minimal_gate=false`，弱窗口回撤改善数 `0`。
+
+修改回测结果：无。删除回测结果：无。
+
+历史旧第78参考字段：期末权益 `1,610,900`、总收益 `705.45%`、最大回撤 `-54.93%`、Sharpe `0.661`、总滑点 `100`、总交易次数 `1000`。本轮为当前第78-1/50万口径的日级回放，不是旧口径复跑。
+
+### 结论
+
+- `portfolio_heat_giveback_v1` 不晋级，不做引擎级回测。
+- 全周期改善回撤/Sharpe，但目标弱窗口独立回放失败，说明该规则会切掉恢复段收益。
+- 热门扩池线暂时收束：不升级 `y.DCE`，不升级 `ag.SHFE`，不继续用风险倍率拯救候选品种。
+
+### 运行前过拟合反思
+
+- 判断：不是过拟合。
+- 原因：规则在运行前预声明，未按结果调阈值；只做最小日级回放。
+
+### 运行后过拟合反思
+
+- 判断：继续优化这个形状会变成过拟合。
+- 原因：全周期漂亮但目标弱窗口失败，若继续调 `20/25%`、`3/6%`、`0.75/0.50` 这类阈值，就是围绕失败窗口找舒适点。
+
+### 运行前继续价值反思
+
+- 判断：是。
+- 原因：能快速验证Stage269后续方向是否值得进入更昂贵的引擎级回测。
+
+### 运行后继续价值反思
+
+- 判断：这个overlay形状不值得继续；组合层风险研究仍有价值。
+- 原因：失败不是执行误差，而是机制问题。后续若继续风险治理，应回到 `futures_trend_risk_overlay` 的账户层 `balanced_tranche_v1`，而不是在本线继续调日级风险倍率。
+
+### 输出文件
+
+- Stage270 report：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage270_portfolio_heat_giveback_overlay_report_stage270_portfolio_heat_giveback_overlay_v1.md`
+- Stage270 summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage270_portfolio_heat_giveback_overlay_summary_stage270_portfolio_heat_giveback_overlay_v1.json`
+- 阶段记录：`research/lines/futures_trend_hot_universe_expansion/stages/20260514_2246_stage005_portfolio_heat_giveback_overlay.md`
+
+# 2026-05-14 23:03 Stage271 盈利锁定分层交易级归因
+
+## 版本改动
+
+- 是否重要突破：否，新研究线启动和归因，不改正式参数。
+- 新增研究线：`research/lines/futures_trend_profit_lock_exit/`
+- 新增脚本：`examples/portfolio_backtesting/analyze_qmt_roll_stage271_profit_lock_trade_attribution.py`
+- 修改正式Stage78-1配置：无。
+- 新增参数：无正式参数。
+- 修改参数：无。
+- 删除参数：无。
+
+## 归因口径
+
+- 当前基准：`official_stage78_1_defensive_50w_no_sizing_cap`
+- 当前锁盈档位：`30->20,20->15,10->8,5->3,3->1,2->0.1`
+- 输入：`qmt_roll_official_stage78_1_trades_2020_2026_04.csv` 与 vn.py 本地日线数据库。
+- 关键口径：策略实际按收盘价更新后的 `max_profit_pct` 触发锁盈，不按日内 high/low MFE 触发。
+- 本阶段不重跑回测，不生成候选策略。
+
+## 新增结果
+
+- 已配对平仓腿数：`444`
+- 按收盘最大浮盈曾触发当前锁盈档位：`209`
+- 触发锁盈但最终亏损：`28`
+- 按当前锁盈地板估算低于地板退出：`76`
+- `2%->0.1%`：`37`腿，胜率`62.16%`，平均最终收益`0.34%`，平均 MFE`3.43%`
+- `3%->1%`：`70`腿，胜率`84.29%`，平均最终收益`1.34%`，平均 MFE`5.02%`
+- `5%->3%`：`48`腿，胜率`95.83%`，平均最终收益`4.03%`，平均 MFE`8.43%`
+- `10%->8%`：`41`腿，胜率`97.56%`，平均最终收益`9.22%`，平均 MFE`16.43%`
+- `20%->15%`：`7`腿，胜率`100%`，平均最终收益`14.12%`，平均 MFE`25.77%`
+- `30%->20%`：`6`腿，胜率`100%`，平均最终收益`29.23%`，平均 MFE`39.43%`
+
+引用基准结果：期末权益 `26,353,935`、总收益 `5170.7870%`、最大回撤 `-40.1659%`、Sharpe `1.1374`、总交易次数 `883`。本阶段不重算总滑点/胜率，不替代正式回测统计。
+
+## 结论
+
+- 当前手工分层不是明显荒谬，高浮盈档位样本少但趋势捕获质量较好。
+- 最值得怀疑的是低档位 `2%->0.1%` 和 `3%->1%`，但归因不能直接证明应该替换参数。
+- 下一步只能做低自由度 A/B/C：比如保留比例曲线、低档位延迟触发、平滑单调锁盈曲线；禁止逐档网格搜索。
+
+## 过拟合反思
+
+- 运行前判断：不是过拟合。
+- 运行后判断：本阶段不是过拟合；若直接按表调 6 个档位会变成过拟合。
+- 原因：本阶段只做事实归因，没有按结果修改正式参数。
+
+## 继续价值反思
+
+- 运行前判断：有价值。
+- 运行后判断：有价值，但要克制。
+- 原因：低档位出现可疑结构，值得做最小候选验证；但锁盈退出属于高过拟合风险模块。
+
+## 输出文件
+
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage271_profit_lock_trade_attribution_report_stage271_profit_lock_trade_attribution_v1.md`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage271_profit_lock_trade_attribution_summary_stage271_profit_lock_trade_attribution_v1.json`
+- 阶段记录：`research/lines/futures_trend_profit_lock_exit/stages/20260514_2303_stage001_profit_lock_trade_attribution.md`
+
+# 2026-05-14 23:16 Stage272 盈利锁定低档位删除 A/C 最小验证
+
+## 版本改动
+
+- 是否重要突破：否，候选未通过最小晋级门。
+- 所属研究线：`research/lines/futures_trend_profit_lock_exit/`
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage272_profit_lock_low_tier_ablation.py`
+- 修改脚本：`examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增参数：`profit_lock_tiers`，默认空值，正式行为不变，仅用于隔离式 A/B/C 实验。
+- 修改正式参数：无。
+- 删除参数：无。
+- 修改正式 Stage78-1 配置：无。
+
+## 回测设计
+
+- A：Stage78-1 当前正式盈利锁定档位。
+- C：保留 `5/10/20/30%` 档位，去掉 `2%->0.1%` 与 `3%->1%` 早锁档位。
+- 资金口径：50万。
+- 判定：全周期、起始年份、近端 2026、弱窗口最小门槛；若失败，不继续围绕低档位小数阈值调参。
+
+## 新增结果
+
+- 晋级结论：`fail_or_hold_no_promotion`
+- 最小门是否通过：`false`
+- `start_year_win_count`：`0`
+- 弱窗口通过数：`2`
+
+全周期 C 版本：
+
+- 期末权益：`26,083,610`
+- 总收益：`5116.72%`
+- 最大回撤：`-40.02%`
+- Sharpe：`1.1347`
+- 总滑点：`2,077,620`
+- 总交易次数：`885`
+- 胜率：`43.49%`
+
+全周期 A 正式基准：
+
+- 期末权益：`26,353,935`
+- 总收益：`5170.79%`
+- 最大回撤：`-40.17%`
+- Sharpe：`1.1374`
+- 总滑点：`2,057,380`
+- 总交易次数：`883`
+- 胜率：`43.36%`
+
+窗口差异：
+
+- `full_2020_2026`：C-A `-270,325`，回撤改善 `+0.15pp`，Sharpe `-0.0027`
+- `since_2021`：C-A `-635`，回撤改善 `+1.08pp`
+- `since_2022`：C-A `-698,275`，回撤变差 `-0.54pp`
+- `since_2023`：C-A `-480,205`
+- `since_2024`：C-A `-60,065`
+- `since_2025`：C-A `-29,300`
+- `since_2026`：C-A `0`
+
+## 结论
+
+- `2%/3%` 低档位在交易级归因里可疑，但“直接删除早锁”没有形成跨窗口优势。
+- 当前 78-1 手工盈利锁档位保持不变。
+- 后续不继续微调 `2%/3%` 的小数阈值；若继续研究，只能做机制级低自由度退出结构。
+
+## 过拟合反思
+
+- 运行前判断：不是过拟合。
+- 原因：只验证一个由 Stage271 归因提出的结构候选，不扫参。
+- 运行后判断：继续围绕低档位小数阈值调参会过拟合。
+- 原因：C 没有通过起始年份一致性检验，继续微调就是按历史窗口找局部舒适点。
+
+## 继续价值反思
+
+- 运行前判断：有价值。
+- 原因：可以验证手工锁盈分层最可疑部分是否值得进入候选。
+- 运行后判断：该候选不值得继续；研究线仍有价值，但方向要从小数阈值转为机制级退出结构。
+- 原因：失败结果给出了明确边界，避免污染正式 78-1。
+
+## 输出文件
+
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage272_profit_lock_low_tier_ablation_report_stage272_profit_lock_low_tier_ablation_v1.md`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage272_profit_lock_low_tier_ablation_summary_stage272_profit_lock_low_tier_ablation_v1.csv`
+- comparison：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage272_profit_lock_low_tier_ablation_comparison_stage272_profit_lock_low_tier_ablation_v1.csv`
+- decision：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage272_profit_lock_low_tier_ablation_decision_stage272_profit_lock_low_tier_ablation_v1.json`
+- 阶段记录：`research/lines/futures_trend_profit_lock_exit/stages/20260514_2316_stage002_profit_lock_low_tier_ablation.md`
+
+# 2026-05-15 00:12 Stage273-276 盈利锁定分层深度实验总结
+
+## 版本改动
+
+- 当前模式：`night`
+- 是否重要突破：是，形成“固定六档盈利锁不继续调参”的最终结论。
+- 所属研究线：`research/lines/futures_trend_profit_lock_exit/`
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage273_profit_lock_effectiveness_and_search.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage274_profit_lock_engine_falsification.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage275_profit_lock_full_robustness.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage276_profit_lock_trade_drilldown.py`
+- 修改正式参数：无。
+- 新增参数：无，沿用实验入口 `profit_lock_tiers`。
+- 删除参数：无。
+
+## 实验规模
+
+- Stage273：`141` 个低自由度候选，`240` 次 bootstrap。
+- Stage274：A/C/D 组合引擎反证，`6` 个窗口。
+- Stage275：D 候选起始年份、季度冷启动、63/126/252短窗口、1x/2x/3x/5x/10x滑点压力。
+- Stage276：逐笔归因、年份/品种/锁盈层贡献集中度审查。
+
+## 关键结果
+
+当前正式 A 全周期：
+
+- 期末权益：`26,353,935`
+- 总收益：`5170.79%`
+- 最大回撤：`-40.17%`
+- Sharpe：`1.1374`
+- 总滑点：`2,057,380`
+- 总交易次数：`883`
+- 胜率：`43.36%`
+
+事件级最优 C `scale_current_1.65`：
+
+- 期末权益：`31,736,530`
+- 总收益：`6247.31%`
+- 最大回撤：`-46.03%`
+- Sharpe：`1.2662`
+- 总滑点：`2,151,340`
+- 总交易次数：`879`
+- 胜率：`43.78%`
+- 判定：收益高但回撤恶化 `-5.86pp`，拒绝。
+
+D `two_segment_l0.30_h0.90`：
+
+- 档位：`30%->27% / 20%->18% / 10%->9% / 5%->1.5% / 3%->0.9% / 2%->0.6%`
+- 期末权益：`29,979,315`
+- 总收益：`5895.86%`
+- 最大回撤：`-39.69%`
+- Sharpe：`1.2031`
+- 总滑点：`2,165,660`
+- 总交易次数：`881`
+- 胜率：`43.90%`
+- 起始年份胜出：`6/7`
+- 季度冷启动 paired win rate：`75.64%`
+- 5x滑点 D-A：`+3,192,260`
+- 10x滑点 D-A：`+2,650,860`
+- Stage275：通过。
+- Stage276：未通过。正贡献交易腿 `10` 笔，top10 正贡献占比 `100%`，top3 品种正贡献占比 `90.45%`。
+
+## 最终结论
+
+- 当前锁盈层在真实代码路径里确实起作用；`5%/10%` 层证据最强，`20%/30%` 层样本太少，`2%/3%` 层偏弱但不能简单删除。
+- D 是目前找到的最强研究候选，但正贡献过度集中，不能替换正式 Stage78-1。
+- 正式 Stage78-1 保持当前手工盈利锁档位。
+- 固定六档数值搜索停止；若继续，只做趋势强度/波动率自适应锁盈机制，并预先定义 OOS 闸门。
+
+## 过拟合反思
+
+- 运行前判断：盈利锁固定档位调参高度容易过拟合。
+- 运行后判断：继续固定六档调参会过拟合。
+- 原因：D 虽然多周期强，但最终逐笔贡献集中度太高；把它直接替换正式参数是在用少数历史路径下注。
+
+## 继续价值反思
+
+- 运行前判断：有价值。
+- 运行后判断：当前固定档位研究应停止；机制级研究仍有价值。
+- 原因：这轮实验已经回答“层是否起作用”和“能否找到更优参数”；下一步应研究更本质的自适应退出机制，而不是继续调百分比。
+
+## 输出文件
+
+- Stage273 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage273_profit_lock_effectiveness_search_report_stage273_profit_lock_effectiveness_search_v1.md`
+- Stage274 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage274_profit_lock_engine_falsification_report_stage274_profit_lock_engine_falsification_v1.md`
+- Stage275 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage275_profit_lock_full_robustness_report_stage275_profit_lock_full_robustness_v1.md`
+- Stage276 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage276_profit_lock_trade_drilldown_report_stage276_profit_lock_trade_drilldown_v1.md`
+- 阶段记录：
+  - `research/lines/futures_trend_profit_lock_exit/stages/20260515_0009_stage003_profit_lock_effectiveness_search.md`
+  - `research/lines/futures_trend_profit_lock_exit/stages/20260515_0010_stage004_profit_lock_engine_falsification.md`
+  - `research/lines/futures_trend_profit_lock_exit/stages/20260515_0011_stage005_profit_lock_full_robustness.md`
+  - `research/lines/futures_trend_profit_lock_exit/stages/20260515_0012_stage006_profit_lock_trade_drilldown.md`
+
+# 2026-05-15 11:56 Stage279 锁盈趋势态放宽 prev2day_stop 反证
+
+## 版本改动
+
+- 当前模式：`day`
+- 是否重要突破：否，属于有效反证。
+- 所属研究线：`research/lines/futures_trend_profit_lock_exit/`
+- 新增脚本：`examples/portfolio_backtesting/run_qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen.py`
+- 修改脚本：`examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增参数：
+  - `enable_profit_lock_trend_relaxed_prev2day_stop=False`
+  - `profit_lock_trend_relax_trigger_pct=0.05`
+  - `profit_lock_trend_relax_ma_fast=20`
+  - `profit_lock_trend_relax_ma_slow=40`
+  - `profit_lock_trend_relax_slope_days=3`
+- 修改正式参数：无，默认关闭，正式 Stage78-1 行为保持不变。
+- 删除参数：无。
+
+## 回测结果
+
+正式 A 全周期：
+
+- 期末权益：`26,353,935`
+- 总收益：`5170.79%`
+- 最大回撤：`-40.17%`
+- Sharpe：`1.1374`
+- 总滑点：`2,057,380`
+- 总交易次数：`883`
+- 胜率：`43.36%`
+
+C `locked_trend_relaxed_prev2day` 全周期：
+
+- 期末权益：`18,594,465`
+- 总收益：`3618.89%`
+- 最大回撤：`-50.87%`
+- Sharpe：`0.9809`
+- 总滑点：`1,520,250`
+- 总交易次数：`871`
+- 胜率：`42.38%`
+
+对比：
+
+- `total_relaxed_prev2day_skip_count=1754`
+- 全周期期末权益差：`-7,759,470`
+- 全周期回撤差：`-10.70pp`
+- 全周期 Sharpe 差：`-0.1565`
+- 2026 独立启动期末权益差：`-8,930`
+- 6 个窗口胜出：`1/6`
+- 回撤闸门通过：`3/6`
+- 判定：`reject_do_not_promote`
+
+## 结论
+
+- `prev2day_stop + 已锁盈` 确实会截断一些趋势，但它也是组合风险刹车。直接跳过 `prev2day_stop` 会明显降低长期收益并放大回撤。
+- 该候选不进入正式 Stage78-1，不进入影子盘/SimNow。
+- 后续不继续调 `5%/MA20/MA40/3日斜率` 这类补丁参数；若继续退出研究，只考虑降仓、延迟确认或账户层风险预算。
+
+## 过拟合反思
+
+- 运行前判断：有过拟合风险，但仍值得验证。
+- 运行后判断：继续沿该形状调参会过拟合。
+- 原因：只有一个窗口略胜，全周期和多个独立启动窗口都恶化，继续调阈值就是贴历史窗口。
+
+## 继续价值反思
+
+- 运行前判断：有价值。
+- 运行后判断：该候选不值得继续；反证本身有价值。
+- 原因：它排除了一个看似合理但会削弱风险刹车的方向，保护正式 78-1 不被少数趋势案例污染。
+
+## 输出文件
+
+- 报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_report_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.md`
+- summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_summary_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.csv`
+- comparison：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_comparison_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.csv`
+- decision：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_decision_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.json`
+- 阶段记录：`research/lines/futures_trend_profit_lock_exit/stages/20260515_1156_stage009_profit_lock_trend_relaxed_prev2day_engine_screen.md`

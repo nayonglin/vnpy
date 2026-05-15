@@ -145,6 +145,28 @@
   - 修复 Stage174 只读探针零持仓行语义，全部 `volume=0/frozen=0` 时归为 `confirmed_flat`
   - 修复 Stage245 重复委托检查：按同一订单最新状态判断，避免已撤单前的 `Not Traded` 中间态误判为活跃委托
   - 下一步进入“虚拟盘日常SOP的真实策略委托草案 -> SimNow执行 -> 对账”闭环，而不是直接上正常策略手数
+- Stage260 已落地每日虚拟盘执行闸门：
+  - 新增 `run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py`
+  - 修复 Stage244 提交前检查的活跃委托判断，同样按订单最新状态识别
+  - 2026-05-12 最新Stage188信号为 `si2609.GFEX short close 1`
+  - SimNow新鲜只读快照为 `confirmed_flat`，非零持仓行数 `0`
+  - 执行判断为 `skip_broker_flat_for_close / no_matching_long_position_to_close`
+  - 今日无可执行策略委托，委托API调用次数 `0`
+  - 下一步等2026-05-13收盘数据完整后，更新数据并生成下一份日报/执行闸门
+- Stage261 已完成 Stage78-1 多周期转正等待期评测：
+  - 新增 `analyze_qmt_roll_stage261_stage78_1_time_to_positive.py`
+  - 固定 `official_stage78_1_defensive_50w_no_sizing_cap`、50万本金、Stage182 最新月度 AI 池，复跑 26 个季度冷启动窗口至 `2026-05-12`
+  - 25/26 个窗口曾实现权益高于本金；唯一未转正窗口为 `2026Q2`，样本仅 26 个交易日
+  - 已转正窗口最长等待为 `256` 个交易日 / `384` 个自然日（`2022Q2` 启动）
+  - 当前 `2026Q1` 冷启动曾于 `2026-01-14` 首次转正，但从 `2026-01-30` 到 `2026-05-12` 已持续水下 `63` 个交易日，期末权益 `407,220`，收益 `-18.5560%`，最大回撤 `-31.5769%`
+  - 当前水下体验显著差于常态等待中位数，但仍未超过历史极端水下长度 `268` 个交易日；维持 `review` 观察，不应新增风险
+- Stage262 已完成 2026-05-14 最新影子盘信号：
+  - Stage173 已更新主力映射和当前主力日线到 `2026-05-14`
+  - Stage183/Stage182 已刷新月度AI池，最新完整月评估日从旧 `2026-04-21` 修正为 `2026-04-30`
+  - 最新AI池为 `SA.CZCE, SH.CZCE, FG.CZCE, si.GFEX, MA.CZCE, jm.DCE, rb.SHFE, AP.CZCE, fu.SHFE`
+  - Stage188 固定50万口径重跑后，期末权益 `405,030`，总收益 `-18.9940%`，最大回撤 `-32.0709%`，Sharpe `-1.2384`，交易 `33`
+  - 2026-05-14 当日理论信号数 `0`，无新增/平仓委托草案；期末影子持仓仅 `ru2609.SHFE` 多 `5` 手
+  - 风险层级仍为 `review`，触发 `drawdown_review, daily_loss_review`；影子盘可记录，但SimNow/实盘不允许新增开仓
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
 - Stage78相关 `*30w*.py` 可运行入口已禁用或仅保留历史提示；未来如需30万账户，应新增独立部署变体。

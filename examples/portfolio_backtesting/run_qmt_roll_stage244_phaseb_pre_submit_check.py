@@ -18,6 +18,18 @@ APPROVAL_PREFIX = "qmt_roll_stage243_phaseb_approval"
 
 READONLY_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
 READONLY_SUCCESS_STATUSES = {"connected_or_attempted_readonly", "readonly_snapshots_received"}
+ACTIVE_ORDER_STATUSES = {
+    "submitting",
+    "submitted",
+    "nottraded",
+    "not traded",
+    "parttraded",
+    "part traded",
+    "partial_filled",
+    "提交中",
+    "未成交",
+    "部分成交",
+}
 
 
 def _paths(trade_date: str) -> dict[str, Path]:
@@ -67,6 +79,34 @@ def _has_error_logs(logs: pd.DataFrame) -> tuple[bool, str]:
     return False, ""
 
 
+def _column(df: pd.DataFrame, *candidates: str) -> pd.Series:
+    for name in candidates:
+        if name in df.columns:
+            return df[name]
+    return pd.Series([""] * len(df), index=df.index)
+
+
+def _latest_order_rows(orders: pd.DataFrame) -> pd.DataFrame:
+    if orders.empty:
+        return orders
+    latest = orders.copy().reset_index(drop=False).rename(columns={"index": "_event_index"})
+    if "vt_orderid" in latest.columns:
+        key = latest["vt_orderid"].fillna("").astype(str).str.strip()
+    else:
+        key = pd.Series([""] * len(latest), index=latest.index)
+    if "gateway_name" in latest.columns and "orderid" in latest.columns:
+        fallback = (
+            latest["gateway_name"].fillna("").astype(str).str.strip()
+            + "."
+            + latest["orderid"].fillna("").astype(str).str.strip()
+        )
+    else:
+        fallback = _column(latest, "orderid")
+    latest["_order_key"] = key.where(key.ne(""), fallback)
+    latest = latest.sort_values("_event_index").groupby("_order_key", as_index=False, dropna=False).tail(1)
+    return latest.drop(columns=["_event_index", "_order_key"], errors="ignore")
+
+
 def _build_result_row(row: dict[str, Any], readonly_summary: dict[str, Any], accounts: pd.DataFrame, positions: pd.DataFrame, orders: pd.DataFrame, logs: pd.DataFrame) -> dict[str, Any]:
     reasons: list[str] = []
     can_submit = True
@@ -105,9 +145,10 @@ def _build_result_row(row: dict[str, Any], readonly_summary: dict[str, Any], acc
     # Empty positions means flat is possible; not a blocker by itself.
 
     live_open_orders = 0
-    if not orders.empty and "status" in orders.columns:
-        status_series = orders["status"].astype(str).str.lower()
-        live_open_orders = int(status_series.isin(["submitting", "submitted", "nottraded", "parttraded", "partial_filled"]).sum())
+    latest_orders = _latest_order_rows(orders)
+    if not latest_orders.empty and "status" in latest_orders.columns:
+        status_series = latest_orders["status"].fillna("").astype(str).str.strip().str.lower()
+        live_open_orders = int(status_series.isin(ACTIVE_ORDER_STATUSES).sum())
     if live_open_orders > 0:
         can_submit = False
         reasons.append("existing_live_open_orders")

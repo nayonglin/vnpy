@@ -145,6 +145,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
     enable_prev2day_stop: bool = False
+    enable_profit_lock_trend_relaxed_prev2day_stop: bool = False
+    profit_lock_trend_relax_trigger_pct: float = 0.05
+    profit_lock_trend_relax_ma_fast: int = 20
+    profit_lock_trend_relax_ma_slow: int = 40
+    profit_lock_trend_relax_slope_days: int = 3
     enable_rsi_partial_exit: bool = False
     rsi_partial_exit_threshold: float = 95.0
     rsi_partial_exit_ratio: float = 0.5
@@ -251,6 +256,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     stop_loss_pct: float = 0.02
     trailing_stop_enabled: bool = True
     trailing_stop_pct: float = 0.0
+    profit_lock_tiers: str = ""
     enable_profit_giveback_stop: bool = False
     profit_giveback_trigger_pct: float = 0.08
     profit_giveback_retain_ratio: float = 0.70
@@ -317,6 +323,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
         "enable_prev2day_stop",
+        "enable_profit_lock_trend_relaxed_prev2day_stop",
+        "profit_lock_trend_relax_trigger_pct",
+        "profit_lock_trend_relax_ma_fast",
+        "profit_lock_trend_relax_ma_slow",
+        "profit_lock_trend_relax_slope_days",
         "enable_rsi_partial_exit",
         "rsi_partial_exit_threshold",
         "rsi_partial_exit_ratio",
@@ -421,6 +432,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "stop_loss_pct",
         "trailing_stop_enabled",
         "trailing_stop_pct",
+        "profit_lock_tiers",
         "enable_profit_giveback_stop",
         "profit_giveback_trigger_pct",
         "profit_giveback_retain_ratio",
@@ -467,6 +479,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_equity_high_water",
         "portfolio_drawdown_pct",
         "profit_giveback_streak_neutral_count",
+        "profit_lock_trend_relaxed_prev2day_skip_count",
     ]
 
     def __init__(
@@ -515,6 +528,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.trade_costs_total: float = 0.0
         self.profit_giveback_stop_update_count: int = 0
         self.profit_giveback_streak_neutral_count: int = 0
+        self.profit_lock_trend_relaxed_prev2day_skip_count: int = 0
         self.pending_close_lots: dict[str, list[dict[str, Any]]] = {}
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
@@ -3631,6 +3645,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if state.bars_since_entry < 2 or len(history) < 3:
             return ""
 
+        if self._should_relax_prev2day_stop_for_locked_trend(state, bar, history):
+            self.profit_lock_trend_relaxed_prev2day_skip_count += 1
+            return ""
+
         prev2_window = history.iloc[-3:-1]
         if len(prev2_window) < 2:
             return ""
@@ -3663,6 +3681,44 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 return "short_prev2day_stop"
 
         return ""
+
+    def _should_relax_prev2day_stop_for_locked_trend(
+        self,
+        state: ProductState,
+        bar: BarData,
+        history: pd.DataFrame,
+    ) -> bool:
+        if not self.enable_profit_lock_trend_relaxed_prev2day_stop:
+            return False
+        if not state.layers:
+            return False
+
+        trigger_pct = max(float(self.profit_lock_trend_relax_trigger_pct or 0.0), 0.0)
+        max_layer_profit = max(float(layer.max_profit_pct or 0.0) for layer in state.layers)
+        if max_layer_profit < trigger_pct:
+            return False
+
+        fast_window = max(int(self.profit_lock_trend_relax_ma_fast or 0), 1)
+        slow_window = max(int(self.profit_lock_trend_relax_ma_slow or 0), fast_window + 1)
+        slope_days = max(int(self.profit_lock_trend_relax_slope_days or 0), 1)
+        if len(history) < slow_window + slope_days + 1:
+            return False
+
+        closes = pd.to_numeric(history["close"], errors="coerce")
+        fast_ma = closes.rolling(fast_window).mean()
+        slow_ma = closes.rolling(slow_window).mean()
+        fast_now = float(fast_ma.iloc[-1]) if not pd.isna(fast_ma.iloc[-1]) else float("nan")
+        fast_prev = float(fast_ma.iloc[-1 - slope_days]) if not pd.isna(fast_ma.iloc[-1 - slope_days]) else float("nan")
+        slow_now = float(slow_ma.iloc[-1]) if not pd.isna(slow_ma.iloc[-1]) else float("nan")
+        close_price = float(bar.close_price)
+        if not all(math.isfinite(value) for value in [fast_now, fast_prev, slow_now, close_price]):
+            return False
+
+        if state.direction == "long":
+            return close_price > fast_now > slow_now and fast_now > fast_prev
+        if state.direction == "short":
+            return close_price < fast_now < slow_now and fast_now < fast_prev
+        return False
 
     def _process_layer_stops(self, state: ProductState, bar: BarData) -> str:
         direction: str = state.direction
@@ -3779,7 +3835,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 layer.stop_price = min(layer.stop_price, layer.lowest_price * (1 + self.trailing_stop_pct))
 
     def _profit_lock_price(self, layer: PositionLayer) -> float | None:
-        thresholds: list[tuple[float, float]] = [
+        thresholds: list[tuple[float, float]] = self._profit_lock_thresholds()
+        for trigger_pct, lock_pct in thresholds:
+            if layer.max_profit_pct >= trigger_pct:
+                return layer.entry_price * (1 + lock_pct) if layer.direction == "long" else layer.entry_price * (1 - lock_pct)
+        return None
+
+    def _profit_lock_thresholds(self) -> list[tuple[float, float]]:
+        default_thresholds: list[tuple[float, float]] = [
             (0.30, 0.20),
             (0.20, 0.15),
             (0.10, 0.08),
@@ -3787,10 +3850,29 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             (0.03, 0.01),
             (0.02, 0.001),
         ]
-        for trigger_pct, lock_pct in thresholds:
-            if layer.max_profit_pct >= trigger_pct:
-                return layer.entry_price * (1 + lock_pct) if layer.direction == "long" else layer.entry_price * (1 - lock_pct)
-        return None
+        raw_tiers = str(self.profit_lock_tiers or "").strip()
+        if not raw_tiers:
+            return default_thresholds
+
+        parsed: list[tuple[float, float]] = []
+        for raw_item in raw_tiers.split(","):
+            raw_item = raw_item.strip()
+            if not raw_item or ":" not in raw_item:
+                continue
+            trigger_text, lock_text = raw_item.split(":", 1)
+            try:
+                trigger_pct = max(0.0, float(trigger_text.strip()))
+                lock_pct = max(0.0, float(lock_text.strip()))
+            except ValueError:
+                continue
+            if trigger_pct <= 0 or lock_pct <= 0 or lock_pct > trigger_pct:
+                continue
+            parsed.append((trigger_pct, lock_pct))
+
+        if not parsed:
+            return default_thresholds
+        parsed = sorted(set(parsed), key=lambda item: item[0], reverse=True)
+        return parsed
 
     def _profit_giveback_stop_price(self, layer: PositionLayer) -> float | None:
         trigger_pct = max(float(self.profit_giveback_trigger_pct), 0.0)
