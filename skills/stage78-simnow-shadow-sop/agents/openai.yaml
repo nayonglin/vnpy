@@ -1,4 +1,4 @@
 interface:
-  display_name: "Stage78 SimNow虚拟盘SOP"
-  short_description: "固定Stage78-1/50万的每日影子盘、SimNow虚拟盘、AI池月更、风险闸门和对账纪律。"
-  default_prompt: "按Stage78-1 SimNow虚拟盘SOP运行今日流程：更新数据、使用当前月AI池、生成日报和委托草案、检查风险闸门、复验SimNow状态，并给出是否允许执行。"
+  display_name: "Stage78 CTP虚拟盘SOP"
+  short_description: "固定Stage78-1/50万的每日影子盘、CTP/SimNow虚拟盘、AI池月更、风险闸门、smoke order和对账纪律。"
+  default_prompt: "按Stage78-1 CTP虚拟盘SOP运行今日流程：更新数据、使用当前月AI池、生成日报和委托草案、刷新CTP只读快照，跑每日执行闸门，并给出是否允许进入Stage251或测试环境smoke order。"

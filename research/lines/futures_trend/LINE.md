@@ -167,6 +167,179 @@
   - Stage188 固定50万口径重跑后，期末权益 `405,030`，总收益 `-18.9940%`，最大回撤 `-32.0709%`，Sharpe `-1.2384`，交易 `33`
   - 2026-05-14 当日理论信号数 `0`，无新增/平仓委托草案；期末影子持仓仅 `ru2609.SHFE` 多 `5` 手
   - 风险层级仍为 `review`，触发 `drawdown_review, daily_loss_review`；影子盘可记录，但SimNow/实盘不允许新增开仓
+- Stage264 已复验 SimNow `7x24` 只读通路：
+  - 网络探针显示当前仅 `7x24_182` 的 `40001/40011` 可达，`trading/trading2/trading_mobile` 仍 `Connection refused`
+  - `SIMNOW_FRONT=7x24` 只读探针通过：行情登录、交易授权、交易登录、结算确认、合约查询、账户快照、持仓确认均成功
+  - 当前 SimNow 账户持仓语义为 `confirmed_flat`，非零持仓 `0`
+  - `real_order_enabled=false / order_api_called=false`
+  - 7x24 可用于只读监控和 fresh gate 前置；策略委托仍必须先跑 Stage251，且空仓不得发送平仓单
+- Stage265 已完成 2026-05-15 日常影子盘与 SimNow 执行闸门：
+  - Stage173 已更新19个主力合约日线到 `2026-05-15`
+  - Stage188 最新AI池影子盘期末权益 `395,780`，总收益 `-20.8440%`，最大回撤 `-33.4991%`，Sharpe `-1.3627`
+  - 风险级别仍为 `review/drawdown_review`，禁止新增开仓
+  - 理论信号为 `ru2609.SHFE Short Close 5手`，原因 `long_prev2day_stop`
+  - 7x24 SimNow 快照为 `confirmed_flat`，非零持仓 `0`
+  - Stage260 执行闸门输出 `skip_broker_flat_for_close`，委托API调用次数 `0`
+  - 当前不提交委托；等待下一个交易日或真实持仓与理论信号对齐
+- Stage266 已更新 `skills/stage78-simnow-shadow-sop/SKILL.md`：
+  - 新增 `Daily 7x24 Dry-Run Gate` 小节，固化 Stage173 -> Stage188 -> Stage177(7x24) -> Stage260 -> Stage251 的顺序
+  - 明确 `review` 禁止新增开仓，`confirmed_flat + close signal` 必须跳过
+  - 明确 `order_api_called_count` 必须保持 `0`，理论影子持仓不得覆盖 SimNow 真实持仓
+- Stage267 已打通券商CTP测试柜台只读链路：
+  - 新增 `ctp_broker_test.example.env` 本地模板和 `run_ctp_stage267_broker_test_readonly_probe.sh`
+  - 券商测试柜台使用 `ctp_broker_test.local.env`，真实账号/密码/AppID/AuthCode 只允许保留在本机 local env
+  - 修正端口后只读探针通过：行情/交易连接、行情登录、交易授权、交易登录、结算确认、账户/持仓/合约快照均成功
+  - Stage174 账户快照已补 `available` 字段，能输出 `balance/available/frozen`
+- Stage268 已完成券商CTP测试柜台1手 submit-cancel smoke order：
+  - 新增 `run_ctp_stage268_broker_test_smoke_order.sh`，复用 Stage258 smoke-order 核心逻辑但读取 `ctp_broker_test.local.env`
+  - `MA609.CZCE` 1手买开被动限价单成功送出，委托编号 `CTP.5_-140689176_1`
+  - 委托价格 `2944`，随后撤单；最终状态 `Cancelled`，成交行数 `0`，成交数量 `0`
+  - Stage78-1 SOP 已扩展到 CTP broker-test：提交前必须 fresh readonly、dry-run、1手、显式 `CTP_SMOKE_ORDER_ENABLED=1` 与确认文本
+  - 下一步不是直接上策略正常手数，而是把策略目标仓位、券商测试账户实际持仓、委托/成交/撤单回报纳入日常对账闭环
+- Stage269 已完成国金期货评测版 CTP API 下载和 Mac 兼容性验证：
+  - 官网评测版 API 包为 `v6.7.10_CP_20250415_traderapi.zip`
+  - 包内只有 Linux x86_64 `.so` 与 Windows `.dll/.lib`，没有 macOS `.framework/.dylib`
+  - 当前 Mac `vnpy_ctp 6.7.2.1` 自带 Mach-O universal CTP framework，仍可连接券商测试柜台 `41207/41215`
+  - 评测前置 `414xx` 两种 TD/MD 端口顺序均返回 `decode err / 4097`，不是简单端口写反
+  - 结论：除非券商提供 macOS 版 `v6.7.10_CP` API，否则 Stage78-1 当前虚拟盘继续使用已通过的 `41207/41215`
+- Stage270 已补充检查国金官网生产版 CTP API：
+  - 生产包 `v6.7.11_20250714_traderapi.zip` 同样只包含 Linux x86_64 与 Windows 库，未发现 macOS `.framework/.dylib`
+  - 当前本机能在 Mac 上连接 CTP，是依赖 `vnpy_ctp 6.7.2.1` 自带的 macOS Mach-O universal framework，不是来自国金官网生产包
+  - 对券商口径应明确区分“官网生产包未见 macOS 版”和“本机 vn.py 自带 macOS CTP 库可连 41207/41215”
+- Stage271 已完成 SimNow Mac CP SDK 隔离加载与 414xx 只读探针：
+  - 用户下载的 `TraderapiMduserapi_6.7.7_MacOS_CP.zip` MD5 为 `bbb85d8789008ee81094aca87b2c9715`，与 SimNow 页面一致
+  - 解压后的 SDK 为 `v6.7.7_MacOS_CP_20240716 15:00:00`，包含 macOS `thostmduserapi_se.framework` 与 `thosttraderapi_se.framework`
+  - 新增 `run_ctp_stage271_broker_cp_mac_sdk_readonly_probe.sh`，通过 `CTP_MAC_CP_SDK_DIR` 隔离加载 CP SDK，不覆盖当前 `.py311` 库
+  - 用 CP SDK 连接 `41415/41407` 时 `decode err / 4097` 消失，说明握手协议匹配；当前阻塞变为 `代码64：CTP:客户端未认证`
+  - 同一 CP SDK 连接已打通的 `41207/41215` 反而 `decode err`，说明 412xx 与 414xx 对应不同 API/前置协议路线
+  - 下一步需券商确认 414xx 的 AppID/AuthCode/账号权限登记；Stage78-1日常虚拟盘仍沿用 412xx
+- Stage272 已复测用户将 414xx 直接写入 `ctp_broker_test.local.env` 后的状态：
+  - 当前文件为 `TD=41407 / MD=41415`；按此顺序用 CP SDK 运行时，行情服务器连接和登录成功，但随后底层进程 `exit_code=139` 段错误
+  - 按页面文字顺序临时覆盖为 `TD=41415 / MD=41407` 时，行情连接成功但登录失败 `代码64：CTP:客户端未认证`
+  - 尝试在 `/private/tmp` 安装匹配 `vnpy_ctp==6.7.7.2` 失败，未改动当前 `.py311`
+  - 结论：414xx 当前不能作为默认执行路径；应要求券商明确 TD/MD 顺序、AppID/AuthCode 登记和可用于 Python/vn.py 的匹配封装
+- Stage273 已按券商截图确认 `TD=41407 / MD=41415` 后继续复测：
+  - CP Mac SDK combined readonly：`41415` 行情连接和登录成功，但随后底层进程 `exit_code=139`，未拿到交易认证/登录/账户快照
+  - 新增 TD-only 探针 `run_ctp_stage273_cp_mac_td_only_probe.py/.sh`，只连交易接口、不连行情、不下单
+  - TD-only 结果为 35 秒内 `front_connected=False`，退出时仍 `exit_code=139`
+  - 老 `vnpy_ctp 6.7.2.1` 连 414xx 对照为行情 `decode err`、交易 `4097`
+  - 网络层 41407/41415 均可达；当前阻塞集中在 41407 交易前置与 Mac CP SDK/Python封装兼容性或交易端权限登记
+  - 414xx 仍不可作为 Stage78-1 默认执行路径；已打通的 `41207/41215` 仍是当前稳定 broker-test 路线
+- Stage274 已完成 `41415` 行情前置 MD-only 订阅探针：
+  - 新增 `run_ctp_stage274_cp_mac_md_subscribe_probe.py/.sh`，只连行情、不连交易、不下单
+  - `41415` 行情前置连接成功、登录成功
+  - `MA609` 与 `ru2609` 订阅均返回 `ErrorID=0`
+  - 收盘阶段收到 2 条行情快照/最后 tick；`tick_count=2`
+  - 该结果证明 41415 行情登录和订阅链路可用，但不能证明连续实时行情推送稳定；需夜盘/日盘开盘附近复测
+  - 交易前置 `41407` 仍未成功，账户/持仓/结算/下单能力仍未验证
+- Stage275 已检查券商新给的 `v6.6.7_CP_tradeapi.zip`：
+  - 文件 MD5 `4832dff0132150ffaf8ac32f7b58db00`
+  - 包内只有 Linux `.so` 与 Windows `.dll/.lib`，并包含 CTP 头文件
+  - 未发现 macOS `.framework`、`.dylib` 或 Mach-O 动态库
+  - 当前 Mac/vn.py 环境无法加载该包，不能用它测试 `41407`
+  - 如券商要我们在 Mac 上测 `v6.6.7_CP`，需提供 macOS 版 `thosttraderapi_se.framework/thostmduserapi_se.framework` 或可用于 macOS 的 `.dylib`，并确认 Python/vn.py 封装兼容性
+- Stage276 已在夜盘开盘时段复测 `414xx` 与 `412xx`：
+  - 时间 `2026-05-19 21:16-21:20 CST`
+  - `nc` 探测 `41407/41415/41207/41215` 均 `Operation timed out`
+  - `41407` TD-only 等待 75 秒仍 `front_connected=False`，未认证/登录/结算/账户持仓
+  - `41415` MD-only 等待 60 秒仍 `front_connected=False`，未登录/订阅/tick
+  - 显式覆盖 `41207/41215` 的老路线对照也为 `readonly_logs_without_ctp_progress`
+  - 判断：当前时点不像单纯收盘问题，更像本机到券商前置整体网络不可达、前置未服务/重启、白名单/路由或柜台时段状态变化；继续 fail-closed，不下单
+- Stage277 已在日盘时段复测 `414xx` 与 `412xx`：
+  - 时间 `2026-05-20 11:22-11:24 CST`
+  - `nc` 探测 `41407/41415/41207/41215` 全部连接成功，端口层已恢复
+  - `41407` TD-only 等待 75 秒仍 `front_connected=False`，未认证/登录/结算/账户持仓，退出 `139`
+  - `41415` MD-only 连接/登录/订阅成功，`MA609/ru2609` 订阅均成功，`tick_count=3`
+  - 显式覆盖 `41207/41215` 的老路线完整成功：行情/交易连接、行情登录、交易授权、交易登录、结算确认、合约查询、账户/持仓快照
+  - 判断：问题不是本机网络整体故障，也不是交易时段问题；阻塞集中在 `41407` 评测/CP 交易前置与 Mac CP SDK/Python 封装或权限登记
+- Stage278 已完成原生 C++ 直连 `41407` 交易前置验证：
+  - 新增 `run_ctp_stage278_native_cpp_td_login_probe.cpp/.sh`，直接调用 SimNow Mac CP SDK `thosttraderapi_se.framework`，绕开 vn.py / `vnpy_ctp` Python 封装
+  - 原生 C++ 输出 API 版本 `v6.7.7_MacOS_CP_20240716 15:00:00`
+  - `OnFrontConnected` 成功，交易认证 `ErrorID=0`，用户登录 `ErrorID=0`，结算确认 `ErrorID=0`
+  - 账户快照收到 `account_count=1`，持仓快照收到 `position_count=32`
+  - 委托/撤单 API 调用次数 `0`
+  - 结论：`41407` 交易前置、账号、AppID/AuthCode 和 Mac CP SDK 本身可用；此前 Python TD-only 无连接回调/退出 `139` 更可能是 `vnpy_ctp` 封装与 CP 交易库兼容问题
+  - 短期 Stage78-1 虚拟盘仍优先使用已验证的 `41207/41215` vn.py 路线；若必须走 `414xx/CP`，下一步应重编匹配 `vnpy_ctp` 或开发最小原生 C++ 交易桥
+- Stage279 已接入券商提供的 `DataCollectforMacOS0719.zip` 终端采集工具并复测 `41407`：
+  - DataCollect 工具为 macOS Mach-O universal binary，版本 `datacollect_1.0 for MacOS version 1.0_20231016_4926_MacOS`
+  - 工具可成功输出 `CollectData`；记录中只保留长度，避免泄露本机 MAC/硬盘序列号等采集信息
+  - `run_ctp_stage278_native_cpp_td_login_probe.sh` 已支持自动调用 `DataCollectforMacOS` 并把结果作为 `ReqUserLogin` 的 `systemInfo`
+  - `ReqUserLogin system_info_len=100 ret=0`
+  - `OnRspUserLogin ErrorID=0`，`FrontID=15`，`SessionID=1581585766`，`TradingDay=20260520`，`LoginTime=15:09:59`
+  - 后续结算确认、账户查询、持仓查询继续成功：`account_count=1 / position_count=32`
+  - 委托/撤单 API 调用次数 `0`
+  - 若券商仍查不到登录/采集记录，应按上述 `SessionID/FrontID/LoginTime/AppID/BrokerID/测试账号` 查交易前置登录流水；必要时再显式开启 `CTP_NATIVE_REGISTER_USER_SYSTEM_INFO=1` 做窄范围复测
+- Stage280 已按券商新测试账号复测 `41407` 原生 C++ + DataCollect：
+  - 本地 env 由用户更新为新账号；记录只保留 `CTP_USERID` 长度 `6` 与密码长度 `8`
+  - `CTP_CLIENT_SYSTEM_INFO=set(len=100)`
+  - `ReqAuthenticate ret=0`，`OnRspAuthenticate ErrorID=0`
+  - `ReqUserLogin system_info_len=100 ret=0`
+  - `OnRspUserLogin ErrorID=0`，`FrontID=15`，`SessionID=1715607367`，`TradingDay=20260520`，`LoginTime=15:44:05`
+  - 后续结算确认、账户查询、持仓查询继续成功：`account_count=1 / position_count=4`
+  - 委托/撤单 API 调用次数 `0`
+  - 已生成脱敏证据文本和截图：`examples/portfolio_backtesting/backtest_outputs/ctp_evidence/stage280_41407_new_account_datacollect_login_evidence_sanitized.*`
+  - 若券商仍查不到，应按 `SessionID=1715607367 / FrontID=15 / LoginTime=15:44:05 / AppID=client_hermanna_1.0 / BrokerID=1010 / 新测试账号` 查前置登录流水
+- Stage281 已完成 `41407` 原生 C++ 报单 API smoke order：
+  - 新增 `run_ctp_stage281_native_cpp_smoke_order.cpp/.sh`，只用于测试环境 1 手 smoke order，不得作为 Stage78-1 正常策略手数入口
+  - 先 dry-run，再 fresh read-only snapshot，最后在显式开关和确认文本下调用 `ReqOrderInsert`
+  - 测试委托为 `MA609.CZCE` 买开 `1` 手，价格 `1.0000`
+  - `ReqAuthenticate ret=0`，`OnRspAuthenticate ErrorID=0`
+  - `ReqUserLogin system_info_len=100 ret=0`
+  - `OnRspUserLogin ErrorID=0`，`FrontID=15`，`SessionID=1768626185`，`TradingDay=20260520`，`LoginTime=15:57:36`
+  - `ReqOrderInsert OrderRef=779263855588 ret=0`
+  - 随后收到 `OnRspOrderInsert ErrorID=21`；无 `OnRtnOrder`、无 `OnRtnTrade`、无活动委托、无成交
+  - `send_order_api_called_count=1`，`cancel_order_api_called_count=0`
+  - 事后账户/持仓复核成功：`account_count=1 / position_count=4`
+  - 结论：41407 原生 C++ 路线已证实能调用报单 API，但该测试单被 CTP 拒绝；下一步应让券商按 `SessionID=1768626185 / OrderRef=779263855588 / ErrorID=21` 查具体柜台原因
+- Stage282 已复核 `41407` 看穿式终端信息上报路径：
+  - 本地 Mac CP SDK 头文件同时有 `RegisterUserSystemInfo`、`SubmitUserSystemInfo` 和扩展版 `ReqUserLogin(..., length, systemInfo)`
+  - CTP 文档口径显示：`RegisterUserSystemInfo` 对应多连接中继，`SubmitUserSystemInfo` 对应操作员中继；直连模式通常由交易 API 登录阶段处理终端采集信息
+  - 当前代码确实传入了 `ReqUserLogin system_info_len=100`，不是完全没传；但登录成功不能证明上报成功，因为 `system_info_len=0` 对照也能登录成功
+  - 显式 `RegisterUserSystemInfo` 复测返回 `ret=-6`，随后登录成功，`SessionID=1816074420`
+  - 显式 `SubmitUserSystemInfo` 复测返回 `ret=-6`，随后登录成功，`SessionID=1820006595`
+  - 空 `systemInfo` 对照登录同样成功，`SessionID=1822628046`
+  - `-6` 为采集结果字段错误；说明把 `DataCollectforMacOS` 打印出的 `CollectData` 直接塞进 `CThostFtdcUserSystemInfoField.ClientSystemInfo` 至少不是可接受的中继上报格式
+  - 下一步需券商确认 `client_hermanna_1.0` 的 AppType，以及 Mac 直连场景到底应使用 `ReqUserLogin(..., systemInfo)` 还是必须提供 `DataCollect.h`/动态库调用 `CTP_GetSystemInfo` 得到原始字节
+- Stage283 已由券商侧确认 `client_hermanna_1.0` AppType 为直连投资者：
+  - 正式 414xx/CP 路线不应主动调用 `RegisterUserSystemInfo` 或 `SubmitUserSystemInfo`
+  - Stage282 中两个中继接口返回 `ret=-6` 与该口径一致，应保留为诊断证据，不作为正常路径
+  - 后续唯一合理方向是扩展版 `ReqUserLogin(req, request_id, systemInfoLen, systemInfo)`
+  - 未闭环点从 AppType 收敛为 `systemInfo` 数据来源：`DataCollectforMacOS` 打印的 `CollectData` 是否能原样传入，还是必须通过 Mac 采集库/头文件获取官方原始字节
+- Stage285 已完成普通 SimNow `9999/trading` 1手开仓+平仓成交证明：
+  - 新增 `run_ctp_stage285_simnow_open_close_proof.py/.sh`
+  - 使用 `MA609.CZCE`，先 `Long/Open` 1手，再 `Short/Close` 1手
+  - 开仓委托 `CTP.1_-1160514772_1`，成交价 `2970.0`，成交编号 `2026052100040894`
+  - 平仓委托 `CTP.1_-1160514772_2`，成交价 `2968.0`，成交编号 `2026052100041181`
+  - `send_order_api_called_count=2`，`cancel_order_api_called_count=0`
+  - 后验只读快照确认 `confirmed_flat / nonzero_position_rows=0`
+  - 已生成给券商截图用的证据页和PNG：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage285_simnow_open_close_proof_evidence_20260520_214451.*`
+  - 注意：本阶段证明普通 SimNow/vn.py/CTP 执行栈能正常开平仓；若券商要求必须在 `1010/41407/41415` 评测前置验收，仍需等该前置从本机网络恢复后复刻
+- Stage286 已补齐普通 SimNow `9999/trading` 撤单证据：
+  - 使用 `MA609.CZCE` 买开 `1` 手被动限价单测试撤单
+  - 撤单委托 `CTP.1_-1097460188_1`，限价 `2872.0`，成交 `0`，后验订单快照最终状态 `Cancelled`
+  - Stage258 控制台记录 `send_order_api_called_count=1 / cancel_order_api_called_count=1`
+  - 后验只读快照确认 `confirmed_flat / nonzero_position_rows=0`
+  - 已生成合并截图证据：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage285_simnow_open_close_cancel_evidence_20260520_220320.*`
+  - 注意：本阶段仍是普通 SimNow 证明，不替代 `1010/41407/41415` 评测前置验收
+- Stage287 已补齐普通 SimNow `9999/trading` 程序化断网回调证据：
+  - 新增 `run_ctp_stage287_simnow_disconnect_proof.py/.sh`，通过本机 TCP 代理模拟运行中断网，不关闭整台 Mac 网络
+  - 行情/交易登录、交易授权、结算确认均先成功
+  - 切断代理后收到 `交易服务器连接断开，原因4097` 和 `行情服务器连接断开，原因4097`
+  - `send_order_api_called_count=0 / cancel_order_api_called_count=0`，委托和成交行数均为 `0`
+  - 已生成截图证据：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage287_simnow_disconnect_proof_evidence_20260520_221731_stage287_simnow_disconnect_proof_v1.png`
+  - 注意：本阶段仍是普通 SimNow 异常场景证明，不替代 `1010/41407/41415` 评测前置验收
+- Stage288 已完成 Stage78-1 执行安全验收总证据：
+  - 新增 `ctp_execution_safety.py`，抽象出可复用于实盘提交前的阈值预警、交易指令检查、CTP错误归一化和暂停交易门禁
+  - 新增 `run_ctp_stage288_execution_acceptance_suite.py`，把普通 SimNow 开仓/平仓、撤单、断网实测证据与1.6-1.9验收项合并到同一HTML；最新版外发页已补回脱敏交易细节和控制台关键打印/回调摘录
+  - `run_qmt_roll_stage250_phaseb_vnpy_order_request_builder.py` 已接入 `validate_order_instruction`，后续策略委托草案转 vn.py `OrderRequest` 时会复用同一套合约、tick、最大手数检查
+  - 验收测试点 `16`，通过 `16`，失败 `0`
+  - Stage288 自身不连接柜台、不调用发单/撤单API：`send_order_api_called_count=0 / cancel_order_api_called_count=0`
+  - 阈值预警通过：报单笔数 `4>=3`、撤单笔数 `2>=1`、重复意图 `1>=1`
+  - 交易指令检查通过：错误合约、非最小tick价格、超单笔最大手数均本地拒绝，保证坏单不进入 `send_order`
+  - 错误提示通过：资金不足、持仓不足、市场状态不允许三类CTP错误可归一化并展示；正式回调层应监听 `OnRspOrderInsert/OnErrRtnOrderInsert/OnRtnOrder`
+  - 暂停交易通过：账号权限限制、策略暂停、强制退出三类状态均阻断发单
+  - 已用 Chrome DevTools 生成外发友好版统一截图：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage288_execution_acceptance_suite_20260520_234200_stage288_execution_acceptance_suite_v1.png`
+  - 外发版HTML不展示本机文件路径，不强调SimNow/Stage/资金口径，不嵌入截图，并将每个测试点拆成独立章节卡片；页面内可直接查看委托号、成交号、委托价/成交价、最终状态、发送委托、发送撤单、委托/成交回报和断网4097回调
 - 月度AI品种池SOP：`research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`。
 - Stage111/旧30万有封顶版本只作为历史对照，不替代当前Stage78-1正式口径。
 - Stage78相关 `*30w*.py` 可运行入口已禁用或仅保留历史提示；未来如需30万账户，应新增独立部署变体。

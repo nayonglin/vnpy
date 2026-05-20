@@ -108,6 +108,7 @@ def _build_report(summary: dict[str, Any]) -> str:
             "# Stage251 Phase B Fresh Pre-submit Gate",
             "",
             f"- 交易日：`{summary['trade_date']}`",
+            f"- 只读连接来源：`{summary['readonly_wrapper']}`",
             f"- SimNow 前置：`{summary['simnow_front']}`",
             f"- 等待秒数：`{summary['wait_seconds']}`",
             f"- 最大快照年龄秒数：`{summary['max_snapshot_age_seconds']}`",
@@ -143,6 +144,12 @@ def main() -> None:
     parser.add_argument("--wait-seconds", type=int, default=90)
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
     parser.add_argument("--simnow-front", default=os.getenv("SIMNOW_FRONT", "trading"))
+    parser.add_argument(
+        "--readonly-wrapper",
+        choices=("simnow", "broker-test"),
+        default=os.getenv("CTP_READONLY_WRAPPER", "simnow"),
+        help="Which CTP read-only wrapper to refresh before pre-submit checks.",
+    )
     parser.add_argument("--skip-real-block-test", action="store_true")
     args = parser.parse_args()
 
@@ -154,12 +161,17 @@ def main() -> None:
     env["SIMNOW_FRONT"] = args.simnow_front
     commands: list[dict[str, Any]] = []
 
+    readonly_wrapper_script = {
+        "simnow": "run_ctp_stage177_simnow_readonly_probe.sh",
+        "broker-test": "run_ctp_stage267_broker_test_readonly_probe.sh",
+    }[args.readonly_wrapper]
+
     command_specs: list[tuple[str, list[str]]] = [
         (
             "stage174_fresh_readonly_probe",
             [
                 "bash",
-                str(SCRIPT_DIR / "run_ctp_stage177_simnow_readonly_probe.sh"),
+                str(SCRIPT_DIR / readonly_wrapper_script),
                 "--connect",
                 "--wait-seconds",
                 str(args.wait_seconds),
@@ -302,6 +314,7 @@ def main() -> None:
         "model_tag": MODEL_TAG,
         "trade_date": args.trade_date,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "readonly_wrapper": args.readonly_wrapper,
         "simnow_front": args.simnow_front,
         "wait_seconds": args.wait_seconds,
         "max_snapshot_age_seconds": args.max_snapshot_age_seconds,

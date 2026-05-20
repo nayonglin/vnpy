@@ -11,6 +11,7 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from ctp_execution_safety import build_contract_lookup, validate_order_instruction
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.trader.constant import Direction, Exchange, Offset, OrderType
 from vnpy.trader.object import OrderRequest
@@ -172,6 +173,18 @@ def _build_request_row(row: dict[str, Any], contracts: pd.DataFrame, mode: str, 
     if pricetick and not _price_on_tick(price, pricetick):
         reasons.append("price_not_on_tick")
 
+    safety_result = validate_order_instruction(
+        vt_symbol=vt_symbol,
+        direction=_clean_scalar(row.get("direction")),
+        offset=_clean_scalar(row.get("offset")),
+        price=price,
+        volume=volume,
+        contract_lookup=build_contract_lookup(contracts.to_dict(orient="records")),
+    )
+    for safety_reason in safety_result["reasons"]:
+        if safety_reason not in reasons:
+            reasons.append(safety_reason)
+
     real_env_enabled = _env_enabled("PHASEB_REAL_ORDER_ENABLED")
     if mode == "real":
         if not real_env_enabled:
@@ -227,6 +240,7 @@ def _build_request_row(row: dict[str, Any], contracts: pd.DataFrame, mode: str, 
         "pricetick": pricetick,
         "min_volume": min_volume,
         "max_volume": max_volume,
+        "execution_safety_reasons": ";".join(safety_result["reasons"]),
         "gateway_name": gateway_name,
         "order_request_json": json.dumps(order_request_payload, ensure_ascii=False, sort_keys=True),
         "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

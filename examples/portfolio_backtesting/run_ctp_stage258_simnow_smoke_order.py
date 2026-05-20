@@ -26,7 +26,8 @@ OUTPUT_PREFIX = "qmt_roll_stage258_simnow_smoke_order"
 READONLY_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
 CONTRACT_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_contracts_stage174_ctp_vnpy_readonly_probe_v1.csv"
 
-CONFIRM_TEXT = "I_UNDERSTAND_THIS_SENDS_SIMNOW_VIRTUAL_ORDERS"
+CONFIRM_TEXT = "I_UNDERSTAND_THIS_SENDS_CTP_TEST_ORDERS"
+LEGACY_CONFIRM_TEXT = "I_UNDERSTAND_THIS_SENDS_SIMNOW_VIRTUAL_ORDERS"
 
 
 def _paths(run_id: str) -> dict[str, Path]:
@@ -230,11 +231,11 @@ def _build_report(summary: dict[str, Any], rows: dict[str, list[dict[str, Any]]]
     ] or ["| _empty_ | | | | | | |"]
     return "\n".join(
         [
-            "# Stage258 SimNow Smoke Order",
+            "# Stage258 CTP Test Smoke Order",
             "",
             f"- 运行模式：`{summary['mode']}`",
             f"- 合约：`{summary['vt_symbol']}`",
-            f"- 前置：`{summary['simnow_front']}`",
+            f"- 前置：`{summary['front_profile']}`",
             f"- 状态：`{summary['status']}`",
             f"- 发送委托API次数：`{summary['send_order_api_called_count']}`",
             f"- 撤单API次数：`{summary['cancel_order_api_called_count']}`",
@@ -257,8 +258,8 @@ def _build_report(summary: dict[str, Any], rows: dict[str, list[dict[str, Any]]]
             "## 说明",
             "",
             "- `dry-run` 模式连接、订阅并构造请求，但不调用 `send_order`。",
-            "- `submit-cancel` 模式只用于 SimNow 虚拟盘，需要环境变量和命令行确认双开关。",
-            "- 本脚本不用于真实资金账户。",
+            "- `submit-cancel` 模式只用于明确确认过的 CTP 测试/仿真环境，需要环境变量和命令行确认双开关。",
+            "- 本脚本不用于真实资金账户；实盘必须走独立 live gate。",
             "",
         ]
     )
@@ -274,8 +275,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     contract = _read_contract(vt_symbol)
     missing_env = _required_env_missing()
     readonly_gate = _readonly_gate(args.max_snapshot_age_seconds)
-    submit_enabled = _env_enabled("SIMNOW_SMOKE_ORDER_ENABLED")
-    confirm_ok = args.confirm_submit == CONFIRM_TEXT
+    submit_enabled = _env_enabled("CTP_SMOKE_ORDER_ENABLED") or _env_enabled("SIMNOW_SMOKE_ORDER_ENABLED")
+    confirm_ok = args.confirm_submit in {CONFIRM_TEXT, LEGACY_CONFIRM_TEXT}
 
     rows: dict[str, list[dict[str, Any]]] = {
         "ticks": [],
@@ -291,6 +292,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "mode": args.mode,
         "vt_symbol": vt_symbol,
+        "front_profile": os.getenv("SIMNOW_FRONT", ""),
         "simnow_front": os.getenv("SIMNOW_FRONT", ""),
         "status": "initialized",
         "failure_reason": "",
@@ -307,7 +309,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {
             "overfit_before": "否。1手链路测试只验证执行通道，不修改策略参数。",
-            "continue_before": "是。SimNow通路已恢复，下一关是最小报单/撤单链路。",
+            "continue_before": "是。CTP测试通路已恢复，下一关是最小报单/撤单链路。",
         },
     }
 
@@ -330,7 +332,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             return summary | {"rows": rows}
         if not submit_enabled:
             summary["status"] = "blocked_submit_env_disabled"
-            summary["failure_reason"] = "SIMNOW_SMOKE_ORDER_ENABLED_not_enabled"
+            summary["failure_reason"] = "CTP_SMOKE_ORDER_ENABLED_not_enabled"
             return summary | {"rows": rows}
         if not confirm_ok:
             summary["status"] = "blocked_confirmation_missing"
@@ -480,7 +482,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Stage258 SimNow-only 1-lot smoke order test.")
+    parser = argparse.ArgumentParser(description="Stage258 CTP test 1-lot smoke order test.")
     parser.add_argument("--mode", choices=["dry-run", "submit-cancel"], default="dry-run")
     parser.add_argument("--vt-symbol", default="MA609.CZCE")
     parser.add_argument("--direction", choices=["long", "short"], default="long")
@@ -500,7 +502,7 @@ def main() -> None:
     paths = {key: Path(value) for key, value in result["outputs"].items()}
 
     result["row_counts"] = {key: len(value) for key, value in rows.items()}
-    result["judgement"]["overfit_after"] = "否。本阶段最多验证SimNow委托链路，不影响策略收益。"
+    result["judgement"]["overfit_after"] = "否。本阶段最多验证CTP测试委托链路，不影响策略收益。"
     result["judgement"]["continue_after"] = "是。dry-run通过后，才值得在显式确认下做1手submit-cancel。"
 
     _write_df(paths["ticks_csv"], rows["ticks"])

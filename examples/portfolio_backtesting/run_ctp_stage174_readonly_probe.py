@@ -154,7 +154,7 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
         row = dict(obj.__dict__)
     else:
         row = {"value": str(obj)}
-    for attr in ["vt_symbol", "vt_orderid", "vt_accountid"]:
+    for attr in ["vt_symbol", "vt_orderid", "vt_accountid", "available"]:
         if hasattr(obj, attr):
             row[attr] = getattr(obj, attr)
     for key, value in list(row.items()):
