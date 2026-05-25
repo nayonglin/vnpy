@@ -5,10 +5,12 @@
 #include <filesystem>
 #include <iostream>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
 
+#include "ctp_native_system_info.hpp"
 #include "ThostFtdcTraderApi.h"
 
 namespace {
@@ -55,9 +57,11 @@ public:
             product_info_ = product;
         }
 
-        const char *client_system_info = std::getenv("CTP_CLIENT_SYSTEM_INFO");
-        if (client_system_info) {
-            client_system_info_ = client_system_info;
+        try {
+            system_info_ = ctp_native::load_system_info(sizeof(TThostFtdcClientSystemInfoType));
+        } catch (const std::exception &exc) {
+            std::cerr << "Failed to load CTP native system info: " << exc.what() << std::endl;
+            std::exit(3);
         }
 
         const char *register_user_system_info = std::getenv("CTP_NATIVE_REGISTER_USER_SYSTEM_INFO");
@@ -86,7 +90,8 @@ public:
         log("CTP_PASSWORD=set(len=" + std::to_string(password_.size()) + ")");
         log("CTP_APPID=set(len=" + std::to_string(app_id_.size()) + ")");
         log("CTP_AUTH_CODE=set(len=" + std::to_string(auth_code_.size()) + ")");
-        log("CTP_CLIENT_SYSTEM_INFO=" + std::string(client_system_info_.empty() ? "empty" : "set(len=" + std::to_string(client_system_info_.size()) + ")"));
+        log("CTP_SYSTEM_INFO_SOURCE=" + system_info_.source);
+        log("CTP_CLIENT_SYSTEM_INFO=" + std::string(system_info_.bytes.empty() ? "empty" : "set(len=" + std::to_string(system_info_.bytes.size()) + ")"));
         log("CTP_NATIVE_REGISTER_USER_SYSTEM_INFO=" + std::string(register_user_system_info_ ? "1" : "0"));
         log("CTP_NATIVE_SUBMIT_USER_SYSTEM_INFO=" + std::string(submit_user_system_info_ ? "1" : "0"));
 
@@ -243,21 +248,21 @@ private:
     }
 
     int copy_client_system_info(TThostFtdcClientSystemInfoType &system_info) {
-        if (client_system_info_.empty()) {
+        if (system_info_.bytes.empty()) {
             return 0;
         }
         std::memset(system_info, 0, sizeof(TThostFtdcClientSystemInfoType));
-        std::size_t copy_len = std::min(client_system_info_.size(), sizeof(TThostFtdcClientSystemInfoType));
-        std::memcpy(system_info, client_system_info_.data(), copy_len);
-        if (copy_len < client_system_info_.size()) {
-            log("CTP_CLIENT_SYSTEM_INFO truncated from len=" + std::to_string(client_system_info_.size()) +
+        std::size_t copy_len = std::min(system_info_.bytes.size(), sizeof(TThostFtdcClientSystemInfoType));
+        std::memcpy(system_info, system_info_.bytes.data(), copy_len);
+        if (copy_len < system_info_.bytes.size()) {
+            log("CTP_CLIENT_SYSTEM_INFO truncated from len=" + std::to_string(system_info_.bytes.size()) +
                 " to len=" + std::to_string(copy_len));
         }
         return static_cast<int>(copy_len);
     }
 
     void register_user_system_info() {
-        if (client_system_info_.empty()) {
+        if (system_info_.bytes.empty()) {
             log("RegisterUserSystemInfo skipped: empty client system info");
             return;
         }
@@ -273,7 +278,7 @@ private:
     }
 
     void submit_user_system_info(CThostFtdcRspUserLoginField *login_rsp) {
-        if (client_system_info_.empty()) {
+        if (system_info_.bytes.empty()) {
             log("SubmitUserSystemInfo skipped: empty client system info");
             return;
         }
@@ -334,7 +339,7 @@ private:
     std::string app_id_;
     std::string auth_code_;
     std::string product_info_;
-    std::string client_system_info_;
+    ctp_native::SystemInfoResult system_info_;
     bool register_user_system_info_ = false;
     bool submit_user_system_info_ = false;
 

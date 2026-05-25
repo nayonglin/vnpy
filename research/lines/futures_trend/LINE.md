@@ -305,6 +305,12 @@
   - Stage282 中两个中继接口返回 `ret=-6` 与该口径一致，应保留为诊断证据，不作为正常路径
   - 后续唯一合理方向是扩展版 `ReqUserLogin(req, request_id, systemInfoLen, systemInfo)`
   - 未闭环点从 AppType 收敛为 `systemInfo` 数据来源：`DataCollectforMacOS` 打印的 `CollectData` 是否能原样传入，还是必须通过 Mac 采集库/头文件获取官方原始字节
+- Stage290 已根据券商最新说明修正 41407 原生 C++ 终端采集路径判断：
+  - 券商明确要求 MacOS/iOS 直连模式先添加采集库，并调用 `CTP_GetSystemInfoUnAesEncode(result, length)` 获取加密采集信息，再把结果和长度传入扩展版 `ReqUserLogin`
+  - 这解释了 Stage279/280 中 `DataCollectforMacOS` 文本输出虽然能让 `ReqUserLogin system_info_len=100`，但券商后台仍可能看不到有效上报
+  - 已新增 `ctp_native_system_info.hpp`，支持通过 `CTP_SYSTEM_INFO_DYLIB` 动态查找 `CTP_GetSystemInfoUnAesEncode`，并保留 `CTP_NATIVE_REQUIRE_SYSTEM_INFO=1` 作为正式复测闸门
+  - `DataCollectforMacOS` 文本解析已降级为 `CTP_USE_DATACOLLECT_TEXT_FALLBACK=1` 的历史兼容路径，不再默认作为正式上报来源
+  - 当前本机只有 DataCollect 可执行文件，没有可链接的 Mac 采集库/头文件；下一步需券商提供 `CTP_GetSystemInfoUnAesEncode` 所在的 `.dylib/.framework` 或完整 Mac C++ demo
 - Stage285 已完成普通 SimNow `9999/trading` 1手开仓+平仓成交证明：
   - 新增 `run_ctp_stage285_simnow_open_close_proof.py/.sh`
   - 使用 `MA609.CZCE`，先 `Long/Open` 1手，再 `Short/Close` 1手

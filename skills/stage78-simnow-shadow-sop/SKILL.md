@@ -198,6 +198,12 @@ Use this only when a broker asks to test the CTP CP/evaluation front such as `41
    - Keep Stage282 `ret=-6` relay-call results as diagnostic evidence only.
    - The normal direct-investor path is extended `ReqUserLogin(req, request_id, systemInfoLen, systemInfo)`.
    - Remaining blocker is the `systemInfo` byte source/format: confirm whether printable `DataCollectforMacOS` `CollectData` can be passed directly, or whether the broker must provide Mac `DataCollect.h`/library or C++ demo to obtain raw `CTP_GetSystemInfo` bytes.
+13. Current confirmed Stage290 result:
+   - Broker clarified the MacOS/iOS direct-investor reporting path: link the collector library, call `CTP_GetSystemInfoUnAesEncode(result, length)`, then pass `length` and `result` into the extended `ReqUserLogin`.
+   - Treat the previous `DataCollectforMacOS` text-output route as diagnostic only. It can prove non-empty bytes were passed, but it is not accepted as the official reporting source unless the broker explicitly says so.
+   - `run_ctp_stage278_native_cpp_td_login_probe.*` and `run_ctp_stage281_native_cpp_smoke_order.*` now support an official collector function path through `CTP_SYSTEM_INFO_SOURCE=collector_api`, optional `CTP_SYSTEM_INFO_DYLIB`, and hard gate `CTP_NATIVE_REQUIRE_SYSTEM_INFO=1`.
+   - `CTP_USE_DATACOLLECT_TEXT_FALLBACK=1` is now required to re-enable the old text parsing path.
+   - Current local files include only the DataCollect executable, not a linkable Mac collector library/header. Ask the broker for the `.dylib/.framework` or a minimal Mac C++ demo exposing `CTP_GetSystemInfoUnAesEncode` before claiming reporting is fixed.
 
 ## Order Discipline
 

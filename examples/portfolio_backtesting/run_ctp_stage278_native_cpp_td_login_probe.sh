@@ -48,7 +48,7 @@ if [[ "${CTP_TD_ADDRESS}" != tcp://* ]]; then
 fi
 
 export CTP_DATA_COLLECT_TOOL="${CTP_DATA_COLLECT_TOOL:-${DEFAULT_DATA_COLLECT_TOOL}}"
-if [[ -z "${CTP_CLIENT_SYSTEM_INFO:-}" && -x "${CTP_DATA_COLLECT_TOOL}" ]]; then
+if [[ "${CTP_USE_DATACOLLECT_TEXT_FALLBACK:-0}" == "1" && -z "${CTP_CLIENT_SYSTEM_INFO:-}" && -x "${CTP_DATA_COLLECT_TOOL}" ]]; then
   collect_output="$("${CTP_DATA_COLLECT_TOOL}")"
   collect_data="$(printf '%s\n' "${collect_output}" | perl -ne 'if (/CollectData\s*=\s*\[(.*)\]/) { print $1 }' | tail -1)"
   if [[ -n "${collect_data}" ]]; then
@@ -63,6 +63,7 @@ mkdir -p "${BUILD_DIR}"
 
 clang++ -std=c++17 \
   -I"${CTP_MAC_CP_SDK_DIR}/thosttraderapi_se.framework/Versions/A/Headers" \
+  -I"${SCRIPT_DIR}" \
   -F"${CTP_MAC_CP_SDK_DIR}" \
   -framework thosttraderapi_se \
   "${SCRIPT_DIR}/run_ctp_stage278_native_cpp_td_login_probe.cpp" \
