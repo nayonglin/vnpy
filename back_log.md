@@ -46349,3 +46349,542 @@ C `locked_trend_relaxed_prev2day` 全周期：
 - comparison：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_comparison_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.csv`
 - decision：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_decision_stage279_profit_lock_trend_relaxed_prev2day_engine_screen_v1.json`
 - 阶段记录：`research/lines/futures_trend_profit_lock_exit/stages/20260515_1156_stage009_profit_lock_trend_relaxed_prev2day_engine_screen.md`
+
+---
+
+# 2026-05-25 15:55 CST - 第78-1回撤30以内保收益线阶段结论
+
+- line_id：`futures_trend_drawdown30_preserve_return`
+- 当前模式：`day`
+- 阶段范围：Stage007 到 Stage010
+- 是否重要突破：否，发现全样本过线账户层组合，但多周期反证，不作为正式候选
+
+## 本次变更
+
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_stage302_stage78_1_full_deleverage_pressure_frontier.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage303_stage78_1_risk_multiplier_frontier.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage304_cash_buffer_frontier.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage305_cash_buffer_multiperiod_validation.py`
+- 修改策略默认配置：无，所有新增风险控制参数仍为 default-off 研究参数。
+- 新增参数：无正式新增参数。
+- 删除参数：无。
+
+## 关键回测结果
+
+78-1正式基准全样本：
+
+- 期末权益：`25,542,885`
+- 总收益：`5008.577%`
+- 最大回撤：`-40.0607%`
+- Sharpe：`1.1295`
+- 总滑点：`1,968,150`
+- 总交易次数：`880`
+
+Stage007 最接近的单策略风险控制：
+
+- 方案：`C_full_delev_pressure040`
+- 总收益：`4985.811%`
+- 收益保留：`99.5455%`
+- 最大回撤：`-31.0767%`
+- Sharpe：`1.2650`
+- 结论：未达到30以内，不继续细调阈值。
+
+Stage008 基础风险倍率反证：
+
+- `C_risk080`：总收益 `3846.605%`，收益保留 `76.8004%`，最大回撤 `-38.0720%`
+- `C_pressure040_risk095`：总收益 `4774.901%`，收益保留 `95.3345%`，最大回撤 `-31.5110%`
+- 结论：简单降风险倍率不能解决全样本深回撤。
+
+Stage009 账户层现金缓冲全样本过线：
+
+- 方案：`C_full_delev_pressure040_cash_weight_0.85`
+- 总收益：`4237.9394%`
+- 收益保留：`84.6136%`
+- 最大回撤：`-29.8636%`
+- Sharpe：`1.5236`
+- 结论：全样本严格通过，但必须多周期反证。
+
+Stage010 多周期反证：
+
+- `full_2020_2026`：收益保留 `84.6136%`，最大回撤 `-29.8636%`，通过。
+- `since_2021`：收益保留 `163.0307%`，最大回撤 `-29.8044%`，通过。
+- `since_2022`：收益保留 `62.6109%`，最大回撤 `-32.6389%`，不通过。
+- `since_2023`：收益保留 `78.7310%`，最大回撤 `-32.6044%`，不通过。
+- `since_2024`：收益保留 `72.1663%`，最大回撤 `-33.3998%`，不通过。
+- `phase_2024_2025`：收益保留 `81.1948%`，最大回撤 `-33.3998%`，不通过。
+
+## 结论
+
+- 暂时没有形成“多周期最大回撤30以内且收益不显著降低”的正式候选。
+- 全层热度降暴露是最强单策略线索，但只能把全样本回撤压到约 `-31.08%`。
+- 15%现金缓冲能让全样本过线，但多周期弱窗口失败，不能推广。
+- 后续不应继续微调 `0.40` 压力阈值、基础风险倍率或现金比例；下一步若继续，应转向低相关多策略组合。
+
+## 过拟合反思
+
+- 当前阶段没有按单品种、年份或特定行情硬补丁，过拟合风险受控。
+- 但 Stage009 的 `85%` 现金权重属于边界点；Stage010 已证明不能稳定推广。
+- 继续调 `0.82/0.83/0.84` 或 `0.39/0.41` 会明显走向过拟合。
+
+## 继续价值反思
+
+- 继续在第78-1单策略内部压回撤的价值下降。
+- 继续研究仍有价值，但方向应切换为组合层：引入低相关收益流或独立策略，而不是继续修补78-1。
+
+## 输出文件
+
+- Stage302报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage302_stage78_1_full_deleverage_pressure_frontier_report_stage302_stage78_1_full_deleverage_pressure_frontier_v1.md`
+- Stage303报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage303_stage78_1_risk_multiplier_frontier_report_stage303_stage78_1_risk_multiplier_frontier_v1.md`
+- Stage304报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage304_cash_buffer_frontier_report_stage304_cash_buffer_frontier_v1.md`
+- Stage305报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage305_cash_buffer_multiperiod_validation_report_stage305_cash_buffer_multiperiod_validation_v1.md`
+- 阶段记录：`research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1555_stage010_cash_buffer_multiperiod_validation.md`
+
+---
+
+# 2026-05-25 16:15 CST - Stage011：低相关组合与动态回撤门禁探索
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage306_low_corr_satellite_scout.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage307_low_corr_weight_frontier.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage308_pressure040_dynamic_dd_gate.py`
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage309_dynamic_dd_gate_sensitivity.py`
+- 修改正式78-1参数：无。
+- 新增正式参数：无。
+- 删除正式参数：无。
+
+## 关键结果
+
+低相关组合研究级最优：
+
+- 方案：`87.5% C_pressure040 + 12.5% qmt_range_reversion_core4_directed_product_signal_back_adjusted_v8_two_stage_stop_daily`
+- 全样本总收益：`4368.83%`
+- 全样本收益保留：`87.12%`
+- 全样本最大回撤：`-29.96%`
+- Sharpe：`1.5244`
+- 多周期研究通过：`6/6`
+- 多周期严格通过：`3/6`
+- 最低收益保留：`71.44%`
+
+动态回撤门禁研究级最优：
+
+- 方案：`dd10_30_min850`
+- 规则：覆盖层权益回撤超过10%后逐步降权，30%时最低降到85%风险。
+- 全样本总收益：`4164.59%`
+- 全样本收益保留：`83.04%`
+- 全样本最大回撤：`-29.99%`
+- Sharpe：`1.4945`
+- 多周期研究通过：`6/6`
+- 多周期严格通过：`4/6`
+- 最低收益保留：`76.80%`
+
+## 结论
+
+- 本轮没有形成“多周期最大回撤30以内且全部正收益窗口收益保留80%+”的严格候选。
+- 固定低相关卫星会像现金缓冲一样拖累2023/2024起始窗口收益。
+- 动态回撤门禁比固定卫星更有研究价值，但仍不能直接合入78-1正式版本。
+- 后续不应继续微调日收益层阈值；若继续，应把动态门禁落回真实回测引擎，或寻找2023/2024窗口本身正贡献的独立收益流。
+
+## 过拟合反思
+
+- 本轮没有改alpha、AI池、品种池或单品种权重，过拟合风险低于黑名单式修补。
+- 但 `dd10_30_min850` 已接近边界，若继续靠 `0.84/0.86` 这类小数点调参宣布成功，就是过拟合。
+
+## 继续价值反思
+
+- 继续有价值，但价值不在“凑30%”，而在验证动态门禁是否能真实落到交易引擎，并寻找真正低相关且有正贡献的独立收益流。
+
+## 输出文件
+
+- 阶段记录：`research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1615_stage011_low_corr_and_dynamic_dd_gate.md`
+- Stage306-309报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage30*_*.md`
+
+---
+
+# 2026-05-25 17:20 CST - Stage012：动态回撤门禁真实引擎反证与外生事件方向
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 新增脚本：
+  - `examples/portfolio_backtesting/run_qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation.py`
+  - `examples/portfolio_backtesting/run_qmt_roll_stage311_stage78_1_drawdown_deleverage_engine_validation.py`
+- 修改脚本：
+  - `examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py`
+- 新增参数：
+  - `portfolio_drawdown_gate_entry_contexts`
+  - `enable_portfolio_drawdown_deleverage`
+  - `portfolio_drawdown_gate_reference_contract`
+  - `portfolio_drawdown_gate_reference_volume`
+- 修改正式78-1参数：无，新增参数默认关闭。
+- 删除参数：无。
+
+## 关键结果
+
+- `C_pressure040` 仍是最强内部风控线索：
+  - 期末权益：`25,429,055`
+  - 总收益：`4985.811%`
+  - 收益保留：`99.5455%`
+  - 最大回撤：`-31.0767%`
+  - Sharpe：`1.2650`
+  - 总滑点：`2,047,490`
+  - 总交易次数：`862`
+  - 胜率：`45.0346%`
+- Stage310 开仓/加仓门禁：
+  - `C_pressure040_ddgate_flat` 总收益 `3286.589%`、收益保留 `65.619%`、最大回撤 `-37.9653%`。
+  - `C_pressure040_ddgate_all_entries` 总收益 `2922.759%`、收益保留 `58.355%`、最大回撤 `-38.0856%`。
+- Stage311 已有持仓降杠杆：
+  - `C_pressure040_dd_deleverage` 总收益 `852.512%`、收益保留 `17.0210%`、最大回撤 `-36.9393%`。
+  - `C_pressure040_dd_gate_deleverage` 总收益 `1738.670%`、收益保留 `34.7139%`、最大回撤 `-35.0566%`。
+
+## 结论
+
+- `dd10_30_min850` 这类日收益层动态门禁落到真实交易引擎后不成立。
+- 回撤后才挡新仓或减已有仓，很难同时压住最大回撤并保留趋势收益。
+- 不继续调 `0.39/0.41`、`0.84/0.86` 之类边界参数。
+- 用户提出的舆情/政府公告方向值得研究，但优先级应是“官方事件风险日历/公告强度”，不是泛舆情预测涨跌。
+- 下一步建议起 Stage013：点时化接入 NDRC/交易所风险公告、EIA、WASDE、CFTC COT、国内宏观定时数据，先做事件归因，若能覆盖最大回撤窗口，再做低自由度 C 方案。
+
+## 外部调研判断
+
+- EIA、USDA、CFTC 等官方数据有明确发布时间，适合点时化回放。
+- 国家发改委/交易所风险公告与国内大宗商品政策冲击相关，适合先做事件标签和风险覆盖层。
+- 泛舆情数据时间戳、版权、噪声和回填风险高，不作为第一阶段。
+
+## 过拟合反思
+
+- 运行前：不是过拟合，属于结构化风控层落地验证。
+- 运行后：Stage310/311 本身不是过拟合，但继续微调回撤门禁会过拟合。
+- 原因：真实引擎已反证“回撤后被动降风险”形状；再用小数阈值救结果会失去穿越周期意义。
+
+## 继续价值反思
+
+- 运行前：有价值。
+- 运行后：继续有价值，但应切换方向。
+- 原因：内生风控已接近边界，外生官方事件数据有可能减少政策/供需/库存报告引发的尾部亏损，并保持趋势主体收益。
+
+## 输出文件
+
+- 阶段记录：`research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1720_stage012_real_engine_dd_gate_and_exogenous_event_judgement.md`
+- Stage310报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation_report_stage310_stage78_1_drawdown_gate_engine_validation_v1.md`
+- Stage311报告：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage311_stage78_1_drawdown_deleverage_engine_validation_report_stage311_stage78_1_drawdown_deleverage_engine_validation_v1.md`
+
+---
+
+# 2026-05-25 17:43 CST - Stage013：外生开仓质量因子方向修正与评估器
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 用户修正：外生数据不是用于解释“公告附近亏损”或做公告日避险，而是用于优化开仓质量和开仓数量。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage312_external_quality_signal_evaluator.py`
+- 修改研究线记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+  - `research/registry.md`
+- 新增阶段记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1743_stage013_external_quality_signal_evaluator.md`
+- 修改正式78-1参数：无。
+- 新增正式参数：无。
+- 删除正式参数：无。
+
+## 运行结果
+
+- 本阶段没有运行收益回测；只运行外生因子评估器和候选 join。
+- 候选样本数：`953`
+- 实际开仓候选数：`315`
+- 外生信号行数：`0`
+- 候选命中外生信号数：`0`
+- 实际开仓命中外生信号数：`0`
+- 判定：`data_not_ready_create_point_in_time_external_signal_file`
+
+由于当前没有真实外生信号表，本阶段不产生新的期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数或胜率。
+
+参考基准仍为 Stage012 最强内部风控线索：
+
+- `C_pressure040`
+- 期末权益：`25,429,055`
+- 总收益：`4985.811%`
+- 最大回撤：`-31.0767%`
+- Sharpe：`1.2650`
+- 总滑点：`2,047,490`
+- 总交易次数：`862`
+- 胜率：`45.0346%`
+
+## 结论
+
+- 技术接入点确认：`entry_candidate_snapshots` 是外生质量因子最自然的落点。
+- 已建立点时化输入契约：`available_datetime`、`product_vt_symbol`、`direction`、`external_quality_score`、`suggested_volume_multiplier`、`veto_flag`、`confidence`。
+- 当前不能说外生数据有效，也不能说无效；因为还没有真实外生信号命中历史开仓候选。
+- 下一步必须先填充真实、点时化、低自由度外生信号，再检验 valid/test 高分桶是否拥有更高20日R和更低20日不利波动R。
+
+## 过拟合反思
+
+- 运行前：不是过拟合。
+- 原因：本阶段不改交易规则，不用历史收益倒推参数，只建立外生信号契约和只读评估器。
+- 运行后：仍不是过拟合。
+- 原因：没有真实外生数据时，评估器明确拒绝给策略效果结论。
+
+## 继续价值反思
+
+- 运行前：有价值。
+- 原因：内生风控已接近边界，外生信息可能改善“该不该开/开多少”，这是结构上不同于回撤后被动降风险的路径。
+- 运行后：继续有价值，但价值取决于数据层。
+- 下一步：起 Stage014 真实外生数据填充路线，优先接入交易所公告、政府/监管公告、EIA/USDA固定发布时间报告、产业库存/开工率；只读分桶通过后才进入 A/C 回测。
+
+## 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage312_external_quality_signal_evaluator_external_signal_template_stage312_external_quality_signal_evaluator_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage312_external_quality_signal_evaluator_external_signal_schema_stage312_external_quality_signal_evaluator_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage312_external_quality_signal_evaluator_joined_candidates_stage312_external_quality_signal_evaluator_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage312_external_quality_signal_evaluator_report_stage312_external_quality_signal_evaluator_v1.md`
+
+---
+
+# 2026-05-25 18:03 CST - Stage014：CFTC COT 外生开仓质量探针
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 用户补充方向：外生数据用于优化开仓质量和数量，不是解释公告附近亏损。
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage313_cftc_cot_external_quality_probe.py`
+- 新增阶段记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1803_stage014_cftc_cot_external_quality_probe.md`
+- 修改研究线记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+  - `research/registry.md`
+- 修改正式78-1参数：无。
+- 新增正式参数：无。
+- 删除正式参数：无。
+
+## 运行结果
+
+- 本阶段没有运行新的策略收益回测；只运行 CFTC COT 官方周度持仓外生信号构造和第78-1开仓候选只读分桶验证。
+- 外生信号行数：`4750`
+- 候选样本数：`953`
+- 实际开仓候选数：`315`
+- 候选命中外生信号数：`401`
+- 实际开仓命中外生信号数：`117`
+- 候选命中率：`42.0776%`
+- 实际开仓命中率：`37.1429%`
+- 判定：`fail_quality_score_not_monotonic_on_oos_forward_r`
+
+test 切分关键分桶：
+
+- 低分桶：样本数 `62`，平均20日R `2.7677`，平均20日不利波动R `3.2436`
+- 中分桶：样本数 `62`，平均20日R `0.1758`，平均20日不利波动R `7.1111`
+- 高分桶：样本数 `63`，平均20日R `-0.7065`，平均20日不利波动R `5.5624`
+
+由于 test 高分桶没有更高20日R，也没有更低不利波动R，本阶段不产生新的期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数或胜率。
+
+参考基准仍为 Stage012 最强内部风控线索：
+
+- `C_pressure040`
+- 期末权益：`25,429,055`
+- 总收益：`4985.811%`
+- 最大回撤：`-31.0767%`
+- Sharpe：`1.2650`
+- 总滑点：`2,047,490`
+- 总交易次数：`862`
+- 胜率：`45.0346%`
+
+## 结论
+
+- CFTC COT 可以作为外盘资金温度计，但不能直接当作中国期货市场持仓真相。
+- 当前固定公式和点时化处理下，COT 对第78-1开仓候选没有稳定样本外排序能力。
+- 不启动 A/C 回测，不接入78-1实盘或影子盘。
+- 继续围绕 COT 调窗口、分位或品种映射会有过拟合风险。
+- 下一步转向更贴近中国盘的交易所会员持仓排名、库存/仓单、基差、产业库存/开工率和政策/监管公告。
+
+## 过拟合反思
+
+- 运行前：不是过拟合。
+- 原因：本阶段使用官方周度数据和预先固定公式，只读验证，不改策略。
+- 运行后：仍不是过拟合。
+- 原因：样本外分桶失败后直接拒绝接入交易，没有为了好结果继续微调 COT。
+
+## 继续价值反思
+
+- 运行前：有价值。
+- 原因：外生开仓质量因子是不同于回撤后被动降风险的结构路线。
+- 运行后：继续有价值，但不应继续深挖 COT 单因子。
+- 下一步：起 Stage015 国内点时化外生数据可得性路线。
+
+## 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage313_cftc_cot_external_quality_probe_external_signals_stage313_cftc_cot_external_quality_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage313_cftc_cot_external_quality_probe_joined_candidates_stage313_cftc_cot_external_quality_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage313_cftc_cot_external_quality_probe_bucket_summary_stage313_cftc_cot_external_quality_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage313_cftc_cot_external_quality_probe_report_stage313_cftc_cot_external_quality_probe_v1.md`
+
+---
+
+# 2026-05-25 18:21 CST - Stage015：国内外生数据可得性探针
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage314_domestic_external_data_availability_probe.py`
+- 新增阶段记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1821_stage015_domestic_external_data_availability.md`
+- 修改研究线记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+  - `research/registry.md`
+- 修改正式78-1参数：无。
+- 新增正式参数：无。
+- 删除正式参数：无。
+
+## 运行结果
+
+- 本阶段没有运行新的策略收益回测；只检查国内外生数据可得性和第78-1品种覆盖。
+- 判定：`domestic_member_rank_data_layer_ready_for_feature_build`
+- 可用数据源数：`7`
+- 至少有一类外生数据覆盖的第78-1品种数：`19`
+- 有会员持仓排名覆盖的品种数：`17`
+- 有仓单/库存覆盖的品种数：`17`
+- 有现货/基差覆盖的品种数：`19`
+
+可用数据源：
+
+- 上期所会员成交持仓排名：`616` 行，覆盖 `RB/RU/FU/AU/CU/HC/SP`
+- 郑商所会员成交持仓排名：`2039` 行，覆盖 `AP/CF/FG/MA/OI/SA/SH/SM`
+- 广期所日成交持仓排名：`80` 行，覆盖 `LC/SI`
+- 上期所仓单日报：`400` 行
+- 郑商所仓单日报：`805` 行
+- 广期所仓单日报：`40` 行
+- 生意社现货与基差：`18` 行，覆盖除少数缺口外的第78-1品种
+
+暂不可用：
+
+- 大商所会员持仓排名：`BadZipFile`
+- 大商所仓单日报：`JSONDecodeError`
+
+由于本阶段只做数据层探针，没有新的期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数或胜率。
+
+参考基准仍为 Stage012 最强内部风控线索：
+
+- `C_pressure040`
+- 期末权益：`25,429,055`
+- 总收益：`4985.811%`
+- 最大回撤：`-31.0767%`
+- Sharpe：`1.2650`
+- 总滑点：`2,047,490`
+- 总交易次数：`862`
+- 胜率：`45.0346%`
+
+## 结论
+
+- 国内会员持仓、仓单/库存、基差数据比 COT 更适合作为第78-1开仓质量因子的第一批来源。
+- 下一阶段优先构造“会员净多变化与趋势方向一致性”因子。
+- 仓单/库存和基差作为辅助质量因子，不先碰泛舆情文本。
+- `jm.DCE`、`lh.DCE` 的 DCE 官方会员持仓/仓单接口需要后续单独修复；短期可先用基差覆盖，不强行编持仓因子。
+
+## 过拟合反思
+
+- 运行前：不是过拟合。
+- 原因：本阶段只检验数据可得性，不用收益结果挑参数。
+- 运行后：仍不是过拟合。
+- 原因：输出的是数据覆盖和接口状态，没有形成交易信号。
+
+## 继续价值反思
+
+- 运行前：有价值。
+- 运行后：继续有价值。
+- 原因：国内数据覆盖明显优于 COT，且更贴近中国期货的供需和资金结构；值得进入低自由度特征构建和样本外分桶验证。
+
+## 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage314_domestic_external_data_availability_probe_source_checks_stage314_domestic_external_data_availability_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage314_domestic_external_data_availability_probe_product_coverage_stage314_domestic_external_data_availability_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage314_domestic_external_data_availability_probe_report_stage314_domestic_external_data_availability_probe_v1.md`
+
+# 2026-05-25 18:53 CST - Stage016：国内会员持仓净变化开仓质量探针
+
+## 本次变更
+
+- 研究线：`futures_trend_drawdown30_preserve_return`
+- 新增脚本：
+  - `examples/portfolio_backtesting/analyze_qmt_roll_stage315_member_rank_quality_probe.py`
+- 新增阶段记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/stages/20260525_1853_stage016_member_rank_quality_probe.md`
+- 修改研究线记录：
+  - `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+  - `research/registry.md`
+- 修改正式78-1参数：无。
+- 新增正式参数：无。
+- 删除正式参数：无。
+
+## 运行结果
+
+- 本阶段没有运行新的策略收益回测；只做国内会员持仓净变化的点时化外生信号分桶。
+- 判定：`fail_quality_score_not_monotonic_on_oos_forward_r`
+- 数据区间：`20230101` 到 `20260417`
+- 特征行数：`11,753`
+- 外生信号行数：`23,506`
+- 候选样本数：`953`
+- 实际开仓候选数：`315`
+- 候选命中外生信号数：`460`
+- 实际开仓命中外生信号数：`119`
+- 候选命中率：`48.2686%`
+- 实际开仓命中率：`37.7778%`
+
+valid 分桶：
+
+- 低分平均20日R：`-0.4214`，平均20日不利波动R：`4.4133`
+- 高分平均20日R：`0.4833`，平均20日不利波动R：`2.9508`
+
+test 分桶：
+
+- 低分平均20日R：`2.4665`，平均20日不利波动R：`3.6658`
+- 高分平均20日R：`0.6688`，平均20日不利波动R：`3.5537`
+
+真实开仓样本补充检查：
+
+- valid 高分真实开仓平均20日R：`1.0683`
+- test 高分真实开仓平均20日R：`-0.8166`
+- test 低分真实开仓平均20日R：`0.4309`
+
+由于本阶段只做开仓候选质量分桶，没有新的期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数或胜率。
+
+参考基准仍为 Stage012 最强内部风控线索：
+
+- `C_pressure040`
+- 期末权益：`25,429,055`
+- 总收益：`4985.811%`
+- 最大回撤：`-31.0767%`
+- Sharpe：`1.2650`
+- 总滑点：`2,047,490`
+- 总交易次数：`862`
+- 胜率：`45.0346%`
+
+## 结论
+
+- 国内会员净多变化有经济含义，但样本外不能稳定排序第78-1开仓质量。
+- 不进入 A/C 回测，不接入78-1，不作为开仓倍率或禁止开仓因子。
+- 继续调会员净多变化的权重、窗口、TopN 或阈值会有明显过拟合风险。
+- 下一步转向仓单/库存与基差这类更贴近供需的低自由度因子。
+
+## 过拟合反思
+
+- 运行前：不是过拟合。
+- 原因：公式预先固定，不根据收益反推权重。
+- 运行后：当前阶段仍不是过拟合，但继续调参会变成过拟合。
+- 原因：valid 好看、test 失败，说明信号不稳定；若继续救这个形状，大概率是在拟合噪声。
+
+## 继续价值反思
+
+- 运行前：有价值。
+- 运行后：该具体因子不值得继续调参，但外生数据方向仍有价值。
+- 原因：本阶段明确排除了一个直觉上很诱人的会员持仓因子，后续可把精力转向仓单/库存与基差。
+
+## 输出文件
+
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage315_member_rank_quality_probe_report_stage315_member_rank_quality_probe_v1.md`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage315_member_rank_quality_probe_summary_stage315_member_rank_quality_probe_v1.json`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage315_member_rank_quality_probe_bucket_summary_stage315_member_rank_quality_probe_v1.csv`
+- `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage315_member_rank_quality_probe_joined_candidates_stage315_member_rank_quality_probe_v1.csv`

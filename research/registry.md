@@ -1,12 +1,13 @@
 # 研究线总索引
 
-更新时间：2026-05-20 23:42 CST
+更新时间：2026-05-25 18:53 CST
 
 ## 当前研究线
 
 | line_id | 中文名 | 资产/策略 | 当前状态 | 最新关键阶段 | 主要记录目录 | 下一步 |
 | --- | --- | --- | --- | --- | --- | --- |
 | `futures_trend` | 期货趋势策略 | 商品期货趋势/第78-1正式基准 | Stage78-1正式基准与50万资金约束；CTP/SimNow daily gate 与 broker-test/SimNow 1手测试链路已固化；普通 SimNow `9999/trading` 已完成1手开仓成交、1手平仓成交、1手撤单回报、程序化断网回调和1.6-1.9执行安全验收；`41407`原生C++路线已能调用报单API但测试单曾被CTP拒绝，评测前置仍需券商确认/恢复 | Stage288：合并普通 SimNow 开平仓/撤单/断网证据，补齐阈值预警、交易指令检查、错误提示和暂停交易验收，16/16通过；执行安全模块已接入Stage250 OrderRequest构造层；外发版HTML已去本机路径、通用中文分章节，并补回脱敏交易细节与控制台关键打印 | `research/lines/futures_trend/` | 后续每日虚拟盘按skill执行；review禁止新增开仓，空仓不得发送平仓单；继续把 `ctp_execution_safety.py` 扩展到最终真实submit adapter；若券商要求 `1010/41407/41415` 评测前置证明，则等该前置稳定后复刻开平仓/撤单/断网 |
+| `futures_trend_drawdown30_preserve_return` | 期货趋势回撤30以内保收益线 | 商品期货趋势/第78-1风险压缩 | 独立研究线；动态回撤门禁真实引擎落地被反证，内部风控最强仍是`C_pressure040`但回撤卡在-31.08%，暂不合入78-1；外生数据方向已修正为开仓质量/数量因子；CFTC COT真实外生探针未通过样本外排序；国内会员净多变化也未通过样本外排序 | Stage016：国内会员净多变化因子候选命中率48.27%、实际开仓命中率37.78%，valid看似有效但test高分桶20日R低于低分桶，判定不进入A/C | `research/lines/futures_trend_drawdown30_preserve_return/` | 起Stage017仓单/库存与基差质量因子；固定低自由度公式，先只读分桶，通过后再进入A/C回测 |
 | `futures_trend_profit_lock_exit` | 期货趋势盈利锁定退出线 | 商品期货趋势/Stage78-1退出规则 | Stage279反证“锁盈已激活+趋势仍强时直接跳过prev2day_stop”；正式78-1盈利锁档位和prev2day_stop保持不变 | Stage009：C触发1754次但全周期少775.9万、回撤恶化10.70pp，仅1/6窗口胜出 | `research/lines/futures_trend_profit_lock_exit/` | 停止该形状；若继续只考虑降仓、延迟确认或账户层风控，不做MA阈值补丁 |
 | `futures_trend_hot_universe_expansion` | 期货趋势热门缺口扩池线 | 商品期货趋势/Stage78-1基础宇宙扩展候选 | 收束研究线，不改78-1正式池；`y/ag`均不promotion，heat/giveback风险倍率也失败 | Stage005：组合层heat/giveback日级回放全周期好看但弱窗口独立回放失败，停止该overlay形状 | `research/lines/futures_trend_hot_universe_expansion/` | 正式池不变；若继续风险治理，转回`futures_trend_risk_overlay`账户层分层 |
 | `futures_trend_risk_overlay` | 期货趋势风险覆盖层 | 商品期货趋势/78-1风险叠加层 | 独立研究线，不改78-1 alpha | Stage238：balanced_tranche已进入日更部署日报 | `research/lines/futures_trend_risk_overlay/` | 接真实账户余额并监控实值与回放偏差 |

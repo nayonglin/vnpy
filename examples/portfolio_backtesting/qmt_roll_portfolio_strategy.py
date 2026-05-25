@@ -66,6 +66,8 @@ class ProductState:
     bars_since_entry: int = 0
     prev2day_stop_price: float | None = None
     rsi_partial_exit_done: bool = False
+    portfolio_drawdown_gate_reference_contract: str = ""
+    portfolio_drawdown_gate_reference_volume: int = 0
 
     def reset(self) -> None:
         self.contract_vt_symbol = ""
@@ -80,6 +82,8 @@ class ProductState:
         self.bars_since_entry = 0
         self.prev2day_stop_price = None
         self.rsi_partial_exit_done = False
+        self.portfolio_drawdown_gate_reference_contract = ""
+        self.portfolio_drawdown_gate_reference_volume = 0
 
     def active_volume(self) -> int:
         return sum(layer.volume for layer in self.layers)
@@ -189,6 +193,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     max_risk_per_trade: float = 50_000_000.0
     default_margin_ratio: float = 0.10
     margin_ratio_overrides: str = ""
+    enable_risk_cluster_margin_cap: bool = False
+    risk_cluster_margin_cap_ratio: float = 0.35
+    risk_cluster_target_clusters: str = ""
+    risk_cluster_map: str = ""
+    enable_risk_cluster_heat_gate: bool = False
+    risk_cluster_heat_gate_target_clusters: str = ""
+    risk_cluster_heat_gate_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    risk_cluster_heat_gate_drawdown_start_pct: float = 0.10
+    risk_cluster_heat_gate_drawdown_full_pct: float = 0.25
+    risk_cluster_heat_gate_margin_start_ratio: float = 0.15
+    risk_cluster_heat_gate_margin_full_ratio: float = 0.35
+    risk_cluster_heat_gate_unrealized_loss_start_ratio: float = 0.02
+    risk_cluster_heat_gate_unrealized_loss_full_ratio: float = 0.08
+    risk_cluster_heat_gate_weight_floor: float = 0.35
+    enable_risk_cluster_heat_deleverage: bool = False
+    risk_cluster_heat_deleverage_target_clusters: str = ""
+    risk_cluster_heat_deleverage_layer_kinds: str = "add,donchian"
+    risk_cluster_heat_deleverage_min_pressure: float = 0.50
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
     streak_risk_state_excluded_products: str = ""
     streak_risk_state_exclusion_mode: str = "all"
@@ -217,6 +239,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_drawdown_gate_start_pct: float = 0.10
     portfolio_drawdown_gate_full_pct: float = 0.25
     portfolio_drawdown_gate_weight_floor: float = 0.50
+    portfolio_drawdown_gate_entry_contexts: str = "flat_entry"
+    enable_portfolio_drawdown_deleverage: bool = False
     enable_same_direction_correlation_gate: bool = False
     same_direction_correlation_gate_lookback: int = 20
     same_direction_correlation_gate_start: float = 0.60
@@ -251,6 +275,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_ai_product_pool_filter: bool = False
     ai_product_pool_eligibility_path: str = ""
     ai_product_pool_strategy: str = "ai_top8_entry_filter"
+    enable_supply_demand_headwind_filter: bool = False
+    supply_demand_signal_path: str = ""
+    supply_demand_headwind_threshold: float = -0.35
+    supply_demand_headwind_weight_floor: float = 0.0
+    supply_demand_headwind_max_age_days: int = 7
     array_manager_size_floor: int = 120
 
     stop_loss_pct: float = 0.02
@@ -298,6 +327,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     estimated_equity: float = 0.0
     realized_pnl: float = 0.0
     total_margin_in_use: float = 0.0
+    risk_cluster_margin_in_use: float = 0.0
     current_risk_per_trade: float = 0.0
     risk_multiplier: float = 1.0
     loss_streak: int = 0
@@ -366,6 +396,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "max_risk_per_trade",
         "default_margin_ratio",
         "margin_ratio_overrides",
+        "enable_risk_cluster_margin_cap",
+        "risk_cluster_margin_cap_ratio",
+        "risk_cluster_target_clusters",
+        "risk_cluster_map",
+        "enable_risk_cluster_heat_gate",
+        "risk_cluster_heat_gate_target_clusters",
+        "risk_cluster_heat_gate_entry_contexts",
+        "risk_cluster_heat_gate_drawdown_start_pct",
+        "risk_cluster_heat_gate_drawdown_full_pct",
+        "risk_cluster_heat_gate_margin_start_ratio",
+        "risk_cluster_heat_gate_margin_full_ratio",
+        "risk_cluster_heat_gate_unrealized_loss_start_ratio",
+        "risk_cluster_heat_gate_unrealized_loss_full_ratio",
+        "risk_cluster_heat_gate_weight_floor",
+        "enable_risk_cluster_heat_deleverage",
+        "risk_cluster_heat_deleverage_target_clusters",
+        "risk_cluster_heat_deleverage_layer_kinds",
+        "risk_cluster_heat_deleverage_min_pressure",
         "streak_risk_multipliers",
         "streak_risk_state_excluded_products",
         "streak_risk_state_exclusion_mode",
@@ -394,6 +442,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_drawdown_gate_start_pct",
         "portfolio_drawdown_gate_full_pct",
         "portfolio_drawdown_gate_weight_floor",
+        "portfolio_drawdown_gate_entry_contexts",
+        "enable_portfolio_drawdown_deleverage",
         "enable_same_direction_correlation_gate",
         "same_direction_correlation_gate_lookback",
         "same_direction_correlation_gate_start",
@@ -428,6 +478,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_ai_product_pool_filter",
         "ai_product_pool_eligibility_path",
         "ai_product_pool_strategy",
+        "enable_supply_demand_headwind_filter",
+        "supply_demand_signal_path",
+        "supply_demand_headwind_threshold",
+        "supply_demand_headwind_weight_floor",
+        "supply_demand_headwind_max_age_days",
         "array_manager_size_floor",
         "stop_loss_pct",
         "trailing_stop_enabled",
@@ -472,6 +527,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "estimated_equity",
         "realized_pnl",
         "total_margin_in_use",
+        "risk_cluster_margin_in_use",
+        "risk_cluster_unrealized_loss_in_use",
+        "risk_cluster_heat_gate_weight",
+        "risk_cluster_heat_deleverage_count",
+        "portfolio_drawdown_deleverage_count",
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
@@ -536,7 +596,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.portfolio_equity_high_water: float = self.base_capital
         self.portfolio_drawdown_pct: float = 0.0
         self.last_close_prices: dict[str, float] = {}
+        self.cluster_margin_usage: dict[str, float] = {}
+        self.cluster_unrealized_pnl: dict[str, float] = {}
+        self.risk_cluster_unrealized_loss_in_use: float = 0.0
+        self.risk_cluster_heat_gate_weight: float = 1.0
+        self.risk_cluster_heat_deleverage_count: int = 0
+        self.portfolio_drawdown_deleverage_count: int = 0
         self.pending_margin_reservation: float = 0.0
+        self.pending_cluster_margin_reservation: dict[str, float] = {}
         self.pending_active_products: set[str] = set()
         self.current_env_gate_snapshot: dict[str, Any] = {}
         self.selection_pairwise_volume_tilt_last_date_by_direction: dict[str, pd.Timestamp] = {}
@@ -544,6 +611,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.ai_product_pool_eval_dates: list[pd.Timestamp] = []
         if self.enable_ai_product_pool_filter:
             self._load_ai_product_pool_eligibility()
+        self.supply_demand_signals: pd.DataFrame = pd.DataFrame()
+        self.supply_demand_signal_index: dict[tuple[str, str], pd.DataFrame] = {}
+        if self.enable_supply_demand_headwind_filter:
+            self._load_supply_demand_signals()
         self.selection_pairwise_runtime: SelectionPairwiseRuntimeModel | None = None
         if self.enable_selection_pairwise_v2:
             self.selection_pairwise_runtime = SelectionPairwiseRuntimeModel(
@@ -641,6 +712,124 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         snapshot["ai_product_pool_score"] = float(product_row.get("score", 0.0) or 0.0)
         snapshot["ai_product_pool_rank"] = int(product_row.get("rank", 0) or 0)
         snapshot["ai_product_pool_top_n"] = int(product_row.get("top_n", 0) or 0)
+        return snapshot
+
+    def _load_supply_demand_signals(self) -> None:
+        path = Path(str(self.supply_demand_signal_path or ""))
+        if not path.exists():
+            self.write_log(f"Supply-demand signal file missing: {path}")
+            return
+
+        df = pd.read_csv(path)
+        required_columns = {
+            "available_datetime",
+            "product_vt_symbol",
+            "direction",
+            "external_quality_score",
+        }
+        missing_columns = required_columns - set(df.columns)
+        if missing_columns:
+            self.write_log(f"Supply-demand signal file missing columns: {sorted(missing_columns)}")
+            return
+
+        frame = df.copy()
+        frame["available_datetime"] = pd.to_datetime(frame["available_datetime"], errors="coerce")
+        frame = frame[frame["available_datetime"].notna()].copy()
+        if frame.empty:
+            self.write_log(f"Supply-demand signal file has no valid rows: {path}")
+            return
+
+        frame["available_datetime"] = frame["available_datetime"].map(
+            lambda value: pd.Timestamp(value).tz_localize(None)
+        )
+        frame["product_vt_symbol"] = frame["product_vt_symbol"].astype(str).str.strip()
+        frame["direction"] = frame["direction"].astype(str).str.lower().str.strip()
+        frame["external_quality_score"] = (
+            pd.to_numeric(frame["external_quality_score"], errors="coerce").fillna(0.0).clip(-1.0, 1.0)
+        )
+        frame.sort_values(["product_vt_symbol", "direction", "available_datetime"], inplace=True)
+
+        self.supply_demand_signals = frame
+        self.supply_demand_signal_index = {
+            (str(product), str(direction)): group.reset_index(drop=True)
+            for (product, direction), group in frame.groupby(["product_vt_symbol", "direction"], sort=False)
+        }
+
+    def _supply_demand_headwind_snapshot(
+        self,
+        product_vt_symbol: str,
+        direction: str,
+        trade_datetime: pd.Timestamp,
+    ) -> dict[str, Any]:
+        if not self.enable_supply_demand_headwind_filter:
+            return {
+                "supply_demand_headwind_enabled": 0,
+                "supply_demand_headwind_matched": 0,
+                "supply_demand_headwind_score": 0.0,
+                "supply_demand_headwind_weight": 1.0,
+                "supply_demand_headwind_threshold": float(self.supply_demand_headwind_threshold),
+                "supply_demand_headwind_signal_age_days": 0.0,
+                "supply_demand_headwind_signal_datetime": "",
+                "supply_demand_headwind_reason": "disabled",
+            }
+
+        snapshot = {
+            "supply_demand_headwind_enabled": 1,
+            "supply_demand_headwind_matched": 0,
+            "supply_demand_headwind_score": 0.0,
+            "supply_demand_headwind_weight": 1.0,
+            "supply_demand_headwind_threshold": float(self.supply_demand_headwind_threshold),
+            "supply_demand_headwind_signal_age_days": 0.0,
+            "supply_demand_headwind_signal_datetime": "",
+            "supply_demand_headwind_reason": "no_signal",
+        }
+        if self.supply_demand_signals.empty:
+            return snapshot
+
+        trade_dt = pd.Timestamp(trade_datetime).tz_localize(None)
+        max_age_days = max(0, int(self.supply_demand_headwind_max_age_days or 0))
+        min_dt = trade_dt - pd.Timedelta(days=max_age_days)
+
+        candidate_frames: list[pd.DataFrame] = []
+        for key in (
+            (product_vt_symbol, direction),
+            (product_vt_symbol, "both"),
+            (product_vt_symbol, "all"),
+            ("ALL", direction),
+            ("ALL", "both"),
+            ("all", direction),
+            ("all", "both"),
+        ):
+            frame = self.supply_demand_signal_index.get(key)
+            if frame is not None and not frame.empty:
+                candidate_frames.append(frame)
+        if not candidate_frames:
+            return snapshot
+
+        candidates = pd.concat(candidate_frames, ignore_index=True)
+        candidates = candidates[
+            (candidates["available_datetime"] <= trade_dt)
+            & (candidates["available_datetime"] >= min_dt)
+        ].copy()
+        if candidates.empty:
+            return snapshot
+
+        candidates.sort_values(["available_datetime"], ascending=False, inplace=True)
+        row = candidates.iloc[0]
+        score = float(row.get("external_quality_score", 0.0) or 0.0)
+        threshold = float(self.supply_demand_headwind_threshold)
+        weight = 1.0 if score > threshold else self._clip01(float(self.supply_demand_headwind_weight_floor))
+        age_days = (trade_dt - pd.Timestamp(row["available_datetime"])).total_seconds() / 86400.0
+        snapshot.update(
+            {
+                "supply_demand_headwind_matched": 1,
+                "supply_demand_headwind_score": score,
+                "supply_demand_headwind_weight": weight,
+                "supply_demand_headwind_signal_age_days": age_days,
+                "supply_demand_headwind_signal_datetime": pd.Timestamp(row["available_datetime"]).isoformat(),
+                "supply_demand_headwind_reason": "strong_headwind" if score <= threshold else "passed",
+            }
+        )
         return snapshot
 
     def on_init(self) -> None:
@@ -817,6 +1006,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.last_signal = f"{product_vt}:{layer_exit_reason}"
                 continue
 
+            heat_deleverage_reason: str = self._process_risk_cluster_heat_deleverage(state, target_bar)
+            if heat_deleverage_reason:
+                self.last_signal = f"{product_vt}:{heat_deleverage_reason}"
+                continue
+
+            portfolio_deleverage_reason: str = self._process_portfolio_drawdown_deleverage(state, target_bar)
+            if portfolio_deleverage_reason:
+                self.last_signal = f"{product_vt}:{portfolio_deleverage_reason}"
+                continue
+
             rsi_partial_exit_reason: str = self._process_rsi_partial_exit(state, target_bar, rsi_value)
             if rsi_partial_exit_reason:
                 self._apply_state_target(state)
@@ -933,6 +1132,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             can_add, add_type = self._check_regular_add_conditions(state, target_bar, history)
             if entry_allowed_today and can_add and add_type:
                 add_volume: int = self._calculate_regular_add_volume(state)
+                add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
+                    state.contract_vt_symbol,
+                    add_volume,
+                    target_bar.close_price,
+                    "regular_add",
+                )
+                add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "regular_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -943,6 +1149,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             can_don_add, don_add_type = self._check_donchian_add_conditions(state, target_bar, history)
             if entry_allowed_today and can_don_add and don_add_type:
                 add_volume = self._calculate_donchian_add_volume(state)
+                add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
+                    state.contract_vt_symbol,
+                    add_volume,
+                    target_bar.close_price,
+                    "donchian_add",
+                )
+                add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "donchian_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -1084,6 +1297,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.estimated_equity = self._estimate_equity(bars)
         self._refresh_portfolio_drawdown_state()
         self.total_margin_in_use = self._estimate_margin_usage(bars)
+        self.cluster_margin_usage = self._estimate_margin_usage_by_cluster(bars)
+        self.cluster_unrealized_pnl = self._estimate_unrealized_pnl_by_cluster(bars)
+        self.risk_cluster_margin_in_use = max(self.cluster_margin_usage.values(), default=0.0)
+        self.risk_cluster_unrealized_loss_in_use = max(
+            (max(0.0, -float(value)) for value in self.cluster_unrealized_pnl.values()),
+            default=0.0,
+        )
+        self.risk_cluster_heat_gate_weight = self._current_min_risk_cluster_heat_gate_weight()
         limited_balance: float = self._limited_available_balance()
         self.current_risk_per_trade = self._risk_amount_from_ratio(self.risk_ratio_of_total_assets, limited_balance)
         self.risk_multiplier = self._current_streak_multiplier()
@@ -1105,6 +1326,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
     def _reset_intrabar_reservations(self) -> None:
         self.pending_margin_reservation = 0.0
+        self.pending_cluster_margin_reservation.clear()
         self.pending_active_products.clear()
 
     def _portfolio_env_gate_weight(self, entry_context: str) -> float:
@@ -1113,10 +1335,22 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         snapshot = self.current_env_gate_snapshot or {}
         return self._clip01(float(snapshot.get("env_gate_weight", 1.0)))
 
-    def _portfolio_drawdown_gate_weight(self, entry_context: str) -> float:
-        if not self.enable_portfolio_drawdown_gate or entry_context != "flat_entry":
-            return 1.0
+    def _portfolio_drawdown_gate_context_set(self) -> set[str]:
+        raw_contexts = str(self.portfolio_drawdown_gate_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
 
+    def _portfolio_drawdown_gate_context_applies(self, entry_context: str) -> bool:
+        contexts = self._portfolio_drawdown_gate_context_set()
+        return "*" in contexts or entry_context in contexts
+
+    def _portfolio_drawdown_gate_weight_value(self) -> float:
         drawdown_pct: float = max(0.0, float(self.portfolio_drawdown_pct or 0.0))
         start_pct: float = max(0.0, float(self.portfolio_drawdown_gate_start_pct or 0.0))
         full_pct: float = max(start_pct + 1e-9, float(self.portfolio_drawdown_gate_full_pct or 0.0))
@@ -1128,6 +1362,27 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         relief_ratio: float = (full_pct - drawdown_pct) / max(1e-9, full_pct - start_pct)
         return self._clip01(weight_floor + (1.0 - weight_floor) * relief_ratio)
+
+    def _portfolio_drawdown_gate_weight(self, entry_context: str) -> float:
+        if (
+            not self.enable_portfolio_drawdown_gate
+            or not self._portfolio_drawdown_gate_context_applies(entry_context)
+        ):
+            return 1.0
+        return self._portfolio_drawdown_gate_weight_value()
+
+    def _portfolio_drawdown_gate_adjust_volume(self, volume: int, entry_context: str) -> int:
+        selected_volume = max(0, int(volume))
+        if (
+            not self.enable_portfolio_drawdown_gate
+            or not self._portfolio_drawdown_gate_context_applies(entry_context)
+        ):
+            return selected_volume
+
+        adjusted_volume = int(math.floor(selected_volume * self._portfolio_drawdown_gate_weight_value()))
+        if 0 < adjusted_volume < self.min_position_size:
+            adjusted_volume = 0
+        return max(0, adjusted_volume)
 
     def _rollover_reopen_drawdown_guard_fields(self) -> dict[str, Any]:
         guard_enabled = int(bool(self.enable_rollover_reopen_drawdown_guard))
@@ -1374,14 +1629,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         count_active_position: bool,
     ) -> None:
         margin_per_contract = float(sizing_snapshot.get("margin_per_contract") or 0.0)
-        self.pending_margin_reservation += max(0.0, margin_per_contract * max(0, int(volume)))
+        projected_margin = max(0.0, margin_per_contract * max(0, int(volume)))
+        self.pending_margin_reservation += projected_margin
+        cluster = self._risk_cluster_for_symbol(product_vt_symbol)
+        if cluster:
+            self.pending_cluster_margin_reservation[cluster] = (
+                self.pending_cluster_margin_reservation.get(cluster, 0.0) + projected_margin
+            )
         if count_active_position:
             self.pending_active_products.add(product_vt_symbol)
 
     def _reserve_intrabar_margin(self, vt_symbol: str, volume: int, price: float) -> None:
         margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
         projected_margin = float(price) * self.get_size(vt_symbol) * max(0, int(volume)) * margin_ratio
-        self.pending_margin_reservation += max(0.0, projected_margin)
+        projected_margin = max(0.0, projected_margin)
+        self.pending_margin_reservation += projected_margin
+        cluster = self._risk_cluster_for_symbol(vt_symbol)
+        if cluster:
+            self.pending_cluster_margin_reservation[cluster] = (
+                self.pending_cluster_margin_reservation.get(cluster, 0.0) + projected_margin
+            )
 
     def _resolve_base_capital(self) -> float:
         if self.capital_base > 0:
@@ -1612,6 +1879,47 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             margin_ratio: float = self._margin_ratio_for_symbol(state.contract_vt_symbol)
             total_margin += abs(close_price * size * state.active_volume() * margin_ratio)
         return total_margin
+
+    def _estimate_margin_usage_by_cluster(self, bars: dict[str, BarData]) -> dict[str, float]:
+        usage: dict[str, float] = {}
+        for state in self.states.values():
+            if not state.contract_vt_symbol or not state.layers:
+                continue
+            bar: BarData | None = bars.get(state.contract_vt_symbol)
+            if not bar:
+                continue
+            cluster: str = self._risk_cluster_for_symbol(state.product_vt_symbol or state.contract_vt_symbol)
+            if not cluster:
+                continue
+            size: int = self.get_size(state.contract_vt_symbol)
+            close_price: float = float(bar.close_price)
+            margin_ratio: float = self._margin_ratio_for_symbol(state.contract_vt_symbol)
+            margin: float = abs(close_price * size * state.active_volume() * margin_ratio)
+            usage[cluster] = usage.get(cluster, 0.0) + margin
+        return usage
+
+    def _estimate_unrealized_pnl_by_cluster(self, bars: dict[str, BarData]) -> dict[str, float]:
+        pnl_by_cluster: dict[str, float] = {}
+        for state in self.states.values():
+            if not state.contract_vt_symbol or not state.layers:
+                continue
+            bar: BarData | None = bars.get(state.contract_vt_symbol)
+            if not bar:
+                continue
+            cluster: str = self._risk_cluster_for_symbol(state.product_vt_symbol or state.contract_vt_symbol)
+            if not cluster:
+                continue
+            size: int = self.get_size(state.contract_vt_symbol)
+            close_price: float = float(bar.close_price)
+            state_pnl: float = 0.0
+            for layer in state.layers:
+                volume = max(0, int(layer.volume))
+                if state.direction == "short":
+                    state_pnl += (float(layer.entry_price) - close_price) * size * volume
+                else:
+                    state_pnl += (close_price - float(layer.entry_price)) * size * volume
+            pnl_by_cluster[cluster] = pnl_by_cluster.get(cluster, 0.0) + state_pnl
+        return pnl_by_cluster
 
     def _sizing_equity_soft_cap_release_weight(self, value: float, start: float, full: float) -> float:
         start = max(0.0, float(start))
@@ -1919,6 +2227,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             pd.Timestamp(context.target_bar.datetime).normalize(),
         )
         sizing.update(ai_product_pool_snapshot)
+        supply_demand_snapshot = self._supply_demand_headwind_snapshot(
+            context.product_vt_symbol,
+            direction,
+            pd.Timestamp(context.target_bar.datetime),
+        )
+        sizing.update(supply_demand_snapshot)
+        if int(supply_demand_snapshot.get("supply_demand_headwind_enabled", 0) or 0):
+            headwind_weight = self._clip01(float(supply_demand_snapshot.get("supply_demand_headwind_weight", 1.0)))
+            if headwind_weight < 1.0:
+                volume_before = max(0, int(sizing.get("selected_volume") or volume))
+                volume_after = int(math.floor(volume_before * headwind_weight))
+                if 0 < volume_after < self.min_position_size:
+                    volume_after = 0
+                sizing["supply_demand_headwind_selected_volume_before"] = volume_before
+                sizing["supply_demand_headwind_selected_volume_after"] = max(0, volume_after)
+                sizing["selected_volume"] = max(0, volume_after)
+                volume = max(0, volume_after)
+                native_openable = self._is_native_openable_candidate(signal, direction, volume)
         if direction == "long" and not self.long_entry_enabled:
             skip_reason = "long_entry_disabled"
         elif direction == "short" and not self.short_entry_enabled:
@@ -1926,7 +2252,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         elif direction == "short" and not self._can_open_short_signal(signal):
             skip_reason = "short_signal_rejected"
         elif volume <= 0:
-            skip_reason = "sizing_zero_volume"
+            if str(supply_demand_snapshot.get("supply_demand_headwind_reason", "")) == "strong_headwind":
+                skip_reason = "supply_demand_headwind_blocked"
+            else:
+                skip_reason = "sizing_zero_volume"
         elif (
             self.enable_ai_product_pool_filter
             and int(ai_product_pool_snapshot.get("ai_product_pool_allowed", 1) or 0) == 0
@@ -2656,6 +2985,57 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         return snapshot
 
+    def _apply_risk_cluster_heat_gate_to_volume(
+        self,
+        vt_symbol: str,
+        selected_volume: int,
+        margin_per_contract: float,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        cluster: str = self._risk_cluster_for_symbol(vt_symbol)
+        enabled: int = int(
+            bool(self.enable_risk_cluster_heat_gate)
+            and self._risk_cluster_heat_gate_cluster_applies(cluster)
+            and self._risk_cluster_heat_gate_context_applies(entry_context)
+        )
+        projected_margin: float = max(0.0, float(margin_per_contract or 0.0) * max(0, int(selected_volume)))
+        heat_fields = self._risk_cluster_heat_pressure_fields(
+            cluster,
+            projected_margin=projected_margin,
+            enabled=bool(enabled),
+        )
+        heat_pressure = float(heat_fields["risk_cluster_heat_pressure"])
+        floor = self._clip01(float(self.risk_cluster_heat_gate_weight_floor or 0.0))
+        weight = self._clip01(1.0 - (1.0 - floor) * heat_pressure) if enabled else 1.0
+
+        selected_volume_before = max(0, int(selected_volume))
+        selected_volume_after = int(math.floor(selected_volume_before * weight)) if enabled else selected_volume_before
+        if 0 < selected_volume_after < self.min_position_size:
+            selected_volume_after = 0
+        return {
+            "risk_cluster_heat_gate_enabled": enabled,
+            "risk_cluster_heat_gate_cluster": cluster,
+            "risk_cluster_heat_gate_entry_context": entry_context,
+            "risk_cluster_heat_gate_weight": weight,
+            "risk_cluster_heat_gate_pressure": heat_pressure if enabled else 0.0,
+            "risk_cluster_heat_gate_drawdown_pressure": float(
+                heat_fields["risk_cluster_heat_drawdown_pressure"]
+            ),
+            "risk_cluster_heat_gate_margin_pressure": float(heat_fields["risk_cluster_heat_margin_pressure"]),
+            "risk_cluster_heat_gate_unrealized_loss_pressure": float(
+                heat_fields["risk_cluster_heat_unrealized_loss_pressure"]
+            ),
+            "risk_cluster_heat_gate_margin_ratio": float(heat_fields["risk_cluster_heat_margin_ratio"]),
+            "risk_cluster_heat_gate_unrealized_loss_ratio": float(
+                heat_fields["risk_cluster_heat_unrealized_loss_ratio"]
+            ),
+            "risk_cluster_heat_gate_portfolio_drawdown_pct": float(
+                heat_fields["risk_cluster_heat_portfolio_drawdown_pct"]
+            ),
+            "risk_cluster_heat_gate_selected_volume_before": selected_volume_before,
+            "risk_cluster_heat_gate_selected_volume": max(0, selected_volume_after),
+        }
+
     def _apply_env_gate_to_volume(
         self,
         base_volume: int,
@@ -2677,7 +3057,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     selected_volume = 0
 
         portfolio_drawdown_gate_enabled = int(
-            self.enable_portfolio_drawdown_gate and entry_context == "flat_entry"
+            self.enable_portfolio_drawdown_gate
+            and self._portfolio_drawdown_gate_context_applies(entry_context)
         )
         portfolio_drawdown_gate_weight = self._portfolio_drawdown_gate_weight(entry_context)
         if portfolio_drawdown_gate_enabled and apply_env_gate:
@@ -2753,6 +3134,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 int(contracts_by_single_trade_cap or 0),
                 self.max_position_size,
             )
+            cluster_cap_fields = self._risk_cluster_cap_fields(vt_symbol, volume, margin_per_contract)
+            volume = int(cluster_cap_fields["risk_cluster_selected_volume"])
+            heat_gate_fields = self._apply_risk_cluster_heat_gate_to_volume(
+                vt_symbol,
+                volume,
+                margin_per_contract,
+                entry_context,
+            )
+            volume = int(heat_gate_fields["risk_cluster_heat_gate_selected_volume"])
             if 0 < volume < self.min_position_size:
                 volume = 0
             env_gate_fields = self._apply_env_gate_to_volume(
@@ -2782,6 +3172,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
                 **sizing_equity_fields,
                 **recovery_fields,
+                **cluster_cap_fields,
+                **heat_gate_fields,
                 **env_gate_fields,
             }
 
@@ -2829,6 +3221,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             contracts_by_single_trade_cap,
             self.max_position_size,
         )
+        cluster_cap_fields = self._risk_cluster_cap_fields(vt_symbol, volume, margin_per_contract)
+        volume = int(cluster_cap_fields["risk_cluster_selected_volume"])
+        heat_gate_fields = self._apply_risk_cluster_heat_gate_to_volume(
+            vt_symbol,
+            volume,
+            margin_per_contract,
+            entry_context,
+        )
+        volume = int(heat_gate_fields["risk_cluster_heat_gate_selected_volume"])
         if 0 < volume < self.min_position_size:
             volume = 0
         env_gate_fields = self._apply_env_gate_to_volume(
@@ -2859,6 +3260,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
             **sizing_equity_fields,
             **recovery_fields,
+            **cluster_cap_fields,
+            **heat_gate_fields,
             **env_gate_fields,
         }
 
@@ -3779,6 +4182,107 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             self._apply_state_target(state, execution_price_override=exit_price)
         return exit_reason
 
+    def _process_risk_cluster_heat_deleverage(self, state: ProductState, bar: BarData) -> str:
+        if not self.enable_risk_cluster_heat_deleverage:
+            return ""
+        if not state.layers or not state.contract_vt_symbol:
+            return ""
+
+        cluster: str = self._risk_cluster_for_symbol(state.contract_vt_symbol)
+        if not self._risk_cluster_heat_deleverage_cluster_applies(cluster):
+            return ""
+
+        heat_fields = self._risk_cluster_heat_pressure_fields(cluster, projected_margin=0.0, enabled=True)
+        heat_pressure: float = float(heat_fields["risk_cluster_heat_pressure"] or 0.0)
+        if heat_pressure < max(0.0, float(self.risk_cluster_heat_deleverage_min_pressure or 0.0)):
+            return ""
+
+        layer_kinds = self._risk_cluster_heat_deleverage_layer_kind_set()
+        triggered_indexes = [index for index, layer in enumerate(state.layers) if layer.kind in layer_kinds]
+        if not triggered_indexes:
+            return ""
+
+        contract_vt_symbol = state.contract_vt_symbol
+        product_vt_symbol = state.product_vt_symbol
+        direction = state.direction
+        exit_price = float(bar.close_price)
+        closed_volume = sum(state.layers[index].volume for index in triggered_indexes)
+        exit_reason = f"{direction}_risk_cluster_heat_deleverage"
+        self._close_layers(state, triggered_indexes, exit_price, exit_reason=exit_reason)
+        self.risk_cluster_heat_deleverage_count += 1
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=contract_vt_symbol,
+            product_vt_symbol=product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            if exit_price > 0:
+                self.execution_price_overrides[contract_vt_symbol] = exit_price
+            self.set_target(contract_vt_symbol, 0)
+        return exit_reason
+
+    def _process_portfolio_drawdown_deleverage(self, state: ProductState, bar: BarData) -> str:
+        if not self.enable_portfolio_drawdown_deleverage:
+            return ""
+        if not state.layers or not state.contract_vt_symbol:
+            return ""
+
+        weight = self._portfolio_drawdown_gate_weight_value()
+        if weight >= 0.999:
+            state.portfolio_drawdown_gate_reference_contract = ""
+            state.portfolio_drawdown_gate_reference_volume = 0
+            return ""
+
+        current_volume = state.active_volume()
+        if current_volume <= 0:
+            return ""
+
+        if state.portfolio_drawdown_gate_reference_contract != state.contract_vt_symbol:
+            state.portfolio_drawdown_gate_reference_contract = state.contract_vt_symbol
+            state.portfolio_drawdown_gate_reference_volume = current_volume
+        elif state.portfolio_drawdown_gate_reference_volume < current_volume:
+            state.portfolio_drawdown_gate_reference_volume = current_volume
+
+        reference_volume = max(current_volume, int(state.portfolio_drawdown_gate_reference_volume or 0))
+        target_volume = int(math.floor(reference_volume * weight))
+        if 0 < target_volume < self.min_position_size:
+            target_volume = 0
+        if target_volume >= current_volume:
+            return ""
+
+        contract_vt_symbol = state.contract_vt_symbol
+        product_vt_symbol = state.product_vt_symbol
+        direction = state.direction
+        exit_price = float(bar.close_price)
+        closed_volume = current_volume - max(0, target_volume)
+        exit_reason = f"{direction}_portfolio_drawdown_deleverage"
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=contract_vt_symbol,
+            product_vt_symbol=product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        self._reduce_position_to_target(state, max(0, target_volume), exit_price)
+        self.portfolio_drawdown_deleverage_count += 1
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            if exit_price > 0:
+                self.execution_price_overrides[contract_vt_symbol] = exit_price
+            self.set_target(contract_vt_symbol, 0)
+        return exit_reason
+
     def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
         for layer in state.layers:
             self._update_layer_stop(layer, bar)
@@ -4263,7 +4767,34 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
         projected_margin = price * self.get_size(vt_symbol) * volume * margin_ratio
         allowed_capital = self._allowed_capital()
-        return (self._reserved_margin_in_use() + projected_margin) <= allowed_capital
+        if (self._reserved_margin_in_use() + projected_margin) > allowed_capital:
+            return False
+        if not self.enable_risk_cluster_margin_cap:
+            return True
+        cluster = self._risk_cluster_for_symbol(vt_symbol)
+        if not self._cluster_cap_applies(cluster):
+            return True
+        cap = max(0.0, self._sizing_equity() * float(self.risk_cluster_margin_cap_ratio or 0.0))
+        return (self._reserved_cluster_margin(cluster) + projected_margin) <= cap
+
+    def _risk_cluster_heat_gate_adjust_add_volume(
+        self,
+        vt_symbol: str,
+        volume: int,
+        price: float,
+        entry_context: str,
+    ) -> int:
+        if not self.enable_risk_cluster_heat_gate:
+            return max(0, int(volume))
+        margin_ratio = self._margin_ratio_for_symbol(vt_symbol)
+        margin_per_contract = float(price) * self.get_size(vt_symbol) * margin_ratio
+        fields = self._apply_risk_cluster_heat_gate_to_volume(
+            vt_symbol,
+            max(0, int(volume)),
+            margin_per_contract,
+            entry_context,
+        )
+        return max(0, int(fields["risk_cluster_heat_gate_selected_volume"]))
 
     def _build_history_df(self, am: ArrayManager) -> pd.DataFrame:
         return pd.DataFrame(
@@ -4314,6 +4845,181 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return overrides[source_symbol]
         return max(0.0, self.default_margin_ratio)
 
+    def _risk_cluster_for_symbol(self, vt_symbol: str) -> str:
+        mapping: dict[str, str] = self._parse_string_mapping(self.risk_cluster_map)
+        source_symbol: str = self.source_symbol_by_contract.get(vt_symbol, "")
+        product_symbol: str = source_symbol or self._product_vt_symbol(vt_symbol)
+        normalized_product: str = product_symbol
+        if "." in product_symbol:
+            symbol, exchange = product_symbol.split(".", 1)
+            normalized_product = f"{symbol.lower()}.{exchange.upper()}"
+        keys: list[str] = [str(vt_symbol), source_symbol, product_symbol, normalized_product]
+        for key in keys:
+            if key and key in mapping:
+                return mapping[key]
+        return ""
+
+    def _cluster_cap_applies(self, cluster: str) -> bool:
+        if not cluster:
+            return False
+        targets = {
+            item.strip()
+            for item in str(self.risk_cluster_target_clusters or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return not targets or cluster in targets
+
+    def _risk_cluster_heat_gate_cluster_applies(self, cluster: str) -> bool:
+        if not cluster:
+            return False
+        targets = {
+            item.strip()
+            for item in str(self.risk_cluster_heat_gate_target_clusters or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return not targets or cluster in targets
+
+    def _risk_cluster_heat_gate_context_applies(self, entry_context: str) -> bool:
+        contexts = {
+            item.strip()
+            for item in str(self.risk_cluster_heat_gate_entry_contexts or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return not contexts or str(entry_context or "").strip() in contexts
+
+    def _risk_cluster_heat_deleverage_cluster_applies(self, cluster: str) -> bool:
+        if not cluster:
+            return False
+        targets = {
+            item.strip()
+            for item in str(self.risk_cluster_heat_deleverage_target_clusters or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return not targets or cluster in targets
+
+    def _risk_cluster_heat_deleverage_layer_kind_set(self) -> set[str]:
+        kinds = {
+            item.strip()
+            for item in str(self.risk_cluster_heat_deleverage_layer_kinds or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return kinds or {"add", "donchian"}
+
+    def _risk_cluster_heat_pressure_fields(
+        self,
+        cluster: str,
+        *,
+        projected_margin: float = 0.0,
+        enabled: bool = True,
+    ) -> dict[str, float]:
+        if not enabled or not cluster:
+            return {
+                "risk_cluster_heat_pressure": 0.0,
+                "risk_cluster_heat_drawdown_pressure": 0.0,
+                "risk_cluster_heat_margin_pressure": 0.0,
+                "risk_cluster_heat_unrealized_loss_pressure": 0.0,
+                "risk_cluster_heat_margin_ratio": 0.0,
+                "risk_cluster_heat_unrealized_loss_ratio": 0.0,
+                "risk_cluster_heat_portfolio_drawdown_pct": 0.0,
+            }
+
+        sizing_equity = max(1e-9, float(self._sizing_equity() or self.base_capital))
+        margin_before = self._reserved_cluster_margin(cluster)
+        margin_ratio = (margin_before + max(0.0, float(projected_margin or 0.0))) / sizing_equity
+        unrealized_pnl = float(self.cluster_unrealized_pnl.get(cluster, 0.0) or 0.0)
+        unrealized_loss_ratio = max(0.0, -unrealized_pnl) / sizing_equity
+        drawdown_ratio = max(0.0, float(self.portfolio_drawdown_pct or 0.0))
+
+        drawdown_pressure = self._linear_pressure(
+            drawdown_ratio,
+            float(self.risk_cluster_heat_gate_drawdown_start_pct),
+            float(self.risk_cluster_heat_gate_drawdown_full_pct),
+        )
+        margin_pressure = self._linear_pressure(
+            margin_ratio,
+            float(self.risk_cluster_heat_gate_margin_start_ratio),
+            float(self.risk_cluster_heat_gate_margin_full_ratio),
+        )
+        unrealized_loss_pressure = self._linear_pressure(
+            unrealized_loss_ratio,
+            float(self.risk_cluster_heat_gate_unrealized_loss_start_ratio),
+            float(self.risk_cluster_heat_gate_unrealized_loss_full_ratio),
+        )
+        heat_pressure = drawdown_pressure * max(margin_pressure, unrealized_loss_pressure)
+        return {
+            "risk_cluster_heat_pressure": heat_pressure,
+            "risk_cluster_heat_drawdown_pressure": drawdown_pressure,
+            "risk_cluster_heat_margin_pressure": margin_pressure,
+            "risk_cluster_heat_unrealized_loss_pressure": unrealized_loss_pressure,
+            "risk_cluster_heat_margin_ratio": margin_ratio,
+            "risk_cluster_heat_unrealized_loss_ratio": unrealized_loss_ratio,
+            "risk_cluster_heat_portfolio_drawdown_pct": drawdown_ratio,
+        }
+
+    def _current_min_risk_cluster_heat_gate_weight(self) -> float:
+        if not self.enable_risk_cluster_heat_gate:
+            return 1.0
+        weights: list[float] = []
+        for cluster in set(self.cluster_margin_usage) | set(self.cluster_unrealized_pnl):
+            if not self._risk_cluster_heat_gate_cluster_applies(cluster):
+                continue
+            heat_fields = self._risk_cluster_heat_pressure_fields(cluster, enabled=True)
+            pressure = float(heat_fields["risk_cluster_heat_pressure"])
+            floor = self._clip01(float(self.risk_cluster_heat_gate_weight_floor or 0.0))
+            weights.append(self._clip01(1.0 - (1.0 - floor) * pressure))
+        return min(weights) if weights else 1.0
+
+    def _reserved_cluster_margin(self, cluster: str) -> float:
+        return max(
+            0.0,
+            float(self.cluster_margin_usage.get(cluster, 0.0) or 0.0)
+            + float(self.pending_cluster_margin_reservation.get(cluster, 0.0) or 0.0),
+        )
+
+    def _risk_cluster_cap_fields(
+        self,
+        vt_symbol: str,
+        selected_volume: int,
+        margin_per_contract: float,
+    ) -> dict[str, Any]:
+        cluster: str = self._risk_cluster_for_symbol(vt_symbol)
+        enabled: int = int(bool(self.enable_risk_cluster_margin_cap) and self._cluster_cap_applies(cluster))
+        cap: float = max(0.0, self._sizing_equity() * float(self.risk_cluster_margin_cap_ratio or 0.0))
+        current: float = self._reserved_cluster_margin(cluster) if cluster else 0.0
+        margin_per_contract = max(0.0, float(margin_per_contract or 0.0))
+        max_volume: int = int(max(0.0, cap - current) // margin_per_contract) if enabled and margin_per_contract > 0 else int(selected_volume)
+        capped_volume: int = min(max(0, int(selected_volume)), max(0, max_volume)) if enabled else max(0, int(selected_volume))
+        return {
+            "risk_cluster_cap_enabled": enabled,
+            "risk_cluster_name": cluster,
+            "risk_cluster_cap_ratio": float(self.risk_cluster_margin_cap_ratio or 0.0),
+            "risk_cluster_cap_amount": cap if enabled else 0.0,
+            "risk_cluster_reserved_margin_before": current if enabled else 0.0,
+            "risk_cluster_max_volume": max_volume if enabled else int(selected_volume),
+            "risk_cluster_selected_volume_before": max(0, int(selected_volume)),
+            "risk_cluster_selected_volume": capped_volume,
+        }
+
+    @staticmethod
+    def _linear_pressure(value: float, start: float, full: float) -> float:
+        start = max(0.0, float(start))
+        full = max(start + 1e-9, float(full))
+        value = max(0.0, float(value))
+        if value <= start:
+            return 0.0
+        if value >= full:
+            return 1.0
+        return (value - start) / max(1e-9, full - start)
+
+    @staticmethod
+    def _product_vt_symbol(vt_symbol: str) -> str:
+        text = str(vt_symbol or "")
+        if "." not in text:
+            return text
+        symbol, exchange = text.split(".", 1)
+        product = "".join(ch for ch in symbol if not ch.isdigit())
+        return f"{product}.{exchange}"
+
     def _parse_mapping(self, raw: str) -> dict[str, float]:
         mapping: dict[str, float] = {}
         for item in str(raw or "").replace(";", ",").split(","):
@@ -4325,6 +5031,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 mapping[key.strip()] = float(value.strip())
             except ValueError:
                 continue
+        return mapping
+
+    def _parse_string_mapping(self, raw: str) -> dict[str, str]:
+        mapping: dict[str, str] = {}
+        for item in str(raw or "").replace(";", ",").split(","):
+            item = item.strip()
+            if not item or "=" not in item:
+                continue
+            key, value = item.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            if key and value:
+                mapping[key] = value
         return mapping
 
     def _parse_float_list(self, raw: str, default: list[float]) -> list[float]:

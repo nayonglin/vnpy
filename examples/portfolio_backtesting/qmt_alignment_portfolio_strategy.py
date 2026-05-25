@@ -110,6 +110,10 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
     default_margin_ratio: float = 0.10
     margin_ratio_overrides: str = ""
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
+    enable_risk_cluster_margin_cap: bool = False
+    risk_cluster_margin_cap_ratio: float = 0.35
+    risk_cluster_target_clusters: str = ""
+    risk_cluster_map: str = ""
 
     stop_loss_pct: float = 0.02
     trailing_stop_enabled: bool = True
@@ -144,6 +148,7 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
     estimated_equity: float = 0.0
     realized_pnl: float = 0.0
     total_margin_in_use: float = 0.0
+    risk_cluster_margin_in_use: float = 0.0
     current_risk_per_trade: float = 0.0
     risk_multiplier: float = 1.0
     loss_streak: int = 0
@@ -175,6 +180,10 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
         "default_margin_ratio",
         "margin_ratio_overrides",
         "streak_risk_multipliers",
+        "enable_risk_cluster_margin_cap",
+        "risk_cluster_margin_cap_ratio",
+        "risk_cluster_target_clusters",
+        "risk_cluster_map",
         "stop_loss_pct",
         "trailing_stop_enabled",
         "trailing_stop_pct",
@@ -206,6 +215,7 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
         "estimated_equity",
         "realized_pnl",
         "total_margin_in_use",
+        "risk_cluster_margin_in_use",
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
@@ -228,6 +238,7 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
             vt_symbol: SymbolState() for vt_symbol in self.vt_symbols
         }
         self.base_capital: float = self._resolve_base_capital()
+        self.cluster_margin_usage: dict[str, float] = {}
 
     def on_init(self) -> None:
         self.write_log("Portfolio migration strategy initialized")
@@ -405,6 +416,8 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
     def _refresh_risk_state(self, bars: dict[str, BarData]) -> None:
         self.estimated_equity = self._estimate_equity(bars)
         self.total_margin_in_use = self._estimate_margin_usage(bars)
+        self.cluster_margin_usage = self._estimate_margin_usage_by_cluster(bars)
+        self.risk_cluster_margin_in_use = max(self.cluster_margin_usage.values(), default=0.0)
         limited_balance: float = self._limited_available_balance()
         self.current_risk_per_trade = self._risk_amount_from_ratio(self.risk_ratio_of_total_assets, limited_balance)
         self.risk_multiplier = self._current_streak_multiplier()
@@ -451,6 +464,24 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
             total_margin += abs(close_price * size * state.active_volume() * margin_ratio)
 
         return total_margin
+
+    def _estimate_margin_usage_by_cluster(self, bars: dict[str, BarData]) -> dict[str, float]:
+        usage: dict[str, float] = {}
+        for vt_symbol, state in self.states.items():
+            bar: BarData | None = bars.get(vt_symbol)
+            if not bar or not state.layers:
+                continue
+
+            cluster: str = self._risk_cluster_for_symbol(vt_symbol)
+            if not cluster:
+                continue
+
+            size: int = self.get_size(vt_symbol)
+            close_price: float = float(bar.close_price)
+            margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
+            margin: float = abs(close_price * size * state.active_volume() * margin_ratio)
+            usage[cluster] = usage.get(cluster, 0.0) + margin
+        return usage
 
     def _limited_available_balance(self) -> float:
         allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
@@ -505,6 +536,7 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
         contracts_by_margin: int = int(limited_balance // margin_per_contract) if margin_per_contract > 0 else 0
 
         volume: int = min(contracts_by_risk, contracts_by_margin, self.max_position_size)
+        volume = min(volume, self._max_volume_by_cluster_margin_cap(vt_symbol, float(bar.close_price), direction))
         if 0 < volume < self.min_position_size:
             return 0
         return max(0, volume)
@@ -974,7 +1006,19 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
         margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
         projected_margin: float = price * self.get_size(vt_symbol) * volume * margin_ratio
         allowed_capital: float = max(0.0, self.estimated_equity * self.max_capital_usage_ratio)
-        return (self.total_margin_in_use + projected_margin) <= allowed_capital
+        if (self.total_margin_in_use + projected_margin) > allowed_capital:
+            return False
+
+        if not self.enable_risk_cluster_margin_cap:
+            return True
+
+        cluster: str = self._risk_cluster_for_symbol(vt_symbol)
+        if not self._cluster_cap_applies(cluster):
+            return True
+
+        cap: float = max(0.0, self.estimated_equity * float(self.risk_cluster_margin_cap_ratio))
+        current: float = float(self.cluster_margin_usage.get(cluster, 0.0) or 0.0)
+        return (current + projected_margin) <= cap
 
     def _build_history_df(self, am: ArrayManager) -> pd.DataFrame:
         return pd.DataFrame(
@@ -1030,6 +1074,56 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
             return overrides[vt_symbol]
         return max(0.0, self.default_margin_ratio)
 
+    def _risk_cluster_for_symbol(self, vt_symbol: str) -> str:
+        mapping: dict[str, str] = self._parse_string_mapping(self.risk_cluster_map)
+        product_symbol: str = self._product_vt_symbol(vt_symbol)
+        normalized_product: str = product_symbol
+        if "." in product_symbol:
+            symbol, exchange = product_symbol.split(".", 1)
+            normalized_product = f"{symbol.lower()}.{exchange.upper()}"
+        keys: list[str] = [str(vt_symbol), product_symbol, normalized_product]
+        for key in keys:
+            if key and key in mapping:
+                return mapping[key]
+        return ""
+
+    def _cluster_cap_applies(self, cluster: str) -> bool:
+        if not cluster:
+            return False
+        targets = {
+            item.strip()
+            for item in str(self.risk_cluster_target_clusters or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return not targets or cluster in targets
+
+    def _max_volume_by_cluster_margin_cap(self, vt_symbol: str, price: float, direction: str) -> int:
+        if not self.enable_risk_cluster_margin_cap:
+            return self.max_position_size
+
+        cluster: str = self._risk_cluster_for_symbol(vt_symbol)
+        if not self._cluster_cap_applies(cluster):
+            return self.max_position_size
+
+        margin_ratio: float = self._margin_ratio_for_symbol(vt_symbol)
+        margin_per_contract: float = float(price) * self.get_size(vt_symbol) * margin_ratio
+        if margin_per_contract <= 0:
+            return 0
+
+        cap: float = max(0.0, self.estimated_equity * float(self.risk_cluster_margin_cap_ratio))
+        current: float = float(self.cluster_margin_usage.get(cluster, 0.0) or 0.0)
+        remaining: float = max(0.0, cap - current)
+        return max(0, int(remaining // margin_per_contract))
+
+    @staticmethod
+    def _product_vt_symbol(vt_symbol: str) -> str:
+        text = str(vt_symbol or "")
+        if "." not in text:
+            return text
+        symbol, exchange = text.split(".", 1)
+        product = "".join(ch for ch in symbol if not ch.isdigit())
+        return f"{product}.{exchange}"
+
     def _parse_mapping(self, raw: str) -> dict[str, float]:
         mapping: dict[str, float] = {}
         for item in str(raw or "").replace(";", ",").split(","):
@@ -1041,6 +1135,19 @@ class QmtAlignmentPortfolioStrategy(StrategyTemplate):
                 mapping[key.strip()] = float(value.strip())
             except ValueError:
                 continue
+        return mapping
+
+    def _parse_string_mapping(self, raw: str) -> dict[str, str]:
+        mapping: dict[str, str] = {}
+        for item in str(raw or "").replace(";", ",").split(","):
+            item = item.strip()
+            if not item or "=" not in item:
+                continue
+            key, value = item.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            if key and value:
+                mapping[key] = value
         return mapping
 
     def _parse_float_list(self, raw: str, default: list[float]) -> list[float]:
