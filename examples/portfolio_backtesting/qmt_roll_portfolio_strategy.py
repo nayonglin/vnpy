@@ -68,6 +68,8 @@ class ProductState:
     rsi_partial_exit_done: bool = False
     portfolio_drawdown_gate_reference_contract: str = ""
     portfolio_drawdown_gate_reference_volume: int = 0
+    portfolio_volatility_budget_reference_contract: str = ""
+    portfolio_volatility_budget_reference_volume: int = 0
 
     def reset(self) -> None:
         self.contract_vt_symbol = ""
@@ -84,6 +86,8 @@ class ProductState:
         self.rsi_partial_exit_done = False
         self.portfolio_drawdown_gate_reference_contract = ""
         self.portfolio_drawdown_gate_reference_volume = 0
+        self.portfolio_volatility_budget_reference_contract = ""
+        self.portfolio_volatility_budget_reference_volume = 0
 
     def active_volume(self) -> int:
         return sum(layer.volume for layer in self.layers)
@@ -241,6 +245,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_drawdown_gate_weight_floor: float = 0.50
     portfolio_drawdown_gate_entry_contexts: str = "flat_entry"
     enable_portfolio_drawdown_deleverage: bool = False
+    enable_portfolio_volatility_budget: bool = False
+    portfolio_volatility_budget_lookback: int = 60
+    portfolio_volatility_budget_target_annual_vol: float = 0.60
+    portfolio_volatility_budget_min_scale: float = 0.0
+    portfolio_volatility_budget_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    enable_portfolio_volatility_budget_deleverage: bool = False
     enable_same_direction_correlation_gate: bool = False
     same_direction_correlation_gate_lookback: int = 20
     same_direction_correlation_gate_start: float = 0.60
@@ -444,6 +454,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_drawdown_gate_weight_floor",
         "portfolio_drawdown_gate_entry_contexts",
         "enable_portfolio_drawdown_deleverage",
+        "enable_portfolio_volatility_budget",
+        "portfolio_volatility_budget_lookback",
+        "portfolio_volatility_budget_target_annual_vol",
+        "portfolio_volatility_budget_min_scale",
+        "portfolio_volatility_budget_entry_contexts",
+        "enable_portfolio_volatility_budget_deleverage",
         "enable_same_direction_correlation_gate",
         "same_direction_correlation_gate_lookback",
         "same_direction_correlation_gate_start",
@@ -532,6 +548,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "risk_cluster_heat_gate_weight",
         "risk_cluster_heat_deleverage_count",
         "portfolio_drawdown_deleverage_count",
+        "portfolio_volatility_budget_scale",
+        "portfolio_volatility_budget_realized_annual_vol",
+        "portfolio_volatility_budget_deleverage_count",
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
@@ -602,6 +621,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.risk_cluster_heat_gate_weight: float = 1.0
         self.risk_cluster_heat_deleverage_count: int = 0
         self.portfolio_drawdown_deleverage_count: int = 0
+        self.portfolio_volatility_budget_scale: float = 1.0
+        self.portfolio_volatility_budget_realized_annual_vol: float = 0.0
+        self.portfolio_volatility_budget_return_history: list[float] = []
+        self.portfolio_volatility_budget_scale_history: list[dict[str, Any]] = []
+        self.portfolio_volatility_budget_last_equity: float = self.base_capital
+        self.portfolio_volatility_budget_deleverage_count: int = 0
         self.pending_margin_reservation: float = 0.0
         self.pending_cluster_margin_reservation: dict[str, float] = {}
         self.pending_active_products: set[str] = set()
@@ -1016,6 +1041,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.last_signal = f"{product_vt}:{portfolio_deleverage_reason}"
                 continue
 
+            portfolio_volatility_budget_deleverage_reason: str = self._process_portfolio_volatility_budget_deleverage(
+                state,
+                target_bar,
+            )
+            if portfolio_volatility_budget_deleverage_reason:
+                self.last_signal = f"{product_vt}:{portfolio_volatility_budget_deleverage_reason}"
+                continue
+
             rsi_partial_exit_reason: str = self._process_rsi_partial_exit(state, target_bar, rsi_value)
             if rsi_partial_exit_reason:
                 self._apply_state_target(state)
@@ -1139,6 +1172,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     "regular_add",
                 )
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "regular_add")
+                add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "regular_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -1156,6 +1190,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     "donchian_add",
                 )
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "donchian_add")
+                add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "donchian_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -1163,6 +1198,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:{don_add_type}"
 
         self.rebalance_portfolio(bars)
+        self._record_portfolio_volatility_budget_daily_return()
         self.settled_balance = self.estimated_equity
         self.last_close_prices = {vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()}
         self.active_count = self._count_active_positions()
@@ -1296,6 +1332,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _refresh_risk_state(self, bars: dict[str, BarData]) -> None:
         self.estimated_equity = self._estimate_equity(bars)
         self._refresh_portfolio_drawdown_state()
+        self._refresh_portfolio_volatility_budget_state()
+        self._record_portfolio_volatility_budget_scale_snapshot(bars)
         self.total_margin_in_use = self._estimate_margin_usage(bars)
         self.cluster_margin_usage = self._estimate_margin_usage_by_cluster(bars)
         self.cluster_unrealized_pnl = self._estimate_unrealized_pnl_by_cluster(bars)
@@ -1380,6 +1418,102 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return selected_volume
 
         adjusted_volume = int(math.floor(selected_volume * self._portfolio_drawdown_gate_weight_value()))
+        if 0 < adjusted_volume < self.min_position_size:
+            adjusted_volume = 0
+        return max(0, adjusted_volume)
+
+    def _portfolio_volatility_budget_context_set(self) -> set[str]:
+        raw_contexts = str(self.portfolio_volatility_budget_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
+
+    def _portfolio_volatility_budget_context_applies(self, entry_context: str) -> bool:
+        contexts = self._portfolio_volatility_budget_context_set()
+        return "*" in contexts or entry_context in contexts
+
+    def _refresh_portfolio_volatility_budget_state(self) -> None:
+        if not self.enable_portfolio_volatility_budget:
+            self.portfolio_volatility_budget_scale = 1.0
+            self.portfolio_volatility_budget_realized_annual_vol = 0.0
+            return
+
+        lookback = max(2, int(self.portfolio_volatility_budget_lookback or 0))
+        if len(self.portfolio_volatility_budget_return_history) < lookback:
+            self.portfolio_volatility_budget_scale = 1.0
+            self.portfolio_volatility_budget_realized_annual_vol = 0.0
+            return
+
+        recent_returns = np.array(
+            self.portfolio_volatility_budget_return_history[-lookback:],
+            dtype="float64",
+        )
+        realized_daily_vol = float(np.std(recent_returns, ddof=1)) if len(recent_returns) > 1 else 0.0
+        realized_annual_vol = realized_daily_vol * math.sqrt(252.0)
+        self.portfolio_volatility_budget_realized_annual_vol = realized_annual_vol
+        if not math.isfinite(realized_annual_vol) or realized_annual_vol <= 1e-12:
+            self.portfolio_volatility_budget_scale = 1.0
+            return
+
+        target_vol = max(0.0, float(self.portfolio_volatility_budget_target_annual_vol or 0.0))
+        min_scale = self._clip01(float(self.portfolio_volatility_budget_min_scale or 0.0))
+        scale = target_vol / realized_annual_vol if target_vol > 0 else min_scale
+        self.portfolio_volatility_budget_scale = min(1.0, max(min_scale, scale))
+
+    def _record_portfolio_volatility_budget_daily_return(self) -> None:
+        if not self.enable_portfolio_volatility_budget:
+            self.portfolio_volatility_budget_last_equity = float(self.estimated_equity or self.base_capital)
+            return
+
+        previous_equity = float(self.portfolio_volatility_budget_last_equity or self.base_capital)
+        current_equity = float(self.estimated_equity or previous_equity)
+        if previous_equity > 1e-9 and math.isfinite(previous_equity) and math.isfinite(current_equity):
+            daily_return = current_equity / previous_equity - 1.0
+            if math.isfinite(daily_return):
+                self.portfolio_volatility_budget_return_history.append(float(daily_return))
+        self.portfolio_volatility_budget_last_equity = current_equity
+
+    def _record_portfolio_volatility_budget_scale_snapshot(self, bars: dict[str, BarData]) -> None:
+        if not self.enable_portfolio_volatility_budget or not bars:
+            return
+        current_date = next(iter(bars.values())).datetime.date()
+        if (
+            self.portfolio_volatility_budget_scale_history
+            and self.portfolio_volatility_budget_scale_history[-1].get("date") == current_date
+        ):
+            return
+        self.portfolio_volatility_budget_scale_history.append(
+            {
+                "date": current_date,
+                "scale": float(self.portfolio_volatility_budget_scale or 1.0),
+                "realized_annual_vol": float(self.portfolio_volatility_budget_realized_annual_vol or 0.0),
+                "lookback": int(self.portfolio_volatility_budget_lookback or 0),
+                "target_annual_vol": float(self.portfolio_volatility_budget_target_annual_vol or 0.0),
+            }
+        )
+
+    def _portfolio_volatility_budget_weight(self, entry_context: str) -> float:
+        if (
+            not self.enable_portfolio_volatility_budget
+            or not self._portfolio_volatility_budget_context_applies(entry_context)
+        ):
+            return 1.0
+        return self._clip01(float(self.portfolio_volatility_budget_scale or 1.0))
+
+    def _portfolio_volatility_budget_adjust_volume(self, volume: int, entry_context: str) -> int:
+        selected_volume = max(0, int(volume))
+        if (
+            not self.enable_portfolio_volatility_budget
+            or not self._portfolio_volatility_budget_context_applies(entry_context)
+        ):
+            return selected_volume
+
+        adjusted_volume = int(math.floor(selected_volume * self._portfolio_volatility_budget_weight(entry_context)))
         if 0 < adjusted_volume < self.min_position_size:
             adjusted_volume = 0
         return max(0, adjusted_volume)
@@ -3066,6 +3200,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if 0 < selected_volume < self.min_position_size:
                 selected_volume = 0
 
+        portfolio_volatility_budget_enabled = int(
+            self.enable_portfolio_volatility_budget
+            and self._portfolio_volatility_budget_context_applies(entry_context)
+        )
+        portfolio_volatility_budget_weight = self._portfolio_volatility_budget_weight(entry_context)
+        if portfolio_volatility_budget_enabled and apply_env_gate:
+            selected_volume = int(math.floor(selected_volume * portfolio_volatility_budget_weight))
+            if 0 < selected_volume < self.min_position_size:
+                selected_volume = 0
+
         return {
             "selected_volume_ungated": base_selected_volume,
             "selected_volume": max(0, int(selected_volume)),
@@ -3084,6 +3228,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "portfolio_drawdown_gate_weight": portfolio_drawdown_gate_weight,
             "portfolio_drawdown_pct": float(self.portfolio_drawdown_pct or 0.0),
             "portfolio_equity_high_water": float(self.portfolio_equity_high_water or self.base_capital),
+            "portfolio_volatility_budget_enabled": portfolio_volatility_budget_enabled,
+            "portfolio_volatility_budget_weight": portfolio_volatility_budget_weight,
+            "portfolio_volatility_budget_realized_annual_vol": float(
+                self.portfolio_volatility_budget_realized_annual_vol or 0.0
+            ),
+            "portfolio_volatility_budget_lookback": int(self.portfolio_volatility_budget_lookback or 0),
+            "portfolio_volatility_budget_target_annual_vol": float(
+                self.portfolio_volatility_budget_target_annual_vol or 0.0
+            ),
         }
 
     def _calculate_entry_sizing(
@@ -3656,6 +3809,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "portfolio_equity_high_water": float(
                     sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
                 ),
+                "portfolio_volatility_budget_enabled": int(
+                    sizing_snapshot.get("portfolio_volatility_budget_enabled") or 0
+                ),
+                "portfolio_volatility_budget_weight": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_weight") or 1.0
+                ),
+                "portfolio_volatility_budget_realized_annual_vol": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_realized_annual_vol") or 0.0
+                ),
+                "portfolio_volatility_budget_lookback": int(
+                    sizing_snapshot.get("portfolio_volatility_budget_lookback") or 0
+                ),
+                "portfolio_volatility_budget_target_annual_vol": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_target_annual_vol") or 0.0
+                ),
                 "rollover_reopen_drawdown_guard_enabled": int(
                     sizing_snapshot.get("rollover_reopen_drawdown_guard_enabled") or 0
                 ),
@@ -3952,6 +4120,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "portfolio_drawdown_pct": float(sizing_snapshot.get("portfolio_drawdown_pct") or 0.0),
                 "portfolio_equity_high_water": float(
                     sizing_snapshot.get("portfolio_equity_high_water") or self.portfolio_equity_high_water
+                ),
+                "portfolio_volatility_budget_enabled": int(
+                    sizing_snapshot.get("portfolio_volatility_budget_enabled") or 0
+                ),
+                "portfolio_volatility_budget_weight": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_weight") or 1.0
+                ),
+                "portfolio_volatility_budget_realized_annual_vol": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_realized_annual_vol") or 0.0
+                ),
+                "portfolio_volatility_budget_lookback": int(
+                    sizing_snapshot.get("portfolio_volatility_budget_lookback") or 0
+                ),
+                "portfolio_volatility_budget_target_annual_vol": float(
+                    sizing_snapshot.get("portfolio_volatility_budget_target_annual_vol") or 0.0
                 ),
                 "rollover_reopen_drawdown_guard_enabled": int(
                     sizing_snapshot.get("rollover_reopen_drawdown_guard_enabled") or 0
@@ -4275,6 +4458,61 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         self._reduce_position_to_target(state, max(0, target_volume), exit_price)
         self.portfolio_drawdown_deleverage_count += 1
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            if exit_price > 0:
+                self.execution_price_overrides[contract_vt_symbol] = exit_price
+            self.set_target(contract_vt_symbol, 0)
+        return exit_reason
+
+    def _process_portfolio_volatility_budget_deleverage(self, state: ProductState, bar: BarData) -> str:
+        if not (self.enable_portfolio_volatility_budget and self.enable_portfolio_volatility_budget_deleverage):
+            return ""
+        if not state.layers or not state.contract_vt_symbol:
+            return ""
+
+        weight = self._clip01(float(self.portfolio_volatility_budget_scale or 1.0))
+        if weight >= 0.999:
+            state.portfolio_volatility_budget_reference_contract = ""
+            state.portfolio_volatility_budget_reference_volume = 0
+            return ""
+
+        current_volume = state.active_volume()
+        if current_volume <= 0:
+            return ""
+
+        if state.portfolio_volatility_budget_reference_contract != state.contract_vt_symbol:
+            state.portfolio_volatility_budget_reference_contract = state.contract_vt_symbol
+            state.portfolio_volatility_budget_reference_volume = current_volume
+        elif state.portfolio_volatility_budget_reference_volume < current_volume:
+            state.portfolio_volatility_budget_reference_volume = current_volume
+
+        reference_volume = max(current_volume, int(state.portfolio_volatility_budget_reference_volume or 0))
+        target_volume = int(math.floor(reference_volume * weight))
+        if 0 < target_volume < self.min_position_size:
+            target_volume = 0
+        if target_volume >= current_volume:
+            return ""
+
+        contract_vt_symbol = state.contract_vt_symbol
+        product_vt_symbol = state.product_vt_symbol
+        direction = state.direction
+        exit_price = float(bar.close_price)
+        closed_volume = current_volume - max(0, target_volume)
+        exit_reason = f"{direction}_portfolio_volatility_budget_deleverage"
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=contract_vt_symbol,
+            product_vt_symbol=product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        self._reduce_position_to_target(state, max(0, target_volume), exit_price)
+        self.portfolio_volatility_budget_deleverage_count += 1
         if state.layers:
             self._apply_state_target(state, execution_price_override=exit_price)
         else:
