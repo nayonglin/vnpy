@@ -215,6 +215,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     risk_cluster_heat_deleverage_target_clusters: str = ""
     risk_cluster_heat_deleverage_layer_kinds: str = "add,donchian"
     risk_cluster_heat_deleverage_min_pressure: float = 0.50
+    risk_cluster_heat_deleverage_use_daily_snapshot: bool = False
+    risk_cluster_heat_deleverage_snapshot_requires_same_direction_multi: bool = False
     streak_risk_multipliers: str = "1.0,1.0,1.0,0.1"
     streak_risk_state_excluded_products: str = ""
     streak_risk_state_exclusion_mode: str = "all"
@@ -424,6 +426,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "risk_cluster_heat_deleverage_target_clusters",
         "risk_cluster_heat_deleverage_layer_kinds",
         "risk_cluster_heat_deleverage_min_pressure",
+        "risk_cluster_heat_deleverage_use_daily_snapshot",
+        "risk_cluster_heat_deleverage_snapshot_requires_same_direction_multi",
         "streak_risk_multipliers",
         "streak_risk_state_excluded_products",
         "streak_risk_state_exclusion_mode",
@@ -620,6 +624,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.risk_cluster_unrealized_loss_in_use: float = 0.0
         self.risk_cluster_heat_gate_weight: float = 1.0
         self.risk_cluster_heat_deleverage_count: int = 0
+        self.risk_cluster_heat_pressure_snapshot: dict[str, float] = {}
+        self.risk_cluster_same_direction_multi_snapshot: dict[str, bool] = {}
         self.portfolio_drawdown_deleverage_count: int = 0
         self.portfolio_volatility_budget_scale: float = 1.0
         self.portfolio_volatility_budget_realized_annual_vol: float = 0.0
@@ -1342,6 +1348,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             (max(0.0, -float(value)) for value in self.cluster_unrealized_pnl.values()),
             default=0.0,
         )
+        self._refresh_risk_cluster_heat_pressure_snapshot()
         self.risk_cluster_heat_gate_weight = self._current_min_risk_cluster_heat_gate_weight()
         limited_balance: float = self._limited_available_balance()
         self.current_risk_per_trade = self._risk_amount_from_ratio(self.risk_ratio_of_total_assets, limited_balance)
@@ -4375,8 +4382,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if not self._risk_cluster_heat_deleverage_cluster_applies(cluster):
             return ""
 
-        heat_fields = self._risk_cluster_heat_pressure_fields(cluster, projected_margin=0.0, enabled=True)
-        heat_pressure: float = float(heat_fields["risk_cluster_heat_pressure"] or 0.0)
+        use_snapshot = bool(self.risk_cluster_heat_deleverage_use_daily_snapshot)
+        if use_snapshot and self.risk_cluster_heat_deleverage_snapshot_requires_same_direction_multi:
+            use_snapshot = bool(self.risk_cluster_same_direction_multi_snapshot.get(cluster, False))
+
+        if use_snapshot:
+            heat_pressure = float(self.risk_cluster_heat_pressure_snapshot.get(cluster, 0.0) or 0.0)
+        else:
+            heat_fields = self._risk_cluster_heat_pressure_fields(cluster, projected_margin=0.0, enabled=True)
+            heat_pressure = float(heat_fields["risk_cluster_heat_pressure"] or 0.0)
         if heat_pressure < max(0.0, float(self.risk_cluster_heat_deleverage_min_pressure or 0.0)):
             return ""
 
@@ -5142,6 +5156,37 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if item.strip()
         }
         return kinds or {"add", "donchian"}
+
+    def _refresh_risk_cluster_heat_pressure_snapshot(self) -> None:
+        self.risk_cluster_heat_pressure_snapshot = {}
+        self.risk_cluster_same_direction_multi_snapshot = self._risk_cluster_same_direction_multi_flags()
+        if not self.enable_risk_cluster_heat_deleverage:
+            return
+        for cluster in set(self.cluster_margin_usage) | set(self.cluster_unrealized_pnl):
+            if not self._risk_cluster_heat_deleverage_cluster_applies(cluster):
+                continue
+            heat_fields = self._risk_cluster_heat_pressure_fields(cluster, projected_margin=0.0, enabled=True)
+            self.risk_cluster_heat_pressure_snapshot[cluster] = float(
+                heat_fields["risk_cluster_heat_pressure"] or 0.0
+            )
+
+    def _risk_cluster_same_direction_multi_flags(self) -> dict[str, bool]:
+        cluster_products: dict[str, set[str]] = {}
+        cluster_directions: dict[str, set[str]] = {}
+        for state in self.states.values():
+            if state.active_volume() <= 0 or not state.contract_vt_symbol:
+                continue
+            if state.direction not in {"long", "short"}:
+                continue
+            cluster = self._risk_cluster_for_symbol(state.contract_vt_symbol)
+            if not cluster:
+                continue
+            cluster_products.setdefault(cluster, set()).add(state.product_vt_symbol)
+            cluster_directions.setdefault(cluster, set()).add(state.direction)
+        return {
+            cluster: len(cluster_products.get(cluster, set())) >= 2 and len(cluster_directions.get(cluster, set())) == 1
+            for cluster in set(cluster_products) | set(cluster_directions)
+        }
 
     def _risk_cluster_heat_pressure_fields(
         self,

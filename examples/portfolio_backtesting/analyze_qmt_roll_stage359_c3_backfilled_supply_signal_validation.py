@@ -307,16 +307,17 @@ def main() -> None:
     comparison_df.to_csv(COMPARISON_PATH, index=False, encoding="utf-8-sig")
     DECISION_PATH.write_text(json.dumps(decision, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     REPORT_PATH.write_text(_build_report(summary_df, comparison_df, decision), encoding="utf-8")
-    manifest = build_official_stage78_manifest(
-        output_prefix=OUTPUT_PREFIX,
-        model_tag=MODEL_TAG,
-        extra={
+    manifest = build_official_stage78_manifest()
+    manifest.update(
+        {
+            "output_prefix": OUTPUT_PREFIX,
+            "model_tag": MODEL_TAG,
             "line_id": LINE_ID,
             "combined_signal_path": str(COMBINED_SIGNAL_PATH),
             "current_signal_path": str(CURRENT_SIGNAL_PATH),
             "backfilled_signal_path": str(BACKFILLED_SIGNAL_PATH),
             "decision": decision,
-        },
+        }
     )
     manifest_path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_manifest_{MODEL_TAG}.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
