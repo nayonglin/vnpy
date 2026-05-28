@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 import math
 from pathlib import Path
 from typing import Any
@@ -70,6 +71,8 @@ class ProductState:
     portfolio_drawdown_gate_reference_volume: int = 0
     portfolio_volatility_budget_reference_contract: str = ""
     portfolio_volatility_budget_reference_volume: int = 0
+    portfolio_overheat_cooldown_reference_contract: str = ""
+    portfolio_overheat_cooldown_reference_volume: int = 0
 
     def reset(self) -> None:
         self.contract_vt_symbol = ""
@@ -88,6 +91,8 @@ class ProductState:
         self.portfolio_drawdown_gate_reference_volume = 0
         self.portfolio_volatility_budget_reference_contract = ""
         self.portfolio_volatility_budget_reference_volume = 0
+        self.portfolio_overheat_cooldown_reference_contract = ""
+        self.portfolio_overheat_cooldown_reference_volume = 0
 
     def active_volume(self) -> int:
         return sum(layer.volume for layer in self.layers)
@@ -253,6 +258,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_volatility_budget_min_scale: float = 0.0
     portfolio_volatility_budget_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
     enable_portfolio_volatility_budget_deleverage: bool = False
+    enable_portfolio_overheat_cooldown: bool = False
+    portfolio_overheat_cooldown_near_high_drawdown_pct: float = 0.05
+    portfolio_overheat_cooldown_hot20_threshold: float = 0.50
+    portfolio_overheat_cooldown_hot60_threshold: float = -1.0
+    portfolio_overheat_cooldown_brake_scale: float = 0.80
+    portfolio_overheat_cooldown_recovery_drawdown_pct: float = 0.15
+    portfolio_overheat_cooldown_recovery_ret20_threshold: float = 0.0
+    portfolio_overheat_cooldown_recovery_scale: float = 1.10
+    portfolio_overheat_cooldown_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    enable_portfolio_overheat_cooldown_deleverage: bool = False
+    enable_product_direction_failure_cooldown: bool = False
+    product_direction_failure_cooldown_lookback_days: int = 252
+    product_direction_failure_cooldown_min_consecutive_failures: int = 3
+    product_direction_failure_cooldown_days: int = 90
+    product_direction_failure_cooldown_entry_contexts: str = "flat_entry"
     enable_same_direction_correlation_gate: bool = False
     same_direction_correlation_gate_lookback: int = 20
     same_direction_correlation_gate_start: float = 0.60
@@ -464,6 +484,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_volatility_budget_min_scale",
         "portfolio_volatility_budget_entry_contexts",
         "enable_portfolio_volatility_budget_deleverage",
+        "enable_portfolio_overheat_cooldown",
+        "portfolio_overheat_cooldown_near_high_drawdown_pct",
+        "portfolio_overheat_cooldown_hot20_threshold",
+        "portfolio_overheat_cooldown_hot60_threshold",
+        "portfolio_overheat_cooldown_brake_scale",
+        "portfolio_overheat_cooldown_recovery_drawdown_pct",
+        "portfolio_overheat_cooldown_recovery_ret20_threshold",
+        "portfolio_overheat_cooldown_recovery_scale",
+        "portfolio_overheat_cooldown_entry_contexts",
+        "enable_portfolio_overheat_cooldown_deleverage",
+        "enable_product_direction_failure_cooldown",
+        "product_direction_failure_cooldown_lookback_days",
+        "product_direction_failure_cooldown_min_consecutive_failures",
+        "product_direction_failure_cooldown_days",
+        "product_direction_failure_cooldown_entry_contexts",
         "enable_same_direction_correlation_gate",
         "same_direction_correlation_gate_lookback",
         "same_direction_correlation_gate_start",
@@ -555,6 +590,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_volatility_budget_scale",
         "portfolio_volatility_budget_realized_annual_vol",
         "portfolio_volatility_budget_deleverage_count",
+        "portfolio_overheat_cooldown_scale",
+        "portfolio_overheat_cooldown_reason",
+        "portfolio_overheat_cooldown_deleverage_count",
+        "product_direction_failure_cooldown_count",
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
@@ -633,6 +672,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.portfolio_volatility_budget_scale_history: list[dict[str, Any]] = []
         self.portfolio_volatility_budget_last_equity: float = self.base_capital
         self.portfolio_volatility_budget_deleverage_count: int = 0
+        self.portfolio_overheat_cooldown_scale: float = 1.0
+        self.portfolio_overheat_cooldown_reason: str = ""
+        self.portfolio_overheat_cooldown_prior_drawdown_pct: float = 0.0
+        self.portfolio_overheat_cooldown_prior_ret20: float = float("nan")
+        self.portfolio_overheat_cooldown_prior_ret60: float = float("nan")
+        self.portfolio_overheat_cooldown_equity_history: list[float] = []
+        self.portfolio_overheat_cooldown_scale_history: list[dict[str, Any]] = []
+        self.portfolio_overheat_cooldown_deleverage_count: int = 0
+        self.product_direction_outcome_history: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        self.product_direction_failure_cooldown_count: int = 0
+        self.product_direction_failure_cooldown_events: list[dict[str, Any]] = []
+        self.current_bar_date: pd.Timestamp | None = None
         self.pending_margin_reservation: float = 0.0
         self.pending_cluster_margin_reservation: dict[str, float] = {}
         self.pending_active_products: set[str] = set()
@@ -910,6 +961,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.ams[vt_symbol].update_bar(bar)
 
         current_date: str = next(iter(bars.values())).datetime.strftime("%Y-%m-%d")
+        self.current_bar_date = pd.Timestamp(current_date).normalize()
         mapping_today: dict[str, str] = self.daily_mapping.get(current_date, {})
         self._refresh_risk_state(bars)
         self.last_signal = ""
@@ -1055,6 +1107,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.last_signal = f"{product_vt}:{portfolio_volatility_budget_deleverage_reason}"
                 continue
 
+            portfolio_overheat_cooldown_deleverage_reason: str = self._process_portfolio_overheat_cooldown_deleverage(
+                state,
+                target_bar,
+            )
+            if portfolio_overheat_cooldown_deleverage_reason:
+                self.last_signal = f"{product_vt}:{portfolio_overheat_cooldown_deleverage_reason}"
+                continue
+
             rsi_partial_exit_reason: str = self._process_rsi_partial_exit(state, target_bar, rsi_value)
             if rsi_partial_exit_reason:
                 self._apply_state_target(state)
@@ -1179,6 +1239,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 )
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "regular_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "regular_add")
+                add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "regular_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -1197,6 +1258,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 )
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "donchian_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "donchian_add")
+                add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "donchian_add")
                 if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
@@ -1205,6 +1267,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         self.rebalance_portfolio(bars)
         self._record_portfolio_volatility_budget_daily_return()
+        self._record_portfolio_overheat_cooldown_daily_equity()
         self.settled_balance = self.estimated_equity
         self.last_close_prices = {vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()}
         self.active_count = self._count_active_positions()
@@ -1340,6 +1403,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self._refresh_portfolio_drawdown_state()
         self._refresh_portfolio_volatility_budget_state()
         self._record_portfolio_volatility_budget_scale_snapshot(bars)
+        self._refresh_portfolio_overheat_cooldown_state()
+        self._record_portfolio_overheat_cooldown_scale_snapshot(bars)
         self.total_margin_in_use = self._estimate_margin_usage(bars)
         self.cluster_margin_usage = self._estimate_margin_usage_by_cluster(bars)
         self.cluster_unrealized_pnl = self._estimate_unrealized_pnl_by_cluster(bars)
@@ -1524,6 +1589,271 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if 0 < adjusted_volume < self.min_position_size:
             adjusted_volume = 0
         return max(0, adjusted_volume)
+
+    def _portfolio_overheat_cooldown_context_set(self) -> set[str]:
+        raw_contexts = str(self.portfolio_overheat_cooldown_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
+
+    def _portfolio_overheat_cooldown_context_applies(self, entry_context: str) -> bool:
+        contexts = self._portfolio_overheat_cooldown_context_set()
+        return "*" in contexts or entry_context in contexts
+
+    def _portfolio_overheat_cooldown_scale_value(self) -> float:
+        if not self.enable_portfolio_overheat_cooldown:
+            return 1.0
+        scale = float(self.portfolio_overheat_cooldown_scale or 1.0)
+        max_scale = max(1.0, float(self.portfolio_overheat_cooldown_recovery_scale or 1.0))
+        if not math.isfinite(scale):
+            return 1.0
+        return max(0.0, min(max_scale, scale))
+
+    def _portfolio_overheat_cooldown_fields(self, entry_context: str) -> dict[str, Any]:
+        enabled = int(
+            self.enable_portfolio_overheat_cooldown
+            and self._portfolio_overheat_cooldown_context_applies(entry_context)
+        )
+        scale = self._portfolio_overheat_cooldown_scale_value() if enabled else 1.0
+        return {
+            "portfolio_overheat_cooldown_enabled": enabled,
+            "portfolio_overheat_cooldown_scale": scale,
+            "portfolio_overheat_cooldown_reason": str(self.portfolio_overheat_cooldown_reason or ""),
+            "portfolio_overheat_cooldown_prior_drawdown_pct": float(
+                self.portfolio_overheat_cooldown_prior_drawdown_pct or 0.0
+            ),
+            "portfolio_overheat_cooldown_prior_ret20": float(self.portfolio_overheat_cooldown_prior_ret20),
+            "portfolio_overheat_cooldown_prior_ret60": float(self.portfolio_overheat_cooldown_prior_ret60),
+        }
+
+    def _portfolio_overheat_cooldown_adjust_volume(self, volume: int, entry_context: str) -> int:
+        selected_volume = max(0, int(volume))
+        if (
+            not self.enable_portfolio_overheat_cooldown
+            or not self._portfolio_overheat_cooldown_context_applies(entry_context)
+        ):
+            return selected_volume
+
+        scale = self._portfolio_overheat_cooldown_scale_value()
+        adjusted_volume = int(math.floor(selected_volume * scale))
+        if 0 < adjusted_volume < self.min_position_size:
+            adjusted_volume = 0
+        return max(0, adjusted_volume)
+
+    def _refresh_portfolio_overheat_cooldown_state(self) -> None:
+        if not self.enable_portfolio_overheat_cooldown:
+            self.portfolio_overheat_cooldown_scale = 1.0
+            self.portfolio_overheat_cooldown_reason = ""
+            self.portfolio_overheat_cooldown_prior_drawdown_pct = 0.0
+            self.portfolio_overheat_cooldown_prior_ret20 = float("nan")
+            self.portfolio_overheat_cooldown_prior_ret60 = float("nan")
+            return
+
+        history = np.array(self.portfolio_overheat_cooldown_equity_history, dtype="float64")
+        history = history[np.isfinite(history)]
+        if len(history) < 2:
+            self.portfolio_overheat_cooldown_scale = 1.0
+            self.portfolio_overheat_cooldown_reason = "insufficient_history"
+            self.portfolio_overheat_cooldown_prior_drawdown_pct = 0.0
+            self.portfolio_overheat_cooldown_prior_ret20 = float("nan")
+            self.portfolio_overheat_cooldown_prior_ret60 = float("nan")
+            return
+
+        last_equity = float(history[-1])
+        high_equity = max(float(np.max(history)), float(self.base_capital), 1e-9)
+        drawdown_ratio = max(0.0, (high_equity - last_equity) / high_equity)
+        ret20 = float(last_equity / history[-21] - 1.0) if len(history) > 20 and history[-21] > 0 else float("nan")
+        ret60 = float(last_equity / history[-61] - 1.0) if len(history) > 60 and history[-61] > 0 else float("nan")
+
+        near_high = drawdown_ratio <= max(0.0, float(self.portfolio_overheat_cooldown_near_high_drawdown_pct or 0.0))
+        hot20_threshold = float(self.portfolio_overheat_cooldown_hot20_threshold or 0.0)
+        hot60_threshold = float(self.portfolio_overheat_cooldown_hot60_threshold or -1.0)
+        hot20 = math.isfinite(ret20) and hot20_threshold >= 0.0 and ret20 > hot20_threshold
+        hot60 = math.isfinite(ret60) and hot60_threshold >= 0.0 and ret60 > hot60_threshold
+        recovery = (
+            drawdown_ratio >= max(0.0, float(self.portfolio_overheat_cooldown_recovery_drawdown_pct or 0.0))
+            and math.isfinite(ret20)
+            and ret20 > float(self.portfolio_overheat_cooldown_recovery_ret20_threshold or 0.0)
+        )
+
+        if near_high and (hot20 or hot60):
+            self.portfolio_overheat_cooldown_scale = max(
+                0.0,
+                min(1.0, float(self.portfolio_overheat_cooldown_brake_scale or 1.0)),
+            )
+            self.portfolio_overheat_cooldown_reason = "near_high_hot20_or_hot60"
+        elif recovery:
+            self.portfolio_overheat_cooldown_scale = max(1.0, float(self.portfolio_overheat_cooldown_recovery_scale or 1.0))
+            self.portfolio_overheat_cooldown_reason = "deep_drawdown_ret20_recovery"
+        else:
+            self.portfolio_overheat_cooldown_scale = 1.0
+            self.portfolio_overheat_cooldown_reason = "normal"
+
+        self.portfolio_overheat_cooldown_prior_drawdown_pct = drawdown_ratio * 100.0
+        self.portfolio_overheat_cooldown_prior_ret20 = ret20
+        self.portfolio_overheat_cooldown_prior_ret60 = ret60
+
+    def _record_portfolio_overheat_cooldown_daily_equity(self) -> None:
+        if not self.enable_portfolio_overheat_cooldown:
+            return
+        equity = float(self.estimated_equity or self.base_capital)
+        if math.isfinite(equity) and equity > 0:
+            self.portfolio_overheat_cooldown_equity_history.append(equity)
+
+    def _record_portfolio_overheat_cooldown_scale_snapshot(self, bars: dict[str, BarData]) -> None:
+        if not self.enable_portfolio_overheat_cooldown or not bars:
+            return
+        current_date = next(iter(bars.values())).datetime.date()
+        if (
+            self.portfolio_overheat_cooldown_scale_history
+            and self.portfolio_overheat_cooldown_scale_history[-1].get("date") == current_date
+        ):
+            return
+        self.portfolio_overheat_cooldown_scale_history.append(
+            {
+                "date": current_date,
+                "scale": float(self.portfolio_overheat_cooldown_scale or 1.0),
+                "reason": str(self.portfolio_overheat_cooldown_reason or ""),
+                "prior_drawdown_pct": float(self.portfolio_overheat_cooldown_prior_drawdown_pct or 0.0),
+                "prior_ret20_pct": float(self.portfolio_overheat_cooldown_prior_ret20) * 100.0,
+                "prior_ret60_pct": float(self.portfolio_overheat_cooldown_prior_ret60) * 100.0,
+            }
+        )
+
+    def _product_direction_failure_cooldown_context_set(self) -> set[str]:
+        raw_contexts = str(self.product_direction_failure_cooldown_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.replace(";", ",").replace("|", ",").split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
+
+    def _product_direction_failure_cooldown_context_applies(self, entry_context: str) -> bool:
+        contexts = self._product_direction_failure_cooldown_context_set()
+        return "*" in contexts or entry_context in contexts
+
+    @staticmethod
+    def _product_direction_failure_cooldown_date(value: Any) -> pd.Timestamp:
+        return pd.Timestamp(value).tz_localize(None).normalize()
+
+    def _record_product_direction_outcome(
+        self,
+        product_vt_symbol: str,
+        direction: str,
+        realized_pnl: float,
+    ) -> None:
+        if not self.enable_product_direction_failure_cooldown:
+            return
+        product = str(product_vt_symbol or "").strip()
+        side = str(direction or "").strip()
+        if not product or side not in {"long", "short"}:
+            return
+        exit_date = self.current_bar_date
+        if exit_date is None:
+            exit_date = pd.Timestamp(datetime.now()).normalize()
+        exit_date = self._product_direction_failure_cooldown_date(exit_date)
+        key = (product, side)
+        history = self.product_direction_outcome_history.setdefault(key, [])
+        history.append(
+            {
+                "exit_date": exit_date,
+                "realized_pnl": float(realized_pnl),
+            }
+        )
+        lookback = max(1, int(self.product_direction_failure_cooldown_lookback_days or 252))
+        prune_before = exit_date - pd.Timedelta(days=max(lookback * 3, lookback + 365))
+        self.product_direction_outcome_history[key] = [
+            item
+            for item in history
+            if self._product_direction_failure_cooldown_date(item["exit_date"]) >= prune_before
+        ]
+
+    def _product_direction_failure_cooldown_fields(
+        self,
+        *,
+        product_vt_symbol: str,
+        direction: str,
+        entry_context: str,
+        asof: pd.Timestamp,
+    ) -> dict[str, Any]:
+        enabled = int(
+            self.enable_product_direction_failure_cooldown
+            and self._product_direction_failure_cooldown_context_applies(entry_context)
+        )
+        lookback_days = max(1, int(self.product_direction_failure_cooldown_lookback_days or 252))
+        min_failures = max(1, int(self.product_direction_failure_cooldown_min_consecutive_failures or 3))
+        cooldown_days = max(1, int(self.product_direction_failure_cooldown_days or 90))
+        fields: dict[str, Any] = {
+            "product_direction_failure_cooldown_enabled": enabled,
+            "product_direction_failure_cooldown_lookback_days": lookback_days,
+            "product_direction_failure_cooldown_min_consecutive_failures": min_failures,
+            "product_direction_failure_cooldown_days": cooldown_days,
+            "product_direction_failure_cooldown_consecutive_failures": 0,
+            "product_direction_failure_cooldown_last_failure_exit_date": "",
+            "product_direction_failure_cooldown_until": "",
+            "product_direction_failure_cooldown_days_since_last_failure": math.nan,
+            "product_direction_failure_cooldown_blocked": 0,
+            "product_direction_failure_cooldown_reason": "disabled" if not enabled else "no_recent_failures",
+            "product_direction_failure_cooldown_selected_volume_before": 0,
+            "product_direction_failure_cooldown_selected_volume_after": 0,
+        }
+        if not enabled:
+            return fields
+
+        product = str(product_vt_symbol or "").strip()
+        side = str(direction or "").strip()
+        if not product or side not in {"long", "short"}:
+            fields["product_direction_failure_cooldown_reason"] = "invalid_product_or_direction"
+            return fields
+
+        asof_date = self._product_direction_failure_cooldown_date(asof)
+        lookback_start = asof_date - pd.Timedelta(days=lookback_days)
+        events = [
+            item
+            for item in self.product_direction_outcome_history.get((product, side), [])
+            if lookback_start <= self._product_direction_failure_cooldown_date(item["exit_date"]) < asof_date
+        ]
+        if not events:
+            return fields
+
+        events.sort(key=lambda item: self._product_direction_failure_cooldown_date(item["exit_date"]))
+        consecutive_failures = 0
+        last_failure_date: pd.Timestamp | None = None
+        for item in reversed(events):
+            pnl = float(item.get("realized_pnl", 0.0) or 0.0)
+            if pnl <= 0.0:
+                consecutive_failures += 1
+                if last_failure_date is None:
+                    last_failure_date = self._product_direction_failure_cooldown_date(item["exit_date"])
+                continue
+            break
+
+        fields["product_direction_failure_cooldown_consecutive_failures"] = int(consecutive_failures)
+        if last_failure_date is None:
+            fields["product_direction_failure_cooldown_reason"] = "last_trade_was_win"
+            return fields
+
+        cooldown_until = last_failure_date + pd.Timedelta(days=cooldown_days)
+        days_since_last_failure = int((asof_date - last_failure_date).days)
+        fields["product_direction_failure_cooldown_last_failure_exit_date"] = last_failure_date.date().isoformat()
+        fields["product_direction_failure_cooldown_until"] = cooldown_until.date().isoformat()
+        fields["product_direction_failure_cooldown_days_since_last_failure"] = days_since_last_failure
+        if consecutive_failures >= min_failures and asof_date <= cooldown_until:
+            fields["product_direction_failure_cooldown_blocked"] = 1
+            fields["product_direction_failure_cooldown_reason"] = "consecutive_failures_cooldown"
+        elif consecutive_failures >= min_failures:
+            fields["product_direction_failure_cooldown_reason"] = "cooldown_expired"
+        else:
+            fields["product_direction_failure_cooldown_reason"] = "below_failure_threshold"
+        return fields
 
     def _rollover_reopen_drawdown_guard_fields(self) -> dict[str, Any]:
         guard_enabled = int(bool(self.enable_rollover_reopen_drawdown_guard))
@@ -2386,6 +2716,38 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 sizing["selected_volume"] = max(0, volume_after)
                 volume = max(0, volume_after)
                 native_openable = self._is_native_openable_candidate(signal, direction, volume)
+        cooldown_fields = self._product_direction_failure_cooldown_fields(
+            product_vt_symbol=context.product_vt_symbol,
+            direction=direction,
+            entry_context="flat_entry",
+            asof=pd.Timestamp(context.target_bar.datetime).normalize(),
+        )
+        sizing.update(cooldown_fields)
+        if int(cooldown_fields["product_direction_failure_cooldown_blocked"]):
+            volume_before_cooldown = max(0, int(sizing.get("selected_volume") or volume))
+            sizing["product_direction_failure_cooldown_selected_volume_before"] = volume_before_cooldown
+            sizing["product_direction_failure_cooldown_selected_volume_after"] = 0
+            sizing["selected_volume"] = 0
+            volume = 0
+            native_openable = False
+            skip_reason = "product_direction_failure_cooldown"
+            self.product_direction_failure_cooldown_count += 1
+            self.product_direction_failure_cooldown_events.append(
+                {
+                    "date": pd.Timestamp(context.target_bar.datetime).normalize(),
+                    "product_vt_symbol": context.product_vt_symbol,
+                    "contract_vt_symbol": context.target_contract,
+                    "direction": direction,
+                    "signal": signal,
+                    "entry_context": "flat_entry",
+                    "consecutive_failures": int(
+                        cooldown_fields["product_direction_failure_cooldown_consecutive_failures"]
+                    ),
+                    "last_failure_exit_date": cooldown_fields["product_direction_failure_cooldown_last_failure_exit_date"],
+                    "cooldown_until": cooldown_fields["product_direction_failure_cooldown_until"],
+                    "selected_volume_before": volume_before_cooldown,
+                }
+            )
         if direction == "long" and not self.long_entry_enabled:
             skip_reason = "long_entry_disabled"
         elif direction == "short" and not self.short_entry_enabled:
@@ -2393,7 +2755,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         elif direction == "short" and not self._can_open_short_signal(signal):
             skip_reason = "short_signal_rejected"
         elif volume <= 0:
-            if str(supply_demand_snapshot.get("supply_demand_headwind_reason", "")) == "strong_headwind":
+            if skip_reason:
+                pass
+            elif str(supply_demand_snapshot.get("supply_demand_headwind_reason", "")) == "strong_headwind":
                 skip_reason = "supply_demand_headwind_blocked"
             else:
                 skip_reason = "sizing_zero_volume"
@@ -3274,6 +3638,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self._current_streak_multiplier(),
             )
         )
+        overheat_cooldown_fields = self._portfolio_overheat_cooldown_fields(entry_context)
+        overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
         sizing_equity_fields = self._sizing_equity_snapshot()
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
@@ -3303,6 +3669,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 entry_context,
             )
             volume = int(heat_gate_fields["risk_cluster_heat_gate_selected_volume"])
+            volume = self._portfolio_overheat_cooldown_adjust_volume(volume, entry_context)
             if 0 < volume < self.min_position_size:
                 volume = 0
             env_gate_fields = self._apply_env_gate_to_volume(
@@ -3332,6 +3699,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
                 **sizing_equity_fields,
                 **recovery_fields,
+                **overheat_cooldown_fields,
                 **cluster_cap_fields,
                 **heat_gate_fields,
                 **env_gate_fields,
@@ -3360,6 +3728,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             limited_balance,
             risk_multiplier_override=effective_risk_multiplier,
         )
+        risk_amount *= max(0.0, overheat_cooldown_scale)
         stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
         size: int = self.get_size(vt_symbol)
         risk_per_contract: float = abs(float(bar.close_price) - stop_price) * size
@@ -3420,6 +3789,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
             **sizing_equity_fields,
             **recovery_fields,
+            **overheat_cooldown_fields,
             **cluster_cap_fields,
             **heat_gate_fields,
             **env_gate_fields,
@@ -3831,6 +4201,28 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "portfolio_volatility_budget_target_annual_vol": float(
                     sizing_snapshot.get("portfolio_volatility_budget_target_annual_vol") or 0.0
                 ),
+                "portfolio_overheat_cooldown_enabled": int(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_enabled") or 0
+                ),
+                "portfolio_overheat_cooldown_scale": float(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_scale") or 1.0
+                ),
+                "portfolio_overheat_cooldown_reason": str(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_reason") or ""
+                ),
+                "portfolio_overheat_cooldown_prior_drawdown_pct": float(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_prior_drawdown_pct") or 0.0
+                ),
+                "portfolio_overheat_cooldown_prior_ret20": float(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_prior_ret20")
+                    if sizing_snapshot.get("portfolio_overheat_cooldown_prior_ret20") is not None
+                    else float("nan")
+                ),
+                "portfolio_overheat_cooldown_prior_ret60": float(
+                    sizing_snapshot.get("portfolio_overheat_cooldown_prior_ret60")
+                    if sizing_snapshot.get("portfolio_overheat_cooldown_prior_ret60") is not None
+                    else float("nan")
+                ),
                 "rollover_reopen_drawdown_guard_enabled": int(
                     sizing_snapshot.get("rollover_reopen_drawdown_guard_enabled") or 0
                 ),
@@ -3931,6 +4323,44 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "ai_path_damage_selected_volume_after": int(
                     sizing_snapshot.get("ai_path_damage_selected_volume_after") or selected_volume
+                ),
+                "product_direction_failure_cooldown_enabled": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_enabled") or 0
+                ),
+                "product_direction_failure_cooldown_blocked": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_blocked") or 0
+                ),
+                "product_direction_failure_cooldown_reason": str(
+                    sizing_snapshot.get("product_direction_failure_cooldown_reason") or ""
+                ),
+                "product_direction_failure_cooldown_consecutive_failures": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_consecutive_failures") or 0
+                ),
+                "product_direction_failure_cooldown_lookback_days": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_lookback_days") or 0
+                ),
+                "product_direction_failure_cooldown_min_consecutive_failures": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_min_consecutive_failures") or 0
+                ),
+                "product_direction_failure_cooldown_days": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_days") or 0
+                ),
+                "product_direction_failure_cooldown_last_failure_exit_date": str(
+                    sizing_snapshot.get("product_direction_failure_cooldown_last_failure_exit_date") or ""
+                ),
+                "product_direction_failure_cooldown_until": str(
+                    sizing_snapshot.get("product_direction_failure_cooldown_until") or ""
+                ),
+                "product_direction_failure_cooldown_days_since_last_failure": float(
+                    sizing_snapshot.get("product_direction_failure_cooldown_days_since_last_failure")
+                    if sizing_snapshot.get("product_direction_failure_cooldown_days_since_last_failure") is not None
+                    else float("nan")
+                ),
+                "product_direction_failure_cooldown_selected_volume_before": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_selected_volume_before") or selected_volume
+                ),
+                "product_direction_failure_cooldown_selected_volume_after": int(
+                    sizing_snapshot.get("product_direction_failure_cooldown_selected_volume_after") or selected_volume
                 ),
                 "ai_product_pool_enabled": int(sizing_snapshot.get("ai_product_pool_enabled") or 0),
                 "ai_product_pool_strategy": str(sizing_snapshot.get("ai_product_pool_strategy") or ""),
@@ -4535,6 +4965,61 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             self.set_target(contract_vt_symbol, 0)
         return exit_reason
 
+    def _process_portfolio_overheat_cooldown_deleverage(self, state: ProductState, bar: BarData) -> str:
+        if not (self.enable_portfolio_overheat_cooldown and self.enable_portfolio_overheat_cooldown_deleverage):
+            return ""
+        if not state.layers or not state.contract_vt_symbol:
+            return ""
+
+        weight = self._portfolio_overheat_cooldown_scale_value()
+        if weight >= 0.999:
+            state.portfolio_overheat_cooldown_reference_contract = ""
+            state.portfolio_overheat_cooldown_reference_volume = 0
+            return ""
+
+        current_volume = state.active_volume()
+        if current_volume <= 0:
+            return ""
+
+        if state.portfolio_overheat_cooldown_reference_contract != state.contract_vt_symbol:
+            state.portfolio_overheat_cooldown_reference_contract = state.contract_vt_symbol
+            state.portfolio_overheat_cooldown_reference_volume = current_volume
+        elif state.portfolio_overheat_cooldown_reference_volume < current_volume:
+            state.portfolio_overheat_cooldown_reference_volume = current_volume
+
+        reference_volume = max(current_volume, int(state.portfolio_overheat_cooldown_reference_volume or 0))
+        target_volume = int(math.floor(reference_volume * weight))
+        if 0 < target_volume < self.min_position_size:
+            target_volume = 0
+        if target_volume >= current_volume:
+            return ""
+
+        contract_vt_symbol = state.contract_vt_symbol
+        product_vt_symbol = state.product_vt_symbol
+        direction = state.direction
+        exit_price = float(bar.close_price)
+        closed_volume = current_volume - max(0, target_volume)
+        exit_reason = f"{direction}_portfolio_overheat_cooldown_deleverage"
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=contract_vt_symbol,
+            product_vt_symbol=product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        self._reduce_position_to_target(state, max(0, target_volume), exit_price)
+        self.portfolio_overheat_cooldown_deleverage_count += 1
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            if exit_price > 0:
+                self.execution_price_overrides[contract_vt_symbol] = exit_price
+            self.set_target(contract_vt_symbol, 0)
+        return exit_reason
+
     def _update_dynamic_stops(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> None:
         for layer in state.layers:
             self._update_layer_stop(layer, bar)
@@ -4746,7 +5231,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         for index in sorted(indexes, reverse=True):
             layer = state.layers[index]
             self._queue_pending_close_lot(state.contract_vt_symbol, layer, exit_price, layer.volume)
-            realized += self._layer_realized_pnl(layer, exit_price, size)
+            layer_realized = self._layer_realized_pnl(layer, exit_price, size)
+            realized += layer_realized
+            self._record_product_direction_outcome(
+                state.product_vt_symbol,
+                layer.direction,
+                layer_realized,
+            )
             del state.layers[index]
         self.realized_pnl += realized
         self._update_streak_risk_state(
@@ -4774,24 +5265,31 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             last_layer: PositionLayer = state.layers[-1]
             closed_volume: int = min(reduce_volume, last_layer.volume)
             self._queue_pending_close_lot(state.contract_vt_symbol, last_layer, exit_price, closed_volume)
-            realized += self._layer_realized_pnl(
-                PositionLayer(
-                    kind=last_layer.kind,
-                    direction=last_layer.direction,
-                    volume=closed_volume,
-                    entry_price=last_layer.entry_price,
-                    stop_price=last_layer.stop_price,
-                    highest_price=last_layer.highest_price,
-                    lowest_price=last_layer.lowest_price,
-                    signal=last_layer.signal,
-                    entry_date=last_layer.entry_date,
-                    max_profit_pct=last_layer.max_profit_pct,
-                    margin_ratio=last_layer.margin_ratio,
-                    entry_price_synced=last_layer.entry_price_synced,
-                    profit_giveback_stop_active=last_layer.profit_giveback_stop_active,
-                ),
+            closed_layer = PositionLayer(
+                kind=last_layer.kind,
+                direction=last_layer.direction,
+                volume=closed_volume,
+                entry_price=last_layer.entry_price,
+                stop_price=last_layer.stop_price,
+                highest_price=last_layer.highest_price,
+                lowest_price=last_layer.lowest_price,
+                signal=last_layer.signal,
+                entry_date=last_layer.entry_date,
+                max_profit_pct=last_layer.max_profit_pct,
+                margin_ratio=last_layer.margin_ratio,
+                entry_price_synced=last_layer.entry_price_synced,
+                profit_giveback_stop_active=last_layer.profit_giveback_stop_active,
+            )
+            layer_realized = self._layer_realized_pnl(
+                closed_layer,
                 exit_price,
                 size,
+            )
+            realized += layer_realized
+            self._record_product_direction_outcome(
+                state.product_vt_symbol,
+                closed_layer.direction,
+                layer_realized,
             )
             last_layer.volume -= closed_volume
             reduce_volume -= closed_volume

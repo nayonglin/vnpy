@@ -1,0 +1,24 @@
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+{
+  "stage": "Stage154",
+  "model_tag": "stage454_preclose_signal_bar_data_readiness_v1",
+  "line_id": "futures_trend_drawdown30_preserve_return",
+  "generated_at": "2026-05-28 05:46:37",
+  "decision": "consistent_preclose_replay_data_not_ready_need_main_contract_window_backfill",
+  "required_key_count": 26380,
+  "covered_key_count": 4905,
+  "missing_key_count": 21475,
+  "coverage_rate": 0.1859363153904473,
+  "download_plan_span_count": 547,
+  "download_plan_symbol_count": 455,
+  "outputs": {
+    "required": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_required_keys_stage454_preclose_signal_bar_data_readiness_v1.csv",
+    "summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_summary_stage454_preclose_signal_bar_data_readiness_v1.csv",
+    "product_coverage": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_product_coverage_stage454_preclose_signal_bar_data_readiness_v1.csv",
+    "symbol_coverage": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_symbol_coverage_stage454_preclose_signal_bar_data_readiness_v1.csv",
+    "download_plan": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_download_plan_stage454_preclose_signal_bar_data_readiness_v1.csv",
+    "report": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_report_stage454_preclose_signal_bar_data_readiness_v1.md"
+  },
+  "next_step": "先按download_plan补齐主力合约14:55-15:00分钟窗口，再做信号bar和成交价一致的预收盘口径真实回放。"
+}
+wrote: /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage454_preclose_signal_bar_data_readiness_report_stage454_preclose_signal_bar_data_readiness_v1.md

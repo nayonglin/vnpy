@@ -1,0 +1,37 @@
+{
+  "stage": "Stage150",
+  "model_tag": "stage450_minute_execution_equity_rebuild_v1",
+  "line_id": "futures_trend_drawdown30_preserve_return",
+  "generated_at": "2026-05-28 05:00:47",
+  "decision": "minute_execution_first_order_rebuild_complete_need_true_path_replay",
+  "trade_count": 692,
+  "valid_theoretical_trade_count": 692,
+  "same_last5_available_trade_count": 692,
+  "preferred_open_available_trade_count": 624,
+  "same_last5_total_delta_vs_engine_trade": 303272.00000001385,
+  "preferred_open_total_delta_vs_engine_trade": -322324.99999999476,
+  "mechanical_promotion_gate_pass_variants": [
+    "stage103_original_same",
+    "stage103_minute_1455_vwap_c3_only"
+  ],
+  "actual_promotion_gate_pass_variants": [],
+  "execution_audit_not_strategy_promotion": true,
+  "hard_constraint_pass_variants": [
+    "stage103_original_same",
+    "stage103_minute_1455_vwap_c3_only",
+    "stage079"
+  ],
+  "outputs": {
+    "daily": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_daily_stage450_minute_execution_equity_rebuild_v1.csv",
+    "trade_delta": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_trade_delta_stage450_minute_execution_equity_rebuild_v1.csv",
+    "summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_summary_stage450_minute_execution_equity_rebuild_v1.csv",
+    "horizon": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_horizon_stage450_minute_execution_equity_rebuild_v1.csv",
+    "score": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_score_stage450_minute_execution_equity_rebuild_v1.csv",
+    "cost": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_cost_stress_stage450_minute_execution_equity_rebuild_v1.csv",
+    "gate": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_gate_stage450_minute_execution_equity_rebuild_v1.csv",
+    "chart": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_chart_stage450_minute_execution_equity_rebuild_v1.png",
+    "report": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_report_stage450_minute_execution_equity_rebuild_v1.md"
+  },
+  "next_step": "用分钟代理成交价做真实引擎路径重放；若路径重放仍保留Stage079硬约束，再讨论3/6个月体验优化。"
+}
+wrote: /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage450_minute_execution_equity_rebuild_report_stage450_minute_execution_equity_rebuild_v1.md

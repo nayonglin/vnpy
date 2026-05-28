@@ -1,0 +1,32 @@
+{
+  "stage": "Stage151",
+  "model_tag": "stage451_true_path_1455_vwap_replay_v1",
+  "line_id": "futures_trend_drawdown30_preserve_return",
+  "generated_at": "2026-05-28 05:11:58",
+  "decision": "true_path_1455_vwap_hard_fail_pause_candidate_optimization",
+  "proxy_matched_trade_count": 673,
+  "fallback_trade_count": 101,
+  "true_path_trade_count": 774,
+  "rerun_vs_stage403_end_equity_delta": 0.0,
+  "hard_constraint_pass_variants": [
+    "stage079",
+    "stage079_rerun_same_day_close"
+  ],
+  "promotion_gate_pass_variants": [],
+  "true_path_failed_hard_constraints": "max_dd_not_worse,max_dd_below_30,rolling252_dd30_zero,rolling504_dd30_zero,annual_dd30_pass_100,quarter_dd30_pass_100,cost_stress_not_worse",
+  "true_path_score_90d": 100.49101221784377,
+  "true_path_score_180d": 115.49217435091794,
+  "outputs": {
+    "daily": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_daily_stage451_true_path_1455_vwap_replay_v1.csv",
+    "trade_usage": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_trade_usage_stage451_true_path_1455_vwap_replay_v1.csv",
+    "summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_summary_stage451_true_path_1455_vwap_replay_v1.csv",
+    "horizon": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_horizon_stage451_true_path_1455_vwap_replay_v1.csv",
+    "score": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_score_stage451_true_path_1455_vwap_replay_v1.csv",
+    "cost": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_cost_stress_stage451_true_path_1455_vwap_replay_v1.csv",
+    "gate": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_gate_stage451_true_path_1455_vwap_replay_v1.csv",
+    "chart": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_chart_stage451_true_path_1455_vwap_replay_v1.png",
+    "report": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_report_stage451_true_path_1455_vwap_replay_v1.md"
+  },
+  "next_step": "若Stage079真实路径仍通过硬约束，则用同一成交口径重算Stage103/xsmom；若失败，则暂停短持有优化并先修执行口径。"
+}
+wrote: /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage451_true_path_1455_vwap_replay_report_stage451_true_path_1455_vwap_replay_v1.md

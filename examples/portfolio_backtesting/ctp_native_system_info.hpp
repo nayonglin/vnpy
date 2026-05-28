@@ -42,8 +42,10 @@ inline void *resolve_system_info_symbol(void *handle, std::string &symbol_name) 
     const char *names[] = {
         "CTP_GetSystemInfoUnAesEncode",
         "_CTP_GetSystemInfoUnAesEncode",
+        "_Z28CTP_GetSystemInfoUnAesEncodePcRi",
         "__Z28CTP_GetSystemInfoUnAesEncodePcRi",
         "CTP_GetRealSystemInfo",
+        "_Z21CTP_GetRealSystemInfoPcRi",
         "__Z21CTP_GetRealSystemInfoPcRi",
     };
     for (const char *name : names) {
@@ -65,12 +67,17 @@ inline SystemInfoResult collect_via_official_function(std::size_t max_len) {
         throw std::runtime_error("CTP system-info collector symbol not found");
     }
 
-    std::vector<char> buffer(std::max<std::size_t>(max_len, 264), 0);
-    int length = static_cast<int>(std::min<std::size_t>(buffer.size(), 264));
-    using CollectorFunc = void (*)(char *, int &);
+    std::vector<char> buffer(std::max<std::size_t>(max_len, 270), 0);
+    int length = 0;
+    using CollectorFunc = int (*)(char *, int &);
     auto collect = reinterpret_cast<CollectorFunc>(symbol);
-    collect(buffer.data(), length);
+    int collect_code = collect(buffer.data(), length);
 
+    if (collect_code != 0) {
+        throw std::runtime_error(
+            "CTP system-info collector returned error code=" + std::to_string(collect_code) +
+            " length=" + std::to_string(length));
+    }
     if (length <= 0 || static_cast<std::size_t>(length) > max_len) {
         throw std::runtime_error("CTP system-info collector returned invalid length=" + std::to_string(length));
     }

@@ -1,0 +1,79 @@
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+    INFO - 回测结束
+    INFO - 模拟交易成交记录, 账户: TQSIM
+    INFO - 模拟交易账户资金, 账户: TQSIM
+    INFO - 日期: 2022-06-15, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 胜率: 0.00%, 盈亏额比例: inf, 收益率: 0.00%, 年化收益率: 0.00%, 最大回撤: 0.00%, 年化夏普率: inf,年化索提诺比率: -15.8114
+    INFO - 回测结束
+    INFO - 模拟交易成交记录, 账户: TQSIM
+    INFO - 模拟交易账户资金, 账户: TQSIM
+    INFO - 日期: 2022-08-31, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 胜率: 0.00%, 盈亏额比例: inf, 收益率: 0.00%, 年化收益率: 0.00%, 最大回撤: 0.00%, 年化夏普率: inf,年化索提诺比率: -15.8114
+    INFO - 回测结束
+    INFO - 模拟交易成交记录, 账户: TQSIM
+    INFO - 模拟交易账户资金, 账户: TQSIM
+    INFO - 日期: 2022-07-20, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 胜率: 0.00%, 盈亏额比例: inf, 收益率: 0.00%, 年化收益率: 0.00%, 最大回撤: 0.00%, 年化夏普率: inf,年化索提诺比率: -15.8114
+    INFO - 回测结束
+    INFO - 模拟交易成交记录, 账户: TQSIM
+    INFO - 模拟交易账户资金, 账户: TQSIM
+    INFO - 日期: 2020-11-24, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 日期: 2020-11-25, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 日期: 2020-11-26, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 日期: 2020-11-27, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 日期: 2020-11-30, 账户权益: 10000000.00, 可用资金: 10000000.00, 浮动盈亏: 0.00, 持仓盈亏: 0.00, 平仓盈亏: 0.00, 市值: 0.00, 保证金: 0.00, 手续费: 0.00, 风险度: 0.00%
+    INFO - 胜率: 0.00%, 盈亏额比例: inf, 收益率: 0.00%, 年化收益率: 0.00%, 最大回撤: 0.00%, 年化夏普率: inf,年化索提诺比率: -15.8114
+{
+  "stage": "Stage153",
+  "model_tag": "stage453_preclose_fill_semantics_replay_v1",
+  "line_id": "futures_trend_drawdown30_preserve_return",
+  "generated_at": "2026-05-28 05:39:12",
+  "decision": "preclose_semantics_all_hard_fail_keep_execution_pause",
+  "seed_target_count": 797,
+  "hard_constraint_pass_variants": [
+    "stage079",
+    "stage079_rerun_same_day_close"
+  ],
+  "tested_hard_constraint_pass_variants": [],
+  "promotion_gate_pass_variants": [],
+  "tested_promotion_gate_pass_variants": [],
+  "variant_meta": {
+    "stage079_true_path_1455_vwap_backfilled_rerun": {
+      "label": "Stage079 true path 14:55-14:59 VWAP rerun",
+      "final_fallback_trade_count": 0,
+      "trade_count": 774,
+      "proxy_key_count": 797,
+      "deployability_note": "Stage152 已硬失败；本阶段只作为复核锚点。"
+    },
+    "stage079_true_path_1455_first_open": {
+      "label": "Stage079 true path 14:55 first open",
+      "final_fallback_trade_count": 0,
+      "trade_count": 749,
+      "proxy_key_count": 803,
+      "deployability_note": "若能在14:55前冻结信号，可作为更早的收盘前执行近似。"
+    },
+    "stage079_true_path_1459_last_close": {
+      "label": "Stage079 true path 14:59 last close",
+      "final_fallback_trade_count": 0,
+      "trade_count": 774,
+      "proxy_key_count": 797,
+      "deployability_note": "最接近收盘价，但除非信号能在收盘前冻结，否则只能作为敏感性审计，不可直接部署。"
+    }
+  },
+  "min_final_fallback_trade_count": 0,
+  "outputs": {
+    "daily": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_daily_stage453_preclose_fill_semantics_replay_v1.csv",
+    "trade_usage": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_trade_usage_stage453_preclose_fill_semantics_replay_v1.csv",
+    "backfill_status": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_backfill_status_stage453_preclose_fill_semantics_replay_v1.csv",
+    "proxy_map": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_proxy_map_stage453_preclose_fill_semantics_replay_v1.csv",
+    "summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_summary_stage453_preclose_fill_semantics_replay_v1.csv",
+    "horizon": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_horizon_stage453_preclose_fill_semantics_replay_v1.csv",
+    "score": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_score_stage453_preclose_fill_semantics_replay_v1.csv",
+    "cost": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_cost_stress_stage453_preclose_fill_semantics_replay_v1.csv",
+    "gate": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_gate_stage453_preclose_fill_semantics_replay_v1.csv",
+    "chart": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_chart_stage453_preclose_fill_semantics_replay_v1.png",
+    "report": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_report_stage453_preclose_fill_semantics_replay_v1.md"
+  },
+  "next_step": "若只有14:59 close-like通过，必须先验证信号能否收盘前冻结/实时化；否则不得作为部署候选。"
+}
+wrote: /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage453_preclose_fill_semantics_replay_report_stage453_preclose_fill_semantics_replay_v1.md

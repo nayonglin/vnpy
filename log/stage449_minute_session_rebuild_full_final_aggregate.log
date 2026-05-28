@@ -1,0 +1,273 @@
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+cached_raw rank=1 hc2010.SHFE SHFE.hc2010 rows=24509 elapsed=0.0
+cached_raw rank=2 rb2305.SHFE SHFE.rb2305 rows=23699 elapsed=0.0
+cached_raw rank=3 SM109.CZCE CZCE.SM109 rows=13755 elapsed=0.0
+cached_raw rank=4 MA101.CZCE CZCE.MA101 rows=22800 elapsed=0.0
+cached_raw rank=5 MA605.CZCE CZCE.MA605 rows=6930 elapsed=0.0
+cached_raw rank=6 ru2605.SHFE SHFE.ru2605 rows=150 elapsed=0.0
+cached_raw rank=7 fu2209.SHFE SHFE.fu2209 rows=6705 elapsed=0.0
+cached_raw rank=8 ru2201.SHFE SHFE.ru2201 rows=24060 elapsed=0.0
+cached_raw rank=9 hc2110.SHFE SHFE.hc2110 rows=23025 elapsed=0.0
+cached_raw rank=10 SM005.CZCE CZCE.SM005 rows=13080 elapsed=0.0
+cached_raw rank=11 CF009.CZCE CZCE.CF009 rows=21765 elapsed=0.0
+cached_raw rank=12 rb2010.SHFE SHFE.rb2010 rows=20385 elapsed=0.0
+cached_raw rank=13 FG109.CZCE CZCE.FG109 rows=19559 elapsed=0.0
+cached_raw rank=14 fu2509.SHFE SHFE.fu2509 rows=17400 elapsed=0.0
+cached_raw rank=15 FG305.CZCE CZCE.FG305 rows=20939 elapsed=0.0
+cached_raw rank=16 fu2501.SHFE SHFE.fu2501 rows=150 elapsed=0.0
+cached_raw rank=17 FG205.CZCE CZCE.FG205 rows=14175 elapsed=0.0
+cached_raw rank=18 jm2205.DCE DCE.jm2205 rows=20955 elapsed=0.0
+cached_raw rank=19 MA205.CZCE CZCE.MA205 rows=17834 elapsed=0.0
+cached_raw rank=20 rb2110.SHFE SHFE.rb2110 rows=23025 elapsed=0.0
+cached_raw rank=21 SA109.CZCE CZCE.SA109 rows=12795 elapsed=0.0
+cached_raw rank=22 jm2005.DCE DCE.jm2005 rows=7964 elapsed=0.0
+cached_raw rank=23 CF105.CZCE CZCE.CF105 rows=18179 elapsed=0.0
+cached_raw rank=24 jm2109.DCE DCE.jm2109 rows=21629 elapsed=0.0
+cached_raw rank=25 SM101.CZCE CZCE.SM101 rows=15314 elapsed=0.0
+cached_raw rank=26 au2012.SHFE SHFE.au2012 rows=52409 elapsed=0.0
+cached_raw rank=27 SA105.CZCE CZCE.SA105 rows=15900 elapsed=0.0
+cached_raw rank=28 jm2105.DCE DCE.jm2105 rows=23025 elapsed=0.0
+cached_raw rank=29 CF205.CZCE CZCE.CF205 rows=25304 elapsed=0.0
+cached_raw rank=30 FG009.CZCE CZCE.FG009 rows=18660 elapsed=0.0
+cached_raw rank=31 OI105.CZCE CZCE.OI105 rows=15435 elapsed=0.0
+cached_raw rank=32 FG105.CZCE CZCE.FG105 rows=26339 elapsed=0.0
+cached_raw rank=33 ru2101.SHFE SHFE.ru2101 rows=27285 elapsed=0.0
+cached_raw rank=34 ru2009.SHFE SHFE.ru2009 rows=20730 elapsed=0.0
+cached_raw rank=35 sp2009.SHFE SHFE.sp2009 rows=23970 elapsed=0.0
+cached_raw rank=36 CF101.CZCE CZCE.CF101 rows=13469 elapsed=0.0
+cached_raw rank=37 OI009.CZCE CZCE.OI009 rows=16935 elapsed=0.0
+cached_raw rank=38 sp2012.SHFE SHFE.sp2012 rows=5309 elapsed=0.0
+cached_raw rank=39 SA501.CZCE CZCE.SA501 rows=150 elapsed=0.0
+cached_raw rank=40 fu2205.SHFE SHFE.fu2205 rows=150 elapsed=0.0
+cached_raw rank=41 jm2209.DCE DCE.jm2209 rows=150 elapsed=0.0
+cached_raw rank=42 jm2201.DCE DCE.jm2201 rows=11415 elapsed=0.0
+cached_raw rank=43 ru2409.SHFE SHFE.ru2409 rows=2445 elapsed=0.0
+cached_raw rank=44 CF309.CZCE CZCE.CF309 rows=10035 elapsed=0.0
+cached_raw rank=45 fu2503.SHFE SHFE.fu2503 rows=8310 elapsed=0.0
+cached_raw rank=46 OI405.CZCE CZCE.OI405 rows=18315 elapsed=0.0
+cached_raw rank=47 jm2301.DCE DCE.jm2301 rows=21300 elapsed=0.0
+cached_raw rank=48 rb2605.SHFE SHFE.rb2605 rows=1530 elapsed=0.0
+cached_raw rank=49 fu2405.SHFE SHFE.fu2405 rows=4635 elapsed=0.0
+cached_raw rank=50 jm2309.DCE DCE.jm2309 rows=2565 elapsed=0.0
+cached_raw rank=51 FG401.CZCE CZCE.FG401 rows=3600 elapsed=0.0
+cached_raw rank=52 cu2401.SHFE SHFE.cu2401 rows=10484 elapsed=0.0
+cached_raw rank=53 fu2305.SHFE SHFE.fu2305 rows=10139 elapsed=0.0
+cached_raw rank=54 sp2205.SHFE SHFE.sp2205 rows=15780 elapsed=0.0
+cached_raw rank=55 MA305.CZCE CZCE.MA305 rows=6224 elapsed=0.0
+cached_raw rank=56 SM205.CZCE CZCE.SM205 rows=9030 elapsed=0.0
+cached_raw rank=57 SM505.CZCE CZCE.SM505 rows=14205 elapsed=0.0
+cached_raw rank=58 CF201.CZCE CZCE.CF201 rows=11969 elapsed=0.0
+cached_raw rank=59 CF109.CZCE CZCE.CF109 rows=18540 elapsed=0.0
+cached_raw rank=60 MA209.CZCE CZCE.MA209 rows=7275 elapsed=0.0
+cached_raw rank=61 MA109.CZCE CZCE.MA109 rows=17850 elapsed=0.0
+cached_raw rank=62 FG409.CZCE CZCE.FG409 rows=6689 elapsed=0.0
+cached_raw rank=63 SM105.CZCE CZCE.SM105 rows=4514 elapsed=0.0
+cached_raw rank=64 SA201.CZCE CZCE.SA201 rows=8069 elapsed=0.0
+cached_raw rank=65 ru2109.SHFE SHFE.ru2109 rows=16245 elapsed=0.0
+cached_raw rank=66 SA301.CZCE CZCE.SA301 rows=9570 elapsed=0.0
+cached_raw rank=67 rb2005.SHFE SHFE.rb2005 rows=11684 elapsed=0.0
+cached_raw rank=68 OI101.CZCE CZCE.OI101 rows=6705 elapsed=0.0
+cached_raw rank=69 MA201.CZCE CZCE.MA201 rows=6689 elapsed=0.0
+cached_raw rank=70 au2206.SHFE SHFE.au2206 rows=16664 elapsed=0.0
+cached_raw rank=71 jm2009.DCE DCE.jm2009 rows=10019 elapsed=0.0
+cached_raw rank=72 rb2105.SHFE SHFE.rb2105 rows=11415 elapsed=0.0
+cached_raw rank=73 FG101.CZCE CZCE.FG101 rows=9120 elapsed=0.0
+cached_raw rank=74 au2006.SHFE SHFE.au2006 rows=13080 elapsed=0.0
+cached_raw rank=75 rb2205.SHFE SHFE.rb2205 rows=7275 elapsed=0.0
+cached_raw rank=76 hc2205.SHFE SHFE.hc2205 rows=6930 elapsed=0.0
+cached_raw rank=77 MA105.CZCE CZCE.MA105 rows=19230 elapsed=0.0
+cached_raw rank=78 sp2005.SHFE SHFE.sp2005 rows=10649 elapsed=0.0
+cached_raw rank=79 AP505.CZCE CZCE.AP505 rows=239 elapsed=0.0
+cached_raw rank=80 lh2301.DCE DCE.lh2301 rows=5655 elapsed=0.0
+cached_raw rank=81 lh2409.DCE DCE.lh2409 rows=18705 elapsed=0.0
+cached_raw rank=82 AP110.CZCE CZCE.AP110 rows=9480 elapsed=0.0
+cached_raw rank=83 jm2509.DCE DCE.jm2509 rows=4980 elapsed=0.0
+cached_raw rank=84 lc2505.GFEX GFEX.lc2505 rows=12614 elapsed=0.0
+cached_raw rank=85 lh2401.DCE DCE.lh2401 rows=30 elapsed=0.0
+cached_raw rank=86 lc2605.GFEX GFEX.lc2605 rows=30 elapsed=0.0
+cached_raw rank=87 AP501.CZCE CZCE.AP501 rows=6330 elapsed=0.0
+cached_raw rank=88 AP305.CZCE CZCE.AP305 rows=8580 elapsed=0.0
+cached_raw rank=89 lh2201.DCE DCE.lh2201 rows=4755 elapsed=0.0
+cached_raw rank=90 lh2209.DCE DCE.lh2209 rows=8805 elapsed=0.0
+cached_raw rank=91 AP210.CZCE CZCE.AP210 rows=19155 elapsed=0.0
+cached_raw rank=92 lh2205.DCE DCE.lh2205 rows=5205 elapsed=0.0
+cached_raw rank=93 AP205.CZCE CZCE.AP205 rows=4530 elapsed=0.0
+cached_raw rank=94 jm2405.DCE DCE.jm2405 rows=479 elapsed=0.0
+cached_raw rank=95 ru2501.SHFE SHFE.ru2501 rows=150 elapsed=0.0
+cached_raw rank=96 OI605.CZCE CZCE.OI605 rows=150 elapsed=0.0
+cached_raw rank=97 FG509.CZCE CZCE.FG509 rows=150 elapsed=0.0
+cached_raw rank=98 jm2401.DCE DCE.jm2401 rows=479 elapsed=0.0
+cached_raw rank=99 rb2505.SHFE SHFE.rb2505 rows=359 elapsed=0.0
+cached_raw rank=100 ru2405.SHFE SHFE.ru2405 rows=479 elapsed=0.0
+cached_raw rank=101 cu2410.SHFE SHFE.cu2410 rows=270 elapsed=0.0
+cached_raw rank=102 fu2301.SHFE SHFE.fu2301 rows=840 elapsed=0.0
+cached_raw rank=103 cu2411.SHFE SHFE.cu2411 rows=1890 elapsed=0.0
+cached_raw rank=104 fu2603.SHFE SHFE.fu2603 rows=150 elapsed=0.0
+cached_raw rank=105 SA601.CZCE CZCE.SA601 rows=2565 elapsed=0.0
+cached_raw rank=106 OI305.CZCE CZCE.OI305 rows=4635 elapsed=0.0
+cached_raw rank=107 sp2503.SHFE SHFE.sp2503 rows=3825 elapsed=0.0
+cached_raw rank=108 jm2409.DCE DCE.jm2409 rows=1514 elapsed=0.0
+cached_raw rank=109 fu2510.SHFE SHFE.fu2510 rows=824 elapsed=0.0
+cached_raw rank=110 SA209.CZCE CZCE.SA209 rows=824 elapsed=0.0
+cached_raw rank=111 SA505.CZCE CZCE.SA505 rows=150 elapsed=0.0
+cached_raw rank=112 cu2508.SHFE SHFE.cu2508 rows=2579 elapsed=0.0
+cached_raw rank=113 OI505.CZCE CZCE.OI505 rows=495 elapsed=0.0
+cached_raw rank=114 hc2401.SHFE SHFE.hc2401 rows=495 elapsed=0.0
+cached_raw rank=115 MA509.CZCE CZCE.MA509 rows=1875 elapsed=0.0
+cached_raw rank=116 fu2601.SHFE SHFE.fu2601 rows=1049 elapsed=0.0
+cached_raw rank=117 FG505.CZCE CZCE.FG505 rows=150 elapsed=0.0
+cached_raw rank=118 FG309.CZCE CZCE.FG309 rows=4154 elapsed=0.0
+cached_raw rank=119 cu2502.SHFE SHFE.cu2502 rows=1200 elapsed=0.0
+cached_raw rank=120 MA505.CZCE CZCE.MA505 rows=1875 elapsed=0.0
+cached_raw rank=121 SM309.CZCE CZCE.SM309 rows=255 elapsed=0.0
+cached_raw rank=122 cu2307.SHFE SHFE.cu2307 rows=1890 elapsed=0.0
+cached_raw rank=123 au2510.SHFE SHFE.au2510 rows=8114 elapsed=0.0
+cached_raw rank=124 FG601.CZCE CZCE.FG601 rows=1049 elapsed=0.0
+cached_raw rank=125 rb2510.SHFE SHFE.rb2510 rows=2910 elapsed=0.0
+cached_raw rank=126 SM501.CZCE CZCE.SM501 rows=480 elapsed=0.0
+cached_raw rank=127 sp2511.SHFE SHFE.sp2511 rows=824 elapsed=0.0
+cached_raw rank=128 OI601.CZCE CZCE.OI601 rows=2220 elapsed=0.0
+cached_raw rank=129 fu2311.SHFE SHFE.fu2311 rows=3255 elapsed=0.0
+cached_raw rank=130 SA605.CZCE CZCE.SA605 rows=840 elapsed=0.0
+cached_raw rank=131 FG201.CZCE CZCE.FG201 rows=2100 elapsed=0.0
+cached_raw rank=132 sp2109.SHFE SHFE.sp2109 rows=495 elapsed=0.0
+cached_raw rank=133 ru2305.SHFE SHFE.ru2305 rows=495 elapsed=0.0
+cached_raw rank=134 au2112.SHFE SHFE.au2112 rows=4800 elapsed=0.0
+cached_raw rank=135 fu2310.SHFE SHFE.fu2310 rows=1514 elapsed=0.0
+cached_raw rank=136 jm2601.DCE DCE.jm2601 rows=2220 elapsed=0.0
+cached_raw rank=137 au2412.SHFE SHFE.au2412 rows=7004 elapsed=0.0
+cached_raw rank=138 cu2111.SHFE SHFE.cu2111 rows=2130 elapsed=0.0
+cached_raw rank=139 hc2305.SHFE SHFE.hc2305 rows=2220 elapsed=0.0
+cached_raw rank=140 hc2210.SHFE SHFE.hc2210 rows=150 elapsed=0.0
+cached_raw rank=141 hc2310.SHFE SHFE.hc2310 rows=1514 elapsed=0.0
+cached_raw rank=142 rb2201.SHFE SHFE.rb2201 rows=1755 elapsed=0.0
+cached_raw rank=143 cu2203.SHFE SHFE.cu2203 rows=3990 elapsed=0.0
+cached_raw rank=144 ru2505.SHFE SHFE.ru2505 rows=1875 elapsed=0.0
+cached_raw rank=145 MA409.CZCE CZCE.MA409 rows=1875 elapsed=0.0
+cached_raw rank=146 cu2304.SHFE SHFE.cu2304 rows=1200 elapsed=0.0
+cached_raw rank=147 ru2205.SHFE SHFE.ru2205 rows=824 elapsed=0.0
+cached_raw rank=148 sp2501.SHFE SHFE.sp2501 rows=1875 elapsed=0.0
+cached_raw rank=149 OI309.CZCE CZCE.OI309 rows=6705 elapsed=0.0
+cached_raw rank=150 ru2105.SHFE SHFE.ru2105 rows=2774 elapsed=0.0
+cached_raw rank=151 sp2301.SHFE SHFE.sp2301 rows=2565 elapsed=0.0
+cached_raw rank=152 cu2402.SHFE SHFE.cu2402 rows=2804 elapsed=0.0
+cached_raw rank=153 cu2309.SHFE SHFE.cu2309 rows=3974 elapsed=0.0
+cached_raw rank=154 au2212.SHFE SHFE.au2212 rows=2025 elapsed=0.0
+cached_raw rank=155 jm2505.DCE DCE.jm2505 rows=479 elapsed=0.0
+cached_raw rank=156 SM310.CZCE CZCE.SM310 rows=4080 elapsed=0.0
+cached_raw rank=157 au2506.SHFE SHFE.au2506 rows=5580 elapsed=0.0
+cached_raw rank=158 CF405.CZCE CZCE.CF405 rows=8639 elapsed=0.0
+cached_raw rank=159 CF401.CZCE CZCE.CF401 rows=1514 elapsed=0.0
+cached_raw rank=160 ru2601.SHFE SHFE.ru2601 rows=495 elapsed=0.0
+cached_raw rank=161 SM201.CZCE CZCE.SM201 rows=1814 elapsed=0.0
+cached_raw rank=162 sp2103.SHFE SHFE.sp2103 rows=2220 elapsed=0.0
+cached_raw rank=163 sp2106.SHFE SHFE.sp2106 rows=1859 elapsed=0.0
+cached_raw rank=164 au2504.SHFE SHFE.au2504 rows=2564 elapsed=0.0
+cached_raw rank=165 sp2105.SHFE SHFE.sp2105 rows=2565 elapsed=0.0
+cached_raw rank=166 SM409.CZCE CZCE.SM409 rows=1830 elapsed=0.0
+cached_raw rank=167 MA405.CZCE CZCE.MA405 rows=479 elapsed=0.0
+cached_raw rank=168 SA309.CZCE CZCE.SA309 rows=1530 elapsed=0.0
+cached_raw rank=169 cu2312.SHFE SHFE.cu2312 rows=1200 elapsed=0.0
+cached_raw rank=170 ru2301.SHFE SHFE.ru2301 rows=720 elapsed=0.0
+cached_raw rank=171 MA009.CZCE CZCE.MA009 rows=1530 elapsed=0.0
+cached_raw rank=172 hc2105.SHFE SHFE.hc2105 rows=4154 elapsed=0.0
+cached_raw rank=173 cu2006.SHFE SHFE.cu2006 rows=3734 elapsed=0.0
+cached_raw rank=174 CF209.CZCE CZCE.CF209 rows=479 elapsed=0.0
+cached_raw rank=175 SA101.CZCE CZCE.SA101 rows=4635 elapsed=0.0
+cached_raw rank=176 OI201.CZCE CZCE.OI201 rows=8984 elapsed=0.0
+cached_raw rank=177 au2106.SHFE SHFE.au2106 rows=3135 elapsed=0.0
+cached_raw rank=178 au2102.SHFE SHFE.au2102 rows=2564 elapsed=0.0
+cached_raw rank=179 SA205.CZCE CZCE.SA205 rows=4170 elapsed=0.0
+cached_raw rank=180 cu2106.SHFE SHFE.cu2106 rows=6059 elapsed=0.0
+cached_raw rank=181 cu2201.SHFE SHFE.cu2201 rows=1184 elapsed=0.0
+cached_raw rank=182 jm2101.DCE DCE.jm2101 rows=2220 elapsed=0.0
+cached_raw rank=183 hc2101.SHFE SHFE.hc2101 rows=1169 elapsed=0.0
+cached_raw rank=184 SM209.CZCE CZCE.SM209 rows=1155 elapsed=0.0
+cached_raw rank=185 cu2012.SHFE SHFE.cu2012 rows=1200 elapsed=0.0
+cached_raw rank=186 CF005.CZCE CZCE.CF005 rows=2055 elapsed=0.0
+cached_raw rank=187 sp2201.SHFE SHFE.sp2201 rows=1859 elapsed=0.0
+cached_raw rank=188 OI205.CZCE CZCE.OI205 rows=495 elapsed=0.0
+cached_raw rank=189 SA009.CZCE CZCE.SA009 rows=3945 elapsed=0.0
+cached_raw rank=190 cu2303.SHFE SHFE.cu2303 rows=4215 elapsed=0.0
+cached_raw rank=191 cu2310.SHFE SHFE.cu2310 rows=2130 elapsed=0.0
+cached_raw rank=192 cu2101.SHFE SHFE.cu2101 rows=10484 elapsed=0.0
+cached_raw rank=193 cu2308.SHFE SHFE.cu2308 rows=1200 elapsed=0.0
+cached_raw rank=194 cu2010.SHFE SHFE.cu2010 rows=1649 elapsed=0.0
+cached_raw rank=195 rb2301.SHFE SHFE.rb2301 rows=824 elapsed=0.0
+cached_raw rank=196 rb2101.SHFE SHFE.rb2101 rows=824 elapsed=0.0
+cached_raw rank=197 cu2104.SHFE SHFE.cu2104 rows=3060 elapsed=0.0
+cached_raw rank=198 cu2102.SHFE SHFE.cu2102 rows=1200 elapsed=0.0
+cached_raw rank=199 FG005.CZCE CZCE.FG005 rows=689 elapsed=0.0
+cached_raw rank=200 ru2005.SHFE SHFE.ru2005 rows=1859 elapsed=0.0
+cached_raw rank=201 SM009.CZCE CZCE.SM009 rows=2489 elapsed=0.0
+cached_raw rank=202 hc2005.SHFE SHFE.hc2005 rows=705 elapsed=0.0
+cached_raw rank=203 lh2605.DCE DCE.lh2605 rows=1155 elapsed=0.0
+cached_raw rank=204 si2509.GFEX GFEX.si2509 rows=2955 elapsed=0.0
+cached_raw rank=205 SH409.CZCE CZCE.SH409 rows=150 elapsed=0.0
+cached_raw rank=206 lh2303.DCE DCE.lh2303 rows=239 elapsed=0.0
+cached_raw rank=207 lh2603.DCE DCE.lh2603 rows=30 elapsed=0.0
+cached_raw rank=208 AP605.CZCE CZCE.AP605 rows=30 elapsed=0.0
+cached_raw rank=209 lc2507.GFEX GFEX.lc2507 rows=30 elapsed=0.0
+cached_raw rank=210 SH405.CZCE CZCE.SH405 rows=3480 elapsed=0.0
+cached_raw rank=211 si2502.GFEX GFEX.si2502 rows=1380 elapsed=0.0
+cached_raw rank=212 SH605.CZCE CZCE.SH605 rows=495 elapsed=0.0
+cached_raw rank=213 AP510.CZCE CZCE.AP510 rows=1830 elapsed=0.0
+cached_raw rank=214 lh2411.DCE DCE.lh2411 rows=1380 elapsed=0.0
+cached_raw rank=215 lh2203.DCE DCE.lh2203 rows=255 elapsed=0.0
+cached_raw rank=216 si2310.GFEX GFEX.si2310 rows=705 elapsed=0.0
+cached_raw rank=217 si2605.GFEX GFEX.si2605 rows=255 elapsed=0.0
+cached_raw rank=218 SH603.CZCE CZCE.SH603 rows=495 elapsed=0.0
+cached_raw rank=219 lh2503.DCE DCE.lh2503 rows=239 elapsed=0.0
+cached_raw rank=220 AP101.CZCE CZCE.AP101 rows=4080 elapsed=0.0
+cached_raw rank=221 AP201.CZCE CZCE.AP201 rows=3164 elapsed=0.0
+cached_raw rank=222 si2501.GFEX GFEX.si2501 rows=1380 elapsed=0.0
+cached_raw rank=223 lh2505.DCE DCE.lh2505 rows=2489 elapsed=0.0
+cached_raw rank=224 AP010.CZCE CZCE.AP010 rows=2714 elapsed=0.0
+cached_raw rank=225 AP005.CZCE CZCE.AP005 rows=914 elapsed=0.0
+cached_raw rank=226 ru2609.SHFE SHFE.ru2609 rows=150 elapsed=0.0
+cached_raw rank=227 MA609.CZCE CZCE.MA609 rows=14 elapsed=0.0
+cached_raw rank=228 SH607.CZCE CZCE.SH607 rows=359 elapsed=0.0
+{
+  "model_tag": "stage449_minute_session_rebuild_full_v1",
+  "line_id": "futures_trend_drawdown30_preserve_return",
+  "generated_at": "2026-05-28 04:51:06",
+  "target_scope": "all",
+  "symbol_offset": 0,
+  "max_symbols": 0,
+  "selected_symbols": 228,
+  "extracted_or_cached_symbols": 228,
+  "failed_or_timeout_or_empty_symbols": 0,
+  "extracted_minute_bars": 1453601,
+  "target_windows": 3561,
+  "covered_windows": 1624,
+  "coverage_rate": 0.4560516708789666,
+  "covered_trade_count": 692,
+  "valid_same_day_close_trade_count": 547,
+  "valid_next_open_trade_count": 624,
+  "invalid_same_day_close_count": 145,
+  "invalid_next_open_count": 0,
+  "same_last5_large_mismatch_count": 345,
+  "same_last5_large_mismatch_rate": 0.6307129798903108,
+  "real_open_vs_daily_next_open_large_mismatch_count": 321,
+  "real_open_vs_daily_next_open_large_mismatch_rate": 0.5144230769230769,
+  "max_same_last5_abs_minus_same_close": 79860.0,
+  "max_same_last5_abs_minus_same_close_valid": 4008.0,
+  "max_real_open_abs_minus_daily_next_open": 6000.0,
+  "max_real_open_abs_minus_daily_next_open_valid": 6000.0,
+  "preferred_real_open_cash_delta_vs_same_close": -1736968162.06,
+  "preferred_real_open_cash_delta_vs_same_close_valid_same_close": 120068722.90000002,
+  "same_last5_cash_delta_vs_same_close_valid_same_close": 109785288.58800001,
+  "decision": "session_proxy_mismatch_confirmed_extend_full_rebuild",
+  "outputs": {
+    "extract_status": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_extract_status_stage449_minute_session_rebuild_full_v1.csv",
+    "minute_bars": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_minute_bars_stage449_minute_session_rebuild_full_v1.csv",
+    "window_coverage": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_window_coverage_stage449_minute_session_rebuild_full_v1.csv",
+    "proxy_prices": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_proxy_prices_stage449_minute_session_rebuild_full_v1.csv",
+    "ledger_proxy_detail": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_ledger_proxy_detail_stage449_minute_session_rebuild_full_v1.csv",
+    "metric_summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_metric_summary_stage449_minute_session_rebuild_full_v1.csv",
+    "symbol_summary": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_symbol_summary_stage449_minute_session_rebuild_full_v1.csv",
+    "report": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_report_stage449_minute_session_rebuild_full_v1.md"
+  },
+  "next_step": "继续分批扩展到全量Stage443订单，完成分钟会话执行ledger后再比较Stage079/Stage103与任何新候选。"
+}
+wrote: /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage449_minute_session_rebuild_full_report_stage449_minute_session_rebuild_full_v1.md
