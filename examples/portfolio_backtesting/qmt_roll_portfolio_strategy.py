@@ -258,6 +258,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_volatility_budget_min_scale: float = 0.0
     portfolio_volatility_budget_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
     enable_portfolio_volatility_budget_deleverage: bool = False
+    enable_portfolio_margin_deleverage: bool = False
+    portfolio_margin_deleverage_start_ratio: float = 0.90
+    portfolio_margin_deleverage_full_ratio: float = 1.10
+    portfolio_margin_deleverage_min_pressure: float = 0.50
+    portfolio_margin_deleverage_layer_kinds: str = "add,donchian"
+    portfolio_margin_deleverage_broker_multiplier: float = 1.10
     enable_portfolio_overheat_cooldown: bool = False
     portfolio_overheat_cooldown_near_high_drawdown_pct: float = 0.05
     portfolio_overheat_cooldown_hot20_threshold: float = 0.50
@@ -484,6 +490,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_volatility_budget_min_scale",
         "portfolio_volatility_budget_entry_contexts",
         "enable_portfolio_volatility_budget_deleverage",
+        "enable_portfolio_margin_deleverage",
+        "portfolio_margin_deleverage_start_ratio",
+        "portfolio_margin_deleverage_full_ratio",
+        "portfolio_margin_deleverage_min_pressure",
+        "portfolio_margin_deleverage_layer_kinds",
+        "portfolio_margin_deleverage_broker_multiplier",
         "enable_portfolio_overheat_cooldown",
         "portfolio_overheat_cooldown_near_high_drawdown_pct",
         "portfolio_overheat_cooldown_hot20_threshold",
@@ -590,6 +602,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_volatility_budget_scale",
         "portfolio_volatility_budget_realized_annual_vol",
         "portfolio_volatility_budget_deleverage_count",
+        "portfolio_margin_deleverage_count",
+        "portfolio_margin_deleverage_pressure",
+        "portfolio_margin_deleverage_ratio",
         "portfolio_overheat_cooldown_scale",
         "portfolio_overheat_cooldown_reason",
         "portfolio_overheat_cooldown_deleverage_count",
@@ -672,6 +687,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.portfolio_volatility_budget_scale_history: list[dict[str, Any]] = []
         self.portfolio_volatility_budget_last_equity: float = self.base_capital
         self.portfolio_volatility_budget_deleverage_count: int = 0
+        self.portfolio_margin_deleverage_count: int = 0
+        self.portfolio_margin_deleverage_pressure: float = 0.0
+        self.portfolio_margin_deleverage_ratio: float = 0.0
         self.portfolio_overheat_cooldown_scale: float = 1.0
         self.portfolio_overheat_cooldown_reason: str = ""
         self.portfolio_overheat_cooldown_prior_drawdown_pct: float = 0.0
@@ -1094,6 +1112,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self.last_signal = f"{product_vt}:{heat_deleverage_reason}"
                 continue
 
+            portfolio_margin_deleverage_reason: str = self._process_portfolio_margin_deleverage(state, target_bar)
+            if portfolio_margin_deleverage_reason:
+                self.last_signal = f"{product_vt}:{portfolio_margin_deleverage_reason}"
+                continue
+
             portfolio_deleverage_reason: str = self._process_portfolio_drawdown_deleverage(state, target_bar)
             if portfolio_deleverage_reason:
                 self.last_signal = f"{product_vt}:{portfolio_deleverage_reason}"
@@ -1408,6 +1431,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.total_margin_in_use = self._estimate_margin_usage(bars)
         self.cluster_margin_usage = self._estimate_margin_usage_by_cluster(bars)
         self.cluster_unrealized_pnl = self._estimate_unrealized_pnl_by_cluster(bars)
+        self._refresh_portfolio_margin_deleverage_state()
         self.risk_cluster_margin_in_use = max(self.cluster_margin_usage.values(), default=0.0)
         self.risk_cluster_unrealized_loss_in_use = max(
             (max(0.0, -float(value)) for value in self.cluster_unrealized_pnl.values()),
@@ -4837,6 +4861,69 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         exit_reason = f"{direction}_risk_cluster_heat_deleverage"
         self._close_layers(state, triggered_indexes, exit_price, exit_reason=exit_reason)
         self.risk_cluster_heat_deleverage_count += 1
+        self._record_trade_event(
+            bar=bar,
+            contract_vt_symbol=contract_vt_symbol,
+            product_vt_symbol=product_vt_symbol,
+            position_direction=direction,
+            offset="Close",
+            reason=exit_reason,
+            volume=closed_volume,
+            price=exit_price,
+        )
+        if state.layers:
+            self._apply_state_target(state, execution_price_override=exit_price)
+        else:
+            if exit_price > 0:
+                self.execution_price_overrides[contract_vt_symbol] = exit_price
+            self.set_target(contract_vt_symbol, 0)
+        return exit_reason
+
+    def _refresh_portfolio_margin_deleverage_state(self) -> None:
+        if not self.enable_portfolio_margin_deleverage:
+            self.portfolio_margin_deleverage_pressure = 0.0
+            self.portfolio_margin_deleverage_ratio = 0.0
+            return
+        equity = max(1e-9, float(self.estimated_equity or self.base_capital))
+        broker_multiplier = max(0.0, float(self.portfolio_margin_deleverage_broker_multiplier or 1.0))
+        margin_ratio = max(0.0, float(self.total_margin_in_use or 0.0)) * broker_multiplier / equity
+        self.portfolio_margin_deleverage_ratio = margin_ratio
+        self.portfolio_margin_deleverage_pressure = self._linear_pressure(
+            margin_ratio,
+            float(self.portfolio_margin_deleverage_start_ratio or 0.0),
+            float(self.portfolio_margin_deleverage_full_ratio or 0.0),
+        )
+
+    def _portfolio_margin_deleverage_layer_kind_set(self) -> set[str]:
+        kinds = {
+            item.strip()
+            for item in str(self.portfolio_margin_deleverage_layer_kinds or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return kinds or {"add", "donchian"}
+
+    def _process_portfolio_margin_deleverage(self, state: ProductState, bar: BarData) -> str:
+        if not self.enable_portfolio_margin_deleverage:
+            return ""
+        if not state.layers or not state.contract_vt_symbol:
+            return ""
+        pressure = float(self.portfolio_margin_deleverage_pressure or 0.0)
+        if pressure < max(0.0, float(self.portfolio_margin_deleverage_min_pressure or 0.0)):
+            return ""
+
+        layer_kinds = self._portfolio_margin_deleverage_layer_kind_set()
+        triggered_indexes = [index for index, layer in enumerate(state.layers) if layer.kind in layer_kinds]
+        if not triggered_indexes:
+            return ""
+
+        contract_vt_symbol = state.contract_vt_symbol
+        product_vt_symbol = state.product_vt_symbol
+        direction = state.direction
+        exit_price = float(bar.close_price)
+        closed_volume = sum(state.layers[index].volume for index in triggered_indexes)
+        exit_reason = f"{direction}_portfolio_margin_deleverage"
+        self._close_layers(state, triggered_indexes, exit_price, exit_reason=exit_reason)
+        self.portfolio_margin_deleverage_count += 1
         self._record_trade_event(
             bar=bar,
             contract_vt_symbol=contract_vt_symbol,
