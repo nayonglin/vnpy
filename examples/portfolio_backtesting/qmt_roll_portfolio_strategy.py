@@ -279,6 +279,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     product_direction_failure_cooldown_min_consecutive_failures: int = 3
     product_direction_failure_cooldown_days: int = 90
     product_direction_failure_cooldown_entry_contexts: str = "flat_entry"
+    enable_failure_memory_micro_sizing: bool = False
+    failure_memory_micro_sizing_lookback_days: int = 252
+    failure_memory_micro_sizing_min_consecutive_failures: int = 2
+    failure_memory_micro_sizing_multiplier: float = 1.10
+    failure_memory_micro_sizing_entry_contexts: str = "flat_entry"
     enable_same_direction_correlation_gate: bool = False
     same_direction_correlation_gate_lookback: int = 20
     same_direction_correlation_gate_start: float = 0.60
@@ -313,6 +318,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_ai_product_pool_filter: bool = False
     ai_product_pool_eligibility_path: str = ""
     ai_product_pool_strategy: str = "ai_top8_entry_filter"
+    ai_product_pool_use_next_trade_date_for_entry: bool = False
     enable_supply_demand_headwind_filter: bool = False
     supply_demand_signal_path: str = ""
     supply_demand_headwind_threshold: float = -0.35
@@ -511,6 +517,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "product_direction_failure_cooldown_min_consecutive_failures",
         "product_direction_failure_cooldown_days",
         "product_direction_failure_cooldown_entry_contexts",
+        "enable_failure_memory_micro_sizing",
+        "failure_memory_micro_sizing_lookback_days",
+        "failure_memory_micro_sizing_min_consecutive_failures",
+        "failure_memory_micro_sizing_multiplier",
+        "failure_memory_micro_sizing_entry_contexts",
         "enable_same_direction_correlation_gate",
         "same_direction_correlation_gate_lookback",
         "same_direction_correlation_gate_start",
@@ -545,6 +556,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_ai_product_pool_filter",
         "ai_product_pool_eligibility_path",
         "ai_product_pool_strategy",
+        "ai_product_pool_use_next_trade_date_for_entry",
         "enable_supply_demand_headwind_filter",
         "supply_demand_signal_path",
         "supply_demand_headwind_threshold",
@@ -609,6 +621,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_overheat_cooldown_reason",
         "portfolio_overheat_cooldown_deleverage_count",
         "product_direction_failure_cooldown_count",
+        "failure_memory_micro_sizing_count",
         "current_risk_per_trade",
         "risk_multiplier",
         "loss_streak",
@@ -633,6 +646,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.daily_mapping: dict[str, dict[str, str]] = build_daily_mapping(
             mapping_path,
             supported_symbols=supported_symbols,
+        )
+        self.available_trade_dates: list[pd.Timestamp] = sorted(
+            pd.Timestamp(item).normalize() for item in self.daily_mapping
         )
         metadata: dict[str, Any] = build_contract_metadata(
             mapping_path,
@@ -701,6 +717,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.product_direction_outcome_history: dict[tuple[str, str], list[dict[str, Any]]] = {}
         self.product_direction_failure_cooldown_count: int = 0
         self.product_direction_failure_cooldown_events: list[dict[str, Any]] = []
+        self.failure_memory_micro_sizing_count: int = 0
         self.current_bar_date: pd.Timestamp | None = None
         self.pending_margin_reservation: float = 0.0
         self.pending_cluster_margin_reservation: dict[str, float] = {}
@@ -795,6 +812,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             normalized_date = normalized_date.tz_localize(None)
         normalized_date = normalized_date.normalize()
         eval_index = pd.DatetimeIndex(self.ai_product_pool_eval_dates)
+        # eval_date is treated as a completed signal snapshot. On the exact
+        # eval_date, keep using the prior snapshot; the new one is tradable
+        # from the next trade date unless the caller explicitly shifts the
+        # effective date via _ai_product_pool_entry_effective_date().
         signal_index = int(eval_index.searchsorted(normalized_date, side="left") - 1)
         if signal_index < 0:
             # Before the first out-of-sample AI signal, keep the original strategy unchanged.
@@ -813,6 +834,36 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         snapshot["ai_product_pool_rank"] = int(product_row.get("rank", 0) or 0)
         snapshot["ai_product_pool_top_n"] = int(product_row.get("top_n", 0) or 0)
         return snapshot
+
+    def _ai_product_pool_entry_allowed(
+        self,
+        product_vt_symbol: str,
+        trade_date: pd.Timestamp,
+    ) -> tuple[bool, dict[str, Any]]:
+        effective_date = self._ai_product_pool_entry_effective_date(trade_date)
+        snapshot = self._ai_product_pool_snapshot(product_vt_symbol, effective_date)
+        snapshot["ai_product_pool_use_next_trade_date_for_entry"] = int(
+            bool(self.ai_product_pool_use_next_trade_date_for_entry)
+        )
+        snapshot["ai_product_pool_entry_effective_date"] = effective_date.date().isoformat()
+        if not self.enable_ai_product_pool_filter:
+            return True, snapshot
+        return int(snapshot.get("ai_product_pool_allowed", 1) or 0) == 1, snapshot
+
+    def _ai_product_pool_entry_effective_date(self, trade_date: pd.Timestamp) -> pd.Timestamp:
+        normalized_date = pd.Timestamp(trade_date)
+        if normalized_date.tz is not None:
+            normalized_date = normalized_date.tz_localize(None)
+        normalized_date = normalized_date.normalize()
+        if not self.ai_product_pool_use_next_trade_date_for_entry:
+            return normalized_date
+        if not self.available_trade_dates:
+            return normalized_date
+        trade_index = pd.DatetimeIndex(self.available_trade_dates)
+        next_index = int(trade_index.searchsorted(normalized_date, side="right"))
+        if next_index >= len(trade_index):
+            return normalized_date
+        return pd.Timestamp(trade_index[next_index]).normalize()
 
     def _load_supply_demand_signals(self) -> None:
         path = Path(str(self.supply_demand_signal_path or ""))
@@ -1191,8 +1242,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             signal_data,
                             entry_context="reverse_entry",
                         )
+                        ai_allowed, ai_product_pool_snapshot = self._ai_product_pool_entry_allowed(
+                            state.product_vt_symbol,
+                            pd.Timestamp(target_bar.datetime).normalize(),
+                        )
+                        sizing.update(ai_product_pool_snapshot)
                         volume = int(sizing["selected_volume"])
-                        if volume > 0:
+                        if ai_allowed and volume > 0:
                             self._open_position(
                                 state,
                                 target_contract,
@@ -1233,8 +1289,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             signal_data,
                             entry_context="reverse_entry",
                         )
+                        ai_allowed, ai_product_pool_snapshot = self._ai_product_pool_entry_allowed(
+                            state.product_vt_symbol,
+                            pd.Timestamp(target_bar.datetime).normalize(),
+                        )
+                        sizing.update(ai_product_pool_snapshot)
                         volume = int(sizing["selected_volume"])
-                        if volume > 0:
+                        if ai_allowed and volume > 0:
                             self._open_position(
                                 state,
                                 target_contract,
@@ -1263,7 +1324,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "regular_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "regular_add")
                 add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "regular_add")
-                if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
+                ai_allowed, _ = self._ai_product_pool_entry_allowed(
+                    state.product_vt_symbol,
+                    pd.Timestamp(target_bar.datetime).normalize(),
+                )
+                if (
+                    ai_allowed
+                    and add_volume > 0
+                    and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price)
+                ):
                     self._execute_regular_add(state, target_bar, add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
@@ -1282,7 +1351,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "donchian_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "donchian_add")
                 add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "donchian_add")
-                if add_volume > 0 and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price):
+                ai_allowed, _ = self._ai_product_pool_entry_allowed(
+                    state.product_vt_symbol,
+                    pd.Timestamp(target_bar.datetime).normalize(),
+                )
+                if (
+                    ai_allowed
+                    and add_volume > 0
+                    and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price)
+                ):
                     self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
@@ -1764,6 +1841,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         contexts = self._product_direction_failure_cooldown_context_set()
         return "*" in contexts or entry_context in contexts
 
+    def _failure_memory_micro_sizing_context_set(self) -> set[str]:
+        raw_contexts = str(self.failure_memory_micro_sizing_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.replace(";", ",").replace("|", ",").split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
+
+    def _failure_memory_micro_sizing_context_applies(self, entry_context: str) -> bool:
+        contexts = self._failure_memory_micro_sizing_context_set()
+        return "*" in contexts or entry_context in contexts
+
     @staticmethod
     def _product_direction_failure_cooldown_date(value: Any) -> pd.Timestamp:
         return pd.Timestamp(value).tz_localize(None).normalize()
@@ -1774,7 +1866,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         direction: str,
         realized_pnl: float,
     ) -> None:
-        if not self.enable_product_direction_failure_cooldown:
+        if not (self.enable_product_direction_failure_cooldown or self.enable_failure_memory_micro_sizing):
             return
         product = str(product_vt_symbol or "").strip()
         side = str(direction or "").strip()
@@ -1792,7 +1884,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "realized_pnl": float(realized_pnl),
             }
         )
-        lookback = max(1, int(self.product_direction_failure_cooldown_lookback_days or 252))
+        lookbacks: list[int] = []
+        if self.enable_product_direction_failure_cooldown:
+            lookbacks.append(max(1, int(self.product_direction_failure_cooldown_lookback_days or 252)))
+        if self.enable_failure_memory_micro_sizing:
+            lookbacks.append(max(1, int(self.failure_memory_micro_sizing_lookback_days or 252)))
+        lookback = max(lookbacks or [252])
         prune_before = exit_date - pd.Timedelta(days=max(lookback * 3, lookback + 365))
         self.product_direction_outcome_history[key] = [
             item
@@ -1877,6 +1974,85 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             fields["product_direction_failure_cooldown_reason"] = "cooldown_expired"
         else:
             fields["product_direction_failure_cooldown_reason"] = "below_failure_threshold"
+        return fields
+
+    def _failure_memory_micro_sizing_fields(
+        self,
+        *,
+        product_vt_symbol: str,
+        direction: str,
+        entry_context: str,
+        asof: pd.Timestamp,
+        base_multiplier: float,
+    ) -> dict[str, Any]:
+        enabled = int(
+            self.enable_failure_memory_micro_sizing
+            and self._failure_memory_micro_sizing_context_applies(entry_context)
+        )
+        lookback_days = max(1, int(self.failure_memory_micro_sizing_lookback_days or 252))
+        min_failures = max(1, int(self.failure_memory_micro_sizing_min_consecutive_failures or 2))
+        configured_multiplier = max(0.0, float(self.failure_memory_micro_sizing_multiplier or 1.0))
+        base_multiplier = max(0.0, float(base_multiplier or 0.0))
+        fields: dict[str, Any] = {
+            "failure_memory_micro_sizing_enabled": enabled,
+            "failure_memory_micro_sizing_applied": 0,
+            "failure_memory_micro_sizing_reason": "disabled" if not enabled else "no_recent_failures",
+            "failure_memory_micro_sizing_lookback_days": lookback_days,
+            "failure_memory_micro_sizing_min_consecutive_failures": min_failures,
+            "failure_memory_micro_sizing_multiplier": configured_multiplier,
+            "failure_memory_micro_sizing_base_multiplier": base_multiplier,
+            "failure_memory_micro_sizing_effective_multiplier": base_multiplier,
+            "failure_memory_micro_sizing_consecutive_failures": 0,
+            "failure_memory_micro_sizing_last_failure_exit_date": "",
+            "failure_memory_micro_sizing_days_since_last_failure": math.nan,
+        }
+        if not enabled:
+            return fields
+
+        product = str(product_vt_symbol or "").strip()
+        side = str(direction or "").strip()
+        if not product or side not in {"long", "short"}:
+            fields["failure_memory_micro_sizing_reason"] = "invalid_product_or_direction"
+            return fields
+
+        asof_date = self._product_direction_failure_cooldown_date(asof)
+        lookback_start = asof_date - pd.Timedelta(days=lookback_days)
+        events = [
+            item
+            for item in self.product_direction_outcome_history.get((product, side), [])
+            if lookback_start <= self._product_direction_failure_cooldown_date(item["exit_date"]) < asof_date
+        ]
+        if not events:
+            return fields
+
+        events.sort(key=lambda item: self._product_direction_failure_cooldown_date(item["exit_date"]))
+        consecutive_failures = 0
+        last_failure_date: pd.Timestamp | None = None
+        for item in reversed(events):
+            pnl = float(item.get("realized_pnl", 0.0) or 0.0)
+            if pnl <= 0.0:
+                consecutive_failures += 1
+                if last_failure_date is None:
+                    last_failure_date = self._product_direction_failure_cooldown_date(item["exit_date"])
+                continue
+            break
+
+        fields["failure_memory_micro_sizing_consecutive_failures"] = int(consecutive_failures)
+        if last_failure_date is None:
+            fields["failure_memory_micro_sizing_reason"] = "last_trade_was_win"
+            return fields
+
+        fields["failure_memory_micro_sizing_last_failure_exit_date"] = last_failure_date.date().isoformat()
+        fields["failure_memory_micro_sizing_days_since_last_failure"] = int((asof_date - last_failure_date).days)
+        if consecutive_failures >= min_failures:
+            effective_multiplier = base_multiplier * configured_multiplier
+            fields["failure_memory_micro_sizing_effective_multiplier"] = effective_multiplier
+            fields["failure_memory_micro_sizing_applied"] = int(effective_multiplier > base_multiplier + 1e-12)
+            fields["failure_memory_micro_sizing_reason"] = (
+                "consecutive_failures_micro_sizing" if fields["failure_memory_micro_sizing_applied"] else "no_multiplier_lift"
+            )
+        else:
+            fields["failure_memory_micro_sizing_reason"] = "below_failure_threshold"
         return fields
 
     def _rollover_reopen_drawdown_guard_fields(self) -> dict[str, Any]:
@@ -2717,7 +2893,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         volume = int(sizing["selected_volume"])
         native_openable = self._is_native_openable_candidate(signal, direction, volume)
         skip_reason = ""
-        ai_product_pool_snapshot = self._ai_product_pool_snapshot(
+        ai_allowed, ai_product_pool_snapshot = self._ai_product_pool_entry_allowed(
             context.product_vt_symbol,
             pd.Timestamp(context.target_bar.datetime).normalize(),
         )
@@ -2785,10 +2961,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 skip_reason = "supply_demand_headwind_blocked"
             else:
                 skip_reason = "sizing_zero_volume"
-        elif (
-            self.enable_ai_product_pool_filter
-            and int(ai_product_pool_snapshot.get("ai_product_pool_allowed", 1) or 0) == 0
-        ):
+        elif not ai_allowed:
             native_openable = False
             skip_reason = "ai_product_pool_blocked"
 
@@ -3377,6 +3550,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             sizing["remaining_position_slots"] = plan["remaining_position_slots"]
             plan["sizing"] = sizing
+            if (
+                plan.get("candidate_status") == "opened"
+                and int(sizing.get("failure_memory_micro_sizing_applied") or 0)
+            ):
+                self.failure_memory_micro_sizing_count += 1
 
         for plan in candidate_plans:
             if plan["native_openable"]:
@@ -3662,6 +3840,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 self._current_streak_multiplier(),
             )
         )
+        product_vt_symbol = self.source_symbol_by_contract.get(vt_symbol, self._product_vt_symbol(vt_symbol))
+        failure_memory_fields = self._failure_memory_micro_sizing_fields(
+            product_vt_symbol=product_vt_symbol,
+            direction=direction,
+            entry_context=entry_context,
+            asof=pd.Timestamp(bar.datetime).normalize(),
+            base_multiplier=effective_risk_multiplier,
+        )
+        effective_risk_multiplier = float(
+            failure_memory_fields.get(
+                "failure_memory_micro_sizing_effective_multiplier",
+                effective_risk_multiplier,
+            )
+            or effective_risk_multiplier
+        )
         overheat_cooldown_fields = self._portfolio_overheat_cooldown_fields(entry_context)
         overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
         sizing_equity_fields = self._sizing_equity_snapshot()
@@ -3723,6 +3916,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
                 **sizing_equity_fields,
                 **recovery_fields,
+                **failure_memory_fields,
                 **overheat_cooldown_fields,
                 **cluster_cap_fields,
                 **heat_gate_fields,
@@ -3813,6 +4007,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "effective_max_concurrent_positions": self._effective_max_concurrent_positions(entry_context),
             **sizing_equity_fields,
             **recovery_fields,
+            **failure_memory_fields,
             **overheat_cooldown_fields,
             **cluster_cap_fields,
             **heat_gate_fields,
@@ -4092,6 +4287,44 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_mode": str(sizing_snapshot.get("risk_mode", signal_data.get("risk_mode", "regular"))),
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "failure_memory_micro_sizing_enabled": int(
+                    sizing_snapshot.get("failure_memory_micro_sizing_enabled") or 0
+                ),
+                "failure_memory_micro_sizing_applied": int(
+                    sizing_snapshot.get("failure_memory_micro_sizing_applied") or 0
+                ),
+                "failure_memory_micro_sizing_reason": str(
+                    sizing_snapshot.get("failure_memory_micro_sizing_reason") or ""
+                ),
+                "failure_memory_micro_sizing_lookback_days": int(
+                    sizing_snapshot.get("failure_memory_micro_sizing_lookback_days") or 0
+                ),
+                "failure_memory_micro_sizing_min_consecutive_failures": int(
+                    sizing_snapshot.get("failure_memory_micro_sizing_min_consecutive_failures") or 0
+                ),
+                "failure_memory_micro_sizing_multiplier": float(
+                    sizing_snapshot.get("failure_memory_micro_sizing_multiplier") or 1.0
+                ),
+                "failure_memory_micro_sizing_base_multiplier": float(
+                    sizing_snapshot.get("failure_memory_micro_sizing_base_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "failure_memory_micro_sizing_effective_multiplier": float(
+                    sizing_snapshot.get("failure_memory_micro_sizing_effective_multiplier")
+                    or sizing_snapshot.get("risk_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "failure_memory_micro_sizing_consecutive_failures": int(
+                    sizing_snapshot.get("failure_memory_micro_sizing_consecutive_failures") or 0
+                ),
+                "failure_memory_micro_sizing_last_failure_exit_date": str(
+                    sizing_snapshot.get("failure_memory_micro_sizing_last_failure_exit_date") or ""
+                ),
+                "failure_memory_micro_sizing_days_since_last_failure": float(
+                    sizing_snapshot.get("failure_memory_micro_sizing_days_since_last_failure")
+                    if sizing_snapshot.get("failure_memory_micro_sizing_days_since_last_failure") is not None
+                    else float("nan")
+                ),
                 "streak_entry_structure_risk_recovery_enabled": int(
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_enabled") or 0
                 ),
@@ -4389,6 +4622,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "ai_product_pool_enabled": int(sizing_snapshot.get("ai_product_pool_enabled") or 0),
                 "ai_product_pool_strategy": str(sizing_snapshot.get("ai_product_pool_strategy") or ""),
                 "ai_product_pool_allowed": int(sizing_snapshot.get("ai_product_pool_allowed") or 0),
+                "ai_product_pool_use_next_trade_date_for_entry": int(
+                    sizing_snapshot.get("ai_product_pool_use_next_trade_date_for_entry") or 0
+                ),
+                "ai_product_pool_entry_effective_date": str(
+                    sizing_snapshot.get("ai_product_pool_entry_effective_date") or ""
+                ),
                 "ai_product_pool_signal_date": str(sizing_snapshot.get("ai_product_pool_signal_date") or ""),
                 "ai_product_pool_score": float(sizing_snapshot.get("ai_product_pool_score") or 0.0),
                 "ai_product_pool_rank": int(sizing_snapshot.get("ai_product_pool_rank") or 0),
