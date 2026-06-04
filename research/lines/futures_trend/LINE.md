@@ -4,11 +4,14 @@
 
 - 资产：商品期货。
 - 策略类型：趋势/组合选择/资金约束。
-- 正式基准：Stage78-1 `official_stage78_1_defensive_50w_no_sizing_cap`。
+- 历史正式基准：Stage78-1 `official_stage78_1_defensive_50w_no_sizing_cap`。
+- 当前实盘默认已于 2026-06-04 切换到 Stage653 20万：`official_live_stage653_20w_force95_to80`。本线保留 Stage78-1 为研究对照和执行安全资产，不再作为实盘默认 signal source。
 - 重要隔离：这是趋势线，不能被震荡策略研究直接修改。
 
 ## 当前状态
 
+- Stage360/Stage295 已完成实盘官方口径切换：新增 `qmt_roll_official_live_config.py`，当前 official live 版本为 Stage653 20万 `force95_to80`；Stage242 Phase B 草案与 Stage260 执行闸门默认读取 Stage653 signal_plan，不再回落到 Stage78。Stage78-1 50万 Stage294 结果保留为历史对照：`500,000 -> 460,720`，收益 `-7.8560%`，最大回撤 `-33.0387%`，目标日信号 `0`，order API `0`。
+- Stage294 已完成 `2026-06-04` 数据更新、6 月 AI 池生成和 Stage78-1 50万历史对照影子盘：主力映射/日线已补到 `2026-06-04`，AI 池 eval date 为 `2026-05-29`，Top9 为 `SA.CZCE, si.GFEX, FG.CZCE, MA.CZCE, OI.CZCE, jm.DCE, AP.CZCE, rb.SHFE, fu.SHFE`。Stage188 年初至今结果为 `500,000 -> 460,720`，总收益 `-7.8560%`，最大回撤 `-33.0387%`，Sharpe `-0.4153`，总滑点 `5,910`，交易 `34`，胜率 `18.75%`，目标日理论信号 `0`，风险级别 `watch/drawdown_watch`，order API 调用 `0`。结论：旧 AI 池确实需要更新；该 50万口径不再作为当前实盘默认提交来源。
 - Stage78-1是默认正式基准，当前口径为50万本金、关闭100万sizing封顶：
   - 期末权益`25,542,885`
   - 总收益`5008.5770%`
@@ -18,7 +21,7 @@
   - 交易`880`
   - 胜率待专项复跑确认
 - 30万口径已从当前执行入口隔离：只能作为历史对照，不能用于78-1影子盘、SimNow、Phase B或实盘默认流程。
-- 当前可运行入口必须读取 `OFFICIAL_STAGE78_CAPITAL=500000`，优先使用不含`30w`的 `stage78_1` canonical runner。
+- 当前实盘可运行入口必须读取 `qmt_roll_official_live_config.py`，使用 `OFFICIAL_LIVE_CAPITAL=200000` 和 Stage653 signal_plan。`OFFICIAL_STAGE78_CAPITAL=500000` 只适用于 Stage78 历史对照 runner。
 - Stage225已完成`78-1` AI选品开/关消融：
   - AI ON主回测期末权益`25,542,885`，总收益`5008.5770%`，最大回撤`-40.0607%`，Sharpe`1.1295`
   - AI OFF主回测期末权益`7,588,545`，总收益`1417.7090%`，最大回撤`-46.6939%`，Sharpe`0.7214`
@@ -128,9 +131,9 @@
   - Stage251 Fresh Pre-submit Gate 已通过，且真实 `submit/send_order` 调用次数仍为 `0`
   - 7x24 前置当前仍不可用，但不影响交易时段第一套 SimNow 虚拟盘路径
   - 下一步可以做 SimNow-only 最小委托链路测试；若策略信号是平仓，必须先确认 SimNow 账户有对应持仓，否则不能对空仓发送平仓单
-- Stage257 已新增 `skills/stage78-simnow-shadow-sop/SKILL.md`：
+- Stage257 已新增 `skills/futures-live-execution-sop/SKILL.md`：
   - `AGENTS.md` 已加入触发规则，后续涉及Stage78-1每日影子盘、SimNow虚拟盘、Phase B闸门、AI池月更、`review`风险解释和每日对账时应先读取该skill
-  - skill 固化50万口径、月度AI池、`review`只允许降风险、SimNow空仓不得平仓、默认dry-run、账号密码不入库等规则
+  - skill 当前已切换为 Stage653 20万 official live 口径；月度AI池、`review`只允许降风险、SimNow空仓不得平仓、默认dry-run、账号密码不入库等规则继续保留
   - 本阶段不改策略、不跑回测、不发单；下一步仍是 SimNow-only 最小委托链路测试
 - Stage258 已落地 SimNow-only 1手 smoke order 脚本并完成 dry-run：
   - 新增 `run_ctp_stage258_simnow_smoke_order.py/.sh`
@@ -181,7 +184,7 @@
   - 7x24 SimNow 快照为 `confirmed_flat`，非零持仓 `0`
   - Stage260 执行闸门输出 `skip_broker_flat_for_close`，委托API调用次数 `0`
   - 当前不提交委托；等待下一个交易日或真实持仓与理论信号对齐
-- Stage266 已更新 `skills/stage78-simnow-shadow-sop/SKILL.md`：
+- Stage266 已更新 `skills/futures-live-execution-sop/SKILL.md`：
   - 新增 `Daily 7x24 Dry-Run Gate` 小节，固化 Stage173 -> Stage188 -> Stage177(7x24) -> Stage260 -> Stage251 的顺序
   - 明确 `review` 禁止新增开仓，`confirmed_flat + close signal` 必须跳过
   - 明确 `order_api_called_count` 必须保持 `0`，理论影子持仓不得覆盖 SimNow 真实持仓

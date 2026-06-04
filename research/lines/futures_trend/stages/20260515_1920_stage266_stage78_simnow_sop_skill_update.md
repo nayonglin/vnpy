@@ -10,15 +10,15 @@
 
 ## 外部调研与判断
 
-- 参考资料：读取 `skills/stage78-simnow-shadow-sop/SKILL.md` 与系统 `skill-creator` 规范。
+- 参考资料：读取 `skills/futures-live-execution-sop/SKILL.md` 与系统 `skill-creator` 规范。
 - 我的判断：本次不是新能力，属于现有 Stage78-1 SimNow SOP 的子流程固化；应更新现有 skill，而不是新建 skill。
 
 ## 本次变更
 
 - 新增脚本：无
 - 修改脚本：
-  - `skills/stage78-simnow-shadow-sop/SKILL.md`
-  - `skills/stage78-simnow-shadow-sop/agents/openai.yaml`
+  - `skills/futures-live-execution-sop/SKILL.md`
+  - `skills/futures-live-execution-sop/agents/openai.yaml`
 - 删除脚本：无
 - 新增参数：无
 - 修改参数：无
@@ -26,7 +26,7 @@
 
 ## 变更内容
 
-- 在 `stage78-simnow-shadow-sop` 中新增 `Daily 7x24 Dry-Run Gate` 小节。
+- 在 `futures-live-execution-sop` 中新增 `Daily 7x24 Dry-Run Gate` 小节。
 - 固化顺序：
   1. Stage173 更新主力映射和日线。
   2. Stage188 跑 50万最新 AI 池影子盘。
@@ -45,8 +45,8 @@
 
 ## 输出文件
 
-- skill：`skills/stage78-simnow-shadow-sop/SKILL.md`
-- UI metadata：`skills/stage78-simnow-shadow-sop/agents/openai.yaml`
+- skill：`skills/futures-live-execution-sop/SKILL.md`
+- UI metadata：`skills/futures-live-execution-sop/agents/openai.yaml`
 
 ## 结论
 

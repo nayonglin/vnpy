@@ -192,6 +192,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     incremental_margin_budget_gate_usage_ratio: float = -1.0
     incremental_margin_budget_gate_min_openable_candidates: int = 1
     incremental_margin_budget_gate_protected_selection_rank: int = 0
+    incremental_margin_budget_gate_reduce_volume: bool = False
+    incremental_margin_budget_gate_entry_contexts: str = "flat_entry"
     risk_ratio_of_total_assets: float = 0.01
     risk_ratio_breakout: float = 0.01
     risk_ratio_ma_cross_breakout: float = 0.01
@@ -264,6 +266,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_margin_deleverage_min_pressure: float = 0.50
     portfolio_margin_deleverage_layer_kinds: str = "add,donchian"
     portfolio_margin_deleverage_broker_multiplier: float = 1.10
+    enable_forced_margin_deleverage: bool = False
+    forced_margin_deleverage_trigger_ratio: float = 0.95
+    forced_margin_deleverage_target_ratio: float = 0.80
+    forced_margin_deleverage_broker_multiplier: float = 1.10
+    forced_margin_deleverage_priority: str = "largest_margin"
+    forced_margin_deleverage_max_reductions_per_day: int = 100
     enable_portfolio_overheat_cooldown: bool = False
     portfolio_overheat_cooldown_near_high_drawdown_pct: float = 0.05
     portfolio_overheat_cooldown_hot20_threshold: float = 0.50
@@ -430,6 +438,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "incremental_margin_budget_gate_usage_ratio",
         "incremental_margin_budget_gate_min_openable_candidates",
         "incremental_margin_budget_gate_protected_selection_rank",
+        "incremental_margin_budget_gate_reduce_volume",
+        "incremental_margin_budget_gate_entry_contexts",
         "risk_ratio_of_total_assets",
         "risk_ratio_breakout",
         "risk_ratio_ma_cross_breakout",
@@ -502,6 +512,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_margin_deleverage_min_pressure",
         "portfolio_margin_deleverage_layer_kinds",
         "portfolio_margin_deleverage_broker_multiplier",
+        "enable_forced_margin_deleverage",
+        "forced_margin_deleverage_trigger_ratio",
+        "forced_margin_deleverage_target_ratio",
+        "forced_margin_deleverage_broker_multiplier",
+        "forced_margin_deleverage_priority",
+        "forced_margin_deleverage_max_reductions_per_day",
         "enable_portfolio_overheat_cooldown",
         "portfolio_overheat_cooldown_near_high_drawdown_pct",
         "portfolio_overheat_cooldown_hot20_threshold",
@@ -617,6 +633,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "portfolio_margin_deleverage_count",
         "portfolio_margin_deleverage_pressure",
         "portfolio_margin_deleverage_ratio",
+        "forced_margin_deleverage_count",
+        "forced_margin_deleverage_closed_volume",
+        "forced_margin_deleverage_ratio",
+        "forced_margin_deleverage_max_observed_ratio",
         "portfolio_overheat_cooldown_scale",
         "portfolio_overheat_cooldown_reason",
         "portfolio_overheat_cooldown_deleverage_count",
@@ -706,6 +726,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.portfolio_margin_deleverage_count: int = 0
         self.portfolio_margin_deleverage_pressure: float = 0.0
         self.portfolio_margin_deleverage_ratio: float = 0.0
+        self.forced_margin_deleverage_count: int = 0
+        self.forced_margin_deleverage_closed_volume: int = 0
+        self.forced_margin_deleverage_ratio: float = 0.0
+        self.forced_margin_deleverage_max_observed_ratio: float = 0.0
+        self.forced_margin_deleverage_events: list[dict[str, Any]] = []
         self.portfolio_overheat_cooldown_scale: float = 1.0
         self.portfolio_overheat_cooldown_reason: str = ""
         self.portfolio_overheat_cooldown_prior_drawdown_pct: float = 0.0
@@ -1324,6 +1349,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "regular_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "regular_add")
                 add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "regular_add")
+                regular_margin_per_contract = (
+                    float(target_bar.close_price)
+                    * self.get_size(state.contract_vt_symbol)
+                    * self._margin_ratio_for_symbol(state.contract_vt_symbol)
+                )
+                add_volume, _ = self._incremental_margin_budget_gate_adjust_volume(
+                    selected_volume=add_volume,
+                    margin_per_contract=regular_margin_per_contract,
+                    entry_context="regular_add",
+                )
                 ai_allowed, _ = self._ai_product_pool_entry_allowed(
                     state.product_vt_symbol,
                     pd.Timestamp(target_bar.datetime).normalize(),
@@ -1351,6 +1386,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "donchian_add")
                 add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "donchian_add")
                 add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "donchian_add")
+                donchian_margin_per_contract = (
+                    float(target_bar.close_price)
+                    * self.get_size(state.contract_vt_symbol)
+                    * self._margin_ratio_for_symbol(state.contract_vt_symbol)
+                )
+                add_volume, _ = self._incremental_margin_budget_gate_adjust_volume(
+                    selected_volume=add_volume,
+                    margin_per_contract=donchian_margin_per_contract,
+                    entry_context="donchian_add",
+                )
                 ai_allowed, _ = self._ai_product_pool_entry_allowed(
                     state.product_vt_symbol,
                     pd.Timestamp(target_bar.datetime).normalize(),
@@ -1366,6 +1411,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     self.last_signal = f"{product_vt}:{don_add_type}"
 
         self.rebalance_portfolio(bars)
+        forced_count_before = self.forced_margin_deleverage_count
+        self._process_forced_margin_deleverage(bars)
+        if self.forced_margin_deleverage_count > forced_count_before:
+            self.rebalance_portfolio(bars)
         self._record_portfolio_volatility_budget_daily_return()
         self._record_portfolio_overheat_cooldown_daily_equity()
         self.settled_balance = self.estimated_equity
@@ -2235,6 +2284,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             ratio = self._effective_capital_usage_ratio(entry_context)
         return max(0.0, self._sizing_equity() * ratio)
 
+    def _incremental_margin_budget_gate_context_applies(self, entry_context: str) -> bool:
+        contexts = {
+            item.strip()
+            for item in str(self.incremental_margin_budget_gate_entry_contexts or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        return "*" in contexts or str(entry_context or "").strip() in contexts
+
     def _incremental_margin_budget_gate_fields(
         self,
         *,
@@ -2251,33 +2308,87 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         protected_by_rank = int(protected_rank > 0 and 0 < selection_rank <= protected_rank)
         gate_enabled = int(
             self.enable_incremental_margin_budget_gate
-            and entry_context == "flat_entry"
+            and self._incremental_margin_budget_gate_context_applies(entry_context)
             and int(openable_candidate_count) >= min_candidates
         )
         reserved_margin_before = self._reserved_margin_in_use()
-        planned_margin = max(0.0, float(margin_per_contract) * max(0, int(selected_volume)))
+        selected_volume_before = max(0, int(selected_volume))
+        planned_margin_before = max(0.0, float(margin_per_contract) * selected_volume_before)
         budget = self._incremental_margin_budget_gate_allowed_capital(entry_context)
         projected_before = reserved_margin_before + max(0.0, float(planned_intraday_margin_before))
-        projected_after = projected_before + planned_margin
+        projected_after_before = projected_before + planned_margin_before
+        reduce_volume_enabled = int(
+            gate_enabled
+            and self.incremental_margin_budget_gate_reduce_volume
+            and not protected_by_rank
+        )
+        remaining_budget = max(0.0, budget - projected_before)
+        if gate_enabled and float(margin_per_contract) > 0.0:
+            max_affordable_volume = int(remaining_budget // float(margin_per_contract))
+        else:
+            max_affordable_volume = selected_volume_before
+        selected_volume_after = selected_volume_before
+        if reduce_volume_enabled and projected_after_before > budget + 1e-9:
+            selected_volume_after = min(selected_volume_before, max(0, max_affordable_volume))
+            if 0 < selected_volume_after < self.min_position_size:
+                selected_volume_after = 0
+        planned_margin_after = max(0.0, float(margin_per_contract) * max(0, int(selected_volume_after)))
+        projected_after = projected_before + planned_margin_after
         passed = (not gate_enabled) or bool(protected_by_rank) or projected_after <= budget + 1e-9
         return {
             "incremental_margin_budget_gate_enabled": gate_enabled,
+            "incremental_margin_budget_gate_reduce_volume_enabled": reduce_volume_enabled,
             "incremental_margin_budget_gate_min_openable_candidates": min_candidates,
             "incremental_margin_budget_gate_openable_candidate_count": int(openable_candidate_count),
             "incremental_margin_budget_gate_protected_selection_rank": protected_rank,
             "incremental_margin_budget_gate_candidate_selection_rank": selection_rank,
             "incremental_margin_budget_gate_protected_by_rank": protected_by_rank,
             "incremental_margin_budget_gate_budget": budget,
+            "incremental_margin_budget_gate_remaining_budget": remaining_budget,
+            "incremental_margin_budget_gate_max_affordable_volume": max_affordable_volume,
+            "incremental_margin_budget_gate_selected_volume_before": selected_volume_before,
+            "incremental_margin_budget_gate_selected_volume_after": selected_volume_after,
+            "incremental_margin_budget_gate_volume_reduced": int(selected_volume_after < selected_volume_before),
             "incremental_margin_budget_gate_reserved_margin_before": reserved_margin_before,
             "incremental_margin_budget_gate_planned_intraday_margin_before": max(
                 0.0,
                 float(planned_intraday_margin_before),
             ),
-            "incremental_margin_budget_gate_planned_entry_margin": planned_margin,
+            "incremental_margin_budget_gate_planned_entry_margin_before": planned_margin_before,
+            "incremental_margin_budget_gate_planned_entry_margin": planned_margin_after,
             "incremental_margin_budget_gate_projected_margin_before": projected_before,
+            "incremental_margin_budget_gate_projected_margin_after_before_reduction": projected_after_before,
             "incremental_margin_budget_gate_projected_margin_after": projected_after,
             "incremental_margin_budget_gate_passed": int(passed),
         }
+
+    def _incremental_margin_budget_gate_adjust_volume(
+        self,
+        *,
+        selected_volume: int,
+        margin_per_contract: float,
+        entry_context: str,
+        planned_intraday_margin_before: float = 0.0,
+        openable_candidate_count: int = 1,
+        selection_pairwise_rank: int = 0,
+    ) -> tuple[int, dict[str, Any]]:
+        gate_fields = self._incremental_margin_budget_gate_fields(
+            planned_intraday_margin_before=planned_intraday_margin_before,
+            selected_volume=max(0, int(selected_volume)),
+            margin_per_contract=float(margin_per_contract or 0.0),
+            openable_candidate_count=openable_candidate_count,
+            selection_pairwise_rank=selection_pairwise_rank,
+            entry_context=entry_context,
+        )
+        adjusted_volume = max(
+            0,
+            int(gate_fields.get("incremental_margin_budget_gate_selected_volume_after", selected_volume) or 0),
+        )
+        if int(gate_fields["incremental_margin_budget_gate_enabled"]) and not int(
+            gate_fields["incremental_margin_budget_gate_passed"]
+        ):
+            adjusted_volume = 0
+        return adjusted_volume, gate_fields
 
     def _single_trade_capital_limit(self) -> float:
         return max(0.0, self._sizing_equity() * self.max_single_trade_capital_usage_ratio)
@@ -3485,12 +3596,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 entry_context="flat_entry",
             )
             sizing.update(gate_fields)
+            selected_volume_before_gate = selected_volume
+            selected_volume = max(
+                0,
+                int(gate_fields.get("incremental_margin_budget_gate_selected_volume_after", selected_volume) or 0),
+            )
+            sizing["selected_volume"] = selected_volume
             plan["active_positions_before"] = active_positions_before
             plan["remaining_position_slots"] = max(0, effective_max_positions - active_positions_before)
             plan["volume"] = selected_volume
             if selected_volume <= 0:
                 plan["candidate_status"] = "skipped"
-                plan["skip_reason"] = "sizing_zero_volume"
+                if (
+                    selected_volume_before_gate > 0
+                    and int(gate_fields["incremental_margin_budget_gate_enabled"])
+                    and int(gate_fields.get("incremental_margin_budget_gate_reduce_volume_enabled") or 0)
+                ):
+                    plan["skip_reason"] = "incremental_margin_budget_gate"
+                else:
+                    plan["skip_reason"] = "sizing_zero_volume"
             elif active_positions_before >= effective_max_positions:
                 plan["candidate_status"] = "skipped"
                 plan["skip_reason"] = "concurrent_limit"
@@ -3894,6 +4018,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 entry_context=entry_context,
                 apply_env_gate=apply_env_gate,
             )
+            incremental_gate_fields: dict[str, Any] = {}
+            if entry_context != "flat_entry":
+                adjusted_volume, incremental_gate_fields = self._incremental_margin_budget_gate_adjust_volume(
+                    selected_volume=int(env_gate_fields["selected_volume"]),
+                    margin_per_contract=margin_per_contract,
+                    entry_context=entry_context,
+                )
+                env_gate_fields["selected_volume"] = adjusted_volume
             return {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
                 "risk_ratio": None,
@@ -3921,6 +4053,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **cluster_cap_fields,
                 **heat_gate_fields,
                 **env_gate_fields,
+                **incremental_gate_fields,
             }
 
         limited_balance: float = self._limited_available_balance(entry_context)
@@ -3984,6 +4117,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             entry_context=entry_context,
             apply_env_gate=apply_env_gate,
         )
+        incremental_gate_fields = {}
+        if entry_context != "flat_entry":
+            adjusted_volume, incremental_gate_fields = self._incremental_margin_budget_gate_adjust_volume(
+                selected_volume=int(env_gate_fields["selected_volume"]),
+                margin_per_contract=margin_per_contract,
+                entry_context=entry_context,
+            )
+            env_gate_fields["selected_volume"] = adjusted_volume
 
         return {
             "risk_mode": risk_mode,
@@ -4012,6 +4153,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **cluster_cap_fields,
             **heat_gate_fields,
             **env_gate_fields,
+            **incremental_gate_fields,
         }
 
     def _calculate_entry_volume(
@@ -4396,8 +4538,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "incremental_margin_budget_gate_protected_by_rank": int(
                     sizing_snapshot.get("incremental_margin_budget_gate_protected_by_rank") or 0
                 ),
+                "incremental_margin_budget_gate_reduce_volume_enabled": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_reduce_volume_enabled") or 0
+                ),
                 "incremental_margin_budget_gate_budget": float(
                     sizing_snapshot.get("incremental_margin_budget_gate_budget") or 0.0
+                ),
+                "incremental_margin_budget_gate_remaining_budget": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_remaining_budget") or 0.0
+                ),
+                "incremental_margin_budget_gate_max_affordable_volume": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_max_affordable_volume") or 0
+                ),
+                "incremental_margin_budget_gate_selected_volume_before": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_selected_volume_before") or selected_volume
+                ),
+                "incremental_margin_budget_gate_selected_volume_after": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_selected_volume_after") or selected_volume
+                ),
+                "incremental_margin_budget_gate_volume_reduced": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_volume_reduced") or 0
                 ),
                 "incremental_margin_budget_gate_reserved_margin_before": float(
                     sizing_snapshot.get("incremental_margin_budget_gate_reserved_margin_before") or 0.0
@@ -4410,6 +4570,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "incremental_margin_budget_gate_projected_margin_before": float(
                     sizing_snapshot.get("incremental_margin_budget_gate_projected_margin_before") or 0.0
+                ),
+                "incremental_margin_budget_gate_projected_margin_after_before_reduction": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_projected_margin_after_before_reduction") or 0.0
                 ),
                 "incremental_margin_budget_gate_projected_margin_after": float(
                     sizing_snapshot.get("incremental_margin_budget_gate_projected_margin_after") or 0.0
@@ -4800,6 +4963,27 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),
                 "selected_volume": sizing_snapshot.get("selected_volume"),
                 "selected_volume_ungated": sizing_snapshot.get("selected_volume_ungated"),
+                "incremental_margin_budget_gate_reduce_volume_enabled": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_reduce_volume_enabled") or 0
+                ),
+                "incremental_margin_budget_gate_budget": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_budget") or 0.0
+                ),
+                "incremental_margin_budget_gate_remaining_budget": float(
+                    sizing_snapshot.get("incremental_margin_budget_gate_remaining_budget") or 0.0
+                ),
+                "incremental_margin_budget_gate_max_affordable_volume": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_max_affordable_volume") or 0
+                ),
+                "incremental_margin_budget_gate_selected_volume_before": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_selected_volume_before") or 0
+                ),
+                "incremental_margin_budget_gate_selected_volume_after": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_selected_volume_after") or 0
+                ),
+                "incremental_margin_budget_gate_volume_reduced": int(
+                    sizing_snapshot.get("incremental_margin_budget_gate_volume_reduced") or 0
+                ),
                 "env_gate_enabled": int(sizing_snapshot.get("env_gate_enabled") or 0),
                 "env_gate_weight": float(sizing_snapshot.get("env_gate_weight") or 1.0),
                 "env_candidate_count": int(sizing_snapshot.get("env_candidate_count") or 0),
@@ -5140,6 +5324,146 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if item.strip()
         }
         return kinds or {"add", "donchian"}
+
+    def _forced_margin_deleverage_candidates(self, bars: dict[str, BarData]) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for state in self.states.values():
+            if not state.layers or not state.contract_vt_symbol:
+                continue
+            bar: BarData | None = bars.get(state.contract_vt_symbol)
+            if bar is None:
+                continue
+            volume: int = state.active_volume()
+            if volume <= 0:
+                continue
+            size: int = self.get_size(state.contract_vt_symbol)
+            close_price: float = float(bar.close_price)
+            margin_ratio: float = self._margin_ratio_for_symbol(state.contract_vt_symbol)
+            margin_per_contract: float = max(0.0, close_price * size * margin_ratio)
+            if margin_per_contract <= 0:
+                continue
+            unrealized_pnl: float = 0.0
+            for layer in state.layers:
+                if layer.direction == "long":
+                    unrealized_pnl += (close_price - float(layer.entry_price)) * size * int(layer.volume)
+                else:
+                    unrealized_pnl += (float(layer.entry_price) - close_price) * size * int(layer.volume)
+            rows.append(
+                {
+                    "state": state,
+                    "bar": bar,
+                    "volume": volume,
+                    "margin_per_contract": margin_per_contract,
+                    "margin": margin_per_contract * volume,
+                    "unrealized_pnl": unrealized_pnl,
+                }
+            )
+        priority = str(self.forced_margin_deleverage_priority or "largest_margin").strip().lower()
+        if priority == "largest_unrealized_loss":
+            rows.sort(key=lambda row: (float(row["unrealized_pnl"]), -float(row["margin"])))
+        elif priority == "largest_volume":
+            rows.sort(key=lambda row: (-int(row["volume"]), -float(row["margin"])))
+        else:
+            rows.sort(key=lambda row: (-float(row["margin"]), float(row["unrealized_pnl"])))
+        return rows
+
+    def _process_forced_margin_deleverage(self, bars: dict[str, BarData]) -> None:
+        if not self.enable_forced_margin_deleverage:
+            self.forced_margin_deleverage_ratio = 0.0
+            return
+        if not bars:
+            return
+
+        trigger_ratio: float = max(0.0, float(self.forced_margin_deleverage_trigger_ratio or 0.0))
+        target_ratio: float = max(0.0, float(self.forced_margin_deleverage_target_ratio or 0.0))
+        if trigger_ratio <= 0.0 or target_ratio <= 0.0:
+            return
+        target_ratio = min(target_ratio, trigger_ratio)
+        broker_multiplier: float = max(0.0, float(self.forced_margin_deleverage_broker_multiplier or 1.0))
+        if broker_multiplier <= 0.0:
+            return
+
+        equity: float = max(1e-9, float(self.estimated_equity or self.base_capital))
+        max_reductions: int = max(1, int(self.forced_margin_deleverage_max_reductions_per_day or 1))
+        reductions: int = 0
+
+        while reductions < max_reductions:
+            current_margin: float = self._estimate_margin_usage(bars)
+            current_ratio: float = current_margin * broker_multiplier / equity
+            self.forced_margin_deleverage_ratio = current_ratio
+            self.forced_margin_deleverage_max_observed_ratio = max(
+                self.forced_margin_deleverage_max_observed_ratio,
+                current_ratio,
+            )
+            if current_ratio <= trigger_ratio + 1e-12:
+                break
+
+            target_margin: float = equity * target_ratio / broker_multiplier
+            margin_to_release: float = max(0.0, current_margin - target_margin)
+            candidates = self._forced_margin_deleverage_candidates(bars)
+            if not candidates:
+                break
+
+            candidate = candidates[0]
+            state: ProductState = candidate["state"]
+            bar: BarData = candidate["bar"]
+            volume: int = int(candidate["volume"])
+            margin_per_contract: float = max(1e-9, float(candidate["margin_per_contract"]))
+            reduce_volume: int = min(volume, max(1, int(math.ceil(margin_to_release / margin_per_contract))))
+            target_volume: int = max(0, volume - reduce_volume)
+            close_price: float = float(bar.close_price)
+            direction: str = state.direction
+            contract_vt_symbol: str = state.contract_vt_symbol
+            product_vt_symbol: str = state.product_vt_symbol
+            reason = "forced_margin_deleverage"
+
+            self._record_trade_event(
+                bar=bar,
+                contract_vt_symbol=contract_vt_symbol,
+                product_vt_symbol=product_vt_symbol,
+                position_direction=direction,
+                offset="Close",
+                reason=reason,
+                volume=reduce_volume,
+                price=close_price,
+            )
+            ratio_before = current_ratio
+            self._reduce_position_to_target(state, target_volume, close_price)
+            if state.layers:
+                self._apply_state_target(state, execution_price_override=close_price)
+            else:
+                if close_price > 0:
+                    self.execution_price_overrides[contract_vt_symbol] = close_price
+                self.set_target(contract_vt_symbol, 0)
+
+            ratio_after: float = self._estimate_margin_usage(bars) * broker_multiplier / equity
+            reductions += 1
+            self.forced_margin_deleverage_count += 1
+            self.forced_margin_deleverage_closed_volume += reduce_volume
+            self.forced_margin_deleverage_ratio = ratio_after
+            self.forced_margin_deleverage_events.append(
+                {
+                    "datetime": bar.datetime,
+                    "date": bar.datetime.date(),
+                    "vt_symbol": contract_vt_symbol,
+                    "product_vt_symbol": product_vt_symbol,
+                    "direction": direction,
+                    "priority": str(self.forced_margin_deleverage_priority or "largest_margin"),
+                    "trigger_ratio": trigger_ratio,
+                    "target_ratio": target_ratio,
+                    "broker_multiplier": broker_multiplier,
+                    "equity": equity,
+                    "margin_before": current_margin,
+                    "ratio_before": ratio_before,
+                    "margin_per_contract": margin_per_contract,
+                    "reduce_volume": reduce_volume,
+                    "volume_before": volume,
+                    "volume_after": target_volume,
+                    "price": close_price,
+                    "margin_after": self._estimate_margin_usage(bars),
+                    "ratio_after": ratio_after,
+                }
+            )
 
     def _process_portfolio_margin_deleverage(self, state: ProductState, bar: BarData) -> str:
         if not self.enable_portfolio_margin_deleverage:

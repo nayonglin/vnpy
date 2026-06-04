@@ -194,7 +194,11 @@ public:
                 " last=" + (last ? "true " : "false ") +
                 rsp_info(info) +
                 " Balance=" + std::to_string(account->Balance) +
-                " Available=" + std::to_string(account->Available));
+                " Available=" + std::to_string(account->Available) +
+                " CurrMargin=" + std::to_string(account->CurrMargin) +
+                " FrozenMargin=" + std::to_string(account->FrozenMargin) +
+                " FrozenCash=" + std::to_string(account->FrozenCash) +
+                " FrozenCommission=" + std::to_string(account->FrozenCommission));
         } else {
             log("OnRspQryTradingAccount reqid=" + std::to_string(reqid) + " last=" + (last ? "true " : "false ") + rsp_info(info));
         }

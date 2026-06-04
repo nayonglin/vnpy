@@ -1,0 +1,4 @@
+interface:
+  display_name: "期货实盘执行SOP"
+  short_description: "期货官方实盘/虚拟盘的影子盘、CTP闸门、AI池、smoke order和对账纪律。"
+  default_prompt: "Use $futures-live-execution-sop to run today's futures live-execution workflow: update data, use the current monthly AI pool, generate the shadow report and order draft, refresh the CTP read-only snapshot, run the execution gate, and state whether the next session may proceed to pre-submit or test-environment smoke order."

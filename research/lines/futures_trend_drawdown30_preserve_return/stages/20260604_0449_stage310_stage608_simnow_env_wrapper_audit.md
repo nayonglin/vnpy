@@ -22,7 +22,7 @@
 
 ## SOP 与外部调研判断
 
-- 已读取 `skills/stage78-simnow-shadow-sop/SKILL.md`。本阶段遵守默认 dry-run、50万口径、密码不入库、无显式确认不得连接/订阅/下单的纪律。
+- 已读取 `skills/futures-live-execution-sop/SKILL.md`。本阶段遵守默认 dry-run、50万口径、密码不入库、无显式确认不得连接/订阅/下单的纪律。
 - vn.py/CTP 网关标准路径支持 `connect(setting)` 后通过事件回调获得合约、账户、持仓、行情；`SubscribeRequest + main_engine.subscribe` 是只读 tick snapshot 的正确抽象。
 - `vnpy_ctp` 官方/文档资料确认 CTP gateway 是 VeighNa 的期货接口，环境参数应由连接配置提供；因此 SimNow front/default/env 放在 wrapper，而不是写死进策略或提交逻辑。
 

@@ -8,20 +8,36 @@ from typing import Any
 
 import pandas as pd
 
-from qmt_roll_official_stage78_config import OFFICIAL_STAGE78_SHORT_ALIAS, OFFICIAL_STAGE78_VERSION, build_official_stage78_manifest
+from pandas.errors import EmptyDataError
+
+from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
+    OFFICIAL_LIVE_SUMMARY_PATH,
+    OFFICIAL_LIVE_VERSION,
+    build_official_live_manifest,
+    build_official_live_risk_snapshot,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
 MODEL_TAG = "stage242_phaseb_order_draft_v1"
 OUTPUT_PREFIX = "qmt_roll_stage242_phaseb_order_draft"
 
-STAGE186_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage186_stage78_2026_50w_cold_start_summary_stage186_stage78_2026_50w_cold_start_v1.json"
-STAGE186_SIGNAL_PLAN_PATH = OUTPUT_DIR / "qmt_roll_stage186_stage78_2026_50w_cold_start_signal_plan_stage186_stage78_2026_50w_cold_start_v1.csv"
-STAGE238_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage238_balanced_tranche_shadow_daily_bundle_summary_20260430_stage238_balanced_tranche_shadow_daily_bundle_v1.json"
-
 
 def _read_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _read_csv_maybe(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path, encoding="utf-8-sig")
+    except EmptyDataError:
+        return pd.DataFrame()
 
 
 def _fmt(value: Any) -> str:
@@ -44,13 +60,58 @@ def _to_markdown(df: pd.DataFrame, columns: list[str], max_rows: int = 20) -> st
     return view.to_markdown(index=False)
 
 
-def _build_rows(signal_plan: pd.DataFrame, stage186_summary: dict[str, Any], stage238_summary: dict[str, Any]) -> pd.DataFrame:
-    trade_date = str(stage186_summary.get("target_date", ""))
-    risk = stage186_summary.get("risk_snapshot", {})
-    deploy = stage238_summary.get("balanced_tranche_status", {})
+def _live_deployment_status(live_summary: dict[str, Any]) -> dict[str, Any]:
+    variant = live_summary.get("current_variant", {}) or {}
+    equity = float(variant.get("end_equity", 0.0) or 0.0)
+    return {
+        "source": OFFICIAL_LIVE_VERSION,
+        "current_total_equity": equity,
+        "current_production_equity": equity,
+        "current_locked_equity": 0.0,
+        "current_expansion_equity": 0.0,
+        "gap_to_first_sweep": 0.0,
+        "historical_first_sweep_date": "",
+    }
+
+
+def _build_rows(signal_plan: pd.DataFrame, live_summary: dict[str, Any], deployment_status: dict[str, Any]) -> pd.DataFrame:
+    trade_date = str(live_summary.get("analysis_end", ""))
+    risk = build_official_live_risk_snapshot(live_summary)
     allow_real = int(risk.get("allow_real_new_orders", 0))
     reasons = ",".join(risk.get("reasons", []))
 
+    columns = [
+        "trade_date",
+        "intent_id",
+        "order_group_id",
+        "shadow_session_id",
+        "strategy_version",
+        "strategy_alias",
+        "approval_status",
+        "approval_required",
+        "blocked_reason",
+        "risk_level",
+        "allow_real_new_orders",
+        "deployment_gap_to_first_sweep",
+        "current_production_equity",
+        "historical_first_sweep_date",
+        "vt_symbol",
+        "direction",
+        "offset",
+        "planned_volume",
+        "theoretical_price",
+        "draft_order_price",
+        "draft_price_source",
+        "proxy_quality",
+        "operator_action",
+        "operator_id",
+        "operator_note",
+        "approved_at",
+        "submit_mode",
+        "pre_submit_check_status",
+        "broker_order_id",
+        "submit_status",
+    ]
     rows: list[dict[str, Any]] = []
     for idx, row in enumerate(signal_plan.to_dict(orient="records"), start=1):
         shadow_session_id = str(row.get("shadow_session_id", ""))
@@ -67,16 +128,16 @@ def _build_rows(signal_plan: pd.DataFrame, stage186_summary: dict[str, Any], sta
                 "intent_id": intent_id,
                 "order_group_id": order_group_id,
                 "shadow_session_id": shadow_session_id,
-                "strategy_version": OFFICIAL_STAGE78_VERSION,
-                "strategy_alias": OFFICIAL_STAGE78_SHORT_ALIAS,
+                "strategy_version": OFFICIAL_LIVE_VERSION,
+                "strategy_alias": OFFICIAL_LIVE_ALIAS,
                 "approval_status": initial_status,
                 "approval_required": 1 if allow_real else 0,
                 "blocked_reason": "" if allow_real else reasons,
                 "risk_level": risk.get("risk_level", ""),
                 "allow_real_new_orders": allow_real,
-                "deployment_gap_to_first_sweep": float(deploy.get("gap_to_first_sweep", 0.0)),
-                "current_production_equity": float(deploy.get("current_production_equity", 0.0)),
-                "historical_first_sweep_date": str(deploy.get("historical_first_sweep_date", "")),
+                "deployment_gap_to_first_sweep": float(deployment_status.get("gap_to_first_sweep", 0.0)),
+                "current_production_equity": float(deployment_status.get("current_production_equity", 0.0)),
+                "historical_first_sweep_date": str(deployment_status.get("historical_first_sweep_date", "")),
                 "vt_symbol": str(row.get("vt_symbol", "")),
                 "direction": str(row.get("direction", "")),
                 "offset": str(row.get("offset", "")),
@@ -95,24 +156,24 @@ def _build_rows(signal_plan: pd.DataFrame, stage186_summary: dict[str, Any], sta
                 "submit_status": "not_submitted",
             }
         )
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows, columns=columns)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build Phase B semi-auto order draft for Stage78-1.")
-    parser.add_argument("--trade-date", default="", help="Expected trade date. Defaults to Stage186 target_date.")
+    parser = argparse.ArgumentParser(description="Build Phase B semi-auto order draft for the official live profile.")
+    parser.add_argument("--trade-date", default="", help="Expected trade date. Defaults to official live summary analysis_end.")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    stage186_summary = _read_json(STAGE186_SUMMARY_PATH)
-    stage238_summary = _read_json(STAGE238_SUMMARY_PATH)
-    signal_plan = pd.read_csv(STAGE186_SIGNAL_PLAN_PATH)
+    live_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    deployment_status = _live_deployment_status(live_summary)
+    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
 
-    target_date = args.trade_date or str(stage186_summary.get("target_date", ""))
+    target_date = args.trade_date or str(live_summary.get("analysis_end", ""))
     if target_date:
-        stage186_summary["target_date"] = target_date
+        live_summary["analysis_end"] = target_date
 
-    draft_df = _build_rows(signal_plan, stage186_summary, stage238_summary)
+    draft_df = _build_rows(signal_plan, live_summary, deployment_status)
     date_key = target_date.replace("-", "") if target_date else "latest"
 
     draft_csv = OUTPUT_DIR / f"{OUTPUT_PREFIX}_draft_{date_key}_{MODEL_TAG}.csv"
@@ -124,15 +185,15 @@ def main() -> None:
     summary = {
         "model_tag": MODEL_TAG,
         "trade_date": target_date,
-        "strategy_version": OFFICIAL_STAGE78_VERSION,
-        "strategy_alias": OFFICIAL_STAGE78_SHORT_ALIAS,
+        "strategy_version": OFFICIAL_LIVE_VERSION,
+        "strategy_alias": OFFICIAL_LIVE_ALIAS,
         "signal_count": int(len(signal_plan)),
         "draft_count": int(len(draft_df)),
         "pending_manual_approval_count": int(draft_df["approval_status"].eq("pending_manual_approval").sum()) if not draft_df.empty else 0,
         "blocked_by_gate_count": int(draft_df["approval_status"].eq("blocked_by_gate").sum()) if not draft_df.empty else 0,
-        "risk_snapshot": stage186_summary.get("risk_snapshot", {}),
-        "deployment_status": stage238_summary.get("balanced_tranche_status", {}),
-        "official_manifest": build_official_stage78_manifest(),
+        "risk_snapshot": build_official_live_risk_snapshot(live_summary),
+        "deployment_status": deployment_status,
+        "official_manifest": build_official_live_manifest(),
         "outputs": {
             "draft_csv": str(draft_csv.resolve()),
             "summary_json": str(summary_json.resolve()),
@@ -151,15 +212,15 @@ def main() -> None:
         "# Stage242 Phase B Order Draft",
         "",
         f"- 交易日：`{target_date}`",
-        f"- 策略版本：`{OFFICIAL_STAGE78_VERSION}`",
-        f"- 策略别名：`{OFFICIAL_STAGE78_SHORT_ALIAS}`",
+        f"- 策略版本：`{OFFICIAL_LIVE_VERSION}`",
+        f"- 策略别名：`{OFFICIAL_LIVE_ALIAS}`",
         "- 目标：把当日信号转成 `Phase B` 待审批委托草案，不触发真实下单。",
         "",
         "## 风险与部署状态",
         "",
-        f"- 风险级别：`{stage186_summary.get('risk_snapshot', {}).get('risk_level', '')}`",
-        f"- 是否允许真实新增开仓：`{stage186_summary.get('risk_snapshot', {}).get('allow_real_new_orders', '')}`",
-        f"- 离首次提款阈值还差：`{float(stage238_summary.get('balanced_tranche_status', {}).get('gap_to_first_sweep', 0.0)):,.0f}`",
+        f"- 风险级别：`{build_official_live_risk_snapshot(live_summary).get('risk_level', '')}`",
+        f"- 是否允许真实新增开仓：`{build_official_live_risk_snapshot(live_summary).get('allow_real_new_orders', '')}`",
+        f"- 当前生产权益：`{float(deployment_status.get('current_production_equity', 0.0)):,.0f}`",
         "",
         "## 待审批委托草案",
         "",
@@ -183,6 +244,7 @@ def main() -> None:
         "",
         "- `approval_status=pending_manual_approval` 表示允许进入人工审批。",
         "- `approval_status=blocked_by_gate` 表示部署 gate 未通过，不得进入人工审批。",
+        "- 如果 official live `signal_plan` 为空，本阶段会生成空草案并保持 fail-closed，不回落到 Stage78。",
         "- 本阶段不做真实下单，只生成待审批对象。",
         "",
     ]

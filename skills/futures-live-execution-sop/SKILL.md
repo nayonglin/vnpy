@@ -1,17 +1,20 @@
 ---
-name: stage78-simnow-shadow-sop
-description: Use for Stage78-1 futures trend daily CTP/SimNow/broker-test shadow or virtual trading SOP, monthly AI pool cadence, CTP read-only checks, Phase B pre-submit gates, risk-level interpretation, smoke-order tests, and daily execution/reconciliation discipline. Trigger when the user asks about Stage78-1 virtual trading, shadow trading, SimNow, broker-test CTP, daily reports, AI pool timing, review/yellow-light risk status, order drafts, smoke orders, or whether a Stage78-1 signal may be submitted. Do not use for unrelated stock/range strategies or alpha optimization.
+name: futures-live-execution-sop
+description: Use for the futures trend official live execution profile and related CTP/SimNow/broker-test shadow or virtual trading SOP, monthly AI pool cadence, CTP read-only checks, Phase B pre-submit gates, risk-level interpretation, smoke-order tests, daily execution/reconciliation discipline, and whether a futures signal may be submitted. Trigger when the user asks about official live trading, current live candidate, virtual trading, shadow trading, SimNow, broker-test CTP, daily reports, AI pool timing, review/yellow-light risk status, order drafts, smoke orders, or next-session actionable orders. Do not use for unrelated stock/range strategies or alpha optimization.
 ---
 
-# Stage78-1 CTP/SimNow Shadow SOP
+# Futures Live Execution SOP
 
 ## Core Positioning
 
 This skill is an execution-discipline guide, not an alpha-research guide.
 
-- Line: `futures_trend`.
-- Strategy: Stage78-1 official trend baseline.
-- Capital: `500000` only. Treat old `30w` paths as historical references unless the user explicitly creates a new independent deployment variant.
+- Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
+- Current official live profile: `official_live_stage653_20w_force95_to80`.
+- Current line: `futures_trend_drawdown30_preserve_return`.
+- Current strategy: Stage653 / Stage526 20w `force95_to80_largest_margin_r080_pc25_maxpos4`.
+- Current capital: `200000` only for live/virtual execution.
+- Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
 - Account state source for virtual/live execution: CTP broker/SimNow snapshot, not historical shadow holdings.
 - Python: use `.py311/bin/python`.
 - Secrets: never write, print, or store CTP/SimNow passwords in repo files, reports, stage records, or chat. Read credentials only from local environment variables or local secure config.
@@ -20,8 +23,10 @@ Before running anything, read:
 
 1. `work-type.txt`
 2. `research/registry.md`
-3. `research/lines/futures_trend/LINE.md`
-4. `research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md` when AI pool timing matters
+3. `examples/portfolio_backtesting/qmt_roll_official_live_config.py`
+4. The current official line from the registry/config, currently `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+5. `research/lines/futures_trend/LINE.md` only when comparing against a historical baseline.
+6. `research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md` when AI pool timing matters.
 
 State at the start and end:
 
@@ -36,26 +41,26 @@ Use this after a completed trading day, normally after market data for that day 
 2. Update main-contract mapping and daily bars:
    - `examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py`
 3. Use the current month AI pool for daily signals. Do not retrain or rerank the AI pool every day.
-4. Run the canonical 50w Stage78-1 latest-AI-pool shadow runner:
-   - `examples/portfolio_backtesting/run_qmt_roll_stage188_stage78_1_2026_cold_start_latest_ai_pool.py`
+4. Run the canonical current-profile latest-AI-pool shadow runner:
+   - `examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py --target-date YYYY-MM-DD`
 5. Read the generated daily report and signal plan.
 6. Interpret risk level:
    - `base` or normal status: signal may proceed to broker-state gates.
    - `review`: shadow records continue, but SimNow/live execution may only close, reduce risk, or reconcile; do not open new positions.
    - missing/unknown risk state: fail closed.
-7. Write a Chinese stage record under `research/lines/futures_trend/stages/`.
+7. Write a Chinese stage record under `research/lines/futures_trend_drawdown30_preserve_return/stages/`.
 
 ## Daily 7x24 Dry-Run Gate
 
-Use this after the daily shadow report when the goal is to decide whether the next SimNow session has an actionable Stage78-1 order. This workflow is still dry-run; it must not call `send_order`.
+Use this after the daily shadow report when the goal is to decide whether the next SimNow session has an actionable official-live order. This workflow is still dry-run; it must not call `send_order`.
 
 1. Update data to the latest completed trading day:
    - `examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py --mapping-start YYYY-MM-01 --bar-start YYYY-MM-DD --end YYYY-MM-DD`
-2. Run the 50w latest-AI-pool shadow report for the same target date:
-   - `examples/portfolio_backtesting/run_qmt_roll_stage188_stage78_1_2026_cold_start_latest_ai_pool.py --target-date YYYY-MM-DD`
+2. Run the current-profile latest-AI-pool shadow report for the same target date:
+   - `examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py --target-date YYYY-MM-DD`
 3. Refresh SimNow 7x24 read-only broker state:
    - `SIMNOW_FRONT=7x24 examples/portfolio_backtesting/run_ctp_stage177_simnow_readonly_probe.sh --connect --wait-seconds 90`
-4. Run the daily execution gate:
+4. Run the official-live daily execution gate:
    - `examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py --max-snapshot-age-seconds 300`
 5. Interpret the gate result:
    - `simnow_executable`: may proceed to Stage251 fresh pre-submit gate; this still does not submit an order.
@@ -66,11 +71,11 @@ Use this after the daily shadow report when the goal is to decide whether the ne
    - `review` allows close/reduce/reconcile only; it blocks new opens.
    - Broker/SimNow positions override historical shadow positions.
    - A close signal requires a matching SimNow position in the opposite direction.
-7. Record a Chinese stage file under `research/lines/futures_trend/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
+7. Record a Chinese stage file under `research/lines/futures_trend_drawdown30_preserve_return/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
 
 ## Monthly AI Pool Cadence
 
-The AI pool is monthly, not daily.
+The AI pool is monthly, not daily. The current official live profile consumes the Stage182 monthly AI pool file unless a later official-live config replaces it.
 
 - Run monthly live inference only after the previous month last trading day has complete data.
 - Daily reports should use the current month pool.
@@ -132,7 +137,7 @@ Use this when the user has provided a broker CTP test/simulation account and exp
    - trade row count,
    - whether a residual position exists.
 7. A clean smoke test usually ends as `Cancelled` with `traded=0`. If it fills, immediately record the fill and reconcile the new test position; do not pretend it was only a connectivity test.
-8. Never use the smoke-order path for normal Stage78-1 strategy sizing. It only proves the broker adapter can submit and cancel one tiny test order.
+8. Never use the smoke-order path for normal strategy sizing. It only proves the broker adapter can submit and cancel one tiny test order.
 
 ## Broker CP Mac SDK / 414xx Isolated Workflow
 
@@ -250,7 +255,7 @@ Stop and ask or fail closed when:
 - credentials are requested in chat,
 - the command would send a real-money order,
 - broker state is missing or stale,
-- old `30w` Stage78 paths appear in an active execution route,
+- historical baseline or old capital paths appear in an active execution route without explicit user intent,
 - `review` risk tries to open a new position,
 - SimNow is flat but the proposed action is close-only,
 - AI pool is stale and the user is asking for an executable order.

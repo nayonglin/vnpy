@@ -9,8 +9,8 @@
 
 ## 本次变更
 
-- 新增本地 skill：`skills/stage78-simnow-shadow-sop/SKILL.md`
-- 新增 skill UI 元数据：`skills/stage78-simnow-shadow-sop/agents/openai.yaml`
+- 新增本地 skill：`skills/futures-live-execution-sop/SKILL.md`
+- 新增 skill UI 元数据：`skills/futures-live-execution-sop/agents/openai.yaml`
 - 更新 `AGENTS.md`：加入 Stage78-1 SimNow 虚拟盘 SOP 的触发规则
 
 ## 新增参数

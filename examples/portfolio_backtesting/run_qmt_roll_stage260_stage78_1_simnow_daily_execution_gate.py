@@ -9,13 +9,18 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
+    OFFICIAL_LIVE_SUMMARY_PATH,
+    OFFICIAL_LIVE_VERSION,
+    build_official_live_risk_snapshot,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
-MODEL_TAG = "stage260_stage78_1_simnow_daily_execution_gate_v1"
-OUTPUT_PREFIX = "qmt_roll_stage260_stage78_1_simnow_daily_execution_gate"
-STAGE188_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage188_stage78_2026_50w_latest_ai_pool_summary_stage188_stage78_2026_50w_latest_ai_pool_v1.json"
-STAGE188_SIGNAL_PLAN_PATH = OUTPUT_DIR / "qmt_roll_stage188_stage78_2026_50w_latest_ai_pool_signal_plan_stage188_stage78_2026_50w_latest_ai_pool_v1.csv"
+MODEL_TAG = "stage260_official_live_daily_execution_gate_v1"
+OUTPUT_PREFIX = "qmt_roll_stage260_official_live_daily_execution_gate"
 READONLY_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
 
 ACTIVE_ORDER_STATUSES = {
@@ -258,19 +263,19 @@ def _to_markdown(df: pd.DataFrame, columns: list[str], max_rows: int = 20) -> st
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Stage78-1 SimNow daily execution gate from latest shadow signal.")
+    parser = argparse.ArgumentParser(description="Official live daily execution gate from latest Stage653 signal.")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    stage188_summary = _read_json(STAGE188_SUMMARY_PATH)
-    signal_plan = _read_csv_maybe(STAGE188_SIGNAL_PLAN_PATH)
+    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     readonly_outputs = readonly_summary.get("outputs", {})
     positions = _read_csv_maybe(readonly_outputs.get("positions"))
     orders = _read_csv_maybe(readonly_outputs.get("orders"))
 
-    trade_date = str(stage188_summary.get("target_date", "latest"))
+    trade_date = str(official_summary.get("analysis_end", "latest"))
     paths = _paths(trade_date)
     generated_at = str(readonly_summary.get("generated_at", ""))
     generated_dt = _parse_generated_at(generated_at)
@@ -292,7 +297,7 @@ def main() -> None:
         ),
     }
     active_orders = _active_order_count(orders)
-    risk_snapshot = stage188_summary.get("risk_snapshot", {})
+    risk_snapshot = build_official_live_risk_snapshot(official_summary)
     decisions = pd.DataFrame(
         [
             _decision_for_signal(row, risk_snapshot, readonly_gate, positions, active_orders)
@@ -308,9 +313,11 @@ def main() -> None:
         "model_tag": MODEL_TAG,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "trade_date": trade_date,
-        "stage188_target_date": stage188_summary.get("target_date", ""),
-        "stage188_generated_at": stage188_summary.get("generated_at", ""),
-        "ai_pool_latest_eval_date": stage188_summary.get("ai_pool_audit", {}).get("max_eval_date", ""),
+        "official_live_version": OFFICIAL_LIVE_VERSION,
+        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "official_summary_analysis_end": official_summary.get("analysis_end", ""),
+        "official_summary_generated_at": official_summary.get("generated_at", ""),
+        "ai_pool_latest_eval_date": official_summary.get("ai_pool_audit", {}).get("max_eval_date", ""),
         "risk_snapshot": risk_snapshot,
         "readonly_gate": readonly_gate,
         "signal_count": int(len(signal_plan)),
@@ -329,10 +336,12 @@ def main() -> None:
     paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
 
     lines = [
-        "# Stage260 Stage78-1 SimNow Daily Execution Gate",
+        "# Stage260 Official Live Daily Execution Gate",
         "",
         f"- 目标交易日：`{trade_date}`",
-        f"- Stage188生成时间：`{stage188_summary.get('generated_at', '')}`",
+        f"- 官方实盘版本：`{OFFICIAL_LIVE_VERSION}`",
+        f"- 官方实盘别名：`{OFFICIAL_LIVE_ALIAS}`",
+        f"- 官方影子生成时间：`{official_summary.get('generated_at', '')}`",
         f"- AI池最新eval_date：`{summary['ai_pool_latest_eval_date']}`",
         f"- 风险级别：`{risk_snapshot.get('risk_level', '')}`",
         f"- 只读快照状态：`{readonly_gate['status']}` / `{readonly_gate['position_snapshot_state']}`",
@@ -363,6 +372,7 @@ def main() -> None:
         "## 说明",
         "",
         "- 本阶段只做执行闸门，不发单。",
+        "- 本阶段默认读取 Stage653/20万 official live `signal_plan`；没有信号时不回落到 Stage78。",
         "- `skip_broker_flat_for_close` 表示策略理论上要平仓，但SimNow账户没有对应持仓，不能对空仓发送平仓单。",
         "- `review` 风险级别允许降风险/平仓，但不允许新开仓。",
         "",

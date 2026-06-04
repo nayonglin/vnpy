@@ -36,7 +36,7 @@
 - 新增隔离 wrapper：
   - `examples/portfolio_backtesting/run_ctp_stage271_broker_cp_mac_sdk_readonly_probe.sh`
 - 更新 SOP：
-  - `skills/stage78-simnow-shadow-sop/SKILL.md`
+  - `skills/futures-live-execution-sop/SKILL.md`
 
 wrapper 特点：
 

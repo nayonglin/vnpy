@@ -10,7 +10,7 @@
 
 ## 外部调研与判断
 
-- 参考资料：仓库内 `skills/stage78-simnow-shadow-sop/SKILL.md`、Stage174 只读快照、Stage258 smoke-order 保险层。
+- 参考资料：仓库内 `skills/futures-live-execution-sop/SKILL.md`、Stage174 只读快照、Stage258 smoke-order 保险层。
 - 我的判断：
   - 用户需要给期货商证明“程序能正常下达开仓和平仓指令”，这属于执行链路证明，不属于 alpha 优化。
   - 当前券商评测 `1010/41407/41415` 从 Mac 侧网络探针超时，原生 C++ 也未收到 `OnFrontConnected`，因此不能用该通道构造当下成交证据。

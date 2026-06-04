@@ -31,10 +31,10 @@
   - 新增 `CTP_SMOKE_ORDER_ENABLED=1`
   - 新增确认文本 `I_UNDERSTAND_THIS_SENDS_CTP_TEST_ORDERS`
   - 继续兼容旧 `SIMNOW_SMOKE_ORDER_ENABLED` 和旧确认文本，便于历史SimNow结果复现
-- 更新 `skills/stage78-simnow-shadow-sop/SKILL.md`
+- 更新 `skills/futures-live-execution-sop/SKILL.md`
   - 新增 Broker-Test CTP Workflow
   - 固化 fresh readonly -> dry-run -> 1手 submit-cancel -> 订单/成交/持仓复核
-- 更新 `AGENTS.md`、`skills/stage78-simnow-shadow-sop/agents/openai.yaml`、`research/lines/futures_trend/LINE.md`、`research/registry.md`
+- 更新 `AGENTS.md`、`skills/futures-live-execution-sop/agents/openai.yaml`、`research/lines/futures_trend/LINE.md`、`research/registry.md`
 
 ## 执行命令
 

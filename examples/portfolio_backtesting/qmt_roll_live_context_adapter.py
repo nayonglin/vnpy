@@ -30,6 +30,20 @@ REQUIRED_LIVE_CONTEXT_FIELDS = [
     "operator_confirmed",
 ]
 
+ACCOUNT_MARGIN_FIELD_CANDIDATES = [
+    "margin",
+    "curr_margin",
+    "CurrMargin",
+    "current_margin",
+    "CurrentMargin",
+    "position_margin",
+    "PositionMargin",
+    "occupied_margin",
+    "OccupiedMargin",
+    "use_margin",
+    "UseMargin",
+]
+
 PRE_SUBMIT_HEATMAP_FIELDS = [
     "order_reference_ready",
     "dry_run_payload_ready",
@@ -208,6 +222,24 @@ def _lookup_by_vt_symbol(rows: list[dict[str, Any]], vt_symbol: str) -> dict[str
         if _vt_symbol_from_row(row).lower() == target:
             return row
     return None
+
+
+def _account_margin_value(account: dict[str, Any] | None) -> tuple[float, str]:
+    """Return broker current margin from explicit account fields only.
+
+    vn.py's CTP gateway maps AccountData.frozen from FrozenMargin/FrozenCash/
+    FrozenCommission. That is not the same as CTP CurrMargin, so it must not
+    be used as the trigger source for forced margin deleveraging.
+    """
+    if not account:
+        return 0.0, ""
+    for key in ACCOUNT_MARGIN_FIELD_CANDIDATES:
+        if key not in account:
+            continue
+        value = to_float(account.get(key), math.nan)
+        if not math.isnan(value) and value >= 0:
+            return value, key
+    return 0.0, ""
 
 
 def _any_fresh_row(rows: list[dict[str, Any]], now: datetime, max_age_seconds: int) -> tuple[dict[str, Any] | None, float | None]:
@@ -456,8 +488,8 @@ def evaluate_live_context_for_order(
         )
     )
 
-    broker_margin_before = to_float(account.get("frozen") if account else None, 0.0)
-    broker_margin_ok = bool(account and "frozen" in account and broker_margin_before >= 0)
+    broker_margin_before, broker_margin_source = _account_margin_value(account)
+    broker_margin_ok = bool(account and broker_margin_source and broker_margin_before >= 0)
     if not broker_margin_ok:
         blockers.append("broker_margin_before_missing")
     field_rows.append(
@@ -467,9 +499,9 @@ def evaluate_live_context_for_order(
             watch_priority=watch_priority,
             required_field="broker_margin_before",
             passed=broker_margin_ok,
-            observed=f"{broker_margin_before:.2f}" if broker_margin_ok else "missing",
-            source="fresh AccountData.frozen plus broker margin policy",
-            blocker="" if broker_margin_ok else "missing_broker_margin_before",
+            observed=f"{broker_margin_before:.2f};source={broker_margin_source}" if broker_margin_ok else "missing_explicit_margin_field",
+            source="fresh AccountData explicit margin field / raw CTP CurrMargin",
+            blocker="" if broker_margin_ok else "missing_explicit_broker_current_margin",
         )
     )
 
