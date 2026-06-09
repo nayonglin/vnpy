@@ -7,11 +7,14 @@ from typing import Any
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-OFFICIAL_LIVE_ALIAS: str = "Stage653-20w"
-OFFICIAL_LIVE_VERSION: str = "official_live_stage653_20w_force95_to80"
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage653"
-OFFICIAL_LIVE_FAMILY_VERSION: str = "stage526_200k_margin_forced_deleverage"
-OFFICIAL_LIVE_PROFILE_NAME: str = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
+OFFICIAL_LIVE_ALIAS: str = "Stage372-20w"
+OFFICIAL_LIVE_VERSION: str = "official_live_stage372_20w_recovery_sleeve"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage372"
+OFFICIAL_LIVE_FAMILY_VERSION: str = "stage526_200k_margin_forced_deleverage_recovery_sleeve"
+OFFICIAL_LIVE_BASE_PROFILE_NAME: str = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
+OFFICIAL_LIVE_PROFILE_NAME: str = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
+OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage653_20w_force95_to80"
+OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = OFFICIAL_LIVE_BASE_PROFILE_NAME
 OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile"
 OFFICIAL_LIVE_CAPITAL: float = 200_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "20w"
@@ -25,8 +28,8 @@ OFFICIAL_LIVE_AI_ELIGIBILITY_PATH: Path = (
     "stage182_ai_product_pool_live_inference_v1.csv"
 )
 
-OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage659_stage653_2026_ytd_latest_ai_shadow_v1"
-OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow"
+OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage659_stage372_2026_ytd_latest_ai_shadow_v1"
+OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage659_stage372_2026_ytd_latest_ai_shadow"
 OFFICIAL_LIVE_SUMMARY_PATH: Path = (
     OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_decision_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.json"
 )
@@ -51,29 +54,47 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
     "real_submit_default": "fail_closed",
 }
 
+OFFICIAL_LIVE_STRATEGY_OVERRIDES: dict[str, Any] = {
+    "enable_streak_entry_structure_risk_recovery": True,
+    "streak_entry_structure_recovery_signals": "long_case1a,short_case1a",
+    "streak_entry_structure_recovery_min_multiplier": 1.0,
+    "streak_entry_structure_recovery_require_flat_portfolio": True,
+    "streak_entry_structure_recovery_max_same_direction_corr": 0.30,
+    "streak_entry_structure_recovery_require_rsi_confirmation": False,
+    "enable_recovery_sleeve": True,
+    "recovery_sleeve_base_multiplier_max": 0.1000001,
+    "recovery_sleeve_broker_margin_multiplier": 1.65,
+    "recovery_sleeve_max_single_contract_broker_margin_to_equity": 0.20,
+    "recovery_sleeve_cooldown_days": 20,
+    "recovery_sleeve_volume": 1,
+}
+
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
-    "full_2020_2026_stage353": {
-        "end_equity": 10_415_070.0,
-        "total_return_pct": 5_107.5350,
-        "max_dd_pct": -38.8730,
-        "sharpe": 1.6384,
-        "total_slippage": 597_710.0,
-        "total_trade_count": 655.0,
-        "win_rate_pct": 52.3156,
-        "broker10_peak_margin_to_equity_pct": 83.3212,
+    "full_2020_2026_stage372": {
+        "end_equity": 8_728_285.0,
+        "total_return_pct": 4_264.1425,
+        "max_dd_pct": -38.6713,
+        "sharpe": 1.6279,
+        "total_slippage": 506_220.0,
+        "total_trade_count": 633.0,
+        "win_rate_pct": 52.2586,
+        "broker10_peak_margin_to_equity_pct": 79.6015,
         "forced_margin_deleverage_count": 6.0,
-        "forced_margin_deleverage_closed_volume": 317.0,
-        "return_retention_vs_allin_pct": 89.9664,
+        "forced_margin_deleverage_closed_volume": 299.0,
+        "cost2_max_dd_pct": -40.6555,
+        "cost3_max_dd_pct": -42.7649,
+        "since_2022_total_return_pct": 133.8550,
+        "since_2022_max_dd_pct": -28.0550,
     },
-    "latest_2026_to_20260604_stage359": {
-        "end_equity": 201_140.0,
-        "total_return_pct": 0.5700,
-        "cagr_pct": 1.3936,
-        "max_dd_pct": -14.5394,
-        "sharpe": 0.1943,
-        "total_slippage": 1_250.0,
-        "total_trade_count": 18.0,
-        "win_rate_pct": 44.0,
+    "latest_2026_to_20260604_stage372": {
+        "end_equity": 222_440.0,
+        "total_return_pct": 11.2200,
+        "cagr_pct": 29.5553,
+        "max_dd_pct": -16.3027,
+        "sharpe": 1.0240,
+        "total_slippage": 1_550.0,
+        "total_trade_count": 22.0,
+        "win_rate_pct": 48.7805,
         "broker10_peak_margin_to_equity_pct": 55.1058,
         "forced_margin_deleverage_count": 0.0,
         "forced_margin_deleverage_closed_volume": 0.0,
@@ -88,6 +109,9 @@ def build_official_live_manifest() -> dict[str, Any]:
         "family_version": OFFICIAL_LIVE_FAMILY_VERSION,
         "source_stage": OFFICIAL_LIVE_SOURCE_STAGE,
         "profile_name": OFFICIAL_LIVE_PROFILE_NAME,
+        "base_profile_name": OFFICIAL_LIVE_BASE_PROFILE_NAME,
+        "previous_version": OFFICIAL_LIVE_PREVIOUS_VERSION,
+        "previous_profile_name": OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME,
         "role": OFFICIAL_LIVE_ROLE,
         "capital": OFFICIAL_LIVE_CAPITAL,
         "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
@@ -97,6 +121,7 @@ def build_official_live_manifest() -> dict[str, Any]:
         "current_positions_path": str(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH),
         "report_path": str(OFFICIAL_LIVE_REPORT_PATH),
         "execution_policy": OFFICIAL_LIVE_EXECUTION_POLICY,
+        "strategy_overrides": OFFICIAL_LIVE_STRATEGY_OVERRIDES,
         "reference_metrics": OFFICIAL_LIVE_REFERENCE_METRICS,
         "legacy_stage78": {
             "version": LEGACY_STAGE78_VERSION,
@@ -113,7 +138,7 @@ def build_official_live_risk_snapshot(summary: dict[str, Any]) -> dict[str, Any]
     max_margin = float(variant.get("max_broker10_margin_to_equity_pct", 999.0) or 999.0)
     reasons: list[str] = []
     if not deployable:
-        reasons.append("stage653_deployable_gate_failed")
+        reasons.append("official_live_deployable_gate_failed")
     if days_over_100 > 0:
         reasons.append("broker10_margin_over_100")
     if days_over_90 > 0:
@@ -121,7 +146,7 @@ def build_official_live_risk_snapshot(summary: dict[str, Any]) -> dict[str, Any]
     if max_margin >= 90:
         reasons.append("broker10_margin_watch")
     if not reasons:
-        reasons.append("stage653_live_profile_normal")
+        reasons.append("official_live_profile_normal")
     allow_real_new_orders = int(deployable and days_over_100 == 0 and max_margin < 90)
     return {
         "risk_level": "normal" if allow_real_new_orders else "review",

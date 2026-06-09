@@ -10,9 +10,9 @@ description: Use for the futures trend official live execution profile and relat
 This skill is an execution-discipline guide, not an alpha-research guide.
 
 - Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
-- Current official live profile: `official_live_stage653_20w_force95_to80`.
+- Current official live profile: `official_live_stage372_20w_recovery_sleeve`.
 - Current line: `futures_trend_drawdown30_preserve_return`.
-- Current strategy: Stage653 / Stage526 20w `force95_to80_largest_margin_r080_pc25_maxpos4`.
+- Current strategy: Stage372 / Stage526 20w `force95_to80_recovery_sleeve_r080_pc25_maxpos4`.
 - Current capital: `200000` only for live/virtual execution.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
 - Account state source for virtual/live execution: CTP broker/SimNow snapshot, not historical shadow holdings.
@@ -43,6 +43,7 @@ Use this after a completed trading day, normally after market data for that day 
 3. Use the current month AI pool for daily signals. Do not retrain or rerank the AI pool every day.
 4. Run the canonical current-profile latest-AI-pool shadow runner:
    - `examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py --target-date YYYY-MM-DD`
+   - The file name is historical; it now resolves the live profile from `qmt_roll_official_live_config.py`.
 5. Read the generated daily report and signal plan.
 6. Interpret risk level:
    - `base` or normal status: signal may proceed to broker-state gates.
@@ -58,6 +59,7 @@ Use this after the daily shadow report when the goal is to decide whether the ne
    - `examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py --mapping-start YYYY-MM-01 --bar-start YYYY-MM-DD --end YYYY-MM-DD`
 2. Run the current-profile latest-AI-pool shadow report for the same target date:
    - `examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py --target-date YYYY-MM-DD`
+   - The file name is historical; it now resolves the live profile from `qmt_roll_official_live_config.py`.
 3. Refresh SimNow 7x24 read-only broker state:
    - `SIMNOW_FRONT=7x24 examples/portfolio_backtesting/run_ctp_stage177_simnow_readonly_probe.sh --connect --wait-seconds 90`
 4. Run the official-live daily execution gate:

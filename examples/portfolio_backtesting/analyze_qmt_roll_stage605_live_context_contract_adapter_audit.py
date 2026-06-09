@@ -245,7 +245,7 @@ def build_contract_schema() -> pd.DataFrame:
             "stage591_field": "operator_confirmed",
             "tca_consumer": "human approval audit",
             "implementation_status": "confirmation_gate_missing_for_real_submit",
-            "evidence": "skills/stage78-simnow-shadow-sop/SKILL.md",
+            "evidence": "skills/futures-live-execution-sop/SKILL.md",
         },
         {
             "contract_field": "bridge_signal_id_reference",

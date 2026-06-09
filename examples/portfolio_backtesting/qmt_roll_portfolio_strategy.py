@@ -63,9 +63,11 @@ class ProductState:
     entry_date: str = ""
     last_add_date: str = ""
     last_donchian_add_date: str = ""
+    last_post_quality_add_date: str = ""
     rollover_opened_today: str = ""
     bars_since_entry: int = 0
     prev2day_stop_price: float | None = None
+    post_quality_prev2day_relax_done: bool = False
     rsi_partial_exit_done: bool = False
     portfolio_drawdown_gate_reference_contract: str = ""
     portfolio_drawdown_gate_reference_volume: int = 0
@@ -83,9 +85,11 @@ class ProductState:
         self.entry_date = ""
         self.last_add_date = ""
         self.last_donchian_add_date = ""
+        self.last_post_quality_add_date = ""
         self.rollover_opened_today = ""
         self.bars_since_entry = 0
         self.prev2day_stop_price = None
+        self.post_quality_prev2day_relax_done = False
         self.rsi_partial_exit_done = False
         self.portfolio_drawdown_gate_reference_contract = ""
         self.portfolio_drawdown_gate_reference_volume = 0
@@ -163,6 +167,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     profit_lock_trend_relax_ma_fast: int = 20
     profit_lock_trend_relax_ma_slow: int = 40
     profit_lock_trend_relax_slope_days: int = 3
+    enable_post_entry_quality_prev2day_relax: bool = False
+    post_entry_quality_prev2day_relax_feature: str = "post1_smooth_directional_combo"
     enable_rsi_partial_exit: bool = False
     rsi_partial_exit_threshold: float = 95.0
     rsi_partial_exit_ratio: float = 0.5
@@ -210,7 +216,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     risk_cluster_map: str = ""
     enable_risk_cluster_heat_gate: bool = False
     risk_cluster_heat_gate_target_clusters: str = ""
-    risk_cluster_heat_gate_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    risk_cluster_heat_gate_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add,post_quality_add"
     risk_cluster_heat_gate_drawdown_start_pct: float = 0.10
     risk_cluster_heat_gate_drawdown_full_pct: float = 0.25
     risk_cluster_heat_gate_margin_start_ratio: float = 0.15
@@ -220,7 +226,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     risk_cluster_heat_gate_weight_floor: float = 0.35
     enable_risk_cluster_heat_deleverage: bool = False
     risk_cluster_heat_deleverage_target_clusters: str = ""
-    risk_cluster_heat_deleverage_layer_kinds: str = "add,donchian"
+    risk_cluster_heat_deleverage_layer_kinds: str = "add,donchian,post_quality"
     risk_cluster_heat_deleverage_min_pressure: float = 0.50
     risk_cluster_heat_deleverage_use_daily_snapshot: bool = False
     risk_cluster_heat_deleverage_snapshot_requires_same_direction_multi: bool = False
@@ -238,7 +244,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     streak_entry_structure_recovery_require_rsi_confirmation: bool = False
     streak_entry_structure_recovery_long_min_rsi: float = 60.0
     streak_entry_structure_recovery_short_max_rsi: float = 40.0
+    streak_entry_structure_recovery_require_directional_edge60: bool = False
+    streak_entry_structure_recovery_directional_edge_period: int = 60
+    streak_entry_structure_recovery_long_close_position_min: float = 0.80
+    streak_entry_structure_recovery_short_close_position_max: float = 0.20
     streak_entry_structure_recovery_max_portfolio_drawdown_pct: float = -1.0
+    enable_recovery_sleeve: bool = False
+    recovery_sleeve_base_multiplier_max: float = 0.1000001
+    recovery_sleeve_broker_margin_multiplier: float = 1.65
+    recovery_sleeve_max_single_contract_broker_margin_to_equity: float = 0.20
+    recovery_sleeve_cooldown_days: int = 20
+    recovery_sleeve_volume: int = 1
+    recovery_sleeve_normal_risk_bypass_require_directional_edge60: bool = False
+    recovery_sleeve_normal_risk_bypass_max_portfolio_drawdown_pct: float = -1.0
     enable_weighted_env_gate: bool = False
     enable_portfolio_env_gate: bool = False
     weighted_env_gate_close_position_good_max: float = 0.25
@@ -258,13 +276,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_volatility_budget_lookback: int = 60
     portfolio_volatility_budget_target_annual_vol: float = 0.60
     portfolio_volatility_budget_min_scale: float = 0.0
-    portfolio_volatility_budget_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    portfolio_volatility_budget_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add,post_quality_add"
     enable_portfolio_volatility_budget_deleverage: bool = False
     enable_portfolio_margin_deleverage: bool = False
     portfolio_margin_deleverage_start_ratio: float = 0.90
     portfolio_margin_deleverage_full_ratio: float = 1.10
     portfolio_margin_deleverage_min_pressure: float = 0.50
-    portfolio_margin_deleverage_layer_kinds: str = "add,donchian"
+    portfolio_margin_deleverage_layer_kinds: str = "add,donchian,post_quality"
     portfolio_margin_deleverage_broker_multiplier: float = 1.10
     enable_forced_margin_deleverage: bool = False
     forced_margin_deleverage_trigger_ratio: float = 0.95
@@ -280,7 +298,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     portfolio_overheat_cooldown_recovery_drawdown_pct: float = 0.15
     portfolio_overheat_cooldown_recovery_ret20_threshold: float = 0.0
     portfolio_overheat_cooldown_recovery_scale: float = 1.10
-    portfolio_overheat_cooldown_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add"
+    portfolio_overheat_cooldown_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen,regular_add,donchian_add,post_quality_add"
     enable_portfolio_overheat_cooldown_deleverage: bool = False
     enable_product_direction_failure_cooldown: bool = False
     product_direction_failure_cooldown_lookback_days: int = 252
@@ -346,6 +364,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     add_position_min_profit: float = 0.001
     atr_2x_mid_stop_enabled: bool = True
 
+    enable_post_entry_quality_add: bool = False
+    post_entry_quality_add_feature: str = "post1_body60_ratio_ge50"
+    post_entry_quality_add_volume_multiplier: float = 0.5
+    post_entry_quality_add_max_layers: int = 1
+    post_entry_quality_add_use_day_extreme_stop: bool = True
+    post_entry_quality_add_triggers_add_profit_lock: bool = False
+    post_entry_quality_add_body_pct_min: float = 0.60
+    post_entry_quality_add_body_ratio_min: float = 0.50
+    post_entry_quality_add_directional_close_strength_min: float = 0.60
+    post_entry_quality_add_short_wick_ratio_min: float = 0.50
+    post_entry_quality_add_long_wick_ratio_max: float = 0.20
+    post_entry_quality_add_adverse_wick_pct_max: float = 0.25
+
     enable_add_position: bool = True
     add_position_threshold: float = 0.01
     second_add_position_threshold: float = 0.01
@@ -410,6 +441,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "profit_lock_trend_relax_ma_fast",
         "profit_lock_trend_relax_ma_slow",
         "profit_lock_trend_relax_slope_days",
+        "enable_post_entry_quality_prev2day_relax",
+        "post_entry_quality_prev2day_relax_feature",
         "enable_rsi_partial_exit",
         "rsi_partial_exit_threshold",
         "rsi_partial_exit_ratio",
@@ -484,7 +517,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "streak_entry_structure_recovery_require_rsi_confirmation",
         "streak_entry_structure_recovery_long_min_rsi",
         "streak_entry_structure_recovery_short_max_rsi",
+        "streak_entry_structure_recovery_require_directional_edge60",
+        "streak_entry_structure_recovery_directional_edge_period",
+        "streak_entry_structure_recovery_long_close_position_min",
+        "streak_entry_structure_recovery_short_close_position_max",
         "streak_entry_structure_recovery_max_portfolio_drawdown_pct",
+        "enable_recovery_sleeve",
+        "recovery_sleeve_base_multiplier_max",
+        "recovery_sleeve_broker_margin_multiplier",
+        "recovery_sleeve_max_single_contract_broker_margin_to_equity",
+        "recovery_sleeve_cooldown_days",
+        "recovery_sleeve_volume",
+        "recovery_sleeve_normal_risk_bypass_require_directional_edge60",
+        "recovery_sleeve_normal_risk_bypass_max_portfolio_drawdown_pct",
         "enable_weighted_env_gate",
         "enable_portfolio_env_gate",
         "weighted_env_gate_close_position_good_max",
@@ -590,6 +635,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "profit_giveback_streak_update_mode",
         "add_position_min_profit",
         "atr_2x_mid_stop_enabled",
+        "enable_post_entry_quality_add",
+        "post_entry_quality_add_feature",
+        "post_entry_quality_add_volume_multiplier",
+        "post_entry_quality_add_max_layers",
+        "post_entry_quality_add_use_day_extreme_stop",
+        "post_entry_quality_add_triggers_add_profit_lock",
+        "post_entry_quality_add_body_pct_min",
+        "post_entry_quality_add_body_ratio_min",
+        "post_entry_quality_add_directional_close_strength_min",
+        "post_entry_quality_add_short_wick_ratio_min",
+        "post_entry_quality_add_long_wick_ratio_max",
+        "post_entry_quality_add_adverse_wick_pct_max",
         "enable_add_position",
         "add_position_threshold",
         "second_add_position_threshold",
@@ -646,6 +703,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "risk_multiplier",
         "loss_streak",
         "profit_recovery_streak",
+        "recovery_sleeve_open_count",
+        "recovery_sleeve_last_open_date",
+        "post_entry_quality_add_count",
+        "post_entry_quality_add_signal_count",
+        "post_entry_quality_add_zero_volume_count",
+        "post_entry_quality_prev2day_relax_skip_count",
         "portfolio_equity_high_water",
         "portfolio_drawdown_pct",
         "profit_giveback_streak_neutral_count",
@@ -691,6 +754,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             self.streak_risk_state_excluded_products
         )
         self.profit_recovery_streak: int = 0
+        self.recovery_sleeve_open_count: int = 0
+        self.recovery_sleeve_last_open_date: str = ""
+        self._recovery_sleeve_last_open_timestamp: pd.Timestamp | None = None
         self.base_capital: float = self._resolve_base_capital()
         self.entry_risk_diagnostics: list[dict[str, Any]] = []
         self.entry_candidate_snapshots: list[dict[str, Any]] = []
@@ -702,6 +768,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.profit_giveback_stop_update_count: int = 0
         self.profit_giveback_streak_neutral_count: int = 0
         self.profit_lock_trend_relaxed_prev2day_skip_count: int = 0
+        self.post_entry_quality_add_count: int = 0
+        self.post_entry_quality_add_signal_count: int = 0
+        self.post_entry_quality_add_zero_volume_count: int = 0
+        self.post_entry_quality_prev2day_relax_skip_count: int = 0
         self.pending_close_lots: dict[str, list[dict[str, Any]]] = {}
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
@@ -1335,6 +1405,57 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             self._reserve_intrabar_entry(state.product_vt_symbol, sizing, volume, count_active_position=False)
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
+                    continue
+
+            can_post_quality_add, post_quality_signal, post_quality_stats = self._check_post_entry_quality_add_conditions(
+                state,
+                target_bar,
+                history,
+            )
+            if entry_allowed_today and can_post_quality_add and post_quality_signal:
+                self.post_entry_quality_add_signal_count += 1
+                add_volume = self._calculate_post_entry_quality_add_volume(state)
+                if add_volume <= 0:
+                    self.post_entry_quality_add_zero_volume_count += 1
+                add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
+                    state.contract_vt_symbol,
+                    add_volume,
+                    target_bar.close_price,
+                    "post_quality_add",
+                )
+                add_volume = self._portfolio_drawdown_gate_adjust_volume(add_volume, "post_quality_add")
+                add_volume = self._portfolio_volatility_budget_adjust_volume(add_volume, "post_quality_add")
+                add_volume = self._portfolio_overheat_cooldown_adjust_volume(add_volume, "post_quality_add")
+                post_quality_margin_per_contract = (
+                    float(target_bar.close_price)
+                    * self.get_size(state.contract_vt_symbol)
+                    * self._margin_ratio_for_symbol(state.contract_vt_symbol)
+                )
+                add_volume, _ = self._incremental_margin_budget_gate_adjust_volume(
+                    selected_volume=add_volume,
+                    margin_per_contract=post_quality_margin_per_contract,
+                    entry_context="post_quality_add",
+                )
+                ai_allowed, _ = self._ai_product_pool_entry_allowed(
+                    state.product_vt_symbol,
+                    pd.Timestamp(target_bar.datetime).normalize(),
+                )
+                if (
+                    ai_allowed
+                    and add_volume > 0
+                    and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price)
+                ):
+                    self._execute_post_entry_quality_add(
+                        state,
+                        target_bar,
+                        post_quality_signal,
+                        add_volume,
+                        history,
+                        post_quality_stats,
+                    )
+                    self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
+                    self._apply_state_target(state)
+                    self.last_signal = f"{product_vt}:{post_quality_signal}"
                     continue
 
             can_add, add_type = self._check_regular_add_conditions(state, target_bar, history)
@@ -2831,6 +2952,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         tier: int = min(self.loss_streak, len(multipliers) - 1)
         return max(0.0, multipliers[tier])
 
+    def _directional_edge_close_position(self, history: pd.DataFrame) -> float:
+        period = max(2, int(self.streak_entry_structure_recovery_directional_edge_period or 60))
+        min_required = max(20, period // 2)
+        if history is None or history.empty or len(history) < min_required:
+            return float("nan")
+        recent = history.tail(period)
+        high = pd.to_numeric(recent["high"], errors="coerce")
+        low = pd.to_numeric(recent["low"], errors="coerce")
+        close = pd.to_numeric(recent["close"], errors="coerce")
+        high_value = float(high.max()) if high.notna().any() else float("nan")
+        low_value = float(low.min()) if low.notna().any() else float("nan")
+        close_value = float(close.iloc[-1]) if not close.empty and pd.notna(close.iloc[-1]) else float("nan")
+        if not (math.isfinite(high_value) and math.isfinite(low_value) and math.isfinite(close_value)):
+            return float("nan")
+        width = high_value - low_value
+        if width <= 0.0:
+            return float("nan")
+        return (close_value - low_value) / width
+
     def _entry_structure_recovery_fields(
         self,
         *,
@@ -2838,6 +2978,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         direction: str,
         entry_context: str,
         rsi_value: float | None,
+        history: pd.DataFrame,
         active_positions_before: int | None,
         correlation_snapshot: dict[str, Any] | None,
     ) -> dict[str, Any]:
@@ -2858,6 +2999,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             ),
             "streak_entry_structure_risk_recovery_short_max_rsi": float(
                 self.streak_entry_structure_recovery_short_max_rsi
+            ),
+            "streak_entry_structure_risk_recovery_directional_edge_enabled": int(
+                self.streak_entry_structure_recovery_require_directional_edge60
+            ),
+            "streak_entry_structure_risk_recovery_directional_edge_period": int(
+                self.streak_entry_structure_recovery_directional_edge_period or 0
+            ),
+            "streak_entry_structure_risk_recovery_directional_edge_close_position": float("nan"),
+            "streak_entry_structure_risk_recovery_directional_edge_long_min": float(
+                self.streak_entry_structure_recovery_long_close_position_min
+            ),
+            "streak_entry_structure_risk_recovery_directional_edge_short_max": float(
+                self.streak_entry_structure_recovery_short_close_position_max
             ),
             "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
                 self.portfolio_drawdown_pct or 0.0
@@ -2898,6 +3052,22 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 fields["streak_entry_structure_risk_recovery_reason"] = "rsi_not_confirmed"
                 return fields
 
+        if bool(self.streak_entry_structure_recovery_require_directional_edge60):
+            close_position = self._directional_edge_close_position(history)
+            fields["streak_entry_structure_risk_recovery_directional_edge_close_position"] = close_position
+            if not math.isfinite(close_position):
+                fields["streak_entry_structure_risk_recovery_reason"] = "directional_edge_unavailable"
+                return fields
+            long_min = float(self.streak_entry_structure_recovery_long_close_position_min)
+            short_max = float(self.streak_entry_structure_recovery_short_close_position_max)
+            directional_edge_confirmed = (
+                (direction == "long" and close_position >= long_min)
+                or (direction == "short" and close_position <= short_max)
+            )
+            if not directional_edge_confirmed:
+                fields["streak_entry_structure_risk_recovery_reason"] = "directional_edge_not_confirmed"
+                return fields
+
         max_portfolio_drawdown = float(self.streak_entry_structure_recovery_max_portfolio_drawdown_pct)
         if max_portfolio_drawdown >= 0.0 and float(self.portfolio_drawdown_pct or 0.0) > max_portfolio_drawdown:
             fields["streak_entry_structure_risk_recovery_reason"] = "portfolio_drawdown_too_deep"
@@ -2911,6 +3081,116 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             fields["streak_entry_structure_risk_recovery_reason"] = "early_cross_clean_book"
         else:
             fields["streak_entry_structure_risk_recovery_reason"] = "no_multiplier_lift"
+        return fields
+
+    def _recovery_sleeve_fields(
+        self,
+        sizing: dict[str, Any],
+        bar: BarData,
+        entry_context: str,
+        direction: str,
+        history: pd.DataFrame,
+    ) -> dict[str, Any]:
+        selected_before = int(sizing.get("selected_volume") or 0)
+        fields: dict[str, Any] = {
+            "recovery_sleeve_enabled": int(self.enable_recovery_sleeve),
+            "recovery_sleeve_applied": 0,
+            "recovery_sleeve_normal_risk_bypass_enabled": int(
+                bool(self.recovery_sleeve_normal_risk_bypass_require_directional_edge60)
+                or float(self.recovery_sleeve_normal_risk_bypass_max_portfolio_drawdown_pct or -1.0) >= 0.0
+            ),
+            "recovery_sleeve_normal_risk_bypassed": 0,
+            "recovery_sleeve_reason": "",
+            "recovery_sleeve_selected_volume_before": selected_before,
+            "recovery_sleeve_selected_volume_after": selected_before,
+            "recovery_sleeve_broker_margin_multiplier": float(self.recovery_sleeve_broker_margin_multiplier),
+            "recovery_sleeve_single_contract_broker_margin_to_equity": 0.0,
+            "recovery_sleeve_max_single_contract_broker_margin_to_equity": float(
+                self.recovery_sleeve_max_single_contract_broker_margin_to_equity
+            ),
+            "recovery_sleeve_cooldown_days": int(self.recovery_sleeve_cooldown_days or 0),
+        }
+        if not self.enable_recovery_sleeve:
+            return fields
+
+        if entry_context != "flat_entry":
+            fields["recovery_sleeve_reason"] = "not_flat_entry"
+            return fields
+
+        if int(sizing.get("streak_entry_structure_risk_recovery_applied") or 0) != 1:
+            fields["recovery_sleeve_reason"] = str(
+                sizing.get("streak_entry_structure_risk_recovery_reason") or "structure_recovery_not_applied"
+            )
+            return fields
+
+        base_multiplier = float(sizing.get("streak_entry_structure_risk_recovery_base_multiplier") or 0.0)
+        if base_multiplier > float(self.recovery_sleeve_base_multiplier_max or 0.0):
+            sizing["selected_volume"] = 0
+            fields["recovery_sleeve_reason"] = "not_throttle_floor"
+            fields["recovery_sleeve_selected_volume_after"] = 0
+            return fields
+
+        candidate_date = pd.Timestamp(bar.datetime).tz_localize(None).normalize()
+        last_open_date = self._recovery_sleeve_last_open_timestamp
+        if last_open_date is not None:
+            days_since = int((candidate_date - pd.Timestamp(last_open_date)).days)
+            if days_since <= int(self.recovery_sleeve_cooldown_days or 0):
+                sizing["selected_volume"] = 0
+                fields["recovery_sleeve_reason"] = "cooldown"
+                fields["recovery_sleeve_selected_volume_after"] = 0
+                return fields
+
+        if selected_before <= 0:
+            fields["recovery_sleeve_reason"] = "zero_after_structure_recovery"
+            return fields
+
+        bypass_max_drawdown = float(self.recovery_sleeve_normal_risk_bypass_max_portfolio_drawdown_pct or -1.0)
+        if int(fields["recovery_sleeve_normal_risk_bypass_enabled"]):
+            drawdown_passed = bypass_max_drawdown < 0.0 or float(self.portfolio_drawdown_pct or 0.0) <= bypass_max_drawdown
+            directional_passed = True
+            if bool(self.recovery_sleeve_normal_risk_bypass_require_directional_edge60):
+                close_position = self._directional_edge_close_position(history)
+                long_min = float(self.streak_entry_structure_recovery_long_close_position_min)
+                short_max = float(self.streak_entry_structure_recovery_short_close_position_max)
+                directional_passed = (
+                    math.isfinite(close_position)
+                    and (
+                        (direction == "long" and close_position >= long_min)
+                        or (direction == "short" and close_position <= short_max)
+                    )
+                )
+                fields["streak_entry_structure_risk_recovery_directional_edge_close_position"] = close_position
+            if drawdown_passed and directional_passed:
+                fields["recovery_sleeve_normal_risk_bypassed"] = 1
+                fields["recovery_sleeve_reason"] = "structure_recovery_normal_risk_bypass"
+                fields["recovery_sleeve_selected_volume_after"] = selected_before
+                return fields
+
+        sizing_equity = float(
+            sizing.get("sizing_equity")
+            or sizing.get("effective_sizing_equity_cap")
+            or self.estimated_equity
+            or self.base_capital
+            or 0.0
+        )
+        margin_per_contract = float(sizing.get("margin_per_contract") or 0.0)
+        broker_single_ratio = (
+            margin_per_contract * float(self.recovery_sleeve_broker_margin_multiplier or 0.0) / sizing_equity
+            if sizing_equity > 0.0 and margin_per_contract > 0.0
+            else 999.0
+        )
+        fields["recovery_sleeve_single_contract_broker_margin_to_equity"] = broker_single_ratio
+        if broker_single_ratio > float(self.recovery_sleeve_max_single_contract_broker_margin_to_equity or 0.0):
+            sizing["selected_volume"] = 0
+            fields["recovery_sleeve_reason"] = "single_contract_margin_too_high"
+            fields["recovery_sleeve_selected_volume_after"] = 0
+            return fields
+
+        selected_after = max(1, int(self.recovery_sleeve_volume or 1))
+        sizing["selected_volume"] = selected_after
+        fields["recovery_sleeve_applied"] = 1
+        fields["recovery_sleeve_reason"] = "structure_recovery_one_lot"
+        fields["recovery_sleeve_selected_volume_after"] = selected_after
         return fields
 
     @staticmethod
@@ -3955,6 +4235,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             direction=direction,
             entry_context=entry_context,
             rsi_value=signal_data.get("rsi_value"),
+            history=history,
             active_positions_before=active_positions_before,
             correlation_snapshot=correlation_snapshot,
         )
@@ -4026,7 +4307,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     entry_context=entry_context,
                 )
                 env_gate_fields["selected_volume"] = adjusted_volume
-            return {
+            sizing_result: dict[str, Any] = {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
                 "risk_ratio": None,
                 "risk_amount": None,
@@ -4055,6 +4336,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **env_gate_fields,
                 **incremental_gate_fields,
             }
+            sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
+            return sizing_result
 
         limited_balance: float = self._limited_available_balance(entry_context)
         allowed_capital: float = self._allowed_capital(entry_context)
@@ -4126,7 +4409,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             env_gate_fields["selected_volume"] = adjusted_volume
 
-        return {
+        sizing_result = {
             "risk_mode": risk_mode,
             "risk_ratio": risk_ratio,
             "risk_amount": risk_amount,
@@ -4155,6 +4438,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **env_gate_fields,
             **incremental_gate_fields,
         }
+        sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
+        return sizing_result
 
     def _calculate_entry_volume(
         self,
@@ -4205,6 +4490,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 signal_data,
             )
 
+        if int(sizing_snapshot.get("recovery_sleeve_applied") or 0) == 1:
+            sleeve_open_date = pd.Timestamp(bar.datetime).tz_localize(None).normalize()
+            self._recovery_sleeve_last_open_timestamp = sleeve_open_date
+            self.recovery_sleeve_last_open_date = sleeve_open_date.date().isoformat()
+            self.recovery_sleeve_open_count += 1
+
         stop_price: float = float(sizing_snapshot["stop_price"])
         state.reset()
         state.contract_vt_symbol = contract_vt_symbol
@@ -4249,6 +4540,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         signal: str,
         history: pd.DataFrame,
         use_day_extreme_stop: bool = True,
+        sizing_snapshot_extra: dict[str, Any] | None = None,
     ) -> None:
         stop_price: float = self._entry_stop_price(state.direction, bar, history, use_day_extreme=use_day_extreme_stop)
         state.layers.append(
@@ -4266,6 +4558,31 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 entry_price_synced=False,
             )
         )
+        sizing_method = {
+            "add": "add_multiplier",
+            "donchian": "donchian_multiplier",
+            "post_quality": "post_entry_quality_add",
+        }.get(kind, f"{kind}_multiplier")
+        sizing_snapshot = {
+            "risk_mode": state.risk_mode,
+            "risk_ratio": None,
+            "risk_amount": None,
+            "limited_balance": self._limited_available_balance(),
+            "allowed_capital": self._allowed_capital(),
+            "free_capital": self._free_capital_after_reservations(),
+            "reserved_margin_before": self._reserved_margin_in_use(),
+            "stop_price": stop_price,
+            "risk_per_contract": None,
+            "margin_ratio": self._margin_ratio_for_symbol(state.contract_vt_symbol),
+            "margin_per_contract": None,
+            "contracts_by_risk": None,
+            "contracts_by_margin": None,
+            "selected_volume": max(1, int(volume)),
+            "risk_multiplier": self._current_streak_multiplier(),
+            "sizing_method": sizing_method,
+        }
+        if sizing_snapshot_extra:
+            sizing_snapshot.update(sizing_snapshot_extra)
         self._record_entry_risk_diagnostic(
             product_vt_symbol=state.product_vt_symbol,
             contract_vt_symbol=state.contract_vt_symbol,
@@ -4276,24 +4593,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             volume=max(1, int(volume)),
             stop_price=stop_price,
             risk_mode=state.risk_mode,
-            sizing_snapshot={
-                "risk_mode": state.risk_mode,
-                "risk_ratio": None,
-                "risk_amount": None,
-                "limited_balance": self._limited_available_balance(),
-                "allowed_capital": self._allowed_capital(),
-                "free_capital": self._free_capital_after_reservations(),
-                "reserved_margin_before": self._reserved_margin_in_use(),
-                "stop_price": stop_price,
-                "risk_per_contract": None,
-                "margin_ratio": self._margin_ratio_for_symbol(state.contract_vt_symbol),
-                "margin_per_contract": None,
-                "contracts_by_risk": None,
-                "contracts_by_margin": None,
-                "selected_volume": max(1, int(volume)),
-                "risk_multiplier": self._current_streak_multiplier(),
-                "sizing_method": "add_multiplier" if kind == "add" else "donchian_multiplier",
-            },
+            sizing_snapshot=sizing_snapshot,
         )
 
     def _apply_state_target(self, state: ProductState, execution_price_override: float | None = None) -> None:
@@ -4501,6 +4801,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_short_max_rsi")
                     or self.streak_entry_structure_recovery_short_max_rsi
                 ),
+                "streak_entry_structure_risk_recovery_directional_edge_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_period": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_period")
+                    or self.streak_entry_structure_recovery_directional_edge_period
+                    or 0
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_close_position": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_close_position")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_close_position")
+                    is not None
+                    else float("nan")
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_long_min": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_long_min")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_long_min") is not None
+                    else self.streak_entry_structure_recovery_long_close_position_min
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_short_max": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_short_max")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_short_max") is not None
+                    else self.streak_entry_structure_recovery_short_close_position_max
+                ),
                 "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_portfolio_drawdown_pct")
                     or self.portfolio_drawdown_pct
@@ -4510,6 +4834,69 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct")
                     if sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct") is not None
                     else self.streak_entry_structure_recovery_max_portfolio_drawdown_pct
+                ),
+                "recovery_sleeve_enabled": int(sizing_snapshot.get("recovery_sleeve_enabled") or 0),
+                "recovery_sleeve_applied": int(sizing_snapshot.get("recovery_sleeve_applied") or 0),
+                "recovery_sleeve_normal_risk_bypass_enabled": int(
+                    sizing_snapshot.get("recovery_sleeve_normal_risk_bypass_enabled") or 0
+                ),
+                "recovery_sleeve_normal_risk_bypassed": int(
+                    sizing_snapshot.get("recovery_sleeve_normal_risk_bypassed") or 0
+                ),
+                "recovery_sleeve_reason": str(sizing_snapshot.get("recovery_sleeve_reason") or ""),
+                "recovery_sleeve_selected_volume_before": int(
+                    sizing_snapshot.get("recovery_sleeve_selected_volume_before") or 0
+                ),
+                "recovery_sleeve_selected_volume_after": int(
+                    sizing_snapshot.get("recovery_sleeve_selected_volume_after") or 0
+                ),
+                "recovery_sleeve_broker_margin_multiplier": float(
+                    sizing_snapshot.get("recovery_sleeve_broker_margin_multiplier")
+                    or self.recovery_sleeve_broker_margin_multiplier
+                ),
+                "recovery_sleeve_single_contract_broker_margin_to_equity": float(
+                    sizing_snapshot.get("recovery_sleeve_single_contract_broker_margin_to_equity") or 0.0
+                ),
+                "recovery_sleeve_max_single_contract_broker_margin_to_equity": float(
+                    sizing_snapshot.get("recovery_sleeve_max_single_contract_broker_margin_to_equity")
+                    or self.recovery_sleeve_max_single_contract_broker_margin_to_equity
+                ),
+                "recovery_sleeve_cooldown_days": int(
+                    sizing_snapshot.get("recovery_sleeve_cooldown_days") or self.recovery_sleeve_cooldown_days or 0
+                ),
+                "post_entry_quality_add_enabled": int(
+                    sizing_snapshot.get("post_entry_quality_add_enabled") or 0
+                ),
+                "post_entry_quality_add_feature": str(
+                    sizing_snapshot.get("post_entry_quality_add_feature") or ""
+                ),
+                "post_entry_quality_add_passed": int(sizing_snapshot.get("post_entry_quality_add_passed") or 0),
+                "post_entry_quality_add_observation_bars": int(
+                    sizing_snapshot.get("post_entry_quality_add_observation_bars") or 0
+                ),
+                "post_entry_quality_add_volume_multiplier": float(
+                    sizing_snapshot.get("post_entry_quality_add_volume_multiplier") or 0.0
+                ),
+                "post_entry_quality_add_triggers_add_profit_lock": int(
+                    sizing_snapshot.get("post_entry_quality_add_triggers_add_profit_lock") or 0
+                ),
+                "post_entry_quality_add_body60_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_body60_ratio") or 0.0
+                ),
+                "post_entry_quality_add_avg_body_pct": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_body_pct") or 0.0
+                ),
+                "post_entry_quality_add_avg_directional_close_strength": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_directional_close_strength") or 0.0
+                ),
+                "post_entry_quality_add_short30_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_short30_ratio") or 0.0
+                ),
+                "post_entry_quality_add_long60_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_long60_ratio") or 0.0
+                ),
+                "post_entry_quality_add_avg_adverse_wick_pct": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_adverse_wick_pct") or 0.0
                 ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
@@ -4934,6 +5321,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_short_max_rsi")
                     or self.streak_entry_structure_recovery_short_max_rsi
                 ),
+                "streak_entry_structure_risk_recovery_directional_edge_enabled": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_enabled") or 0
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_period": int(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_period")
+                    or self.streak_entry_structure_recovery_directional_edge_period
+                    or 0
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_close_position": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_close_position")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_close_position")
+                    is not None
+                    else float("nan")
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_long_min": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_long_min")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_long_min") is not None
+                    else self.streak_entry_structure_recovery_long_close_position_min
+                ),
+                "streak_entry_structure_risk_recovery_directional_edge_short_max": float(
+                    sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_short_max")
+                    if sizing_snapshot.get("streak_entry_structure_risk_recovery_directional_edge_short_max") is not None
+                    else self.streak_entry_structure_recovery_short_close_position_max
+                ),
                 "streak_entry_structure_risk_recovery_portfolio_drawdown_pct": float(
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_portfolio_drawdown_pct")
                     or self.portfolio_drawdown_pct
@@ -4943,6 +5354,69 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct")
                     if sizing_snapshot.get("streak_entry_structure_risk_recovery_max_portfolio_drawdown_pct") is not None
                     else self.streak_entry_structure_recovery_max_portfolio_drawdown_pct
+                ),
+                "recovery_sleeve_enabled": int(sizing_snapshot.get("recovery_sleeve_enabled") or 0),
+                "recovery_sleeve_applied": int(sizing_snapshot.get("recovery_sleeve_applied") or 0),
+                "recovery_sleeve_normal_risk_bypass_enabled": int(
+                    sizing_snapshot.get("recovery_sleeve_normal_risk_bypass_enabled") or 0
+                ),
+                "recovery_sleeve_normal_risk_bypassed": int(
+                    sizing_snapshot.get("recovery_sleeve_normal_risk_bypassed") or 0
+                ),
+                "recovery_sleeve_reason": str(sizing_snapshot.get("recovery_sleeve_reason") or ""),
+                "recovery_sleeve_selected_volume_before": int(
+                    sizing_snapshot.get("recovery_sleeve_selected_volume_before") or 0
+                ),
+                "recovery_sleeve_selected_volume_after": int(
+                    sizing_snapshot.get("recovery_sleeve_selected_volume_after") or 0
+                ),
+                "recovery_sleeve_broker_margin_multiplier": float(
+                    sizing_snapshot.get("recovery_sleeve_broker_margin_multiplier")
+                    or self.recovery_sleeve_broker_margin_multiplier
+                ),
+                "recovery_sleeve_single_contract_broker_margin_to_equity": float(
+                    sizing_snapshot.get("recovery_sleeve_single_contract_broker_margin_to_equity") or 0.0
+                ),
+                "recovery_sleeve_max_single_contract_broker_margin_to_equity": float(
+                    sizing_snapshot.get("recovery_sleeve_max_single_contract_broker_margin_to_equity")
+                    or self.recovery_sleeve_max_single_contract_broker_margin_to_equity
+                ),
+                "recovery_sleeve_cooldown_days": int(
+                    sizing_snapshot.get("recovery_sleeve_cooldown_days") or self.recovery_sleeve_cooldown_days or 0
+                ),
+                "post_entry_quality_add_enabled": int(
+                    sizing_snapshot.get("post_entry_quality_add_enabled") or 0
+                ),
+                "post_entry_quality_add_feature": str(
+                    sizing_snapshot.get("post_entry_quality_add_feature") or ""
+                ),
+                "post_entry_quality_add_passed": int(sizing_snapshot.get("post_entry_quality_add_passed") or 0),
+                "post_entry_quality_add_observation_bars": int(
+                    sizing_snapshot.get("post_entry_quality_add_observation_bars") or 0
+                ),
+                "post_entry_quality_add_volume_multiplier": float(
+                    sizing_snapshot.get("post_entry_quality_add_volume_multiplier") or 0.0
+                ),
+                "post_entry_quality_add_triggers_add_profit_lock": int(
+                    sizing_snapshot.get("post_entry_quality_add_triggers_add_profit_lock") or 0
+                ),
+                "post_entry_quality_add_body60_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_body60_ratio") or 0.0
+                ),
+                "post_entry_quality_add_avg_body_pct": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_body_pct") or 0.0
+                ),
+                "post_entry_quality_add_avg_directional_close_strength": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_directional_close_strength") or 0.0
+                ),
+                "post_entry_quality_add_short30_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_short30_ratio") or 0.0
+                ),
+                "post_entry_quality_add_long60_ratio": float(
+                    sizing_snapshot.get("post_entry_quality_add_long60_ratio") or 0.0
+                ),
+                "post_entry_quality_add_avg_adverse_wick_pct": float(
+                    sizing_snapshot.get("post_entry_quality_add_avg_adverse_wick_pct") or 0.0
                 ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
@@ -5128,6 +5602,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             final_stop = raw_stop if state.prev2day_stop_price is None else max(state.prev2day_stop_price, raw_stop)
             state.prev2day_stop_price = final_stop
             if self._stop_triggered("long", bar, final_stop):
+                if self._should_relax_prev2day_stop_for_post_quality(state, history):
+                    state.post_quality_prev2day_relax_done = True
+                    self.post_entry_quality_prev2day_relax_skip_count += 1
+                    return ""
                 exit_price = self._stop_execution_price("long", bar, final_stop)
                 self._close_all_layers_and_set_flat_target(
                     state,
@@ -5141,6 +5619,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             final_stop = raw_stop if state.prev2day_stop_price is None else min(state.prev2day_stop_price, raw_stop)
             state.prev2day_stop_price = final_stop
             if self._stop_triggered("short", bar, final_stop):
+                if self._should_relax_prev2day_stop_for_post_quality(state, history):
+                    state.post_quality_prev2day_relax_done = True
+                    self.post_entry_quality_prev2day_relax_skip_count += 1
+                    return ""
                 exit_price = self._stop_execution_price("short", bar, final_stop)
                 self._close_all_layers_and_set_flat_target(
                     state,
@@ -5189,6 +5671,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if state.direction == "short":
             return close_price < fast_now < slow_now and fast_now < fast_prev
         return False
+
+    def _should_relax_prev2day_stop_for_post_quality(
+        self,
+        state: ProductState,
+        history: pd.DataFrame,
+    ) -> bool:
+        if not self.enable_post_entry_quality_prev2day_relax:
+            return False
+        if state.post_quality_prev2day_relax_done or not state.layers or not state.direction:
+            return False
+        feature = str(self.post_entry_quality_prev2day_relax_feature or "").strip().lower()
+        window = self._post_entry_quality_feature_window(feature)
+        observed_history = history.iloc[:-1] if len(history) > 1 else history.iloc[0:0]
+        if len(observed_history) < window:
+            return False
+        stats = self._post_entry_quality_candle_stats(observed_history, state.direction, window)
+        return self._post_entry_quality_feature_passes(stats, feature=feature)
 
     def _process_layer_stops(self, state: ProductState, bar: BarData) -> str:
         direction: str = state.direction
@@ -5323,7 +5822,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             for item in str(self.portfolio_margin_deleverage_layer_kinds or "").replace(";", ",").split(",")
             if item.strip()
         }
-        return kinds or {"add", "donchian"}
+        return kinds or {"add", "donchian", "post_quality"}
 
     def _forced_margin_deleverage_candidates(self, bars: dict[str, BarData]) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
@@ -5675,7 +6174,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             self._update_layer_stop(layer, bar)
         if self.atr_2x_mid_stop_enabled:
             self._apply_atr_mid_stop(state, bar, history)
-        if state.active_volume() > state.base_volume():
+        profit_lock_layer_kinds = {"add", "donchian"}
+        if self.post_entry_quality_add_triggers_add_profit_lock:
+            profit_lock_layer_kinds.add("post_quality")
+        has_profit_lock_layer = any(layer.kind in profit_lock_layer_kinds for layer in state.layers)
+        if has_profit_lock_layer and state.active_volume() > state.base_volume():
             self._apply_add_position_profit_lock(state)
 
     def _update_layer_stop(self, layer: PositionLayer, bar: BarData) -> None:
@@ -5690,7 +6193,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             pnl_pct = (layer.entry_price - close_price) / layer.entry_price if layer.entry_price else 0.0
         layer.max_profit_pct = max(layer.max_profit_pct, pnl_pct)
 
-        if layer.kind in {"add", "donchian"}:
+        if layer.kind in {"add", "donchian", "post_quality"}:
             if layer.direction == "long":
                 layer.stop_price = max(layer.stop_price, float(bar.low_price))
             else:
@@ -6080,6 +6583,180 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return realized_pnl < 0
         return False
 
+    def _post_entry_quality_feature_window(self, feature: str) -> int:
+        text = str(feature or "").strip().lower()
+        if not text.startswith("post"):
+            return 1
+        digits = []
+        for char in text[4:]:
+            if char.isdigit():
+                digits.append(char)
+            else:
+                break
+        if not digits:
+            return 1
+        return max(1, int("".join(digits)))
+
+    def _post_entry_quality_add_window(self) -> int:
+        return self._post_entry_quality_feature_window(str(self.post_entry_quality_add_feature or ""))
+
+    def _post_entry_quality_candle_stats(
+        self,
+        history: pd.DataFrame,
+        direction: str,
+        window: int,
+    ) -> dict[str, float]:
+        if len(history) < window:
+            return {}
+        bars = history.tail(window).copy()
+        open_price = pd.to_numeric(bars["open"], errors="coerce")
+        high_price = pd.to_numeric(bars["high"], errors="coerce")
+        low_price = pd.to_numeric(bars["low"], errors="coerce")
+        close_price = pd.to_numeric(bars["close"], errors="coerce")
+        bar_range = (high_price - low_price).replace(0.0, np.nan)
+        body_pct = (close_price - open_price).abs() / bar_range
+        close_position = (close_price - low_price) / bar_range
+        upper_wick_pct = (high_price - pd.concat([open_price, close_price], axis=1).max(axis=1)) / bar_range
+        lower_wick_pct = (pd.concat([open_price, close_price], axis=1).min(axis=1) - low_price) / bar_range
+        total_wick_pct = upper_wick_pct + lower_wick_pct
+        if direction == "long":
+            directional_close_strength = close_position
+            adverse_wick_pct = upper_wick_pct
+        elif direction == "short":
+            directional_close_strength = 1.0 - close_position
+            adverse_wick_pct = lower_wick_pct
+        else:
+            return {}
+        return {
+            "observation_bars": float(window),
+            "body60_ratio": float(body_pct.ge(float(self.post_entry_quality_add_body_pct_min)).mean()),
+            "avg_body_pct": float(body_pct.mean()),
+            "avg_directional_close_strength": float(directional_close_strength.mean()),
+            "short30_ratio": float(total_wick_pct.le(0.30).mean()),
+            "long60_ratio": float(total_wick_pct.ge(0.60).mean()),
+            "avg_adverse_wick_pct": float(adverse_wick_pct.mean()),
+        }
+
+    def _post_entry_quality_feature_passes(self, stats: dict[str, float], feature: str | None = None) -> bool:
+        if not stats:
+            return False
+        if feature is None:
+            feature = str(self.post_entry_quality_add_feature or "")
+        feature = str(feature or "").strip().lower()
+        suffix = feature
+        window = self._post_entry_quality_feature_window(feature)
+        prefix = f"post{window}_"
+        if suffix.startswith(prefix):
+            suffix = suffix[len(prefix) :]
+
+        body_ratio = float(stats.get("body60_ratio", 0.0) or 0.0)
+        avg_body = float(stats.get("avg_body_pct", 0.0) or 0.0)
+        avg_strength = float(stats.get("avg_directional_close_strength", 0.0) or 0.0)
+        short30_ratio = float(stats.get("short30_ratio", 0.0) or 0.0)
+        long60_ratio = float(stats.get("long60_ratio", 0.0) or 0.0)
+        adverse_wick = float(stats.get("avg_adverse_wick_pct", 0.0) or 0.0)
+
+        if suffix == "body60_ratio_ge50":
+            return body_ratio >= float(self.post_entry_quality_add_body_ratio_min)
+        if suffix == "avg_directional_close_strength_ge60":
+            return avg_strength >= float(self.post_entry_quality_add_directional_close_strength_min)
+        if suffix == "short30_ratio_ge50":
+            return short30_ratio >= float(self.post_entry_quality_add_short_wick_ratio_min)
+        if suffix == "long60_ratio_le20":
+            return long60_ratio <= float(self.post_entry_quality_add_long_wick_ratio_max)
+        if suffix == "avg_adverse_wick_le25":
+            return adverse_wick <= float(self.post_entry_quality_add_adverse_wick_pct_max)
+        if suffix == "smooth_directional_combo":
+            return (
+                body_ratio >= float(self.post_entry_quality_add_body_ratio_min)
+                and avg_strength >= float(self.post_entry_quality_add_directional_close_strength_min)
+                and adverse_wick <= float(self.post_entry_quality_add_adverse_wick_pct_max)
+            )
+        if suffix == "clean_shadow_combo":
+            return (
+                short30_ratio >= float(self.post_entry_quality_add_short_wick_ratio_min)
+                and long60_ratio <= float(self.post_entry_quality_add_long_wick_ratio_max)
+                and avg_body >= float(self.post_entry_quality_add_body_pct_min)
+            )
+        return False
+
+    def _check_post_entry_quality_add_conditions(
+        self,
+        state: ProductState,
+        bar: BarData,
+        history: pd.DataFrame,
+    ) -> tuple[bool, str | None, dict[str, float]]:
+        if not self.enable_post_entry_quality_add or not state.layers or not state.direction:
+            return False, None, {}
+        add_count = self._count_layers(state, "post_quality")
+        if add_count >= max(1, int(self.post_entry_quality_add_max_layers)):
+            return False, None, {}
+        window = self._post_entry_quality_add_window()
+        if state.bars_since_entry != window or len(history) < window:
+            return False, None, {}
+        today_key = self._bar_date(bar)
+        if (
+            state.entry_date == today_key
+            or state.rollover_opened_today == today_key
+            or state.last_post_quality_add_date == today_key
+        ):
+            return False, None, {}
+        stats = self._post_entry_quality_candle_stats(history, state.direction, window)
+        if not self._post_entry_quality_feature_passes(stats):
+            return False, None, stats
+        feature = str(self.post_entry_quality_add_feature or "").strip().lower()
+        signal = f"post_quality_add_{feature or 'unknown'}"
+        return True, signal, stats
+
+    def _calculate_post_entry_quality_add_volume(self, state: ProductState) -> int:
+        base_volume = max(0, int(state.base_volume()))
+        multiplier = max(0.0, float(self.post_entry_quality_add_volume_multiplier or 0.0))
+        volume = int(math.floor(base_volume * multiplier + 1e-12))
+        return min(max(0, volume), self.max_position_size)
+
+    def _execute_post_entry_quality_add(
+        self,
+        state: ProductState,
+        bar: BarData,
+        signal: str,
+        volume: int,
+        history: pd.DataFrame,
+        stats: dict[str, float],
+    ) -> None:
+        snapshot_extra = {
+            "post_entry_quality_add_enabled": int(self.enable_post_entry_quality_add),
+            "post_entry_quality_add_feature": str(self.post_entry_quality_add_feature or ""),
+            "post_entry_quality_add_passed": 1,
+            "post_entry_quality_add_observation_bars": int(stats.get("observation_bars", 0.0) or 0.0),
+            "post_entry_quality_add_volume_multiplier": float(self.post_entry_quality_add_volume_multiplier or 0.0),
+            "post_entry_quality_add_triggers_add_profit_lock": int(
+                self.post_entry_quality_add_triggers_add_profit_lock
+            ),
+            "post_entry_quality_add_body60_ratio": float(stats.get("body60_ratio", 0.0) or 0.0),
+            "post_entry_quality_add_avg_body_pct": float(stats.get("avg_body_pct", 0.0) or 0.0),
+            "post_entry_quality_add_avg_directional_close_strength": float(
+                stats.get("avg_directional_close_strength", 0.0) or 0.0
+            ),
+            "post_entry_quality_add_short30_ratio": float(stats.get("short30_ratio", 0.0) or 0.0),
+            "post_entry_quality_add_long60_ratio": float(stats.get("long60_ratio", 0.0) or 0.0),
+            "post_entry_quality_add_avg_adverse_wick_pct": float(stats.get("avg_adverse_wick_pct", 0.0) or 0.0),
+        }
+        self._append_layer(
+            state,
+            "post_quality",
+            volume,
+            bar,
+            signal,
+            history,
+            self.post_entry_quality_add_use_day_extreme_stop,
+            sizing_snapshot_extra=snapshot_extra,
+        )
+        state.last_post_quality_add_date = self._bar_date(bar)
+        state.last_signal = signal
+        self.post_entry_quality_add_count += 1
+        if self.post_entry_quality_add_triggers_add_profit_lock:
+            self._apply_add_position_profit_lock(state)
+
     def _check_regular_add_conditions(self, state: ProductState, bar: BarData, history: pd.DataFrame) -> tuple[bool, str | None]:
         if not self.enable_add_position:
             return False, None
@@ -6303,7 +6980,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             for item in str(self.risk_cluster_heat_deleverage_layer_kinds or "").replace(";", ",").split(",")
             if item.strip()
         }
-        return kinds or {"add", "donchian"}
+        return kinds or {"add", "donchian", "post_quality"}
 
     def _refresh_risk_cluster_heat_pressure_snapshot(self) -> None:
         self.risk_cluster_heat_pressure_snapshot = {}

@@ -263,7 +263,7 @@ def _to_markdown(df: pd.DataFrame, columns: list[str], max_rows: int = 20) -> st
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Official live daily execution gate from latest Stage653 signal.")
+    parser = argparse.ArgumentParser(description="Official live daily execution gate from latest official live signal.")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
     args = parser.parse_args()
 
@@ -372,7 +372,7 @@ def main() -> None:
         "## 说明",
         "",
         "- 本阶段只做执行闸门，不发单。",
-        "- 本阶段默认读取 Stage653/20万 official live `signal_plan`；没有信号时不回落到 Stage78。",
+        "- 本阶段默认读取当前官方实盘 20万 `signal_plan`；没有信号时不回落到 Stage78。",
         "- `skip_broker_flat_for_close` 表示策略理论上要平仓，但SimNow账户没有对应持仓，不能对空仓发送平仓单。",
         "- `review` 风险级别允许降风险/平仓，但不允许新开仓。",
         "",

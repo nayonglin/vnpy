@@ -435,7 +435,7 @@ For each P0 bucket (`lc2505.GFEX`, `AP505.CZCE`, `fu2509.SHFE`), close only afte
 
 - Dry-run first.
 - A normal audit must leave `send_order_api_called_count=0`.
-- Submit paths require the existing SimNow/broker-test confirmation gates from `skills/stage78-simnow-shadow-sop/SKILL.md`.
+- Submit paths require the existing SimNow/broker-test confirmation gates from `skills/futures-live-execution-sop/SKILL.md`.
 """
     RUNBOOK_PATH.write_text(text, encoding="utf-8")
     return text

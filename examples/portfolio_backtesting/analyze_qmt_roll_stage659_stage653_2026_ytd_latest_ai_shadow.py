@@ -13,16 +13,26 @@ import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513  #
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as s650  # noqa: E402
 import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653  # noqa: E402
 import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658  # noqa: E402
+from qmt_roll_official_live_config import (  # noqa: E402
+    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_BASE_PROFILE_NAME,
+    OFFICIAL_LIVE_PROFILE_NAME,
+    OFFICIAL_LIVE_STAGE659_MODEL_TAG,
+    OFFICIAL_LIVE_STAGE659_PREFIX,
+    OFFICIAL_LIVE_STRATEGY_OVERRIDES,
+    OFFICIAL_LIVE_VERSION,
+)
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "backtest_outputs"
 
-MODEL_TAG = "stage659_stage653_2026_ytd_latest_ai_shadow_v1"
-OUTPUT_PREFIX = "qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow"
+MODEL_TAG = OFFICIAL_LIVE_STAGE659_MODEL_TAG
+OUTPUT_PREFIX = OFFICIAL_LIVE_STAGE659_PREFIX
 LINE_ID = "futures_trend_drawdown30_preserve_return"
 
-CURRENT_VARIANT = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
+CURRENT_VARIANT = OFFICIAL_LIVE_PROFILE_NAME
 BASELINE_VARIANT = s653.BASELINE_VARIANT
 SELECTED_VARIANTS = (BASELINE_VARIANT, CURRENT_VARIANT)
 
@@ -41,11 +51,7 @@ FORCED_SUMMARY_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_forced_summary_{MODEL_TAG}.
 DECISION_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_decision_{MODEL_TAG}.json"
 REPORT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 
-DEFAULT_AI_ELIGIBILITY_PATH = (
-    OUTPUT_DIR
-    / "qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_eligibility_"
-    "stage182_ai_product_pool_live_inference_v1.csv"
-)
+DEFAULT_AI_ELIGIBILITY_PATH = OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
 
 
 def _json_safe(value: Any) -> Any:
@@ -101,6 +107,39 @@ def _run_variant_dynamic(
         s653.s517.END_DT = original_end
 
 
+def _official_live_spec(identity_map: str) -> s653.ForcedVariant:
+    base_spec: s653.ForcedVariant | None = None
+    for spec in s653._variants(identity_map):
+        if spec.capital.variant == OFFICIAL_LIVE_BASE_PROFILE_NAME:
+            base_spec = spec
+            break
+    if base_spec is None:
+        raise ValueError(f"official live base profile not found: {OFFICIAL_LIVE_BASE_PROFILE_NAME}")
+
+    capital = replace(
+        base_spec.capital,
+        variant=OFFICIAL_LIVE_PROFILE_NAME,
+        label=f"20w {OFFICIAL_LIVE_ALIAS} recovery sleeve",
+        note=(
+            "Stage372 official live: force95->80 base plus one-lot recovery sleeve only for clean "
+            "long_case1a/short_case1a structure recovery at the 0.1 risk floor."
+        ),
+    )
+    overrides = {**base_spec.overrides, **OFFICIAL_LIVE_STRATEGY_OVERRIDES}
+    return replace(base_spec, capital=capital, overrides=overrides, profile="forced_margin_95_to_80_recovery_sleeve")
+
+
+def _selected_specs(identity_map: str) -> list[s653.ForcedVariant]:
+    baseline_spec: s653.ForcedVariant | None = None
+    for spec in s653._variants(identity_map):
+        if spec.capital.variant == BASELINE_VARIANT:
+            baseline_spec = spec
+            break
+    if baseline_spec is None:
+        raise ValueError(f"baseline profile not found: {BASELINE_VARIANT}")
+    return [baseline_spec, _official_live_spec(identity_map)]
+
+
 def _write_report(
     summary: pd.DataFrame,
     cost: pd.DataFrame,
@@ -111,15 +150,16 @@ def _write_report(
     decision: dict[str, Any],
 ) -> None:
     lines = [
-        "# Stage659 Stage653 2026 年初至今最新 AI 池影子盘",
+        "# Stage659 当前官方实盘 2026 年初至今最新 AI 池影子盘",
         "",
         f"- 生成时间：`{datetime.now().strftime('%Y-%m-%d %H:%M CST')}`",
         f"- line_id：`{LINE_ID}`",
+        f"- 当前官方版本：`{OFFICIAL_LIVE_VERSION}` / `{OFFICIAL_LIVE_ALIAS}`。",
         f"- 统计区间：`{decision['analysis_start']}` 至 `{decision['analysis_end']}`。",
         "- 性质：只读影子盘绩效；不连接 CTP，不读取账户，不调用下单。",
         f"- AI 池最新 eval_date：`{decision['ai_pool_audit'].get('max_eval_date', '')}`。",
         f"- AI 池最新品种：`{', '.join(decision['ai_pool_audit'].get('latest_products', []))}`。",
-        "- 当前候选：`stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4`。",
+        f"- 当前官方策略体：`{CURRENT_VARIANT}`。",
         "- 对照：`stage526_200k_allin_r080_pc25_maxpos4`。",
         "",
         "## 核心结果",
@@ -198,7 +238,7 @@ def _write_report(
         "## 判断",
         "",
         f"- 决策：`{decision['decision']}`。",
-        "- 这是最新 AI 池影子盘口径，不等同于 Stage353 全周期固定结果。",
+        "- 这是最新 AI 池影子盘口径，不等同于全周期固定池结果。",
         "- 真实执行仍需 fresh read-only、dry-run、1手测试单和 TCA 闸门。",
     ]
     REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -233,7 +273,7 @@ def _signal_plan_from_usage(usage: pd.DataFrame, target_date: datetime) -> pd.Da
     frame = frame[frame["signal_date"].eq(target)].copy()
     if frame.empty:
         return _empty_signal_plan()
-    frame["shadow_session_id"] = frame["trade_id"].map(lambda value: f"STAGE653LIVE-{target.replace('-', '')}-{value}")
+    frame["shadow_session_id"] = frame["trade_id"].map(lambda value: f"STAGE372LIVE-{target.replace('-', '')}-{value}")
     frame["volume"] = pd.to_numeric(frame.get("order_volume", 0.0), errors="coerce").fillna(0.0)
     frame["theoretical_price"] = pd.to_numeric(frame.get("order_price", 0.0), errors="coerce").fillna(0.0)
     frame["real_t1_open_proxy_price"] = ""
@@ -248,7 +288,7 @@ def _signal_plan_from_usage(usage: pd.DataFrame, target_date: datetime) -> pd.Da
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Stage653 20w YTD shadow with latest monthly AI pool.")
+    parser = argparse.ArgumentParser(description="Run current official live 20w YTD shadow with latest monthly AI pool.")
     parser.add_argument("--analysis-start", default="2026-01-01")
     parser.add_argument("--target-date", default="2026-06-04")
     parser.add_argument("--ai-eligibility-path", default=str(DEFAULT_AI_ELIGIBILITY_PATH))
@@ -260,7 +300,7 @@ def main() -> None:
 
     metadata = s513._metadata()
     identity_map = s653.s519._product_identity_cluster_map(metadata)
-    specs = [spec for spec in s653._variants(identity_map) if spec.capital.variant in SELECTED_VARIANTS]
+    specs = _selected_specs(identity_map)
     spec_map = {spec.capital.variant: spec for spec in specs}
 
     daily_frames: list[pd.DataFrame] = []
@@ -327,7 +367,7 @@ def main() -> None:
     current_row = summary[summary["variant"].eq(CURRENT_VARIANT)].to_dict(orient="records")
     baseline_row = summary[summary["variant"].eq(BASELINE_VARIANT)].to_dict(orient="records")
     decision = {
-        "stage": "Stage359",
+        "stage": "Stage373",
         "script_stage": "Stage659",
         "line_id": LINE_ID,
         "model_tag": MODEL_TAG,
@@ -338,7 +378,8 @@ def main() -> None:
         "ai_pool_audit": _ai_pool_audit(ai_eligibility_path),
         "current_variant": current_row[0] if current_row else {},
         "baseline_variant": baseline_row[0] if baseline_row else {},
-        "decision": "stage653_2026_ytd_latest_ai_shadow_measured_no_order_api",
+        "official_live_version": OFFICIAL_LIVE_VERSION,
+        "decision": "stage372_2026_ytd_latest_ai_shadow_measured_no_order_api",
         "execution_scope": "read-only backtest/shadow performance only; no CTP connection and no order API call",
         "target_signal_count": int(len(signal_plan)),
     }
