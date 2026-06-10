@@ -310,6 +310,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     failure_memory_micro_sizing_min_consecutive_failures: int = 2
     failure_memory_micro_sizing_multiplier: float = 1.10
     failure_memory_micro_sizing_entry_contexts: str = "flat_entry"
+    enable_oi_price_confirm_risk_restore: bool = False
+    oi_price_confirm_risk_restore_multiplier: float = 0.80
+    oi_price_confirm_risk_restore_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
+    oi_price_confirm_risk_restore_require_recent_sum_ratio: bool = False
+    oi_price_confirm_risk_restore_recent_sum_days: int = 5
+    oi_price_confirm_risk_restore_recent_sum_min_ratio: float = 2.0
     enable_same_direction_correlation_gate: bool = False
     same_direction_correlation_gate_lookback: int = 20
     same_direction_correlation_gate_start: float = 0.60
@@ -583,6 +589,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "failure_memory_micro_sizing_min_consecutive_failures",
         "failure_memory_micro_sizing_multiplier",
         "failure_memory_micro_sizing_entry_contexts",
+        "enable_oi_price_confirm_risk_restore",
+        "oi_price_confirm_risk_restore_multiplier",
+        "oi_price_confirm_risk_restore_entry_contexts",
+        "oi_price_confirm_risk_restore_require_recent_sum_ratio",
+        "oi_price_confirm_risk_restore_recent_sum_days",
+        "oi_price_confirm_risk_restore_recent_sum_min_ratio",
         "enable_same_direction_correlation_gate",
         "same_direction_correlation_gate_lookback",
         "same_direction_correlation_gate_start",
@@ -1111,7 +1123,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             self.total_margin_in_use = self._estimate_margin_usage(engine_bars)
 
     def rebalance_portfolio(self, bars: dict[str, BarData]) -> None:
-        super().rebalance_portfolio(bars)
+        rebalance_bars: dict[str, BarData] = dict(bars)
+        engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
+        for vt_symbol, pos in list(self.pos_data.items()):
+            if not pos or vt_symbol in rebalance_bars:
+                continue
+            if self.get_target(vt_symbol) == pos:
+                continue
+            bar = engine_bars.get(vt_symbol)
+            if bar is not None:
+                rebalance_bars[vt_symbol] = bar
+        super().rebalance_portfolio(rebalance_bars)
         self.execution_price_overrides.clear()
 
     def on_bars(self, bars: dict[str, BarData]) -> None:
@@ -1134,11 +1156,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         for product_vt in self.product_symbols:
             target_contract: str = mapping_today.get(product_vt, "")
             if not target_contract:
+                self._close_position_when_target_unavailable(
+                    product_vt,
+                    state=self.states[product_vt],
+                    target_contract="",
+                    bars=bars,
+                    reason="rollover_close_missing_target_contract",
+                )
                 continue
 
             state: ProductState = self.states[product_vt]
             target_bar: BarData | None = bars.get(target_contract)
             if target_bar is None:
+                self._close_position_when_target_unavailable(
+                    product_vt,
+                    state=state,
+                    target_contract=target_contract,
+                    bars=bars,
+                    reason="rollover_close_missing_target_bar",
+                )
                 continue
 
             actual_contract, current_pos, actual_bar = self._resolve_actual_position(state, target_contract, bars)
@@ -1147,6 +1183,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             target_am: ArrayManager = self.ams[target_contract]
             if not target_am.inited:
+                if current_pos != 0 and state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
+                    reconcile_bar = actual_bar or self._bar_from_current_or_engine(actual_contract, bars) or target_bar
+                    self._reconcile_state_with_position(state, current_pos, reconcile_bar)
+                    if state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
+                        self._handle_rollover(state, target_contract, bars)
                 continue
 
             history: pd.DataFrame = self._build_history_df(target_am)
@@ -1592,9 +1633,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return
 
         old_contract: str = state.contract_vt_symbol
-        old_bar: BarData | None = bars.get(old_contract)
-        new_bar: BarData | None = bars.get(target_contract)
-        if not old_bar or not new_bar:
+        old_bar: BarData | None = self._bar_from_current_or_engine(old_contract, bars)
+        new_bar: BarData | None = self._bar_from_current_or_engine(target_contract, bars)
+        if not old_bar:
             return
 
         old_direction: str = state.direction
@@ -1613,6 +1654,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.set_target(old_contract, 0)
 
         if not self.rollover_reopen_enabled:
+            return
+        if not new_bar:
             return
 
         target_am: ArrayManager = self.ams[target_contract]
@@ -1667,6 +1710,47 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         state.risk_mode = old_risk_mode
         state.rollover_opened_today = self._bar_date(new_bar)
         self._apply_state_target(state)
+
+    def _close_position_when_target_unavailable(
+        self,
+        product_vt: str,
+        *,
+        state: ProductState,
+        target_contract: str,
+        bars: dict[str, BarData],
+        reason: str,
+    ) -> None:
+        actual_contract, current_pos, actual_bar = self._resolve_actual_position(state, target_contract, bars)
+        if actual_bar is None:
+            actual_bar = self._bar_from_current_or_engine(actual_contract, bars)
+        if current_pos == 0 or not actual_contract or actual_bar is None:
+            return
+        if target_contract and actual_contract == target_contract:
+            return
+
+        state.contract_vt_symbol = actual_contract
+        self._reconcile_state_with_position(state, current_pos, actual_bar)
+        self._record_trade_event(
+            bar=actual_bar,
+            contract_vt_symbol=actual_contract,
+            product_vt_symbol=product_vt,
+            position_direction=state.direction,
+            offset="Close",
+            reason=reason,
+            volume=state.active_volume(),
+            price=float(actual_bar.close_price),
+        )
+        self._close_all_layers(state, float(actual_bar.close_price))
+        self.set_target(actual_contract, 0)
+
+    def _bar_from_current_or_engine(self, vt_symbol: str, bars: dict[str, BarData]) -> BarData | None:
+        if not vt_symbol:
+            return None
+        bar = bars.get(vt_symbol)
+        if bar is not None:
+            return bar
+        engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
+        return engine_bars.get(vt_symbol)
 
     def _refresh_risk_state(self, bars: dict[str, BarData]) -> None:
         self.estimated_equity = self._estimate_equity(bars)
@@ -2026,6 +2110,21 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         contexts = self._failure_memory_micro_sizing_context_set()
         return "*" in contexts or entry_context in contexts
 
+    def _oi_price_confirm_risk_restore_context_set(self) -> set[str]:
+        raw_contexts = str(self.oi_price_confirm_risk_restore_entry_contexts or "").strip()
+        if not raw_contexts:
+            return {"flat_entry"}
+        contexts = {
+            item.strip()
+            for item in raw_contexts.replace(";", ",").replace("|", ",").split(",")
+            if item.strip()
+        }
+        return contexts or {"flat_entry"}
+
+    def _oi_price_confirm_risk_restore_context_applies(self, entry_context: str) -> bool:
+        contexts = self._oi_price_confirm_risk_restore_context_set()
+        return "*" in contexts or entry_context in contexts
+
     @staticmethod
     def _product_direction_failure_cooldown_date(value: Any) -> pd.Timestamp:
         return pd.Timestamp(value).tz_localize(None).normalize()
@@ -2223,6 +2322,132 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
         else:
             fields["failure_memory_micro_sizing_reason"] = "below_failure_threshold"
+        return fields
+
+    def _oi_price_confirm_risk_restore_fields(
+        self,
+        *,
+        history: pd.DataFrame,
+        direction: str,
+        entry_context: str,
+        base_multiplier: float,
+    ) -> dict[str, Any]:
+        enabled = int(
+            self.enable_oi_price_confirm_risk_restore
+            and self._oi_price_confirm_risk_restore_context_applies(entry_context)
+        )
+        configured_multiplier = max(0.0, float(self.oi_price_confirm_risk_restore_multiplier or 0.0))
+        base_multiplier = max(0.0, float(base_multiplier or 0.0))
+        require_recent_sum_ratio = bool(self.oi_price_confirm_risk_restore_require_recent_sum_ratio)
+        recent_sum_days = max(1, int(self.oi_price_confirm_risk_restore_recent_sum_days or 1))
+        recent_sum_min_ratio = max(0.0, float(self.oi_price_confirm_risk_restore_recent_sum_min_ratio or 0.0))
+        fields: dict[str, Any] = {
+            "oi_price_confirm_risk_restore_enabled": enabled,
+            "oi_price_confirm_risk_restore_applied": 0,
+            "oi_price_confirm_risk_restore_reason": "disabled" if not enabled else "not_confirmed",
+            "oi_price_confirm_risk_restore_base_multiplier": base_multiplier,
+            "oi_price_confirm_risk_restore_multiplier": configured_multiplier,
+            "oi_price_confirm_risk_restore_effective_multiplier": base_multiplier,
+            "oi_price_confirm_recent_sum_ratio_required": int(require_recent_sum_ratio),
+            "oi_price_confirm_recent_sum_days": recent_sum_days,
+            "oi_price_confirm_recent_oi_sum": math.nan,
+            "oi_price_confirm_prior_oi_sum": math.nan,
+            "oi_price_confirm_recent_prior_oi_sum_ratio": math.nan,
+            "oi_price_confirm_recent_sum_ratio_passed": int(not require_recent_sum_ratio),
+            "oi_price_confirm_entry_close": math.nan,
+            "oi_price_confirm_prev_close": math.nan,
+            "oi_price_confirm_entry_oi": math.nan,
+            "oi_price_confirm_prev_oi": math.nan,
+            "oi_price_confirm_oi_up": 0,
+            "oi_price_confirm_price_aligned": 0,
+            "oi_price_confirm_passed": 0,
+        }
+        if not enabled:
+            return fields
+
+        if history is None or history.empty or len(history) < 2:
+            fields["oi_price_confirm_risk_restore_reason"] = "insufficient_history"
+            return fields
+        if "close" not in history.columns or "open_interest" not in history.columns:
+            fields["oi_price_confirm_risk_restore_reason"] = "missing_close_or_oi"
+            return fields
+
+        close = pd.to_numeric(history["close"], errors="coerce")
+        open_interest = pd.to_numeric(history["open_interest"], errors="coerce")
+        close0 = float(close.iloc[-1]) if len(close) else math.nan
+        close1 = float(close.iloc[-2]) if len(close) >= 2 else math.nan
+        oi0 = float(open_interest.iloc[-1]) if len(open_interest) else math.nan
+        oi1 = float(open_interest.iloc[-2]) if len(open_interest) >= 2 else math.nan
+        fields.update(
+            {
+                "oi_price_confirm_entry_close": close0,
+                "oi_price_confirm_prev_close": close1,
+                "oi_price_confirm_entry_oi": oi0,
+                "oi_price_confirm_prev_oi": oi1,
+            }
+        )
+        if not all(math.isfinite(value) for value in [close0, close1, oi0, oi1]) or oi1 <= 0.0:
+            fields["oi_price_confirm_risk_restore_reason"] = "invalid_close_or_oi"
+            return fields
+
+        recent_sum_ratio_passed = True
+        if require_recent_sum_ratio:
+            required_history = recent_sum_days * 2
+            if len(open_interest) < required_history:
+                fields["oi_price_confirm_risk_restore_reason"] = "insufficient_recent_oi_sum_history"
+                return fields
+            prior_oi = open_interest.iloc[-required_history:-recent_sum_days]
+            recent_oi = open_interest.iloc[-recent_sum_days:]
+            prior_values = pd.to_numeric(prior_oi, errors="coerce").to_numpy(dtype=float)
+            recent_values = pd.to_numeric(recent_oi, errors="coerce").to_numpy(dtype=float)
+            if (
+                len(prior_values) != recent_sum_days
+                or len(recent_values) != recent_sum_days
+                or not np.isfinite(prior_values).all()
+                or not np.isfinite(recent_values).all()
+            ):
+                fields["oi_price_confirm_risk_restore_reason"] = "invalid_recent_oi_sum"
+                return fields
+            prior_sum = float(np.sum(prior_values))
+            recent_sum = float(np.sum(recent_values))
+            ratio = recent_sum / prior_sum if prior_sum > 0.0 else math.nan
+            recent_sum_ratio_passed = bool(
+                math.isfinite(ratio)
+                and prior_sum > 0.0
+                and recent_sum >= prior_sum * recent_sum_min_ratio
+            )
+            fields.update(
+                {
+                    "oi_price_confirm_recent_oi_sum": recent_sum,
+                    "oi_price_confirm_prior_oi_sum": prior_sum,
+                    "oi_price_confirm_recent_prior_oi_sum_ratio": ratio,
+                    "oi_price_confirm_recent_sum_ratio_passed": int(recent_sum_ratio_passed),
+                }
+            )
+
+        side = str(direction or "")
+        price_aligned = close0 > close1 if side == "long" else close0 < close1 if side == "short" else False
+        oi_up = oi0 > oi1
+        passed = bool(price_aligned and oi_up and recent_sum_ratio_passed)
+        effective_multiplier = max(base_multiplier, configured_multiplier) if passed else base_multiplier
+        fields.update(
+            {
+                "oi_price_confirm_oi_up": int(oi_up),
+                "oi_price_confirm_price_aligned": int(price_aligned),
+                "oi_price_confirm_passed": int(passed),
+                "oi_price_confirm_risk_restore_effective_multiplier": effective_multiplier,
+                "oi_price_confirm_risk_restore_applied": int(effective_multiplier > base_multiplier + 1e-12),
+                "oi_price_confirm_risk_restore_reason": (
+                    "oi_price_confirm_restore"
+                    if effective_multiplier > base_multiplier + 1e-12
+                    else "confirmed_no_multiplier_lift"
+                    if passed
+                    else "recent_oi_sum_ratio_not_passed"
+                    if price_aligned and oi_up and require_recent_sum_ratio and not recent_sum_ratio_passed
+                    else "not_confirmed"
+                ),
+            }
+        )
         return fields
 
     def _rollover_reopen_drawdown_guard_fields(self) -> dict[str, Any]:
@@ -4260,6 +4485,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             or effective_risk_multiplier
         )
+        oi_price_confirm_fields = self._oi_price_confirm_risk_restore_fields(
+            history=history,
+            direction=direction,
+            entry_context=entry_context,
+            base_multiplier=effective_risk_multiplier,
+        )
+        effective_risk_multiplier = float(
+            oi_price_confirm_fields.get(
+                "oi_price_confirm_risk_restore_effective_multiplier",
+                effective_risk_multiplier,
+            )
+            or effective_risk_multiplier
+        )
         overheat_cooldown_fields = self._portfolio_overheat_cooldown_fields(entry_context)
         overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
         sizing_equity_fields = self._sizing_equity_snapshot()
@@ -4330,6 +4568,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **sizing_equity_fields,
                 **recovery_fields,
                 **failure_memory_fields,
+                **oi_price_confirm_fields,
                 **overheat_cooldown_fields,
                 **cluster_cap_fields,
                 **heat_gate_fields,
@@ -4432,6 +4671,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **sizing_equity_fields,
             **recovery_fields,
             **failure_memory_fields,
+            **oi_price_confirm_fields,
             **overheat_cooldown_fields,
             **cluster_cap_fields,
             **heat_gate_fields,
@@ -4729,6 +4969,79 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "risk_mode": str(sizing_snapshot.get("risk_mode", signal_data.get("risk_mode", "regular"))),
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "oi_price_confirm_risk_restore_enabled": int(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_enabled") or 0
+                ),
+                "oi_price_confirm_risk_restore_applied": int(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_applied") or 0
+                ),
+                "oi_price_confirm_risk_restore_reason": str(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_reason") or ""
+                ),
+                "oi_price_confirm_risk_restore_base_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_base_multiplier")
+                    if sizing_snapshot.get("oi_price_confirm_risk_restore_base_multiplier") is not None
+                    else self._current_streak_multiplier()
+                ),
+                "oi_price_confirm_risk_restore_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_multiplier")
+                    if sizing_snapshot.get("oi_price_confirm_risk_restore_multiplier") is not None
+                    else self.oi_price_confirm_risk_restore_multiplier
+                ),
+                "oi_price_confirm_risk_restore_effective_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_effective_multiplier")
+                    or sizing_snapshot.get("risk_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "oi_price_confirm_entry_close": float(
+                    sizing_snapshot.get("oi_price_confirm_entry_close")
+                    if sizing_snapshot.get("oi_price_confirm_entry_close") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prev_close": float(
+                    sizing_snapshot.get("oi_price_confirm_prev_close")
+                    if sizing_snapshot.get("oi_price_confirm_prev_close") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_entry_oi": float(
+                    sizing_snapshot.get("oi_price_confirm_entry_oi")
+                    if sizing_snapshot.get("oi_price_confirm_entry_oi") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prev_oi": float(
+                    sizing_snapshot.get("oi_price_confirm_prev_oi")
+                    if sizing_snapshot.get("oi_price_confirm_prev_oi") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_oi_up": int(sizing_snapshot.get("oi_price_confirm_oi_up") or 0),
+                "oi_price_confirm_price_aligned": int(
+                    sizing_snapshot.get("oi_price_confirm_price_aligned") or 0
+                ),
+                "oi_price_confirm_recent_sum_ratio_required": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_ratio_required") or 0
+                ),
+                "oi_price_confirm_recent_sum_days": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_days") or 0
+                ),
+                "oi_price_confirm_recent_oi_sum": float(
+                    sizing_snapshot.get("oi_price_confirm_recent_oi_sum")
+                    if sizing_snapshot.get("oi_price_confirm_recent_oi_sum") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prior_oi_sum": float(
+                    sizing_snapshot.get("oi_price_confirm_prior_oi_sum")
+                    if sizing_snapshot.get("oi_price_confirm_prior_oi_sum") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_recent_prior_oi_sum_ratio": float(
+                    sizing_snapshot.get("oi_price_confirm_recent_prior_oi_sum_ratio")
+                    if sizing_snapshot.get("oi_price_confirm_recent_prior_oi_sum_ratio") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_recent_sum_ratio_passed": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_ratio_passed") or 0
+                ),
+                "oi_price_confirm_passed": int(sizing_snapshot.get("oi_price_confirm_passed") or 0),
                 "failure_memory_micro_sizing_enabled": int(
                     sizing_snapshot.get("failure_memory_micro_sizing_enabled") or 0
                 ),
@@ -5287,6 +5600,79 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "effective_streak_risk_multipliers": self.streak_risk_multipliers,
                 "risk_ratio": sizing_snapshot.get("risk_ratio"),
                 "risk_multiplier": float(sizing_snapshot.get("risk_multiplier") or self._current_streak_multiplier()),
+                "oi_price_confirm_risk_restore_enabled": int(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_enabled") or 0
+                ),
+                "oi_price_confirm_risk_restore_applied": int(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_applied") or 0
+                ),
+                "oi_price_confirm_risk_restore_reason": str(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_reason") or ""
+                ),
+                "oi_price_confirm_risk_restore_base_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_base_multiplier")
+                    if sizing_snapshot.get("oi_price_confirm_risk_restore_base_multiplier") is not None
+                    else self._current_streak_multiplier()
+                ),
+                "oi_price_confirm_risk_restore_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_multiplier")
+                    if sizing_snapshot.get("oi_price_confirm_risk_restore_multiplier") is not None
+                    else self.oi_price_confirm_risk_restore_multiplier
+                ),
+                "oi_price_confirm_risk_restore_effective_multiplier": float(
+                    sizing_snapshot.get("oi_price_confirm_risk_restore_effective_multiplier")
+                    or sizing_snapshot.get("risk_multiplier")
+                    or self._current_streak_multiplier()
+                ),
+                "oi_price_confirm_entry_close": float(
+                    sizing_snapshot.get("oi_price_confirm_entry_close")
+                    if sizing_snapshot.get("oi_price_confirm_entry_close") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prev_close": float(
+                    sizing_snapshot.get("oi_price_confirm_prev_close")
+                    if sizing_snapshot.get("oi_price_confirm_prev_close") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_entry_oi": float(
+                    sizing_snapshot.get("oi_price_confirm_entry_oi")
+                    if sizing_snapshot.get("oi_price_confirm_entry_oi") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prev_oi": float(
+                    sizing_snapshot.get("oi_price_confirm_prev_oi")
+                    if sizing_snapshot.get("oi_price_confirm_prev_oi") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_oi_up": int(sizing_snapshot.get("oi_price_confirm_oi_up") or 0),
+                "oi_price_confirm_price_aligned": int(
+                    sizing_snapshot.get("oi_price_confirm_price_aligned") or 0
+                ),
+                "oi_price_confirm_recent_sum_ratio_required": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_ratio_required") or 0
+                ),
+                "oi_price_confirm_recent_sum_days": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_days") or 0
+                ),
+                "oi_price_confirm_recent_oi_sum": float(
+                    sizing_snapshot.get("oi_price_confirm_recent_oi_sum")
+                    if sizing_snapshot.get("oi_price_confirm_recent_oi_sum") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_prior_oi_sum": float(
+                    sizing_snapshot.get("oi_price_confirm_prior_oi_sum")
+                    if sizing_snapshot.get("oi_price_confirm_prior_oi_sum") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_recent_prior_oi_sum_ratio": float(
+                    sizing_snapshot.get("oi_price_confirm_recent_prior_oi_sum_ratio")
+                    if sizing_snapshot.get("oi_price_confirm_recent_prior_oi_sum_ratio") is not None
+                    else float("nan")
+                ),
+                "oi_price_confirm_recent_sum_ratio_passed": int(
+                    sizing_snapshot.get("oi_price_confirm_recent_sum_ratio_passed") or 0
+                ),
+                "oi_price_confirm_passed": int(sizing_snapshot.get("oi_price_confirm_passed") or 0),
                 "streak_entry_structure_risk_recovery_enabled": int(
                     sizing_snapshot.get("streak_entry_structure_risk_recovery_enabled") or 0
                 ),
