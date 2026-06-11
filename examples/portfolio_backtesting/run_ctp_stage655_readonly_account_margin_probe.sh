@@ -42,6 +42,6 @@ if [[ "${CTP_TD_ADDRESS}" != tcp://* ]]; then
 fi
 
 export CTP_PRODUCT_INFO="${CTP_PRODUCT_INFO:-}"
-export DYLD_FRAMEWORK_PATH="${CTP_FRAMEWORK_DIR}:${CTP_LIB_DIR}${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}"
+export DYLD_FRAMEWORK_PATH="${CTP_LIB_DIR}:${CTP_FRAMEWORK_DIR}${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}"
 
 exec "${VENV_PYTHON}" "${SCRIPT_DIR}/run_ctp_stage655_readonly_account_margin_probe.py" "$@"

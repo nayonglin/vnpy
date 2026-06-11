@@ -36,6 +36,7 @@ CLOSE_CONFIRM_TEXT = "I_UNDERSTAND_THIS_SENDS_REAL_CTP_LIVE_CLOSE_ORDER"
 CONTRACT_SPECS: dict[str, dict[str, float]] = {
     # Broker mobile app showed FG2609 margin as 1028 * 20 * 15% = 3084.
     "FG.CZCE": {"volume_multiple": 20.0, "price_tick": 1.0, "margin_ratio": 0.15},
+    "MA.CZCE": {"volume_multiple": 10.0, "price_tick": 1.0, "margin_ratio": 0.12},
     "SA.CZCE": {"volume_multiple": 20.0, "price_tick": 1.0, "margin_ratio": 0.07},
     "rb.SHFE": {"volume_multiple": 10.0, "price_tick": 1.0, "margin_ratio": 0.08},
     "hc.SHFE": {"volume_multiple": 10.0, "price_tick": 1.0, "margin_ratio": 0.08},
@@ -63,7 +64,10 @@ def _now() -> str:
 def _read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"_read_error": repr(exc)}
 
 
 def _parse_dt(value: str) -> datetime | None:
@@ -162,6 +166,13 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
     return float(number)
 
 
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return default
+
+
 def _split_vt_symbol(vt_symbol: str) -> tuple[str, Exchange | None, str]:
     if "." not in vt_symbol:
         return vt_symbol, None, ""
@@ -183,6 +194,7 @@ def _readonly_gate(max_age_seconds: int) -> dict[str, Any]:
         age_seconds = round((datetime.now() - generated_dt).total_seconds(), 3)
     return {
         "summary_path": str(READONLY_SUMMARY_PATH),
+        "read_error": str(summary.get("_read_error", "")),
         "generated_at": generated_at,
         "age_seconds": age_seconds,
         "fresh": age_seconds is not None and age_seconds <= max_age_seconds,
@@ -191,18 +203,27 @@ def _readonly_gate(max_age_seconds: int) -> dict[str, Any]:
         "auth_ok": bool(summary.get("auth_ok")),
         "login_ok": bool(summary.get("login_ok")),
         "settlement_ok": bool(summary.get("settlement_ok")),
-        "account_rows": int(summary.get("account_rows") or 0),
-        "position_rows": int(summary.get("position_rows") or 0),
-        "explicit_margin_rows": int(summary.get("explicit_margin_rows") or 0),
+        "account_query_received": bool(summary.get("account_query_received")),
+        "position_query_completed": bool(summary.get("position_query_completed")),
+        "position_query_error_id": _safe_int(summary.get("position_query_error_id")),
+        "position_query_error_msg": str(summary.get("position_query_error_msg") or ""),
+        "position_query_ok": bool(summary.get("position_query_ok")),
+        "account_rows": _safe_int(summary.get("account_rows")),
+        "position_rows": _safe_int(summary.get("position_rows")),
+        "explicit_margin_rows": _safe_int(summary.get("explicit_margin_rows")),
         "passed": (
-            summary.get("status") == "readonly_account_margin_received"
+            not summary.get("_read_error")
+            and summary.get("status") == "readonly_account_margin_received"
             and bool(summary.get("front_connected"))
             and bool(summary.get("auth_ok"))
             and bool(summary.get("login_ok"))
             and bool(summary.get("settlement_ok"))
-            and int(summary.get("account_rows") or 0) >= 1
-            and int(summary.get("explicit_margin_rows") or 0) >= 1
-            and int(summary.get("position_rows") or 0) == 0
+            and bool(summary.get("account_query_received"))
+            and bool(summary.get("position_query_completed"))
+            and bool(summary.get("position_query_ok"))
+            and _safe_int(summary.get("account_rows")) >= 1
+            and _safe_int(summary.get("explicit_margin_rows")) >= 1
+            and _safe_int(summary.get("position_rows")) == 0
             and age_seconds is not None
             and age_seconds <= max_age_seconds
         ),
@@ -227,7 +248,16 @@ def _position_gate(symbol: str, direction: Direction, volume: int) -> dict[str, 
             "matched_position": 0.0,
             "target_position_side": "",
         }
-    frame = pd.read_csv(READONLY_POSITIONS_PATH, encoding="utf-8-sig")
+    try:
+        frame = pd.read_csv(READONLY_POSITIONS_PATH, encoding="utf-8-sig")
+    except Exception as exc:
+        return {
+            "positions_path": str(READONLY_POSITIONS_PATH),
+            "passed": False,
+            "reason": f"positions_file_unreadable:{exc!r}",
+            "matched_position": 0.0,
+            "target_position_side": "",
+        }
     if frame.empty:
         return {
             "positions_path": str(READONLY_POSITIONS_PATH),
@@ -237,7 +267,15 @@ def _position_gate(symbol: str, direction: Direction, volume: int) -> dict[str, 
             "target_position_side": "",
         }
     target_side = "long" if direction == Direction.SHORT else "short"
-    view = frame[frame.get("instrument", "").astype(str).eq(symbol)].copy()
+    if "instrument" not in frame.columns:
+        return {
+            "positions_path": str(READONLY_POSITIONS_PATH),
+            "passed": False,
+            "reason": "positions_file_missing_instrument_column",
+            "matched_position": 0.0,
+            "target_position_side": target_side,
+        }
+    view = frame[frame["instrument"].astype(str).eq(symbol)].copy()
     if view.empty:
         return {
             "positions_path": str(READONLY_POSITIONS_PATH),
@@ -303,6 +341,38 @@ def _latest_active_order(orders: list[dict[str, Any]], vt_orderid: str) -> dict[
     return matched[-1] if matched else None
 
 
+def _matching_trade_volume(
+    trades: list[dict[str, Any]],
+    *,
+    vt_orderid: str,
+    vt_symbol: str,
+    direction: Direction,
+    offset: Offset,
+) -> tuple[float, int]:
+    _, _, orderid = vt_orderid.partition(".")
+    fallback_rows = 0
+    filled = 0.0
+    for row in trades:
+        row_vt_orderid = str(row.get("vt_orderid") or "")
+        row_orderid = str(row.get("orderid") or "")
+        if row_vt_orderid:
+            if row_vt_orderid != vt_orderid:
+                continue
+        elif row_orderid:
+            if row_orderid != orderid:
+                continue
+        else:
+            fallback_rows += 1
+
+        if (
+            row.get("vt_symbol") == vt_symbol
+            and row.get("direction") == direction.value
+            and row.get("offset") == offset.value
+        ):
+            filled += _safe_float(row.get("volume"), 0.0)
+    return filled, fallback_rows
+
+
 def _status_is_active(status_value: Any) -> bool:
     text = str(status_value)
     return text in {Status.SUBMITTING.value, Status.NOTTRADED.value, Status.PARTTRADED.value, "SUBMITTING", "NOTTRADED", "PARTTRADED"}
@@ -310,7 +380,7 @@ def _status_is_active(status_value: Any) -> bool:
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     paths = _paths(run_id)
 
     vt_symbol = args.vt_symbol.strip()
@@ -364,7 +434,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         summary["status"] = status
         summary["failure_reason"] = reason
         summary["row_counts"] = {key: len(value) for key, value in rows.items()}
-        return summary | {"rows": rows}
+        summary["rows"] = rows
+        return summary
 
     if summary["missing_required_env"]:
         return finish("blocked_missing_env", ",".join(summary["missing_required_env"]))
@@ -383,6 +454,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 and readonly_gate["auth_ok"]
                 and readonly_gate["login_ok"]
                 and readonly_gate["settlement_ok"]
+                and readonly_gate["account_query_received"]
+                and readonly_gate["position_query_completed"]
+                and readonly_gate["position_query_ok"]
                 and readonly_gate["account_rows"] >= 1
                 and readonly_gate["explicit_margin_rows"] >= 1
                 and readonly_gate["position_rows"] >= 1
@@ -402,11 +476,17 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             if not position_gate.get("passed"):
                 return finish("blocked_matching_position_missing", str(position_gate.get("reason", "")))
 
-    from vnpy_ctp import CtpGateway
+    try:
+        from vnpy_ctp import CtpGateway
+    except Exception as exc:
+        return finish("blocked_ctp_gateway_import_error", repr(exc))
 
-    event_engine = EventEngine()
-    main_engine = MainEngine(event_engine)
-    main_engine.add_gateway(CtpGateway)
+    try:
+        event_engine = EventEngine()
+        main_engine = MainEngine(event_engine)
+        main_engine.add_gateway(CtpGateway)
+    except Exception as exc:
+        return finish("blocked_ctp_gateway_setup_error", repr(exc))
 
     def on_tick(event: Any) -> None:
         row = _object_to_row(event.data)
@@ -481,8 +561,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             return finish("dry_run_close_request_ready" if is_close_mode else "dry_run_request_ready")
 
         start_trade_count = len(rows["trades"])
-        vt_orderid = main_engine.send_order(req, "CTP")
         summary["send_order_api_called_count"] = 1
+        vt_orderid = main_engine.send_order(req, "CTP")
         summary["vt_orderid"] = vt_orderid
         if not vt_orderid:
             return finish("submit_failed_no_vt_orderid", "send_order_returned_empty")
@@ -491,13 +571,14 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         filled = 0.0
         while time.time() < fill_deadline:
             recent = rows["trades"][start_trade_count:]
-            filled = sum(
-                _safe_float(row.get("volume"), 0.0)
-                for row in recent
-                if row.get("vt_symbol") == vt_symbol
-                and row.get("direction") == direction.value
-                and row.get("offset") == req.offset.value
+            filled, fallback_rows = _matching_trade_volume(
+                recent,
+                vt_orderid=vt_orderid,
+                vt_symbol=vt_symbol,
+                direction=direction,
+                offset=req.offset,
             )
+            summary["trade_match_fallback_rows"] = fallback_rows
             if filled >= int(args.volume):
                 summary["filled_volume"] = filled
                 time.sleep(max(args.final_wait_seconds, 0))
@@ -510,15 +591,37 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if latest and _status_is_active(latest.get("status")):
             _, _, orderid = vt_orderid.partition(".")
             cancel_req = CancelRequest(orderid=orderid, symbol=symbol, exchange=exchange)
-            main_engine.cancel_order(cancel_req, "CTP")
             summary["cancel_order_api_called_count"] = 1
+            main_engine.cancel_order(cancel_req, "CTP")
             time.sleep(max(args.post_cancel_wait_seconds, 1))
-            return finish(f"{args.mode}_not_filled_cancel_attempted", f"filled_volume={filled}")
+            recent = rows["trades"][start_trade_count:]
+            filled, fallback_rows = _matching_trade_volume(
+                recent,
+                vt_orderid=vt_orderid,
+                vt_symbol=vt_symbol,
+                direction=direction,
+                offset=req.offset,
+            )
+            summary["trade_match_fallback_rows"] = fallback_rows
+            summary["filled_volume"] = filled
+            latest_after_cancel = _latest_active_order(rows["orders"], vt_orderid)
+            summary["post_cancel_latest_order"] = latest_after_cancel or {}
+            summary["post_cancel_order_active"] = bool(latest_after_cancel and _status_is_active(latest_after_cancel.get("status")))
+            if filled >= int(args.volume):
+                if args.mode == "submit-close":
+                    return finish("submit_close_filled_position_should_be_flat", "filled_after_cancel_attempt")
+                return finish("submit_open_filled_residual_position_exists", "filled_after_cancel_attempt")
+            if latest_after_cancel and not _status_is_active(latest_after_cancel.get("status")):
+                return finish(f"{args.mode}_not_filled_cancel_confirmed", f"filled_volume={filled}")
+            return finish(f"{args.mode}_cancel_outcome_uncertain", f"filled_volume={filled}")
         return finish(f"{args.mode}_not_filled_order_not_active", f"filled_volume={filled}")
     except Exception as exc:
         return finish("exception", repr(exc))
     finally:
-        main_engine.close()
+        try:
+            main_engine.close()
+        except Exception as exc:
+            summary["main_engine_close_error"] = repr(exc)
 
 
 def main() -> None:

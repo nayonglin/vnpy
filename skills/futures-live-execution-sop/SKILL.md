@@ -33,6 +33,35 @@ State at the start and end:
 - Overfitting judgment: yes/no and why.
 - Continued-value judgment: yes/no and why.
 
+## CTP Environment and Runtime Guard
+
+This guard applies before any CTP/SimNow/broker-test read-only probe, dry-run gate, smoke order, or real-money submit gate. It exists because a wrong Mac framework or env file can look like a broker/front outage while the real issue is local runtime selection.
+
+1. Choose the correct local env file before connecting:
+   - Real-money production front: use `examples/portfolio_backtesting/ctp_live.local.env`.
+   - Broker-test / 414xx / CP evaluation routes: use the specific broker-test env and the isolated CP workflow below.
+   - `examples/portfolio_backtesting/run_ctp_stage655_readonly_account_margin_probe.sh` defaults to `ctp_broker_test.local.env`; do not use that shell directly for production live account checks unless you explicitly override/source `ctp_live.local.env` or run through a wrapper that does so.
+2. On macOS, production CTP/vn.py must load the formal `vnpy_ctp` framework before any CP/evaluation framework:
+   - Correct production order:
+     `DYLD_FRAMEWORK_PATH="${PROJECT_ROOT}/.py311/lib/python3.11/site-packages/vnpy_ctp/api/libs:${PROJECT_ROOT}/.py311/lib${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}"`
+   - The repo has had `.py311/lib` containing `v6.7.7_MacOS_CP_20240716`; that CP/evaluation framework is for the isolated `414xx/CP` workflow only.
+   - For the normal production front such as `116.228.52.242:11207/11215`, prefer the `vnpy_ctp 6.7.2.1` bundled formal framework under `vnpy_ctp/api/libs`.
+3. Known wrong-runtime symptoms:
+   - raw MD/TD returns `ErrorID=4040 CTP:API Front shake hand err: decode err`,
+   - logs include `Decrypt handshake data failed`,
+   - read-only gates remain `front_connected=false` even though TCP host:port is reachable,
+   - combined vn.py gateway may hit native `Segmentation fault: 11`.
+4. Required response to those symptoms:
+   - fail closed,
+   - verify env file and masked account/front target,
+   - verify `DYLD_FRAMEWORK_PATH` order,
+   - re-run a read-only account/position probe,
+   - confirm `send_order_api_called_count=0` and `cancel_order_api_called_count=0`,
+   - never bypass the read-only account/position gate just to submit on time.
+5. Current regression note from 2026-06-11:
+   - Prior successful production order flow used the formal `vnpy_ctp/api/libs` runtime.
+   - A wrapper that prioritized `.py311/lib` loaded the CP runtime first and reproduced `4040 decode err`; restoring formal runtime priority allowed raw MD ticks and Stage655 TD-only account/position queries to succeed.
+
 ## Daily Shadow Workflow
 
 Use this after a completed trading day, normally after market data for that day is available.

@@ -129,6 +129,14 @@ class RawAccountMarginProbe(TdApi):
         self.account_rows: list[dict[str, Any]] = []
         self.position_rows: list[dict[str, Any]] = []
         self.log_rows: list[dict[str, Any]] = []
+        self.account_query_received = False
+        self.position_query_completed = False
+        self.account_query_request_ret = 0
+        self.position_query_request_ret = 0
+        self.account_query_reqid = 0
+        self.position_query_reqid = 0
+        self.position_query_error_id = 0
+        self.position_query_error_msg = ""
         self.start = time.time()
 
         self.userid = _env_required("CTP_USERID")
@@ -203,6 +211,17 @@ class RawAccountMarginProbe(TdApi):
             "auth_ok": self.auth_ok,
             "login_ok": self.login_ok,
             "settlement_ok": self.settlement_ok,
+            "account_query_received": self.account_query_received,
+            "position_query_completed": self.position_query_completed,
+            "account_query_request_ret": self.account_query_request_ret,
+            "position_query_request_ret": self.position_query_request_ret,
+            "position_query_error_id": self.position_query_error_id,
+            "position_query_error_msg": self.position_query_error_msg,
+            "position_query_ok": (
+                self.position_query_completed
+                and self.position_query_request_ret == 0
+                and self.position_query_error_id == 0
+            ),
             "account_rows": len(self.account_rows),
             "position_rows": len(self.position_rows),
             "explicit_margin_rows": sum(1 for row in self.account_rows if row.get("curr_margin") not in {"", None}),
@@ -273,20 +292,26 @@ class RawAccountMarginProbe(TdApi):
             self.done = True
             return
         self.settlement_ok = True
-        account_ret = self.reqQryTradingAccount(
+        self.account_query_reqid = self.next_reqid()
+        self.account_query_request_ret = self.reqQryTradingAccount(
             {"BrokerID": self.brokerid, "InvestorID": self.userid},
-            self.next_reqid(),
+            self.account_query_reqid,
         )
-        self.log(f"reqQryTradingAccount ret={account_ret}")
+        self.log(f"reqQryTradingAccount ret={self.account_query_request_ret}")
         time.sleep(1.1)
-        position_ret = self.reqQryInvestorPosition(
+        self.position_query_reqid = self.next_reqid()
+        self.position_query_request_ret = self.reqQryInvestorPosition(
             {"BrokerID": self.brokerid, "InvestorID": self.userid},
-            self.next_reqid(),
+            self.position_query_reqid,
         )
-        self.log(f"reqQryInvestorPosition ret={position_ret}")
+        self.log(f"reqQryInvestorPosition ret={self.position_query_request_ret}")
+        if self.position_query_request_ret != 0:
+            self.position_query_error_id = int(self.position_query_request_ret)
+            self.position_query_error_msg = "reqQryInvestorPosition_returned_nonzero"
 
     def onRspQryTradingAccount(self, data: dict, error: dict, reqid: int, last: bool) -> None:
         if data and data.get("AccountID"):
+            self.account_query_received = True
             row = {field: _clean_value(data.get(field, "")) for field in RAW_ACCOUNT_FIELDS}
             row.update(
                 {
@@ -329,12 +354,21 @@ class RawAccountMarginProbe(TdApi):
                 }
             )
         if error and error.get("ErrorID"):
+            self.position_query_error_id = int(error.get("ErrorID") or 0)
+            self.position_query_error_msg = str(error.get("ErrorMsg") or "")
             self.log(f"onRspQryInvestorPosition error {_error_text(error)}")
         if last:
             self.log("onRspQryInvestorPosition last=True")
+            self.position_query_completed = True
             self.done = True
 
     def onRspError(self, error: dict, reqid: int, last: bool) -> None:
+        if reqid == self.position_query_reqid and error and error.get("ErrorID"):
+            self.position_query_error_id = int(error.get("ErrorID") or 0)
+            self.position_query_error_msg = str(error.get("ErrorMsg") or "")
+            self.position_query_completed = bool(last)
+            if last:
+                self.done = True
         self.log(f"onRspError reqid={reqid} last={last} {_error_text(error)}")
 
 
@@ -389,6 +423,17 @@ def run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
                     "auth_ok": probe.auth_ok,
                     "login_ok": probe.login_ok,
                     "settlement_ok": probe.settlement_ok,
+                    "account_query_received": probe.account_query_received,
+                    "position_query_completed": probe.position_query_completed,
+                    "account_query_request_ret": probe.account_query_request_ret,
+                    "position_query_request_ret": probe.position_query_request_ret,
+                    "position_query_error_id": probe.position_query_error_id,
+                    "position_query_error_msg": probe.position_query_error_msg,
+                    "position_query_ok": (
+                        probe.position_query_completed
+                        and probe.position_query_request_ret == 0
+                        and probe.position_query_error_id == 0
+                    ),
                     "account_rows": len(probe.account_rows),
                     "position_rows": len(probe.position_rows),
                     "explicit_margin_rows": sum(1 for row in probe.account_rows if row.get("curr_margin") not in {"", None}),
@@ -397,6 +442,18 @@ def run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     summary.setdefault("account_rows", len(rows["accounts"]))
     summary.setdefault("position_rows", len(rows["positions"]))
     summary.setdefault("explicit_margin_rows", sum(1 for row in rows["accounts"] if row.get("curr_margin") not in {"", None}))
+    summary.setdefault("account_query_received", bool(rows["accounts"]))
+    summary.setdefault("position_query_completed", False)
+    summary.setdefault("account_query_request_ret", 0)
+    summary.setdefault("position_query_request_ret", 0)
+    summary.setdefault("position_query_error_id", 0)
+    summary.setdefault("position_query_error_msg", "")
+    summary.setdefault(
+        "position_query_ok",
+        bool(summary.get("position_query_completed"))
+        and int(summary.get("position_query_request_ret") or 0) == 0
+        and int(summary.get("position_query_error_id") or 0) == 0,
+    )
     _write_df(ACCOUNT_PATH, rows["accounts"])
     _write_df(POSITION_PATH, rows["positions"])
     _write_df(LOG_PATH, rows["logs"])

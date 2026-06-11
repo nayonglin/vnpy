@@ -22,6 +22,27 @@ OFFICIAL_LIVE_CAPITAL_LABEL: str = "20w"
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
 
+OFFICIAL_CANDIDATE_STAGE777_VERSION: str = "official_candidate_stage777_50w_am41_oi08_old_ai_v1"
+OFFICIAL_CANDIDATE_STAGE777_STATUS: str = "official_candidate_not_live_default"
+OFFICIAL_CANDIDATE_STAGE777_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage777_config"
+OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
+    OFFICIAL_CANDIDATE_STAGE777_VERSION: {
+        "alias": "Stage777-50w-AM41-OI0.8-oldAI",
+        "source_stage": "Stage777",
+        "status": OFFICIAL_CANDIDATE_STAGE777_STATUS,
+        "config_module": OFFICIAL_CANDIDATE_STAGE777_CONFIG_MODULE,
+        "capital": 500_000.0,
+        "capital_label": "50w",
+        "live_default": False,
+        "current_live_default_remains": OFFICIAL_LIVE_VERSION,
+        "risk_note": (
+            "High-return official candidate only. Stage777 keeps strong right-tail "
+            "returns, but early-start drawdown remains near 49%; do not use as live "
+            "default without fresh shadow, execution dry-run, and explicit risk review."
+        ),
+    },
+}
+
 OFFICIAL_LIVE_AI_ELIGIBILITY_PATH: Path = (
     OUTPUT_DIR
     / "qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_eligibility_"
@@ -123,6 +144,7 @@ def build_official_live_manifest() -> dict[str, Any]:
         "execution_policy": OFFICIAL_LIVE_EXECUTION_POLICY,
         "strategy_overrides": OFFICIAL_LIVE_STRATEGY_OVERRIDES,
         "reference_metrics": OFFICIAL_LIVE_REFERENCE_METRICS,
+        "official_candidates": OFFICIAL_CANDIDATE_VERSIONS,
         "legacy_stage78": {
             "version": LEGACY_STAGE78_VERSION,
             "status": LEGACY_STAGE78_STATUS,
