@@ -25,7 +25,57 @@ LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
 OFFICIAL_CANDIDATE_STAGE777_VERSION: str = "official_candidate_stage777_50w_am41_oi08_old_ai_v1"
 OFFICIAL_CANDIDATE_STAGE777_STATUS: str = "official_candidate_not_live_default"
 OFFICIAL_CANDIDATE_STAGE777_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage777_config"
+OFFICIAL_CANDIDATE_STAGE819_30W_VERSION: str = (
+    "official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1"
+)
+OFFICIAL_CANDIDATE_STAGE819_30W_STATUS: str = "official_candidate_not_live_default_watch"
+OFFICIAL_CANDIDATE_STAGE819_30W_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage819_30w_config"
+OFFICIAL_CANDIDATE_STAGE813_VERSION: str = (
+    "official_candidate_stage813_50w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1"
+)
+OFFICIAL_CANDIDATE_STAGE813_STATUS: str = "official_candidate_not_live_default"
+OFFICIAL_CANDIDATE_STAGE813_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage813_config"
+OFFICIAL_CANDIDATE_PRIMARY_VERSION: str = OFFICIAL_CANDIDATE_STAGE819_30W_VERSION
+OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE: str = OFFICIAL_CANDIDATE_STAGE819_30W_CONFIG_MODULE
 OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
+    OFFICIAL_CANDIDATE_STAGE819_30W_VERSION: {
+        "alias": "Stage819-30w-AM41-OI0.8-oldAI-longTightStop-RSI95",
+        "source_stage": "Stage819",
+        "base_stage": "Stage813",
+        "status": OFFICIAL_CANDIDATE_STAGE819_30W_STATUS,
+        "config_module": OFFICIAL_CANDIDATE_STAGE819_30W_CONFIG_MODULE,
+        "capital": 300_000.0,
+        "capital_label": "30w",
+        "live_default": False,
+        "primary_official_candidate": True,
+        "current_live_default_remains": OFFICIAL_LIVE_VERSION,
+        "risk_note": (
+            "Operator-promoted official candidate and watch arm. It keeps Stage813 "
+            "AM41/OI0.8/old-AI/long tighter stop/RSI95 logic and changes only "
+            "account_capital/c3_capital to 300000. Stage819 yearly and Stage821 "
+            "annual-step rolling results were strong, but Stage822 monthly 3-year "
+            "rolling validation did not show stable dominance over 50w and still "
+            "had DD50 tail failures; do not use as live default without fresh "
+            "shadow, execution dry-run, and explicit risk review."
+        ),
+    },
+    OFFICIAL_CANDIDATE_STAGE813_VERSION: {
+        "alias": "Stage813-50w-AM41-OI0.8-oldAI-longTightStop-RSI95",
+        "source_stage": "Stage813",
+        "status": OFFICIAL_CANDIDATE_STAGE813_STATUS,
+        "config_module": OFFICIAL_CANDIDATE_STAGE813_CONFIG_MODULE,
+        "capital": 500_000.0,
+        "capital_label": "50w",
+        "live_default": False,
+        "primary_official_candidate": False,
+        "current_live_default_remains": OFFICIAL_LIVE_VERSION,
+        "risk_note": (
+            "Aggressive official candidate by operator request. It explicitly enables "
+            "RSI95 half-exit profit lock on top of Stage804 long tighter initial stop, "
+            "while keeping Stage777 AM41/OI0.8/old-AI assumptions. Corrected Stage813 "
+            "A/B did not improve DD40/DD50 failures, so this is not the live default."
+        ),
+    },
     OFFICIAL_CANDIDATE_STAGE777_VERSION: {
         "alias": "Stage777-50w-AM41-OI0.8-oldAI",
         "source_stage": "Stage777",
@@ -34,6 +84,7 @@ OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
         "capital": 500_000.0,
         "capital_label": "50w",
         "live_default": False,
+        "primary_official_candidate": False,
         "current_live_default_remains": OFFICIAL_LIVE_VERSION,
         "risk_note": (
             "High-return official candidate only. Stage777 keeps strong right-tail "
@@ -144,6 +195,11 @@ def build_official_live_manifest() -> dict[str, Any]:
         "execution_policy": OFFICIAL_LIVE_EXECUTION_POLICY,
         "strategy_overrides": OFFICIAL_LIVE_STRATEGY_OVERRIDES,
         "reference_metrics": OFFICIAL_LIVE_REFERENCE_METRICS,
+        "primary_official_candidate": {
+            "version": OFFICIAL_CANDIDATE_PRIMARY_VERSION,
+            "config_module": OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE,
+            "live_default": False,
+        },
         "official_candidates": OFFICIAL_CANDIDATE_VERSIONS,
         "legacy_stage78": {
             "version": LEGACY_STAGE78_VERSION,

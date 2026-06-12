@@ -26,6 +26,28 @@
 
 ## 当前状态
 
+- Stage823 已按用户要求将 Stage819 30w 登记为当前 primary official candidate：
+  - 当前 primary 候选版本号：`official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1`。
+  - 新增配置：`examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py`；在 `qmt_roll_official_live_config.py` 的 `official_candidates` 里登记，并新增 `primary_official_candidate` manifest 字段。
+  - 当前实盘默认仍是 Stage372 20万 `official_live_stage372_20w_recovery_sleeve`；Stage819 30w 只是官方候选和 shadow 观察版本，不是 live default。
+  - 候选口径：继承 Stage813 的 `AM41`、基础等效风险 `0.40`、`OI上升+价格沿方向` 恢复到 `0.80`、旧正式 AI、maxpos4、Stage804 多头更紧初始止损、`RSI95` 半平，唯一资金变化为 `account_capital/c3_capital=300000`。
+  - 边界：Stage819 年度与 Stage821 年度步进滚动对 30w 友好，但 Stage822 月度 3 年滚动显示 30w 对 50w 不具备稳定统治力，且仍有 DD50 尾部失败；不能直接切 live default。
+- Stage816 已完成 Stage813 官方候选全周期 Top50 亏损比例 K 线图谱：
+  - 口径：复用 Stage815 已落盘的 Stage813 closed lots 与 summary，不重跑策略、不改参数、不连接 CTP、不调用下单。
+  - 全周期结果沿用 Stage815：`26,293,495/5158.699%/-46.5025%/Sharpe1.3618/滑点2,029,740/交易673/胜率53.3847%`。
+  - Top50 按 `theory_loss_pct=-directional(entry->exit return pct)` 排序；最差 `6.3561%`、第50名 `1.9144%`，Top50 PnL 合计 `-17,811,230`，OI 放大命中 `24/50`。
+  - 图谱 `13` 页已生成并在会话直接发送；缺失K线 `0`，其中 `6` 笔用分钟聚合日线、`8` 笔用 Tushare 早期日线。结论仍是只读左尾复盘，不得从这50笔直接倒推过滤阈值。
+- Stage815 已完成 Stage813 官方候选全周期 Top40 亏损比例 K 线图谱：
+  - 口径：`official_candidate_stage813_50w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1`，`2018-01-01 -> 2026-05-29`，不改策略、不连接 CTP、不调用下单。
+  - 全周期结果：`26,293,495/5158.699%/-46.5025%/Sharpe1.3618/滑点2,029,740/交易673/胜率53.3847%`。
+  - Top40 按 `theory_loss_pct=-directional(entry->exit return pct)` 排序；最差 `6.3561%`、第40名 `2.2777%`，Top40 PnL 合计 `-15,102,795`，OI 放大命中 `20/40`。
+  - 图谱 `10` 页已生成，缺失K线 `0`；其中 `6` 笔用分钟聚合日线、`5` 笔用 Tushare 早期日线。结论只作为左尾复盘线索，不能直接反推过滤阈值。
+- Stage814 已按用户要求将 Stage813 登记为正式候选版本：
+  - 候选版本号：`official_candidate_stage813_50w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1`。
+  - 新增配置：`examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py`；在 `qmt_roll_official_live_config.py` 的 `official_candidates` 里登记，但不修改 `OFFICIAL_LIVE_VERSION`。
+  - 当前实盘默认仍是 Stage372 20万 `official_live_stage372_20w_recovery_sleeve`；Stage813 只是进攻型正式候选和 shadow 观察版本，不是 live default。
+  - 候选口径：50万、`AM41`、基础等效风险 `0.40`、命中 `OI上升 + 价格沿方向` 恢复到 `0.80`、旧正式 AI 品种池、maxpos4、关闭连败缩放和 recovery sleeve、Stage804 多头更紧初始止损，并显式开启 `enable_rsi_partial_exit=True`、`RSI=95`、半平比例 `0.5`。
+  - 限制：Stage813 纠错 A/B 中 RSI 半平确实触发并改变路径，但 DD40/DD50 失败没有改善；下一步只做候选 shadow、执行 dry-run 和风险复核，不扫 RSI 阈值。
 - Stage793 已完成 `Stage777 + 旧正式 AI 老师` 官方候选的 Monte Carlo 路径压力测试：
   - 实验口径：不改策略、不调参数、不重跑策略，只基于已有权益曲线做 `10,000` 条路径的 `iid/block_20/block_60/block_120` bootstrap，并做坏块前置压力。
   - 关键结论：候选右尾仍强，但深回撤概率显著高于 Stage372。候选 `2020` 同期 `block_60/block_120` 的 DD50 概率约 `26.32%/22.98%`，当前 Stage372 同期约 `8.84%/4.64%`。
