@@ -26,6 +26,11 @@
 
 ## 当前状态
 
+- Stage824 已完成当前线上版 Stage372 20w 与 Stage819 30w primary official candidate 的同窗口月度 3 年滚动对比，决策 `stage824_candidate_not_live_default_keep_stage372`：
+  - 窗口口径：`2020-01` 到 `2023-05` 的完整 3 年滚动窗口 `41` 个，另含 `2023-06 -> 2026-05-29` terminal partial，共 `42` 个窗口。
+  - A 线上版 `official_live_stage372_20w_recovery_sleeve`：`42/42` 正收益，收益中位 `258.6550%`、p10 `17.9935%`、最小 `0.2175%`，回撤中位 `-32.0894%`、最差 `-39.1172%`，DD40/50 失败 `0/0`，Sharpe 中位 `1.3747`。
+  - C 候选 `official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1`：`42/42` 正收益，收益中位 `212.7592%`、p10 `55.1280%`、最小 `28.9200%`，回撤中位 `-38.7314%`、最差 `-44.7648%`，DD40/50 失败 `18/0`，Sharpe 中位 `1.2390`。
+  - 同窗口 C 收益胜出 `32/42`、Sharpe 胜出 `25/42`，但回撤胜出仅 `5/42`、收益+回撤双胜仅 `3/42`；候选继续保留为 shadow/dry-run 观察臂，不能切 live default。
 - Stage823 已按用户要求将 Stage819 30w 登记为当前 primary official candidate：
   - 当前 primary 候选版本号：`official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1`。
   - 新增配置：`examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py`；在 `qmt_roll_official_live_config.py` 的 `official_candidates` 里登记，并新增 `primary_official_candidate` manifest 字段。
