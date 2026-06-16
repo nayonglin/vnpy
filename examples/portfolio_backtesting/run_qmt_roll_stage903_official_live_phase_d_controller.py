@@ -807,6 +807,7 @@ def _build_cycle_plan(
     stage904_summary = stage904_result.get("summary", {})
     stage904_status = str(stage904_summary.get("monitor_status", ""))
     stage904_order_api_called = _to_int(stage904_summary.get("order_api_called_count"), 0)
+    stage904_retry_open_dry_run = _to_int(stage904_summary.get("retry_open_dry_run_count"), 0)
     stage905_summary = stage905_result.get("summary", {})
     stage905_status = str(stage905_summary.get("executor_status", ""))
     stage905_send_called = _to_int(stage905_summary.get("send_order_api_called_count"), 0)
@@ -952,6 +953,7 @@ def _build_cycle_plan(
             "monitor C9 0.5R stop/retry during active sessions",
             (
                 f"stage904={stage904_status};"
+                f"retry_open_dry_run={stage904_retry_open_dry_run};"
                 + (_clean(stage902_blockers.get("c9_intraday_session_daemon_enabled", {}).get("blocker")) or "session daemon gate not blocking")
             ),
             order_api_called=stage904_order_api_called,
@@ -1362,6 +1364,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage904_exit_code": stage904_result.get("exit_code"),
         "stage904_monitor_status": stage904_result.get("summary", {}).get("monitor_status", ""),
         "stage904_close_dry_run_count": stage904_result.get("summary", {}).get("close_dry_run_count", 0),
+        "stage904_retry_open_dry_run_count": stage904_result.get("summary", {}).get("retry_open_dry_run_count", 0),
+        "stage904_retry_watch_count": stage904_result.get("summary", {}).get("retry_watch_count", 0),
         "stage905_exit_code": stage905_result.get("exit_code"),
         "stage905_executor_status": stage905_result.get("summary", {}).get("executor_status", ""),
         "stage905_ready_count": stage905_result.get("summary", {}).get("ready_count", 0),

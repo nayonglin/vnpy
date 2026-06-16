@@ -368,31 +368,31 @@ def _build_report(summary: dict[str, Any]) -> str:
     submit = latest.get("stage931", {}).get("summary", {}) if isinstance(latest.get("stage931"), dict) else {}
     return "\n".join(
         [
-            "# Stage930 C9 Session Daemon",
+            "# Stage930 C9 盘中会话守护报告",
             "",
-            f"- generated_at: `{summary['generated_at']}`",
-            f"- mode: `{summary['mode']}`",
-            f"- submit_mode: `{summary['submit_mode']}`",
-            f"- target_date: `{summary['target_date']}`",
-            f"- cycle_count: `{summary['cycle_count']}`",
-            f"- daemon_status: `{summary['daemon_status']}`",
-            f"- current_session_names: `{summary['current_session_names']}`",
-            f"- order_api_called_count: `{summary['order_api_called_count']}`",
+            f"- 生成时间：`{summary['generated_at']}`",
+            f"- 控制器模式：`{summary['mode']}`",
+            f"- 真实提交模式：`{summary['submit_mode']}`",
+            f"- 目标交易日：`{summary['target_date']}`",
+            f"- 已运行轮次：`{summary['cycle_count']}`",
+            f"- 守护进程状态：`{summary['daemon_status']}`",
+            f"- 当前交易时段：`{summary['current_session_names']}`",
+            f"- 下单 API 调用次数：`{summary['order_api_called_count']}`",
             "",
-            "## Latest Cycle",
+            "## 最近一轮",
             "",
-            f"- tick_refresh: `{tick.get('refresh_status', '')}` rows `{tick.get('tick_rows', '')}`",
-            f"- controller: `{controller.get('controller_status', '')}`",
-            f"- stage904: `{controller.get('stage904_monitor_status', '')}` close_dry_run `{controller.get('stage904_close_dry_run_count', '')}`",
-            f"- stage905: `{controller.get('stage905_executor_status', '')}` ready `{controller.get('stage905_ready_count', '')}` blocked `{controller.get('stage905_blocked_count', '')}`",
-            f"- stage927: `{arming.get('arming_status', '')}` permitted `{arming.get('real_submit_permitted', '')}`",
-            f"- stage931: `{submit.get('adapter_status', latest.get('stage931', {}).get('submit_status', ''))}`",
+            f"- tick 刷新：`{tick.get('refresh_status', '')}`，行数 `{tick.get('tick_rows', '')}`",
+            f"- Controller：`{controller.get('controller_status', '')}`",
+            f"- Stage904 平仓/重试监控：`{controller.get('stage904_monitor_status', '')}`，close dry-run `{controller.get('stage904_close_dry_run_count', '')}`，retry open dry-run `{controller.get('stage904_retry_open_dry_run_count', '')}`",
+            f"- Stage905 开仓/平仓执行 dry-run：`{controller.get('stage905_executor_status', '')}`，ready `{controller.get('stage905_ready_count', '')}`，blocked `{controller.get('stage905_blocked_count', '')}`",
+            f"- Stage927 真实提交闸门：`{arming.get('arming_status', '')}`，是否允许 `{arming.get('real_submit_permitted', '')}`",
+            f"- Stage931 真实提交适配器：`{submit.get('adapter_status', latest.get('stage931', {}).get('submit_status', ''))}`",
             "",
-            "## Discipline",
+            "## 执行纪律",
             "",
-            "- Stage930 is the session daemon/control loop for C9 entry-day monitoring.",
-            "- Dry-run mode may refresh read-only broker state and ticks, but must not submit or cancel orders.",
-            "- Live submit requires Stage927 permitted, exact confirm text, real-submit env, and Stage931 live-real mode.",
+            "- Stage930 是 C9 入场日/持仓日盘中守护循环，用来刷新 tick、检查止损/开平仓候选，并按闸门决定是否提交。",
+            "- dry-run 模式可以刷新只读账户和行情，但不会报单或撤单。",
+            "- live-real 提交必须同时满足 Stage927 放行、确认文本、真实提交环境变量和 Stage931 live-real 模式。",
             "",
         ]
     )
@@ -505,35 +505,22 @@ def _send_cycle_email_if_needed(
     order_api = _to_int(cycle.get("order_api_called_count"), 0)
     ready = _to_int(controller.get("stage905_ready_count"), 0)
     severity = "critical" if order_api > 0 or submit.get("adapter_status") == "adapter_exception" or cycle.get("cycle_exception") else "warning"
-    subject = (
-        f"[C9/15w][session][{severity}] {summary['target_date']} "
-        f"ready={ready} order_api={order_api}"
-    )
-    raw_ctp_note = (
-        "Stage931 附件包含未脱敏 raw CTP orders/trades，仅用于显式取证。"
-        if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP")
-        else "Stage931 raw CTP orders/trades 默认不作为会话邮件附件外发。"
-    )
+    subject = f"[C9/15w 盘中守护][{severity}] {summary['target_date']} 可提交={ready} 下单API={order_api}"
+    if order_api > 0:
+        action_text = "这轮已经触发真实下单/撤单 API，请立即核对委托、成交、持仓和资金。"
+    elif ready > 0:
+        action_text = "出现可提交候选，后续是否真实下单取决于 Stage927 和 Stage931 闸门。"
+    else:
+        action_text = "这轮只是关键状态变化或阻断告警，没有可提交指令。"
     body = "\n".join(
         [
-            "C9/15w 会话守护检测到关键执行事件。",
-            "",
-            f"生成时间: {summary['generated_at']}",
-            f"周期时间: {cycle.get('cycle_at', '')}",
-            f"模式: {summary['mode']} / submit={summary['submit_mode']}",
-            f"目标日期: {summary['target_date']}",
-            f"当前 session: {summary.get('current_session_names', '')}",
-            "",
-            f"Tick refresh: {(cycle.get('tick_refresh') or {}).get('refresh_status', '')}",
-            f"Controller: {controller.get('controller_status', '')}",
-            f"Stage905 ready: {ready}",
-            f"Stage927 permitted: {((cycle.get('stage927') or {}).get('summary') or {}).get('real_submit_permitted', '')}",
-            f"Stage931 status: {submit.get('adapter_status', (cycle.get('stage931') or {}).get('submit_status', ''))}",
-            f"Order API calls in cycle: {order_api}",
-            f"Cycle exception: {cycle.get('cycle_exception', '')}",
-            "",
-            "附件包含 Stage930 本轮 summary/report；若发生真实提交，Stage931 会另发订单级明细。",
-            raw_ctp_note,
+            f"结论：{action_text}",
+            f"时间：{cycle.get('cycle_at', '')}；时段：{summary.get('current_session_names', '')}",
+            f"模式：{summary['mode']} / {summary['submit_mode']}",
+            f"可提交/下单API：{ready}/{order_api}",
+            f"Stage927放行：{((cycle.get('stage927') or {}).get('summary') or {}).get('real_submit_permitted', '')}",
+            f"Stage931：{submit.get('adapter_status', (cycle.get('stage931') or {}).get('submit_status', ''))}",
+            f"异常：{cycle.get('cycle_exception', '') or '无'}",
         ]
     )
     attachments: list[Path] = [paths["report_md"], paths["summary_json"]]

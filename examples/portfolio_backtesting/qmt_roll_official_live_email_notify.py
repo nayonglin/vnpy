@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import mimetypes
 import os
 import re
 import smtplib
@@ -141,6 +140,7 @@ class OfficialLiveEmailConfig:
             "timeout_seconds": self.timeout_seconds,
             "dry_run": int(self.dry_run),
             "attach_files": int(self.attach_files),
+            "attachment_policy": "key_summary_only_no_attachments",
             "max_attachment_bytes": self.max_attachment_bytes,
             "env_file": str(self.env_file.resolve()),
             "env_file_exists": int(self.env_file.exists()),
@@ -173,28 +173,10 @@ def load_official_live_email_config(env_file: Path | None = None) -> OfficialLiv
         smtp_auth=smtp_auth,
         timeout_seconds=_int_value(values.get("OFFICIAL_LIVE_EMAIL_TIMEOUT_SECONDS"), 15),
         dry_run=_truthy(values.get("OFFICIAL_LIVE_EMAIL_DRY_RUN")),
-        attach_files=not _truthy(values.get("OFFICIAL_LIVE_EMAIL_DISABLE_ATTACHMENTS")),
+        attach_files=False,
         max_attachment_bytes=_int_value(values.get("OFFICIAL_LIVE_EMAIL_MAX_ATTACHMENT_BYTES"), 5_000_000),
         env_file=path,
     )
-
-
-def _attachment_candidates(paths: list[Path], max_attachment_bytes: int) -> tuple[list[Path], list[dict[str, Any]]]:
-    attached: list[Path] = []
-    skipped: list[dict[str, Any]] = []
-    for path in paths:
-        if not path:
-            continue
-        item = Path(path)
-        if not item.exists() or not item.is_file():
-            skipped.append({"path": str(item), "reason": "missing"})
-            continue
-        size = item.stat().st_size
-        if size > max_attachment_bytes:
-            skipped.append({"path": str(item.resolve()), "reason": "too_large", "bytes": size})
-            continue
-        attached.append(item)
-    return attached, skipped
 
 
 def _build_message(
@@ -217,10 +199,6 @@ def _build_message(
     message["X-Official-Live-Severity"] = severity
     message["X-Official-Live-Generated-At"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     message.set_content(body)
-    for path in attachments:
-        content_type, _ = mimetypes.guess_type(str(path))
-        maintype, subtype = (content_type or "application/octet-stream").split("/", 1)
-        message.add_attachment(path.read_bytes(), maintype=maintype, subtype=subtype, filename=path.name)
     return message
 
 
@@ -288,23 +266,34 @@ def send_official_live_email_notification(
         return result
 
     paths = [Path(item) for item in (attachments or [])]
-    attached: list[Path] = []
-    skipped: list[dict[str, Any]] = []
-    if config.attach_files:
-        attached, skipped = _attachment_candidates(paths, config.max_attachment_bytes)
-    else:
-        skipped = [{"path": str(item), "reason": "attachments_disabled"} for item in paths]
-    result["attached_files"] = [str(path.resolve()) for path in attached]
-    result["skipped_attachments"] = skipped
+    body_for_email = body.rstrip()
+    referenced_files: list[dict[str, Any]] = []
+    missing_files: list[dict[str, Any]] = []
+    for item in paths:
+        path = Path(item)
+        if path.exists() and path.is_file():
+            referenced_files.append({"path": str(path.resolve()), "bytes": path.stat().st_size})
+        else:
+            missing_files.append({"path": str(path), "reason": "missing_or_not_file"})
+    result["attachment_policy"] = "key_summary_only_no_attachments"
+    result["attached_files"] = []
+    result["skipped_attachments"] = [
+        {"path": str(Path(item).resolve()) if Path(item).exists() else str(item), "reason": "attachments_disabled_key_summary_only"}
+        for item in paths
+    ]
+    result["referenced_files"] = referenced_files
+    result["missing_referenced_files"] = missing_files
+    result["inline_files"] = []
+    result["skipped_inline_files"] = []
 
     try:
         message = _build_message(
             config=config,
             subject=subject,
-            body=body,
+            body=body_for_email,
             severity=severity,
             event_type=event_type,
-            attachments=attached,
+            attachments=[],
         )
         if config.dry_run:
             dry_run_path = OUTPUT_DIR / f"qmt_roll_official_live_email_dry_run_{datetime.now():%Y%m%d_%H%M%S}_{_safe_slug(event_type)}.eml"

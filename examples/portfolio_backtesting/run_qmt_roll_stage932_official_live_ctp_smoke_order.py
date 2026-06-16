@@ -529,48 +529,48 @@ def _trade_volume(rows: list[dict[str, Any]], vt_orderid: str) -> float:
 def _build_report(summary: dict[str, Any], rows: dict[str, list[dict[str, Any]]]) -> str:
     return "\n".join(
         [
-            "# Stage932 Official Live CTP Smoke Order",
+            "# Stage932 官方实盘 CTP smoke 报撤报告",
             "",
-            f"- generated_at: `{summary['generated_at']}`",
-            f"- official_live: `{summary['official_live_version']}` / `{summary['official_live_alias']}`",
-            f"- mode: `{summary['mode']}`",
-            f"- target_date: `{summary['target_date']}`",
-            f"- vt_symbol: `{summary['vt_symbol']}`",
-            f"- status: `{summary['status']}`",
-            f"- smoke_passed: `{summary['smoke_passed']}`",
-            f"- send_order_api_called_count: `{summary['send_order_api_called_count']}`",
-            f"- cancel_order_api_called_count: `{summary['cancel_order_api_called_count']}`",
-            f"- trade_volume: `{summary['trade_volume']}`",
-            f"- vt_orderid: `{summary['vt_orderid']}`",
-            f"- order_request: `{json.dumps(summary['order_request'], ensure_ascii=False, default=str)}`",
+            f"- 生成时间：`{summary['generated_at']}`",
+            f"- 官方版本：`{summary['official_live_version']}` / `{summary['official_live_alias']}`",
+            f"- 模式：`{summary['mode']}`",
+            f"- 目标交易日：`{summary['target_date']}`",
+            f"- 合约：`{summary['vt_symbol']}`",
+            f"- 状态：`{summary['status']}`",
+            f"- smoke 是否通过：`{summary['smoke_passed']}`",
+            f"- 报单 API 调用次数：`{summary['send_order_api_called_count']}`",
+            f"- 撤单 API 调用次数：`{summary['cancel_order_api_called_count']}`",
+            f"- 成交手数：`{summary['trade_volume']}`",
+            f"- 委托号：`{summary['vt_orderid']}`",
+            f"- 报单请求：`{json.dumps(summary['order_request'], ensure_ascii=False, default=str)}`",
             "",
-            "## Gates",
+            "## 闸门",
             "",
-            f"- stage927_gate: `{summary['stage927_gate']}`",
-            f"- readonly_gate: `{summary['readonly_gate']}`",
-            f"- active_orders_gate: `{summary['active_orders_gate']}`",
-            f"- current_phase_d_sessions: `{summary['current_phase_d_sessions']}`",
-            f"- latest_tick_age_seconds: `{summary['latest_tick_age_seconds']}`",
+            f"- Stage927 闸门：`{summary['stage927_gate']}`",
+            f"- 只读账户闸门：`{summary['readonly_gate']}`",
+            f"- 活动委托闸门：`{summary['active_orders_gate']}`",
+            f"- 当前 Phase D 时段：`{summary['current_phase_d_sessions']}`",
+            f"- 最新 tick 年龄秒数：`{summary['latest_tick_age_seconds']}`",
             "",
-            "## Latest Orders",
+            "## 最近委托回报",
             "",
             pd.DataFrame(rows["orders"]).tail(20).to_markdown(index=False) if rows["orders"] else "_empty_",
             "",
-            "## Latest Trades",
+            "## 最近成交回报",
             "",
             pd.DataFrame(rows["trades"]).tail(20).to_markdown(index=False) if rows["trades"] else "_empty_",
             "",
-            "## Raw CTP Order Messages",
+            "## 原始 CTP 委托消息",
             "",
             pd.DataFrame(rows["raw_orders"]).tail(20).to_markdown(index=False) if rows["raw_orders"] else "_empty_",
             "",
-            "## Order Insert Errors",
+            "## 报单错误",
             "",
             pd.DataFrame(rows["order_insert_errors"]).tail(20).to_markdown(index=False)
             if rows["order_insert_errors"]
             else "_empty_",
             "",
-            "## Order Action Errors",
+            "## 撤单错误",
             "",
             pd.DataFrame(rows["order_action_errors"]).tail(20).to_markdown(index=False)
             if rows["order_action_errors"]
@@ -912,34 +912,26 @@ def main() -> None:
                     paths["order_action_errors_csv"],
                 ]
             )
-            attachment_note = "附件包含 smoke report/summary/未脱敏 raw CTP callback evidence，仅用于显式取证。"
+        if result.get("smoke_passed") == 1:
+            action_text = "smoke 报撤通过，说明生产 CTP 报单和撤单链路可用；仍需看是否有异常成交。"
+        elif result.get("trade_volume", 0):
+            action_text = "smoke 过程中出现成交，必须先对账和恢复风险，再继续任何自动化。"
         else:
-            attachment_note = (
-                "附件包含 smoke report/summary；raw CTP callback evidence 默认不邮件外发，"
-                "如需未脱敏取证附件请显式设置 OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP=1 后重跑。"
-            )
+            action_text = "smoke 未通过或被阻断，请优先看 failure_reason 和交易所/CTP 返回信息。"
         result["email_notification"] = send_official_live_email_notification(
             subject=(
-                f"[C9/15w][Stage932 smoke][{severity}] {result.get('vt_symbol')} "
-                f"status={result.get('status')} trade_volume={result.get('trade_volume')}"
+                f"[C9/15w smoke报撤][{severity}] {result.get('vt_symbol')} "
+                f"状态={result.get('status')} 成交={result.get('trade_volume')}"
             ),
             body="\n".join(
                 [
-                    "C9/15w Stage932 实盘 smoke 报撤结果。",
-                    "",
-                    f"生成时间: {result.get('generated_at')}",
-                    f"目标日期: {result.get('target_date')}",
-                    f"合约: {result.get('vt_symbol')}",
-                    f"状态: {result.get('status')}",
-                    f"smoke_passed: {result.get('smoke_passed')}",
-                    f"send_order_api_called_count: {result.get('send_order_api_called_count')}",
-                    f"cancel_order_api_called_count: {result.get('cancel_order_api_called_count')}",
-                    f"trade_volume: {result.get('trade_volume')}",
-                    f"vt_orderid: {result.get('vt_orderid')}",
-                    f"failure_reason: {result.get('failure_reason', '')}",
-                    f"current_order_raw_status_messages: {result.get('current_order_raw_status_messages', [])}",
-                    "",
-                    attachment_note,
+                    f"结论：{action_text}",
+                    f"日期：{result.get('target_date')}；合约：{result.get('vt_symbol')}",
+                    f"状态：{result.get('status')}；通过：{result.get('smoke_passed')}",
+                    f"报单API/撤单API：{result.get('send_order_api_called_count')}/{result.get('cancel_order_api_called_count')}",
+                    f"成交/最终成交：{result.get('trade_volume')}/{result.get('final_order_traded')}",
+                    f"委托号：{result.get('vt_orderid') or '无'}",
+                    f"原因：{result.get('failure_reason', '') or result.get('current_order_raw_status_messages', []) or '无'}",
                 ]
             ),
             event_type="stage932_smoke_order",

@@ -31,6 +31,7 @@ from run_qmt_alignment_backtest import OUTPUT_DIR
 MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
 OUTPUT_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 STOP_RETRY_R = 0.5
+RETRY_INTENT_ROLE = "c9_retry_open_once"
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -197,10 +198,14 @@ def _latest_entry_risk(entry_risk: pd.DataFrame, vt_symbol: str, direction: str,
     if entry_risk.empty:
         return None
     frame = entry_risk.copy()
-    frame["direction_norm"] = frame.get("direction", "").map(_normalize_direction)
-    frame["date_norm"] = frame.get("date", "").map(_date_only)
+    empty = pd.Series([""] * len(frame), index=frame.index)
+    direction_source = frame["direction"] if "direction" in frame.columns else empty
+    date_source = frame["date"] if "date" in frame.columns else empty
+    vt_source = frame["contract_vt_symbol"] if "contract_vt_symbol" in frame.columns else frame["vt_symbol"] if "vt_symbol" in frame.columns else empty
+    frame["direction_norm"] = direction_source.map(_normalize_direction)
+    frame["date_norm"] = date_source.map(_date_only)
     matched = frame[
-        frame.get("contract_vt_symbol", "").astype(str).eq(vt_symbol)
+        vt_source.astype(str).eq(vt_symbol)
         & frame["direction_norm"].eq(direction)
         & frame["date_norm"].le(target_date)
     ].copy()
@@ -342,6 +347,16 @@ def _broker_position_volume(row: dict[str, Any]) -> float:
     return max(0.0, volume - frozen)
 
 
+def _has_broker_position(broker_positions: pd.DataFrame, vt_symbol: str, direction: str) -> bool:
+    if broker_positions.empty:
+        return False
+    for row in broker_positions.drop_duplicates().to_dict(orient="records"):
+        if _vt_symbol(row) == vt_symbol and _normalize_direction(row.get("direction")) == direction:
+            if _broker_position_volume(row) > 0:
+                return True
+    return False
+
+
 def _monitor_positions(shadow_positions: pd.DataFrame, broker_positions: pd.DataFrame) -> pd.DataFrame:
     keyed: dict[tuple[str, str], dict[str, Any]] = {}
     for row in shadow_positions.to_dict(orient="records"):
@@ -373,6 +388,247 @@ def _monitor_positions(shadow_positions: pd.DataFrame, broker_positions: pd.Data
         keyed[(vt_symbol, direction)] = item
 
     return pd.DataFrame(list(keyed.values()))
+
+
+def _ledger_intent_payload(row: dict[str, Any]) -> dict[str, Any]:
+    payload = row.get("intent_payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _ledger_source(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _clean(payload.get("source") or row.get("source"))
+
+
+def _ledger_intent_role(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _clean(payload.get("intent_role") or row.get("intent_role"))
+
+
+def _ledger_vt_symbol(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _clean(row.get("vt_symbol") or payload.get("vt_symbol"))
+
+
+def _ledger_direction(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _normalize_direction(row.get("direction") or payload.get("direction"))
+
+
+def _ledger_offset(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _normalize_offset(row.get("offset") or payload.get("offset"))
+
+
+def _stage904_stop_close_fills(
+    rows: list[dict[str, Any]],
+    target_date: str,
+    vt_symbol: str,
+    original_direction: str,
+) -> list[dict[str, Any]]:
+    close_direction = "short" if original_direction == "long" else "long" if original_direction == "short" else ""
+    matched: list[dict[str, Any]] = []
+    for row in rows:
+        if _clean(row.get("target_date")) != target_date:
+            continue
+        if _clean(row.get("event_type")) != "filled_or_part_filled":
+            continue
+        if _ledger_vt_symbol(row) != vt_symbol:
+            continue
+        if _ledger_direction(row) != close_direction:
+            continue
+        if _ledger_offset(row) != "close":
+            continue
+        intent_id = _clean(row.get("intent_id"))
+        if intent_id.startswith("STAGE905-C9MON") or _ledger_source(row) == "stage904_c9_intraday_close":
+            matched.append(row)
+    return matched
+
+
+def _stage904_retry_open_attempted(
+    rows: list[dict[str, Any]],
+    target_date: str,
+    vt_symbol: str,
+    original_direction: str,
+) -> bool:
+    for row in rows:
+        if _clean(row.get("target_date")) != target_date:
+            continue
+        if _ledger_vt_symbol(row) != vt_symbol:
+            continue
+        if _ledger_direction(row) != original_direction:
+            continue
+        if _ledger_offset(row) != "open":
+            continue
+        intent_id = _clean(row.get("intent_id"))
+        if (
+            intent_id.startswith("STAGE905-C9RETRY")
+            or _ledger_source(row) == "stage904_c9_intraday_retry_open"
+            or _ledger_intent_role(row) == RETRY_INTENT_ROLE
+        ):
+            return True
+    return False
+
+
+def _retry_action_for_stopped_position(
+    *,
+    ledger_open_trade: dict[str, Any],
+    close_fill: dict[str, Any],
+    broker_positions: pd.DataFrame,
+    entry_risk: pd.DataFrame,
+    ticks: pd.DataFrame,
+    target_date: str,
+    max_tick_age_seconds: int,
+) -> dict[str, Any]:
+    vt_symbol = _clean(ledger_open_trade.get("vt_symbol"))
+    direction = _normalize_direction(ledger_open_trade.get("direction"))
+    volume = _to_float(ledger_open_trade.get("volume"), 0.0)
+    fill_price = _to_float(ledger_open_trade.get("price"), 0.0)
+    risk_row = _latest_entry_risk(entry_risk, vt_symbol, direction, target_date)
+    initial_stop_price = _to_float(risk_row.get("stop_price") if risk_row else None, 0.0)
+    risk_price = abs(fill_price - initial_stop_price) if fill_price > 0 and initial_stop_price > 0 else 0.0
+    tick = _tick_row(ticks, vt_symbol)
+    fresh_ticks = _fresh_tick_frame(ticks, vt_symbol, max_tick_age_seconds)
+    tick_age = _tick_age(tick)
+    live_price, live_price_source = _tick_price(tick)
+    progress_extreme_price, progress_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "progress")
+    reasons: list[str] = []
+    action = "retry_block"
+
+    if not vt_symbol:
+        reasons.append("retry_missing_vt_symbol")
+    if direction not in {"long", "short"}:
+        reasons.append("retry_invalid_direction")
+    if volume <= 0:
+        reasons.append("retry_invalid_volume")
+    if fill_price <= 0:
+        reasons.append("retry_original_fill_price_missing")
+    if risk_row is None:
+        reasons.append("retry_matching_entry_risk_missing")
+    if risk_price <= 0:
+        reasons.append("retry_invalid_risk_price")
+    if _has_broker_position(broker_positions, vt_symbol, direction):
+        reasons.append("retry_blocked_broker_position_not_flat_after_stop_close")
+    if tick is None:
+        reasons.append("retry_fresh_tick_missing")
+    if tick_age is None or tick_age > max_tick_age_seconds:
+        reasons.append("retry_fresh_tick_missing_or_stale")
+    if live_price <= 0:
+        reasons.append("retry_live_price_missing")
+
+    retry_hit = False
+    if risk_price > 0 and progress_extreme_price > 0:
+        if direction == "long":
+            retry_hit = progress_extreme_price >= fill_price
+        elif direction == "short":
+            retry_hit = progress_extreme_price <= fill_price
+
+    if not reasons:
+        if retry_hit:
+            action = "retry_open_dry_run"
+            reasons.append("stage847_retry_reclaim_triggered")
+        else:
+            action = "retry_watch"
+            reasons.append("stage847_retry_waiting_for_reclaim")
+
+    return {
+        "target_date": target_date,
+        "vt_symbol": vt_symbol,
+        "direction": direction,
+        "position_source": "ledger_stop_close_flat",
+        "volume": volume,
+        "open_trade_id": _clean(ledger_open_trade.get("trade_id")),
+        "open_trade_date": _date_only(ledger_open_trade.get("date")),
+        "ledger_open_trade_date": _date_only(ledger_open_trade.get("date")),
+        "ledger_open_trade_count": int(_to_float(ledger_open_trade.get("trade_count"), 0.0)),
+        "ledger_open_trade_volume": volume,
+        "broker_open_trade_date": "",
+        "broker_open_trade_count": 0,
+        "broker_open_trade_volume": 0.0,
+        "entry_risk_date": _date_only(risk_row.get("date") if risk_row else ""),
+        "entry_day_active": 1,
+        "fill_price": fill_price,
+        "fill_price_source": _clean(ledger_open_trade.get("fill_price_source")) or "stage931_execution_ledger_open_fill_weighted_avg",
+        "ledger_fill_price": fill_price,
+        "broker_fill_price": 0.0,
+        "broker_position_avg_price": 0.0,
+        "broker_position_avg_price_source": "",
+        "initial_stop_price": initial_stop_price,
+        "risk_price": risk_price,
+        "stop_retry_r": STOP_RETRY_R,
+        "stage847_stop_price": fill_price - (1.0 if direction == "long" else -1.0) * STOP_RETRY_R * risk_price if risk_price > 0 else 0.0,
+        "stage847_progress_price": fill_price,
+        "stage847_retry_trigger_price": fill_price,
+        "live_price": live_price,
+        "live_price_source": live_price_source,
+        "live_bid_price_1": _tick_value(tick, "bid_price_1"),
+        "live_ask_price_1": _tick_value(tick, "ask_price_1"),
+        "live_limit_up": _tick_value(tick, "limit_up", "upper_limit", "limit_up_price"),
+        "live_limit_down": _tick_value(tick, "limit_down", "lower_limit", "limit_down_price"),
+        "adverse_extreme_price": _to_float(close_fill.get("price"), 0.0),
+        "adverse_extreme_source": "stage931_stop_close_fill",
+        "progress_extreme_price": progress_extreme_price,
+        "progress_extreme_source": progress_extreme_source,
+        "tick_batch_count": int(len(_tick_frame(ticks, vt_symbol))),
+        "fresh_tick_batch_count": int(len(fresh_ticks)),
+        "tick_age_seconds": tick_age,
+        "mark_price_fallback": 0.0,
+        "adverse_hit": 0,
+        "progress_hit": int(retry_hit),
+        "retry_open_attempted": 0,
+        "retry_stop_close_fill_price": _to_float(close_fill.get("price"), 0.0),
+        "retry_stop_close_fill_volume": _to_float(close_fill.get("trade_volume_delta", close_fill.get("volume")), 0.0),
+        "monitor_action": action,
+        "monitor_reason": ";".join(dict.fromkeys(reasons)),
+        "order_api_called": 0,
+        "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    }
+
+
+def _retry_actions(
+    *,
+    broker_positions: pd.DataFrame,
+    execution_ledger_rows: list[dict[str, Any]],
+    entry_risk: pd.DataFrame,
+    ticks: pd.DataFrame,
+    target_date: str,
+    max_tick_age_seconds: int,
+) -> pd.DataFrame:
+    open_keys: set[tuple[str, str]] = set()
+    for row in execution_ledger_rows:
+        if _clean(row.get("target_date")) != target_date:
+            continue
+        if _clean(row.get("event_type")) != "filled_or_part_filled":
+            continue
+        if _ledger_offset(row) != "open":
+            continue
+        vt_symbol = _ledger_vt_symbol(row)
+        direction = _ledger_direction(row)
+        if vt_symbol and direction in {"long", "short"}:
+            open_keys.add((vt_symbol, direction))
+
+    rows: list[dict[str, Any]] = []
+    for vt_symbol, direction in sorted(open_keys):
+        if _stage904_retry_open_attempted(execution_ledger_rows, target_date, vt_symbol, direction):
+            continue
+        close_fills = _stage904_stop_close_fills(execution_ledger_rows, target_date, vt_symbol, direction)
+        if not close_fills:
+            continue
+        ledger_open_trade = weighted_open_fill(execution_ledger_rows, target_date, vt_symbol, direction)
+        if not ledger_open_trade:
+            continue
+        rows.append(
+            _retry_action_for_stopped_position(
+                ledger_open_trade=ledger_open_trade,
+                close_fill=close_fills[-1],
+                broker_positions=broker_positions,
+                entry_risk=entry_risk,
+                ticks=ticks,
+                target_date=target_date,
+                max_tick_age_seconds=max_tick_age_seconds,
+            )
+        )
+    return pd.DataFrame(rows)
 
 
 def _action_for_position(
@@ -549,6 +805,7 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
             f"- monitor 状态：`{summary['monitor_status']}`",
             f"- 动作数：`{summary['action_count']}`",
             f"- close dry-run 数：`{summary['close_dry_run_count']}`",
+            f"- retry open dry-run 数：`{summary['retry_open_dry_run_count']}`",
             f"- order API 调用次数：`{summary['order_api_called_count']}`",
             "",
             "## Actions",
@@ -565,10 +822,13 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
                     "initial_stop_price",
                     "stage847_stop_price",
                     "stage847_progress_price",
+                    "stage847_retry_trigger_price",
                     "live_price",
                     "adverse_extreme_price",
+                    "progress_extreme_price",
                     "fresh_tick_batch_count",
                     "tick_age_seconds",
+                    "retry_open_attempted",
                     "monitor_action",
                     "monitor_reason",
                 ],
@@ -578,7 +838,7 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
             "",
             "- 本阶段只计算 C9 入场日 `0.5R` 止损/重试状态，不连接 CTP，不下单。",
             "- 没有 fresh tick 时必须 fail-closed，不能用历史收盘价触发实盘动作。",
-            "- 重试执行还需要真实订单/成交回报状态机，本阶段只覆盖初始 0.5R 监控 dry-run。",
+            "- 止损后重试只允许一次，且必须先看到真实初始开仓成交、真实止损平仓成交、broker 对应方向空仓和 fresh tick 重回原开仓价。",
             "",
         ]
     )
@@ -606,7 +866,7 @@ def main() -> None:
     config = build_phase_d_config()
     monitor_positions = _monitor_positions(positions, broker_positions)
 
-    actions = pd.DataFrame(
+    position_actions = pd.DataFrame(
         [
             _action_for_position(
                 row,
@@ -622,11 +882,25 @@ def main() -> None:
             for row in monitor_positions.to_dict(orient="records")
         ]
     )
+    retry_actions = _retry_actions(
+        broker_positions=broker_positions,
+        execution_ledger_rows=execution_ledger_rows,
+        entry_risk=entry_risk,
+        ticks=ticks,
+        target_date=target_date,
+        max_tick_age_seconds=args.max_tick_age_seconds,
+    )
+    action_frames = [frame for frame in [position_actions, retry_actions] if not frame.empty]
+    actions = pd.concat(action_frames, ignore_index=True, sort=False) if action_frames else pd.DataFrame()
     close_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("close_dry_run").sum()) if not actions.empty else 0
-    blocked_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("block").sum()) if not actions.empty else 0
+    retry_open_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("retry_open_dry_run").sum()) if not actions.empty else 0
+    retry_watch_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("retry_watch").sum()) if not actions.empty else 0
+    blocked_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["block", "retry_block"]).sum()) if not actions.empty else 0
     order_api_called = int(actions.get("order_api_called", pd.Series(dtype=float)).sum()) if not actions.empty else 0
     monitor_status = "intraday_monitor_blocked" if blocked_count else "intraday_monitor_ready"
-    if close_dry_run_count:
+    if retry_open_dry_run_count:
+        monitor_status = "intraday_monitor_retry_open_dry_run"
+    elif close_dry_run_count:
         monitor_status = "intraday_monitor_close_dry_run"
 
     summary = {
@@ -639,6 +913,8 @@ def main() -> None:
         "action_count": int(len(actions)),
         "blocked_count": blocked_count,
         "close_dry_run_count": close_dry_run_count,
+        "retry_open_dry_run_count": retry_open_dry_run_count,
+        "retry_watch_count": retry_watch_count,
         "order_api_called_count": order_api_called,
         "readonly_status": readonly_summary.get("status", ""),
         "tick_path": str(READONLY_TICKS_PATH.resolve()),
@@ -648,13 +924,14 @@ def main() -> None:
         "broker_trade_rows": int(len(broker_trades)),
         "execution_ledger_rows": int(len(execution_ledger_rows)),
         "monitor_position_rows": int(len(monitor_positions)),
+        "retry_candidate_rows": int(len(retry_actions)),
         "phase_d_hard_limits": config.hard_limits.__dict__,
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {
             "overfit_before": "否。C9 盘中监控只复刻已冻结的 0.5R 止损/重试状态机，不改参数。",
             "continue_before": "是。没有盘中监控，C9 无法全自动执行入场日风控。",
             "overfit_after": "否。没有根据监控结果调整策略。",
-            "continue_after": "是。下一步需要把该 monitor 接入 Stage903，并补订单/成交状态机以支持 retry。",
+            "continue_after": "是。Stage904 已能产出初始止损和平仓后一次重试开仓候选，下一步由 Stage905/931 承接为真实 order intent。",
         },
     }
     actions.to_csv(paths["actions_csv"], index=False, encoding="utf-8-sig")

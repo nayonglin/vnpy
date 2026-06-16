@@ -48,15 +48,14 @@ def main() -> None:
 
     if args.mode in {"dry-run", "send-test"}:
         notification = send_official_live_email_notification(
-            subject=f"[C9/15w][email-check] {args.mode}",
+            subject=f"[C9/15w 邮件链路检查] {args.mode}",
             body="\n".join(
                 [
-                    "C9/15w 官方实盘邮件通知链路测试。",
-                    f"mode: {args.mode}",
-                    f"generated_at: {summary['generated_at']}",
-                    f"official_live: {OFFICIAL_LIVE_VERSION} / {OFFICIAL_LIVE_ALIAS}",
-                    "",
-                    "这封邮件不代表策略信号，不触发下单。",
+                    "结论：邮件链路测试成功；不代表交易信号，也不会触发下单。",
+                    f"模式：{args.mode}",
+                    f"时间：{summary['generated_at']}",
+                    f"版本：{OFFICIAL_LIVE_ALIAS}",
+                    "后续邮件只发关键摘要，不发文件正文。",
                 ]
             ),
             event_type="stage933_email_check",

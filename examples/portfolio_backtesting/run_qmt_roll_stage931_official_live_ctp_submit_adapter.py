@@ -392,26 +392,26 @@ def _wait_order_completion(rows: dict[str, list[dict[str, Any]]], vt_orderid: st
 def _build_report(summary: dict[str, Any], submitted: pd.DataFrame) -> str:
     return "\n".join(
         [
-            "# Stage931 Official Live CTP Submit Adapter",
+            "# Stage931 官方实盘 CTP 提交适配器报告",
             "",
-            f"- generated_at: `{summary['generated_at']}`",
-            f"- official_live: `{summary['official_live_version']}` / `{summary['official_live_alias']}`",
-            f"- target_date: `{summary['target_date']}`",
-            f"- mode: `{summary['mode']}`",
-            f"- adapter_status: `{summary['adapter_status']}`",
-            f"- ready_intent_count: `{summary['ready_intent_count']}`",
-            f"- send_order_api_called_count: `{summary['send_order_api_called_count']}`",
-            f"- cancel_order_api_called_count: `{summary['cancel_order_api_called_count']}`",
+            f"- 生成时间：`{summary['generated_at']}`",
+            f"- 官方版本：`{summary['official_live_version']}` / `{summary['official_live_alias']}`",
+            f"- 目标交易日：`{summary['target_date']}`",
+            f"- 模式：`{summary['mode']}`",
+            f"- 适配器状态：`{summary['adapter_status']}`",
+            f"- 待提交意图数量：`{summary['ready_intent_count']}`",
+            f"- 报单 API 调用次数：`{summary['send_order_api_called_count']}`",
+            f"- 撤单 API 调用次数：`{summary['cancel_order_api_called_count']}`",
             "",
-            "## Submitted",
+            "## 本次处理的指令",
             "",
             submitted.head(80).to_markdown(index=False) if not submitted.empty else "_empty_",
             "",
-            "## Notes",
+            "## 执行纪律",
             "",
-            "- Dry-run mode never connects CTP and never calls send_order/cancel_order.",
-            "- Live-real mode requires Stage927 real_submit_permitted=1, env switches, exact confirm text, and inactive kill switch.",
-            "- Unfilled active orders are cancelled after the configured fill wait.",
+            "- dry-run 模式不会连接 CTP，也不会调用 send_order/cancel_order。",
+            "- live-real 模式必须同时满足 Stage927 放行、真实提交环境变量、精确确认文本和 kill switch 未启用。",
+            "- 已提交但未成交的活动委托，会在配置的等待时间后尝试撤单。",
             "",
         ]
     )
@@ -474,25 +474,28 @@ def _send_submit_email(paths: dict[str, Path], summary: dict[str, Any], submitte
     elif int(summary.get("blocking_failure_count", 0)) > 0 or summary.get("adapter_status") == "adapter_exception":
         severity = "warning"
     subject = (
-        f"[C9/15w][Stage931][{severity}] {summary['target_date']} "
-        f"{summary['adapter_status']} order_api={summary['order_api_called_count']} trades={summary['trade_row_count']}"
+        f"[C9/15w 真实提交][{severity}] {summary['target_date']} "
+        f"{summary['adapter_status']} 下单API={summary['order_api_called_count']} 成交行={summary['trade_row_count']}"
     )
+    if int(summary.get("order_api_called_count", 0)) > 0:
+        action_text = "本次已经调用真实报单/撤单 API，请马上核对委托、成交、持仓、资金和执行台账。"
+    elif int(summary.get("blocking_failure_count", 0)) > 0:
+        action_text = "本次被闸门阻断，没有真实报单；请先看阻断原因，不要手工追单。"
+    elif int(summary.get("ready_intent_count", 0)) > 0:
+        action_text = "存在待提交意图，但当前邮件显示没有触发真实 API；请确认模式和闸门状态。"
+    else:
+        action_text = "没有待提交意图，也没有真实报单。"
+    blockers_text = ";".join(str(item) for item in summary.get("blockers", [])) or "无"
+    if len(blockers_text) > 500:
+        blockers_text = blockers_text[:500] + "..."
     body_lines = [
-        "C9/15w Stage931 订单提交适配器产生关键事件。",
-        "",
-        f"生成时间: {summary['generated_at']}",
-        f"目标日期: {summary['target_date']}",
-        f"模式: {summary['mode']}",
-        f"状态: {summary['adapter_status']}",
-        f"Ready intents: {summary['ready_intent_count']}",
-        f"Blockers: {summary['blockers']}",
-        f"Send API: {summary['send_order_api_called_count']}",
-        f"Cancel API: {summary['cancel_order_api_called_count']}",
-        f"Order rows: {summary['order_row_count']}",
-        f"Trade rows: {summary['trade_row_count']}",
+        f"结论：{action_text}",
+        f"日期：{summary['target_date']}；模式：{summary['mode']}",
+        f"状态：{summary['adapter_status']}",
+        f"待提交/报单API/撤单API：{summary['ready_intent_count']}/{summary['send_order_api_called_count']}/{summary['cancel_order_api_called_count']}",
+        f"委托/成交回报：{summary['order_row_count']}/{summary['trade_row_count']}",
+        f"阻断原因：{blockers_text}",
     ]
-    if not submitted.empty:
-        body_lines.extend(["", "Submitted tail:", submitted.tail(10).to_string(index=False)])
     attachments = [
         paths["report_md"],
         paths["summary_json"],
@@ -500,15 +503,6 @@ def _send_submit_email(paths: dict[str, Path], summary: dict[str, Any], submitte
     ]
     if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP"):
         attachments.extend([paths["orders_csv"], paths["trades_csv"], paths["logs_csv"]])
-        body_lines.extend(["", "附件包含 Stage931 report/summary/submitted/未脱敏 raw CTP orders/trades/logs，仅用于显式取证。"])
-    else:
-        body_lines.extend(
-            [
-                "",
-                "附件包含 Stage931 report/summary/submitted；raw CTP orders/trades/logs 默认不邮件外发。",
-                "如需未脱敏取证附件，显式设置 OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP=1 后重跑。",
-            ]
-        )
     return send_official_live_email_notification(
         subject=subject,
         body="\n".join(body_lines),

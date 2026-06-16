@@ -290,29 +290,31 @@ def _email_severity(stage903: dict[str, Any], wrapper: dict[str, Any]) -> str:
 
 def _send_report_email(paths: dict[str, Path], wrapper: dict[str, Any], stage903: dict[str, Any]) -> dict[str, Any]:
     severity = _email_severity(stage903, wrapper)
+    pending = _to_int(stage903.get("pending_order_count", 0))
+    ready = _to_int(stage903.get("stage905_ready_count", 0))
+    order_api = _to_int(stage903.get("order_api_called_count", 0))
+    account = wrapper.get("account_snapshot") or {}
+    if order_api > 0:
+        action_text = "检测到真实下单 API 调用，请马上人工核对委托、成交、持仓和资金。"
+    elif ready > 0:
+        action_text = "有已经通过 dry-run 的候选指令，但这封报告本身不会真实下单，需要继续看 Stage927/Stage931 闸门。"
+    elif pending > 0:
+        action_text = "策略层有理论指令，但执行闸门没有放行；暂时不要手工追单，先看阻断原因。"
+    else:
+        action_text = "没有需要自动执行的开仓或平仓指令。"
     subject = (
-        f"[C9/15w][{wrapper['phase']}][{severity}] "
-        f"{wrapper['target_date']} pending={stage903.get('pending_order_count', 0)} "
-        f"ready={stage903.get('stage905_ready_count', 0)}"
+        f"[C9/15w 官方报告][{severity}] {wrapper['target_date']} "
+        f"待处理={pending} 可提交={ready} 下单API={order_api}"
     )
     body = "\n".join(
         [
-            "C9/15w 官方实盘定时报告已生成。",
-            "",
-            f"生成时间: {wrapper['generated_at']}",
-            f"阶段: {wrapper['phase']}",
-            f"目标日期: {wrapper['target_date']}",
-            f"版本: {OFFICIAL_LIVE_VERSION} / {OFFICIAL_LIVE_ALIAS}",
-            f"结论: {_status_text(stage903)}",
-            "",
-            f"Controller: {stage903.get('controller_status', '')}",
-            f"Pending orders: {stage903.get('pending_order_count', '')}",
-            f"Stage905 ready: {stage903.get('stage905_ready_count', '')}",
-            f"Order API calls: {stage903.get('order_api_called_count', '')}",
-            f"Readonly balance: {(wrapper.get('account_snapshot') or {}).get('balance', '')}",
-            f"Readonly nonzero positions: {(wrapper.get('account_snapshot') or {}).get('nonzero_position_rows', 0)}",
-            "",
-            "附件包含本次 wrapper report 和 summary。邮件失败不会触发或阻断交易，只会写入邮件审计日志。",
+            f"结论：{action_text}",
+            f"日期：{wrapper['target_date']}，阶段：{wrapper['phase']}",
+            f"信号/待执行/可提交：{stage903.get('signal_count', '')}/{pending}/{ready}",
+            f"下单API：{order_api}",
+            f"账户：资金 {account.get('balance', '')}，非零持仓 {account.get('nonzero_position_rows', 0)}",
+            f"状态：{stage903.get('controller_status', '')}；{stage903.get('stage905_executor_status', '')}",
+            "需要你做：有下单API或可提交指令时看账户；否则不用处理。",
         ]
     )
     return send_official_live_email_notification(

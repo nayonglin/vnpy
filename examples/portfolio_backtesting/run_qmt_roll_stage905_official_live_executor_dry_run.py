@@ -31,6 +31,7 @@ STAGE904_MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
 STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 STAGE260_MODEL_TAG = "stage260_official_live_daily_execution_gate_v1"
 STAGE260_PREFIX = "qmt_roll_stage260_official_live_daily_execution_gate"
+RETRY_INTENT_ROLE = "c9_retry_open_once"
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -286,6 +287,30 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 "source_reason": _clean(row.get("monitor_reason")),
             }
         )
+    retry_actions = stage904_actions[stage904_actions["monitor_action"].astype(str).eq("retry_open_dry_run")]
+    for idx, row in enumerate(retry_actions.to_dict(orient="records"), start=1):
+        rows.append(
+            {
+                "intent_id": f"STAGE905-C9RETRY-{idx:03d}",
+                "source": "stage904_c9_intraday_retry_open",
+                "intent_role": RETRY_INTENT_ROLE,
+                "vt_symbol": _clean(row.get("vt_symbol")),
+                "direction": _normalize_direction_text(row.get("direction")),
+                "offset": "open",
+                "planned_volume": _to_float(row.get("volume"), 0.0),
+                "limit_price": _to_float(row.get("stage847_retry_trigger_price", row.get("fill_price")), 0.0),
+                "retry_trigger_price": _to_float(row.get("stage847_retry_trigger_price", row.get("fill_price")), 0.0),
+                "retry_stop_price": _to_float(row.get("stage847_stop_price"), 0.0),
+                "retry_original_fill_price": _to_float(row.get("fill_price"), 0.0),
+                "trigger_live_price": _to_float(row.get("live_price"), 0.0),
+                "trigger_progress_extreme_price": _to_float(row.get("progress_extreme_price"), 0.0),
+                "live_bid_price_1": _to_float(row.get("live_bid_price_1"), 0.0),
+                "live_ask_price_1": _to_float(row.get("live_ask_price_1"), 0.0),
+                "live_limit_up": _to_float(row.get("live_limit_up"), 0.0),
+                "live_limit_down": _to_float(row.get("live_limit_down"), 0.0),
+                "source_reason": _clean(row.get("monitor_reason")),
+            }
+        )
     return rows
 
 
@@ -355,6 +380,7 @@ def _validate_intent(
     stage260_executable = int(_to_float(stage260_summary.get("executable_count"), 0))
     source = _clean(intent.get("source"))
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
+    intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
 
     stage902_blocking_for_intent = stage902_reduce_close_blocking if offset_text == "close" else stage902_blocking
     if stage902_blocking_for_intent > 0 and not intraday_close_intent:
@@ -417,7 +443,7 @@ def _validate_intent(
     elif offset_text == "open":
         if stage902_allow_new_open != 1:
             reasons.append("stage902_new_open_not_allowed")
-        if stage260_executable <= 0:
+        if stage260_executable <= 0 and not intraday_retry_open_intent:
             reasons.append("stage260_no_executable_open_gate")
 
     order_request_payload: dict[str, Any] = {}
@@ -500,6 +526,9 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
                     "stop_trigger_price",
                     "trigger_live_price",
                     "trigger_adverse_extreme_price",
+                    "retry_trigger_price",
+                    "retry_stop_price",
+                    "trigger_progress_extreme_price",
                     "price_adjustment_reason",
                     "dedupe_removed_count",
                     "dedupe_removed_sources",
@@ -511,7 +540,8 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
             "## 说明",
             "",
             "- Stage905 只生成 dry-run `OrderRequest` payload，不连接 CTP，不调用 `send_order` 或 `cancel_order`。",
-            "- 平仓必须有 broker 持仓快照和 Stage260 executable gate；影子持仓不能替代真实账户持仓。",
+            "- 平仓必须有 broker 持仓快照；普通日线开仓必须有 Stage260 executable gate。",
+            "- C9 止损后一次重试开仓来自 Stage904，必须先通过 ledger/空仓/fresh tick 闭环，不能由人工影子持仓替代。",
             "- 合约快照、持仓快照、活跃委托、Stage902、Stage260 任一缺失都必须 fail-closed。",
             "",
         ]

@@ -75,7 +75,7 @@ def _stable_json(payload: dict[str, Any]) -> str:
 
 
 def normalize_intent_payload(target_date: str, row: dict[str, Any], order_request: dict[str, Any]) -> dict[str, Any]:
-    return {
+    payload = {
         "target_date": target_date,
         "source": _clean(row.get("source")),
         "vt_symbol": _clean(row.get("vt_symbol") or order_request.get("vt_symbol")),
@@ -88,6 +88,10 @@ def normalize_intent_payload(target_date: str, row: dict[str, Any], order_reques
         "source_reason": _clean(row.get("source_reason")),
         "reference": _clean(order_request.get("reference")),
     }
+    intent_role = _clean(row.get("intent_role") or order_request.get("intent_role"))
+    if intent_role:
+        payload["intent_role"] = intent_role
+    return payload
 
 
 def intent_fingerprint(target_date: str, row: dict[str, Any], order_request: dict[str, Any]) -> tuple[str, dict[str, Any]]:
@@ -203,15 +207,35 @@ def ledger_order_api_counts(rows: list[dict[str, Any]], target_date: str) -> dic
     }
 
 
+def _event_intent_payload(row: dict[str, Any]) -> dict[str, Any]:
+    payload = row.get("intent_payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _event_vt_symbol(row: dict[str, Any]) -> str:
+    payload = _event_intent_payload(row)
+    return _clean(row.get("vt_symbol") or payload.get("vt_symbol"))
+
+
+def _event_direction(row: dict[str, Any]) -> str:
+    payload = _event_intent_payload(row)
+    return _clean(row.get("direction") or payload.get("direction")).lower()
+
+
+def _event_offset(row: dict[str, Any]) -> str:
+    payload = _event_intent_payload(row)
+    return _clean(row.get("offset") or payload.get("offset")).lower()
+
+
 def open_fill_rows(rows: list[dict[str, Any]], target_date: str, vt_symbol: str, direction: str) -> list[dict[str, Any]]:
     return [
         row
         for row in rows
         if _clean(row.get("target_date")) == target_date
         and _clean(row.get("event_type")) == "filled_or_part_filled"
-        and _clean(row.get("vt_symbol")) == vt_symbol
-        and _clean(row.get("offset")).lower() == "open"
-        and _clean(row.get("direction")).lower() == direction.lower()
+        and _event_vt_symbol(row) == vt_symbol
+        and _event_offset(row) == "open"
+        and _event_direction(row) == direction.lower()
     ]
 
 
@@ -235,6 +259,9 @@ def weighted_open_fill(rows: list[dict[str, Any]], target_date: str, vt_symbol: 
     latest = fills[-1]
     return {
         **latest,
+        "vt_symbol": vt_symbol,
+        "direction": direction.lower(),
+        "offset": "open",
         "price": notional / total_volume,
         "volume": total_volume,
         "trade_count": len(fills),
