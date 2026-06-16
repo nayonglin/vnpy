@@ -171,6 +171,8 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
 
 def _write_df(path: Path, rows: list[dict[str, Any]]) -> None:
     frame = pd.DataFrame(rows)
+    if not frame.empty:
+        frame = frame.drop_duplicates().reset_index(drop=True)
     frame.to_csv(path, index=False, encoding="utf-8-sig")
 
 
@@ -214,7 +216,7 @@ def _analyze_logs(log_rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analysis: dict[str, Any]) -> dict[str, Any]:
     callbacks = rows.get("position_query_callbacks", [])
-    position_rows = rows.get("positions", [])
+    position_rows = pd.DataFrame(rows.get("positions", [])).drop_duplicates().to_dict(orient="records")
     data_callbacks = [row for row in callbacks if row.get("has_data")]
     error_callbacks = [row for row in callbacks if int(row.get("error_id") or 0) != 0]
     last_seen = any(bool(row.get("last")) for row in callbacks)

@@ -17,6 +17,7 @@ from qmt_roll_official_live_config import (  # noqa: E402
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_BASE_PROFILE_NAME,
+    OFFICIAL_LIVE_FAMILY_VERSION,
     OFFICIAL_LIVE_PROFILE_NAME,
     OFFICIAL_LIVE_STAGE659_MODEL_TAG,
     OFFICIAL_LIVE_STAGE659_PREFIX,
@@ -288,6 +289,12 @@ def _signal_plan_from_usage(usage: pd.DataFrame, target_date: datetime) -> pd.Da
 
 
 def main() -> None:
+    if OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry":
+        import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901  # noqa: WPS433
+
+        s901.main()
+        return
+
     parser = argparse.ArgumentParser(description="Run current official live 20w YTD shadow with latest monthly AI pool.")
     parser.add_argument("--analysis-start", default="2026-01-01")
     parser.add_argument("--target-date", default="2026-06-04")

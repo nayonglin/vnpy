@@ -32,6 +32,8 @@ STAGE849_PREFIX = "qmt_roll_stage849_stage848_pressure_path_forensics"
 STAGE849_TAG = "stage849_stage848_pressure_path_forensics_v1"
 STAGE860_PREFIX = "qmt_roll_stage860_stage859_full_coverage_import"
 STAGE860_TAG = "stage860_stage859_full_coverage_import_v1"
+STAGE900_PREFIX = "qmt_roll_stage900_stage898_c9_gap_backfill"
+STAGE900_TAG = "stage900_stage898_c9_gap_backfill_v1"
 
 STAGE825_CLOSED_PATH = OUTPUT_DIR / f"{STAGE825_PREFIX}_closed_lots_{STAGE825_TAG}.csv"
 STAGE849_PRESSURE_PATH = OUTPUT_DIR / f"{STAGE849_PREFIX}_minute_features_{STAGE849_TAG}.csv"
@@ -39,6 +41,7 @@ STAGE860_PATCH_BARS_PATH = OUTPUT_DIR / f"{STAGE860_PREFIX}_combined_patch_minut
 STAGE860_REQUEST_COVERAGE_PATH = OUTPUT_DIR / f"{STAGE860_PREFIX}_request_coverage_after_stage860_{STAGE860_TAG}.csv"
 STAGE860_STAGE825_COVERAGE_PATH = OUTPUT_DIR / f"{STAGE860_PREFIX}_stage825_coverage_after_stage860_{STAGE860_TAG}.csv"
 STAGE860_PRESSURE_COVERAGE_PATH = OUTPUT_DIR / f"{STAGE860_PREFIX}_stage849_pressure_coverage_after_stage860_{STAGE860_TAG}.csv"
+STAGE900_C9_GAP_BARS_PATH = OUTPUT_DIR / f"{STAGE900_PREFIX}_minute_bars_{STAGE900_TAG}.csv"
 
 FULL_MINUTE_BARS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_full_minute_bars_{MODEL_TAG}.csv"
 ENTRY_FEATURES_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_entry_lot_features_{MODEL_TAG}.csv"
@@ -83,6 +86,12 @@ def _load_csv(path: Path) -> pd.DataFrame:
     return pd.read_csv(path, encoding="utf-8-sig")
 
 
+def _load_csv_optional(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    return pd.read_csv(path, encoding="utf-8-sig")
+
+
 def _prepare_minute_frame(frame: pd.DataFrame, source_name: str) -> pd.DataFrame:
     if frame.empty:
         return frame
@@ -120,11 +129,15 @@ def _load_full_minute_bars(vt_symbols: set[str]) -> pd.DataFrame:
     original = _prepare_minute_frame(s825._load_minute_bars(vt_symbols), "stage825_original_minute_source")
     patch = _prepare_minute_frame(_load_csv(STAGE860_PATCH_BARS_PATH), "stage860_combined_patch")
     patch = patch[patch["vt_symbol"].astype(str).isin(vt_symbols)].copy()
-    frames = [frame for frame in [original, patch] if not frame.empty]
+    c9_gap_patch = _prepare_minute_frame(_load_csv_optional(STAGE900_C9_GAP_BARS_PATH), "stage900_c9_gap_patch")
+    # Stage900 is scoped by the Stage898 C9 open-trade audit.  Keep it whole
+    # because some C9-only open days are outside the Stage861 baseline lot sample.
+    c9_gap_patch = c9_gap_patch.copy()
+    frames = [frame for frame in [original, patch, c9_gap_patch] if not frame.empty]
     if not frames:
         return pd.DataFrame()
     data = pd.concat(frames, ignore_index=True, sort=False)
-    data["source_priority"] = data["minute_source"].astype(str).str.contains("stage860|stage859|stage855").astype(int)
+    data["source_priority"] = data["minute_source"].astype(str).str.contains("stage900|stage860|stage859|stage855").astype(int)
     data = data.sort_values(["vt_symbol", "bar_datetime", "source_priority"])
     data = data.drop_duplicates(["vt_symbol", "bar_datetime"], keep="last")
     return data.drop(columns=["source_priority"]).sort_values(["vt_symbol", "bar_datetime"]).reset_index(drop=True)
@@ -485,6 +498,7 @@ def main() -> None:
                 "full_minute_bars": int(len(minute_bars)),
                 "full_minute_symbols": int(minute_bars["vt_symbol"].astype(str).nunique()) if not minute_bars.empty else 0,
                 "stage860_patch_minute_bars": int(len(_load_csv(STAGE860_PATCH_BARS_PATH))),
+                "stage900_c9_gap_patch_minute_bars": int(len(_load_csv_optional(STAGE900_C9_GAP_BARS_PATH))),
                 "entry_lots": int(len(entry_features)),
                 "entry_day_covered_lots": entry_covered,
                 "entry_day_missing_lots": int(len(entry_features) - entry_covered),
@@ -530,6 +544,7 @@ def main() -> None:
             "stage825_closed_lots": str(STAGE825_CLOSED_PATH),
             "stage849_pressure_features": str(STAGE849_PRESSURE_PATH),
             "stage860_combined_patch_bars": str(STAGE860_PATCH_BARS_PATH),
+            "stage900_c9_gap_patch_bars": str(STAGE900_C9_GAP_BARS_PATH),
             "stage860_stage825_coverage": str(STAGE860_STAGE825_COVERAGE_PATH),
             "stage860_pressure_coverage": str(STAGE860_PRESSURE_COVERAGE_PATH),
         },

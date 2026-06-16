@@ -398,6 +398,30 @@ def _c9_profile(metadata: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _enum_text(value: Any) -> str:
+    return str(getattr(value, "value", value))
+
+
+def _active_limit_orders_frame(engine: Any) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for vt_orderid, order in (getattr(engine, "active_limit_orders", {}) or {}).items():
+        rows.append(
+            {
+                "vt_orderid": str(vt_orderid),
+                "orderid": str(getattr(order, "orderid", "")),
+                "vt_symbol": str(getattr(order, "vt_symbol", "")),
+                "direction": _enum_text(getattr(order, "direction", "")),
+                "offset": _enum_text(getattr(order, "offset", "")),
+                "price": float(getattr(order, "price", 0.0) or 0.0),
+                "volume": int(float(getattr(order, "volume", 0) or 0)),
+                "traded": int(float(getattr(order, "traded", 0) or 0)),
+                "datetime": getattr(order, "datetime", ""),
+                "status": _enum_text(getattr(order, "status", "")),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.DataFrame, dict[str, pd.DataFrame]]:
     spec = replace(profile["spec"])
     original_start = s827.s778.s653.s517.START_DT
@@ -480,6 +504,7 @@ def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.
             "intraday_events": intraday_events,
             "c2_events": c2_events,
             "stop_retry_events": stop_retry_events,
+            "pending_orders": _active_limit_orders_frame(engine),
         }
         for frame in frames.values():
             if frame.empty:

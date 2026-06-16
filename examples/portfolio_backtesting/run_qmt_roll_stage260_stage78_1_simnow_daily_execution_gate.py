@@ -16,6 +16,7 @@ from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_VERSION,
     build_official_live_risk_snapshot,
 )
+from qmt_roll_official_live_phase_d_config import STAGE901_PENDING_ORDERS_PATH
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -176,6 +177,7 @@ def _active_order_count(orders: pd.DataFrame) -> int:
 def _position_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) -> float:
     if positions.empty:
         return 0.0
+    positions = positions.drop_duplicates().copy()
     pos_vt_symbol = _vt_symbol_series(positions).fillna("").astype(str).str.lower()
     pos_direction = _column(positions, "direction").map(_normalize_direction)
     pos_volume = pd.to_numeric(_column(positions, "volume", "pos", "position"), errors="coerce").fillna(0.0)
@@ -188,6 +190,31 @@ def _target_close_direction(signal_direction: str) -> str:
     if signal_direction == "long":
         return "short"
     return ""
+
+
+def _execution_candidates(signal_plan: pd.DataFrame, pending_orders: pd.DataFrame) -> pd.DataFrame:
+    if not pending_orders.empty:
+        rows: list[dict[str, Any]] = []
+        for row in pending_orders.to_dict(orient="records"):
+            rows.append(
+                {
+                    "execution_source": "stage901_pending_order",
+                    "shadow_session_id": "",
+                    "trade_id": _clean_scalar(row.get("vt_orderid") or row.get("orderid")),
+                    "vt_symbol": _clean_scalar(row.get("vt_symbol")),
+                    "direction": row.get("direction", ""),
+                    "offset": row.get("offset", ""),
+                    "volume": row.get("volume", 0.0),
+                    "theoretical_price": row.get("price", 0.0),
+                    "exit_reason": row.get("status", ""),
+                }
+            )
+        return pd.DataFrame(rows)
+    if signal_plan.empty:
+        return signal_plan
+    out = signal_plan.copy()
+    out["execution_source"] = "stage901_signal_plan"
+    return out
 
 
 def _decision_for_signal(
@@ -228,10 +255,13 @@ def _decision_for_signal(
 
     if not reasons:
         action = "simnow_executable"
-    elif offset == "close" and all(reason.startswith("no_matching_") or reason.startswith("insufficient_position") for reason in reasons):
+    elif offset == "close" and all(reason.startswith("no_matching_") for reason in reasons):
         action = "skip_broker_flat_for_close"
+    elif offset == "close" and all(reason.startswith("no_matching_") or reason.startswith("insufficient_position") for reason in reasons):
+        action = "skip_broker_position_mismatch_for_close"
 
     return {
+        "execution_source": row.get("execution_source", "stage901_signal_plan"),
         "shadow_session_id": row.get("shadow_session_id", ""),
         "trade_id": row.get("trade_id", ""),
         "vt_symbol": vt_symbol,
@@ -270,6 +300,8 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
     signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
+    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+    candidates = _execution_candidates(signal_plan, pending_orders)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     readonly_outputs = readonly_summary.get("outputs", {})
     positions = _read_csv_maybe(readonly_outputs.get("positions"))
@@ -301,11 +333,12 @@ def main() -> None:
     decisions = pd.DataFrame(
         [
             _decision_for_signal(row, risk_snapshot, readonly_gate, positions, active_orders)
-            for row in signal_plan.to_dict(orient="records")
+            for row in candidates.to_dict(orient="records")
         ]
     )
     executable_count = int(decisions["execution_action"].astype(str).eq("simnow_executable").sum()) if not decisions.empty else 0
     skipped_flat_count = int(decisions["execution_action"].astype(str).eq("skip_broker_flat_for_close").sum()) if not decisions.empty else 0
+    skipped_position_mismatch_count = int(decisions["execution_action"].astype(str).eq("skip_broker_position_mismatch_for_close").sum()) if not decisions.empty else 0
     blocked_count = int(decisions["execution_action"].astype(str).eq("blocked").sum()) if not decisions.empty else 0
 
     decisions.to_csv(paths["decision_csv"], index=False, encoding="utf-8-sig")
@@ -321,8 +354,12 @@ def main() -> None:
         "risk_snapshot": risk_snapshot,
         "readonly_gate": readonly_gate,
         "signal_count": int(len(signal_plan)),
+        "pending_order_count": int(len(pending_orders)),
+        "execution_candidate_count": int(len(candidates)),
+        "execution_candidate_source": "stage901_pending_order" if not pending_orders.empty else "stage901_signal_plan",
         "executable_count": executable_count,
         "skipped_flat_count": skipped_flat_count,
+        "skipped_position_mismatch_count": skipped_position_mismatch_count,
         "blocked_count": blocked_count,
         "order_api_called_count": 0,
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
@@ -344,10 +381,14 @@ def main() -> None:
         f"- 官方影子生成时间：`{official_summary.get('generated_at', '')}`",
         f"- AI池最新eval_date：`{summary['ai_pool_latest_eval_date']}`",
         f"- 风险级别：`{risk_snapshot.get('risk_level', '')}`",
+        f"- signal_plan 行数：`{len(signal_plan)}`",
+        f"- pending_order 行数：`{len(pending_orders)}`",
+        f"- 执行候选来源：`{summary['execution_candidate_source']}`",
         f"- 只读快照状态：`{readonly_gate['status']}` / `{readonly_gate['position_snapshot_state']}`",
         f"- 只读快照年龄秒数：`{readonly_gate['snapshot_age_seconds']}`",
         f"- 可执行信号数：`{executable_count}`",
         f"- 因账户空仓跳过平仓数：`{skipped_flat_count}`",
+        f"- 因账户持仓数量不匹配跳过平仓数：`{skipped_position_mismatch_count}`",
         f"- 阻断数：`{blocked_count}`",
         f"- 委托API调用次数：`0`",
         "",
@@ -356,6 +397,7 @@ def main() -> None:
         _to_markdown(
             decisions,
             [
+                "execution_source",
                 "vt_symbol",
                 "direction",
                 "offset",
@@ -372,8 +414,9 @@ def main() -> None:
         "## 说明",
         "",
         "- 本阶段只做执行闸门，不发单。",
-        "- 本阶段默认读取当前官方实盘 20万 `signal_plan`；没有信号时不回落到 Stage78。",
-        "- `skip_broker_flat_for_close` 表示策略理论上要平仓，但SimNow账户没有对应持仓，不能对空仓发送平仓单。",
+        "- 本阶段优先读取 Stage901 pending orders；只有 pending 为空时才读取 `signal_plan`，避免漏掉最后一天 engine pending order 或重复执行已体现在 shadow 持仓里的历史开仓。",
+        "- `skip_broker_flat_for_close` 表示策略理论上要平仓，但 broker 账户没有对应持仓，不能对空仓发送平仓单。",
+        "- `skip_broker_position_mismatch_for_close` 表示 broker 账户有对应持仓但数量不足，不能按理论数量平仓。",
         "- `review` 风险级别允许降风险/平仓，但不允许新开仓。",
         "",
     ]

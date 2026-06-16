@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.qmt-roll.official-live.15w.evening-report</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/bytedance/Desktop/person/vnpy</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py</string>
+    <string>--phase</string>
+    <string>evening-report</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>21</integer>
+    <key>Minute</key>
+    <integer>5</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage929_launchd_evening_report.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage929_launchd_evening_report.err.log</string>
+</dict>
+</plist>

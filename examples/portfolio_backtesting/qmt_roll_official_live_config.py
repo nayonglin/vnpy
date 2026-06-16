@@ -3,24 +3,33 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
+
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
-OFFICIAL_LIVE_ALIAS: str = "Stage372-20w"
-OFFICIAL_LIVE_VERSION: str = "official_live_stage372_20w_recovery_sleeve"
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage372"
-OFFICIAL_LIVE_FAMILY_VERSION: str = "stage526_200k_margin_forced_deleverage_recovery_sleeve"
-OFFICIAL_LIVE_BASE_PROFILE_NAME: str = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
-OFFICIAL_LIVE_PROFILE_NAME: str = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
-OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage653_20w_force95_to80"
-OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = OFFICIAL_LIVE_BASE_PROFILE_NAME
-OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile"
-OFFICIAL_LIVE_CAPITAL: float = 200_000.0
-OFFICIAL_LIVE_CAPITAL_LABEL: str = "20w"
+OFFICIAL_LIVE_ALIAS: str = "Stage847-C9-15w"
+OFFICIAL_LIVE_VERSION: str = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928"
+OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry"
+OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE847_C9_PROFILE_NAME
+OFFICIAL_LIVE_PROFILE_NAME: str = "stage847_c9_15w_stage819_05r_stop_retry_live"
+OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
+OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
+OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_override_15w_account_aligned_high_risk"
+OFFICIAL_LIVE_CAPITAL: float = 150_000.0
+OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
+OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE: str = "2026-06-16"
 
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
+LEGACY_STAGE847_C9_30W_LIVE_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
+LEGACY_STAGE847_C9_30W_LIVE_STATUS: str = "previous_live_capital_profile_superseded_by_15w_account_alignment"
+LEGACY_STAGE847_C9_30W_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
+LEGACY_STAGE372_LIVE_VERSION: str = "official_live_stage372_20w_recovery_sleeve"
+LEGACY_STAGE372_LIVE_STATUS: str = "legacy_previous_live_default_superseded_by_c9_operator_override"
+LEGACY_STAGE372_LIVE_PROFILE_NAME: str = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
 
 OFFICIAL_CANDIDATE_STAGE777_VERSION: str = "official_candidate_stage777_50w_am41_oi08_old_ai_v1"
 OFFICIAL_CANDIDATE_STAGE777_STATUS: str = "official_candidate_not_live_default"
@@ -30,14 +39,46 @@ OFFICIAL_CANDIDATE_STAGE819_30W_VERSION: str = (
 )
 OFFICIAL_CANDIDATE_STAGE819_30W_STATUS: str = "official_candidate_not_live_default_watch"
 OFFICIAL_CANDIDATE_STAGE819_30W_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage819_30w_config"
+OFFICIAL_CANDIDATE_STAGE847_C9_VERSION: str = (
+    "official_candidate_stage847_c9_30w_stage819_05r_stop_retry_once_v1"
+)
+OFFICIAL_CANDIDATE_STAGE847_C9_STATUS: str = "promoted_to_live_default_operator_override_high_risk_watch"
+OFFICIAL_CANDIDATE_STAGE847_C9_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage847_c9_config"
 OFFICIAL_CANDIDATE_STAGE813_VERSION: str = (
     "official_candidate_stage813_50w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1"
 )
 OFFICIAL_CANDIDATE_STAGE813_STATUS: str = "official_candidate_not_live_default"
 OFFICIAL_CANDIDATE_STAGE813_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage813_config"
-OFFICIAL_CANDIDATE_PRIMARY_VERSION: str = OFFICIAL_CANDIDATE_STAGE819_30W_VERSION
-OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE: str = OFFICIAL_CANDIDATE_STAGE819_30W_CONFIG_MODULE
+OFFICIAL_CANDIDATE_PRIMARY_VERSION: str = OFFICIAL_CANDIDATE_STAGE847_C9_VERSION
+OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE: str = OFFICIAL_CANDIDATE_STAGE847_C9_CONFIG_MODULE
 OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
+    OFFICIAL_CANDIDATE_STAGE847_C9_VERSION: {
+        "alias": "Stage847-C9-30w-Stage819-0.5RStopRetry",
+        "source_stage": "Stage847",
+        "base_stage": "Stage819",
+        "status": OFFICIAL_CANDIDATE_STAGE847_C9_STATUS,
+        "config_module": OFFICIAL_CANDIDATE_STAGE847_C9_CONFIG_MODULE,
+        "capital": 300_000.0,
+        "capital_label": "30w",
+        "live_capital": OFFICIAL_LIVE_CAPITAL,
+        "live_capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
+        "live_default": True,
+        "primary_official_candidate": True,
+        "current_live_default": OFFICIAL_LIVE_VERSION,
+        "previous_live_default": OFFICIAL_LIVE_PREVIOUS_VERSION,
+        "risk_note": (
+            "Operator-promoted live default and high-risk watch arm. "
+            "It inherits the Stage819 30w candidate, then enables the C9 intraday "
+            "0.5R stop/retry-once logic, C2 intraday stop, and broker10 entry cap. "
+            "Stage900 cleared the prior C9 entry-day minute-data gap and Stage898 "
+            "P0 audit now passes, but Stage896/899 still show DD50/broker100 and "
+            "near-58% drawdown tails. Stage928 switches only the deployment capital "
+            "profile to 15w after the account was funded to 150000; C9 signal logic "
+            "is unchanged. This live-default switch is an explicit operator override; "
+            "execution remains fail-closed until fresh shadow, execution dry-run, "
+            "broker-state reconciliation, and wrapper engineering review are completed."
+        ),
+    },
     OFFICIAL_CANDIDATE_STAGE819_30W_VERSION: {
         "alias": "Stage819-30w-AM41-OI0.8-oldAI-longTightStop-RSI95",
         "source_stage": "Stage819",
@@ -47,7 +88,7 @@ OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
         "capital": 300_000.0,
         "capital_label": "30w",
         "live_default": False,
-        "primary_official_candidate": True,
+        "primary_official_candidate": False,
         "current_live_default_remains": OFFICIAL_LIVE_VERSION,
         "risk_note": (
             "Operator-promoted official candidate and watch arm. It keeps Stage813 "
@@ -100,8 +141,8 @@ OFFICIAL_LIVE_AI_ELIGIBILITY_PATH: Path = (
     "stage182_ai_product_pool_live_inference_v1.csv"
 )
 
-OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage659_stage372_2026_ytd_latest_ai_shadow_v1"
-OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage659_stage372_2026_ytd_latest_ai_shadow"
+OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage901_stage847_c9_2026_ytd_live_shadow_v1"
+OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow"
 OFFICIAL_LIVE_SUMMARY_PATH: Path = (
     OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_decision_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.json"
 )
@@ -118,31 +159,62 @@ OFFICIAL_LIVE_REPORT_PATH: Path = (
 OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
     "default_profile": OFFICIAL_LIVE_VERSION,
     "capital": OFFICIAL_LIVE_CAPITAL,
+    "previous_live_default": OFFICIAL_LIVE_PREVIOUS_VERSION,
+    "legacy_stage372_live_default": LEGACY_STAGE372_LIVE_VERSION,
+    "shadow_runner": "examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
     "normal_signal_source": str(OFFICIAL_LIVE_SIGNAL_PLAN_PATH),
     "position_source": str(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH),
     "legacy_stage78_status": LEGACY_STAGE78_STATUS,
     "must_not_fallback_to_stage78_for_live": True,
+    "operator_override_risk_acceptance": (
+        "C9 was promoted to live default by explicit operator request despite known "
+        "Stage896/899 DD50, broker100, and near-58% drawdown tails. The 15w switch "
+        "changes only the deployment capital profile to match the funded live account."
+    ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
     "real_submit_default": "fail_closed",
 }
 
-OFFICIAL_LIVE_STRATEGY_OVERRIDES: dict[str, Any] = {
-    "enable_streak_entry_structure_risk_recovery": True,
-    "streak_entry_structure_recovery_signals": "long_case1a,short_case1a",
-    "streak_entry_structure_recovery_min_multiplier": 1.0,
-    "streak_entry_structure_recovery_require_flat_portfolio": True,
-    "streak_entry_structure_recovery_max_same_direction_corr": 0.30,
-    "streak_entry_structure_recovery_require_rsi_confirmation": False,
-    "enable_recovery_sleeve": True,
-    "recovery_sleeve_base_multiplier_max": 0.1000001,
-    "recovery_sleeve_broker_margin_multiplier": 1.65,
-    "recovery_sleeve_max_single_contract_broker_margin_to_equity": 0.20,
-    "recovery_sleeve_cooldown_days": 20,
-    "recovery_sleeve_volume": 1,
-}
+
+def build_official_live_strategy_overrides() -> dict[str, Any]:
+    overrides = stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
+    overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
+    overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
+    return overrides
+
+
+OFFICIAL_LIVE_STRATEGY_OVERRIDES: dict[str, Any] = build_official_live_strategy_overrides()
 
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
-    "full_2020_2026_stage372": {
+    "full_20180102_20260529_stage847_c9": {
+        "end_equity": 51_297_786.20,
+        "total_return_pct": 16_999.2621,
+        "max_dd_pct": -41.6664,
+        "sharpe": 1.6404,
+        "total_slippage": 3_646_200.0,
+        "total_trade_count": 790.0,
+        "win_rate_pct": 53.5299,
+        "broker10_peak_margin_to_equity_pct": 115.0507,
+        "stage896_worst_rolling3y_dd_pct": -56.1208,
+        "stage899_worst_monthly_start_dd_pct": -58.0872,
+    },
+    "stage928_15w_halfyear_to_20260615_mature_windows": {
+        "window_count": 18.0,
+        "positive_window_count": 16.0,
+        "mature_252d_window_count": 16.0,
+        "mature_252d_positive_window_count": 16.0,
+        "mature_252d_median_total_return_pct": 976.9086,
+        "mature_252d_min_total_return_pct": 79.5363,
+        "mature_252d_worst_max_dd_pct": -59.7794,
+        "mature_252d_dd40_fail_count": 7.0,
+        "mature_252d_dd50_fail_count": 2.0,
+        "mature_252d_broker100_fail_count": 6.0,
+        "mature_252d_survival_fail_count": 0.0,
+        "mature_252d_peak_broker10_margin_to_equity_pct": 112.8549,
+        "negative_short_windows": 2.0,
+        "worst_short_window_total_return_pct": -19.48,
+    },
+    "previous_live_full_2020_2026_stage372": {
         "end_equity": 8_728_285.0,
         "total_return_pct": 4_264.1425,
         "max_dd_pct": -38.6713,
@@ -158,7 +230,7 @@ OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
         "since_2022_total_return_pct": 133.8550,
         "since_2022_max_dd_pct": -28.0550,
     },
-    "latest_2026_to_20260604_stage372": {
+    "previous_live_latest_2026_to_20260604_stage372": {
         "end_equity": 222_440.0,
         "total_return_pct": 11.2200,
         "cagr_pct": 29.5553,
@@ -198,12 +270,24 @@ def build_official_live_manifest() -> dict[str, Any]:
         "primary_official_candidate": {
             "version": OFFICIAL_CANDIDATE_PRIMARY_VERSION,
             "config_module": OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE,
-            "live_default": False,
+            "live_default": bool(
+                OFFICIAL_CANDIDATE_VERSIONS.get(OFFICIAL_CANDIDATE_PRIMARY_VERSION, {}).get("live_default", False)
+            ),
         },
         "official_candidates": OFFICIAL_CANDIDATE_VERSIONS,
         "legacy_stage78": {
             "version": LEGACY_STAGE78_VERSION,
             "status": LEGACY_STAGE78_STATUS,
+        },
+        "legacy_stage372_live": {
+            "version": LEGACY_STAGE372_LIVE_VERSION,
+            "status": LEGACY_STAGE372_LIVE_STATUS,
+            "profile_name": LEGACY_STAGE372_LIVE_PROFILE_NAME,
+        },
+        "legacy_stage847_c9_30w_live": {
+            "version": LEGACY_STAGE847_C9_30W_LIVE_VERSION,
+            "status": LEGACY_STAGE847_C9_30W_LIVE_STATUS,
+            "profile_name": LEGACY_STAGE847_C9_30W_PROFILE_NAME,
         },
     }
 
