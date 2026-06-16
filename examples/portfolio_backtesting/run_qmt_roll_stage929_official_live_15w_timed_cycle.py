@@ -96,6 +96,13 @@ def _parse_stage903_stdout(text: str) -> dict[str, Any]:
     return {}
 
 
+def _to_int(value: Any, default: int = 0) -> int:
+    number = pd.to_numeric(value, errors="coerce")
+    if pd.isna(number):
+        return default
+    return int(number)
+
+
 def _account_snapshot() -> dict[str, Any]:
     accounts = _read_csv_maybe(
         OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_accounts_stage174_ctp_vnpy_readonly_probe_v1.csv"
@@ -195,9 +202,9 @@ def _run_stage903(args: argparse.Namespace, target_date: str, log_path: Path) ->
 
 
 def _status_text(summary: dict[str, Any]) -> str:
-    pending = int(pd.to_numeric(summary.get("pending_order_count", 0), errors="coerce") or 0)
-    executable = int(pd.to_numeric(summary.get("stage260_executable_count", 0), errors="coerce") or 0)
-    order_api = int(pd.to_numeric(summary.get("order_api_called_count", 0), errors="coerce") or 0)
+    pending = _to_int(summary.get("pending_order_count", 0))
+    executable = _to_int(summary.get("stage260_executable_count", 0))
+    order_api = _to_int(summary.get("order_api_called_count", 0))
     controller_status = str(summary.get("controller_status", ""))
     if order_api:
         return "异常：检测到 order API 调用，必须立即人工复核。"
