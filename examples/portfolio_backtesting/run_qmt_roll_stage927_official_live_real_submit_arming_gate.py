@@ -62,6 +62,13 @@ def _to_int(value: Any, default: int = -1) -> int:
     return int(number)
 
 
+def _to_float(value: Any, default: float = -1.0) -> float:
+    number = pd.to_numeric(value, errors="coerce")
+    if pd.isna(number):
+        return default
+    return float(number)
+
+
 def _env_enabled(name: str) -> bool:
     return str(os.environ.get(name, "")).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -170,6 +177,7 @@ def main() -> None:
             "stage925_official_live_account_recovery_ack_suite_v1",
         ),
         "stage926": _latest("qmt_roll_stage926_official_live_aligned_idle_integration_summary_*_stage926_official_live_aligned_idle_integration_v1.json"),
+        "stage932": _latest("qmt_roll_stage932_official_live_ctp_smoke_order_summary_*_stage932_official_live_ctp_smoke_order_v1.json"),
         "kill_switch": KILL_SWITCH_PATH if KILL_SWITCH_PATH.exists() else None,
     }
     payloads = {name: _read_json(path) for name, path in source_paths.items()}
@@ -185,6 +193,7 @@ def main() -> None:
     stage924 = payloads["stage924"]
     stage925 = payloads["stage925"]
     stage926 = payloads["stage926"]
+    stage932 = payloads["stage932"]
     kill_switch = payloads["kill_switch"]
 
     rows: list[dict[str, Any]] = []
@@ -356,6 +365,28 @@ def main() -> None:
     )
     _check(
         rows,
+        check="one_lot_smoke_submit_cancel_confirmed",
+        category="smoke",
+        passed=stage932.get("target_date") == args.target_date
+        and stage932.get("status") == "submit_cancel_confirmed"
+        and _to_int(stage932.get("smoke_passed"), 0) == 1
+        and _to_int(stage932.get("send_order_api_called_count"), -1) == 1
+        and _to_int(stage932.get("cancel_order_api_called_count"), -1) == 1
+        and _to_float(stage932.get("trade_volume"), -1.0) == 0.0,
+        severity="block",
+        observed=(
+            f"target={stage932.get('target_date', '')};"
+            f"status={stage932.get('status', '')};"
+            f"smoke_passed={stage932.get('smoke_passed', '')};"
+            f"send={stage932.get('send_order_api_called_count', '')};"
+            f"cancel={stage932.get('cancel_order_api_called_count', '')};"
+            f"trade_volume={stage932.get('trade_volume', '')}"
+        ),
+        required="same target_date + submit_cancel_confirmed + smoke_passed=1 + send=1 + cancel=1 + trade_volume=0",
+        blocker="stage932_clean_smoke_not_confirmed",
+    )
+    _check(
+        rows,
         check="aligned_idle_integration_passed",
         category="integration",
         passed=stage926.get("idle_integration_status") == "aligned_idle_no_action_passed_fail_closed"
@@ -385,7 +416,11 @@ def main() -> None:
     evidence_blockers = pre_env_checks[
         pre_env_checks["severity"].eq("block") & pre_env_checks["passed"].eq(0)
     ]
+    pre_smoke_blockers = evidence_blockers[
+        ~evidence_blockers["check"].eq("one_lot_smoke_submit_cancel_confirmed")
+    ]
     evidence_blocker_count = int(len(evidence_blockers))
+    pre_smoke_permitted = int(pre_smoke_blockers.empty)
     real_submit_env_enabled = _env_enabled(PHASE_D_REAL_ENABLED_ENV)
     confirm_live_real_ok = args.confirm_live_real == PHASE_D_CONFIRM_TEXT
 
@@ -444,6 +479,9 @@ def main() -> None:
         "arming_status": arming_status,
         "real_submit_permitted": real_submit_permitted,
         "auto_submit_permitted": real_submit_permitted,
+        "pre_smoke_permitted": pre_smoke_permitted,
+        "pre_smoke_blocking_failure_count": int(len(pre_smoke_blockers)),
+        "pre_smoke_blocking_failures": pre_smoke_blockers.to_dict(orient="records"),
         "env_real_submit_enabled": int(real_submit_env_enabled),
         "confirm_live_real_ok": int(confirm_live_real_ok),
         "blocking_failure_count": int(len(blocking_failures)),

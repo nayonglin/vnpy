@@ -13,7 +13,12 @@ import pandas as pd
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
-from qmt_roll_official_live_phase_d_config import PHASE_D_CONFIRM_TEXT, PHASE_D_REAL_ENABLED_ENV
+from qmt_roll_official_live_phase_d_config import (
+    PHASE_D_CONFIRM_TEXT,
+    PHASE_D_REAL_ENABLED_ENV,
+    READONLY_ORDERS_PATH,
+    build_phase_d_config,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.event import EventEngine
 from vnpy.trader.constant import Direction, Exchange, Offset, OrderType, Status
@@ -68,7 +73,10 @@ def _read_contract(vt_symbol: str) -> dict[str, Any] | None:
     if not CONTRACT_PATH.exists() or "." not in vt_symbol:
         return None
     symbol, exchange = vt_symbol.rsplit(".", 1)
-    contracts = pd.read_csv(CONTRACT_PATH, encoding="utf-8-sig")
+    try:
+        contracts = pd.read_csv(CONTRACT_PATH, encoding="utf-8-sig")
+    except Exception:
+        return None
     rows = contracts[
         contracts["symbol"].astype(str).eq(symbol)
         & contracts["exchange"].astype(str).eq(exchange)
@@ -85,6 +93,10 @@ def _parse_dt(value: str) -> datetime | None:
             return datetime.strptime(value, fmt)
         except ValueError:
             continue
+    try:
+        return datetime.fromisoformat(str(value))
+    except ValueError:
+        pass
     return None
 
 
@@ -94,6 +106,21 @@ def _env_enabled(name: str) -> bool:
 
 def _missing_ctp_env() -> list[str]:
     return [key for key in CTP_ENV_KEYS if not os.getenv(key, "")]
+
+
+def _current_phase_d_sessions() -> list[dict[str, str]]:
+    config = build_phase_d_config()
+    now = datetime.now().time()
+    active: list[dict[str, str]] = []
+    for session in config.sessions:
+        start_h, start_m = [int(part) for part in session.start.split(":", 1)]
+        end_h, end_m = [int(part) for part in session.end.split(":", 1)]
+        start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+        end = now.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+        in_session = start <= now <= end if start <= end else now >= start or now <= end
+        if in_session:
+            active.append({"name": session.name, "role": session.role})
+    return active
 
 
 def _safe_float(value: Any, default: float = 0.0) -> float:
@@ -362,12 +389,14 @@ def _stage927_gate(target_date: str, max_age_seconds: int) -> dict[str, Any]:
         "generated_at": generated_at,
         "age_seconds": age_seconds,
         "arming_status": summary.get("arming_status", ""),
+        "pre_smoke_permitted": summary.get("pre_smoke_permitted", 0),
+        "pre_smoke_blocking_failure_count": summary.get("pre_smoke_blocking_failure_count", ""),
         "real_submit_permitted": summary.get("real_submit_permitted", 0),
         "blocking_failure_count": summary.get("blocking_failure_count", ""),
         "order_api_called_count": summary.get("order_api_called_count", ""),
         "passed": (
-            summary.get("real_submit_permitted") == 1
-            and summary.get("blocking_failure_count") == 0
+            summary.get("pre_smoke_permitted") == 1
+            and summary.get("pre_smoke_blocking_failure_count") == 0
             and summary.get("order_api_called_count") == 0
             and age_seconds is not None
             and age_seconds <= max_age_seconds
@@ -413,8 +442,79 @@ def _latest_active_order(orders: list[dict[str, Any]], vt_orderid: str) -> dict[
 
 
 def _status_is_active(status_value: Any) -> bool:
-    text = str(status_value)
-    return text in {Status.SUBMITTING.value, Status.NOTTRADED.value, Status.PARTTRADED.value, "SUBMITTING", "NOTTRADED", "PARTTRADED"}
+    text = str(status_value).strip().lower()
+    return text in {
+        Status.SUBMITTING.value.lower(),
+        Status.NOTTRADED.value.lower(),
+        Status.PARTTRADED.value.lower(),
+        "submitting",
+        "submitted",
+        "not traded",
+        "nottraded",
+        "part traded",
+        "parttraded",
+        "未成交",
+        "提交中",
+        "部分成交",
+    }
+
+
+def _read_csv_maybe(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path, encoding="utf-8-sig")
+    except Exception:
+        return pd.DataFrame()
+
+
+def _active_order_count(rows: list[dict[str, Any]]) -> int:
+    latest_by_id: dict[str, dict[str, Any]] = {}
+    for idx, row in enumerate(rows):
+        key = str(row.get("vt_orderid") or row.get("orderid") or f"row_{idx}")
+        latest_by_id[key] = row
+    return sum(1 for row in latest_by_id.values() if _status_is_active(row.get("status")))
+
+
+def _active_orders_gate() -> dict[str, Any]:
+    orders = _read_csv_maybe(READONLY_ORDERS_PATH)
+    active_count = _active_order_count(orders.to_dict(orient="records")) if not orders.empty else 0
+    return {
+        "orders_path": str(READONLY_ORDERS_PATH.resolve()),
+        "orders_file_exists": int(READONLY_ORDERS_PATH.exists()),
+        "order_row_count": int(len(orders)),
+        "active_order_count": int(active_count),
+        "passed": READONLY_ORDERS_PATH.exists() and active_count == 0,
+    }
+
+
+def _tick_age_seconds(row: dict[str, Any]) -> float | None:
+    for key in ("datetime", "localtime", "received_at"):
+        text = str(row.get(key, "") or "").strip()
+        if not text:
+            continue
+        parsed = _parse_dt(text)
+        if parsed is not None:
+            if parsed.tzinfo is not None:
+                parsed = parsed.astimezone().replace(tzinfo=None)
+            return max(0.0, (datetime.now() - parsed).total_seconds())
+    return None
+
+
+def _wait_order_terminal(rows: list[dict[str, Any]], vt_orderid: str, deadline: float) -> dict[str, Any]:
+    latest: dict[str, Any] | None = None
+    while time.time() < deadline:
+        latest = _latest_active_order(rows, vt_orderid)
+        if latest and not _status_is_active(latest.get("status")):
+            break
+        time.sleep(0.2)
+    return _latest_active_order(rows, vt_orderid) or latest or {}
+
+
+def _order_traded_volume(row: dict[str, Any] | None) -> float:
+    if not row:
+        return 0.0
+    return max(_safe_float(row.get("traded"), 0.0), _safe_float(row.get("volume_traded"), 0.0))
 
 
 def _trade_volume(rows: list[dict[str, Any]], vt_orderid: str) -> float:
@@ -448,6 +548,9 @@ def _build_report(summary: dict[str, Any], rows: dict[str, list[dict[str, Any]]]
             "",
             f"- stage927_gate: `{summary['stage927_gate']}`",
             f"- readonly_gate: `{summary['readonly_gate']}`",
+            f"- active_orders_gate: `{summary['active_orders_gate']}`",
+            f"- current_phase_d_sessions: `{summary['current_phase_d_sessions']}`",
+            f"- latest_tick_age_seconds: `{summary['latest_tick_age_seconds']}`",
             "",
             "## Latest Orders",
             "",
@@ -486,7 +589,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     contract = _read_contract(vt_symbol)
     missing_env = _missing_ctp_env()
     readonly_gate = _readonly_gate(args.max_snapshot_age_seconds)
+    active_orders_gate = _active_orders_gate()
     stage927_gate = _stage927_gate(args.target_date, args.max_stage927_age_seconds)
+    current_phase_d_sessions = _current_phase_d_sessions()
+    in_execution_session = any(row.get("role") == "market_and_execution" for row in current_phase_d_sessions)
     real_submit_env = _env_enabled(PHASE_D_REAL_ENABLED_ENV)
     smoke_env = _env_enabled(SMOKE_ENV)
     live_confirm_ok = args.confirm_live_real == PHASE_D_CONFIRM_TEXT
@@ -521,6 +627,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "smoke_passed": 0,
         "stage927_gate": stage927_gate,
         "readonly_gate": readonly_gate,
+        "active_orders_gate": active_orders_gate,
+        "current_phase_d_sessions": current_phase_d_sessions,
+        "in_phase_d_execution_session": int(in_execution_session),
         "missing_required_env": missing_env,
         "contract_found": bool(contract),
         "real_submit_env_enabled": int(real_submit_env),
@@ -531,9 +640,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "cancel_order_api_called_count": 0,
         "order_api_called_count": 0,
         "trade_volume": 0.0,
+        "final_order_traded": 0.0,
+        "latest_tick_age_seconds": None,
         "vt_orderid": "",
         "order_request": {},
         "latest_order": {},
+        "latest_order_after_cancel": {},
         "order_insert_error_messages": [],
         "order_action_error_messages": [],
         "current_order_raw_status_messages": [],
@@ -557,6 +669,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if volume != 1:
         blockers.append("volume_must_equal_1")
     if args.mode == "submit-cancel":
+        if not in_execution_session:
+            blockers.append("not_in_phase_d_execution_session")
+        if not active_orders_gate["passed"]:
+            blockers.append("active_order_gate_not_passed")
         if not stage927_gate["passed"]:
             blockers.append("stage927_gate_not_passed")
         if not readonly_gate["passed"]:
@@ -619,9 +735,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             summary["status"] = "blocked_no_tick"
             summary["failure_reason"] = "no_tick_after_subscribe"
             return summary | {"rows": rows}
+        latest_tick = rows["ticks"][-1]
+        tick_age = _tick_age_seconds(latest_tick)
+        summary["latest_tick_age_seconds"] = tick_age
+        if tick_age is None or tick_age > args.max_tick_age_seconds:
+            summary["status"] = "blocked_stale_tick"
+            summary["failure_reason"] = f"tick_age_seconds={tick_age};max={args.max_tick_age_seconds}"
+            return summary | {"rows": rows}
 
         direction = Direction.LONG if args.direction == "long" else Direction.SHORT
-        price, price_reasons = _choose_smoke_price(rows["ticks"][-1], contract or {}, direction, args.passive_ticks_away, args.manual_price)
+        price, price_reasons = _choose_smoke_price(latest_tick, contract or {}, direction, args.passive_ticks_away, args.manual_price)
         if price <= 0:
             summary["status"] = "blocked_invalid_price"
             summary["failure_reason"] = ";".join(price_reasons)
@@ -647,7 +770,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "reference": req.reference,
             "vt_symbol": req.vt_symbol,
             "price_reasons": price_reasons,
-            "latest_tick": rows["ticks"][-1],
+            "latest_tick": latest_tick,
         }
         if args.mode == "dry-run":
             summary["status"] = "dry_run_request_ready"
@@ -673,7 +796,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             main_engine.cancel_order(CancelRequest(orderid=orderid, symbol=symbol, exchange=exchange), "CTP")
             summary["cancel_order_api_called_count"] = 1
             summary["order_api_called_count"] = 2
-            time.sleep(max(1, args.post_cancel_wait_seconds))
+            latest_after_cancel = _wait_order_terminal(
+                rows["orders"],
+                vt_orderid,
+                time.time() + max(1, args.post_cancel_wait_seconds),
+            )
+            summary["latest_order_after_cancel"] = latest_after_cancel
             summary["status"] = "submit_cancel_attempted"
         else:
             summary["status"] = "submit_seen_non_active_before_cancel"
@@ -696,8 +824,25 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             summary["failure_reason"] = ";".join(
                 _unique_nonempty(["order_not_active_before_cancel"] + insert_messages + status_messages)
             )
-        if summary["status"] == "submit_cancel_attempted" and summary["trade_volume"] == 0:
-            summary["smoke_passed"] = 1
+        if summary["status"] == "submit_cancel_attempted":
+            latest_after_cancel = summary.get("latest_order_after_cancel") or {}
+            latest_cancel_status = str(latest_after_cancel.get("status", "") or "").strip()
+            summary["final_order_traded"] = _order_traded_volume(latest_after_cancel) or _order_traded_volume(latest_order)
+            if summary["trade_volume"] > 0:
+                summary["status"] = "submit_cancel_filled_requires_reconcile"
+                summary["failure_reason"] = f"trade_volume_after_cancel={summary['trade_volume']}"
+            elif summary["final_order_traded"] > 0:
+                summary["status"] = "submit_cancel_order_traded_requires_reconcile"
+                summary["failure_reason"] = f"final_order_traded_after_cancel={summary['final_order_traded']}"
+            elif not latest_cancel_status:
+                summary["status"] = "submit_cancel_unknown_after_cancel"
+                summary["failure_reason"] = "residual_order_unknown_after_cancel"
+            elif _status_is_active(latest_cancel_status):
+                summary["status"] = "submit_cancel_active_after_cancel"
+                summary["failure_reason"] = f"residual_order_active_after_cancel:{latest_cancel_status}"
+            else:
+                summary["status"] = "submit_cancel_confirmed"
+                summary["smoke_passed"] = 1
         return summary | {"rows": rows}
     except Exception as exc:
         summary["status"] = "exception"
@@ -720,6 +865,7 @@ def main() -> None:
     parser.add_argument("--manual-price", type=float)
     parser.add_argument("--connect-wait-seconds", type=int, default=8)
     parser.add_argument("--tick-wait-seconds", type=int, default=20)
+    parser.add_argument("--max-tick-age-seconds", type=int, default=10)
     parser.add_argument("--cancel-after-seconds", type=int, default=2)
     parser.add_argument("--post-cancel-wait-seconds", type=int, default=5)
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)

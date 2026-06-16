@@ -892,12 +892,18 @@ def main() -> None:
                     if post_cancel_vwap > 0 and post_cancel_trade_volume > trade_event_volume:
                         ledger_fill_price = post_cancel_vwap
                         fill_price_source = post_cancel_price_source
-                    if latest_after_cancel and _status_is_active(latest_after_cancel.get("status")):
-                        blockers.append("residual_order_active_after_cancel")
-                        adapter_status = "adapter_blocked_residual_order_active_after_cancel"
+                    cancel_status_known = bool(latest_after_cancel and str(latest_after_cancel.get("status", "")).strip())
+                    if residual_volume > 0 and (not cancel_status_known or _status_is_active(latest_after_cancel.get("status"))):
+                        residual_event_type = (
+                            "residual_order_active_after_cancel"
+                            if cancel_status_known
+                            else "residual_order_unknown_after_cancel"
+                        )
+                        blockers.append(residual_event_type)
+                        adapter_status = f"adapter_blocked_{residual_event_type}"
                         append_execution_ledger_event(
                             {
-                                "event_type": "residual_order_active_after_cancel",
+                                "event_type": residual_event_type,
                                 "target_date": args.target_date,
                                 "intent_id": row.get("intent_id", ""),
                                 "intent_fingerprint": fingerprint,
@@ -906,7 +912,7 @@ def main() -> None:
                                 "direction": req.direction.value,
                                 "offset": req.offset.value,
                                 "adapter": "Stage931",
-                                "latest_order_status": latest_after_cancel.get("status", ""),
+                                "latest_order_status": latest_after_cancel.get("status", "") if latest_after_cancel else "",
                                 "trade_volume_delta": effective_traded_volume,
                                 "residual_volume": residual_volume,
                             }

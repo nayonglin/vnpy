@@ -30,6 +30,7 @@ CLOSE_BLOCKING_EVENTS = {
     "filled_or_part_filled",
     "rejected_or_inactive",
     "residual_order_active_after_cancel",
+    "residual_order_unknown_after_cancel",
 }
 
 
@@ -94,7 +95,7 @@ def intent_fingerprint(target_date: str, row: dict[str, Any], order_request: dic
     fingerprint_payload = {
         key: value
         for key, value in payload.items()
-        if key not in {"limit_price", "source_reason"}
+        if key not in {"limit_price", "source", "source_reason", "reference"}
     }
     digest = hashlib.sha256(_stable_json(fingerprint_payload).encode("utf-8")).hexdigest()
     return digest, payload
@@ -260,6 +261,8 @@ def duplicate_blocker(
         return "ledger_duplicate_close_intent:filled_or_part_filled", fingerprint, payload, latest
     if offset == "close" and any(_clean(item.get("event_type")) == "residual_order_active_after_cancel" for item in matched_events):
         return "ledger_duplicate_close_intent:residual_order_active_after_cancel", fingerprint, payload, latest
+    if offset == "close" and any(_clean(item.get("event_type")) == "residual_order_unknown_after_cancel" for item in matched_events):
+        return "ledger_duplicate_close_intent:residual_order_unknown_after_cancel", fingerprint, payload, latest
     if offset == "close" and event_type in {"reserved", "final_pre_send_gate_blocked_after_reserve"}:
         age = event_age_seconds(latest)
         if age is not None and age >= close_retry_after_cancel_seconds:
