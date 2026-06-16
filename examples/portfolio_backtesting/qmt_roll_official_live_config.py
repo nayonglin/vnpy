@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
+from qmt_roll_official_live_phase_d_config import PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
@@ -172,7 +173,7 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
         "changes only the deployment capital profile to match the funded live account."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
-    "real_submit_default": "fail_closed",
+    "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
 }
 
 

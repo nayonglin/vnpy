@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
+import hashlib
 import json
 import os
 import shlex
 import subprocess
+import sys
 import time
 from datetime import date, datetime
 from pathlib import Path
@@ -15,6 +18,7 @@ import pandas as pd
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
+    OFFICIAL_LIVE_SUMMARY_PATH,
     OFFICIAL_LIVE_VERSION,
 )
 from qmt_roll_official_live_phase_d_config import (
@@ -30,6 +34,7 @@ from qmt_roll_official_live_phase_d_config import (
     STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
 )
+from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -47,6 +52,8 @@ LATEST_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_lat
 LATEST_REPORT_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_latest_report.md"
 LATEST_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_heartbeat.json"
 LATEST_EVENT_LOG_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_events.ndjson"
+LOCK_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon.lock"
+EMAIL_THROTTLE_PATH = OUTPUT_DIR / "qmt_roll_stage930_official_live_email_throttle.json"
 
 
 def _paths(run_id: str) -> dict[str, Path]:
@@ -90,6 +97,10 @@ def _to_int(value: Any, default: int = 0) -> int:
     return int(number)
 
 
+def _env_enabled(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
 def _shell_python_command(script: Path, args: list[str]) -> list[str]:
     env_file = PROJECT_DIR / "ctp_live.local.env"
     framework_dir = REPO_ROOT / ".py311/lib/python3.11/site-packages/vnpy_ctp/api/libs"
@@ -108,6 +119,19 @@ def _shell_python_command(script: Path, args: list[str]) -> list[str]:
         ]
     )
     return ["bash", "-lc", shell]
+
+
+def _acquire_singleton_lock() -> Any | None:
+    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    handle = LOCK_PATH.open("w", encoding="utf-8")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        handle.close()
+        return None
+    handle.write(f"pid={os.getpid()} started_at={datetime.now():%Y-%m-%d %H:%M:%S}\n")
+    handle.flush()
+    return handle
 
 
 def _run_command(cmd: list[str], *, timeout_seconds: int, log_path: Path, label: str) -> dict[str, Any]:
@@ -227,8 +251,6 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
     cmd = [
         str(PYTHON_PATH),
         str(STAGE903_SCRIPT),
-        "--target-date",
-        target_date,
         "--mode",
         args.mode,
         "--shadow-refresh-mode",
@@ -248,6 +270,10 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
         "--max-snapshot-age-seconds",
         str(args.max_snapshot_age_seconds),
     ]
+    if target_date:
+        cmd.extend(["--target-date", target_date])
+    else:
+        cmd.extend(["--target-date-mode", "latest-completed"])
     if args.mode == "live-real":
         cmd.extend(["--confirm-live-real", args.confirm_live_real])
     env = os.environ.copy()
@@ -398,15 +424,165 @@ def _append_event(path: Path, payload: dict[str, Any]) -> None:
         handle.write(json.dumps(payload, ensure_ascii=False, default=str) + "\n")
 
 
+def _default_target_date() -> str:
+    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    analysis_end = _clean(official_summary.get("analysis_end"))
+    return analysis_end or date.today().isoformat()
+
+
+def _cycle_controller_summary(cycle: dict[str, Any]) -> dict[str, Any]:
+    stage903 = cycle.get("stage903", {}) if isinstance(cycle.get("stage903"), dict) else {}
+    return stage903.get("summary", {}) if isinstance(stage903.get("summary"), dict) else {}
+
+
+def _cycle_submit_summary(cycle: dict[str, Any]) -> dict[str, Any]:
+    stage931 = cycle.get("stage931", {}) if isinstance(cycle.get("stage931"), dict) else {}
+    return stage931.get("summary", {}) if isinstance(stage931.get("summary"), dict) else {}
+
+
+def _cycle_email_key(cycle: dict[str, Any]) -> str:
+    controller = _cycle_controller_summary(cycle)
+    submit = _cycle_submit_summary(cycle)
+    arming = cycle.get("stage927", {}).get("summary", {}) if isinstance(cycle.get("stage927"), dict) else {}
+    order_api = _to_int(cycle.get("order_api_called_count"), 0)
+    ready = _to_int(controller.get("stage905_ready_count"), 0)
+    adapter_status = str(submit.get("adapter_status", ""))
+    if order_api > 0:
+        return f"order_api_{cycle.get('cycle_at', '')}_{order_api}"
+    if cycle.get("cycle_exception"):
+        return f"cycle_exception_{cycle.get('cycle_at', '')}"
+    if adapter_status == "adapter_exception":
+        return f"adapter_exception_{cycle.get('cycle_at', '')}"
+    if ready > 0:
+        return "ready_intents_first_seen"
+    if (
+        str(controller.get("mode", "")) == "live-real"
+        and (
+            _to_int(controller.get("stage902_blocking_failure_count"), 0) > 0
+            or _to_int(arming.get("real_submit_permitted"), 0) != 1
+            or str(controller.get("controller_status", "")).endswith("_blocked")
+        )
+    ):
+        return "live_real_blocked_first_seen"
+    return ""
+
+
+def _email_throttle_allows(key: str, cycle: dict[str, Any], min_seconds: int = 1800) -> tuple[bool, str]:
+    if _to_int(cycle.get("order_api_called_count"), 0) > 0:
+        return True, "order_api_never_throttled"
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    state = _read_json(EMAIL_THROTTLE_PATH)
+    last_text = (state.get(digest) or {}).get("last_sent_at") if isinstance(state.get(digest), dict) else ""
+    last_dt = None
+    if last_text:
+        try:
+            last_dt = datetime.strptime(str(last_text), "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            last_dt = None
+    if last_dt is not None and (datetime.now() - last_dt).total_seconds() < min_seconds:
+        return False, f"email_throttled:{digest}"
+    state[digest] = {"last_sent_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "key": key}
+    EMAIL_THROTTLE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    return True, digest
+
+
+def _send_cycle_email_if_needed(
+    *,
+    paths: dict[str, Path],
+    summary: dict[str, Any],
+    cycle: dict[str, Any],
+    sent_keys: set[str],
+) -> dict[str, Any] | None:
+    key = _cycle_email_key(cycle)
+    if not key or key in sent_keys:
+        return None
+    throttle_allowed, throttle_key = _email_throttle_allows(key, cycle)
+    if not throttle_allowed:
+        return {"email_status": "skipped_throttled", "reason": throttle_key, "throttle_path": str(EMAIL_THROTTLE_PATH.resolve())}
+    sent_keys.add(key)
+    controller = _cycle_controller_summary(cycle)
+    submit = _cycle_submit_summary(cycle)
+    order_api = _to_int(cycle.get("order_api_called_count"), 0)
+    ready = _to_int(controller.get("stage905_ready_count"), 0)
+    severity = "critical" if order_api > 0 or submit.get("adapter_status") == "adapter_exception" or cycle.get("cycle_exception") else "warning"
+    subject = (
+        f"[C9/15w][session][{severity}] {summary['target_date']} "
+        f"ready={ready} order_api={order_api}"
+    )
+    raw_ctp_note = (
+        "Stage931 附件包含未脱敏 raw CTP orders/trades，仅用于显式取证。"
+        if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP")
+        else "Stage931 raw CTP orders/trades 默认不作为会话邮件附件外发。"
+    )
+    body = "\n".join(
+        [
+            "C9/15w 会话守护检测到关键执行事件。",
+            "",
+            f"生成时间: {summary['generated_at']}",
+            f"周期时间: {cycle.get('cycle_at', '')}",
+            f"模式: {summary['mode']} / submit={summary['submit_mode']}",
+            f"目标日期: {summary['target_date']}",
+            f"当前 session: {summary.get('current_session_names', '')}",
+            "",
+            f"Tick refresh: {(cycle.get('tick_refresh') or {}).get('refresh_status', '')}",
+            f"Controller: {controller.get('controller_status', '')}",
+            f"Stage905 ready: {ready}",
+            f"Stage927 permitted: {((cycle.get('stage927') or {}).get('summary') or {}).get('real_submit_permitted', '')}",
+            f"Stage931 status: {submit.get('adapter_status', (cycle.get('stage931') or {}).get('submit_status', ''))}",
+            f"Order API calls in cycle: {order_api}",
+            f"Cycle exception: {cycle.get('cycle_exception', '')}",
+            "",
+            "附件包含 Stage930 本轮 summary/report；若发生真实提交，Stage931 会另发订单级明细。",
+            raw_ctp_note,
+        ]
+    )
+    attachments: list[Path] = [paths["report_md"], paths["summary_json"]]
+    stage931_outputs = submit.get("outputs", {}) if isinstance(submit.get("outputs"), dict) else {}
+    stage931_attachment_keys = ["report_md", "summary_json", "submitted_csv"]
+    if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP"):
+        stage931_attachment_keys.extend(["orders_csv", "trades_csv"])
+    for key_name in stage931_attachment_keys:
+        value = stage931_outputs.get(key_name)
+        if value:
+            attachments.append(Path(value))
+    return send_official_live_email_notification(
+        subject=subject,
+        body=body,
+        event_type="stage930_session_key_event",
+        severity=severity,
+        attachments=attachments,
+        metadata={
+            "target_date": summary["target_date"],
+            "mode": summary["mode"],
+            "submit_mode": summary["submit_mode"],
+            "cycle_at": cycle.get("cycle_at", ""),
+            "stage905_ready_count": ready,
+            "order_api_called_count": order_api,
+            "stage931_adapter_status": submit.get("adapter_status", ""),
+        },
+    )
+
+
 def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
     symbols = _watched_symbols(args.vt_symbol)
     tick_result = _run_tick_refresh(args, target_date, symbols, paths)
     stage903_result = _run_stage903(args, target_date, paths)
-    stage927_result = _run_stage927(args, target_date, paths) if args.mode == "live-real" or args.submit_mode == "live-real" else {
+    controller_summary = stage903_result.get("summary", {}) if isinstance(stage903_result.get("summary"), dict) else {}
+    resolved_target_date = _clean(controller_summary.get("target_date")) or target_date
+    ready_count = _to_int(controller_summary.get("stage905_ready_count"), 0)
+    stage927_result = _run_stage927(args, resolved_target_date, paths) if resolved_target_date and (args.mode == "live-real" or args.submit_mode == "live-real") else {
         "summary": {"arming_status": "stage927_skipped_dry_run", "real_submit_permitted": 0},
         "exit_code": 0,
     }
-    stage931_result = _run_stage931(args, target_date, paths)
+    stage927_summary = stage927_result.get("summary", {}) if isinstance(stage927_result.get("summary"), dict) else {}
+    if args.submit_mode == "live-real" and ready_count > 0 and _to_int(stage927_summary.get("real_submit_permitted"), 0) == 1:
+        stage931_result = _run_stage931(args, resolved_target_date, paths)
+    else:
+        stage931_result = {
+            "submit_status": "submit_adapter_skipped_not_armed_or_no_ready",
+            "exit_code": 0,
+            "skip_reason": f"ready_count={ready_count};real_submit_permitted={stage927_summary.get('real_submit_permitted', 0)}",
+        }
     order_api_called = (
         _to_int(stage903_result.get("summary", {}).get("order_api_called_count"), 0)
         + _to_int(stage927_result.get("summary", {}).get("order_api_called_count"), 0)
@@ -414,7 +590,8 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     )
     return {
         "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "target_date": target_date,
+        "target_date": resolved_target_date,
+        "requested_target_date": target_date,
         "watched_symbols": symbols,
         "tick_refresh": tick_result,
         "stage903": stage903_result,
@@ -444,20 +621,57 @@ def main() -> None:
     parser.add_argument("--submit-timeout-seconds", type=int, default=180)
     parser.add_argument("--max-submit-orders", type=int, default=1)
     parser.add_argument("--fill-wait-seconds", type=int, default=8)
+    parser.add_argument("--max-consecutive-cycle-errors", type=int, default=3)
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    lock_handle = _acquire_singleton_lock()
+    if lock_handle is None:
+        summary = {
+            "model_tag": MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "mode": args.mode,
+            "submit_mode": args.submit_mode,
+            "target_date": args.target_date,
+            "daemon_status": "daemon_blocked_already_running",
+            "order_api_called_count": 0,
+            "lock_path": str(LOCK_PATH.resolve()),
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+        sys.exit(3)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
-    target_date = args.target_date or date.today().isoformat()
+    target_date = args.target_date
     started = time.monotonic()
     cycles: list[dict[str, Any]] = []
+    email_notifications: list[dict[str, Any]] = []
+    sent_email_keys: set[str] = set()
     status = "daemon_started"
+    consecutive_errors = 0
 
     while True:
-        cycle = run_cycle(args, target_date, paths)
+        try:
+            cycle = run_cycle(args, target_date, paths)
+            consecutive_errors = 0
+            status = "daemon_running"
+        except Exception as exc:
+            consecutive_errors += 1
+            cycle = {
+                "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": target_date,
+                "watched_symbols": _watched_symbols(args.vt_symbol),
+                "tick_refresh": {"refresh_status": "cycle_exception_before_or_during_refresh"},
+                "stage903": {"summary": {"controller_status": "stage930_cycle_exception_fail_closed"}},
+                "stage927": {"summary": {"arming_status": "stage927_skipped_cycle_exception", "real_submit_permitted": 0}},
+                "stage931": {"summary": {"adapter_status": "stage931_skipped_cycle_exception"}},
+                "order_api_called_count": 0,
+                "cycle_exception": repr(exc),
+                "consecutive_cycle_errors": consecutive_errors,
+            }
+            status = "daemon_cycle_exception_fail_closed"
         cycles.append(cycle)
         _append_event(paths["events_ndjson"], {"event_type": "stage930_cycle", **cycle})
         total_order_api = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
@@ -467,12 +681,15 @@ def main() -> None:
             "official_live_version": OFFICIAL_LIVE_VERSION,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
-            "target_date": target_date,
+            "target_date": _clean(cycle.get("target_date")) or target_date,
+            "requested_target_date": target_date,
             "cycle_count": len(cycles),
             "daemon_status": status,
+            "consecutive_cycle_errors": consecutive_errors,
             "current_session_names": _current_session_names(),
             "order_api_called_count": total_order_api,
             "latest_cycle": cycle,
+            "email_notifications": email_notifications,
             "outputs": {key: str(value.resolve()) for key, value in paths.items()},
             "latest_outputs": {
                 "summary_json": str(LATEST_SUMMARY_PATH.resolve()),
@@ -488,6 +705,17 @@ def main() -> None:
             },
         }
         _write_outputs(paths, summary)
+        email_result = _send_cycle_email_if_needed(paths=paths, summary=summary, cycle=cycle, sent_keys=sent_email_keys)
+        if email_result is not None:
+            email_notifications.append(email_result)
+            summary["email_notifications"] = email_notifications
+            _write_outputs(paths, summary)
+        if consecutive_errors >= max(1, args.max_consecutive_cycle_errors):
+            status = "daemon_stopped_after_consecutive_cycle_errors"
+            summary["daemon_status"] = status
+            _write_outputs(paths, summary)
+            print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+            sys.exit(2)
         if args.max_cycles and len(cycles) >= args.max_cycles:
             status = "daemon_completed_max_cycles"
             summary["daemon_status"] = status

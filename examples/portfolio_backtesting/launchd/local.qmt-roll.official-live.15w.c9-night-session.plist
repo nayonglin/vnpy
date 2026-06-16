@@ -6,8 +6,7 @@
   <string>local.qmt-roll.official-live.15w.c9-night-session</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
-    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh</string>
     <string>--mode</string>
     <string>live-real</string>
     <string>--submit-mode</string>
@@ -18,6 +17,8 @@
     <string>0</string>
     <string>--poll-seconds</string>
     <string>30</string>
+    <string>--max-consecutive-cycle-errors</string>
+    <string>3</string>
     <string>--confirm-live-real</string>
     <string>I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING</string>
   </array>
@@ -29,6 +30,10 @@
     <string>1</string>
     <key>OFFICIAL_LIVE_PHASE_D_SESSION_DAEMON_ENABLED</key>
     <string>1</string>
+    <key>STAGE930_SUPERVISOR_MAX_RESTARTS</key>
+    <string>3</string>
+    <key>STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS</key>
+    <string>15</string>
   </dict>
   <key>WorkingDirectory</key>
   <string>/Users/bytedance/Desktop/person/vnpy</string>

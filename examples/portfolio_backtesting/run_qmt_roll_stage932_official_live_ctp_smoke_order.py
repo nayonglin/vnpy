@@ -12,6 +12,7 @@ from typing import Any
 import pandas as pd
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from qmt_roll_official_live_phase_d_config import PHASE_D_CONFIRM_TEXT, PHASE_D_REAL_ENABLED_ENV
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.event import EventEngine
@@ -747,6 +748,67 @@ def main() -> None:
     _write_df(paths["callback_capture_errors_csv"], rows["callback_capture_errors"])
     paths["summary_json"].write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     paths["report_md"].write_text(_build_report(result, rows), encoding="utf-8")
+    if args.mode == "submit-cancel" or result.get("status") == "exception":
+        severity = "info" if result.get("smoke_passed") == 1 else "warning"
+        if result.get("trade_volume", 0):
+            severity = "critical"
+        email_attachments = [
+            paths["report_md"],
+            paths["summary_json"],
+        ]
+        if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP"):
+            email_attachments.extend(
+                [
+                    paths["orders_csv"],
+                    paths["trades_csv"],
+                    paths["raw_orders_csv"],
+                    paths["order_insert_errors_csv"],
+                    paths["order_action_errors_csv"],
+                ]
+            )
+            attachment_note = "附件包含 smoke report/summary/未脱敏 raw CTP callback evidence，仅用于显式取证。"
+        else:
+            attachment_note = (
+                "附件包含 smoke report/summary；raw CTP callback evidence 默认不邮件外发，"
+                "如需未脱敏取证附件请显式设置 OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP=1 后重跑。"
+            )
+        result["email_notification"] = send_official_live_email_notification(
+            subject=(
+                f"[C9/15w][Stage932 smoke][{severity}] {result.get('vt_symbol')} "
+                f"status={result.get('status')} trade_volume={result.get('trade_volume')}"
+            ),
+            body="\n".join(
+                [
+                    "C9/15w Stage932 实盘 smoke 报撤结果。",
+                    "",
+                    f"生成时间: {result.get('generated_at')}",
+                    f"目标日期: {result.get('target_date')}",
+                    f"合约: {result.get('vt_symbol')}",
+                    f"状态: {result.get('status')}",
+                    f"smoke_passed: {result.get('smoke_passed')}",
+                    f"send_order_api_called_count: {result.get('send_order_api_called_count')}",
+                    f"cancel_order_api_called_count: {result.get('cancel_order_api_called_count')}",
+                    f"trade_volume: {result.get('trade_volume')}",
+                    f"vt_orderid: {result.get('vt_orderid')}",
+                    f"failure_reason: {result.get('failure_reason', '')}",
+                    f"current_order_raw_status_messages: {result.get('current_order_raw_status_messages', [])}",
+                    "",
+                    attachment_note,
+                ]
+            ),
+            event_type="stage932_smoke_order",
+            severity=severity,
+            attachments=email_attachments,
+            metadata={
+                "target_date": result.get("target_date"),
+                "vt_symbol": result.get("vt_symbol"),
+                "status": result.get("status"),
+                "smoke_passed": result.get("smoke_passed"),
+                "order_api_called_count": result.get("order_api_called_count"),
+                "trade_volume": result.get("trade_volume"),
+            },
+        )
+        paths["summary_json"].write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
 
 

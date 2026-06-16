@@ -10,10 +10,10 @@ description: Use for the futures trend official live execution profile and relat
 This skill is an execution-discipline guide, not an alpha-research guide.
 
 - Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
-- Current official live profile: `official_live_stage372_20w_recovery_sleeve`.
-- Current line: `futures_trend_drawdown30_preserve_return`.
-- Current strategy: Stage372 / Stage526 20w `force95_to80_recovery_sleeve_r080_pc25_maxpos4`.
-- Current capital: `200000` only for live/virtual execution.
+- Current official live profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
+- Current line: `futures_trend_stage819_intraday_rules`.
+- Current strategy: C9/Stage847 15w, based on Stage819 with C9 entry-day `0.5R` stop/retry-once, C2 intraday stop, and broker10 cap.
+- Current capital: `150000` only for live/virtual execution.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
 - Account state source for virtual/live execution: CTP broker/SimNow snapshot, not historical shadow holdings.
 - Python: use `.py311/bin/python`.

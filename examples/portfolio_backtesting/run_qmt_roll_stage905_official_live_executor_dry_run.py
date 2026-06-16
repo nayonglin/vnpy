@@ -200,8 +200,44 @@ def _position_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) ->
 def _active_order_count(orders: pd.DataFrame) -> int:
     if orders.empty or "status" not in orders.columns:
         return 0
+    frame = orders.copy()
+    key_source = frame.get("vt_orderid", frame.get("orderid", pd.Series([""] * len(frame))))
+    frame["_order_key"] = key_source.fillna("").astype(str)
+    empty_key = frame["_order_key"].eq("")
+    frame.loc[empty_key, "_order_key"] = [f"row_{idx}" for idx in frame.index[empty_key]]
+    frame["_dt"] = pd.to_datetime(frame.get("datetime", frame.get("received_at", "")), errors="coerce")
+    frame["_row_order"] = range(len(frame))
+    sort_cols = ["_order_key", "_dt", "_row_order"]
+    latest = frame.sort_values(sort_cols).drop_duplicates("_order_key", keep="last")
     active = {"submitting", "submitted", "not traded", "nottraded", "part traded", "parttraded", "未成交", "提交中", "部分成交"}
-    return int(orders["status"].fillna("").astype(str).str.strip().str.lower().isin(active).sum())
+    return int(latest["status"].fillna("").astype(str).str.strip().str.lower().isin(active).sum())
+
+
+def _clip_price(price: float, lower: float, upper: float) -> float:
+    if lower > 0:
+        price = max(price, lower)
+    if upper > 0:
+        price = min(price, upper)
+    return price
+
+
+def _protective_close_price(intent: dict[str, Any], direction_text: str, pricetick: float, fallback_price: float) -> tuple[float, str]:
+    protection_ticks = max(1, int(build_phase_d_config().hard_limits.max_slippage_ticks))
+    tick_value = pricetick if pricetick > 0 else 0.0
+    live_price = _to_float(intent.get("live_price"), 0.0)
+    bid = _to_float(intent.get("live_bid_price_1"), 0.0)
+    ask = _to_float(intent.get("live_ask_price_1"), 0.0)
+    lower = _to_float(intent.get("live_limit_down"), 0.0)
+    upper = _to_float(intent.get("live_limit_up"), 0.0)
+    if direction_text == "short":
+        basis = bid if bid > 0 else live_price if live_price > 0 else fallback_price
+        price = basis - protection_ticks * tick_value if tick_value > 0 else basis
+        return _clip_price(price, lower, upper), f"marketable_sell_close:bid_or_live={basis};protection_ticks={protection_ticks}"
+    if direction_text == "long":
+        basis = ask if ask > 0 else live_price if live_price > 0 else fallback_price
+        price = basis + protection_ticks * tick_value if tick_value > 0 else basis
+        return _clip_price(price, lower, upper), f"marketable_buy_close:ask_or_live={basis};protection_ticks={protection_ticks}"
+    return fallback_price, "protective_close_price_invalid_direction"
 
 
 def _pending_order_intents(pending_orders: pd.DataFrame) -> list[dict[str, Any]]:
@@ -240,6 +276,13 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 "offset": "close",
                 "planned_volume": _to_float(row.get("volume"), 0.0),
                 "limit_price": _to_float(row.get("stage847_stop_price"), 0.0),
+                "stop_trigger_price": _to_float(row.get("stage847_stop_price"), 0.0),
+                "trigger_live_price": _to_float(row.get("live_price"), 0.0),
+                "trigger_adverse_extreme_price": _to_float(row.get("adverse_extreme_price"), 0.0),
+                "live_bid_price_1": _to_float(row.get("live_bid_price_1"), 0.0),
+                "live_ask_price_1": _to_float(row.get("live_ask_price_1"), 0.0),
+                "live_limit_up": _to_float(row.get("live_limit_up"), 0.0),
+                "live_limit_down": _to_float(row.get("live_limit_down"), 0.0),
                 "source_reason": _clean(row.get("monitor_reason")),
             }
         )
@@ -304,10 +347,18 @@ def _validate_intent(
     contract = _contract_row(contracts, vt_symbol)
     active_orders = _active_order_count(orders)
     stage902_blocking = int(_to_float(stage902_summary.get("blocking_failure_count"), 999))
+    stage902_reduce_close_blocking = int(
+        _to_float(stage902_summary.get("blocking_failure_count_for_reduce_close"), stage902_blocking)
+    )
+    stage902_allow_new_open = int(_to_float(stage902_summary.get("allow_new_open"), 0))
+    stage902_allow_reduce_close = int(_to_float(stage902_summary.get("allow_reduce_close"), 0))
     stage260_executable = int(_to_float(stage260_summary.get("executable_count"), 0))
+    source = _clean(intent.get("source"))
+    intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
 
-    if stage902_blocking > 0:
-        reasons.append(f"stage902_blocking_failure_count={stage902_blocking}")
+    stage902_blocking_for_intent = stage902_reduce_close_blocking if offset_text == "close" else stage902_blocking
+    if stage902_blocking_for_intent > 0 and not intraday_close_intent:
+        reasons.append(f"stage902_blocking_failure_count={stage902_blocking_for_intent}")
     if mode != "dry-run":
         reasons.append("stage905_never_submits_live_orders")
     if active_orders > config.hard_limits.max_open_order_count:
@@ -333,10 +384,18 @@ def _validate_intent(
     min_volume = _to_float(contract.get("min_volume") if contract else None, 0.0)
     max_volume = _to_float(contract.get("max_volume") if contract else None, 0.0)
     price_adjustment_reason = ""
+    if intraday_close_intent:
+        original_price = price
+        price, price_adjustment_reason = _protective_close_price(intent, direction_text, pricetick, original_price)
+        if price <= 0:
+            reasons.append("protective_close_price_missing")
+        elif original_price > 0:
+            price_adjustment_reason = f"{price_adjustment_reason};stop_trigger_price={original_price};order_price={price}"
     if pricetick and price > 0 and not _price_on_tick(price, pricetick):
         original_price = price
         price = _snap_price_to_tick(price, pricetick, direction_text)
-        price_adjustment_reason = f"limit_price_snapped_to_tick:{original_price}->{price}"
+        snap_reason = f"limit_price_snapped_to_tick:{original_price}->{price}"
+        price_adjustment_reason = f"{price_adjustment_reason};{snap_reason}" if price_adjustment_reason else snap_reason
     if pricetick and not _price_on_tick(price, pricetick):
         reasons.append("price_not_on_tick")
     if min_volume and volume < min_volume:
@@ -345,15 +404,19 @@ def _validate_intent(
         reasons.append("volume_above_contract_max")
     broker_match_volume = 0.0
     if offset_text == "close":
+        if stage902_allow_reduce_close != 1:
+            reasons.append("stage902_reduce_close_not_allowed")
         broker_match_direction = _opposite_position_direction(direction_text)
         broker_match_volume = _position_volume(positions, vt_symbol, broker_match_direction)
         if broker_match_volume <= 0:
             reasons.append(f"no_matching_{broker_match_direction}_broker_position_to_close")
         elif broker_match_volume < volume:
             reasons.append(f"insufficient_broker_position:{broker_match_volume}<{volume}")
-        if stage260_executable <= 0:
+        if stage260_executable <= 0 and not intraday_close_intent:
             reasons.append("stage260_no_executable_close_gate")
     elif offset_text == "open":
+        if stage902_allow_new_open != 1:
+            reasons.append("stage902_new_open_not_allowed")
         if stage260_executable <= 0:
             reasons.append("stage260_no_executable_open_gate")
 
@@ -434,6 +497,9 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
                     "offset",
                     "planned_volume",
                     "limit_price",
+                    "stop_trigger_price",
+                    "trigger_live_price",
+                    "trigger_adverse_extreme_price",
                     "price_adjustment_reason",
                     "dedupe_removed_count",
                     "dedupe_removed_sources",

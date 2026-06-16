@@ -15,6 +15,7 @@ PHASE_D_SHADOW_REFRESH_ENV = "OFFICIAL_LIVE_PHASE_D_SHADOW_REFRESH_ENABLED"
 PHASE_D_CONFIRM_TEXT = "I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING"
 PHASE_D_READONLY_REFRESH_CONFIRM_TEXT = "I_UNDERSTAND_THIS_RUNS_CTP_READONLY_REFRESH_ONLY"
 PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT = "I_UNDERSTAND_THIS_RUNS_OFFICIAL_SHADOW_REFRESH"
+PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE = "explicit_live_real_enabled"
 
 READONLY_SUMMARY_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
@@ -46,6 +47,7 @@ READONLY_ORDERS_PATH = (
 READONLY_TRADES_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_trades_stage174_ctp_vnpy_readonly_probe_v1.csv"
 )
+LIVE_EXECUTION_LEDGER_PATH = OUTPUT_DIR / "qmt_roll_official_live_phase_d_execution_ledger.ndjson"
 KILL_SWITCH_PATH = OUTPUT_DIR / "qmt_roll_official_live_phase_d_kill_switch.json"
 CONTROLLER_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_official_live_phase_d_controller_heartbeat.json"
 CONTROLLER_STATE_PATH = OUTPUT_DIR / "qmt_roll_official_live_phase_d_controller_state.json"
@@ -89,7 +91,7 @@ class PhaseDConfig:
 def build_phase_d_config() -> PhaseDConfig:
     return PhaseDConfig(
         mode_default="dry-run",
-        real_submit_default="fail_closed",
+        real_submit_default=PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
         gateway_name="CTP",
         sessions=(
             SessionWindow("night", "20:55", "23:05", "market_and_execution"),

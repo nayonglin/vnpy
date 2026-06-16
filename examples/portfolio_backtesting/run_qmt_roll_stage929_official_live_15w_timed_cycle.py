@@ -24,6 +24,7 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT,
     PHASE_D_SHADOW_REFRESH_ENV,
 )
+from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -277,6 +278,60 @@ def _write_outputs(paths: dict[str, Path], wrapper: dict[str, Any], stage903: di
         LATEST_COMMAND_LOG_PATH.write_text(paths["command_log"].read_text(encoding="utf-8"), encoding="utf-8")
 
 
+def _email_severity(stage903: dict[str, Any], wrapper: dict[str, Any]) -> str:
+    if _to_int(stage903.get("order_api_called_count"), 0) > 0 or _to_int(wrapper.get("wrapper_exit_code"), 0) != 0:
+        return "critical"
+    if _to_int(stage903.get("stage260_executable_count"), 0) > 0 or _to_int(stage903.get("pending_order_count"), 0) > 0:
+        return "warning"
+    if "blocked" in str(stage903.get("controller_status", "")):
+        return "warning"
+    return "info"
+
+
+def _send_report_email(paths: dict[str, Path], wrapper: dict[str, Any], stage903: dict[str, Any]) -> dict[str, Any]:
+    severity = _email_severity(stage903, wrapper)
+    subject = (
+        f"[C9/15w][{wrapper['phase']}][{severity}] "
+        f"{wrapper['target_date']} pending={stage903.get('pending_order_count', 0)} "
+        f"ready={stage903.get('stage905_ready_count', 0)}"
+    )
+    body = "\n".join(
+        [
+            "C9/15w 官方实盘定时报告已生成。",
+            "",
+            f"生成时间: {wrapper['generated_at']}",
+            f"阶段: {wrapper['phase']}",
+            f"目标日期: {wrapper['target_date']}",
+            f"版本: {OFFICIAL_LIVE_VERSION} / {OFFICIAL_LIVE_ALIAS}",
+            f"结论: {_status_text(stage903)}",
+            "",
+            f"Controller: {stage903.get('controller_status', '')}",
+            f"Pending orders: {stage903.get('pending_order_count', '')}",
+            f"Stage905 ready: {stage903.get('stage905_ready_count', '')}",
+            f"Order API calls: {stage903.get('order_api_called_count', '')}",
+            f"Readonly balance: {(wrapper.get('account_snapshot') or {}).get('balance', '')}",
+            f"Readonly nonzero positions: {(wrapper.get('account_snapshot') or {}).get('nonzero_position_rows', 0)}",
+            "",
+            "附件包含本次 wrapper report 和 summary。邮件失败不会触发或阻断交易，只会写入邮件审计日志。",
+        ]
+    )
+    return send_official_live_email_notification(
+        subject=subject,
+        body=body,
+        event_type=f"stage929_{wrapper['phase']}",
+        severity=severity,
+        attachments=[paths["report_md"], paths["summary_json"]],
+        metadata={
+            "phase": wrapper["phase"],
+            "target_date": wrapper["target_date"],
+            "controller_status": stage903.get("controller_status", ""),
+            "pending_order_count": stage903.get("pending_order_count", 0),
+            "stage905_ready_count": stage903.get("stage905_ready_count", 0),
+            "order_api_called_count": stage903.get("order_api_called_count", 0),
+        },
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Timed dry-run/report wrapper for official C9/15w live automation.")
     parser.add_argument("--phase", choices=["post-close", "evening-report", "manual"], default="manual")
@@ -334,6 +389,8 @@ def main() -> None:
             "continue_after": "是。下一步是看日终数据是否成功刷新以及 pending/dry-run 是否出现。",
         },
     }
+    _write_outputs(paths, wrapper, stage903_summary)
+    wrapper["email_notification"] = _send_report_email(paths, wrapper, stage903_summary)
     _write_outputs(paths, wrapper, stage903_summary)
     print(json.dumps({"wrapper": wrapper, "stage903_summary": stage903_summary}, ensure_ascii=False, indent=2, default=str))
 

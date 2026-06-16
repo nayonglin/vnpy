@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,11 +25,13 @@ from qmt_roll_official_live_config import (
 from qmt_roll_official_live_phase_d_config import (
     KILL_SWITCH_PATH,
     PHASE_D_CONFIRM_TEXT,
+    PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
     PHASE_D_REAL_ADAPTER_ENV,
     PHASE_D_REAL_ENABLED_ENV,
     PHASE_D_SESSION_DAEMON_ENV,
     READONLY_SUMMARY_PATH,
     STAGE901_PENDING_ORDERS_PATH,
+    build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -88,6 +90,28 @@ def _age_seconds(value: Any) -> float | None:
     if generated_dt is None:
         return None
     return round((datetime.now() - generated_dt).total_seconds(), 3)
+
+
+def _target_age_days(target_date: str) -> int | None:
+    try:
+        return (date.today() - datetime.strptime(target_date, "%Y-%m-%d").date()).days
+    except ValueError:
+        return None
+
+
+def _current_phase_d_sessions() -> list[dict[str, str]]:
+    config = build_phase_d_config()
+    now = datetime.now().time()
+    active: list[dict[str, str]] = []
+    for session in config.sessions:
+        start_h, start_m = [int(part) for part in session.start.split(":", 1)]
+        end_h, end_m = [int(part) for part in session.end.split(":", 1)]
+        start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+        end = now.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+        in_session = start <= now <= end if start <= end else now >= start or now <= end
+        if in_session:
+            active.append({"name": session.name, "role": session.role})
+    return active
 
 
 def _env_enabled(name: str) -> bool:
@@ -190,6 +214,7 @@ def main() -> None:
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
+    parser.add_argument("--max-target-date-age-days", type=int, default=4)
     parser.add_argument("--confirm-live-real", default="")
     args = parser.parse_args()
 
@@ -211,6 +236,9 @@ def main() -> None:
     risk_snapshot = build_official_live_risk_snapshot(official_summary)
     execution_policy = manifest.get("execution_policy", {})
     signal_or_pending_count = _latest_pending_or_signal_count(signal_plan, pending_orders)
+    target_age_days = _target_age_days(target_date)
+    current_phase_d_sessions = _current_phase_d_sessions()
+    in_execution_session = any(row.get("role") == "market_and_execution" for row in current_phase_d_sessions)
 
     readonly_generated_at = readonly_summary.get("generated_at", "")
     readonly_age = _age_seconds(readonly_generated_at)
@@ -232,8 +260,12 @@ def main() -> None:
     session_daemon_env = _env_enabled(PHASE_D_SESSION_DAEMON_ENV)
     real_adapter_env = _env_enabled(PHASE_D_REAL_ADAPTER_ENV)
     confirm_ok = args.confirm_live_real == PHASE_D_CONFIRM_TEXT
-    policy_fail_closed = str(execution_policy.get("real_submit_default", "")) == "fail_closed"
+    real_submit_policy = str(execution_policy.get("real_submit_default", ""))
+    policy_live_real_enabled = real_submit_policy == PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE
     kill_switch_active = bool(kill_switch.get("enabled", False) or kill_switch.get("kill_switch_active", False))
+    risk_level = str(risk_snapshot.get("risk_level", ""))
+    allow_new_open = int(risk_level == "normal" and _to_int(risk_snapshot.get("allow_real_new_orders"), 0) == 1)
+    allow_reduce_close = int(risk_level in {"normal", "review"})
 
     checks: list[dict[str, Any]] = []
     _check(
@@ -267,13 +299,41 @@ def main() -> None:
     )
     _check(
         checks,
-        name="official_risk_allows_new_orders",
-        passed=str(risk_snapshot.get("risk_level")) == "normal" and _to_int(risk_snapshot.get("allow_real_new_orders"), 0) == 1,
+        name="live_real_execution_session",
+        passed=args.mode != "live-real" or in_execution_session,
         severity="block",
-        observed=f"{risk_snapshot.get('risk_level')} / allow={risk_snapshot.get('allow_real_new_orders')}",
+        observed=current_phase_d_sessions,
+        required="active Phase D market_and_execution session when --mode live-real",
+        blocker="live_real_not_in_execution_session",
+    )
+    _check(
+        checks,
+        name="live_real_target_date_not_stale",
+        passed=args.mode != "live-real"
+        or (target_age_days is not None and 0 <= target_age_days <= args.max_target_date_age_days),
+        severity="block",
+        observed=target_age_days,
+        required=f"0 <= target age days <= {args.max_target_date_age_days} when --mode live-real",
+        blocker="live_real_target_date_stale_or_invalid",
+    )
+    _check(
+        checks,
+        name="official_risk_allows_new_orders",
+        passed=allow_new_open == 1,
+        severity="block",
+        observed=f"{risk_level} / allow_new_open={allow_new_open} / allow_reduce_close={allow_reduce_close}",
         required="normal / allow=1",
         blocker="official_risk_state_blocks_new_open",
         note="review 状态只能降风险，不能自动新增开仓。",
+    )
+    _check(
+        checks,
+        name="official_risk_allows_reduce_close",
+        passed=allow_reduce_close == 1,
+        severity="info" if allow_reduce_close else "block",
+        observed=f"{risk_level} / allow_reduce_close={allow_reduce_close}",
+        required="normal or review allows broker-matched close/reduce",
+        blocker="official_risk_state_blocks_reduce_close",
     )
     _check(
         checks,
@@ -341,12 +401,12 @@ def main() -> None:
     )
     _check(
         checks,
-        name="real_submit_policy_not_fail_closed_for_live_real",
-        passed=args.mode == "dry-run" or not policy_fail_closed,
+        name="real_submit_policy_explicit_live_real_enabled",
+        passed=args.mode == "dry-run" or policy_live_real_enabled,
         severity="block",
-        observed=execution_policy.get("real_submit_default", ""),
-        required="not fail_closed when --mode live-real",
-        blocker="official_live_config_real_submit_default_fail_closed",
+        observed=real_submit_policy,
+        required=f"{PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE} when --mode live-real",
+        blocker="official_live_config_real_submit_policy_not_explicitly_enabled",
     )
     _check(
         checks,
@@ -377,6 +437,12 @@ def main() -> None:
 
     checks_df = pd.DataFrame(checks)
     blocking_failures = checks_df[checks_df["passed"].eq(0) & checks_df["severity"].eq("block")]
+    if allow_reduce_close:
+        reduce_close_blocking_failures = blocking_failures[
+            ~blocking_failures["check"].eq("official_risk_allows_new_orders")
+        ]
+    else:
+        reduce_close_blocking_failures = blocking_failures
     ready_for_phase_d_real = int(args.mode == "live-real" and blocking_failures.empty)
     overall_status = "phase_d_ready_for_live_real" if ready_for_phase_d_real else "phase_d_blocked"
     if args.mode == "dry-run" and blocking_failures.empty:
@@ -392,11 +458,15 @@ def main() -> None:
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "official_manifest": manifest,
         "risk_snapshot": risk_snapshot,
+        "allow_new_open": allow_new_open,
+        "allow_reduce_close": allow_reduce_close,
         "signal_count": int(len(signal_plan)),
         "pending_order_count": int(len(pending_orders)),
         "signal_or_pending_count": signal_or_pending_count,
         "current_position_count": int(len(current_positions)),
         "readonly_snapshot_age_seconds": readonly_age,
+        "target_date_age_days": target_age_days,
+        "current_phase_d_sessions": current_phase_d_sessions,
         "stage260_executable_count": stage260_executable_count,
         "stage260_order_api_called_count": stage260_order_api_called,
         "stage251_status": stage251_status,
@@ -406,6 +476,8 @@ def main() -> None:
         "overall_status": overall_status,
         "blocking_failure_count": int(len(blocking_failures)),
         "blocking_failures": blocking_failures.to_dict(orient="records"),
+        "blocking_failure_count_for_reduce_close": int(len(reduce_close_blocking_failures)),
+        "blocking_failures_for_reduce_close": reduce_close_blocking_failures.to_dict(orient="records"),
         "kill_switch_path": str(KILL_SWITCH_PATH.resolve()),
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {

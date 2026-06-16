@@ -533,7 +533,7 @@ def _run_stage251(
     }
 
 
-def _run_stage904(target_date: str) -> dict[str, Any]:
+def _run_stage904(target_date: str, *, require_broker_fill_price: bool) -> dict[str, Any]:
     config = build_phase_d_config()
     cmd = [
         sys.executable,
@@ -543,6 +543,8 @@ def _run_stage904(target_date: str) -> dict[str, Any]:
         "--max-tick-age-seconds",
         str(config.hard_limits.max_tick_age_seconds),
     ]
+    if require_broker_fill_price:
+        cmd.append("--require-broker-fill-price")
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
     started = datetime.now()
@@ -1265,7 +1267,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
         confirm_live_real=args.confirm_live_real,
     )
-    stage904_result = _run_stage904(target_date=target_date)
+    stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
     stage905_result = _run_stage905(target_date=target_date)
     stage906_result = _run_stage906(
         target_date=target_date,

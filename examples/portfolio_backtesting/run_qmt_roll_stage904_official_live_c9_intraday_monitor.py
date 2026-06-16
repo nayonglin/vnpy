@@ -9,6 +9,7 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_live_execution_ledger import read_execution_ledger, weighted_open_fill
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
@@ -17,6 +18,8 @@ from qmt_roll_official_live_config import (
 )
 from qmt_roll_official_live_phase_d_config import (
     READONLY_SUMMARY_PATH,
+    READONLY_POSITIONS_PATH,
+    READONLY_TRADES_PATH,
     READONLY_TICKS_PATH,
     STAGE901_ENTRY_RISK_PATH,
     STAGE901_TRADES_PATH,
@@ -116,6 +119,17 @@ def _normalize_offset(value: Any) -> str:
     return text
 
 
+def _vt_symbol(row: dict[str, Any]) -> str:
+    vt_symbol = _clean(row.get("vt_symbol"))
+    if vt_symbol:
+        return vt_symbol
+    symbol = _clean(row.get("symbol") or row.get("instrument") or row.get("instrument_id"))
+    exchange = _clean(row.get("exchange"))
+    if symbol and exchange and "." not in symbol:
+        return f"{symbol}.{exchange}"
+    return symbol
+
+
 def _date_only(value: Any) -> str:
     text = _clean(value)
     if not text:
@@ -145,6 +159,40 @@ def _latest_open_trade(trades: pd.DataFrame, vt_symbol: str, direction: str, tar
     return matched.sort_values("_dt").iloc[-1].to_dict()
 
 
+def _weighted_broker_open_trade(trades: pd.DataFrame, vt_symbol: str, direction: str, target_date: str) -> dict[str, Any] | None:
+    if trades.empty:
+        return None
+    frame = trades.copy()
+    frame["direction_norm"] = frame.get("direction", "").map(_normalize_direction)
+    frame["offset_norm"] = frame.get("offset", "").map(_normalize_offset)
+    date_source = frame.get("datetime", frame.get("date", frame.get("trading_day", "")))
+    frame["date_norm"] = date_source.map(_date_only) if hasattr(date_source, "map") else ""
+    matched = frame[
+        frame.get("vt_symbol", "").astype(str).eq(vt_symbol)
+        & frame["direction_norm"].eq(direction)
+        & frame["offset_norm"].eq("open")
+        & frame["date_norm"].eq(target_date)
+    ].copy()
+    if matched.empty:
+        return None
+    matched["price_num"] = pd.to_numeric(matched.get("price", 0.0), errors="coerce").fillna(0.0)
+    matched["volume_num"] = pd.to_numeric(matched.get("volume", 0.0), errors="coerce").fillna(0.0)
+    matched = matched[matched["price_num"].gt(0) & matched["volume_num"].gt(0)]
+    if matched.empty:
+        return None
+    total_volume = float(matched["volume_num"].sum())
+    weighted_price = float((matched["price_num"] * matched["volume_num"]).sum() / total_volume)
+    matched["_dt"] = pd.to_datetime(matched.get("datetime", matched["date_norm"]), errors="coerce")
+    latest = matched.sort_values("_dt").iloc[-1].to_dict()
+    return {
+        **latest,
+        "price": weighted_price,
+        "volume": total_volume,
+        "trade_count": int(len(matched)),
+        "date": target_date,
+    }
+
+
 def _latest_entry_risk(entry_risk: pd.DataFrame, vt_symbol: str, direction: str, target_date: str) -> dict[str, Any] | None:
     if entry_risk.empty:
         return None
@@ -162,22 +210,48 @@ def _latest_entry_risk(entry_risk: pd.DataFrame, vt_symbol: str, direction: str,
     return matched.sort_values("_dt").iloc[-1].to_dict()
 
 
-def _tick_row(ticks: pd.DataFrame, vt_symbol: str) -> dict[str, Any] | None:
+def _tick_frame(ticks: pd.DataFrame, vt_symbol: str) -> pd.DataFrame:
     if ticks.empty:
-        return None
+        return pd.DataFrame()
     if "vt_symbol" in ticks.columns:
         matched = ticks[ticks["vt_symbol"].fillna("").astype(str).eq(vt_symbol)].copy()
     elif "symbol" in ticks.columns and "exchange" in ticks.columns:
         key = ticks["symbol"].fillna("").astype(str) + "." + ticks["exchange"].fillna("").astype(str)
         matched = ticks[key.eq(vt_symbol)].copy()
     else:
-        return None
+        return pd.DataFrame()
+    return matched
+
+
+def _tick_dt_series(frame: pd.DataFrame) -> pd.Series:
+    for key in ("localtime", "datetime", "snapshot_at", "generated_at"):
+        if key in frame.columns:
+            return pd.to_datetime(frame[key], errors="coerce")
+    return pd.Series(pd.NaT, index=frame.index)
+
+
+def _fresh_tick_frame(ticks: pd.DataFrame, vt_symbol: str, max_tick_age_seconds: int) -> pd.DataFrame:
+    matched = _tick_frame(ticks, vt_symbol)
+    if matched.empty:
+        return matched
+    matched = matched.copy()
+    matched["_dt"] = _tick_dt_series(matched)
+    matched = matched.dropna(subset=["_dt"])
+    if matched.empty:
+        return matched
+    now = pd.Timestamp.now(tz=matched["_dt"].dt.tz) if matched["_dt"].dt.tz is not None else pd.Timestamp.now()
+    ages = (now - matched["_dt"]).dt.total_seconds()
+    return matched[ages.le(max_tick_age_seconds)].copy()
+
+
+def _tick_row(ticks: pd.DataFrame, vt_symbol: str) -> dict[str, Any] | None:
+    matched = _tick_frame(ticks, vt_symbol)
     if matched.empty:
         return None
-    for key in ("localtime", "datetime", "snapshot_at", "generated_at"):
-        if key in matched.columns:
-            matched["_dt"] = pd.to_datetime(matched[key], errors="coerce")
-            return matched.sort_values("_dt").iloc[-1].to_dict()
+    matched = matched.copy()
+    matched["_dt"] = _tick_dt_series(matched)
+    if matched["_dt"].notna().any():
+        return matched.sort_values("_dt").iloc[-1].to_dict()
     return matched.iloc[-1].to_dict()
 
 
@@ -210,27 +284,129 @@ def _tick_price(row: dict[str, Any] | None) -> tuple[float, str]:
     return 0.0, "missing_tick_price"
 
 
+def _tick_value(row: dict[str, Any] | None, *keys: str) -> float:
+    if not row:
+        return 0.0
+    for key in keys:
+        value = _to_float(row.get(key), 0.0)
+        if value > 0:
+            return value
+    return 0.0
+
+
+def _fresh_extreme_price(frame: pd.DataFrame, direction: str, kind: str) -> tuple[float, str]:
+    if frame.empty:
+        return 0.0, "missing_fresh_tick_batch"
+    if kind == "adverse" and direction == "long":
+        keys = ("last_price", "last", "price", "close_price", "bid_price_1")
+        method = "min"
+    elif kind == "adverse" and direction == "short":
+        keys = ("last_price", "last", "price", "close_price", "ask_price_1")
+        method = "max"
+    elif kind == "progress" and direction == "long":
+        keys = ("last_price", "last", "price", "close_price", "ask_price_1")
+        method = "max"
+    else:
+        keys = ("last_price", "last", "price", "close_price", "bid_price_1")
+        method = "min"
+    values: list[tuple[str, float]] = []
+    for key in keys:
+        if key not in frame.columns:
+            continue
+        series = pd.to_numeric(frame[key], errors="coerce").dropna()
+        series = series[series.gt(0)]
+        if series.empty:
+            continue
+        value = float(series.min() if method == "min" else series.max())
+        values.append((key, value))
+    if not values:
+        return 0.0, "missing_fresh_tick_price_batch"
+    if method == "min":
+        source, value = min(values, key=lambda item: item[1])
+    else:
+        source, value = max(values, key=lambda item: item[1])
+    return value, f"{method}_{source}_fresh_batch"
+
+
+def _broker_position_price(row: dict[str, Any]) -> tuple[float, str]:
+    for key in ("price", "avg_price", "open_price", "cost_price"):
+        price = _to_float(row.get(key), 0.0)
+        if price > 0:
+            return price, key
+    return 0.0, "broker_fill_price_missing"
+
+
+def _broker_position_volume(row: dict[str, Any]) -> float:
+    volume = _to_float(row.get("volume", row.get("position", row.get("pos", 0.0))), 0.0)
+    frozen = _to_float(row.get("frozen", row.get("frozen_volume", 0.0)), 0.0)
+    return max(0.0, volume - frozen)
+
+
+def _monitor_positions(shadow_positions: pd.DataFrame, broker_positions: pd.DataFrame) -> pd.DataFrame:
+    keyed: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in shadow_positions.to_dict(orient="records"):
+        vt_symbol = _clean(row.get("vt_symbol"))
+        direction = _normalize_direction(row.get("direction"))
+        volume = _to_float(row.get("end_pos", row.get("volume", 0.0)), 0.0)
+        if not vt_symbol or direction not in {"long", "short"} or volume <= 0:
+            continue
+        item = dict(row)
+        item["position_source"] = "shadow"
+        item["volume"] = volume
+        keyed[(vt_symbol, direction)] = item
+
+    for row in broker_positions.drop_duplicates().to_dict(orient="records"):
+        vt_symbol = _vt_symbol(row)
+        direction = _normalize_direction(row.get("direction"))
+        volume = _broker_position_volume(row)
+        if not vt_symbol or direction not in {"long", "short"} or volume <= 0:
+            continue
+        price, price_source = _broker_position_price(row)
+        item = dict(row)
+        item["vt_symbol"] = vt_symbol
+        item["direction"] = direction
+        item["position_source"] = "broker"
+        item["volume"] = volume
+        item["end_pos"] = volume
+        item["broker_fill_price"] = price
+        item["broker_fill_price_source"] = price_source
+        keyed[(vt_symbol, direction)] = item
+
+    return pd.DataFrame(list(keyed.values()))
+
+
 def _action_for_position(
     position: dict[str, Any],
     *,
     trades: pd.DataFrame,
+    broker_trades: pd.DataFrame,
+    execution_ledger_rows: list[dict[str, Any]],
     entry_risk: pd.DataFrame,
     ticks: pd.DataFrame,
     target_date: str,
     max_tick_age_seconds: int,
+    require_broker_fill_price: bool,
 ) -> dict[str, Any]:
     vt_symbol = _clean(position.get("vt_symbol"))
     direction = _normalize_direction(position.get("direction"))
     volume = _to_float(position.get("end_pos", position.get("volume", 0.0)), 0.0)
     mark_price = _to_float(position.get("close_price"), 0.0)
+    position_source = _clean(position.get("position_source")) or "shadow"
+    broker_position_avg_price = _to_float(position.get("broker_fill_price"), 0.0)
+    broker_position_avg_price_source = _clean(position.get("broker_fill_price_source"))
     reasons: list[str] = []
     action = "block"
 
     open_trade = _latest_open_trade(trades, vt_symbol, direction, target_date)
+    ledger_open_trade = weighted_open_fill(execution_ledger_rows, target_date, vt_symbol, direction)
+    broker_open_trade = _weighted_broker_open_trade(broker_trades, vt_symbol, direction, target_date)
     risk_row = _latest_entry_risk(entry_risk, vt_symbol, direction, target_date)
     tick = _tick_row(ticks, vt_symbol)
+    fresh_ticks = _fresh_tick_frame(ticks, vt_symbol, max_tick_age_seconds)
     tick_age = _tick_age(tick)
     live_price, live_price_source = _tick_price(tick)
+    adverse_extreme_price, adverse_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "adverse")
+    progress_extreme_price, progress_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "progress")
 
     if not vt_symbol:
         reasons.append("missing_vt_symbol")
@@ -238,10 +414,14 @@ def _action_for_position(
         reasons.append("invalid_direction")
     if volume <= 0:
         reasons.append("no_open_volume")
-    if open_trade is None:
+    ledger_fill_price = _to_float(ledger_open_trade.get("price") if ledger_open_trade else None, 0.0)
+    broker_fill_price = _to_float(broker_open_trade.get("price") if broker_open_trade else None, 0.0)
+    if open_trade is None and ledger_fill_price <= 0 and broker_fill_price <= 0:
         reasons.append("matching_open_trade_missing")
     if risk_row is None:
         reasons.append("matching_entry_risk_missing")
+    if require_broker_fill_price and ledger_fill_price <= 0 and broker_fill_price <= 0:
+        reasons.append("broker_or_execution_open_trade_fill_price_missing_for_live_real_monitor")
     if tick is None:
         reasons.append("fresh_tick_missing")
     if tick_age is None or tick_age > max_tick_age_seconds:
@@ -249,10 +429,29 @@ def _action_for_position(
     if live_price <= 0:
         reasons.append("live_price_missing")
 
-    fill_price = _to_float(open_trade.get("price") if open_trade else None, 0.0)
+    shadow_fill_price = _to_float(open_trade.get("price") if open_trade else None, 0.0)
+    if ledger_fill_price > 0:
+        fill_price = ledger_fill_price
+        fill_price_source = "stage931_execution_ledger_open_fill_weighted_avg"
+    elif broker_fill_price > 0:
+        fill_price = broker_fill_price
+        fill_price_source = "readonly_broker_open_trade_weighted_avg"
+    else:
+        fill_price = shadow_fill_price
+        fill_price_source = "shadow_open_trade_price"
     initial_stop_price = _to_float(risk_row.get("stop_price") if risk_row else None, 0.0)
     open_trade_date = _date_only(open_trade.get("date") if open_trade else "")
-    entry_day_active = bool(open_trade_date and open_trade_date == target_date)
+    risk_date = _date_only(risk_row.get("date") if risk_row else "")
+    broker_open_trade_date = _date_only(broker_open_trade.get("date") if broker_open_trade else "")
+    ledger_open_trade_date = _date_only(ledger_open_trade.get("date") if ledger_open_trade else "")
+    entry_day_active = bool(
+        (open_trade_date and open_trade_date == target_date)
+        or (
+            position_source == "broker"
+            and risk_date == target_date
+            and (ledger_open_trade_date == target_date or broker_open_trade_date == target_date)
+        )
+    )
     if not entry_day_active:
         reasons.append("c9_entry_day_monitor_not_active")
     risk_price = abs(fill_price - initial_stop_price) if fill_price > 0 and initial_stop_price > 0 else 0.0
@@ -264,13 +463,13 @@ def _action_for_position(
     progress_price = fill_price + sign * STOP_RETRY_R * risk_price if risk_price > 0 else 0.0
     adverse_hit = False
     progress_hit = False
-    if live_price > 0 and risk_price > 0:
+    if risk_price > 0:
         if direction == "long":
-            adverse_hit = live_price <= stop_price
-            progress_hit = live_price >= progress_price
+            adverse_hit = adverse_extreme_price > 0 and adverse_extreme_price <= stop_price
+            progress_hit = progress_extreme_price > 0 and progress_extreme_price >= progress_price
         else:
-            adverse_hit = live_price >= stop_price
-            progress_hit = live_price <= progress_price
+            adverse_hit = adverse_extreme_price > 0 and adverse_extreme_price >= stop_price
+            progress_hit = progress_extreme_price > 0 and progress_extreme_price <= progress_price
 
     if not reasons:
         if adverse_hit:
@@ -287,11 +486,24 @@ def _action_for_position(
         "target_date": target_date,
         "vt_symbol": vt_symbol,
         "direction": direction,
+        "position_source": position_source,
         "volume": volume,
         "open_trade_id": _clean(open_trade.get("trade_id") if open_trade else ""),
         "open_trade_date": open_trade_date,
+        "ledger_open_trade_date": ledger_open_trade_date,
+        "ledger_open_trade_count": int(_to_float(ledger_open_trade.get("trade_count") if ledger_open_trade else 0, 0.0)),
+        "ledger_open_trade_volume": _to_float(ledger_open_trade.get("volume") if ledger_open_trade else 0.0, 0.0),
+        "broker_open_trade_date": broker_open_trade_date,
+        "broker_open_trade_count": int(_to_float(broker_open_trade.get("trade_count") if broker_open_trade else 0, 0.0)),
+        "broker_open_trade_volume": _to_float(broker_open_trade.get("volume") if broker_open_trade else 0.0, 0.0),
+        "entry_risk_date": risk_date,
         "entry_day_active": int(entry_day_active),
         "fill_price": fill_price,
+        "fill_price_source": fill_price_source,
+        "ledger_fill_price": ledger_fill_price,
+        "broker_fill_price": broker_fill_price,
+        "broker_position_avg_price": broker_position_avg_price,
+        "broker_position_avg_price_source": broker_position_avg_price_source,
         "initial_stop_price": initial_stop_price,
         "risk_price": risk_price,
         "stop_retry_r": STOP_RETRY_R,
@@ -299,6 +511,16 @@ def _action_for_position(
         "stage847_progress_price": progress_price,
         "live_price": live_price,
         "live_price_source": live_price_source,
+        "live_bid_price_1": _tick_value(tick, "bid_price_1"),
+        "live_ask_price_1": _tick_value(tick, "ask_price_1"),
+        "live_limit_up": _tick_value(tick, "limit_up", "upper_limit", "limit_up_price"),
+        "live_limit_down": _tick_value(tick, "limit_down", "lower_limit", "limit_down_price"),
+        "adverse_extreme_price": adverse_extreme_price,
+        "adverse_extreme_source": adverse_extreme_source,
+        "progress_extreme_price": progress_extreme_price,
+        "progress_extreme_source": progress_extreme_source,
+        "tick_batch_count": int(len(_tick_frame(ticks, vt_symbol))),
+        "fresh_tick_batch_count": int(len(fresh_ticks)),
         "tick_age_seconds": tick_age,
         "mark_price_fallback": mark_price,
         "adverse_hit": int(adverse_hit),
@@ -336,12 +558,16 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
                 [
                     "vt_symbol",
                     "direction",
+                    "position_source",
                     "volume",
                     "fill_price",
+                    "fill_price_source",
                     "initial_stop_price",
                     "stage847_stop_price",
                     "stage847_progress_price",
                     "live_price",
+                    "adverse_extreme_price",
+                    "fresh_tick_batch_count",
                     "tick_age_seconds",
                     "monitor_action",
                     "monitor_reason",
@@ -362,6 +588,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Dry-run C9 intraday 0.5R stop/retry monitor for official live.")
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument("--max-tick-age-seconds", type=int, default=10)
+    parser.add_argument("--require-broker-fill-price", action="store_true")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -369,23 +596,30 @@ def main() -> None:
     target_date = args.target_date or str(official_summary.get("analysis_end", ""))
     paths = _paths(target_date)
     positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
+    broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
+    broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
+    execution_ledger_rows = read_execution_ledger()
     trades = _read_csv_maybe(STAGE901_TRADES_PATH)
     entry_risk = _read_csv_maybe(STAGE901_ENTRY_RISK_PATH)
     ticks = _read_csv_maybe(READONLY_TICKS_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     config = build_phase_d_config()
+    monitor_positions = _monitor_positions(positions, broker_positions)
 
     actions = pd.DataFrame(
         [
             _action_for_position(
                 row,
                 trades=trades,
+                broker_trades=broker_trades,
+                execution_ledger_rows=execution_ledger_rows,
                 entry_risk=entry_risk,
                 ticks=ticks,
                 target_date=target_date,
                 max_tick_age_seconds=args.max_tick_age_seconds,
+                require_broker_fill_price=bool(args.require_broker_fill_price),
             )
-            for row in positions.to_dict(orient="records")
+            for row in monitor_positions.to_dict(orient="records")
         ]
     )
     close_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("close_dry_run").sum()) if not actions.empty else 0
@@ -408,6 +642,12 @@ def main() -> None:
         "order_api_called_count": order_api_called,
         "readonly_status": readonly_summary.get("status", ""),
         "tick_path": str(READONLY_TICKS_PATH.resolve()),
+        "require_broker_fill_price": int(bool(args.require_broker_fill_price)),
+        "shadow_position_rows": int(len(positions)),
+        "broker_position_rows": int(len(broker_positions)),
+        "broker_trade_rows": int(len(broker_trades)),
+        "execution_ledger_rows": int(len(execution_ledger_rows)),
+        "monitor_position_rows": int(len(monitor_positions)),
         "phase_d_hard_limits": config.hard_limits.__dict__,
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {
