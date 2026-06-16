@@ -32,7 +32,7 @@ STAGE901_ENTRY_RISK_PATH = (
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_entry_risk_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
 )
 READONLY_TICKS_PATH = (
-    OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_ticks_stage174_ctp_vnpy_readonly_probe_v1.csv"
+    OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_ticks_stage608_readonly_tick_snapshot_probe_v1.csv"
 )
 READONLY_CONTRACTS_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_contracts_stage174_ctp_vnpy_readonly_probe_v1.csv"

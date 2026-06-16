@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.qmt-roll.official-live.15w.c9-night-session</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
+    <string>--mode</string>
+    <string>live-real</string>
+    <string>--submit-mode</string>
+    <string>live-real</string>
+    <string>--duration-seconds</string>
+    <string>20400</string>
+    <string>--max-cycles</string>
+    <string>0</string>
+    <string>--poll-seconds</string>
+    <string>30</string>
+    <string>--confirm-live-real</string>
+    <string>I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED</key>
+    <string>1</string>
+    <key>OFFICIAL_LIVE_PHASE_D_REAL_ADAPTER_IMPLEMENTED</key>
+    <string>1</string>
+    <key>OFFICIAL_LIVE_PHASE_D_SESSION_DAEMON_ENABLED</key>
+    <string>1</string>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>/Users/bytedance/Desktop/person/vnpy</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>20</integer>
+    <key>Minute</key>
+    <integer>55</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage930_launchd_c9_night_session.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage930_launchd_c9_night_session.err.log</string>
+</dict>
+</plist>
