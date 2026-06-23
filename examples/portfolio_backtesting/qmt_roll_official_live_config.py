@@ -181,6 +181,7 @@ def build_official_live_strategy_overrides() -> dict[str, Any]:
     overrides = stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
     overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
+    overrides["ai_product_pool_eligibility_path"] = str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
     return overrides
 
 
@@ -293,12 +294,24 @@ def build_official_live_manifest() -> dict[str, Any]:
     }
 
 
+def _float_or_default(value: Any, default: float) -> float:
+    if value is None or value == "":
+        return default
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return default
+    if result != result:
+        return default
+    return result
+
+
 def build_official_live_risk_snapshot(summary: dict[str, Any]) -> dict[str, Any]:
     variant = summary.get("current_variant", {}) or {}
-    deployable = int(float(variant.get("deployable_pass", 0) or 0)) == 1
-    days_over_100 = int(float(variant.get("days_over_100pct", 0) or 0))
-    days_over_90 = int(float(variant.get("days_over_90pct", 0) or 0))
-    max_margin = float(variant.get("max_broker10_margin_to_equity_pct", 999.0) or 999.0)
+    deployable = int(_float_or_default(variant.get("deployable_pass"), 0.0)) == 1
+    days_over_100 = int(_float_or_default(variant.get("days_over_100pct"), 0.0))
+    days_over_90 = int(_float_or_default(variant.get("days_over_90pct"), 0.0))
+    max_margin = _float_or_default(variant.get("max_broker10_margin_to_equity_pct"), 999.0)
     reasons: list[str] = []
     if not deployable:
         reasons.append("official_live_deployable_gate_failed")
@@ -316,9 +329,9 @@ def build_official_live_risk_snapshot(summary: dict[str, Any]) -> dict[str, Any]
         "allow_shadow_record": 1,
         "allow_real_new_orders": allow_real_new_orders,
         "reasons": reasons,
-        "drawdown_pct_abs": abs(float(variant.get("max_dd_pct", 0.0) or 0.0)),
+        "drawdown_pct_abs": abs(_float_or_default(variant.get("max_dd_pct"), 0.0)),
         "daily_loss_cash": 0.0,
         "net_pnl": 0.0,
-        "balance": float(variant.get("end_equity", 0.0) or 0.0),
+        "balance": _float_or_default(variant.get("end_equity"), 0.0),
         "execution_adverse_cash": 0.0,
     }

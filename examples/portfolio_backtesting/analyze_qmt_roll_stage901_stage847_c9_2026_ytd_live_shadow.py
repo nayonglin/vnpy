@@ -16,6 +16,7 @@ import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
 import analyze_qmt_roll_stage660_stage653_multiperiod_live_audit as s660
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_CAPITAL,
     OFFICIAL_LIVE_CAPITAL_LABEL,
@@ -26,6 +27,7 @@ from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
     OFFICIAL_LIVE_SUMMARY_PATH,
     OFFICIAL_LIVE_VERSION,
+    build_official_live_strategy_overrides,
     build_official_live_risk_snapshot,
 )
 
@@ -80,6 +82,29 @@ def _md_table(frame: pd.DataFrame, max_rows: int | None = None) -> str:
     return s650._md_table(frame, max_rows=max_rows)
 
 
+def _ai_pool_audit(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"path": str(path), "exists": False}
+    frame = pd.read_csv(path, encoding="utf-8-sig")
+    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    if "strategy" in frame.columns:
+        frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
+    if frame.empty:
+        return {"path": str(path), "exists": True, "rows": 0}
+    frame["eval_date"] = pd.to_datetime(frame["eval_date"], errors="coerce").dt.normalize()
+    latest_date = frame["eval_date"].max()
+    latest = frame[frame["eval_date"].eq(latest_date)].sort_values(["score_rank", "product_vt_symbol"])
+    return {
+        "path": str(path),
+        "exists": True,
+        "rows": int(len(frame)),
+        "min_eval_date": frame["eval_date"].min().date().isoformat(),
+        "max_eval_date": latest_date.date().isoformat(),
+        "unique_eval_dates": int(frame["eval_date"].nunique()),
+        "latest_products": latest["product_vt_symbol"].astype(str).tolist(),
+    }
+
+
 def _run_live_c9(
     metadata: dict[str, Any],
     analysis_start: pd.Timestamp,
@@ -118,7 +143,13 @@ def _run_live_c9(
         )
         live_profile = dict(profile)
         live_profile["profile"] = OFFICIAL_LIVE_PROFILE_NAME
-        live_profile["spec"] = replace(spec, capital=capital, profile=OFFICIAL_LIVE_PROFILE_NAME)
+        live_overrides = {**spec.overrides, **build_official_live_strategy_overrides()}
+        live_profile["spec"] = replace(
+            spec,
+            capital=capital,
+            overrides=live_overrides,
+            profile=OFFICIAL_LIVE_PROFILE_NAME,
+        )
         combined, frames = s847._run_profile(live_profile, metadata)
         live_spec = live_profile["spec"]
     finally:
@@ -200,6 +231,10 @@ def _write_report(
         "- 性质：只读影子盘绩效；不连接 CTP，不读取账户，不调用下单。",
         "- 统计起点由 `OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE` 或命令行 `--analysis-start` 决定。",
         "- 切换口径：operator override，把 C9 从 primary candidate 切为 live default。",
+        f"- AI 池文件：`{decision['ai_pool_audit'].get('path', '')}`。",
+        f"- AI 池最新 eval_date：`{decision['ai_pool_audit'].get('max_eval_date', '')}`。",
+        f"- AI 池最新品种：`{', '.join(decision['ai_pool_audit'].get('latest_products', []))}`。",
+        f"- 实际 strategy override AI 池：`{decision['strategy_ai_product_pool_eligibility_path']}`。",
         "",
         "## 核心结果",
         "",
@@ -335,6 +370,8 @@ def main() -> None:
         "latest_available_data_date": latest_date.date().isoformat(),
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "ai_pool_audit": _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+        "strategy_ai_product_pool_eligibility_path": str(spec.overrides.get("ai_product_pool_eligibility_path", "")),
         "current_variant": current_row[0] if current_row else {},
         "risk_snapshot": {},
         "decision": "stage901_c9_live_default_shadow_measured_no_order_api",

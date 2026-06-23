@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
+import signal
 import subprocess
 import sys
 import time
@@ -33,7 +35,10 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SESSION_DAEMON_ENV,
     PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT,
     PHASE_D_SHADOW_REFRESH_ENV,
+    READONLY_POSITIONS_PATH,
     READONLY_SUMMARY_PATH,
+    READONLY_TICKS_PATH,
+    READONLY_TRADES_PATH,
     STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
     phase_d_config_to_dict,
@@ -48,6 +53,8 @@ OUTPUT_PREFIX = "qmt_roll_stage903_official_live_phase_d_controller"
 STAGE902_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py"
 STAGE902_MODEL_TAG = "stage902_official_live_phase_d_readiness_gate_v1"
 STAGE902_PREFIX = "qmt_roll_stage902_official_live_phase_d_readiness_gate"
+STAGE608_SCRIPT = PROJECT_DIR / "run_ctp_stage608_readonly_tick_snapshot_probe.py"
+STAGE608_MODEL_TAG = "stage608_readonly_tick_snapshot_probe_v1"
 STAGE904_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage904_official_live_c9_intraday_monitor.py"
 STAGE904_MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
 STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
@@ -172,6 +179,26 @@ def _parse_json_stdout(stdout: str) -> dict[str, Any]:
         return json.loads(text[start : end + 1])
     except Exception as exc:
         return {"_read_error": repr(exc)}
+
+
+def _shell_ctp_readonly_command(script: Path, script_args: list[str]) -> list[str]:
+    env_file = PROJECT_DIR / "ctp_live.local.env"
+    framework_dir = REPO_ROOT / ".py311/lib/python3.11/site-packages/vnpy_ctp/api/libs"
+    py311_lib = REPO_ROOT / ".py311/lib"
+    command = " ".join([shlex.quote(sys.executable), shlex.quote(str(script)), *[shlex.quote(str(item)) for item in script_args]])
+    shell = "\n".join(
+        [
+            "set -euo pipefail",
+            f"set -a; source {shlex.quote(str(env_file))}; set +a",
+            (
+                "export DYLD_FRAMEWORK_PATH="
+                f"{shlex.quote(str(framework_dir))}:{shlex.quote(str(py311_lib))}"
+                "${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}"
+            ),
+            command,
+        ]
+    )
+    return ["bash", "-lc", shell]
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -406,6 +433,98 @@ def _run_stage914(wait_seconds: int) -> dict[str, Any]:
         "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": _read_json(_latest_stage914_summary_path()),
+    }
+
+
+def _run_stage608_intraday_tick_refresh(
+    *,
+    symbols: list[str],
+    refresh_mode: str,
+    wait_seconds: int,
+    pre_subscribe_wait_seconds: int,
+    stage914_ready: bool,
+) -> dict[str, Any]:
+    target_symbols = sorted({_clean(symbol) for symbol in symbols if _clean(symbol)})
+    if refresh_mode == "skip":
+        return {
+            "command": [],
+            "exit_code": 0,
+            "timed_out": 0,
+            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "summary": {"status": "intraday_tick_refresh_skipped_by_mode"},
+            "tick_rows": int(len(_read_csv_maybe(READONLY_TICKS_PATH))),
+            "symbols": target_symbols,
+        }
+    if not target_symbols:
+        return {
+            "command": [],
+            "exit_code": 0,
+            "timed_out": 0,
+            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "summary": {"status": "intraday_tick_refresh_skipped_no_symbols"},
+            "tick_rows": int(len(_read_csv_maybe(READONLY_TICKS_PATH))),
+            "symbols": target_symbols,
+        }
+    if not stage914_ready:
+        return {
+            "command": [],
+            "exit_code": 0,
+            "timed_out": 0,
+            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "summary": {"status": "intraday_tick_refresh_skipped_stage914_not_ready"},
+            "tick_rows": int(len(_read_csv_maybe(READONLY_TICKS_PATH))),
+            "symbols": target_symbols,
+        }
+
+    stage_args = [
+        "--connect",
+        "--wait-seconds",
+        str(wait_seconds),
+        "--pre-subscribe-wait-seconds",
+        str(pre_subscribe_wait_seconds),
+        "--submit-plan",
+        str(OUTPUT_DIR / "__nonexistent_stage903_intraday_tick_submit_plan.csv"),
+    ]
+    for symbol in target_symbols:
+        stage_args.extend(["--vt-symbol", symbol])
+    cmd = _shell_ctp_readonly_command(STAGE608_SCRIPT, stage_args)
+    started = datetime.now()
+    proc = subprocess.Popen(
+        cmd,
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    timeout_seconds = max(30, pre_subscribe_wait_seconds + wait_seconds + 60)
+    timed_out = 0
+    try:
+        stdout, _ = proc.communicate(timeout=timeout_seconds)
+        exit_code = proc.returncode
+    except subprocess.TimeoutExpired:
+        timed_out = 1
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        stdout, _ = proc.communicate()
+        exit_code = -signal.SIGKILL
+        stdout = (stdout or "") + f"\nTIMEOUT: killed process group after {timeout_seconds}s\n"
+    summary = _read_json(OUTPUT_DIR / f"qmt_roll_stage608_readonly_tick_snapshot_probe_summary_{STAGE608_MODEL_TAG}.json")
+    return {
+        "command": cmd,
+        "exit_code": exit_code,
+        "timed_out": timed_out,
+        "stdout_tail": (stdout or "")[-4000:],
+        "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
+        "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "summary": summary,
+        "tick_rows": int(len(_read_csv_maybe(READONLY_TICKS_PATH))),
+        "symbols": target_symbols,
     }
 
 
@@ -735,10 +854,23 @@ def _extract_order_symbols(*frames: pd.DataFrame) -> list[str]:
     for frame in frames:
         if frame.empty:
             continue
-        for column in ("vt_symbol", "symbol"):
-            if column not in frame.columns:
-                continue
-            for value in frame[column].fillna("").astype(str):
+        if "vt_symbol" in frame.columns:
+            for value in frame["vt_symbol"].fillna("").astype(str):
+                text = value.strip()
+                if text:
+                    symbols.add(text)
+            continue
+        if "symbol" in frame.columns and "exchange" in frame.columns:
+            symbol_series = frame["symbol"].fillna("").astype(str).str.strip()
+            exchange_series = frame["exchange"].fillna("").astype(str).str.strip()
+            for symbol, exchange in zip(symbol_series, exchange_series, strict=False):
+                if symbol and exchange and "." not in symbol:
+                    symbols.add(f"{symbol}.{exchange}")
+                elif symbol:
+                    symbols.add(symbol)
+            continue
+        if "symbol" in frame.columns:
+            for value in frame["symbol"].fillna("").astype(str):
                 text = value.strip()
                 if text:
                     symbols.add(text)
@@ -914,9 +1046,12 @@ def _build_cycle_plan(
             order_api_called=stage260_order_api_called,
         )
     )
+    stage251_legacy_policy = str(stage902_summary.get("legacy_stage251_policy", "optional"))
     if stage251_status == "fresh_pre_submit_gate_passed":
         stage251_plan_status = "passed"
     elif stage251_status == "stage251_skipped" and stage260_executable <= 0:
+        stage251_plan_status = "skipped"
+    elif stage251_legacy_policy == "optional" and stage251_order_api_called == 0:
         stage251_plan_status = "skipped"
     else:
         stage251_plan_status = "blocked"
@@ -924,8 +1059,11 @@ def _build_cycle_plan(
         _plan_row(
             "stage251_fresh_pre_submit_gate",
             stage251_plan_status,
-            "optionally run fresh pre-submit gate when Stage260 has executable signals",
-            f"stage251={stage251_status};reason={stage251_summary.get('failure_reason', stage251_summary.get('skip_reason', ''))}",
+            "legacy SimNow/broker-test pre-submit gate; production live uses current broker/readiness/final-submit gates",
+            (
+                f"stage251={stage251_status};legacy_policy={stage251_legacy_policy};"
+                f"reason={stage251_summary.get('failure_reason', stage251_summary.get('skip_reason', ''))}"
+            ),
             order_api_called=stage251_order_api_called,
         )
     )
@@ -1145,6 +1283,7 @@ def _build_report(summary: dict[str, Any], plan: pd.DataFrame) -> str:
             f"- 控制器状态：`{summary['controller_status']}`",
             f"- 当前 session：`{summary['current_session_names']}`",
             f"- order API 调用次数：`{summary['order_api_called_count']}`",
+            f"- Stage608 临近 tick 刷新：`{summary.get('stage608_intraday_tick_status', '')}`，行数 `{summary.get('stage608_intraday_tick_rows', '')}`",
             "",
             "## Cycle Plan",
             "",
@@ -1269,6 +1408,16 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
         confirm_live_real=args.confirm_live_real,
     )
+    broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
+    broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
+    symbols = _extract_order_symbols(signal_plan, pending_orders, current_positions, broker_positions, broker_trades)
+    stage608_intraday_result = _run_stage608_intraday_tick_refresh(
+        symbols=symbols,
+        refresh_mode=args.intraday_tick_refresh_mode,
+        wait_seconds=args.intraday_tick_wait_seconds,
+        pre_subscribe_wait_seconds=args.intraday_pre_subscribe_wait_seconds,
+        stage914_ready=stage914_ready,
+    )
     stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
     stage905_result = _run_stage905(target_date=target_date)
     stage906_result = _run_stage906(
@@ -1306,7 +1455,6 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     )
     controller_status = _controller_status(args.mode, kill_active, stage902_result, plan)
     order_api_called = int(plan["order_api_called"].sum()) if not plan.empty else 0
-    symbols = _extract_order_symbols(signal_plan, pending_orders, current_positions)
     current_session_names = ",".join(row["name"] for row in sessions) if sessions else ""
 
     summary = {
@@ -1361,6 +1509,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage902_exit_code": stage902_result.get("exit_code"),
         "stage902_overall_status": stage902_result.get("summary", {}).get("overall_status", ""),
         "stage902_blocking_failure_count": stage902_result.get("summary", {}).get("blocking_failure_count", ""),
+        "stage608_intraday_tick_exit_code": stage608_intraday_result.get("exit_code"),
+        "stage608_intraday_tick_status": stage608_intraday_result.get("summary", {}).get("status", ""),
+        "stage608_intraday_tick_rows": stage608_intraday_result.get("tick_rows", ""),
+        "stage608_intraday_tick_symbols": stage608_intraday_result.get("symbols", []),
+        "stage608_intraday_tick_timed_out": stage608_intraday_result.get("timed_out", 0),
         "stage904_exit_code": stage904_result.get("exit_code"),
         "stage904_monitor_status": stage904_result.get("summary", {}).get("monitor_status", ""),
         "stage904_close_dry_run_count": stage904_result.get("summary", {}).get("close_dry_run_count", 0),
@@ -1404,6 +1557,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage907_command": stage907_result.get("command", []),
         "stage260_command": stage260_result.get("command", []),
         "stage251_command": stage251_result.get("command", []),
+        "stage608_intraday_tick_command": stage608_intraday_result.get("command", []),
         "stage904_command": stage904_result.get("command", []),
         "stage905_command": stage905_result.get("command", []),
         "stage906_command": stage906_result.get("command", []),
@@ -1502,6 +1656,9 @@ def main() -> None:
     parser.add_argument("--stage251-simnow-front", default=os.getenv("SIMNOW_FRONT", "trading"))
     parser.add_argument("--stage251-wait-seconds", type=int, default=90)
     parser.add_argument("--stage251-skip-real-block-test", action="store_true")
+    parser.add_argument("--intraday-tick-refresh-mode", choices=["skip", "refresh"], default="refresh")
+    parser.add_argument("--intraday-tick-wait-seconds", type=int, default=8)
+    parser.add_argument("--intraday-pre-subscribe-wait-seconds", type=int, default=2)
     parser.add_argument("--loop", action="store_true", help="Run continuously with heartbeat updates.")
     parser.add_argument("--poll-seconds", type=int, default=30)
     parser.add_argument("--write-launchd-template", action="store_true")

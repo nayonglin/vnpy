@@ -34,6 +34,8 @@ build/
 dist/
 *.local
 *.local.env
+log/
+incoming/
 
 # VeighNa
 .vntrader/
@@ -59,3 +61,4 @@ lab/
 examples/alpha_research/native_results/
 examples/alpha_research/public_results/
 examples/portfolio_backtesting/backtest_outputs/
+research/lines/*/outputs/

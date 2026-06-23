@@ -21,14 +21,17 @@ OPEN_BLOCKING_EVENTS = {
     "filled_or_part_filled",
     "rejected_or_inactive",
     "submitted_to_ctp",
+    "unknown_order_status_after_send",
+    "residual_order_active_after_cancel",
+    "residual_order_unknown_after_cancel",
     "adapter_exception_after_reserve",
-    "final_pre_send_gate_blocked_after_reserve",
 }
 CLOSE_BLOCKING_EVENTS = {
     "send_order_called",
     "send_order_returned_empty",
     "filled_or_part_filled",
     "rejected_or_inactive",
+    "unknown_order_status_after_send",
     "residual_order_active_after_cancel",
     "residual_order_unknown_after_cancel",
 }
@@ -290,6 +293,8 @@ def duplicate_blocker(
         return "ledger_duplicate_close_intent:residual_order_active_after_cancel", fingerprint, payload, latest
     if offset == "close" and any(_clean(item.get("event_type")) == "residual_order_unknown_after_cancel" for item in matched_events):
         return "ledger_duplicate_close_intent:residual_order_unknown_after_cancel", fingerprint, payload, latest
+    if offset == "close" and any(_clean(item.get("event_type")) == "unknown_order_status_after_send" for item in matched_events):
+        return "ledger_duplicate_close_intent:unknown_order_status_after_send", fingerprint, payload, latest
     if offset == "close" and event_type in {"reserved", "final_pre_send_gate_blocked_after_reserve"}:
         age = event_age_seconds(latest)
         if age is not None and age >= close_retry_after_cancel_seconds:
@@ -310,6 +315,12 @@ def duplicate_blocker(
     if offset == "close":
         if event_type in CLOSE_BLOCKING_EVENTS:
             return f"ledger_duplicate_close_intent:{event_type}", fingerprint, payload, latest
+        return "", fingerprint, payload, latest
+    if event_type == "final_pre_send_gate_blocked_after_reserve":
+        age = event_age_seconds(latest)
+        throttle_seconds = max(30, close_retry_after_cancel_seconds)
+        if age is not None and age < throttle_seconds:
+            return f"ledger_open_retry_throttled_after_final_pre_send_gate:{age}", fingerprint, payload, latest
         return "", fingerprint, payload, latest
     if event_type in OPEN_BLOCKING_EVENTS:
         return f"ledger_duplicate_open_intent:{event_type}", fingerprint, payload, latest

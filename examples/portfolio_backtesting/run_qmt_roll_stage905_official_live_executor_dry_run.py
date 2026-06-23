@@ -32,6 +32,33 @@ STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 STAGE260_MODEL_TAG = "stage260_official_live_daily_execution_gate_v1"
 STAGE260_PREFIX = "qmt_roll_stage260_official_live_daily_execution_gate"
 RETRY_INTENT_ROLE = "c9_retry_open_once"
+ACTIVE_ORDER_STATUSES = {
+    "submitting",
+    "submitted",
+    "not traded",
+    "nottraded",
+    "part traded",
+    "parttraded",
+    "未成交",
+    "提交中",
+    "部分成交",
+}
+TERMINAL_ORDER_STATUSES = {
+    "all traded",
+    "alltraded",
+    "filled",
+    "cancelled",
+    "canceled",
+    "rejected",
+    "全部成交",
+    "已成交",
+    "已撤单",
+    "已撤销",
+    "撤单",
+    "拒单",
+    "已拒绝",
+    "废单",
+}
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -179,10 +206,38 @@ def _opposite_position_direction(order_direction: str) -> str:
     return ""
 
 
+def _dedupe_position_snapshots(positions: pd.DataFrame) -> pd.DataFrame:
+    if positions.empty:
+        return positions
+    frame = positions.copy()
+    key_columns = [
+        column
+        for column in (
+            "vt_symbol",
+            "symbol",
+            "exchange",
+            "instrument",
+            "instrument_id",
+            "direction",
+            "volume",
+            "position",
+            "pos",
+            "frozen",
+            "frozen_volume",
+            "yd_volume",
+            "price",
+        )
+        if column in frame.columns
+    ]
+    if not key_columns:
+        return frame.drop_duplicates()
+    return frame.drop_duplicates(subset=key_columns, keep="last")
+
+
 def _position_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) -> float:
     if positions.empty:
         return 0.0
-    frame = positions.drop_duplicates().copy()
+    frame = _dedupe_position_snapshots(positions)
     if "vt_symbol" in frame.columns:
         vt = frame["vt_symbol"].fillna("").astype(str)
     elif "symbol" in frame.columns and "exchange" in frame.columns:
@@ -198,9 +253,26 @@ def _position_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) ->
     return float(available[vt.eq(vt_symbol) & pos_direction.eq(direction)].sum())
 
 
-def _active_order_count(orders: pd.DataFrame) -> int:
-    if orders.empty or "status" not in orders.columns:
-        return 0
+def _position_gross_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) -> float:
+    if positions.empty:
+        return 0.0
+    frame = _dedupe_position_snapshots(positions)
+    if "vt_symbol" in frame.columns:
+        vt = frame["vt_symbol"].fillna("").astype(str)
+    elif "symbol" in frame.columns and "exchange" in frame.columns:
+        vt = frame["symbol"].fillna("").astype(str) + "." + frame["exchange"].fillna("").astype(str)
+    elif "instrument" in frame.columns:
+        vt = frame["instrument"].fillna("").astype(str)
+    else:
+        return 0.0
+    pos_direction = frame.get("direction", pd.Series([""] * len(frame))).map(_normalize_direction_text)
+    volume = pd.to_numeric(frame.get("volume", frame.get("position", frame.get("pos", 0.0))), errors="coerce").fillna(0.0)
+    return float(volume.clip(lower=0.0)[vt.eq(vt_symbol) & pos_direction.eq(direction)].sum())
+
+
+def _latest_order_statuses(orders: pd.DataFrame) -> pd.Series:
+    if orders.empty:
+        return pd.Series(dtype=str)
     frame = orders.copy()
     key_source = frame.get("vt_orderid", frame.get("orderid", pd.Series([""] * len(frame))))
     frame["_order_key"] = key_source.fillna("").astype(str)
@@ -210,8 +282,22 @@ def _active_order_count(orders: pd.DataFrame) -> int:
     frame["_row_order"] = range(len(frame))
     sort_cols = ["_order_key", "_dt", "_row_order"]
     latest = frame.sort_values(sort_cols).drop_duplicates("_order_key", keep="last")
-    active = {"submitting", "submitted", "not traded", "nottraded", "part traded", "parttraded", "未成交", "提交中", "部分成交"}
-    return int(latest["status"].fillna("").astype(str).str.strip().str.lower().isin(active).sum())
+    if "status" not in latest.columns:
+        return pd.Series([""] * len(latest), dtype=str)
+    return latest["status"].fillna("").astype(str).str.strip().str.lower()
+
+
+def _active_order_count(orders: pd.DataFrame) -> int:
+    statuses = _latest_order_statuses(orders)
+    return int(statuses.isin(ACTIVE_ORDER_STATUSES).sum())
+
+
+def _unknown_order_status_count(orders: pd.DataFrame) -> int:
+    statuses = _latest_order_statuses(orders)
+    if statuses.empty:
+        return 0
+    known = ACTIVE_ORDER_STATUSES | TERMINAL_ORDER_STATUSES
+    return int((~statuses.isin(known)).sum())
 
 
 def _clip_price(price: float, lower: float, upper: float) -> float:
@@ -314,29 +400,37 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
     return rows
 
 
-def _dedupe_close_intents(intents: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+def _dedupe_intents(intents: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    close_grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    open_grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
     passthrough: list[dict[str, Any]] = []
     for intent in intents:
         vt_symbol = _clean(intent.get("vt_symbol"))
         direction = _normalize_direction_text(intent.get("direction"))
         offset = _normalize_offset_text(intent.get("offset"))
-        if offset != "close":
+        if offset == "close":
+            close_grouped.setdefault((vt_symbol, direction, offset), []).append(intent)
+        elif offset == "open":
+            open_grouped.setdefault((vt_symbol, direction, offset), []).append(intent)
+        else:
             passthrough.append(intent)
-            continue
-        grouped.setdefault((vt_symbol, direction, offset), []).append(intent)
 
-    def priority(row: dict[str, Any]) -> tuple[int, float]:
+    def close_priority(row: dict[str, Any]) -> tuple[int, float]:
         source = _clean(row.get("source"))
         source_priority = 0 if source == "stage904_c9_intraday_close" else 1 if source == "stage901_pending_order" else 9
         return source_priority, -_to_float(row.get("planned_volume"), 0.0)
 
+    def open_priority(row: dict[str, Any]) -> tuple[int, float]:
+        source = _clean(row.get("source"))
+        source_priority = 0 if source == "stage904_c9_intraday_retry_open" else 1 if source == "stage901_pending_order" else 9
+        return source_priority, -_to_float(row.get("planned_volume"), 0.0)
+
     deduped: list[dict[str, Any]] = list(passthrough)
-    for rows in grouped.values():
+    for rows in close_grouped.values():
         if len(rows) == 1:
             deduped.append(rows[0])
             continue
-        ordered = sorted(rows, key=priority)
+        ordered = sorted(rows, key=close_priority)
         kept = dict(ordered[0])
         removed = ordered[1:]
         removed_sources = ",".join(_clean(row.get("source")) for row in removed)
@@ -344,6 +438,20 @@ def _dedupe_close_intents(intents: list[dict[str, Any]]) -> list[dict[str, Any]]
         kept["dedupe_removed_sources"] = removed_sources
         reason = _clean(kept.get("source_reason"))
         suffix = f"deduped_close_intents_removed={len(removed)}:{removed_sources}"
+        kept["source_reason"] = f"{reason};{suffix}" if reason else suffix
+        deduped.append(kept)
+    for rows in open_grouped.values():
+        if len(rows) == 1:
+            deduped.append(rows[0])
+            continue
+        ordered = sorted(rows, key=open_priority)
+        kept = dict(ordered[0])
+        removed = ordered[1:]
+        removed_sources = ",".join(_clean(row.get("source")) for row in removed)
+        kept["dedupe_removed_count"] = len(removed)
+        kept["dedupe_removed_sources"] = removed_sources
+        reason = _clean(kept.get("source_reason"))
+        suffix = f"deduped_open_intents_removed={len(removed)}:{removed_sources}"
         kept["source_reason"] = f"{reason};{suffix}" if reason else suffix
         deduped.append(kept)
     return deduped
@@ -371,6 +479,7 @@ def _validate_intent(
     volume = _to_float(intent.get("planned_volume"), 0.0)
     contract = _contract_row(contracts, vt_symbol)
     active_orders = _active_order_count(orders)
+    unknown_orders = _unknown_order_status_count(orders)
     stage902_blocking = int(_to_float(stage902_summary.get("blocking_failure_count"), 999))
     stage902_reduce_close_blocking = int(
         _to_float(stage902_summary.get("blocking_failure_count_for_reduce_close"), stage902_blocking)
@@ -389,6 +498,8 @@ def _validate_intent(
         reasons.append("stage905_never_submits_live_orders")
     if active_orders > config.hard_limits.max_open_order_count:
         reasons.append(f"active_order_count={active_orders}")
+    if unknown_orders > 0:
+        reasons.append(f"unknown_order_status_count={unknown_orders}")
     if not symbol or not exchange_value:
         reasons.append("invalid_vt_symbol")
     if direction is None:
@@ -443,11 +554,24 @@ def _validate_intent(
     elif offset_text == "open":
         if stage902_allow_new_open != 1:
             reasons.append("stage902_new_open_not_allowed")
+        broker_match_volume = _position_gross_volume(positions, vt_symbol, direction_text)
+        if broker_match_volume > 0:
+            reasons.append(f"same_direction_broker_position_exists_for_open:{broker_match_volume}")
         if stage260_executable <= 0 and not intraday_retry_open_intent:
             reasons.append("stage260_no_executable_open_gate")
 
     order_request_payload: dict[str, Any] = {}
-    status = "blocked" if reasons else "dry_run_order_request_payload_ready"
+    skip_existing_stage901_open = (
+        source == "stage901_pending_order"
+        and offset_text == "open"
+        and volume > 0
+        and broker_match_volume >= volume
+    )
+    if skip_existing_stage901_open:
+        status = "skipped_existing_broker_position"
+        reasons = [f"stage901_open_already_present_in_broker_position:{broker_match_volume}"]
+    else:
+        status = "blocked" if reasons else "dry_run_order_request_payload_ready"
     if not reasons and direction and offset:
         req = OrderRequest(
             symbol=symbol,
@@ -508,6 +632,7 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
             f"- intent 数：`{summary['intent_count']}`",
             f"- ready 数：`{summary['ready_count']}`",
             f"- blocked 数：`{summary['blocked_count']}`",
+            f"- skipped 数：`{summary.get('skipped_count', 0)}`",
             f"- send_order 调用次数：`{summary['send_order_api_called_count']}`",
             f"- cancel_order 调用次数：`{summary['cancel_order_api_called_count']}`",
             "",
@@ -564,7 +689,7 @@ def main() -> None:
     stage902_summary = _read_json(_stage902_summary_path(args.target_date))
     stage260_summary = _read_json(_stage260_summary_path(args.target_date))
 
-    raw_intents = _dedupe_close_intents(_pending_order_intents(pending_orders) + _stage904_intents(stage904_actions))
+    raw_intents = _dedupe_intents(_pending_order_intents(pending_orders) + _stage904_intents(stage904_actions))
     intents = pd.DataFrame(
         [
             _validate_intent(
@@ -581,11 +706,17 @@ def main() -> None:
     )
     ready_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).eq("dry_run_order_request_payload_ready").sum()) if not intents.empty else 0
     blocked_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).eq("blocked").sum()) if not intents.empty else 0
+    skipped_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).str.startswith("skipped_").sum()) if not intents.empty else 0
     send_count = int(intents.get("send_order_api_called", pd.Series(dtype=float)).sum()) if not intents.empty else 0
     cancel_count = int(intents.get("cancel_order_api_called", pd.Series(dtype=float)).sum()) if not intents.empty else 0
-    executor_status = "executor_dry_run_ready" if ready_count and not blocked_count else "executor_dry_run_blocked"
     if intents.empty:
         executor_status = "executor_no_intents"
+    elif ready_count and not blocked_count:
+        executor_status = "executor_dry_run_ready"
+    elif blocked_count:
+        executor_status = "executor_dry_run_blocked"
+    else:
+        executor_status = "executor_no_ready_intents"
 
     summary = {
         "model_tag": MODEL_TAG,
@@ -597,6 +728,7 @@ def main() -> None:
         "intent_count": int(len(intents)),
         "ready_count": ready_count,
         "blocked_count": blocked_count,
+        "skipped_count": skipped_count,
         "send_order_api_called_count": send_count,
         "cancel_order_api_called_count": cancel_count,
         "stage902_overall_status": stage902_summary.get("overall_status", ""),

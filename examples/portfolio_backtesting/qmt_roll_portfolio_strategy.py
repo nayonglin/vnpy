@@ -5220,6 +5220,33 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "margin_ratio": margin_ratio,
                 "margin_per_contract": margin_per_contract,
                 "projected_total_margin_after": projected_margin_after,
+                "risk_cluster_cap_enabled": int(sizing_snapshot.get("risk_cluster_cap_enabled") or 0),
+                "risk_cluster_name": str(sizing_snapshot.get("risk_cluster_name") or ""),
+                "risk_cluster_cap_ratio": float(sizing_snapshot.get("risk_cluster_cap_ratio") or 0.0),
+                "risk_cluster_cap_amount": float(sizing_snapshot.get("risk_cluster_cap_amount") or 0.0),
+                "risk_cluster_reserved_margin_before": float(
+                    sizing_snapshot.get("risk_cluster_reserved_margin_before") or 0.0
+                ),
+                "risk_cluster_max_volume": int(sizing_snapshot.get("risk_cluster_max_volume") or 0),
+                "risk_cluster_selected_volume_before": int(
+                    sizing_snapshot.get("risk_cluster_selected_volume_before") or 0
+                ),
+                "risk_cluster_selected_volume": int(sizing_snapshot.get("risk_cluster_selected_volume") or 0),
+                "risk_cluster_heat_gate_enabled": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_enabled") or 0
+                ),
+                "risk_cluster_heat_gate_weight": float(
+                    sizing_snapshot.get("risk_cluster_heat_gate_weight") or 1.0
+                ),
+                "risk_cluster_heat_gate_pressure": float(
+                    sizing_snapshot.get("risk_cluster_heat_gate_pressure") or 0.0
+                ),
+                "risk_cluster_heat_gate_selected_volume_before": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_selected_volume_before") or 0
+                ),
+                "risk_cluster_heat_gate_selected_volume": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_selected_volume") or 0
+                ),
                 "incremental_margin_budget_gate_enabled": int(
                     sizing_snapshot.get("incremental_margin_budget_gate_enabled") or 0
                 ),
@@ -5818,6 +5845,33 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "actual_margin_amount": actual_margin_amount,
                 "projected_total_margin_after": reserved_margin_before + actual_margin_amount,
                 "volume": int(volume),
+                "risk_cluster_cap_enabled": int(sizing_snapshot.get("risk_cluster_cap_enabled") or 0),
+                "risk_cluster_name": str(sizing_snapshot.get("risk_cluster_name") or ""),
+                "risk_cluster_cap_ratio": float(sizing_snapshot.get("risk_cluster_cap_ratio") or 0.0),
+                "risk_cluster_cap_amount": float(sizing_snapshot.get("risk_cluster_cap_amount") or 0.0),
+                "risk_cluster_reserved_margin_before": float(
+                    sizing_snapshot.get("risk_cluster_reserved_margin_before") or 0.0
+                ),
+                "risk_cluster_max_volume": int(sizing_snapshot.get("risk_cluster_max_volume") or 0),
+                "risk_cluster_selected_volume_before": int(
+                    sizing_snapshot.get("risk_cluster_selected_volume_before") or 0
+                ),
+                "risk_cluster_selected_volume": int(sizing_snapshot.get("risk_cluster_selected_volume") or 0),
+                "risk_cluster_heat_gate_enabled": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_enabled") or 0
+                ),
+                "risk_cluster_heat_gate_weight": float(
+                    sizing_snapshot.get("risk_cluster_heat_gate_weight") or 1.0
+                ),
+                "risk_cluster_heat_gate_pressure": float(
+                    sizing_snapshot.get("risk_cluster_heat_gate_pressure") or 0.0
+                ),
+                "risk_cluster_heat_gate_selected_volume_before": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_selected_volume_before") or 0
+                ),
+                "risk_cluster_heat_gate_selected_volume": int(
+                    sizing_snapshot.get("risk_cluster_heat_gate_selected_volume") or 0
+                ),
                 "contracts_by_risk": sizing_snapshot.get("contracts_by_risk"),
                 "contracts_by_margin": sizing_snapshot.get("contracts_by_margin"),
                 "contracts_by_single_trade_cap": sizing_snapshot.get("contracts_by_single_trade_cap"),

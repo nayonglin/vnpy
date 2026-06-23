@@ -215,6 +215,15 @@ def main() -> None:
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
     parser.add_argument("--max-target-date-age-days", type=int, default=4)
+    parser.add_argument(
+        "--legacy-stage251-policy",
+        choices=["optional", "require"],
+        default="optional",
+        help=(
+            "Stage251 is a legacy SimNow/broker-test fresh gate. "
+            "Production live submit uses Stage907/260/905/931 gates by default."
+        ),
+    )
     parser.add_argument("--confirm-live-real", default="")
     args = parser.parse_args()
 
@@ -255,6 +264,13 @@ def main() -> None:
     stage260_order_api_called = _to_int(stage260_summary.get("order_api_called_count"), 0)
     stage251_status = str(stage251_summary.get("overall_status", ""))
     stage251_order_api_called = _to_int(stage251_summary.get("total_order_api_called_count"), 0)
+    stage251_required = args.legacy_stage251_policy == "require" and stage260_executable_count > 0
+    stage251_gate_satisfied = (
+        stage260_executable_count == 0
+        or stage251_status == "fresh_pre_submit_gate_passed"
+        or args.legacy_stage251_policy == "optional"
+    )
+    stage251_clean = stage251_order_api_called == 0 and stage251_gate_satisfied
 
     live_real_env = _env_enabled(PHASE_D_REAL_ENABLED_ENV)
     session_daemon_env = _env_enabled(PHASE_D_SESSION_DAEMON_ENV)
@@ -365,11 +381,19 @@ def main() -> None:
     _check(
         checks,
         name="stage251_fresh_pre_submit_gate_when_executable",
-        passed=stage260_executable_count == 0 or (stage251_status == "fresh_pre_submit_gate_passed" and stage251_order_api_called == 0),
-        severity="block",
-        observed=f"stage260_executable={stage260_executable_count};stage251={stage251_status};order_api={stage251_order_api_called}",
-        required="if executable_count>0 then Stage251 passed and order_api=0",
+        passed=stage251_clean,
+        severity="block" if stage251_required or stage251_order_api_called != 0 else "info",
+        observed=(
+            f"stage260_executable={stage260_executable_count};"
+            f"stage251={stage251_status};order_api={stage251_order_api_called};"
+            f"legacy_policy={args.legacy_stage251_policy}"
+        ),
+        required="Stage251 passed only when legacy policy=require; always order_api=0",
         blocker="fresh_pre_submit_gate_missing_or_blocked",
+        note=(
+            "当前生产实盘开仓以前置只读快照、Stage260、Stage905、Stage931 最终报单前校验为准；"
+            "Stage251 仍保留给 SimNow/broker-test 或显式 legacy 验收。"
+        ),
     )
     _check(
         checks,
@@ -470,6 +494,8 @@ def main() -> None:
         "stage260_executable_count": stage260_executable_count,
         "stage260_order_api_called_count": stage260_order_api_called,
         "stage251_status": stage251_status,
+        "legacy_stage251_policy": args.legacy_stage251_policy,
+        "stage251_required": int(stage251_required),
         "stage251_order_api_called_count": stage251_order_api_called,
         "order_api_called_count": order_api_called,
         "ready_for_phase_d_real": ready_for_phase_d_real,

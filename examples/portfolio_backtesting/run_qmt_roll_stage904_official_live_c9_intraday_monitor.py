@@ -32,6 +32,17 @@ MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
 OUTPUT_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 STOP_RETRY_R = 0.5
 RETRY_INTENT_ROLE = "c9_retry_open_once"
+RETRY_OPEN_CONSUMING_LEDGER_EVENTS = {
+    "send_order_called",
+    "send_order_returned_empty",
+    "submitted_to_ctp",
+    "filled_or_part_filled",
+    "rejected_or_inactive",
+    "unknown_order_status_after_send",
+    "residual_order_active_after_cancel",
+    "residual_order_unknown_after_cancel",
+    "cancel_order_called",
+}
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -347,12 +358,16 @@ def _broker_position_volume(row: dict[str, Any]) -> float:
     return max(0.0, volume - frozen)
 
 
+def _broker_position_gross_volume(row: dict[str, Any]) -> float:
+    return max(0.0, _to_float(row.get("volume", row.get("position", row.get("pos", 0.0))), 0.0))
+
+
 def _has_broker_position(broker_positions: pd.DataFrame, vt_symbol: str, direction: str) -> bool:
     if broker_positions.empty:
         return False
     for row in broker_positions.drop_duplicates().to_dict(orient="records"):
         if _vt_symbol(row) == vt_symbol and _normalize_direction(row.get("direction")) == direction:
-            if _broker_position_volume(row) > 0:
+            if _broker_position_gross_volume(row) > 0:
                 return True
     return False
 
@@ -452,6 +467,8 @@ def _stage904_retry_open_attempted(
     original_direction: str,
 ) -> bool:
     for row in rows:
+        if _clean(row.get("event_type")) not in RETRY_OPEN_CONSUMING_LEDGER_EVENTS:
+            continue
         if _clean(row.get("target_date")) != target_date:
             continue
         if _ledger_vt_symbol(row) != vt_symbol:
@@ -474,6 +491,7 @@ def _retry_action_for_stopped_position(
     *,
     ledger_open_trade: dict[str, Any],
     close_fill: dict[str, Any],
+    stop_close_filled_volume: float,
     broker_positions: pd.DataFrame,
     entry_risk: pd.DataFrame,
     ticks: pd.DataFrame,
@@ -507,6 +525,8 @@ def _retry_action_for_stopped_position(
         reasons.append("retry_matching_entry_risk_missing")
     if risk_price <= 0:
         reasons.append("retry_invalid_risk_price")
+    if stop_close_filled_volume + 1e-9 < volume:
+        reasons.append(f"retry_stop_close_not_fully_filled:{stop_close_filled_volume}<{volume}")
     if _has_broker_position(broker_positions, vt_symbol, direction):
         reasons.append("retry_blocked_broker_position_not_flat_after_stop_close")
     if tick is None:
@@ -577,7 +597,7 @@ def _retry_action_for_stopped_position(
         "progress_hit": int(retry_hit),
         "retry_open_attempted": 0,
         "retry_stop_close_fill_price": _to_float(close_fill.get("price"), 0.0),
-        "retry_stop_close_fill_volume": _to_float(close_fill.get("trade_volume_delta", close_fill.get("volume")), 0.0),
+        "retry_stop_close_fill_volume": stop_close_filled_volume,
         "monitor_action": action,
         "monitor_reason": ";".join(dict.fromkeys(reasons)),
         "order_api_called": 0,
@@ -617,10 +637,15 @@ def _retry_actions(
         ledger_open_trade = weighted_open_fill(execution_ledger_rows, target_date, vt_symbol, direction)
         if not ledger_open_trade:
             continue
+        stop_close_filled_volume = sum(
+            _to_float(row.get("trade_volume_delta", row.get("volume")), 0.0)
+            for row in close_fills
+        )
         rows.append(
             _retry_action_for_stopped_position(
                 ledger_open_trade=ledger_open_trade,
                 close_fill=close_fills[-1],
+                stop_close_filled_volume=stop_close_filled_volume,
                 broker_positions=broker_positions,
                 entry_risk=entry_risk,
                 ticks=ticks,
@@ -898,7 +923,9 @@ def main() -> None:
     blocked_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["block", "retry_block"]).sum()) if not actions.empty else 0
     order_api_called = int(actions.get("order_api_called", pd.Series(dtype=float)).sum()) if not actions.empty else 0
     monitor_status = "intraday_monitor_blocked" if blocked_count else "intraday_monitor_ready"
-    if retry_open_dry_run_count:
+    if blocked_count:
+        monitor_status = "intraday_monitor_blocked"
+    elif retry_open_dry_run_count:
         monitor_status = "intraday_monitor_retry_open_dry_run"
     elif close_dry_run_count:
         monitor_status = "intraday_monitor_close_dry_run"

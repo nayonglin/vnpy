@@ -161,9 +161,36 @@ def _position_volume(row: dict[str, Any], *, shadow: bool) -> float:
     return max(0.0, volume - frozen)
 
 
+def _dedupe_position_snapshots(frame: pd.DataFrame) -> pd.DataFrame:
+    if frame.empty:
+        return frame
+    key_columns = [
+        column
+        for column in (
+            "vt_symbol",
+            "symbol",
+            "exchange",
+            "instrument",
+            "instrument_id",
+            "direction",
+            "volume",
+            "position",
+            "pos",
+            "frozen",
+            "frozen_volume",
+            "yd_volume",
+            "price",
+        )
+        if column in frame.columns
+    ]
+    if not key_columns:
+        return frame.drop_duplicates()
+    return frame.drop_duplicates(subset=key_columns, keep="last")
+
+
 def _normalize_positions(frame: pd.DataFrame, *, source: str, shadow: bool) -> pd.DataFrame:
     if not frame.empty:
-        frame = frame.drop_duplicates().copy()
+        frame = _dedupe_position_snapshots(frame)
     rows: list[dict[str, Any]] = []
     for row in frame.to_dict(orient="records"):
         vt_symbol = _vt_symbol(row)

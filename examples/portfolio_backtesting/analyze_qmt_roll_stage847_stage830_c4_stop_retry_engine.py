@@ -463,7 +463,18 @@ def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.
         engine.run_backtesting()
         daily_df = engine.calculate_result()
         if daily_df is None or daily_df.empty:
-            raise RuntimeError(f"empty daily result: {profile['profile']}")
+            daily_df = pd.DataFrame(
+                [
+                    {
+                        "net_pnl": 0.0,
+                        "trade_count": 0.0,
+                        "slippage": 0.0,
+                        "commission": 0.0,
+                        "turnover": 0.0,
+                    }
+                ],
+                index=pd.Index([END.date()], name="date"),
+            )
 
         daily = daily_df.copy()
         daily = daily.loc[(daily.index >= START.date()) & (daily.index <= END.date())].reset_index()

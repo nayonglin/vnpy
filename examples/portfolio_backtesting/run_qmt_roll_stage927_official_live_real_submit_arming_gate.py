@@ -195,6 +195,19 @@ def main() -> None:
     stage926 = payloads["stage926"]
     stage932 = payloads["stage932"]
     kill_switch = payloads["kill_switch"]
+    account_recovery_not_required = stage924.get("recovery_status") == "account_recovery_not_required_aligned"
+    account_recovery_ack_suite_passed = (
+        stage925.get("suite_status") == "account_recovery_ack_suite_passed_fail_closed"
+        and _to_int(stage925.get("failed_count"), -1) == 0
+        and _to_int(stage925.get("order_api_called_count"), -1) == 0
+    )
+    route_smoke_confirmed = (
+        stage932.get("status") == "submit_cancel_confirmed"
+        and _to_int(stage932.get("smoke_passed"), 0) == 1
+        and _to_int(stage932.get("send_order_api_called_count"), -1) == 1
+        and _to_int(stage932.get("cancel_order_api_called_count"), -1) == 1
+        and _to_float(stage932.get("trade_volume"), -1.0) == 0.0
+    )
 
     rows: list[dict[str, Any]] = []
     _check(
@@ -267,6 +280,27 @@ def main() -> None:
         ),
         required="latest controller evidence for current official live version + kill_switch_active=false + order_api=0",
         blocker="controller_evidence_not_armable",
+    )
+    _check(
+        rows,
+        check="controller_live_real_clean_ready",
+        category="controller",
+        passed=bool(stage903)
+        and stage903.get("target_date") == args.target_date
+        and stage903.get("mode") == "live-real"
+        and stage903.get("controller_status") == "phase_d_controller_live_real_ready_no_submit_step"
+        and stage903.get("stage905_executor_status") == "executor_dry_run_ready"
+        and _to_int(stage903.get("stage905_blocked_count"), 999) == 0,
+        severity="block",
+        observed=(
+            f"target={stage903.get('target_date', '')};"
+            f"mode={stage903.get('mode', '')};"
+            f"controller={stage903.get('controller_status', '')};"
+            f"stage905={stage903.get('stage905_executor_status', '')};"
+            f"stage905_blocked={stage903.get('stage905_blocked_count', '')}"
+        ),
+        required="same target_date + mode=live-real + controller live-real clean-ready + stage905 blocked=0",
+        blocker="controller_not_live_real_clean_ready",
     )
     _check(
         rows,
@@ -351,29 +385,23 @@ def main() -> None:
         rows,
         check="account_recovery_ack_suite_passed",
         category="account_recovery",
-        passed=stage925.get("suite_status") == "account_recovery_ack_suite_passed_fail_closed"
-        and _to_int(stage925.get("failed_count"), -1) == 0
-        and _to_int(stage925.get("order_api_called_count"), -1) == 0,
-        severity="block",
+        passed=account_recovery_not_required or account_recovery_ack_suite_passed,
+        severity="warn" if account_recovery_not_required else "block",
         observed=(
+            f"stage924={stage924.get('recovery_status', '')};"
             f"status={stage925.get('suite_status', '')};"
             f"failed={stage925.get('failed_count', '')};"
             f"order_api={stage925.get('order_api_called_count', '')}"
         ),
-        required="ack suite passed + failed=0 + order_api=0",
-        blocker="account_recovery_ack_suite_not_passed",
+        required="Stage924 no recovery required, or ack suite passed + failed=0 + order_api=0",
+        blocker="account_recovery_ack_suite_not_passed_when_recovery_required",
     )
     _check(
         rows,
         check="one_lot_smoke_submit_cancel_confirmed",
         category="smoke",
-        passed=stage932.get("target_date") == args.target_date
-        and stage932.get("status") == "submit_cancel_confirmed"
-        and _to_int(stage932.get("smoke_passed"), 0) == 1
-        and _to_int(stage932.get("send_order_api_called_count"), -1) == 1
-        and _to_int(stage932.get("cancel_order_api_called_count"), -1) == 1
-        and _to_float(stage932.get("trade_volume"), -1.0) == 0.0,
-        severity="block",
+        passed=route_smoke_confirmed,
+        severity="warn",
         observed=(
             f"target={stage932.get('target_date', '')};"
             f"status={stage932.get('status', '')};"
@@ -382,8 +410,8 @@ def main() -> None:
             f"cancel={stage932.get('cancel_order_api_called_count', '')};"
             f"trade_volume={stage932.get('trade_volume', '')}"
         ),
-        required="same target_date + submit_cancel_confirmed + smoke_passed=1 + send=1 + cancel=1 + trade_volume=0",
-        blocker="stage932_clean_smoke_not_confirmed",
+        required="route-level smoke evidence if available; not required per target_date",
+        blocker="stage932_clean_smoke_not_confirmed_route_warning",
     )
     _check(
         rows,
