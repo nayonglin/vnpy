@@ -945,6 +945,7 @@ def main() -> None:
         "order_api_called_count": order_api_called,
         "readonly_status": readonly_summary.get("status", ""),
         "tick_path": str(READONLY_TICKS_PATH.resolve()),
+        "monitor_max_tick_age_seconds": int(args.max_tick_age_seconds),
         "require_broker_fill_price": int(bool(args.require_broker_fill_price)),
         "shadow_position_rows": int(len(positions)),
         "broker_position_rows": int(len(broker_positions)),

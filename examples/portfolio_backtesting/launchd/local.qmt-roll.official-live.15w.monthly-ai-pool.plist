@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.qmt-roll.official-live.15w.monthly-ai-pool</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py</string>
+    <string>--mode</string>
+    <string>run</string>
+    <string>--email-policy</string>
+    <string>changes</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>18</integer>
+    <key>Minute</key>
+    <integer>20</integer>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>/Users/bytedance/Desktop/person/vnpy</string>
+  <key>StandardOutPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage935_launchd_monthly_ai_pool.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage935_launchd_monthly_ai_pool.err.log</string>
+</dict>
+</plist>

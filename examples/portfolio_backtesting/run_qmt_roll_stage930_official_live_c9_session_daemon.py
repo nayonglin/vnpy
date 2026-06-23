@@ -47,6 +47,7 @@ STAGE903_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage903_official_live_phase_d_con
 STAGE608_SCRIPT = PROJECT_DIR / "run_ctp_stage608_readonly_tick_snapshot_probe.py"
 STAGE927_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage927_official_live_real_submit_arming_gate.py"
 STAGE931_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage931_official_live_ctp_submit_adapter.py"
+STAGE935_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py"
 STAGE905_MODEL_TAG = "stage905_official_live_executor_dry_run_v1"
 STAGE905_PREFIX = "qmt_roll_stage905_official_live_executor_dry_run"
 
@@ -343,6 +344,48 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
     }
 
 
+def _run_stage935_preflight(args: argparse.Namespace, paths: dict[str, Path]) -> dict[str, Any]:
+    mode = str(args.ai_pool_preflight_mode)
+    if mode == "skip":
+        return {
+            "preflight_status": "ai_pool_preflight_skipped",
+            "exit_code": 0,
+            "automation_status": "skipped",
+            "allowed_to_continue": 1,
+        }
+    cmd = [
+        str(PYTHON_PATH),
+        str(STAGE935_SCRIPT),
+        "--mode",
+        "run" if mode == "run" else "check",
+        "--email-policy",
+        "changes" if mode == "run" else "never",
+    ]
+    result = _run_command(
+        cmd,
+        timeout_seconds=args.ai_pool_timeout_seconds,
+        log_path=paths["command_log"],
+        label="stage935_ai_pool_preflight",
+    )
+    summary = _extract_json_from_stdout(result.get("stdout", ""))
+    status = str(summary.get("automation_status", ""))
+    allowed = int(result.get("exit_code") == 0 and status in {"monthly_ai_pool_already_current", "monthly_ai_pool_updated"})
+    return {
+        **{key: value for key, value in result.items() if key != "stdout"},
+        "preflight_status": "ai_pool_preflight_passed" if allowed else "ai_pool_preflight_blocked",
+        "automation_status": status,
+        "action": summary.get("action", ""),
+        "expected_eval_date": summary.get("expected_eval_date", ""),
+        "current_eval_date": summary.get("current_eval_date", ""),
+        "resolved_target_date": summary.get("resolved_target_date", ""),
+        "blockers": summary.get("blockers", []),
+        "warnings": summary.get("warnings", []),
+        "order_api_called_count": summary.get("order_api_called_count", 0),
+        "allowed_to_continue": allowed,
+        "summary": summary,
+    }
+
+
 def _run_stage927(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
     cmd = [str(PYTHON_PATH), str(STAGE927_SCRIPT), "--target-date", target_date, "--confirm-live-real", args.confirm_live_real]
     result = _run_command(cmd, timeout_seconds=120, log_path=paths["command_log"], label=f"stage927_arming_{target_date}")
@@ -415,12 +458,30 @@ def _current_session_names() -> str:
     return ",".join(names)
 
 
+def _market_execution_session_active() -> bool:
+    config = build_phase_d_config()
+    now = datetime.now().time()
+    for session in config.sessions:
+        start_h, start_m = [int(part) for part in session.start.split(":", 1)]
+        end_h, end_m = [int(part) for part in session.end.split(":", 1)]
+        start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+        end = now.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+        if start <= end:
+            active = start <= now <= end
+        else:
+            active = now >= start or now <= end
+        if active and session.role == "market_and_execution":
+            return True
+    return False
+
+
 def _build_report(summary: dict[str, Any]) -> str:
     latest = summary.get("latest_cycle", {}) or {}
     controller = latest.get("stage903", {}).get("summary", {}) if isinstance(latest.get("stage903"), dict) else {}
     tick = latest.get("tick_refresh", {}) if isinstance(latest.get("tick_refresh"), dict) else {}
     arming = latest.get("stage927", {}).get("summary", {}) if isinstance(latest.get("stage927"), dict) else {}
     submit = latest.get("stage931", {}).get("summary", {}) if isinstance(latest.get("stage931"), dict) else {}
+    ai_pool = summary.get("ai_pool_preflight") or {}
     return "\n".join(
         [
             "# Stage930 C9 盘中会话守护报告",
@@ -432,6 +493,7 @@ def _build_report(summary: dict[str, Any]) -> str:
             f"- 已运行轮次：`{summary['cycle_count']}`",
             f"- 守护进程状态：`{summary['daemon_status']}`",
             f"- 当前交易时段：`{summary['current_session_names']}`",
+            f"- AI池检查：`{ai_pool.get('automation_status', '')}`，expected `{ai_pool.get('expected_eval_date', '')}`，current `{ai_pool.get('current_eval_date', '')}`",
             f"- 下单 API 调用次数：`{summary['order_api_called_count']}`",
             "",
             "## 最近一轮",
@@ -861,7 +923,17 @@ def _stage931_submit_blockers(
 
 def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
     symbols = _watched_symbols(args.vt_symbol)
-    tick_result = _run_tick_refresh(args, target_date, symbols, paths)
+    if _market_execution_session_active():
+        tick_result = _run_tick_refresh(args, target_date, symbols, paths)
+    else:
+        tick_result = {
+            "refresh_status": "tick_refresh_skipped_outside_market_session",
+            "exit_code": 0,
+            "symbols": symbols,
+            "tick_rows": len(_read_csv_maybe(READONLY_TICKS_PATH)),
+            "tick_path": str(READONLY_TICKS_PATH.resolve()),
+            "order_api_called_count": 0,
+        }
     stage903_result = _run_stage903(args, target_date, paths)
     controller_summary = stage903_result.get("summary", {}) if isinstance(stage903_result.get("summary"), dict) else {}
     resolved_target_date = _clean(controller_summary.get("target_date")) or target_date
@@ -920,6 +992,8 @@ def main() -> None:
     parser.add_argument("--max-submit-orders", type=int, default=1)
     parser.add_argument("--fill-wait-seconds", type=int, default=8)
     parser.add_argument("--max-consecutive-cycle-errors", type=int, default=3)
+    parser.add_argument("--ai-pool-preflight-mode", choices=["skip", "check", "run"], default="run")
+    parser.add_argument("--ai-pool-timeout-seconds", type=int, default=3600)
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
     args = parser.parse_args()
@@ -942,6 +1016,67 @@ def main() -> None:
         sys.exit(3)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
+    ai_pool_preflight = _run_stage935_preflight(args, paths)
+    if int(ai_pool_preflight.get("allowed_to_continue", 0)) != 1:
+        summary = {
+            "model_tag": MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "mode": args.mode,
+            "submit_mode": args.submit_mode,
+            "target_date": args.target_date,
+            "requested_target_date": args.target_date,
+            "cycle_count": 0,
+            "daemon_status": "daemon_blocked_ai_pool_preflight_fail_closed",
+            "consecutive_cycle_errors": 0,
+            "current_session_names": _current_session_names(),
+            "order_api_called_count": 0,
+            "ai_pool_preflight": ai_pool_preflight,
+            "latest_cycle": {
+                "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": args.target_date,
+                "stage903": {"summary": {"controller_status": "stage930_ai_pool_preflight_blocked_fail_closed"}},
+                "stage927": {"summary": {"arming_status": "stage927_skipped_ai_pool_preflight_blocked", "real_submit_permitted": 0}},
+                "stage931": {"summary": {"adapter_status": "stage931_skipped_ai_pool_preflight_blocked"}},
+                "order_api_called_count": 0,
+            },
+            "outputs": {key: str(value.resolve()) for key, value in paths.items()},
+            "latest_outputs": {
+                "summary_json": str(LATEST_SUMMARY_PATH.resolve()),
+                "report_md": str(LATEST_REPORT_PATH.resolve()),
+                "heartbeat_json": str(LATEST_HEARTBEAT_PATH.resolve()),
+                "events_ndjson": str(LATEST_EVENT_LOG_PATH.resolve()),
+            },
+            "judgement": {
+                "overfit_before": "否。AI池预检查只验证执行输入是否为最新完整月，不改策略参数。",
+                "continue_before": "是。会话守护不能在AI池 stale 时继续生成新开仓。",
+                "overfit_after": "否。失败时仅 fail-closed，不反馈优化。",
+                "continue_after": "是。需要修复 Stage935 或数据链路后再启动会话守护。",
+            },
+        }
+        _write_outputs(paths, summary)
+        send_official_live_email_notification(
+            subject=(
+                f"[C9/15w][异常] AI池预检查失败 守护未启动 "
+                f"expected={ai_pool_preflight.get('expected_eval_date', '')} current={ai_pool_preflight.get('current_eval_date', '')}"
+            ),
+            body="\n".join(
+                [
+                    "结论：AI池预检查失败，Stage930 未启动交易循环，避免用旧AI池生成新开仓。",
+                    f"状态：{ai_pool_preflight.get('automation_status', '')}",
+                    f"应为：{ai_pool_preflight.get('expected_eval_date', '')}",
+                    f"当前：{ai_pool_preflight.get('current_eval_date', '')}",
+                    f"阻断：{';'.join(map(str, ai_pool_preflight.get('blockers') or [])) or '无'}",
+                    "下单API：0",
+                ]
+            ),
+            event_type="stage930_ai_pool_preflight_blocked",
+            severity="critical",
+            attachments=[paths["report_md"], paths["summary_json"]],
+            metadata={"ai_pool_preflight": ai_pool_preflight, "order_api_called_count": 0},
+        )
+        print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+        sys.exit(2)
     target_date = args.target_date
     started = time.monotonic()
     cycles: list[dict[str, Any]] = []
@@ -986,6 +1121,7 @@ def main() -> None:
             "consecutive_cycle_errors": consecutive_errors,
             "current_session_names": _current_session_names(),
             "order_api_called_count": total_order_api,
+            "ai_pool_preflight": ai_pool_preflight,
             "latest_cycle": cycle,
             "email_notifications": email_notifications,
             "outputs": {key: str(value.resolve()) for key, value in paths.items()},

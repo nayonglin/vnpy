@@ -15,6 +15,7 @@ import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653
 import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
 import analyze_qmt_roll_stage660_stage653_multiperiod_live_audit as s660
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
+import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
@@ -73,6 +74,10 @@ LEGACY_STAGE372_STRATEGY_OVERRIDES: dict[str, Any] = {
     "recovery_sleeve_volume": 1,
 }
 
+_FULL_MINUTE_BY_SYMBOL_CACHE: dict[str, pd.DataFrame] | None = None
+_FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS: set[str] = set()
+_LAST_MINUTE_AUDIT: dict[str, Any] = {}
+
 
 def _json_safe(value: Any) -> Any:
     return s650._json_safe(value)
@@ -105,6 +110,43 @@ def _ai_pool_audit(path: Path) -> dict[str, Any]:
     }
 
 
+def _load_stage861_full_minute_bars(vt_symbols: set[str]) -> pd.DataFrame:
+    if s861.FULL_MINUTE_BARS_PATH.exists():
+        data = pd.read_csv(s861.FULL_MINUTE_BARS_PATH, encoding="utf-8-sig")
+    else:
+        data = s861._load_full_minute_bars(vt_symbols)
+    data = data[data["vt_symbol"].astype(str).isin(vt_symbols)].copy()
+    data["bar_datetime"] = pd.to_datetime(data["bar_datetime"], errors="coerce")
+    if "bar_date" not in data.columns:
+        data["bar_date"] = data["bar_datetime"].dt.normalize()
+    else:
+        data["bar_date"] = pd.to_datetime(data["bar_date"], errors="coerce").dt.normalize()
+    for column in ["open", "high", "low", "close", "volume", "open_oi", "close_oi"]:
+        if column in data.columns:
+            data[column] = pd.to_numeric(data[column], errors="coerce")
+    return data.dropna(subset=["vt_symbol", "bar_datetime", "open", "high", "low", "close"]).reset_index(drop=True)
+
+
+def _ensure_c9_minute_bars(metadata: dict[str, Any]) -> dict[str, Any]:
+    global _FULL_MINUTE_BY_SYMBOL_CACHE, _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS, _LAST_MINUTE_AUDIT
+
+    vt_symbols = set(str(item) for item in metadata.get("vt_symbols", []))
+    if _FULL_MINUTE_BY_SYMBOL_CACHE is None or not vt_symbols.issubset(_FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS):
+        minute_bars = _load_stage861_full_minute_bars(vt_symbols)
+        _FULL_MINUTE_BY_SYMBOL_CACHE = s847.s825._minute_groups(minute_bars)
+        _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS = set(_FULL_MINUTE_BY_SYMBOL_CACHE.keys())
+
+    s847.s827._GLOBAL_MINUTE_BY_SYMBOL = _FULL_MINUTE_BY_SYMBOL_CACHE
+    _LAST_MINUTE_AUDIT = {
+        "source": str(s861.FULL_MINUTE_BARS_PATH),
+        "source_exists": bool(s861.FULL_MINUTE_BARS_PATH.exists()),
+        "requested_symbol_count": int(len(vt_symbols)),
+        "loaded_symbol_count": int(len(_FULL_MINUTE_BY_SYMBOL_CACHE or {})),
+        "missing_symbol_count": int(len(vt_symbols - _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS)),
+    }
+    return dict(_LAST_MINUTE_AUDIT)
+
+
 def _run_live_c9(
     metadata: dict[str, Any],
     analysis_start: pd.Timestamp,
@@ -112,6 +154,8 @@ def _run_live_c9(
 ) -> tuple[pd.DataFrame, dict[str, pd.DataFrame], Any]:
     original_start = s847.START
     original_end = s847.END
+    original_minute_by_symbol = s847.s827._GLOBAL_MINUTE_BY_SYMBOL
+    minute_audit = _ensure_c9_minute_bars(metadata)
     legacy_official_state = {
         "OFFICIAL_LIVE_PROFILE_NAME": s660.OFFICIAL_LIVE_PROFILE_NAME,
         "OFFICIAL_LIVE_BASE_PROFILE_NAME": s660.OFFICIAL_LIVE_BASE_PROFILE_NAME,
@@ -155,6 +199,7 @@ def _run_live_c9(
     finally:
         s847.START = original_start
         s847.END = original_end
+        s847.s827._GLOBAL_MINUTE_BY_SYMBOL = original_minute_by_symbol
         for key, value in legacy_official_state.items():
             setattr(s660, key, value)
 
@@ -174,6 +219,8 @@ def _run_live_c9(
         "forced_margin_deleverage_max_observed_ratio",
     ]:
         combined[column] = 0
+    combined["minute_source"] = minute_audit["source"]
+    combined["minute_loaded_symbol_count"] = minute_audit["loaded_symbol_count"]
     return combined, frames, live_spec
 
 
@@ -235,6 +282,7 @@ def _write_report(
         f"- AI 池最新 eval_date：`{decision['ai_pool_audit'].get('max_eval_date', '')}`。",
         f"- AI 池最新品种：`{', '.join(decision['ai_pool_audit'].get('latest_products', []))}`。",
         f"- 实际 strategy override AI 池：`{decision['strategy_ai_product_pool_eligibility_path']}`。",
+        f"- C9 分钟K源：`{decision['minute_audit'].get('source', '')}`，已加载合约数 `{decision['minute_audit'].get('loaded_symbol_count', '')}`。",
         "",
         "## 核心结果",
         "",
@@ -371,6 +419,7 @@ def main() -> None:
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "ai_pool_audit": _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+        "minute_audit": dict(_LAST_MINUTE_AUDIT),
         "strategy_ai_product_pool_eligibility_path": str(spec.overrides.get("ai_product_pool_eligibility_path", "")),
         "current_variant": current_row[0] if current_row else {},
         "risk_snapshot": {},

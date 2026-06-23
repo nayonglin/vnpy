@@ -654,13 +654,17 @@ def _run_stage251(
 
 def _run_stage904(target_date: str, *, require_broker_fill_price: bool) -> dict[str, Any]:
     config = build_phase_d_config()
+    monitor_max_tick_age_seconds = max(
+        config.hard_limits.max_tick_age_seconds,
+        config.hard_limits.max_controller_cycle_seconds + 15,
+    )
     cmd = [
         sys.executable,
         str(STAGE904_SCRIPT),
         "--target-date",
         target_date,
         "--max-tick-age-seconds",
-        str(config.hard_limits.max_tick_age_seconds),
+        str(monitor_max_tick_age_seconds),
     ]
     if require_broker_fill_price:
         cmd.append("--require-broker-fill-price")
@@ -683,7 +687,28 @@ def _run_stage904(target_date: str, *, require_broker_fill_price: bool) -> dict[
         "stdout_tail": result.stdout[-4000:],
         "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "monitor_max_tick_age_seconds": monitor_max_tick_age_seconds,
         "summary": summary,
+    }
+
+
+def _skip_stage904_outside_market_session() -> dict[str, Any]:
+    now = datetime.now()
+    return {
+        "command": [],
+        "exit_code": 0,
+        "stdout_tail": "",
+        "started_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+        "finished_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+        "monitor_max_tick_age_seconds": "",
+        "summary": {
+            "monitor_status": "intraday_monitor_skipped_outside_market_session",
+            "action_count": 0,
+            "close_dry_run_count": 0,
+            "retry_open_dry_run_count": 0,
+            "retry_watch_count": 0,
+            "order_api_called_count": 0,
+        },
     }
 
 
@@ -1363,6 +1388,9 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     kill_active, kill_payload = _kill_switch_active()
     sessions = _current_sessions(now)
+    market_execution_session_active = any(
+        _clean(session.get("role")) == "market_and_execution" for session in sessions
+    )
 
     stage914_result = _run_stage914(wait_seconds=args.readonly_wait_seconds)
     stage914_summary = stage914_result.get("summary", {})
@@ -1379,7 +1407,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     if not stage914_ready:
         effective_readonly_refresh_mode = "plan-only"
     elif args.readonly_refresh_mode == "auto":
-        effective_readonly_refresh_mode = "refresh" if readonly_stale else "plan-only"
+        effective_readonly_refresh_mode = "refresh" if readonly_stale and market_execution_session_active else "plan-only"
     else:
         effective_readonly_refresh_mode = args.readonly_refresh_mode
     stage907_result = _run_stage907(
@@ -1413,16 +1441,24 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     symbols = _extract_order_symbols(signal_plan, pending_orders, current_positions, broker_positions, broker_trades)
     stage608_intraday_result = _run_stage608_intraday_tick_refresh(
         symbols=symbols,
-        refresh_mode=args.intraday_tick_refresh_mode,
+        refresh_mode=args.intraday_tick_refresh_mode if market_execution_session_active else "skip",
         wait_seconds=args.intraday_tick_wait_seconds,
         pre_subscribe_wait_seconds=args.intraday_pre_subscribe_wait_seconds,
         stage914_ready=stage914_ready,
     )
-    stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
+    if market_execution_session_active:
+        stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
+    else:
+        stage904_result = _skip_stage904_outside_market_session()
     stage905_result = _run_stage905(target_date=target_date)
+    stage906_max_snapshot_age_seconds = (
+        int(args.reconciliation_max_snapshot_age_seconds)
+        if int(args.reconciliation_max_snapshot_age_seconds) > 0
+        else int(args.max_snapshot_age_seconds)
+    )
     stage906_result = _run_stage906(
         target_date=target_date,
-        max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        max_snapshot_age_seconds=stage906_max_snapshot_age_seconds,
     )
     stage908_result = _run_stage908(
         target_date=target_date,
@@ -1527,6 +1563,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage906_reconciliation_status": stage906_result.get("summary", {}).get("reconciliation_status", ""),
         "stage906_account_state_alignment": stage906_result.get("summary", {}).get("account_state_alignment", ""),
         "stage906_blocking_failure_count": stage906_result.get("summary", {}).get("blocking_failure_count", ""),
+        "stage906_max_snapshot_age_seconds": stage906_max_snapshot_age_seconds,
         "stage908_exit_code": stage908_result.get("exit_code"),
         "stage908_adapter_contract_status": stage908_result.get("summary", {}).get("adapter_contract_status", ""),
         "stage908_live_submit_permitted": stage908_result.get("summary", {}).get("live_submit_permitted", ""),
@@ -1641,6 +1678,15 @@ def main() -> None:
     parser.add_argument("--target-date-as-of", default="")
     parser.add_argument("--mode", choices=["monitor-only", "dry-run", "live-real"], default="dry-run")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
+    parser.add_argument(
+        "--reconciliation-max-snapshot-age-seconds",
+        type=int,
+        default=0,
+        help=(
+            "Optional Stage906-only snapshot age. Use only for post-close preview reconciliation; "
+            "0 keeps the normal --max-snapshot-age-seconds fresh-submit policy."
+        ),
+    )
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--shadow-refresh-mode", choices=["plan-only", "run", "auto"], default="plan-only")
     parser.add_argument("--shadow-analysis-start", default=OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE)

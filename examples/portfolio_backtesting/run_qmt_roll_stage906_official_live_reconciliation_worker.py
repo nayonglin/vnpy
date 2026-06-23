@@ -604,6 +604,7 @@ def main() -> None:
         "broker_snapshot_ready": int(broker_ready),
         "readonly_status": readonly_summary.get("status", ""),
         "readonly_snapshot_age_seconds": readonly_age,
+        "max_snapshot_age_seconds": int(args.max_snapshot_age_seconds),
         "position_snapshot_state": position_state,
         "shadow_position_rows": int(len(shadow_positions)),
         "broker_position_rows": int(len(broker_positions)),

@@ -667,6 +667,13 @@ def _final_pre_send_blockers(
     return blockers
 
 
+def _final_reprice_blockers(reprice_result: dict[str, Any]) -> list[str]:
+    status = str(reprice_result.get("final_reprice_status", "") or "")
+    if not status or status in {"skipped_not_stage904_intraday_close", "applied"}:
+        return []
+    return [f"final_close_reprice_not_applied:{status}"]
+
+
 def _write_df(path: Path, rows: list[dict[str, Any]]) -> None:
     pd.DataFrame(rows).to_csv(path, index=False, encoding="utf-8-sig")
 
@@ -1139,13 +1146,14 @@ def main() -> None:
                             **reprice_result,
                         }
                     )
-                final_blockers = _final_pre_send_blockers(
+                final_blockers = _final_reprice_blockers(reprice_result)
+                final_blockers.extend(_final_pre_send_blockers(
                     rows,
                     req,
                     str(row.get("vt_symbol", "")),
                     readonly_orders=readonly_orders,
                     readonly_orders_confirmed=readonly_orders_confirmed,
-                )
+                ))
                 if final_blockers:
                     blockers.extend(final_blockers)
                     adapter_status = "adapter_blocked_final_pre_send_gate"

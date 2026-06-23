@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.qmt-roll.official-live.15w.day-close-readonly</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/bytedance/Desktop/person/vnpy</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OFFICIAL_LIVE_PHASE_D_READONLY_REFRESH_ENABLED</key>
+    <string>1</string>
+  </dict>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py</string>
+    <string>--mode</string>
+    <string>refresh</string>
+    <string>--env-profile</string>
+    <string>production-live</string>
+    <string>--wait-seconds</string>
+    <string>30</string>
+    <string>--confirm-readonly-refresh</string>
+    <string>I_UNDERSTAND_THIS_RUNS_CTP_READONLY_REFRESH_ONLY</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>15</integer>
+    <key>Minute</key>
+    <integer>5</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage907_launchd_day_close_readonly.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage907_launchd_day_close_readonly.err.log</string>
+</dict>
+</plist>
