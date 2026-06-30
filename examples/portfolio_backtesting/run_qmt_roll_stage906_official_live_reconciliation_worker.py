@@ -155,7 +155,7 @@ def _vt_symbol(row: dict[str, Any]) -> str:
 
 def _position_volume(row: dict[str, Any], *, shadow: bool) -> float:
     if shadow:
-        return _to_float(row.get("end_pos", row.get("volume", row.get("position", 0.0))), 0.0)
+        return abs(_to_float(row.get("end_pos", row.get("volume", row.get("position", 0.0))), 0.0))
     volume = _to_float(row.get("volume", row.get("position", row.get("pos", 0.0))), 0.0)
     frozen = _to_float(row.get("frozen", row.get("frozen_volume", 0.0)), 0.0)
     return max(0.0, volume - frozen)
@@ -221,6 +221,26 @@ def _position_map(frame: pd.DataFrame) -> dict[tuple[str, str], float]:
     }
 
 
+def _float_close(left: float, right: float, tolerance: float = 1e-9) -> bool:
+    return abs(float(left) - float(right)) <= tolerance
+
+
+def _pending_open_allowance_map(pending_orders: pd.DataFrame) -> dict[tuple[str, str], float]:
+    allowance: dict[tuple[str, str], float] = {}
+    if pending_orders.empty:
+        return allowance
+    for row in pending_orders.to_dict(orient="records"):
+        vt_symbol = _clean(row.get("vt_symbol"))
+        direction = _normalize_direction(row.get("direction"))
+        offset = _normalize_offset(row.get("offset"))
+        volume = _to_float(row.get("volume"), 0.0)
+        if not vt_symbol or direction not in {"long", "short"} or offset != "open" or volume <= 0:
+            continue
+        key = (vt_symbol, direction)
+        allowance[key] = allowance.get(key, 0.0) + volume
+    return allowance
+
+
 def _opposite_direction(direction: str) -> str:
     if direction == "long":
         return "short"
@@ -244,8 +264,10 @@ def _active_orders(orders: pd.DataFrame) -> pd.DataFrame:
         fallback = frame.index.astype(str)
         key = key.mask(key.eq(""), fallback)
         frame["_order_key"] = key
-        sort_columns = [column for column in ("datetime", "_row_seq") if column in frame.columns]
-        frame = frame.sort_values(sort_columns).groupby("_order_key", as_index=False, sort=False).tail(1)
+        # vn.py order callbacks are append-only in capture order. Exchange
+        # timestamps can move backwards by a second across state callbacks, so
+        # use row order to decide the latest known status.
+        frame = frame.sort_values("_row_seq").groupby("_order_key", as_index=False, sort=False).tail(1)
     active_status = {
         "submitting",
         "submitted",
@@ -284,7 +306,11 @@ def _check_row(
     )
 
 
-def _build_position_diff(shadow_positions: pd.DataFrame, broker_positions: pd.DataFrame) -> pd.DataFrame:
+def _build_position_diff(
+    shadow_positions: pd.DataFrame,
+    broker_positions: pd.DataFrame,
+    pending_open_allowance: dict[tuple[str, str], float],
+) -> pd.DataFrame:
     shadow = _position_map(shadow_positions)
     broker = _position_map(broker_positions)
     keys = sorted(set(shadow) | set(broker))
@@ -293,6 +319,16 @@ def _build_position_diff(shadow_positions: pd.DataFrame, broker_positions: pd.Da
         shadow_volume = float(shadow.get((vt_symbol, direction), 0.0))
         broker_volume = float(broker.get((vt_symbol, direction), 0.0))
         delta = broker_volume - shadow_volume
+        allowance = float(pending_open_allowance.get((vt_symbol, direction), 0.0))
+        aligned = int(abs(delta) < 1e-9)
+        explanation = ""
+        explained_open_volume = 0.0
+        if not aligned and allowance > 0 and delta > 0:
+            expected_after_pending = shadow_volume + allowance
+            if _float_close(broker_volume, expected_after_pending):
+                aligned = 1
+                explained_open_volume = allowance
+                explanation = "broker_position_matches_stage901_pending_open"
         rows.append(
             {
                 "vt_symbol": vt_symbol,
@@ -300,7 +336,10 @@ def _build_position_diff(shadow_positions: pd.DataFrame, broker_positions: pd.Da
                 "shadow_volume": shadow_volume,
                 "broker_volume": broker_volume,
                 "delta_broker_minus_shadow": delta,
-                "aligned": int(abs(delta) < 1e-9),
+                "pending_open_allowance_volume": allowance,
+                "explained_pending_open_volume": explained_open_volume,
+                "alignment_explanation": explanation,
+                "aligned": aligned,
             }
         )
     return pd.DataFrame(rows)
@@ -373,6 +412,8 @@ def _pending_order_checks(
     pending_orders: pd.DataFrame,
     active_orders: pd.DataFrame,
     intents: pd.DataFrame,
+    shadow_positions: pd.DataFrame,
+    broker_positions: pd.DataFrame,
     *,
     broker_ready: bool,
 ) -> None:
@@ -398,16 +439,58 @@ def _pending_order_checks(
             blocker="pending_order_broker_visibility_unknown",
         )
     elif active_count <= 0:
+        shadow = _position_map(shadow_positions)
+        broker = _position_map(broker_positions)
+        all_intents = intents.copy()
         ready_intents = intents.copy()
         if not ready_intents.empty and "executor_status" in ready_intents.columns:
             ready_intents = ready_intents[ready_intents["executor_status"].astype(str).eq("dry_run_order_request_payload_ready")]
         rebuilt_count = 0
+        broker_filled_count = 0
+        suppressed_after_stage904_stop_count = 0
+        unresolved_count = 0
         for pending in pending_orders.to_dict(orient="records"):
             pending_vt_symbol = _clean(pending.get("vt_symbol"))
             pending_direction = _normalize_direction(pending.get("direction"))
             pending_offset = _normalize_offset(pending.get("offset"))
             pending_volume = _to_float(pending.get("volume"), 0.0)
+            if not all_intents.empty:
+                intent_vt_symbol_all = all_intents.get("vt_symbol", pd.Series([""] * len(all_intents), index=all_intents.index)).fillna("").astype(str)
+                intent_direction_all = all_intents.get("direction", pd.Series([""] * len(all_intents), index=all_intents.index)).map(_normalize_direction)
+                intent_offset_all = all_intents.get("offset", pd.Series([""] * len(all_intents), index=all_intents.index)).map(_normalize_offset)
+                intent_volume_all = pd.to_numeric(all_intents.get("planned_volume", pd.Series([0.0] * len(all_intents), index=all_intents.index)), errors="coerce").fillna(0.0)
+                suppress_text = (
+                    all_intents.get("executor_status", pd.Series([""] * len(all_intents), index=all_intents.index)).fillna("").astype(str)
+                    + ";"
+                    + all_intents.get("executor_reason", pd.Series([""] * len(all_intents), index=all_intents.index)).fillna("").astype(str)
+                    + ";"
+                    + all_intents.get("force_skip_reason", pd.Series([""] * len(all_intents), index=all_intents.index)).fillna("").astype(str)
+                    + ";"
+                    + all_intents.get("source_reason", pd.Series([""] * len(all_intents), index=all_intents.index)).fillna("").astype(str)
+                )
+                suppressed = all_intents[
+                    intent_vt_symbol_all.eq(pending_vt_symbol)
+                    & intent_direction_all.eq(pending_direction)
+                    & intent_offset_all.eq(pending_offset)
+                    & intent_volume_all.sub(pending_volume).abs().le(1e-9)
+                    & suppress_text.str.contains("stage904_stop_close_wait_for", case=False, na=False)
+                ]
+                if not suppressed.empty:
+                    suppressed_after_stage904_stop_count += 1
+                    continue
+            if (
+                pending_vt_symbol
+                and pending_direction in {"long", "short"}
+                and pending_offset == "open"
+                and pending_volume > 0
+            ):
+                shadow_volume = float(shadow.get((pending_vt_symbol, pending_direction), 0.0))
+                broker_volume = float(broker.get((pending_vt_symbol, pending_direction), 0.0))
+                if _float_close(broker_volume, shadow_volume + pending_volume):
+                    broker_filled_count += 1
+                    continue
             if ready_intents.empty:
+                unresolved_count += 1
                 continue
             intent_vt_symbol = ready_intents.get("vt_symbol", pd.Series([""] * len(ready_intents), index=ready_intents.index)).fillna("").astype(str)
             intent_direction = ready_intents.get("direction", pd.Series([""] * len(ready_intents), index=ready_intents.index)).map(_normalize_direction)
@@ -424,14 +507,20 @@ def _pending_order_checks(
             ]
             if not matched.empty:
                 rebuilt_count += 1
-        if rebuilt_count == len(pending_orders):
+            else:
+                unresolved_count += 1
+        if rebuilt_count + broker_filled_count + suppressed_after_stage904_stop_count == len(pending_orders):
             _check_row(
                 rows,
                 check="stage901_pending_orders_broker_visibility",
                 status="passed",
                 severity="block",
-                observed=f"pending={len(pending_orders)};active_broker_orders=0;rebuilt_ready_intents={rebuilt_count}",
-                expected="pending theoretical orders rebuilt as ready executor intents before submit",
+                observed=(
+                    f"pending={len(pending_orders)};active_broker_orders=0;"
+                    f"rebuilt_ready_intents={rebuilt_count};broker_filled_pending={broker_filled_count};"
+                    f"suppressed_after_stage904_stop={suppressed_after_stage904_stop_count}"
+                ),
+                expected="pending theoretical orders rebuilt as ready intents, already present in broker positions, or explicitly suppressed after Stage904 stop close",
             )
             return
         _check_row(
@@ -439,8 +528,12 @@ def _pending_order_checks(
             check="stage901_pending_orders_broker_visibility",
             status="blocked",
             severity="block",
-            observed=f"pending={len(pending_orders)};active_broker_orders=0;rebuilt_ready_intents={rebuilt_count}",
-            expected="pending theoretical orders must be visible or rebuilt through gate",
+            observed=(
+                f"pending={len(pending_orders)};active_broker_orders=0;"
+                f"rebuilt_ready_intents={rebuilt_count};broker_filled_pending={broker_filled_count};"
+                f"suppressed_after_stage904_stop={suppressed_after_stage904_stop_count};unresolved={unresolved_count}"
+            ),
+            expected="pending theoretical orders must be visible, rebuilt through gate, already present in broker positions, or explicitly suppressed after Stage904 stop close",
             blocker="shadow_pending_not_visible_at_broker",
         )
     else:
@@ -479,7 +572,19 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame, position_diff: 
             "",
             "## Position Diff",
             "",
-            table(position_diff, ["vt_symbol", "direction", "shadow_volume", "broker_volume", "delta_broker_minus_shadow", "aligned"]),
+            table(
+                position_diff,
+                [
+                    "vt_symbol",
+                    "direction",
+                    "shadow_volume",
+                    "broker_volume",
+                    "delta_broker_minus_shadow",
+                    "pending_open_allowance_volume",
+                    "alignment_explanation",
+                    "aligned",
+                ],
+            ),
             "",
             "## 说明",
             "",
@@ -519,7 +624,8 @@ def main() -> None:
     )
     shadow_positions = _normalize_positions(shadow_positions_raw, source="shadow", shadow=True)
     broker_positions = _normalize_positions(broker_positions_raw, source="broker", shadow=False)
-    position_diff = _build_position_diff(shadow_positions, broker_positions)
+    pending_open_allowance = _pending_open_allowance_map(pending_orders)
+    position_diff = _build_position_diff(shadow_positions, broker_positions, pending_open_allowance)
     active_orders = _active_orders(broker_orders)
 
     checks: list[dict[str, Any]] = []
@@ -563,7 +669,15 @@ def main() -> None:
         blocker="active_orders_or_unknown_order_state",
     )
     _intent_checks(checks, intents, broker_positions, broker_ready=broker_ready)
-    _pending_order_checks(checks, pending_orders, active_orders, intents, broker_ready=broker_ready)
+    _pending_order_checks(
+        checks,
+        pending_orders,
+        active_orders,
+        intents,
+        shadow_positions,
+        broker_positions,
+        broker_ready=broker_ready,
+    )
     _check_row(
         checks,
         check="broker_trade_snapshot_loaded",
@@ -609,6 +723,11 @@ def main() -> None:
         "shadow_position_rows": int(len(shadow_positions)),
         "broker_position_rows": int(len(broker_positions)),
         "position_diff_rows": int(len(position_diff)),
+        "position_diff_explained_pending_open_rows": int(
+            (position_diff.get("alignment_explanation", pd.Series(dtype=str)).astype(str) == "broker_position_matches_stage901_pending_open").sum()
+            if not position_diff.empty
+            else 0
+        ),
         "active_broker_order_count": int(len(active_orders)),
         "pending_order_count": int(len(pending_orders)),
         "executor_intent_count": int(len(intents)),

@@ -11,6 +11,7 @@ from pandas.errors import EmptyDataError
 
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
     OFFICIAL_LIVE_SUMMARY_PATH,
     OFFICIAL_LIVE_VERSION,
@@ -184,6 +185,19 @@ def _position_volume(positions: pd.DataFrame, vt_symbol: str, direction: str) ->
     return float(pos_volume[pos_vt_symbol.eq(vt_symbol.lower()) & pos_direction.eq(direction)].sum())
 
 
+def _shadow_position_volume(current_positions: pd.DataFrame, vt_symbol: str, direction: str) -> float:
+    if current_positions.empty or "vt_symbol" not in current_positions.columns:
+        return 0.0
+    frame = current_positions.copy()
+    pos_vt_symbol = frame["vt_symbol"].fillna("").astype(str).str.lower()
+    pos_direction = _column(frame, "direction").map(_normalize_direction)
+    if "end_pos" in frame.columns:
+        pos_volume = pd.to_numeric(frame["end_pos"], errors="coerce").fillna(0.0).abs()
+    else:
+        pos_volume = pd.to_numeric(_column(frame, "volume", "pos", "position"), errors="coerce").fillna(0.0).abs()
+    return float(pos_volume[pos_vt_symbol.eq(vt_symbol.lower()) & pos_direction.eq(direction)].sum())
+
+
 def _target_close_direction(signal_direction: str) -> str:
     if signal_direction == "short":
         return "long"
@@ -222,6 +236,7 @@ def _decision_for_signal(
     risk_snapshot: dict[str, Any],
     readonly_gate: dict[str, Any],
     positions: pd.DataFrame,
+    current_positions: pd.DataFrame,
     active_order_count: int,
 ) -> dict[str, Any]:
     reasons: list[str] = []
@@ -233,6 +248,7 @@ def _decision_for_signal(
     risk_level = _clean_scalar(risk_snapshot.get("risk_level"))
     allow_new_orders = int(_to_float(risk_snapshot.get("allow_real_new_orders"), 0.0))
     matching_position_volume = 0.0
+    shadow_matching_position_volume = 0.0
 
     if not readonly_gate["passed"]:
         reasons.append("readonly_gate_not_passed")
@@ -252,6 +268,10 @@ def _decision_for_signal(
             reasons.append(f"insufficient_position:{matching_position_volume:.4f}<{volume:.4f}")
     elif offset != "open":
         reasons.append(f"unsupported_offset={offset}")
+    elif _clean_scalar(row.get("execution_source")) == "stage901_signal_plan":
+        shadow_matching_position_volume = _shadow_position_volume(current_positions, vt_symbol, direction)
+        if shadow_matching_position_volume >= volume > 0:
+            reasons.append(f"shadow_position_already_contains_signal_open:{shadow_matching_position_volume:.4f}")
 
     if not reasons:
         action = "simnow_executable"
@@ -275,6 +295,7 @@ def _decision_for_signal(
         "readonly_gate_passed": int(bool(readonly_gate["passed"])),
         "broker_position_snapshot_state": readonly_gate.get("position_snapshot_state", ""),
         "broker_matching_position_volume": matching_position_volume,
+        "shadow_matching_position_volume": shadow_matching_position_volume,
         "broker_active_order_count": active_order_count,
         "execution_action": action,
         "execution_reason": ";".join(reasons),
@@ -302,6 +323,7 @@ def main() -> None:
     signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
     pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
     candidates = _execution_candidates(signal_plan, pending_orders)
+    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     readonly_outputs = readonly_summary.get("outputs", {})
     positions = _read_csv_maybe(readonly_outputs.get("positions"))
@@ -332,7 +354,7 @@ def main() -> None:
     risk_snapshot = build_official_live_risk_snapshot(official_summary)
     decisions = pd.DataFrame(
         [
-            _decision_for_signal(row, risk_snapshot, readonly_gate, positions, active_orders)
+            _decision_for_signal(row, risk_snapshot, readonly_gate, positions, current_positions, active_orders)
             for row in candidates.to_dict(orient="records")
         ]
     )
@@ -405,6 +427,7 @@ def main() -> None:
                 "risk_level",
                 "broker_position_snapshot_state",
                 "broker_matching_position_volume",
+                "shadow_matching_position_volume",
                 "broker_active_order_count",
                 "execution_action",
                 "execution_reason",

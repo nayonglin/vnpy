@@ -1403,7 +1403,20 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     readonly_snapshot_usable = readonly_summary.get("status") == "readonly_snapshots_received" and _clean(
         broker_snapshot.get("position_snapshot_state")
     ) in {"confirmed_flat", "positions_received"}
-    readonly_stale = readonly_age is None or readonly_age > args.max_snapshot_age_seconds or not readonly_snapshot_usable
+    config = build_phase_d_config()
+    readonly_refresh_headroom_seconds = max(
+        60,
+        int(args.readonly_wait_seconds) + int(config.hard_limits.max_controller_cycle_seconds) + 30,
+    )
+    readonly_refresh_age_limit_seconds = max(
+        0,
+        int(args.max_snapshot_age_seconds) - int(readonly_refresh_headroom_seconds),
+    )
+    readonly_stale = (
+        readonly_age is None
+        or readonly_age > readonly_refresh_age_limit_seconds
+        or not readonly_snapshot_usable
+    )
     if not stage914_ready:
         effective_readonly_refresh_mode = "plan-only"
     elif args.readonly_refresh_mode == "auto":
@@ -1532,6 +1545,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage907_requested_refresh_mode": args.readonly_refresh_mode,
         "stage907_effective_refresh_mode": effective_readonly_refresh_mode,
         "stage907_readonly_age_seconds_before_refresh": readonly_age,
+        "stage907_readonly_refresh_headroom_seconds": readonly_refresh_headroom_seconds,
+        "stage907_readonly_refresh_age_limit_seconds": readonly_refresh_age_limit_seconds,
         "stage907_readonly_stale_before_refresh": int(bool(readonly_stale)),
         "stage260_exit_code": stage260_result.get("exit_code"),
         "stage260_executable_count": stage260_result.get("summary", {}).get("executable_count", ""),

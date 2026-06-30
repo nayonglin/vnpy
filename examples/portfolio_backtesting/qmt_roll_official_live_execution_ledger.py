@@ -44,6 +44,34 @@ def _clean(value: Any) -> str:
     return "" if text.lower() == "nan" else text
 
 
+def _normalize_direction_text(value: Any) -> str:
+    text = _clean(value).lower()
+    if text in {"long", "多", "direction.long"}:
+        return "long"
+    if text in {"short", "空", "direction.short"}:
+        return "short"
+    return text
+
+
+def _normalize_offset_text(value: Any) -> str:
+    text = _clean(value).lower()
+    if text in {"open", "开", "offset.open"}:
+        return "open"
+    if text in {
+        "close",
+        "closetoday",
+        "closeyesterday",
+        "平",
+        "平今",
+        "平昨",
+        "offset.close",
+        "offset.closetoday",
+        "offset.closeyesterday",
+    }:
+        return "close"
+    return text
+
+
 def _to_float(value: Any, default: float = 0.0) -> float:
     number = pd.to_numeric(value, errors="coerce")
     if pd.isna(number):
@@ -84,8 +112,8 @@ def normalize_intent_payload(target_date: str, row: dict[str, Any], order_reques
         "vt_symbol": _clean(row.get("vt_symbol") or order_request.get("vt_symbol")),
         "symbol": _clean(order_request.get("symbol")),
         "exchange": _clean(order_request.get("exchange")),
-        "direction": _clean(order_request.get("direction") or row.get("direction")).lower(),
-        "offset": _clean(order_request.get("offset") or row.get("offset")).lower(),
+        "direction": _normalize_direction_text(order_request.get("direction") or row.get("direction")),
+        "offset": _normalize_offset_text(order_request.get("offset") or row.get("offset")),
         "volume": _to_float(order_request.get("volume", row.get("planned_volume")), 0.0),
         "limit_price": _to_float(order_request.get("price", row.get("limit_price")), 0.0),
         "source_reason": _clean(row.get("source_reason")),
@@ -222,12 +250,12 @@ def _event_vt_symbol(row: dict[str, Any]) -> str:
 
 def _event_direction(row: dict[str, Any]) -> str:
     payload = _event_intent_payload(row)
-    return _clean(row.get("direction") or payload.get("direction")).lower()
+    return _normalize_direction_text(row.get("direction") or payload.get("direction"))
 
 
 def _event_offset(row: dict[str, Any]) -> str:
     payload = _event_intent_payload(row)
-    return _clean(row.get("offset") or payload.get("offset")).lower()
+    return _normalize_offset_text(row.get("offset") or payload.get("offset"))
 
 
 def open_fill_rows(rows: list[dict[str, Any]], target_date: str, vt_symbol: str, direction: str) -> list[dict[str, Any]]:

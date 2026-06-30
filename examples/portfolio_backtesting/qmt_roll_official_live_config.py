@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
 from pathlib import Path
 from typing import Any
 
@@ -185,7 +186,29 @@ def build_official_live_strategy_overrides() -> dict[str, Any]:
     return overrides
 
 
-OFFICIAL_LIVE_STRATEGY_OVERRIDES: dict[str, Any] = build_official_live_strategy_overrides()
+class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
+    def __init__(self) -> None:
+        self._cache: dict[str, Any] | None = None
+
+    def _load(self) -> dict[str, Any]:
+        if self._cache is None:
+            self._cache = build_official_live_strategy_overrides()
+        return self._cache
+
+    def __getitem__(self, key: str) -> Any:
+        return self._load()[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._load())
+
+    def __len__(self) -> int:
+        return len(self._load())
+
+    def copy(self) -> dict[str, Any]:
+        return dict(self._load())
+
+
+OFFICIAL_LIVE_STRATEGY_OVERRIDES: Mapping[str, Any] = _LazyOfficialLiveStrategyOverrides()
 
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
     "full_20180102_20260529_stage847_c9": {

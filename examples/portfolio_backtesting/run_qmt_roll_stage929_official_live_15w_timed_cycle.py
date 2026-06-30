@@ -71,6 +71,7 @@ SIGNAL_DETAIL_COLUMNS: list[tuple[str, str]] = [
     ("vt_symbol", "合约"),
     ("direction", "方向"),
     ("offset", "开平"),
+    ("execution_interpretation", "执行含义"),
     ("planned_volume", "手数"),
     ("order_price", "委托价"),
     ("strategy_entry_price", "策略入场价"),
@@ -83,9 +84,12 @@ SIGNAL_DETAIL_COLUMNS: list[tuple[str, str]] = [
     ("margin_to_available_pct", "策略保证金/可用"),
     ("stage260_action", "执行闸门"),
     ("stage260_reason", "阻断/原因"),
+    ("shadow_matching_position_volume", "Shadow已持仓"),
 ]
 
 BLOCKED_CANDIDATE_COLUMNS: list[tuple[str, str]] = [
+    ("report_target_date", "报告日期"),
+    ("candidate_date", "候选日期"),
     ("product_vt_symbol", "品种"),
     ("contract_vt_symbol", "合约"),
     ("direction", "方向"),
@@ -269,6 +273,24 @@ def _money_ratio(amount: float, denominator: Any) -> float | None:
     return amount / base * 100.0
 
 
+def _execution_interpretation(gate_row: dict[str, Any], intent_row: dict[str, Any]) -> str:
+    stage905_status = _clean(intent_row.get("executor_status"))
+    stage260_action = _clean(gate_row.get("execution_action"))
+    stage260_reason = _clean(gate_row.get("execution_reason"))
+    execution_source = _clean(gate_row.get("execution_source"))
+    if stage905_status == "dry_run_order_request_payload_ready":
+        return "Stage905已生成dry-run候选，仍需Stage927/931放行"
+    if "shadow_position_already_contains_signal_open" in stage260_reason:
+        return "理论shadow已持仓，不是新的自动开仓"
+    if stage260_action == "simnow_executable":
+        return "Stage260闸门通过，但还不是最终报单许可"
+    if stage260_action == "blocked":
+        return "不可执行，执行闸门已阻断"
+    if execution_source == "stage901_signal_plan":
+        return "理论signal_plan展示项，未进入执行器"
+    return ""
+
+
 def _build_signal_details(wrapper: dict[str, Any], stage903: dict[str, Any]) -> pd.DataFrame:
     target_date = str(wrapper.get("target_date", ""))
     pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
@@ -327,6 +349,8 @@ def _build_signal_details(wrapper: dict[str, Any], stage903: dict[str, Any]) -> 
                 "vt_symbol": vt_symbol,
                 "direction": direction,
                 "offset": offset,
+                "execution_source": _clean(gate_row.get("execution_source")),
+                "execution_interpretation": _execution_interpretation(gate_row, intent_row),
                 "planned_volume": planned_volume,
                 "order_price": order_price,
                 "strategy_entry_price": strategy_entry_price,
@@ -373,6 +397,7 @@ def _build_signal_details(wrapper: dict[str, Any], stage903: dict[str, Any]) -> 
                 "risk_level": _clean(gate_row.get("risk_level", stage903.get("risk_level"))),
                 "readonly_gate_passed": _clean(gate_row.get("readonly_gate_passed")),
                 "broker_position_state": _clean(gate_row.get("broker_position_snapshot_state")),
+                "shadow_matching_position_volume": _to_float(gate_row.get("shadow_matching_position_volume"), 0.0),
                 "broker_active_order_count": _to_float(gate_row.get("broker_active_order_count"), 0.0),
                 "stage905_status": _clean(intent_row.get("executor_status")),
                 "stage905_reason": _clean(intent_row.get("executor_reason")),
@@ -417,6 +442,7 @@ def _markdown_table(frame: pd.DataFrame, columns: list[tuple[str, str]]) -> str:
                 "risk_cluster_selected_volume",
                 "risk_cluster_heat_gate_enabled",
                 "broker_active_order_count",
+                "shadow_matching_position_volume",
                 "selected_volume",
                 "selected_volume_ungated",
                 "risk_cluster_max_volume",
@@ -477,6 +503,7 @@ def _format_plain_value(key: str, value: Any) -> str:
         "risk_cluster_selected_volume",
         "risk_cluster_heat_gate_enabled",
         "broker_active_order_count",
+        "shadow_matching_position_volume",
         "selected_volume",
         "selected_volume_ungated",
         "risk_cluster_max_volume",
@@ -617,10 +644,13 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
     if candidates.empty:
         return pd.DataFrame()
     target_date = str(wrapper.get("target_date", ""))
-    if target_date and "date" in candidates.columns:
-        target_rows = candidates[candidates["date"].fillna("").astype(str).eq(target_date)].copy()
-        if not target_rows.empty:
-            candidates = target_rows
+    if target_date:
+        if "date" not in candidates.columns:
+            return pd.DataFrame()
+        candidate_dates = pd.to_datetime(candidates["date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+        candidates = candidates[candidate_dates.eq(target_date)].copy()
+        if candidates.empty:
+            return pd.DataFrame()
 
     status = candidates.get("candidate_status", pd.Series("", index=candidates.index)).fillna("").astype(str).str.lower()
     skip_reason = candidates.get("skip_reason", pd.Series("", index=candidates.index)).fillna("").astype(str)
@@ -665,6 +695,8 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
 
         rows.append(
             {
+                "report_target_date": target_date,
+                "candidate_date": _clean(raw.get("date"))[:10],
                 "product_vt_symbol": product,
                 "contract_vt_symbol": _clean(raw.get("contract_vt_symbol")),
                 "direction": _normal_text(raw.get("direction")),
@@ -709,7 +741,12 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
 def _signal_subject_suffix(details: pd.DataFrame) -> str:
     if details.empty:
         return ""
-    row = details.iloc[0].to_dict()
+    if "stage905_status" not in details.columns:
+        return ""
+    actionable = details[details["stage905_status"].fillna("").astype(str).eq("dry_run_order_request_payload_ready")]
+    if actionable.empty:
+        return ""
+    row = actionable.iloc[0].to_dict()
     vt_symbol = _clean(row.get("vt_symbol"))
     direction = _clean(row.get("direction"))
     offset = _clean(row.get("offset"))
@@ -870,6 +907,9 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
     position_diff = _read_csv_maybe(_stage906_position_diff_path(target_date))
     ai_pool = wrapper.get("ai_pool_preflight") or {}
     minute_audit = stage901.get("minute_audit", {}) if isinstance(stage901.get("minute_audit"), dict) else {}
+    live_stop_alignment = (
+        stage901.get("live_stop_alignment", {}) if isinstance(stage901.get("live_stop_alignment"), dict) else {}
+    )
 
     pending_count = _to_int(stage901.get("pending_order_count", stage903.get("pending_order_count", 0)), 0)
     stage903_pending = _to_int(stage903.get("pending_order_count"), 0)
@@ -903,14 +943,21 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
         stage904_actions=stage904_actions,
         position_diff=position_diff,
     )
+    misaligned_position_rows = (
+        int((pd.to_numeric(position_diff.get("aligned", pd.Series(dtype=float)), errors="coerce").fillna(0.0) != 1.0).sum())
+        if not position_diff.empty
+        else 0
+    )
     manual_strategy_count = sum(1 for row in manual_rows if _to_int(row.get("matches_stage901_open_signal"), 0) == 1)
     realtime_takeover_count = sum(1 for row in manual_rows if _to_int(row.get("realtime_c9_takeover"), 0) == 1)
     if manual_strategy_count and realtime_takeover_count == manual_strategy_count:
         manual_status = "识别到手动补开的策略仓；当日C9实时止损已接管；日线级退出仍需broker/shadow对齐"
     elif manual_strategy_count:
         manual_status = "识别到手动补开的策略仓，但实时止损接管证据不足，请看明细原因"
-    elif _to_int(stage906_summary.get("position_diff_rows"), 0) > 0:
+    elif misaligned_position_rows > 0:
         manual_status = "存在broker/shadow仓位差异，但未识别为当日策略手动补仓"
+    elif not broker_aligned and _to_int(stage906_summary.get("broker_snapshot_ready"), 0) != 1:
+        manual_status = "broker快照过期或不可用，暂不能判断是否有手动策略仓差异"
     else:
         manual_status = "无手动策略仓差异"
 
@@ -942,10 +989,22 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
             stage906_summary.get("max_snapshot_age_seconds", stage903.get("stage906_max_snapshot_age_seconds")), 0
         ),
         "stage906_position_diff_rows": _to_int(stage906_summary.get("position_diff_rows"), 0),
+        "stage906_misaligned_position_rows": misaligned_position_rows,
         "manual_strategy_position_count": manual_strategy_count,
         "manual_strategy_realtime_takeover_count": realtime_takeover_count,
         "manual_strategy_takeover_status": manual_status,
         "manual_strategy_takeover_rows": manual_rows,
+        "live_stop_alignment_event_count": _to_int(live_stop_alignment.get("event_count"), 0),
+        "live_stop_alignment_position_adjustment_count": _to_int(
+            live_stop_alignment.get("position_adjustment_count"), 0
+        ),
+        "live_stop_alignment_position_removed_count": _to_int(live_stop_alignment.get("position_removed_count"), 0),
+        "live_stop_alignment_signal_plan_suppressed_count": _to_int(
+            live_stop_alignment.get("signal_plan_suppressed_count"), 0
+        ),
+        "live_stop_alignment_pending_order_suppressed_count": _to_int(
+            live_stop_alignment.get("pending_order_suppressed_count"), 0
+        ),
         "minute_audit": minute_audit,
         "ai_pool_expected_eval_date": ai_expected,
         "ai_pool_current_eval_date": ai_current,
@@ -1007,10 +1066,19 @@ def _consistency_plain_block(audit: dict[str, Any]) -> str:
             f"{audit.get('broker_position_consistency', '')}"
             f"（Stage906 {audit.get('stage906_reconciliation_status', '')}，"
             f"差异行 {audit.get('stage906_position_diff_rows', '')}，"
+            f"未对齐行 {audit.get('stage906_misaligned_position_rows', '')}，"
             f"快照年龄 {_format_number(audit.get('stage906_readonly_snapshot_age_seconds'), decimals=0) or '无'}秒/"
             f"上限 {audit.get('stage906_max_snapshot_age_seconds', '')}秒）"
         ),
         f"实时止损监控：{audit.get('stage904_monitor_status', '')}（动作 {audit.get('stage904_action_count', '')}，平仓dry-run {audit.get('stage904_close_dry_run_count', '')}）",
+        (
+            "Shadow实时止损对齐："
+            f"事件 {audit.get('live_stop_alignment_event_count', '')}，"
+            f"扣减 {audit.get('live_stop_alignment_position_adjustment_count', '')}，"
+            f"移除持仓 {audit.get('live_stop_alignment_position_removed_count', '')}，"
+            f"抑制理论开仓 {audit.get('live_stop_alignment_signal_plan_suppressed_count', '')}，"
+            f"抑制pending {audit.get('live_stop_alignment_pending_order_suppressed_count', '')}"
+        ),
         f"手动策略仓接管：{audit.get('manual_strategy_takeover_status', '')}",
         f"止盈止损接管规则：{audit.get('stop_takeover_policy', '')}",
         "",
@@ -1262,9 +1330,11 @@ def _build_report(wrapper: dict[str, Any], stage903: dict[str, Any]) -> str:
                 signal_details,
                 [
                     ("vt_symbol", "合约"),
+                    ("execution_interpretation", "执行含义"),
                     ("risk_level", "风险级别"),
                     ("readonly_gate_passed", "只读通过"),
                     ("broker_position_state", "broker持仓状态"),
+                    ("shadow_matching_position_volume", "Shadow已持仓"),
                     ("broker_active_order_count", "活跃委托"),
                     ("stage905_status", "Stage905"),
                     ("stage905_reason", "Stage905原因"),
@@ -1375,10 +1445,12 @@ def _send_report_email(
         signal_details,
         [
             ("vt_symbol", "合约"),
+            ("execution_interpretation", "执行含义"),
             ("risk_level", "风险级别"),
             ("readonly_gate_passed", "只读通过"),
             ("stage260_action", "执行闸门"),
             ("stage260_reason", "阻断/原因"),
+            ("shadow_matching_position_volume", "Shadow已持仓"),
             ("stage905_status", "Stage905"),
         ],
     )

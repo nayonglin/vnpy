@@ -23,6 +23,8 @@
     <string>30</string>
     <string>--confirm-readonly-refresh</string>
     <string>I_UNDERSTAND_THIS_RUNS_CTP_READONLY_REFRESH_ONLY</string>
+    <string>--email-policy</string>
+    <string>always</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict>

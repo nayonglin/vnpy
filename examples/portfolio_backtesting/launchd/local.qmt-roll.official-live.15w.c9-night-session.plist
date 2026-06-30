@@ -20,6 +20,10 @@
     <string>30</string>
     <string>--max-consecutive-cycle-errors</string>
     <string>3</string>
+    <string>--require-current-session-name</string>
+    <string>night</string>
+    <string>--require-current-session-name</string>
+    <string>late_night</string>
     <string>--confirm-live-real</string>
     <string>I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING</string>
   </array>

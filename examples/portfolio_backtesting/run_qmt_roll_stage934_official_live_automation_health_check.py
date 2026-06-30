@@ -236,6 +236,15 @@ def _current_sessions() -> list[str]:
     return active
 
 
+def _expected_session_launchd_key(current_sessions: list[str]) -> str:
+    names = set(current_sessions)
+    if names & {"night", "late_night"}:
+        return "night"
+    if names & {"day_am", "day_pm"}:
+        return "day"
+    return ""
+
+
 def _process_status() -> dict[str, Any]:
     screen = _run(["screen", "-ls"], timeout=5)
     pgrep = _run(["pgrep", "-af", "run_qmt_roll_stage930_official_live_c9_session_daemon.py"], timeout=5)
@@ -391,6 +400,15 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
         daemon_running=daemon_running,
     )
     execution_session_now = any(name in {"night", "late_night", "day_am", "day_pm"} for name in current_sessions)
+    expected_launchd_key = _expected_session_launchd_key(current_sessions)
+    if expected_launchd_key:
+        expected_state = str((session_plists.get(expected_launchd_key, {}).get("launchctl") or {}).get("state", ""))
+        if expected_state != "running":
+            blockers.append(f"{expected_launchd_key}_launchd_not_running_in_current_execution_session")
+        for other_key in sorted(set(SESSION_LABELS) - {expected_launchd_key}):
+            other_state = str((session_plists.get(other_key, {}).get("launchctl") or {}).get("state", ""))
+            if other_state == "running":
+                blockers.append(f"{other_key}_launchd_running_during_{expected_launchd_key}_session")
     if execution_session_now and not process_running:
         blockers.append("execution_session_without_stage930_process")
     if process_running and not summary_fresh:
@@ -422,6 +440,7 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
         "blockers": blockers,
         "warnings": warnings,
         "current_sessions": current_sessions,
+        "expected_session_launchd_key": expected_launchd_key,
         "max_summary_age_seconds": max_summary_age_seconds,
         "latest_stage930_summary": latest,
         "latest_stage935_monthly_ai_pool_summary": latest_stage935,

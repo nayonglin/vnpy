@@ -16,6 +16,7 @@ import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
 import analyze_qmt_roll_stage660_stage653_multiperiod_live_audit as s660
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
+from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
@@ -31,6 +32,7 @@ from qmt_roll_official_live_config import (
     build_official_live_strategy_overrides,
     build_official_live_risk_snapshot,
 )
+from qmt_roll_official_live_phase_d_config import LIVE_EXECUTION_LEDGER_PATH
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -56,6 +58,7 @@ PENDING_ORDERS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_pending_orders_{MODEL_TAG}.
 SIGNAL_PLAN_PATH = OFFICIAL_LIVE_SIGNAL_PLAN_PATH
 DECISION_PATH = OFFICIAL_LIVE_SUMMARY_PATH
 REPORT_PATH = OFFICIAL_LIVE_REPORT_PATH
+LIVE_STOP_ALIGNMENT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_live_stop_alignment_{MODEL_TAG}.csv"
 
 LEGACY_STAGE372_PROFILE_NAME = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
 LEGACY_STAGE372_BASE_PROFILE_NAME = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
@@ -85,6 +88,374 @@ def _json_safe(value: Any) -> Any:
 
 def _md_table(frame: pd.DataFrame, max_rows: int | None = None) -> str:
     return s650._md_table(frame, max_rows=max_rows)
+
+
+def _clean_text(value: Any) -> str:
+    if value is None:
+        return ""
+    text = str(value).strip()
+    return "" if text.lower() == "nan" else text
+
+
+def _to_float(value: Any, default: float = 0.0) -> float:
+    number = pd.to_numeric(value, errors="coerce")
+    if pd.isna(number):
+        return default
+    return float(number)
+
+
+def _normal_direction(value: Any) -> str:
+    text = _clean_text(value).lower()
+    if text in {"long", "多", "direction.long", "buy"}:
+        return "long"
+    if text in {"short", "空", "direction.short", "sell"}:
+        return "short"
+    return text
+
+
+def _normal_offset(value: Any) -> str:
+    text = _clean_text(value).lower()
+    if text in {"open", "开", "offset.open"}:
+        return "open"
+    if text in {
+        "close",
+        "closetoday",
+        "closeyesterday",
+        "平",
+        "平今",
+        "平昨",
+        "offset.close",
+        "offset.closetoday",
+        "offset.closeyesterday",
+    }:
+        return "close"
+    return text
+
+
+def _opposite_direction(direction: str) -> str:
+    if direction == "long":
+        return "short"
+    if direction == "short":
+        return "long"
+    return ""
+
+
+def _ledger_payload(row: dict[str, Any]) -> dict[str, Any]:
+    payload = row.get("intent_payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _ledger_value(row: dict[str, Any], key: str) -> Any:
+    payload = _ledger_payload(row)
+    return row.get(key) if _clean_text(row.get(key)) else payload.get(key)
+
+
+def _ledger_generated_date(row: dict[str, Any]) -> pd.Timestamp | None:
+    generated = pd.to_datetime(_clean_text(row.get("generated_at")), errors="coerce")
+    if pd.isna(generated):
+        generated = pd.to_datetime(_clean_text(row.get("target_date")), errors="coerce")
+    if pd.isna(generated):
+        return None
+    return pd.Timestamp(generated).normalize()
+
+
+def _row_date_series(frame: pd.DataFrame) -> pd.Series:
+    if "date" in frame.columns:
+        source = frame["date"]
+    elif "datetime" in frame.columns:
+        source = frame["datetime"]
+    elif "trading_day" in frame.columns:
+        source = frame["trading_day"]
+    else:
+        return pd.Series(pd.NaT, index=frame.index)
+    return pd.to_datetime(source, errors="coerce").dt.normalize()
+
+
+def _latest_open_dates_by_key(trades: pd.DataFrame) -> dict[tuple[str, str], pd.Timestamp]:
+    if trades.empty or "vt_symbol" not in trades.columns:
+        return {}
+    frame = trades.copy()
+    frame["_date"] = _row_date_series(frame)
+    frame["_direction"] = frame.get("direction", pd.Series("", index=frame.index)).map(_normal_direction)
+    frame["_offset"] = frame.get("offset", pd.Series("", index=frame.index)).map(_normal_offset)
+    frame["_vt_symbol"] = frame["vt_symbol"].fillna("").astype(str).str.strip()
+    opens = frame[
+        frame["_vt_symbol"].ne("")
+        & frame["_direction"].isin(["long", "short"])
+        & frame["_offset"].eq("open")
+        & frame["_date"].notna()
+    ].copy()
+    if opens.empty:
+        return {}
+    grouped = opens.groupby(["_vt_symbol", "_direction"])["_date"].max()
+    return {(str(vt_symbol), str(direction)): pd.Timestamp(date).normalize() for (vt_symbol, direction), date in grouped.items()}
+
+
+def _live_stop_alignment_events(
+    *,
+    ledger_rows: list[dict[str, Any]],
+    trades: pd.DataFrame,
+    analysis_start: pd.Timestamp,
+    analysis_end: pd.Timestamp,
+) -> pd.DataFrame:
+    latest_open_dates = _latest_open_dates_by_key(trades)
+    payload_by_fingerprint: dict[str, dict[str, Any]] = {}
+    for ledger_row in ledger_rows:
+        fingerprint = _clean_text(ledger_row.get("intent_fingerprint"))
+        payload = _ledger_payload(ledger_row)
+        if fingerprint and payload:
+            payload_by_fingerprint[fingerprint] = payload
+    rows: list[dict[str, Any]] = []
+    for row in ledger_rows:
+        if _clean_text(row.get("event_type")) != "filled_or_part_filled":
+            continue
+        linked_payload = payload_by_fingerprint.get(_clean_text(row.get("intent_fingerprint")), {})
+
+        def event_value(key: str) -> Any:
+            return row.get(key) if _clean_text(row.get(key)) else linked_payload.get(key)
+
+        generated_date = _ledger_generated_date(row)
+        if generated_date is None or generated_date < analysis_start or generated_date > analysis_end:
+            continue
+        vt_symbol = _clean_text(event_value("vt_symbol"))
+        source = _clean_text(event_value("source"))
+        source_reason = _clean_text(event_value("source_reason"))
+        offset = _normal_offset(event_value("offset"))
+        order_direction = _normal_direction(event_value("direction"))
+        volume = _to_float(row.get("trade_volume_delta", row.get("volume")), 0.0)
+        if not vt_symbol or volume <= 0:
+            continue
+
+        position_direction = ""
+        position_delta_volume = 0.0
+        stop_close_volume = 0.0
+        retry_open_volume = 0.0
+        suppress_signal_plan = 0
+        alignment_note = ""
+        if source == "stage904_c9_intraday_close" and offset == "close":
+            position_direction = _opposite_direction(order_direction)
+            if not position_direction:
+                continue
+            if "stage901_pending_open_after_stage904_stop_close_forced_close" in source_reason:
+                alignment_note = "live_bug_repair_close_not_subtracted_from_shadow"
+            else:
+                position_delta_volume = -volume
+                stop_close_volume = volume
+                suppress_signal_plan = 1
+                alignment_note = "stage904_realtime_stop_close_subtracted_from_shadow"
+        elif source == "stage904_c9_intraday_retry_open" and offset == "open":
+            position_direction = order_direction
+            if not position_direction:
+                continue
+            position_delta_volume = volume
+            retry_open_volume = volume
+            suppress_signal_plan = 1
+            alignment_note = "stage904_realtime_retry_open_offsets_stop_close"
+        else:
+            continue
+
+        latest_open_date = latest_open_dates.get((vt_symbol, position_direction))
+        if latest_open_date is not None and generated_date < latest_open_date:
+            continue
+
+        rows.append(
+            {
+                "generated_at": _clean_text(row.get("generated_at")),
+                "generated_date": generated_date.date().isoformat(),
+                "target_date": _clean_text(row.get("target_date")),
+                "intent_id": _clean_text(row.get("intent_id")),
+                "vt_orderid": _clean_text(row.get("vt_orderid")),
+                "vt_symbol": vt_symbol,
+                "position_direction": position_direction,
+                "order_direction": order_direction,
+                "offset": offset,
+                "source": source,
+                "source_reason": source_reason,
+                "fill_price": _to_float(row.get("price"), 0.0),
+                "fill_volume": volume,
+                "position_delta_volume": position_delta_volume,
+                "stop_close_volume": stop_close_volume,
+                "retry_open_volume": retry_open_volume,
+                "suppress_signal_plan": suppress_signal_plan,
+                "latest_strategy_open_date": (
+                    latest_open_date.date().isoformat() if latest_open_date is not None else ""
+                ),
+                "alignment_note": alignment_note,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _alignment_group(events: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "vt_symbol",
+        "position_direction",
+        "position_delta_volume",
+        "stop_close_volume",
+        "retry_open_volume",
+        "suppress_signal_plan_volume",
+    ]
+    if events.empty:
+        return pd.DataFrame(columns=columns)
+    frame = events.copy()
+    frame["suppress_signal_plan_volume"] = frame["fill_volume"].where(
+        frame["suppress_signal_plan"].astype(int).eq(1), 0.0
+    )
+    grouped = (
+        frame.groupby(["vt_symbol", "position_direction"], as_index=False)
+        .agg(
+            position_delta_volume=("position_delta_volume", "sum"),
+            stop_close_volume=("stop_close_volume", "sum"),
+            retry_open_volume=("retry_open_volume", "sum"),
+            suppress_signal_plan_volume=("suppress_signal_plan_volume", "sum"),
+        )
+        .loc[:, columns]
+    )
+    grouped["net_stop_close_volume"] = (
+        grouped["stop_close_volume"] - grouped["retry_open_volume"]
+    ).clip(lower=0.0)
+    return grouped
+
+
+def _apply_live_stop_to_current_positions(
+    current_positions: pd.DataFrame,
+    grouped: pd.DataFrame,
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    if current_positions.empty or grouped.empty:
+        return current_positions.copy(), []
+    deltas = {
+        (_clean_text(row["vt_symbol"]), _clean_text(row["position_direction"])): min(
+            0.0,
+            _to_float(row.get("position_delta_volume"), 0.0),
+        )
+        for row in grouped.to_dict(orient="records")
+    }
+    frame = current_positions.copy()
+    audit_rows: list[dict[str, Any]] = []
+    keep_mask = pd.Series(True, index=frame.index)
+    for idx, row in frame.iterrows():
+        vt_symbol = _clean_text(row.get("vt_symbol"))
+        direction = _normal_direction(row.get("direction"))
+        delta = deltas.get((vt_symbol, direction), 0.0)
+        if delta >= 0:
+            continue
+        original_signed = _to_float(row.get("end_pos", row.get("volume")), 0.0)
+        original_volume = abs(original_signed)
+        if original_volume <= 0:
+            continue
+        new_volume = max(0.0, original_volume + delta)
+        applied_delta = new_volume - original_volume
+        if abs(applied_delta) <= 1e-9:
+            continue
+        sign = -1.0 if direction == "short" else 1.0
+        if "end_pos" in frame.columns:
+            frame.at[idx, "end_pos"] = sign * new_volume
+        if "margin_exact" in frame.columns:
+            original_margin = _to_float(row.get("margin_exact"), 0.0)
+            frame.at[idx, "margin_exact"] = original_margin * (new_volume / original_volume)
+        if "live_stop_alignment_delta_volume" not in frame.columns:
+            frame["live_stop_alignment_delta_volume"] = 0.0
+        frame.at[idx, "live_stop_alignment_delta_volume"] = applied_delta
+        if "live_stop_alignment_note" not in frame.columns:
+            frame["live_stop_alignment_note"] = ""
+        frame.at[idx, "live_stop_alignment_note"] = "aligned_with_stage904_realtime_stop_fill"
+        if new_volume <= 1e-9:
+            keep_mask.at[idx] = False
+        audit_rows.append(
+            {
+                "vt_symbol": vt_symbol,
+                "direction": direction,
+                "original_volume": original_volume,
+                "new_volume": new_volume,
+                "applied_delta_volume": applied_delta,
+                "row_removed": int(new_volume <= 1e-9),
+            }
+        )
+    return frame.loc[keep_mask].reset_index(drop=True), audit_rows
+
+
+def _suppress_stage901_open_rows(
+    frame: pd.DataFrame,
+    grouped: pd.DataFrame,
+    *,
+    source_name: str,
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    if frame.empty or grouped.empty:
+        return frame.copy(), []
+    suppress_keys = {
+        (_clean_text(row["vt_symbol"]), _clean_text(row["position_direction"]))
+        for row in grouped.to_dict(orient="records")
+        if _to_float(row.get("suppress_signal_plan_volume"), 0.0) > 0
+    }
+    if not suppress_keys:
+        return frame.copy(), []
+    out = frame.copy()
+    keep_mask = pd.Series(True, index=out.index)
+    audit_rows: list[dict[str, Any]] = []
+    for idx, row in out.iterrows():
+        vt_symbol = _clean_text(row.get("vt_symbol"))
+        direction = _normal_direction(row.get("direction"))
+        offset = _normal_offset(row.get("offset"))
+        if offset != "open" or (vt_symbol, direction) not in suppress_keys:
+            continue
+        keep_mask.at[idx] = False
+        audit_rows.append(
+            {
+                "source": source_name,
+                "vt_symbol": vt_symbol,
+                "direction": direction,
+                "offset": offset,
+                "volume": _to_float(row.get("volume", row.get("planned_volume")), 0.0),
+                "suppress_reason": "stage901_open_already_touched_by_stage904_realtime_stop_logic",
+            }
+        )
+    return out.loc[keep_mask].reset_index(drop=True), audit_rows
+
+
+def _align_shadow_with_live_stop_fills(
+    *,
+    current_positions: pd.DataFrame,
+    signal_plan: pd.DataFrame,
+    pending_orders: pd.DataFrame,
+    trades: pd.DataFrame,
+    analysis_start: pd.Timestamp,
+    analysis_end: pd.Timestamp,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+    ledger_rows = read_execution_ledger()
+    events = _live_stop_alignment_events(
+        ledger_rows=ledger_rows,
+        trades=trades,
+        analysis_start=analysis_start,
+        analysis_end=analysis_end,
+    )
+    grouped = _alignment_group(events)
+    aligned_positions, position_adjustments = _apply_live_stop_to_current_positions(current_positions, grouped)
+    aligned_signal_plan, suppressed_signals = _suppress_stage901_open_rows(
+        signal_plan,
+        grouped,
+        source_name="signal_plan",
+    )
+    aligned_pending_orders, suppressed_pending = _suppress_stage901_open_rows(
+        pending_orders,
+        grouped,
+        source_name="pending_orders",
+    )
+    live_stop_alignment = {
+        "enabled": True,
+        "ledger_path": str(LIVE_EXECUTION_LEDGER_PATH),
+        "ledger_row_count": int(len(ledger_rows)),
+        "event_count": int(len(events)),
+        "stop_close_event_count": int((events.get("stop_close_volume", pd.Series(dtype=float)) > 0).sum()) if not events.empty else 0,
+        "retry_open_event_count": int((events.get("retry_open_volume", pd.Series(dtype=float)) > 0).sum()) if not events.empty else 0,
+        "position_adjustment_count": int(len(position_adjustments)),
+        "position_removed_count": int(sum(row.get("row_removed", 0) for row in position_adjustments)),
+        "signal_plan_suppressed_count": int(len(suppressed_signals)),
+        "pending_order_suppressed_count": int(len(suppressed_pending)),
+        "position_adjustments": position_adjustments,
+        "suppressed_rows": suppressed_signals + suppressed_pending,
+        "events": events.to_dict(orient="records"),
+    }
+    return aligned_positions, aligned_signal_plan, aligned_pending_orders, events, live_stop_alignment
 
 
 def _ai_pool_audit(path: Path) -> dict[str, Any]:
@@ -268,6 +639,28 @@ def _write_report(
     pending_orders: pd.DataFrame,
     decision: dict[str, Any],
 ) -> None:
+    live_stop_alignment = (
+        decision.get("live_stop_alignment", {}) if isinstance(decision.get("live_stop_alignment"), dict) else {}
+    )
+    live_stop_events = pd.DataFrame(live_stop_alignment.get("events", []))
+    if not live_stop_events.empty:
+        live_stop_events = live_stop_events[
+            [
+                column
+                for column in [
+                    "generated_at",
+                    "vt_symbol",
+                    "position_direction",
+                    "source",
+                    "source_reason",
+                    "fill_price",
+                    "fill_volume",
+                    "position_delta_volume",
+                    "alignment_note",
+                ]
+                if column in live_stop_events.columns
+            ]
+        ]
     lines = [
         "# Stage901 C9 当前实盘默认影子盘",
         "",
@@ -337,6 +730,17 @@ def _write_report(
         "",
         _md_table(pending_orders, max_rows=80),
         "",
+        "## 实时止损对齐",
+        "",
+        f"- ledger 文件：`{live_stop_alignment.get('ledger_path', '')}`。",
+        f"- ledger 行数：`{live_stop_alignment.get('ledger_row_count', 0)}`。",
+        f"- 对齐事件数：`{live_stop_alignment.get('event_count', 0)}`。",
+        f"- 持仓扣减行数：`{live_stop_alignment.get('position_adjustment_count', 0)}`。",
+        f"- 移除持仓行数：`{live_stop_alignment.get('position_removed_count', 0)}`。",
+        f"- signal_plan 抑制行数：`{live_stop_alignment.get('signal_plan_suppressed_count', 0)}`。",
+        f"- pending_order 抑制行数：`{live_stop_alignment.get('pending_order_suppressed_count', 0)}`。",
+        _md_table(live_stop_events, max_rows=40),
+        "",
         "## 成本压力",
         "",
         _md_table(
@@ -361,6 +765,8 @@ def _write_report(
         f"- 是否允许真实新开仓：`{decision['risk_snapshot']['allow_real_new_orders']}`。",
         f"- 目标日信号数：`{decision['target_signal_count']}`。",
         f"- 目标日后 pending order 数：`{decision['pending_order_count']}`。",
+        f"- 实时止损对齐事件数：`{live_stop_alignment.get('event_count', 0)}`。",
+        f"- 实时止损抑制理论开仓数：`{live_stop_alignment.get('signal_plan_suppressed_count', 0)}`。",
         "- 决策：`stage901_c9_live_default_shadow_measured_no_order_api`。",
         "- 后续真实执行仍需 fresh read-only、dry-run、broker-state reconciliation 和显式下单确认。",
     ]
@@ -406,6 +812,16 @@ def main() -> None:
     latest_date = pd.to_datetime(combined["date"], errors="coerce").max().normalize()
     current_positions = s658._current_positions(positions, metadata, latest_date)
     signal_plan = _signal_plan_from_trades(trades, analysis_end)
+    current_positions, signal_plan, pending_orders, live_stop_events, live_stop_alignment = (
+        _align_shadow_with_live_stop_fills(
+            current_positions=current_positions,
+            signal_plan=signal_plan,
+            pending_orders=pending_orders,
+            trades=trades,
+            analysis_start=analysis_start,
+            analysis_end=analysis_end,
+        )
+    )
 
     current_row = summary[summary["variant"].eq(OFFICIAL_LIVE_PROFILE_NAME)].to_dict(orient="records")
     decision = {
@@ -421,6 +837,7 @@ def main() -> None:
         "ai_pool_audit": _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
         "minute_audit": dict(_LAST_MINUTE_AUDIT),
         "strategy_ai_product_pool_eligibility_path": str(spec.overrides.get("ai_product_pool_eligibility_path", "")),
+        "live_stop_alignment": live_stop_alignment,
         "current_variant": current_row[0] if current_row else {},
         "risk_snapshot": {},
         "decision": "stage901_c9_live_default_shadow_measured_no_order_api",
@@ -428,6 +845,7 @@ def main() -> None:
         "target_signal_count": int(len(signal_plan)),
         "pending_order_count": int(len(pending_orders)),
         "pending_orders": pending_orders.to_dict(orient="records"),
+        "current_position_count": int(len(current_positions)),
         "order_api_called": False,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,
@@ -446,6 +864,7 @@ def main() -> None:
     intraday_events.to_csv(INTRADAY_EVENTS_PATH, index=False, encoding="utf-8-sig")
     pending_orders.to_csv(PENDING_ORDERS_PATH, index=False, encoding="utf-8-sig")
     signal_plan.to_csv(SIGNAL_PLAN_PATH, index=False, encoding="utf-8-sig")
+    live_stop_events.to_csv(LIVE_STOP_ALIGNMENT_PATH, index=False, encoding="utf-8-sig")
     summary.to_csv(SUMMARY_PATH, index=False, encoding="utf-8-sig")
     cost.to_csv(COST_PATH, index=False, encoding="utf-8-sig")
     DECISION_PATH.write_text(json.dumps(_json_safe(decision), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

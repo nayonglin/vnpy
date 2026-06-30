@@ -308,6 +308,45 @@ def _normalize_offset_text(value: Any) -> str:
     return text
 
 
+def _direction_from_payload(value: Any) -> Direction:
+    text = _normalize_direction_text(value)
+    if text == "long":
+        return Direction.LONG
+    if text == "short":
+        return Direction.SHORT
+    raw = str(value or "").strip()
+    upper = raw.upper()
+    if upper in Direction.__members__:
+        return Direction[upper]
+    return Direction(raw)
+
+
+def _offset_from_payload(value: Any) -> Offset:
+    text = _normalize_offset_text(value)
+    if text == "open":
+        return Offset.OPEN
+    if text == "close":
+        return Offset.CLOSE
+    raw = str(value or "").strip()
+    upper = raw.upper()
+    if upper in Offset.__members__:
+        return Offset[upper]
+    return Offset(raw)
+
+
+def _order_type_from_payload(value: Any) -> OrderType:
+    raw = str(value or OrderType.LIMIT.value).strip()
+    text = raw.lower()
+    if text in {"limit", "限价", "ordertype.limit"}:
+        return OrderType.LIMIT
+    if text in {"market", "市价", "ordertype.market"}:
+        return OrderType.MARKET
+    upper = raw.upper()
+    if upper in OrderType.__members__:
+        return OrderType[upper]
+    return OrderType(raw)
+
+
 def _vt_symbol_from_row(row: dict[str, Any]) -> str:
     vt_symbol = str(row.get("vt_symbol", "") or "").strip()
     if vt_symbol:
@@ -583,10 +622,9 @@ def _latest_order_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     frame["_order_key"] = key_source.fillna("").astype(str)
     empty_key = frame["_order_key"].eq("")
     frame.loc[empty_key, "_order_key"] = [f"row_{idx}" for idx in frame.index[empty_key]]
-    frame["_dt"] = pd.to_datetime(frame.get("datetime", frame.get("received_at", "")), errors="coerce")
     frame["_row_order"] = range(len(frame))
-    latest = frame.sort_values(["_order_key", "_dt", "_row_order"]).drop_duplicates("_order_key", keep="last")
-    return latest.drop(columns=[col for col in ("_order_key", "_dt", "_row_order") if col in latest.columns]).to_dict(orient="records")
+    latest = frame.sort_values(["_order_key", "_row_order"]).drop_duplicates("_order_key", keep="last")
+    return latest.drop(columns=[col for col in ("_order_key", "_row_order") if col in latest.columns]).to_dict(orient="records")
 
 
 def _active_order_count(rows: list[dict[str, Any]]) -> int:
@@ -697,11 +735,11 @@ def _order_request_from_payload(payload: dict[str, Any]) -> OrderRequest:
     return OrderRequest(
         symbol=str(payload["symbol"]),
         exchange=Exchange(str(payload["exchange"])),
-        direction=Direction(str(payload["direction"])),
-        type=OrderType(str(payload.get("type") or OrderType.LIMIT.value)),
+        direction=_direction_from_payload(payload["direction"]),
+        type=_order_type_from_payload(payload.get("type")),
         volume=float(payload["volume"]),
         price=float(payload["price"]),
-        offset=Offset(str(payload["offset"])),
+        offset=_offset_from_payload(payload["offset"]),
         reference=str(payload.get("reference", "Stage931OfficialLive")),
     )
 

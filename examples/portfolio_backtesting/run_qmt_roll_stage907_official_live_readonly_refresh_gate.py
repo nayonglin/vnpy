@@ -12,6 +12,7 @@ from typing import Any
 import pandas as pd
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
     PHASE_D_READONLY_REFRESH_ENV,
@@ -206,12 +207,63 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
     )
 
 
+def _send_email_if_needed(
+    *,
+    summary: dict[str, Any],
+    paths: dict[str, Path],
+    policy: str,
+) -> dict[str, Any]:
+    success = (
+        summary.get("refresh_status") == "readonly_refresh_completed_snapshot_ready"
+        and int(summary.get("blocking_failure_count", 0)) == 0
+    )
+    if policy == "never" or (policy == "on-failure" and success):
+        return {"email_status": "skipped_by_policy", "email_policy": policy}
+
+    severity = "info" if success else "warning"
+    status_text = "成功" if success else "失败/需检查"
+    subject = (
+        f"[C9/15w][15:05只读快照]{status_text} "
+        f"{summary.get('refresh_status', '')} API={summary.get('order_api_called_count', 0)}"
+    )
+    body = "\n".join(
+        [
+            f"结论：15:05 只读快照{status_text}。",
+            f"时间：{summary.get('generated_at', '')}",
+            f"当前官方实盘：{summary.get('official_live_alias', '')}",
+            f"刷新状态：{summary.get('refresh_status', '')}",
+            f"CTP只读状态：{summary.get('readonly_status_after', '')}",
+            f"持仓快照状态：{summary.get('position_snapshot_state_after', '')}",
+            f"阻断数：{summary.get('blocking_failure_count', 0)}",
+            f"订单API：{summary.get('order_api_called_count', 0)}",
+            "说明：这封邮件只确认 15:05 账户/持仓只读快照，不生成交易信号，不提交订单。",
+            "下一步：16:35 仍由 post-close 报告邮件给出收盘后信号、对账和今晚计划。",
+        ]
+    )
+    return send_official_live_email_notification(
+        subject=subject,
+        body=body,
+        event_type="stage907_day_close_readonly",
+        severity=severity,
+        attachments=[paths["report_md"], paths["summary_json"]],
+        metadata={
+            "mode": summary.get("mode", ""),
+            "env_profile": summary.get("env_profile", ""),
+            "refresh_status": summary.get("refresh_status", ""),
+            "blocking_failure_count": summary.get("blocking_failure_count", 0),
+            "order_api_called_count": summary.get("order_api_called_count", 0),
+            "email_policy": policy,
+        },
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live read-only refresh gate.")
     parser.add_argument("--mode", choices=["plan-only", "refresh"], default="plan-only")
     parser.add_argument("--env-profile", choices=["production-live", "simnow", "broker-test"], default="production-live")
     parser.add_argument("--wait-seconds", type=int, default=30)
     parser.add_argument("--confirm-readonly-refresh", default="")
+    parser.add_argument("--email-policy", choices=["never", "on-failure", "always"], default="never")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -299,6 +351,9 @@ def main() -> None:
     checks_df.to_csv(paths["checks_csv"], index=False, encoding="utf-8-sig")
     paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     paths["report_md"].write_text(_build_report(summary, checks_df), encoding="utf-8")
+    email_result = _send_email_if_needed(summary=summary, paths=paths, policy=str(args.email_policy))
+    summary["email_notification"] = email_result
+    paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
 
 

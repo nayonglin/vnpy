@@ -440,7 +440,7 @@ def _run_stage931(args: argparse.Namespace, target_date: str, paths: dict[str, P
     return {**{key: value for key, value in result.items() if key != "stdout"}, "summary": summary}
 
 
-def _current_session_names() -> str:
+def _current_session_name_list() -> list[str]:
     config = build_phase_d_config()
     now = datetime.now().time()
     names: list[str] = []
@@ -455,7 +455,11 @@ def _current_session_names() -> str:
             active = now >= start or now <= end
         if active:
             names.append(session.name)
-    return ",".join(names)
+    return names
+
+
+def _current_session_names() -> str:
+    return ",".join(_current_session_name_list())
 
 
 def _market_execution_session_active() -> bool:
@@ -996,9 +1000,53 @@ def main() -> None:
     parser.add_argument("--ai-pool-timeout-seconds", type=int, default=3600)
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
+    parser.add_argument("--require-current-session-name", action="append", default=[])
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    required_sessions = [_clean(item) for item in args.require_current_session_name if _clean(item)]
+    current_sessions = _current_session_name_list()
+    if required_sessions and not (set(required_sessions) & set(current_sessions)):
+        run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        paths = _paths(run_id)
+        summary = {
+            "model_tag": MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "mode": args.mode,
+            "submit_mode": args.submit_mode,
+            "target_date": args.target_date,
+            "requested_target_date": args.target_date,
+            "cycle_count": 0,
+            "daemon_status": "daemon_blocked_outside_required_session",
+            "required_current_session_names": required_sessions,
+            "current_session_names": ",".join(current_sessions),
+            "order_api_called_count": 0,
+            "latest_cycle": {
+                "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": args.target_date,
+                "stage903": {"summary": {"controller_status": "stage930_outside_required_session_fail_closed"}},
+                "stage927": {"summary": {"arming_status": "stage927_skipped_outside_required_session", "real_submit_permitted": 0}},
+                "stage931": {"summary": {"adapter_status": "stage931_skipped_outside_required_session"}},
+                "order_api_called_count": 0,
+            },
+            "outputs": {key: str(value.resolve()) for key, value in paths.items()},
+            "latest_outputs": {
+                "summary_json": str(LATEST_SUMMARY_PATH.resolve()),
+                "report_md": str(LATEST_REPORT_PATH.resolve()),
+                "heartbeat_json": str(LATEST_HEARTBEAT_PATH.resolve()),
+                "events_ndjson": str(LATEST_EVENT_LOG_PATH.resolve()),
+            },
+            "judgement": {
+                "overfit_before": "否。会话名称限制只约束 launchd 启动窗口，不改策略参数。",
+                "continue_before": "是。防止日盘 label 在盘后手动 kickstart 后持锁挡住夜盘 label。",
+                "overfit_after": "否。失败时只 fail-closed，不反馈优化。",
+                "continue_after": "是。需要在正确交易会话由对应 launchd label 启动守护进程。",
+            },
+        }
+        _write_outputs(paths, summary)
+        print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+        sys.exit(2)
     lock_handle = _acquire_singleton_lock()
     if lock_handle is None:
         summary = {

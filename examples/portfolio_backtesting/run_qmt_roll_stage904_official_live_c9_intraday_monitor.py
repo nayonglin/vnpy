@@ -131,6 +131,14 @@ def _normalize_offset(value: Any) -> str:
     return text
 
 
+def _opposite_direction(direction: str) -> str:
+    if direction == "long":
+        return "short"
+    if direction == "short":
+        return "long"
+    return ""
+
+
 def _vt_symbol(row: dict[str, Any]) -> str:
     vt_symbol = _clean(row.get("vt_symbol"))
     if vt_symbol:
@@ -179,11 +187,16 @@ def _weighted_broker_open_trade(trades: pd.DataFrame, vt_symbol: str, direction:
     frame["offset_norm"] = frame.get("offset", "").map(_normalize_offset)
     date_source = frame.get("datetime", frame.get("date", frame.get("trading_day", "")))
     frame["date_norm"] = date_source.map(_date_only) if hasattr(date_source, "map") else ""
+    accepted_dates = {target_date}
+    try:
+        accepted_dates.add((pd.Timestamp(target_date) + pd.Timedelta(days=1)).date().isoformat())
+    except Exception:
+        pass
     matched = frame[
         frame.get("vt_symbol", "").astype(str).eq(vt_symbol)
         & frame["direction_norm"].eq(direction)
         & frame["offset_norm"].eq("open")
-        & frame["date_norm"].eq(target_date)
+        & frame["date_norm"].isin(accepted_dates)
     ].copy()
     if matched.empty:
         return None
@@ -201,7 +214,93 @@ def _weighted_broker_open_trade(trades: pd.DataFrame, vt_symbol: str, direction:
         "price": weighted_price,
         "volume": total_volume,
         "trade_count": int(len(matched)),
+        "broker_reported_date": _date_only(latest.get("datetime", latest.get("date", ""))),
         "date": target_date,
+    }
+
+
+def _broker_original_open_trade_before_stage904_close(
+    trades: pd.DataFrame,
+    vt_symbol: str,
+    direction: str,
+    target_date: str,
+    first_close_fill: dict[str, Any],
+) -> dict[str, Any] | None:
+    if trades.empty:
+        return None
+    close_direction = _opposite_direction(direction)
+    if not vt_symbol or direction not in {"long", "short"} or not close_direction:
+        return None
+    frame = trades.reset_index(drop=False).rename(columns={"index": "_source_row"}).copy()
+    empty = pd.Series([""] * len(frame), index=frame.index)
+    vt_source = frame["vt_symbol"] if "vt_symbol" in frame.columns else empty
+    direction_source = frame["direction"] if "direction" in frame.columns else empty
+    offset_source = frame["offset"] if "offset" in frame.columns else empty
+    date_source = frame["datetime"] if "datetime" in frame.columns else frame["date"] if "date" in frame.columns else frame["trading_day"] if "trading_day" in frame.columns else empty
+    frame["direction_norm"] = direction_source.map(_normalize_direction)
+    frame["offset_norm"] = offset_source.map(_normalize_offset)
+    frame["date_norm"] = date_source.map(_date_only)
+    frame["price_num"] = pd.to_numeric(frame.get("price", 0.0), errors="coerce").fillna(0.0)
+    frame["volume_num"] = pd.to_numeric(frame.get("volume", 0.0), errors="coerce").fillna(0.0)
+    accepted_dates = {target_date}
+    try:
+        accepted_dates.add((pd.Timestamp(target_date) + pd.Timedelta(days=1)).date().isoformat())
+    except Exception:
+        pass
+    symbol_trades = frame[
+        vt_source.astype(str).eq(vt_symbol)
+        & frame["date_norm"].isin(accepted_dates)
+    ].copy()
+    if symbol_trades.empty:
+        return None
+
+    close_rows = symbol_trades[
+        symbol_trades["direction_norm"].eq(close_direction)
+        & symbol_trades["offset_norm"].eq("close")
+        & symbol_trades["price_num"].gt(0)
+        & symbol_trades["volume_num"].gt(0)
+    ].copy()
+    if close_rows.empty:
+        return None
+    close_price = _to_float(first_close_fill.get("price"), 0.0)
+    close_volume = _to_float(first_close_fill.get("trade_volume_delta", first_close_fill.get("volume")), 0.0)
+    matched_close_rows = close_rows
+    if close_price > 0:
+        by_price = matched_close_rows[matched_close_rows["price_num"].sub(close_price).abs().le(1e-9)]
+        if not by_price.empty:
+            matched_close_rows = by_price
+    if close_volume > 0:
+        by_volume = matched_close_rows[matched_close_rows["volume_num"].sub(close_volume).abs().le(1e-9)]
+        if not by_volume.empty:
+            matched_close_rows = by_volume
+    close_source_row = float(matched_close_rows.sort_values("_source_row").iloc[0]["_source_row"])
+
+    open_rows = symbol_trades[
+        symbol_trades["direction_norm"].eq(direction)
+        & symbol_trades["offset_norm"].eq("open")
+        & symbol_trades["_source_row"].lt(close_source_row)
+        & symbol_trades["price_num"].gt(0)
+        & symbol_trades["volume_num"].gt(0)
+    ].copy()
+    if open_rows.empty:
+        return None
+    total_volume = float(open_rows["volume_num"].sum())
+    if total_volume <= 0:
+        return None
+    weighted_price = float((open_rows["price_num"] * open_rows["volume_num"]).sum() / total_volume)
+    open_rows["_dt"] = pd.to_datetime(open_rows.get("datetime", open_rows["date_norm"]), errors="coerce")
+    latest = open_rows.sort_values(["_source_row"]).iloc[-1].to_dict()
+    return {
+        **latest,
+        "vt_symbol": vt_symbol,
+        "direction": direction,
+        "offset": "open",
+        "price": weighted_price,
+        "volume": total_volume,
+        "trade_count": int(len(open_rows)),
+        "broker_reported_date": _date_only(latest.get("datetime", latest.get("date", ""))),
+        "date": target_date,
+        "fill_price_source": "readonly_broker_open_trade_before_stage904_stop_close",
     }
 
 
@@ -241,8 +340,11 @@ def _tick_frame(ticks: pd.DataFrame, vt_symbol: str) -> pd.DataFrame:
 
 def _tick_dt_series(frame: pd.DataFrame) -> pd.Series:
     for key in ("localtime", "datetime", "snapshot_at", "generated_at"):
-        if key in frame.columns:
-            return pd.to_datetime(frame[key], errors="coerce")
+        if key not in frame.columns:
+            continue
+        series = pd.to_datetime(frame[key], errors="coerce")
+        if series.notna().any():
+            return series
     return pd.Series(pd.NaT, index=frame.index)
 
 
@@ -377,7 +479,7 @@ def _monitor_positions(shadow_positions: pd.DataFrame, broker_positions: pd.Data
     for row in shadow_positions.to_dict(orient="records"):
         vt_symbol = _clean(row.get("vt_symbol"))
         direction = _normalize_direction(row.get("direction"))
-        volume = _to_float(row.get("end_pos", row.get("volume", 0.0)), 0.0)
+        volume = abs(_to_float(row.get("end_pos", row.get("volume", 0.0)), 0.0))
         if not vt_symbol or direction not in {"long", "short"} or volume <= 0:
             continue
         item = dict(row)
@@ -441,7 +543,7 @@ def _stage904_stop_close_fills(
     vt_symbol: str,
     original_direction: str,
 ) -> list[dict[str, Any]]:
-    close_direction = "short" if original_direction == "long" else "long" if original_direction == "short" else ""
+    close_direction = _opposite_direction(original_direction)
     matched: list[dict[str, Any]] = []
     for row in rows:
         if _clean(row.get("target_date")) != target_date:
@@ -608,6 +710,7 @@ def _retry_action_for_stopped_position(
 def _retry_actions(
     *,
     broker_positions: pd.DataFrame,
+    broker_trades: pd.DataFrame,
     execution_ledger_rows: list[dict[str, Any]],
     entry_risk: pd.DataFrame,
     ticks: pd.DataFrame,
@@ -620,12 +723,18 @@ def _retry_actions(
             continue
         if _clean(row.get("event_type")) != "filled_or_part_filled":
             continue
-        if _ledger_offset(row) != "open":
-            continue
         vt_symbol = _ledger_vt_symbol(row)
+        offset = _ledger_offset(row)
         direction = _ledger_direction(row)
-        if vt_symbol and direction in {"long", "short"}:
+        if offset == "open" and vt_symbol and direction in {"long", "short"}:
             open_keys.add((vt_symbol, direction))
+            continue
+        if offset != "close" or not vt_symbol or direction not in {"long", "short"}:
+            continue
+        original_direction = _opposite_direction(direction)
+        intent_id = _clean(row.get("intent_id"))
+        if original_direction and (intent_id.startswith("STAGE905-C9MON") or _ledger_source(row) == "stage904_c9_intraday_close"):
+            open_keys.add((vt_symbol, original_direction))
 
     rows: list[dict[str, Any]] = []
     for vt_symbol, direction in sorted(open_keys):
@@ -635,6 +744,20 @@ def _retry_actions(
         if not close_fills:
             continue
         ledger_open_trade = weighted_open_fill(execution_ledger_rows, target_date, vt_symbol, direction)
+        ledger_open_intent_id = _clean(ledger_open_trade.get("intent_id") if ledger_open_trade else "")
+        ledger_open_at = _clean(ledger_open_trade.get("generated_at") if ledger_open_trade else "")
+        first_close_at = _clean(close_fills[0].get("generated_at"))
+        use_broker_fallback = ledger_open_trade is None
+        if ledger_open_intent_id.startswith("STAGE905-PENDING") and ledger_open_at and first_close_at and ledger_open_at >= first_close_at:
+            use_broker_fallback = True
+        if use_broker_fallback:
+            ledger_open_trade = _broker_original_open_trade_before_stage904_close(
+                broker_trades,
+                vt_symbol,
+                direction,
+                target_date,
+                close_fills[0],
+            )
         if not ledger_open_trade:
             continue
         stop_close_filled_volume = sum(
@@ -688,6 +811,7 @@ def _action_for_position(
     live_price, live_price_source = _tick_price(tick)
     adverse_extreme_price, adverse_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "adverse")
     progress_extreme_price, progress_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "progress")
+    stop_close_fills = _stage904_stop_close_fills(execution_ledger_rows, target_date, vt_symbol, direction)
 
     if not vt_symbol:
         reasons.append("missing_vt_symbol")
@@ -697,18 +821,6 @@ def _action_for_position(
         reasons.append("no_open_volume")
     ledger_fill_price = _to_float(ledger_open_trade.get("price") if ledger_open_trade else None, 0.0)
     broker_fill_price = _to_float(broker_open_trade.get("price") if broker_open_trade else None, 0.0)
-    if open_trade is None and ledger_fill_price <= 0 and broker_fill_price <= 0:
-        reasons.append("matching_open_trade_missing")
-    if risk_row is None:
-        reasons.append("matching_entry_risk_missing")
-    if require_broker_fill_price and ledger_fill_price <= 0 and broker_fill_price <= 0:
-        reasons.append("broker_or_execution_open_trade_fill_price_missing_for_live_real_monitor")
-    if tick is None:
-        reasons.append("fresh_tick_missing")
-    if tick_age is None or tick_age > max_tick_age_seconds:
-        reasons.append("fresh_tick_missing_or_stale")
-    if live_price <= 0:
-        reasons.append("live_price_missing")
 
     shadow_fill_price = _to_float(open_trade.get("price") if open_trade else None, 0.0)
     if ledger_fill_price > 0:
@@ -725,23 +837,55 @@ def _action_for_position(
     risk_date = _date_only(risk_row.get("date") if risk_row else "")
     broker_open_trade_date = _date_only(broker_open_trade.get("date") if broker_open_trade else "")
     ledger_open_trade_date = _date_only(ledger_open_trade.get("date") if ledger_open_trade else "")
+    ledger_open_source = _ledger_source(ledger_open_trade) if ledger_open_trade else ""
+    ledger_open_intent_id = _clean(ledger_open_trade.get("intent_id")) if ledger_open_trade else ""
+    stop_close_latest_at = _clean(stop_close_fills[-1].get("generated_at")) if stop_close_fills else ""
+    ledger_open_at = _clean(ledger_open_trade.get("generated_at")) if ledger_open_trade else ""
+    forced_close_after_stop_reentry = bool(
+        stop_close_fills
+        and ledger_fill_price > 0
+        and (ledger_open_source == "stage901_pending_order" or ledger_open_intent_id.startswith("STAGE905-PENDING"))
+        and (not stop_close_latest_at or not ledger_open_at or ledger_open_at >= stop_close_latest_at)
+    )
+    opened_today = bool(
+        open_trade_date == target_date
+        or ledger_open_trade_date == target_date
+        or broker_open_trade_date == target_date
+    )
     entry_day_active = bool(
-        (open_trade_date and open_trade_date == target_date)
-        or (
-            position_source == "broker"
-            and risk_date == target_date
-            and (ledger_open_trade_date == target_date or broker_open_trade_date == target_date)
+        risk_date == target_date
+        and (
+            opened_today
+            or (position_source == "broker" and broker_position_avg_price > 0)
         )
     )
     if not entry_day_active:
+        if not reasons:
+            action = "watch"
         reasons.append("c9_entry_day_monitor_not_active")
+    else:
+        if open_trade is None and ledger_fill_price <= 0 and broker_fill_price <= 0:
+            reasons.append("matching_open_trade_missing")
+        if risk_row is None:
+            reasons.append("matching_entry_risk_missing")
+        if require_broker_fill_price and ledger_fill_price <= 0 and broker_fill_price <= 0:
+            reasons.append("broker_or_execution_open_trade_fill_price_missing_for_live_real_monitor")
+        if tick is None:
+            reasons.append("fresh_tick_missing")
+        if tick_age is None or tick_age > max_tick_age_seconds:
+            reasons.append("fresh_tick_missing_or_stale")
+        if live_price <= 0:
+            reasons.append("live_price_missing")
     risk_price = abs(fill_price - initial_stop_price) if fill_price > 0 and initial_stop_price > 0 else 0.0
-    if risk_price <= 0:
+    if entry_day_active and risk_price <= 0 and not forced_close_after_stop_reentry:
         reasons.append("invalid_risk_price")
 
     sign = 1.0 if direction == "long" else -1.0
     stop_price = fill_price - sign * STOP_RETRY_R * risk_price if risk_price > 0 else 0.0
     progress_price = fill_price + sign * STOP_RETRY_R * risk_price if risk_price > 0 else 0.0
+    if forced_close_after_stop_reentry and stop_price <= 0:
+        stop_price = initial_stop_price if initial_stop_price > 0 else fill_price
+        progress_price = fill_price
     adverse_hit = False
     progress_hit = False
     if risk_price > 0:
@@ -753,7 +897,10 @@ def _action_for_position(
             progress_hit = progress_extreme_price > 0 and progress_extreme_price <= progress_price
 
     if not reasons:
-        if adverse_hit:
+        if forced_close_after_stop_reentry:
+            action = "close_dry_run"
+            reasons.append("stage901_pending_open_after_stage904_stop_close_forced_close")
+        elif adverse_hit:
             action = "close_dry_run"
             reasons.append("stage847_initial_05r_stop_triggered")
         elif progress_hit:
@@ -774,6 +921,8 @@ def _action_for_position(
         "ledger_open_trade_date": ledger_open_trade_date,
         "ledger_open_trade_count": int(_to_float(ledger_open_trade.get("trade_count") if ledger_open_trade else 0, 0.0)),
         "ledger_open_trade_volume": _to_float(ledger_open_trade.get("volume") if ledger_open_trade else 0.0, 0.0),
+        "ledger_open_source": ledger_open_source,
+        "ledger_open_intent_id": ledger_open_intent_id,
         "broker_open_trade_date": broker_open_trade_date,
         "broker_open_trade_count": int(_to_float(broker_open_trade.get("trade_count") if broker_open_trade else 0, 0.0)),
         "broker_open_trade_volume": _to_float(broker_open_trade.get("volume") if broker_open_trade else 0.0, 0.0),
@@ -806,6 +955,7 @@ def _action_for_position(
         "mark_price_fallback": mark_price,
         "adverse_hit": int(adverse_hit),
         "progress_hit": int(progress_hit),
+        "forced_close_after_stop_reentry": int(forced_close_after_stop_reentry),
         "monitor_action": action,
         "monitor_reason": ";".join(dict.fromkeys(reasons)),
         "order_api_called": 0,
@@ -909,6 +1059,7 @@ def main() -> None:
     )
     retry_actions = _retry_actions(
         broker_positions=broker_positions,
+        broker_trades=broker_trades,
         execution_ledger_rows=execution_ledger_rows,
         entry_risk=entry_risk,
         ticks=ticks,

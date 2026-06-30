@@ -11,6 +11,7 @@ import pandas as pd
 from pandas.errors import EmptyDataError
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_phase_d_config import (
     READONLY_CONTRACTS_PATH,
     READONLY_ORDERS_PATH,
@@ -278,9 +279,8 @@ def _latest_order_statuses(orders: pd.DataFrame) -> pd.Series:
     frame["_order_key"] = key_source.fillna("").astype(str)
     empty_key = frame["_order_key"].eq("")
     frame.loc[empty_key, "_order_key"] = [f"row_{idx}" for idx in frame.index[empty_key]]
-    frame["_dt"] = pd.to_datetime(frame.get("datetime", frame.get("received_at", "")), errors="coerce")
     frame["_row_order"] = range(len(frame))
-    sort_cols = ["_order_key", "_dt", "_row_order"]
+    sort_cols = ["_order_key", "_row_order"]
     latest = frame.sort_values(sort_cols).drop_duplicates("_order_key", keep="last")
     if "status" not in latest.columns:
         return pd.Series([""] * len(latest), dtype=str)
@@ -343,6 +343,93 @@ def _pending_order_intents(pending_orders: pd.DataFrame) -> list[dict[str, Any]]
                 "source_reason": _clean(row.get("status")),
             }
         )
+    return rows
+
+
+def _ledger_intent_payload(row: dict[str, Any]) -> dict[str, Any]:
+    payload = row.get("intent_payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _ledger_vt_symbol(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _clean(row.get("vt_symbol") or payload.get("vt_symbol"))
+
+
+def _ledger_direction(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _normalize_direction_text(row.get("direction") or payload.get("direction"))
+
+
+def _ledger_offset(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _normalize_offset_text(row.get("offset") or payload.get("offset"))
+
+
+def _ledger_source(row: dict[str, Any]) -> str:
+    payload = _ledger_intent_payload(row)
+    return _clean(row.get("source") or payload.get("source"))
+
+
+def _opposite_direction_text(direction: str) -> str:
+    if direction == "long":
+        return "short"
+    if direction == "short":
+        return "long"
+    return ""
+
+
+def _has_stage904_stop_close_fill(
+    ledger_rows: list[dict[str, Any]],
+    target_date: str,
+    vt_symbol: str,
+    original_direction: str,
+) -> bool:
+    close_direction = _opposite_direction_text(original_direction)
+    if not target_date or not vt_symbol or close_direction not in {"long", "short"}:
+        return False
+    for row in ledger_rows:
+        if _clean(row.get("target_date")) != target_date:
+            continue
+        if _clean(row.get("event_type")) != "filled_or_part_filled":
+            continue
+        if _ledger_vt_symbol(row) != vt_symbol:
+            continue
+        if _ledger_direction(row) != close_direction:
+            continue
+        if _ledger_offset(row) != "close":
+            continue
+        intent_id = _clean(row.get("intent_id"))
+        if intent_id.startswith("STAGE905-C9MON") or _ledger_source(row) == "stage904_c9_intraday_close":
+            return True
+    return False
+
+
+def _suppress_stage901_pending_after_stop_close(
+    pending_intents: list[dict[str, Any]],
+    *,
+    ledger_rows: list[dict[str, Any]],
+    target_date: str,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for intent in pending_intents:
+        source = _clean(intent.get("source"))
+        offset = _normalize_offset_text(intent.get("offset"))
+        direction = _normalize_direction_text(intent.get("direction"))
+        vt_symbol = _clean(intent.get("vt_symbol"))
+        if (
+            source == "stage901_pending_order"
+            and offset == "open"
+            and _has_stage904_stop_close_fill(ledger_rows, target_date, vt_symbol, direction)
+        ):
+            item = dict(intent)
+            item["force_skip_reason"] = "stage901_pending_open_suppressed_after_stage904_stop_close_wait_for_retry"
+            reason = _clean(item.get("source_reason"))
+            suffix = "suppressed_after_stage904_stop_close_wait_for_stage904_retry"
+            item["source_reason"] = f"{reason};{suffix}" if reason else suffix
+            rows.append(item)
+            continue
+        rows.append(intent)
     return rows
 
 
@@ -490,7 +577,10 @@ def _validate_intent(
     source = _clean(intent.get("source"))
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
     intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
+    force_skip_reason = _clean(intent.get("force_skip_reason"))
 
+    if force_skip_reason:
+        reasons.append(force_skip_reason)
     stage902_blocking_for_intent = stage902_reduce_close_blocking if offset_text == "close" else stage902_blocking
     if stage902_blocking_for_intent > 0 and not intraday_close_intent:
         reasons.append(f"stage902_blocking_failure_count={stage902_blocking_for_intent}")
@@ -570,6 +660,9 @@ def _validate_intent(
     if skip_existing_stage901_open:
         status = "skipped_existing_broker_position"
         reasons = [f"stage901_open_already_present_in_broker_position:{broker_match_volume}"]
+    elif force_skip_reason:
+        status = f"skipped_{force_skip_reason}"
+        reasons = [force_skip_reason]
     else:
         status = "blocked" if reasons else "dry_run_order_request_payload_ready"
     if not reasons and direction and offset:
@@ -688,8 +781,14 @@ def main() -> None:
     orders = _read_csv_maybe(READONLY_ORDERS_PATH)
     stage902_summary = _read_json(_stage902_summary_path(args.target_date))
     stage260_summary = _read_json(_stage260_summary_path(args.target_date))
+    execution_ledger_rows = read_execution_ledger()
 
-    raw_intents = _dedupe_intents(_pending_order_intents(pending_orders) + _stage904_intents(stage904_actions))
+    pending_intents = _suppress_stage901_pending_after_stop_close(
+        _pending_order_intents(pending_orders),
+        ledger_rows=execution_ledger_rows,
+        target_date=args.target_date,
+    )
+    raw_intents = _dedupe_intents(pending_intents + _stage904_intents(stage904_actions))
     intents = pd.DataFrame(
         [
             _validate_intent(
@@ -733,6 +832,7 @@ def main() -> None:
         "cancel_order_api_called_count": cancel_count,
         "stage902_overall_status": stage902_summary.get("overall_status", ""),
         "stage260_executable_count": stage260_summary.get("executable_count", 0),
+        "execution_ledger_rows": int(len(execution_ledger_rows)),
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {
             "overfit_before": "否。executor dry-run 是执行层，不改信号或策略参数。",
