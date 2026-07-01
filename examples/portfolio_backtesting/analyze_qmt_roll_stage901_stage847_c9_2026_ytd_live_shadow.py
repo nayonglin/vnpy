@@ -13,7 +13,6 @@ import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as s650
 import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653
 import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
-import analyze_qmt_roll_stage660_stage653_multiperiod_live_audit as s660
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
@@ -59,23 +58,6 @@ SIGNAL_PLAN_PATH = OFFICIAL_LIVE_SIGNAL_PLAN_PATH
 DECISION_PATH = OFFICIAL_LIVE_SUMMARY_PATH
 REPORT_PATH = OFFICIAL_LIVE_REPORT_PATH
 LIVE_STOP_ALIGNMENT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_live_stop_alignment_{MODEL_TAG}.csv"
-
-LEGACY_STAGE372_PROFILE_NAME = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
-LEGACY_STAGE372_BASE_PROFILE_NAME = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
-LEGACY_STAGE372_STRATEGY_OVERRIDES: dict[str, Any] = {
-    "enable_streak_entry_structure_risk_recovery": True,
-    "streak_entry_structure_recovery_signals": "long_case1a,short_case1a",
-    "streak_entry_structure_recovery_min_multiplier": 1.0,
-    "streak_entry_structure_recovery_require_flat_portfolio": True,
-    "streak_entry_structure_recovery_max_same_direction_corr": 0.30,
-    "streak_entry_structure_recovery_require_rsi_confirmation": False,
-    "enable_recovery_sleeve": True,
-    "recovery_sleeve_base_multiplier_max": 0.1000001,
-    "recovery_sleeve_broker_margin_multiplier": 1.65,
-    "recovery_sleeve_max_single_contract_broker_margin_to_equity": 0.20,
-    "recovery_sleeve_cooldown_days": 20,
-    "recovery_sleeve_volume": 1,
-}
 
 _FULL_MINUTE_BY_SYMBOL_CACHE: dict[str, pd.DataFrame] | None = None
 _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS: set[str] = set()
@@ -527,20 +509,7 @@ def _run_live_c9(
     original_end = s847.END
     original_minute_by_symbol = s847.s827._GLOBAL_MINUTE_BY_SYMBOL
     minute_audit = _ensure_c9_minute_bars(metadata)
-    legacy_official_state = {
-        "OFFICIAL_LIVE_PROFILE_NAME": s660.OFFICIAL_LIVE_PROFILE_NAME,
-        "OFFICIAL_LIVE_BASE_PROFILE_NAME": s660.OFFICIAL_LIVE_BASE_PROFILE_NAME,
-        "OFFICIAL_LIVE_ALIAS": s660.OFFICIAL_LIVE_ALIAS,
-        "OFFICIAL_LIVE_CAPITAL": s660.OFFICIAL_LIVE_CAPITAL,
-        "OFFICIAL_LIVE_STRATEGY_OVERRIDES": s660.OFFICIAL_LIVE_STRATEGY_OVERRIDES,
-    }
     try:
-        s660.OFFICIAL_LIVE_PROFILE_NAME = LEGACY_STAGE372_PROFILE_NAME
-        s660.OFFICIAL_LIVE_BASE_PROFILE_NAME = LEGACY_STAGE372_BASE_PROFILE_NAME
-        s660.OFFICIAL_LIVE_ALIAS = "Stage372-20w"
-        s660.OFFICIAL_LIVE_CAPITAL = 200_000.0
-        s660.OFFICIAL_LIVE_STRATEGY_OVERRIDES = dict(LEGACY_STAGE372_STRATEGY_OVERRIDES)
-
         s847.START = analysis_start.normalize()
         s847.END = analysis_end.normalize()
         profile = s847._c9_profile(metadata)
@@ -571,8 +540,6 @@ def _run_live_c9(
         s847.START = original_start
         s847.END = original_end
         s847.s827._GLOBAL_MINUTE_BY_SYMBOL = original_minute_by_symbol
-        for key, value in legacy_official_state.items():
-            setattr(s660, key, value)
 
     combined["account_capital"] = live_spec.capital.account_capital
     combined["c3_capital"] = live_spec.capital.c3_capital

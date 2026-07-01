@@ -1,0 +1,99 @@
+# futures_trend_rebuilt_c9_15w_optimization - 重建版 C9/15w 优化线
+
+## 定位
+
+- 资产：商品期货。
+- 当前基准：功能性重建后的当前线上 C9/15w 版本 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`。
+- 当前 profile：`stage847_c9_15w_stage819_05r_stop_retry_live`。
+- AI 池：当前重建 Stage182 池 `qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_eligibility_stage182_ai_product_pool_live_inference_v1.csv`，sha256 `8f54218d5c1922ebd4e0a2a16ef6d80c4f4392d1aa6c8cddd3f6127ffca574e3`。
+- 研究目标：在承认当前版本不是删除前旧产物字节级复刻的前提下，把“当前可复验、可上线延续”的重建版作为新的优化母本；当前用户目标已更新为 `2020-01-01` 到 `2025-06-30` 任意日起点、回测周期大于一年正收益、全周期收益保留 `80%+`、基础品种池加鸡蛋、AI 选品进一步优化、识别超高质量信号并加大风险投入。
+- 独立性：本线只写 `research/lines/futures_trend_rebuilt_c9_15w_optimization/` 下的记录、工具和输出；实验脚本、输出命名应使用 `rebuilt_c9_15w_opt` 或本线 Stage 号前缀；不得污染 `futures_trend_stage819_intraday_rules`、旧 `futures_trend_c9_minrisk_highquality` 或当前官方实盘执行链路。
+
+## 基准口径
+
+- 基准阶段：`Stage167 C9 15w 线上版本多周期回测与 AI 池审计`。
+- 基准记录：`research/lines/futures_trend_stage819_intraday_rules/stages/20260701_0217_stage167_c9_live_multiperiod_ai_audit.md`。
+- 基准回测：从 `2018-01-01` 起每半年一个独立冷启动起点，统一结束 `2026-06-30`，共 `17` 个窗口。
+- 基准 AI 审计：`PASS 858`、`PRE_AI_HISTORY 60`、`FAIL 0`；首个 Stage182 快照 `2019-12-31` 之后的候选月份全部带 AI enabled 和 signal-date 元数据。
+- 基准结果：正收益 `17/17`；期末权益最低/中位/最高 `152,851.60 / 455,463.70 / 14,900,482.00`；总收益最低/中位/最高 `1.9011% / 203.6425% / 9,833.6547%`；最差最大回撤 `-56.2069%`；回撤中位 `-47.2779%`；Sharpe 最低/中位/最高 `0.2860 / 1.1937 / 1.4786`；peak broker10 margin/equity `96.6295%`。
+- 基准图表：
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage167_c9_live_15w_multiperiod_ai_audit_performance_chart_stage167_c9_live_15w_multiperiod_ai_audit_v1.png`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage167_c9_live_15w_multiperiod_ai_audit_absolute_equity_chart_stage167_c9_live_15w_multiperiod_ai_audit_v1.png`
+  - `examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage167_c9_live_15w_multiperiod_ai_audit_ai_audit_chart_stage167_c9_live_15w_multiperiod_ai_audit_v1.png`
+
+## 基线边界
+
+- 本线基准是“当前功能性重建版”，不是删除前旧正式产物的 1:1 字节级复原。
+- 不允许把旧记录中的更好指标直接当作本线达标线；旧记录只能作为历史对照和风险提示。
+- AI 相关实验必须显式写明使用的 AI 池文件、hash、eval_date 范围和是否冻结月度池；不得悄悄切换到最新池或旧池。
+- 实盘执行逻辑、Phase D、Stage929/930/931、CTP/SimNow、邮件和 launchd 不属于本线默认可改范围；若某实验未来可能进入实盘，必须另走官方 SOP、健康门和用户显式确认。
+
+## 外部调研种子
+
+- Bailey、Borwein、Lopez de Prado、Zhu 的 PBO/backtest overfitting 框架提醒：多回测、多参数、多候选会显著提高样本内虚假发现概率；本线所有优化必须做预声明和多起点验证，不能 winner-picking。
+- Hurst、Ooi、Pedersen 的长期趋势跟随研究提示：趋势跟随的核心价值来自跨市场、跨周期的右尾与分散化；优化不应为了压局部回撤而切掉趋势右尾。
+- 后续每个真正优化阶段开始前，必须重新做与该方向相关的网上/GitHub/论文调研，并在 stage 文件中写明采纳、否决或融合的理由。
+
+## 研究假设
+
+- 当前 C9/15w 重建版的主要问题不是 AI 池漏用，而是路径左尾：早期起点最大回撤约 `-55%` 到 `-56%`，DD50 失败较多。
+- 右尾很强，不能用简单过滤、缩手、时间止损、固定止盈或单品种黑名单牺牲趋势复利底座。
+- 更有价值的方向可能在账户层风险状态、入场后风险预算释放纪律、保证金压力治理、信号质量只读标签与新外生信息源，而不是继续扫 `R` 倍数、重试次数、月份、品种、方向或窗口。
+
+## 预声明评估标准
+
+- A：Stage167 当前重建 C9/15w 基准。
+- C：本线新增候选。
+- 必看指标：
+  - 多周期起点的期末权益、总收益、最大回撤、Sharpe。
+  - DD30/DD40/DD50 fail count。
+  - broker10 峰值、broker100 fail count。
+  - 交易次数、滑点、胜率、成本压力。
+  - AI 池审计是否仍为 post-AI `FAIL=0`。
+- 晋级倾向：
+  - 最大回撤和 DD50 fail 明显下降。
+  - 收益保留有清晰阈值，默认不低于基准中位收益的 `80%`，且不得只靠牺牲早期右尾换平滑。
+  - Sharpe 不明显恶化。
+  - broker10/broker100 不恶化。
+  - 改善不能集中在单一年份、单个起点、单品种、单方向或单个右尾事件。
+
+## 反过拟合约束
+
+- 不按 `2018-01`、`2022-07`、`2026-01` 等具体起点定制规则。
+- 不按单品种、交易所、方向、月份、节假日或具体合约黑名单补丁化。
+- 不扫 `0.25R/0.5R/1R`、初始风险比例、确认窗口、止损倍数、重试次数、仓位比例等参数；每条候选必须先有第一性解释，再冻结一个版本做验证。
+- 不用未来 MFE/MAE、最终盈亏、日终后才知道的信息，去定义实时交易规则。
+- 代理审计只能决定是否值得写真实组合引擎；不能把代理收益当作正式回测结论。
+- 每个阶段开始和结束都要写明：是否过拟合、是否仍值得继续。
+
+## 当前状态
+
+- Stage001 已立线。当前线基准固定为 Stage167 当前重建 C9/15w 多周期回测与 AI 审计结果。
+- Stage002 已完成目标基准审计。当前重建版尚不满足用户目标：年度负收益行 `29` 个，主要集中在 `2023` 和截至 `2026-06-30` 的半年度样本；最差年度行为 `2021-07` 起点的 `2022` 年，年度收益 `-16.9640%`。Stage167 中位总收益 `203.6425%`，后续候选的 `80%` 收益保留参考线为 `162.9140%`。`jd.DCE` 在 full-market universe 中可用，但不在当前 Stage182 AI 池，也不在 Stage167 候选。
+- Stage003 已完成负年度与鸡蛋接入归因。负年度不是 AI 未启用导致；正年度的 broker10 峰值和开仓广度反而更高，负年度更像有效趋势机会少、AI block 占比更高、开仓数和 opened products 更低。鸡蛋数据可用但未入 AI 池/候选，历史 Stage405/406/407 提示不得直接塞入共享 AI rerank/topN。
+- Stage004 已完成历史反证清单与下一阶段护栏。共整理 `15` 类禁试形状和 `7` 条允许原则；共享 AI 池加鸡蛋、默认最小风险再恢复、no-follow 降仓、OR 退出、保本、DD 地板、同手数加仓均不得继续扫参救援。下一步只允许“核心 C9 不挤占 + jd 独立/非挤占 + 入场可见质量标签 + 小额独立加风险预算”的冻结代理。
+- Stage005 已完成冻结代理数据可行性审计。当前 Stage167 entry candidates 有核心候选、AI rank/score、OI确认和组合状态，但缺当前重建版逐笔 closed-lot/outcome、entry/first-minute quality labels；旧 Stage016 只能作为特征蓝图。`jd.DCE` 在 full-market universe 可用，但不在当前 Stage182 selected/latest pool，也没有 full-universe monthly score matrix。
+- Stage006 已完成当前重建版质量特征绑定器。用 Stage901 `_run_live_c9` 重跑同口径 `17` 个冷启动起点，复跑摘要与 Stage167 完全一致；保存 `trades/entry_risk/entry_candidates/closed_lots/quality_features/curves`，并补了绝对权益资金曲线。当前 `closed_lots=3401`，但当时只用 `stage861_visual_atlas` 绑定，`entry_first_bar_available=899/3401=26.4334%`；旧 Stage016 交集标签在该窄源下只有 `ai4_6_entry_or_first_aligned=27` 笔、`2` 年、PnL `9,140`。
+- Stage007 已完成分钟源覆盖修复与质量标签重绑。根因是 Stage006 分钟源选窄：`stage152_complete` 覆盖 `3311/3401=97.3537%`，显著高于 Stage861 的 `26.4334%`。重绑后 `ai4_6_entry_or_first_aligned=306` 笔、`13` 产品、`7` 年、PnL `22,617,180`；`ai4_6_not_aligned=497` 笔、PnL `-2,341,570.2`；`aligned_not_ai4_6=1067` 笔、`9` 年、PnL `38,025,240`。这是有价值的高质量信号候选，但仍只是只读证据，不能直接加仓。
+- Stage008 已完成高质量标签小额非挤占加风险只读代理。固定 `tag_ai4_6_entry_or_first_aligned`、固定 `ADD_RISK_FRACTION=0.25`，不扫参；选中 `306` 笔，增量 PnL 代理 `5,654,295`。17 个起点中收益改善/不变/变差为 `16/1/0`，最大回撤改善/不变/变差为 `15/2/0`；中位收益从 `203.6425%` 到 `227.6866%`，最差最大回撤从 `-56.2069%` 到 `-55.2574%`。但 `annual_negative_rows=29` 未改善，且本阶段没有真实成交/保证金/broker10 约束，不能作为候选上线。
+- Stage009 已按用户更新后的目标补密集起点口径审计。目标起点范围改为 `2020-01-01` 到 `2025-06-30`，周期 `>365` 自然日。现有运行曲线子周期审计显示：若结束日固定为 `2026-06-30`，Stage008 proxy 的 `13,267` 个窗口负收益为 `0`，最低收益 `17.7001%`；若严格要求任意结束日、任意 `>1` 年周期都正收益，Stage008 proxy 在 `7,215,647` 个窗口里仍有 `427,688` 个负收益窗口，最差 `-54.2509%`，主要集中在 `2022-07-15 -> 2023-07-17/18/24` 附近。全周期 `80%` 收益保留 `17/17` 通过。本阶段不是每日独立冷启动证明。
+- Stage010 已完成 Stage009 最差窗口左尾归因。焦点窗口为 `2022-07-15 -> 2023-07-17`，覆盖 `10` 个冷启动账户；最差 source `2018-01` 的 proxy 窗口收益 `-54.2509%`、base `-55.2146%`。Stage008 高质量加风险在窗口内合计贡献 `+606,005`，方向是缓冲不是放大；但窗口内已平仓 lot 净实现盈亏仅 `-10,575`，而 base 窗口权益变动合计 `-19,235,925`，残差 `-19,225,350`，说明主问题在窗口内持仓浮亏/日级 holding_pnl 和账户层风险暴露。闭合 lot 层面 `SM.CZCE short` 最差，但不得据此做单品种/方向黑名单。
+- Stage011 已完成焦点窗口 positions 重跑与日级持仓 PnL 归因。`10` 个 source 重跑到 `2023-07-17`，一致性最大差异 `9.31e-10`，positions 可完全解释账户曲线；窗口持仓净损失 `-19,235,925` 中，窗口起点已有仓位亏损占比 `38.08%`，窗口后新增/交易仓位亏损占比 `61.92%`。最大拖累为 `SM.CZCE short opened_or_traded_after_focus_start`，但仍不得黑名单化；最大单日合计亏损 `2022-07-18` 为 holding_pnl 冲击，`2022-11-28` 则出现 broker10 约 `90%` 的保证金压力。
+- Stage012 已完成新增/交易仓位入场前账户状态诊断。焦点窗口新增/交易仓位日级净 PnL `-11,911,535`；焦点入场 `293` 笔 realized PnL `-10,990,495`、胜率 `23.8908%`，而同 source `2020+` 基准入场 realized PnL `75,341,647.6`、胜率 `47.5890%`。坏窗口中 `rank_4_6`、`ai4_6_entry_or_first_aligned` 等历史上强势桶也亏损，说明高质量标签不能脱离账户状态单独加风险。
+- 当前不直接修改任何策略逻辑、不触发 A/B、不接实盘。
+- 下一步建议做 Stage013：冻结一个不按品种、不按日期、不扫参的账户状态候选，例如“深回撤且有效空仓/低活跃状态下，新开仓先用小风险试探，出现可见确认后再释放正常风险”，并进入真实引擎验证。鸡蛋仍需先补 `jd.DCE` full-universe monthly AI 分数或独立非挤占候选生成，不得直接塞入共享 AI topN。
+
+## 后续规划
+
+- Stage002：已完成当前重建版目标基准审计，确认年度正收益目标当前失败、`jd.DCE` 数据可用但未进入基准。
+- Stage003：已完成年度负收益行归因，重点 `2022/2023/2026`，并确认鸡蛋共享 rerank/topN 方向历史上有强反证。
+- Stage004：已完成历史旧 C9 minrisk/highquality 线与鸡蛋 AI 池历史中已经反证的形状，建立“禁止重复尝试清单”。
+- Stage005：已完成冻结代理数据可行性审计，确认当前不能直接写 A/C 候选；旧 Stage016 质量标签只能作为 Stage006 特征蓝图。
+- Stage006：已完成当前重建版逐笔结果 + entry/first-minute 标签绑定，确认复跑与 Stage167 基准一致；但单用 Stage861 分钟源覆盖不足。
+- Stage007：已完成分钟源覆盖修复，确认 `stage152_complete` 可把首分钟覆盖修到 `97.3537%`，并得到更稳定的只读高质量标签候选。
+- Stage008：已完成冻结只读代理，确认 `ai4_6_entry_or_first_aligned + 25%` 非挤占加风险上界有价值，但年度负收益行未改善且缺真实成交/保证金路径。
+- Stage009：已完成新目标密集起点审计，确认“到 `2026-06-30`”口径运行曲线子周期无负收益，但“任意结束日、任意 `>1` 年周期”口径仍未达标。
+- Stage010：已完成最差窗口归因，确认 Stage008 高质量加风险不是左尾主因；窗口已平仓 lot 净额无法解释账户权益损失，主问题转向日级 holding_pnl/持仓浮亏和账户层风险暴露。
+- Stage011：已完成焦点窗口日级持仓/保证金/holding_pnl 拆解；左尾更偏新增/交易仓位主导，而不是纯已有仓位拖累。
+- Stage012：已完成只读诊断新增/交易仓位入场前账户状态；确认坏窗口中正常风险入场整体失效，高质量 AI 标签也承压，下一步应研究账户状态下的风险释放纪律。
+- Stage013：写真引擎冻结候选，验证账户状态风险释放闸门是否能降低左尾，同时保留 Stage167/Stage008 的右尾。

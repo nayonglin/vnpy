@@ -143,6 +143,52 @@ class QmtRollPortfolioStrategyStage830C2Broker10MarginCap(s827.QmtRollPortfolioS
         )
         if not bool(self.enable_stage830_broker10_margin_cap):
             return sizing
+        if entry_context == "reverse_entry":
+            sizing["selected_volume"] = 0
+            sizing["stage830_broker10_margin_cap_applied"] = 1
+            sizing["stage830_broker10_margin_cap_reason"] = "reverse_entry_fail_closed"
+            sizing["stage830_margin_cap_selected_volume_after"] = 0
+            sizing["stage830_projected_broker10_margin_to_equity_after"] = (
+                reserved_margin * multiplier / equity if equity > 0 else np.inf
+            )
+            sizing["stage830_margin_cap_max_affordable_volume"] = 0
+            if before > 0:
+                self.stage830_margin_cap_reduce_count += 1
+                self.stage830_margin_cap_block_count += 1
+                product_vt_symbol = self.source_symbol_by_contract.get(vt_symbol, self._product_vt_symbol(vt_symbol))
+                event = {
+                    "datetime": bar.datetime,
+                    "date": pd.Timestamp(bar.datetime).normalize().date().isoformat(),
+                    "vt_symbol": vt_symbol,
+                    "product_vt_symbol": product_vt_symbol,
+                    "contract_vt_symbol": vt_symbol,
+                    "position_direction": direction,
+                    "direction": direction,
+                    "offset": "RiskSizing",
+                    "price": float(getattr(bar, "close_price", 0.0) or 0.0),
+                    "volume": before,
+                    "signal": str(signal_data.get("signal", "")),
+                    "entry_context": entry_context,
+                    "selected_volume_before": before,
+                    "selected_volume_after": 0,
+                    "reduced_volume": before,
+                    "estimated_equity": equity,
+                    "reserved_margin_before": reserved_margin,
+                    "margin_per_contract": margin_per_contract,
+                    "broker_margin_multiplier": multiplier,
+                    "cap_ratio": cap_ratio,
+                    "max_affordable_volume": 0,
+                    "projected_broker10_margin_to_equity_before": projected_before,
+                    "projected_broker10_margin_to_equity_after": sizing[
+                        "stage830_projected_broker10_margin_to_equity_after"
+                    ],
+                    "reason": "broker10_margin_cap_reverse_entry_fail_closed",
+                }
+                self.stage830_margin_cap_events.append(event)
+                diagnostics = getattr(self, "trade_event_diagnostics", None)
+                if diagnostics is not None:
+                    diagnostics.append(event)
+            return sizing
         if entry_context != "flat_entry":
             sizing["stage830_broker10_margin_cap_reason"] = "not_flat_entry"
             return sizing
@@ -218,7 +264,8 @@ def _cap_profile(metadata: dict[str, Any]) -> dict[str, Any]:
         label="Stage830 Stage819 C2 broker10 100pct projected margin cap 2018 start",
         note=(
             f"{spec.capital.note} | Stage830 live-feasible account guard. C2 intraday stop remains enabled; "
-            "flat-entry sizing is reduced only when projected broker10 margin/equity would exceed 100%."
+            "flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; "
+            "reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction."
         ),
     )
     overrides = {
@@ -380,7 +427,7 @@ def _write_report(
         "",
         "- A：Stage827 baseline，即 Stage819 原始候选复现。",
         "- C2：Stage827 裸 C2，即开仓后若入场日分钟K先触发 1R 逆向止损而非 1R 顺向确认，则同日止损。",
-        "- C4：C2 保持不变；flat-entry 开仓前若 projected broker10 margin/equity 超过 100%，则把手数降到不超过 100%。",
+        "- C4：C2 保持不变；flat-entry 开仓前若 projected broker10 margin/equity 超过 100%，则把手数降到不超过 100%；reverse-entry 在 cap 开启时 fail-closed，只平旧仓、不直接反手新开。",
         "- 100% 是账户生存闸门，不是按 2022、品种或收益反推的阈值。",
         "",
         "## Result",

@@ -4547,6 +4547,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 env_gate_fields["selected_volume"] = adjusted_volume
             sizing_result: dict[str, Any] = {
                 "risk_mode": risk_mode_override or str(signal_data.get("risk_mode", "regular")),
+                "entry_context": entry_context,
                 "risk_ratio": None,
                 "risk_amount": None,
                 "limited_balance": limited_balance,
@@ -4650,6 +4651,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         sizing_result = {
             "risk_mode": risk_mode,
+            "entry_context": entry_context,
             "risk_ratio": risk_ratio,
             "risk_amount": risk_amount,
             "limited_balance": limited_balance,
@@ -4803,8 +4805,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "donchian": "donchian_multiplier",
             "post_quality": "post_entry_quality_add",
         }.get(kind, f"{kind}_multiplier")
+        entry_context = {
+            "add": "regular_add",
+            "donchian": "donchian_add",
+            "post_quality": "post_quality_add",
+        }.get(kind, kind)
         sizing_snapshot = {
             "risk_mode": state.risk_mode,
+            "entry_context": entry_context,
             "risk_ratio": None,
             "risk_amount": None,
             "limited_balance": self._limited_available_balance(),
@@ -5592,6 +5600,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "direction": direction,
                 "signal": signal,
                 "layer_kind": layer_kind,
+                "entry_context": str(
+                    sizing_snapshot.get("entry_context")
+                    or sizing_snapshot.get("env_gate_entry_context")
+                    or ""
+                ),
                 "risk_mode": risk_mode,
                 "sizing_method": sizing_snapshot.get("sizing_method", "unknown"),
                 "estimated_equity": estimated_equity,

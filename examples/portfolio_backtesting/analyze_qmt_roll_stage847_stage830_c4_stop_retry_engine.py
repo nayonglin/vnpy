@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import replace
 from datetime import datetime
 import json
@@ -21,6 +22,7 @@ import analyze_qmt_roll_stage825_stage819_intraday_rule_forensics as s825
 import analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac as s827
 import analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap as s830
 import analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine as s840
+import analyze_qmt_roll_stage660_stage653_multiperiod_live_audit as s660
 import qmt_roll_official_candidate_stage819_30w_config as stage819_cfg
 
 
@@ -43,6 +45,23 @@ C9_ARM = "stage847_stage819_c4_05r_stop_retry_once"
 START = s827.START
 END = s827.END
 CAPITAL = stage819_cfg.OFFICIAL_CANDIDATE_STAGE819_30W_CAPITAL
+
+LEGACY_STAGE372_PROFILE_NAME = "stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4"
+LEGACY_STAGE372_BASE_PROFILE_NAME = "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4"
+LEGACY_STAGE372_STRATEGY_OVERRIDES: dict[str, Any] = {
+    "enable_streak_entry_structure_risk_recovery": True,
+    "streak_entry_structure_recovery_signals": "long_case1a,short_case1a",
+    "streak_entry_structure_recovery_min_multiplier": 1.0,
+    "streak_entry_structure_recovery_require_flat_portfolio": True,
+    "streak_entry_structure_recovery_max_same_direction_corr": 0.30,
+    "streak_entry_structure_recovery_require_rsi_confirmation": False,
+    "enable_recovery_sleeve": True,
+    "recovery_sleeve_base_multiplier_max": 0.1000001,
+    "recovery_sleeve_broker_margin_multiplier": 1.65,
+    "recovery_sleeve_max_single_contract_broker_margin_to_equity": 0.20,
+    "recovery_sleeve_cooldown_days": 20,
+    "recovery_sleeve_volume": 1,
+}
 
 STOP_RETRY_R = 0.5
 MAX_RETRIES = 1
@@ -93,6 +112,27 @@ def _load_required_csv(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise RuntimeError(f"missing required Stage830 output: {path}")
     return pd.read_csv(path, encoding="utf-8-sig")
+
+
+@contextmanager
+def _stage847_stage372_legacy_official_context():
+    legacy_official_state = {
+        "OFFICIAL_LIVE_PROFILE_NAME": s660.OFFICIAL_LIVE_PROFILE_NAME,
+        "OFFICIAL_LIVE_BASE_PROFILE_NAME": s660.OFFICIAL_LIVE_BASE_PROFILE_NAME,
+        "OFFICIAL_LIVE_ALIAS": s660.OFFICIAL_LIVE_ALIAS,
+        "OFFICIAL_LIVE_CAPITAL": s660.OFFICIAL_LIVE_CAPITAL,
+        "OFFICIAL_LIVE_STRATEGY_OVERRIDES": s660.OFFICIAL_LIVE_STRATEGY_OVERRIDES,
+    }
+    try:
+        s660.OFFICIAL_LIVE_PROFILE_NAME = LEGACY_STAGE372_PROFILE_NAME
+        s660.OFFICIAL_LIVE_BASE_PROFILE_NAME = LEGACY_STAGE372_BASE_PROFILE_NAME
+        s660.OFFICIAL_LIVE_ALIAS = "Stage372-20w"
+        s660.OFFICIAL_LIVE_CAPITAL = 200_000.0
+        s660.OFFICIAL_LIVE_STRATEGY_OVERRIDES = dict(LEGACY_STAGE372_STRATEGY_OVERRIDES)
+        yield
+    finally:
+        for key, value in legacy_official_state.items():
+            setattr(s660, key, value)
 
 
 class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyStage830C2Broker10MarginCap):
@@ -310,6 +350,26 @@ class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyS
         return event
 
 
+def _stage847_synthetic_trade_datetime(item: dict[str, Any], fallback: datetime) -> datetime:
+    raw_time = item.get("time", "") if isinstance(item, dict) else ""
+    fallback_timestamp = pd.Timestamp(fallback)
+    fallback_timezone = fallback_timestamp.tzinfo
+    parsed = pd.to_datetime(raw_time, errors="coerce")
+    if pd.isna(parsed):
+        parsed = fallback_timestamp
+    if pd.isna(parsed):
+        return fallback
+    timestamp = pd.Timestamp(parsed)
+    if fallback_timezone is not None:
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.tz_localize(fallback_timezone)
+        else:
+            timestamp = timestamp.tz_convert(fallback_timezone)
+    elif timestamp.tzinfo is not None:
+        timestamp = timestamp.tz_convert(None)
+    return timestamp.to_pydatetime()
+
+
 class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
     def _fill_synthetic_intraday_close(self, order: Any, open_trade: s827.TradeData, exit_event: dict[str, Any]) -> None:
         sequence = exit_event.get("synthetic_trades")
@@ -332,6 +392,7 @@ class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
                 offset = s827.Offset.OPEN
             else:
                 continue
+            trade_datetime = _stage847_synthetic_trade_datetime(item, self.datetime)
             self.trade_count += 1
             trade = s827.TradeData(
                 symbol=order.symbol,
@@ -342,7 +403,7 @@ class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
                 offset=offset,
                 price=price,
                 volume=volume,
-                datetime=self.datetime,
+                datetime=trade_datetime,
                 gateway_name=self.gateway_name,
             )
             self.strategy.update_trade(trade)
@@ -353,7 +414,7 @@ class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
                     "trade_id": trade.vt_tradeid,
                     "orderid": str(trade.orderid),
                     "signal_date": s827.s778.s653.s517.s506.s501._naive_date(order.datetime),
-                    "fill_date": s827.s778.s653.s517.s506.s501._naive_date(self.datetime),
+                    "fill_date": s827.s778.s653.s517.s506.s501._naive_date(trade_datetime),
                     "vt_symbol": str(order.vt_symbol),
                     "direction": s827.s778.s653.s517.s506.s501._direction_text(direction),
                     "offset": "Open" if offset == s827.Offset.OPEN else "Close",
@@ -370,7 +431,8 @@ class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
 
 
 def _c9_profile(metadata: dict[str, Any]) -> dict[str, Any]:
-    profile = s830._cap_profile(metadata)
+    with _stage847_stage372_legacy_official_context():
+        profile = s830._cap_profile(metadata)
     spec = profile["spec"]
     capital = replace(
         spec.capital,
@@ -841,7 +903,7 @@ def _write_report(
         "",
         "- A：Stage827 baseline，即 Stage819 原始候选复现。",
         "- C2：开仓后若入场日分钟K先触发 `1R` 逆向止损而非 `1R` 顺向确认，则同日止损。",
-        "- C4：C2 保持不变；flat-entry 开仓前若 projected broker10 margin/equity 超过 `100%`，则降手数到不超过 `100%`。",
+        "- C4：C2 保持不变；flat-entry 开仓前若 projected broker10 margin/equity 超过 `100%`，则降手数到不超过 `100%`；reverse-entry 在 cap 开启时 fail-closed，只平旧仓、不直接反手新开。",
         "- C9：C4 保持不变；若入场日先触发 `0.5R` 逆向且未先触发 `0.5R` 顺向进展，则先按 `-0.5R` 合成平仓；若同一入场日后续重新穿越原入场价，则只允许一次按原入场价合成重开；若重开后再次触发 `0.5R` 逆向，则再次平仓且不再重试。",
         "- 同一根分钟K同时触发进展和逆向，按保守口径记为止损先发生。",
         "",
