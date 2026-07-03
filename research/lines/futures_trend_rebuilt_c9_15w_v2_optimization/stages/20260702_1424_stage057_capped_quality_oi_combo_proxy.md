@@ -1,0 +1,56 @@
+# Stage057 capped quality + OI 组合 proxy 曲线审计
+
+- 运行时间：2026-07-02 14:24 CST
+- 研究线：`futures_trend_rebuilt_c9_15w_v2_optimization`
+- 基准：正式基准仍为 `official_c9_15w_stage847`；`stage013_account_state_pilot_base` 只是 closed-lot proxy 的构造母本。
+- 本阶段性质：只读 proxy 曲线，不是正式回测、不触发真实引擎、订单 API、CTP、邮件或 launchd。
+- 外部调研判断：二级 sizing/组合应先统一风险预算，避免相关信号裸叠；趋势策略优化不能牺牲跨市场右尾。
+
+## 版本汇总
+
+| variant                                   | source_type                   |   start_count |   positive_start_count |   win_vs_official_count |   min_total_return_pct |   median_total_return_pct |   max_total_return_pct |   worst_max_drawdown_pct |   median_max_drawdown_pct |   min_end_equity |   median_end_equity |   min_end_equity_ratio_vs_official |   median_end_equity_ratio_vs_official |
+|:------------------------------------------|:------------------------------|--------------:|-----------------------:|------------------------:|-----------------------:|--------------------------:|-----------------------:|-------------------------:|--------------------------:|-----------------:|--------------------:|-----------------------------------:|--------------------------------------:|
+| stage057_stage010_plus_oi_sum_cap50       | closed_lot_capped_combo_proxy |            17 |                     17 |                      17 |                4.59327 |                   323.13  |               13726.5  |                 -37.7972 |                  -26.3451 |           156890 |              634695 |                           1.02642  |                               1.35032 |
+| stage057_stage022_xsmom_or_oi_max25       | closed_lot_capped_combo_proxy |            17 |                     17 |                      17 |                3.143   |                   299.586 |               12541.9  |                 -40.4436 |                  -29.5184 |           154715 |              599379 |                           1.01219  |                               1.24928 |
+| stage057_stage014_floor_or_oi_max25       | closed_lot_capped_combo_proxy |            17 |                     17 |                      17 |                3.143   |                   289.403 |               13176.4  |                 -40.4288 |                  -29.5172 |           154715 |              584104 |                           1.01219  |                               1.25042 |
+| stage057_stage014_floor_plus_oi_sum_cap50 | closed_lot_capped_combo_proxy |            17 |                     17 |                      16 |                1.39633 |                   316.923 |               13733.8  |                 -37.4688 |                  -27.9009 |           152095 |              625384 |                           0.995047 |                               1.31822 |
+| stage057_stage014_ceil_plus_oi_sum_cap50  | closed_lot_capped_combo_proxy |            17 |                     17 |                      16 |                1.37467 |                   341.326 |               13785.8  |                 -37.1577 |                  -27.7707 |           152062 |              661989 |                           0.994834 |                               1.3539  |
+| stage057_stage013_plus_oi_sum_cap50       | closed_lot_capped_combo_proxy |            17 |                     17 |                      16 |                1.37467 |                   334.138 |               13755.2  |                 -37.1135 |                  -27.7704 |           152062 |              651208 |                           0.994834 |                               1.34145 |
+| stage057_stage022_xsmom_plus_oi_sum_cap50 | closed_lot_capped_combo_proxy |            17 |                     17 |                      16 |                1.37467 |                   312.316 |               13042    |                 -37.1135 |                  -28.0482 |           152062 |              618474 |                           0.994834 |                               1.26798 |
+| stage013_account_state_pilot_base         | true_engine_base              |            17 |                     17 |                      14 |                1.90107 |                   238.369 |                9880.13 |                 -43.794  |                  -36.7684 |           152852 |              507553 |                           0.907526 |                               1.02695 |
+| official_c9_15w_stage847                  | formal_baseline_true_engine   |            17 |                     17 |                       0 |                1.90107 |                   203.642 |                9833.65 |                 -56.2069 |                  -47.2779 |           152852 |              455464 |                           1        |                               1       |
+
+## combo event delta 汇总
+
+| variant                                   |   event_count |   overlap_event_count |   total_delta_pnl |   mean_combo_fraction |   max_combo_fraction |
+|:------------------------------------------|--------------:|----------------------:|------------------:|----------------------:|---------------------:|
+| stage057_stage010_plus_oi_sum_cap50       |          2274 |                   868 |       2.58331e+07 |              0.345427 |                 0.5  |
+| stage057_stage013_plus_oi_sum_cap50       |          2070 |                   561 |       2.5727e+07  |              0.317754 |                 0.5  |
+| stage057_stage014_ceil_plus_oi_sum_cap50  |          2070 |                   561 |       2.59936e+07 |              0.322764 |                 0.5  |
+| stage057_stage014_floor_or_oi_max25       |          2070 |                   561 |       1.99698e+07 |              0.244359 |                 0.25 |
+| stage057_stage014_floor_plus_oi_sum_cap50 |          2070 |                   561 |       2.52737e+07 |              0.29804  |                 0.5  |
+| stage057_stage022_xsmom_or_oi_max25       |          2013 |                   447 |       1.71309e+07 |              0.25     |                 0.25 |
+| stage057_stage022_xsmom_plus_oi_sum_cap50 |          2013 |                   447 |       2.08206e+07 |              0.305514 |                 0.5  |
+
+## 最差起点样本
+
+| variant                                   | source_type                   | requested_start_month   | start_date   | end_date   |   trading_days |   start_equity |   end_equity |   total_return_pct |   max_drawdown_pct |   sharpe |   official_end_equity |   official_total_return_pct |   official_max_drawdown_pct |   return_diff_vs_official_pp |   end_equity_ratio_vs_official |   maxdd_diff_vs_official_pp |
+|:------------------------------------------|:------------------------------|:------------------------|:-------------|:-----------|---------------:|---------------:|-------------:|-------------------:|-------------------:|---------:|----------------------:|----------------------------:|----------------------------:|-----------------------------:|-------------------------------:|----------------------------:|
+| official_c9_15w_stage847                  | formal_baseline_true_engine   | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152852 |            1.90107 |           -14.7303 | 0.285975 |                152852 |                     1.90107 |                    -14.7303 |                     0        |                       1        |                    0        |
+| stage013_account_state_pilot_base         | true_engine_base              | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152852 |            1.90107 |           -14.7303 | 0.285975 |                152852 |                     1.90107 |                    -14.7303 |                     0        |                       1        |                    0        |
+| stage057_stage010_plus_oi_sum_cap50       | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       156890 |            4.59327 |           -16.145  | 0.475598 |                152852 |                     1.90107 |                    -14.7303 |                     2.6922   |                       1.02642  |                   -1.41466  |
+| stage057_stage013_plus_oi_sum_cap50       | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152062 |            1.37467 |           -16.6474 | 0.247382 |                152852 |                     1.90107 |                    -14.7303 |                    -0.5264   |                       0.994834 |                   -1.91709  |
+| stage057_stage014_ceil_plus_oi_sum_cap50  | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152062 |            1.37467 |           -16.6474 | 0.247382 |                152852 |                     1.90107 |                    -14.7303 |                    -0.5264   |                       0.994834 |                   -1.91709  |
+| stage057_stage014_floor_or_oi_max25       | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       154715 |            3.143   |           -15.4661 | 0.378104 |                152852 |                     1.90107 |                    -14.7303 |                     1.24193  |                       1.01219  |                   -0.735779 |
+| stage057_stage014_floor_plus_oi_sum_cap50 | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152095 |            1.39633 |           -16.6995 | 0.248864 |                152852 |                     1.90107 |                    -14.7303 |                    -0.504733 |                       0.995047 |                   -1.96919  |
+| stage057_stage022_xsmom_or_oi_max25       | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       154715 |            3.143   |           -15.4661 | 0.378104 |                152852 |                     1.90107 |                    -14.7303 |                     1.24193  |                       1.01219  |                   -0.735779 |
+| stage057_stage022_xsmom_plus_oi_sum_cap50 | closed_lot_capped_combo_proxy | 2026-01                 | 2026-01-05   | 2026-06-30 |            116 |         150000 |       152062 |            1.37467 |           -16.6474 | 0.247382 |                152852 |                     1.90107 |                    -14.7303 |                    -0.5264   |                       0.994834 |                   -1.91709  |
+
+## 结论
+
+- 决策：`no_promotion_closed_lot_proxy`，不晋级、不改实盘。
+- 最强 proxy：`stage057_stage010_plus_oi_sum_cap50`。
+- 下一步：`if_user_approves_run_true_engine_ab_for_one_capped_combo_only`。
+- 过拟合反思：否。没有新增条件，只比较预声明 capped arms；但它仍是 closed-lot proxy，存在执行反馈和保证金路径偏差。
+- 继续价值反思：是，但只值得推进一个最强且机制可解释的 capped arm 到真实引擎；不继续扫 cap、topN、floor/ceil 细节。
+- 图表：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage057_capped_quality_oi_combo_proxy/rebuilt_c9_v2_stage057_capped_quality_oi_combo_proxy_absolute_equity_chart_stage057_capped_quality_oi_combo_proxy_v1.png`

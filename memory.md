@@ -1,5 +1,11 @@
 # 项目经验沉淀
 
+## 2026-07-02 当前重建 C9/15w 二期线 Stage058
+
+- Stage058 把 Stage057 最强 `Stage010 quality + contract OI share cap50` proxy 做成真实引擎 A/B：quality 腿 `AI rank 1-8 + selected_volume>1` 给 `+25%`，OI 腿点时 `contract_oi_share>=0.50` 给 `+25%`，总加风险 cap `50%`，只用 `floor` 整数手，不做 `ceil/min+1`。
+- 结果不是晋级候选：`16/17` 起点正收益，最小/中位收益 `-2.2917%/211.8187%`，80% 收益保留 `12/17`；严格 `>1` 年负窗口较 Stage013 小降 `330,947 -> 323,784`，但最差收益恶化 `-43.7940% -> -44.7070%`，到终点最差收益也从 `26.6753%` 降到 `15.2654%`。
+- 长期原则：不要继续用 `quality + OI` 这条线扫 `OI阈值/AI topN/权重/ceil/min+1/品种方向` 救参；它可以保留为 attribution 证据，但不能接正式版本。下一步应转真正新 PIT 源，或结构不同且不压低趋势右尾的账户外层。
+
 ## 2026-06-10 期货趋势2019数据延展线 Stage793
 
 - Stage793 对官方候选 `official_candidate_stage777_50w_am41_oi08_old_ai_v1` 做 Monte Carlo 路径压力测试：不改策略、不调参数，基于已有权益曲线做 `10,000` 条路径的 `iid/block_20/block_60/block_120` bootstrap，并做坏块前置压力。
