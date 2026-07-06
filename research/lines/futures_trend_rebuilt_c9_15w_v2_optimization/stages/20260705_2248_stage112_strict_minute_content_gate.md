@@ -1,0 +1,96 @@
+# Stage112 strict minute content gate
+
+- line_id：`futures_trend_rebuilt_c9_15w_v2_optimization`
+- 当前模式：day
+- 记录时间：2026-07-05T22:48:37
+- 阶段性质：只读严格数据验收；不下载、不回测收益、不改官方 live config、不连接 CTP、不调用下单
+- 是否重要突破：否
+- 是否触发A/B：否
+
+## 外部调研与判断
+
+- 参考：vn.py `BarData` / `BarGenerator`、TqSdk market data。
+- 我的判断：这是对 Stage111 的数据闸门收紧，不是策略优化；通过也只代表现有分钟文件更可信。
+
+## 本次变更
+
+- 新增脚本：`research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage112_strict_minute_content_gate.py`
+- 新增参数：无。
+- 修改参数：无正式策略参数修改。
+- 删除参数：无。
+
+## 结果
+
+- decision：`stage112_strict_minute_content_failed_keep_blocked`
+- manifest_contract_count：`39`
+- minute_file_ready_count：`25`
+- strict_ready_count：`23`
+- minute_missing_count：`14`
+- strict_failed_count：`2`
+- remaining_jd_not_ready_count：`10`
+- expected_jd_day_rows：`225`
+- jd_margin_history_ready：`False`
+- ready_for_true_ledger_replay：`False`
+- 策略变更：`False`
+- true engine run：`False`
+- order API：`0`
+- CTP：`False`
+
+## Summary
+
+| product_vt_symbol   |   contract_count |   minute_file_ready |   strict_ready |   missing_file_count |   source_conflict_count |   strict_failed_count |
+|:--------------------|-----------------:|--------------------:|---------------:|---------------------:|------------------------:|----------------------:|
+| SH.CZCE             |                1 |                   0 |              0 |                    1 |                       0 |                     0 |
+| SM.CZCE             |                1 |                   0 |              0 |                    1 |                       0 |                     0 |
+| au.SHFE             |                1 |                   0 |              0 |                    1 |                       0 |                     0 |
+| cu.SHFE             |                2 |                   0 |              0 |                    2 |                       0 |                     0 |
+| jd.DCE              |               33 |                  25 |             23 |                    8 |                       0 |                     2 |
+| lh.DCE              |                1 |                   0 |              0 |                    1 |                       0 |                     0 |
+
+## Strict Failures
+
+| contract_vt   |   rows | blocking_reason                                                                                                 | monotonic_datetime   |   volume_null_count |   oi_null_count |   negative_oi_count | request_start_date_match   | request_end_date_match   | unique_trade_dates_match   |   jd_session_time_error_count |   jd_per_day_row_mismatch_count |
+|:--------------|-------:|:----------------------------------------------------------------------------------------------------------------|:---------------------|--------------------:|----------------:|--------------------:|:---------------------------|:-------------------------|:---------------------------|------------------------------:|--------------------------------:|
+| jd2205.DCE    |  14189 | strict_failed:jd_per_day_row_mismatch_count,jd_total_rows_match,request_end_date_match,unique_trade_dates_match | True                 |                   0 |               0 |                   0 | True                       | False                    | False                      |                             0 |                               1 |
+| jd2501.DCE    |  14157 | strict_failed:jd_per_day_row_mismatch_count,jd_total_rows_match                                                 | True                 |                   0 |               0 |                   0 | True                       | True                     | True                       |                             0 |                               1 |
+
+## Missing Files
+
+| contract_vt   | product_vt_symbol   | priority                 | request_start_date   | request_end_date   |
+|:--------------|:--------------------|:-------------------------|:---------------------|:-------------------|
+| jd2105.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2020-12-09           | 2021-04-14         |
+| jd2109.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2021-04-15           | 2021-08-18         |
+| jd2201.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2021-08-19           | 2021-12-10         |
+| jd2209.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2022-04-07           | 2022-08-12         |
+| jd2301.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2022-08-15           | 2022-12-13         |
+| jd2305.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2022-12-14           | 2023-04-13         |
+| jd2309.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2023-04-14           | 2023-08-14         |
+| jd2409.DCE    | jd.DCE              | P0_jd_true_carry_blocker | 2024-04-10           | 2024-08-21         |
+| SH609.CZCE    | SH.CZCE             | P1_tail_contract_gap     | 2026-06-17           | 2026-06-30         |
+| SM609.CZCE    | SM.CZCE             | P1_tail_contract_gap     | 2026-06-04           | 2026-06-30         |
+| au2608.SHFE   | au.SHFE             | P1_tail_contract_gap     | 2026-05-26           | 2026-06-30         |
+| cu2607.SHFE   | cu.SHFE             | P1_tail_contract_gap     | 2026-05-22           | 2026-06-23         |
+| cu2608.SHFE   | cu.SHFE             | P1_tail_contract_gap     | 2026-06-24           | 2026-06-30         |
+| lh2609.DCE    | lh.DCE              | P1_tail_contract_gap     | 2026-06-02           | 2026-06-30         |
+
+## 回测记录字段
+
+- 本阶段不新增回测，因此不新增期末权益、总收益、最大回撤、Sharpe、滑点、交易次数、胜率。
+
+## 过拟合反思
+
+- 运行前：否。本阶段只收紧数据 gate，不看收益、不调策略参数。
+- 运行后：否。严格门槛只会降低错误数据通过概率，不会通过绩效筛选制造收益。
+
+## 继续价值反思
+
+- 运行前：有。Stage111 独立评估指出若不收紧 manifest，后续批次可能继承偏宽口径。
+- 运行后：有。若 strict 通过，可继续补剩余 jd；若失败，应先修数据而不是跑回测。
+
+## 输出文件
+
+- report：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage112_strict_minute_content_gate/rebuilt_c9_v2_stage112_strict_minute_content_gate_report_stage112_strict_minute_content_gate_v1.md`
+- strict_manifest：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage112_strict_minute_content_gate/rebuilt_c9_v2_stage112_strict_minute_content_gate_strict_manifest_stage112_strict_minute_content_gate_v1.csv`
+- summary：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage112_strict_minute_content_gate/rebuilt_c9_v2_stage112_strict_minute_content_gate_summary_stage112_strict_minute_content_gate_v1.csv`
+- input_audit：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage112_strict_minute_content_gate/rebuilt_c9_v2_stage112_strict_minute_content_gate_input_audit_stage112_strict_minute_content_gate_v1.csv`
+- decision：`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/outputs/stage112_strict_minute_content_gate/rebuilt_c9_v2_stage112_strict_minute_content_gate_decision_stage112_strict_minute_content_gate_v1.json`
