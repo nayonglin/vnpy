@@ -15,6 +15,7 @@ import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653
 import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
+from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
@@ -440,18 +441,58 @@ def _align_shadow_with_live_stop_fills(
     return aligned_positions, aligned_signal_plan, aligned_pending_orders, events, live_stop_alignment
 
 
-def _ai_pool_audit(path: Path) -> dict[str, Any]:
+def _known_trading_dates() -> pd.Series:
+    if not ALL_FUTURES_MAPPING_PATH.exists():
+        return pd.Series(dtype="datetime64[ns]")
+    frame = pd.read_csv(ALL_FUTURES_MAPPING_PATH, encoding="utf-8-sig")
+    if frame.empty or "date" not in frame.columns:
+        return pd.Series(dtype="datetime64[ns]")
+    return pd.to_datetime(frame["date"], errors="coerce").dropna().drop_duplicates().sort_values().reset_index(drop=True)
+
+
+def _required_ai_eval_dates(analysis_start: pd.Timestamp, analysis_end: pd.Timestamp) -> list[str]:
+    dates = _known_trading_dates()
+    if dates.empty:
+        return []
+    periods = pd.period_range(analysis_start.to_period("M"), analysis_end.to_period("M"), freq="M")
+    required: list[str] = []
+    for period in periods:
+        month_start = pd.Timestamp(year=period.year, month=period.month, day=1)
+        eligible = dates[dates < month_start]
+        if eligible.empty:
+            continue
+        required.append(pd.Timestamp(eligible.iloc[-1]).date().isoformat())
+    return sorted(set(required))
+
+
+def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Timestamp) -> dict[str, Any]:
+    required_eval_dates = _required_ai_eval_dates(analysis_start, analysis_end)
     if not path.exists():
-        return {"path": str(path), "exists": False}
+        return {
+            "path": str(path),
+            "exists": False,
+            "required_eval_dates": required_eval_dates,
+            "missing_required_eval_dates": required_eval_dates,
+        }
     frame = pd.read_csv(path, encoding="utf-8-sig")
     strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
     if "strategy" in frame.columns:
         frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
     if frame.empty:
-        return {"path": str(path), "exists": True, "rows": 0}
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": 0,
+            "required_eval_dates": required_eval_dates,
+            "missing_required_eval_dates": required_eval_dates,
+        }
     frame["eval_date"] = pd.to_datetime(frame["eval_date"], errors="coerce").dt.normalize()
     latest_date = frame["eval_date"].max()
     latest = frame[frame["eval_date"].eq(latest_date)].sort_values(["score_rank", "product_vt_symbol"])
+    available_eval_dates = {
+        pd.Timestamp(value).date().isoformat()
+        for value in frame["eval_date"].dropna().drop_duplicates().tolist()
+    }
     return {
         "path": str(path),
         "exists": True,
@@ -460,6 +501,10 @@ def _ai_pool_audit(path: Path) -> dict[str, Any]:
         "max_eval_date": latest_date.date().isoformat(),
         "unique_eval_dates": int(frame["eval_date"].nunique()),
         "latest_products": latest["product_vt_symbol"].astype(str).tolist(),
+        "required_eval_dates": required_eval_dates,
+        "missing_required_eval_dates": [
+            date for date in required_eval_dates if date not in available_eval_dates
+        ],
     }
 
 
@@ -640,6 +685,8 @@ def _write_report(
         "- 切换口径：operator override，把 C9 从 primary candidate 切为 live default。",
         f"- AI 池文件：`{decision['ai_pool_audit'].get('path', '')}`。",
         f"- AI 池最新 eval_date：`{decision['ai_pool_audit'].get('max_eval_date', '')}`。",
+        f"- 本次回放需要 AI 池 eval_date：`{', '.join(decision['ai_pool_audit'].get('required_eval_dates', []))}`。",
+        f"- 本次回放缺失 AI 池 eval_date：`{', '.join(decision['ai_pool_audit'].get('missing_required_eval_dates', [])) or '无'}`。",
         f"- AI 池最新品种：`{', '.join(decision['ai_pool_audit'].get('latest_products', []))}`。",
         f"- 实际 strategy override AI 池：`{decision['strategy_ai_product_pool_eligibility_path']}`。",
         f"- C9 分钟K源：`{decision['minute_audit'].get('source', '')}`，已加载合约数 `{decision['minute_audit'].get('loaded_symbol_count', '')}`。",
@@ -791,6 +838,7 @@ def main() -> None:
     )
 
     current_row = summary[summary["variant"].eq(OFFICIAL_LIVE_PROFILE_NAME)].to_dict(orient="records")
+    ai_pool_audit = _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH, analysis_start, analysis_end)
     decision = {
         "stage": "Stage901",
         "line_id": LINE_ID,
@@ -801,7 +849,7 @@ def main() -> None:
         "latest_available_data_date": latest_date.date().isoformat(),
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
-        "ai_pool_audit": _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+        "ai_pool_audit": ai_pool_audit,
         "minute_audit": dict(_LAST_MINUTE_AUDIT),
         "strategy_ai_product_pool_eligibility_path": str(spec.overrides.get("ai_product_pool_eligibility_path", "")),
         "live_stop_alignment": live_stop_alignment,
@@ -809,6 +857,10 @@ def main() -> None:
         "risk_snapshot": {},
         "decision": "stage901_c9_live_default_shadow_measured_no_order_api",
         "execution_scope": "read-only backtest/shadow performance only; no CTP connection and no order API call",
+        "shadow_replay_ai_pool_status": (
+            "valid" if not ai_pool_audit.get("missing_required_eval_dates")
+            else "invalid_missing_required_eval_dates"
+        ),
         "target_signal_count": int(len(signal_plan)),
         "pending_order_count": int(len(pending_orders)),
         "pending_orders": pending_orders.to_dict(orient="records"),

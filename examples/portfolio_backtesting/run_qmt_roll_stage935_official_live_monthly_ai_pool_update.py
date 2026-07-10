@@ -17,6 +17,7 @@ from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
     OFFICIAL_LIVE_VERSION,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
@@ -48,6 +49,7 @@ STAGE173_SUMMARY_PATH = (
 )
 LOCK_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}.lock"
 MISSING_CALENDAR_UPDATE_REASON = "trading_calendar_stale_before_wall_clock_cutoff"
+RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS = 4
 BLOCKING_STATUSES = {
     "monthly_ai_pool_update_blocked",
     "monthly_ai_pool_exception",
@@ -270,6 +272,60 @@ def _expected_monthly_eval_date(resolved_target_date: str) -> str:
     return pd.Timestamp(month_dates.iloc[-1]).date().isoformat()
 
 
+def _recent_monthly_eval_dates(expected_eval_date: str, lookback_months: int) -> list[str]:
+    expected_ts = _timestamp(expected_eval_date)
+    if expected_ts is None:
+        return []
+    dates = _known_trading_dates()
+    if dates.empty:
+        return []
+    completed = dates[dates <= expected_ts].copy()
+    if completed.empty:
+        return []
+    month_ends = (
+        completed.groupby(completed.dt.to_period("M"))
+        .max()
+        .sort_values()
+        .tail(int(lookback_months))
+    )
+    return [pd.Timestamp(value).date().isoformat() for value in month_ends.tolist()]
+
+
+def _combined_eval_date_audit(expected_eval_date: str) -> dict[str, Any]:
+    combined = _read_csv(STAGE182_COMBINED_ELIGIBILITY_PATH)
+    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    result: dict[str, Any] = {
+        "path": str(STAGE182_COMBINED_ELIGIBILITY_PATH),
+        "exists": bool(STAGE182_COMBINED_ELIGIBILITY_PATH.exists()),
+        "shadow_analysis_start_date": OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+        "recent_eval_date_lookback_months": RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS,
+        "required_recent_eval_dates": _recent_monthly_eval_dates(
+            expected_eval_date,
+            RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS,
+        ),
+        "missing_recent_eval_dates": [],
+        "row_counts_by_required_eval_date": {},
+    }
+    if combined.empty or "eval_date" not in combined.columns:
+        result["missing_recent_eval_dates"] = list(result["required_recent_eval_dates"])
+        return result
+    if "strategy" in combined.columns:
+        combined = combined[combined["strategy"].astype(str).eq(strategy)].copy()
+    if combined.empty:
+        result["missing_recent_eval_dates"] = list(result["required_recent_eval_dates"])
+        return result
+    combined["eval_date"] = pd.to_datetime(combined["eval_date"], errors="coerce").dt.date.astype(str)
+    row_counts = combined.groupby("eval_date").size().to_dict()
+    required_dates = list(result["required_recent_eval_dates"])
+    result["row_counts_by_required_eval_date"] = {
+        date: int(row_counts.get(date, 0)) for date in required_dates
+    }
+    result["missing_recent_eval_dates"] = [
+        date for date in required_dates if int(row_counts.get(date, 0)) <= 0
+    ]
+    return result
+
+
 def _month_start(value: str) -> str:
     parsed = _timestamp(value)
     if parsed is None:
@@ -329,6 +385,9 @@ def _validate_stage182_outputs(expected_eval_date: str = "") -> dict[str, Any]:
             blockers.append("stage182_combined_missing_eval_date_rows")
     if top_products and "fu.SHFE" not in top_products:
         warnings.append("stage182_top9_missing_fixed_fu_satellite")
+    combined_eval_date_audit = _combined_eval_date_audit(expected_eval_date)
+    if combined_eval_date_audit.get("missing_recent_eval_dates"):
+        blockers.append("stage182_combined_missing_recent_eval_dates")
 
     return {
         "validation_status": "valid" if not blockers else "invalid",
@@ -341,6 +400,7 @@ def _validate_stage182_outputs(expected_eval_date: str = "") -> dict[str, Any]:
         "live_eligibility_path": str(STAGE182_LIVE_ELIGIBILITY_PATH),
         "combined_eligibility_path": str(STAGE182_COMBINED_ELIGIBILITY_PATH),
         "official_live_ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+        "combined_eval_date_audit": combined_eval_date_audit,
     }
 
 
@@ -348,7 +408,7 @@ def _build_base_summary(args: argparse.Namespace) -> dict[str, Any]:
     as_of = _parse_as_of(str(args.as_of or ""))
     resolved_target_date, resolver_evidence = _resolve_latest_completed(as_of, str(args.data_ready_time))
     expected_eval_date = _expected_monthly_eval_date(resolved_target_date)
-    current_validation = _validate_stage182_outputs()
+    current_validation = _validate_stage182_outputs(expected_eval_date=expected_eval_date)
     current_eval_date = current_validation.get("eval_date", "")
     update_reasons: list[str] = []
     current_ts = _timestamp(str(current_eval_date))
@@ -537,6 +597,11 @@ def _build_report(summary: dict[str, Any]) -> str:
             f"{name}: exit={result.get('exit_code')} elapsed={result.get('elapsed_seconds')}s"
         )
     top_products = summary.get("top_products") or (summary.get("current_stage182_validation") or {}).get("top_products") or []
+    combined_audit = (
+        (summary.get("post_stage182_validation") or {}).get("combined_eval_date_audit")
+        or (summary.get("current_stage182_validation") or {}).get("combined_eval_date_audit")
+        or {}
+    )
     lines = [
         "Stage935 官方实盘月度 AI 池自动更新",
         "",
@@ -547,6 +612,8 @@ def _build_report(summary: dict[str, Any]) -> str:
         f"最新完成交易日：{summary.get('resolved_target_date', '')}",
         f"应使用 AI 池 eval_date：{summary.get('expected_eval_date', '')}",
         f"当前 Stage182 eval_date：{summary.get('current_eval_date', '')}",
+        f"最近需保留月度截面：{', '.join(map(str, combined_audit.get('required_recent_eval_dates') or [])) or '未读取'}",
+        f"缺失月度截面：{', '.join(map(str, combined_audit.get('missing_recent_eval_dates') or [])) or '无'}",
         f"更新原因：{';'.join(summary.get('update_reasons') or []) or '无'}",
         f"Top9 品种：{', '.join(map(str, top_products)) or '未读取'}",
         f"阻断：{';'.join(summary.get('blockers') or []) or '无'}",

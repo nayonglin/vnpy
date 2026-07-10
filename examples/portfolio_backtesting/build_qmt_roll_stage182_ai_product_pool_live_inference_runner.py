@@ -41,6 +41,19 @@ COMBINED_ELIGIBILITY_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_combined_stage7
 SUMMARY_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.json"
 REPORT_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 DEFAULT_SOURCE_PREFIX: str = "qmt_roll_selection_long015_volref30_corr_formal_floor35"
+ELIGIBILITY_COLUMNS: list[str] = [
+    "strategy",
+    "score_type",
+    "eval_date",
+    "product_vt_symbol",
+    "score",
+    "score_rank",
+    "top_n",
+]
+PRESERVED_COMBINED_SCORE_TYPE_PREFIXES: tuple[str, ...] = (
+    "stage182_",
+    "stage174_recovered_",
+)
 
 
 def _safe_float(value: object, default: float = 0.0) -> float:
@@ -158,19 +171,63 @@ def _build_live_eligibility(scored: pd.DataFrame, eval_date: pd.Timestamp) -> pd
     return result
 
 
-def _build_combined_eligibility(live_eligibility: pd.DataFrame) -> tuple[pd.DataFrame, Path]:
+def _align_eligibility_schema(frame: pd.DataFrame) -> pd.DataFrame:
+    aligned = frame.copy()
+    for column in ELIGIBILITY_COLUMNS:
+        if column not in aligned.columns:
+            aligned[column] = ""
+    aligned = aligned.loc[:, ELIGIBILITY_COLUMNS].copy()
+    aligned["eval_date"] = pd.to_datetime(aligned["eval_date"], errors="coerce").dt.date.astype(str)
+    aligned["strategy"] = aligned["strategy"].astype(str)
+    aligned["product_vt_symbol"] = aligned["product_vt_symbol"].astype(str)
+    aligned["score"] = pd.to_numeric(aligned["score"], errors="coerce").fillna(0.0)
+    aligned["score_rank"] = pd.to_numeric(aligned["score_rank"], errors="coerce").fillna(999).astype(int)
+    aligned["top_n"] = pd.to_numeric(aligned["top_n"], errors="coerce").fillna(0).astype(int)
+    return aligned
+
+
+def _preservable_combined_snapshot_mask(frame: pd.DataFrame) -> pd.Series:
+    score_type = frame["score_type"].astype(str)
+    return score_type.map(
+        lambda value: any(value.startswith(prefix) for prefix in PRESERVED_COMBINED_SCORE_TYPE_PREFIXES)
+    )
+
+
+def _build_combined_eligibility(live_eligibility: pd.DataFrame) -> tuple[pd.DataFrame, Path, dict[str, Any]]:
     _, official_eligibility_path = build_official_stage78_paths()
-    official = pd.read_csv(official_eligibility_path)
+    official = _align_eligibility_schema(pd.read_csv(official_eligibility_path))
+    existing = (
+        _align_eligibility_schema(pd.read_csv(COMBINED_ELIGIBILITY_PATH, encoding="utf-8-sig"))
+        if COMBINED_ELIGIBILITY_PATH.exists()
+        else pd.DataFrame(columns=ELIGIBILITY_COLUMNS)
+    )
+    live = _align_eligibility_schema(live_eligibility)
     eval_dates = set(live_eligibility["eval_date"].astype(str))
     strategy = str(AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME)
-    keep = ~(
+
+    existing_strategy = existing[
+        existing["strategy"].astype(str).eq(strategy)
+        & _preservable_combined_snapshot_mask(existing)
+    ].copy()
+    preserved = existing_strategy[~existing_strategy["eval_date"].astype(str).isin(eval_dates)].copy()
+    preserved_eval_dates = set(preserved["eval_date"].astype(str))
+    official_keep = ~(
         official["strategy"].astype(str).eq(strategy)
-        & official["eval_date"].astype(str).isin(eval_dates)
+        & official["eval_date"].astype(str).isin(eval_dates | preserved_eval_dates)
     )
-    combined = pd.concat([official[keep].copy(), live_eligibility.copy()], ignore_index=True)
+    combined = pd.concat([official[official_keep].copy(), preserved, live], ignore_index=True)
     combined.sort_values(["eval_date", "score_rank", "product_vt_symbol"], inplace=True)
     combined.reset_index(drop=True, inplace=True)
-    return combined, official_eligibility_path
+    audit = {
+        "official_rows": int(len(official)),
+        "existing_combined_rows": int(len(existing)),
+        "preserved_live_snapshot_rows": int(len(preserved)),
+        "preserved_live_snapshot_eval_dates": sorted(preserved_eval_dates),
+        "current_live_eval_dates": sorted(eval_dates),
+        "combined_rows": int(len(combined)),
+        "combined_eval_date_count": int(combined["eval_date"].nunique()),
+    }
+    return combined, official_eligibility_path, audit
 
 
 def _to_markdown_table(df: pd.DataFrame, columns: list[str]) -> str:
@@ -297,7 +354,7 @@ def main() -> None:
     live_pool["ai_rank"] = range(1, len(live_pool) + 1)
 
     live_eligibility = _build_live_eligibility(live_pool, eval_date)
-    combined, official_eligibility_path = _build_combined_eligibility(live_eligibility)
+    combined, official_eligibility_path, combined_audit = _build_combined_eligibility(live_eligibility)
 
     live_pool.to_csv(LIVE_POOL_PATH, index=False, encoding="utf-8-sig")
     live_eligibility.to_csv(LIVE_ELIGIBILITY_PATH, index=False, encoding="utf-8-sig")
@@ -317,6 +374,7 @@ def main() -> None:
         "live_rows": int(len(live_pool)),
         "source_paths": source_paths,
         "official_eligibility_path": str(official_eligibility_path),
+        "combined_eligibility_audit": combined_audit,
         "outputs": {
             "live_pool": str(LIVE_POOL_PATH),
             "live_eligibility": str(LIVE_ELIGIBILITY_PATH),
