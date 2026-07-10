@@ -1,0 +1,191 @@
+back_log.md
+  s_7d2e0606f09acf::t_82b205a8736ef2 50452-50497
+examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py
+  s_af02e58470dbdb::t_ee82e888ce05ef 18,444-469,471-476,482-488,492-495,504-507,688-689,841,852,860-863
+examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py
+  s_af02e58470dbdb::t_c9e07611408e4d 44-56,174-196,198-204,207-214,216,218,221-230,357,377
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/CZCE/CY209_minute_backtest.csv
+  s_7d2e0606f09acf::t_bebc491a8c6552 1-1381
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/CZCE/PK204_minute_backtest.csv
+  s_7d2e0606f09acf::t_99b7fa84a4aa6d 1-451
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/CZCE/PK210_minute_backtest.csv
+  s_7d2e0606f09acf::t_689f4e14be6f15 1-226
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/eb2206_minute_backtest.csv
+  s_7d2e0606f09acf::t_5300c768cbbd8e 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/eb2207_minute_backtest.csv
+  s_7d2e0606f09acf::t_af2d6569d4d385 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/m2205_minute_backtest.csv
+  s_7d2e0606f09acf::t_7ebe7c102672b6 1-1381
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/rr2205_minute_backtest.csv
+  s_7d2e0606f09acf::t_041769d452adb3 1-691
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/v2205_minute_backtest.csv
+  s_7d2e0606f09acf::t_a60316dc7bec18 1-691
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/v2209_minute_backtest.csv
+  s_7d2e0606f09acf::t_7134560720b4ae 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/DCE/y2209_minute_backtest.csv
+  s_7d2e0606f09acf::t_5452c00296cd33 1-691
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/SHFE/ag2212_minute_backtest.csv
+  s_7d2e0606f09acf::t_ba0e9c01c4ae1e 1-14503
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/SHFE/ni2204_minute_backtest.csv
+  s_7d2e0606f09acf::t_bfcc550cb1b0e2 1-466
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage127_stage125_top10_loss_window_minute_backfill/SHFE/zn2204_minute_backtest.csv
+  s_7d2e0606f09acf::t_3109c4fb126f3c 1-466
+examples/portfolio_backtesting/repair_qmt_roll_stage182_ai_pool_historical_snapshots.py
+  s_af02e58470dbdb::t_28f9667c8dfc34 1-206
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py
+  s_af02e58470dbdb::t_adf7c02d67aa98 20,52,275-328,388-390,403,411,600-604,615-616
+research/lines/futures_trend_covariance_gate_replacement/LINE.md
+  s_7d2e0606f09acf::t_1f6e1430ae750b 1-58
+research/lines/futures_trend_covariance_gate_replacement/stages/20260710_1825_stage001_covariance_gate_replacement_engine.md
+  s_7d2e0606f09acf::t_0afb9c527bc9e6 1-54
+research/lines/futures_trend_covariance_gate_replacement/tools/stage001_covariance_gate_replacement_attribution.py
+  s_7d2e0606f09acf::t_ed37df35e4aa91 1-156
+research/lines/futures_trend_covariance_gate_replacement/tools/stage001_covariance_gate_replacement_engine.py
+  s_7d2e0606f09acf::t_e2bf51fcae1e8d 1-549
+research/lines/futures_trend_full_market_ai_filter_002risk/LINE.md
+  s_7d2e0606f09acf::t_39a03b2e1b9c74 1-144
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_1707_stage001_full_market_pit_ai_risk002_engine.md
+  s_7d2e0606f09acf::t_ccdb8fd26a38dd 1-86
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_1740_stage002_full_market_ai_bottom_quartile_veto_engine.md
+  s_7d2e0606f09acf::t_9e67c413959d09 1-78
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2000_stage003_bottom_quartile_veto_effective_risk_cap_engine.md
+  s_7d2e0606f09acf::t_46fa6b19043f32 1-72
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2015_stage004_top_quartile_effective_risk_cap_engine.md
+  s_7d2e0606f09acf::t_c4135f92d62b6c 1-72
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2210_stage005_official_ai_pool_full_market_bottom_veto_engine.md
+  s_7d2e0606f09acf::t_c324885c7fea5f 1-65
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2245_stage006_current_ai_paired_bottom_veto_engine.md
+  s_7d2e0606f09acf::t_b806eb2e39bb5c 1-60
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2255_stage007_current_ai_paired_bottom_veto_halfyear_engine.md
+  s_7d2e0606f09acf::t_fff2ebd87f4add 1-59
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2315_stage008_guarded_official_tail_bottom_veto_halfyear_engine.md
+  s_7d2e0606f09acf::t_7171c6361bc139 1-56
+research/lines/futures_trend_full_market_ai_filter_002risk/stages/20260709_2345_stage009_2026_tail_veto_failure_attribution.md
+  s_7d2e0606f09acf::t_f929265470e348 1-53
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage001_full_market_pit_ai_risk002_engine.py
+  s_7d2e0606f09acf::t_a0aa2f02692baa 1-945
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage002_full_market_ai_bottom_quartile_veto_engine.py
+  s_7d2e0606f09acf::t_726af257b66d87 1-552
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage003_bottom_quartile_veto_effective_risk_cap_engine.py
+  s_7d2e0606f09acf::t_52c58e0a49b029 1-478
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage004_top_quartile_effective_risk_cap_engine.py
+  s_7d2e0606f09acf::t_d4bf47b1cda680 1-553
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage005_official_ai_pool_full_market_bottom_veto_engine.py
+  s_7d2e0606f09acf::t_ac3fd4dc56b159 1-596
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage006_current_ai_paired_bottom_veto_engine.py
+  s_7d2e0606f09acf::t_25ca70e9be8ef5 1-540
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage007_current_ai_paired_bottom_veto_halfyear_engine.py
+  s_7d2e0606f09acf::t_3da1d22703fc58 1-659
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage008_guarded_official_tail_bottom_veto_halfyear_engine.py
+  s_7d2e0606f09acf::t_f2a945c3726ada 1-487
+research/lines/futures_trend_full_market_ai_filter_002risk/tools/stage009_2026_tail_veto_failure_attribution.py
+  s_7d2e0606f09acf::t_a6482a34a8e439 1-410
+research/lines/futures_trend_marginal_covariance_risk_budget/LINE.md
+  s_7d2e0606f09acf::t_79f182e1035437 1-102
+research/lines/futures_trend_marginal_covariance_risk_budget/stages/20260710_1804_stage001_dated_marginal_covariance_budget_engine.md
+  s_7d2e0606f09acf::t_69b578dc2ab98a 1-80
+research/lines/futures_trend_marginal_covariance_risk_budget/tools/stage001_dated_marginal_covariance_budget_engine.py
+  s_7d2e0606f09acf::t_d37403d4c231ab 1-1042
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/LINE.md
+  s_7d2e0606f09acf::t_a3581d5ca08e3b 103-111
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260706_1424_stage121_stage074_cold_start_ramp_true_engine.md
+  s_7d2e0606f09acf::t_6095936c3ba5ed 1-71
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1327_stage122_2022_full_market_trend_inventory.md
+  s_7d2e0606f09acf::t_34e191d992efd7 1-74
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1341_stage123_c9_product_profitability_inventory.md
+  s_7d2e0606f09acf::t_b9d77d08322ac0 1-74
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1426_stage124_full_market_single_product_c9_replay.md
+  s_7d2e0606f09acf::t_5c3cfa1abed249 1-88
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1434_stage125_loss_window_top10_product_curves.md
+  s_7d2e0606f09acf::t_72cce7d0880042 1-54
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1447_stage126_stage124_125_independent_audit.md
+  s_7d2e0606f09acf::t_3c423b0628d1ee 1-114
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1502_stage127_stage125_top10_loss_window_minute_backfill.md
+  s_7d2e0606f09acf::t_9976ef625f664d 1-60
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1624_stage128_stage125_top10_minute_backfill_cumulative_audit.md
+  s_7d2e0606f09acf::t_992ea3bfc2d9a0 1-69
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260709_1630_stage129_stage125_top10_overlay_replay.md
+  s_7d2e0606f09acf::t_fcf2cf2b6487fd 1-75
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage121_stage074_cold_start_ramp_true_engine.py
+  s_7d2e0606f09acf::t_9cb9a75dedd88b 1-866
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage122_2022_full_market_trend_inventory.py
+  s_7d2e0606f09acf::t_c1ea7884d866be 1-699
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage123_c9_product_profitability_inventory.py
+  s_7d2e0606f09acf::t_892a255c42170b 1-453
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage124_full_market_single_product_c9_replay.py
+  s_7d2e0606f09acf::t_b60a670b859878 1-791
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage127_stage125_top10_loss_window_minute_backfill.py
+  s_7d2e0606f09acf::t_81517885de7406 1-640
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage128_stage125_top10_minute_backfill_cumulative_audit.py
+  s_7d2e0606f09acf::t_5754227b08d536 1-386
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage129_stage125_top10_overlay_replay.py
+  s_7d2e0606f09acf::t_3e6ce6431fb689 1-610
+research/lines/futures_trend_signed_covariance_risk_budget/LINE.md
+  s_7d2e0606f09acf::t_12cd6b6882b61c 1-71
+research/lines/futures_trend_signed_covariance_risk_budget/stages/20260710_1718_stage001_signed_covariance_budget_engine.md
+  s_7d2e0606f09acf::t_1cfd9c6862d009 1-86
+research/lines/futures_trend_signed_covariance_risk_budget/tools/stage001_signed_covariance_budget_engine.py
+  s_7d2e0606f09acf::t_600ddde3ed9a79 1-784
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260710_1839_stage001_stage013_current_ai_engine.md
+  s_7d2e0606f09acf::t_e5ddaff02370b0 1-63
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage001_stage013_current_ai_engine.py
+  s_379709f927f655::t_123abf3439770f 1-530
+research/lines/futures_trend_stage819_intraday_rules/stages/20260707_1658_stage170_20260707_postclose_signal_check.md
+  s_af02e58470dbdb::t_b20b5c9ea2ae78 1-44
+research/lines/futures_trend_stage819_intraday_rules/stages/20260708_1652_stage171_20260708_postclose_signal_check.md
+  s_af02e58470dbdb::t_42db26894c93e5 1-47
+research/lines/futures_trend_stage819_intraday_rules/stages/20260708_1710_stage172_rb_shadow_broker_divergence_recheck.md
+  s_af02e58470dbdb::t_ffb9499d294be0 1-76
+research/lines/futures_trend_stage819_intraday_rules/stages/20260708_1711_stage173_ai_pool_snapshot_gap_audit.md
+  s_af02e58470dbdb::t_7883c15b464909 1-115
+research/lines/futures_trend_stage819_intraday_rules/stages/20260708_2030_stage174_ai_pool_snapshot_repair.md
+  s_af02e58470dbdb::t_0514afdd568407 1-92
+research/lines/futures_trend_stage819_intraday_rules/stages/20260708_2112_stage175_20260708_no_open_attribution.md
+  s_af02e58470dbdb::t_f089436cb6edee 1-82
+research/lines/futures_trend_stage819_intraday_rules/stages/20260710_1948_stage176_20260710_no_actionable_signal.md
+  s_57fbbdfeac5414::t_bc73590034fb68 1-137
+research/registry.md
+  s_7d2e0606f09acf::t_49cf65a0251a7e 3,15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a2cffba007e2f0afee9d447f689080af04052b0c",
+  "prompts": {},
+  "sessions": {
+    "s_379709f927f655": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4b96-511c-7281-ac61-f1c74e21a365",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_7d2e0606f09acf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1692-4a55-7962-8ce8-c454f47b8fe1",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_af02e58470dbdb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eee7e-c9bd-7110-a750-99b466a31b90",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
