@@ -1,0 +1,117 @@
+back_log.md
+  s_7d2e0606f09acf::t_1163a83bf8ff14 50498-50511
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/LINE.md
+  s_7d2e0606f09acf::t_fe90f003291a93 112-115,117
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1152_stage130_tqsdk_expired_option_chain_probe_predecl.md
+  s_7d2e0606f09acf::t_9bb8e522476b29 1-77
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1250_stage130_tqsdk_expired_option_chain_probe_result.md
+  s_7d2e0606f09acf::t_71db5b7e030ef5 1-101
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1308_stage131_c9_event_targeted_option_acquisition_manifest_predecl.md
+  s_7d2e0606f09acf::t_870c66a70072cd 1-105
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1420_stage131_c9_event_targeted_option_acquisition_manifest_result.md
+  s_7d2e0606f09acf::t_707a92b8a37ed6 1-90
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1430_stage132_c9_event_option_metadata_batches_predecl.md
+  s_7d2e0606f09acf::t_b7a8add7d2a0d1 1-142
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1602_stage132_c9_event_option_metadata_batches_result.md
+  s_7d2e0606f09acf::t_2808b27086d67d 1-113
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1611_stage133_c9_2022_extracted_event_market_data_readiness_predecl.md
+  s_7d2e0606f09acf::t_1e0417e6ef3fe4 1-97
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1613_stage133_c9_2022_extracted_event_market_data_readiness_implementation_plan.md
+  s_7d2e0606f09acf::t_077937cc246a1b 1-263
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1750_stage133_c9_2022_extracted_event_market_data_readiness_result.md
+  s_7d2e0606f09acf::t_a3f60becae7c07 1-114
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage130_tqsdk_expired_option_chain_probe.py
+  s_7d2e0606f09acf::t_f471c2e650343d 1-806
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage131_c9_event_targeted_option_acquisition_manifest.py
+  s_7d2e0606f09acf::t_e0292870fbb830 1-1069
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage132_c9_event_option_metadata_batches.py
+  s_7d2e0606f09acf::t_d7f5920faab0de 1-1691
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage133_c9_2022_extracted_event_market_data_readiness.py
+  s_7d2e0606f09acf::t_c2e38a917b5f01 1-1878
+research/lines/futures_trend_stage013_current_ai_revalidation/LINE.md
+  s_7d2e0606f09acf::t_2457624b341202 7,131-375
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260710_2031_stage005_stage013_current_ai_cost_execution_stress.md
+  s_7d2e0606f09acf::t_6b704f657503be 1-94
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260710_2057_stage006_stage013_reconciled_equity_engine.md
+  s_7d2e0606f09acf::t_88ff7e6e4a6a2a 1-79
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260710_2246_stage007_stage006_reconciled_equity_halfyear.md
+  s_7d2e0606f09acf::t_1f69a30a66f0dc 1-80
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260710_2312_stage008_reconciled_equity_slippage_stress.md
+  s_7d2e0606f09acf::t_7f46171c2f4929 1-98
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0057_stage009_gate_opportunity_cost_attribution.md
+  s_7d2e0606f09acf::t_b74cbbf74323a2 1-112
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0258_stage010_drawdown_recovery_progress_ramp.md
+  s_7d2e0606f09acf::t_fdfd6f44864160 1-113
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0435_stage011_2021_anchor_path_feedback_attribution.md
+  s_7d2e0606f09acf::t_9d0af093487682 1-95
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0501_stage012_global_authoritative_equity_sizing_engine.md
+  s_7d2e0606f09acf::t_060bda5345183e 1-122
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0532_stage013_guarded_quality_authoritative_sizing_predecl.md
+  s_7d2e0606f09acf::t_bbf92d3d2088bf 1-68
+research/lines/futures_trend_stage013_current_ai_revalidation/stages/20260711_0541_stage013_guarded_quality_authoritative_sizing_engine.md
+  s_7d2e0606f09acf::t_a3ed6d9a94d927 1-143
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage005_stage013_current_ai_cost_execution_stress.py
+  s_7d2e0606f09acf::t_0872a65cba65ce 380-422,430-435,452-453,456-458,460,695
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage006_stage013_reconciled_equity_engine.py
+  s_7d2e0606f09acf::t_b418482947cfe1 1-1105
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage007_stage006_reconciled_equity_halfyear.py
+  s_7d2e0606f09acf::t_d678417a5acfc5 1-745
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage008_reconciled_equity_slippage_stress.py
+  s_7d2e0606f09acf::t_27b1bced23f06f 1-647
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage009_gate_opportunity_cost_attribution.py
+  s_7d2e0606f09acf::t_2a44e8b46a5c9a 1-875
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage010_drawdown_recovery_progress_ramp.py
+  s_7d2e0606f09acf::t_c4271f0c7869e5 1-1441
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage011_2021_anchor_path_feedback_attribution.py
+  s_7d2e0606f09acf::t_2e8e717dde77b8 1-621
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage012_global_authoritative_equity_sizing_engine.py
+  s_7d2e0606f09acf::t_0a10fbb12b90ce 1-897
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/stage013_guarded_quality_authoritative_sizing_engine.py
+  s_7d2e0606f09acf::t_f7c0d03fd726ab 1-1275
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage005_stage013_current_ai_cost_execution_stress.py
+  s_7d2e0606f09acf::t_faa1fe1909e06f 7-8,11-12,63-83
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage006_stage013_reconciled_equity_engine.py
+  s_7d2e0606f09acf::t_98df6840b3fbbe 1-168
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage007_stage006_reconciled_equity_halfyear.py
+  s_7d2e0606f09acf::t_5ba0348afe2281 1-74
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage008_reconciled_equity_slippage_stress.py
+  s_7d2e0606f09acf::t_5a7ecdfaea6c20 1-64
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage009_gate_opportunity_cost_attribution.py
+  s_7d2e0606f09acf::t_5a97801f400214 1-352
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage010_drawdown_recovery_progress_ramp.py
+  s_7d2e0606f09acf::t_d6aceca3de8d8a 1-246
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage011_2021_anchor_path_feedback_attribution.py
+  s_7d2e0606f09acf::t_5f7eb7955fd3ef 1-177
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage012_global_authoritative_equity_sizing_engine.py
+  s_7d2e0606f09acf::t_324dc9f63763cc 1-80
+research/lines/futures_trend_stage013_current_ai_revalidation/tools/test_stage013_guarded_quality_authoritative_sizing_engine.py
+  s_7d2e0606f09acf::t_8861913c4b560d 1-340
+research/registry.md
+  s_7d2e0606f09acf::t_62d42fee84471a 3,14-15
+tests/test_rebuilt_c9_v2_stage130_tqsdk_expired_option_chain_probe.py
+  s_7d2e0606f09acf::t_43b18869ff336e 1-250
+tests/test_rebuilt_c9_v2_stage131_c9_event_targeted_option_acquisition_manifest.py
+  s_7d2e0606f09acf::t_98e58edfbf91a8 1-402
+tests/test_rebuilt_c9_v2_stage132_c9_event_option_metadata_batches.py
+  s_7d2e0606f09acf::t_0a1cc03aeea6d5 1-642
+tests/test_rebuilt_c9_v2_stage133_c9_2022_extracted_event_market_data_readiness.py
+  s_7d2e0606f09acf::t_481824b4aba8b5 1-643
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "533fa961c15eebec3f2caf69669142f123d4d76b",
+  "prompts": {},
+  "sessions": {
+    "s_7d2e0606f09acf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1692-4a55-7962-8ce8-c454f47b8fe1",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
