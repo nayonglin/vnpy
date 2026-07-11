@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import importlib
+from pathlib import Path
+import tempfile
 import unittest
+
+import pandas as pd
 
 
 class Stage005CostStressTest(unittest.TestCase):
@@ -55,6 +59,27 @@ class Stage005CostStressTest(unittest.TestCase):
         self.assertAlmostEqual(result["main_stress_drawdown_improvement_pct"], 5.0)
         self.assertAlmostEqual(result["broker10_peak_delta_pct"], -1.0)
         self.assertTrue(result["performance_gate_pass"])
+
+    def test_persisted_daily_comparison_uses_two_serialized_artifacts(self) -> None:
+        module = self._module()
+        self.assertTrue(
+            hasattr(module, "_compare_persisted_daily"),
+            "persisted artifact comparison helper is missing",
+        )
+        row = {"date": "2026-01-01"}
+        row.update({column: 1.234567890123 for column in module.CORE_DAILY_COLUMNS})
+        with tempfile.TemporaryDirectory() as directory:
+            reference = Path(directory) / "reference.csv.gz"
+            fresh = Path(directory) / "fresh.csv.gz"
+            pd.DataFrame([row]).to_csv(reference, index=False)
+            pd.DataFrame([row]).to_csv(fresh, index=False)
+
+            result = module._compare_persisted_daily(reference, fresh)
+
+        self.assertEqual(result["missing_date_count"], 0)
+        self.assertEqual(result["daily_mismatch_cell_count"], 0)
+        self.assertEqual(result["daily_max_abs_difference"], 0.0)
+        self.assertTrue(result["core_daily_hash_equal"])
 
 
 if __name__ == "__main__":

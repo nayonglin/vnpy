@@ -377,9 +377,49 @@ def _canonical_daily_hash(frame: pd.DataFrame) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def _reproduction_audit(
-    daily_1x: dict[str, pd.DataFrame], summary: pd.DataFrame
-) -> pd.DataFrame:
+def _compare_persisted_daily(reference_path: Path, fresh_path: Path) -> dict[str, Any]:
+    reference_daily = pd.read_csv(reference_path, encoding="utf-8-sig")
+    fresh_daily = pd.read_csv(fresh_path, encoding="utf-8-sig")
+    reference_daily["date"] = pd.to_datetime(
+        reference_daily["date"], errors="coerce"
+    ).dt.normalize()
+    fresh_daily["date"] = pd.to_datetime(
+        fresh_daily["date"], errors="coerce"
+    ).dt.normalize()
+    merged = reference_daily[["date", *CORE_DAILY_COLUMNS]].merge(
+        fresh_daily[["date", *CORE_DAILY_COLUMNS]],
+        on="date",
+        how="outer",
+        suffixes=("_reference", "_fresh"),
+        indicator=True,
+    )
+    missing_date_count = int(merged["_merge"].ne("both").sum())
+    daily_max_abs = 0.0
+    mismatch_cells = 0
+    for column in CORE_DAILY_COLUMNS:
+        left = pd.to_numeric(merged[f"{column}_reference"], errors="coerce")
+        right = pd.to_numeric(merged[f"{column}_fresh"], errors="coerce")
+        diff = (left - right).abs()
+        daily_max_abs = max(
+            daily_max_abs, float(diff.max()) if diff.notna().any() else 0.0
+        )
+        both_nan = left.isna() & right.isna()
+        mismatch_cells += int((~both_nan & (diff.isna() | diff.gt(CORE_TOLERANCE))).sum())
+    reference_hash = _canonical_daily_hash(reference_daily)
+    fresh_hash = _canonical_daily_hash(fresh_daily)
+    return {
+        "reference_rows": int(len(reference_daily)),
+        "fresh_rows": int(len(fresh_daily)),
+        "missing_date_count": missing_date_count,
+        "daily_mismatch_cell_count": int(mismatch_cells),
+        "daily_max_abs_difference": float(daily_max_abs),
+        "reference_core_daily_sha256": reference_hash,
+        "fresh_core_daily_sha256": fresh_hash,
+        "core_daily_hash_equal": bool(reference_hash == fresh_hash),
+    }
+
+
+def _reproduction_audit(summary: pd.DataFrame) -> pd.DataFrame:
     reference_summary = pd.read_csv(STAGE001_SUMMARY_PATH, encoding="utf-8-sig")
     rows: list[dict[str, Any]] = []
     for version in VERSIONS:
@@ -387,26 +427,13 @@ def _reproduction_audit(
             STAGE001_OUT
             / f"{stage001.OUTPUT_PREFIX}_{version}_daily_{stage001.MODEL_TAG}.csv.gz"
         )
-        reference_daily = pd.read_csv(reference_daily_path, encoding="utf-8-sig")
-        current_daily = daily_1x[version].copy()
-        reference_daily["date"] = pd.to_datetime(reference_daily["date"], errors="coerce").dt.normalize()
-        current_daily["date"] = pd.to_datetime(current_daily["date"], errors="coerce").dt.normalize()
-        merged = reference_daily[["date", *CORE_DAILY_COLUMNS]].merge(
-            current_daily[["date", *CORE_DAILY_COLUMNS]],
-            on="date",
-            how="outer",
-            suffixes=("_reference", "_fresh"),
-            indicator=True,
+        fresh_daily_path = (
+            OUT
+            / f"{OUTPUT_PREFIX}_{_token(1.0)}_{version}_daily_{MODEL_TAG}.csv.gz"
         )
-        missing_date_count = int(merged["_merge"].ne("both").sum())
-        daily_max_abs = 0.0
-        mismatch_cells = 0
-        for column in CORE_DAILY_COLUMNS:
-            left = pd.to_numeric(merged[f"{column}_reference"], errors="coerce")
-            right = pd.to_numeric(merged[f"{column}_fresh"], errors="coerce")
-            diff = (left - right).abs()
-            daily_max_abs = max(daily_max_abs, float(diff.max()) if diff.notna().any() else 0.0)
-            mismatch_cells += int((diff > CORE_TOLERANCE).fillna(True).sum())
+        daily_comparison = _compare_persisted_daily(
+            reference_daily_path, fresh_daily_path
+        )
         reference_row = reference_summary[reference_summary["version"].eq(version)].iloc[0]
         current_row = summary[
             summary["version"].eq(version)
@@ -418,27 +445,19 @@ def _reproduction_audit(
                 abs(float(reference_row[column]) - float(current_row[column]))
             )
         summary_max_abs = max(summary_diffs) if summary_diffs else 0.0
-        reference_hash = _canonical_daily_hash(reference_daily)
-        fresh_hash = _canonical_daily_hash(current_daily)
         rows.append(
             {
                 "version": version,
                 "reference_daily_path": str(reference_daily_path),
-                "reference_rows": int(len(reference_daily)),
-                "fresh_rows": int(len(current_daily)),
-                "missing_date_count": missing_date_count,
-                "daily_mismatch_cell_count": int(mismatch_cells),
-                "daily_max_abs_difference": float(daily_max_abs),
+                "fresh_daily_path": str(fresh_daily_path),
+                **daily_comparison,
                 "summary_max_abs_difference": float(summary_max_abs),
-                "reference_core_daily_sha256": reference_hash,
-                "fresh_core_daily_sha256": fresh_hash,
-                "core_daily_hash_equal": bool(reference_hash == fresh_hash),
                 "reproduction_pass": bool(
-                    missing_date_count == 0
-                    and mismatch_cells == 0
-                    and daily_max_abs <= CORE_TOLERANCE
+                    daily_comparison["missing_date_count"] == 0
+                    and daily_comparison["daily_mismatch_cell_count"] == 0
+                    and daily_comparison["daily_max_abs_difference"] <= CORE_TOLERANCE
                     and summary_max_abs <= CORE_TOLERANCE
-                    and reference_hash == fresh_hash
+                    and daily_comparison["core_daily_hash_equal"]
                 ),
             }
         )
@@ -673,9 +692,7 @@ def build() -> dict[str, Any]:
     ai_parity["all_cost_multipliers"] = "/".join(
         f"{item:g}x" for item in COST_MULTIPLIERS
     )
-    reproduction = _reproduction_audit(
-        {version: daily_by_key[(1.0, version)] for version in VERSIONS}, summary
-    )
+    reproduction = _reproduction_audit(summary)
     base_slippage_hash_after = _mapping_sha256(base_metadata["slippages"])
     for audit in cost_audits:
         audit["base_metadata_hash_before"] = base_slippage_hash_before
