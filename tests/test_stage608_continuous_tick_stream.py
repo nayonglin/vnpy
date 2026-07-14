@@ -21,6 +21,22 @@ import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
 
 
 class ContinuousTickStreamTest(unittest.TestCase):
+    @staticmethod
+    def _ingress_tick(last_price: float = 1245.5) -> SimpleNamespace:
+        return SimpleNamespace(
+            vt_symbol="JM609.DCE",
+            symbol="JM609",
+            exchange=SimpleNamespace(value="DCE"),
+            datetime=datetime(2026, 7, 13, 21, 1, 2, 3000),
+            last_price=last_price,
+            bid_price_1=last_price - 0.5,
+            ask_price_1=last_price,
+            bid_volume_1=10,
+            ask_volume_1=12,
+            limit_up=1370.0,
+            limit_down=1120.0,
+        )
+
     def test_tick_row_preserves_arrival_identity_and_market_fields(self) -> None:
         tick = SimpleNamespace(
             vt_symbol="JM609.DCE",
@@ -249,6 +265,145 @@ class ContinuousTickStreamTest(unittest.TestCase):
             },
         )
         self.assertNotIn("OLD609.DCE", watermarks)
+
+    def test_gateway_ingress_stamp_precedes_event_engine_backlog(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def __init__(self) -> None:
+                self.epoch = 1_784_000_000_123_456_000
+                self.monotonic = 100
+
+            def epoch_ns(self) -> int:
+                return self.epoch
+
+            def monotonic_ns(self) -> int:
+                return self.monotonic
+
+            def sleep(self, seconds: float) -> None:
+                self.monotonic += int(seconds * 1_000_000_000)
+
+        clock = FakeClock()
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-a",
+            journal_segment_path=Path("unused.ndjson"),
+            clock=clock,
+            queue_capacity=4,
+            max_buffer_ticks=4,
+        )
+        tick = self._ingress_tick()
+
+        envelope = pipeline.capture_ingress(tick)
+        tick.last_price = 9999.0
+        cutoff_ns = 200
+        clock.monotonic = 300
+        observation = pipeline.observe_handler(tick)
+
+        self.assertIsNotNone(envelope)
+        self.assertIsNotNone(observation)
+        self.assertEqual(envelope.tick_row["last_price"], 1245.5)
+        with self.assertRaises(TypeError):
+            envelope.tick_row["last_price"] = 1.0
+        self.assertLess(envelope.ingress_monotonic_ns, cutoff_ns)
+        self.assertGreater(observation.handler_received_monotonic_ns, cutoff_ns)
+        self.assertEqual(envelope.received_at_utc, envelope.tick_row["received_at"])
+
+    def test_queue_overflow_latches_exact_gap_and_never_auto_recovers(self) -> None:
+        from qmt_roll_official_live_tick_stream import (
+            TICK_INGRESS_ENVELOPE_ATTR,
+            TickStreamPipeline,
+            install_gateway_tick_ingress,
+        )
+
+        class FakeClock:
+            def __init__(self) -> None:
+                self.epoch = 1_784_000_000_000_000_000
+                self.monotonic = 10
+
+            def epoch_ns(self) -> int:
+                self.epoch += 1
+                return self.epoch
+
+            def monotonic_ns(self) -> int:
+                self.monotonic += 1
+                return self.monotonic
+
+            def sleep(self, seconds: float) -> None:
+                self.monotonic += int(seconds * 1_000_000_000)
+
+        forwarded_sequences: list[int] = []
+
+        class Gateway:
+            def on_tick(self, tick: SimpleNamespace) -> None:
+                envelope = getattr(tick, TICK_INGRESS_ENVELOPE_ATTR)
+                forwarded_sequences.append(envelope.ingress_sequence)
+
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-overflow",
+            journal_segment_path=Path("unused.ndjson"),
+            clock=FakeClock(),
+            queue_capacity=1,
+            max_buffer_ticks=1,
+        )
+        gateway = Gateway()
+        restore = install_gateway_tick_ingress(gateway, pipeline)
+
+        gateway.on_tick(self._ingress_tick(1.0))
+        gateway.on_tick(self._ingress_tick(2.0))
+        pipeline.take_ingress_nowait()
+        gateway.on_tick(self._ingress_tick(3.0))
+        snapshot = pipeline.snapshot()
+        restore()
+        restore()
+
+        self.assertEqual(snapshot.dropped_tick_count, 2)
+        self.assertEqual(
+            (snapshot.gap.start_ingress_sequence, snapshot.gap.end_ingress_sequence),
+            (2, 3),
+        )
+        self.assertFalse(snapshot.stream_ready)
+        self.assertEqual(forwarded_sequences, [1, 2, 3])
+
+    def test_event_handler_observation_is_diagnostic_only(self) -> None:
+        from qmt_roll_official_live_tick_stream import (
+            TICK_INGRESS_ENVELOPE_ATTR,
+            TickStreamPipeline,
+        )
+
+        class FakeClock:
+            def __init__(self) -> None:
+                self.epoch = 1_784_000_000_999_000_000
+                self.monotonic = 500
+
+            def epoch_ns(self) -> int:
+                return self.epoch
+
+            def monotonic_ns(self) -> int:
+                self.monotonic += 100
+                return self.monotonic
+
+            def sleep(self, seconds: float) -> None:
+                self.monotonic += int(seconds * 1_000_000_000)
+
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-observation",
+            journal_segment_path=Path("unused.ndjson"),
+            clock=FakeClock(),
+            queue_capacity=4,
+            max_buffer_ticks=4,
+        )
+        tick = self._ingress_tick()
+        before = pipeline.capture_ingress(tick)
+
+        observation = pipeline.observe_handler(tick)
+        after = getattr(tick, TICK_INGRESS_ENVELOPE_ATTR)
+
+        self.assertIsNotNone(observation)
+        self.assertIs(after, before)
+        self.assertEqual(
+            after.tick_row["ingress_epoch_ns"], before.tick_row["ingress_epoch_ns"]
+        )
+        self.assertNotIn("handler_received_monotonic_ns", after.tick_row)
 
 
 if __name__ == "__main__":
