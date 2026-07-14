@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,11 @@ import pandas as pd
 from pandas.errors import EmptyDataError
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_live_c9_intraday_state import (
+    generate_position_cycle_id,
+    generate_position_epoch_id,
+    generate_root_position_id,
+)
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_phase_d_config import (
     READONLY_CONTRACTS_PATH,
@@ -30,9 +36,34 @@ STAGE902_MODEL_TAG = "stage902_official_live_phase_d_readiness_gate_v1"
 STAGE902_PREFIX = "qmt_roll_stage902_official_live_phase_d_readiness_gate"
 STAGE904_MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
 STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
+STAGE904_MAX_AGE_SECONDS = 30
 STAGE260_MODEL_TAG = "stage260_official_live_daily_execution_gate_v1"
 STAGE260_PREFIX = "qmt_roll_stage260_official_live_daily_execution_gate"
 RETRY_INTENT_ROLE = "c9_retry_open_once"
+INITIAL_OPEN_INTENT_ROLE = "c9_initial_open"
+IDENTITY_TEXT_FIELDS = (
+    "root_position_id",
+    "position_cycle_id",
+    "position_epoch_id",
+    "parent_position_cycle_id",
+    "intent_role",
+    "position_direction",
+    "entry_risk_date",
+    "open_trade_id",
+    "action_id",
+)
+IDENTITY_NUMBER_FIELDS = (
+    "position_cycle_no",
+    "strategy_entry_price",
+    "strategy_initial_stop_price",
+    "strategy_stop_price",
+    "retry_trigger_price",
+    "retry_stop_price",
+    "retry_original_fill_price",
+    "root_entry_price",
+    "root_initial_stop_price",
+    "root_entry_volume",
+)
 ACTIVE_ORDER_STATUSES = {
     "submitting",
     "submitted",
@@ -81,6 +112,11 @@ def _stage904_actions_path(target_date: str) -> Path:
     return OUTPUT_DIR / f"{STAGE904_PREFIX}_actions_{date_key}_{STAGE904_MODEL_TAG}.csv"
 
 
+def _stage904_summary_path(target_date: str) -> Path:
+    date_key = target_date.replace("-", "") if target_date else "latest"
+    return OUTPUT_DIR / f"{STAGE904_PREFIX}_summary_{date_key}_{STAGE904_MODEL_TAG}.json"
+
+
 def _stage260_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"{STAGE260_PREFIX}_summary_{date_key}_{STAGE260_MODEL_TAG}.json"
@@ -95,6 +131,18 @@ def _read_json(path: Path) -> dict[str, Any]:
         return {"_read_error": repr(exc)}
 
 
+def _age_seconds(value: Any) -> float | None:
+    text = _clean(value)
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    now = datetime.now(parsed.tzinfo) if parsed.tzinfo is not None else datetime.now()
+    return max(0.0, (now - parsed).total_seconds())
+
+
 def _read_csv_maybe(path: str | Path | None) -> pd.DataFrame:
     if not path:
         return pd.DataFrame()
@@ -105,6 +153,20 @@ def _read_csv_maybe(path: str | Path | None) -> pd.DataFrame:
         return pd.read_csv(p, encoding="utf-8-sig")
     except EmptyDataError:
         return pd.DataFrame()
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary.write_text(text, encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def _atomic_write_df(path: Path, frame: pd.DataFrame) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    frame.to_csv(temporary, index=False, encoding="utf-8-sig")
+    os.replace(temporary, path)
 
 
 def _clean(value: Any) -> str:
@@ -327,22 +389,58 @@ def _protective_close_price(intent: dict[str, Any], direction_text: str, priceti
     return fallback_price, "protective_close_price_invalid_direction"
 
 
-def _pending_order_intents(pending_orders: pd.DataFrame) -> list[dict[str, Any]]:
+def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for idx, row in enumerate(pending_orders.to_dict(orient="records"), start=1):
         vt_symbol = _clean(row.get("vt_symbol"))
-        rows.append(
-            {
+        direction = _normalize_direction_text(row.get("direction"))
+        offset = _normalize_offset_text(row.get("offset"))
+        item = {
                 "intent_id": f"STAGE905-PENDING-{idx:03d}",
                 "source": "stage901_pending_order",
                 "vt_symbol": vt_symbol,
-                "direction": _normalize_direction_text(row.get("direction")),
-                "offset": _normalize_offset_text(row.get("offset")),
+                "direction": direction,
+                "offset": offset,
                 "planned_volume": _to_float(row.get("volume"), 0.0),
                 "limit_price": _to_float(row.get("price"), 0.0),
                 "source_reason": _clean(row.get("status")),
             }
-        )
+        if target_date and vt_symbol and direction in {"long", "short"} and offset == "open":
+            root_position_id = generate_root_position_id(
+                target_date=target_date,
+                vt_symbol=vt_symbol,
+                direction=direction,
+            )
+            planned_epoch_id = ""
+            planned_entry_at = _clean(row.get("datetime") or row.get("generated_at"))
+            planned_fill_identity = _clean(
+                row.get("vt_orderid") or row.get("orderid") or row.get("intent_id")
+            )
+            if planned_entry_at and planned_fill_identity:
+                planned_epoch_id = generate_position_epoch_id(
+                    target_date=target_date,
+                    vt_symbol=vt_symbol,
+                    direction=direction,
+                    entry_filled_at=planned_entry_at,
+                    fill_identity=f"stage901_pending:{planned_fill_identity}",
+                )
+            item.update(
+                {
+                    "root_position_id": root_position_id,
+                    "position_cycle_id": generate_position_cycle_id(root_position_id=root_position_id, cycle_no=0),
+                    "position_cycle_no": 0,
+                    "intent_role": INITIAL_OPEN_INTENT_ROLE,
+                    "position_direction": direction,
+                    "strategy_entry_price": _to_float(row.get("price"), 0.0),
+                    "strategy_initial_stop_price": _to_float(row.get("stop_price"), 0.0),
+                    "root_entry_price": _to_float(row.get("price"), 0.0),
+                    "root_initial_stop_price": _to_float(row.get("stop_price"), 0.0),
+                    "root_entry_volume": _to_float(row.get("volume"), 0.0),
+                }
+            )
+            if planned_epoch_id:
+                item["position_epoch_id"] = planned_epoch_id
+        rows.append(item)
     return rows
 
 
@@ -441,9 +539,9 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
     for idx, row in enumerate(close_actions.to_dict(orient="records"), start=1):
         current_direction = _normalize_direction_text(row.get("direction"))
         close_direction = "short" if current_direction == "long" else "long" if current_direction == "short" else ""
-        rows.append(
-            {
-                "intent_id": f"STAGE905-C9MON-{idx:03d}",
+        intent = {
+                "intent_id": _clean(row.get("action_id")) or f"STAGE905-C9MON-{idx:03d}",
+                "target_date": _clean(row.get("target_date")),
                 "source": "stage904_c9_intraday_close",
                 "vt_symbol": _clean(row.get("vt_symbol")),
                 "direction": close_direction,
@@ -457,14 +555,22 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 "live_ask_price_1": _to_float(row.get("live_ask_price_1"), 0.0),
                 "live_limit_up": _to_float(row.get("live_limit_up"), 0.0),
                 "live_limit_down": _to_float(row.get("live_limit_down"), 0.0),
+                "monitor_run_id": _clean(row.get("monitor_run_id")),
                 "source_reason": _clean(row.get("monitor_reason")),
             }
-        )
+        for key in IDENTITY_TEXT_FIELDS:
+            value = _clean(row.get(key))
+            if value:
+                intent[key] = value
+        for key in IDENTITY_NUMBER_FIELDS:
+            if _clean(row.get(key)):
+                intent[key] = _to_float(row.get(key), 0.0)
+        rows.append(intent)
     retry_actions = stage904_actions[stage904_actions["monitor_action"].astype(str).eq("retry_open_dry_run")]
     for idx, row in enumerate(retry_actions.to_dict(orient="records"), start=1):
-        rows.append(
-            {
-                "intent_id": f"STAGE905-C9RETRY-{idx:03d}",
+        intent = {
+                "intent_id": _clean(row.get("action_id")) or f"STAGE905-C9RETRY-{idx:03d}",
+                "target_date": _clean(row.get("target_date")),
                 "source": "stage904_c9_intraday_retry_open",
                 "intent_role": RETRY_INTENT_ROLE,
                 "vt_symbol": _clean(row.get("vt_symbol")),
@@ -481,9 +587,17 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 "live_ask_price_1": _to_float(row.get("live_ask_price_1"), 0.0),
                 "live_limit_up": _to_float(row.get("live_limit_up"), 0.0),
                 "live_limit_down": _to_float(row.get("live_limit_down"), 0.0),
+                "monitor_run_id": _clean(row.get("monitor_run_id")),
                 "source_reason": _clean(row.get("monitor_reason")),
             }
-        )
+        for key in IDENTITY_TEXT_FIELDS:
+            value = _clean(row.get(key))
+            if value:
+                intent[key] = value
+        for key in IDENTITY_NUMBER_FIELDS:
+            if _clean(row.get(key)):
+                intent[key] = _to_float(row.get(key), 0.0)
+        rows.append(intent)
     return rows
 
 
@@ -502,10 +616,10 @@ def _dedupe_intents(intents: list[dict[str, Any]]) -> list[dict[str, Any]]:
         else:
             passthrough.append(intent)
 
-    def close_priority(row: dict[str, Any]) -> tuple[int, float]:
+    def close_priority(row: dict[str, Any]) -> tuple[int, float, float]:
         source = _clean(row.get("source"))
         source_priority = 0 if source == "stage904_c9_intraday_close" else 1 if source == "stage901_pending_order" else 9
-        return source_priority, -_to_float(row.get("planned_volume"), 0.0)
+        return source_priority, -_to_float(row.get("position_cycle_no"), -1.0), -_to_float(row.get("planned_volume"), 0.0)
 
     def open_priority(row: dict[str, Any]) -> tuple[int, float]:
         source = _clean(row.get("source"))
@@ -551,6 +665,7 @@ def _validate_intent(
     positions: pd.DataFrame,
     orders: pd.DataFrame,
     stage902_summary: dict[str, Any],
+    stage904_summary: dict[str, Any],
     stage260_summary: dict[str, Any],
     mode: str,
 ) -> dict[str, Any]:
@@ -578,6 +693,46 @@ def _validate_intent(
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
     intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
     force_skip_reason = _clean(intent.get("force_skip_reason"))
+
+    root_position_id = _clean(intent.get("root_position_id"))
+    position_cycle_id = _clean(intent.get("position_cycle_id"))
+    intent_role = _clean(intent.get("intent_role"))
+    if root_position_id or position_cycle_id:
+        missing_identity = [
+            key
+            for key, value in (
+                ("root_position_id", root_position_id),
+                ("position_cycle_id", position_cycle_id),
+                ("intent_role", intent_role),
+            )
+            if not value
+        ]
+        if missing_identity:
+            reasons.append(f"incomplete_v2_intent_identity:missing={','.join(missing_identity)}")
+    if (intraday_close_intent or intraday_retry_open_intent) and not _clean(intent.get("position_epoch_id")):
+        reasons.append("stage904_position_epoch_id_missing")
+    if intraday_close_intent or intraday_retry_open_intent:
+        stage904_age = _age_seconds(stage904_summary.get("generated_at"))
+        stage904_run_id = _clean(
+            stage904_summary.get("monitor_run_id") or stage904_summary.get("run_id")
+        )
+        intent_run_id = _clean(intent.get("monitor_run_id"))
+        valid_final_statuses = {
+            "intraday_monitor_ready",
+            "intraday_monitor_blocked",
+            "intraday_monitor_close_dry_run",
+            "intraday_monitor_retry_open_dry_run",
+        }
+        if _clean(stage904_summary.get("model_tag")) != STAGE904_MODEL_TAG:
+            reasons.append("stage904_summary_model_tag_mismatch")
+        if _clean(stage904_summary.get("target_date")) != _clean(intent.get("target_date")):
+            reasons.append("stage904_summary_target_date_mismatch")
+        if stage904_age is None or stage904_age > STAGE904_MAX_AGE_SECONDS:
+            reasons.append(f"stage904_summary_stale_or_missing:{stage904_age}")
+        if _clean(stage904_summary.get("monitor_status")) not in valid_final_statuses:
+            reasons.append("stage904_summary_not_final")
+        if not stage904_run_id or not intent_run_id or stage904_run_id != intent_run_id:
+            reasons.append("stage904_monitor_run_id_mismatch")
 
     if force_skip_reason:
         reasons.append(force_skip_reason)
@@ -611,13 +766,14 @@ def _validate_intent(
     min_volume = _to_float(contract.get("min_volume") if contract else None, 0.0)
     max_volume = _to_float(contract.get("max_volume") if contract else None, 0.0)
     price_adjustment_reason = ""
-    if intraday_close_intent:
+    if intraday_close_intent or intraday_retry_open_intent:
         original_price = price
         price, price_adjustment_reason = _protective_close_price(intent, direction_text, pricetick, original_price)
         if price <= 0:
-            reasons.append("protective_close_price_missing")
+            reasons.append("protective_intraday_price_missing")
         elif original_price > 0:
-            price_adjustment_reason = f"{price_adjustment_reason};stop_trigger_price={original_price};order_price={price}"
+            trigger_label = "stop_trigger_price" if intraday_close_intent else "retry_trigger_price"
+            price_adjustment_reason = f"{price_adjustment_reason};{trigger_label}={original_price};order_price={price}"
     if pricetick and price > 0 and not _price_on_tick(price, pricetick):
         original_price = price
         price = _snap_price_to_tick(price, pricetick, direction_text)
@@ -688,6 +844,9 @@ def _validate_intent(
             "vt_symbol": req.vt_symbol,
             "gateway_name": _clean(contract.get("gateway_name") if contract else "CTP") or "CTP",
         }
+        for key in (*IDENTITY_TEXT_FIELDS, *IDENTITY_NUMBER_FIELDS):
+            if _clean(intent.get(key)):
+                order_request_payload[key] = intent[key]
 
     return {
         **intent,
@@ -774,8 +933,27 @@ def main() -> None:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)
+    _atomic_write_df(paths["intents_csv"], pd.DataFrame())
+    _atomic_write_text(
+        paths["summary_json"],
+        json.dumps(
+            {
+                "model_tag": MODEL_TAG,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": args.target_date,
+                "executor_status": "executor_running_fail_closed",
+                "ready_count": 0,
+                "blocked_count": 1,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+    )
     pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
     stage904_actions = _read_csv_maybe(_stage904_actions_path(args.target_date))
+    stage904_summary = _read_json(_stage904_summary_path(args.target_date))
     contracts = _read_csv_maybe(READONLY_CONTRACTS_PATH)
     positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
     orders = _read_csv_maybe(READONLY_ORDERS_PATH)
@@ -784,7 +962,7 @@ def main() -> None:
     execution_ledger_rows = read_execution_ledger()
 
     pending_intents = _suppress_stage901_pending_after_stop_close(
-        _pending_order_intents(pending_orders),
+        _pending_order_intents(pending_orders, args.target_date),
         ledger_rows=execution_ledger_rows,
         target_date=args.target_date,
     )
@@ -797,6 +975,7 @@ def main() -> None:
                 positions=positions,
                 orders=orders,
                 stage902_summary=stage902_summary,
+                stage904_summary=stage904_summary,
                 stage260_summary=stage260_summary,
                 mode=args.mode,
             )
@@ -841,9 +1020,9 @@ def main() -> None:
             "continue_after": "是。下一步应把 Stage905 接入 Stage903，并补 broker read-only/Stage260 fresh 自动刷新。",
         },
     }
-    intents.to_csv(paths["intents_csv"], index=False, encoding="utf-8-sig")
-    paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-    paths["report_md"].write_text(_build_report(summary, intents), encoding="utf-8")
+    _atomic_write_df(paths["intents_csv"], intents)
+    _atomic_write_text(paths["summary_json"], json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+    _atomic_write_text(paths["report_md"], _build_report(summary, intents))
     print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
 
 

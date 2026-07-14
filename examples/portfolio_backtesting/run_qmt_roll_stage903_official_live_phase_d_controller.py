@@ -744,6 +744,31 @@ def _run_stage905(target_date: str) -> dict[str, Any]:
     }
 
 
+def _read_external_intraday_stage(target_date: str, *, stage: str) -> dict[str, Any]:
+    """Consume atomically published fast-lane outputs without launching a second monitor."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if stage == "stage904":
+        summary = _read_json(_stage904_summary_path(target_date))
+        missing_status = "intraday_monitor_external_output_missing"
+    elif stage == "stage905":
+        summary = _read_json(_stage905_summary_path(target_date))
+        missing_status = "executor_external_output_missing"
+    else:
+        raise ValueError(f"unsupported external intraday stage: {stage}")
+    if not summary:
+        key = "monitor_status" if stage == "stage904" else "executor_status"
+        summary = {key: missing_status, "order_api_called_count": 0}
+    return {
+        "command": [],
+        "exit_code": 0,
+        "stdout_tail": "",
+        "started_at": now,
+        "finished_at": now,
+        "summary": summary,
+        "external_fast_lane": 1,
+    }
+
+
 def _run_stage906(target_date: str, max_snapshot_age_seconds: int) -> dict[str, Any]:
     cmd = [
         sys.executable,
@@ -1452,18 +1477,25 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
     broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
     symbols = _extract_order_symbols(signal_plan, pending_orders, current_positions, broker_positions, broker_trades)
+    effective_intraday_refresh_mode = (
+        "skip" if args.intraday_execution_mode == "external" else args.intraday_tick_refresh_mode
+    )
     stage608_intraday_result = _run_stage608_intraday_tick_refresh(
         symbols=symbols,
-        refresh_mode=args.intraday_tick_refresh_mode if market_execution_session_active else "skip",
+        refresh_mode=effective_intraday_refresh_mode if market_execution_session_active else "skip",
         wait_seconds=args.intraday_tick_wait_seconds,
         pre_subscribe_wait_seconds=args.intraday_pre_subscribe_wait_seconds,
         stage914_ready=stage914_ready,
     )
-    if market_execution_session_active:
+    if args.intraday_execution_mode == "external":
+        stage904_result = _read_external_intraday_stage(target_date, stage="stage904")
+        stage905_result = _read_external_intraday_stage(target_date, stage="stage905")
+    elif market_execution_session_active:
         stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
+        stage905_result = _run_stage905(target_date=target_date)
     else:
         stage904_result = _skip_stage904_outside_market_session()
-    stage905_result = _run_stage905(target_date=target_date)
+        stage905_result = _run_stage905(target_date=target_date)
     stage906_max_snapshot_age_seconds = (
         int(args.reconciliation_max_snapshot_age_seconds)
         if int(args.reconciliation_max_snapshot_age_seconds) > 0
@@ -1718,6 +1750,12 @@ def main() -> None:
     parser.add_argument("--stage251-wait-seconds", type=int, default=90)
     parser.add_argument("--stage251-skip-real-block-test", action="store_true")
     parser.add_argument("--intraday-tick-refresh-mode", choices=["skip", "refresh"], default="refresh")
+    parser.add_argument(
+        "--intraday-execution-mode",
+        choices=["integrated", "external"],
+        default="integrated",
+        help="external lets Stage930 own the single fast Stage904/905 lane.",
+    )
     parser.add_argument("--intraday-tick-wait-seconds", type=int, default=8)
     parser.add_argument("--intraday-pre-subscribe-wait-seconds", type=int, default=2)
     parser.add_argument("--loop", action="store_true", help="Run continuously with heartbeat updates.")

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
+import threading
 import time
 import urllib.request
+import uuid
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +18,15 @@ import pandas as pd
 
 from vnpy.event import EventEngine
 from vnpy.trader.engine import MainEngine
-from vnpy.trader.event import EVENT_ACCOUNT, EVENT_CONTRACT, EVENT_LOG, EVENT_ORDER, EVENT_POSITION, EVENT_TRADE
+from vnpy.trader.event import (
+    EVENT_ACCOUNT,
+    EVENT_CONTRACT,
+    EVENT_LOG,
+    EVENT_ORDER,
+    EVENT_POSITION,
+    EVENT_TIMER,
+    EVENT_TRADE,
+)
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
@@ -32,6 +43,12 @@ TRADE_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_trades_{MODEL_TAG}.csv"
 CONTRACT_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_contracts_{MODEL_TAG}.csv"
 LOG_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_logs_{MODEL_TAG}.csv"
 POSITION_QUERY_CALLBACK_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_position_query_callbacks_{MODEL_TAG}.csv"
+ORDER_QUERY_CALLBACK_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_order_query_callbacks_{MODEL_TAG}.csv"
+TRADE_QUERY_CALLBACK_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_trade_query_callbacks_{MODEL_TAG}.csv"
+QUERY_BUNDLE_MANIFEST_PATH: Path = (
+    OUTPUT_DIR / f"{OUTPUT_PREFIX}_query_bundle_manifest_{MODEL_TAG}.json"
+)
+QUERY_BUNDLE_SCHEMA_VERSION: int = 1
 
 CTP_ENV_KEYS: dict[str, str] = {
     "userid": "CTP_USERID",
@@ -169,11 +186,456 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
     return row
 
 
-def _write_df(path: Path, rows: list[dict[str, Any]]) -> None:
+def _normalized_frame(rows: list[dict[str, Any]]) -> pd.DataFrame:
     frame = pd.DataFrame(rows)
     if not frame.empty:
         frame = frame.drop_duplicates().reset_index(drop=True)
-    frame.to_csv(path, index=False, encoding="utf-8-sig")
+    return frame
+
+
+def _fsync_parent(path: Path) -> None:
+    try:
+        directory_fd = os.open(str(path.parent), os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+
+
+def _atomic_write_bytes(path: Path, payload: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    try:
+        with temporary.open("wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        _fsync_parent(path)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _atomic_write_df(path: Path, rows: list[dict[str, Any]]) -> pd.DataFrame:
+    frame = _normalized_frame(rows)
+    payload = frame.to_csv(index=False).encode("utf-8-sig")
+    _atomic_write_bytes(path, payload)
+    return frame
+
+
+def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+    _atomic_write_bytes(
+        path,
+        json.dumps(payload, ensure_ascii=False, indent=2, default=str).encode("utf-8"),
+    )
+
+
+def _sha256_path(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _clean_ctp_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        for encoding in ("utf-8", "gbk", "latin1"):
+            try:
+                return value.decode(encoding).strip()
+            except UnicodeDecodeError:
+                continue
+        return value.decode("utf-8", errors="replace").strip()
+    return str(value).strip()
+
+
+def _account_fingerprint(broker_id: Any, account_id: Any) -> str:
+    broker = _clean_ctp_text(broker_id)
+    account = _clean_ctp_text(account_id)
+    if not broker or not account:
+        return ""
+    return hashlib.sha256(f"{broker}\0{account}".encode("utf-8")).hexdigest()
+
+
+def _ctp_enum_value(mapping: dict[Any, Any], raw: Any) -> str:
+    value = mapping.get(raw)
+    if value is None:
+        return _clean_ctp_text(raw)
+    return _clean_ctp_text(getattr(value, "value", value))
+
+
+def _query_callback_state(
+    callbacks: list[dict[str, Any]],
+    *,
+    expected_reqid: int | None,
+    request_return_code: int | None,
+    request_sent_at: str | None = None,
+) -> dict[str, Any]:
+    matched = [
+        row for row in callbacks
+        if expected_reqid is not None and int(row.get("reqid", -1)) == expected_reqid
+    ]
+    error_rows = [row for row in matched if int(row.get("error_id") or 0) != 0]
+    last_seen = any(bool(row.get("last")) for row in matched)
+    completed_at = next(
+        (
+            _clean_ctp_text(row.get("received_at"))
+            for row in reversed(matched)
+            if bool(row.get("last")) and _clean_ctp_text(row.get("received_at"))
+        ),
+        "",
+    )
+    request_sent = expected_reqid is not None and request_return_code is not None
+    complete = bool(
+        request_sent
+        and request_return_code == 0
+        and _clean_ctp_text(request_sent_at)
+        and matched
+        and last_seen
+        and completed_at
+        and not error_rows
+    )
+    return {
+        "reqid": expected_reqid,
+        "request_sent": request_sent,
+        "request_sent_at": _clean_ctp_text(request_sent_at),
+        "request_return_code": request_return_code,
+        "callback_count": len(matched),
+        "data_callback_count": sum(bool(row.get("has_data")) for row in matched),
+        "last_seen": last_seen,
+        "completed_at": completed_at,
+        "error_rows": len(error_rows),
+        "complete": complete,
+    }
+
+
+def _stable_order_id(data: dict[str, Any]) -> tuple[str, str]:
+    front = _clean_ctp_text(data.get("FrontID"))
+    session = _clean_ctp_text(data.get("SessionID"))
+    order_ref = _clean_ctp_text(data.get("OrderRef"))
+    if not front or not session or not order_ref:
+        return "", ""
+    orderid = f"{front}_{session}_{order_ref}"
+    return orderid, f"CTP.{orderid}"
+
+
+def _order_sysid_key(data: dict[str, Any]) -> tuple[str, str]:
+    return (
+        _clean_ctp_text(data.get("ExchangeID")).upper(),
+        _clean_ctp_text(data.get("OrderSysID")),
+    )
+
+
+def _normalize_queried_order(
+    data: dict[str, Any],
+    *,
+    generation_uuid: str,
+    ctp_gateway_module: Any,
+) -> dict[str, Any]:
+    orderid, vt_orderid = _stable_order_id(data)
+    symbol = _clean_ctp_text(data.get("InstrumentID"))
+    exchange = _ctp_enum_value(
+        getattr(ctp_gateway_module, "EXCHANGE_CTP2VT", {}), data.get("ExchangeID")
+    )
+    insert_date = _clean_ctp_text(data.get("InsertDate"))
+    insert_time = _clean_ctp_text(data.get("InsertTime"))
+    return {
+        "query_generation_uuid": generation_uuid,
+        "query_source": "ctp_req_qry_order",
+        "broker_id": _clean_ctp_text(data.get("BrokerID")),
+        "account_id": _clean_ctp_text(data.get("InvestorID")),
+        "trading_day": _clean_ctp_text(data.get("TradingDay")),
+        "symbol": symbol,
+        "exchange": exchange,
+        "vt_symbol": f"{symbol}.{exchange}" if symbol and exchange else symbol,
+        "direction": _ctp_enum_value(
+            getattr(ctp_gateway_module, "DIRECTION_CTP2VT", {}), data.get("Direction")
+        ),
+        "offset": _ctp_enum_value(
+            getattr(ctp_gateway_module, "OFFSET_CTP2VT", {}), data.get("CombOffsetFlag")
+        ),
+        "price": data.get("LimitPrice", ""),
+        "volume": data.get("VolumeTotalOriginal", ""),
+        "traded": data.get("VolumeTraded", ""),
+        "status": _ctp_enum_value(
+            getattr(ctp_gateway_module, "STATUS_CTP2VT", {}), data.get("OrderStatus")
+        ),
+        "orderid": orderid,
+        "vt_orderid": vt_orderid,
+        "front_id": data.get("FrontID", ""),
+        "session_id": data.get("SessionID", ""),
+        "order_ref": _clean_ctp_text(data.get("OrderRef")),
+        "order_sys_id": _clean_ctp_text(data.get("OrderSysID")),
+        "exchange_id_raw": _clean_ctp_text(data.get("ExchangeID")),
+        "datetime": f"{insert_date} {insert_time}".strip(),
+        "status_msg": _clean_ctp_text(data.get("StatusMsg")),
+        "gateway_name": "CTP",
+        "stable_order_identity_complete": int(bool(vt_orderid)),
+    }
+
+
+def _normalize_queried_trade(
+    data: dict[str, Any],
+    *,
+    generation_uuid: str,
+    ctp_gateway_module: Any,
+    order_matches: list[dict[str, Any]],
+) -> dict[str, Any]:
+    symbol = _clean_ctp_text(data.get("InstrumentID"))
+    exchange = _ctp_enum_value(
+        getattr(ctp_gateway_module, "EXCHANGE_CTP2VT", {}), data.get("ExchangeID")
+    )
+    tradeid = _clean_ctp_text(data.get("TradeID"))
+    trade_date = _clean_ctp_text(data.get("TradeDate"))
+    trade_time = _clean_ctp_text(data.get("TradeTime"))
+    unique_orderids = list(
+        dict.fromkeys(
+            _clean_ctp_text(row.get("vt_orderid"))
+            for row in order_matches
+            if _clean_ctp_text(row.get("vt_orderid"))
+        )
+    )
+    vt_orderid = unique_orderids[0] if len(unique_orderids) == 1 else ""
+    mapping_status = (
+        "joined_unique_order_sys_id"
+        if len(unique_orderids) == 1
+        else "order_sys_id_not_found"
+        if not order_matches
+        else "order_sys_id_ambiguous_or_unstable"
+    )
+    broker_id = _clean_ctp_text(data.get("BrokerID"))
+    account_id = _clean_ctp_text(data.get("InvestorID"))
+    order_sys_id = _clean_ctp_text(data.get("OrderSysID"))
+    stable_trade_identity = ""
+    if (
+        tradeid
+        and order_sys_id
+        and broker_id
+        and account_id
+        and exchange
+        and trade_date
+    ):
+        stable_trade_identity = (
+            f"ctp:{broker_id}:"
+            f"{account_id}:{exchange}:"
+            f"{trade_date}:{order_sys_id}:{tradeid}"
+        )
+    return {
+        "query_generation_uuid": generation_uuid,
+        "query_source": "ctp_req_qry_trade",
+        "broker_id": broker_id,
+        "account_id": account_id,
+        "trading_day": _clean_ctp_text(data.get("TradingDay") or trade_date),
+        "symbol": symbol,
+        "exchange": exchange,
+        "vt_symbol": f"{symbol}.{exchange}" if symbol and exchange else symbol,
+        "direction": _ctp_enum_value(
+            getattr(ctp_gateway_module, "DIRECTION_CTP2VT", {}), data.get("Direction")
+        ),
+        "offset": _ctp_enum_value(
+            getattr(ctp_gateway_module, "OFFSET_CTP2VT", {}), data.get("OffsetFlag")
+        ),
+        "price": data.get("Price", ""),
+        "volume": data.get("Volume", ""),
+        "tradeid": tradeid,
+        "vt_tradeid": f"CTP.{tradeid}" if tradeid else "",
+        "broker_trade_identity": stable_trade_identity,
+        "order_sys_id": order_sys_id,
+        "exchange_id_raw": _clean_ctp_text(data.get("ExchangeID")),
+        "vt_orderid": vt_orderid,
+        "order_mapping_status": mapping_status,
+        "order_mapping_complete": int(bool(vt_orderid)),
+        "datetime": f"{trade_date} {trade_time}".strip(),
+        "gateway_name": "CTP",
+        "stable_trade_identity_complete": int(bool(stable_trade_identity)),
+    }
+
+
+def _normalize_query_bundle_rows(
+    raw_orders: list[dict[str, Any]],
+    raw_trades: list[dict[str, Any]],
+    *,
+    generation_uuid: str,
+    ctp_gateway_module: Any,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    orders = [
+        _normalize_queried_order(
+            row,
+            generation_uuid=generation_uuid,
+            ctp_gateway_module=ctp_gateway_module,
+        )
+        for row in raw_orders
+    ]
+    pair_map: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    sysid_map: dict[str, list[dict[str, Any]]] = {}
+    for order in orders:
+        key = (
+            _clean_ctp_text(order.get("exchange_id_raw")).upper(),
+            _clean_ctp_text(order.get("order_sys_id")),
+        )
+        if not key[1]:
+            continue
+        pair_map.setdefault(key, []).append(order)
+        sysid_map.setdefault(key[1], []).append(order)
+
+    trades: list[dict[str, Any]] = []
+    for raw in raw_trades:
+        key = _order_sysid_key(raw)
+        matches = pair_map.get(key, [])
+        if not matches and key[1]:
+            # Some broker trade rows omit ExchangeID.  A globally unique
+            # OrderSysID in the same queried order generation remains stable.
+            unique = sysid_map.get(key[1], [])
+            if len(unique) == 1:
+                matches = unique
+        trades.append(
+            _normalize_queried_trade(
+                raw,
+                generation_uuid=generation_uuid,
+                ctp_gateway_module=ctp_gateway_module,
+                order_matches=matches,
+            )
+        )
+
+    return orders, trades, {
+        "trade_order_join_complete": all(
+            int(row.get("order_mapping_complete") or 0) == 1 for row in trades
+        ),
+        "trade_identity_complete": all(
+            int(row.get("stable_trade_identity_complete") or 0) == 1 for row in trades
+        ),
+        "unmapped_trade_count": sum(
+            int(row.get("order_mapping_complete") or 0) != 1 for row in trades
+        ),
+        "unstable_trade_identity_count": sum(
+            int(row.get("stable_trade_identity_complete") or 0) != 1 for row in trades
+        ),
+    }
+
+
+def _number_or_none(value: Any) -> float | None:
+    number = pd.to_numeric(value, errors="coerce")
+    if pd.isna(number):
+        return None
+    return float(number)
+
+
+def _normalize_queried_positions(
+    raw_positions: list[dict[str, Any]],
+    *,
+    generation_uuid: str,
+    broker_trading_day: str,
+    ctp_gateway_module: Any,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Aggregate only the rows returned by this generation's position reqid.
+
+    This deliberately does not depend on the asynchronous contract query.  A
+    missing exchange/direction/account identity therefore fails the generation
+    closed instead of borrowing contract state from a prior or concurrent
+    callback.  Price remains zero because CTP position cost needs the contract
+    multiplier; Stage904 reconstructs the entry price from the same-generation
+    trade rows.
+    """
+
+    grouped: dict[tuple[str, ...], dict[str, Any]] = {}
+    invalid_rows = 0
+    for raw in raw_positions:
+        broker_id = _clean_ctp_text(raw.get("BrokerID"))
+        account_id = _clean_ctp_text(raw.get("InvestorID"))
+        trading_day = _clean_ctp_text(raw.get("TradingDay")) or broker_trading_day
+        symbol = _clean_ctp_text(raw.get("InstrumentID"))
+        exchange_raw = _clean_ctp_text(raw.get("ExchangeID"))
+        exchange = _ctp_enum_value(
+            getattr(ctp_gateway_module, "EXCHANGE_CTP2VT", {}),
+            raw.get("ExchangeID"),
+        )
+        direction = _ctp_enum_value(
+            getattr(ctp_gateway_module, "DIRECTION_CTP2VT", {}),
+            raw.get("PosiDirection"),
+        )
+        volume = _number_or_none(raw.get("Position"))
+        today_volume = _number_or_none(raw.get("TodayPosition"))
+        yd_volume = _number_or_none(raw.get("YdPosition"))
+        pnl = _number_or_none(raw.get("PositionProfit"))
+        if (
+            not broker_id
+            or not account_id
+            or not trading_day
+            or not symbol
+            or not exchange_raw
+            or not exchange
+            or not direction
+            or volume is None
+        ):
+            invalid_rows += 1
+            continue
+
+        direction_token = direction.strip().lower()
+        raw_direction = _clean_ctp_text(raw.get("PosiDirection"))
+        long_constant = _clean_ctp_text(
+            getattr(ctp_gateway_module, "THOST_FTDC_PD_Long", "")
+        )
+        is_long = bool(
+            direction_token in {"long", "多"}
+            or (long_constant and raw_direction == long_constant)
+        )
+        frozen = _number_or_none(
+            raw.get("ShortFrozen") if is_long else raw.get("LongFrozen")
+        )
+        if frozen is None:
+            frozen = 0.0
+        if yd_volume is None:
+            yd_volume = max(volume - (today_volume or 0.0), 0.0)
+
+        key = (
+            broker_id,
+            account_id,
+            trading_day,
+            symbol,
+            exchange,
+            direction,
+        )
+        aggregate = grouped.setdefault(
+            key,
+            {
+                "query_generation_uuid": generation_uuid,
+                "query_source": "ctp_req_qry_investor_position",
+                "broker_id": broker_id,
+                "account_id": account_id,
+                "trading_day": trading_day,
+                "symbol": symbol,
+                "exchange": exchange,
+                "vt_symbol": f"{symbol}.{exchange}",
+                "direction": direction,
+                "volume": 0.0,
+                "frozen": 0.0,
+                "pnl": 0.0,
+                "yd_volume": 0.0,
+                "price": 0.0,
+                "gateway_name": "CTP",
+                "source_row_count": 0,
+            },
+        )
+        aggregate["volume"] += volume
+        aggregate["frozen"] += frozen
+        aggregate["pnl"] += pnl or 0.0
+        aggregate["yd_volume"] += yd_volume
+        aggregate["source_row_count"] += 1
+
+    positions = list(grouped.values())
+    return positions, {
+        "position_normalization_complete": invalid_rows == 0,
+        "position_raw_row_count": len(raw_positions),
+        "position_normalized_row_count": len(positions),
+        "position_invalid_row_count": invalid_rows,
+    }
 
 
 def _analyze_logs(log_rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -215,7 +677,11 @@ def _analyze_logs(log_rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analysis: dict[str, Any]) -> dict[str, Any]:
-    callbacks = rows.get("position_query_callbacks", [])
+    callbacks = [
+        row
+        for row in rows.get("position_query_callbacks", [])
+        if int(row.get("reqid_matched", 0) or 0) == 1
+    ]
     position_rows = pd.DataFrame(rows.get("positions", [])).drop_duplicates().to_dict(orient="records")
     data_callbacks = [row for row in callbacks if row.get("has_data")]
     error_callbacks = [row for row in callbacks if int(row.get("error_id") or 0) != 0]
@@ -234,10 +700,13 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
         state = "positions_received"
     elif error_callbacks:
         state = "position_query_error"
-    elif last_seen and log_analysis.get("td_login_success"):
-        state = "confirmed_flat"
     elif last_seen and data_callbacks and not position_rows:
         state = "position_payload_without_position_rows"
+    elif last_seen:
+        # These callbacks have already been filtered to the explicit position
+        # reqid.  A zero-error last callback with no non-zero normalized row is
+        # direct flat evidence and does not depend on log-event timing.
+        state = "confirmed_flat"
     elif log_analysis.get("td_login_success"):
         state = "position_query_not_completed"
 
@@ -254,6 +723,7 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
 
 def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    query_generation_uuid = str(uuid.uuid4())
     gateway_import = _gateway_import_status()
     import_available = bool(gateway_import["ctp_gateway_import_available"])
     # #region debug-point A:probe-start
@@ -277,11 +747,25 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         "contracts": [],
         "logs": [],
         "position_query_callbacks": [],
+        "order_query_callbacks": [],
+        "trade_query_callbacks": [],
+        "event_orders": [],
+        "event_trades": [],
+        "raw_queried_orders": [],
+        "raw_queried_trades": [],
+        "raw_queried_positions": [],
+    }
+
+    query_requests: dict[str, dict[str, Any]] = {
+        "orders": {"reqid": None, "return_code": None, "request_sent_at": ""},
+        "trades": {"reqid": None, "return_code": None, "request_sent_at": ""},
+        "positions": {"reqid": None, "return_code": None, "request_sent_at": ""},
     }
 
     summary: dict[str, Any] = {
         "model_tag": MODEL_TAG,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "generated_at": datetime.now().astimezone().isoformat(),
+        "query_generation_uuid": query_generation_uuid,
         "connect_requested": connect,
         "wait_seconds": wait_seconds,
         "vnpy_ctp_import_available": import_available,
@@ -304,6 +788,9 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
             "contracts": str(CONTRACT_PATH),
             "logs": str(LOG_PATH),
             "position_query_callbacks": str(POSITION_QUERY_CALLBACK_PATH),
+            "order_query_callbacks": str(ORDER_QUERY_CALLBACK_PATH),
+            "trade_query_callbacks": str(TRADE_QUERY_CALLBACK_PATH),
+            "query_bundle_manifest": str(QUERY_BUNDLE_MANIFEST_PATH),
         },
     }
 
@@ -333,23 +820,107 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     from vnpy_ctp.gateway import ctp_gateway as ctp_gateway_module
 
     original_position_rsp = ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition
+    original_settlement_rsp = ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm
+    original_order_query_rsp = ctp_gateway_module.CtpTdApi.onRspQryOrder
+    original_trade_query_rsp = ctp_gateway_module.CtpTdApi.onRspQryTrade
+    settlement_confirmed = threading.Event()
+    order_query_completed = threading.Event()
+    trade_query_completed = threading.Event()
+    position_query_completed = threading.Event()
+    settlement_response: dict[str, Any] = {
+        "reqid": None,
+        "last_seen": False,
+        "error_id": None,
+    }
 
     def instrumented_position_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> None:
+        expected_reqid = query_requests["positions"].get("reqid")
+        matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
         rows["position_query_callbacks"].append(
             {
-                "reqid": reqid,
+                "query_generation_uuid": query_generation_uuid,
+                "reqid": int(reqid),
+                "expected_reqid": expected_reqid,
+                "reqid_matched": int(matched),
                 "last": bool(last),
                 "has_data": bool(data),
-                "instrument": str(data.get("InstrumentID", "")) if isinstance(data, dict) else "",
+                "instrument": _clean_ctp_text(data.get("InstrumentID")) if isinstance(data, dict) else "",
                 "position": data.get("Position", "") if isinstance(data, dict) else "",
                 "error_id": error.get("ErrorID", 0) if isinstance(error, dict) else 0,
-                "error_msg": error.get("ErrorMsg", "") if isinstance(error, dict) else "",
-                "received_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "error_msg": _clean_ctp_text(error.get("ErrorMsg")) if isinstance(error, dict) else "",
+                "received_at": datetime.now().astimezone().isoformat(),
             }
         )
-        return original_position_rsp(self, data, error, reqid, last)
+        if matched and isinstance(data, dict) and data:
+            rows["raw_queried_positions"].append(dict(data))
+        if matched and last:
+            position_query_completed.set()
+        if not matched:
+            return original_position_rsp(self, data, error, reqid, last)
+        return None
 
-    ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = instrumented_position_rsp
+    def instrumented_settlement_rsp(
+        self: Any, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        error_id = int(error.get("ErrorID", 0) or 0) if isinstance(error, dict) else 0
+        settlement_response.update(
+            {"reqid": int(reqid), "last_seen": bool(last), "error_id": error_id}
+        )
+        if last and error_id == 0:
+            settlement_confirmed.set()
+        # Defer vn.py's implicit instrument query.  It contains an unbounded
+        # retry loop and otherwise competes for CTP query flow with the
+        # generation-bound order/trade/position requests below.
+        return None
+
+    def instrumented_order_query_rsp(
+        self: Any, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        expected_reqid = query_requests["orders"].get("reqid")
+        matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+        rows["order_query_callbacks"].append(
+            {
+                "query_generation_uuid": query_generation_uuid,
+                "reqid": int(reqid),
+                "expected_reqid": expected_reqid,
+                "reqid_matched": int(matched),
+                "last": bool(last),
+                "has_data": bool(data),
+                "order_sys_id": _clean_ctp_text(data.get("OrderSysID")) if isinstance(data, dict) else "",
+                "error_id": error.get("ErrorID", 0) if isinstance(error, dict) else 0,
+                "error_msg": _clean_ctp_text(error.get("ErrorMsg")) if isinstance(error, dict) else "",
+                "received_at": datetime.now().astimezone().isoformat(),
+            }
+        )
+        if matched and isinstance(data, dict) and data:
+            rows["raw_queried_orders"].append(dict(data))
+        if matched and last:
+            order_query_completed.set()
+
+    def instrumented_trade_query_rsp(
+        self: Any, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        expected_reqid = query_requests["trades"].get("reqid")
+        matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+        rows["trade_query_callbacks"].append(
+            {
+                "query_generation_uuid": query_generation_uuid,
+                "reqid": int(reqid),
+                "expected_reqid": expected_reqid,
+                "reqid_matched": int(matched),
+                "last": bool(last),
+                "has_data": bool(data),
+                "trade_id": _clean_ctp_text(data.get("TradeID")) if isinstance(data, dict) else "",
+                "order_sys_id": _clean_ctp_text(data.get("OrderSysID")) if isinstance(data, dict) else "",
+                "error_id": error.get("ErrorID", 0) if isinstance(error, dict) else 0,
+                "error_msg": _clean_ctp_text(error.get("ErrorMsg")) if isinstance(error, dict) else "",
+                "received_at": datetime.now().astimezone().isoformat(),
+            }
+        )
+        if matched and isinstance(data, dict) and data:
+            rows["raw_queried_trades"].append(dict(data))
+        if matched and last:
+            trade_query_completed.set()
 
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
@@ -368,15 +939,15 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         # #endregion
 
     def on_order(event: Any) -> None:
-        rows["orders"].append(_object_to_row(event.data))
+        rows["event_orders"].append(_object_to_row(event.data))
         # #region debug-point C:order-event
-        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_order", "[DEBUG] order callback received", {"order_rows": len(rows["orders"])})
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_order", "[DEBUG] order callback received", {"order_rows": len(rows["event_orders"])})
         # #endregion
 
     def on_trade(event: Any) -> None:
-        rows["trades"].append(_object_to_row(event.data))
+        rows["event_trades"].append(_object_to_row(event.data))
         # #region debug-point C:trade-event
-        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_trade", "[DEBUG] trade callback received", {"trade_rows": len(rows["trades"])})
+        _debug_report("C", "run_ctp_stage174_readonly_probe.py:on_trade", "[DEBUG] trade callback received", {"trade_rows": len(rows["event_trades"])})
         # #endregion
 
     def on_contract(event: Any) -> None:
@@ -398,6 +969,18 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     event_engine.register(EVENT_CONTRACT, on_contract)
     event_engine.register(EVENT_LOG, on_log)
 
+    # Install callback instrumentation only after all engine construction and
+    # event registration has succeeded.  Any constructor failure therefore
+    # leaves the process-wide CTP class untouched; the inner finally restores
+    # every installed method even when MainEngine.close itself raises.
+    ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = instrumented_position_rsp
+    ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm = instrumented_settlement_rsp
+    ctp_gateway_module.CtpTdApi.onRspQryOrder = instrumented_order_query_rsp
+    ctp_gateway_module.CtpTdApi.onRspQryTrade = instrumented_trade_query_rsp
+
+    td_api: Any = None
+    gateway: Any = None
+    timer_query_paused = False
     try:
         # #region debug-point A:before-connect
         _debug_report("A", "run_ctp_stage174_readonly_probe.py:_run_probe:before_connect", "[DEBUG] connecting readonly probe", {"td_address": os.getenv("CTP_TD_ADDRESS", ""), "md_address": os.getenv("CTP_MD_ADDRESS", "")})
@@ -406,11 +989,153 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         # #region debug-point D:after-connect-call
         _debug_report("D", "run_ctp_stage174_readonly_probe.py:_run_probe:after_connect", "[DEBUG] main_engine.connect returned", {"wait_seconds": int(wait_seconds)})
         # #endregion
-        time.sleep(max(wait_seconds, 1))
+        deadline = time.monotonic() + max(wait_seconds, 1)
+        gateway = main_engine.get_gateway("CTP")
+        td_api = getattr(gateway, "td_api", None)
+        if gateway is not None:
+            event_engine.unregister(EVENT_TIMER, gateway.process_timer_event)
+            timer_query_paused = True
+        while time.monotonic() < deadline:
+            if (
+                settlement_confirmed.is_set()
+                and bool(getattr(td_api, "login_status", False))
+            ):
+                break
+            time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
+
+        if settlement_confirmed.is_set() and td_api is not None:
+            summary["broker_trading_day"] = _clean_ctp_text(td_api.getTradingDay())
+            query_account = {
+                "BrokerID": os.getenv("CTP_BROKERID", ""),
+                "InvestorID": os.getenv("CTP_USERID", ""),
+            }
+            flow_gap_seconds = 1.05
+            max_callback_wait_seconds = 3.0
+            last_query_sent_at: float | None = None
+
+            def send_bound_query(
+                name: str,
+                request: Any,
+                completed: threading.Event,
+                *,
+                reserve_seconds: float,
+            ) -> bool:
+                nonlocal last_query_sent_at
+                if last_query_sent_at is not None:
+                    flow_wait = flow_gap_seconds - (
+                        time.monotonic() - last_query_sent_at
+                    )
+                    if flow_wait > 0:
+                        if time.monotonic() + flow_wait + reserve_seconds >= deadline:
+                            return False
+                        time.sleep(flow_wait)
+                if time.monotonic() + reserve_seconds >= deadline:
+                    return False
+                td_api.reqid += 1
+                reqid = int(td_api.reqid)
+                query_requests[name]["reqid"] = reqid
+                last_query_sent_at = time.monotonic()
+                query_requests[name]["request_sent_at"] = (
+                    datetime.now().astimezone().isoformat()
+                )
+                query_requests[name]["return_code"] = int(
+                    request(query_account, reqid)
+                )
+                if query_requests[name]["return_code"] != 0:
+                    return False
+                callback_budget = min(
+                    max_callback_wait_seconds,
+                    max(0.0, deadline - time.monotonic() - reserve_seconds),
+                )
+                return bool(
+                    callback_budget > 0
+                    and completed.wait(timeout=callback_budget)
+                )
+
+            # CTP query flow control is serial.  A timed-out or rejected query
+            # stops the sequence; issuing a later query while its predecessor
+            # is unresolved would make callback attribution ambiguous.
+            order_done = send_bound_query(
+                "orders",
+                td_api.reqQryOrder,
+                order_query_completed,
+                reserve_seconds=4.25,
+            )
+            trade_done = bool(
+                order_done
+                and send_bound_query(
+                    "trades",
+                    td_api.reqQryTrade,
+                    trade_query_completed,
+                    reserve_seconds=2.1,
+                )
+            )
+            position_done = bool(
+                trade_done
+                and send_bound_query(
+                    "positions",
+                    td_api.reqQryInvestorPosition,
+                    position_query_completed,
+                    reserve_seconds=0.0,
+                )
+            )
+            summary["query_sequence"] = {
+                "order_last_received": order_done,
+                "trade_last_received": trade_done,
+                "position_last_received": position_done,
+                "flow_gap_seconds": flow_gap_seconds,
+                "max_callback_wait_seconds": max_callback_wait_seconds,
+            }
+
+            # Preserve the contract snapshot without gating the evidence
+            # bundle on contract initialization.  This replaces vn.py's
+            # unbounded settlement callback loop with one bounded attempt.
+            contract_query = {
+                "reqid": None,
+                "request_return_code": None,
+            }
+            if position_done and last_query_sent_at is not None:
+                flow_wait = flow_gap_seconds - (
+                    time.monotonic() - last_query_sent_at
+                )
+                if flow_wait > 0 and time.monotonic() + flow_wait < deadline:
+                    time.sleep(flow_wait)
+                if time.monotonic() < deadline:
+                    td_api.reqid += 1
+                    contract_query["reqid"] = int(td_api.reqid)
+                    contract_query["request_return_code"] = int(
+                        td_api.reqQryInstrument({}, td_api.reqid)
+                    )
+            summary["contract_query"] = contract_query
+
+            if contract_query["request_return_code"] == 0:
+                while (
+                    time.monotonic() < deadline
+                    and not bool(getattr(td_api, "contract_inited", False))
+                ):
+                    time.sleep(
+                        min(0.1, max(0.0, deadline - time.monotonic()))
+                    )
+            # Once contracts are complete, the remaining timer budget may
+            # refresh the legacy account artifact.  Any later automatic
+            # position callbacks have a different reqid and are excluded from
+            # this generation's normalized position artifact.
+            if (
+                timer_query_paused
+                and gateway is not None
+                and bool(getattr(td_api, "contract_inited", False))
+                and deadline - time.monotonic() > 2.0
+            ):
+                event_engine.register(EVENT_TIMER, gateway.process_timer_event)
+                timer_query_paused = False
+
+        remaining = deadline - time.monotonic()
+        if remaining > 0:
+            time.sleep(remaining)
         summary["status"] = "connected_or_attempted_readonly"
         log_analysis = _analyze_logs(rows["logs"])
         summary["log_analysis"] = log_analysis
-        if rows["accounts"] or rows["positions"]:
+        if rows["accounts"] or position_query_completed.is_set():
             summary["status"] = "readonly_snapshots_received"
         elif log_analysis["status_hint"] == "trading_login_failed":
             summary["status"] = "readonly_trading_login_failed"
@@ -442,14 +1167,131 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         _debug_report("B", "run_ctp_stage174_readonly_probe.py:_run_probe:exception", "[DEBUG] connect raised exception", {"exception": repr(exc)})
         # #endregion
     finally:
+        summary["timer_query_paused_until_close"] = bool(timer_query_paused)
+        try:
+            main_engine.close()
+        except Exception as exc:
+            summary["close_exception"] = repr(exc)
+            summary["status"] = "readonly_close_failed"
+        finally:
+            ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = original_position_rsp
+            ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm = original_settlement_rsp
+            ctp_gateway_module.CtpTdApi.onRspQryOrder = original_order_query_rsp
+            ctp_gateway_module.CtpTdApi.onRspQryTrade = original_trade_query_rsp
+
         if "log_analysis" not in summary:
             summary["log_analysis"] = _analyze_logs(rows["logs"])
+        expected_broker_id = os.getenv("CTP_BROKERID", "")
+        expected_account_id = os.getenv("CTP_USERID", "")
+        broker_trading_day = _clean_ctp_text(
+            summary.get("broker_trading_day")
+            or getattr(td_api, "getTradingDay", lambda: "")()
+        )
+        normalized_orders, normalized_trades, join_status = _normalize_query_bundle_rows(
+            rows["raw_queried_orders"],
+            rows["raw_queried_trades"],
+            generation_uuid=query_generation_uuid,
+            ctp_gateway_module=ctp_gateway_module,
+        )
+        normalized_positions, position_status = _normalize_queried_positions(
+            rows["raw_queried_positions"],
+            generation_uuid=query_generation_uuid,
+            broker_trading_day=broker_trading_day,
+            ctp_gateway_module=ctp_gateway_module,
+        )
+        rows["orders"] = normalized_orders
+        rows["trades"] = normalized_trades
+        rows["positions"] = normalized_positions
+        order_query = _query_callback_state(
+            rows["order_query_callbacks"],
+            expected_reqid=query_requests["orders"].get("reqid"),
+            request_return_code=query_requests["orders"].get("return_code"),
+            request_sent_at=query_requests["orders"].get("request_sent_at"),
+        )
+        trade_query = _query_callback_state(
+            rows["trade_query_callbacks"],
+            expected_reqid=query_requests["trades"].get("reqid"),
+            request_return_code=query_requests["trades"].get("return_code"),
+            request_sent_at=query_requests["trades"].get("request_sent_at"),
+        )
+        position_query = _query_callback_state(
+            rows["position_query_callbacks"],
+            expected_reqid=query_requests["positions"].get("reqid"),
+            request_return_code=query_requests["positions"].get("return_code"),
+            request_sent_at=query_requests["positions"].get("request_sent_at"),
+        )
+        position_query.update(position_status)
+        response_rows = normalized_orders + normalized_trades + normalized_positions
+        response_account_match = bool(
+            all(
+            _clean_ctp_text(row.get("broker_id")) == expected_broker_id
+            and _clean_ctp_text(row.get("account_id")) == expected_account_id
+            for row in response_rows
+            )
+            and (
+                bool(response_rows)
+                or (
+                    order_query["complete"]
+                    and trade_query["complete"]
+                    and position_query["complete"]
+                    and sum(
+                        int(query["data_callback_count"])
+                        for query in (order_query, trade_query, position_query)
+                    )
+                    == 0
+                )
+            )
+        )
+        login_account_match = bool(
+            _clean_ctp_text(getattr(td_api, "brokerid", "")) == expected_broker_id
+            and _clean_ctp_text(getattr(td_api, "userid", "")) == expected_account_id
+        )
+        summary["generated_at"] = datetime.now().astimezone().isoformat()
+        summary["broker_trading_day"] = broker_trading_day
+        summary["settlement_confirmation"] = dict(settlement_response)
+        summary["broker_query_bundle"] = {
+            "schema_version": QUERY_BUNDLE_SCHEMA_VERSION,
+            "generation_uuid": query_generation_uuid,
+            "generated_at": summary["generated_at"],
+            "broker_trading_day": broker_trading_day,
+            "account": {
+                "account_fingerprint": _account_fingerprint(
+                    expected_broker_id, expected_account_id
+                ),
+                "login_account_match": login_account_match,
+                "response_account_match": response_account_match,
+            },
+            "queries": {
+                "orders": order_query,
+                "trades": trade_query,
+                "positions": position_query,
+            },
+            "trade_order_join_complete": bool(join_status["trade_order_join_complete"]),
+            "trade_identity_complete": bool(join_status["trade_identity_complete"]),
+            "unmapped_trade_count": int(join_status["unmapped_trade_count"]),
+            "unstable_trade_identity_count": int(join_status["unstable_trade_identity_count"]),
+            "complete": bool(
+                order_query["complete"]
+                and trade_query["complete"]
+                and position_query["complete"]
+                and position_status["position_normalization_complete"]
+                and position_status["position_raw_row_count"]
+                == position_query["data_callback_count"]
+                and summary.get("status") == "readonly_snapshots_received"
+                and not summary.get("close_exception")
+                and broker_trading_day
+                and login_account_match
+                and response_account_match
+                and join_status["trade_order_join_complete"]
+                and join_status["trade_identity_complete"]
+            ),
+        }
         summary["broker_snapshot"] = _analyze_position_snapshot(rows, summary["log_analysis"])
         # #region debug-point D:before-close
         _debug_report(
             "D",
             "run_ctp_stage174_readonly_probe.py:_run_probe:finally",
-            "[DEBUG] probe closing main_engine",
+            "[DEBUG] probe closed main_engine and finalized query bundle",
             {
                 "status": summary["status"],
                 "account_rows": len(rows["accounts"]),
@@ -463,8 +1305,6 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
             },
         )
         # #endregion
-        main_engine.close()
-        ctp_gateway_module.CtpTdApi.onRspQryInvestorPosition = original_position_rsp
 
     return summary | {"rows": rows}
 
@@ -477,14 +1317,138 @@ def main() -> None:
 
     result = _run_probe(connect=bool(args.connect), wait_seconds=int(args.wait_seconds))
     rows = result.pop("rows")
-    _write_df(ACCOUNT_PATH, rows["accounts"])
-    _write_df(POSITION_PATH, rows["positions"])
-    _write_df(ORDER_PATH, rows["orders"])
-    _write_df(TRADE_PATH, rows["trades"])
-    _write_df(CONTRACT_PATH, rows["contracts"])
-    _write_df(LOG_PATH, rows["logs"])
-    _write_df(POSITION_QUERY_CALLBACK_PATH, rows["position_query_callbacks"])
-    SUMMARY_PATH.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    frames = {
+        "accounts": _atomic_write_df(ACCOUNT_PATH, rows["accounts"]),
+        "positions": _atomic_write_df(POSITION_PATH, rows["positions"]),
+        "orders": _atomic_write_df(ORDER_PATH, rows["orders"]),
+        "trades": _atomic_write_df(TRADE_PATH, rows["trades"]),
+        "contracts": _atomic_write_df(CONTRACT_PATH, rows["contracts"]),
+        "logs": _atomic_write_df(LOG_PATH, rows["logs"]),
+        "position_query_callbacks": _atomic_write_df(
+            POSITION_QUERY_CALLBACK_PATH, rows["position_query_callbacks"]
+        ),
+        "order_query_callbacks": _atomic_write_df(
+            ORDER_QUERY_CALLBACK_PATH, rows["order_query_callbacks"]
+        ),
+        "trade_query_callbacks": _atomic_write_df(
+            TRADE_QUERY_CALLBACK_PATH, rows["trade_query_callbacks"]
+        ),
+    }
+    result["row_counts"] = {name: int(len(frame)) for name, frame in frames.items()}
+    query_bundle = result.setdefault(
+        "broker_query_bundle",
+        {
+            "schema_version": QUERY_BUNDLE_SCHEMA_VERSION,
+            "generation_uuid": _clean_ctp_text(result.get("query_generation_uuid")),
+            "generated_at": _clean_ctp_text(result.get("generated_at")),
+            "broker_trading_day": "",
+            "account": {
+                "account_fingerprint": "",
+                "login_account_match": False,
+                "response_account_match": False,
+            },
+            "queries": {
+                "orders": _query_callback_state([], expected_reqid=None, request_return_code=None),
+                "trades": _query_callback_state([], expected_reqid=None, request_return_code=None),
+                "positions": _query_callback_state([], expected_reqid=None, request_return_code=None),
+            },
+            "trade_order_join_complete": False,
+            "trade_identity_complete": False,
+            "complete": False,
+        },
+    )
+    artifact_paths = {
+        "orders": ORDER_PATH,
+        "trades": TRADE_PATH,
+        "positions": POSITION_PATH,
+    }
+    artifacts = {
+        name: {
+            "path": str(path.resolve()),
+            "row_count": int(len(frames[name])),
+            "sha256": _sha256_path(path),
+        }
+        for name, path in artifact_paths.items()
+    }
+    query_bundle["artifacts"] = artifacts
+    query_bundle["manifest_path"] = str(QUERY_BUNDLE_MANIFEST_PATH.resolve())
+
+    generation_uuid = _clean_ctp_text(query_bundle.get("generation_uuid"))
+    account_fingerprint = _clean_ctp_text(
+        (query_bundle.get("account") or {}).get("account_fingerprint")
+    )
+    for name in ("orders", "trades", "positions"):
+        frame = frames[name]
+        generations = (
+            set(frame["query_generation_uuid"].dropna().astype(str).str.strip())
+            if "query_generation_uuid" in frame.columns
+            else set()
+        )
+        artifacts[name]["row_generation_match"] = bool(
+            not generations or generations == {generation_uuid}
+        )
+        fingerprints = set()
+        if {"broker_id", "account_id"}.issubset(frame.columns):
+            fingerprints = {
+                fingerprint
+                for broker_id, account_id in zip(
+                    frame["broker_id"], frame["account_id"], strict=False
+                )
+                if (fingerprint := _account_fingerprint(broker_id, account_id))
+            }
+        artifacts[name]["row_account_match"] = bool(
+            not fingerprints or fingerprints == {account_fingerprint}
+        )
+    queries = query_bundle.get("queries", {})
+    query_reqids = [
+        int((queries.get(name, {}) or {}).get("reqid") or 0)
+        for name in ("orders", "trades", "positions")
+    ]
+    position_query = queries.get("positions", {}) or {}
+    query_bundle["complete"] = bool(
+        query_bundle.get("complete")
+        and artifacts["orders"]["row_generation_match"]
+        and artifacts["trades"]["row_generation_match"]
+        and artifacts["positions"]["row_generation_match"]
+        and artifacts["orders"]["row_account_match"]
+        and artifacts["trades"]["row_account_match"]
+        and artifacts["positions"]["row_account_match"]
+        and all(query_reqids)
+        and len(set(query_reqids)) == len(query_reqids)
+        and artifacts["orders"]["row_count"]
+        == int((queries.get("orders", {}) or {}).get("data_callback_count", -1))
+        and artifacts["trades"]["row_count"]
+        == int((queries.get("trades", {}) or {}).get("data_callback_count", -1))
+        and int(position_query.get("position_raw_row_count", -1))
+        == int(position_query.get("data_callback_count", -2))
+        and artifacts["positions"]["row_count"]
+        == int(position_query.get("position_normalized_row_count", -1))
+        and position_query.get("position_normalization_complete") is True
+    )
+
+    # Summary is published before the manifest.  A crash at any earlier point
+    # leaves either the prior manifest or no matching manifest, so consumers
+    # fail closed instead of combining files from different generations.
+    _atomic_write_json(SUMMARY_PATH, result)
+    manifest = {
+        "schema_version": QUERY_BUNDLE_SCHEMA_VERSION,
+        "generation_uuid": generation_uuid,
+        "generated_at": _clean_ctp_text(query_bundle.get("generated_at")),
+        "published_at": datetime.now().astimezone().isoformat(),
+        "broker_trading_day": _clean_ctp_text(query_bundle.get("broker_trading_day")),
+        "account": dict(query_bundle.get("account") or {}),
+        "queries": dict(query_bundle.get("queries") or {}),
+        "trade_order_join_complete": bool(query_bundle.get("trade_order_join_complete")),
+        "trade_identity_complete": bool(query_bundle.get("trade_identity_complete")),
+        "complete": bool(query_bundle.get("complete")),
+        "artifacts": artifacts,
+        "summary_binding": {
+            "path": str(SUMMARY_PATH.resolve()),
+            "generated_at": _clean_ctp_text(result.get("generated_at")),
+            "status": _clean_ctp_text(result.get("status")),
+        },
+    }
+    _atomic_write_json(QUERY_BUNDLE_MANIFEST_PATH, manifest)
 
     print(json.dumps(result, ensure_ascii=False, indent=2))
     print(f"summary json: {SUMMARY_PATH}")

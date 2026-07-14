@@ -4,10 +4,11 @@
 <dict>
   <key>Label</key>
   <string>local.qmt-roll.official-live.15w.c9-day-session</string>
+  <key>AbandonProcessGroup</key>
+  <false/>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
-    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh</string>
     <string>--mode</string>
     <string>live-real</string>
     <string>--submit-mode</string>

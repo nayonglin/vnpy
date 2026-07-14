@@ -1127,6 +1127,19 @@ def _stage903_command(args: argparse.Namespace, target_date: str) -> list[str]:
                 str(args.post_close_reconcile_snapshot_age_seconds),
             ]
         )
+    if args.phase == "evening-report":
+        # Stage930 owns the single persistent tick stream and the only fast
+        # Stage904/905 lane during the active night session.  Stage929 remains
+        # a report/controller wrapper and must not cold-refresh or overwrite
+        # those shared intraday artifacts at 21:05.
+        cmd.extend(
+            [
+                "--intraday-tick-refresh-mode",
+                "skip",
+                "--intraday-execution-mode",
+                "external",
+            ]
+        )
     return cmd
 
 

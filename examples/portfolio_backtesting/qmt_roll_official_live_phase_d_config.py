@@ -20,6 +20,11 @@ PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE = "explicit_live_real_enabled"
 READONLY_SUMMARY_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
 )
+READONLY_QUERY_BUNDLE_MANIFEST_PATH = (
+    OUTPUT_DIR
+    / "qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_"
+    "stage174_ctp_vnpy_readonly_probe_v1.json"
+)
 STAGE901_PENDING_ORDERS_PATH = (
     OUTPUT_DIR
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_pending_orders_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
