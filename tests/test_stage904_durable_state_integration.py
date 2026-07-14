@@ -520,17 +520,21 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             }
         ]
         readonly = self.readonly_flat(flat_at)
-        rows = self.advance_flat_states(
-            store=store,
-            execution_ledger_rows=ledger,
-            broker_positions=pd.DataFrame(),
-            readonly_summary=readonly,
-            ticks=self.ticks([(1, 1252.0), (4, 1245.0)]),
-            heartbeat=self.heartbeat(),
-            represented_roots=set(),
-            journal_path=Path(tempfile.gettempdir()) / "stage904-test-journal.ndjson",
-            max_tick_age_seconds=30,
-        )
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            patch.object(stage904, "_age_seconds", return_value=0.0),
+        ):
+            rows = self.advance_flat_states(
+                store=store,
+                execution_ledger_rows=ledger,
+                broker_positions=pd.DataFrame(),
+                readonly_summary=readonly,
+                ticks=self.ticks([(1, 1252.0), (4, 1245.0)]),
+                heartbeat=self.heartbeat(),
+                represented_roots=set(),
+                journal_path=Path(tmp) / "state.ndjson",
+                max_tick_age_seconds=30,
+            )
         retry = [row for row in rows if row["monitor_action"] == "retry_open_dry_run"]
         self.assertEqual(len(retry), 1)
         self.assertEqual(retry[0]["intent_role"], RETRY_OPEN_ACTION_ROLE)
