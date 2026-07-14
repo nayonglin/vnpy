@@ -3,13 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from functools import wraps
-from hashlib import sha256
 from itertools import count
 from pathlib import Path
 from queue import Full, Queue
 from types import MappingProxyType
 from typing import Any, Callable, Mapping
-import copy
 import threading
 
 from qmt_roll_official_live_time import Clock, utc_iso_from_epoch_ns
@@ -96,8 +94,20 @@ def _exchange_datetime(tick: Any) -> str:
 
 
 def _trace_id(feed_session_id: str, ingress_sequence: int) -> str:
-    identity = f"stage179-tick|{feed_session_id}|{int(ingress_sequence)}"
-    return sha256(identity.encode("utf-8")).hexdigest()
+    return f"stage179-tick/{feed_session_id}/{int(ingress_sequence)}"
+
+
+def _immutable_number(tick: Any, field: str) -> int | float:
+    value = getattr(tick, field, 0.0)
+    if isinstance(value, bool):
+        raise TypeError(f"{field} must be an immutable number, got bool")
+    if isinstance(value, float):
+        return float.__float__(value)
+    if isinstance(value, int):
+        return int(value)
+    raise TypeError(
+        f"{field} must be an immutable int/float, got {type(value).__name__}"
+    )
 
 
 def _immutable_tick_row(
@@ -127,13 +137,13 @@ def _immutable_tick_row(
         "vt_symbol": _clean(getattr(tick, "vt_symbol", "")),
         "symbol": _clean(getattr(tick, "symbol", "")),
         "exchange": _exchange_value(tick),
-        "last_price": copy.deepcopy(getattr(tick, "last_price", 0.0)),
-        "bid_price_1": copy.deepcopy(getattr(tick, "bid_price_1", 0.0)),
-        "ask_price_1": copy.deepcopy(getattr(tick, "ask_price_1", 0.0)),
-        "bid_volume_1": copy.deepcopy(getattr(tick, "bid_volume_1", 0.0)),
-        "ask_volume_1": copy.deepcopy(getattr(tick, "ask_volume_1", 0.0)),
-        "limit_up": copy.deepcopy(getattr(tick, "limit_up", 0.0)),
-        "limit_down": copy.deepcopy(getattr(tick, "limit_down", 0.0)),
+        "last_price": _immutable_number(tick, "last_price"),
+        "bid_price_1": _immutable_number(tick, "bid_price_1"),
+        "ask_price_1": _immutable_number(tick, "ask_price_1"),
+        "bid_volume_1": _immutable_number(tick, "bid_volume_1"),
+        "ask_volume_1": _immutable_number(tick, "ask_volume_1"),
+        "limit_up": _immutable_number(tick, "limit_up"),
+        "limit_down": _immutable_number(tick, "limit_down"),
     }
     return MappingProxyType(row)
 
@@ -321,11 +331,31 @@ class TickStreamPipeline:
 
     def latch_capture_exception(self, exc: Exception) -> None:
         sequence = max(1, self._last_ingress_sequence)
+        try:
+            message = str(exc)
+        except Exception:
+            message = "unprintable"
         self._latch_fault(
             kind="ingress_capture_exception",
-            detail=f"{type(exc).__name__}:{exc}",
+            detail=f"{type(exc).__name__}:{message}",
             ingress_sequence=sequence,
         )
+        self._dropped_tick_count += 1
+
+    def _force_fail_closed_after_latch_error(self, exc: Exception) -> None:
+        """Last-resort state transition that does not call the injected clock."""
+
+        self._dropped_tick_count += 1
+        sequence = max(1, self._last_ingress_sequence)
+        self._last_ingress_sequence = sequence
+        self._accepting = False
+        if self._fault is None:
+            self._fault = TickStreamFault(
+                kind="ingress_fault_latch_exception",
+                detail=type(exc).__name__,
+                occurred_epoch_ns=0,
+            )
+        self._extend_gap(sequence, reason="ingress_fault_latch_exception")
 
 
 def install_gateway_tick_ingress(
@@ -341,7 +371,13 @@ def install_gateway_tick_ingress(
         try:
             pipeline.capture_ingress(tick)
         except Exception as exc:
-            pipeline.latch_capture_exception(exc)
+            try:
+                pipeline.latch_capture_exception(exc)
+            except Exception as latch_exc:
+                try:
+                    pipeline._force_fail_closed_after_latch_error(latch_exc)
+                except Exception:
+                    pass
         return original_on_tick(tick, *args, **kwargs)
 
     gateway.on_tick = wrapped_on_tick

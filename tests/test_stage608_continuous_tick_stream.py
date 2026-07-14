@@ -267,7 +267,11 @@ class ContinuousTickStreamTest(unittest.TestCase):
         self.assertNotIn("OLD609.DCE", watermarks)
 
     def test_gateway_ingress_stamp_precedes_event_engine_backlog(self) -> None:
-        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+        from qmt_roll_official_live_tick_stream import (
+            TICK_INGRESS_ENVELOPE_ATTR,
+            TickStreamPipeline,
+            install_gateway_tick_ingress,
+        )
 
         class FakeClock:
             def __init__(self) -> None:
@@ -291,16 +295,32 @@ class ContinuousTickStreamTest(unittest.TestCase):
             queue_capacity=4,
             max_buffer_ticks=4,
         )
+        enqueued_ticks: list[SimpleNamespace] = []
+
+        class Gateway:
+            stamped_at_enqueue = False
+
+            def on_tick(self, queued_tick: SimpleNamespace) -> None:
+                self.stamped_at_enqueue = hasattr(
+                    queued_tick, TICK_INGRESS_ENVELOPE_ATTR
+                )
+                enqueued_ticks.append(queued_tick)
+
+        gateway = Gateway()
+        restore = install_gateway_tick_ingress(gateway, pipeline)
         tick = self._ingress_tick()
 
-        envelope = pipeline.capture_ingress(tick)
+        gateway.on_tick(tick)
+        envelope = getattr(tick, TICK_INGRESS_ENVELOPE_ATTR)
         tick.last_price = 9999.0
         cutoff_ns = 200
         clock.monotonic = 300
-        observation = pipeline.observe_handler(tick)
+        observation = pipeline.observe_handler(enqueued_ticks.pop())
+        restore()
 
         self.assertIsNotNone(envelope)
         self.assertIsNotNone(observation)
+        self.assertTrue(gateway.stamped_at_enqueue)
         self.assertEqual(envelope.tick_row["last_price"], 1245.5)
         with self.assertRaises(TypeError):
             envelope.tick_row["last_price"] = 1.0
@@ -363,6 +383,84 @@ class ContinuousTickStreamTest(unittest.TestCase):
         )
         self.assertFalse(snapshot.stream_ready)
         self.assertEqual(forwarded_sequences, [1, 2, 3])
+
+    def test_gateway_forwarding_survives_capture_and_fault_latch_errors(self) -> None:
+        from qmt_roll_official_live_tick_stream import (
+            TickStreamPipeline,
+            install_gateway_tick_ingress,
+        )
+
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        forwarded: list[SimpleNamespace] = []
+
+        class Gateway:
+            def on_tick(self, tick: SimpleNamespace) -> None:
+                forwarded.append(tick)
+
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-capture-fault",
+            journal_segment_path=Path("unused.ndjson"),
+            clock=FakeClock(),
+            queue_capacity=1,
+            max_buffer_ticks=1,
+        )
+        gateway = Gateway()
+        install_gateway_tick_ingress(gateway, pipeline)
+        tick = self._ingress_tick()
+
+        with (
+            patch.object(
+                pipeline, "capture_ingress", side_effect=RuntimeError("capture")
+            ),
+            patch.object(
+                pipeline,
+                "latch_capture_exception",
+                side_effect=RuntimeError("latch"),
+            ),
+        ):
+            gateway.on_tick(tick)
+
+        self.assertEqual(forwarded, [tick])
+        self.assertFalse(pipeline.snapshot().stream_ready)
+
+    def test_ingress_scalar_copy_does_not_call_deepcopy(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class NoDeepcopyFloat(float):
+            def __deepcopy__(self, memo: dict[int, object]) -> float:
+                raise AssertionError("gateway hot path must not call deepcopy")
+
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        tick = self._ingress_tick(NoDeepcopyFloat(1245.5))
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-scalar-copy",
+            journal_segment_path=Path("unused.ndjson"),
+            clock=FakeClock(),
+            queue_capacity=1,
+            max_buffer_ticks=1,
+        )
+
+        envelope = pipeline.capture_ingress(tick)
+
+        self.assertEqual(envelope.tick_row["last_price"], 1245.5)
 
     def test_event_handler_observation_is_diagnostic_only(self) -> None:
         from qmt_roll_official_live_tick_stream import (
