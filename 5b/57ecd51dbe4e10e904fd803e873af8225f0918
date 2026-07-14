@@ -1,0 +1,25 @@
+examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py
+  s_57fbbdfeac5414::t_effdcabe4266be 1-358
+examples/portfolio_backtesting/qmt_roll_official_live_time.py
+  s_57fbbdfeac5414::t_237c17b8efd463 1-39
+tests/test_stage608_continuous_tick_stream.py
+  s_57fbbdfeac5414::t_ebe76b05dc702e 24-39,269-407
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5b57ecd51dbe4e10e904fd803e873af8225f0918",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
