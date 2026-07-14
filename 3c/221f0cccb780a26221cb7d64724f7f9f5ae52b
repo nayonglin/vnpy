@@ -1,0 +1,355 @@
+AGENTS.md
+  s_7d2e0606f09acf::t_dc63d823fa1850 25
+back_log.md
+  s_7d2e0606f09acf::t_2a729cccf25fa8 50512-50530
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage052_jd_minute_gap_backfill/CZCE/AP010_minute_backtest.csv
+  s_7d2e0606f09acf::t_6a44b2257d13fb 1-226
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage052_jd_minute_gap_backfill/CZCE/SH609_minute_backtest.csv
+  s_7d2e0606f09acf::t_bf889491770b4a 2-121
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage052_jd_minute_gap_backfill/SHFE/au2608_minute_backtest.csv
+  s_7d2e0606f09acf::t_022c2d5d0e4d06 1-13546
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage052_jd_minute_gap_backfill/SHFE/cu2607_minute_backtest.csv
+  s_7d2e0606f09acf::t_2d9dfe560a8c0f 1-9991
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage052_jd_minute_gap_backfill/SHFE/cu2608_minute_backtest.csv
+  s_7d2e0606f09acf::t_edd0a5dd5599b6 1-2326
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/CZCE/FG309_20230801_minute_backtest.csv
+  s_4a459b6d0c007d::t_2379e9a6c01419 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/CZCE/FG609_20260624_minute_backtest.csv
+  s_123ad7764c5379::t_accf4c106aa09b 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/CZCE/MA609_20260611_minute_backtest.csv
+  s_7d2e0606f09acf::t_c1cb0a29c05ab1 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/CZCE/OI609_20260602_minute_backtest.csv
+  s_123ad7764c5379::t_2992a7f18a8df4 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/DCE/jm2609_20260603_minute_backtest.csv
+  s_4a459b6d0c007d::t_5bffbd9f922802 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/hc2205_20220304_minute_backtest.csv
+  s_123ad7764c5379::t_a32356e54d44c6 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/rb2610_20260508_minute_backtest.csv
+  s_123ad7764c5379::t_5d0d0a2ee1b2d0 1-346
+examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/rb2610_20260623_minute_backtest.csv
+  s_57fbbdfeac5414::t_259f13144fdac7 1-346
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/LINE.md
+  s_7d2e0606f09acf::t_8ca9adedf7a90d 1-77
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/stages/20260713_0130_stage000_external_hypothesis.md
+  s_7d2e0606f09acf::t_72634c87151100 1-52
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/stages/20260713_0131_stage001_predecl.md
+  s_7d2e0606f09acf::t_7ef07b94aa917a 1-42
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/stages/20260713_0148_stage001_year_jackknife_closed.md
+  s_7d2e0606f09acf::t_262665e80c18cf 1-105
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/tests/test_stage001_year_jackknife_qualification.py
+  s_7d2e0606f09acf::t_51ab90a92e3f13 1-224
+research/lines/futures_trend_ai_rank_year_jackknife_qualification/tools/stage001_year_jackknife_qualification.py
+  s_7d2e0606f09acf::t_e45097c5cd4455 1-976
+research/lines/futures_trend_candidate_marginal_risk_contribution/LINE.md
+  s_7d2e0606f09acf::t_4b1de8becceacc 1-90
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1812_stage000_line_registration.md
+  s_7d2e0606f09acf::t_7adbffd6ca36aa 1-28
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1831_stage001_candidate_mrc_predecl.md
+  s_7d2e0606f09acf::t_91cdea4772e4b9 1-84
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1832_stage001_candidate_mrc_implementation_plan.md
+  s_7d2e0606f09acf::t_4a85b9040cc765 1-31
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1840_stage001_data_contract_amendment.md
+  s_7d2e0606f09acf::t_1cfafcfb123e7c 1-27
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1908_stage001_static_audit_pass.md
+  s_7d2e0606f09acf::t_65b20b4cc36fdb 1-90
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_1946_stage001_precanary_gate_review_repair.md
+  s_7d2e0606f09acf::t_80da2df78d510f 1-75
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_2011_stage001_runtime_evidence_gate_review_repair.md
+  s_7d2e0606f09acf::t_d04a2dcc5ab3f6 1-69
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/20260712_2053_stage001_four_anchor_canary_failed.md
+  s_7d2e0606f09acf::t_df19a3dcb10ae6 1-115
+research/lines/futures_trend_candidate_marginal_risk_contribution/stages/stage001_precanary_review_manifest.csv
+  s_7d2e0606f09acf::t_bbe20988c346d1 1-24
+research/lines/futures_trend_candidate_marginal_risk_contribution/tools/stage001_candidate_marginal_risk_contribution_engine.py
+  s_7d2e0606f09acf::t_a16ac821c2e4d8 1-2167
+research/lines/futures_trend_fu_sc_proxy_option_qualification/LINE.md
+  s_7d2e0606f09acf::t_e24d15759418f5 1-94
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2300_stage000_line_registration.md
+  s_7d2e0606f09acf::t_a42fa5dc6e81c8 1-49
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2300_stage001_fu_sc_t1_beta_predecl.md
+  s_7d2e0606f09acf::t_90ec75956356f5 1-73
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2304_stage001_implementation_plan.md
+  s_7d2e0606f09acf::t_d9ea20950ba8ec 1-29
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2310_stage001_sc_chain_implementation_plan.md
+  s_7d2e0606f09acf::t_434c2558e654ec 1-33
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2335_stage001_fu_sc_basis_and_chain_qualified.md
+  s_7d2e0606f09acf::t_ea1ffafe4e3e4b 1-133
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2339_stage002_execution_data_predecl.md
+  s_7d2e0606f09acf::t_064f8086c5148d 1-99
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260712_2340_stage002_implementation_plan.md
+  s_7d2e0606f09acf::t_dbfc6a8f101fe0 1-32
+research/lines/futures_trend_fu_sc_proxy_option_qualification/stages/20260713_0009_stage002_execution_preflight_closed.md
+  s_7d2e0606f09acf::t_7ee3514be7a651 1-83
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tests/test_stage001_fu_sc_t1_beta_gate.py
+  s_7d2e0606f09acf::t_b614063581c435 1-105
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tests/test_stage001_sc_option_chain_coverage.py
+  s_7d2e0606f09acf::t_f0f717f5dc7ce1 1-85
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tests/test_stage002_execution_preflight.py
+  s_7d2e0606f09acf::t_7c965b39783288 1-107
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tools/stage001_fu_sc_t1_beta_gate.py
+  s_7d2e0606f09acf::t_c7f352f9616ad5 1-543
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tools/stage001_sc_option_chain_coverage.py
+  s_7d2e0606f09acf::t_2e552de13876e1 1-431
+research/lines/futures_trend_fu_sc_proxy_option_qualification/tools/stage002_execution_preflight.py
+  s_7d2e0606f09acf::t_71520d57b7287a 1-554
+research/lines/futures_trend_l1_topbook_entry_quality/LINE.md
+  s_7d2e0606f09acf::t_f4e636882e5851 1-84
+research/lines/futures_trend_l1_topbook_entry_quality/stages/20260713_0102_stage000_external_hypothesis.md
+  s_7d2e0606f09acf::t_65c5c3cc4c83a7 1-62
+research/lines/futures_trend_l1_topbook_entry_quality/stages/20260713_0103_stage001_canary_predecl.md
+  s_7d2e0606f09acf::t_c304b509c69249 1-39
+research/lines/futures_trend_l1_topbook_entry_quality/stages/20260713_0123_stage001_l1_tick_canary_closed.md
+  s_7d2e0606f09acf::t_20e18e988f69f7 1-99
+research/lines/futures_trend_l1_topbook_entry_quality/tests/test_stage001_l1_tick_canary.py
+  s_7d2e0606f09acf::t_83812cbb9f1ab3 1-279
+research/lines/futures_trend_l1_topbook_entry_quality/tools/stage001_l1_tick_canary.py
+  s_7d2e0606f09acf::t_2f289c0988f91d 1-1098
+research/lines/futures_trend_lag1_granger_spillover_qualification/LINE.md
+  s_7d2e0606f09acf::t_bb28f57ea473bf 1-78
+research/lines/futures_trend_lag1_granger_spillover_qualification/stages/20260713_0026_stage000_external_hypothesis.md
+  s_7d2e0606f09acf::t_41b40c7cb0924d 1-75
+research/lines/futures_trend_lag1_granger_spillover_qualification/stages/20260713_0027_stage001_predecl.md
+  s_7d2e0606f09acf::t_b02dfff489e273 1-40
+research/lines/futures_trend_lag1_granger_spillover_qualification/stages/20260713_0053_stage001_lag1_granger_qualification_closed.md
+  s_7d2e0606f09acf::t_37303cfc724c67 1-91
+research/lines/futures_trend_lag1_granger_spillover_qualification/tests/test_stage001_lag1_granger_qualification.py
+  s_7d2e0606f09acf::t_d88d0c7a00a836 1-217
+research/lines/futures_trend_lag1_granger_spillover_qualification/tools/stage001_lag1_granger_qualification.py
+  s_7d2e0606f09acf::t_9acd817d5bf8eb 1-839
+research/lines/futures_trend_option_convexity_tushare_coverage/LINE.md
+  s_7d2e0606f09acf::t_c9d1472ea15d33 1-77
+research/lines/futures_trend_option_convexity_tushare_coverage/stages/20260712_2233_stage000_line_registration.md
+  s_7d2e0606f09acf::t_5672cba3be0cfe 1-56
+research/lines/futures_trend_option_convexity_tushare_coverage/stages/20260712_2233_stage001_tushare_event_coverage_predecl.md
+  s_7d2e0606f09acf::t_1f408664d054af 1-86
+research/lines/futures_trend_option_convexity_tushare_coverage/stages/20260712_2257_stage001_tushare_structural_coverage_closed.md
+  s_7d2e0606f09acf::t_2dfe848e50f4dc 1-122
+research/lines/futures_trend_option_convexity_tushare_coverage/tests/test_stage001_structural_option_existence_gate.py
+  s_7d2e0606f09acf::t_a3ff3d3c0df136 1-65
+research/lines/futures_trend_option_convexity_tushare_coverage/tools/stage001_structural_option_existence_gate.py
+  s_7d2e0606f09acf::t_75281f691e991d 1-227
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/LINE.md
+  s_7d2e0606f09acf::t_13a4b602b3cbea 13,116-120
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1821_stage134_tail_minute_session_semantics_repair_implementation_plan.md
+  s_7d2e0606f09acf::t_b0de70a6db3eef 32-35,43-47,54-57,64-68
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1829_stage134_tail_minute_session_semantics_repair.md
+  s_7d2e0606f09acf::t_bd7f3318c4bc0e 1-57
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1841_stage134_tail_minute_session_semantics_repair.md
+  s_7d2e0606f09acf::t_4ac77902c4dc98 1-75
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1912_stage135_no_jd_stage208_true_carry_degraded_predecl.md
+  s_7d2e0606f09acf::t_810fcc71cfa701 1-82
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1913_stage135_no_jd_stage208_true_carry_degraded_implementation_plan.md
+  s_7d2e0606f09acf::t_33c9c6b5a5371b 1-15
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_1930_stage136_ap010_canary_fill_window_backfill_predecl.md
+  s_7d2e0606f09acf::t_13f2fd7e44a235 1-30
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_2015_stage136_ap010_canary_fill_window_backfill_result.md
+  s_7d2e0606f09acf::t_a2ebb609a6f492 1-105
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_2020_stage135_no_jd_stage208_true_carry_degraded_result.md
+  s_7d2e0606f09acf::t_7b4684ec415965 1-111
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_2030_stage137_current_c9_quality_one_way_satellite_predecl.md
+  s_7d2e0606f09acf::t_762fa8c7cf224a 1-246
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260711_2031_stage137_current_c9_quality_one_way_satellite_implementation_plan.md
+  s_7d2e0606f09acf::t_a2a029ef943dfa 1-357
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1330_stage137_static_audit_stage167_snapshot_drift_failclose.md
+  s_7d2e0606f09acf::t_e672e71cc6b921 1-73
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1515_stage137_static_audit_cross_anchor_manifest_failclose.md
+  s_7d2e0606f09acf::t_4ef3a5f0a6f670 1-74
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1530_stage137_cross_anchor_manifest_union_contract.md
+  s_7d2e0606f09acf::t_0b6a6f74f72933 1-74
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1607_stage137_four_anchor_static_audit_pass.md
+  s_7d2e0606f09acf::t_6d98b1cb42dce5 1-84
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1637_stage137_static_evidence_contract_repair.md
+  s_7d2e0606f09acf::t_52bc0323a37f4c 1-74
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1716_stage137_four_anchor_static_audit_evidence_clean_pass.md
+  s_7d2e0606f09acf::t_477ce9686d9854 1-84
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260712_1744_stage137_four_anchor_1x_canary_failed.md
+  s_7d2e0606f09acf::t_f3f4d8fdc4f4a6 1-99
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage052_tqsdk_jd_minute_backfill.py
+  s_7d2e0606f09acf::t_336e6764e6fb0d 220-248,274,279-290,299,304,312
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage134_tail_minute_session_semantics_repair.py
+  s_7d2e0606f09acf::t_9057f68524df22 1-918
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage135_no_jd_stage208_true_carry_degraded.py
+  s_7d2e0606f09acf::t_a9e0777bd25d78 1-1575
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage136_ap010_canary_fill_window_backfill.py
+  s_7d2e0606f09acf::t_de0048f0f9bf9d 1-301
+research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/tools/stage137_current_c9_quality_one_way_satellite.py
+  s_7d2e0606f09acf::t_e4fce4a648ed58 1-5529
+research/lines/futures_trend_stage819_intraday_rules/stages/20260713_2114_stage178_jm_night_open_missed_auto_submit_attribution.md
+  s_57fbbdfeac5414::t_ecdbff5d0ea6d3 1-99
+research/lines/futures_trend_tight_stop_quality_sizing/LINE.md
+  s_7d2e0606f09acf::t_1c5668ad123260 1-84
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2240_stage000_external_hypothesis.md
+  s_7d2e0606f09acf::t_7689ffb01d59ac 1-69
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2245_stage001_baseline_technical_attribution_predecl.md
+  s_7d2e0606f09acf::t_08addf7979a3d7 1-79
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2246_stage001_implementation_plan.md
+  s_7d2e0606f09acf::t_113b363f70ab67 1-22
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2307_stage001_independent_review_repair_contract.md
+  s_7a9e7d5af6a2bc::t_352a1353fe679e 1-44
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2325_stage002_tight_moderate_body_risk_transfer_predecl.md
+  s_7a9e7d5af6a2bc::t_030ce7e1451e9c 1-53
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2326_stage002_tight_moderate_body_risk_transfer_implementation_plan.md
+  s_7d2e0606f09acf::t_0957fcfe08abd4 1-31
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2332_stage001_baseline_technical_attribution_result.md
+  s_7a9e7d5af6a2bc::t_e168f116605a46 1-60
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2334_stage002_tight_moderate_body_risk_transfer_result.md
+  s_7a9e7d5af6a2bc::t_bb602dd12285d0 1-29
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2336_stage003_lower_half_stop_moderate_body_risk_transfer_predecl.md
+  s_7a9e7d5af6a2bc::t_b639b253b80d2f 1-36
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260713_2350_stage003_independent_review_repair_contract.md
+  s_6727c0fbd65ee1::t_1cafb3910c38d1 1-30
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0005_stage004_underwater_only_quality_transfer_predecl.md
+  s_7d2e0606f09acf::t_01c20de03aaa4c 1-44
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0006_stage004_underwater_only_quality_transfer_implementation_plan.md
+  s_7d2e0606f09acf::t_385c9b0564dcf2 1-20
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0053_stage005_underwater_quality_add_only_predecl.md
+  s_3b7334af3925f6::t_d5977acda45704 1-34
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0054_stage005_underwater_quality_add_only_implementation_plan.md
+  s_3b7334af3925f6::t_300db5061e3fcb 1-18
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0101_stage006_drawdown_deepening_quality_transfer_predecl.md
+  s_57fbbdfeac5414::t_d229a242be7e81 1-34
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0102_stage006_drawdown_deepening_quality_transfer_implementation_plan.md
+  s_57fbbdfeac5414::t_b943c9704f1bf9 1-17
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0112_stage000_strict_minute_and_account_repair.md
+  s_7d2e0606f09acf::t_2f7da01fab5337 1-62
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0118_stage003_strict_engine_result.md
+  s_7d2e0606f09acf::t_fe99ffbf81f4bb 1-78
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0122_stage004_strict_engine_result.md
+  s_7d2e0606f09acf::t_0bb21b527a3f0f 1-87
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0125_stage005_stage006_invalidated_and_stopped.md
+  s_7d2e0606f09acf::t_988475da81999a 1-41
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_0132_stage007_final_review_and_governance_close.md
+  s_7d2e0606f09acf::t_c5a0165e19b821 1-42
+research/lines/futures_trend_tight_stop_quality_sizing/stages/20260714_1400_stage008_fresh_baseline_breakout_quality_predecl.md
+  s_7d2e0606f09acf::t_d14581e0b65e41 1-68
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage001_baseline_technical_attribution.py
+  s_7d2e0606f09acf::t_9258bc2d021326 1-463
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage003_lower_half_stop_moderate_body_risk_transfer.py
+  s_7d2e0606f09acf::t_0dabd0b58bb6aa 1-248
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage004_underwater_only_quality_transfer.py
+  s_57fbbdfeac5414::t_07f5b7608de220 1-82
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage005_underwater_quality_add_only.py
+  s_3b7334af3925f6::t_9c970db0a04806 1-66
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage006_drawdown_deepening_quality_transfer.py
+  s_57fbbdfeac5414::t_58578504ee1d8c 1-42
+research/lines/futures_trend_tight_stop_quality_sizing/tests/test_stage008_fresh_baseline_breakout_quality_attribution.py
+  s_7d2e0606f09acf::t_6ed530b3f899b8 1-326
+research/lines/futures_trend_tight_stop_quality_sizing/tools/render_stage004_repaired_four_anchor_detail.py
+  s_1a9272ab5fee5c::t_2654addaea4a9f 1-71
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage000_complete_entry_session_minute_repair.py
+  s_7d2e0606f09acf::t_3446123f3b9478 1-490
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage001_baseline_technical_attribution.py
+  s_7d2e0606f09acf::t_6cd37e298beea0 1-1668
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage003_lower_half_stop_moderate_body_risk_transfer.py
+  s_7d2e0606f09acf::t_a7b1d180b583ce 1-1346
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage004_underwater_only_quality_transfer.py
+  s_7d2e0606f09acf::t_fd09bc5eb8e1fe 1-506
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage005_underwater_quality_add_only.py
+  s_57fbbdfeac5414::t_84a23c3e1f254d 1-384
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage006_drawdown_deepening_quality_transfer.py
+  s_7d2e0606f09acf::t_609286f6019581 1-426
+research/lines/futures_trend_tight_stop_quality_sizing/tools/stage008_fresh_baseline_breakout_quality_attribution.py
+  s_7d2e0606f09acf::t_ff10a22b678fa4 1-1219
+research/lines/futures_trend_turning_point_speed_switch/LINE.md
+  s_7d2e0606f09acf::t_6039b030d6b9ce 1-76
+research/lines/futures_trend_turning_point_speed_switch/stages/20260712_2103_stage000_line_registration.md
+  s_7d2e0606f09acf::t_6920c8350d5bee 1-54
+research/lines/futures_trend_turning_point_speed_switch/stages/20260712_2122_stage001_turning_state_attribution_predecl.md
+  s_7d2e0606f09acf::t_f925358570eb20 1-118
+research/lines/futures_trend_turning_point_speed_switch/stages/20260712_2123_stage001_turning_state_attribution_implementation_plan.md
+  s_7d2e0606f09acf::t_297fe478b202aa 1-65
+research/lines/futures_trend_turning_point_speed_switch/stages/20260712_2208_stage001_turning_state_attribution_closed.md
+  s_7d2e0606f09acf::t_3dc23e50aa0131 1-99
+research/lines/futures_trend_turning_point_speed_switch/tools/stage001_turning_state_attribution.py
+  s_7d2e0606f09acf::t_4a9a895c15c47a 1-1766
+research/registry.md
+  s_7d2e0606f09acf::t_f7b94a4e625eb4 3,14,18-26
+tests/test_candidate_marginal_risk_contribution_stage001.py
+  s_7d2e0606f09acf::t_3867182844f793 1-709
+tests/test_rebuilt_c9_v2_stage052_tqsdk_jd_minute_backfill.py
+  s_7d2e0606f09acf::t_59b280f73d1b07 6,20-65
+tests/test_rebuilt_c9_v2_stage134_tail_minute_session_semantics_repair.py
+  s_7d2e0606f09acf::t_0c5f3bc18d9cda 131-153,210-265
+tests/test_rebuilt_c9_v2_stage135_no_jd_stage208_true_carry_degraded.py
+  s_7d2e0606f09acf::t_f82adfb4eb74b0 1-464
+tests/test_rebuilt_c9_v2_stage136_ap010_canary_fill_window_backfill.py
+  s_7d2e0606f09acf::t_83c66ce38535b1 1-85
+tests/test_rebuilt_c9_v2_stage137_current_c9_quality_one_way_satellite.py
+  s_7d2e0606f09acf::t_5a24e584e56edc 1-4437
+tests/test_turning_point_speed_switch_stage001.py
+  s_7d2e0606f09acf::t_99c03aaa7f0be6 1-317
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3c221f0cccb780a26221cb7d64724f7f9f5ae52b",
+  "prompts": {},
+  "sessions": {
+    "s_123ad7764c5379": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c3f-add2-7de2-a333-2cb25b102fb4",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_1a9272ab5fee5c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c80-34af-7800-b361-588720093ce6",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_3b7334af3925f6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c5e-d0ab-7ee2-ad3a-c1a2da119afe",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_4a459b6d0c007d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5bff-a98f-7840-921b-5898e69f7d11",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_6727c0fbd65ee1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c25-72fa-7b62-9456-f29c2bdb4a31",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_7a9e7d5af6a2bc": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c00-7313-70a0-8bc6-011ebe61a686",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_7d2e0606f09acf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1692-4a55-7962-8ce8-c454f47b8fe1",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
