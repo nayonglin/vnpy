@@ -128,6 +128,29 @@ class Stage134PlanTest(unittest.TestCase):
 
 
 class Stage134SessionAuditTest(unittest.TestCase):
+    def test_global_first_trade_date_uses_day_window_without_signal_date(self) -> None:
+        s134 = _module()
+        data = _bars().iloc[[3, 4]].copy()
+        data["bar_datetime"] = ["2020-01-02 09:00:00", "2020-01-02 09:01:00"]
+        row = SimpleNamespace(
+            contract_vt="cu2607.SHFE",
+            product_vt_symbol="cu.SHFE",
+            download_start_datetime="2020-01-02 08:55:00",
+            download_end_datetime="2020-01-02 15:15:00",
+            final_output_path="",
+        )
+        expected = pd.DatetimeIndex(["2020-01-02"])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidate.csv"
+            data.to_csv(path, index=False, encoding="utf-8-sig")
+
+            audit = s134.audit_session_file(row, path, expected, expected)
+
+        self.assertTrue(audit["strict_ready"])
+        self.assertEqual(audit["night_window_ready_count"], 0)
+        self.assertEqual(audit["day_window_ready_count"], 1)
+        self.assertEqual(audit["fill_window_coverage_count"], 1)
+
     def test_cross_midnight_natural_dates_do_not_fail_exact_trade_dates(self) -> None:
         s134 = _module()
         with tempfile.TemporaryDirectory() as tmp:
@@ -183,6 +206,62 @@ class Stage134SessionAuditTest(unittest.TestCase):
         self.assertFalse(audit["strict_ready"])
         self.assertFalse(audit["day_session_dates_exact"])
         self.assertEqual(audit["ohlc_relation_error_count"], 1)
+
+    def test_duplicate_timestamp_fails_closed(self) -> None:
+        s134 = _module()
+        data = pd.concat([_bars(), _bars().iloc[[0]]], ignore_index=True).sort_values(
+            "bar_datetime", kind="mergesort"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidate.csv"
+            data.to_csv(path, index=False, encoding="utf-8-sig")
+
+            audit = s134.audit_session_file(
+                _audit_row(path), path, _expected_dates(), _global_dates()
+            )
+
+        self.assertFalse(audit["strict_ready"])
+        self.assertEqual(audit["duplicate_key_count"], 1)
+        self.assertIn("duplicate_key", audit["blocking_reason"])
+
+    def test_negative_volume_and_oi_fail_closed(self) -> None:
+        s134 = _module()
+        data = _bars()
+        data.loc[data.index[0], "volume"] = -1.0
+        data.loc[data.index[1], "close_oi"] = -1.0
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidate.csv"
+            data.to_csv(path, index=False, encoding="utf-8-sig")
+
+            audit = s134.audit_session_file(
+                _audit_row(path), path, _expected_dates(), _global_dates()
+            )
+
+        self.assertFalse(audit["strict_ready"])
+        self.assertEqual(audit["negative_volume_count"], 1)
+        self.assertEqual(audit["negative_oi_count"], 1)
+        self.assertIn("negative_volume", audit["blocking_reason"])
+        self.assertIn("negative_oi", audit["blocking_reason"])
+
+    def test_out_of_bounds_row_fails_closed(self) -> None:
+        s134 = _module()
+        data = _bars()
+        extra = data.iloc[[0]].copy()
+        extra["bar_datetime"] = "2026-05-26 15:15:00"
+        data = pd.concat([data, extra], ignore_index=True).sort_values(
+            "bar_datetime", kind="mergesort"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidate.csv"
+            data.to_csv(path, index=False, encoding="utf-8-sig")
+
+            audit = s134.audit_session_file(
+                _audit_row(path), path, _expected_dates(), _global_dates()
+            )
+
+        self.assertFalse(audit["strict_ready"])
+        self.assertEqual(audit["out_of_bounds_row_count"], 1)
+        self.assertIn("out_of_bounds", audit["blocking_reason"])
 
 
 class Stage134AtomicPublishTest(unittest.TestCase):

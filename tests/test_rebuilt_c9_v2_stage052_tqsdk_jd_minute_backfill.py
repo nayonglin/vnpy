@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -16,6 +17,52 @@ import stage052_tqsdk_jd_minute_backfill as s052
 
 
 class Stage052TqSdkJdMinuteBackfillTest(unittest.TestCase):
+    def test_repeated_bar_id_keeps_latest_closed_snapshot(self) -> None:
+        bar_datetime = pd.Timestamp("2020-09-02 09:00:00", tz=ZoneInfo("Asia/Shanghai")).tz_convert("UTC").value
+        snapshots: dict[int, dict] = {}
+        first = {
+            "id": 7,
+            "datetime": bar_datetime,
+            "open": 6876.0,
+            "high": 6876.0,
+            "low": 6876.0,
+            "close": 6876.0,
+            "volume": 0.0,
+            "open_oi": 151578.0,
+            "close_oi": 151578.0,
+        }
+        closed = {
+            **first,
+            "high": 6895.0,
+            "low": 6870.0,
+            "close": 6890.0,
+            "volume": 123.0,
+            "close_oi": 151255.0,
+        }
+
+        s052.upsert_bar_snapshot(
+            snapshots,
+            first,
+            contract_vt="AP010.CZCE",
+            tq_symbol="CZCE.AP010",
+            start_dt=pd.Timestamp("2020-09-01 20:55:00"),
+            end_dt=pd.Timestamp("2020-09-02 15:15:00"),
+        )
+        s052.upsert_bar_snapshot(
+            snapshots,
+            closed,
+            contract_vt="AP010.CZCE",
+            tq_symbol="CZCE.AP010",
+            start_dt=pd.Timestamp("2020-09-01 20:55:00"),
+            end_dt=pd.Timestamp("2020-09-02 15:15:00"),
+        )
+
+        self.assertEqual(len(snapshots), 1)
+        self.assertEqual(snapshots[7]["open"], 6876.0)
+        self.assertEqual(snapshots[7]["high"], 6895.0)
+        self.assertEqual(snapshots[7]["close"], 6890.0)
+        self.assertEqual(snapshots[7]["volume"], 123.0)
+
     def test_backfill_plan_filters_jd_gaps_and_skips_existing_contract_files(self) -> None:
         manifest = pd.DataFrame(
             {

@@ -217,6 +217,35 @@ def _normalize_tqsdk_datetime(value: Any) -> pd.Timestamp:
     return ts.tz_convert(CHINA_TZ).tz_localize(None)
 
 
+def upsert_bar_snapshot(
+    snapshots: dict[int, dict[str, Any]],
+    row_dict: dict[str, Any],
+    *,
+    contract_vt: str,
+    tq_symbol: str,
+    start_dt: pd.Timestamp,
+    end_dt: pd.Timestamp,
+) -> bool:
+    bar_id = int(row_dict.get("id", -1))
+    bar_dt = _normalize_tqsdk_datetime(row_dict.get("datetime"))
+    if bar_id < 0 or pd.isna(bar_dt) or bar_dt < pd.Timestamp(start_dt) or bar_dt >= pd.Timestamp(end_dt):
+        return False
+    snapshots[bar_id] = {
+        "contract_vt": contract_vt,
+        "tq_symbol": tq_symbol,
+        "bar_datetime": bar_dt,
+        "bar_id": bar_id,
+        "open": _safe_float(row_dict.get("open")),
+        "high": _safe_float(row_dict.get("high")),
+        "low": _safe_float(row_dict.get("low")),
+        "close": _safe_float(row_dict.get("close")),
+        "volume": _safe_float(row_dict.get("volume")),
+        "open_oi": _safe_float(row_dict.get("open_oi")),
+        "close_oi": _safe_float(row_dict.get("close_oi")),
+    }
+    return True
+
+
 def download_contract_minutes(row: Any, username: str, password: str, max_seconds: int) -> tuple[dict[str, Any], pd.DataFrame]:
     from tqsdk import BacktestFinished, TqApi, TqAuth, TqBacktest, TqSim
 
@@ -242,12 +271,23 @@ def download_contract_minutes(row: Any, username: str, password: str, max_second
         "message": "",
     }
     started = time.time()
-    seen_ids: set[int] = set()
-    bar_rows: list[dict[str, Any]] = []
+    snapshots: dict[int, dict[str, Any]] = {}
     api = None
     try:
         api = TqApi(TqSim(), backtest=TqBacktest(start_dt=start_dt, end_dt=end_dt), auth=TqAuth(username, password))
         klines = api.get_kline_serial(tq_symbol, duration_seconds=60, data_length=500)
+
+        def capture_latest_snapshots() -> None:
+            for _, kline_row in klines.iterrows():
+                upsert_bar_snapshot(
+                    snapshots,
+                    kline_row.to_dict(),
+                    contract_vt=contract_vt,
+                    tq_symbol=tq_symbol,
+                    start_dt=pd.Timestamp(start_dt),
+                    end_dt=pd.Timestamp(end_dt),
+                )
+
         while True:
             if time.time() - started > max_seconds:
                 status["status"] = "timeout"
@@ -256,34 +296,12 @@ def download_contract_minutes(row: Any, username: str, password: str, max_second
             try:
                 changed = api.wait_update(deadline=time.time() + 1.0)
             except BacktestFinished:
+                capture_latest_snapshots()
                 status["status"] = "downloaded"
                 break
             if not changed:
                 continue
-            for _, kline_row in klines.iterrows():
-                row_dict = kline_row.to_dict()
-                bar_id = int(row_dict.get("id", -1))
-                if bar_id in seen_ids:
-                    continue
-                bar_dt = _normalize_tqsdk_datetime(row_dict.get("datetime"))
-                if pd.isna(bar_dt) or bar_dt < pd.Timestamp(start_dt) or bar_dt >= pd.Timestamp(end_dt):
-                    continue
-                seen_ids.add(bar_id)
-                bar_rows.append(
-                    {
-                        "contract_vt": contract_vt,
-                        "tq_symbol": tq_symbol,
-                        "bar_datetime": bar_dt,
-                        "bar_id": bar_id,
-                        "open": _safe_float(row_dict.get("open")),
-                        "high": _safe_float(row_dict.get("high")),
-                        "low": _safe_float(row_dict.get("low")),
-                        "close": _safe_float(row_dict.get("close")),
-                        "volume": _safe_float(row_dict.get("volume")),
-                        "open_oi": _safe_float(row_dict.get("open_oi")),
-                        "close_oi": _safe_float(row_dict.get("close_oi")),
-                    }
-                )
+            capture_latest_snapshots()
     except Exception as exc:
         status["status"] = "failed"
         status["message"] = repr(exc)
@@ -291,7 +309,7 @@ def download_contract_minutes(row: Any, username: str, password: str, max_second
         if api is not None:
             api.close()
 
-    bars = normalize_downloaded_bars(pd.DataFrame(bar_rows))
+    bars = normalize_downloaded_bars(pd.DataFrame(snapshots.values()))
     if not bars.empty:
         bars.to_csv(output_path, index=False, encoding="utf-8-sig")
         status["rows"] = int(len(bars))
