@@ -192,7 +192,7 @@ class TickStreamGap:
 
 Expected: all selected tests pass; no real sleep/network/order call.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples/portfolio_backtesting/qmt_roll_official_live_time.py \
@@ -323,7 +323,7 @@ git commit -m "fix(stage608): harden durable readonly lifecycle"
 - Consumes: per-symbol durable and eviction watermarks
 - Produces: exact `tick_target_symbol_evicted_before_consume` fail-close evidence
 
-- [ ] **Step 1: Verify the Task 2 producer contract, then write the Stage904 RED test**
+- [x] **Step 1: Verify the Task 2 producer contract, then write the Stage904 RED test**
 
 Task 2 already owns and verifies the producer-side contract:
 
@@ -339,7 +339,7 @@ def test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_targe
     self.assertIn("tick_target_symbol_evicted_before_consume", result["feed_gap_reason"])
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -349,7 +349,7 @@ def test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_targe
 
 Expected: the existing Stage608 producer watermark test is GREEN; only the Stage904 consumer test is RED because the gate is missing.
 
-- [ ] **Step 3: Implement only the Stage904 consumer gate**
+- [x] **Step 3: Implement only the Stage904 consumer gate**
 
 Read Task 2's existing `durable_symbol_sequence`, `first_buffered_symbol_sequence`, and `evicted_through_symbol_sequence` fields without changing their producer semantics. Before generic missing-row handling, Stage904 compares `evicted_through` with the state's last consumed sequence and returns:
 
@@ -361,7 +361,7 @@ return (
 )
 ```
 
-- [ ] **Step 4: Run GREEN including interleaving controls**
+- [x] **Step 4: Run GREEN including interleaving controls**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
