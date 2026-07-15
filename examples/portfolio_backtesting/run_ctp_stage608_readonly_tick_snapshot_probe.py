@@ -509,6 +509,61 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
     }
 
 
+def _quiesce_market_data_ingress(
+    gateway: Any,
+    pipeline: TickStreamPipeline,
+    restore_gateway: Any,
+) -> dict[str, str]:
+    """Linearize stream cutover before draining the durable writer.
+
+    The wrapper stays installed while acceptance is revoked and the market
+    data API closes.  Any callback racing that boundary therefore receives an
+    ingress identity and extends the explicit suffix gap instead of bypassing
+    Stage179 capture.  TD teardown remains with ``MainEngine.close``.
+    """
+
+    errors: dict[str, str] = {}
+    pipeline.stop_accepting()
+    try:
+        md_api = getattr(gateway, "md_api", None)
+        md_close = getattr(md_api, "close", None)
+        if callable(md_close):
+            md_close()
+        else:
+            gateway.close()
+    except Exception as exc:
+        errors["market_data_close_error"] = repr(exc)
+    finally:
+        try:
+            restore_gateway()
+        except Exception as exc:
+            errors["gateway_restore_error"] = repr(exc)
+    return errors
+
+
+def _tick_stream_ready(
+    *,
+    transport_ready: bool,
+    expected_symbol_count: int,
+    missing_tick_symbol_count: int,
+    durable_stream_ready: bool,
+    prior_gap: Any | None,
+    stopped: bool,
+    starting: bool,
+) -> bool:
+    """Apply the permanent fail-close readiness predicate for one session."""
+
+    return bool(
+        transport_ready
+        and int(expected_symbol_count) > 0
+        and int(missing_tick_symbol_count) == 0
+        and durable_stream_ready
+        and prior_gap is None
+        and not stopped
+        and not starting
+    )
+
+
 def _run_probe(connect: bool, wait_seconds: int, pre_subscribe_wait_seconds: int, target_symbols: list[str]) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     gateway_import = _gateway_import_status()
@@ -869,13 +924,14 @@ def _run_stream(
             durable.symbol_watermarks,
         )
         transport_ready = bool(log_analysis.get("md_login_success") and not stopped)
-        ready = bool(
-            transport_ready
-            and expected
-            and not missing_tick_symbols
-            and durable.stream_ready
-            and not stopped
-            and not starting
+        ready = _tick_stream_ready(
+            transport_ready=transport_ready,
+            expected_symbol_count=len(expected),
+            missing_tick_symbol_count=len(missing_tick_symbols),
+            durable_stream_ready=durable.stream_ready,
+            prior_gap=recovery.disclosed_gap,
+            stopped=stopped,
+            starting=starting,
         )
         latest_received_at = max(
             (_clean(row.get("received_at")) for row in published_latest.values()),
@@ -971,12 +1027,13 @@ def _run_stream(
         summary["status"] = "tick_stream_exception"
         summary["exception"] = repr(exc)
     finally:
-        restore_gateway()
-        pipeline.stop_accepting()
-        try:
-            ctp_gateway.close()
-        except Exception as exc:
-            summary["gateway_close_error"] = repr(exc)
+        summary.update(
+            _quiesce_market_data_ingress(
+                ctp_gateway,
+                pipeline,
+                restore_gateway,
+            )
+        )
         try:
             shutdown_report = pipeline.shutdown(timeout_seconds=2.0)
             summary["shutdown_report"] = asdict(shutdown_report)
