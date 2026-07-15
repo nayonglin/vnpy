@@ -2,7 +2,7 @@
 
 - line_id：`futures_trend_stage819_intraday_rules`
 - 记录时间：`2026-07-15 18:13 CST`
-- 候选冻结时间：`2026-07-15 18:23 CST`
+- 候选冻结时间：`2026-07-15 18:35 CST`
 - 当前模式：隔离 worktree 离线修复、故障注入与独立只读审查；未加载实盘 env、未连接 CTP、未操作 launchctl
 - 工作区/分支：`/Users/bytedance/Desktop/person/vnpy_stage179_live_reliability` / `codex/stage179-live-execution-reliability`
 - 基线提交：`a89141c9c`
@@ -72,6 +72,7 @@
   - 本轮所有新增缺陷均先得到可复现 RED，再修至 GREEN。
   - 独立最终审查：冻结 code/test 与九文件指纹均精确匹配，18 条关键故障注入 `18/18` 通过；结论 `P0=0、P1=0、P2=4`，Task2 可提交但不能据此部署。
   - 提交对象级终审：独立 agent 从 `bb0408942bc61b319ec2865738d64f7e5610cbde` 重跑 Stage608 `145/145`（`23.745s`）、Stage931 `1/1`（`1.011s`）并通过 diff-check；结论 `P0=0、P1=0`，该对象可作为 Task2 开发基线，仍非部署证明。
+  - terminal/lifecycle 提交级复审：commit/tree 起止一致，12 条定向 fake-gateway 故障测试 `12/12`（`6.457s`）、Stage608 `145/145`（`24.228s`）；结论 `P0=0、P1=0、局部 P2=3`，其中 PID reuse 与既有记录重合，新增 finding 为 emergency canonicalization 与 same-feed revision/successor 约束两项。加上既有 5 项，本阶段去重跟踪 `P2=7`。
 
 ## 输出文件
 
@@ -93,6 +94,7 @@
   - atomic parent-open 时序和 capture token 的 first-check/clear/second-check 交错仍可增加 caller 层确定性 RED；当前实现与静态审查未发现错误放行。
   - 当前普通 `fsync + parent fsync` 只形成进程崩溃/OS 可见一致性口径，不证明 macOS 突然断电后的驱动器缓存顺序；Task13 需在正式文件系统基准测试 `F_BARRIERFSYNC`/`F_FULLFSYNC` 后再决定是否升级原语，不能无延迟证据直接替换热路径。
   - emergency fail-close heartbeat 从旧 authority 继承未显式规范化的 `accepting/recovery_blocked`；它仍固定为 stopped/unready/writer-dead，不会错误放行，下一次 connect 也会在 recovery 前再次撤权收敛。后续可补 `accepting=false + recovery_blocked=true` 和对应断言，本阶段不为该非授权型 P2 打破冻结代码快照。
+  - same-feed terminal/revoke guard reconcile 会验证 feed、segment、owner death 与 stopped-fault 收敛，但未严格绑定 `prior_heartbeat_revision_uuid` 或受限 successor；当前会在清 guard 前先 fail-close 撤权，不会错误放行，但审计契约比 Spec 的 exact-revision 表述更宽，后续需补 revision/successor 证明和非生命周期字段锁定。
 - 是否更新本线 `LINE.md`：否；同线并行先保留唯一 Stage181 文件，合入时统一整理。
 - 是否更新 `research/registry.md`：否。
 - 是否追加根目录 `memory.md/back_log.md`：否；尚未成为正式候选或完成外部验收。

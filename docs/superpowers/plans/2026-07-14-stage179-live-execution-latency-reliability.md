@@ -292,7 +292,7 @@ Task 2 may publish additive per-symbol durable/first-buffered/evicted-through wa
 
 Expected: existing and new Stage608 tests pass; send/cancel counters remain 0.
 
-- [ ] **Step 5: Commit after the reopened exact-diff review reports `P0=0, P1=0`**
+- [x] **Step 5: Commit after the reopened exact-diff review reports `P0=0, P1=0`**
 
 ```bash
 git add docs/superpowers/plans/2026-07-14-stage179-live-execution-latency-reliability.md \
