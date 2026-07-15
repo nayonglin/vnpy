@@ -14,7 +14,7 @@ from collections import deque
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import pandas as pd
 
@@ -25,6 +25,14 @@ from vnpy.trader.event import EVENT_ACCOUNT, EVENT_CONTRACT, EVENT_LOG, EVENT_OR
 from vnpy.trader.object import SubscribeRequest
 
 from qmt_roll_live_context_adapter import collect_snapshot_from_main_engine
+from qmt_roll_official_live_tick_stream import (
+    DurableTickSnapshot,
+    SymbolDurableWatermark,
+    TickStreamPipeline,
+    install_gateway_tick_ingress,
+    recover_or_isolate_dirty_tail,
+)
+from qmt_roll_official_live_time import SystemClock
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
@@ -33,6 +41,7 @@ OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 MODEL_TAG: str = "stage608_readonly_tick_snapshot_probe_v1"
 OUTPUT_PREFIX: str = "qmt_roll_stage608_readonly_tick_snapshot_probe"
 TICK_SNAPSHOT_COMMIT_SCHEMA_VERSION: int = 1
+SYSTEM_CLOCK = SystemClock()
 
 
 def _snapshot_stream_collections(
@@ -65,18 +74,29 @@ def _snapshot_stream_collections(
 def _symbol_tick_watermarks(
     watched_symbols: list[str],
     latest_by_symbol: dict[str, dict[str, Any]],
+    durable_watermarks: Mapping[str, SymbolDurableWatermark] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Publish one bounded, durable liveness marker per currently watched symbol."""
 
     result: dict[str, dict[str, Any]] = {}
     for vt_symbol in sorted({_clean(item) for item in watched_symbols if _clean(item)}):
         row = latest_by_symbol.get(vt_symbol) or {}
+        durable = (durable_watermarks or {}).get(vt_symbol)
         result[vt_symbol] = {
             "received_at": _clean(row.get("received_at")),
             "stream_sequence": int(row.get("stream_sequence", 0) or 0),
             "symbol_stream_sequence": int(
                 row.get("symbol_stream_sequence", row.get("stream_sequence", 0))
                 or 0
+            ),
+            "durable_symbol_sequence": int(
+                durable.durable_symbol_sequence if durable is not None else 0
+            ),
+            "first_buffered_symbol_sequence": int(
+                durable.first_buffered_symbol_sequence if durable is not None else 0
+            ),
+            "evicted_through_symbol_sequence": int(
+                durable.evicted_through_symbol_sequence if durable is not None else 0
             ),
         }
     return result
@@ -700,16 +720,55 @@ def _run_stream(
         _atomic_write_json(heartbeat_path, {**summary, "stream_ready": False, "stopped": True})
         return summary
 
+    previous_heartbeat: dict[str, Any] = {}
+    journal_segment_path = journal_path.with_name(
+        f"{journal_path.stem}.{feed_session_id}{journal_path.suffix or '.ndjson'}"
+    )
+    try:
+        if heartbeat_path.exists():
+            payload = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+            if isinstance(payload, dict):
+                previous_heartbeat = payload
+        previous_journal_path = Path(
+            _clean(previous_heartbeat.get("journal_segment_path"))
+            or _clean(previous_heartbeat.get("journal_path"))
+            or journal_path
+        )
+        recovery = recover_or_isolate_dirty_tail(
+            previous_journal_path,
+            previous_heartbeat,
+        )
+    except Exception as exc:
+        summary["status"] = "stream_blocked_journal_recovery_error"
+        summary["journal_recovery_error"] = repr(exc)
+        _atomic_write_json(
+            heartbeat_path,
+            {**summary, "stream_ready": False, "stopped": True},
+        )
+        return summary
+
+    summary["journal_segment_path"] = str(journal_segment_path.resolve())
+    summary["prior_uncommitted_gap"] = (
+        asdict(recovery.disclosed_gap) if recovery.disclosed_gap is not None else None
+    )
+    summary["recovery_previous_durable_cursor"] = (
+        asdict(recovery.previous_durable_cursor)
+        if recovery.previous_durable_cursor is not None
+        else None
+    )
+    summary["recovery_isolated_tail_path"] = (
+        str(recovery.isolated_tail_path.resolve())
+        if recovery.isolated_tail_path is not None
+        else ""
+    )
+    summary["recovery_isolated_byte_count"] = int(recovery.isolated_byte_count)
+
     from vnpy_ctp import CtpGateway
 
     rows: dict[str, list[dict[str, Any]]] = {"logs": []}
-    tick_buffer: deque[dict[str, Any]] = deque(maxlen=max(1, int(max_buffer_ticks)))
-    latest_by_symbol: dict[str, dict[str, Any]] = {}
-    symbol_sequence_by_symbol: dict[str, int] = {}
     subscribed: set[str] = set()
     subscribed_at_by_symbol: dict[str, str] = {}
     invalid: set[str] = set()
-    sequence = 0
     stream_state_lock = threading.Lock()
     stop_requested = False
     started_monotonic = time.monotonic()
@@ -717,7 +776,27 @@ def _run_stream(
 
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
-    main_engine.add_gateway(CtpGateway)
+    try:
+        ctp_gateway = main_engine.add_gateway(CtpGateway)
+        pipeline = TickStreamPipeline(
+            feed_session_id=feed_session_id,
+            journal_segment_path=journal_segment_path,
+            clock=SYSTEM_CLOCK,
+            queue_capacity=8192,
+            max_buffer_ticks=max_buffer_ticks,
+            writer_batch_size=256,
+            writer_flush_seconds=0.050,
+        )
+        restore_gateway = install_gateway_tick_ingress(ctp_gateway, pipeline)
+    except Exception as exc:
+        main_engine.close()
+        summary["status"] = "stream_blocked_pipeline_initialization_error"
+        summary["pipeline_initialization_error"] = repr(exc)
+        _atomic_write_json(
+            heartbeat_path,
+            {**summary, "stream_ready": False, "stopped": True},
+        )
+        return summary
 
     def on_log(event: Any) -> None:
         with stream_state_lock:
@@ -726,27 +805,7 @@ def _run_stream(
                 del rows["logs"][:-500]
 
     def on_tick(event: Any) -> None:
-        nonlocal sequence
-        vt_symbol = _clean(getattr(event.data, "vt_symbol", ""))
-        with stream_state_lock:
-            sequence += 1
-            current_sequence = sequence
-            current_symbol_sequence = 0
-            if vt_symbol:
-                current_symbol_sequence = symbol_sequence_by_symbol.get(vt_symbol, 0) + 1
-                symbol_sequence_by_symbol[vt_symbol] = current_symbol_sequence
-        row = _stream_tick_row(
-            event.data,
-            feed_session_id=feed_session_id,
-            stream_sequence=current_sequence,
-            symbol_stream_sequence=current_symbol_sequence,
-        )
-        if not row["vt_symbol"]:
-            return
-        _append_ndjson(journal_path, row)
-        with stream_state_lock:
-            tick_buffer.append(row)
-            latest_by_symbol[row["vt_symbol"]] = row
+        pipeline.observe_handler(event.data)
 
     event_engine.register(EVENT_LOG, on_log)
     event_engine.register(EVENT_TICK, on_tick)
@@ -781,18 +840,21 @@ def _run_stream(
             subscribed.add(vt_symbol)
             subscribed_at_by_symbol[vt_symbol] = datetime.now().isoformat(timespec="microseconds")
 
-    def publish_heartbeat(*, stopped: bool = False) -> dict[str, Any]:
-        snapshot = _snapshot_stream_collections(
-            stream_state_lock,
-            logs=rows["logs"],
-            tick_buffer=tick_buffer,
-            latest_by_symbol=latest_by_symbol,
-            sequence=sequence,
-        )
-        snapshot_latest = snapshot["latest_by_symbol"]
-        snapshot_ticks = snapshot["ticks"]
-        snapshot_sequence = int(snapshot["sequence"])
-        log_analysis = _analyze_logs(snapshot["logs"])
+    def publish_heartbeat(
+        *,
+        stopped: bool = False,
+        starting: bool = False,
+    ) -> dict[str, Any]:
+        durable: DurableTickSnapshot = pipeline.durable_snapshot()
+        snapshot_latest = {
+            vt_symbol: dict(row)
+            for vt_symbol, row in durable.latest_by_symbol.items()
+        }
+        snapshot_ticks = [dict(row) for row in durable.rows]
+        snapshot_sequence = int(durable.durable_ingress_sequence)
+        with stream_state_lock:
+            snapshot_logs = list(rows["logs"])
+        log_analysis = _analyze_logs(snapshot_logs)
         desired = set(target_symbols) | set(_manifest_symbols(watch_manifest))
         expected = sorted(item for item in desired if item and item not in invalid)
         missing_tick_symbols = sorted(item for item in expected if item not in snapshot_latest)
@@ -801,9 +863,20 @@ def _run_stream(
             for vt_symbol in expected
             if vt_symbol in snapshot_latest
         }
-        symbol_tick_watermarks = _symbol_tick_watermarks(expected, published_latest)
+        symbol_tick_watermarks = _symbol_tick_watermarks(
+            expected,
+            published_latest,
+            durable.symbol_watermarks,
+        )
         transport_ready = bool(log_analysis.get("md_login_success") and not stopped)
-        ready = bool(transport_ready and expected and not missing_tick_symbols)
+        ready = bool(
+            transport_ready
+            and expected
+            and not missing_tick_symbols
+            and durable.stream_ready
+            and not stopped
+            and not starting
+        )
         latest_received_at = max(
             (_clean(row.get("received_at")) for row in published_latest.values()),
             default="",
@@ -811,7 +884,15 @@ def _run_stream(
         heartbeat = {
             **summary,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "status": "tick_stream_ready" if ready else "tick_stream_stopped" if stopped else "tick_stream_waiting_for_market_data",
+            "status": (
+                "tick_stream_stopped"
+                if stopped
+                else "tick_stream_starting"
+                if starting
+                else "tick_stream_ready"
+                if ready
+                else "tick_stream_waiting_for_market_data"
+            ),
             "stream_ready": ready,
             "transport_ready": transport_ready,
             "stopped": bool(stopped),
@@ -819,6 +900,24 @@ def _run_stream(
             "stream_sequence": snapshot_sequence,
             "journal_tick_count": snapshot_sequence,
             "buffered_tick_count": len(snapshot_ticks),
+            "last_ingress_sequence": int(durable.last_ingress_sequence),
+            "durable_ingress_sequence": snapshot_sequence,
+            "queue_depth": int(durable.queue_depth),
+            "queue_capacity": int(durable.queue_capacity),
+            "dropped_tick_count": int(durable.dropped_tick_count),
+            "gap_latched": durable.gap is not None,
+            "gap_start_ingress_sequence": (
+                int(durable.gap.start_ingress_sequence) if durable.gap else 0
+            ),
+            "gap_end_ingress_sequence": (
+                int(durable.gap.end_ingress_sequence) if durable.gap else 0
+            ),
+            "gap_reason": durable.gap.reason if durable.gap else "",
+            "writer_fault": (
+                asdict(durable.writer_fault) if durable.writer_fault else None
+            ),
+            "writer_alive": bool(durable.writer_alive),
+            "journal_segment_path": str(durable.journal_segment_path.resolve()),
             "subscribed_symbols": sorted(subscribed),
             "subscribed_at_by_symbol": subscribed_at_by_symbol,
             "invalid_symbols": sorted(invalid),
@@ -843,7 +942,10 @@ def _run_stream(
         )
 
     final_heartbeat: dict[str, Any] = {}
+    shutdown_report: Any = None
     try:
+        pipeline.start()
+        final_heartbeat = publish_heartbeat(starting=True)
         main_engine.connect(_ctp_setting_from_env(), "CTP")
         deadline = time.monotonic() + max(0, int(pre_subscribe_wait_seconds))
         while time.monotonic() < deadline and not stop_requested:
@@ -869,18 +971,34 @@ def _run_stream(
         summary["status"] = "tick_stream_exception"
         summary["exception"] = repr(exc)
     finally:
+        restore_gateway()
+        pipeline.stop_accepting()
+        try:
+            ctp_gateway.close()
+        except Exception as exc:
+            summary["gateway_close_error"] = repr(exc)
+        try:
+            shutdown_report = pipeline.shutdown(timeout_seconds=2.0)
+            summary["shutdown_report"] = asdict(shutdown_report)
+        except Exception as exc:
+            summary["shutdown_error"] = repr(exc)
         try:
             final_heartbeat = publish_heartbeat(stopped=True)
         finally:
-            main_engine.close()
-            signal.signal(signal.SIGTERM, old_sigterm)
-            signal.signal(signal.SIGINT, old_sigint)
+            try:
+                main_engine.close()
+            finally:
+                signal.signal(signal.SIGTERM, old_sigterm)
+                signal.signal(signal.SIGINT, old_sigint)
+    final_durable = pipeline.durable_snapshot()
     return {
         **summary,
         "status": _clean(final_heartbeat.get("status")) or summary["status"],
         "stopped": True,
-        "stream_sequence": sequence,
-        "journal_tick_count": sequence,
+        "stream_sequence": int(final_durable.durable_ingress_sequence),
+        "journal_tick_count": int(final_durable.durable_ingress_sequence),
+        "last_ingress_sequence": int(final_durable.last_ingress_sequence),
+        "durable_ingress_sequence": int(final_durable.durable_ingress_sequence),
         "subscribed_symbols": sorted(subscribed),
         "invalid_symbols": sorted(invalid),
         "latest_tick_received_at": final_heartbeat.get("latest_tick_received_at", ""),

@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import errno
 import json
 import hashlib
 import threading
+import io
 from collections import deque
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 import sys
 import tempfile
 import unittest
+import types
 from unittest.mock import patch
 
 
@@ -159,6 +163,90 @@ class ContinuousTickStreamTest(unittest.TestCase):
         self.assertEqual(result["send_order_api_called_count"], 0)
         self.assertEqual(result["cancel_order_api_called_count"], 0)
 
+    def test_stage608_live_wiring_publishes_only_durable_ingress_aliases(self) -> None:
+        from vnpy.trader.gateway import BaseGateway
+
+        class FakeCtpGateway(BaseGateway):
+            default_name = "CTP"
+            exchanges = []
+
+            def connect(self, setting: dict[str, object]) -> None:
+                self.on_tick(self_test._ingress_tick())
+
+            def subscribe(self, req: object) -> None:
+                return None
+
+            def send_order(self, req: object) -> str:
+                raise AssertionError("read-only Stage608 must not send orders")
+
+            def cancel_order(self, req: object) -> None:
+                raise AssertionError("read-only Stage608 must not cancel orders")
+
+            def query_account(self) -> None:
+                return None
+
+            def query_position(self) -> None:
+                return None
+
+            def close(self) -> None:
+                return None
+
+        self_test = self
+        fake_vnpy_ctp = types.ModuleType("vnpy_ctp")
+        fake_vnpy_ctp.CtpGateway = FakeCtpGateway
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            journal = root / "ticks.ndjson"
+            heartbeat = root / "heartbeat.json"
+            tick_snapshot = root / "ticks.csv"
+            with (
+                patch.dict(sys.modules, {"vnpy_ctp": fake_vnpy_ctp}),
+                patch.object(
+                    stage608,
+                    "_gateway_import_status",
+                    return_value={"ctp_gateway_import_available": True},
+                ),
+                patch.object(stage608, "_required_env_missing", return_value=[]),
+                patch.object(stage608, "_env_status", return_value={}),
+                patch.object(stage608, "_ctp_setting_from_env", return_value={}),
+                patch.object(stage608, "TICK_PATH", tick_snapshot),
+                patch.object(stage608.MainEngine, "write_log", return_value=None),
+                patch.object(stage608.os, "kill", side_effect=ProcessLookupError),
+            ):
+                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    result = stage608._run_stream(
+                        connect=True,
+                        pre_subscribe_wait_seconds=0,
+                        target_symbols=["JM609.DCE"],
+                        watch_manifest=None,
+                        journal_path=journal,
+                        heartbeat_path=heartbeat,
+                        duration_seconds=0,
+                        heartbeat_seconds=0.2,
+                        max_buffer_ticks=10,
+                        parent_pid=999_999,
+                    )
+
+            persisted = json.loads(heartbeat.read_text(encoding="utf-8"))
+            persisted_segment = Path(persisted["journal_segment_path"])
+            journal_rows = [
+                json.loads(line)
+                for line in persisted_segment.read_text(encoding="utf-8").splitlines()
+            ]
+
+        self.assertEqual(result["send_order_api_called_count"], 0)
+        self.assertEqual(result["cancel_order_api_called_count"], 0)
+        self.assertEqual(result["last_ingress_sequence"], 1)
+        self.assertEqual(result["durable_ingress_sequence"], 1)
+        self.assertEqual(persisted["stream_sequence"], 1)
+        self.assertEqual(persisted["journal_tick_count"], 1)
+        self.assertEqual(persisted["durable_ingress_sequence"], 1)
+        self.assertTrue(persisted["stopped"])
+        self.assertFalse(persisted["stream_ready"])
+        self.assertNotEqual(persisted_segment, journal)
+        self.assertEqual([row["ingress_sequence"] for row in journal_rows], [1])
+
     def test_disconnect_log_revokes_transport_readiness_until_relogin(self) -> None:
         disconnected = stage608._analyze_logs(
             [
@@ -254,6 +342,9 @@ class ContinuousTickStreamTest(unittest.TestCase):
                 "received_at": "2026-07-13T21:00:01.123456",
                 "stream_sequence": 17,
                 "symbol_stream_sequence": 9,
+                "durable_symbol_sequence": 0,
+                "first_buffered_symbol_sequence": 0,
+                "evicted_through_symbol_sequence": 0,
             },
         )
         self.assertEqual(
@@ -262,6 +353,9 @@ class ContinuousTickStreamTest(unittest.TestCase):
                 "received_at": "",
                 "stream_sequence": 0,
                 "symbol_stream_sequence": 0,
+                "durable_symbol_sequence": 0,
+                "first_buffered_symbol_sequence": 0,
+                "evicted_through_symbol_sequence": 0,
             },
         )
         self.assertNotIn("OLD609.DCE", watermarks)
@@ -430,7 +524,17 @@ class ContinuousTickStreamTest(unittest.TestCase):
             gateway.on_tick(tick)
 
         self.assertEqual(forwarded, [tick])
-        self.assertFalse(pipeline.snapshot().stream_ready)
+        snapshot = pipeline.snapshot()
+        self.assertFalse(snapshot.stream_ready)
+        self.assertEqual(snapshot.dropped_tick_count, 1)
+        self.assertEqual(snapshot.fault.kind, "ingress_fault_latch_exception")
+        self.assertEqual(
+            (
+                snapshot.gap.start_ingress_sequence,
+                snapshot.gap.end_ingress_sequence,
+            ),
+            (1, 1),
+        )
 
     def test_ingress_scalar_copy_does_not_call_deepcopy(self) -> None:
         from qmt_roll_official_live_tick_stream import TickStreamPipeline
@@ -502,6 +606,333 @@ class ContinuousTickStreamTest(unittest.TestCase):
             after.tick_row["ingress_epoch_ns"], before.tick_row["ingress_epoch_ns"]
         )
         self.assertNotIn("handler_received_monotonic_ns", after.tick_row)
+
+    def test_fsync_precedes_durable_watermark_and_snapshot_publish(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        with tempfile.TemporaryDirectory() as tmp:
+            fsync_entered = threading.Event()
+            release_fsync = threading.Event()
+
+            def blocking_fsync(_fd: int) -> None:
+                fsync_entered.set()
+                self.assertTrue(release_fsync.wait(timeout=1.0))
+
+            pipeline = TickStreamPipeline(
+                feed_session_id="feed-fsync-order",
+                journal_segment_path=Path(tmp) / "ticks.ndjson",
+                clock=FakeClock(),
+                queue_capacity=4,
+                max_buffer_ticks=4,
+                writer_batch_size=1,
+                writer_flush_seconds=0.001,
+            )
+            pipeline.capture_ingress(self._ingress_tick())
+            with patch(
+                "qmt_roll_official_live_tick_stream.os.fsync",
+                side_effect=blocking_fsync,
+            ):
+                pipeline.start()
+                self.assertTrue(fsync_entered.wait(timeout=1.0))
+                before = pipeline.durable_snapshot()
+                release_fsync.set()
+                self.assertTrue(
+                    pipeline.wait_until_durable(1, timeout_seconds=1.0)
+                )
+                after = pipeline.durable_snapshot()
+            pipeline.shutdown(timeout_seconds=2.0)
+
+        self.assertEqual(before.durable_ingress_sequence, 0)
+        self.assertEqual(before.rows, ())
+        self.assertEqual(after.durable_ingress_sequence, 1)
+        self.assertEqual(
+            [row["ingress_sequence"] for row in after.rows],
+            [1],
+        )
+
+    def test_writer_error_latches_fault_and_rejects_ready_heartbeat(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pipeline = TickStreamPipeline(
+                feed_session_id="feed-writer-error",
+                journal_segment_path=Path(tmp) / "ticks.ndjson",
+                clock=FakeClock(),
+                queue_capacity=4,
+                max_buffer_ticks=4,
+                writer_batch_size=1,
+                writer_flush_seconds=0.001,
+            )
+            pipeline.capture_ingress(self._ingress_tick())
+            with patch(
+                "qmt_roll_official_live_tick_stream.os.fsync",
+                side_effect=OSError(errno.ENOSPC, "disk full"),
+            ):
+                pipeline.start()
+                self.assertTrue(pipeline.wait_until_writer_stops(timeout_seconds=1.0))
+            snapshot = pipeline.durable_snapshot()
+            pipeline.shutdown(timeout_seconds=0.1)
+
+        self.assertEqual(snapshot.durable_ingress_sequence, 0)
+        self.assertIsNotNone(snapshot.writer_fault)
+        self.assertEqual(snapshot.writer_fault.kind, "journal_write_error")
+        self.assertFalse(snapshot.stream_ready)
+        self.assertEqual(
+            (
+                snapshot.gap.start_ingress_sequence,
+                snapshot.gap.end_ingress_sequence,
+            ),
+            (1, 1),
+        )
+
+    def test_graceful_shutdown_drains_all_enqueued_ticks_within_two_seconds(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def __init__(self) -> None:
+                self.epoch = 1_784_000_000_000_000_000
+                self.monotonic = 0
+
+            def epoch_ns(self) -> int:
+                self.epoch += 1
+                return self.epoch
+
+            def monotonic_ns(self) -> int:
+                self.monotonic += 1
+                return self.monotonic
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        expected_count = 9
+        with tempfile.TemporaryDirectory() as tmp:
+            pipeline = TickStreamPipeline(
+                feed_session_id="feed-drain",
+                journal_segment_path=Path(tmp) / "ticks.ndjson",
+                clock=FakeClock(),
+                queue_capacity=expected_count,
+                max_buffer_ticks=expected_count,
+                writer_batch_size=4,
+                writer_flush_seconds=0.001,
+            )
+            for sequence in range(1, expected_count + 1):
+                pipeline.capture_ingress(self._ingress_tick(float(sequence)))
+            pipeline.start()
+            report = pipeline.shutdown(timeout_seconds=2.0)
+
+        self.assertTrue(report.drained)
+        self.assertEqual(report.remaining_queue_depth, 0)
+        self.assertIsNotNone(report.durable_through)
+        self.assertEqual(report.durable_through.ingress_sequence, expected_count)
+        self.assertIsNone(report.gap)
+        self.assertIsNone(report.writer_fault)
+
+    def test_durable_ring_capacity_records_per_symbol_eviction(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def __init__(self) -> None:
+                self.epoch = 1_784_000_000_000_000_000
+
+            def epoch_ns(self) -> int:
+                self.epoch += 1
+                return self.epoch
+
+            def monotonic_ns(self) -> int:
+                return self.epoch
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pipeline = TickStreamPipeline(
+                feed_session_id="feed-eviction",
+                journal_segment_path=Path(tmp) / "ticks.ndjson",
+                clock=FakeClock(),
+                queue_capacity=2,
+                max_buffer_ticks=1,
+                writer_batch_size=2,
+                writer_flush_seconds=0.001,
+            )
+            pipeline.capture_ingress(self._ingress_tick(1245.0))
+            second = self._ingress_tick(540.0)
+            second.vt_symbol = "I609.DCE"
+            second.symbol = "I609"
+            pipeline.capture_ingress(second)
+            pipeline.start()
+            report = pipeline.shutdown(timeout_seconds=2.0)
+            snapshot = pipeline.durable_snapshot()
+
+        self.assertTrue(report.drained)
+        self.assertEqual(
+            [row["vt_symbol"] for row in snapshot.rows],
+            ["I609.DCE"],
+        )
+        self.assertEqual(
+            snapshot.symbol_watermarks[
+                "JM609.DCE"
+            ].evicted_through_symbol_sequence,
+            1,
+        )
+        self.assertEqual(
+            snapshot.symbol_watermarks[
+                "I609.DCE"
+            ].first_buffered_symbol_sequence,
+            1,
+        )
+
+    def test_shutdown_timeout_prevents_late_durable_commit(self) -> None:
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        with tempfile.TemporaryDirectory() as tmp:
+            fsync_entered = threading.Event()
+            release_fsync = threading.Event()
+
+            def blocking_fsync(_fd: int) -> None:
+                fsync_entered.set()
+                self.assertTrue(release_fsync.wait(timeout=1.0))
+
+            pipeline = TickStreamPipeline(
+                feed_session_id="feed-shutdown-timeout",
+                journal_segment_path=Path(tmp) / "ticks.ndjson",
+                clock=FakeClock(),
+                queue_capacity=1,
+                max_buffer_ticks=1,
+                writer_batch_size=1,
+                writer_flush_seconds=0.001,
+            )
+            pipeline.capture_ingress(self._ingress_tick())
+            with patch(
+                "qmt_roll_official_live_tick_stream.os.fsync",
+                side_effect=blocking_fsync,
+            ):
+                pipeline.start()
+                self.assertTrue(fsync_entered.wait(timeout=1.0))
+                report = pipeline.shutdown(timeout_seconds=0.01)
+                release_fsync.set()
+                self.assertTrue(
+                    pipeline.wait_until_writer_stops(timeout_seconds=1.0)
+                )
+                after_release = pipeline.durable_snapshot()
+
+        self.assertFalse(report.drained)
+        self.assertEqual(report.writer_fault.kind, "shutdown_drain_timeout")
+        self.assertEqual(
+            (
+                report.gap.start_ingress_sequence,
+                report.gap.end_ingress_sequence,
+            ),
+            (1, 1),
+        )
+        self.assertEqual(after_release.durable_ingress_sequence, 0)
+
+    def test_dirty_tail_recovery_isolates_partial_line_and_discloses_gap(self) -> None:
+        from qmt_roll_official_live_tick_stream import recover_or_isolate_dirty_tail
+
+        with tempfile.TemporaryDirectory() as tmp:
+            journal = Path(tmp) / "feed-old.ndjson"
+            journal.write_bytes(
+                b'{"feed_session_id":"feed-old","ingress_sequence":7}\n'
+                b'{"feed_session_id":"feed-old","ingress_sequence":8'
+            )
+            result = recover_or_isolate_dirty_tail(
+                journal,
+                {
+                    "feed_session_id": "feed-old",
+                    "last_ingress_sequence": 10,
+                    "durable_ingress_sequence": 7,
+                },
+            )
+
+            trusted_rows = [
+                json.loads(line)
+                for line in journal.read_text(encoding="utf-8").splitlines()
+            ]
+            isolated = result.isolated_tail_path
+
+        self.assertIsNotNone(result.previous_durable_cursor)
+        self.assertEqual(result.previous_durable_cursor.ingress_sequence, 7)
+        self.assertEqual(
+            (
+                result.disclosed_gap.start_ingress_sequence,
+                result.disclosed_gap.end_ingress_sequence,
+            ),
+            (8, 10),
+        )
+        self.assertEqual(
+            [row["ingress_sequence"] for row in trusted_rows],
+            [7],
+        )
+        self.assertIsNotNone(isolated)
+        self.assertGreater(result.isolated_byte_count, 0)
+
+    def test_reader_rejects_cross_session_cursor_and_undurable_tail(self) -> None:
+        from qmt_roll_official_live_tick_stream import (
+            DurableTickCursor,
+            TickStreamJournalReader,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            journal = Path(tmp) / "feed-a.ndjson"
+            journal.write_text(
+                "".join(
+                    json.dumps(
+                        {
+                            "feed_session_id": "feed-a",
+                            "ingress_sequence": sequence,
+                        }
+                    )
+                    + "\n"
+                    for sequence in range(1, 4)
+                ),
+                encoding="utf-8",
+            )
+            reader = TickStreamJournalReader(journal)
+            durable = DurableTickCursor("feed-a", 2)
+
+            batch = reader.read_after(None, durable_through=durable)
+            cross_session = reader.read_after(
+                DurableTickCursor("feed-b", 1),
+                durable_through=durable,
+            )
+
+        self.assertEqual(
+            [row["ingress_sequence"] for row in batch.records],
+            [1, 2],
+        )
+        self.assertTrue(batch.caught_up)
+        self.assertIsNotNone(cross_session.gap)
+        self.assertEqual(cross_session.gap.reason, "cursor_session_mismatch")
 
 
 if __name__ == "__main__":
