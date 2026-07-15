@@ -49,6 +49,7 @@ OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 MODEL_TAG: str = "stage608_readonly_tick_snapshot_probe_v1"
 OUTPUT_PREFIX: str = "qmt_roll_stage608_readonly_tick_snapshot_probe"
 TICK_SNAPSHOT_COMMIT_SCHEMA_VERSION: int = 1
+SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION: int = 1
 SYSTEM_CLOCK = SystemClock()
 
 
@@ -2537,6 +2538,9 @@ def _run_stream_owned(
             "journal_schema": JOURNAL_SCHEMA_FRAMED_V1,
             "journal_format": JOURNAL_FORMAT_FRAMED_V1,
             "journal_schema_version": JOURNAL_BATCH_COMMIT_SCHEMA_VERSION,
+            "symbol_eviction_watermark_schema_version": (
+                SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION
+            ),
             "journal_authority_committed": True,
             "pid": os.getpid(),
             "stream_sequence": snapshot_sequence,

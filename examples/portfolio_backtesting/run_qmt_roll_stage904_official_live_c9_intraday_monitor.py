@@ -84,6 +84,7 @@ STATE_JOURNAL_SCHEMA_VERSION = 1
 ALLOWED_TICK_CLOCK_SKEW_SECONDS = 2.0
 DEFAULT_STATE_TICK_MAX_AGE_SECONDS = 30
 TICK_SNAPSHOT_COMMIT_SCHEMA_VERSION = 1
+SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION = 1
 TICK_SNAPSHOT_STABLE_READ_ATTEMPTS = 3
 TICK_SNAPSHOT_STABLE_READ_RETRY_SECONDS = 0.05
 TICK_STREAM_HEARTBEAT_PATH = OUTPUT_DIR / (
@@ -894,6 +895,7 @@ def _target_symbol_eviction_gap_reason(
     *,
     state: dict[str, Any],
     heartbeat: dict[str, Any],
+    allow_legacy_offline_watermarks: bool = False,
 ) -> str:
     """Reject a target-symbol prefix that left the durable ring unconsumed."""
 
@@ -910,9 +912,20 @@ def _target_symbol_eviction_gap_reason(
         "evicted_through_symbol_sequence",
     )
     present = [field in watermark for field in fields]
-    if not any(present):
-        # Compatibility with a pre-Task2 Stage608 heartbeat during rollout.
-        return ""
+    schema_field = "symbol_eviction_watermark_schema_version"
+    if schema_field not in heartbeat:
+        if allow_legacy_offline_watermarks and not any(present):
+            return ""
+        return f"tick_stream_symbol_eviction_watermark_schema_missing:{vt_symbol}"
+    schema_version = heartbeat.get(schema_field)
+    if type(schema_version) is not int:
+        return f"tick_stream_symbol_eviction_watermark_schema_invalid:{vt_symbol}"
+    if schema_version != SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION:
+        return (
+            "tick_stream_symbol_eviction_watermark_schema_unsupported:"
+            f"{vt_symbol};actual={schema_version};"
+            f"required={SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION}"
+        )
     if not all(present):
         return f"tick_stream_symbol_eviction_watermarks_incomplete:{vt_symbol}"
 
@@ -961,10 +974,12 @@ def _feed_gap_reason(
     heartbeat: dict[str, Any],
     tick_identity_errors: list[str],
     max_tick_age_seconds: int = DEFAULT_STATE_TICK_MAX_AGE_SECONDS,
+    allow_legacy_offline_watermarks: bool = False,
 ) -> str:
     eviction_reason = _target_symbol_eviction_gap_reason(
         state=state,
         heartbeat=heartbeat,
+        allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
     )
     if eviction_reason:
         return eviction_reason
@@ -2663,6 +2678,7 @@ def _apply_state_to_position_action(
     broker_positions: pd.DataFrame | None = None,
     max_tick_age_seconds: int = DEFAULT_STATE_TICK_MAX_AGE_SECONDS,
     execution_ledger_path: Path = LIVE_EXECUTION_LEDGER_PATH,
+    allow_legacy_offline_watermarks: bool = False,
 ) -> dict[str, Any]:
     if int(_to_float(base.get("entry_day_active"), 0.0)) != 1:
         return base
@@ -2873,6 +2889,7 @@ def _apply_state_to_position_action(
         heartbeat=heartbeat,
         tick_identity_errors=tick_identity_errors,
         max_tick_age_seconds=max_tick_age_seconds,
+        allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
     )
     gap_reason = gap_reason or _tick_buffer_gap_reason(state, ticks, heartbeat)
     gap_reason = gap_reason or _preconsume_tick_gap_reason(state, stream_ticks)
@@ -3737,6 +3754,7 @@ def _advance_flat_states(
     readonly_bundle_evidence: dict[str, Any] | None = None,
     broker_orders: pd.DataFrame | None = None,
     execution_ledger_path: Path = LIVE_EXECUTION_LEDGER_PATH,
+    allow_legacy_offline_watermarks: bool = False,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     states = store.setdefault("states", {})
@@ -3930,6 +3948,9 @@ def _advance_flat_states(
                 heartbeat=heartbeat,
                 tick_identity_errors=tick_identity_errors,
                 max_tick_age_seconds=max_tick_age_seconds,
+                allow_legacy_offline_watermarks=(
+                    allow_legacy_offline_watermarks
+                ),
             )
             gap_reason = gap_reason or _tick_buffer_gap_reason(
                 state, ticks, heartbeat
@@ -3967,6 +3988,9 @@ def _advance_flat_states(
                 heartbeat=heartbeat,
                 tick_identity_errors=tick_identity_errors,
                 max_tick_age_seconds=max_tick_age_seconds,
+                allow_legacy_offline_watermarks=(
+                    allow_legacy_offline_watermarks
+                ),
             )
             gap_reason = gap_reason or _tick_buffer_gap_reason(state, ticks, heartbeat)
             gap_reason = gap_reason or _preconsume_tick_gap_reason(

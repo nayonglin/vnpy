@@ -830,6 +830,10 @@ class ContinuousTickStreamTest(unittest.TestCase):
             persisted = json.loads(heartbeat.read_text(encoding="utf-8"))
 
         self.assertTrue(result["ever_stream_ready"])
+        self.assertEqual(
+            persisted["symbol_eviction_watermark_schema_version"],
+            1,
+        )
         self.assertTrue(persisted["gap_latched"])
         self.assertEqual(
             persisted["journal_session_state"],

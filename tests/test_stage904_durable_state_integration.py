@@ -241,6 +241,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             broker_positions=broker_positions,
             readonly_bundle_manifest=manifest,
             readonly_bundle_evidence=evidence,
+            allow_legacy_offline_watermarks=True,
             **kwargs,
         )
 
@@ -403,6 +404,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             journal_path=journal_path,
             max_tick_age_seconds=30,
             execution_ledger_path=ledger_path,
+            allow_legacy_offline_watermarks=True,
         )
 
     def base(self, *, fill_price: float = 1245.5, cycle_no: int = 0) -> dict:
@@ -456,6 +458,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         ledger: list[dict] | None = None,
         base: dict | None = None,
         heartbeat: dict | None = None,
+        allow_legacy_offline_watermarks: bool = True,
     ) -> dict:
         effective_base = base or self.base()
         readonly_summary, broker_positions = self.readonly_position(
@@ -471,6 +474,9 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 journal_path=Path(tmp) / "journal.ndjson",
                 readonly_summary=readonly_summary,
                 broker_positions=broker_positions,
+                allow_legacy_offline_watermarks=(
+                    allow_legacy_offline_watermarks
+                ),
             )
 
     def test_progress_first_disarms_stop_in_same_batch_and_next_cycle(self) -> None:
@@ -1976,6 +1982,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 broker_positions=broker_positions,
                 max_tick_age_seconds=30,
                 execution_ledger_path=ledger_path,
+                allow_legacy_offline_watermarks=True,
             )
             durable_rows = stage904.read_execution_ledger(ledger_path)
 
@@ -2018,6 +2025,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 ticks=retained,
                 heartbeat=heartbeat,
                 journal_path=Path(tmp) / "journal.ndjson",
+                allow_legacy_offline_watermarks=True,
             )
         self.assertEqual("watch", row["monitor_action"])
         self.assertEqual("initial_armed", row["state_phase"])
@@ -2476,6 +2484,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         )
         heartbeat = {
             **self.heartbeat(),
+            "symbol_eviction_watermark_schema_version": 1,
             "stream_sequence": 2,
             "journal_tick_count": 2,
             "buffered_tick_count": 1,
@@ -2513,12 +2522,179 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             row["feed_gap_reason"],
         )
 
+    def test_missing_eviction_capability_cannot_hide_rolled_back_evicted_stop(
+        self,
+    ) -> None:
+        retained_after_eviction = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 2,
+                    "received_at": self.iso(self.entry_at - timedelta(seconds=1)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                },
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 3,
+                    "symbol_stream_sequence": 3,
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=2)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1239.0,
+                    "bid_price_1": 1239.0,
+                    "ask_price_1": 1239.0,
+                },
+            ]
+        )
+        heartbeat = {
+            **self.heartbeat(),
+            "stream_sequence": 3,
+            "journal_tick_count": 3,
+            "buffered_tick_count": 2,
+            "symbol_tick_watermarks": {
+                "JM609.DCE": {
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=2)),
+                    "stream_sequence": 3,
+                    "symbol_stream_sequence": 3,
+                }
+            },
+        }
+
+        row = self.apply(
+            stage904._new_state_store(self.target_date),
+            retained_after_eviction,
+            heartbeat=heartbeat,
+            allow_legacy_offline_watermarks=False,
+        )
+
+        self.assertEqual("initial_armed", row["state_phase"])
+        self.assertEqual(1, row["feed_gap_latched"])
+        self.assertEqual(
+            "tick_stream_symbol_eviction_watermark_schema_missing:JM609.DCE",
+            row["feed_gap_reason"],
+        )
+
+    def test_eviction_capability_and_watermark_validation_matrix(self) -> None:
+        state = {
+            "vt_symbol": "JM609.DCE",
+            "last_seq_by_feed": {"feed-a": 0},
+        }
+        valid = {
+            "durable_symbol_sequence": 3,
+            "first_buffered_symbol_sequence": 2,
+            "evicted_through_symbol_sequence": 1,
+        }
+        cases = [
+            (
+                "schema_bool",
+                True,
+                valid,
+                "tick_stream_symbol_eviction_watermark_schema_invalid:JM609.DCE",
+            ),
+            (
+                "schema_unsupported",
+                2,
+                valid,
+                "tick_stream_symbol_eviction_watermark_schema_unsupported:"
+                "JM609.DCE;actual=2;required=1",
+            ),
+            (
+                "watermarks_missing",
+                1,
+                {},
+                "tick_stream_symbol_eviction_watermarks_incomplete:JM609.DCE",
+            ),
+            (
+                "watermarks_partial",
+                1,
+                {"durable_symbol_sequence": 3},
+                "tick_stream_symbol_eviction_watermarks_incomplete:JM609.DCE",
+            ),
+            (
+                "watermarks_bool",
+                1,
+                {**valid, "durable_symbol_sequence": True},
+                "tick_stream_symbol_eviction_watermarks_invalid:JM609.DCE",
+            ),
+            (
+                "watermarks_incoherent",
+                1,
+                {
+                    "durable_symbol_sequence": 3,
+                    "first_buffered_symbol_sequence": 3,
+                    "evicted_through_symbol_sequence": 0,
+                },
+                "tick_stream_symbol_eviction_watermarks_incoherent:JM609.DCE;"
+                "durable=3;first_buffered=3;evicted_through=0",
+            ),
+        ]
+        for name, schema, watermark, expected in cases:
+            with self.subTest(name):
+                reason = stage904._target_symbol_eviction_gap_reason(
+                    state=state,
+                    heartbeat={
+                        "feed_session_id": "feed-a",
+                        "symbol_eviction_watermark_schema_version": schema,
+                        "symbol_tick_watermarks": {"JM609.DCE": watermark},
+                    },
+                )
+                self.assertEqual(expected, reason)
+
+        invalid_cursor = stage904._target_symbol_eviction_gap_reason(
+            state={
+                "vt_symbol": "JM609.DCE",
+                "last_seq_by_feed": {"feed-a": True},
+            },
+            heartbeat={
+                "feed_session_id": "feed-a",
+                "symbol_eviction_watermark_schema_version": 1,
+                "symbol_tick_watermarks": {"JM609.DCE": valid},
+            },
+        )
+        self.assertEqual(
+            "tick_stream_target_symbol_last_consumed_invalid:"
+            "JM609.DCE;feed=feed-a",
+            invalid_cursor,
+        )
+
+    def test_legacy_offline_watermark_bypass_is_explicit_and_all_or_nothing(
+        self,
+    ) -> None:
+        state = {"vt_symbol": "JM609.DCE", "last_seq_by_feed": {}}
+        heartbeat = {
+            "feed_session_id": "feed-a",
+            "symbol_tick_watermarks": {"JM609.DCE": {}},
+        }
+        self.assertEqual(
+            "",
+            stage904._target_symbol_eviction_gap_reason(
+                state=state,
+                heartbeat=heartbeat,
+                allow_legacy_offline_watermarks=True,
+            ),
+        )
+        heartbeat["symbol_tick_watermarks"]["JM609.DCE"] = {
+            "durable_symbol_sequence": 3,
+        }
+        self.assertEqual(
+            "tick_stream_symbol_eviction_watermark_schema_missing:JM609.DCE",
+            stage904._target_symbol_eviction_gap_reason(
+                state=state,
+                heartbeat=heartbeat,
+                allow_legacy_offline_watermarks=True,
+            ),
+        )
+
     def test_target_symbol_eviction_at_last_consumed_boundary_does_not_false_gap(
         self,
     ) -> None:
         store = stage904._new_state_store(self.target_date)
         first_heartbeat = {
             **self.heartbeat(),
+            "symbol_eviction_watermark_schema_version": 1,
             "symbol_tick_watermarks": {
                 "JM609.DCE": {
                     "received_at": self.iso(self.now),
@@ -2553,6 +2729,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         )
         second_heartbeat = {
             **self.heartbeat(),
+            "symbol_eviction_watermark_schema_version": 1,
             "symbol_tick_watermarks": {
                 "JM609.DCE": {
                     "received_at": self.iso(self.now),
@@ -2614,6 +2791,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         )
         heartbeat = {
             **self.heartbeat(),
+            "symbol_eviction_watermark_schema_version": 1,
             "stream_sequence": 3,
             "journal_tick_count": 3,
             "buffered_tick_count": 3,
@@ -2718,6 +2896,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 ticks=self.ticks([(1, 1252.0)]),
                 heartbeat=self.heartbeat(),
                 journal_path=journal_path,
+                allow_legacy_offline_watermarks=True,
             )
             self.assertEqual("close_dry_run", row["monitor_action"])
             expected_action_id = row["action_id"]
