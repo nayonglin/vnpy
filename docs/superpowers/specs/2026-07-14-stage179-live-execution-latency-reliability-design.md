@@ -1,6 +1,6 @@
 # Stage179 实盘执行低延迟与可靠性设计
 
-**状态：** 对话设计已于 2026-07-14 获得用户批准；本文等待用户书面复核后进入实施计划。
+**状态：** 对话设计已于 2026-07-14 获得用户批准，2026-07-15 按 Spec 分任务实施中；代码合入不等于实盘激活。
 
 **目标：** 将现有 Stage179 执行可靠性候选推进为“可安全合入、默认不激活、可分阶段验证”的正式候选，并把行情进入系统到报单、回报和落账的延迟变成可证明、可故障注入、超限即失败关闭的工程指标。
 
@@ -85,11 +85,19 @@ Stage608 包装实际 gateway 实例的 `on_tick`。在调用原始 `BaseGateway
 - `ingress_monotonic_ns`
 - `handler_received_monotonic_ns`（仅在 EventEngine handler 观测时补充，不能用于 freshness）
 
-入口只允许字段复制、序列分配和 `put_nowait`，不得做文件、锁、JSON 编码、网络或等待操作。默认队列容量为 `8192`。异步唯一 writer 按最多 `256` 条或最多等待 `50ms` 成批写 NDJSON，执行 `flush + os.fsync` 后才推进 durable watermark、ring snapshot 和 heartbeat。
+入口只允许字段复制、序列分配、`put_nowait`，以及用于和 shutdown restore 线性化的极短内存 capture lease；支持的 CPython 3.11 实现使用 Event flag 与 GIL 串行化的 token add/discard，不得在 callback 使用 mutex/Condition。callback 不得做文件/flock、JSON 编码、网络、耐久化等待或无界等待。restore 先禁止新 capture，再最多轮询 `2s` 让已取得 lease 的 capture 退出。默认队列容量为 `8192`。异步唯一 writer 按最多 `256` 条或最多等待 `50ms` 成批写带 header/commit frame 的 NDJSON journal，执行完整写入、`flush + os.fsync` 后才推进 durable watermark、ring snapshot 和 heartbeat。
 
-队列满时 callback 必须立即返回，同时锁存 overflow、记录首尾缺口序列并撤销 readiness；不得静默丢 tick 后重新变绿。writer 错误同样锁存 fault，只有新 `feed_session_id` 完整启动后才能恢复。
+`feed_session_id` 必须是可编码为 UTF-8 且不超过 `256 bytes` 的非空字符串；header/commit 等控制记录序列化后也不得超过单行 `4MiB` 上限。外部 reader cursor 不是可信 checkpoint：framed v1 reader 必须从同一已打开文件描述符的 header 开始，逐批验证 sequence、row identity、byte count、hash、previous/first/last cursor 与 commit offset，证明目标 cursor 在完整祖先链上可达后才允许 resume。校验内存保持单批上限，但时间复杂度为 `O(cursor offset)`；若后续要改成常数时间 resume，必须升级为带受信 checkpoint/hash chain 的新 schema，并重新过 Task13 SLA，不能退回只检查 cursor 附近一条 commit。
 
-启动时先发布 `starting/unready`。优雅停止顺序为：禁止新 ingress、关闭 MD、最多等待 `2s` drain、fsync、发布 `stopped`。若上次 segment 存在半行或未校验尾部，新进程隔离或截断坏尾、创建新 session，并在 heartbeat 披露上个 session 的未提交区间。
+队列满时 callback 必须立即返回，同时锁存 overflow、记录首尾缺口序列并撤销 readiness；不得静默丢 tick 后重新变绿。writer 错误同样锁存 fault，旧 feed 永久撤销 readiness，只有新 `feed_session_id` 完整启动后才能恢复。`journal_write_error` 若只是 durability barrier 结果不确定，新 feed 仅可在取得同一 segment 独占锁、完整验证 commit frame/hash/序列并于暴露 recovered cursor 前重新完成一次 durability barrier 后消除该 soft gap；queue overflow、shutdown revocation、半帧和坏 hash 属于不可扫描消除的 hard gap。recovery barrier 失败只阻断本次恢复且不得暴露 cursor；后续尝试必须重新取锁、重放全部验证并完成新的成功 barrier。
+
+脏尾恢复使用不可变 redo manifest，禁止在 recovery 结果只存在内存时先破坏源 journal。正确提交顺序是：验证源 inode/大小与前后缀 hash → 写 sidecar 并完成文件和父目录耐久化 → 原子写固定路径 manifest 并完成文件和父目录耐久化 → 再次验证同一源 inode/大小/hash → `ftruncate + fsync(source) + fsync(parent)`。manifest 记录确定性 transaction id、源身份、trusted offset、prefix/tail hash、sidecar、旧 authority 投影和完整 gap lineage；重启时必须在普通扫描前重放 manifest，只接受源仍为 original size 或 trusted size 的同一 inode。authority 默认必须与 manifest 完全一致；唯一允许的变化是初始化失败造成 `starting/running → fault_stopped` 的单调撤权，且必须同时证明 stopped/unready、writer 已停、recovery blocked，并保持所有非生命周期 authority 字段不变。direct ACK 与 restart ACK 都必须从 manifest 重建 recovery result，并证明外层 result 与 transaction-id core 内的 result 完全相等，之后才允许验证 successor heartbeat 的 transaction/gap 覆盖并删除 manifest。ACK 证据可以是耐久的 `starting/unready` H1，也可以是它的单调 `fault_stopped` / `recovery_required_stopped` 后继；后继必须从磁盘重读证明同一 transaction id、manifest path、完整 gaps，且 stopped/unready、非 clean、writer-dead。ACK 在 journal lock 内还必须重新证明 sidecar/manifest 的 inode、大小与 hash，严格证明 source 已经是同一 inode 的 `trusted_end` 大小且 trusted prefix hash 不变；只有 replay 可以接受尚未 apply 的 `original_size`。heartbeat 必须在文件 barrier 前后复读同一 FD 的完整字节，并在 unlink 前于锁内再次证明 pathname/inode/hash/H1 未变化。满足这些条件后才允许删除 manifest 并 fsync 父目录；sidecar 作为审计证据保留。
+
+启动采用两段 lifecycle guard：先耐久写 `startup_handoff` guard，再发布 `starting/unready`；journal header 完成文件及父目录耐久化、writer 仍存活、H1 已从磁盘重读且 recovery manifest 已 ACK 后，必须在连接 CTP 前清除这段 guard。停止阶段必须在任何 MD/TD/EventEngine teardown 之前先耐久写 `terminal_commit` guard，并在 shutdown 后单调刷新 `capture_quiesced`、`writer_quiesced`、`pipeline_quiesced`；只有三项均成立、stopped/unready 终态已持久化且原 SIGTERM/SIGINT handler 恢复成功后才可清除。若 guard 两次发布都失败且任一 quiescence 未完成，必须在仍持 owner lock 时执行进程级 `os._exit(2)`，普通 return/raise/SystemExit 都不具备安全语义。新 producer 取得 owner lock 后，可消费身份、segment、authority revision 与 phase 全部一致的死 owner guard，但清 guard 前必须先把 `starting/running`、旧 `clean_stopped`、任何 ready/transport-ready、writer-alive、accepting 或其他非一致 stopped-fault authority 原子改写为 `fault_stopped + stopped/unready + writer-dead + accepting=false + recovery_blocked`；只有已经一致的 fault/recovery-required stop 可不重复改写。即使没有 guard，普通进程崩溃遗留的 running/ready authority 也必须在任何 journal recovery、初始化或 CTP connect 前通过一段可恢复 startup guard 原子撤权；这段 guard 必须绑定旧 authority 的 feed/session、segment 和 revision，确保 fault heartbeat 已提交但 guard 尚未删除时，下一进程可在确认旧 owner 死亡后消费同一条单调撤权链。撤权写失败保留 guard 并禁止 recovery/connect。guard 损坏或身份矛盾继续阻断。任一 quiescence 字段未证明的 guard 都要求旧 PID 已确定消失，不能让仍在执行 callback 或 writer 的旧进程与新 producer 并存。
+
+tick/heartbeat 原子发布把父目录 open/fsync 也视为 commit 的一部分；父目录 FD 必须在 replace 前取得。若 post-replace barrier 失败，必须通过仍打开的句柄分别 truncate/fsync 新 replacement inode 与可能因崩溃回滚重新可见的 pre-replace inode，两个候选都撤权后才能传播原始 barrier 错误；若任一撤权失败，必须抛出明确的 `authority_unsafe` 复合错误并保留 lifecycle guard，绝不能报告成功。一次性 snapshot probe 与 stream 的全部报单授权前初始化（模块导入、callback patch、EventEngine、MainEngine、gateway、guard、pipeline、handler 与 signal handler）都必须处于同一回滚边界；任一步骤失败，都要撤销 heartbeat readiness，并关闭已经创建的资源。停止时保持行情包装和报单 guard：snapshot probe 为 TD/MD 都安装 entered/completed 的 at-most-once fence；stream 先禁止新 ingress，直接关闭一次非幂等 MD API，再通过连接状态与替换 close 阻断二次 native MD close，并为 TD 安装 entered/completed fence后执行 aggregate close。如果 aggregate close 在 gateway 前短路，fallback 继续关闭 EventEngine、其余 engine、TD 与尚未进入的 MD close，但任一 native close 最多进入一次，部分 native close 失败不得重试。只有 aggregate close 成功且 capture fence 确认全部在途 lease 已退出后，才可恢复报单 guard；然后最多等待 `2s` drain writer 与 fsync。capture fence 超时必须保留报单 guard 和 lifecycle guard，并以 fault/exit `2` 结束。最终 `clean_stopped` 和 heartbeat 必须来自同一份 durable terminal snapshot，并同时证明 `journal_authority_committed=true`、framed schema/cursor offset 合法、无 gap/fault/drop、queue 为空、writer 已停、accepting=false 且 `last_ingress_sequence == durable_ingress_sequence`；任一矛盾都降级为 `fault_stopped` 且退出码为 `2`。`stopped/unready` 必须先耐久发布，原 SIGTERM/SIGINT handler 才能恢复；恢复失败时再次降级，不得留下 ready/running 终止窗口。若首次 MD close/fence 不确定，则禁止 aggregate gateway 重试，分别关闭 EventEngine、其余 engine 与 TD，并保持 fault-stopped。若上次 segment 存在半行、commit frame 不完整或 cursor 证据矛盾，新进程隔离或截断坏尾、创建新 session，并在 heartbeat 披露上个 session 的未提交区间。
+
+Stage608 在本阶段可先发布每个目标合约的 `durable_symbol_sequence`、`first_buffered_symbol_sequence` 和 `evicted_through_symbol_sequence`，但这只是 producer prewire；在 Stage904 的 Task 3 消费门禁完成并通过回归前，这些字段不得被解释为新的交易授权或已完成的淘汰阻断能力。
 
 ### 5.2 常驻 Stage904/905 检测器
 
@@ -192,7 +200,8 @@ monotonic 时间只在同一主机启动周期内比较；跨重启审计使用 
 ## 6. 故障与恢复语义
 
 - **正常重启：** 停 ingress、drain/fsync、撤销 readiness；detector 和 executor 从 durable cursor/spool/ledger 恢复。
-- **SIGKILL/主机故障：** 只保证已 fsync 行和已提交 SQLite 事务；queued 或当前未 fsync batch 允许丢失，但下一次启动必须披露 sequence gap 并保持 unready。
+- **SIGKILL/进程崩溃：** 只把已完成普通 `fsync` 和父目录 barrier 的行、以及已提交 SQLite 事务视为 OS 可见提交；queued 或当前未 fsync batch 允许丢失，但下一次启动必须披露 sequence gap 并保持 unready。
+- **macOS 主机断电/驱动器缓存：** 当前候选不承诺普通 `fsync` 之后的物理介质落盘或写入顺序。Apple 明确区分 `fsync`、`F_BARRIERFSYNC` 和 `F_FULLFSYNC`；Task13 必须在正式文件系统上做延迟与故障测试，再决定是否升级耐久原语和 SLA。在此之前，“host failure”只覆盖进程/OS 可见恢复模型，不得解释为突然断电证明。
 - **磁盘满或 fsync 失败：** MD feed、detector 和新风险全部失败关闭；不得降级为仅 flush。
 - **spool lease 超时：** 先查 execution ledger。若存在 API slot/send/unknown evidence，不得重新 lease 给另一个 sender；只允许对账。
 - **broker ack 超时：** 标记 side-effect unknown，停止该 intent 自动重试，查询 active order/trade/position 后人工或确定性收敛。

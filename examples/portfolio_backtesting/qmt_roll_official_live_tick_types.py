@@ -9,11 +9,16 @@ DEFAULT_INGRESS_QUEUE_CAPACITY = 8192
 DEFAULT_WRITER_BATCH_SIZE = 256
 DEFAULT_WRITER_FLUSH_SECONDS = 0.050
 DEFAULT_SHUTDOWN_DRAIN_SECONDS = 2.0
+MAX_FEED_SESSION_ID_BYTES = 256
 
 JOURNAL_RECORD_TYPE_FIELD = "_stage179_record_type"
 JOURNAL_HEADER_RECORD_TYPE = "tick_journal_header_v1"
 JOURNAL_BATCH_COMMIT_RECORD_TYPE = "tick_batch_commit_v1"
 JOURNAL_BATCH_COMMIT_SCHEMA_VERSION = 1
+JOURNAL_SCHEMA_FRAMED_V1 = "stage179_framed_v1"
+JOURNAL_SCHEMA_LEGACY_V0 = "legacy_ndjson_v0"
+JOURNAL_FORMAT_FRAMED_V1 = "stage179_framed_ndjson_v1"
+JOURNAL_FORMAT_LEGACY_V0 = "legacy_ndjson_v0"
 
 TICK_INGRESS_ENVELOPE_ATTR = "_stage179_tick_ingress_envelope"
 
@@ -22,6 +27,8 @@ TICK_INGRESS_ENVELOPE_ATTR = "_stage179_tick_ingress_envelope"
 class DurableTickCursor:
     feed_session_id: str
     ingress_sequence: int
+    journal_byte_offset: int = 0
+    journal_schema: str = JOURNAL_SCHEMA_FRAMED_V1
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,6 +106,8 @@ class DurableTickSnapshot:
     accepting: bool
     stream_ready: bool
     journal_segment_path: Path
+    durable_journal_byte_offset: int = 0
+    journal_schema: str = JOURNAL_SCHEMA_FRAMED_V1
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,3 +135,8 @@ class JournalRecoveryResult:
     isolated_tail_path: Path | None
     isolated_byte_count: int
     disclosed_gap: TickStreamGap | None
+    disclosed_gaps: tuple[TickStreamGap, ...] = ()
+    journal_schema: str = JOURNAL_SCHEMA_FRAMED_V1
+    recovery_transaction_id: str = ""
+    recovery_manifest_path: Path | None = None
+    recovery_ack_required: bool = False

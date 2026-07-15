@@ -180,7 +180,7 @@ class TickStreamGap:
     reason: str
 ```
 
-`SystemClock.epoch_ns()` returns `time.time_ns()`, `monotonic_ns()` returns `time.monotonic_ns()`, and `sleep()` calls `time.sleep()`. `utc_iso_from_epoch_ns()` derives aware UTC from the same epoch value. `capture_ingress()` copies the tick fields before one `queue.put_nowait`; the first `Full` latches a permanent suffix gap and stops journal acceptance for that session. `install_gateway_tick_ingress()` always forwards the tick to the original gateway method and returns an idempotent restore callable.
+`SystemClock.epoch_ns()` returns `time.time_ns()`, `monotonic_ns()` returns `time.monotonic_ns()`, and `sleep()` calls `time.sleep()`. `utc_iso_from_epoch_ns()` derives aware UTC from the same epoch value. `capture_ingress()` copies the tick fields before one `queue.put_nowait`; the first `Full` latches a permanent suffix gap and stops journal acceptance for that session. `install_gateway_tick_ingress()` always forwards the tick to the original gateway method and returns an idempotent restore callable. The supported CPython 3.11 wrapper uses an Event flag plus GIL-serialized token add/discard for its short capture lease, not a blocking mutex/Condition; restore disables new captures and polls at most `2s` for already leased captures. The callback still performs no filesystem/flock/JSON/network I/O, mutex wait, or durability wait.
 
 - [ ] **Step 4: Run GREEN and the existing Stage931 backlog control**
 
@@ -206,15 +206,20 @@ git commit -m "feat(stage608): add bounded gateway tick ingress"
 ### Task 2: Add the Async Fsync Writer, Durable Cursor, Recovery, and Stage608 Wiring
 
 **Files:**
+- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py`
 - Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py`
+- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py`
 - Modify: `examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py`
+- Create: `examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py`
+- Create: `examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py`
 - Modify: `tests/test_stage608_continuous_tick_stream.py`
+- Create: `research/lines/futures_trend_stage819_intraday_rules/stages/20260715_1653_stage180_stage179_task2_durable_ingress_candidate.md`
 
 **Interfaces:**
 - Consumes: Task 1 envelopes
-- Produces: `DurableTickSnapshot`, `DurableTickBatch`, `ShutdownReport`, `JournalRecoveryResult`, `TickStreamJournalReader`, and a Stage608 heartbeat whose old aliases reflect only fsynced rows
+- Produces: `DurableTickCursor`, `DurableTickSnapshot`, `DurableTickBatch`, `ShutdownReport`, `JournalRecoveryResult`, `AsyncTickJournalWriter`, `TickStreamJournalReader`, `recover_or_isolate_dirty_tail()`, and a Stage608 heartbeat whose old aliases reflect only fsynced rows
 
-- [ ] **Step 1: Write RED tests for fsync ordering, writer faults, drain, dirty-tail recovery, and reader bounds**
+- [x] **Step 1: Write RED tests for fsync ordering, writer faults, drain, dirty-tail recovery, and reader bounds**
 
 Add tests named:
 
@@ -243,7 +248,7 @@ def test_reader_rejects_cross_session_cursor_and_undurable_tail(self):
     self.assertTrue(cross_session.gap is not None)
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -252,9 +257,11 @@ def test_reader_rejects_cross_session_cursor_and_undurable_tail(self):
 
 Expected: durable writer/recovery APIs are absent.
 
-- [ ] **Step 3: Implement commit ordering and Stage608 integration**
+- [x] **Step 3: Implement commit ordering and Stage608 integration**
 
-The writer owns one journal file descriptor. It batches at `256` rows or `50ms`, writes complete NDJSON, then calls `flush()` and `os.fsync()` before updating the immutable durable snapshot. A failed write/fsync leaves the cursor unchanged, latches a suffix gap from `durable+1`, and permanently revokes readiness for that feed session. The reader returns only rows `<= durable_through` and rejects cross-session cursors.
+The writer owns one journal file descriptor. It batches at `256` rows or `50ms`, writes complete NDJSON, then calls `flush()` and `os.fsync()` before updating the immutable durable snapshot. A failed write/fsync leaves the cursor unchanged, latches a suffix gap from `durable+1`, and permanently revokes readiness for that feed session. `feed_session_id` must be non-empty, valid UTF-8, and at most `256 bytes`; serialized header/commit control records share the `4MiB` single-line ceiling. `journal_write_error` is a soft durability ambiguity rather than proof of permanent data loss: a new feed may clear only that gap after taking the same exclusive segment lock, validating a complete commit frame/hash/sequence, and completing a new durability barrier before exposing the recovered cursor. Queue overflow, shutdown revocation, and partial/corrupt frames remain hard gaps. A failed recovery barrier blocks that attempt without exposing a cursor; a later attempt may retry only by retaking the lock, replaying all validation, and completing a new successful barrier. The framed reader returns only rows `<= durable_through`, rejects cross-session cursors, and treats external cursors as untrusted: it scans from the same descriptor's header through every bounded batch and proves the cursor's complete commit ancestry before resume. This uses bounded `O(batch)` memory but `O(cursor offset)` time; a future constant-time resume needs a new trusted checkpoint/hash-chain schema and Task13 SLA evidence. Atomic tick/heartbeat publication treats opening or fsyncing the parent directory as part of the commit; either failure propagates and must not be reported as a durable success. If the post-replace directory barrier fails, both still-open candidates—the replacement inode and the pre-replace inode that a crash rollback could make visible again—must be truncated and fsynced before propagating the barrier error. This Task 2 contract is process-crash and OS-visible `fsync` consistency, not a macOS sudden-power-loss guarantee: Apple documents that ordinary `fsync` may leave drive caches unordered. Task 13 must benchmark and fault-test `F_BARRIERFSYNC`/`F_FULLFSYNC` on the production filesystem before any stronger durability claim; do not silently switch the hot path primitive without latency evidence.
+
+Dirty-tail isolation uses one immutable redo manifest at `.<journal>.stage179.recovery.json`. The implementation must durably commit the deterministic sidecar and manifest before truncating the source, then revalidate the source inode/size and prefix/tail hashes before `ftruncate + fsync(source) + fsync(parent)`. Restart replays the manifest before ordinary heartbeat/path-size validation and accepts only the same inode at either original size or trusted size. The manifest contains the deterministic transaction id, source identity/hashes, sidecar, previous authority projection, exact recovery result, and complete gap lineage. Replay requires the exact prior authority projection, except that an initialization failure may monotonically revoke `starting/running` to `fault_stopped` only when stopped/unready, writer-dead, and recovery-blocked evidence is present and every non-lifecycle authority field is unchanged. Direct ACK and restart ACK must both reconstruct the recovery result from the manifest and prove that its outer projection exactly equals the result inside the transaction-id core before evaluating successor-heartbeat gap coverage or deleting redo authority. The manifest remains active until either a new `starting/unready` H1 or its durably committed monotonic `fault_stopped`/`recovery_required_stopped` successor proves the same transaction id, manifest path, and complete gaps from disk; a stopped successor must also be unready, non-clean, and writer-dead. Under the journal lock, ACK must re-prove sidecar/manifest bytes and identity, require the source to be the same inode already truncated to `trusted_end` with its trusted prefix hash intact, byte-recheck the heartbeat across its barrier, and re-read the same heartbeat and manifest identity immediately before unlink. Only replay may accept `original_size`; only after these ACK proofs may the manifest be unlinked and its parent fsynced. The dirty sidecar remains as audit evidence.
 
 In Stage608:
 
@@ -272,9 +279,11 @@ pipeline = TickStreamPipeline(
 restore_gateway = install_gateway_tick_ingress(ctp_gateway, pipeline)
 ```
 
-The EVENT_TICK handler calls only `pipeline.observe_handler(event.data)`. Heartbeat publication reads `pipeline.durable_snapshot()`. Shutdown order is restore/stop acceptance → close MD gateway → drain up to `2s` → final fsync/stopped heartbeat → `main_engine.close()`. Preserve `_run_stream` signature, old paths, model tag, schema-v1 snapshot commit, and aliases `stream_sequence`, `symbol_stream_sequence`, and `received_at`.
+The EVENT_TICK handler calls only `pipeline.observe_handler(event.data)`. Heartbeat publication reads `pipeline.durable_snapshot()`. Both the one-shot snapshot probe and stream place every pre-authority initialization step—module import/callback patch, EventEngine, MainEngine, gateway, guards, pipeline, event handlers, and signal handlers—inside one rollback boundary; any failure revokes heartbeat readiness and closes all resources created so far. Stream lifecycle uses a `startup_handoff` guard before H1 and clears it only after the on-disk `starting/unready` heartbeat has been reread, any recovery manifest has been ACKed, and before CTP connect. It durably writes `terminal_commit` before any teardown, then monotonically refreshes `capture_quiesced`, `writer_quiesced`, and `pipeline_quiesced`; clearing requires all three, stopped/unready durability, and signal restoration. If no valid terminal fence can be persisted while any resource remains unquiesced, the process calls `os._exit(2)` while still holding the owner lock instead of unwinding it. A new owner may reconcile an identity-consistent dead-owner guard under the owner lock, but before clearing it must durably rewrite every starting/running, stale clean, ready/transport-ready, writer-alive, accepting, or otherwise not-safely-fault-stopped authority as fault-stopped, unready, stopped, writer-dead, non-accepting, and recovery-blocked. Only an already consistent fault/recovery-required stop may be consumed without another rewrite; corrupt or mismatched guards remain blocking. Any unproved quiescence field requires the old PID to be definitely gone. Even with no guard, a stale running/ready authority from an ordinary process crash is fenced and durably revoked before journal recovery, initialization, or CTP connect; that revoke guard is bound to the prior authority's feed/session and revision so a crash after the fault heartbeat but before guard deletion is reconcilable on restart. A revoke-write or guard-clear failure remains restart-recoverable and cannot advance to recovery/connect. Atomic publication preopens the parent directory before replace; barrier plus invalidation double failure is reported as authority unsafe and preserves the guard. The one-shot snapshot probe wraps both TD and MD close with at-most-once entered/completed fences. Stream shutdown keeps both ingress and order guards installed while it stops acceptance, directly closes the non-idempotent MD API once, makes any second native MD close inert through connection state and method replacement, wraps TD close with an at-most-once entered/completed fence, and then runs aggregate `main_engine.close()` so any late gateway callback is still captured or rejected. If aggregate close short-circuits before the gateway, fallback continues EventEngine/engine/TD/MD teardown and invokes each native close at most once; a partial native close failure is recorded and never retried. Restore the order guard only after aggregate close and a successful gateway capture fence; timeout keeps both order and lifecycle guards, records fault, and exits `2`. Then drain the writer for up to `2s` and complete the final fsync. The final `clean_stopped` decision and heartbeat must come from the same durable terminal snapshot and prove committed authority, framed schema/byte cursor consistency, no gap/fault/drop, an empty queue, a stopped writer, disabled acceptance, and `last_ingress_sequence == durable_ingress_sequence`; any contradiction downgrades to `fault_stopped` and exit code `2`. Publish stopped/unready durably before restoring the original SIGTERM/SIGINT handlers. A signal-restore error republishes `fault_stopped`; restoring defaults must never reopen a ready/running termination window. If the first MD close or its fence is uncertain, skip the unsafe aggregate gateway retry, close the remaining Python/EventEngine/TD resources separately, and remain fault-stopped.
 
-- [ ] **Step 4: Run GREEN**
+Task 2 may publish additive per-symbol durable/first-buffered/evicted-through watermarks, but they are producer-side prewiring only. They do not authorize or block trading until Task 3 adds and verifies the Stage904 consumer gate. Preserve `_run_stream` signature, old paths, model tag, schema-v1 snapshot commit, and aliases `stream_sequence`, `symbol_stream_sequence`, and `received_at`.
+
+- [x] **Step 4: Run GREEN**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -283,38 +292,48 @@ The EVENT_TICK handler calls only `pipeline.observe_handler(event.data)`. Heartb
 
 Expected: existing and new Stage608 tests pass; send/cancel counters remain 0.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit after the reopened exact-diff review reports `P0=0, P1=0`**
 
 ```bash
-git add examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py \
+git add docs/superpowers/plans/2026-07-14-stage179-live-execution-latency-reliability.md \
+  docs/superpowers/specs/2026-07-14-stage179-live-execution-latency-reliability-design.md \
+  examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py \
+  examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py \
+  examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py \
+  examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py \
+  examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py \
   examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py \
-  tests/test_stage608_continuous_tick_stream.py
-git commit -m "fix(stage608): publish only fsynced tick state"
+  tests/test_stage608_continuous_tick_stream.py \
+  research/lines/futures_trend_stage819_intraday_rules/stages/20260715_1813_stage181_stage179_task2_followup_crash_consistency.md
+git commit -m "fix(stage608): harden durable readonly lifecycle"
 ```
 
 ---
 
-### Task 3: Detect Target-Symbol Eviction Even When Its Ring Frame Is Empty
+### Task 3: Consume Target-Symbol Eviction Even When Its Ring Frame Is Empty
 
 **Files:**
-- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py`
-- Modify: `examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py`
+- Read/verify only: `examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py`
+- Read/verify only: `examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py`
 - Modify: `examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py`
-- Modify: `tests/test_stage608_continuous_tick_stream.py`
+- Read/verify only: `tests/test_stage608_continuous_tick_stream.py`
 - Modify: `tests/test_stage904_durable_state_integration.py`
 
 **Interfaces:**
 - Consumes: per-symbol durable and eviction watermarks
 - Produces: exact `tick_target_symbol_evicted_before_consume` fail-close evidence
 
-- [ ] **Step 1: Write RED tests**
+- [ ] **Step 1: Verify the Task 2 producer contract, then write the Stage904 RED test**
+
+Task 2 already owns and verifies the producer-side contract:
 
 ```python
-def test_global_ring_eviction_exposes_target_symbol_gap(self):
+def test_durable_ring_capacity_records_per_symbol_eviction(self):
     self.assertEqual(watermark.evicted_through_symbol_sequence, 1)
     self.assertEqual(watermark.first_buffered_symbol_sequence, 0)
     self.assertEqual(watermark.durable_symbol_sequence, 1)
 
+# New Task 3 RED test:
 def test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_target_frame_empty(self):
     self.assertEqual(result["feed_gap_latched"], 1)
     self.assertIn("tick_target_symbol_evicted_before_consume", result["feed_gap_reason"])
@@ -328,11 +347,11 @@ def test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_targe
   tests.test_stage904_durable_state_integration.Stage904DurableStateIntegrationTest.test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_target_frame_empty
 ```
 
-Expected: the new watermark/gate is missing.
+Expected: the existing Stage608 producer watermark test is GREEN; only the Stage904 consumer test is RED because the gate is missing.
 
-- [ ] **Step 3: Implement the additive watermark and Stage904 gate**
+- [ ] **Step 3: Implement only the Stage904 consumer gate**
 
-Every durable ring eviction updates `evicted_through_symbol_sequence`; the heartbeat retains old keys and adds `durable_symbol_sequence`, `first_buffered_symbol_sequence`, and `evicted_through_symbol_sequence`. Before generic missing-row handling, Stage904 compares `evicted_through` with the state's last consumed sequence and returns:
+Read Task 2's existing `durable_symbol_sequence`, `first_buffered_symbol_sequence`, and `evicted_through_symbol_sequence` fields without changing their producer semantics. Before generic missing-row handling, Stage904 compares `evicted_through` with the state's last consumed sequence and returns:
 
 ```python
 return (
@@ -355,10 +374,7 @@ Expected: target eviction fails closed; existing JM/RB/JM interleaving does not 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py \
-  examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py \
-  examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py \
-  tests/test_stage608_continuous_tick_stream.py \
+git add examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py \
   tests/test_stage904_durable_state_integration.py
 git commit -m "fix(stage904): latch evicted target tick gaps"
 ```

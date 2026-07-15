@@ -14,9 +14,13 @@ from collections import deque
 from qmt_roll_official_live_time import Clock, utc_iso_from_epoch_ns
 from qmt_roll_official_live_tick_journal import (
     AsyncTickJournalWriter,
-    TickStreamJournalReader,
     _durability_barrier,
     _fsync_parent,
+)
+from qmt_roll_official_live_tick_reader import TickStreamJournalReader
+from qmt_roll_official_live_tick_recovery import (
+    acknowledge_committed_recovery_manifest,
+    acknowledge_recovery_manifest,
     recover_or_isolate_dirty_tail,
 )
 from qmt_roll_official_live_tick_types import (
@@ -26,8 +30,13 @@ from qmt_roll_official_live_tick_types import (
     DEFAULT_WRITER_FLUSH_SECONDS,
     JOURNAL_BATCH_COMMIT_RECORD_TYPE,
     JOURNAL_BATCH_COMMIT_SCHEMA_VERSION,
+    JOURNAL_FORMAT_FRAMED_V1,
+    JOURNAL_FORMAT_LEGACY_V0,
     JOURNAL_HEADER_RECORD_TYPE,
     JOURNAL_RECORD_TYPE_FIELD,
+    JOURNAL_SCHEMA_FRAMED_V1,
+    JOURNAL_SCHEMA_LEGACY_V0,
+    MAX_FEED_SESSION_ID_BYTES,
     TICK_INGRESS_ENVELOPE_ATTR,
     DurableTickBatch,
     DurableTickCursor,
@@ -131,18 +140,32 @@ class TickStreamPipeline:
         writer_flush_seconds: float = DEFAULT_WRITER_FLUSH_SECONDS,
         trace_sink: Any | None = None,
     ) -> None:
-        if not _clean(feed_session_id):
+        normalized_feed_session_id = _clean(feed_session_id)
+        if not normalized_feed_session_id:
             raise ValueError("feed_session_id must not be empty")
+        try:
+            feed_session_id_bytes = normalized_feed_session_id.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ValueError("feed_session_id must be valid UTF-8") from exc
+        if len(feed_session_id_bytes) > MAX_FEED_SESSION_ID_BYTES:
+            raise ValueError(
+                "feed_session_id is too long: "
+                f"{len(feed_session_id_bytes)} > {MAX_FEED_SESSION_ID_BYTES} bytes"
+            )
         if queue_capacity <= 0:
             raise ValueError("queue_capacity must be positive")
         if max_buffer_ticks <= 0:
             raise ValueError("max_buffer_ticks must be positive")
         if writer_batch_size <= 0:
             raise ValueError("writer_batch_size must be positive")
+        if writer_batch_size > DEFAULT_WRITER_BATCH_SIZE:
+            raise ValueError(
+                f"writer_batch_size must be <= {DEFAULT_WRITER_BATCH_SIZE}"
+            )
         if writer_flush_seconds <= 0:
             raise ValueError("writer_flush_seconds must be positive")
 
-        self.feed_session_id = _clean(feed_session_id)
+        self.feed_session_id = normalized_feed_session_id
         self.journal_segment_path = Path(journal_segment_path)
         self.clock = clock
         self.queue_capacity = int(queue_capacity)
@@ -164,6 +187,7 @@ class TickStreamPipeline:
         self._accepting = True
         self._durable_condition = threading.Condition()
         self._durable_ingress_sequence = 0
+        self._durable_journal_byte_offset = 0
         self._durable_rows: deque[Mapping[str, Any]] = deque()
         self._latest_by_symbol: dict[str, Mapping[str, Any]] = {}
         self._evicted_through_by_symbol: dict[str, int] = {}
@@ -324,11 +348,52 @@ class TickStreamPipeline:
         for envelope in batch:
             if envelope.feed_session_id != self.feed_session_id:
                 raise RuntimeError("writer_batch_feed_session_mismatch")
+            for field in (
+                "ingress_sequence",
+                "symbol_sequence",
+                "ingress_epoch_ns",
+                "ingress_monotonic_ns",
+            ):
+                value = getattr(envelope, field)
+                if type(value) is not int:
+                    raise RuntimeError(
+                        "writer_envelope_integer_identity_invalid:"
+                        f"field={field};actual_type={type(value).__name__}"
+                    )
             if envelope.ingress_sequence != expected:
                 raise RuntimeError(
                     "writer_batch_sequence_gap:"
                     f"expected={expected};actual={envelope.ingress_sequence}"
                 )
+            expected_trace_id = _trace_id(
+                envelope.feed_session_id,
+                envelope.ingress_sequence,
+            )
+            expected_identity = {
+                "feed_session_id": envelope.feed_session_id,
+                "ingress_sequence": envelope.ingress_sequence,
+                "stream_sequence": envelope.ingress_sequence,
+                "symbol_sequence": envelope.symbol_sequence,
+                "symbol_stream_sequence": envelope.symbol_sequence,
+                "received_at_utc": envelope.received_at_utc,
+                "received_at": envelope.received_at_utc,
+                "ingress_epoch_ns": envelope.ingress_epoch_ns,
+                "ingress_monotonic_ns": envelope.ingress_monotonic_ns,
+                "trace_id": envelope.trace_id,
+            }
+            if envelope.trace_id != expected_trace_id:
+                raise RuntimeError("writer_envelope_trace_identity_mismatch")
+            for field, expected_value in expected_identity.items():
+                actual_value = envelope.tick_row.get(field)
+                if (
+                    type(actual_value) is not type(expected_value)
+                    or actual_value != expected_value
+                ):
+                    raise RuntimeError(
+                        "writer_tick_row_identity_mismatch:"
+                        f"field={field};expected={expected_value!r};"
+                        f"actual={actual_value!r}"
+                    )
             expected += 1
 
     def _validate_batch_for_journal(
@@ -340,7 +405,12 @@ class TickStreamPipeline:
         with self._durable_condition:
             self._validate_durable_batch_locked(batch)
 
-    def _commit_durable_batch(self, batch: list[TickIngressEnvelope]) -> None:
+    def _commit_durable_batch(
+        self,
+        batch: list[TickIngressEnvelope],
+        *,
+        journal_byte_offset: int,
+    ) -> None:
         if not batch:
             return
         with self._durable_condition:
@@ -367,6 +437,7 @@ class TickStreamPipeline:
                 if vt_symbol:
                     self._latest_by_symbol[vt_symbol] = row
             self._durable_ingress_sequence = batch[-1].ingress_sequence
+            self._durable_journal_byte_offset = int(journal_byte_offset)
             self._rebuild_symbol_watermarks()
             self._durable_condition.notify_all()
 
@@ -467,12 +538,16 @@ class TickStreamPipeline:
     def wait_until_writer_stops(self, *, timeout_seconds: float) -> bool:
         return self._writer.wait_stopped(timeout_seconds)
 
+    def wait_until_journal_ready(self, *, timeout_seconds: float) -> bool:
+        return self._writer.wait_header_durable(timeout_seconds)
+
     def durable_snapshot(self) -> DurableTickSnapshot:
         with self._durable_condition:
             rows = tuple(self._durable_rows)
             latest_by_symbol = MappingProxyType(dict(self._latest_by_symbol))
             symbol_watermarks = MappingProxyType(dict(self._symbol_watermarks))
             durable_ingress_sequence = self._durable_ingress_sequence
+            durable_journal_byte_offset = self._durable_journal_byte_offset
             writer_fault = self._writer_fault
         writer_alive = self._writer.is_alive
         return DurableTickSnapshot(
@@ -497,6 +572,8 @@ class TickStreamPipeline:
                 and writer_alive
             ),
             journal_segment_path=self.journal_segment_path,
+            durable_journal_byte_offset=durable_journal_byte_offset,
+            journal_schema=JOURNAL_SCHEMA_FRAMED_V1,
         )
 
     def shutdown(
@@ -557,7 +634,12 @@ class TickStreamPipeline:
         )
         gap = self._effective_gap()
         durable_through = (
-            DurableTickCursor(self.feed_session_id, durable_sequence)
+            DurableTickCursor(
+                self.feed_session_id,
+                durable_sequence,
+                journal_byte_offset=self._durable_journal_byte_offset,
+                journal_schema=JOURNAL_SCHEMA_FRAMED_V1,
+            )
             if durable_sequence > 0
             else None
         )
@@ -630,30 +712,66 @@ def install_gateway_tick_ingress(
     """Stamp before EventEngine enqueue while preserving gateway forwarding."""
 
     original_on_tick = gateway.on_tick
+    capture_enabled = threading.Event()
+    capture_enabled.set()
+    # The supported CPython 3.11 runtime serializes set add/discard under the
+    # GIL.  Unlike a Condition, these hot-path operations never wait on a
+    # user-space mutex.  The second Event check closes the clear-vs-add race.
+    active_capture_tokens: set[object] = set()
+    restore_complete = False
 
     @wraps(original_on_tick)
     def wrapped_on_tick(tick: Any, *args: Any, **kwargs: Any) -> Any:
+        capture_token: object | None = None
         try:
-            pipeline.capture_ingress(tick)
-        except Exception as exc:
             try:
-                pipeline.latch_capture_exception(exc)
-            except Exception as latch_exc:
+                if capture_enabled.is_set():
+                    capture_token = object()
+                    active_capture_tokens.add(capture_token)
+                    if not capture_enabled.is_set():
+                        active_capture_tokens.discard(capture_token)
+                        capture_token = None
+                if capture_token is not None:
+                    pipeline.capture_ingress(tick)
+            except Exception as exc:
                 try:
-                    pipeline._force_fail_closed_after_latch_error(latch_exc)
-                except Exception:
-                    pass
-        return original_on_tick(tick, *args, **kwargs)
+                    pipeline.latch_capture_exception(exc)
+                except Exception as latch_exc:
+                    try:
+                        pipeline._force_fail_closed_after_latch_error(latch_exc)
+                    except Exception:
+                        pass
+            return original_on_tick(tick, *args, **kwargs)
+        finally:
+            if capture_token is not None:
+                active_capture_tokens.discard(capture_token)
 
     gateway.on_tick = wrapped_on_tick
-    restored = False
 
     def restore() -> None:
-        nonlocal restored
-        if restored:
+        """Fence new captures and wait for every leased capture to finish."""
+
+        nonlocal restore_complete
+        deadline = time.monotonic() + DEFAULT_SHUTDOWN_DRAIN_SECONDS
+        if restore_complete:
             return
-        restored = True
-        if gateway.on_tick is wrapped_on_tick:
-            gateway.on_tick = original_on_tick
+        capture_enabled.clear()
+        assignment_error: Exception | None = None
+        try:
+            if gateway.on_tick is wrapped_on_tick:
+                gateway.on_tick = original_on_tick
+        except Exception as exc:
+            assignment_error = exc
+        while active_capture_tokens:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(
+                    "gateway ingress capture fence timed out;"
+                    f" active_captures={len(active_capture_tokens)}"
+                )
+            time.sleep(min(0.001, remaining))
+        if assignment_error is not None:
+            raise assignment_error
+        restore_complete = True
 
     return restore
