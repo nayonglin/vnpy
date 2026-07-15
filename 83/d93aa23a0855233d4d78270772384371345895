@@ -1,0 +1,21 @@
+examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py
+  s_57fbbdfeac5414::t_c5fa95d034b6b0 17,28-35,44,77,84,92-100,723-765,779-799,808,843-857,866-870,872-879,887-895,903-920,945,947-948,974-984,988-993,998-1001
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "83d93aa23a0855233d4d78270772384371345895",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
