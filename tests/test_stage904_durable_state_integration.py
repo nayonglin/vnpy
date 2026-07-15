@@ -2457,6 +2457,126 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         self.assertEqual(1, row["feed_gap_latched"])
         self.assertIn("tick_from_future_before_consume", row["feed_gap_reason"])
 
+    def test_target_symbol_evicted_from_global_ring_latches_feed_gap_even_when_target_frame_empty(
+        self,
+    ) -> None:
+        retained_other_symbol = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 1,
+                    "received_at": self.iso(self.now),
+                    "vt_symbol": "RB610.SHFE",
+                    "last_price": 3500.0,
+                    "bid_price_1": 3499.0,
+                    "ask_price_1": 3500.0,
+                }
+            ]
+        )
+        heartbeat = {
+            **self.heartbeat(),
+            "stream_sequence": 2,
+            "journal_tick_count": 2,
+            "buffered_tick_count": 1,
+            "symbol_tick_watermarks": {
+                "JM609.DCE": {
+                    "received_at": self.iso(self.now),
+                    "stream_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "durable_symbol_sequence": 1,
+                    "first_buffered_symbol_sequence": 0,
+                    "evicted_through_symbol_sequence": 1,
+                },
+                "RB610.SHFE": {
+                    "received_at": self.iso(self.now),
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 1,
+                    "durable_symbol_sequence": 1,
+                    "first_buffered_symbol_sequence": 1,
+                    "evicted_through_symbol_sequence": 0,
+                },
+            },
+        }
+
+        row = self.apply(
+            stage904._new_state_store(self.target_date),
+            retained_other_symbol,
+            heartbeat=heartbeat,
+        )
+
+        self.assertEqual("initial_armed", row["state_phase"])
+        self.assertEqual(1, row["feed_gap_latched"])
+        self.assertEqual(
+            "tick_target_symbol_evicted_before_consume:JM609.DCE;"
+            "feed=feed-a;last_consumed=0;evicted_through=1",
+            row["feed_gap_reason"],
+        )
+
+    def test_target_symbol_eviction_at_last_consumed_boundary_does_not_false_gap(
+        self,
+    ) -> None:
+        store = stage904._new_state_store(self.target_date)
+        first_heartbeat = {
+            **self.heartbeat(),
+            "symbol_tick_watermarks": {
+                "JM609.DCE": {
+                    "received_at": self.iso(self.now),
+                    "stream_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "durable_symbol_sequence": 1,
+                    "first_buffered_symbol_sequence": 1,
+                    "evicted_through_symbol_sequence": 0,
+                }
+            },
+        }
+        first = self.apply(
+            store,
+            self.ticks([(1, 1245.0)]),
+            heartbeat=first_heartbeat,
+        )
+        self.assertEqual(0, first["feed_gap_latched"])
+
+        retained_next_tick = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 2,
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=2)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                }
+            ]
+        )
+        second_heartbeat = {
+            **self.heartbeat(),
+            "symbol_tick_watermarks": {
+                "JM609.DCE": {
+                    "received_at": self.iso(self.now),
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 2,
+                    "durable_symbol_sequence": 2,
+                    "first_buffered_symbol_sequence": 2,
+                    "evicted_through_symbol_sequence": 1,
+                }
+            },
+        }
+        second = self.apply(
+            store,
+            retained_next_tick,
+            heartbeat=second_heartbeat,
+        )
+
+        self.assertEqual(0, second["feed_gap_latched"])
+        self.assertEqual("", second["feed_gap_reason"])
+        self.assertEqual(
+            2,
+            store["states"][second["root_position_id"]]["last_seq_by_feed"]["feed-a"],
+        )
+
     def test_interleaved_symbols_use_per_symbol_sequence_without_false_gap(self) -> None:
         ticks = pd.DataFrame(
             [
@@ -2502,11 +2622,17 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                     "received_at": self.iso(self.now),
                     "stream_sequence": 3,
                     "symbol_stream_sequence": 2,
+                    "durable_symbol_sequence": 2,
+                    "first_buffered_symbol_sequence": 1,
+                    "evicted_through_symbol_sequence": 0,
                 },
                 "RB610.SHFE": {
                     "received_at": self.iso(self.now - timedelta(seconds=1)),
                     "stream_sequence": 2,
                     "symbol_stream_sequence": 1,
+                    "durable_symbol_sequence": 1,
+                    "first_buffered_symbol_sequence": 1,
+                    "evicted_through_symbol_sequence": 0,
                 },
             },
         }

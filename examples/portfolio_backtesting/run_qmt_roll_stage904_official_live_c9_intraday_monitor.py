@@ -890,6 +890,71 @@ def _dt_after(left: Any, right: Any) -> bool:
     return left_dt.astimezone(timezone.utc) > right_dt.astimezone(timezone.utc)
 
 
+def _target_symbol_eviction_gap_reason(
+    *,
+    state: dict[str, Any],
+    heartbeat: dict[str, Any],
+) -> str:
+    """Reject a target-symbol prefix that left the durable ring unconsumed."""
+
+    feed_session_id = _clean(heartbeat.get("feed_session_id"))
+    vt_symbol = _clean(state.get("vt_symbol"))
+    watermarks = heartbeat.get("symbol_tick_watermarks")
+    watermark = watermarks.get(vt_symbol) if isinstance(watermarks, dict) else None
+    if not feed_session_id or not vt_symbol or not isinstance(watermark, dict):
+        return ""
+
+    fields = (
+        "durable_symbol_sequence",
+        "first_buffered_symbol_sequence",
+        "evicted_through_symbol_sequence",
+    )
+    present = [field in watermark for field in fields]
+    if not any(present):
+        # Compatibility with a pre-Task2 Stage608 heartbeat during rollout.
+        return ""
+    if not all(present):
+        return f"tick_stream_symbol_eviction_watermarks_incomplete:{vt_symbol}"
+
+    values = {field: watermark.get(field) for field in fields}
+    if any(type(value) is not int or value < 0 for value in values.values()):
+        return f"tick_stream_symbol_eviction_watermarks_invalid:{vt_symbol}"
+    durable = int(values["durable_symbol_sequence"])
+    first_buffered = int(values["first_buffered_symbol_sequence"])
+    evicted_through = int(values["evicted_through_symbol_sequence"])
+    coherent = (
+        evicted_through == durable
+        if first_buffered == 0
+        else first_buffered == evicted_through + 1 and first_buffered <= durable
+    )
+    if not coherent:
+        return (
+            f"tick_stream_symbol_eviction_watermarks_incoherent:{vt_symbol};"
+            f"durable={durable};first_buffered={first_buffered};"
+            f"evicted_through={evicted_through}"
+        )
+
+    last_seq_by_feed = (
+        state.get("last_seq_by_feed")
+        if isinstance(state.get("last_seq_by_feed"), dict)
+        else {}
+    )
+    last_consumed_value = last_seq_by_feed.get(feed_session_id, 0)
+    if type(last_consumed_value) is not int or last_consumed_value < 0:
+        return (
+            "tick_stream_target_symbol_last_consumed_invalid:"
+            f"{vt_symbol};feed={feed_session_id}"
+        )
+    last_consumed = int(last_consumed_value)
+    if evicted_through <= last_consumed:
+        return ""
+    return (
+        f"tick_target_symbol_evicted_before_consume:{vt_symbol};"
+        f"feed={feed_session_id};last_consumed={last_consumed};"
+        f"evicted_through={evicted_through}"
+    )
+
+
 def _feed_gap_reason(
     *,
     state: dict[str, Any],
@@ -897,6 +962,12 @@ def _feed_gap_reason(
     tick_identity_errors: list[str],
     max_tick_age_seconds: int = DEFAULT_STATE_TICK_MAX_AGE_SECONDS,
 ) -> str:
+    eviction_reason = _target_symbol_eviction_gap_reason(
+        state=state,
+        heartbeat=heartbeat,
+    )
+    if eviction_reason:
+        return eviction_reason
     if tick_identity_errors:
         return tick_identity_errors[0]
     heartbeat_age = _age_seconds(heartbeat.get("generated_at"))
