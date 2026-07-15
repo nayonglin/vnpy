@@ -8,6 +8,7 @@
 - 基线提交：`a89141c9c`
 - 代码/测试七文件候选指纹：`551368da2cf089fc17dba92a543ec2dcb04e5c24a56d07e4b3fada43ea7305ca`
 - 代码/测试/Spec 九文件候选指纹：`d2d9c0eee9d382fa7012946d9ebeec0d78c1332dfe5517de41ac645550979894`
+- Task2 冻结提交：`bb0408942bc61b319ec2865738d64f7e5610cbde`；完整 binary show 指纹：`57aa0c513680b1f515a5eb52be45f1c17fa21a5ef13cc920193f9b0dcd6f1aa0`
 - 阶段性质：Stage180 后续精确审查驱动的 Task2 crash consistency 与 lifecycle fail-close 修正；不改 alpha
 - 是否重要突破：否；修复真实执行底座缺陷，但 Task3、端到端 SLA、LaunchAgent、0/0 只读 CTP 与 SimNow 仍未验收
 - 是否触发 A/B：否；没有修改信号、AI 池、止损、重进场、品种、方向、手数或资金参数
@@ -70,6 +71,7 @@
   - 7 个相关 Python 文件 `py_compile` 通过；`git diff --check` 通过。
   - 本轮所有新增缺陷均先得到可复现 RED，再修至 GREEN。
   - 独立最终审查：冻结 code/test 与九文件指纹均精确匹配，18 条关键故障注入 `18/18` 通过；结论 `P0=0、P1=0、P2=4`，Task2 可提交但不能据此部署。
+  - 提交对象级终审：独立 agent 从 `bb0408942bc61b319ec2865738d64f7e5610cbde` 重跑 Stage608 `145/145`（`23.745s`）、Stage931 `1/1`（`1.011s`）并通过 diff-check；结论 `P0=0、P1=0`，该对象可作为 Task2 开发基线，仍非部署证明。
 
 ## 输出文件
 
@@ -82,7 +84,7 @@
 ## 结论与 TODO
 
 - 当前结论：Task2 修正已通过离线回归与冻结指纹独立终审，达到代码提交条件；这不等于部署条件，更不等于实盘激活条件。
-- 下一步：amend Task2 提交并做提交对象级只读审查，然后进入 Task3 Stage904 eviction 消费门禁和分段延迟 SLA。
+- 下一步：Task2 冻结提交已完成对象级只读审查且不再 amend；进入 Task3 Stage904 eviction 消费门禁和分段延迟 SLA。
 - 后续必须完成：代码部署与实盘激活隔离、LaunchAgent/supervisor/runtime 修复、官方资金/版本口径统一、严格 `0/0` 只读 CTP、SimNow 报撤验收；这些闸门通过前禁止真实报单。
 - 已知 P2：
   - framed reader 每次带 cursor 分页均从 header 验证完整 ancestry，单次 `O(cursor offset)`、累计可能近似 `O(N²/page)`；Task13 必须给出延迟证据与新 schema 方案。
@@ -90,6 +92,7 @@
   - terminal exit gate 已校验 schema/offset/零值关系，但仍缺“返回 cursor、落盘 final heartbeat、segment 实际 commit boundary”三者的独立故障注入绑定测试。
   - atomic parent-open 时序和 capture token 的 first-check/clear/second-check 交错仍可增加 caller 层确定性 RED；当前实现与静态审查未发现错误放行。
   - 当前普通 `fsync + parent fsync` 只形成进程崩溃/OS 可见一致性口径，不证明 macOS 突然断电后的驱动器缓存顺序；Task13 需在正式文件系统基准测试 `F_BARRIERFSYNC`/`F_FULLFSYNC` 后再决定是否升级原语，不能无延迟证据直接替换热路径。
+  - emergency fail-close heartbeat 从旧 authority 继承未显式规范化的 `accepting/recovery_blocked`；它仍固定为 stopped/unready/writer-dead，不会错误放行，下一次 connect 也会在 recovery 前再次撤权收敛。后续可补 `accepting=false + recovery_blocked=true` 和对应断言，本阶段不为该非授权型 P2 打破冻结代码快照。
 - 是否更新本线 `LINE.md`：否；同线并行先保留唯一 Stage181 文件，合入时统一整理。
 - 是否更新 `research/registry.md`：否。
 - 是否追加根目录 `memory.md/back_log.md`：否；尚未成为正式候选或完成外部验收。
