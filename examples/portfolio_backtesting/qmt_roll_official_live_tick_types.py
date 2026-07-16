@@ -39,6 +39,7 @@ class TickIngressEnvelope:
     received_at_utc: str
     ingress_epoch_ns: int
     ingress_monotonic_ns: int
+    clock_domain_id: str
     trace_id: str
     tick_row: Mapping[str, Any]
 

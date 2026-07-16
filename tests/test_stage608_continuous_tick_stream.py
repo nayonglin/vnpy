@@ -259,6 +259,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
                 received_at_utc="2026-07-15T00:00:00.000000+00:00",
                 ingress_epoch_ns=sequence,
                 ingress_monotonic_ns=sequence,
+                clock_domain_id="test-boot",
                 trace_id=f"stage179-tick/feed-bounded-payload/{sequence}",
                 tick_row=MappingProxyType(
                     {
@@ -311,6 +312,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
             received_at_utc="2026-07-15T00:00:00.000000+00:00",
             ingress_epoch_ns=1,
             ingress_monotonic_ns=1,
+            clock_domain_id="test-boot",
             trace_id="stage179-tick/feed-control-bound/1",
             tick_row=MappingProxyType({"ingress_sequence": 1}),
         )
@@ -5147,6 +5149,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
                 received_at_utc="2026-07-14T13:00:00.000000000Z",
                 ingress_epoch_ns=1,
                 ingress_monotonic_ns=1,
+                clock_domain_id="test-boot",
                 trace_id="invalid",
                 tick_row=MappingProxyType(
                     {
@@ -5573,6 +5576,69 @@ class ContinuousTickStreamTest(unittest.TestCase):
 
         self.assertIsNotNone(pipeline.durable_snapshot().writer_fault)
         self.assertFalse(any("ingress_sequence" in row for row in persisted))
+
+    def test_writer_rejects_clock_domain_tamper_before_tick_bytes(self) -> None:
+        from dataclasses import replace
+
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        class FakeClock:
+            def clock_domain_id(self) -> str:
+                return "boot-good"
+
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 1
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+        for tamper_envelope in (False, True):
+            with self.subTest(tamper_envelope=tamper_envelope):
+                with tempfile.TemporaryDirectory() as tmp:
+                    journal = Path(tmp) / "clock-domain-tamper.ndjson"
+                    pipeline = TickStreamPipeline(
+                        feed_session_id="feed-clock-domain-identity",
+                        journal_segment_path=journal,
+                        clock=FakeClock(),
+                        queue_capacity=1,
+                        max_buffer_ticks=1,
+                        writer_batch_size=1,
+                        writer_flush_seconds=0.001,
+                    )
+                    envelope = pipeline.capture_ingress(self._ingress_tick())
+                    queued = pipeline.take_ingress_nowait()
+                    pipeline._ingress_queue.task_done()
+                    self.assertIs(queued, envelope)
+                    tampered_row = dict(envelope.tick_row)
+                    tampered_row["clock_domain_id"] = "boot-evil"
+                    replacement_fields = {
+                        "tick_row": MappingProxyType(tampered_row),
+                    }
+                    if tamper_envelope:
+                        replacement_fields["clock_domain_id"] = "boot-evil"
+                    pipeline._ingress_queue.put_nowait(
+                        replace(envelope, **replacement_fields)
+                    )
+                    pipeline.start()
+                    committed = pipeline.wait_until_durable(
+                        1,
+                        timeout_seconds=0.2,
+                    )
+                    report = pipeline.shutdown(timeout_seconds=1.0)
+                    persisted = [
+                        json.loads(line)
+                        for line in journal.read_text(encoding="utf-8").splitlines()
+                    ]
+
+                self.assertFalse(committed)
+                self.assertIsNotNone(report.writer_fault)
+                self.assertFalse(pipeline.durable_snapshot().stream_ready)
+                self.assertFalse(
+                    any("ingress_sequence" in row for row in persisted)
+                )
 
     def test_writer_rejects_bool_alias_for_integer_identity_before_tick_bytes(self) -> None:
         from dataclasses import replace

@@ -7,6 +7,7 @@ from pathlib import Path
 from queue import Full, Queue
 from types import MappingProxyType
 from typing import Any, Callable, Mapping
+import os
 import threading
 import time
 from collections import deque
@@ -74,6 +75,24 @@ def _trace_id(feed_session_id: str, ingress_sequence: int) -> str:
     return f"stage179-tick/{feed_session_id}/{int(ingress_sequence)}"
 
 
+def _clock_domain_id(clock: Clock) -> str:
+    provider = getattr(clock, "clock_domain_id", None)
+    if not callable(provider):
+        # Legacy/injected clocks remain usable for offline tests, but the
+        # process-local marker cannot compare across exec/restart and will
+        # therefore fail closed when consumed by a real SystemClock.
+        return f"uncomparable-process:{os.getpid()}:clock:{id(clock)}"
+    value = provider()
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("clock_domain_id_must_be_nonempty_text")
+    normalized = value.strip()
+    if any(ord(character) < 32 for character in normalized):
+        raise ValueError("clock_domain_id_contains_control_character")
+    if len(normalized.encode("utf-8")) > 256:
+        raise ValueError("clock_domain_id_too_long")
+    return normalized
+
+
 def _immutable_number(tick: Any, field: str) -> int | float:
     value = getattr(tick, field, 0.0)
     if isinstance(value, bool):
@@ -96,6 +115,7 @@ def _immutable_tick_row(
     received_at_utc: str,
     ingress_epoch_ns: int,
     ingress_monotonic_ns: int,
+    clock_domain_id: str,
     trace_id: str,
 ) -> Mapping[str, Any]:
     row: dict[str, Any] = {
@@ -105,6 +125,7 @@ def _immutable_tick_row(
         "received_at_utc": received_at_utc,
         "ingress_epoch_ns": int(ingress_epoch_ns),
         "ingress_monotonic_ns": int(ingress_monotonic_ns),
+        "clock_domain_id": clock_domain_id,
         "trace_id": trace_id,
         # Compatibility aliases consumed by the current Stage608/904 chain.
         "stream_sequence": int(ingress_sequence),
@@ -168,6 +189,7 @@ class TickStreamPipeline:
         self.feed_session_id = normalized_feed_session_id
         self.journal_segment_path = Path(journal_segment_path)
         self.clock = clock
+        self.clock_domain_id = _clock_domain_id(clock)
         self.queue_capacity = int(queue_capacity)
         self.max_buffer_ticks = int(max_buffer_ticks)
         self.writer_batch_size = int(writer_batch_size)
@@ -348,6 +370,19 @@ class TickStreamPipeline:
         for envelope in batch:
             if envelope.feed_session_id != self.feed_session_id:
                 raise RuntimeError("writer_batch_feed_session_mismatch")
+            if (
+                type(envelope.clock_domain_id) is not str
+                or not envelope.clock_domain_id
+                or envelope.clock_domain_id != envelope.clock_domain_id.strip()
+                or any(
+                    ord(character) < 32
+                    for character in envelope.clock_domain_id
+                )
+                or len(envelope.clock_domain_id.encode("utf-8")) > 256
+            ):
+                raise RuntimeError("writer_envelope_clock_domain_invalid")
+            if envelope.clock_domain_id != self.clock_domain_id:
+                raise RuntimeError("writer_envelope_clock_domain_mismatch")
             for field in (
                 "ingress_sequence",
                 "symbol_sequence",
@@ -379,6 +414,7 @@ class TickStreamPipeline:
                 "received_at": envelope.received_at_utc,
                 "ingress_epoch_ns": envelope.ingress_epoch_ns,
                 "ingress_monotonic_ns": envelope.ingress_monotonic_ns,
+                "clock_domain_id": envelope.clock_domain_id,
                 "trace_id": envelope.trace_id,
             }
             if envelope.trace_id != expected_trace_id:
@@ -461,6 +497,7 @@ class TickStreamPipeline:
             received_at_utc=received_at_utc,
             ingress_epoch_ns=ingress_epoch_ns,
             ingress_monotonic_ns=ingress_monotonic_ns,
+            clock_domain_id=self.clock_domain_id,
             trace_id=trace_id,
             tick_row=_immutable_tick_row(
                 tick,
@@ -470,6 +507,7 @@ class TickStreamPipeline:
                 received_at_utc=received_at_utc,
                 ingress_epoch_ns=ingress_epoch_ns,
                 ingress_monotonic_ns=ingress_monotonic_ns,
+                clock_domain_id=self.clock_domain_id,
                 trace_id=trace_id,
             ),
         )
