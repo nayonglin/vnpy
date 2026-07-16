@@ -557,7 +557,7 @@ Implemented as `334349d7c4a7384102f1e202361850e67059f6d8`; final relevant verifi
 - Consumes: an in-memory `Stage904RunResult`, snapshot inputs, Task 4 traces, and the injected clock
 - Produces: `Stage905SnapshotInputs`, `Stage905RunResult`, and a `run_executor_dry_run` callable; CLI compatibility remains
 
-- [ ] **Step 1: Write RED tests**
+- [x] **Step 1: Write RED tests**
 
 ```python
 def test_stage904_trace_deadline_and_state_generation_are_preserved(self):
@@ -574,7 +574,7 @@ def test_in_memory_stage904_result_does_not_read_stage904_files(self):
     self.assertEqual(result.summary["send_order_api_called_count"], 0)
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -583,7 +583,7 @@ def test_in_memory_stage904_result_does_not_read_stage904_files(self):
 
 Expected: callable/deadline behavior missing.
 
-- [ ] **Step 3: Implement the deterministic builder**
+- [x] **Step 3: Implement the deterministic builder**
 
 Add:
 
@@ -607,9 +607,11 @@ class Stage905RunResult:
 
 `run_executor_dry_run(target_date, mode="dry-run", stage904_actions=None, stage904_summary=None, snapshots=None, include_stage901_pending=True, clock=SYSTEM_CLOCK, write_compat_outputs=True)` owns the former `main()` body. In-memory actions/summary prevent file reads. Detector callers use `include_stage901_pending=False`; initial opens stay on the legacy path until the warm executor task. `_stage904_intents` passes every trace/cursor/deadline field unchanged. At `now >= deadline`, open is expired and close is blocked/critical; neither is ready. Stable payload hashing excludes monitor-run/generated/check timestamps.
 
+The in-memory path also treats Stage904 actions/summary as one atomic input, cross-binds action/count/cursor/state generation, accepts a later summary cursor only when it covers the persisted trigger cursor, and surfaces batch blockers even when no intent exists. Exact integer provenance is rebuilt after mixed Stage901/904 DataFrame construction. One `ClockStamp` is sampled for the whole batch; stable hashes include the resolved status/order while reducing time-varying diagnostics to canonical reason codes.
+
 The CLI retains required `--target-date`, `--mode dry-run`, output names/model tag, fail-closed clearing, and stdout JSON.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -619,13 +621,15 @@ The CLI retains required `--target-date`, `--mode dry-run`, output names/model t
 
 Expected: all selected tests pass; order counters are 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py \
   tests/test_stage905_c9_cycle_intents.py
 git commit -m "refactor(stage905): build traced intents in memory"
 ```
+
+Implemented as `8099fc04367bb4557e8371edbaad46632ce66d7a`; final broad relevant verification was `264/264`, with independent review `P0=0`, `P1=0`, `P2=0`. This remains code-submit eligible only; Task7 spool, Task8 detector cursor/generation CAS, runtime gates, read-only CTP, and SimNow still block activation.
 
 ---
 
