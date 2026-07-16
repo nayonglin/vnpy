@@ -1417,6 +1417,41 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         )
         self.assertEqual(blockers, [])
 
+        manual_ready_open = ready_open_intents.copy()
+        manual_ready_open.loc[
+            manual_ready_open["intent_id"].eq("open-1"),
+            "manual_intervention_required",
+        ] = 1
+        manual_ready_open.loc[
+            manual_ready_open["intent_id"].eq("open-1"),
+            "migration_blocker",
+        ] = "legacy_state_unproven"
+        blockers = stage931._stage905_snapshot_blockers(
+            ready_open_summary,
+            manual_ready_open,
+            target_date="2026-07-13",
+            max_age_seconds=180,
+            reduce_close_only=False,
+        )
+        self.assertIn(
+            "stage905_ready_retry_open_manual_migration_blocked", blockers
+        )
+
+        invalid_manual_ready_open = ready_open_intents.copy()
+        invalid_manual_ready_open["manual_intervention_required"] = pd.Series(
+            [0, "true"], dtype="object"
+        )
+        blockers = stage931._stage905_snapshot_blockers(
+            ready_open_summary,
+            invalid_manual_ready_open,
+            target_date="2026-07-13",
+            max_age_seconds=180,
+            reduce_close_only=False,
+        )
+        self.assertIn(
+            "stage905_ready_retry_open_manual_flag_invalid", blockers
+        )
+
         inconsistent = dict(summary, ready_count=2)
         blockers = stage931._stage905_snapshot_blockers(
             inconsistent,
@@ -1444,6 +1479,373 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         )
         self.assertIn("stage905_no_ready_stage904_close_intent", blockers)
         self.assertIn("stage905_close_scope_nonready_count=1", blockers)
+
+    def test_ready_retry_open_rebinds_current_stage904_run_and_migration_state(
+        self,
+    ) -> None:
+        ready_retry = pd.DataFrame(
+            [
+                {
+                    "intent_id": "retry-open-1",
+                    "action_id": "retry-open-1",
+                    "source": "stage904_c9_intraday_retry_open",
+                    "intent_role": "c9_retry_open_once",
+                    "offset": "open",
+                    "executor_status": "dry_run_order_request_payload_ready",
+                    "monitor_run_id": "run-001",
+                    "manual_intervention_required": 0,
+                    "migration_blocker": "",
+                }
+            ]
+        )
+        stage904_summary = {
+            "model_tag": stage931.STAGE904_MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "monitor_status": "intraday_monitor_retry_open_dry_run",
+        }
+
+        self.assertEqual(
+            [],
+            stage931._stage904_retry_open_snapshot_blockers(
+                stage904_summary,
+                ready_retry,
+                target_date="2026-07-13",
+                max_age_seconds=30,
+            ),
+        )
+        blocked_status = stage931._stage904_retry_open_snapshot_blockers(
+            {**stage904_summary, "monitor_status": "intraday_monitor_blocked"},
+            ready_retry,
+            target_date="2026-07-13",
+            max_age_seconds=30,
+        )
+        self.assertIn("stage904_retry_open_status_not_authoritative", blocked_status)
+
+        manual_ready = ready_retry.copy()
+        manual_ready.loc[:, "manual_intervention_required"] = 1
+        manual_ready.loc[:, "migration_blocker"] = "legacy_state_unproven"
+        manual_blockers = stage931._stage904_retry_open_snapshot_blockers(
+            stage904_summary,
+            manual_ready,
+            target_date="2026-07-13",
+            max_age_seconds=30,
+        )
+        self.assertIn("stage904_ready_retry_open_manual_migration_blocked", manual_blockers)
+
+        invalid_manual = ready_retry.astype(
+            {"manual_intervention_required": "object"}
+        ).copy()
+        invalid_manual.loc[:, "manual_intervention_required"] = "true"
+        invalid_manual_blockers = stage931._stage904_retry_open_snapshot_blockers(
+            stage904_summary,
+            invalid_manual,
+            target_date="2026-07-13",
+            max_age_seconds=30,
+        )
+        self.assertIn(
+            "stage904_ready_retry_open_manual_flag_invalid",
+            invalid_manual_blockers,
+        )
+
+        missing_identity = ready_retry.copy()
+        missing_identity.loc[:, "action_id"] = ""
+        missing_identity.loc[:, "intent_role"] = ""
+        identity_blockers = stage931._stage904_retry_open_snapshot_blockers(
+            stage904_summary,
+            missing_identity,
+            target_date="2026-07-13",
+            max_age_seconds=30,
+        )
+        self.assertIn("stage904_retry_open_action_id_missing", identity_blockers)
+        self.assertIn("stage904_retry_open_intent_role_mismatch", identity_blockers)
+
+        run_mismatch = stage931._stage904_retry_open_snapshot_blockers(
+            {**stage904_summary, "monitor_run_id": "run-002"},
+            ready_retry,
+            target_date="2026-07-13",
+            max_age_seconds=30,
+        )
+        self.assertIn("stage904_retry_open_run_id_mismatch", run_mismatch)
+
+        ready_close = pd.DataFrame(
+            [
+                {
+                    "source": "stage904_c9_intraday_close",
+                    "offset": "close",
+                    "executor_status": "dry_run_order_request_payload_ready",
+                    "manual_intervention_required": 1,
+                    "migration_blocker": "legacy_state_unproven",
+                }
+            ]
+        )
+        self.assertEqual(
+            [],
+            stage931._stage904_retry_open_snapshot_blockers(
+                {**stage904_summary, "monitor_status": "intraday_monitor_blocked"},
+                ready_close,
+                target_date="2026-07-13",
+                max_age_seconds=30,
+            ),
+        )
+
+    def test_retry_open_rebinds_latest_stage904_immediately_before_send(self) -> None:
+        row = {
+            "intent_id": "retry-open-1",
+            "action_id": "retry-open-1",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "source": "stage904_c9_intraday_retry_open",
+            "intent_role": "c9_retry_open_once",
+            "offset": "open",
+            "direction": "short",
+            "planned_volume": 1,
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "order_request_price": 1245.5,
+            "order_request_volume": 1,
+            "monitor_run_id": "run-001",
+            "manual_intervention_required": 0,
+            "migration_blocker": "",
+            "vt_symbol": "JM609.DCE",
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "executor_status": "dry_run_order_request_payload_ready",
+        }
+        row["order_request_json"] = stage931.json.dumps(
+            {
+                "intent_id": "retry-open-1",
+                "action_id": "retry-open-1",
+                "target_date": "2026-07-13",
+                "monitor_run_id": "run-001",
+                "source": "stage904_c9_intraday_retry_open",
+                "symbol": "JM609",
+                "exchange": "DCE",
+                "direction": stage931.Direction.SHORT.value,
+                "type": stage931.OrderType.LIMIT.value,
+                "volume": 1,
+                "price": 1245.5,
+                "offset": stage931.Offset.OPEN.value,
+                "reference": "Stage905PhaseD:retry-open-1",
+                "gateway_name": "CTP",
+                "vt_symbol": "JM609.DCE",
+                "root_position_id": "root",
+                "position_cycle_id": "root:cycle1",
+                "position_cycle_no": 1,
+                "position_epoch_id": "epoch-001",
+                "intent_role": "c9_retry_open_once",
+                "manual_intervention_required": 0,
+            },
+            sort_keys=True,
+        )
+        latest_blocked = {
+            "model_tag": stage931.STAGE904_MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-002",
+            "monitor_status": "intraday_monitor_blocked",
+        }
+        req = stage931.OrderRequest(
+            symbol="JM609",
+            exchange=stage931.Exchange.DCE,
+            direction=stage931.Direction.SHORT,
+            type=stage931.OrderType.LIMIT,
+            volume=1,
+            price=1245.5,
+            offset=stage931.Offset.OPEN,
+        )
+        send_calls: list[object] = []
+        engine = SimpleNamespace(
+            send_order=lambda request, gateway: send_calls.append((request, gateway))
+        )
+        with (
+            patch.object(stage931, "_read_json", return_value=latest_blocked),
+            patch.object(stage931, "append_execution_ledger_event"),
+        ):
+            result = stage931._submit_pre_reserved_child(
+                main_engine=engine,
+                rows={"trades": [], "order_insert_requests": []},
+                req=req,
+                args=SimpleNamespace(
+                    target_date="2026-07-13",
+                    max_stage904_age_seconds=30,
+                ),
+                config=None,
+                row=row,
+                fingerprint="fingerprint",
+                intent_metadata={},
+                reprice_result={},
+                child_index=0,
+                child_count=1,
+                send_slot_batch_id="slot-batch",
+            )
+
+        self.assertEqual([], send_calls)
+        self.assertEqual(0, result["send_called"])
+        self.assertEqual(
+            "adapter_blocked_stage904_rebind_before_send",
+            result["adapter_status"],
+        )
+        self.assertIn(
+            "stage904_retry_open_status_not_authoritative",
+            result["blockers"],
+        )
+
+    def test_stage905_row_cannot_masquerade_retry_open_payload_as_close_or_pending(self) -> None:
+        payload = {
+            "intent_id": "retry-open-1",
+            "action_id": "retry-open-1",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "source": "stage904_c9_intraday_retry_open",
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "direction": stage931.Direction.SHORT.value,
+            "type": stage931.OrderType.LIMIT.value,
+            "volume": 1,
+            "price": 1245.5,
+            "offset": stage931.Offset.OPEN.value,
+            "reference": "Stage905PhaseD:retry-open-1",
+            "gateway_name": "CTP",
+            "vt_symbol": "JM609.DCE",
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_retry_open_once",
+            "manual_intervention_required": 0,
+        }
+        base = {
+            "intent_id": "retry-open-1",
+            "action_id": "retry-open-1",
+            "target_date": "2026-07-13",
+            "source": "stage904_c9_intraday_retry_open",
+            "intent_role": "c9_retry_open_once",
+            "offset": "open",
+            "direction": "short",
+            "planned_volume": 1,
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "order_request_price": 1245.5,
+            "order_request_volume": 1,
+            "monitor_run_id": "run-001",
+            "manual_intervention_required": 0,
+            "vt_symbol": "JM609.DCE",
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "executor_status": "dry_run_order_request_payload_ready",
+            "order_request_json": stage931.json.dumps(payload, sort_keys=True),
+        }
+        self.assertEqual(
+            [],
+            stage931._stage905_ready_intent_artifact_blockers(
+                pd.DataFrame([base])
+            ),
+        )
+
+        disguised_close = {**base, "source": "stage904_c9_intraday_close", "offset": "close"}
+        close_frame = pd.DataFrame([disguised_close])
+        close_blockers = stage931._stage905_ready_intent_artifact_blockers(close_frame)
+        self.assertIn(
+            "stage905_order_payload_source_mismatch:retry-open-1",
+            close_blockers,
+        )
+        self.assertIn(
+            "stage905_order_payload_offset_mismatch:retry-open-1",
+            close_blockers,
+        )
+        self.assertFalse(stage931._ready_intents_close_only(close_frame))
+
+        disguised_pending = {**base, "source": "stage901_pending_order"}
+        pending_blockers = stage931._stage905_ready_intent_artifact_blockers(
+            pd.DataFrame([disguised_pending])
+        )
+        self.assertIn(
+            "stage905_order_payload_source_mismatch:retry-open-1",
+            pending_blockers,
+        )
+        self.assertIn(
+            "stage905_initial_open_source_role_mismatch:retry-open-1",
+            pending_blockers,
+        )
+
+    def test_close_only_artifact_scope_ignores_unrelated_broken_open(self) -> None:
+        close_payload = {
+            "intent_id": "close-1",
+            "action_id": "close-1",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-close",
+            "source": "stage904_c9_intraday_close",
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "direction": stage931.Direction.LONG.value,
+            "type": stage931.OrderType.LIMIT.value,
+            "volume": 1,
+            "price": 1252.0,
+            "offset": stage931.Offset.CLOSE.value,
+            "reference": "Stage905PhaseD:close-1",
+            "gateway_name": "CTP",
+            "vt_symbol": "JM609.DCE",
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle0",
+            "position_cycle_no": 0,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_initial_stop_close",
+            "manual_intervention_required": 0,
+        }
+        close = {
+            "intent_id": "close-1",
+            "action_id": "close-1",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-close",
+            "source": "stage904_c9_intraday_close",
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "vt_symbol": "JM609.DCE",
+            "direction": "long",
+            "offset": "close",
+            "planned_volume": 1,
+            "order_request_price": 1252.0,
+            "order_request_volume": 1,
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle0",
+            "position_cycle_no": 0,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_initial_stop_close",
+            "manual_intervention_required": 0,
+            "executor_status": "dry_run_order_request_payload_ready",
+            "order_request_json": stage931.json.dumps(close_payload, sort_keys=True),
+        }
+        broken_open = {
+            **close,
+            "intent_id": "broken-open",
+            "source": "stage901_pending_order",
+            "offset": "open",
+            "order_request_json": "{}",
+        }
+        selected = pd.DataFrame([close])
+        full = pd.DataFrame([close, broken_open])
+
+        self.assertEqual(
+            [],
+            stage931._stage905_cycle_artifact_blockers(
+                full,
+                selected,
+                reduce_close_only=True,
+            ),
+        )
+        self.assertTrue(
+            stage931._stage905_cycle_artifact_blockers(
+                full,
+                selected,
+                reduce_close_only=False,
+            )
+        )
 
     def test_multiple_protective_closes_are_deterministically_deferred_not_globally_blocked(self) -> None:
         ready = pd.DataFrame(

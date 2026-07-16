@@ -21,6 +21,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
+import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
 import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
 from qmt_roll_official_live_c9_intraday_state import (
     INITIAL_STOP_ACTION_ROLE,
@@ -49,6 +50,38 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 "JM609.DCE": {
                     "received_at": self.iso(self.now),
                     "stream_sequence": 100,
+                }
+            },
+        }
+
+    def v1_heartbeat(
+        self,
+        *,
+        feed: str = "feed-a",
+        sequence: int,
+        first_buffered: int,
+        evicted_through: int,
+        received_at: datetime | None = None,
+    ) -> dict:
+        observed_at = received_at or self.now
+        generation = f"test-generation-{feed}-{sequence}"
+        return {
+            **self.heartbeat(),
+            "feed_session_id": feed,
+            "stream_sequence": sequence,
+            "journal_tick_count": sequence,
+            "buffered_tick_count": max(0, sequence - evicted_through),
+            "symbol_eviction_watermark_schema_version": 1,
+            "tick_snapshot_generation_uuid": generation,
+            "heartbeat_revision_uuid": generation,
+            "symbol_tick_watermarks": {
+                "JM609.DCE": {
+                    "received_at": self.iso(observed_at),
+                    "stream_sequence": sequence,
+                    "symbol_stream_sequence": sequence,
+                    "durable_symbol_sequence": sequence,
+                    "first_buffered_symbol_sequence": first_buffered,
+                    "evicted_through_symbol_sequence": evicted_through,
                 }
             },
         }
@@ -230,6 +263,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         *,
         readonly_summary: dict,
         broker_positions: pd.DataFrame,
+        allow_legacy_offline_watermarks: bool = True,
         **kwargs: object,
     ) -> list[dict]:
         bound_summary, manifest, evidence = self.bind_position_query_bundle(
@@ -241,7 +275,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             broker_positions=broker_positions,
             readonly_bundle_manifest=manifest,
             readonly_bundle_evidence=evidence,
-            allow_legacy_offline_watermarks=True,
+            allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
             **kwargs,
         )
 
@@ -544,6 +578,9 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         retry = [row for row in rows if row["monitor_action"] == "retry_open_dry_run"]
         self.assertEqual(len(retry), 1)
         self.assertEqual(retry[0]["intent_role"], RETRY_OPEN_ACTION_ROLE)
+        self.assertEqual(0, retry[0]["manual_intervention_required"])
+        retry_intent = stage905._stage904_intents(pd.DataFrame(retry))[0]
+        self.assertEqual(0, retry_intent["manual_intervention_required"])
         self.assertTrue(retry[0]["position_cycle_id"].endswith(":cycle1"))
 
         cycle1 = retry[0]["position_cycle_id"]
@@ -2583,6 +2620,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             "last_seq_by_feed": {"feed-a": 0},
         }
         valid = {
+            "symbol_stream_sequence": 3,
             "durable_symbol_sequence": 3,
             "first_buffered_symbol_sequence": 2,
             "evicted_through_symbol_sequence": 1,
@@ -2620,9 +2658,23 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                 "tick_stream_symbol_eviction_watermarks_invalid:JM609.DCE",
             ),
             (
+                "symbol_sequence_bool",
+                1,
+                {**valid, "symbol_stream_sequence": True},
+                "tick_stream_symbol_sequence_invalid:JM609.DCE",
+            ),
+            (
+                "symbol_sequence_mismatch",
+                1,
+                {**valid, "symbol_stream_sequence": 2},
+                "tick_stream_symbol_durable_sequence_mismatch:JM609.DCE;"
+                "symbol_sequence=2;durable=3",
+            ),
+            (
                 "watermarks_incoherent",
                 1,
                 {
+                    "symbol_stream_sequence": 3,
                     "durable_symbol_sequence": 3,
                     "first_buffered_symbol_sequence": 3,
                     "evicted_through_symbol_sequence": 0,
@@ -2688,6 +2740,459 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             ),
         )
 
+    def test_legacy_progress_latch_requires_persisted_capability_provenance(
+        self,
+    ) -> None:
+        store = stage904._new_state_store(self.target_date)
+        legacy = self.apply(
+            store,
+            self.ticks([(1, 1239.0)]),
+            heartbeat=self.heartbeat(),
+            allow_legacy_offline_watermarks=True,
+        )
+        self.assertEqual("initial_progress_latched", legacy["state_phase"])
+
+        upgraded_tick = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-b",
+                    "stream_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=2)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                }
+            ]
+        )
+        upgraded = self.v1_heartbeat(
+            feed="feed-b",
+            sequence=1,
+            first_buffered=1,
+            evicted_through=0,
+            received_at=self.entry_at + timedelta(seconds=2),
+        )
+        row = self.apply(
+            store,
+            upgraded_tick,
+            heartbeat=upgraded,
+            allow_legacy_offline_watermarks=False,
+        )
+
+        self.assertEqual("block", row["monitor_action"])
+        self.assertEqual(1, row["manual_intervention_required"])
+        self.assertEqual("P1", row["risk_alert_level"])
+        self.assertIn("capability_provenance", row["monitor_reason"])
+        self.assertNotEqual(RETRY_OPEN_ACTION_ROLE, row.get("intent_role"))
+        persisted = store["states"][legacy["root_position_id"]]
+        self.assertEqual("initial_progress_latched", persisted["phase"])
+
+    def test_legacy_retry_reclaim_cannot_be_washed_clean_by_current_v1_feed(
+        self,
+    ) -> None:
+        store, stopped, _ = self.initial_stop_store()
+        cutoff = self.entry_at + timedelta(seconds=3)
+        retry_wait = stage904.arm_retry_after_close(
+            stopped,
+            close_fill_at=self.entry_at + timedelta(seconds=2),
+            broker_flat_at=cutoff,
+        )
+        legacy_reclaim = stage904.consume_ticks(
+            retry_wait,
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "seq": 2,
+                    "received_at": self.iso(cutoff + timedelta(seconds=1)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                }
+            ],
+        )
+        self.assertEqual("retry_reclaim_latched", legacy_reclaim["phase"])
+        store["states"][stopped["root_position_id"]] = legacy_reclaim
+        heartbeat = self.v1_heartbeat(
+            sequence=3,
+            first_buffered=1,
+            evicted_through=0,
+            received_at=cutoff + timedelta(seconds=2),
+        )
+        ticks = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 3,
+                    "symbol_stream_sequence": 3,
+                    "received_at": self.iso(cutoff + timedelta(seconds=2)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                }
+            ]
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            rows = self.advance_flat_states(
+                store=store,
+                execution_ledger_rows=[],
+                broker_positions=pd.DataFrame(),
+                readonly_summary=self.readonly_flat(self.now),
+                ticks=ticks,
+                heartbeat=heartbeat,
+                represented_roots=set(),
+                journal_path=Path(tmp) / "state.ndjson",
+                max_tick_age_seconds=30,
+                allow_legacy_offline_watermarks=False,
+            )
+
+        self.assertEqual(1, len(rows))
+        self.assertEqual("block", rows[0]["monitor_action"])
+        self.assertEqual(1, rows[0]["manual_intervention_required"])
+        self.assertIn("capability_provenance", rows[0]["monitor_reason"])
+        self.assertNotEqual(RETRY_OPEN_ACTION_ROLE, rows[0].get("intent_role"))
+
+        transition = next(
+            row
+            for row in legacy_reclaim["transitions"]
+            if row.get("to") == "retry_reclaim_latched"
+        )
+        fabricated_payload = {
+            "schema_version": 1,
+            "coverage_mode": "symbol_eviction_v1",
+            "symbol_eviction_watermark_schema_version": 1,
+            "feed_session_id": "feed-a",
+            "tick_snapshot_generation_uuid": "fabricated-generation",
+            "heartbeat_revision_uuid": "fabricated-generation",
+            "durable_symbol_sequence": 2,
+            "first_buffered_symbol_sequence": 1,
+            "evicted_through_symbol_sequence": 0,
+            "target_date": legacy_reclaim["target_date"],
+            "vt_symbol": legacy_reclaim["vt_symbol"],
+            "direction": legacy_reclaim["direction"],
+            "root_position_id": legacy_reclaim["root_position_id"],
+            "position_cycle_id": legacy_reclaim["position_cycle_id"],
+            "position_cycle_no": legacy_reclaim["position_cycle_no"],
+            "position_epoch_id": legacy_reclaim["position_epoch_id"],
+            "transition_phase": "retry_reclaim_latched",
+            "transition_reason": "original_entry_reclaimed_after_confirmed_flat",
+            "transition_at": transition["at"],
+            "transition_feed_session_id": transition["feed_session_id"],
+            "transition_symbol_sequence": transition["seq"],
+        }
+        fabricated_payload["provenance_sha256"] = (
+            stage904._journal_record_checksum(fabricated_payload)
+        )
+        fabricated = copy.deepcopy(legacy_reclaim)
+        fabricated["risk_transition_tick_coverage_provenance"] = fabricated_payload
+        store["states"][stopped["root_position_id"]] = fabricated
+        with tempfile.TemporaryDirectory() as tmp:
+            fabricated_rows = self.advance_flat_states(
+                store=store,
+                execution_ledger_rows=[],
+                broker_positions=pd.DataFrame(),
+                readonly_summary=self.readonly_flat(self.now),
+                ticks=ticks,
+                heartbeat=heartbeat,
+                represented_roots=set(),
+                journal_path=Path(tmp) / "state.ndjson",
+                max_tick_age_seconds=30,
+                allow_legacy_offline_watermarks=False,
+            )
+        self.assertEqual("block", fabricated_rows[0]["monitor_action"])
+        self.assertIn(
+            "capability_provenance_transition_invalid",
+            fabricated_rows[0]["monitor_reason"],
+        )
+        self.assertNotEqual(
+            RETRY_OPEN_ACTION_ROLE, fabricated_rows[0].get("intent_role")
+        )
+
+    def test_current_v1_progress_latch_persists_auditable_provenance(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+        heartbeat = self.v1_heartbeat(
+            sequence=1,
+            first_buffered=1,
+            evicted_through=0,
+            received_at=self.entry_at + timedelta(seconds=1),
+        )
+        row = self.apply(
+            store,
+            self.ticks([(1, 1239.0)]),
+            heartbeat=heartbeat,
+            allow_legacy_offline_watermarks=False,
+        )
+
+        self.assertEqual("initial_progress_latched", row["state_phase"])
+        state = store["states"][row["root_position_id"]]
+        provenance = state["risk_transition_tick_coverage_provenance"]
+        self.assertEqual(1, provenance["schema_version"])
+        self.assertEqual(1, provenance["symbol_eviction_watermark_schema_version"])
+        self.assertEqual("initial_progress_latched", provenance["transition_phase"])
+        self.assertEqual("feed-a", provenance["feed_session_id"])
+        self.assertEqual("test-generation-feed-a-1", provenance["tick_snapshot_generation_uuid"])
+        self.assertEqual(1, provenance["transition_symbol_sequence"])
+        self.assertEqual(1, provenance["durable_symbol_sequence"])
+
+        restored = stage904.loads_state(
+            json.dumps(state, ensure_ascii=False, sort_keys=True)
+        )
+        self.assertEqual(provenance, restored["risk_transition_tick_coverage_provenance"])
+        store["states"][row["root_position_id"]] = restored
+        next_row = self.apply(
+            store,
+            self.ticks([(2, 1245.0)]),
+            heartbeat=self.v1_heartbeat(
+                sequence=2,
+                first_buffered=2,
+                evicted_through=1,
+                received_at=self.entry_at + timedelta(seconds=2),
+            ),
+            allow_legacy_offline_watermarks=False,
+        )
+        self.assertEqual(
+            "watch_progress_hit_no_initial_stop", next_row["monitor_action"]
+        )
+        self.assertEqual(0, next_row["manual_intervention_required"])
+
+    def test_risk_transition_provenance_tampering_fails_closed(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+        row = self.apply(
+            store,
+            self.ticks([(1, 1239.0)]),
+            heartbeat=self.v1_heartbeat(
+                sequence=1,
+                first_buffered=1,
+                evicted_through=0,
+                received_at=self.entry_at + timedelta(seconds=1),
+            ),
+            allow_legacy_offline_watermarks=False,
+        )
+        state = store["states"][row["root_position_id"]]
+        self.assertEqual(
+            "",
+            stage904._risk_transition_capability_blocker(
+                state,
+                allow_legacy_offline_watermarks=False,
+            ),
+        )
+
+        mutations = {
+            "record_schema_bool": {"schema_version": True},
+            "watermark_schema_bool": {
+                "symbol_eviction_watermark_schema_version": True
+            },
+            "generation_missing": {"tick_snapshot_generation_uuid": ""},
+            "heartbeat_generation_mismatch": {
+                "heartbeat_revision_uuid": "other-generation"
+            },
+            "transition_feed_mismatch": {
+                "transition_feed_session_id": "feed-b"
+            },
+            "transition_range_invalid": {"transition_symbol_sequence": 0},
+            "transition_at_tampered": {"transition_at": "2099-01-01T00:00:00"},
+            "first_buffered_tampered": {"first_buffered_symbol_sequence": 0},
+            "durable_tampered": {"durable_symbol_sequence": 2},
+            "transition_phase_invalid": {"transition_phase": "retry_reclaim_latched"},
+            "coverage_mode_invalid": {"coverage_mode": "unknown"},
+            "state_symbol_binding_invalid": {"vt_symbol": "RB610.SHFE"},
+        }
+        for name, mutation in mutations.items():
+            with self.subTest(name=name):
+                tampered = copy.deepcopy(state)
+                tampered["risk_transition_tick_coverage_provenance"].update(
+                    mutation
+                )
+                reason = stage904._risk_transition_capability_blocker(
+                    tampered,
+                    allow_legacy_offline_watermarks=False,
+                )
+                self.assertIn("capability_provenance", reason)
+
+        transition_tampered = copy.deepcopy(state)
+        transition_tampered["transitions"][-1]["at"] = "2099-01-01T00:00:00"
+        self.assertIn(
+            "capability_provenance",
+            stage904._risk_transition_capability_blocker(
+                transition_tampered,
+                allow_legacy_offline_watermarks=False,
+            ),
+        )
+
+        copied_across_state = copy.deepcopy(state)
+        copied_across_state["position_epoch_id"] = "c9pos-other-epoch"
+        self.assertIn(
+            "capability_provenance",
+            stage904._risk_transition_capability_blocker(
+                copied_across_state,
+                allow_legacy_offline_watermarks=False,
+            ),
+        )
+
+        fabricated_on_legacy_transition = copy.deepcopy(state)
+        fabricated_on_legacy_transition["transitions"][-1].pop(
+            "risk_transition_provenance_sha256", None
+        )
+        self.assertIn(
+            "capability_provenance",
+            stage904._risk_transition_capability_blocker(
+                fabricated_on_legacy_transition,
+                allow_legacy_offline_watermarks=False,
+            ),
+        )
+
+    def test_risk_transition_requires_bound_snapshot_generation_and_rows(
+        self,
+    ) -> None:
+        missing_generation = self.v1_heartbeat(
+            sequence=1,
+            first_buffered=1,
+            evicted_through=0,
+            received_at=self.entry_at + timedelta(seconds=1),
+        )
+        missing_generation.pop("tick_snapshot_generation_uuid")
+        generation_row = self.apply(
+            stage904._new_state_store(self.target_date),
+            self.ticks([(1, 1239.0)]),
+            heartbeat=missing_generation,
+            allow_legacy_offline_watermarks=False,
+        )
+        self.assertEqual("initial_armed", generation_row["state_phase"])
+        self.assertEqual(1, generation_row["feed_gap_latched"])
+        self.assertEqual(
+            "risk_transition_snapshot_generation_invalid:JM609.DCE",
+            generation_row["feed_gap_reason"],
+        )
+
+        retained_suffix_only = pd.DataFrame(
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=1)),
+                    "vt_symbol": "RB610.SHFE",
+                    "last_price": 3500.0,
+                    "bid_price_1": 3499.0,
+                    "ask_price_1": 3500.0,
+                },
+                {
+                    "feed_session_id": "feed-a",
+                    "stream_sequence": 2,
+                    "symbol_stream_sequence": 2,
+                    "received_at": self.iso(self.entry_at + timedelta(seconds=2)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1239.0,
+                    "bid_price_1": 1239.0,
+                    "ask_price_1": 1239.0,
+                }
+            ]
+        )
+        range_row = self.apply(
+            stage904._new_state_store(self.target_date),
+            retained_suffix_only,
+            heartbeat=self.v1_heartbeat(
+                sequence=2,
+                first_buffered=1,
+                evicted_through=0,
+                received_at=self.entry_at + timedelta(seconds=2),
+            ),
+            allow_legacy_offline_watermarks=False,
+        )
+        self.assertEqual("initial_armed", range_row["state_phase"])
+        self.assertEqual(1, range_row["feed_gap_latched"])
+        self.assertEqual(
+            "tick_buffer_overrun_before_first_observation:journal=2;buffered=1",
+            range_row["feed_gap_reason"],
+        )
+        context, context_error = stage904._risk_transition_coverage_context(
+            state={"vt_symbol": "JM609.DCE"},
+            heartbeat=self.v1_heartbeat(
+                sequence=2,
+                first_buffered=1,
+                evicted_through=0,
+                received_at=self.entry_at + timedelta(seconds=2),
+            ),
+            stream_ticks=[{"feed_session_id": "feed-a", "seq": 2}],
+            allow_legacy_offline_watermarks=False,
+        )
+        self.assertEqual({}, context)
+        self.assertEqual(
+            "risk_transition_retained_range_mismatch:JM609.DCE;"
+            "first_buffered=1;durable=2",
+            context_error,
+        )
+
+    def test_unproven_retry_open_remains_close_only_during_activation(self) -> None:
+        store, stopped, _ = self.initial_stop_store()
+        cutoff = self.entry_at + timedelta(seconds=3)
+        retry_wait = stage904.arm_retry_after_close(
+            stopped,
+            close_fill_at=self.entry_at + timedelta(seconds=2),
+            broker_flat_at=cutoff,
+        )
+        reclaim = stage904.consume_ticks(
+            retry_wait,
+            [
+                {
+                    "feed_session_id": "feed-a",
+                    "seq": 2,
+                    "received_at": self.iso(cutoff + timedelta(seconds=1)),
+                    "vt_symbol": "JM609.DCE",
+                    "last_price": 1245.0,
+                    "bid_price_1": 1245.0,
+                    "ask_price_1": 1245.0,
+                }
+            ],
+        )
+        retry_open = stage904.mark_retry_filled(
+            reclaim,
+            retry_fill_at=cutoff + timedelta(seconds=2),
+            retry_fill_price=1246.0,
+            retry_fill_volume=2,
+        )
+        base = self.base(fill_price=1246.0, cycle_no=1)
+        heartbeat = self.v1_heartbeat(
+            sequence=3,
+            first_buffered=1,
+            evicted_through=0,
+            received_at=cutoff + timedelta(seconds=3),
+        )
+
+        for price, expected_action in ((1245.0, "retry_block"), (1252.0, "close_dry_run")):
+            with self.subTest(price=price):
+                isolated = copy.deepcopy(store)
+                isolated["states"][stopped["root_position_id"]] = copy.deepcopy(
+                    retry_open
+                )
+                ticks = pd.DataFrame(
+                    [
+                        {
+                            "feed_session_id": "feed-a",
+                            "stream_sequence": 3,
+                            "symbol_stream_sequence": 3,
+                            "received_at": self.iso(cutoff + timedelta(seconds=3)),
+                            "vt_symbol": "JM609.DCE",
+                            "last_price": price,
+                            "bid_price_1": price,
+                            "ask_price_1": price,
+                        }
+                    ]
+                )
+                row = self.apply(
+                    isolated,
+                    ticks,
+                    base=base,
+                    heartbeat=heartbeat,
+                    allow_legacy_offline_watermarks=False,
+                )
+                self.assertEqual(expected_action, row["monitor_action"])
+                self.assertEqual(1, row["manual_intervention_required"])
+                self.assertEqual("P1", row["risk_alert_level"])
+                self.assertIn("capability_provenance", row["migration_blocker"])
+
     def test_target_symbol_eviction_at_last_consumed_boundary_does_not_false_gap(
         self,
     ) -> None:
@@ -2695,6 +3200,8 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         first_heartbeat = {
             **self.heartbeat(),
             "symbol_eviction_watermark_schema_version": 1,
+            "tick_snapshot_generation_uuid": "test-generation-boundary-1",
+            "heartbeat_revision_uuid": "test-generation-boundary-1",
             "symbol_tick_watermarks": {
                 "JM609.DCE": {
                     "received_at": self.iso(self.now),
@@ -2730,6 +3237,8 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         second_heartbeat = {
             **self.heartbeat(),
             "symbol_eviction_watermark_schema_version": 1,
+            "tick_snapshot_generation_uuid": "test-generation-boundary-2",
+            "heartbeat_revision_uuid": "test-generation-boundary-2",
             "symbol_tick_watermarks": {
                 "JM609.DCE": {
                     "received_at": self.iso(self.now),
@@ -2792,6 +3301,8 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         heartbeat = {
             **self.heartbeat(),
             "symbol_eviction_watermark_schema_version": 1,
+            "tick_snapshot_generation_uuid": "test-generation-interleaved-3",
+            "heartbeat_revision_uuid": "test-generation-interleaved-3",
             "stream_sequence": 3,
             "journal_tick_count": 3,
             "buffered_tick_count": 3,

@@ -85,6 +85,8 @@ ALLOWED_TICK_CLOCK_SKEW_SECONDS = 2.0
 DEFAULT_STATE_TICK_MAX_AGE_SECONDS = 30
 TICK_SNAPSHOT_COMMIT_SCHEMA_VERSION = 1
 SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION = 1
+RISK_TRANSITION_PROVENANCE_SCHEMA_VERSION = 1
+RISK_TRANSITION_PROVENANCE_FIELD = "risk_transition_tick_coverage_provenance"
 TICK_SNAPSHOT_STABLE_READ_ATTEMPTS = 3
 TICK_SNAPSHOT_STABLE_READ_RETRY_SECONDS = 0.05
 TICK_STREAM_HEARTBEAT_PATH = OUTPUT_DIR / (
@@ -935,6 +937,14 @@ def _target_symbol_eviction_gap_reason(
     durable = int(values["durable_symbol_sequence"])
     first_buffered = int(values["first_buffered_symbol_sequence"])
     evicted_through = int(values["evicted_through_symbol_sequence"])
+    symbol_sequence = watermark.get("symbol_stream_sequence")
+    if type(symbol_sequence) is not int or symbol_sequence < 0:
+        return f"tick_stream_symbol_sequence_invalid:{vt_symbol}"
+    if symbol_sequence != durable:
+        return (
+            f"tick_stream_symbol_durable_sequence_mismatch:{vt_symbol};"
+            f"symbol_sequence={symbol_sequence};durable={durable}"
+        )
     coherent = (
         evicted_through == durable
         if first_buffered == 0
@@ -966,6 +976,316 @@ def _target_symbol_eviction_gap_reason(
         f"feed={feed_session_id};last_consumed={last_consumed};"
         f"evicted_through={evicted_through}"
     )
+
+
+def _risk_transition_coverage_context(
+    *,
+    state: dict[str, Any],
+    heartbeat: dict[str, Any],
+    stream_ticks: list[dict[str, Any]],
+    allow_legacy_offline_watermarks: bool,
+) -> tuple[dict[str, Any], str]:
+    """Build evidence that can travel with a risk-changing state transition."""
+
+    vt_symbol = _clean(state.get("vt_symbol"))
+    feed_session_id = _clean(heartbeat.get("feed_session_id"))
+    watermarks = heartbeat.get("symbol_tick_watermarks")
+    watermark = watermarks.get(vt_symbol) if isinstance(watermarks, dict) else None
+    if not vt_symbol or not feed_session_id or not isinstance(watermark, dict):
+        return {}, f"risk_transition_capability_context_missing:{vt_symbol or 'unknown'}"
+
+    fields = (
+        "durable_symbol_sequence",
+        "first_buffered_symbol_sequence",
+        "evicted_through_symbol_sequence",
+    )
+    present = [field in watermark for field in fields]
+    schema_field = "symbol_eviction_watermark_schema_version"
+    if schema_field not in heartbeat:
+        if allow_legacy_offline_watermarks and not any(present):
+            return (
+                {
+                    "schema_version": RISK_TRANSITION_PROVENANCE_SCHEMA_VERSION,
+                    "coverage_mode": "legacy_offline",
+                    "feed_session_id": feed_session_id,
+                },
+                "",
+            )
+        return {}, f"risk_transition_capability_schema_missing:{vt_symbol}"
+    schema_version = heartbeat.get(schema_field)
+    if (
+        type(schema_version) is not int
+        or schema_version != SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION
+    ):
+        return {}, f"risk_transition_capability_schema_invalid:{vt_symbol}"
+
+    generation = _clean(heartbeat.get("tick_snapshot_generation_uuid"))
+    heartbeat_revision = _clean(heartbeat.get("heartbeat_revision_uuid"))
+    if not generation or not heartbeat_revision or heartbeat_revision != generation:
+        return {}, f"risk_transition_snapshot_generation_invalid:{vt_symbol}"
+    if not all(present):
+        return {}, f"risk_transition_watermarks_incomplete:{vt_symbol}"
+    values = {field: watermark.get(field) for field in fields}
+    if any(type(value) is not int or value < 0 for value in values.values()):
+        return {}, f"risk_transition_watermarks_invalid:{vt_symbol}"
+    durable = int(values["durable_symbol_sequence"])
+    first_buffered = int(values["first_buffered_symbol_sequence"])
+    evicted_through = int(values["evicted_through_symbol_sequence"])
+    symbol_sequence = watermark.get("symbol_stream_sequence")
+    if type(symbol_sequence) is not int or symbol_sequence != durable:
+        return {}, f"risk_transition_symbol_sequence_mismatch:{vt_symbol}"
+
+    retained_sequences: list[int] = []
+    for row in stream_ticks:
+        if _clean(row.get("feed_session_id")) != feed_session_id:
+            return {}, f"risk_transition_tick_feed_mismatch:{vt_symbol}"
+        seq = row.get("seq")
+        if type(seq) is not int or seq < 0:
+            return {}, f"risk_transition_tick_sequence_invalid:{vt_symbol}"
+        retained_sequences.append(int(seq))
+    if first_buffered == 0:
+        if retained_sequences:
+            return {}, f"risk_transition_retained_rows_unexpected:{vt_symbol}"
+    elif (
+        not retained_sequences
+        or min(retained_sequences) != first_buffered
+        or max(retained_sequences) != durable
+    ):
+        return (
+            {},
+            f"risk_transition_retained_range_mismatch:{vt_symbol};"
+            f"first_buffered={first_buffered};durable={durable}",
+        )
+    return (
+        {
+            "schema_version": RISK_TRANSITION_PROVENANCE_SCHEMA_VERSION,
+            "coverage_mode": "symbol_eviction_v1",
+            "symbol_eviction_watermark_schema_version": schema_version,
+            "feed_session_id": feed_session_id,
+            "tick_snapshot_generation_uuid": generation,
+            "heartbeat_revision_uuid": heartbeat_revision,
+            "durable_symbol_sequence": durable,
+            "first_buffered_symbol_sequence": first_buffered,
+            "evicted_through_symbol_sequence": evicted_through,
+        },
+        "",
+    )
+
+
+def _record_risk_transition_provenance(
+    *,
+    previous_phase: str,
+    state: dict[str, Any],
+    context: dict[str, Any],
+) -> dict[str, Any]:
+    phase = _clean(state.get("phase"))
+    transition_pairs = {
+        (PHASE_INITIAL_ARMED, PHASE_INITIAL_PROGRESS_LATCHED),
+        (PHASE_RETRY_WAIT, PHASE_RETRY_RECLAIM_LATCHED),
+    }
+    if (previous_phase, phase) not in transition_pairs:
+        return state
+    transitions = [dict(row) for row in state.get("transitions", [])]
+    matching_indices = [
+        index
+        for index, row in enumerate(transitions)
+        if _clean(row.get("from")) == previous_phase
+        and _clean(row.get("to")) == phase
+    ]
+    if len(matching_indices) != 1:
+        raise ValueError("risk_transition_record_missing")
+    transition_index = matching_indices[0]
+    transition = transitions[transition_index]
+    feed_session_id = _clean(transition.get("feed_session_id"))
+    transition_sequence = transition.get("seq")
+    if not feed_session_id or type(transition_sequence) is not int:
+        raise ValueError("risk_transition_identity_invalid")
+    if (
+        _clean(context.get("coverage_mode")) == "symbol_eviction_v1"
+        and feed_session_id != _clean(context.get("feed_session_id"))
+    ):
+        raise ValueError("risk_transition_feed_not_bound_to_snapshot")
+    provenance = {
+        **context,
+        "target_date": _clean(state.get("target_date")),
+        "vt_symbol": _clean(state.get("vt_symbol")),
+        "direction": _clean(state.get("direction")),
+        "root_position_id": _clean(state.get("root_position_id")),
+        "position_cycle_id": _clean(state.get("position_cycle_id")),
+        "position_cycle_no": state.get("position_cycle_no"),
+        "position_epoch_id": _clean(state.get("position_epoch_id")),
+        "transition_phase": phase,
+        "transition_reason": _clean(transition.get("reason")),
+        "transition_at": _clean(transition.get("at")),
+        "transition_feed_session_id": feed_session_id,
+        "transition_symbol_sequence": int(transition_sequence),
+    }
+    provenance_sha256 = _journal_record_checksum(provenance)
+    provenance["provenance_sha256"] = provenance_sha256
+    transition["risk_transition_provenance_sha256"] = provenance_sha256
+    transitions[transition_index] = transition
+    result = dict(state)
+    result["transitions"] = transitions
+    result[RISK_TRANSITION_PROVENANCE_FIELD] = provenance
+    return result
+
+
+def _risk_transition_capability_blocker(
+    state: dict[str, Any],
+    *,
+    allow_legacy_offline_watermarks: bool,
+) -> str:
+    phase = _clean(state.get("phase"))
+    transition_spec = {
+        PHASE_INITIAL_PROGRESS_LATCHED: (
+            PHASE_INITIAL_ARMED,
+            PHASE_INITIAL_PROGRESS_LATCHED,
+            "initial_progress_permanently_waived_stop",
+        ),
+        PHASE_RETRY_RECLAIM_LATCHED: (
+            PHASE_RETRY_WAIT,
+            PHASE_RETRY_RECLAIM_LATCHED,
+            "original_entry_reclaimed_after_confirmed_flat",
+        ),
+        PHASE_RETRY_OPEN: (
+            PHASE_RETRY_WAIT,
+            PHASE_RETRY_RECLAIM_LATCHED,
+            "original_entry_reclaimed_after_confirmed_flat",
+        ),
+    }.get(phase)
+    if not transition_spec:
+        return ""
+    expected_from, expected_transition, expected_reason = transition_spec
+    provenance = state.get(RISK_TRANSITION_PROVENANCE_FIELD)
+    if not isinstance(provenance, dict):
+        return f"state_risk_transition_capability_provenance_missing:{phase}"
+    if (
+        type(provenance.get("schema_version")) is not int
+        or provenance.get("schema_version")
+        != RISK_TRANSITION_PROVENANCE_SCHEMA_VERSION
+        or _clean(provenance.get("transition_phase")) != expected_transition
+    ):
+        return f"state_risk_transition_capability_provenance_invalid:{phase}"
+    identity_fields = (
+        "target_date",
+        "vt_symbol",
+        "direction",
+        "root_position_id",
+        "position_cycle_id",
+        "position_epoch_id",
+    )
+    if any(
+        _clean(provenance.get(field)) != _clean(state.get(field))
+        or not _clean(provenance.get(field))
+        for field in identity_fields
+    ) or (
+        type(provenance.get("position_cycle_no")) is not int
+        or type(state.get("position_cycle_no")) is not int
+        or provenance.get("position_cycle_no") != state.get("position_cycle_no")
+    ):
+        return f"state_risk_transition_capability_provenance_identity_invalid:{phase}"
+    provenance_sha256 = _clean(provenance.get("provenance_sha256"))
+    if len(provenance_sha256) != 64 or any(
+        character not in "0123456789abcdef" for character in provenance_sha256
+    ):
+        return f"state_risk_transition_capability_provenance_checksum_missing:{phase}"
+    checksum_payload = dict(provenance)
+    checksum_payload.pop("provenance_sha256", None)
+    if _journal_record_checksum(checksum_payload) != provenance_sha256:
+        return f"state_risk_transition_capability_provenance_checksum_invalid:{phase}"
+    matching_transitions = [
+        row
+        for row in state.get("transitions", [])
+        if isinstance(row, dict)
+        and _clean(row.get("from")) == expected_from
+        and _clean(row.get("to")) == expected_transition
+        and _clean(row.get("reason")) == expected_reason
+    ]
+    if len(matching_transitions) != 1:
+        return f"state_risk_transition_capability_provenance_transition_missing:{phase}"
+    transition = matching_transitions[0]
+    if (
+        _clean(provenance.get("transition_reason")) != expected_reason
+        or _clean(provenance.get("transition_at")) != _clean(transition.get("at"))
+        or _clean(provenance.get("transition_feed_session_id"))
+        != _clean(transition.get("feed_session_id"))
+        or provenance.get("transition_symbol_sequence") != transition.get("seq")
+        or _clean(transition.get("risk_transition_provenance_sha256"))
+        != provenance_sha256
+    ):
+        return f"state_risk_transition_capability_provenance_transition_invalid:{phase}"
+    coverage_mode = _clean(provenance.get("coverage_mode"))
+    if coverage_mode == "legacy_offline":
+        if allow_legacy_offline_watermarks:
+            return ""
+        return f"state_risk_transition_capability_provenance_legacy:{phase}"
+    if coverage_mode != "symbol_eviction_v1":
+        return f"state_risk_transition_capability_provenance_mode_invalid:{phase}"
+    exact_int_fields = (
+        "symbol_eviction_watermark_schema_version",
+        "durable_symbol_sequence",
+        "first_buffered_symbol_sequence",
+        "evicted_through_symbol_sequence",
+        "transition_symbol_sequence",
+    )
+    if any(
+        type(provenance.get(field)) is not int or provenance.get(field) < 0
+        for field in exact_int_fields
+    ):
+        return f"state_risk_transition_capability_provenance_cursor_invalid:{phase}"
+    if (
+        provenance.get("symbol_eviction_watermark_schema_version")
+        != SYMBOL_EVICTION_WATERMARK_SCHEMA_VERSION
+        or not _clean(provenance.get("feed_session_id"))
+        or _clean(provenance.get("transition_feed_session_id"))
+        != _clean(provenance.get("feed_session_id"))
+        or not _clean(provenance.get("tick_snapshot_generation_uuid"))
+        or _clean(provenance.get("heartbeat_revision_uuid"))
+        != _clean(provenance.get("tick_snapshot_generation_uuid"))
+        or not _clean(provenance.get("transition_at"))
+    ):
+        return f"state_risk_transition_capability_provenance_binding_invalid:{phase}"
+    transition_sequence = int(provenance["transition_symbol_sequence"])
+    first_buffered = int(provenance["first_buffered_symbol_sequence"])
+    durable = int(provenance["durable_symbol_sequence"])
+    evicted_through = int(provenance["evicted_through_symbol_sequence"])
+    if not (
+        transition_sequence > 0
+        and first_buffered > 0
+        and first_buffered == evicted_through + 1
+        and first_buffered <= transition_sequence <= durable
+    ):
+        return f"state_risk_transition_capability_provenance_range_invalid:{phase}"
+    return ""
+
+
+def _manual_capability_migration_block(
+    row: dict[str, Any],
+    *,
+    state: dict[str, Any],
+    reason: str,
+) -> dict[str, Any]:
+    result = dict(row)
+    result.update(
+        {
+            "monitor_action": "block",
+            "monitor_reason": reason,
+            "intent_role": "",
+            "action_id": "",
+            "state_phase": _clean(state.get("phase")),
+            "state_revision": int(state.get("revision", 0)),
+            "feed_gap_latched": int(bool(state.get("feed_gap_latched"))),
+            "feed_gap_reason": _clean(state.get("feed_gap_reason")),
+            "manual_intervention_required": 1,
+            "risk_alert_level": "P1",
+            "migration_blocker": reason,
+            "recommended_operator_action": (
+                "verify_broker_position_and_legacy_tick_history_before_activation"
+            ),
+            "order_api_called": 0,
+        }
+    )
+    return result
 
 
 def _feed_gap_reason(
@@ -2823,6 +3143,19 @@ def _apply_state_to_position_action(
 
     previous_revision = int(state.get("revision", 0))
     state = _mark_retry_fill_from_ledger(state, execution_ledger_rows)
+    capability_migration_blocker = _risk_transition_capability_blocker(
+        state,
+        allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
+    )
+    if (
+        capability_migration_blocker
+        and _clean(state.get("phase")) != PHASE_RETRY_OPEN
+    ):
+        return _manual_capability_migration_block(
+            _blocked_state_row(base, capability_migration_blocker),
+            state=state,
+            reason=capability_migration_blocker,
+        )
     if (
         state.get("phase") == PHASE_INITIAL_STOP_LATCHED
         and _clean(base.get("position_source")) == "broker"
@@ -2893,9 +3226,24 @@ def _apply_state_to_position_action(
     )
     gap_reason = gap_reason or _tick_buffer_gap_reason(state, ticks, heartbeat)
     gap_reason = gap_reason or _preconsume_tick_gap_reason(state, stream_ticks)
+    previous_phase = _clean(state.get("phase"))
+    provenance_context: dict[str, Any] = {}
+    if not gap_reason and previous_phase in {PHASE_INITIAL_ARMED, PHASE_RETRY_WAIT}:
+        provenance_context, provenance_error = _risk_transition_coverage_context(
+            state=state,
+            heartbeat=heartbeat,
+            stream_ticks=stream_ticks,
+            allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
+        )
+        gap_reason = provenance_error
     if gap_reason:
         state = mark_feed_gap(state, detected_at=datetime.now().isoformat(), reason=gap_reason)
     state = consume_ticks(state, stream_ticks)
+    state = _record_risk_transition_provenance(
+        previous_phase=previous_phase,
+        state=state,
+        context=provenance_context,
+    )
     states[root_position_id] = state
     _append_state_journal(journal_path, previous_revision=previous_revision, state=state)
 
@@ -2928,7 +3276,10 @@ def _apply_state_to_position_action(
         monitor_action = "retry_watch"
         monitor_reason = "retry_reclaim_latched_but_current_price_unfavorable"
     elif phase == PHASE_RETRY_OPEN:
-        if retry_broker_blocker:
+        if capability_migration_blocker:
+            monitor_action = "retry_block"
+            monitor_reason = capability_migration_blocker
+        elif retry_broker_blocker:
             monitor_action = "retry_block"
             monitor_reason = f"retry_open_requires_fresh_broker_position:{retry_broker_blocker}"
         else:
@@ -2969,6 +3320,7 @@ def _apply_state_to_position_action(
         "retry_position_volume_source": retry_position_volume_source,
         "monitor_action": monitor_action,
         "monitor_reason": monitor_reason,
+        "manual_intervention_required": 0,
         "order_api_called": 0,
         "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
@@ -2982,6 +3334,17 @@ def _apply_state_to_position_action(
             result["volume"] = _to_float(base.get("volume"), 0.0)
         else:
             result["volume"] = _to_float(state.get("volume"), 0.0)
+    if capability_migration_blocker:
+        result.update(
+            {
+                "manual_intervention_required": 1,
+                "risk_alert_level": "P1",
+                "migration_blocker": capability_migration_blocker,
+                "recommended_operator_action": (
+                    "verify_broker_position_and_legacy_tick_history_before_activation"
+                ),
+            }
+        )
     return result
 
 
@@ -3051,6 +3414,7 @@ def _state_only_action_row(
         ),
         "monitor_action": monitor_action,
         "monitor_reason": monitor_reason,
+        "manual_intervention_required": 0,
         "order_api_called": 0,
         "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
@@ -3768,6 +4132,26 @@ def _advance_flat_states(
         previous_revision = int(state.get("revision", 0))
         state = _mark_retry_fill_from_ledger(state, execution_ledger_rows)
         phase = _clean(state.get("phase"))
+        capability_migration_blocker = _risk_transition_capability_blocker(
+            state,
+            allow_legacy_offline_watermarks=allow_legacy_offline_watermarks,
+        )
+        if capability_migration_blocker and phase != PHASE_RETRY_OPEN:
+            blocked = _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="block",
+                monitor_reason=capability_migration_blocker,
+            )
+            rows.append(
+                _manual_capability_migration_block(
+                    blocked,
+                    state=state,
+                    reason=capability_migration_blocker,
+                )
+            )
+            states[root_position_id] = state
+            continue
         if phase == PHASE_INITIAL_STOP_LATCHED:
             target_close_volume = _to_float(state.get("volume"), 0.0)
             fills = _fill_events_for_identity(
@@ -3969,17 +4353,30 @@ def _advance_flat_states(
                 monitor_action = "close_dry_run"
                 pending = get_pending_action(state)
                 reason = _clean((pending or {}).get("reason")) or "retry_failed_at_c9_stop"
+            elif capability_migration_blocker:
+                monitor_action = "retry_block"
+                reason = capability_migration_blocker
             else:
                 monitor_action = "retry_watch"
                 reason = "retry_fill_protected_from_ledger_while_broker_snapshot_refreshes"
-            rows.append(
-                _state_only_action_row(
-                    state,
-                    ticks=ticks,
-                    monitor_action=monitor_action,
-                    monitor_reason=reason,
-                )
+            retry_row = _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action=monitor_action,
+                monitor_reason=reason,
             )
+            if capability_migration_blocker:
+                retry_row.update(
+                    {
+                        "manual_intervention_required": 1,
+                        "risk_alert_level": "P1",
+                        "migration_blocker": capability_migration_blocker,
+                        "recommended_operator_action": (
+                            "verify_broker_position_and_legacy_tick_history_before_activation"
+                        ),
+                    }
+                )
+            rows.append(retry_row)
 
         if state.get("phase") in {PHASE_RETRY_WAIT, PHASE_RETRY_RECLAIM_LATCHED}:
             stream_ticks, tick_identity_errors = _ordered_stream_ticks(ticks, _clean(state.get("vt_symbol")))
@@ -3996,9 +4393,28 @@ def _advance_flat_states(
             gap_reason = gap_reason or _preconsume_tick_gap_reason(
                 state, stream_ticks
             )
+            previous_phase = _clean(state.get("phase"))
+            provenance_context: dict[str, Any] = {}
+            if not gap_reason and previous_phase == PHASE_RETRY_WAIT:
+                provenance_context, provenance_error = (
+                    _risk_transition_coverage_context(
+                        state=state,
+                        heartbeat=heartbeat,
+                        stream_ticks=stream_ticks,
+                        allow_legacy_offline_watermarks=(
+                            allow_legacy_offline_watermarks
+                        ),
+                    )
+                )
+                gap_reason = provenance_error
             if gap_reason:
                 state = mark_feed_gap(state, detected_at=datetime.now().isoformat(), reason=gap_reason)
             state = consume_ticks(state, stream_ticks)
+            state = _record_risk_transition_provenance(
+                previous_phase=previous_phase,
+                state=state,
+                context=provenance_context,
+            )
             pending = get_pending_action(state)
             latest_tick_age = _tick_age(_tick_row(ticks, _clean(state.get("vt_symbol"))))
             retry_tick_fresh = _tick_age_is_fresh(
@@ -4271,6 +4687,7 @@ def main() -> None:
         fcntl.flock(state_lock.fileno(), fcntl.LOCK_UN)
     for row in action_rows:
         row["monitor_run_id"] = monitor_run_id
+        row.setdefault("manual_intervention_required", 0)
     actions = pd.DataFrame(action_rows)
     close_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("close_dry_run").sum()) if not actions.empty else 0
     retry_open_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("retry_open_dry_run").sum()) if not actions.empty else 0

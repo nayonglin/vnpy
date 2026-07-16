@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import errno
+import copy
 import json
 import hashlib
 import threading
@@ -532,6 +533,12 @@ class ContinuousTickStreamTest(unittest.TestCase):
         self_test = self
         fake_vnpy_ctp = types.ModuleType("vnpy_ctp")
         fake_vnpy_ctp.CtpGateway = FakeCtpGateway
+        published_heartbeats: list[dict[str, object]] = []
+        real_publish = stage608._publish_tick_snapshot_commit
+
+        def capture_publish(**kwargs: object) -> dict[str, object]:
+            published_heartbeats.append(copy.deepcopy(kwargs["heartbeat"]))
+            return real_publish(**kwargs)
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -551,6 +558,11 @@ class ContinuousTickStreamTest(unittest.TestCase):
                 patch.object(stage608, "TICK_PATH", tick_snapshot),
                 patch.object(stage608.MainEngine, "write_log", return_value=None),
                 patch.object(stage608.os, "kill", side_effect=ProcessLookupError),
+                patch.object(
+                    stage608,
+                    "_publish_tick_snapshot_commit",
+                    side_effect=capture_publish,
+                ),
             ):
                 with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                     result = stage608._run_stream(
@@ -560,10 +572,9 @@ class ContinuousTickStreamTest(unittest.TestCase):
                         watch_manifest=None,
                         journal_path=journal,
                         heartbeat_path=heartbeat,
-                        duration_seconds=0,
+                        duration_seconds=1,
                         heartbeat_seconds=0.2,
                         max_buffer_ticks=10,
-                        parent_pid=999_999,
                     )
 
             persisted = json.loads(heartbeat.read_text(encoding="utf-8"))
@@ -595,6 +606,22 @@ class ContinuousTickStreamTest(unittest.TestCase):
             0,
         )
         self.assertFalse(persisted["stream_ready"])
+        published_states = {
+            str(row.get("journal_session_state")) for row in published_heartbeats
+        }
+        self.assertTrue(
+            {"starting", "running", "clean_stopped"}.issubset(published_states),
+            published_states,
+        )
+        for heartbeat_row in published_heartbeats:
+            self.assertIs(
+                type(heartbeat_row["symbol_eviction_watermark_schema_version"]),
+                int,
+            )
+            self.assertEqual(
+                heartbeat_row["symbol_eviction_watermark_schema_version"],
+                1,
+            )
         self.assertNotEqual(persisted_segment, journal)
         self.assertEqual(
             [

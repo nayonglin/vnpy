@@ -37,6 +37,11 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_TICKS_PATH,
     build_phase_d_config,
 )
+from qmt_roll_official_live_c9_intraday_state import (
+    INITIAL_STOP_ACTION_ROLE,
+    RETRY_OPEN_ACTION_ROLE,
+    RETRY_STOP_ACTION_ROLE,
+)
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.event import EVENT_TIMER, EventEngine
@@ -51,6 +56,8 @@ OUTPUT_PREFIX = "qmt_roll_stage931_official_live_ctp_submit_adapter"
 EMAIL_THROTTLE_PATH = OUTPUT_DIR / "qmt_roll_stage931_official_live_email_throttle.json"
 STAGE905_MODEL_TAG = "stage905_official_live_executor_dry_run_v1"
 STAGE905_PREFIX = "qmt_roll_stage905_official_live_executor_dry_run"
+STAGE904_MODEL_TAG = "stage904_official_live_c9_intraday_monitor_v1"
+STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 STAGE902_MODEL_TAG = "stage902_official_live_phase_d_readiness_gate_v1"
 STAGE902_PREFIX = "qmt_roll_stage902_official_live_phase_d_readiness_gate"
 STAGE927_MODEL_TAG = "stage927_official_live_real_submit_arming_gate_v1"
@@ -136,6 +143,12 @@ LEDGER_METADATA_FIELDS = (
     "root_initial_stop_price",
     "root_entry_volume",
     "action_id",
+    "manual_intervention_required",
+    "risk_alert_level",
+    "migration_blocker",
+    "recommended_operator_action",
+    "stage904_monitor_status",
+    "stage904_summary_generated_at",
 )
 
 
@@ -176,6 +189,11 @@ def _stage905_intents_path(target_date: str) -> Path:
 def _stage905_summary_path(target_date: str) -> Path:
     key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"{STAGE905_PREFIX}_summary_{key}_{STAGE905_MODEL_TAG}.json"
+
+
+def _stage904_summary_path(target_date: str) -> Path:
+    key = target_date.replace("-", "") if target_date else "latest"
+    return OUTPUT_DIR / f"{STAGE904_PREFIX}_summary_{key}_{STAGE904_MODEL_TAG}.json"
 
 
 def _stage902_summary_path(target_date: str) -> Path:
@@ -244,6 +262,29 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     if pd.isna(number):
         return default
     return float(number)
+
+
+def _canonical_binary_flag(value: Any) -> tuple[bool, int]:
+    """Accept only numeric 0/1; strings/bools cannot grant execution authority."""
+
+    if value is None or pd.api.types.is_bool(value) or isinstance(value, str):
+        return False, 0
+    try:
+        if bool(pd.isna(value)):
+            return False, 0
+        number = float(value)
+    except (TypeError, ValueError):
+        return False, 0
+    if not math.isfinite(number) or number not in {0.0, 1.0}:
+        return False, 0
+    return True, int(number)
+
+
+def _canonical_binary_flag_series(values: pd.Series) -> tuple[pd.Series, pd.Series]:
+    parsed = values.map(_canonical_binary_flag)
+    valid = parsed.map(lambda item: bool(item[0]))
+    enabled = parsed.map(lambda item: bool(item[0] and item[1] == 1))
+    return valid, enabled
 
 
 def _file_age_seconds(path: Path) -> float | None:
@@ -2692,7 +2733,327 @@ def _stage905_snapshot_blockers(
             blockers.append(f"stage905_executor_not_clean_ready:{executor_status}")
         if actual_blocked_count != 0:
             blockers.append(f"stage905_blocked_count={actual_blocked_count}")
+        ready_retry = intents[
+            statuses.eq("dry_run_order_request_payload_ready")
+            & intents.get(
+                "source", pd.Series([""] * len(intents), index=intents.index)
+            ).fillna("").astype(str).eq("stage904_c9_intraday_retry_open")
+            & intents.get(
+                "offset", pd.Series([""] * len(intents), index=intents.index)
+            ).fillna("").astype(str).str.lower().eq("open")
+        ]
+        if not ready_retry.empty:
+            manual_valid, manual = _canonical_binary_flag_series(
+                ready_retry.get(
+                    "manual_intervention_required",
+                    pd.Series([None] * len(ready_retry), index=ready_retry.index),
+                )
+            )
+            if not bool(manual_valid.all()):
+                blockers.append("stage905_ready_retry_open_manual_flag_invalid")
+            migration = ready_retry.get(
+                "migration_blocker",
+                pd.Series([""] * len(ready_retry), index=ready_retry.index),
+            ).fillna("").astype(str).str.strip().ne("")
+            risk = ready_retry.get(
+                "risk_alert_level",
+                pd.Series([""] * len(ready_retry), index=ready_retry.index),
+            ).fillna("").astype(str).str.upper().isin({"P0", "P1"})
+            if bool((manual | migration | risk).any()):
+                blockers.append("stage905_ready_retry_open_manual_migration_blocked")
+            blockers.extend(_stage904_retry_open_identity_blockers(ready_retry))
     return blockers
+
+
+def _stage904_retry_open_snapshot_blockers(
+    stage904: dict[str, Any],
+    ready: pd.DataFrame,
+    *,
+    target_date: str,
+    max_age_seconds: int,
+) -> list[str]:
+    """Bind every ready retry-open to the current exact Stage904 run."""
+
+    if ready.empty:
+        return []
+    sources = ready.get(
+        "source", pd.Series([""] * len(ready), index=ready.index)
+    ).fillna("").astype(str)
+    offsets = ready.get(
+        "offset", pd.Series([""] * len(ready), index=ready.index)
+    ).fillna("").astype(str).str.lower()
+    retry = ready[sources.eq("stage904_c9_intraday_retry_open") & offsets.eq("open")]
+    if retry.empty:
+        return []
+
+    blockers: list[str] = []
+    age = _age_seconds(stage904.get("generated_at"))
+    if age is None or age > max_age_seconds:
+        blockers.append(f"stage904_retry_open_summary_stale_or_missing:{age}")
+    if stage904.get("model_tag") != STAGE904_MODEL_TAG:
+        blockers.append("stage904_retry_open_model_tag_mismatch")
+    if stage904.get("target_date") != target_date:
+        blockers.append("stage904_retry_open_target_date_mismatch")
+    if stage904.get("monitor_status") != "intraday_monitor_retry_open_dry_run":
+        blockers.append("stage904_retry_open_status_not_authoritative")
+    monitor_run_id = str(
+        stage904.get("monitor_run_id") or stage904.get("run_id") or ""
+    ).strip()
+    intent_run_ids = retry.get(
+        "monitor_run_id", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.strip()
+    if (
+        not monitor_run_id
+        or intent_run_ids.eq("").any()
+        or not bool(intent_run_ids.eq(monitor_run_id).all())
+    ):
+        blockers.append("stage904_retry_open_run_id_mismatch")
+    manual_valid, manual = _canonical_binary_flag_series(
+        retry.get(
+            "manual_intervention_required",
+            pd.Series([None] * len(retry), index=retry.index),
+        )
+    )
+    if not bool(manual_valid.all()):
+        blockers.append("stage904_ready_retry_open_manual_flag_invalid")
+    migration = retry.get(
+        "migration_blocker", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.strip().ne("")
+    risk = retry.get(
+        "risk_alert_level", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.upper().isin({"P0", "P1"})
+    if bool((manual | migration | risk).any()):
+        blockers.append("stage904_ready_retry_open_manual_migration_blocked")
+    blockers.extend(_stage904_retry_open_identity_blockers(retry))
+    return blockers
+
+
+def _stage904_retry_open_identity_blockers(retry: pd.DataFrame) -> list[str]:
+    blockers: list[str] = []
+    intent_ids = retry.get(
+        "intent_id", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.strip()
+    action_ids = retry.get(
+        "action_id", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.strip()
+    roles = retry.get(
+        "intent_role", pd.Series([""] * len(retry), index=retry.index)
+    ).fillna("").astype(str).str.strip()
+    if bool(intent_ids.eq("").any()):
+        blockers.append("stage904_retry_open_intent_id_missing")
+    if bool(action_ids.eq("").any()):
+        blockers.append("stage904_retry_open_action_id_missing")
+    if bool(intent_ids.ne(action_ids).any()):
+        blockers.append("stage904_retry_open_action_identity_mismatch")
+    if bool(roles.ne(RETRY_OPEN_ACTION_ROLE).any()):
+        blockers.append("stage904_retry_open_intent_role_mismatch")
+    return blockers
+
+
+def _stage904_retry_open_pre_send_blockers(
+    row: dict[str, Any],
+    *,
+    target_date: str,
+    max_age_seconds: int,
+) -> list[str]:
+    """Re-read Stage904 immediately before each risk-increasing CTP call."""
+
+    current = _read_json(_stage904_summary_path(target_date))
+    return _stage904_retry_open_snapshot_blockers(
+        current,
+        pd.DataFrame([row]),
+        target_date=target_date,
+        max_age_seconds=max_age_seconds,
+    )
+
+
+def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]:
+    """Cross-bind every ready Stage905 row to its immutable order payload."""
+
+    if intents.empty:
+        return []
+    statuses = intents.get(
+        "executor_status", pd.Series([""] * len(intents), index=intents.index)
+    ).fillna("").astype(str)
+    ready = intents[statuses.eq("dry_run_order_request_payload_ready")]
+    blockers: list[str] = []
+    for index, row in ready.iterrows():
+        intent_id = _artifact_text(row.get("intent_id"))
+        label = intent_id or str(index)
+        try:
+            payload = json.loads(str(row.get("order_request_json", "")))
+        except (TypeError, json.JSONDecodeError):
+            blockers.append(f"stage905_order_payload_invalid_json:{label}")
+            continue
+        if not isinstance(payload, dict) or not payload:
+            blockers.append(f"stage905_order_payload_missing:{label}")
+            continue
+
+        source = _artifact_text(row.get("source"))
+        row_offset = _normalize_offset_text(row.get("offset"))
+        payload_offset = _normalize_offset_text(payload.get("offset"))
+        role = _artifact_text(row.get("intent_role"))
+        if _artifact_text(payload.get("intent_id")) != intent_id:
+            blockers.append(f"stage905_order_payload_intent_id_mismatch:{label}")
+        if _artifact_text(payload.get("source")) != source:
+            blockers.append(f"stage905_order_payload_source_mismatch:{label}")
+        if _artifact_text(payload.get("target_date")) != _artifact_text(
+            row.get("target_date")
+        ):
+            blockers.append(f"stage905_order_payload_target_date_mismatch:{label}")
+        if _artifact_text(payload.get("vt_symbol")) != _artifact_text(
+            row.get("vt_symbol")
+        ):
+            blockers.append(f"stage905_order_payload_vt_symbol_mismatch:{label}")
+        if _artifact_text(payload.get("symbol")) != _artifact_text(row.get("symbol")):
+            blockers.append(f"stage905_order_payload_symbol_mismatch:{label}")
+        if _artifact_text(payload.get("exchange")) != _artifact_text(
+            row.get("exchange")
+        ):
+            blockers.append(f"stage905_order_payload_exchange_mismatch:{label}")
+        if _normalize_direction_text(payload.get("direction")) != _normalize_direction_text(
+            row.get("direction")
+        ):
+            blockers.append(f"stage905_order_payload_direction_mismatch:{label}")
+        if payload_offset != row_offset:
+            blockers.append(f"stage905_order_payload_offset_mismatch:{label}")
+        if abs(_to_float(payload.get("volume"), -1.0) - _to_float(row.get("planned_volume"), -2.0)) > 1e-9:
+            blockers.append(f"stage905_order_payload_volume_mismatch:{label}")
+        if _to_float(payload.get("price"), 0.0) <= 0:
+            blockers.append(f"stage905_order_payload_price_invalid:{label}")
+        try:
+            if _order_type_from_payload(payload.get("type")) != OrderType.LIMIT:
+                blockers.append(f"stage905_order_payload_type_invalid:{label}")
+        except ValueError:
+            blockers.append(f"stage905_order_payload_type_invalid:{label}")
+        if _artifact_text(payload.get("gateway_name")) != "CTP":
+            blockers.append(f"stage905_order_payload_gateway_invalid:{label}")
+        if abs(
+            _to_float(payload.get("price"), -1.0)
+            - _to_float(row.get("order_request_price"), -2.0)
+        ) > 1e-9:
+            blockers.append(f"stage905_order_payload_price_mismatch:{label}")
+        if abs(
+            _to_float(payload.get("volume"), -1.0)
+            - _to_float(row.get("order_request_volume"), -2.0)
+        ) > 1e-9:
+            blockers.append(f"stage905_order_payload_request_volume_mismatch:{label}")
+        if str(payload.get("reference", "") or "") != f"Stage905PhaseD:{intent_id}":
+            blockers.append(f"stage905_order_payload_reference_mismatch:{label}")
+
+        for key in (
+            "action_id",
+            "root_position_id",
+            "position_cycle_id",
+            "position_epoch_id",
+            "intent_role",
+            "monitor_run_id",
+            "risk_alert_level",
+            "migration_blocker",
+            "recommended_operator_action",
+        ):
+            if _artifact_text(payload.get(key)) != _artifact_text(row.get(key)):
+                blockers.append(f"stage905_order_payload_{key}_mismatch:{label}")
+        row_cycle_raw = row.get("position_cycle_no")
+        payload_cycle_raw = payload.get("position_cycle_no")
+        row_cycle_present = row_cycle_raw is not None and not bool(pd.isna(row_cycle_raw))
+        payload_cycle_present = payload_cycle_raw is not None and not bool(pd.isna(payload_cycle_raw))
+        if row_cycle_present or payload_cycle_present:
+            row_cycle_no = _to_int(row.get("position_cycle_no"), -1)
+            payload_cycle_no = _to_int(payload.get("position_cycle_no"), -2)
+            if row_cycle_no != payload_cycle_no:
+                blockers.append(f"stage905_order_payload_position_cycle_no_mismatch:{label}")
+
+        if source == "stage904_c9_intraday_retry_open":
+            if row_offset != "open" or role != RETRY_OPEN_ACTION_ROLE:
+                blockers.append(f"stage905_retry_open_source_role_offset_mismatch:{label}")
+        elif source == "stage904_c9_intraday_close":
+            if row_offset != "close" or role not in {
+                INITIAL_STOP_ACTION_ROLE,
+                RETRY_STOP_ACTION_ROLE,
+            }:
+                blockers.append(f"stage905_close_source_role_offset_mismatch:{label}")
+        elif source == "stage901_pending_order":
+            if row_offset == "open" and role != "c9_initial_open":
+                blockers.append(f"stage905_initial_open_source_role_mismatch:{label}")
+        else:
+            blockers.append(f"stage905_ready_intent_source_unknown:{label}:{source}")
+
+        if not intent_id:
+            blockers.append(f"stage905_ready_intent_id_missing:{label}")
+        if source.startswith("stage904_c9_intraday_"):
+            action_id = _artifact_text(row.get("action_id"))
+            required_identity = {
+                "action_id": action_id,
+                "root_position_id": _artifact_text(row.get("root_position_id")),
+                "position_cycle_id": _artifact_text(row.get("position_cycle_id")),
+                "position_epoch_id": _artifact_text(row.get("position_epoch_id")),
+                "intent_role": role,
+                "monitor_run_id": _artifact_text(row.get("monitor_run_id")),
+            }
+            missing = [key for key, value in required_identity.items() if not value]
+            if missing:
+                blockers.append(
+                    f"stage905_stage904_identity_missing:{label}:{','.join(missing)}"
+                )
+            if action_id != intent_id:
+                blockers.append(f"stage905_stage904_action_identity_mismatch:{label}")
+
+        if source.startswith("stage904_c9_intraday_"):
+            row_manual_valid, row_manual = _canonical_binary_flag(
+                row.get("manual_intervention_required")
+            )
+            payload_manual_valid, payload_manual = _canonical_binary_flag(
+                payload.get("manual_intervention_required")
+            )
+            if (
+                not row_manual_valid
+                or not payload_manual_valid
+                or row_manual != payload_manual
+            ):
+                blockers.append(f"stage905_order_payload_manual_flag_mismatch:{label}")
+    return list(dict.fromkeys(blockers))
+
+
+def _artifact_text(value: Any) -> str:
+    if value is None:
+        return ""
+    try:
+        if bool(pd.isna(value)):
+            return ""
+    except (TypeError, ValueError):
+        return ""
+    return str(value).strip()
+
+
+def _pre_reserved_child_intent_blockers(
+    row: dict[str, Any], req: OrderRequest
+) -> list[str]:
+    """Defend the final broker request against row/payload identity confusion."""
+
+    source = _artifact_text(row.get("source"))
+    if not source:
+        return []  # Compatibility for isolated accounting tests, never official rows.
+    candidate = dict(row)
+    candidate["executor_status"] = "dry_run_order_request_payload_ready"
+    blockers = _stage905_ready_intent_artifact_blockers(pd.DataFrame([candidate]))
+    row_offset = _normalize_offset_text(row.get("offset"))
+    request_offset = _normalize_offset_text(req.offset.value)
+    request_is_close = req.offset in {
+        Offset.CLOSE,
+        Offset.CLOSETODAY,
+        Offset.CLOSEYESTERDAY,
+    }
+    if row_offset == "open" and req.offset != Offset.OPEN:
+        blockers.append("pre_send_row_request_offset_mismatch")
+    if row_offset == "close" and not request_is_close:
+        blockers.append("pre_send_row_request_offset_mismatch")
+    if row_offset not in {"open", "close"} or request_offset not in {
+        "open",
+        "close",
+    }:
+        blockers.append("pre_send_request_offset_invalid")
+    return list(dict.fromkeys(blockers))
 
 
 def _ledger_daily_slot_blockers(
@@ -2709,12 +3070,40 @@ def _ledger_daily_slot_blockers(
     return blockers
 
 
-def _ready_intents_close_only(ready: pd.DataFrame) -> bool:
+def _ready_intents_row_close_only(ready: pd.DataFrame) -> bool:
     if ready.empty:
         return False
     sources = ready.get("source", pd.Series([""] * len(ready))).fillna("").astype(str)
     offsets = ready.get("offset", pd.Series([""] * len(ready))).fillna("").astype(str).str.lower()
     return bool(sources.eq("stage904_c9_intraday_close").all() and offsets.eq("close").all())
+
+
+def _ready_intents_close_only(ready: pd.DataFrame) -> bool:
+    if not _ready_intents_row_close_only(ready):
+        return False
+    if _stage905_ready_intent_artifact_blockers(ready):
+        return False
+    for row in ready.to_dict(orient="records"):
+        try:
+            payload = json.loads(str(row.get("order_request_json", "")))
+        except (TypeError, json.JSONDecodeError):
+            return False
+        if _normalize_offset_text(payload.get("offset")) != "close":
+            return False
+    return True
+
+
+def _stage905_cycle_artifact_blockers(
+    stage905_intents: pd.DataFrame,
+    selected_ready: pd.DataFrame,
+    *,
+    reduce_close_only: bool,
+) -> list[str]:
+    """Keep unrelated open corruption from starving a proven close-only cycle."""
+
+    if reduce_close_only and _ready_intents_close_only(selected_ready):
+        return _stage905_ready_intent_artifact_blockers(selected_ready)
+    return _stage905_ready_intent_artifact_blockers(stage905_intents)
 
 
 def _bound_ready_intents_for_cycle(
@@ -2728,7 +3117,7 @@ def _bound_ready_intents_for_cycle(
     limit = max(0, int(max_orders))
     if len(ready) <= limit:
         return ready.copy(), ready.iloc[0:0].copy(), ""
-    if not reduce_close_only or not _ready_intents_close_only(ready):
+    if not reduce_close_only or not _ready_intents_row_close_only(ready):
         return ready.copy(), ready.iloc[0:0].copy(), "ready_intent_count_above_limit"
 
     ordered = ready.copy()
@@ -2770,7 +3159,7 @@ def _drop_terminal_duplicate_close_intents(
 
     if ready.empty:
         return ready.copy(), ready.copy()
-    if not reduce_close_only or not _ready_intents_close_only(ready):
+    if not reduce_close_only or not _ready_intents_row_close_only(ready):
         return ready.copy(), ready.iloc[0:0].copy()
     keep_indices: list[Any] = []
     skipped_indices: list[Any] = []
@@ -3397,6 +3786,39 @@ def _submit_pre_reserved_child(
         "cancel_called": 0,
         "submitted_row": {},
     }
+    pre_send_blockers = _pre_reserved_child_intent_blockers(row, req)
+    retry_open = (
+        str(row.get("source", "")).strip() == "stage904_c9_intraday_retry_open"
+        and str(row.get("offset", "")).strip().lower() == "open"
+    )
+    if retry_open and not pre_send_blockers:
+        pre_send_blockers.extend(
+            _stage904_retry_open_pre_send_blockers(
+                row,
+                target_date=args.target_date,
+                max_age_seconds=args.max_stage904_age_seconds,
+            )
+        )
+    if pre_send_blockers:
+        result["blockers"] = pre_send_blockers
+        result["adapter_status"] = "adapter_blocked_stage904_rebind_before_send"
+        result["submitted_row"] = {
+            "intent_id": row.get("intent_id", ""),
+            "vt_symbol": row.get("vt_symbol", ""),
+            "mode": "live-real",
+            "submit_status": "stage904_rebind_blocked_before_send_order",
+            "intent_fingerprint": fingerprint,
+            "final_blockers": ";".join(pre_send_blockers),
+            **reprice_result,
+        }
+        append_execution_ledger_event(
+            {
+                "event_type": "stage904_rebind_blocked_before_send_order",
+                **context,
+                "blockers": pre_send_blockers,
+            }
+        )
+        return result
     start_trade_count = len(rows["trades"])
     order_insert_audit_start = len(rows.setdefault("order_insert_requests", []))
     order_insert_audit = _req_order_insert_audit_since(
@@ -4026,6 +4448,7 @@ def main() -> None:
     parser.add_argument("--post-cancel-wait-seconds", type=int, default=4)
     parser.add_argument("--max-stage927-age-seconds", type=int, default=180)
     parser.add_argument("--max-stage905-age-seconds", type=int, default=180)
+    parser.add_argument("--max-stage904-age-seconds", type=int, default=30)
     parser.add_argument("--max-target-date-age-days", type=int, default=4)
     parser.add_argument("--close-retry-after-cancel-seconds", type=int, default=30)
     parser.add_argument(
@@ -4055,6 +4478,7 @@ def main() -> None:
         offsets = ready.get("offset", pd.Series([""] * len(ready))).fillna("").astype(str).str.lower()
         ready = ready[sources.eq("stage904_c9_intraday_close") & offsets.eq("close")].copy()
     stage905 = _read_json(_stage905_summary_path(args.target_date))
+    stage904 = _read_json(_stage904_summary_path(args.target_date))
     stage902 = _read_json(_stage902_summary_path(args.target_date))
     stage927 = _read_json(_stage927_summary_path(args.target_date))
     readonly_order_snapshot_age = _file_age_seconds(READONLY_ORDERS_PATH)
@@ -4129,6 +4553,13 @@ def main() -> None:
     if bool(kill_switch.get("enabled", False) or kill_switch.get("kill_switch_active", False)):
         blockers.append("kill_switch_active")
     if args.mode == "live-real":
+        blockers.extend(
+            _stage905_cycle_artifact_blockers(
+                stage905_intents,
+                ready,
+                reduce_close_only=bool(args.reduce_close_only),
+            )
+        )
         if stage927.get("real_submit_permitted") != 1 and not close_only_reduce_risk:
             blockers.append("stage927_real_submit_not_permitted")
         if close_only_reduce_risk and not allow_reduce_close:
@@ -4143,6 +4574,14 @@ def main() -> None:
                 target_date=args.target_date,
                 max_age_seconds=args.max_stage905_age_seconds,
                 reduce_close_only=bool(args.reduce_close_only and close_only_reduce_risk),
+            )
+        )
+        blockers.extend(
+            _stage904_retry_open_snapshot_blockers(
+                stage904,
+                ready,
+                target_date=args.target_date,
+                max_age_seconds=args.max_stage904_age_seconds,
             )
         )
         # Stage174 order files remain useful telemetry, but cannot be a live

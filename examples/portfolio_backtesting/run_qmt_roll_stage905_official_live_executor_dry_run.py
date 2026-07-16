@@ -13,6 +13,9 @@ from pandas.errors import EmptyDataError
 
 from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
 from qmt_roll_official_live_c9_intraday_state import (
+    INITIAL_STOP_ACTION_ROLE,
+    RETRY_OPEN_ACTION_ROLE,
+    RETRY_STOP_ACTION_ROLE,
     generate_position_cycle_id,
     generate_position_epoch_id,
     generate_root_position_id,
@@ -63,6 +66,12 @@ IDENTITY_NUMBER_FIELDS = (
     "root_entry_price",
     "root_initial_stop_price",
     "root_entry_volume",
+)
+STAGE904_MIGRATION_AUDIT_FIELDS = (
+    "manual_intervention_required",
+    "risk_alert_level",
+    "migration_blocker",
+    "recommended_operator_action",
 )
 ACTIVE_ORDER_STATUSES = {
     "submitting",
@@ -181,6 +190,22 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     if pd.isna(number):
         return default
     return float(number)
+
+
+def _canonical_binary_flag(value: Any) -> tuple[bool, int]:
+    """Accept only numeric 0/1; never coerce strings or bools into authority."""
+
+    if value is None or pd.api.types.is_bool(value) or isinstance(value, str):
+        return False, 0
+    try:
+        if bool(pd.isna(value)):
+            return False, 0
+        number = float(value)
+    except (TypeError, ValueError):
+        return False, 0
+    if not math.isfinite(number) or number not in {0.0, 1.0}:
+        return False, 0
+    return True, int(number)
 
 
 def _normalize_direction_text(value: Any) -> str:
@@ -397,6 +422,7 @@ def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") 
         offset = _normalize_offset_text(row.get("offset"))
         item = {
                 "intent_id": f"STAGE905-PENDING-{idx:03d}",
+                "target_date": target_date,
                 "source": "stage901_pending_order",
                 "vt_symbol": vt_symbol,
                 "direction": direction,
@@ -540,7 +566,7 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
         current_direction = _normalize_direction_text(row.get("direction"))
         close_direction = "short" if current_direction == "long" else "long" if current_direction == "short" else ""
         intent = {
-                "intent_id": _clean(row.get("action_id")) or f"STAGE905-C9MON-{idx:03d}",
+                "intent_id": _clean(row.get("action_id")),
                 "target_date": _clean(row.get("target_date")),
                 "source": "stage904_c9_intraday_close",
                 "vt_symbol": _clean(row.get("vt_symbol")),
@@ -565,14 +591,20 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
         for key in IDENTITY_NUMBER_FIELDS:
             if _clean(row.get(key)):
                 intent[key] = _to_float(row.get(key), 0.0)
+        for key in STAGE904_MIGRATION_AUDIT_FIELDS:
+            value = row.get(key)
+            if key == "manual_intervention_required":
+                valid, normalized = _canonical_binary_flag(value)
+                intent[key] = normalized if valid else value
+            elif _clean(value):
+                intent[key] = _clean(value)
         rows.append(intent)
     retry_actions = stage904_actions[stage904_actions["monitor_action"].astype(str).eq("retry_open_dry_run")]
     for idx, row in enumerate(retry_actions.to_dict(orient="records"), start=1):
         intent = {
-                "intent_id": _clean(row.get("action_id")) or f"STAGE905-C9RETRY-{idx:03d}",
+                "intent_id": _clean(row.get("action_id")),
                 "target_date": _clean(row.get("target_date")),
                 "source": "stage904_c9_intraday_retry_open",
-                "intent_role": RETRY_INTENT_ROLE,
                 "vt_symbol": _clean(row.get("vt_symbol")),
                 "direction": _normalize_direction_text(row.get("direction")),
                 "offset": "open",
@@ -597,6 +629,13 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
         for key in IDENTITY_NUMBER_FIELDS:
             if _clean(row.get(key)):
                 intent[key] = _to_float(row.get(key), 0.0)
+        for key in STAGE904_MIGRATION_AUDIT_FIELDS:
+            value = row.get(key)
+            if key == "manual_intervention_required":
+                valid, normalized = _canonical_binary_flag(value)
+                intent[key] = normalized if valid else value
+            elif _clean(value):
+                intent[key] = _clean(value)
         rows.append(intent)
     return rows
 
@@ -693,6 +732,14 @@ def _validate_intent(
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
     intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
     force_skip_reason = _clean(intent.get("force_skip_reason"))
+    manual_flag_valid, manual_flag = _canonical_binary_flag(
+        intent.get("manual_intervention_required")
+    )
+    manual_migration_blocked = bool(
+        (manual_flag_valid and manual_flag == 1)
+        or _clean(intent.get("migration_blocker"))
+        or _clean(intent.get("risk_alert_level")).upper() in {"P0", "P1"}
+    )
 
     root_position_id = _clean(intent.get("root_position_id"))
     position_cycle_id = _clean(intent.get("position_cycle_id"))
@@ -712,30 +759,44 @@ def _validate_intent(
     if (intraday_close_intent or intraday_retry_open_intent) and not _clean(intent.get("position_epoch_id")):
         reasons.append("stage904_position_epoch_id_missing")
     if intraday_close_intent or intraday_retry_open_intent:
+        if not _clean(intent.get("intent_id")) or not _clean(intent.get("action_id")):
+            reasons.append("stage904_action_id_missing")
+        if intraday_retry_open_intent and intent_role != RETRY_OPEN_ACTION_ROLE:
+            reasons.append("stage904_retry_open_intent_role_mismatch")
+        if intraday_close_intent and intent_role not in {
+            INITIAL_STOP_ACTION_ROLE,
+            RETRY_STOP_ACTION_ROLE,
+        }:
+            reasons.append("stage904_close_intent_role_mismatch")
+    if intraday_retry_open_intent and not manual_flag_valid:
+        reasons.append("stage904_manual_intervention_required_invalid")
+    if intraday_close_intent or intraday_retry_open_intent:
         stage904_age = _age_seconds(stage904_summary.get("generated_at"))
         stage904_run_id = _clean(
             stage904_summary.get("monitor_run_id") or stage904_summary.get("run_id")
         )
         intent_run_id = _clean(intent.get("monitor_run_id"))
-        valid_final_statuses = {
-            "intraday_monitor_ready",
-            "intraday_monitor_blocked",
-            "intraday_monitor_close_dry_run",
-            "intraday_monitor_retry_open_dry_run",
-        }
+        monitor_status = _clean(stage904_summary.get("monitor_status"))
         if _clean(stage904_summary.get("model_tag")) != STAGE904_MODEL_TAG:
             reasons.append("stage904_summary_model_tag_mismatch")
         if _clean(stage904_summary.get("target_date")) != _clean(intent.get("target_date")):
             reasons.append("stage904_summary_target_date_mismatch")
         if stage904_age is None or stage904_age > STAGE904_MAX_AGE_SECONDS:
             reasons.append(f"stage904_summary_stale_or_missing:{stage904_age}")
-        if _clean(stage904_summary.get("monitor_status")) not in valid_final_statuses:
-            reasons.append("stage904_summary_not_final")
+        if intraday_retry_open_intent and monitor_status != "intraday_monitor_retry_open_dry_run":
+            reasons.append("stage904_summary_not_authoritative_for_retry_open")
+        if intraday_close_intent and monitor_status not in {
+            "intraday_monitor_close_dry_run",
+            "intraday_monitor_blocked",
+        }:
+            reasons.append("stage904_summary_not_authoritative_for_close")
         if not stage904_run_id or not intent_run_id or stage904_run_id != intent_run_id:
             reasons.append("stage904_monitor_run_id_mismatch")
 
     if force_skip_reason:
         reasons.append(force_skip_reason)
+    if offset_text == "open" and manual_migration_blocked:
+        reasons.append("stage904_manual_migration_blocker")
     stage902_blocking_for_intent = stage902_reduce_close_blocking if offset_text == "close" else stage902_blocking
     if stage902_blocking_for_intent > 0 and not intraday_close_intent:
         reasons.append(f"stage902_blocking_failure_count={stage902_blocking_for_intent}")
@@ -833,6 +894,10 @@ def _validate_intent(
             reference=f"Stage905PhaseD:{intent.get('intent_id')}",
         )
         order_request_payload = {
+            "intent_id": _clean(intent.get("intent_id")),
+            "source": source,
+            "target_date": _clean(intent.get("target_date")),
+            "monitor_run_id": _clean(intent.get("monitor_run_id")),
             "symbol": req.symbol,
             "exchange": req.exchange.value,
             "direction": req.direction.value,
@@ -844,7 +909,11 @@ def _validate_intent(
             "vt_symbol": req.vt_symbol,
             "gateway_name": _clean(contract.get("gateway_name") if contract else "CTP") or "CTP",
         }
-        for key in (*IDENTITY_TEXT_FIELDS, *IDENTITY_NUMBER_FIELDS):
+        for key in (
+            *IDENTITY_TEXT_FIELDS,
+            *IDENTITY_NUMBER_FIELDS,
+            *STAGE904_MIGRATION_AUDIT_FIELDS,
+        ):
             if _clean(intent.get(key)):
                 order_request_payload[key] = intent[key]
 
@@ -860,6 +929,18 @@ def _validate_intent(
         "broker_matching_position_volume": broker_match_volume,
         "active_order_count": active_orders,
         "order_request_json": json.dumps(order_request_payload, ensure_ascii=False, sort_keys=True),
+        "order_request_price": _to_float(order_request_payload.get("price"), 0.0),
+        "order_request_volume": _to_float(order_request_payload.get("volume"), 0.0),
+        "stage904_monitor_status": (
+            _clean(stage904_summary.get("monitor_status"))
+            if intraday_close_intent or intraday_retry_open_intent
+            else ""
+        ),
+        "stage904_summary_generated_at": (
+            _clean(stage904_summary.get("generated_at"))
+            if intraday_close_intent or intraday_retry_open_intent
+            else ""
+        ),
         "send_order_api_called": 0,
         "cancel_order_api_called": 0,
         "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
