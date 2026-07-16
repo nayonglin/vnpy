@@ -1,0 +1,21 @@
+research/lines/futures_trend_stage819_intraday_rules/stages/20260716_1658_stage187_stage179_task7_wal_priority_spool.md
+  s_57fbbdfeac5414::t_8570e527b267fc 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d21e579043211ece771ad63e1e603f9df8606693",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
