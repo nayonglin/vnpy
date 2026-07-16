@@ -476,7 +476,7 @@ Implemented as `c17a3b897acf944c358d12118071557789ac9d9e`; final relevant verifi
 - Consumes: `DurableTickBatch`, canonical trace/cursor fields, and existing Stage904 state WAL
 - Produces: `Stage904RunResult` and a `run_intraday_monitor` callable, while the original CLI writes the same outputs
 
-- [ ] **Step 1: Write RED tests for first-trigger identity, durable-batch input, and state-before-return ordering**
+- [x] **Step 1: Write RED tests for first-trigger identity, durable-batch input, and state-before-return ordering**
 
 ```python
 def test_trigger_action_preserves_gateway_cursor_and_deadline_across_replay(self):
@@ -493,7 +493,7 @@ def test_state_wal_is_committed_before_callable_returns_action(self):
     self.assertEqual(recovered_pending_action["action_id"], result.actions.iloc[0]["action_id"])
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -503,7 +503,7 @@ def test_state_wal_is_committed_before_callable_returns_action(self):
 
 Expected: cursor/trace fields and callable are absent.
 
-- [ ] **Step 3: Implement the callable without duplicating the reducer**
+- [x] **Step 3: Implement the callable without duplicating the reducer**
 
 Add immutable result type:
 
@@ -519,9 +519,11 @@ class Stage904RunResult:
 
 `run_intraday_monitor(target_date="", max_tick_age_seconds=10, require_broker_fill_price=False, durable_batch=None, clock=SYSTEM_CLOCK, write_compat_outputs=True)` owns the former `main()` body. When `durable_batch` is present it never calls `_read_committed_tick_snapshot`; otherwise it preserves the H1/bytes/H2 compatibility path. State transition/pending-action data retain `trace_json`, `trace_id`, source feed/ingress/symbol sequences, ingress epoch/monotonic times, the original 25-second deadline, and `state_generation=position_epoch_id:state_revision`. Later ticks and a new monitor run ID cannot overwrite those trigger fields. The state journal/snapshot commit completes before returning a ready action.
 
+The durable path additionally requires `caught_up=True` and `next_cursor == durable_through`, retains the complete framed-v1 batch commit cursor separately from the trigger row identity, and uses strict `LatencyTrace` parsing plus state-transition cross-binding before any retry-open pending action exists. Missing or legacy trigger provenance never blocks a risk-reducing close, but it produces no retry open and emits a P1 migration blocker. Exact integer nanoseconds and byte offsets are rebuilt as object columns from the original action rows so mixed traced/watch results cannot pass through float64.
+
 The existing `main()` parses the same flags, calls this function, and prints the same summary JSON. It does not add order capability.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -531,7 +533,7 @@ The existing `main()` parses the same flags, calls this function, and prints the
 
 Expected: all selected tests pass and existing action IDs remain stable.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py \
@@ -540,6 +542,8 @@ git add examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.
   tests/test_stage904_durable_state_integration.py
 git commit -m "refactor(stage904): expose durable intraday monitor callable"
 ```
+
+Implemented as `334349d7c4a7384102f1e202361850e67059f6d8`; final relevant verification was `221/221`, with independent review `P0=0`, `P1=0`, `P2=1`. Task 8 must still bind the durable batch and heartbeat generation as one detector-cycle input; until then this is merge eligible only and cannot activate Stage179.
 
 ---
 
