@@ -371,13 +371,21 @@ return (
 
 Expected: target eviction fails closed; existing JM/RB/JM interleaving does not create a false gap.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py \
   tests/test_stage904_durable_state_integration.py
 git commit -m "fix(stage904): latch evicted target tick gaps"
 ```
+
+- [x] **Step 6: Close the reviewer-discovered implicit-legacy downgrade**
+
+The first Task 3 review reproduced a wall-clock rollback counterexample: with the adverse target tick already evicted, a retained pre-entry tick followed by a favorable tick could pass because all three eviction fields being absent implicitly selected the legacy fallback. Add a producer-declared exact-integer `symbol_eviction_watermark_schema_version=1`; make the official Stage904 path require it by default; fail closed on missing, invalid, unsupported, partial, or incoherent evidence. The only compatibility bypass is an internal offline argument defaulting to `False`; Stage930 and the official CLI expose no switch. Keep the counterexample, exact-boundary, interleaving, producer declaration, and validation-matrix tests. Commit the correction separately as `fix(stage904): require eviction watermark capability` after independent review.
+
+- [x] **Step 7: Close the persisted-state capability laundering gap**
+
+The second adversarial review proved that a current v1 heartbeat did not invalidate an old `initial_progress_latched` or `retry_reclaim_latched` state. Persist auditable transition provenance atomically with every progress/reclaim risk authorization; bind it to the exact state identity, transition row, feed, committed snapshot generation, heartbeat revision, target-symbol cursor range, and triggering symbol sequence. The checksum is an internal consistency/tamper cross-link, not source authentication. In production, missing/legacy/tampered provenance must emit a P1 manual migration blocker with no risk-increasing identity. Stage904 must emit canonical numeric `manual_intervention_required=0/1` on every action. Stage905 must propagate the manual/migration/P0/P1 evidence, require canonical flags plus the exact existing role/action identity and exact retry-open monitor state, bind source/target/run/identity into the order payload, and fail closed on every abnormal open. Stage931 live-real must cross-bind every ready row to the payload before any close-only or Stage927 override, independently re-read a fresh same-run Stage904 summary both at selection and immediately before every retry-open child `send_order`, and revalidate canonical flags, exact action identity, and actual broker-request offset instead of trusting a stale or relabelled Stage905/Stage927 snapshot across CTP/O-P-O/reprice waits. Once the selected set itself strictly proves close-only, artifact corruption in unrelated opens must not starve that risk-reducing cycle; normal/open cycles still validate the full artifact. Preserve close-only handling for an already exposed unproven `retry_open`, and never block the existing risk-reducing close phases. Add realistic old-feed-to-new-feed, same-feed laundering, restart round-trip, transition/copy/tamper matrix, retained-range, snapshot-generation, producer-consumer schema, row-payload masquerade, Stage931 rebind/TOCTOU, and close-only isolation regressions. Do not mark this step complete until the frozen current diff receives an independent P0/P1 review and the activation preflight requirement is carried into the deployment gate.
 
 ---
 

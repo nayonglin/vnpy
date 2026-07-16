@@ -99,6 +99,10 @@ tick/heartbeat 原子发布把父目录 open/fsync 也视为 commit 的一部分
 
 Stage608 在本阶段可先发布每个目标合约的 `durable_symbol_sequence`、`first_buffered_symbol_sequence` 和 `evicted_through_symbol_sequence`，但这只是 producer prewire；在 Stage904 的 Task 3 消费门禁完成并通过回归前，这些字段不得被解释为新的交易授权或已完成的淘汰阻断能力。
 
+Task 3 激活后，Stage608 heartbeat 顶层必须同时发布精确整数 `symbol_eviction_watermark_schema_version=1`。Stage904 官方路径固定要求该版本后才解释上述三元；版本缺失、类型错误、版本不支持、三元部分缺失或三元不相干均失败关闭，禁止通过“字段全缺”自动推断成可用 legacy。旧 artifact 只允许隔离的离线调用显式选择兼容路径，该选择默认关闭，且 Stage930 与官方 CLI 不提供开启入口。
+
+能力门禁还必须追溯到持久化 reducer 状态，不能用“当前 heartbeat 已是 v1”洗白旧版已授权的永久止损豁免或 retry open。`initial_progress_latched` 与 `retry_reclaim_latched` 发生时，必须与同一原子状态修订一起持久化 transition provenance，至少绑定 state identity、provenance schema、eviction schema v1、feed session、committed snapshot generation、heartbeat revision、目标合约 durable/first-buffered/evicted cursor、实际触发 transition 的合约序列，以及唯一匹配的 transition row。其摘要交叉链接只用于状态内部一致性与篡改检测，不得宣称为外部来源认证。官方路径遇到缺失、legacy-only、篡改或不相干 provenance 时：旧 progress/reclaim 必须清空任何可执行身份并要求人工迁移；已形成真实风险暴露的旧 `retry_open` 只允许风险降低 close，禁止继续按健康状态观察或新增风险。Stage904 所有 action 必须显式输出 canonical numeric `manual_intervention_required=0/1`；Stage905 必须原样传播 manual/migration/P0/P1 证据，只接受 canonical flag 与既有精确 action identity，并把 source/target/run/identity 固化进 order payload，异常 open 一律 fail-close。Stage931 live-real 必须在任何 close-only 或 Stage927 override 前交叉校验 ready 行与 payload 的 source、target、symbol/exchange、direction、offset、volume/price、reference、action/cycle/role/manual；顶层 close 但 payload open、或 retry open 伪装成 Stage901 必须阻断。只有 selected set 自身严格证明为合法 close-only 后，artifact gate 才可忽略无关 open 的损坏，避免饿死风险降低；普通/open 模式仍审全量。retry open 在选择时和每个 child `send_order` 紧前还必须重新绑定同 target、同 run 且足够新鲜的当前 Stage904 summary，并按实际 `OrderRequest.offset` 复核，不能只信任先前快照跨越 CTP/O-P-O/reprice 等待。`initial_stop_latched`、`retry_stop_latched` 的风险降低 close 不得因迁移门禁被撤销。正式激活前还必须扫描现存 state store；任何需人工处理的旧状态都应阻断 activation，而不是自动重置或重建状态。
+
 ### 5.2 常驻 Stage904/905 检测器
 
 Stage904 的 reducer 和 Stage905 的 intent builder 被提取为可重复调用的确定性模块，现有 CLI 继续作为离线/回滚入口。Stage930 启动一个常驻 detector worker：
