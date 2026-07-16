@@ -28,6 +28,17 @@ from qmt_roll_official_live_c9_intraday_state import (
     RETRY_OPEN_ACTION_ROLE,
     RETRY_STOP_ACTION_ROLE,
 )
+from qmt_roll_official_live_tick_types import (
+    DurableTickBatch,
+    DurableTickCursor,
+)
+from qmt_roll_official_live_time import utc_iso_from_epoch_ns
+from qmt_roll_official_live_trace import LatencyTrace
+
+
+class TraceClock:
+    def clock_domain_id(self) -> str:
+        return "boot-test"
 
 
 class Stage904DurableStateIntegrationTest(unittest.TestCase):
@@ -124,6 +135,382 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             },
         }
         return summary, frame
+
+    def test_durable_batch_callable_never_reads_compat_tick_csv(self) -> None:
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 900_000_000
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+            def clock_domain_id(self) -> str:
+                return "boot-test"
+
+        cursor = DurableTickCursor(
+            feed_session_id="feed-a",
+            ingress_sequence=1,
+            journal_byte_offset=4096,
+        )
+        durable_batch = DurableTickBatch(
+            records=(
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "symbol": "JM609",
+                    "exchange": "DCE",
+                    "last_price": 100.0,
+                    "bid_price_1": 99.5,
+                    "ask_price_1": 100.0,
+                    "received_at": self.iso(self.now),
+                    "received_at_utc": utc_iso_from_epoch_ns(
+                        1_784_000_000_000_000_000
+                    ),
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": 1,
+                    "stream_sequence": 1,
+                    "symbol_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "ingress_epoch_ns": 1_784_000_000_000_000_000,
+                    "ingress_monotonic_ns": 900_000_000,
+                    "clock_domain_id": "boot-test",
+                    "trace_id": "stage179-tick/feed-a/1",
+                },
+            ),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat = self.v1_heartbeat(
+                sequence=1,
+                first_buffered=1,
+                evicted_through=0,
+            )
+
+            def fake_json(path: Path) -> dict:
+                if path == stage904.OFFICIAL_LIVE_SUMMARY_PATH:
+                    return {"analysis_end": self.target_date}
+                if path == stage904.TICK_STREAM_HEARTBEAT_PATH:
+                    return heartbeat
+                return {}
+
+            with (
+                patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(stage904, "_read_json", side_effect=fake_json),
+                patch.object(stage904, "_read_csv_maybe", return_value=pd.DataFrame()),
+                patch.object(stage904, "read_execution_ledger", return_value=[]),
+                patch.object(
+                    stage904,
+                    "_read_committed_tick_snapshot",
+                    side_effect=AssertionError("compat tick CSV path used"),
+                ),
+            ):
+                result = stage904.run_intraday_monitor(
+                    target_date=self.target_date,
+                    durable_batch=durable_batch,
+                    clock=FakeClock(),
+                    write_compat_outputs=False,
+                )
+
+            self.assertEqual(0, result.summary["order_api_called_count"])
+            self.assertEqual(self.target_date, result.target_date)
+            self.assertTrue(result.monitor_run_id.startswith("stage904-"))
+            self.assertFalse(result.paths["actions_csv"].exists())
+            self.assertFalse(result.paths["summary_json"].exists())
+            self.assertFalse(result.paths["report_md"].exists())
+
+    def test_mixed_action_rows_preserve_exact_integer_nanoseconds(self) -> None:
+        exact_epoch = 1_784_000_025_000_000_001
+        exact_offset = 9_007_199_254_740_993
+        frame = stage904._action_frame(
+            [
+                {
+                    "monitor_action": "retry_open_dry_run",
+                    "deadline_epoch_ns": exact_epoch,
+                    "durable_cursor_journal_byte_offset": exact_offset,
+                },
+                {
+                    "monitor_action": "watch",
+                    "deadline_epoch_ns": None,
+                    "durable_cursor_journal_byte_offset": None,
+                },
+            ]
+        )
+
+        first = frame.iloc[0].to_dict()
+        self.assertIs(type(first["deadline_epoch_ns"]), int)
+        self.assertEqual(exact_epoch, first["deadline_epoch_ns"])
+        self.assertIs(type(first["durable_cursor_journal_byte_offset"]), int)
+        self.assertEqual(
+            exact_offset,
+            first["durable_cursor_journal_byte_offset"],
+        )
+
+    def test_durable_trigger_cursor_deadline_and_generation_reach_action(self) -> None:
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 900_000_000
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+            def clock_domain_id(self) -> str:
+                return "boot-test"
+
+        cursor = DurableTickCursor(
+            feed_session_id="feed-a",
+            ingress_sequence=12,
+            journal_byte_offset=8192,
+        )
+        durable_batch = DurableTickBatch(
+            records=(
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "symbol": "JM609",
+                    "exchange": "DCE",
+                    "last_price": 1252.0,
+                    "bid_price_1": 1252.0,
+                    "ask_price_1": 1252.0,
+                    "received_at": self.iso(self.now),
+                    "received_at_utc": utc_iso_from_epoch_ns(
+                        1_784_000_000_000_000_000
+                    ),
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": 11,
+                    "stream_sequence": 11,
+                    "symbol_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "ingress_epoch_ns": 1_784_000_000_000_000_000,
+                    "ingress_monotonic_ns": 900_000_000,
+                    "clock_domain_id": "boot-test",
+                    "trace_id": "stage179-tick/feed-a/11",
+                },
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "symbol": "JM609",
+                    "exchange": "DCE",
+                    "last_price": 1248.0,
+                    "bid_price_1": 1248.0,
+                    "ask_price_1": 1248.0,
+                    "received_at": self.iso(self.now + timedelta(seconds=1)),
+                    "received_at_utc": utc_iso_from_epoch_ns(
+                        1_784_000_001_000_000_000
+                    ),
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": 12,
+                    "stream_sequence": 12,
+                    "symbol_sequence": 2,
+                    "symbol_stream_sequence": 2,
+                    "ingress_epoch_ns": 1_784_000_001_000_000_000,
+                    "ingress_monotonic_ns": 1_900_000_000,
+                    "clock_domain_id": "boot-test",
+                    "trace_id": "stage179-tick/feed-a/12",
+                },
+            ),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+        ticks, error = stage904._durable_batch_tick_frame(
+            durable_batch,
+            clock=FakeClock(),
+        )
+        self.assertEqual("", error)
+
+        _, partial_error = stage904._durable_batch_tick_frame(
+            DurableTickBatch(
+                records=durable_batch.records,
+                next_cursor=durable_batch.next_cursor,
+                durable_through=durable_batch.durable_through,
+                caught_up=False,
+                gap=None,
+            ),
+            clock=FakeClock(),
+        )
+        self.assertEqual("durable_tick_batch_not_caught_up", partial_error)
+
+        cursor_past_records = DurableTickCursor(
+            feed_session_id="feed-a",
+            ingress_sequence=13,
+            journal_byte_offset=9000,
+        )
+        _, cursor_error = stage904._durable_batch_tick_frame(
+            DurableTickBatch(
+                records=durable_batch.records,
+                next_cursor=cursor_past_records,
+                durable_through=cursor_past_records,
+                caught_up=True,
+                gap=None,
+            ),
+            clock=FakeClock(),
+        )
+        self.assertEqual(
+            "durable_tick_batch_cursor_not_at_record_boundary",
+            cursor_error,
+        )
+
+        store = stage904._new_state_store(self.target_date)
+        row = self.apply(
+            store,
+            ticks,
+            heartbeat=self.v1_heartbeat(
+                sequence=2,
+                first_buffered=1,
+                evicted_through=0,
+            ),
+            allow_legacy_offline_watermarks=False,
+        )
+
+        self.assertEqual("close_dry_run", row["monitor_action"])
+        self.assertEqual(11, row["source_ingress_sequence"])
+        self.assertEqual(1, row["source_symbol_sequence"])
+        self.assertEqual("feed-a", row["durable_cursor_feed_session_id"])
+        self.assertEqual(12, row["durable_cursor_ingress_sequence"])
+        self.assertEqual(8192, row["durable_cursor_journal_byte_offset"])
+        self.assertEqual(
+            "stage179_framed_v1",
+            row["durable_cursor_journal_schema"],
+        )
+        self.assertEqual(
+            1_784_000_025_000_000_000,
+            row["deadline_epoch_ns"],
+        )
+        self.assertTrue(row["trace_json"])
+        self.assertEqual(2, row["state_revision"])
+        self.assertEqual(
+            f"{row['position_epoch_id']}:1",
+            row["state_generation"],
+        )
+
+    def test_callable_commits_state_before_returning_ready_action(self) -> None:
+        class FakeClock:
+            def epoch_ns(self) -> int:
+                return 1_784_000_000_000_000_000
+
+            def monotonic_ns(self) -> int:
+                return 900_000_000
+
+            def sleep(self, seconds: float) -> None:
+                return None
+
+            def clock_domain_id(self) -> str:
+                return "boot-test"
+
+        cursor = DurableTickCursor(
+            feed_session_id="feed-a",
+            ingress_sequence=1,
+            journal_byte_offset=4096,
+        )
+        durable_batch = DurableTickBatch(
+            records=(
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "symbol": "JM609",
+                    "exchange": "DCE",
+                    "last_price": 1252.0,
+                    "bid_price_1": 1252.0,
+                    "ask_price_1": 1252.0,
+                    "received_at": self.iso(self.now),
+                    "received_at_utc": utc_iso_from_epoch_ns(
+                        1_784_000_000_000_000_000
+                    ),
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": 1,
+                    "stream_sequence": 1,
+                    "symbol_sequence": 1,
+                    "symbol_stream_sequence": 1,
+                    "ingress_epoch_ns": 1_784_000_000_000_000_000,
+                    "ingress_monotonic_ns": 900_000_000,
+                    "clock_domain_id": "boot-test",
+                    "trace_id": "stage179-tick/feed-a/1",
+                },
+            ),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat = self.v1_heartbeat(
+                sequence=1,
+                first_buffered=1,
+                evicted_through=0,
+            )
+
+            def fake_json(path: Path) -> dict:
+                if path == stage904.OFFICIAL_LIVE_SUMMARY_PATH:
+                    return {"analysis_end": self.target_date}
+                if path == stage904.TICK_STREAM_HEARTBEAT_PATH:
+                    return heartbeat
+                return {}
+
+            with (
+                patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(stage904, "_read_json", side_effect=fake_json),
+                patch.object(
+                    stage904,
+                    "_read_csv_maybe",
+                    side_effect=lambda path, **_: (
+                        pd.DataFrame(
+                            [
+                                {
+                                    "vt_symbol": "JM609.DCE",
+                                    "direction": "short",
+                                    "volume": 2.0,
+                                    "frozen": 0.0,
+                                }
+                            ]
+                        )
+                        if path == stage904.READONLY_POSITIONS_PATH
+                        else pd.DataFrame()
+                    ),
+                ),
+                patch.object(stage904, "read_execution_ledger", return_value=[]),
+                patch.object(
+                    stage904,
+                    "_monitor_positions",
+                    return_value=pd.DataFrame([self.base()]),
+                ),
+                patch.object(
+                    stage904,
+                    "_action_for_position",
+                    side_effect=lambda row, **_: dict(row),
+                ),
+            ):
+                result = stage904.run_intraday_monitor(
+                    target_date=self.target_date,
+                    durable_batch=durable_batch,
+                    clock=FakeClock(),
+                    write_compat_outputs=False,
+                )
+                recovered = stage904._load_state_store(
+                    result.paths["state_json"],
+                    self.target_date,
+                    journal_path=result.paths["state_journal"],
+                )
+
+            self.assertEqual(1, len(result.actions))
+            action = result.actions.iloc[0].to_dict()
+            self.assertEqual("close_dry_run", action["monitor_action"])
+            recovered_state = next(iter(recovered["states"].values()))
+            recovered_action = stage904.get_pending_action(recovered_state)
+            self.assertEqual(action["action_id"], recovered_action["action_id"])
+            self.assertEqual(
+                action["state_generation"],
+                recovered_action["state_generation"],
+            )
 
     def complete_query_bundle(
         self,
@@ -470,20 +857,56 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         }
 
     def ticks(self, values: list[tuple[int, float]]) -> pd.DataFrame:
-        return pd.DataFrame(
-            [
+        rows: list[dict] = []
+        for seq, (offset, price) in enumerate(values, start=1):
+            ingress_epoch_ns = 1_784_000_000_000_000_000 + seq
+            ingress_monotonic_ns = 900_000_000 + seq
+            trace = LatencyTrace.from_ingress_row(
+                {
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": seq,
+                    "symbol_sequence": seq,
+                    "vt_symbol": "JM609.DCE",
+                    "ingress_epoch_ns": ingress_epoch_ns,
+                    "ingress_monotonic_ns": ingress_monotonic_ns,
+                    "received_at_utc": utc_iso_from_epoch_ns(
+                        ingress_epoch_ns
+                    ),
+                    "clock_domain_id": "boot-test",
+                    "trace_id": f"stage179-tick/feed-a/{seq}",
+                },
+                clock=TraceClock(),
+            )
+            deadline_epoch_ns = trace.deadline_epoch_ns
+            deadline_monotonic_ns = trace.deadline_monotonic_ns
+            trace_id = trace.trace_id
+            rows.append(
                 {
                     "feed_session_id": "feed-a",
                     "stream_sequence": seq,
-                    "received_at": self.iso(self.entry_at + timedelta(seconds=offset)),
+                    "received_at": self.iso(
+                        self.entry_at + timedelta(seconds=offset)
+                    ),
                     "vt_symbol": "JM609.DCE",
+                    "trace_json": trace.to_json(),
+                    "trace_id": trace_id,
+                    "source_feed_session_id": "feed-a",
+                    "source_ingress_sequence": seq,
+                    "source_symbol_sequence": seq,
+                    "ingress_epoch_ns": ingress_epoch_ns,
+                    "ingress_monotonic_ns": ingress_monotonic_ns,
+                    "deadline_epoch_ns": deadline_epoch_ns,
+                    "deadline_monotonic_ns": deadline_monotonic_ns,
+                    "durable_cursor_feed_session_id": "feed-a",
+                    "durable_cursor_ingress_sequence": seq,
+                    "durable_cursor_journal_byte_offset": seq * 100,
+                    "durable_cursor_journal_schema": "stage179_framed_v1",
                     "last_price": price,
                     "bid_price_1": price,
                     "ask_price_1": price,
                 }
-                for seq, (offset, price) in enumerate(values, start=1)
-            ]
-        )
+            )
+        return pd.DataFrame(rows)
 
     def apply(
         self,

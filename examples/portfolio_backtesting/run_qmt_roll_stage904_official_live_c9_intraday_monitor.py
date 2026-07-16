@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import fcntl
 import hashlib
 import io
@@ -10,7 +11,7 @@ import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -71,6 +72,9 @@ from qmt_roll_official_live_phase_d_config import (
     STAGE901_TRADES_PATH,
     build_phase_d_config,
 )
+from qmt_roll_official_live_tick_types import DurableTickBatch
+from qmt_roll_official_live_time import Clock, SystemClock
+from qmt_roll_official_live_trace import LatencyTrace, TraceValidationError
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -147,6 +151,74 @@ BROKER_TERMINAL_ORDER_STATUSES = BROKER_ALL_TRADED_STATUSES.union(
         "废单",
     }
 )
+SYSTEM_CLOCK = SystemClock()
+
+
+@dataclass(frozen=True)
+class Stage904RunResult:
+    target_date: str
+    monitor_run_id: str
+    actions: pd.DataFrame
+    summary: dict[str, Any]
+    paths: Mapping[str, Path]
+
+
+TRIGGER_ACTION_FIELDS = (
+    "trace_json",
+    "trace_id",
+    "source_feed_session_id",
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+    "durable_cursor_feed_session_id",
+    "durable_cursor_ingress_sequence",
+    "durable_cursor_journal_byte_offset",
+    "durable_cursor_journal_schema",
+    "state_generation",
+)
+EXACT_INT_ACTION_FIELDS = (
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+    "durable_cursor_ingress_sequence",
+    "durable_cursor_journal_byte_offset",
+)
+
+
+def _pending_trigger_fields(
+    pending: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    source = pending if isinstance(pending, Mapping) else {}
+    return {field: source.get(field) for field in TRIGGER_ACTION_FIELDS}
+
+
+def _action_frame(action_rows: list[dict[str, Any]]) -> pd.DataFrame:
+    """Prevent pandas from converting exact nanoseconds to float64."""
+
+    frame = pd.DataFrame(action_rows)
+    for field_name in EXACT_INT_ACTION_FIELDS:
+        if field_name in frame.columns:
+            frame[field_name] = pd.Series(
+                [row.get(field_name) for row in action_rows],
+                dtype=object,
+            )
+    return frame
+
+
+def _local_datetime_from_clock(clock: Clock) -> datetime:
+    epoch_ns = clock.epoch_ns()
+    if type(epoch_ns) is not int or epoch_ns < 0:
+        raise ValueError("clock_epoch_ns_must_be_nonnegative_exact_int")
+    seconds, nanoseconds = divmod(epoch_ns, 1_000_000_000)
+    return datetime.fromtimestamp(seconds).replace(
+        microsecond=nanoseconds // 1_000
+    )
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -341,6 +413,87 @@ def _read_committed_tick_snapshot(
         latest_heartbeat,
         f"tick_snapshot_commit_unstable_after_{total_attempts}_attempts:{last_error}",
     )
+
+
+def _durable_batch_tick_frame(
+    durable_batch: DurableTickBatch,
+    *,
+    clock: Clock,
+) -> tuple[pd.DataFrame, str]:
+    """Build Stage904 tick input without touching compatibility CSV output."""
+
+    if not isinstance(durable_batch, DurableTickBatch):
+        return pd.DataFrame(), "durable_tick_batch_type_invalid"
+    if durable_batch.gap is not None:
+        return (
+            pd.DataFrame(),
+            "durable_tick_batch_gap:"
+            f"{durable_batch.gap.reason}:"
+            f"{durable_batch.gap.start_ingress_sequence}-"
+            f"{durable_batch.gap.end_ingress_sequence}",
+        )
+    if durable_batch.caught_up is not True:
+        return pd.DataFrame(), "durable_tick_batch_not_caught_up"
+    cursor = durable_batch.next_cursor
+    if durable_batch.records and cursor is None:
+        return pd.DataFrame(), "durable_tick_batch_cursor_missing"
+    durable_through = durable_batch.durable_through
+    for label, candidate in (
+        ("cursor", cursor),
+        ("durable_through", durable_through),
+    ):
+        if candidate is None:
+            continue
+        if (
+            type(candidate.feed_session_id) is not str
+            or not candidate.feed_session_id.strip()
+            or type(candidate.ingress_sequence) is not int
+            or candidate.ingress_sequence < 0
+            or type(candidate.journal_byte_offset) is not int
+            or candidate.journal_byte_offset < 0
+            or type(candidate.journal_schema) is not str
+            or not candidate.journal_schema.strip()
+        ):
+            return pd.DataFrame(), f"durable_tick_batch_{label}_invalid"
+    if cursor is None and durable_through.ingress_sequence != 0:
+        return pd.DataFrame(), "durable_tick_batch_cursor_missing"
+    if cursor is not None and cursor != durable_through:
+        return pd.DataFrame(), "durable_tick_batch_cursor_not_at_watermark"
+    rows: list[dict[str, Any]] = []
+    for raw in durable_batch.records:
+        row = dict(raw)
+        try:
+            trace = LatencyTrace.from_ingress_row(row, clock=clock)
+        except TraceValidationError as exc:
+            return pd.DataFrame(), f"durable_tick_trace_invalid:{exc}"
+        if cursor is None:
+            return pd.DataFrame(), "durable_tick_batch_cursor_missing"
+        if (
+            cursor.feed_session_id != trace.feed_session_id
+            or cursor.ingress_sequence < trace.ingress_sequence
+        ):
+            return pd.DataFrame(), "durable_tick_batch_cursor_identity_mismatch"
+        row.update(
+            {
+                "trace_json": trace.to_json(),
+                "trace_id": trace.trace_id,
+                "source_feed_session_id": trace.feed_session_id,
+                "source_ingress_sequence": trace.ingress_sequence,
+                "source_symbol_sequence": trace.symbol_sequence,
+                "deadline_epoch_ns": trace.deadline_epoch_ns,
+                "deadline_monotonic_ns": trace.deadline_monotonic_ns,
+                "durable_cursor_feed_session_id": cursor.feed_session_id,
+                "durable_cursor_ingress_sequence": cursor.ingress_sequence,
+                "durable_cursor_journal_byte_offset": cursor.journal_byte_offset,
+                "durable_cursor_journal_schema": cursor.journal_schema,
+            }
+        )
+        rows.append(row)
+    if rows and cursor is not None:
+        last_sequence = rows[-1].get("ingress_sequence")
+        if type(last_sequence) is not int or last_sequence != cursor.ingress_sequence:
+            return pd.DataFrame(), "durable_tick_batch_cursor_not_at_record_boundary"
+    return pd.DataFrame(rows), ""
 
 
 def _sha256_file(path: Path) -> str:
@@ -3249,6 +3402,9 @@ def _apply_state_to_position_action(
 
     pending = get_pending_action(state)
     phase = _clean(state.get("phase"))
+    trigger_provenance_blocker = _clean(
+        state.get("trigger_provenance_blocker")
+    )
     if (
         pending
         and pending.get("action") == "close"
@@ -3273,8 +3429,12 @@ def _apply_state_to_position_action(
         monitor_action = "retry_watch"
         monitor_reason = "retry_waiting_for_post_flat_reclaim"
     elif phase == PHASE_RETRY_RECLAIM_LATCHED:
-        monitor_action = "retry_watch"
-        monitor_reason = "retry_reclaim_latched_but_current_price_unfavorable"
+        if trigger_provenance_blocker:
+            monitor_action = "retry_block"
+            monitor_reason = trigger_provenance_blocker
+        else:
+            monitor_action = "retry_watch"
+            monitor_reason = "retry_reclaim_latched_but_current_price_unfavorable"
     elif phase == PHASE_RETRY_OPEN:
         if capability_migration_blocker:
             monitor_action = "retry_block"
@@ -3294,6 +3454,7 @@ def _apply_state_to_position_action(
 
     result = {
         **base,
+        **_pending_trigger_fields(pending),
         "root_position_id": state["root_position_id"],
         "position_cycle_id": state["position_cycle_id"],
         "position_cycle_no": state["position_cycle_no"],
@@ -3334,12 +3495,15 @@ def _apply_state_to_position_action(
             result["volume"] = _to_float(base.get("volume"), 0.0)
         else:
             result["volume"] = _to_float(state.get("volume"), 0.0)
-    if capability_migration_blocker:
+    if capability_migration_blocker or trigger_provenance_blocker:
+        migration_blocker = (
+            capability_migration_blocker or trigger_provenance_blocker
+        )
         result.update(
             {
                 "manual_intervention_required": 1,
                 "risk_alert_level": "P1",
-                "migration_blocker": capability_migration_blocker,
+                "migration_blocker": migration_blocker,
                 "recommended_operator_action": (
                     "verify_broker_position_and_legacy_tick_history_before_activation"
                 ),
@@ -3360,6 +3524,7 @@ def _state_only_action_row(
     live_price, live_price_source = _tick_price(tick)
     pending = get_pending_action(state)
     return {
+        **_pending_trigger_fields(pending),
         "target_date": state.get("target_date"),
         "vt_symbol": vt_symbol,
         "direction": state.get("direction"),
@@ -4416,6 +4581,9 @@ def _advance_flat_states(
                 context=provenance_context,
             )
             pending = get_pending_action(state)
+            trigger_provenance_blocker = _clean(
+                state.get("trigger_provenance_blocker")
+            )
             latest_tick_age = _tick_age(_tick_row(ticks, _clean(state.get("vt_symbol"))))
             retry_tick_fresh = _tick_age_is_fresh(
                 latest_tick_age, max_tick_age_seconds
@@ -4438,6 +4606,24 @@ def _advance_flat_states(
                         monitor_reason=f"retry_current_tick_stale:age={latest_tick_age}",
                     )
                 )
+            elif trigger_provenance_blocker:
+                blocked_row = _state_only_action_row(
+                    state,
+                    ticks=ticks,
+                    monitor_action="retry_block",
+                    monitor_reason=trigger_provenance_blocker,
+                )
+                blocked_row.update(
+                    {
+                        "manual_intervention_required": 1,
+                        "risk_alert_level": "P1",
+                        "migration_blocker": trigger_provenance_blocker,
+                        "recommended_operator_action": (
+                            "verify_trigger_trace_and_durable_cursor_before_retry_open"
+                        ),
+                    }
+                )
+                rows.append(blocked_row)
             elif state.get("feed_gap_latched"):
                 rows.append(
                     _state_only_action_row(
@@ -4517,39 +4703,42 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
     )
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Dry-run C9 intraday 0.5R stop/retry monitor for official live.")
-    parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
-    parser.add_argument("--max-tick-age-seconds", type=int, default=10)
-    parser.add_argument("--require-broker-fill-price", action="store_true")
-    args = parser.parse_args()
-
+def run_intraday_monitor(
+    target_date: str = "",
+    max_tick_age_seconds: int = 10,
+    require_broker_fill_price: bool = False,
+    durable_batch: DurableTickBatch | None = None,
+    clock: Clock = SYSTEM_CLOCK,
+    write_compat_outputs: bool = True,
+) -> Stage904RunResult:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    target_date = args.target_date or str(official_summary.get("analysis_end", ""))
+    target_date = target_date or str(official_summary.get("analysis_end", ""))
+    run_now = _local_datetime_from_clock(clock)
     monitor_run_id = (
         f"stage904-{target_date.replace('-', '') or 'latest'}-"
-        f"{datetime.now():%Y%m%dT%H%M%S%f}-{os.getpid()}-{uuid.uuid4().hex[:8]}"
+        f"{run_now:%Y%m%dT%H%M%S%f}-{os.getpid()}-{uuid.uuid4().hex[:8]}"
     )
     paths = _paths(target_date)
     # Clear executable views before any reducer work.  If the process crashes,
     # Stage905 must observe no stale close/retry intent from a previous cycle.
-    _atomic_write_df(paths["actions_csv"], pd.DataFrame())
-    _atomic_write_text(
-        paths["summary_json"],
-        json.dumps(
-            {
-                "model_tag": MODEL_TAG,
-                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "target_date": target_date,
-                "monitor_run_id": monitor_run_id,
-                "monitor_status": "intraday_monitor_running_fail_closed",
-                "order_api_called_count": 0,
-            },
-            ensure_ascii=False,
-            indent=2,
-        ),
-    )
+    if write_compat_outputs:
+        _atomic_write_df(paths["actions_csv"], pd.DataFrame())
+        _atomic_write_text(
+            paths["summary_json"],
+            json.dumps(
+                {
+                    "model_tag": MODEL_TAG,
+                    "generated_at": run_now.strftime("%Y-%m-%d %H:%M:%S"),
+                    "target_date": target_date,
+                    "monitor_run_id": monitor_run_id,
+                    "monitor_status": "intraday_monitor_running_fail_closed",
+                    "order_api_called_count": 0,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
     positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
     broker_positions = _read_csv_maybe(
         READONLY_POSITIONS_PATH, preserve_identity=True
@@ -4563,14 +4752,21 @@ def main() -> None:
     execution_ledger_rows = read_execution_ledger()
     trades = _read_csv_maybe(STAGE901_TRADES_PATH)
     entry_risk = _read_csv_maybe(STAGE901_ENTRY_RISK_PATH)
-    (
-        ticks,
-        tick_stream_heartbeat,
-        tick_snapshot_commit_error,
-    ) = _read_committed_tick_snapshot(
-        READONLY_TICKS_PATH,
-        TICK_STREAM_HEARTBEAT_PATH,
-    )
+    if durable_batch is None:
+        (
+            ticks,
+            tick_stream_heartbeat,
+            tick_snapshot_commit_error,
+        ) = _read_committed_tick_snapshot(
+            READONLY_TICKS_PATH,
+            TICK_STREAM_HEARTBEAT_PATH,
+        )
+    else:
+        ticks, tick_snapshot_commit_error = _durable_batch_tick_frame(
+            durable_batch,
+            clock=clock,
+        )
+        tick_stream_heartbeat = _read_json(TICK_STREAM_HEARTBEAT_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     readonly_bundle_manifest = _read_json(READONLY_QUERY_BUNDLE_MANIFEST_PATH)
     readonly_bundle_evidence = _build_readonly_query_bundle_evidence(
@@ -4601,7 +4797,7 @@ def main() -> None:
             state_store_error = f"state_corrupt_fail_closed:{exc}"
 
         candidate_positions = monitor_positions
-        if args.require_broker_fill_price and not candidate_positions.empty and "position_source" in candidate_positions.columns:
+        if require_broker_fill_price and not candidate_positions.empty and "position_source" in candidate_positions.columns:
             candidate_positions = candidate_positions[candidate_positions["position_source"].astype(str).eq("broker")].copy()
 
         base_rows = [
@@ -4613,8 +4809,8 @@ def main() -> None:
                 entry_risk=entry_risk,
                 ticks=ticks,
                 target_date=target_date,
-                max_tick_age_seconds=args.max_tick_age_seconds,
-                require_broker_fill_price=bool(args.require_broker_fill_price),
+                max_tick_age_seconds=max_tick_age_seconds,
+                require_broker_fill_price=bool(require_broker_fill_price),
                 readonly_summary=readonly_summary,
                 readonly_bundle_manifest=readonly_bundle_manifest,
                 readonly_bundle_evidence=readonly_bundle_evidence,
@@ -4647,7 +4843,7 @@ def main() -> None:
                             readonly_bundle_manifest=readonly_bundle_manifest,
                             readonly_bundle_evidence=readonly_bundle_evidence,
                             broker_positions=broker_positions,
-                            max_tick_age_seconds=args.max_tick_age_seconds,
+                            max_tick_age_seconds=max_tick_age_seconds,
                         )
                     )
                 except Exception as exc:
@@ -4671,7 +4867,7 @@ def main() -> None:
                     heartbeat=tick_stream_heartbeat,
                     represented_roots=represented_broker_roots,
                     journal_path=paths["state_journal"],
-                    max_tick_age_seconds=args.max_tick_age_seconds,
+                    max_tick_age_seconds=max_tick_age_seconds,
                     readonly_bundle_manifest=readonly_bundle_manifest,
                     readonly_bundle_evidence=readonly_bundle_evidence,
                     broker_orders=broker_orders,
@@ -4688,7 +4884,7 @@ def main() -> None:
     for row in action_rows:
         row["monitor_run_id"] = monitor_run_id
         row.setdefault("manual_intervention_required", 0)
-    actions = pd.DataFrame(action_rows)
+    actions = _action_frame(action_rows)
     close_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("close_dry_run").sum()) if not actions.empty else 0
     retry_open_dry_run_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("retry_open_dry_run").sum()) if not actions.empty else 0
     retry_watch_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).eq("retry_watch").sum()) if not actions.empty else 0
@@ -4704,7 +4900,7 @@ def main() -> None:
 
     summary = {
         "model_tag": MODEL_TAG,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_at": run_now.strftime("%Y-%m-%d %H:%M:%S"),
         "target_date": target_date,
         "monitor_run_id": monitor_run_id,
         "official_live_version": OFFICIAL_LIVE_VERSION,
@@ -4718,8 +4914,21 @@ def main() -> None:
         "order_api_called_count": order_api_called,
         "readonly_status": readonly_summary.get("status", ""),
         "tick_path": str(READONLY_TICKS_PATH.resolve()),
-        "monitor_max_tick_age_seconds": int(args.max_tick_age_seconds),
-        "require_broker_fill_price": int(bool(args.require_broker_fill_price)),
+        "tick_input_mode": (
+            "durable_batch" if durable_batch is not None else "compat_snapshot"
+        ),
+        "durable_batch_cursor": (
+            {
+                "feed_session_id": durable_batch.next_cursor.feed_session_id,
+                "ingress_sequence": durable_batch.next_cursor.ingress_sequence,
+                "journal_byte_offset": durable_batch.next_cursor.journal_byte_offset,
+                "journal_schema": durable_batch.next_cursor.journal_schema,
+            }
+            if durable_batch is not None and durable_batch.next_cursor is not None
+            else {}
+        ),
+        "monitor_max_tick_age_seconds": int(max_tick_age_seconds),
+        "require_broker_fill_price": int(bool(require_broker_fill_price)),
         "shadow_position_rows": int(len(positions)),
         "broker_position_rows": int(len(broker_positions)),
         "broker_order_rows": int(len(broker_orders)),
@@ -4759,10 +4968,40 @@ def main() -> None:
             "continue_after": "是。Stage904 已能产出初始止损和平仓后一次重试开仓候选，下一步由 Stage905/931 承接为真实 order intent。",
         },
     }
-    _atomic_write_df(paths["actions_csv"], actions)
-    _atomic_write_text(paths["summary_json"], json.dumps(summary, ensure_ascii=False, indent=2, default=str))
-    _atomic_write_text(paths["report_md"], _build_report(summary, actions))
-    print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+    if write_compat_outputs:
+        _atomic_write_df(paths["actions_csv"], actions)
+        _atomic_write_text(
+            paths["summary_json"],
+            json.dumps(summary, ensure_ascii=False, indent=2, default=str),
+        )
+        _atomic_write_text(paths["report_md"], _build_report(summary, actions))
+    return Stage904RunResult(
+        target_date=target_date,
+        monitor_run_id=monitor_run_id,
+        actions=actions,
+        summary=summary,
+        paths=dict(paths),
+    )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Dry-run C9 intraday 0.5R stop/retry monitor for official live."
+    )
+    parser.add_argument(
+        "--target-date",
+        default="",
+        help="Target completed trading day. Defaults to official summary analysis_end.",
+    )
+    parser.add_argument("--max-tick-age-seconds", type=int, default=10)
+    parser.add_argument("--require-broker-fill-price", action="store_true")
+    args = parser.parse_args()
+    result = run_intraday_monitor(
+        target_date=args.target_date,
+        max_tick_age_seconds=args.max_tick_age_seconds,
+        require_broker_fill_price=bool(args.require_broker_fill_price),
+    )
+    print(json.dumps(result.summary, ensure_ascii=False, indent=2, default=str))
 
 
 if __name__ == "__main__":

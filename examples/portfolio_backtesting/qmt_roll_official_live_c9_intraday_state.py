@@ -26,6 +26,13 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Mapping
 
+from qmt_roll_official_live_tick_types import JOURNAL_SCHEMA_FRAMED_V1
+from qmt_roll_official_live_trace import (
+    LatencyTrace,
+    TraceStage,
+    TraceValidationError,
+)
+
 
 STATE_SCHEMA_VERSION = 1
 STOP_RETRY_R = 0.5
@@ -389,11 +396,13 @@ def new_state(
         "initial_progress_latched_price": None,
         "initial_stop_latched_at": None,
         "initial_stop_latched_price": None,
+        "initial_stop_trigger_provenance": None,
         "close_fill_at": None,
         "broker_flat_at": None,
         "retry_armed_after": None,
         "retry_reclaim_latched_at": None,
         "retry_reclaim_latched_price": None,
+        "retry_reclaim_trigger_provenance": None,
         "retry_current_favorable": False,
         "retry_fresh_tick_required": False,
         "retry_action_id": None,
@@ -404,8 +413,10 @@ def new_state(
         "current_position_volume": normalized_volume,
         "retry_stop_latched_at": None,
         "retry_stop_latched_price": None,
+        "retry_stop_trigger_provenance": None,
         "flat_at": None,
         "pending_action": None,
+        "trigger_provenance_blocker": None,
         "revision": 0,
         "transitions": [],
         "counters": {
@@ -476,7 +487,9 @@ def _validate_state(state: Mapping[str, Any]) -> None:
 
 def _copy_state(state: Mapping[str, Any]) -> dict[str, Any]:
     _validate_state(state)
-    return copy.deepcopy(dict(state))
+    result = copy.deepcopy(dict(state))
+    _lock_legacy_trigger_generation(result)
+    return result
 
 
 def _increment(state: dict[str, Any], counter: str) -> None:
@@ -538,9 +551,26 @@ def _build_action(
             "current_position_volume",
             state.get("retry_filled_volume", state["volume"]),
         )
+    trigger_field = ""
+    if attempt_no == ATTEMPT_INITIAL and action == ACTION_CLOSE:
+        trigger_field = "initial_stop_trigger_provenance"
+    elif attempt_no == ATTEMPT_RETRY and action == ACTION_OPEN:
+        trigger_field = "retry_reclaim_trigger_provenance"
+    elif attempt_no == ATTEMPT_RETRY and action == ACTION_CLOSE:
+        trigger_field = "retry_stop_trigger_provenance"
+    raw_trigger = state.get(trigger_field) if trigger_field else None
+    trigger = copy.deepcopy(raw_trigger) if isinstance(raw_trigger, Mapping) else {}
+    trigger_revision = trigger.pop(
+        "trigger_state_revision",
+        state.get("revision", 0),
+    )
     return {
         "action_id": action_id,
         **generation,
+        **trigger,
+        "state_generation": (
+            f"{state['position_epoch_id']}:{int(trigger_revision)}"
+        ),
         "attempt_no": attempt_no,
         "action": action,
         "offset": offset,
@@ -561,9 +591,124 @@ def _build_action(
     }
 
 
+def _retry_open_trigger_provenance_blocker(
+    state: Mapping[str, Any],
+) -> str:
+    provenance = state.get("retry_reclaim_trigger_provenance")
+    if not isinstance(provenance, Mapping):
+        return "retry_open_trigger_provenance_missing"
+    text_fields = (
+        "trace_json",
+        "trace_id",
+        "source_feed_session_id",
+        "durable_cursor_feed_session_id",
+        "durable_cursor_journal_schema",
+    )
+    for field_name in text_fields:
+        value = provenance.get(field_name)
+        if type(value) is not str or not value.strip():
+            return f"retry_open_trigger_provenance_text_invalid:{field_name}"
+    integer_fields = (
+        "source_ingress_sequence",
+        "source_symbol_sequence",
+        "ingress_epoch_ns",
+        "ingress_monotonic_ns",
+        "deadline_epoch_ns",
+        "deadline_monotonic_ns",
+        "durable_cursor_ingress_sequence",
+        "durable_cursor_journal_byte_offset",
+        "trigger_state_revision",
+    )
+    for field_name in integer_fields:
+        value = provenance.get(field_name)
+        if type(value) is not int or value < 0:
+            return f"retry_open_trigger_provenance_integer_invalid:{field_name}"
+    if provenance["source_ingress_sequence"] <= 0:
+        return "retry_open_trigger_source_ingress_sequence_invalid"
+    if provenance["durable_cursor_journal_byte_offset"] <= 0:
+        return "retry_open_trigger_cursor_offset_invalid"
+    if provenance["durable_cursor_journal_schema"] != JOURNAL_SCHEMA_FRAMED_V1:
+        return "retry_open_trigger_cursor_schema_unsupported"
+    if (
+        provenance["durable_cursor_feed_session_id"]
+        != provenance["source_feed_session_id"]
+        or provenance["durable_cursor_ingress_sequence"]
+        < provenance["source_ingress_sequence"]
+    ):
+        return "retry_open_trigger_cursor_identity_mismatch"
+    if (
+        provenance["deadline_epoch_ns"]
+        != provenance["ingress_epoch_ns"] + 25_000_000_000
+        or provenance["deadline_monotonic_ns"]
+        != provenance["ingress_monotonic_ns"] + 25_000_000_000
+    ):
+        return "retry_open_trigger_deadline_mismatch"
+    try:
+        trace = LatencyTrace.from_json(provenance["trace_json"])
+    except TraceValidationError:
+        return "retry_open_trigger_trace_json_invalid"
+    ingress_stamp = trace.stamps[TraceStage.GATEWAY_INGRESS.value]
+    exact_bindings = (
+        ("trace_id", trace.trace_id, provenance["trace_id"]),
+        (
+            "feed_session_id",
+            trace.feed_session_id,
+            provenance["source_feed_session_id"],
+        ),
+        (
+            "ingress_sequence",
+            trace.ingress_sequence,
+            provenance["source_ingress_sequence"],
+        ),
+        (
+            "symbol_sequence",
+            trace.symbol_sequence,
+            provenance["source_symbol_sequence"],
+        ),
+        ("vt_symbol", trace.vt_symbol, state.get("vt_symbol")),
+        ("ingress_epoch_ns", ingress_stamp.epoch_ns, provenance["ingress_epoch_ns"]),
+        (
+            "ingress_monotonic_ns",
+            ingress_stamp.monotonic_ns,
+            provenance["ingress_monotonic_ns"],
+        ),
+        ("deadline_epoch_ns", trace.deadline_epoch_ns, provenance["deadline_epoch_ns"]),
+        (
+            "deadline_monotonic_ns",
+            trace.deadline_monotonic_ns,
+            provenance["deadline_monotonic_ns"],
+        ),
+    )
+    for field_name, actual, expected in exact_bindings:
+        if type(actual) is not type(expected) or actual != expected:
+            return f"retry_open_trigger_trace_identity_mismatch:{field_name}"
+    matching_transitions = [
+        row
+        for row in state.get("transitions", [])
+        if isinstance(row, Mapping)
+        and row.get("to") == PHASE_RETRY_RECLAIM_LATCHED
+        and row.get("reason") == "original_entry_reclaimed_after_confirmed_flat"
+    ]
+    if len(matching_transitions) != 1:
+        return "retry_open_trigger_transition_identity_missing"
+    transition = matching_transitions[0]
+    if (
+        type(transition.get("feed_session_id")) is not str
+        or transition.get("feed_session_id")
+        != provenance["source_feed_session_id"]
+        or type(transition.get("seq")) is not int
+        or transition.get("seq") != provenance["source_symbol_sequence"]
+        or type(transition.get("at")) is not str
+        or transition.get("at") != state.get("retry_reclaim_latched_at")
+    ):
+        return "retry_open_trigger_transition_identity_mismatch"
+    return ""
+
+
 def _refresh_pending_action(state: dict[str, Any]) -> dict[str, Any]:
     phase = state["phase"]
     pending: dict[str, Any] | None = None
+    state["trigger_provenance_blocker"] = None
     if phase == PHASE_INITIAL_STOP_LATCHED:
         pending = _build_action(
             state,
@@ -579,15 +724,19 @@ def _refresh_pending_action(state: dict[str, Any]) -> dict[str, Any]:
             and not state.get("retry_fresh_tick_required")
             and state.get("retry_current_favorable")
         ):
-            pending = _build_action(
-                state,
-                attempt_no=ATTEMPT_RETRY,
-                action=ACTION_OPEN,
-                triggered_at=str(state["retry_reclaim_latched_at"]),
-                trigger_price=float(state["retry_reclaim_latched_price"]),
-                reason="original_entry_reclaimed_after_confirmed_flat",
-            )
-            state["retry_action_id"] = pending["action_id"]
+            blocker = _retry_open_trigger_provenance_blocker(state)
+            if blocker:
+                state["trigger_provenance_blocker"] = blocker
+            else:
+                pending = _build_action(
+                    state,
+                    attempt_no=ATTEMPT_RETRY,
+                    action=ACTION_OPEN,
+                    triggered_at=str(state["retry_reclaim_latched_at"]),
+                    trigger_price=float(state["retry_reclaim_latched_price"]),
+                    reason="original_entry_reclaimed_after_confirmed_flat",
+                )
+                state["retry_action_id"] = pending["action_id"]
     elif phase == PHASE_RETRY_STOP_LATCHED:
         pending = _build_action(
             state,
@@ -693,6 +842,92 @@ def _is_progress_cross(state: Mapping[str, Any], price: float) -> bool:
     if state["direction"] == "long":
         return price >= float(state["c9_progress_price"])
     return price <= float(state["c9_progress_price"])
+
+
+def _trigger_provenance(
+    tick: Mapping[str, Any],
+    *,
+    feed_session_id: str,
+    seq: int,
+    state_revision: int,
+) -> dict[str, Any]:
+    """Copy first-trigger identity so later ticks cannot rewrite authority."""
+
+    ingress_sequence = tick.get(
+        "source_ingress_sequence",
+        tick.get("ingress_sequence", tick.get("stream_sequence")),
+    )
+    symbol_sequence = tick.get(
+        "source_symbol_sequence",
+        tick.get("symbol_sequence", tick.get("symbol_stream_sequence", seq)),
+    )
+    return copy.deepcopy(
+        {
+            "trigger_state_revision": int(state_revision),
+            "trace_json": tick.get("trace_json"),
+            "trace_id": tick.get("trace_id"),
+            "source_feed_session_id": feed_session_id,
+            "source_ingress_sequence": ingress_sequence,
+            "source_symbol_sequence": symbol_sequence,
+            "ingress_epoch_ns": tick.get("ingress_epoch_ns"),
+            "ingress_monotonic_ns": tick.get("ingress_monotonic_ns"),
+            "deadline_epoch_ns": tick.get("deadline_epoch_ns"),
+            "deadline_monotonic_ns": tick.get("deadline_monotonic_ns"),
+            "durable_cursor_feed_session_id": tick.get(
+                "durable_cursor_feed_session_id"
+            ),
+            "durable_cursor_ingress_sequence": tick.get(
+                "durable_cursor_ingress_sequence"
+            ),
+            "durable_cursor_journal_byte_offset": tick.get(
+                "durable_cursor_journal_byte_offset"
+            ),
+            "durable_cursor_journal_schema": tick.get(
+                "durable_cursor_journal_schema"
+            ),
+        }
+    )
+
+
+def _lock_legacy_trigger_generation(state: dict[str, Any]) -> None:
+    """Freeze one pre-Task5 pending action before its revision can advance."""
+
+    phase_spec = {
+        PHASE_INITIAL_STOP_LATCHED: (
+            "initial_stop_trigger_provenance",
+            PHASE_INITIAL_STOP_LATCHED,
+        ),
+        PHASE_RETRY_RECLAIM_LATCHED: (
+            "retry_reclaim_trigger_provenance",
+            PHASE_RETRY_RECLAIM_LATCHED,
+        ),
+        PHASE_RETRY_STOP_LATCHED: (
+            "retry_stop_trigger_provenance",
+            PHASE_RETRY_STOP_LATCHED,
+        ),
+    }
+    spec = phase_spec.get(state.get("phase"))
+    if spec is None:
+        return
+    field_name, target_phase = spec
+    if isinstance(state.get(field_name), Mapping):
+        return
+    transition = next(
+        (
+            row
+            for row in reversed(state.get("transitions", []))
+            if isinstance(row, Mapping) and row.get("to") == target_phase
+        ),
+        {},
+    )
+    raw_sequence = transition.get("seq")
+    sequence = raw_sequence if type(raw_sequence) is int and raw_sequence >= 0 else 0
+    state[field_name] = _trigger_provenance(
+        {},
+        feed_session_id=str(transition.get("feed_session_id") or ""),
+        seq=sequence,
+        state_revision=int(state.get("revision", 0)),
+    )
 
 
 def _latch_feed_gap_in_place(
@@ -831,6 +1066,12 @@ def consume_tick(
         if adverse_cross:
             result["initial_stop_latched_at"] = received_at
             result["initial_stop_latched_price"] = adverse_price
+            result["initial_stop_trigger_provenance"] = _trigger_provenance(
+                tick,
+                feed_session_id=feed_session_id,
+                seq=seq,
+                state_revision=int(result["revision"]),
+            )
             _transition(
                 result,
                 phase=PHASE_INITIAL_STOP_LATCHED,
@@ -865,6 +1106,12 @@ def consume_tick(
             else:
                 result["retry_reclaim_latched_at"] = received_at
                 result["retry_reclaim_latched_price"] = retry_reclaim_price
+                result["retry_reclaim_trigger_provenance"] = _trigger_provenance(
+                    tick,
+                    feed_session_id=feed_session_id,
+                    seq=seq,
+                    state_revision=int(result["revision"]),
+                )
                 result["retry_current_favorable"] = True
                 result["retry_fresh_tick_required"] = False
                 result["retry_action_id"] = generate_action_id(
@@ -901,6 +1148,12 @@ def consume_tick(
         elif adverse_price is not None and _is_adverse_cross(result, adverse_price):
             result["retry_stop_latched_at"] = received_at
             result["retry_stop_latched_price"] = adverse_price
+            result["retry_stop_trigger_provenance"] = _trigger_provenance(
+                tick,
+                feed_session_id=feed_session_id,
+                seq=seq,
+                state_revision=int(result["revision"]),
+            )
             _transition(
                 result,
                 phase=PHASE_RETRY_STOP_LATCHED,

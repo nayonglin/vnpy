@@ -11,6 +11,13 @@ MODULE_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_backt
 sys.path.insert(0, str(MODULE_DIR))
 
 import qmt_roll_official_live_c9_intraday_state as c9  # noqa: E402
+from qmt_roll_official_live_time import utc_iso_from_epoch_ns  # noqa: E402
+from qmt_roll_official_live_trace import LatencyTrace  # noqa: E402
+
+
+class TraceClock:
+    def clock_domain_id(self) -> str:
+        return "boot-test"
 
 
 class C9IntradayStateTest(unittest.TestCase):
@@ -37,11 +44,43 @@ class C9IntradayStateTest(unittest.TestCase):
         bid: float | None = None,
         ask: float | None = None,
     ) -> dict:
+        ingress_epoch_ns = 1_784_000_000_000_000_000 + seq
+        ingress_monotonic_ns = 900_000_000 + seq
+        trace = LatencyTrace.from_ingress_row(
+            {
+                "feed_session_id": feed,
+                "ingress_sequence": seq,
+                "symbol_sequence": seq,
+                "vt_symbol": "JM2609.DCE",
+                "ingress_epoch_ns": ingress_epoch_ns,
+                "ingress_monotonic_ns": ingress_monotonic_ns,
+                "received_at_utc": utc_iso_from_epoch_ns(ingress_epoch_ns),
+                "clock_domain_id": "boot-test",
+                "trace_id": f"stage179-tick/{feed}/{seq}",
+            },
+            clock=TraceClock(),
+        )
+        trace_id = trace.trace_id
+        deadline_epoch_ns = trace.deadline_epoch_ns
+        deadline_monotonic_ns = trace.deadline_monotonic_ns
         return {
             "vt_symbol": "JM2609.DCE",
             "received_at": at,
             "feed_session_id": feed,
             "seq": seq,
+            "trace_json": trace.to_json(),
+            "trace_id": trace_id,
+            "source_feed_session_id": feed,
+            "source_ingress_sequence": seq,
+            "source_symbol_sequence": seq,
+            "ingress_epoch_ns": ingress_epoch_ns,
+            "ingress_monotonic_ns": ingress_monotonic_ns,
+            "deadline_epoch_ns": deadline_epoch_ns,
+            "deadline_monotonic_ns": deadline_monotonic_ns,
+            "durable_cursor_feed_session_id": feed,
+            "durable_cursor_ingress_sequence": seq,
+            "durable_cursor_journal_byte_offset": seq * 100,
+            "durable_cursor_journal_schema": "stage179_framed_v1",
             "last_price": price,
             "bid_price_1": price if bid is None else bid,
             "ask_price_1": price if ask is None else ask,
@@ -274,6 +313,166 @@ class C9IntradayStateTest(unittest.TestCase):
         )
         self.assertEqual(c9.PHASE_INITIAL_STOP_LATCHED, restored["phase"])
         self.assertEqual(action_id, c9.get_pending_action(restored)["action_id"])
+
+    def test_trigger_cursor_trace_and_state_generation_survive_restart_and_later_ticks(
+        self,
+    ) -> None:
+        trigger = self.tick("2026-07-13T21:00:10+08:00", 7, 106.0)
+        trigger.update(
+            {
+                "trace_json": '{"trace_id":"trace-7"}',
+                "trace_id": "trace-7",
+                "source_feed_session_id": "feed-a",
+                "source_ingress_sequence": 17,
+                "source_symbol_sequence": 7,
+                "ingress_epoch_ns": 1_784_000_000_000_000_000,
+                "ingress_monotonic_ns": 900_000_000,
+                "deadline_epoch_ns": 1_784_000_025_000_000_000,
+                "deadline_monotonic_ns": 25_900_000_000,
+                "durable_cursor_feed_session_id": "feed-a",
+                "durable_cursor_ingress_sequence": 17,
+                "durable_cursor_journal_byte_offset": 4096,
+                "durable_cursor_journal_schema": "stage179_framed_v1",
+            }
+        )
+        state = c9.consume_tick(self.make_state(), trigger)
+        first = c9.get_pending_action(state)
+        expected = {
+            "trace_json": '{"trace_id":"trace-7"}',
+            "trace_id": "trace-7",
+            "source_feed_session_id": "feed-a",
+            "source_ingress_sequence": 17,
+            "source_symbol_sequence": 7,
+            "ingress_epoch_ns": 1_784_000_000_000_000_000,
+            "ingress_monotonic_ns": 900_000_000,
+            "deadline_epoch_ns": 1_784_000_025_000_000_000,
+            "deadline_monotonic_ns": 25_900_000_000,
+            "durable_cursor_feed_session_id": "feed-a",
+            "durable_cursor_ingress_sequence": 17,
+            "durable_cursor_journal_byte_offset": 4096,
+            "durable_cursor_journal_schema": "stage179_framed_v1",
+        }
+        self.assertEqual(expected, {key: first[key] for key in expected})
+        self.assertEqual(
+            f"{state['position_epoch_id']}:{state['revision']}",
+            first["state_generation"],
+        )
+
+        restored = c9.loads_state(c9.dumps_state(state))
+        restored = c9.consume_tick(
+            restored,
+            self.tick("2026-07-13T21:00:11+08:00", 8, 99.0),
+        )
+        later = c9.get_pending_action(restored)
+
+        self.assertGreater(restored["revision"], state["revision"])
+        self.assertEqual(first["state_generation"], later["state_generation"])
+        self.assertEqual(expected, {key: later[key] for key in expected})
+
+    def test_legacy_pending_action_locks_generation_before_later_tick(self) -> None:
+        legacy = self.latch_initial_stop()
+        legacy.pop("initial_stop_trigger_provenance", None)
+        first_generation = c9.get_pending_action(legacy)["state_generation"]
+
+        loaded = c9.loads_state(c9.dumps_state(legacy))
+        self.assertEqual(
+            first_generation,
+            c9.get_pending_action(loaded)["state_generation"],
+        )
+        self.assertIsNotNone(loaded["initial_stop_trigger_provenance"])
+
+        volume_refreshed = c9.update_current_position_volume(legacy, volume=2)
+        self.assertEqual(
+            first_generation,
+            c9.get_pending_action(volume_refreshed)["state_generation"],
+        )
+
+        gapped = c9.mark_feed_gap(
+            legacy,
+            detected_at="2026-07-13T21:00:10.500000+08:00",
+            reason="legacy_generation_regression",
+        )
+        self.assertEqual(
+            first_generation,
+            c9.get_pending_action(gapped)["state_generation"],
+        )
+
+        migrated = c9.consume_tick(
+            legacy,
+            self.tick("2026-07-13T21:00:11+08:00", 2, 99.0),
+        )
+
+        self.assertEqual(
+            first_generation,
+            c9.get_pending_action(migrated)["state_generation"],
+        )
+        self.assertIsNotNone(migrated["initial_stop_trigger_provenance"])
+
+    def test_legacy_retry_reclaim_without_trace_cursor_cannot_reopen(self) -> None:
+        state = self.arm_retry()
+        state = c9.consume_tick(
+            state,
+            self.tick("2026-07-13T21:00:13+08:00", 2, 99.0),
+        )
+        self.assertEqual(c9.PHASE_RETRY_RECLAIM_LATCHED, state["phase"])
+        state.pop("retry_reclaim_trigger_provenance", None)
+
+        restarted = c9.loads_state(c9.dumps_state(state))
+        restarted = c9.consume_tick(
+            restarted,
+            self.tick("2026-07-13T21:00:14+08:00", 3, 99.0),
+        )
+
+        self.assertIsNone(c9.get_pending_action(restarted))
+        self.assertIn(
+            "retry_open_trigger_provenance",
+            restarted["trigger_provenance_blocker"],
+        )
+
+    def test_retry_open_trigger_provenance_tamper_matrix_fails_closed(self) -> None:
+        state = self.arm_retry()
+        state = c9.consume_tick(
+            state,
+            self.tick("2026-07-13T21:00:13+08:00", 2, 99.0),
+        )
+        self.assertEqual("open", c9.get_pending_action(state)["action"])
+
+        def tamper_trace_symbol(provenance: dict) -> None:
+            payload = json.loads(provenance["trace_json"])
+            payload["vt_symbol"] = "OTHER.DCE"
+            provenance["trace_json"] = json.dumps(payload)
+
+        def tamper_trace_and_outer_symbol_sequence(provenance: dict) -> None:
+            payload = json.loads(provenance["trace_json"])
+            payload["symbol_sequence"] = 999
+            provenance["trace_json"] = json.dumps(payload)
+            provenance["source_symbol_sequence"] = 999
+
+        cases = {
+            "source_symbol_sequence": lambda item: item.update(
+                {"source_symbol_sequence": 999}
+            ),
+            "cursor_schema": lambda item: item.update(
+                {"durable_cursor_journal_schema": "evil"}
+            ),
+            "ingress_epoch": lambda item: item.update(
+                {"ingress_epoch_ns": item["ingress_epoch_ns"] + 1}
+            ),
+            "trace_vt_symbol": tamper_trace_symbol,
+            "trace_and_outer_symbol_sequence": (
+                tamper_trace_and_outer_symbol_sequence
+            ),
+        }
+        for name, mutate in cases.items():
+            with self.subTest(name=name):
+                candidate = json.loads(json.dumps(state))
+                mutate(candidate["retry_reclaim_trigger_provenance"])
+                candidate = c9.consume_tick(
+                    candidate,
+                    self.tick("2026-07-13T21:00:14+08:00", 3, 99.0),
+                )
+                self.assertIsNone(c9.get_pending_action(candidate))
+                self.assertTrue(candidate["trigger_provenance_blocker"])
 
     def test_partial_tick_latches_gap_but_adverse_side_can_still_close(self) -> None:
         state = c9.consume_tick(
