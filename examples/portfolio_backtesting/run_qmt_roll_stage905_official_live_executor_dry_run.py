@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
+import hashlib
 import json
 import math
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -29,6 +31,13 @@ from qmt_roll_official_live_phase_d_config import (
     build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
+from qmt_roll_official_live_time import Clock, SystemClock
+from qmt_roll_official_live_trace import (
+    ClockStamp,
+    LatencyTrace,
+    TraceValidationError,
+    disposition_for_trace,
+)
 from vnpy.trader.constant import Direction, Exchange, Offset, OrderType
 from vnpy.trader.object import OrderRequest
 
@@ -100,6 +109,58 @@ TERMINAL_ORDER_STATUSES = {
     "已拒绝",
     "废单",
 }
+STAGE904_PROVENANCE_FIELDS = (
+    "trace_json",
+    "trace_id",
+    "source_feed_session_id",
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+    "durable_cursor_feed_session_id",
+    "durable_cursor_ingress_sequence",
+    "durable_cursor_journal_byte_offset",
+    "durable_cursor_journal_schema",
+    "state_generation",
+)
+STAGE904_EXACT_INT_FIELDS = (
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+    "durable_cursor_ingress_sequence",
+    "durable_cursor_journal_byte_offset",
+)
+_VOLATILE_INTENT_HASH_FIELDS = {
+    "monitor_run_id",
+    "generated_at",
+    "checked_at",
+    "stage904_summary_generated_at",
+    "payload_sha256",
+}
+SYSTEM_CLOCK = SystemClock()
+
+
+@dataclass(frozen=True)
+class Stage905SnapshotInputs:
+    pending_orders: pd.DataFrame
+    contracts: pd.DataFrame
+    positions: pd.DataFrame
+    orders: pd.DataFrame
+    stage902_summary: Mapping[str, Any]
+    stage260_summary: Mapping[str, Any]
+    execution_ledger_rows: Sequence[Mapping[str, Any]]
+
+
+@dataclass(frozen=True)
+class Stage905RunResult:
+    intents: pd.DataFrame
+    summary: dict[str, Any]
+    paths: Mapping[str, Path]
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -140,7 +201,7 @@ def _read_json(path: Path) -> dict[str, Any]:
         return {"_read_error": repr(exc)}
 
 
-def _age_seconds(value: Any) -> float | None:
+def _age_seconds(value: Any, *, now_epoch_ns: int | None = None) -> float | None:
     text = _clean(value)
     if not text:
         return None
@@ -148,7 +209,10 @@ def _age_seconds(value: Any) -> float | None:
         parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
     except ValueError:
         return None
-    now = datetime.now(parsed.tzinfo) if parsed.tzinfo is not None else datetime.now()
+    if now_epoch_ns is None:
+        now = datetime.now(parsed.tzinfo) if parsed.tzinfo is not None else datetime.now()
+    else:
+        now = datetime.fromtimestamp(now_epoch_ns / 1_000_000_000, tz=parsed.tzinfo)
     return max(0.0, (now - parsed).total_seconds())
 
 
@@ -557,6 +621,44 @@ def _suppress_stage901_pending_after_stop_close(
     return rows
 
 
+def _copy_stage904_provenance(
+    intent: dict[str, Any],
+    action: Mapping[str, Any],
+) -> None:
+    for field_name in STAGE904_PROVENANCE_FIELDS:
+        value = action.get(field_name)
+        if value is not None and not (isinstance(value, float) and math.isnan(value)):
+            intent[field_name] = value
+
+
+def _stable_payload_sha256(intent: Mapping[str, Any]) -> str:
+    payload: dict[str, Any] = {}
+    for key in sorted(intent):
+        if (
+            key in _VOLATILE_INTENT_HASH_FIELDS
+            or key.endswith("_generated_at")
+            or key.endswith("_checked_at")
+        ):
+            continue
+        value = intent[key]
+        if isinstance(value, float) and math.isnan(value):
+            value = None
+        elif hasattr(value, "item") and not isinstance(value, (str, bytes, bytearray)):
+            try:
+                value = value.item()
+            except (AttributeError, ValueError):
+                pass
+        payload[key] = value
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
     if stage904_actions.empty or "monitor_action" not in stage904_actions.columns:
         return []
@@ -598,6 +700,7 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 intent[key] = normalized if valid else value
             elif _clean(value):
                 intent[key] = _clean(value)
+        _copy_stage904_provenance(intent, row)
         rows.append(intent)
     retry_actions = stage904_actions[stage904_actions["monitor_action"].astype(str).eq("retry_open_dry_run")]
     for idx, row in enumerate(retry_actions.to_dict(orient="records"), start=1):
@@ -636,6 +739,7 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 intent[key] = normalized if valid else value
             elif _clean(value):
                 intent[key] = _clean(value)
+        _copy_stage904_provenance(intent, row)
         rows.append(intent)
     return rows
 
@@ -697,6 +801,175 @@ def _dedupe_intents(intents: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return deduped
 
 
+def _required_exact_int(value: Any, *, field_name: str, minimum: int = 0) -> int:
+    if hasattr(value, "item") and not isinstance(value, (str, bytes, bytearray)):
+        try:
+            value = value.item()
+        except (AttributeError, ValueError):
+            pass
+    if type(value) is not int or value < minimum:
+        raise TraceValidationError(f"{field_name}_must_be_exact_int_at_least_{minimum}")
+    return value
+
+
+def _stage904_batch_summary_blockers(
+    actions: pd.DataFrame,
+    summary: Mapping[str, Any],
+) -> tuple[str, ...]:
+    blockers: list[str] = []
+    monitor_actions = (
+        actions.get("monitor_action", pd.Series(dtype=str)).astype(str)
+        if not actions.empty
+        else pd.Series(dtype=str)
+    )
+    expected_counts = {
+        "action_count": int(len(actions)),
+        "close_dry_run_count": int(monitor_actions.eq("close_dry_run").sum()),
+        "retry_open_dry_run_count": int(
+            monitor_actions.eq("retry_open_dry_run").sum()
+        ),
+        "retry_watch_count": int(monitor_actions.eq("retry_watch").sum()),
+        "blocked_count": int(monitor_actions.isin(["block", "retry_block"]).sum()),
+        "order_api_called_count": int(
+            pd.to_numeric(
+                actions.get("order_api_called", pd.Series(dtype=int)),
+                errors="coerce",
+            ).fillna(0).sum()
+        ),
+    }
+    for field_name, expected in expected_counts.items():
+        try:
+            actual = _required_exact_int(summary.get(field_name), field_name=field_name)
+        except TraceValidationError as exc:
+            blockers.append(f"stage904_summary_count_invalid:{exc}")
+            continue
+        if actual != expected:
+            blockers.append(
+                f"stage904_summary_count_mismatch:{field_name}:"
+                f"expected={expected};actual={actual}"
+            )
+    summary_cursor = summary.get("durable_batch_cursor")
+    if not isinstance(summary_cursor, Mapping):
+        blockers.append("stage904_summary_durable_batch_cursor_missing")
+    elif summary_cursor:
+        expected_cursor_fields = {
+            "feed_session_id",
+            "ingress_sequence",
+            "journal_byte_offset",
+            "journal_schema",
+        }
+        if set(summary_cursor) != expected_cursor_fields:
+            blockers.append("stage904_summary_durable_batch_cursor_fields_invalid")
+        else:
+            try:
+                _required_exact_int(
+                    summary_cursor.get("ingress_sequence"),
+                    field_name="summary_durable_cursor_ingress_sequence",
+                    minimum=1,
+                )
+                _required_exact_int(
+                    summary_cursor.get("journal_byte_offset"),
+                    field_name="summary_durable_cursor_journal_byte_offset",
+                )
+            except TraceValidationError as exc:
+                blockers.append(f"stage904_summary_durable_batch_cursor_invalid:{exc}")
+            if not _clean(summary_cursor.get("feed_session_id")):
+                blockers.append("stage904_summary_durable_batch_cursor_feed_missing")
+            if _clean(summary_cursor.get("journal_schema")) != "stage179_framed_v1":
+                blockers.append("stage904_summary_durable_batch_cursor_schema_invalid")
+    elif not actions.empty:
+        blockers.append("stage904_summary_durable_batch_cursor_empty_with_actions")
+    return tuple(blockers)
+
+
+def _validated_stage904_trace(
+    intent: Mapping[str, Any],
+    *,
+    stage904_summary: Mapping[str, Any] | None = None,
+) -> LatencyTrace:
+    trace = LatencyTrace.from_json(_clean(intent.get("trace_json")))
+    ingress = trace.stamps["gateway_ingress"]
+    expected_values = {
+        "trace_id": trace.trace_id,
+        "source_feed_session_id": trace.feed_session_id,
+        "source_ingress_sequence": trace.ingress_sequence,
+        "source_symbol_sequence": trace.symbol_sequence,
+        "ingress_epoch_ns": ingress.epoch_ns,
+        "ingress_monotonic_ns": ingress.monotonic_ns,
+        "deadline_epoch_ns": trace.deadline_epoch_ns,
+        "deadline_monotonic_ns": trace.deadline_monotonic_ns,
+    }
+    for field_name, expected in expected_values.items():
+        actual = intent.get(field_name)
+        if isinstance(expected, int):
+            actual = _required_exact_int(actual, field_name=field_name)
+        else:
+            actual = _clean(actual)
+        if actual != expected:
+            raise TraceValidationError(
+                f"stage904_trace_outer_mismatch:{field_name}:"
+                f"expected={expected};actual={actual}"
+            )
+    if _clean(intent.get("vt_symbol")) != trace.vt_symbol:
+        raise TraceValidationError("stage904_trace_outer_mismatch:vt_symbol")
+    durable_feed = _clean(intent.get("durable_cursor_feed_session_id"))
+    durable_sequence = _required_exact_int(
+        intent.get("durable_cursor_ingress_sequence"),
+        field_name="durable_cursor_ingress_sequence",
+        minimum=1,
+    )
+    durable_offset = _required_exact_int(
+        intent.get("durable_cursor_journal_byte_offset"),
+        field_name="durable_cursor_journal_byte_offset",
+    )
+    if durable_feed != trace.feed_session_id or durable_sequence < trace.ingress_sequence:
+        raise TraceValidationError("stage904_durable_cursor_does_not_cover_trigger")
+    if _clean(intent.get("durable_cursor_journal_schema")) != "stage179_framed_v1":
+        raise TraceValidationError("stage904_durable_cursor_schema_invalid")
+    position_epoch_id = _clean(intent.get("position_epoch_id"))
+    state_generation = _clean(intent.get("state_generation"))
+    generation_prefix = f"{position_epoch_id}:"
+    generation_revision = (
+        state_generation[len(generation_prefix) :]
+        if position_epoch_id and state_generation.startswith(generation_prefix)
+        else ""
+    )
+    if (
+        not generation_revision.isdecimal()
+        or str(int(generation_revision)) != generation_revision
+    ):
+        raise TraceValidationError("stage904_state_generation_invalid")
+    if stage904_summary is not None:
+        summary_cursor = stage904_summary.get("durable_batch_cursor")
+        if not isinstance(summary_cursor, Mapping):
+            raise TraceValidationError("stage904_summary_durable_batch_cursor_missing")
+        summary_feed = _clean(summary_cursor.get("feed_session_id"))
+        summary_schema = _clean(summary_cursor.get("journal_schema"))
+        summary_sequence = _required_exact_int(
+            summary_cursor.get("ingress_sequence"),
+            field_name="summary_durable_cursor_ingress_sequence",
+            minimum=1,
+        )
+        summary_offset = _required_exact_int(
+            summary_cursor.get("journal_byte_offset"),
+            field_name="summary_durable_cursor_journal_byte_offset",
+        )
+        if summary_feed != durable_feed or summary_schema != "stage179_framed_v1":
+            raise TraceValidationError("stage904_summary_durable_cursor_identity_mismatch")
+        if summary_sequence < durable_sequence or summary_offset < durable_offset:
+            raise TraceValidationError("stage904_summary_durable_cursor_does_not_cover_action")
+    return trace
+
+
+def _stable_reason_codes(reasons: Sequence[str]) -> tuple[str, ...]:
+    codes: set[str] = set()
+    for reason in reasons:
+        code = reason.split(":", 1)[0].split("=", 1)[0].strip()
+        if code:
+            codes.add(code)
+    return tuple(sorted(codes))
+
+
 def _validate_intent(
     intent: dict[str, Any],
     *,
@@ -707,11 +980,21 @@ def _validate_intent(
     stage904_summary: dict[str, Any],
     stage260_summary: dict[str, Any],
     mode: str,
+    clock: Clock = SYSTEM_CLOCK,
+    require_stage904_trace: bool = False,
+    now_stamp: ClockStamp | None = None,
+    stage904_batch_blockers: Sequence[str] = (),
 ) -> dict[str, Any]:
     config = build_phase_d_config()
     reasons: list[str] = []
     vt_symbol = _clean(intent.get("vt_symbol"))
     symbol, exchange_value = _split_vt_symbol(vt_symbol)
+    exchange: Exchange | None = None
+    if exchange_value:
+        try:
+            exchange = Exchange(exchange_value)
+        except ValueError:
+            reasons.append(f"invalid_exchange:{exchange_value}")
     direction_text = _normalize_direction_text(intent.get("direction"))
     offset_text = _normalize_offset_text(intent.get("offset"))
     direction = _normalize_direction(direction_text)
@@ -740,6 +1023,8 @@ def _validate_intent(
         or _clean(intent.get("migration_blocker"))
         or _clean(intent.get("risk_alert_level")).upper() in {"P0", "P1"}
     )
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+    deadline_status = ""
 
     root_position_id = _clean(intent.get("root_position_id"))
     position_cycle_id = _clean(intent.get("position_cycle_id"))
@@ -759,6 +1044,7 @@ def _validate_intent(
     if (intraday_close_intent or intraday_retry_open_intent) and not _clean(intent.get("position_epoch_id")):
         reasons.append("stage904_position_epoch_id_missing")
     if intraday_close_intent or intraday_retry_open_intent:
+        reasons.extend(stage904_batch_blockers)
         if not _clean(intent.get("intent_id")) or not _clean(intent.get("action_id")):
             reasons.append("stage904_action_id_missing")
         if intraday_retry_open_intent and intent_role != RETRY_OPEN_ACTION_ROLE:
@@ -771,7 +1057,10 @@ def _validate_intent(
     if intraday_retry_open_intent and not manual_flag_valid:
         reasons.append("stage904_manual_intervention_required_invalid")
     if intraday_close_intent or intraday_retry_open_intent:
-        stage904_age = _age_seconds(stage904_summary.get("generated_at"))
+        stage904_age = _age_seconds(
+            stage904_summary.get("generated_at"),
+            now_epoch_ns=current_stamp.epoch_ns,
+        )
         stage904_run_id = _clean(
             stage904_summary.get("monitor_run_id") or stage904_summary.get("run_id")
         )
@@ -792,6 +1081,27 @@ def _validate_intent(
             reasons.append("stage904_summary_not_authoritative_for_close")
         if not stage904_run_id or not intent_run_id or stage904_run_id != intent_run_id:
             reasons.append("stage904_monitor_run_id_mismatch")
+        if _clean(intent.get("trace_json")):
+            try:
+                trace = _validated_stage904_trace(
+                    intent,
+                    stage904_summary=(
+                        stage904_summary if require_stage904_trace else None
+                    ),
+                )
+                deadline_status = disposition_for_trace(
+                    trace,
+                    now=current_stamp,
+                    intent_kind=offset_text,
+                )
+            except TraceValidationError as exc:
+                reasons.append(f"stage904_trace_invalid:{exc}")
+        elif require_stage904_trace:
+            reasons.append("stage904_trace_missing")
+        if deadline_status == "expired":
+            reasons.append("stage179_deadline_expired_open")
+        elif deadline_status == "blocked":
+            reasons.append("stage179_deadline_expired_close_critical")
 
     if force_skip_reason:
         reasons.append(force_skip_reason)
@@ -880,12 +1190,16 @@ def _validate_intent(
     elif force_skip_reason:
         status = f"skipped_{force_skip_reason}"
         reasons = [force_skip_reason]
+    elif deadline_status == "expired":
+        status = "expired"
+    elif deadline_status == "blocked":
+        status = "blocked"
     else:
         status = "blocked" if reasons else "dry_run_order_request_payload_ready"
-    if not reasons and direction and offset:
+    if not reasons and direction and offset and exchange:
         req = OrderRequest(
             symbol=symbol,
-            exchange=Exchange(exchange_value),
+            exchange=exchange,
             direction=direction,
             type=OrderType.LIMIT,
             volume=volume,
@@ -917,11 +1231,30 @@ def _validate_intent(
             if _clean(intent.get(key)):
                 order_request_payload[key] = intent[key]
 
+    unique_reasons = ";".join(dict.fromkeys(reasons))
+    stable_order_payload = {
+        key: value
+        for key, value in order_request_payload.items()
+        if key != "monitor_run_id"
+    }
+    payload_sha256 = _stable_payload_sha256(
+        {
+            **intent,
+            "executor_status": status,
+            "executor_reason_codes": _stable_reason_codes(reasons),
+            "resolved_limit_price": price,
+            "pricetick": pricetick,
+            "broker_matching_position_volume": broker_match_volume,
+            "order_request": stable_order_payload,
+        }
+    )
+
     return {
         **intent,
+        "payload_sha256": payload_sha256,
         "executor_mode": mode,
         "executor_status": status,
-        "executor_reason": ";".join(dict.fromkeys(reasons)),
+        "executor_reason": unique_reasons,
         "symbol": symbol,
         "exchange": exchange_value,
         "pricetick": pricetick,
@@ -943,7 +1276,9 @@ def _validate_intent(
         ),
         "send_order_api_called": 0,
         "cancel_order_api_called": 0,
-        "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "checked_at": datetime.fromtimestamp(
+            current_stamp.epoch_ns / 1_000_000_000
+        ).strftime("%Y-%m-%d %H:%M:%S"),
     }
 
 
@@ -1006,69 +1341,141 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
     )
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Official-live Phase D executor dry-run.")
-    parser.add_argument("--target-date", required=True)
-    parser.add_argument("--mode", choices=["dry-run"], default="dry-run")
-    args = parser.parse_args()
+def run_executor_dry_run(
+    target_date: str,
+    mode: str = "dry-run",
+    stage904_actions: pd.DataFrame | Any | None = None,
+    stage904_summary: Mapping[str, Any] | None = None,
+    snapshots: Stage905SnapshotInputs | None = None,
+    include_stage901_pending: bool = True,
+    clock: Clock = SYSTEM_CLOCK,
+    write_compat_outputs: bool = True,
+) -> Stage905RunResult:
+    if stage904_actions is not None and not isinstance(stage904_actions, pd.DataFrame):
+        result_actions = getattr(stage904_actions, "actions", None)
+        result_summary = getattr(stage904_actions, "summary", None)
+        if not isinstance(result_actions, pd.DataFrame) or not isinstance(result_summary, Mapping):
+            raise TypeError("stage904_actions_must_be_dataframe_or_stage904_run_result")
+        if stage904_summary is not None and dict(stage904_summary) != dict(result_summary):
+            raise ValueError("stage904_run_result_summary_conflict")
+        if _clean(getattr(stage904_actions, "target_date", "")) != target_date:
+            raise ValueError("stage904_run_result_target_date_mismatch")
+        result_run_id = _clean(getattr(stage904_actions, "monitor_run_id", ""))
+        if result_run_id != _clean(result_summary.get("monitor_run_id")):
+            raise ValueError("stage904_run_result_monitor_run_id_mismatch")
+        stage904_summary = result_summary
+        stage904_actions = result_actions
+    if (stage904_actions is None) != (stage904_summary is None):
+        raise ValueError("stage904_in_memory_inputs_must_be_paired")
+    in_memory_stage904 = stage904_actions is not None
+    if (
+        in_memory_stage904
+        and _clean(stage904_summary.get("target_date")) != target_date
+    ):
+        raise ValueError("stage904_in_memory_target_date_mismatch")
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    paths = _paths(args.target_date)
-    _atomic_write_df(paths["intents_csv"], pd.DataFrame())
-    _atomic_write_text(
-        paths["summary_json"],
-        json.dumps(
-            {
-                "model_tag": MODEL_TAG,
-                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "target_date": args.target_date,
-                "executor_status": "executor_running_fail_closed",
-                "ready_count": 0,
-                "blocked_count": 1,
-                "send_order_api_called_count": 0,
-                "cancel_order_api_called_count": 0,
-            },
-            ensure_ascii=False,
-            indent=2,
-        ),
-    )
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-    stage904_actions = _read_csv_maybe(_stage904_actions_path(args.target_date))
-    stage904_summary = _read_json(_stage904_summary_path(args.target_date))
-    contracts = _read_csv_maybe(READONLY_CONTRACTS_PATH)
-    positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
-    orders = _read_csv_maybe(READONLY_ORDERS_PATH)
-    stage902_summary = _read_json(_stage902_summary_path(args.target_date))
-    stage260_summary = _read_json(_stage260_summary_path(args.target_date))
-    execution_ledger_rows = read_execution_ledger()
+    paths = _paths(target_date)
+    run_now = ClockStamp.from_clock(clock)
+    generated_at = datetime.fromtimestamp(
+        run_now.epoch_ns / 1_000_000_000
+    ).strftime("%Y-%m-%d %H:%M:%S")
+    if write_compat_outputs:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        _atomic_write_df(paths["intents_csv"], pd.DataFrame())
+        _atomic_write_text(
+            paths["summary_json"],
+            json.dumps(
+                {
+                    "model_tag": MODEL_TAG,
+                    "generated_at": generated_at,
+                    "target_date": target_date,
+                    "executor_status": "executor_running_fail_closed",
+                    "ready_count": 0,
+                    "blocked_count": 1,
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
 
-    pending_intents = _suppress_stage901_pending_after_stop_close(
-        _pending_order_intents(pending_orders, args.target_date),
-        ledger_rows=execution_ledger_rows,
-        target_date=args.target_date,
+    if stage904_actions is None:
+        stage904_actions = _read_csv_maybe(_stage904_actions_path(target_date))
+    else:
+        stage904_actions = stage904_actions.copy(deep=True)
+    if stage904_summary is None:
+        stage904_summary_data = _read_json(_stage904_summary_path(target_date))
+    else:
+        stage904_summary_data = dict(stage904_summary)
+    stage904_batch_blockers = (
+        _stage904_batch_summary_blockers(
+            stage904_actions,
+            stage904_summary_data,
+        )
+        if in_memory_stage904
+        else ()
     )
-    raw_intents = _dedupe_intents(pending_intents + _stage904_intents(stage904_actions))
-    intents = pd.DataFrame(
-        [
-            _validate_intent(
-                row,
-                contracts=contracts,
-                positions=positions,
-                orders=orders,
-                stage902_summary=stage902_summary,
-                stage904_summary=stage904_summary,
-                stage260_summary=stage260_summary,
-                mode=args.mode,
+    if snapshots is None:
+        pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+        contracts = _read_csv_maybe(READONLY_CONTRACTS_PATH)
+        positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
+        orders = _read_csv_maybe(READONLY_ORDERS_PATH)
+        stage902_summary = _read_json(_stage902_summary_path(target_date))
+        stage260_summary = _read_json(_stage260_summary_path(target_date))
+        execution_ledger_rows = read_execution_ledger()
+    else:
+        pending_orders = snapshots.pending_orders.copy(deep=True)
+        contracts = snapshots.contracts.copy(deep=True)
+        positions = snapshots.positions.copy(deep=True)
+        orders = snapshots.orders.copy(deep=True)
+        stage902_summary = dict(snapshots.stage902_summary)
+        stage260_summary = dict(snapshots.stage260_summary)
+        execution_ledger_rows = [dict(row) for row in snapshots.execution_ledger_rows]
+
+    pending_intents = []
+    if include_stage901_pending:
+        pending_intents = _suppress_stage901_pending_after_stop_close(
+            _pending_order_intents(pending_orders, target_date),
+            ledger_rows=execution_ledger_rows,
+            target_date=target_date,
+        )
+    raw_intents = _dedupe_intents(
+        pending_intents + _stage904_intents(stage904_actions)
+    )
+    intent_rows = [
+        _validate_intent(
+            row,
+            contracts=contracts,
+            positions=positions,
+            orders=orders,
+            stage902_summary=stage902_summary,
+            stage904_summary=stage904_summary_data,
+            stage260_summary=stage260_summary,
+            mode=mode,
+            clock=clock,
+            require_stage904_trace=in_memory_stage904,
+            now_stamp=run_now,
+            stage904_batch_blockers=stage904_batch_blockers,
+        )
+        for row in raw_intents
+    ]
+    intents = pd.DataFrame(intent_rows)
+    for field_name in STAGE904_EXACT_INT_FIELDS:
+        if any(field_name in row for row in intent_rows):
+            intents[field_name] = pd.Series(
+                [row.get(field_name) for row in intent_rows],
+                dtype=object,
             )
-            for row in raw_intents
-        ]
-    )
     ready_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).eq("dry_run_order_request_payload_ready").sum()) if not intents.empty else 0
     blocked_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).eq("blocked").sum()) if not intents.empty else 0
+    expired_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).eq("expired").sum()) if not intents.empty else 0
     skipped_count = int(intents.get("executor_status", pd.Series(dtype=str)).astype(str).str.startswith("skipped_").sum()) if not intents.empty else 0
     send_count = int(intents.get("send_order_api_called", pd.Series(dtype=float)).sum()) if not intents.empty else 0
     cancel_count = int(intents.get("cancel_order_api_called", pd.Series(dtype=float)).sum()) if not intents.empty else 0
-    if intents.empty:
+    if stage904_batch_blockers:
+        executor_status = "executor_dry_run_blocked"
+    elif intents.empty:
         executor_status = "executor_no_intents"
     elif ready_count and not blocked_count:
         executor_status = "executor_dry_run_ready"
@@ -1079,15 +1486,18 @@ def main() -> None:
 
     summary = {
         "model_tag": MODEL_TAG,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "target_date": args.target_date,
+        "generated_at": generated_at,
+        "target_date": target_date,
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "executor_status": executor_status,
         "intent_count": int(len(intents)),
         "ready_count": ready_count,
         "blocked_count": blocked_count,
+        "expired_count": expired_count,
         "skipped_count": skipped_count,
+        "input_blocker_count": int(len(stage904_batch_blockers)),
+        "input_blockers": list(stage904_batch_blockers),
         "send_order_api_called_count": send_count,
         "cancel_order_api_called_count": cancel_count,
         "stage902_overall_status": stage902_summary.get("overall_status", ""),
@@ -1101,10 +1511,24 @@ def main() -> None:
             "continue_after": "是。下一步应把 Stage905 接入 Stage903，并补 broker read-only/Stage260 fresh 自动刷新。",
         },
     }
-    _atomic_write_df(paths["intents_csv"], intents)
-    _atomic_write_text(paths["summary_json"], json.dumps(summary, ensure_ascii=False, indent=2, default=str))
-    _atomic_write_text(paths["report_md"], _build_report(summary, intents))
-    print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+    if write_compat_outputs:
+        _atomic_write_df(paths["intents_csv"], intents)
+        _atomic_write_text(
+            paths["summary_json"],
+            json.dumps(summary, ensure_ascii=False, indent=2, default=str),
+        )
+        _atomic_write_text(paths["report_md"], _build_report(summary, intents))
+    return Stage905RunResult(intents=intents, summary=summary, paths=paths)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Official-live Phase D executor dry-run.")
+    parser.add_argument("--target-date", required=True)
+    parser.add_argument("--mode", choices=["dry-run"], default="dry-run")
+    args = parser.parse_args()
+
+    result = run_executor_dry_run(args.target_date, mode=args.mode)
+    print(json.dumps(result.summary, ensure_ascii=False, indent=2, default=str))
 
 
 if __name__ == "__main__":
