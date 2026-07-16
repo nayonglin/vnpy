@@ -1,0 +1,27 @@
+examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py
+  s_57fbbdfeac5414::t_cbef71df53202e 1-1957
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_80873e8e6a7414 144-145,655,659,664-700,1136-1143,1287-1308,1310,1315
+tests/test_official_live_intent_spool.py
+  s_57fbbdfeac5414::t_f6ba75429e5887 1-1031
+tests/test_stage905_c9_cycle_intents.py
+  s_57fbbdfeac5414::t_5a17ff23fd39b7 4-5,9,23-25,91-99,798-862
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "927caee717b2a5562a0498cb00a5c4075c9b1dd1",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
