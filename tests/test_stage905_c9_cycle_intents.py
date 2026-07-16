@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -17,7 +20,9 @@ if str(PORTFOLIO_DIR) not in sys.path:
 
 import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
-from qmt_roll_official_live_trace import LatencyTrace
+import qmt_roll_official_live_intent_spool as intent_spool
+from qmt_roll_official_live_tick_types import DurableTickCursor
+from qmt_roll_official_live_trace import ClockStamp, LatencyTrace
 from qmt_roll_official_live_time import utc_iso_from_epoch_ns
 
 
@@ -82,6 +87,15 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
                 "received_at_utc": utc_iso_from_epoch_ns(ingress_epoch_ns),
             },
             clock=clock,
+        )
+        trace = trace.record_stamp(
+            "stage904_detected",
+            ClockStamp(
+                epoch_ns=ingress_epoch_ns,
+                monotonic_ns=ingress_monotonic_ns,
+                clock_domain_id=clock.clock_domain_id(),
+                utc_iso=utc_iso_from_epoch_ns(ingress_epoch_ns),
+            ),
         )
         offset = "open" if monitor_action == "retry_open_dry_run" else "close"
         return {
@@ -780,6 +794,71 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
             first.intents.iloc[0]["payload_sha256"],
             replay.intents.iloc[0]["payload_sha256"],
         )
+
+        first_intent = first.intents.iloc[0]
+        spool_payload_json = first_intent["spool_payload_json"]
+        self.assertEqual(
+            hashlib.sha256(spool_payload_json.encode("utf-8")).hexdigest(),
+            first_intent["payload_sha256"],
+        )
+        self.assertNotIn("trace_json", json.loads(spool_payload_json))
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            connection = intent_spool.open_spool(
+                Path(tempdir) / "stage905-integration.sqlite3"
+            )
+            try:
+                cursor = DurableTickCursor(
+                    feed_session_id=first_intent[
+                        "durable_cursor_feed_session_id"
+                    ],
+                    ingress_sequence=int(
+                        first_intent["durable_cursor_ingress_sequence"]
+                    ),
+                    journal_byte_offset=int(
+                        first_intent["durable_cursor_journal_byte_offset"]
+                    ),
+                )
+                committed = intent_spool.commit_detector_batch(
+                    connection,
+                    consumer_id="stage941",
+                    expected_cursor=None,
+                    next_cursor=cursor,
+                    intents=[dict(first_intent)],
+                    now_epoch_ns=clock.epoch_ns(),
+                    now_monotonic_ns=clock.monotonic_ns(),
+                    clock_domain_id=clock.clock_domain_id(),
+                )
+                self.assertEqual(1, committed.inserted_count)
+            finally:
+                connection.close()
+
+    def test_business_payload_hash_ignores_trace_observation_but_not_order_data(self) -> None:
+        base = {
+            "intent_id": "retry-action",
+            "trace_id": "trace-retry-action",
+            "trace_json": '{"stage905_intent_ready":{"epoch_ns":1}}',
+            "planned_volume": 1,
+            "limit_price": 1245.5,
+        }
+
+        self.assertEqual(
+            stage905._stable_payload_sha256(base),
+            stage905._stable_payload_sha256(
+                {
+                    **base,
+                    "trace_json": '{"stage905_intent_ready":{"epoch_ns":2}}',
+                }
+            ),
+        )
+        self.assertNotEqual(
+            stage905._stable_payload_sha256(base),
+            stage905._stable_payload_sha256({**base, "planned_volume": 2}),
+        )
+
+    def test_business_payload_hash_rejects_lossy_string_coercion(self) -> None:
+        with self.assertRaisesRegex(ValueError, "json_type_unsupported"):
+            stage905._stable_payload_sha256({"intent_id": "x", "value": object()})
 
     def test_invalid_exchange_fails_closed_instead_of_raising(self) -> None:
         intent = {

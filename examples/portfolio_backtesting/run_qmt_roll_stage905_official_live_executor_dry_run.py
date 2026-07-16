@@ -141,6 +141,8 @@ _VOLATILE_INTENT_HASH_FIELDS = {
     "checked_at",
     "stage904_summary_generated_at",
     "payload_sha256",
+    "spool_payload_json",
+    "trace_json",
 }
 SYSTEM_CLOCK = SystemClock()
 
@@ -650,13 +652,50 @@ def _stable_payload_sha256(intent: Mapping[str, Any]) -> str:
                 pass
         payload[key] = value
     encoded = json.dumps(
-        payload,
+        _canonical_spool_json_value(payload),
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
-        default=str,
+        allow_nan=False,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _canonical_spool_json_value(value: Any, *, field_name: str = "payload") -> Any:
+    """Return strict JSON data without lossy ``default=str`` coercion."""
+    if value is None or isinstance(value, (str, bool)):
+        return value
+    if type(value) is int:
+        return value
+    if isinstance(value, float):
+        if math.isnan(value):
+            return None
+        if not math.isfinite(value):
+            raise ValueError(f"{field_name}_must_be_finite")
+        return value
+    if isinstance(value, Mapping):
+        normalized: dict[str, Any] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise ValueError(f"{field_name}_key_must_be_text")
+            normalized[key] = _canonical_spool_json_value(
+                item,
+                field_name=f"{field_name}.{key}",
+            )
+        return normalized
+    if isinstance(value, (list, tuple)):
+        return [
+            _canonical_spool_json_value(item, field_name=f"{field_name}[]")
+            for item in value
+        ]
+    if hasattr(value, "item"):
+        try:
+            scalar = value.item()
+        except AttributeError:
+            scalar = value
+        if scalar is not value:
+            return _canonical_spool_json_value(scalar, field_name=field_name)
+    raise ValueError(f"{field_name}_json_type_unsupported:{type(value).__name__}")
 
 
 def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
@@ -1094,6 +1133,14 @@ def _validate_intent(
                     now=current_stamp,
                     intent_kind=offset_text,
                 )
+                if "stage904_detected" not in trace.stamps:
+                    raise TraceValidationError("stage904_detected_stamp_missing")
+                if "stage905_intent_ready" not in trace.stamps:
+                    trace = trace.record_stamp(
+                        "stage905_intent_ready",
+                        current_stamp,
+                    )
+                intent["trace_json"] = trace.to_json()
             except TraceValidationError as exc:
                 reasons.append(f"stage904_trace_invalid:{exc}")
         elif require_stage904_trace:
@@ -1237,21 +1284,35 @@ def _validate_intent(
         for key, value in order_request_payload.items()
         if key != "monitor_run_id"
     }
-    payload_sha256 = _stable_payload_sha256(
-        {
-            **intent,
-            "executor_status": status,
-            "executor_reason_codes": _stable_reason_codes(reasons),
-            "resolved_limit_price": price,
-            "pricetick": pricetick,
-            "broker_matching_position_volume": broker_match_volume,
-            "order_request": stable_order_payload,
-        }
+    spool_payload = {
+        **intent,
+        "executor_status": status,
+        "executor_reason_codes": _stable_reason_codes(reasons),
+        "resolved_limit_price": price,
+        "pricetick": pricetick,
+        "broker_matching_position_volume": broker_match_volume,
+        "order_request": stable_order_payload,
+    }
+    stable_spool_payload = {
+        key: value
+        for key, value in spool_payload.items()
+        if key not in _VOLATILE_INTENT_HASH_FIELDS
+        and not key.endswith("_generated_at")
+        and not key.endswith("_checked_at")
+    }
+    spool_payload_json = json.dumps(
+        _canonical_spool_json_value(stable_spool_payload),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
     )
+    payload_sha256 = hashlib.sha256(spool_payload_json.encode("utf-8")).hexdigest()
 
     return {
         **intent,
         "payload_sha256": payload_sha256,
+        "spool_payload_json": spool_payload_json,
         "executor_mode": mode,
         "executor_status": status,
         "executor_reason": unique_reasons,
