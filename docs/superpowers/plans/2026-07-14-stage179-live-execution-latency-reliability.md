@@ -394,13 +394,16 @@ The second adversarial review proved that a current v1 heartbeat did not invalid
 **Files:**
 - Create: `examples/portfolio_backtesting/qmt_roll_official_live_trace.py`
 - Create: `tests/test_official_live_trace.py`
-- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_time.py` only if the clock-domain identifier is not already exposed
+- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_time.py`
+- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py`
+- Modify: `examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py`
+- Modify: `tests/test_stage608_continuous_tick_stream.py`
 
 **Interfaces:**
 - Consumes: canonical ingress rows and `Clock`
 - Produces: `TraceStage`, `ClockStamp`, `LatencyTrace`, `SlaBudget`, `SlaEvaluation`, deterministic trace IDs, serialization, and exact deadline disposition
 
-- [ ] **Step 1: Write the complete RED contract**
+- [x] **Step 1: Write the complete RED contract**
 
 ```python
 def test_virtual_clock_expires_at_exact_25_second_boundary(self):
@@ -422,7 +425,7 @@ def test_clock_domain_change_fails_closed(self):
     self.assertEqual(close_disposition, "blocked")
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -431,13 +434,15 @@ def test_clock_domain_change_fails_closed(self):
 
 Expected: module/API missing.
 
-- [ ] **Step 3: Implement the schema and exact budgets**
+- [x] **Step 3: Implement the schema and exact budgets**
 
 Define stages `gateway_ingress`, `journal_durable`, `stage904_detected`, `stage905_intent_ready`, `spool_committed`, `executor_dequeued`, `broker_bundle_ready`, `send_order_called`, `first_broker_ack`, `first_fill`, `cancel_requested`, `cancel_terminal`, `ledger_durable`, and diagnostic `event_handler_observed`. `trace_id` is UUIDv5 over `feed_session_id:ingress_sequence`; `deadline_epoch_ns` and same-domain monotonic deadline equal ingress plus `25_000_000_000` ns. A repeated identical stamp is idempotent; a different repeated stamp, negative cursor, naïve UTC, tampered deadline, or monotonic rollback raises `TraceValidationError`.
 
 Install the exact approved `SLA_BUDGETS`; missing required endpoints are ineligible failures, and conditional fill/cancel segments are not applicable when the event never occurred.
 
-- [ ] **Step 4: Run GREEN**
+Stage608 must persist the boot-stable `clock_domain_id` in the canonical ingress envelope and row. Before any tick bytes are written, the writer cross-binds the pipeline, envelope, and row domain with exact type/value checks. The Task 4 trace is an internal-consistency and audit-latency schema, not source authentication: a cross-domain stamp is always live-ineligible. Task 5 must persist the complete trigger cursor and state generation; Task 8 must validate producer generation, heartbeat/commit lineage, and the durable cursor before accepting downstream stamps. The adversarial forward-domain sample remains a mandatory Task 5/8 regression, and Stage179 cannot activate until that Spec 5.5 lineage is closed.
+
+- [x] **Step 4: Run GREEN**
 
 ```bash
 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest -v \
@@ -446,7 +451,7 @@ Install the exact approved `SLA_BUDGETS`; missing required endpoints are ineligi
 
 Expected: all trace tests pass without real sleep.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples/portfolio_backtesting/qmt_roll_official_live_time.py \
@@ -454,6 +459,8 @@ git add examples/portfolio_backtesting/qmt_roll_official_live_time.py \
   tests/test_official_live_trace.py
 git commit -m "feat(stage179): add auditable trace and SLA schema"
 ```
+
+Implemented as `c17a3b897acf944c358d12118071557789ac9d9e`; final relevant verification was `171/171`, with independent review `P0=0`, `P1=0` and conservative aggregate `P2=2`. This commit is merge eligible only; it does not authorize deployment or activation.
 
 ---
 
