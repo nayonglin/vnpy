@@ -1,0 +1,33 @@
+examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py
+  s_57fbbdfeac5414::t_cdd6ef598c8b4c 88-89,940-947,981-1290,3146-3158,3229-3238,3242-3246,3279-3282,3323,3337-3347,3417,4135-4154,4356-4358,4362-4366,4368-4379,4396-4409,4413-4417,4690
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_a295e3eac14c6c 16-18,70-75,195-210,425,569,594-600,605,632-638,735-742,761-772,779,786-792,798-799,897-900,912-916,932-943
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_8fb628676f5e3e 40-44,59-60,146-151,194-198,267-289,2736-2764,2768-3058,3073,3081-3108,3120,3162,3789-3821,4451,4481,4556-4562,4579-4586
+tests/test_stage608_continuous_tick_stream.py
+  s_57fbbdfeac5414::t_59feaf1ae4bf82 4,536-541,561-565,575,609-624
+tests/test_stage904_durable_state_integration.py
+  s_57fbbdfeac5414::t_dee7073091da23 24,57-88,266,278,581-583,2623,2660-2672,2677,2743-3195,3203-3204,3240-3241,3304-3305
+tests/test_stage905_c9_cycle_intents.py
+  s_57fbbdfeac5414::t_29fb53af0210ce 41,100-385
+tests/test_stage931_trade_fill_accounting.py
+  s_57fbbdfeac5414::t_7fb3495870788d 1420-1454,1483-1849
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "64e388bb3520e3dce84832d9e62dac65d28180da",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
