@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T21:14:28.049117Z",
+  "created_at_utc": "2026-07-18T21:21:45.804958Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -34,13 +34,13 @@
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
-      "sha256": "9232239362d7176b0d31d8831b622fbad68a045292e2d76bfd68938765662a96",
-      "size_bytes": 2255
+      "sha256": "d1ef5f2ee1d563f36d96c91c5622ff317bec208dd381a36f154819ddc61f0b42",
+      "size_bytes": 2335
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
-      "sha256": "9d46b3a991297c1ae0a1ce7ddaf1dc7c7cd753bb8af0bc478cb5876a2c2ffc9f",
-      "size_bytes": 2265
+      "sha256": "c5d215754b2d74e4a3a73d092e34bebed8a41e10ad4f22a299b3db9a7e2fc9c2",
+      "size_bytes": 2345
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
@@ -344,8 +344,8 @@
     },
     {
       "path": "tests/test_stage930_fast_lane.py",
-      "sha256": "c6cc27341ca96f9d2a41894b8115a56d1f740cc23b82a8c4d0f893fb07b7ad10",
-      "size_bytes": 105573
+      "sha256": "6413bc57c286d9799d519df7a0b14e2bab555a4f5be70099fa3ee9d2c350f705",
+      "size_bytes": 106609
     }
   ],
   "execution_profile": "stage372-20w",
@@ -364,14 +364,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "575be4283f390defa2e00062a41811edba930322b290c709d2dfae5dd63b238d",
+  "manifest_sha256": "7d3140602757919269e9f71c535b40b7f8c923890d97782016fb04da0ebeb0e4",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-integration-ef3b28eee",
+  "release_id": "stage179-stage372-readonly-integration-8bd235ee0",
   "schema_version": 2,
-  "source_commit": "ef3b28eeed745aa61f54cf4de0286e43253755c0",
+  "source_commit": "8bd235ee01ea9cb7f76f59e4715903678a4d4932",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "9a1b3735492281262e67c2715a8375bd0742f872b0ec92c596015bf4bb4fb991"
+  "tree_fingerprint": "232670892a1d6b06b695403dabcc13caae54ba15990b4ca6367d9defd8de75a6"
 }
