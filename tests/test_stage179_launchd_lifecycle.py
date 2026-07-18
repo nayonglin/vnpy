@@ -214,6 +214,7 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             environment = dict(os.environ)
             environment["OFFICIAL_LIVE_OUTPUT_DIR"] = directory
+            environment["QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR"] = "1"
             result = subprocess.run(
                 [
                     sys.executable,
