@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from dataclasses import asdict
 from datetime import datetime, timezone
+import gc
+import hashlib
+import heapq
+import io
 import json
 import math
 import os
 from pathlib import Path
+import platform
 from queue import Empty, Queue
 import subprocess
+import sys
 import threading
 import time
 from types import SimpleNamespace
@@ -31,6 +38,96 @@ def _percentile(values: list[float], percentile: float) -> float:
     return ordered[index]
 
 
+class _LatencyDiagnostics:
+    """Keep bounded causal evidence for rare wall-clock tail samples."""
+
+    def __init__(self, *, limit: int, wall_threshold_ms: float) -> None:
+        self.limit = max(1, int(limit))
+        self.wall_threshold_ns = int(float(wall_threshold_ms) * 1_000_000)
+        self.wall_over_threshold_count = 0
+        self._top: list[tuple[int, int, dict[str, Any]]] = []
+
+    def record(
+        self,
+        *,
+        sequence: int,
+        started_wall_ns: int,
+        finished_wall_ns: int,
+        started_thread_ns: int,
+        finished_thread_ns: int,
+        capture_wall_ns: int,
+        capture_thread_ns: int,
+        forward_wall_ns: int,
+        forward_thread_ns: int,
+    ) -> None:
+        wall_ns = max(0, int(finished_wall_ns) - int(started_wall_ns))
+        thread_ns = max(0, int(finished_thread_ns) - int(started_thread_ns))
+        off_cpu_ns = max(0, wall_ns - thread_ns)
+        wrapper_thread_ns = max(
+            0,
+            thread_ns - int(capture_thread_ns) - int(forward_thread_ns),
+        )
+        if wall_ns > self.wall_threshold_ns:
+            self.wall_over_threshold_count += 1
+        if off_cpu_ns >= 1_000_000 and off_cpu_ns * 2 >= wall_ns:
+            classification = "off_cpu_or_lock_wait"
+        elif int(capture_thread_ns) * 2 >= max(1, thread_ns):
+            classification = "capture_cpu"
+        elif int(forward_thread_ns) * 2 >= max(1, thread_ns):
+            classification = "forward_cpu"
+        else:
+            classification = "wrapper_cpu"
+        sample = {
+            "sequence": int(sequence),
+            "started_wall_ns": int(started_wall_ns),
+            "finished_wall_ns": int(finished_wall_ns),
+            "wall_ms": wall_ns / 1_000_000,
+            "thread_cpu_ms": thread_ns / 1_000_000,
+            "off_cpu_or_wait_ms": off_cpu_ns / 1_000_000,
+            "capture_wall_ms": max(0, int(capture_wall_ns)) / 1_000_000,
+            "capture_thread_cpu_ms": max(0, int(capture_thread_ns)) / 1_000_000,
+            "forward_wall_ms": max(0, int(forward_wall_ns)) / 1_000_000,
+            "forward_thread_cpu_ms": max(0, int(forward_thread_ns)) / 1_000_000,
+            "wrapper_thread_cpu_ms": wrapper_thread_ns / 1_000_000,
+            "classification": classification,
+        }
+        entry = (wall_ns, -int(sequence), sample)
+        if len(self._top) < self.limit:
+            heapq.heappush(self._top, entry)
+        elif entry[:2] > self._top[0][:2]:
+            heapq.heapreplace(self._top, entry)
+
+    def summary(self, *, gc_intervals: list[dict[str, Any]]) -> dict[str, Any]:
+        top_samples: list[dict[str, Any]] = []
+        for _, _, sample in sorted(self._top, reverse=True):
+            generations = sorted(
+                {
+                    int(interval["generation"])
+                    for interval in gc_intervals
+                    if int(interval["started_wall_ns"])
+                    <= int(sample["finished_wall_ns"])
+                    and int(interval["finished_wall_ns"])
+                    >= int(sample["started_wall_ns"])
+                }
+            )
+            top_samples.append({**sample, "gc_generations": generations})
+        gc_durations_ms = [
+            max(
+                0,
+                int(interval["finished_wall_ns"])
+                - int(interval["started_wall_ns"]),
+            )
+            / 1_000_000
+            for interval in gc_intervals
+        ]
+        return {
+            "wall_over_5ms_count": self.wall_over_threshold_count,
+            "top_samples": top_samples,
+            "gc_collection_count": len(gc_intervals),
+            "gc_collection_max_ms": max(gc_durations_ms, default=0.0),
+        }
+
+
 def _rss_bytes() -> int:
     result = subprocess.run(
         ["ps", "-o", "rss=", "-p", str(os.getpid())],
@@ -42,6 +139,149 @@ def _rss_bytes() -> int:
         return int(result.stdout.strip()) * 1024
     except ValueError:
         return 0
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _latency_segment_rows(
+    *,
+    total_ms: list[float],
+    capture_ms: list[float],
+    forward_ms: list[float],
+    thread_cpu_ms: list[float],
+    ticks_per_segment: int,
+    wall_threshold_ms: float,
+) -> list[dict[str, Any]]:
+    """Summarize sequential fixed-size windows without hiding rare tails."""
+    sample_count = len(total_ms)
+    if not (
+        len(capture_ms) == sample_count
+        and len(forward_ms) == sample_count
+        and len(thread_cpu_ms) == sample_count
+    ):
+        raise ValueError("latency_series_length_mismatch")
+    segment_size = max(1, int(ticks_per_segment))
+    rows: list[dict[str, Any]] = []
+    for start in range(0, sample_count, segment_size):
+        end = min(sample_count, start + segment_size)
+        total_segment = total_ms[start:end]
+        capture_segment = capture_ms[start:end]
+        forward_segment = forward_ms[start:end]
+        thread_segment = thread_cpu_ms[start:end]
+        rows.append(
+            {
+                "segment_index": len(rows),
+                "sequence_start": start + 1,
+                "sequence_end": end,
+                "sample_count": end - start,
+                "ingress_p99_ms": _percentile(total_segment, 0.99),
+                "ingress_max_ms": max(total_segment, default=math.inf),
+                "capture_p99_ms": _percentile(capture_segment, 0.99),
+                "capture_max_ms": max(capture_segment, default=math.inf),
+                "forward_p99_ms": _percentile(forward_segment, 0.99),
+                "forward_max_ms": max(forward_segment, default=math.inf),
+                "thread_cpu_p99_ms": _percentile(thread_segment, 0.99),
+                "thread_cpu_max_ms": max(thread_segment, default=math.inf),
+                "wall_over_threshold_count": sum(
+                    value > float(wall_threshold_ms)
+                    for value in total_segment
+                ),
+            }
+        )
+    return rows
+
+
+def _write_evidence_bundle(output_dir: Path, payload: dict[str, Any]) -> None:
+    summary_text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    performance_path = output_dir / "stage179_performance_gate.json"
+    summary_path = output_dir / "summary.json"
+    performance_path.write_text(summary_text, encoding="utf-8")
+    summary_path.write_text(summary_text, encoding="utf-8")
+
+    top_samples = list(
+        payload.get("metrics", {})
+        .get("ingress_diagnostics", {})
+        .get("top_samples", [])
+    )
+    csv_buffer = io.StringIO(newline="")
+    fieldnames = list(top_samples[0]) if top_samples else ["sequence"]
+    writer = csv.DictWriter(csv_buffer, fieldnames=fieldnames)
+    writer.writeheader()
+    for row in top_samples:
+        writer.writerow(
+            {
+                key: (
+                    json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+                    if isinstance(value, (list, dict))
+                    else value
+                )
+                for key, value in row.items()
+            }
+        )
+    top_samples_path = output_dir / "stage179_ingress_top_samples.csv"
+    top_samples_path.write_text(csv_buffer.getvalue(), encoding="utf-8")
+
+    latency_segments = list(payload.get("latency_segments", []))
+    segment_buffer = io.StringIO(newline="")
+    segment_fieldnames = (
+        list(latency_segments[0]) if latency_segments else ["segment_index"]
+    )
+    segment_writer = csv.DictWriter(
+        segment_buffer,
+        fieldnames=segment_fieldnames,
+    )
+    segment_writer.writeheader()
+    segment_writer.writerows(latency_segments)
+    segments_path = output_dir / "stage179_latency_segments.csv"
+    segments_path.write_text(segment_buffer.getvalue(), encoding="utf-8")
+
+    runtime_payload = {
+        "python_version": platform.python_version(),
+        "python_implementation": platform.python_implementation(),
+        "python_executable": sys.executable,
+        "platform": platform.platform(),
+        "machine": platform.machine(),
+        "process_pid": os.getpid(),
+        "runtime_policy_label": os.environ.get(
+            "STAGE179_PERFORMANCE_RUNTIME_POLICY",
+            "unspecified",
+        ),
+        "perf_counter": vars(time.get_clock_info("perf_counter")),
+        "thread_time": vars(time.get_clock_info("thread_time")),
+    }
+    runtime_path = output_dir / "runtime_versions.json"
+    runtime_path.write_text(
+        json.dumps(runtime_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    evidence_paths = (
+        performance_path,
+        summary_path,
+        top_samples_path,
+        segments_path,
+        runtime_path,
+        output_dir / "ticks.ndjson",
+        output_dir / "overflow.ndjson",
+    )
+    hash_payload = {
+        "algorithm": "sha256",
+        "files": {
+            path.name: _sha256_file(path)
+            for path in evidence_paths
+            if path.exists()
+        },
+    }
+    (output_dir / "sha256.json").write_text(
+        json.dumps(hash_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _tick(index: int, symbols: int) -> SimpleNamespace:
@@ -113,12 +353,53 @@ def run_gate(
     consumer_stop = threading.Event()
     sentinel_latencies_ms: list[float] = []
 
+    class InstrumentedPipeline:
+        def capture_ingress(self, tick: Any) -> Any:
+            started_wall_ns = time.perf_counter_ns()
+            started_thread_ns = time.thread_time_ns()
+            try:
+                return pipeline.capture_ingress(tick)
+            finally:
+                setattr(
+                    tick,
+                    "_stage179_perf_capture_wall_ns",
+                    time.perf_counter_ns() - started_wall_ns,
+                )
+                setattr(
+                    tick,
+                    "_stage179_perf_capture_thread_ns",
+                    time.thread_time_ns() - started_thread_ns,
+                )
+
+        def latch_capture_exception(self, exc: Exception) -> None:
+            pipeline.latch_capture_exception(exc)
+
+        def _force_fail_closed_after_latch_error(self, exc: Exception) -> None:
+            pipeline._force_fail_closed_after_latch_error(exc)
+
     class Gateway:
         def on_tick(self, tick: Any) -> None:
-            event_queue.put_nowait(("tick", tick))
+            started_wall_ns = time.perf_counter_ns()
+            started_thread_ns = time.thread_time_ns()
+            try:
+                event_queue.put_nowait(("tick", tick))
+            finally:
+                setattr(
+                    tick,
+                    "_stage179_perf_forward_wall_ns",
+                    time.perf_counter_ns() - started_wall_ns,
+                )
+                setattr(
+                    tick,
+                    "_stage179_perf_forward_thread_ns",
+                    time.thread_time_ns() - started_thread_ns,
+                )
 
     gateway = Gateway()
-    restore_gateway = install_gateway_tick_ingress(gateway, pipeline)
+    restore_gateway = install_gateway_tick_ingress(
+        gateway,
+        InstrumentedPipeline(),
+    )
 
     def event_consumer() -> None:
         while not consumer_stop.is_set() or not event_queue.empty():
@@ -143,6 +424,36 @@ def run_gate(
     )
     consumer.start()
     ingress_latencies_ms: list[float] = []
+    ingress_thread_cpu_ms: list[float] = []
+    capture_latencies_ms: list[float] = []
+    forward_latencies_ms: list[float] = []
+    latency_diagnostics = _LatencyDiagnostics(
+        limit=20,
+        wall_threshold_ms=5.0,
+    )
+    gc_intervals: list[dict[str, Any]] = []
+    active_gc: list[dict[str, Any]] = []
+
+    def gc_callback(phase: str, info: dict[str, Any]) -> None:
+        if phase == "start":
+            active_gc.append(
+                {
+                    "generation": int(info.get("generation", -1)),
+                    "started_wall_ns": time.perf_counter_ns(),
+                }
+            )
+            return
+        if phase != "stop" or not active_gc:
+            return
+        started = active_gc.pop()
+        gc_intervals.append(
+            {
+                **started,
+                "finished_wall_ns": time.perf_counter_ns(),
+                "collected": int(info.get("collected", 0)),
+                "uncollectable": int(info.get("uncollectable", 0)),
+            }
+        )
     durable_lag_ms: list[float] = []
     ingress_monotonic_ns = [0] * (total_ticks + 1)
     previous_durable = 0
@@ -158,6 +469,7 @@ def run_gate(
     injection_elapsed = 0.0
     next_sentinel = 0.0
     try:
+        gc.callbacks.append(gc_callback)
         with patch(
             "qmt_roll_official_live_tick_journal._durability_barrier",
             side_effect=delayed_barrier,
@@ -180,9 +492,39 @@ def run_gate(
                 while sent < due:
                     tick = _tick(sent, symbols)
                     started_ns = time.perf_counter_ns()
+                    started_thread_ns = time.thread_time_ns()
                     gateway.on_tick(tick)
+                    finished_thread_ns = time.thread_time_ns()
                     finished_ns = time.perf_counter_ns()
                     ingress_latencies_ms.append((finished_ns - started_ns) / 1_000_000)
+                    ingress_thread_cpu_ms.append(
+                        (finished_thread_ns - started_thread_ns) / 1_000_000
+                    )
+                    capture_wall_ns = int(
+                        getattr(tick, "_stage179_perf_capture_wall_ns", 0)
+                    )
+                    capture_thread_ns = int(
+                        getattr(tick, "_stage179_perf_capture_thread_ns", 0)
+                    )
+                    forward_wall_ns = int(
+                        getattr(tick, "_stage179_perf_forward_wall_ns", 0)
+                    )
+                    forward_thread_ns = int(
+                        getattr(tick, "_stage179_perf_forward_thread_ns", 0)
+                    )
+                    capture_latencies_ms.append(capture_wall_ns / 1_000_000)
+                    forward_latencies_ms.append(forward_wall_ns / 1_000_000)
+                    latency_diagnostics.record(
+                        sequence=sent + 1,
+                        started_wall_ns=started_ns,
+                        finished_wall_ns=finished_ns,
+                        started_thread_ns=started_thread_ns,
+                        finished_thread_ns=finished_thread_ns,
+                        capture_wall_ns=capture_wall_ns,
+                        capture_thread_ns=capture_thread_ns,
+                        forward_wall_ns=forward_wall_ns,
+                        forward_thread_ns=forward_thread_ns,
+                    )
                     captured = tick._stage179_tick_ingress_envelope
                     ingress_monotonic_ns[captured.ingress_sequence] = (
                         captured.ingress_monotonic_ns
@@ -218,6 +560,10 @@ def run_gate(
                     )
                 )
     finally:
+        try:
+            gc.callbacks.remove(gc_callback)
+        except ValueError:
+            pass
         restore_gateway()
         consumer_stop.set()
         consumer.join(timeout=2.0)
@@ -233,6 +579,27 @@ def run_gate(
         "injection_elapsed_seconds": injection_elapsed,
         "ingress_p99_ms": _percentile(ingress_latencies_ms, 0.99),
         "ingress_max_ms": max(ingress_latencies_ms, default=math.inf),
+        "ingress_thread_cpu_p99_ms": _percentile(
+            ingress_thread_cpu_ms,
+            0.99,
+        ),
+        "ingress_thread_cpu_max_ms": max(
+            ingress_thread_cpu_ms,
+            default=math.inf,
+        ),
+        "capture_ingress_p99_ms": _percentile(capture_latencies_ms, 0.99),
+        "capture_ingress_max_ms": max(capture_latencies_ms, default=math.inf),
+        "original_event_enqueue_p99_ms": _percentile(
+            forward_latencies_ms,
+            0.99,
+        ),
+        "original_event_enqueue_max_ms": max(
+            forward_latencies_ms,
+            default=math.inf,
+        ),
+        "ingress_diagnostics": latency_diagnostics.summary(
+            gc_intervals=gc_intervals,
+        ),
         "event_sentinel_samples": len(sentinel_latencies_ms),
         "event_sentinel_p99_ms": _percentile(sentinel_latencies_ms, 0.99),
         "event_sentinel_max_ms": max(sentinel_latencies_ms, default=math.inf),
@@ -279,13 +646,18 @@ def run_gate(
         "status": "passed" if all(checks.values()) else "failed",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "metrics": metrics,
+        "latency_segments": _latency_segment_rows(
+            total_ms=ingress_latencies_ms,
+            capture_ms=capture_latencies_ms,
+            forward_ms=forward_latencies_ms,
+            thread_cpu_ms=ingress_thread_cpu_ms,
+            ticks_per_segment=ticks_per_second,
+            wall_threshold_ms=5.0,
+        ),
         "checks": checks,
         "failures": [name for name, passed in checks.items() if not passed],
     }
-    (output_dir / "stage179_performance_gate.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    _write_evidence_bundle(output_dir, payload)
     return payload
 
 

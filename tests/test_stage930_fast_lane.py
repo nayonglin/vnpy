@@ -1878,6 +1878,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
             self.assertIs(payload.get("AbandonProcessGroup"), False)
             self.assertEqual(15, payload.get("ExitTimeOut"))
+            self.assertEqual("Interactive", payload.get("ProcessType"))
 
     def test_supervisor_forwards_term_waits_and_never_restarts(self) -> None:
         supervisor = PORTFOLIO_DIR / "run_qmt_roll_stage930_official_live_c9_session_supervisor.sh"

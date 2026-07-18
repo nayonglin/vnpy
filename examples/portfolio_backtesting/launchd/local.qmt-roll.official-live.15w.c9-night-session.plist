@@ -4,6 +4,8 @@
 <dict>
   <key>Label</key>
   <string>local.qmt-roll.official-live.15w.c9-night-session</string>
+  <key>ProcessType</key>
+  <string>Interactive</string>
   <key>AbandonProcessGroup</key>
   <false/>
   <key>ExitTimeOut</key>
