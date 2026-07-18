@@ -1,0 +1,45 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py
+  s_57fbbdfeac5414::t_eadfd9ff8ccd58 1-153
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist
+  s_57fbbdfeac5414::t_b2761d5551a1ff 9-10,13-14
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist
+  s_57fbbdfeac5414::t_ec46d3a52425a3 9-10,13-14
+examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist
+  s_57fbbdfeac5414::t_c9e29ef577b3cb 1-42
+examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist
+  s_57fbbdfeac5414::t_e05958447c94b9 1-49
+examples/portfolio_backtesting/run_qmt_alignment_backtest.py
+  s_57fbbdfeac5414::t_3322e0e04f9c23 6,24-29
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_d754db0c34c8df 30-31,48-52,119-120,435,1112-1113,2063-2195,2711-2715,2756-2761,2777,2875-2888,2993
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh
+  s_57fbbdfeac5414::t_b123d7fc22fd6e 6,9,15-16,22,25-69,78,99-110,144,146,149-168,170,175,187
+examples/portfolio_backtesting/run_qmt_roll_stage930_supervisor_child.py
+  s_57fbbdfeac5414::t_3dd5bd143d7c72 1-17
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_3ac28beaae77e0 4913,6759-6763
+tests/test_stage179_launchd_lifecycle.py
+  s_57fbbdfeac5414::t_2ece45b5398631 1-248
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_ee727f4469c419 18,169-243
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_8c6219d5da5fd3 106-206,1605,1616,1619-1622,1625
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "789a62c9e53bd4e514c425540f14dfe738763594",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
