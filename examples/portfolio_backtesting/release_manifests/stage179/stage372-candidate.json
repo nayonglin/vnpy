@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T16:44:05.035368Z",
+  "created_at_utc": "2026-07-18T16:52:05.018581Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -64,8 +64,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
-      "sha256": "503e9231615a22195585f8ac9cef4d5b24eb392b3d5dfbcd6ff819e1945f7467",
-      "size_bytes": 6136
+      "sha256": "f23cb9044e1bc422e67e07b0e86bb981b75997c3009f939f38a5116792769fd3",
+      "size_bytes": 6667
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
@@ -154,8 +154,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
-      "sha256": "e0cd09323b85d667a1ef1d9b15c55220a583e2289b22e28e1ff59f02054d51a6",
-      "size_bytes": 12384
+      "sha256": "6531b4e3385ded9ea6f50a8c2bd0cc8e09db313874639e20d0af6827dc3dc4c4",
+      "size_bytes": 12520
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
@@ -179,8 +179,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
-      "sha256": "e2a6ee30910c289f9375c199d8a6d4c89c1e27a7bb18d801769db2d06055c972",
-      "size_bytes": 28164
+      "sha256": "36401247f5531a458c7d38e46b41333ddb5a19b91f1ce595763e6c9f97d6a19c",
+      "size_bytes": 28252
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
@@ -274,8 +274,8 @@
     },
     {
       "path": "tests/test_stage179_stage260_execution_profile.py",
-      "sha256": "9d15e2edbfea485ace3e878370a43a05ec7a8d736609e471f79fa2201dbe9a5a",
-      "size_bytes": 11674
+      "sha256": "6386dbdea1ed7a73e983b6a1fdf9630a5fe9487d685a4e28b8a11967672ef0db",
+      "size_bytes": 13110
     },
     {
       "path": "tests/test_stage179_stage372_daemon_boundary.py",
@@ -329,14 +329,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "cc88bf26658c3099a1828e818c83247896e2bf705d4528156d4ecbd5a0048533",
+  "manifest_sha256": "df99726f0c1bb17c5cd7e7e04fbe72d3045c530d09e43d1d6ca80d3ceb3d2d91",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-no-submit-513b3028c",
+  "release_id": "stage179-stage372-no-submit-acbe4825d",
   "schema_version": 2,
-  "source_commit": "513b3028c7baf108a8ab5222158b3fcdeaa9fcb1",
+  "source_commit": "acbe4825df9266cedf4dc5f59356d7e7725054a8",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "dd7318f51c0e7100cf5bf01985406065ffcdb86e77b98c6fadc8549ed1be80d5"
+  "tree_fingerprint": "1765c15a25253e69634579d6ae298e786633a9085a3602136adaa91c271f75cc"
 }

@@ -130,6 +130,7 @@
 - 新增两条直接复现测试：公共 loader 拒绝预先换绑路径的 profile；即使 snapshot 已在替代 registry 下生成，恢复正式 registry 后 Stage260 也拒绝该 profile/snapshot。测试使用临时 patch registry 隔离文件，不放宽生产 API。
 - 修复后聚焦测试：`49 passed, 11 subtests passed`；扩大回归两组共 `663 passed, 245 subtests passed`，其中 Stage179/Stage372 组 `394 passed, 190 subtests passed`，历史 C9/账本/CTP gate 组 `269 passed, 55 subtests passed`。Python 静态编译与 `git diff --check` 通过。
 - 本轮仍未运行新回测、未连接 CTP、未读取生产 env、未加载 launchd、未调用报撤单 API。当前 manifest 因关键源码变化必须从本修复提交再次刷新，旧 digest 只作历史记录。
+- canonical profile 修复提交 `acbe4825df9266cedf4dc5f59356d7e7725054a8` 后，从干净 detached worktree 再次生成 61 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-acbe4825d`，manifest digest `df99726f0c1bb17c5cd7e7e04fbe72d3045c530d09e43d1d6ca80d3ceb3d2d91`，文件 SHA-256 `458e6d069338e5afc8bd341cc3df58c7cbb5ed74da488a16f031e1c83006e545`；资格保持 `blocked`，只允许 offline/production-readonly。
 
 ## 结论与硬门禁
 
