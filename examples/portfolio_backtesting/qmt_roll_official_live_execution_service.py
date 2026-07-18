@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, is_dataclass
 import fcntl
@@ -148,6 +148,8 @@ class ExecutionSession(Protocol):
     def transport_blockers(self) -> list[str]: ...
 
     def pre_lease_blockers(self) -> list[str]: ...
+
+    def pre_lease_authorized_intents(self) -> Mapping[str, str] | None: ...
 
     def reconnect(self) -> None: ...
 
@@ -578,6 +580,16 @@ def serve_executor(
                             sleeper=sleeper,
                         )
                         continue
+                    authorized_provider = getattr(
+                        session,
+                        "pre_lease_authorized_intents",
+                        None,
+                    )
+                    authorized_intents = (
+                        authorized_provider()
+                        if callable(authorized_provider)
+                        else None
+                    )
                     dequeue_started_monotonic_ns = int(monotonic_ns_now())
                     lease = spool.lease_next(
                         owner_id=service_generation,
@@ -585,6 +597,7 @@ def serve_executor(
                         now_monotonic_ns=now_monotonic_ns,
                         clock_domain_id=domain_id,
                         lease_seconds=lease_seconds,
+                        authorized_intents=authorized_intents,
                     )
                     dequeue_completed_monotonic_ns = int(monotonic_ns_now())
                     dequeue_sla_exceeded = (

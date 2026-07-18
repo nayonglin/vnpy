@@ -68,6 +68,7 @@ class FakeSpool:
             SimpleNamespace(
                 intent=SimpleNamespace(
                     intent_id=intent_id,
+                    payload_sha256=(intent_id[0] if intent_id else "a") * 64,
                     target_date="2026-07-18",
                     deadline_epoch_ns=clock.epoch_ns + 25_000_000_000,
                     deadline_monotonic_ns=clock.monotonic_ns + 25_000_000_000,
@@ -79,6 +80,7 @@ class FakeSpool:
             for intent_id in intent_ids
         ]
         self.transitions: list[tuple[str, str]] = []
+        self.last_lease_kwargs: dict[str, Any] = {}
         self.recovery_calls = 0
 
     def recover_expired(self, **_: Any) -> list[str]:
@@ -88,7 +90,8 @@ class FakeSpool:
     def expire_due(self, **_: Any) -> None:
         return None
 
-    def lease_next(self, **_: Any) -> Any:
+    def lease_next(self, **kwargs: Any) -> Any:
+        self.last_lease_kwargs = dict(kwargs)
         return self.ready.pop(0) if self.ready else None
 
     def mark_sending(self, lease: Any, **_: Any) -> None:
@@ -129,6 +132,7 @@ class FakeWarmSession:
         self.connection_generation = ""
         self._lease: Any = None
         self.pre_lease_blocker_values: list[str] = []
+        self.pre_lease_authorized_values: dict[str, str] | None = None
         self.pre_lease_calls = 0
 
     def connect(self) -> None:
@@ -160,6 +164,9 @@ class FakeWarmSession:
     def pre_lease_blockers(self) -> list[str]:
         self.pre_lease_calls += 1
         return list(self.pre_lease_blocker_values)
+
+    def pre_lease_authorized_intents(self) -> dict[str, str] | None:
+        return self.pre_lease_authorized_values
 
     def reconnect(self) -> None:
         self.transport_failures = max(0, self.transport_failures - 1)
@@ -282,6 +289,27 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual([], spool.transitions)
         self.assertEqual(0, session.send_calls)
 
+    def test_cycle_authorization_allow_list_is_passed_into_atomic_lease(self) -> None:
+        spool = FakeSpool(["approved"], self.clock)
+        session = FakeWarmSession(self.clock)
+        session.pre_lease_authorized_values = {"approved": "a" * 64}
+
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(
+            {"approved": "a" * 64},
+            spool.last_lease_kwargs["authorized_intents"],
+        )
+
     def test_multi_child_revalidates_authorization_before_every_physical_send(self) -> None:
         args = SimpleNamespace(target_date="2026-07-18")
         session = stage931._build_stage179_warm_ctp_session(
@@ -297,6 +325,8 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         )
         state["connection_generation"] = "connection-1"
         authorization_path = submit_authorization_path(self.runtime.output_root)
+        authorization_now_ns = time.time_ns()
+        authorization_expires_ns = authorization_now_ns + 30_000_000_000
         publish_submit_authorization(
             path=authorization_path,
             target_date="2026-07-18",
@@ -306,22 +336,37 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             connection_generation="connection-1",
             cycle_id="cycle-1",
             intent_scope="all",
-            issued_epoch_ns=time.time_ns(),
-            expires_epoch_ns=time.time_ns() + 30_000_000_000,
+            authorized_intents=[
+                {
+                    "intent_id": "intent-1",
+                    "payload_sha256": "a" * 64,
+                    "intent_kind": "close",
+                }
+            ],
+            issued_epoch_ns=authorization_now_ns,
+            expires_epoch_ns=authorization_expires_ns,
             controller_evidence={
                 "target_date": "2026-07-18",
                 "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
                 "stage905_executor_status": "executor_dry_run_ready",
                 "stage905_blocked_count": 0,
                 "stage905_ready_count": 1,
+                "expires_epoch_ns": authorization_expires_ns,
             },
-            stage927_evidence={"real_submit_permitted": 1},
+            stage927_evidence={
+                "real_submit_permitted": 1,
+                "expires_epoch_ns": authorization_expires_ns,
+            },
             broker_gate_evidence={
                 "status": "ready",
                 "service_generation": session.service_generation,
                 "connection_generation": "connection-1",
+                "expires_epoch_ns": authorization_expires_ns,
             },
-            tick_watermark_evidence={"all_symbols_ready": 1},
+            tick_watermark_evidence={
+                "all_symbols_ready": 1,
+                "expires_epoch_ns": authorization_expires_ns,
+            },
         )
 
         class FakeMainEngine:
@@ -351,6 +396,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         lease = SimpleNamespace(
             intent=SimpleNamespace(
                 intent_id="intent-1",
+                payload_sha256="a" * 64,
                 target_date="2026-07-18",
                 intent_kind="close",
                 vt_symbol="JM609.DCE",

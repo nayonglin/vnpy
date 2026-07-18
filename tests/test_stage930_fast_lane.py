@@ -14,6 +14,8 @@ import tempfile
 import time
 import unittest
 
+import pandas as pd
+
 
 os.environ.setdefault("QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR", "1")
 PORTFOLIO_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_backtesting"
@@ -270,26 +272,53 @@ class Stage930FastLaneTest(unittest.TestCase):
                     "connection_generation": "connection-1",
                     "runtime_profile": "simnow",
                     "order_scope": "test",
+                    "expires_epoch_ns": time.time_ns() + 3_000_000_000,
                 }
                 controller = {
+                    "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "target_date": "2026-07-16",
                     "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
                     "stage905_executor_status": "executor_dry_run_ready",
                     "stage905_blocked_count": 0,
                     "stage905_ready_count": 1,
                 }
-                result = stage930._publish_stage931_submit_authorization(
-                    args,
-                    target_date="2026-07-16",
-                    controller_summary=controller,
-                    stage927_summary={"real_submit_permitted": 1},
-                    tick_gate={"all_symbols_ready": 1},
-                    service_status={
-                        "submit_status": "warm_executor_ready",
-                        "readiness": readiness,
-                    },
-                    reduce_close_only=False,
-                )
+                intents_path = Path(directory) / "stage905-intents.csv"
+                pd.DataFrame(
+                    [
+                        {
+                            "intent_id": "approved-intent",
+                            "payload_sha256": "a" * 64,
+                            "offset": "open",
+                            "target_date": "2026-07-16",
+                            "executor_status": "dry_run_order_request_payload_ready",
+                        }
+                    ]
+                ).to_csv(intents_path, index=False)
+                with patch.object(
+                    stage930,
+                    "_stage905_intents_path",
+                    return_value=intents_path,
+                ):
+                    result = stage930._publish_stage931_submit_authorization(
+                        args,
+                        target_date="2026-07-16",
+                        controller_summary=controller,
+                        stage927_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "real_submit_permitted": 1,
+                        },
+                        tick_gate={
+                            "all_symbols_ready": 1,
+                            "summary": {
+                                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            },
+                        },
+                        service_status={
+                            "submit_status": "warm_executor_ready",
+                            "readiness": readiness,
+                        },
+                        reduce_close_only=False,
+                    )
 
                 blockers = validate_submit_authorization(
                     path=result["authorization_path"],
@@ -299,12 +328,95 @@ class Stage930FastLaneTest(unittest.TestCase):
                     service_generation="service-1",
                     connection_generation="connection-1",
                     now_epoch_ns=time.time_ns(),
+                    intent_id="approved-intent",
+                    payload_sha256="a" * 64,
+                    intent_kind="open",
                 )
             finally:
                 stage930._STAGE931_SERVICE_RUNTIME = None
 
         self.assertEqual(1, result["authorized"])
         self.assertEqual([], blockers)
+
+    def test_stage930_authorization_excludes_intent_committed_after_publish(self) -> None:
+        args = self.args()
+        args.runtime_profile = "simnow"
+        args.poll_seconds = 30
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            runtime = stage930._stage179_runtime(args)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            intents_path = Path(directory) / "stage905-intents.csv"
+            pd.DataFrame(
+                [
+                    {
+                        "intent_id": "cycle-approved",
+                        "payload_sha256": "a" * 64,
+                        "offset": "open",
+                        "target_date": "2026-07-16",
+                        "executor_status": "dry_run_order_request_payload_ready",
+                    }
+                ]
+            ).to_csv(intents_path, index=False)
+            now_ns = time.time_ns()
+            try:
+                with patch.object(
+                    stage930,
+                    "_stage905_intents_path",
+                    return_value=intents_path,
+                ):
+                    result = stage930._publish_stage931_submit_authorization(
+                        args,
+                        target_date="2026-07-16",
+                        controller_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "target_date": "2026-07-16",
+                            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                            "stage905_executor_status": "executor_dry_run_ready",
+                            "stage905_blocked_count": 0,
+                            "stage905_ready_count": 1,
+                        },
+                        stage927_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "real_submit_permitted": 1,
+                        },
+                        tick_gate={
+                            "all_symbols_ready": 1,
+                            "summary": {
+                                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            },
+                        },
+                        service_status={
+                            "submit_status": "warm_executor_ready",
+                            "readiness": {
+                                "status": "ready",
+                                "service_generation": "service-1",
+                                "connection_generation": "connection-1",
+                                "expires_epoch_ns": now_ns + 3_000_000_000,
+                            },
+                        },
+                        reduce_close_only=False,
+                    )
+                blocker = validate_submit_authorization(
+                    path=result["authorization_path"],
+                    target_date="2026-07-16",
+                    runtime_profile="simnow",
+                    order_scope="test",
+                    service_generation="service-1",
+                    connection_generation="connection-1",
+                    now_epoch_ns=time.time_ns(),
+                    intent_id="post-publish-new",
+                    payload_sha256="b" * 64,
+                    intent_kind="open",
+                )
+            finally:
+                stage930._STAGE931_SERVICE_RUNTIME = None
+
+        self.assertEqual(1, result["authorized"])
+        self.assertIn(
+            "stage179_submit_authorization_intent_not_authorized",
+            blocker,
+        )
 
     def test_stage931_stop_revokes_readiness_before_terminating_child(self) -> None:
         events: list[str] = []

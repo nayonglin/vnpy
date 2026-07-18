@@ -10,9 +10,11 @@ import tempfile
 from typing import Any
 
 
-SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 1
+SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 2
 SUBMIT_AUTHORIZATION_FILENAME = "stage179_submit_authorization.json"
 _INTENT_SCOPES = {"all", "reduce_close_only"}
+_INTENT_KINDS = {"open", "close"}
+_SHA256_HEX = frozenset("0123456789abcdef")
 
 
 def submit_authorization_path(output_root: str | Path) -> Path:
@@ -72,6 +74,53 @@ def _signed(payload: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _normalized_authorized_intents(
+    rows: Any,
+) -> list[dict[str, str]]:
+    if not isinstance(rows, (list, tuple)) or not rows:
+        raise ValueError(
+            "stage179_submit_authorization_authorized_intents_missing"
+        )
+    normalized: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise ValueError(
+                "stage179_submit_authorization_authorized_intent_invalid"
+            )
+        intent_id = str(row.get("intent_id", "")).strip()
+        payload_sha256 = str(row.get("payload_sha256", "")).strip().lower()
+        intent_kind = str(row.get("intent_kind", "")).strip().lower()
+        if not intent_id:
+            raise ValueError(
+                "stage179_submit_authorization_intent_id_missing"
+            )
+        if intent_id in seen:
+            raise ValueError(
+                "stage179_submit_authorization_authorized_intent_duplicate"
+            )
+        if (
+            len(payload_sha256) != 64
+            or any(character not in _SHA256_HEX for character in payload_sha256)
+        ):
+            raise ValueError(
+                "stage179_submit_authorization_payload_sha256_invalid"
+            )
+        if intent_kind not in _INTENT_KINDS:
+            raise ValueError(
+                "stage179_submit_authorization_intent_kind_invalid"
+            )
+        seen.add(intent_id)
+        normalized.append(
+            {
+                "intent_id": intent_id,
+                "payload_sha256": payload_sha256,
+                "intent_kind": intent_kind,
+            }
+        )
+    return sorted(normalized, key=lambda item: item["intent_id"])
+
+
 def publish_submit_authorization(
     *,
     path: str | Path,
@@ -82,6 +131,7 @@ def publish_submit_authorization(
     connection_generation: str,
     cycle_id: str,
     intent_scope: str,
+    authorized_intents: Any,
     issued_epoch_ns: int,
     expires_epoch_ns: int,
     controller_evidence: Mapping[str, Any],
@@ -111,12 +161,20 @@ def publish_submit_authorization(
     }
     if any(not value for value in evidence.values()):
         raise ValueError("stage179_submit_authorization_evidence_missing")
+    normalized_intents = _normalized_authorized_intents(authorized_intents)
+    if intent_scope == "reduce_close_only" and any(
+        row["intent_kind"] != "close" for row in normalized_intents
+    ):
+        raise ValueError(
+            "stage179_submit_authorization_reduce_close_scope_contains_open"
+        )
     payload = _signed(
         {
             "schema_version": SUBMIT_AUTHORIZATION_SCHEMA_VERSION,
             "status": "authorized",
             **{key: str(value).strip() for key, value in required_strings.items()},
             "intent_scope": intent_scope,
+            "authorized_intents": normalized_intents,
             "issued_epoch_ns": int(issued_epoch_ns),
             "expires_epoch_ns": int(expires_epoch_ns),
             **evidence,
@@ -169,6 +227,28 @@ def read_submit_authorization(path: str | Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def authorized_submit_intents(path: str | Path) -> dict[str, str]:
+    """Return the exact immutable allow-list, or no authority on any defect."""
+
+    payload = read_submit_authorization(path)
+    if (
+        payload.get("schema_version") != SUBMIT_AUTHORIZATION_SCHEMA_VERSION
+        or payload.get("status") != "authorized"
+    ):
+        return {}
+    digest = str(payload.get("record_digest", ""))
+    if len(digest) != 64 or not hmac.compare_digest(
+        digest,
+        _canonical_digest(payload),
+    ):
+        return {}
+    try:
+        rows = _normalized_authorized_intents(payload.get("authorized_intents"))
+    except ValueError:
+        return {}
+    return {row["intent_id"]: row["payload_sha256"] for row in rows}
+
+
 def validate_submit_authorization(
     *,
     path: str | Path,
@@ -178,6 +258,8 @@ def validate_submit_authorization(
     service_generation: str,
     connection_generation: str,
     now_epoch_ns: int,
+    intent_id: str | None = None,
+    payload_sha256: str | None = None,
     intent_kind: str | None = None,
     child_offset: str | None = None,
 ) -> list[str]:
@@ -209,6 +291,13 @@ def validate_submit_authorization(
         blockers.append("stage179_submit_authorization_expired")
     if not str(payload.get("cycle_id", "")).strip():
         blockers.append("stage179_submit_authorization_cycle_id_missing")
+    authorized_rows: list[dict[str, str]] = []
+    try:
+        authorized_rows = _normalized_authorized_intents(
+            payload.get("authorized_intents")
+        )
+    except ValueError as exc:
+        blockers.append(str(exc))
     for evidence_key in (
         "controller_evidence",
         "stage927_evidence",
@@ -225,11 +314,75 @@ def validate_submit_authorization(
             blockers.append("stage179_submit_authorization_reduce_close_only")
         if child_offset is not None and str(child_offset).lower() == "open":
             blockers.append("stage179_submit_authorization_reduce_close_only")
+    if (intent_id is None) != (payload_sha256 is None):
+        blockers.append(
+            "stage179_submit_authorization_intent_identity_incomplete"
+        )
+    elif intent_id is not None and payload_sha256 is not None:
+        normalized_intent_id = str(intent_id).strip()
+        normalized_sha = str(payload_sha256).strip().lower()
+        authorized = next(
+            (
+                row
+                for row in authorized_rows
+                if row["intent_id"] == normalized_intent_id
+            ),
+            None,
+        )
+        if authorized is None:
+            blockers.append(
+                "stage179_submit_authorization_intent_not_authorized"
+            )
+        else:
+            if not hmac.compare_digest(
+                authorized["payload_sha256"],
+                normalized_sha,
+            ):
+                blockers.append(
+                    "stage179_submit_authorization_payload_sha256_mismatch"
+                )
+            if (
+                intent_kind is not None
+                and authorized["intent_kind"]
+                != str(intent_kind).strip().lower()
+            ):
+                blockers.append(
+                    "stage179_submit_authorization_intent_kind_mismatch"
+                )
     controller = payload.get("controller_evidence", {})
     stage927 = payload.get("stage927_evidence", {})
     broker = payload.get("broker_gate_evidence", {})
     tick = payload.get("tick_watermark_evidence", {})
     reduce_close_only = scope == "reduce_close_only"
+    evidence_expiry_keys = [
+        ("controller_evidence", controller),
+        ("stage927_evidence", stage927),
+    ]
+    if not reduce_close_only:
+        evidence_expiry_keys.append(("tick_watermark_evidence", tick))
+    authorization_expires_epoch_ns = int(
+        payload.get("expires_epoch_ns", 0) or 0
+    )
+    for evidence_name, evidence_payload in evidence_expiry_keys:
+        evidence_expires_epoch_ns = int(
+            evidence_payload.get("expires_epoch_ns", 0) or 0
+        ) if isinstance(evidence_payload, dict) else 0
+        if evidence_expires_epoch_ns <= 0:
+            blockers.append(
+                "stage179_submit_authorization_"
+                f"{evidence_name}_expiry_missing"
+            )
+            continue
+        if authorization_expires_epoch_ns > evidence_expires_epoch_ns:
+            blockers.append(
+                "stage179_submit_authorization_"
+                f"exceeds_{evidence_name}_expiry"
+            )
+        if int(now_epoch_ns) >= evidence_expires_epoch_ns:
+            blockers.append(
+                "stage179_submit_authorization_"
+                f"{evidence_name}_expired"
+            )
     if isinstance(controller, dict):
         if target_date is not None and str(controller.get("target_date", "")) != str(
             target_date
@@ -276,6 +429,22 @@ def validate_submit_authorization(
             blockers.append(
                 "stage179_submit_authorization_broker_connection_generation_mismatch"
             )
+        broker_expires_epoch_ns = int(
+            broker.get("expires_epoch_ns", 0) or 0
+        )
+        if broker_expires_epoch_ns <= 0:
+            blockers.append(
+                "stage179_submit_authorization_broker_readiness_expiry_missing"
+            )
+        else:
+            if int(payload.get("expires_epoch_ns", 0) or 0) > broker_expires_epoch_ns:
+                blockers.append(
+                    "stage179_submit_authorization_exceeds_broker_readiness_expiry"
+                )
+            if int(now_epoch_ns) >= broker_expires_epoch_ns:
+                blockers.append(
+                    "stage179_submit_authorization_broker_readiness_expired"
+                )
     if (
         isinstance(tick, dict)
         and not reduce_close_only
@@ -288,6 +457,7 @@ def validate_submit_authorization(
 __all__ = [
     "SUBMIT_AUTHORIZATION_FILENAME",
     "SUBMIT_AUTHORIZATION_SCHEMA_VERSION",
+    "authorized_submit_intents",
     "publish_submit_authorization",
     "read_submit_authorization",
     "revoke_submit_authorization",

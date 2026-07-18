@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 import hashlib
 import json
 import math
@@ -46,6 +46,7 @@ from qmt_roll_official_live_execution_service import (
 )
 from qmt_roll_official_live_intent_spool import open_spool
 from qmt_roll_official_live_submit_authorization import (
+    authorized_submit_intents,
     submit_authorization_path,
     validate_submit_authorization,
 )
@@ -534,6 +535,9 @@ class CtpExecutionSession:
         transport_probe: Callable[[], list[str]] | None = None,
         pre_api_slot_blockers: Callable[[Any], list[str]] | None = None,
         pre_lease_blockers: Callable[[], list[str]] | None = None,
+        pre_lease_authorized_intents: (
+            Callable[[], Mapping[str, str] | None] | None
+        ) = None,
         connection_generation_observer: Callable[[str], None] | None = None,
         epoch_ns: Callable[[], int] = time.time_ns,
         monotonic: Callable[[], float] = time.monotonic,
@@ -554,6 +558,7 @@ class CtpExecutionSession:
         self._send_order = send_order
         self._pre_api_slot_blockers = pre_api_slot_blockers or (lambda _: [])
         self._pre_lease_blockers = pre_lease_blockers or (lambda: [])
+        self._pre_lease_authorized_intents = pre_lease_authorized_intents
         self._connection_generation_observer = (
             connection_generation_observer or (lambda _: None)
         )
@@ -702,6 +707,20 @@ class CtpExecutionSession:
                 "stage179_pre_lease_authorization_exception:"
                 f"{type(exc).__name__}"
             ]
+
+    def pre_lease_authorized_intents(self) -> Mapping[str, str] | None:
+        if self._pre_lease_authorized_intents is None:
+            return None
+        try:
+            result = self._pre_lease_authorized_intents()
+        except BaseException:
+            return {}
+        if result is None:
+            return None
+        return {
+            str(intent_id): str(payload_sha256)
+            for intent_id, payload_sha256 in result.items()
+        }
 
     def execute_with_readiness(
         self,
@@ -6229,6 +6248,8 @@ def _build_stage179_warm_ctp_session(
     def authorization_blockers(
         *,
         target_date: str | None = None,
+        intent_id: str | None = None,
+        payload_sha256: str | None = None,
         intent_kind: str | None = None,
         child_offset: str | None = None,
     ) -> list[str]:
@@ -6240,6 +6261,8 @@ def _build_stage179_warm_ctp_session(
             service_generation=service_generation,
             connection_generation=str(state.get("connection_generation", "")),
             now_epoch_ns=time.time_ns(),
+            intent_id=intent_id,
+            payload_sha256=payload_sha256,
             intent_kind=intent_kind,
             child_offset=child_offset,
         )
@@ -6386,6 +6409,8 @@ def _build_stage179_warm_ctp_session(
             return {"blockers": ["stage179_spool_order_request_missing"]}
         cycle_authorization_blockers = authorization_blockers(
             target_date=lease.intent.target_date,
+            intent_id=lease.intent.intent_id,
+            payload_sha256=lease.intent.payload_sha256,
             intent_kind=lease.intent.intent_kind,
         )
         if cycle_authorization_blockers:
@@ -6551,6 +6576,8 @@ def _build_stage179_warm_ctp_session(
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
         blockers = authorization_blockers(
             target_date=lease.intent.target_date,
+            intent_id=lease.intent.intent_id,
+            payload_sha256=lease.intent.payload_sha256,
             intent_kind=lease.intent.intent_kind,
         )
         blockers.extend(_post_final_gate_pre_api_slot_blockers(
@@ -6672,6 +6699,8 @@ def _build_stage179_warm_ctp_session(
         for index, request in enumerate(requests):
             child_authorization_blockers = authorization_blockers(
                 target_date=lease.intent.target_date,
+                intent_id=lease.intent.intent_id,
+                payload_sha256=lease.intent.payload_sha256,
                 intent_kind=lease.intent.intent_kind,
                 child_offset=request.offset.value,
             )
@@ -6808,6 +6837,9 @@ def _build_stage179_warm_ctp_session(
         transport_probe=transport_probe,
         pre_lease_blockers=lambda: authorization_blockers(
             target_date=args.target_date,
+        ),
+        pre_lease_authorized_intents=lambda: authorized_submit_intents(
+            authorization_path
         ),
         fresh_bundle=fresh_bundle,
         pre_api_slot_blockers=pre_api_slot_blockers,

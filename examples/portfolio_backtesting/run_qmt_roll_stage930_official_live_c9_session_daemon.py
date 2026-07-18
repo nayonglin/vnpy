@@ -2234,11 +2234,147 @@ def _publish_stage931_submit_authorization(
             "authorized": 0,
             "blocker": "stage931_warm_readiness_generation_missing",
         }
+    ready = _read_csv_maybe(_stage905_intents_path(target_date))
+    if ready.empty or "executor_status" not in ready.columns:
+        return {
+            "authorized": 0,
+            "blocker": "stage931_authorized_intents_missing",
+        }
+    ready = ready[
+        ready["executor_status"]
+        .fillna("")
+        .astype(str)
+        .eq("dry_run_order_request_payload_ready")
+    ].copy()
+    expected_ready_count = _to_int(
+        controller_summary.get("stage905_ready_count"),
+        -1,
+    )
+    if expected_ready_count <= 0 or len(ready) != expected_ready_count:
+        return {
+            "authorized": 0,
+            "blocker": (
+                "stage931_authorized_intent_count_mismatch:"
+                f"{len(ready)}!={expected_ready_count}"
+            ),
+        }
+    authorized_intents: list[dict[str, str]] = []
+    seen_intent_ids: set[str] = set()
+    for _, row in ready.iterrows():
+        intent_id = _clean(row.get("intent_id"))
+        payload_sha256 = _clean(row.get("payload_sha256")).lower()
+        intent_kind = _clean(row.get("offset")).lower()
+        row_target_date = _clean(row.get("target_date"))
+        if not intent_id or intent_id in seen_intent_ids:
+            return {
+                "authorized": 0,
+                "blocker": "stage931_authorized_intent_identity_invalid",
+            }
+        if len(payload_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in payload_sha256
+        ):
+            return {
+                "authorized": 0,
+                "blocker": "stage931_authorized_intent_payload_sha256_invalid",
+            }
+        if intent_kind not in {"open", "close"}:
+            return {
+                "authorized": 0,
+                "blocker": "stage931_authorized_intent_kind_invalid",
+            }
+        if row_target_date != target_date:
+            return {
+                "authorized": 0,
+                "blocker": "stage931_authorized_intent_target_date_mismatch",
+            }
+        if reduce_close_only and intent_kind != "close":
+            return {
+                "authorized": 0,
+                "blocker": "stage931_reduce_close_authorization_contains_open",
+            }
+        seen_intent_ids.add(intent_id)
+        authorized_intents.append(
+            {
+                "intent_id": intent_id,
+                "payload_sha256": payload_sha256,
+                "intent_kind": intent_kind,
+            }
+        )
     issued_epoch_ns = time.time_ns()
     ttl_seconds = min(
         60.0,
         max(5.0, float(getattr(args, "poll_seconds", 30)) + 5.0),
     )
+    readiness_expires_epoch_ns = _to_int(
+        readiness.get("expires_epoch_ns"),
+        0,
+    )
+    controller_age_seconds = _age_seconds(
+        controller_summary.get("generated_at")
+    )
+    stage927_age_seconds = _age_seconds(
+        stage927_summary.get("generated_at")
+    )
+    controller_fresh_seconds = min(
+        60.0,
+        max(5.0, float(getattr(args, "max_snapshot_age_seconds", 60))),
+    )
+    evidence_expiries: list[tuple[str, int]] = []
+    for evidence_name, age_seconds in (
+        ("controller", controller_age_seconds),
+        ("stage927", stage927_age_seconds),
+    ):
+        if (
+            age_seconds is None
+            or age_seconds < -TICK_CLOCK_SKEW_SECONDS
+            or age_seconds >= controller_fresh_seconds
+        ):
+            return {
+                "authorized": 0,
+                "blocker": f"stage931_{evidence_name}_evidence_stale",
+            }
+        evidence_expiries.append(
+            (
+                evidence_name,
+                issued_epoch_ns
+                + int(
+                    (controller_fresh_seconds - max(0.0, age_seconds))
+                    * 1_000_000_000
+                ),
+            )
+        )
+    tick_expires_epoch_ns = issued_epoch_ns + int(ttl_seconds * 1_000_000_000)
+    if not reduce_close_only:
+        tick_summary = tick_gate.get("summary")
+        tick_age_seconds = _age_seconds(
+            tick_summary.get("generated_at")
+            if isinstance(tick_summary, dict)
+            else None
+        )
+        if (
+            tick_age_seconds is None
+            or tick_age_seconds < -TICK_CLOCK_SKEW_SECONDS
+            or tick_age_seconds >= 3.0
+        ):
+            return {
+                "authorized": 0,
+                "blocker": "stage931_tick_watermark_evidence_stale",
+            }
+        tick_expires_epoch_ns = issued_epoch_ns + int(
+            (3.0 - max(0.0, tick_age_seconds)) * 1_000_000_000
+        )
+        evidence_expiries.append(("tick", tick_expires_epoch_ns))
+    expires_epoch_ns = min(
+        issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
+        readiness_expires_epoch_ns,
+        *(expiry for _, expiry in evidence_expiries),
+    )
+    if expires_epoch_ns <= issued_epoch_ns:
+        return {
+            "authorized": 0,
+            "blocker": "stage931_warm_readiness_expired_before_authorization",
+        }
     payload = publish_submit_authorization(
         path=submit_authorization_path(runtime.output_root),
         target_date=target_date,
@@ -2248,12 +2384,22 @@ def _publish_stage931_submit_authorization(
         connection_generation=connection_generation,
         cycle_id=uuid.uuid4().hex,
         intent_scope="reduce_close_only" if reduce_close_only else "all",
+        authorized_intents=authorized_intents,
         issued_epoch_ns=issued_epoch_ns,
-        expires_epoch_ns=issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
-        controller_evidence=controller_summary,
-        stage927_evidence=stage927_summary,
+        expires_epoch_ns=expires_epoch_ns,
+        controller_evidence={
+            **controller_summary,
+            "expires_epoch_ns": dict(evidence_expiries)["controller"],
+        },
+        stage927_evidence={
+            **stage927_summary,
+            "expires_epoch_ns": dict(evidence_expiries)["stage927"],
+        },
         broker_gate_evidence=readiness,
-        tick_watermark_evidence=tick_gate,
+        tick_watermark_evidence={
+            **tick_gate,
+            "expires_epoch_ns": tick_expires_epoch_ns,
+        },
     )
     validation_blockers = validate_submit_authorization(
         path=submit_authorization_path(runtime.output_root),
@@ -2282,6 +2428,7 @@ def _publish_stage931_submit_authorization(
         "cycle_id": payload["cycle_id"],
         "expires_epoch_ns": payload["expires_epoch_ns"],
         "intent_scope": payload["intent_scope"],
+        "authorized_intent_count": len(authorized_intents),
     }
 
 

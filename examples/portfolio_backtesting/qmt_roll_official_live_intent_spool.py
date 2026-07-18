@@ -1573,6 +1573,7 @@ def lease_next(
     now_monotonic_ns: int,
     clock_domain_id: str,
     lease_seconds: float,
+    authorized_intents: Mapping[str, str] | None = None,
 ) -> IntentLease | None:
     normalized_owner = _required_text(
         owner_id,
@@ -1594,6 +1595,34 @@ def lease_next(
     _exact_int(lease_expiry, field_name="lease_expires_epoch_ns")
     _exact_int(lease_monotonic_expiry, field_name="lease_expires_monotonic_ns")
     token = uuid.uuid4().hex
+    normalized_authorized: dict[str, str] | None = None
+    if authorized_intents is not None:
+        if not isinstance(authorized_intents, Mapping):
+            raise SpoolValidationError("authorized_intents_must_be_mapping")
+        normalized_authorized = {}
+        for raw_intent_id, raw_payload_sha256 in authorized_intents.items():
+            intent_id = _required_text(
+                raw_intent_id,
+                field_name="authorized_intent_id",
+                max_bytes=512,
+            )
+            payload_sha256 = _required_text(
+                raw_payload_sha256,
+                field_name="authorized_payload_sha256",
+                max_bytes=64,
+            ).lower()
+            if _SHA256_RE.fullmatch(payload_sha256) is None:
+                raise SpoolValidationError(
+                    "authorized_payload_sha256_invalid"
+                )
+            normalized_authorized[intent_id] = payload_sha256
+
+    def row_is_authorized(row: sqlite3.Row) -> bool:
+        return bool(
+            normalized_authorized is None
+            or normalized_authorized.get(str(row["intent_id"]))
+            == str(row["payload_sha256"])
+        )
 
     with _write_transaction(connection):
         _expire_due_locked(
@@ -1602,11 +1631,15 @@ def lease_next(
             now_monotonic_ns=normalized_monotonic,
             clock_domain_id=normalized_domain,
         )
-        row = connection.execute(
+        close_rows = connection.execute(
             "SELECT * FROM intents WHERE state='ready' AND intent_kind='close' "
             "AND spool_committed_json<>'' "
-            "ORDER BY spool_sequence LIMIT 1"
-        ).fetchone()
+            "ORDER BY spool_sequence"
+        ).fetchall()
+        row = next(
+            (candidate for candidate in close_rows if row_is_authorized(candidate)),
+            None,
+        )
         if row is None:
             placeholders = ",".join("?" for _ in OUTSTANDING_CLOSE_STATES)
             outstanding = connection.execute(
@@ -1616,11 +1649,15 @@ def lease_next(
             ).fetchone()
             if outstanding is not None:
                 return None
-            row = connection.execute(
+            open_rows = connection.execute(
                 "SELECT * FROM intents WHERE state='ready' AND intent_kind='open' "
                 "AND spool_committed_json<>'' "
-                "ORDER BY spool_sequence LIMIT 1"
-            ).fetchone()
+                "ORDER BY spool_sequence"
+            ).fetchall()
+            row = next(
+                (candidate for candidate in open_rows if row_is_authorized(candidate)),
+                None,
+            )
         if row is None:
             return None
         dequeued_json = row["executor_dequeued_json"] or _validated_trace_observation_json(

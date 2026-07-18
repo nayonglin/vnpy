@@ -551,6 +551,69 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             )
         )
 
+    def test_lease_filter_never_consumes_post_authorization_intent(self) -> None:
+        approved = self.intent("approved-open")
+        first_cursor = self.cursor(1)
+        self.commit([approved], next_cursor=first_cursor)
+        post_publish = self.intent("post-publish-open")
+        self.commit(
+            [post_publish],
+            expected=first_cursor,
+            next_cursor=self.cursor(2),
+        )
+
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+            authorized_intents={
+                "approved-open": str(approved["payload_sha256"]),
+            },
+        )
+
+        self.assertIsNotNone(lease)
+        self.assertEqual("approved-open", lease.intent.intent_id)
+        self.assertIsNone(
+            spool.lease_next(
+                self.connection,
+                owner_id="executor-a",
+                now_epoch_ns=201,
+                now_monotonic_ns=201,
+                clock_domain_id="boot-a",
+                lease_seconds=5,
+                authorized_intents={
+                    "approved-open": str(approved["payload_sha256"]),
+                },
+            )
+        )
+        state = self.connection.execute(
+            "SELECT state FROM intents WHERE intent_id='post-publish-open'"
+        ).fetchone()["state"]
+        self.assertEqual("ready", state)
+
+    def test_lease_filter_requires_exact_payload_hash(self) -> None:
+        approved = self.intent("approved-open")
+        self.commit([approved])
+
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+            authorized_intents={"approved-open": "f" * 64},
+        )
+
+        self.assertIsNone(lease)
+        state = self.connection.execute(
+            "SELECT state FROM intents WHERE intent_id='approved-open'"
+        ).fetchone()["state"]
+        self.assertEqual("ready", state)
+
     def test_exact_deadline_expires_open_and_blocks_close_critical(self) -> None:
         self.commit(
             [
