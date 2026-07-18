@@ -330,6 +330,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         publish_submit_authorization(
             path=authorization_path,
             target_date="2026-07-18",
+            execution_profile="c9-15w-historical",
             runtime_profile="simnow",
             order_scope="test",
             service_generation=session.service_generation,

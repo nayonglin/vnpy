@@ -29,6 +29,7 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         values: dict[str, object] = {
             "path": self.path,
             "target_date": "2026-07-18",
+            "execution_profile": "stage372-20w",
             "runtime_profile": "simnow",
             "order_scope": "test",
             "service_generation": "service-1",
@@ -74,6 +75,7 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         values: dict[str, object] = {
             "path": self.path,
             "target_date": "2026-07-18",
+            "execution_profile": "stage372-20w",
             "runtime_profile": "simnow",
             "order_scope": "test",
             "service_generation": "service-1",
@@ -95,6 +97,10 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         self.assertIn(
             "stage179_submit_authorization_connection_generation_mismatch",
             self.validate(connection_generation="connection-2"),
+        )
+        self.assertIn(
+            "stage179_submit_authorization_execution_profile_mismatch",
+            self.validate(execution_profile="c9-15w-historical"),
         )
 
     def test_authorization_binds_exact_intent_and_payload_identity(self) -> None:

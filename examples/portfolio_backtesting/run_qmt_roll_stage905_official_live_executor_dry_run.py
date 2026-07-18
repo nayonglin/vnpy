@@ -1346,6 +1346,12 @@ def _validate_intent(
             "intent_id": _clean(intent.get("intent_id")),
             "source": source,
             "target_date": _clean(intent.get("target_date")),
+            "execution_profile": _clean(intent.get("execution_profile")),
+            "official_live_version": _clean(
+                intent.get("official_live_version")
+            ),
+            "capital": _to_float(intent.get("capital"), 0.0),
+            "capital_label": _clean(intent.get("capital_label")),
             "monitor_run_id": _clean(intent.get("monitor_run_id")),
             "symbol": req.symbol,
             "exchange": req.exchange.value,
@@ -1632,6 +1638,12 @@ def run_executor_dry_run(
         + stage260_intents
         + _stage904_intents(stage904_actions)
     )
+    for row in raw_intents:
+        assert_intent_source_allowed(profile, row.get("source"))
+        row["execution_profile"] = profile.profile_key
+        row["official_live_version"] = profile.official_version
+        row["capital"] = profile.capital
+        row["capital_label"] = profile.capital_label
     intent_rows = [
         _validate_intent(
             row,

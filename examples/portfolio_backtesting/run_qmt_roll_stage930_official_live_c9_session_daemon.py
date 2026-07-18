@@ -2095,6 +2095,8 @@ def _run_stage931(
     stage_args = [
         "--target-date",
         target_date,
+        "--execution-profile",
+        _execution_profile_for_args(args).profile_key,
         "--mode",
         "live-real",
         "--confirm-live-real",
@@ -2187,6 +2189,8 @@ def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] |
         "--command",
         "serve",
         "--stage179-warm-executor",
+        "--execution-profile",
+        _execution_profile_for_args(args).profile_key,
         "--mode",
         "live-real" if args.submit_mode == "live-real" else "dry-run",
         "--runtime-profile",
@@ -2450,6 +2454,7 @@ def _publish_stage931_submit_authorization(
     payload = publish_submit_authorization(
         path=submit_authorization_path(runtime.output_root),
         target_date=target_date,
+        execution_profile=_execution_profile_for_args(args).profile_key,
         runtime_profile=runtime.profile.value,
         order_scope=runtime.order_scope.value,
         service_generation=service_generation,
@@ -2476,6 +2481,7 @@ def _publish_stage931_submit_authorization(
     validation_blockers = validate_submit_authorization(
         path=submit_authorization_path(runtime.output_root),
         target_date=target_date,
+        execution_profile=_execution_profile_for_args(args).profile_key,
         runtime_profile=runtime.profile.value,
         order_scope=runtime.order_scope.value,
         service_generation=service_generation,

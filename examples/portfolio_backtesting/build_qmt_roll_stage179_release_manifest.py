@@ -19,11 +19,16 @@ from qmt_roll_official_live_release_manifest import (
     write_release_manifest,
 )
 from qmt_roll_official_live_runtime_profile import ExecutionRuntimeProfile
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    resolve_execution_profile,
+)
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PROJECT_DIR.parent.parent
 DEFAULT_CRITICAL_FILES = (
+    "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
@@ -46,6 +51,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
     "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
     "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
@@ -65,7 +71,12 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
     "tests/stage179_performance_gate.py",
     "tests/test_stage179_fault_matrix.py",
+    "tests/test_stage179_official_execution_profile.py",
     "tests/test_stage179_performance_gate_diagnostics.py",
+    "tests/test_stage179_stage260_execution_profile.py",
+    "tests/test_stage179_stage372_daemon_boundary.py",
+    "tests/test_stage179_stage372_daily_intents.py",
+    "tests/test_stage179_stage372_submit_boundary.py",
     "tests/test_stage179_submit_authorization.py",
     "tests/test_stage179_two_executor_process_race.py",
     "tests/test_stage930_fast_lane.py",
@@ -205,11 +216,20 @@ def main() -> None:
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release-id", required=True)
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--critical-file", action="append", default=[])
     args = parser.parse_args()
+    profile = resolve_execution_profile(args.execution_profile)
     payload = build_release_manifest_file(
         output_path=args.output,
         release_id=args.release_id,
+        official_version=profile.official_version,
+        capital=profile.capital,
+        capital_label=profile.capital_label,
         critical_files=args.critical_file or DEFAULT_CRITICAL_FILES,
     )
     print(payload["manifest_sha256"])

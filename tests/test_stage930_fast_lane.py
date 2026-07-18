@@ -323,6 +323,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                 blockers = validate_submit_authorization(
                     path=result["authorization_path"],
                     target_date="2026-07-16",
+                    execution_profile="c9-15w-historical",
                     runtime_profile="simnow",
                     order_scope="test",
                     service_generation="service-1",
@@ -400,6 +401,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                 blocker = validate_submit_authorization(
                     path=result["authorization_path"],
                     target_date="2026-07-16",
+                    execution_profile="c9-15w-historical",
                     runtime_profile="simnow",
                     order_scope="test",
                     service_generation="service-1",

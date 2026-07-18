@@ -20,11 +20,11 @@ from typing import Any
 
 import pandas as pd
 
-from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CAPITAL,
-    OFFICIAL_LIVE_CAPITAL_LABEL,
-    OFFICIAL_LIVE_VERSION,
+from qmt_roll_official_execution_profile import (
+    C9_15W_HISTORICAL_PROFILE,
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
 )
 from qmt_roll_official_live_execution_ledger import (
     append_execution_ledger_event,
@@ -3396,6 +3396,22 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
             blockers.append(f"stage905_order_payload_intent_id_mismatch:{label}")
         if _artifact_text(payload.get("source")) != source:
             blockers.append(f"stage905_order_payload_source_mismatch:{label}")
+        for key in (
+            "execution_profile",
+            "official_live_version",
+            "capital_label",
+        ):
+            if _artifact_text(payload.get(key)) != _artifact_text(row.get(key)):
+                blockers.append(
+                    f"stage905_order_payload_{key}_mismatch:{label}"
+                )
+        payload_capital = _artifact_text(payload.get("capital"))
+        row_capital = _artifact_text(row.get("capital"))
+        if (payload_capital or row_capital) and abs(
+            _to_float(payload_capital, -1.0)
+            - _to_float(row_capital, -2.0)
+        ) > 1e-9:
+            blockers.append(f"stage905_order_payload_capital_mismatch:{label}")
         if _artifact_text(payload.get("target_date")) != _artifact_text(
             row.get("target_date")
         ):
@@ -3475,6 +3491,20 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
         elif source == "stage901_pending_order":
             if row_offset == "open" and role != "c9_initial_open":
                 blockers.append(f"stage905_initial_open_source_role_mismatch:{label}")
+        elif source == "stage260_stage372_daily":
+            if role or any(
+                _artifact_text(row.get(key))
+                for key in (
+                    "root_position_id",
+                    "position_cycle_id",
+                    "position_epoch_id",
+                    "action_id",
+                    "monitor_run_id",
+                )
+            ):
+                blockers.append(
+                    f"stage905_stage372_c9_metadata_forbidden:{label}"
+                )
         else:
             blockers.append(f"stage905_ready_intent_source_unknown:{label}:{source}")
 
@@ -3523,6 +3553,68 @@ def _artifact_text(value: Any) -> str:
     except (TypeError, ValueError):
         return ""
     return str(value).strip()
+
+
+def _execution_profile_intent_blockers(
+    profile: OfficialExecutionProfile,
+    row: Mapping[str, Any],
+) -> list[str]:
+    blockers: list[str] = []
+    if _artifact_text(row.get("execution_profile")) != profile.profile_key:
+        blockers.append("execution_profile_mismatch")
+    if _artifact_text(row.get("official_live_version")) != profile.official_version:
+        blockers.append("execution_profile_version_mismatch")
+    if abs(_to_float(row.get("capital"), -1.0) - profile.capital) > 1e-9:
+        blockers.append("execution_profile_capital_mismatch")
+    if _artifact_text(row.get("capital_label")) != profile.capital_label:
+        blockers.append("execution_profile_capital_label_mismatch")
+    source = _artifact_text(row.get("source"))
+    if source not in profile.allowed_intent_sources:
+        blockers.append("intent_source_not_allowed_for_execution_profile")
+    if not profile.intraday_stop_retry_enabled:
+        c9_metadata = (
+            source.startswith("stage904_c9_intraday_")
+            or _artifact_text(row.get("intent_role")).startswith("c9_")
+            or any(
+                _artifact_text(row.get(key))
+                for key in (
+                    "root_position_id",
+                    "position_cycle_id",
+                    "position_epoch_id",
+                    "parent_position_cycle_id",
+                    "action_id",
+                    "monitor_run_id",
+                )
+            )
+        )
+        if c9_metadata:
+            blockers.append("stage372_c9_intent_metadata_forbidden")
+    return list(dict.fromkeys(blockers))
+
+
+def _stage905_execution_profile_blockers(
+    profile: OfficialExecutionProfile,
+    intents: pd.DataFrame,
+) -> list[str]:
+    if intents.empty:
+        return []
+    statuses = intents.get(
+        "executor_status",
+        pd.Series([""] * len(intents), index=intents.index),
+    ).fillna("").astype(str)
+    blockers: list[str] = []
+    for index, row in intents[statuses.eq(
+        "dry_run_order_request_payload_ready"
+    )].iterrows():
+        label = _artifact_text(row.get("intent_id")) or str(index)
+        blockers.extend(
+            f"{blocker}:{label}"
+            for blocker in _execution_profile_intent_blockers(
+                profile,
+                row.to_dict(),
+            )
+        )
+    return list(dict.fromkeys(blockers))
 
 
 def _pre_reserved_child_intent_blockers(
@@ -4929,6 +5021,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Run one backward-compatible cold cycle or the Stage179 warm executor.",
     )
     parser.add_argument("--target-date", default="")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument(
@@ -5006,7 +5103,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
+def _execution_profile_for_args(
+    args: argparse.Namespace,
+) -> OfficialExecutionProfile:
+    """Resolve explicit CLI identity; preserve legacy unit fixtures as C9."""
+
+    return resolve_execution_profile(
+        getattr(
+            args,
+            "execution_profile",
+            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+        )
+    )
+
+
 def run_once(args: argparse.Namespace) -> dict[str, Any]:
+    execution_profile = _execution_profile_for_args(args)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)
     stage905_intents = _stage905_intents(args.target_date)
@@ -5078,6 +5190,23 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     }
 
     blockers: list[str] = []
+    blockers.extend(
+        _stage905_execution_profile_blockers(
+            execution_profile,
+            stage905_intents,
+        )
+    )
+    if _artifact_text(stage905.get("execution_profile")) != execution_profile.profile_key:
+        blockers.append("stage905_summary_execution_profile_mismatch")
+    if _artifact_text(stage905.get("official_live_version")) != execution_profile.official_version:
+        blockers.append("stage905_summary_official_version_mismatch")
+    if abs(
+        _to_float(stage905.get("capital"), -1.0)
+        - execution_profile.capital
+    ) > 1e-9:
+        blockers.append("stage905_summary_capital_mismatch")
+    if _artifact_text(stage905.get("capital_label")) != execution_profile.capital_label:
+        blockers.append("stage905_summary_capital_label_mismatch")
     if ready.empty:
         blockers.append("no_ready_stage905_intents")
     if ready_limit_blocker:
@@ -5169,9 +5298,9 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                 resolved=resolved_runtime,
                 release_manifest_path=args.stage179_release_manifest,
                 repo_root=resolved_runtime.repo_root,
-                expected_official_version=OFFICIAL_LIVE_VERSION,
-                expected_capital=OFFICIAL_LIVE_CAPITAL,
-                expected_capital_label=OFFICIAL_LIVE_CAPITAL_LABEL,
+                expected_official_version=execution_profile.official_version,
+                expected_capital=execution_profile.capital,
+                expected_capital_label=execution_profile.capital_label,
                 environment=os.environ,
                 confirmation=args.confirm_stage179_activation,
                 activation_receipt_path=(
@@ -6020,8 +6149,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "target_date": args.target_date,
         "mode": args.mode,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": execution_profile.profile_key,
+        "official_live_version": execution_profile.official_version,
+        "official_live_alias": execution_profile.alias,
+        "capital": execution_profile.capital,
+        "capital_label": execution_profile.capital_label,
         "adapter_status": adapter_status,
         "ready_intent_count": int(len(ready)),
         "unfiltered_ready_intent_count": unfiltered_ready_count,
@@ -6218,6 +6350,7 @@ def _build_stage179_warm_ctp_session(
 ) -> CtpExecutionSession:
     """Build the real warm backend only after the Task9 gate has passed."""
 
+    execution_profile = _execution_profile_for_args(args)
     service_generation = uuid.uuid4().hex
     state: dict[str, Any] = {
         "main_engine": None,
@@ -6256,6 +6389,7 @@ def _build_stage179_warm_ctp_session(
         return validate_submit_authorization(
             path=authorization_path,
             target_date=target_date,
+            execution_profile=execution_profile.profile_key,
             runtime_profile=runtime.profile.value,
             order_scope=runtime.order_scope.value,
             service_generation=service_generation,
@@ -6593,6 +6727,9 @@ def _build_stage179_warm_ctp_session(
             blockers.append("live_real_not_in_execution_session_before_api_slot")
         blockers.extend(_continuous_submit_blockers())
         row = dict(context.get("row", {}))
+        blockers.extend(
+            _execution_profile_intent_blockers(execution_profile, row)
+        )
         requests = list(context.get("requests", []))
         request = context.get("request")
         if request is None or not requests:
@@ -6822,8 +6959,8 @@ def _build_stage179_warm_ctp_session(
     return CtpExecutionSession.for_callbacks(
         runtime=runtime,
         service_generation=service_generation,
-        official_version=OFFICIAL_LIVE_VERSION,
-        capital=OFFICIAL_LIVE_CAPITAL,
+        official_version=execution_profile.official_version,
+        capital=execution_profile.capital,
         readiness_ttl_seconds=(
             build_phase_d_config().hard_limits.readiness_lease_ttl_seconds
         ),
@@ -6924,6 +7061,7 @@ def _serve_stage179_no_submit_prewarm(runtime: Any) -> int:
 def run_serve(args: argparse.Namespace) -> int:
     if not args.stage179_warm_executor:
         raise RuntimeProfileError("stage179_warm_executor_opt_in_missing")
+    execution_profile = _execution_profile_for_args(args)
     runtime = resolve_runtime_profile(
         profile=args.runtime_profile,
         order_scope=args.order_scope,
@@ -6985,9 +7123,9 @@ def run_serve(args: argparse.Namespace) -> int:
         resolved=runtime,
         release_manifest_path=args.stage179_release_manifest,
         repo_root=runtime.repo_root,
-        expected_official_version=OFFICIAL_LIVE_VERSION,
-        expected_capital=OFFICIAL_LIVE_CAPITAL,
-        expected_capital_label=OFFICIAL_LIVE_CAPITAL_LABEL,
+        expected_official_version=execution_profile.official_version,
+        expected_capital=execution_profile.capital,
+        expected_capital_label=execution_profile.capital_label,
         environment=environment,
         confirmation=args.confirm_stage179_activation,
         activation_receipt_path=(args.stage179_activation_receipt or None),

@@ -10,7 +10,7 @@ import tempfile
 from typing import Any
 
 
-SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 2
+SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 3
 SUBMIT_AUTHORIZATION_FILENAME = "stage179_submit_authorization.json"
 _INTENT_SCOPES = {"all", "reduce_close_only"}
 _INTENT_KINDS = {"open", "close"}
@@ -125,6 +125,7 @@ def publish_submit_authorization(
     *,
     path: str | Path,
     target_date: str,
+    execution_profile: str,
     runtime_profile: str,
     order_scope: str,
     service_generation: str,
@@ -145,6 +146,7 @@ def publish_submit_authorization(
         raise ValueError("stage179_submit_authorization_expiry_invalid")
     required_strings = {
         "target_date": target_date,
+        "execution_profile": execution_profile,
         "runtime_profile": runtime_profile,
         "order_scope": order_scope,
         "service_generation": service_generation,
@@ -253,6 +255,7 @@ def validate_submit_authorization(
     *,
     path: str | Path,
     target_date: str | None,
+    execution_profile: str,
     runtime_profile: str,
     order_scope: str,
     service_generation: str,
@@ -275,6 +278,7 @@ def validate_submit_authorization(
     if payload.get("status") != "authorized":
         blockers.append("stage179_submit_authorization_not_authorized")
     expected = {
+        "execution_profile": execution_profile,
         "runtime_profile": runtime_profile,
         "order_scope": order_scope,
         "service_generation": service_generation,
