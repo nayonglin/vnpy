@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T19:52:51.936952Z",
+  "created_at_utc": "2026-07-18T20:16:42.761909Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -174,8 +174,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
-      "sha256": "7d72ca8fe11c0e8808c07183f525f9bd45bfd5ec883e2cadcea3e76a99c4ece9",
-      "size_bytes": 86438
+      "sha256": "f1b8196701068ad8d869196bbced2c232c23d233a49caefaf72b54846da9ca08",
+      "size_bytes": 93163
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
@@ -239,8 +239,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
-      "sha256": "037ab71c7d8b5c8f9c6e7b6c20810e859ae64c97b98fa885bffce5a445e1bae2",
-      "size_bytes": 173726
+      "sha256": "c5de6bc726e73bf4afa9dc2d30588ebe6f2828aaeaba9bfd10945cc9e0e901e2",
+      "size_bytes": 174649
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -274,8 +274,8 @@
     },
     {
       "path": "tests/test_stage174_query_bundle.py",
-      "sha256": "9d94d718061a63f09d24fcb18acae4c88a4026dfcaf4170fdd92114a6bdee9fd",
-      "size_bytes": 29272
+      "sha256": "65cbaedd1510a343c6482c940d3e06b311a2228600217bb6dc4e29a8da52a040",
+      "size_bytes": 30229
     },
     {
       "path": "tests/test_stage179_fault_matrix.py",
@@ -344,8 +344,8 @@
     },
     {
       "path": "tests/test_stage930_fast_lane.py",
-      "sha256": "cd0fffe125abf061c0bf78e6d5786bbb7a2f50dd6e60b703adcf6476e7dc73c1",
-      "size_bytes": 97926
+      "sha256": "a1ca7cc2224fa5f4a9e6be784260efdcab23dc6ef3889366ec05a50bb426f46b",
+      "size_bytes": 99638
     }
   ],
   "execution_profile": "stage372-20w",
@@ -364,14 +364,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "386a0c2185a548d18b590990a961a8fb9ad101bb3f6b27213d04f4e4e9f7a889",
+  "manifest_sha256": "139604c6a79eef321e0a270126895cafa7f96946caad904655521dc1f57dcecb",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-1695c9ffc",
+  "release_id": "stage179-stage372-readonly-84e618dad",
   "schema_version": 2,
-  "source_commit": "1695c9ffc2654670f0fb667f40bbeee88a64f406",
+  "source_commit": "84e618dadab52021057c0e1ca161ab62e9017927",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "9bb2c8d44c68db9e02642b4cd264a20f499ae310d866dbcd83128677d7b1ccab"
+  "tree_fingerprint": "87a848582f3a274328e78096546a0ced93b8a797938f4292b706705a4562cd61"
 }
