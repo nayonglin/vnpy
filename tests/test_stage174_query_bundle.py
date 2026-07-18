@@ -343,6 +343,8 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         )
         self.assertEqual("sent", FakeTdApi().send_order(object()))
         self.assertEqual(["gateway_send"], calls)
+        self.assertNotIn("send_order", FakeTdApi.__dict__)
+        self.assertNotIn("cancel_order", FakeTdApi.__dict__)
 
     def test_dry_run_publishes_exact_zero_order_api_counters(self) -> None:
         result = stage174._run_probe(connect=False, wait_seconds=1)

@@ -2847,9 +2847,18 @@ def _write_auxiliary_outputs(
     _atomic_write_json(LATEST_HEARTBEAT_PATH, heartbeat)
 
 
-def _write_outputs(paths: dict[str, Path], summary: dict[str, Any]) -> None:
+def _write_outputs(
+    paths: dict[str, Path], summary: dict[str, Any]
+) -> list[str]:
+    summary["post_commit_output_errors"] = []
     _write_summary_commit_point(paths, summary)
-    _write_auxiliary_outputs(paths, summary)
+    errors: list[str] = []
+    try:
+        _write_auxiliary_outputs(paths, summary)
+    except Exception as exc:
+        errors.append(f"auxiliary_outputs:{type(exc).__name__}")
+    summary["post_commit_output_errors"] = errors
+    return errors
 
 
 def _append_event(path: Path, payload: dict[str, Any]) -> None:

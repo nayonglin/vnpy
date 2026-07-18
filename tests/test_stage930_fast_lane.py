@@ -501,6 +501,35 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(stage930.LATEST_SUMMARY_PATH, writes[0])
 
+    def test_write_outputs_only_treats_canonical_failure_as_fatal(self) -> None:
+        summary: dict[str, object] = {"run_id": "run-1"}
+
+        with (
+            patch.object(stage930, "_write_summary_commit_point") as canonical,
+            patch.object(
+                stage930,
+                "_write_auxiliary_outputs",
+                side_effect=OSError("simulated auxiliary failure"),
+            ),
+        ):
+            errors = stage930._write_outputs({}, summary)
+
+        canonical.assert_called_once_with({}, summary)
+        self.assertEqual(["auxiliary_outputs:OSError"], errors)
+        self.assertEqual(errors, summary["post_commit_output_errors"])
+
+        with (
+            patch.object(
+                stage930,
+                "_write_summary_commit_point",
+                side_effect=OSError("simulated canonical failure"),
+            ),
+            patch.object(stage930, "_write_auxiliary_outputs") as auxiliary,
+        ):
+            with self.assertRaisesRegex(OSError, "simulated canonical failure"):
+                stage930._write_outputs({}, {})
+        auxiliary.assert_not_called()
+
     def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
         missing = stage930._missing_order_api_evidence_fields(
             stage903_result={

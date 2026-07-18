@@ -147,20 +147,26 @@ def _install_readonly_order_api_firewall(
     counters: dict[str, int],
     state_lock: Any | None = None,
     evidence_window: dict[str, Any] | None = None,
-) -> dict[tuple[type, str], Any]:
+) -> dict[tuple[type, str], tuple[bool, Any]]:
     """Block every order mutation at both vn.py CTP boundaries.
 
     Attempted calls are counted, but the original API is never invoked.  The
     separate called counters therefore remain authoritative exact zeros.
     """
-    originals: dict[tuple[type, str], Any] = {}
+    originals: dict[tuple[type, str], tuple[bool, Any]] = {}
     for owner in (gateway_class, td_api_class):
         for method_name in ("send_order", "cancel_order"):
-            originals[(owner, method_name)] = getattr(owner, method_name)
+            originals[(owner, method_name)] = (
+                method_name in owner.__dict__,
+                getattr(owner, method_name),
+            )
     for method_name in NATIVE_CTP_MUTATION_METHODS:
         original = getattr(td_api_class, method_name, None)
         if original is not None:
-            originals[(td_api_class, method_name)] = original
+            originals[(td_api_class, method_name)] = (
+                method_name in td_api_class.__dict__,
+                original,
+            )
 
     for owner in (gateway_class, td_api_class):
         for method_name, counter_name in (
@@ -212,10 +218,13 @@ def _install_readonly_order_api_firewall(
 def _restore_readonly_order_api_firewall(
     gateway_class: type,
     td_api_class: type,
-    originals: dict[tuple[type, str], Any],
+    originals: dict[tuple[type, str], tuple[bool, Any]],
 ) -> None:
-    for (owner, method_name), original in originals.items():
-        setattr(owner, method_name, original)
+    for (owner, method_name), (was_owned, original) in originals.items():
+        if was_owned:
+            setattr(owner, method_name, original)
+        elif method_name in owner.__dict__:
+            delattr(owner, method_name)
 
 
 def _publish_order_api_counters(
