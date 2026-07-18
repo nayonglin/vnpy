@@ -415,3 +415,12 @@
 - TODO：记录并择期修复 3 个 P2；补齐 performance provenance；在不替换旧线上进程的独立 runtime 做 0/0 验收；只有另行授权后才允许 SimNow/券商测试环境报单。
 - 是否更新 `LINE.md/registry.md`：否；同线 stage 记录已收口，待环境验收后由合入者统一更新。
 - 是否追加根目录 `memory.md/back_log.md`：否；尚未完成生产激活，不应记为正式实盘突破。
+
+### 2026-07-18 22:45 CST Stage372 20万离线映射审计
+
+- 按 `AGENTS.md` 的新默认口径复核 Git 历史：提交 `3ebcac125` 中存在完整 Stage372 配置，版本 `official_live_stage372_20w_recovery_sleeve`、资金 `200,000`、profile `stage526_200k_force95_to80_recovery_sleeve_r080_pc25_maxpos4`，并带 recovery sleeve overrides。
+- 当前 Stage179 候选不是纯 transport patch：Stage904/905/930/931 同时承载 C9 专属 `0.5R` 止损与最多一次重进场语义。直接把当前 official config 切回 Stage372 后启动整条 Stage179 链，会把 C9 日内规则暗中叠加到 Stage372，属于未回测、未授权的策略语义变更。
+- 决策：不自动恢复 official config、不修改 Stage372 alpha、不生成新的 20万 manifest。通用的 ingress 时间因果、durable tick stream、cycle authorization 基础设施和 launchd `ProcessType` 可以合入代码；C9 Stage904/905/930/931 自动止损重进场必须保持 dormant，不能称为 Stage372 实盘已启用。
+- 后续若要让 Stage372 使用同等可靠性层，应另建 Stage372 execution adapter，只复用 transport/ledger/authorization，不复用 C9 intraday state machine；完成独立契约测试、0/0 CTP 与 canary 后再讨论激活。
+- 过拟合判断：否；本次只做版本/语义边界审计。
+- 继续价值判断：是；该拆分避免用“解决口径冲突”为名无意改变正式策略。
