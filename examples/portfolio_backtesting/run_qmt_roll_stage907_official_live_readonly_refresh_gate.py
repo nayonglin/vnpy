@@ -49,6 +49,36 @@ def _env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+def _readonly_order_api_evidence(summary: dict[str, Any]) -> dict[str, Any]:
+    fields = (
+        "send_order_api_attempted_count",
+        "cancel_order_api_attempted_count",
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    missing = [
+        field
+        for field in fields
+        if type(summary.get(field)) is not int
+        or int(summary[field]) < 0
+    ]
+    nonzero = [
+        field
+        for field in fields
+        if field not in missing and int(summary[field]) != 0
+    ]
+    return {
+        "complete": not missing and not nonzero,
+        "missing_fields": missing,
+        "nonzero_fields": nonzero,
+        **{
+            field: summary.get(field) if field not in missing else None
+            for field in fields
+        },
+    }
+
+
 def _check_row(
     rows: list[dict[str, Any]],
     *,
@@ -308,9 +338,24 @@ def main() -> None:
         paths["command_log"].write_text("", encoding="utf-8")
 
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
+    order_api_evidence = _readonly_order_api_evidence(readonly_summary)
+    _check_row(
+        checks,
+        check="readonly_order_api_exact_zero_evidence",
+        passed=bool(order_api_evidence["complete"]),
+        severity="block",
+        observed=(
+            f"missing={order_api_evidence['missing_fields']};"
+            f"nonzero={order_api_evidence['nonzero_fields']}"
+        ),
+        required="Stage174 gateway and TD API attempted/called counters are exact integer 0/0",
+        blocker="readonly_order_api_evidence_incomplete_or_nonzero",
+    )
+    checks_df = pd.DataFrame(checks)
+    blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
     broker_snapshot = readonly_summary.get("broker_snapshot", {}) if isinstance(readonly_summary.get("broker_snapshot"), dict) else {}
     position_state = str(broker_snapshot.get("position_snapshot_state", ""))
-    readonly_ready = readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
+    readonly_ready = bool(order_api_evidence["complete"]) and readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
         "confirmed_flat",
         "positions_received",
     }
@@ -338,7 +383,19 @@ def main() -> None:
         "position_snapshot_state_after": position_state,
         "command_exit_code": command_result.get("exit_code", ""),
         "blocking_failure_count": int(len(blocking)),
-        "order_api_called_count": 0,
+        "send_order_api_attempted_count": order_api_evidence.get("send_order_api_attempted_count"),
+        "cancel_order_api_attempted_count": order_api_evidence.get("cancel_order_api_attempted_count"),
+        "send_order_api_called_count": order_api_evidence.get("send_order_api_called_count"),
+        "cancel_order_api_called_count": order_api_evidence.get("cancel_order_api_called_count"),
+        "order_api_called_count": order_api_evidence.get("order_api_called_count"),
+        "order_api_evidence_complete": int(bool(order_api_evidence["complete"])),
+        "order_api_evidence_missing_fields": order_api_evidence["missing_fields"],
+        "order_api_evidence_nonzero_fields": order_api_evidence["nonzero_fields"],
+        "connection_lifecycle": (
+            readonly_summary.get("connection_lifecycle")
+            if isinstance(readonly_summary.get("connection_lifecycle"), dict)
+            else {}
+        ),
         "sanitized_command_plan": command_plan,
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {

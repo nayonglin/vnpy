@@ -209,6 +209,69 @@ def _to_int(value: Any, default: int = 0) -> int:
     return int(number)
 
 
+def _aggregate_order_api_evidence(
+    stage907_result: dict[str, Any],
+    stage905_result: dict[str, Any],
+) -> dict[str, Any]:
+    sources = {
+        "stage907": stage907_result.get("summary"),
+        "stage905": stage905_result.get("summary"),
+    }
+    required = {
+        "stage907": (
+            "send_order_api_attempted_count",
+            "cancel_order_api_attempted_count",
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        ),
+        "stage905": (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        ),
+    }
+    missing: list[str] = []
+    for label, fields in required.items():
+        summary = sources[label]
+        if not isinstance(summary, dict):
+            summary = {}
+        for field in fields:
+            value = summary.get(field)
+            if type(value) is not int or value < 0:
+                missing.append(f"{label}.summary.{field}")
+        send = summary.get("send_order_api_called_count")
+        cancel = summary.get("cancel_order_api_called_count")
+        total = summary.get("order_api_called_count")
+        if all(type(value) is int and value >= 0 for value in (send, cancel, total)):
+            if total != send + cancel:
+                missing.append(f"{label}.summary.order_api_called_count_inconsistent")
+    stage907_summary = sources["stage907"] if isinstance(sources["stage907"], dict) else {}
+    if stage907_summary.get("order_api_evidence_complete") != 1:
+        missing.append("stage907.summary.order_api_evidence_complete")
+
+    def count(label: str, field: str) -> int:
+        summary = sources[label]
+        value = summary.get(field) if isinstance(summary, dict) else None
+        return value if type(value) is int and value >= 0 else 0
+
+    send = sum(count(label, "send_order_api_called_count") for label in sources)
+    cancel = sum(count(label, "cancel_order_api_called_count") for label in sources)
+    return {
+        "send_order_api_attempted_count": count(
+            "stage907", "send_order_api_attempted_count"
+        ),
+        "cancel_order_api_attempted_count": count(
+            "stage907", "cancel_order_api_attempted_count"
+        ),
+        "send_order_api_called_count": send,
+        "cancel_order_api_called_count": cancel,
+        "order_api_called_count": send + cancel,
+        "order_api_evidence_complete": int(not missing),
+        "order_api_evidence_missing_fields": missing,
+    }
+
+
 def _clean(value: Any) -> str:
     if value is None:
         return ""
@@ -1659,7 +1722,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         current_sessions=sessions,
     )
     controller_status = _controller_status(args.mode, kill_active, stage902_result, plan)
-    order_api_called = int(plan["order_api_called"].sum()) if not plan.empty else 0
+    plan_order_api_called = int(plan["order_api_called"].sum()) if not plan.empty else 0
+    order_api_evidence = _aggregate_order_api_evidence(
+        stage907_result,
+        stage905_result,
+    )
     current_session_names = ",".join(row["name"] for row in sessions) if sessions else ""
 
     summary = {
@@ -1703,6 +1770,9 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage907_env_profile": stage907_result.get("summary", {}).get("env_profile", ""),
         "stage907_readonly_status_after": stage907_result.get("summary", {}).get("readonly_status_after", ""),
         "stage907_position_snapshot_state_after": stage907_result.get("summary", {}).get("position_snapshot_state_after", ""),
+        "stage907_connection_lifecycle": stage907_result.get("summary", {}).get(
+            "connection_lifecycle", {}
+        ),
         "stage907_requested_refresh_mode": args.readonly_refresh_mode,
         "stage907_effective_refresh_mode": effective_readonly_refresh_mode,
         "stage907_readonly_age_seconds_before_refresh": readonly_age,
@@ -1735,8 +1805,12 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage905_executor_status": stage905_result.get("summary", {}).get("executor_status", ""),
         "stage905_ready_count": stage905_result.get("summary", {}).get("ready_count", 0),
         "stage905_blocked_count": stage905_result.get("summary", {}).get("blocked_count", 0),
-        "send_order_api_called_count": stage905_result.get("summary", {}).get("send_order_api_called_count", ""),
-        "cancel_order_api_called_count": stage905_result.get("summary", {}).get("cancel_order_api_called_count", ""),
+        "send_order_api_attempted_count": order_api_evidence["send_order_api_attempted_count"],
+        "cancel_order_api_attempted_count": order_api_evidence["cancel_order_api_attempted_count"],
+        "send_order_api_called_count": order_api_evidence["send_order_api_called_count"],
+        "cancel_order_api_called_count": order_api_evidence["cancel_order_api_called_count"],
+        "order_api_evidence_complete": order_api_evidence["order_api_evidence_complete"],
+        "order_api_evidence_missing_fields": order_api_evidence["order_api_evidence_missing_fields"],
         "stage906_exit_code": stage906_result.get("exit_code"),
         "stage906_reconciliation_status": stage906_result.get("summary", {}).get("reconciliation_status", ""),
         "stage906_account_state_alignment": stage906_result.get("summary", {}).get("account_state_alignment", ""),
@@ -1752,7 +1826,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage924_exit_code": stage924_result.get("exit_code"),
         "stage924_recovery_status": stage924_result.get("summary", {}).get("recovery_status", ""),
         "stage924_operator_action_required": stage924_result.get("summary", {}).get("operator_action_required", ""),
-        "order_api_called_count": order_api_called,
+        "order_api_called_count": order_api_evidence["order_api_called_count"],
+        "plan_order_api_called_count": plan_order_api_called,
         "env_gates": {
             PHASE_D_SESSION_DAEMON_ENV: _env_enabled(PHASE_D_SESSION_DAEMON_ENV),
             PHASE_D_REAL_ADAPTER_ENV: _env_enabled(PHASE_D_REAL_ADAPTER_ENV),
@@ -1799,7 +1874,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "target_date_mode": args.target_date_mode,
         "target_date_source": target_date_source,
         "current_session_names": current_session_names,
-        "order_api_called_count": order_api_called,
+        "order_api_called_count": order_api_evidence["order_api_called_count"],
         "kill_switch_active": kill_active,
         "watched_symbols": symbols,
         "summary_path": str(paths["summary_json"].resolve()),
@@ -1818,7 +1893,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                 "run_id": run_id,
                 "controller_status": controller_status,
                 "target_date": target_date,
-                "order_api_called_count": order_api_called,
+                "order_api_called_count": order_api_evidence["order_api_called_count"],
                 "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             },
             *[

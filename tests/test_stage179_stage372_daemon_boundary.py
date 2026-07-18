@@ -25,6 +25,50 @@ import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930
 
 
 class Stage372DaemonBoundaryTest(unittest.TestCase):
+    def test_stage903_order_api_evidence_includes_stage174_via_stage907(self) -> None:
+        evidence = stage903._aggregate_order_api_evidence(
+            {
+                "summary": {
+                    "order_api_evidence_complete": 1,
+                    "send_order_api_attempted_count": 0,
+                    "cancel_order_api_attempted_count": 0,
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                    "order_api_called_count": 0,
+                }
+            },
+            {
+                "summary": {
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                    "order_api_called_count": 0,
+                }
+            },
+        )
+
+        self.assertEqual(1, evidence["order_api_evidence_complete"])
+        self.assertEqual([], evidence["order_api_evidence_missing_fields"])
+        self.assertEqual(0, evidence["send_order_api_called_count"])
+        self.assertEqual(0, evidence["cancel_order_api_called_count"])
+
+    def test_stage903_order_api_evidence_fails_closed_when_stage907_missing(self) -> None:
+        evidence = stage903._aggregate_order_api_evidence(
+            {"summary": {"order_api_evidence_complete": 1}},
+            {
+                "summary": {
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                    "order_api_called_count": 0,
+                }
+            },
+        )
+
+        self.assertEqual(0, evidence["order_api_evidence_complete"])
+        self.assertIn(
+            "stage907.summary.send_order_api_called_count",
+            evidence["order_api_evidence_missing_fields"],
+        )
+
     def test_stage372_controller_never_runs_stage904(self) -> None:
         with patch.object(
             stage903,

@@ -2330,6 +2330,34 @@ def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] |
     return _STAGE931_SERVICE_PROCESS
 
 
+def _no_submit_prewarm_order_evidence(readiness: dict[str, Any]) -> dict[str, Any]:
+    required_zero_fields = (
+        "spool_opened",
+        "ctp_module_loaded",
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    missing = [
+        field
+        for field in required_zero_fields
+        if type(readiness.get(field)) is not int or readiness.get(field) != 0
+    ]
+    if readiness.get("service_kind") != "no_submit_prewarm":
+        missing.append("service_kind")
+    return {
+        "complete": int(not missing),
+        "missing_fields": missing,
+        "send_order_api_called_count": readiness.get(
+            "send_order_api_called_count"
+        ),
+        "cancel_order_api_called_count": readiness.get(
+            "cancel_order_api_called_count"
+        ),
+        "order_api_called_count": readiness.get("order_api_called_count"),
+    }
+
+
 def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
     process = _STAGE931_SERVICE_PROCESS
     runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
@@ -2349,6 +2377,9 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("stage931_warm_readiness_expired")
     if _clean(readiness.get("runtime_profile")) != runtime.profile.value:
         blockers.append("stage931_warm_readiness_profile_mismatch")
+    no_submit_evidence = _no_submit_prewarm_order_evidence(readiness)
+    if args.submit_mode != "live-real" and not no_submit_evidence["complete"]:
+        blockers.append("stage931_no_submit_order_evidence_incomplete")
     return {
         "submit_status": (
             (
@@ -2366,9 +2397,19 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         "readiness": readiness,
         "blockers": blockers,
         "summary": {
-            "order_api_called_count": 0,
-            "send_order_api_called_count": 0,
-            "cancel_order_api_called_count": 0,
+            "order_api_called_count": no_submit_evidence[
+                "order_api_called_count"
+            ],
+            "send_order_api_called_count": no_submit_evidence[
+                "send_order_api_called_count"
+            ],
+            "cancel_order_api_called_count": no_submit_evidence[
+                "cancel_order_api_called_count"
+            ],
+            "order_api_evidence_complete": no_submit_evidence["complete"],
+            "order_api_evidence_missing_fields": no_submit_evidence[
+                "missing_fields"
+            ],
         },
     }
 
@@ -3159,6 +3200,14 @@ def _stage931_submit_blockers(
 
 
 def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
+    if (
+        tick_result.get("refresh_status") != "tick_stream_ready"
+        or tick_result.get("transport_ready") != 1
+        or tick_result.get("stream_ready") != 1
+        or tick_result.get("all_symbols_ready") != 1
+        or tick_result.get("heartbeat_pid_matches_process") != 1
+    ):
+        return None
     summary = tick_result.get("summary")
     if not isinstance(summary, dict):
         return None
@@ -3187,26 +3236,26 @@ def _tick_result_durable_epoch_ns(tick_result: dict[str, Any]) -> int | None:
 
 def _session_timing_evidence(cycles: list[dict[str, Any]]) -> dict[str, int | None]:
     for cycle in cycles:
-        ingress = cycle.get("first_market_tick_ingress_epoch_ns")
+        ingress = cycle.get("open_minute_tick_ingress_epoch_ns")
         if type(ingress) is not int or ingress <= 0:
             continue
         return {
-            "first_market_tick_ingress_epoch_ns": ingress,
-            "first_market_tick_cycle_started_epoch_ns": cycle.get(
+            "open_minute_tick_ingress_epoch_ns": ingress,
+            "open_minute_tick_cycle_started_epoch_ns": cycle.get(
                 "cycle_started_epoch_ns"
             ),
-            "first_market_tick_durable_epoch_ns": cycle.get(
-                "first_market_tick_durable_epoch_ns"
+            "open_minute_tick_durable_epoch_ns": cycle.get(
+                "open_minute_tick_durable_epoch_ns"
             ),
-            "first_market_tick_cycle_finished_epoch_ns": cycle.get(
+            "open_minute_tick_cycle_finished_epoch_ns": cycle.get(
                 "cycle_finished_epoch_ns"
             ),
         }
     return {
-        "first_market_tick_ingress_epoch_ns": None,
-        "first_market_tick_cycle_started_epoch_ns": None,
-        "first_market_tick_durable_epoch_ns": None,
-        "first_market_tick_cycle_finished_epoch_ns": None,
+        "open_minute_tick_ingress_epoch_ns": None,
+        "open_minute_tick_cycle_started_epoch_ns": None,
+        "open_minute_tick_durable_epoch_ns": None,
+        "open_minute_tick_cycle_finished_epoch_ns": None,
     }
 
 
@@ -3261,6 +3310,20 @@ def _missing_order_api_evidence_fields(
             value = summary.get(field)
             if type(value) is not int or value < 0:
                 missing.append(f"{label}.summary.{field}")
+        if label == "stage903":
+            for field in (
+                "send_order_api_attempted_count",
+                "cancel_order_api_attempted_count",
+            ):
+                value = summary.get(field)
+                if type(value) is not int or value != 0:
+                    missing.append(f"{label}.summary.{field}")
+            if summary.get("order_api_evidence_complete") != 1:
+                missing.append(f"{label}.summary.order_api_evidence_complete")
+        elif label == "stage931" and summary.get(
+            "order_api_evidence_complete"
+        ) != 1:
+            missing.append(f"{label}.summary.order_api_evidence_complete")
     for label, result in (
         ("stage903", stage903_result),
         ("stage927", stage927_result),
@@ -3430,10 +3493,10 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         + _to_int(post_submit_reduce_close.get("summary", {}).get("cancel_order_api_called_count"), 0)
     )
     cycle_finished_epoch_ns = time.time_ns()
-    first_market_tick_ingress_epoch_ns = _tick_result_ingress_epoch_ns(
+    open_minute_tick_ingress_epoch_ns = _tick_result_ingress_epoch_ns(
         tick_result
     )
-    first_market_tick_durable_epoch_ns = _tick_result_durable_epoch_ns(
+    open_minute_tick_durable_epoch_ns = _tick_result_durable_epoch_ns(
         tick_result
     )
     order_api_evidence_missing_fields = _missing_order_api_evidence_fields(
@@ -3446,10 +3509,10 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "cycle_started_epoch_ns": cycle_started_epoch_ns,
         "cycle_finished_epoch_ns": cycle_finished_epoch_ns,
-        "first_market_tick_ingress_epoch_ns": first_market_tick_ingress_epoch_ns,
-        "first_market_tick_durable_epoch_ns": (
-            first_market_tick_durable_epoch_ns
-            if first_market_tick_ingress_epoch_ns is not None
+        "open_minute_tick_ingress_epoch_ns": open_minute_tick_ingress_epoch_ns,
+        "open_minute_tick_durable_epoch_ns": (
+            open_minute_tick_durable_epoch_ns
+            if open_minute_tick_ingress_epoch_ns is not None
             else None
         ),
         "runtime_profile": getattr(args, "runtime_profile", "offline"),
@@ -3606,6 +3669,7 @@ def main() -> None:
         paths = _paths(run_id)
         summary = {
             "model_tag": MODEL_TAG,
+            "run_id": run_id,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "execution_profile": _execution_profile_for_args(args).profile_key,
             "official_live_version": _execution_profile_for_args(args).official_version,
@@ -3761,8 +3825,8 @@ def main() -> None:
                 "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "cycle_started_epoch_ns": cycle_attempt_started_epoch_ns,
                 "cycle_finished_epoch_ns": time.time_ns(),
-                "first_market_tick_ingress_epoch_ns": None,
-                "first_market_tick_durable_epoch_ns": None,
+                "open_minute_tick_ingress_epoch_ns": None,
+                "open_minute_tick_durable_epoch_ns": None,
                 "runtime_profile": runtime_profile,
                 "target_date": target_date,
                 "watched_symbols": _watched_symbols_for_args(args),

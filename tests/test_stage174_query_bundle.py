@@ -202,6 +202,103 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         self.assertFalse(status["position_normalization_complete"])
         self.assertEqual(1, status["position_invalid_row_count"])
 
+    def test_readonly_order_firewall_blocks_gateway_and_td_api_calls(self) -> None:
+        calls: list[str] = []
+
+        class FakeGateway:
+            def send_order(self, *args: object, **kwargs: object) -> str:
+                calls.append("gateway_send")
+                return "sent"
+
+            def cancel_order(self, *args: object, **kwargs: object) -> str:
+                calls.append("gateway_cancel")
+                return "cancelled"
+
+        class FakeTdApi:
+            def send_order(self, *args: object, **kwargs: object) -> str:
+                calls.append("td_send")
+                return "sent"
+
+            def cancel_order(self, *args: object, **kwargs: object) -> str:
+                calls.append("td_cancel")
+                return "cancelled"
+
+        counters = stage174._new_order_api_counters()
+        originals = stage174._install_readonly_order_api_firewall(
+            FakeGateway,
+            FakeTdApi,
+            counters,
+        )
+        try:
+            for instance, method_name in (
+                (FakeGateway(), "send_order"),
+                (FakeGateway(), "cancel_order"),
+                (FakeTdApi(), "send_order"),
+                (FakeTdApi(), "cancel_order"),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "readonly_order_api_blocked"):
+                    getattr(instance, method_name)(object())
+        finally:
+            stage174._restore_readonly_order_api_firewall(
+                FakeGateway,
+                FakeTdApi,
+                originals,
+            )
+
+        self.assertEqual([], calls)
+        self.assertEqual(2, counters["send_order_api_attempted_count"])
+        self.assertEqual(2, counters["cancel_order_api_attempted_count"])
+        self.assertEqual(0, counters["send_order_api_called_count"])
+        self.assertEqual(0, counters["cancel_order_api_called_count"])
+        self.assertEqual("sent", FakeGateway().send_order(object()))
+        self.assertEqual("cancelled", FakeTdApi().cancel_order(object()))
+
+    def test_dry_run_publishes_exact_zero_order_api_counters(self) -> None:
+        result = stage174._run_probe(connect=False, wait_seconds=1)
+
+        for field in (
+            "send_order_api_attempted_count",
+            "cancel_order_api_attempted_count",
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        ):
+            self.assertIs(type(result[field]), int)
+            self.assertEqual(0, result[field])
+
+    def test_reconnect_proof_requires_fresh_queries_on_new_generation(self) -> None:
+        lifecycle = {
+            "disconnect_observed": 1,
+            "reconnect_observed": 1,
+            "old_connection_generation": "old",
+            "new_connection_generation": "new",
+            "readiness_revoked_epoch_ns": 10,
+        }
+        queries = {
+            name: {"connection_generation": "new"}
+            for name in ("orders", "trades", "positions")
+        }
+
+        proof = stage174._finalize_connection_lifecycle(
+            lifecycle,
+            query_requests=queries,
+            query_bundle_complete=True,
+            order_api_counters=stage174._new_order_api_counters(),
+            restored_epoch_ns=20,
+        )
+        stale = stage174._finalize_connection_lifecycle(
+            lifecycle,
+            query_requests={**queries, "positions": {"connection_generation": "old"}},
+            query_bundle_complete=True,
+            order_api_counters=stage174._new_order_api_counters(),
+            restored_epoch_ns=20,
+        )
+
+        self.assertEqual(1, proof["proof_complete"])
+        self.assertEqual(20, proof["readiness_restored_epoch_ns"])
+        self.assertEqual(0, stale["proof_complete"])
+        self.assertIsNone(stale["readiness_restored_epoch_ns"])
+
 
 if __name__ == "__main__":
     unittest.main()

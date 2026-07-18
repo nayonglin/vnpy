@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
+import tempfile
 import sys
 import unittest
 from zoneinfo import ZoneInfo
@@ -13,6 +14,9 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 from audit_qmt_roll_stage179_readonly_canary_qualification import (  # noqa: E402
+    _record_digest,
+    _mapping_digest,
+    _validate_canonical_plist,
     build_readonly_session_evidence,
     evaluate_readonly_qualification,
 )
@@ -20,6 +24,9 @@ from audit_qmt_roll_stage179_readonly_canary_qualification import (  # noqa: E40
 
 MANIFEST_SHA256 = "a" * 64
 SOURCE_COMMIT = "b" * 40
+DAY_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist"
+NIGHT_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist"
+PLIST_SHA256 = "c" * 64
 
 
 def session_record(index: int, *, session_kind: str) -> dict[str, object]:
@@ -34,7 +41,9 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
     )
     scheduled_epoch_ns = int(scheduled.timestamp() * 1_000_000_000)
     ingress = scheduled_epoch_ns + 300_000_000_000
-    return {
+    record: dict[str, object] = {
+        "capture_schema_version": 2,
+        "stage930_summary_sha256": "d" * 64,
         "session_id": f"session-{index}",
         "session_date": session_date,
         "session_kind": session_kind,
@@ -46,6 +55,9 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         ),
         "launchd_start_hour": 8 if session_kind == "day" else 20,
         "launchd_start_minute": 55,
+        "launchd_plist_relative_path": DAY_PLIST if session_kind == "day" else NIGHT_PLIST,
+        "launchd_plist_sha256": PLIST_SHA256,
+        "manifest_launchd_plist_sha256": PLIST_SHA256,
         "execution_profile": "stage372-20w",
         "official_live_version": "official_live_stage372_20w_recovery_sleeve",
         "capital": 200_000,
@@ -72,8 +84,8 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "order_api_evidence_missing_fields": [],
         "scheduled_start_epoch_ns": scheduled_epoch_ns,
         "daemon_started_epoch_ns": scheduled_epoch_ns + 5_000_000_000,
-        "first_market_tick_ingress_epoch_ns": ingress,
-        "first_market_tick_durable_epoch_ns": ingress + 100_000_000,
+        "open_minute_tick_ingress_epoch_ns": ingress,
+        "open_minute_tick_durable_epoch_ns": ingress + 100_000_000,
         "cycle_started_epoch_ns": ingress + 1_000_000,
         "cycle_finished_epoch_ns": ingress + 300_000_000,
         "disconnect_observed": int(index == 4),
@@ -89,6 +101,28 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "disconnect_send_order_api_called_count": 0 if index == 4 else None,
         "disconnect_cancel_order_api_called_count": 0 if index == 4 else None,
     }
+    payload_fields = (
+        "execution_profile",
+        "official_live_version",
+        "capital",
+        "capital_label",
+        "runtime_profile",
+        "mode",
+        "submit_mode",
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+        "order_api_evidence_complete",
+        "order_api_evidence_missing_fields",
+        "daemon_started_epoch_ns",
+        "open_minute_tick_ingress_epoch_ns",
+        "open_minute_tick_durable_epoch_ns",
+    )
+    payload = {field: record[field] for field in payload_fields}
+    record["stage930_summary_payload"] = payload
+    record["stage930_summary_payload_sha256"] = _mapping_digest(payload)
+    record["capture_record_sha256"] = _record_digest(record)
+    return record
 
 
 class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
@@ -126,6 +160,7 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
     def test_capture_binds_daemon_controller_plist_and_manifest(self) -> None:
         source = session_record(0, session_kind="night")
         summary = {
+            "run_id": "20260720_205500",
             "daemon_status": "daemon_completed_duration",
             "daemon_started_epoch_ns": source["daemon_started_epoch_ns"],
             "execution_profile": source["execution_profile"],
@@ -140,10 +175,10 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
             "order_api_called_count": 0,
             "order_api_evidence_complete": 1,
             "order_api_evidence_missing_fields": [],
-            "first_market_tick_ingress_epoch_ns": source["first_market_tick_ingress_epoch_ns"],
-            "first_market_tick_durable_epoch_ns": source["first_market_tick_durable_epoch_ns"],
-            "first_market_tick_cycle_started_epoch_ns": source["cycle_started_epoch_ns"],
-            "first_market_tick_cycle_finished_epoch_ns": source["cycle_finished_epoch_ns"],
+            "open_minute_tick_ingress_epoch_ns": source["open_minute_tick_ingress_epoch_ns"],
+            "open_minute_tick_durable_epoch_ns": source["open_minute_tick_durable_epoch_ns"],
+            "open_minute_tick_cycle_started_epoch_ns": source["cycle_started_epoch_ns"],
+            "open_minute_tick_cycle_finished_epoch_ns": source["cycle_finished_epoch_ns"],
             "latest_cycle": {
                 "stage903": {
                     "summary": {
@@ -153,6 +188,10 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
                         "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
                         "stage907_readonly_status_after": "readonly_snapshots_received",
                         "stage907_position_snapshot_state_after": "confirmed_flat",
+                        "stage907_connection_lifecycle": {
+                            "disconnect_observed": 0,
+                            "reconnect_observed": 0,
+                        },
                     }
                 }
             },
@@ -181,13 +220,31 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
                 "manifest_sha256": MANIFEST_SHA256,
                 "source_commit": SOURCE_COMMIT,
             },
-            session_id="session-0",
-            session_date=str(source["session_date"]),
+            launchd_plist_relative_path=NIGHT_PLIST,
+            launchd_plist_sha256=PLIST_SHA256,
+            stage930_summary_sha256="d" * 64,
             session_kind="night",
-            scheduled_start_epoch_ns=int(source["scheduled_start_epoch_ns"]),
+        )
+        captured_again = build_readonly_session_evidence(
+            stage930_summary=summary,
+            launchd_plist=plist,
+            validated_manifest={
+                "manifest_sha256": MANIFEST_SHA256,
+                "source_commit": SOURCE_COMMIT,
+            },
+            launchd_plist_relative_path=NIGHT_PLIST,
+            launchd_plist_sha256=PLIST_SHA256,
+            stage930_summary_sha256="d" * 64,
+            session_kind="night",
         )
 
-        self.assertEqual(source, captured)
+        self.assertEqual(source["session_date"], captured["session_date"])
+        self.assertEqual(NIGHT_PLIST, captured["launchd_plist_relative_path"])
+        self.assertEqual(PLIST_SHA256, captured["launchd_plist_sha256"])
+        self.assertEqual(source["scheduled_start_epoch_ns"], captured["scheduled_start_epoch_ns"])
+        self.assertEqual("dry-run", captured["plist_mode"])
+        self.assertEqual(_record_digest(captured), captured["capture_record_sha256"])
+        self.assertEqual(captured["session_id"], captured_again["session_id"])
 
     def test_five_day_night_sessions_and_reconnect_qualify(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
@@ -260,20 +317,30 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
 
     def test_first_tick_must_arrive_in_first_minute_after_market_open(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
-        records[0]["first_market_tick_ingress_epoch_ns"] = (
-            int(records[0]["first_market_tick_ingress_epoch_ns"])
+        records[0]["open_minute_tick_ingress_epoch_ns"] = (
+            int(records[0]["open_minute_tick_ingress_epoch_ns"])
             - 1_000_000_000
         )
 
         result = self.qualify(records)
 
-        self.assertIn("session-0:first_market_tick_window_mismatch", result["blockers"])
+        self.assertIn("session-0:open_minute_tick_window_mismatch", result["blockers"])
+
+    def test_open_minute_window_is_half_open(self) -> None:
+        records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
+        records[0]["open_minute_tick_ingress_epoch_ns"] = (
+            int(records[0]["scheduled_start_epoch_ns"]) + 360_000_000_000
+        )
+
+        result = self.qualify(records)
+
+        self.assertIn("session-0:open_minute_tick_window_mismatch", result["blockers"])
 
     def test_missing_or_late_timestamps_fail_readonly_e2e_gate(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
-        records[0].pop("first_market_tick_ingress_epoch_ns")
-        records[1]["first_market_tick_durable_epoch_ns"] = (
-            int(records[1]["first_market_tick_ingress_epoch_ns"])
+        records[0].pop("open_minute_tick_ingress_epoch_ns")
+        records[1]["open_minute_tick_durable_epoch_ns"] = (
+            int(records[1]["open_minute_tick_ingress_epoch_ns"])
             + 1_000_000_001
         )
 
@@ -281,10 +348,68 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
 
         self.assertEqual("blocked", result["qualification_status"])
         self.assertIn(
-            "session-0:missing_first_market_tick_ingress_epoch_ns",
+            "session-0:missing_open_minute_tick_ingress_epoch_ns",
             result["blockers"],
         )
         self.assertIn("session-1:ingress_durable_hard_deadline_exceeded", result["blockers"])
+
+    def test_duplicate_plist_flag_fails_closed(self) -> None:
+        source = session_record(0, session_kind="night")
+        summary = {
+            "run_id": "20260720_205500",
+            "daemon_status": "daemon_completed_duration",
+            "daemon_started_epoch_ns": source["daemon_started_epoch_ns"],
+            "execution_profile": source["execution_profile"],
+            "official_live_version": source["official_live_version"],
+            "capital": source["capital"],
+            "capital_label": source["capital_label"],
+            "runtime_profile": source["runtime_profile"],
+            "mode": source["mode"],
+            "submit_mode": source["submit_mode"],
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0,
+            "order_api_evidence_complete": 1,
+            "order_api_evidence_missing_fields": [],
+            "open_minute_tick_ingress_epoch_ns": source["open_minute_tick_ingress_epoch_ns"],
+            "open_minute_tick_durable_epoch_ns": source["open_minute_tick_durable_epoch_ns"],
+            "open_minute_tick_cycle_started_epoch_ns": source["cycle_started_epoch_ns"],
+            "open_minute_tick_cycle_finished_epoch_ns": source["cycle_finished_epoch_ns"],
+            "latest_cycle": {"stage903": {"summary": {}}},
+        }
+        plist = {
+            "Label": source["launchd_label"],
+            "StartCalendarInterval": {"Hour": 20, "Minute": 55},
+            "ProgramArguments": [
+                "python", "daemon.py", "--mode", "dry-run", "--mode", "live-real",
+                "--submit-mode", "disabled", "--execution-profile", "stage372-20w",
+                "--runtime-profile", "production-readonly",
+            ],
+        }
+
+        captured = build_readonly_session_evidence(
+            stage930_summary=summary,
+            launchd_plist=plist,
+            validated_manifest={"manifest_sha256": MANIFEST_SHA256, "source_commit": SOURCE_COMMIT},
+            launchd_plist_relative_path=NIGHT_PLIST,
+            launchd_plist_sha256=PLIST_SHA256,
+            stage930_summary_sha256="d" * 64,
+            session_kind="night",
+        )
+
+        self.assertEqual("", captured["plist_mode"])
+
+    def test_noncanonical_plist_path_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            copied = Path(tmp) / "copied.plist"
+            copied.write_bytes((PORTFOLIO_DIR / "launchd" / Path(NIGHT_PLIST).name).read_bytes())
+
+            with self.assertRaisesRegex(ValueError, "launchd_plist_not_canonical"):
+                _validate_canonical_plist(
+                    supplied_path=copied,
+                    repo_root=PORTFOLIO_DIR.parents[1],
+                    validated_manifest={"critical_files": []},
+                )
 
 
 if __name__ == "__main__":

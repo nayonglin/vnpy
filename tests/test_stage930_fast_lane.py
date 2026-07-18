@@ -114,6 +114,11 @@ class Stage930FastLaneTest(unittest.TestCase):
     def test_tick_ingress_evidence_uses_newest_exact_integer(self) -> None:
         result = stage930._tick_result_ingress_epoch_ns(
             {
+                "refresh_status": "tick_stream_ready",
+                "transport_ready": 1,
+                "stream_ready": 1,
+                "all_symbols_ready": 1,
+                "heartbeat_pid_matches_process": 1,
                 "summary": {
                     "latest_ticks": {
                         "JM609.DCE": {"ingress_epoch_ns": 200},
@@ -139,34 +144,76 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
         )
 
-    def test_session_timing_evidence_keeps_first_market_tick_cycle(self) -> None:
+    def test_session_timing_evidence_keeps_first_open_minute_tick_cycle(self) -> None:
         result = stage930._session_timing_evidence(
             [
                 {
                     "cycle_started_epoch_ns": 10,
                     "cycle_finished_epoch_ns": 20,
-                    "first_market_tick_ingress_epoch_ns": None,
-                    "first_market_tick_durable_epoch_ns": None,
+                    "open_minute_tick_ingress_epoch_ns": None,
+                    "open_minute_tick_durable_epoch_ns": None,
                 },
                 {
                     "cycle_started_epoch_ns": 30,
                     "cycle_finished_epoch_ns": 50,
-                    "first_market_tick_ingress_epoch_ns": 40,
-                    "first_market_tick_durable_epoch_ns": 41,
+                    "open_minute_tick_ingress_epoch_ns": 40,
+                    "open_minute_tick_durable_epoch_ns": 41,
                 },
                 {
                     "cycle_started_epoch_ns": 60,
                     "cycle_finished_epoch_ns": 80,
-                    "first_market_tick_ingress_epoch_ns": 70,
-                    "first_market_tick_durable_epoch_ns": 71,
+                    "open_minute_tick_ingress_epoch_ns": 70,
+                    "open_minute_tick_durable_epoch_ns": 71,
                 },
             ]
         )
 
-        self.assertEqual(40, result["first_market_tick_ingress_epoch_ns"])
-        self.assertEqual(30, result["first_market_tick_cycle_started_epoch_ns"])
-        self.assertEqual(41, result["first_market_tick_durable_epoch_ns"])
-        self.assertEqual(50, result["first_market_tick_cycle_finished_epoch_ns"])
+        self.assertEqual(40, result["open_minute_tick_ingress_epoch_ns"])
+        self.assertEqual(30, result["open_minute_tick_cycle_started_epoch_ns"])
+        self.assertEqual(41, result["open_minute_tick_durable_epoch_ns"])
+        self.assertEqual(50, result["open_minute_tick_cycle_finished_epoch_ns"])
+
+    def test_tick_ingress_evidence_requires_ready_bound_heartbeat(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "refresh_status": "tick_stream_not_ready_fail_closed",
+                "transport_ready": 0,
+                "stream_ready": 0,
+                "all_symbols_ready": 0,
+                "heartbeat_pid_matches_process": 1,
+                "summary": {
+                    "symbol_tick_watermarks": {
+                        "JM609.DCE": {"ingress_epoch_ns": 200}
+                    }
+                },
+            }
+        )
+
+        self.assertIsNone(result)
+
+    def test_no_submit_prewarm_counters_are_bound_to_readiness(self) -> None:
+        evidence = stage930._no_submit_prewarm_order_evidence(
+            {
+                "service_kind": "no_submit_prewarm",
+                "spool_opened": 0,
+                "ctp_module_loaded": 0,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            }
+        )
+        forged = stage930._no_submit_prewarm_order_evidence(
+            {
+                "service_kind": "no_submit_prewarm",
+                "spool_opened": 0,
+                "ctp_module_loaded": 0,
+                "order_api_called_count": 0,
+            }
+        )
+
+        self.assertEqual(1, evidence["complete"])
+        self.assertEqual(0, evidence["send_order_api_called_count"])
+        self.assertEqual(0, forged["complete"])
 
     def test_readonly_qualification_cycle_keeps_latest_complete_snapshot(self) -> None:
         ready = {
@@ -223,8 +270,14 @@ class Stage930FastLaneTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            ["stage903.summary.cancel_order_api_called_count"],
-            missing,
+            {
+                "stage903.summary.cancel_order_api_called_count",
+                "stage903.summary.send_order_api_attempted_count",
+                "stage903.summary.cancel_order_api_attempted_count",
+                "stage903.summary.order_api_evidence_complete",
+                "stage931.summary.order_api_evidence_complete",
+            },
+            set(missing),
         )
 
     def test_order_api_evidence_rejects_incomplete_fast_lane_provenance(self) -> None:

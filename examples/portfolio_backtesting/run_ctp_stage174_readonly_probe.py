@@ -62,6 +62,124 @@ CTP_ENV_KEYS: dict[str, str] = {
 }
 
 
+def _new_order_api_counters() -> dict[str, int]:
+    return {
+        "send_order_api_attempted_count": 0,
+        "cancel_order_api_attempted_count": 0,
+        "send_order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+    }
+
+
+def _install_readonly_order_api_firewall(
+    gateway_class: type,
+    td_api_class: type,
+    counters: dict[str, int],
+) -> dict[tuple[type, str], Any]:
+    """Block every order mutation at both vn.py CTP boundaries.
+
+    Attempted calls are counted, but the original API is never invoked.  The
+    separate called counters therefore remain authoritative exact zeros.
+    """
+    originals: dict[tuple[type, str], Any] = {}
+    for owner in (gateway_class, td_api_class):
+        for method_name, counter_name in (
+            ("send_order", "send_order_api_attempted_count"),
+            ("cancel_order", "cancel_order_api_attempted_count"),
+        ):
+            original = getattr(owner, method_name)
+            originals[(owner, method_name)] = original
+
+            def blocked(
+                self: Any,
+                *args: Any,
+                _counter_name: str = counter_name,
+                _method_name: str = method_name,
+                **kwargs: Any,
+            ) -> Any:
+                counters[_counter_name] += 1
+                raise RuntimeError(f"readonly_order_api_blocked:{_method_name}")
+
+            setattr(owner, method_name, blocked)
+    return originals
+
+
+def _restore_readonly_order_api_firewall(
+    gateway_class: type,
+    td_api_class: type,
+    originals: dict[tuple[type, str], Any],
+) -> None:
+    for owner in (gateway_class, td_api_class):
+        for method_name in ("send_order", "cancel_order"):
+            original = originals.get((owner, method_name))
+            if original is not None:
+                setattr(owner, method_name, original)
+
+
+def _publish_order_api_counters(
+    summary: dict[str, Any], counters: dict[str, int]
+) -> None:
+    summary.update(counters)
+    summary["order_api_called_count"] = (
+        counters["send_order_api_called_count"]
+        + counters["cancel_order_api_called_count"]
+    )
+    summary["order_api_called"] = bool(summary["order_api_called_count"])
+
+
+def _finalize_connection_lifecycle(
+    lifecycle: dict[str, Any],
+    *,
+    query_requests: dict[str, dict[str, Any]],
+    query_bundle_complete: bool,
+    order_api_counters: dict[str, int],
+    restored_epoch_ns: int,
+) -> dict[str, Any]:
+    old_generation = str(lifecycle.get("old_connection_generation") or "")
+    new_generation = str(lifecycle.get("new_connection_generation") or "")
+    query_generations = {
+        name: str((query_requests.get(name) or {}).get("connection_generation") or "")
+        for name in ("orders", "trades", "positions")
+    }
+    fresh_queries_on_new_generation = bool(
+        new_generation
+        and all(value == new_generation for value in query_generations.values())
+    )
+    proof_complete = bool(
+        lifecycle.get("disconnect_observed") == 1
+        and lifecycle.get("reconnect_observed") == 1
+        and old_generation
+        and new_generation
+        and old_generation != new_generation
+        and type(lifecycle.get("readiness_revoked_epoch_ns")) is int
+        and lifecycle["readiness_revoked_epoch_ns"] > 0
+        and query_bundle_complete
+        and fresh_queries_on_new_generation
+        and all(value == 0 for value in order_api_counters.values())
+    )
+    evidence_id = ""
+    if proof_complete:
+        evidence_id = hashlib.sha256(
+            f"{old_generation}:{new_generation}:{restored_epoch_ns}".encode("utf-8")
+        ).hexdigest()
+    return {
+        **lifecycle,
+        "old_connection_generation": old_generation,
+        "new_connection_generation": new_generation,
+        "query_connection_generations": query_generations,
+        "fresh_queries_on_new_generation": int(fresh_queries_on_new_generation),
+        "proof_complete": int(proof_complete),
+        "disconnect_evidence_id": evidence_id,
+        "readiness_restored_epoch_ns": restored_epoch_ns if proof_complete else None,
+        "send_order_api_called_count": order_api_counters[
+            "send_order_api_called_count"
+        ],
+        "cancel_order_api_called_count": order_api_counters[
+            "cancel_order_api_called_count"
+        ],
+    }
+
+
 # #region debug-point A:reporting
 def _debug_report(hypothesis_id: str, location: str, msg: str, data: dict[str, Any] | None = None) -> None:
     payload = {
@@ -724,6 +842,7 @@ def _analyze_position_snapshot(rows: dict[str, list[dict[str, Any]]], log_analys
 def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     query_generation_uuid = str(uuid.uuid4())
+    order_api_counters = _new_order_api_counters()
     gateway_import = _gateway_import_status()
     import_available = bool(gateway_import["ctp_gateway_import_available"])
     # #region debug-point A:probe-start
@@ -757,9 +876,20 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     }
 
     query_requests: dict[str, dict[str, Any]] = {
-        "orders": {"reqid": None, "return_code": None, "request_sent_at": ""},
-        "trades": {"reqid": None, "return_code": None, "request_sent_at": ""},
-        "positions": {"reqid": None, "return_code": None, "request_sent_at": ""},
+        "orders": {"reqid": None, "return_code": None, "request_sent_at": "", "connection_generation": ""},
+        "trades": {"reqid": None, "return_code": None, "request_sent_at": "", "connection_generation": ""},
+        "positions": {"reqid": None, "return_code": None, "request_sent_at": "", "connection_generation": ""},
+    }
+    connection_lifecycle: dict[str, Any] = {
+        "model_tag": "stage174_ctp_connection_lifecycle_v1",
+        "disconnect_observed": 0,
+        "reconnect_observed": 0,
+        "old_connection_generation": "",
+        "new_connection_generation": "",
+        "current_connection_generation": "",
+        "readiness_revoked_epoch_ns": None,
+        "probe_closing": 0,
+        "events": [],
     }
 
     summary: dict[str, Any] = {
@@ -773,7 +903,6 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         "env_status": _env_status(),
         "missing_required_env": _required_env_missing(),
         "real_order_enabled": False,
-        "order_api_called": False,
         "status": "dry_run_not_connected",
         "connection_target": {
             "td_address": os.getenv("CTP_TD_ADDRESS", ""),
@@ -793,6 +922,8 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
             "query_bundle_manifest": str(QUERY_BUNDLE_MANIFEST_PATH),
         },
     }
+    _publish_order_api_counters(summary, order_api_counters)
+    summary["connection_lifecycle"] = dict(connection_lifecycle)
 
     if not connect:
         summary["status"] = "dry_run_not_connected"
@@ -823,6 +954,8 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     original_settlement_rsp = ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm
     original_order_query_rsp = ctp_gateway_module.CtpTdApi.onRspQryOrder
     original_trade_query_rsp = ctp_gateway_module.CtpTdApi.onRspQryTrade
+    original_front_connected = ctp_gateway_module.CtpTdApi.onFrontConnected
+    original_front_disconnected = ctp_gateway_module.CtpTdApi.onFrontDisconnected
     settlement_confirmed = threading.Event()
     order_query_completed = threading.Event()
     trade_query_completed = threading.Event()
@@ -922,6 +1055,50 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         if matched and last:
             trade_query_completed.set()
 
+    def instrumented_front_connected(self: Any) -> None:
+        now_epoch_ns = time.time_ns()
+        generation = uuid.uuid4().hex
+        connection_lifecycle["current_connection_generation"] = generation
+        if connection_lifecycle.get("disconnect_observed") == 1:
+            connection_lifecycle["reconnect_observed"] = 1
+            connection_lifecycle["new_connection_generation"] = generation
+        connection_lifecycle["events"].append(
+            {
+                "event": "front_connected",
+                "connection_generation": generation,
+                "epoch_ns": now_epoch_ns,
+            }
+        )
+        return original_front_connected(self)
+
+    def instrumented_front_disconnected(self: Any, reason: int) -> None:
+        now_epoch_ns = time.time_ns()
+        current_generation = str(
+            connection_lifecycle.get("current_connection_generation") or ""
+        )
+        if connection_lifecycle.get("probe_closing") == 1:
+            connection_lifecycle["events"].append(
+                {
+                    "event": "front_disconnected_during_probe_close",
+                    "connection_generation": current_generation,
+                    "reason": int(reason),
+                    "epoch_ns": now_epoch_ns,
+                }
+            )
+            return original_front_disconnected(self, reason)
+        connection_lifecycle["disconnect_observed"] = 1
+        connection_lifecycle["old_connection_generation"] = current_generation
+        connection_lifecycle["readiness_revoked_epoch_ns"] = now_epoch_ns
+        connection_lifecycle["events"].append(
+            {
+                "event": "front_disconnected",
+                "connection_generation": current_generation,
+                "reason": int(reason),
+                "epoch_ns": now_epoch_ns,
+            }
+        )
+        return original_front_disconnected(self, reason)
+
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
     main_engine.add_gateway(CtpGateway)
@@ -977,6 +1154,13 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
     ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm = instrumented_settlement_rsp
     ctp_gateway_module.CtpTdApi.onRspQryOrder = instrumented_order_query_rsp
     ctp_gateway_module.CtpTdApi.onRspQryTrade = instrumented_trade_query_rsp
+    ctp_gateway_module.CtpTdApi.onFrontConnected = instrumented_front_connected
+    ctp_gateway_module.CtpTdApi.onFrontDisconnected = instrumented_front_disconnected
+    order_api_originals = _install_readonly_order_api_firewall(
+        CtpGateway,
+        ctp_gateway_module.CtpTdApi,
+        order_api_counters,
+    )
 
     td_api: Any = None
     gateway: Any = None
@@ -1037,6 +1221,9 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
                 last_query_sent_at = time.monotonic()
                 query_requests[name]["request_sent_at"] = (
                     datetime.now().astimezone().isoformat()
+                )
+                query_requests[name]["connection_generation"] = str(
+                    connection_lifecycle.get("current_connection_generation") or ""
                 )
                 query_requests[name]["return_code"] = int(
                     request(query_account, reqid)
@@ -1168,6 +1355,7 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
         # #endregion
     finally:
         summary["timer_query_paused_until_close"] = bool(timer_query_paused)
+        connection_lifecycle["probe_closing"] = 1
         try:
             main_engine.close()
         except Exception as exc:
@@ -1178,6 +1366,15 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
             ctp_gateway_module.CtpTdApi.onRspSettlementInfoConfirm = original_settlement_rsp
             ctp_gateway_module.CtpTdApi.onRspQryOrder = original_order_query_rsp
             ctp_gateway_module.CtpTdApi.onRspQryTrade = original_trade_query_rsp
+            ctp_gateway_module.CtpTdApi.onFrontConnected = original_front_connected
+            ctp_gateway_module.CtpTdApi.onFrontDisconnected = original_front_disconnected
+            _restore_readonly_order_api_firewall(
+                CtpGateway,
+                ctp_gateway_module.CtpTdApi,
+                order_api_originals,
+            )
+
+        _publish_order_api_counters(summary, order_api_counters)
 
         if "log_analysis" not in summary:
             summary["log_analysis"] = _analyze_logs(rows["logs"])
@@ -1286,6 +1483,13 @@ def _run_probe(connect: bool, wait_seconds: int) -> dict[str, Any]:
                 and join_status["trade_identity_complete"]
             ),
         }
+        summary["connection_lifecycle"] = _finalize_connection_lifecycle(
+            connection_lifecycle,
+            query_requests=query_requests,
+            query_bundle_complete=bool(summary["broker_query_bundle"]["complete"]),
+            order_api_counters=order_api_counters,
+            restored_epoch_ns=time.time_ns(),
+        )
         summary["broker_snapshot"] = _analyze_position_snapshot(rows, summary["log_analysis"])
         # #region debug-point D:before-close
         _debug_report(

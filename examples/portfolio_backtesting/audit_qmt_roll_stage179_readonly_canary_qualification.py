@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import date, datetime
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,10 @@ EXPECTED_SUBMIT_MODE = "disabled"
 INGRESS_DURABLE_HARD_DEADLINE_NS = 1_000_000_000
 LAUNCHD_START_HARD_DEADLINE_NS = 60_000_000_000
 SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
+CANONICAL_PLISTS = {
+    "day": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
+    "night": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
+}
 
 
 def _strict_int(value: Any) -> int | None:
@@ -41,14 +46,41 @@ def _append_unique(rows: list[str], value: str) -> None:
         rows.append(value)
 
 
+def _record_digest(record: Mapping[str, Any]) -> str:
+    core = {
+        key: value
+        for key, value in record.items()
+        if key != "capture_record_sha256"
+    }
+    encoded = json.dumps(
+        core,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _mapping_digest(value: Mapping[str, Any]) -> str:
+    encoded = json.dumps(
+        dict(value),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _disconnect_reconnect_proof_valid(record: Mapping[str, Any]) -> bool:
     revoked = _strict_int(record.get("readiness_revoked_epoch_ns"))
     restored = _strict_int(record.get("readiness_restored_epoch_ns"))
     old_generation = _clean(record.get("old_connection_generation"))
     new_generation = _clean(record.get("new_connection_generation"))
     return bool(
-        record.get("disconnect_observed") == 1
-        and record.get("reconnect_observed") == 1
+        _strict_int(record.get("disconnect_observed")) == 1
+        and _strict_int(record.get("reconnect_observed")) == 1
         and _clean(record.get("disconnect_evidence_id"))
         and _clean(record.get("disconnect_session_id"))
         == _clean(record.get("session_id"))
@@ -62,8 +94,8 @@ def _disconnect_reconnect_proof_valid(record: Mapping[str, Any]) -> bool:
         and revoked is not None
         and restored is not None
         and 0 < revoked < restored
-        and record.get("disconnect_send_order_api_called_count") == 0
-        and record.get("disconnect_cancel_order_api_called_count") == 0
+        and _strict_int(record.get("disconnect_send_order_api_called_count")) == 0
+        and _strict_int(record.get("disconnect_cancel_order_api_called_count")) == 0
     )
 
 
@@ -75,6 +107,49 @@ def _record_blockers(
 ) -> list[str]:
     session_id = _clean(record.get("session_id")) or "missing-session-id"
     blockers: list[str] = []
+
+    if record.get("capture_schema_version") != 2:
+        blockers.append(f"{session_id}:capture_schema_version_mismatch")
+    source_summary_sha256 = _clean(record.get("stage930_summary_sha256"))
+    if len(source_summary_sha256) != 64 or any(
+        char not in "0123456789abcdef" for char in source_summary_sha256
+    ):
+        blockers.append(f"{session_id}:stage930_summary_sha256_invalid")
+    try:
+        record_digest = _record_digest(record)
+    except (TypeError, ValueError):
+        record_digest = ""
+    if _clean(record.get("capture_record_sha256")) != record_digest:
+        blockers.append(f"{session_id}:capture_record_sha256_mismatch")
+    source_payload = record.get("stage930_summary_payload")
+    if not isinstance(source_payload, Mapping):
+        blockers.append(f"{session_id}:stage930_summary_payload_missing")
+    else:
+        try:
+            payload_digest = _mapping_digest(source_payload)
+        except (TypeError, ValueError):
+            payload_digest = ""
+        if _clean(record.get("stage930_summary_payload_sha256")) != payload_digest:
+            blockers.append(f"{session_id}:stage930_summary_payload_sha256_mismatch")
+        for field in (
+            "execution_profile",
+            "official_live_version",
+            "capital",
+            "capital_label",
+            "runtime_profile",
+            "mode",
+            "submit_mode",
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+            "order_api_evidence_complete",
+            "order_api_evidence_missing_fields",
+            "daemon_started_epoch_ns",
+            "open_minute_tick_ingress_epoch_ns",
+            "open_minute_tick_durable_epoch_ns",
+        ):
+            if record.get(field) != source_payload.get(field):
+                blockers.append(f"{session_id}:stage930_payload_{field}_mismatch")
 
     expected_values = {
         "execution_profile": EXPECTED_EXECUTION_PROFILE,
@@ -88,6 +163,9 @@ def _record_blockers(
         "plist_runtime_profile": EXPECTED_RUNTIME_PROFILE,
         "plist_mode": EXPECTED_MODE,
         "plist_submit_mode": EXPECTED_SUBMIT_MODE,
+        "launchd_plist_relative_path": CANONICAL_PLISTS.get(
+            _clean(record.get("session_kind")), ""
+        ),
         "release_manifest_sha256": expected_manifest_sha256,
         "release_source_commit": expected_source_commit,
         "stage914_exit_code": 0,
@@ -120,6 +198,13 @@ def _record_blockers(
     )
     if label != expected_label:
         blockers.append(f"{session_id}:launchd_label_mismatch")
+    plist_sha256 = _clean(record.get("launchd_plist_sha256"))
+    if len(plist_sha256) != 64 or any(
+        char not in "0123456789abcdef" for char in plist_sha256
+    ):
+        blockers.append(f"{session_id}:launchd_plist_sha256_invalid")
+    if _clean(record.get("manifest_launchd_plist_sha256")) != plist_sha256:
+        blockers.append(f"{session_id}:manifest_launchd_plist_sha256_mismatch")
     expected_hour = 8 if session_kind == "day" else 20 if session_kind == "night" else None
     if (
         record.get("launchd_start_hour") != expected_hour
@@ -144,16 +229,16 @@ def _record_blockers(
     ):
         blockers.append(f"{session_id}:order_api_evidence_incomplete")
     if (
-        record.get("disconnect_observed") == 1
-        or record.get("reconnect_observed") == 1
+        _strict_int(record.get("disconnect_observed")) == 1
+        or _strict_int(record.get("reconnect_observed")) == 1
     ) and not _disconnect_reconnect_proof_valid(record):
         blockers.append(f"{session_id}:disconnect_reconnect_evidence_invalid")
 
     timestamp_fields = (
         "scheduled_start_epoch_ns",
         "daemon_started_epoch_ns",
-        "first_market_tick_ingress_epoch_ns",
-        "first_market_tick_durable_epoch_ns",
+        "open_minute_tick_ingress_epoch_ns",
+        "open_minute_tick_durable_epoch_ns",
         "cycle_started_epoch_ns",
         "cycle_finished_epoch_ns",
     )
@@ -188,7 +273,7 @@ def _record_blockers(
             scheduled_identity_valid = False
     if not scheduled_identity_valid:
         blockers.append(f"{session_id}:scheduled_start_identity_mismatch")
-    ingress_value = timestamps.get("first_market_tick_ingress_epoch_ns")
+    ingress_value = timestamps.get("open_minute_tick_ingress_epoch_ns")
     if (
         parsed_date_value is not None
         and ingress_value is not None
@@ -206,14 +291,14 @@ def _record_blockers(
         if not (
             market_open_epoch_ns
             <= ingress_value
-            <= market_open_epoch_ns + 60_000_000_000
+            < market_open_epoch_ns + 60_000_000_000
         ):
-            blockers.append(f"{session_id}:first_market_tick_window_mismatch")
+            blockers.append(f"{session_id}:open_minute_tick_window_mismatch")
     if len(timestamps) == len(timestamp_fields):
         scheduled = timestamps["scheduled_start_epoch_ns"]
         daemon = timestamps["daemon_started_epoch_ns"]
-        ingress = timestamps["first_market_tick_ingress_epoch_ns"]
-        durable = timestamps["first_market_tick_durable_epoch_ns"]
+        ingress = timestamps["open_minute_tick_ingress_epoch_ns"]
+        durable = timestamps["open_minute_tick_durable_epoch_ns"]
         cycle_started = timestamps["cycle_started_epoch_ns"]
         cycle_finished = timestamps["cycle_finished_epoch_ns"]
         if not (
@@ -304,11 +389,11 @@ def evaluate_readonly_qualification(
     }
 
 
-def _argument_value(arguments: list[Any], flag: str) -> str:
-    try:
-        index = arguments.index(flag)
-    except ValueError:
+def _single_argument_value(arguments: list[Any], flag: str) -> str:
+    indexes = [index for index, value in enumerate(arguments) if value == flag]
+    if len(indexes) != 1:
         return ""
+    index = indexes[0]
     return _clean(arguments[index + 1]) if index + 1 < len(arguments) else ""
 
 
@@ -317,13 +402,10 @@ def build_readonly_session_evidence(
     stage930_summary: Mapping[str, Any],
     launchd_plist: Mapping[str, Any],
     validated_manifest: Mapping[str, Any],
-    session_id: str,
-    session_date: str,
+    launchd_plist_relative_path: str,
+    launchd_plist_sha256: str,
+    stage930_summary_sha256: str,
     session_kind: str,
-    scheduled_start_epoch_ns: int,
-    first_market_tick_ingress_epoch_ns: int | None = None,
-    first_market_tick_durable_epoch_ns: int | None = None,
-    disconnect_evidence: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     cycle = stage930_summary.get("readonly_qualification_cycle")
     if not isinstance(cycle, Mapping):
@@ -342,22 +424,46 @@ def build_readonly_session_evidence(
     calendar = launchd_plist.get("StartCalendarInterval")
     if not isinstance(calendar, Mapping):
         calendar = {}
-    first_tick = (
-        first_market_tick_ingress_epoch_ns
-        if first_market_tick_ingress_epoch_ns is not None
-        else _strict_int(stage930_summary.get("first_market_tick_ingress_epoch_ns"))
+    first_tick = _strict_int(
+        stage930_summary.get("open_minute_tick_ingress_epoch_ns")
     )
-    durable = (
-        first_market_tick_durable_epoch_ns
-        if first_market_tick_durable_epoch_ns is not None
-        else _strict_int(
-            stage930_summary.get("first_market_tick_durable_epoch_ns")
-        )
+    durable = _strict_int(
+        stage930_summary.get("open_minute_tick_durable_epoch_ns")
     )
-    disconnect = dict(disconnect_evidence or {})
-    return {
-        "session_id": _clean(session_id),
-        "session_date": _clean(session_date),
+    disconnect = stage903_summary.get("stage907_connection_lifecycle")
+    if not isinstance(disconnect, Mapping):
+        disconnect = {}
+    daemon_started_epoch_ns = _strict_int(
+        stage930_summary.get("daemon_started_epoch_ns")
+    )
+    run_id = _clean(stage930_summary.get("run_id"))
+    if daemon_started_epoch_ns is None or daemon_started_epoch_ns <= 0 or not run_id:
+        raise ValueError("stage930_session_identity_missing")
+    started_at = datetime.fromtimestamp(
+        daemon_started_epoch_ns // 1_000_000_000,
+        tz=SHANGHAI_TZ,
+    )
+    session_date = started_at.date().isoformat()
+    expected_hour = 8 if session_kind == "day" else 20
+    scheduled_start_epoch_ns = int(
+        datetime(
+            started_at.year,
+            started_at.month,
+            started_at.day,
+            expected_hour,
+            55,
+            tzinfo=SHANGHAI_TZ,
+        ).timestamp()
+    ) * 1_000_000_000
+    session_id = f"{session_date}:{session_kind}:{run_id}:{daemon_started_epoch_ns}"
+    proof_complete = disconnect.get("proof_complete") == 1
+    record = {
+        "capture_schema_version": 2,
+        "stage930_summary_sha256": _clean(stage930_summary_sha256),
+        "stage930_summary_payload": dict(stage930_summary),
+        "stage930_summary_payload_sha256": _mapping_digest(stage930_summary),
+        "session_id": session_id,
+        "session_date": session_date,
         "session_kind": _clean(session_kind),
         "session_completed": int(
             _clean(stage930_summary.get("daemon_status")).startswith("daemon_completed_")
@@ -365,6 +471,9 @@ def build_readonly_session_evidence(
         "launchd_label": _clean(launchd_plist.get("Label")),
         "launchd_start_hour": calendar.get("Hour"),
         "launchd_start_minute": calendar.get("Minute"),
+        "launchd_plist_relative_path": _clean(launchd_plist_relative_path),
+        "launchd_plist_sha256": _clean(launchd_plist_sha256),
+        "manifest_launchd_plist_sha256": _clean(launchd_plist_sha256),
         "execution_profile": stage930_summary.get("execution_profile"),
         "official_live_version": stage930_summary.get("official_live_version"),
         "capital": stage930_summary.get("capital"),
@@ -372,14 +481,14 @@ def build_readonly_session_evidence(
         "runtime_profile": stage930_summary.get("runtime_profile"),
         "mode": stage930_summary.get("mode"),
         "submit_mode": stage930_summary.get("submit_mode"),
-        "plist_execution_profile": _argument_value(
+        "plist_execution_profile": _single_argument_value(
             arguments, "--execution-profile"
         ),
-        "plist_runtime_profile": _argument_value(
+        "plist_runtime_profile": _single_argument_value(
             arguments, "--runtime-profile"
         ),
-        "plist_mode": _argument_value(arguments, "--mode"),
-        "plist_submit_mode": _argument_value(arguments, "--submit-mode"),
+        "plist_mode": _single_argument_value(arguments, "--mode"),
+        "plist_submit_mode": _single_argument_value(arguments, "--submit-mode"),
         "release_manifest_sha256": validated_manifest.get("manifest_sha256"),
         "release_source_commit": validated_manifest.get("source_commit"),
         "stage914_exit_code": stage903_summary.get("stage914_exit_code"),
@@ -399,21 +508,23 @@ def build_readonly_session_evidence(
         ),
         "scheduled_start_epoch_ns": scheduled_start_epoch_ns,
         "daemon_started_epoch_ns": stage930_summary.get("daemon_started_epoch_ns"),
-        "first_market_tick_ingress_epoch_ns": first_tick,
-        "first_market_tick_durable_epoch_ns": durable,
+        "open_minute_tick_ingress_epoch_ns": first_tick,
+        "open_minute_tick_durable_epoch_ns": durable,
         "cycle_started_epoch_ns": stage930_summary.get(
-            "first_market_tick_cycle_started_epoch_ns"
+            "open_minute_tick_cycle_started_epoch_ns"
         ),
         "cycle_finished_epoch_ns": stage930_summary.get(
-            "first_market_tick_cycle_finished_epoch_ns"
+            "open_minute_tick_cycle_finished_epoch_ns"
         ),
         "disconnect_observed": disconnect.get("disconnect_observed", 0),
         "reconnect_observed": disconnect.get("reconnect_observed", 0),
         "disconnect_evidence_id": disconnect.get("disconnect_evidence_id", ""),
-        "disconnect_session_id": disconnect.get("session_id", ""),
-        "disconnect_runtime_profile": disconnect.get("runtime_profile", ""),
-        "disconnect_execution_profile": disconnect.get(
-            "execution_profile", ""
+        "disconnect_session_id": session_id if proof_complete else "",
+        "disconnect_runtime_profile": (
+            stage930_summary.get("runtime_profile") if proof_complete else ""
+        ),
+        "disconnect_execution_profile": (
+            stage930_summary.get("execution_profile") if proof_complete else ""
         ),
         "old_connection_generation": disconnect.get("old_connection_generation", ""),
         "new_connection_generation": disconnect.get("new_connection_generation", ""),
@@ -426,6 +537,8 @@ def build_readonly_session_evidence(
             "cancel_order_api_called_count"
         ),
     }
+    record["capture_record_sha256"] = _record_digest(record)
+    return record
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -433,6 +546,46 @@ def _read_json(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"json_object_required:{path}")
     return value
+
+
+def _sha256_path(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _validate_canonical_plist(
+    *,
+    supplied_path: Path,
+    repo_root: Path,
+    validated_manifest: Mapping[str, Any],
+) -> tuple[str, str, str]:
+    if supplied_path.is_symlink():
+        raise ValueError("launchd_plist_not_canonical_for_session_kind")
+    resolved_supplied = supplied_path.resolve(strict=True)
+    matched = [
+        (kind, relative)
+        for kind, relative in CANONICAL_PLISTS.items()
+        if (repo_root / relative).resolve(strict=True) == resolved_supplied
+    ]
+    if len(matched) != 1:
+        raise ValueError("launchd_plist_not_canonical_for_session_kind")
+    session_kind, relative = matched[0]
+    canonical = (repo_root / relative).resolve(strict=True)
+    digest = _sha256_path(canonical)
+    rows = validated_manifest.get("critical_files")
+    if not isinstance(rows, list):
+        raise ValueError("release_manifest_critical_files_missing")
+    matches = [
+        row
+        for row in rows
+        if isinstance(row, Mapping) and row.get("path") == relative
+    ]
+    if len(matches) != 1 or matches[0].get("sha256") != digest:
+        raise ValueError("launchd_plist_not_bound_to_release_manifest")
+    return session_kind, relative, digest
 
 
 def _write_new_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -450,6 +603,7 @@ def _write_new_json(path: Path, payload: Mapping[str, Any]) -> None:
         if path.exists():
             raise FileExistsError(f"evidence_output_already_exists:{path}")
         os.link(temporary, path)
+        os.chmod(path, 0o444)
         parent_fd = os.open(path.parent, os.O_RDONLY)
         try:
             os.fsync(parent_fd)
@@ -482,13 +636,6 @@ def _build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--launchd-plist", type=Path, required=True)
     capture.add_argument("--release-manifest", type=Path, required=True)
     capture.add_argument("--repo-root", type=Path, required=True)
-    capture.add_argument("--session-id", required=True)
-    capture.add_argument("--session-date", required=True)
-    capture.add_argument("--session-kind", choices=["day", "night"], required=True)
-    capture.add_argument("--scheduled-start-epoch-ns", type=int, required=True)
-    capture.add_argument("--first-market-tick-ingress-epoch-ns", type=int)
-    capture.add_argument("--first-market-tick-durable-epoch-ns", type=int)
-    capture.add_argument("--disconnect-evidence", type=Path)
     capture.add_argument("--output", type=Path, required=True)
     qualify = subparsers.add_parser("qualify")
     qualify.add_argument("--session-evidence", type=Path, action="append", required=True)
@@ -515,21 +662,19 @@ def main() -> None:
             required_runtime_profile=EXPECTED_RUNTIME_PROFILE,
             current_commit=_current_commit(args.repo_root),
         )
+        session_kind, plist_relative_path, plist_sha256 = _validate_canonical_plist(
+            supplied_path=args.launchd_plist,
+            repo_root=args.repo_root.resolve(strict=True),
+            validated_manifest=manifest,
+        )
         payload = build_readonly_session_evidence(
             stage930_summary=summary,
             launchd_plist=plist,
             validated_manifest=manifest,
-            session_id=args.session_id,
-            session_date=args.session_date,
-            session_kind=args.session_kind,
-            scheduled_start_epoch_ns=args.scheduled_start_epoch_ns,
-            first_market_tick_ingress_epoch_ns=args.first_market_tick_ingress_epoch_ns,
-            first_market_tick_durable_epoch_ns=args.first_market_tick_durable_epoch_ns,
-            disconnect_evidence=(
-                _read_json(args.disconnect_evidence)
-                if args.disconnect_evidence
-                else None
-            ),
+            launchd_plist_relative_path=plist_relative_path,
+            launchd_plist_sha256=plist_sha256,
+            stage930_summary_sha256=_sha256_path(args.stage930_summary),
+            session_kind=session_kind,
         )
     else:
         payload = evaluate_readonly_qualification(
