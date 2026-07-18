@@ -1,0 +1,342 @@
+{
+  "allowed_runtime_profiles": [
+    "offline",
+    "production-readonly"
+  ],
+  "capital": 200000.0,
+  "capital_label": "20w",
+  "created_at_utc": "2026-07-18T16:28:34.823204Z",
+  "critical_files": [
+    {
+      "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
+      "sha256": "58d9fefcba2f14f68fb5d00bc34ceddf1b8937e4d1116f5f54257107f9765bdf",
+      "size_bytes": 23159
+    },
+    {
+      "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
+      "sha256": "c125a73526ab64a1d054abd6f5c91100c4a911579566a596a23dce6c0eb6ae7e",
+      "size_bytes": 13162
+    },
+    {
+      "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
+      "sha256": "e0c105df8b9543c9e4ef34eee49cdf9d5ee5d43fc0433207f50fa2838908bf1f",
+      "size_bytes": 4919
+    },
+    {
+      "path": "examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py",
+      "sha256": "57ea03e9d71a679fdcee6004b208e79029363423f6c9c21f353aaffdda50c099",
+      "size_bytes": 14229
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
+      "sha256": "9232239362d7176b0d31d8831b622fbad68a045292e2d76bfd68938765662a96",
+      "size_bytes": 2255
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
+      "sha256": "9d46b3a991297c1ae0a1ce7ddaf1dc7c7cd753bb8af0bc478cb5876a2c2ffc9f",
+      "size_bytes": 2265
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
+      "sha256": "8bd2f71121fc55ef7f1093f294bc3d3b2df3fde467bc7f1e11e2e7ee544afaf6",
+      "size_bytes": 2826
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
+      "sha256": "023accf2f46d45f9cff59771d56bba980649dbe3dd2415eb2ec7ea3f71cb8ccc",
+      "size_bytes": 2840
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist",
+      "sha256": "05b82c469d765427b2a6b4b9194cefdf4cbf825af6bed074fbf4dbbb6eb56f95",
+      "size_bytes": 2197
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
+      "sha256": "051d3210c193fec68c58ac75ece273683eca867f91cc416cf5f6d23419418138",
+      "size_bytes": 1865
+    },
+    {
+      "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
+      "sha256": "eec8d03284d53e6cfe498889e3f3014b4030c00203a33b581f30723783ce2554",
+      "size_bytes": 2107
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+      "sha256": "503e9231615a22195585f8ac9cef4d5b24eb392b3d5dfbcd6ff819e1945f7467",
+      "size_bytes": 6136
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
+      "sha256": "b8d4cff19af95345d71d2be95c32403e66e84094bf1859bcfb977525814c3e3b",
+      "size_bytes": 50491
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+      "sha256": "0f4d0b524629f828915d2ee237faa9eacb176e29efc0b926efecd207199a14fc",
+      "size_bytes": 17134
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py",
+      "sha256": "6860ce201b4c942711cd32ae49b65c93fde74dc5f85d50c987507a76a650436a",
+      "size_bytes": 77363
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
+      "sha256": "8fcb844079ec0cd91e5fa2d0a6815f0eb206ded684e5f3f3904f812464b12332",
+      "size_bytes": 25372
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
+      "sha256": "a3ddea7e2c30c727dccf59c7e3af075de2963ca3c1c2e280b561759a79785c9b",
+      "size_bytes": 85524
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py",
+      "sha256": "289da40ded04515ab2e90ceb6198431b47c16e01f1d5039d15aec95d83eb60d2",
+      "size_bytes": 32979
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
+      "sha256": "71bdf8a461d81caa4b2ab5036f63ed14e247ae0514f5dd087092b45b6b6faeab",
+      "size_bytes": 5310
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py",
+      "sha256": "b9f2050c118f52a4d61f9bc2a204b23efcd28817d42de5c2d624a55a20bf7d85",
+      "size_bytes": 18070
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
+      "sha256": "8c5eec22c377d250511822b27721c15f3c3ca23e0c4a3b0adb092f2086f65a7b",
+      "size_bytes": 6981
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py",
+      "sha256": "f548a370242ca104db8b33d8c7fff1e51a187264b76b67dd2b54a259b0a39658",
+      "size_bytes": 17302
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
+      "sha256": "972ed74f31b0343131f47345fdb5380eeaf37e06aa06a0af0d860f8204833ab9",
+      "size_bytes": 13975
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py",
+      "sha256": "a0d9fa21af1cf5761b5ddba9b2813dc684c04251e1d61229843122bc5e035e7c",
+      "size_bytes": 33322
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py",
+      "sha256": "4816aeb322fe7e9c98c9c60129de611c2c868597df6d4f6d3d93e2d6f15677ec",
+      "size_bytes": 69781
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py",
+      "sha256": "7bf2ca5d90fd01445253f494bdf30d7d435125bdaa59955a3e8dfcd45534ac1d",
+      "size_bytes": 32439
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py",
+      "sha256": "aa7143b86fd62ae69a57749848d1e104337f75569a635f826039ef179ca67345",
+      "size_bytes": 3883
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_time.py",
+      "sha256": "ce66363cbc1838a0c7fb684d97e157ee66b652b007e617ac6a442d8fbc55a711",
+      "size_bytes": 4029
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_trace.py",
+      "sha256": "6b17a1965d7afbf9116d2db20237ea88539ccce4f3aa762a1a4d8afc35146e5b",
+      "size_bytes": 33546
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
+      "sha256": "0cfc4c592ab3ad3ffa119d6b3713c80c2a15c207880bbe208d986d1b8092ba0c",
+      "size_bytes": 5069
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
+      "sha256": "7aa70be593304f08426160bf138af2bdc3379c10f81ad1c404ee66d16b432597",
+      "size_bytes": 2010
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
+      "sha256": "f36c8fb9b3b6bfcbe90a0e1b97c5e8b7df9b08a2bc143f688998b32b18483fc5",
+      "size_bytes": 59849
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
+      "sha256": "7cc317d72e4598ef8239b0ac921230ad27b55247531dc5e2d3fa8d89771c8c7d",
+      "size_bytes": 126944
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+      "sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55",
+      "size_bytes": 61731
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
+      "sha256": "beec65aecd565de89b25b4792f2ffcacb5ee7e5bedc6ab79ce830c3da1749332",
+      "size_bytes": 27283
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
+      "sha256": "4233d5dc3504e0b3f3da5b233f962bdab4f9eae7c74bf2c0568d282d282ef019",
+      "size_bytes": 28469
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
+      "sha256": "ab774b258699f243b46c04d5be5394bfdb1359e8f6ee5084591ab5a42370632d",
+      "size_bytes": 78797
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
+      "sha256": "d7498f0ffbf8a6fd49836cdb8be46622c20229d7505dd7ac6487b7ea7de94cd3",
+      "size_bytes": 213046
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py",
+      "sha256": "9844c84f76baf8e1d14117f85d3dfe60c74f4687fa15282cd7f44da6c9f5bc46",
+      "size_bytes": 74060
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
+      "sha256": "e28a4c434f24fcd83cda4ef6d70f0c7d1aa16f16a3ca1b831b753c94ec0a9f27",
+      "size_bytes": 14981
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
+      "sha256": "44fd43c35e529adf80fe28a8261640405cbf7fda7ec71a568de1f89e8db23957",
+      "size_bytes": 23529
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage927_official_live_real_submit_arming_gate.py",
+      "sha256": "1baca59c940524b013d3ecfb46931956d36ae6c6d2f9358c189e2e3433367a3f",
+      "size_bytes": 23898
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py",
+      "sha256": "2597d0e21007203db454d113184bf760b2439e94ee943392edb569b5076839aa",
+      "size_bytes": 77568
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
+      "sha256": "c08d76c9e24bbeab64a53d97e82aac555526c844bfd62921c49edfcac66f26eb",
+      "size_bytes": 149958
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
+      "sha256": "edaa8bff11f8cfe72fbe916d7cd99c7e1d986b63a046feeb4b0ecca9d7bd2166",
+      "size_bytes": 6009
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_owned_child_guard.py",
+      "sha256": "ca23c61e8aebdf70015abe1cab61df8775576ed8d4593b4f1faa82eac1ceefb9",
+      "size_bytes": 5614
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_supervisor_child.py",
+      "sha256": "6b6ab170a861d9d01f42a5de0c12b943ba8aa8ad58f1c65883a5078ec8ecff59",
+      "size_bytes": 389
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+      "sha256": "944adfc505b10b043a16b2216cf82c124397760023a82e707b7f57fa244803a2",
+      "size_bytes": 309199
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
+      "sha256": "8aa1dfc6cddfce81d9c84dd09721754b9d882f50acf0eec542806d757b695e72",
+      "size_bytes": 43364
+    },
+    {
+      "path": "tests/stage179_performance_gate.py",
+      "sha256": "ad9ae81e8ef48a75b97e5564ef6702f3173ecc42745b5a4b363282b39e0c13a3",
+      "size_bytes": 26246
+    },
+    {
+      "path": "tests/test_stage179_fault_matrix.py",
+      "sha256": "77e5f97628380b29562324a00660bfec55f2233086cce7898206aa4688acf793",
+      "size_bytes": 12864
+    },
+    {
+      "path": "tests/test_stage179_official_execution_profile.py",
+      "sha256": "5c835c37a3967af861b0966089e9402f335b4d2ab37c2055855566231e901d67",
+      "size_bytes": 4274
+    },
+    {
+      "path": "tests/test_stage179_performance_gate_diagnostics.py",
+      "sha256": "007d294906a4f7a642f4d453468f320f525ac304e88d3faf9b277dff1675640b",
+      "size_bytes": 5354
+    },
+    {
+      "path": "tests/test_stage179_stage260_execution_profile.py",
+      "sha256": "8999a2dc0d15038e4eb09c09a63ef97a87ab196c7bb758233366a803b438c2ce",
+      "size_bytes": 8880
+    },
+    {
+      "path": "tests/test_stage179_stage372_daemon_boundary.py",
+      "sha256": "bc34c61eeca58dabd54604a9dc9442ce24f61a0a3fb00b06344063c380ebfa7d",
+      "size_bytes": 4136
+    },
+    {
+      "path": "tests/test_stage179_stage372_daily_intents.py",
+      "sha256": "4b44d33814292838f3c408b6cfc81dde3146d8b1d2306b31743b07b42f6cac55",
+      "size_bytes": 6267
+    },
+    {
+      "path": "tests/test_stage179_stage372_shadow_precompute.py",
+      "sha256": "021930cf9f825a6cde85938fd90dcf18abc4a612969fa692c5984e5dabd0899c",
+      "size_bytes": 7502
+    },
+    {
+      "path": "tests/test_stage179_stage372_submit_boundary.py",
+      "sha256": "740999537b1e7764c9735b284cbaabdab56a5190517b21034f9891776558a245",
+      "size_bytes": 2475
+    },
+    {
+      "path": "tests/test_stage179_submit_authorization.py",
+      "sha256": "b8793443652f6b66209cca6338e1184a56f98eabf9b8b66da4a94bf85f835c01",
+      "size_bytes": 9352
+    },
+    {
+      "path": "tests/test_stage179_two_executor_process_race.py",
+      "sha256": "510a4430c2ae7c98e616562809f3b6b866a348ce60bc98212aaa5c75d71a4bca",
+      "size_bytes": 15687
+    },
+    {
+      "path": "tests/test_stage930_fast_lane.py",
+      "sha256": "b18d68f86388c6cb3aaa33956f5317e7f39f49d1d195ed99d6a0a7c996ad13ca",
+      "size_bytes": 85269
+    }
+  ],
+  "execution_profile": "stage372-20w",
+  "ledger_contract": {
+    "intent_fingerprint_versions": [
+      1,
+      2
+    ],
+    "reader_capabilities": [
+      "batch_api_slot_cas_v1",
+      "close_uuid_lease_v1",
+      "intent_fingerprint_v1",
+      "intent_fingerprint_v2",
+      "ledger_schema_1",
+      "spool_crash_recovery_v1"
+    ],
+    "schema_version": 1
+  },
+  "manifest_sha256": "c0dde1dead9d2e00140dd1be4dcde63f2d39c73e7e7a2466bde79f6c03f9363e",
+  "official_version": "official_live_stage372_20w_recovery_sleeve",
+  "release_id": "stage179-stage372-no-submit-d113a4bd4",
+  "schema_version": 2,
+  "source_commit": "d113a4bd4065b895f7bed06098abe556fa4b021b",
+  "strategy_semantics_qualification": {
+    "evidence_id": "stage372-source-inputs-not-reproducible",
+    "status": "blocked"
+  },
+  "tree_fingerprint": "d6a06c8832cd5206d20a82b915e00a58245e84b83f30258970d82ea9a4625396"
+}
