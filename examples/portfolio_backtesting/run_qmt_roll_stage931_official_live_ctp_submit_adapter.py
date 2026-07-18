@@ -16,7 +16,12 @@ from typing import Any, Callable, Iterator
 
 import pandas as pd
 
-from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_CAPITAL,
+    OFFICIAL_LIVE_CAPITAL_LABEL,
+    OFFICIAL_LIVE_VERSION,
+)
 from qmt_roll_official_live_execution_ledger import (
     append_execution_ledger_event,
     duplicate_blocker,
@@ -43,6 +48,15 @@ from qmt_roll_official_live_c9_intraday_state import (
     RETRY_STOP_ACTION_ROLE,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
+from qmt_roll_official_live_runtime_profile import (
+    ExecutionRuntimeProfile,
+    OrderScope,
+    RuntimeProfileError,
+    resolve_runtime_profile,
+)
+from run_qmt_roll_stage914_official_live_ctp_runtime_preflight import (
+    evaluate_stage179_pre_adapter_gate,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.event import EVENT_TIMER, EventEngine
 from vnpy.trader.constant import Direction, Exchange, Offset, OrderType, Status
@@ -4426,6 +4440,27 @@ def main() -> None:
     parser.add_argument("--target-date", required=True)
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--confirm-live-real", default="")
+    parser.add_argument(
+        "--stage179-warm-executor",
+        action="store_true",
+        help=(
+            "Explicitly opt into the new Stage179 execution generation. "
+            "Default keeps the existing legacy Stage931 path unchanged."
+        ),
+    )
+    parser.add_argument(
+        "--runtime-profile",
+        choices=[item.value for item in ExecutionRuntimeProfile],
+        default=ExecutionRuntimeProfile.OFFLINE.value,
+    )
+    parser.add_argument(
+        "--order-scope",
+        choices=[item.value for item in OrderScope],
+        default=OrderScope.NONE.value,
+    )
+    parser.add_argument("--stage179-release-manifest", default="")
+    parser.add_argument("--stage179-activation-receipt", default="")
+    parser.add_argument("--confirm-stage179-activation", default="")
     parser.add_argument("--max-orders", type=int, default=1)
     parser.add_argument(
         "--reduce-close-only",
@@ -4601,6 +4636,75 @@ def main() -> None:
         missing = _missing_env()
         if missing:
             blockers.append("missing_ctp_env:" + ",".join(missing))
+
+    stage179_gate_summary: dict[str, Any] = {
+        "opted_in": int(bool(args.stage179_warm_executor)),
+        "evaluated": 0,
+        "runtime_profile": args.runtime_profile,
+        "order_scope": args.order_scope,
+        "manifest_sha256": "",
+        "blockers": [],
+        "adapter_created": 0,
+    }
+    if args.stage179_warm_executor:
+        try:
+            if args.mode == "live-real" and (
+                args.runtime_profile != ExecutionRuntimeProfile.PRODUCTION_LIVE.value
+                or args.order_scope != OrderScope.LIVE.value
+            ):
+                raise RuntimeProfileError(
+                    "live_real_requires_production_live_profile_and_scope"
+                )
+            resolved_runtime = resolve_runtime_profile(
+                profile=args.runtime_profile,
+                order_scope=args.order_scope,
+                repo_root=Path(__file__).resolve().parents[2],
+            )
+            gate_stage927_age = _age_seconds(stage927.get("generated_at"))
+            stage179_gate = evaluate_stage179_pre_adapter_gate(
+                resolved=resolved_runtime,
+                release_manifest_path=args.stage179_release_manifest,
+                repo_root=resolved_runtime.repo_root,
+                expected_official_version=OFFICIAL_LIVE_VERSION,
+                expected_capital=OFFICIAL_LIVE_CAPITAL,
+                expected_capital_label=OFFICIAL_LIVE_CAPITAL_LABEL,
+                environment=os.environ,
+                confirmation=args.confirm_stage179_activation,
+                activation_receipt_path=(
+                    args.stage179_activation_receipt or None
+                ),
+                phase_d_real_submit_ready=bool(
+                    _env_enabled(PHASE_D_REAL_ADAPTER_ENV)
+                    and _env_enabled(PHASE_D_REAL_ENABLED_ENV)
+                    and args.confirm_live_real == PHASE_D_CONFIRM_TEXT
+                    and not _missing_env()
+                ),
+                stage927_ready=bool(
+                    stage927.get("real_submit_permitted") == 1
+                    and gate_stage927_age is not None
+                    and gate_stage927_age <= args.max_stage927_age_seconds
+                ),
+                kill_switch_clear=not bool(
+                    kill_switch.get("enabled", False)
+                    or kill_switch.get("kill_switch_active", False)
+                ),
+                broker_gates_fresh=not blockers,
+            )
+            stage179_gate_summary = {
+                "opted_in": 1,
+                "evaluated": 1,
+                "runtime_profile": resolved_runtime.profile.value,
+                "order_scope": resolved_runtime.order_scope.value,
+                "manifest_sha256": stage179_gate.manifest_sha256,
+                "blockers": list(stage179_gate.blockers),
+                "adapter_created": int(stage179_gate.adapter_created),
+            }
+            blockers.extend(stage179_gate.blockers)
+        except (RuntimeProfileError, OSError, ValueError) as exc:
+            blocker = f"stage179_runtime_profile_invalid:{exc}"
+            stage179_gate_summary["evaluated"] = 1
+            stage179_gate_summary["blockers"] = [blocker]
+            blockers.append(blocker)
 
     ledger_intent_rows: list[dict[str, Any]] = []
     for row in ready.to_dict(orient="records"):
@@ -5475,6 +5579,7 @@ def main() -> None:
         "target_date_age_days": target_age_days,
         "current_phase_d_sessions": current_phase_d_sessions,
         "continuous_submit_blockers": continuous_submit_blockers,
+        "stage179_pre_adapter_gate": stage179_gate_summary,
         "ledger_path": str(LIVE_EXECUTION_LEDGER_PATH.resolve()),
         "ledger_counts_before": ledger_counts,
         "ledger_intents": ledger_intent_rows,
