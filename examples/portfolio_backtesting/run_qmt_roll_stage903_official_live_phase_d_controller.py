@@ -18,6 +18,7 @@ from pandas.errors import EmptyDataError
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
     OfficialExecutionProfile,
+    assert_profile_identity,
     resolve_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import (
@@ -437,6 +438,35 @@ def _run_stage914(
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": _parse_json_stdout(result.stdout),
     }
+
+
+def _stage914_result_ready(
+    result: dict[str, Any],
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> bool:
+    exit_code = result.get("exit_code")
+    if type(exit_code) is not int or exit_code != 0:
+        return False
+    summary = result.get("summary", {})
+    if not isinstance(summary, dict):
+        return False
+    if summary.get("execution_profile") != execution_profile.profile_key:
+        return False
+    try:
+        assert_profile_identity(
+            execution_profile,
+            official_version=summary.get("official_live_version"),
+            capital=summary.get("capital"),
+            capital_label=summary.get("capital_label"),
+        )
+    except (TypeError, ValueError):
+        return False
+    return (
+        summary.get("preflight_status")
+        == "production_readonly_preflight_passed"
+        and _to_int(summary.get("blocking_failure_count"), 999) == 0
+    )
 
 
 def _run_stage608_intraday_tick_refresh(
@@ -1491,10 +1521,9 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         wait_seconds=args.readonly_wait_seconds,
         execution_profile=execution_profile,
     )
-    stage914_summary = stage914_result.get("summary", {})
-    stage914_ready = (
-        stage914_summary.get("preflight_status") == "production_readonly_preflight_passed"
-        and _to_int(stage914_summary.get("blocking_failure_count"), 999) == 0
+    stage914_ready = _stage914_result_ready(
+        stage914_result,
+        execution_profile=execution_profile,
     )
     readonly_age = _age_seconds(readonly_summary.get("generated_at"), now)
     broker_snapshot = readonly_summary.get("broker_snapshot", {}) if isinstance(readonly_summary.get("broker_snapshot"), dict) else {}

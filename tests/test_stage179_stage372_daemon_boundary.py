@@ -151,6 +151,58 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
 
         self.assertEqual(result["summary"], same_run_summary)
 
+    def test_stage914_readiness_binds_exit_code_and_profile(self) -> None:
+        passed = {
+            "execution_profile": STAGE372_20W_PROFILE.profile_key,
+            "official_live_version": STAGE372_20W_PROFILE.official_version,
+            "capital": STAGE372_20W_PROFILE.capital,
+            "capital_label": STAGE372_20W_PROFILE.capital_label,
+            "preflight_status": "production_readonly_preflight_passed",
+            "blocking_failure_count": 0,
+        }
+        self.assertFalse(
+            stage903._stage914_result_ready(
+                {"exit_code": 139, "summary": passed},
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+        )
+        self.assertFalse(
+            stage903._stage914_result_ready(
+                {"exit_code": "0", "summary": passed},
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+        )
+        self.assertFalse(
+            stage903._stage914_result_ready(
+                {
+                    "exit_code": 0,
+                    "summary": {
+                        **passed,
+                        "execution_profile": "c9-15w-historical",
+                    },
+                },
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+        )
+        self.assertFalse(
+            stage903._stage914_result_ready(
+                {
+                    "exit_code": 0,
+                    "summary": {
+                        **passed,
+                        "capital": STAGE372_20W_PROFILE.capital + 1,
+                    },
+                },
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+        )
+        self.assertTrue(
+            stage903._stage914_result_ready(
+                {"exit_code": 0, "summary": passed},
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+        )
+
     def test_stage372_directory_provisioner_is_bounded_and_idempotent(self) -> None:
         script = (
             PORTFOLIO_DIR
@@ -164,7 +216,8 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
         self.assertIsNotNone(spec)
         self.assertIsNotNone(spec.loader)
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        with patch.dict(sys.modules, {spec.name: module}):
+            spec.loader.exec_module(module)
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "stage179_stage372"
@@ -192,10 +245,12 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                 )
             )
 
-            required = module.collect_required_directories(
-                [plist_path],
-                allowed_root=root,
-            )
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                plan = module.build_directory_provision_plan()
+                required = plan.directories
             resolved_root = root.resolve(strict=False)
             self.assertEqual(
                 set(required),
@@ -207,9 +262,17 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                     resolved_root / "signal-input",
                 },
             )
-            check = module.provision_directories(required, create=False)
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                check = module.provision_directories(plan, create=False)
             self.assertEqual(check["status"], "directories_missing")
-            created = module.provision_directories(required, create=True)
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                created = module.provision_directories(plan, create=True)
             self.assertEqual(created["status"], "directories_ready")
             self.assertEqual(created["launchctl_called_count"], 0)
             self.assertEqual(created["order_api_called_count"], 0)
@@ -217,13 +280,21 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                 stat.S_IMODE(resolved_root.stat().st_mode),
                 0o750,
             )
-            repeated = module.provision_directories(required, create=True)
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                repeated = module.provision_directories(plan, create=True)
             self.assertEqual(repeated["created_count"], 0)
             resolved_root.chmod(0o755)
-            permission_drift = module.provision_directories(
-                required,
-                create=False,
-            )
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                permission_drift = module.provision_directories(
+                    plan,
+                    create=False,
+                )
             self.assertEqual(
                 permission_drift["status"],
                 "directories_permission_mismatch",
@@ -232,6 +303,17 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                 permission_drift["permission_mismatch_count"],
                 1,
             )
+            with (
+                patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                patch.object(module, "DEFAULT_PLISTS", (plist_path,)),
+            ):
+                repaired = module.provision_directories(plan, create=True)
+            self.assertEqual(repaired["status"], "directories_ready")
+            self.assertEqual(
+                repaired["permission_mismatch_before_count"],
+                1,
+            )
+            self.assertEqual(repaired["permission_mismatch_count"], 0)
 
             outside_plist = Path(tmp) / "outside.plist"
             outside_plist.write_bytes(
@@ -243,10 +325,25 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                 ValueError,
                 "stage372_launchd_directory_outside_allowed_root",
             ):
-                module.collect_required_directories(
-                    [outside_plist],
-                    allowed_root=root,
-                )
+                with (
+                    patch.object(module, "DEFAULT_ALLOWED_ROOT", root),
+                    patch.object(
+                        module,
+                        "DEFAULT_PLISTS",
+                        (outside_plist,),
+                    ),
+                ):
+                    module.build_directory_provision_plan()
+
+            with (
+                patch.object(sys, "argv", [
+                    "provisioner",
+                    "--allowed-root",
+                    str(root),
+                ]),
+                self.assertRaises(SystemExit),
+            ):
+                module.main()
 
 
 if __name__ == "__main__":

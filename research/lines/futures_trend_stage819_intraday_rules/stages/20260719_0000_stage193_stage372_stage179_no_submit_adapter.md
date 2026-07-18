@@ -153,13 +153,22 @@
 - 本轮没有新回测、没有加载 launchd、没有调用任何报撤单 API。新增关键源码后 manifest 必须从新干净 HEAD 再次冻结，旧 digest 只作历史证据。
 - P2 修复提交 `270819ea6837a590302007eaef12e192d5fb74a5` 后，从干净 detached worktree 生成 62 个 critical files 的 schema v2 no-submit manifest；新增 provisioner 已纳入冻结范围。release id `stage179-stage372-no-submit-270819ea6`，manifest digest `4341c58ae238d66f354fe72a54cf6815edb2a356d099f68aa9fd03c77d8bd1a8`，文件 SHA-256 `e1e212e3d90c40f9779f3a72b78cba0447fcb2d9d3aaed1e8423d549fc594cd7`；资格保持 `blocked`，只允许 offline/production-readonly。
 
+### 2026-07-19 01:13-01:21 provisioner 与 Stage914 资格绑定终审修复
+
+- 独立 Agent 对冻结 HEAD `aa810d9e1a60c7d77d9a8a487dd108e9376fc649` 的审查结果为 `P0=0、P1=1、P2=3`。唯一 P1 是目录 provisioner 暴露 `--allowed-root/--plist`，调用者可把 `/Users/bytedance` 等宽根本身加入 required set，并在 create 模式执行 `chmod 0750`；原有测试因只使用临时专属根而没有覆盖该攻击面。
+- provisioner 现只允许从模块内固定的 `DEFAULT_ALLOWED_ROOT/DEFAULT_PLISTS` 构造密封 plan，执行前重新解析 canonical plist 并逐项核对 root、plist 和目录集合；公共 CLI 删除 `--allowed-root/--plist`，只保留 `--mode check/create`。任意越界 plist、非 canonical plan 或旧宽根 CLI 参数均失败关闭。
+- create 模式新增修复前权限漂移证据 `permission_mismatches_before`，修复后继续报告最终 mismatch；重复执行保持幂等，`launchctl=0`、order API `0/0`。
+- Stage903 的 Stage914 readiness 现同时要求：同一子进程 `exit_code` 为严格整数 `0`、summary 为本次 stdout JSON、profile key 精确匹配、official version/capital/capital label 完整匹配、preflight passed 且 blocker 为 0。独立审查复现的 `exit 139 + passed JSON` 和错 profile/资金 summary 均不能进入 ready。
+- TDD 聚焦验证 `7 passed`；扩大执行链回归覆盖 `test_qmt_* + test_official_live_* + test_stage*`，结果 `697 passed, 245 subtests passed`，耗时 `74.66s`。Python compile 与 `git diff --check` 通过。
+- 本轮没有调整任何 alpha 参数，没有运行新回测，没有连接 CTP/SimNow，没有加载 launchd，也没有调用报撤单 API。由于关键源码再次变化，`aa810...` manifest 已失效，必须从修复提交重新冻结并再次独立审查。
+
 ## 结论与硬门禁
 
-- 代码合入判断：`GO`，严格限定为 no-submit 代码与 dormant plist。两轮 follow-up 新发现的产物快照和 canonical profile 换绑 P1 均已修复；最终独立终审为 `P0=0、P1=0`。
+- 代码合入判断：`待最终独立复审`。最新 P1 已按失败关闭原则修复且 697 条扩大回归通过，但在新 manifest 冻结与独立 Agent 将 `P0/P1` 重新清零前，不恢复 no-submit 合入 `GO`。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
 - 激活判断：release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍因 CTP 未就绪而 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：冻结包含 Stage903/run-binding 与 provisioner 的新 manifest，再做独立审查；由合入者将 no-submit 候选合入线上代码库，但保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：先提交本轮 P1/P2 修复，从干净 detached worktree 冻结新 manifest，再让独立 Agent 重放宽根 CLI 与 `exit 139 + passed JSON` 攻击并给出四类 GO/NO-GO。之后才可由合入者合入 no-submit 候选，且保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 

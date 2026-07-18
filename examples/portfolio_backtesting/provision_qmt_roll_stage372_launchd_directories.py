@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 from pathlib import Path
 import plistlib
@@ -27,6 +28,15 @@ _DIRECTORY_ENV_KEYS = {
     "OFFICIAL_LIVE_SIGNAL_INPUT_DIR",
 }
 _RUNTIME_ROOT_FLAG = "--stage179-runtime-root"
+_PLAN_SEAL = object()
+
+
+@dataclass(frozen=True, slots=True, init=False)
+class DirectoryProvisionPlan:
+    allowed_root: Path
+    plist_paths: tuple[Path, ...]
+    directories: tuple[Path, ...]
+    _seal: object
 
 
 def _bounded_directory(value: Any, *, allowed_root: Path) -> Path:
@@ -39,7 +49,7 @@ def _bounded_directory(value: Any, *, allowed_root: Path) -> Path:
     return candidate
 
 
-def collect_required_directories(
+def _collect_required_directories(
     plist_paths: Iterable[Path | str],
     *,
     allowed_root: Path | str,
@@ -89,23 +99,71 @@ def collect_required_directories(
     return tuple(sorted(required, key=str))
 
 
+def build_directory_provision_plan() -> DirectoryProvisionPlan:
+    allowed_root = DEFAULT_ALLOWED_ROOT.expanduser().resolve(strict=False)
+    plist_paths = tuple(
+        path.expanduser().resolve(strict=True) for path in DEFAULT_PLISTS
+    )
+    directories = _collect_required_directories(
+        plist_paths,
+        allowed_root=allowed_root,
+    )
+    plan = object.__new__(DirectoryProvisionPlan)
+    object.__setattr__(plan, "allowed_root", allowed_root)
+    object.__setattr__(plan, "plist_paths", plist_paths)
+    object.__setattr__(plan, "directories", directories)
+    object.__setattr__(plan, "_seal", _PLAN_SEAL)
+    return plan
+
+
+def _validate_plan(plan: DirectoryProvisionPlan) -> None:
+    if (
+        not isinstance(plan, DirectoryProvisionPlan)
+        or getattr(plan, "_seal", None) is not _PLAN_SEAL
+    ):
+        raise ValueError("stage372_launchd_directory_plan_not_canonical")
+    allowed_root = DEFAULT_ALLOWED_ROOT.expanduser().resolve(strict=False)
+    plist_paths = tuple(
+        path.expanduser().resolve(strict=True) for path in DEFAULT_PLISTS
+    )
+    directories = _collect_required_directories(
+        plist_paths,
+        allowed_root=allowed_root,
+    )
+    if (
+        plan.allowed_root != allowed_root
+        or plan.plist_paths != plist_paths
+        or plan.directories != directories
+    ):
+        raise ValueError("stage372_launchd_directory_plan_not_canonical")
+
+
+def _permission_mismatches(paths: Iterable[Path]) -> list[dict[str, str]]:
+    return [
+        {
+            "path": str(path),
+            "observed_mode": oct(stat.S_IMODE(path.stat().st_mode)),
+            "required_mode": "0o750",
+        }
+        for path in paths
+        if path.is_dir() and stat.S_IMODE(path.stat().st_mode) != 0o750
+    ]
+
+
 def provision_directories(
-    directories: Iterable[Path | str],
+    plan: DirectoryProvisionPlan,
     *,
     create: bool,
 ) -> dict[str, Any]:
-    required = tuple(
-        sorted(
-            {Path(path).expanduser().resolve(strict=False) for path in directories},
-            key=str,
-        )
-    )
+    _validate_plan(plan)
+    required = plan.directories
     missing_before: list[str] = []
     for path in required:
         if path.exists() and not path.is_dir():
             raise ValueError(f"stage372_launchd_directory_not_directory:{path}")
         if not path.is_dir():
             missing_before.append(str(path))
+    permission_mismatches_before = _permission_mismatches(required)
     created: list[str] = []
     if create:
         for path in required:
@@ -114,15 +172,7 @@ def provision_directories(
                 created.append(str(path))
             path.chmod(0o750)
     missing_after = [str(path) for path in required if not path.is_dir()]
-    permission_mismatches = [
-        {
-            "path": str(path),
-            "observed_mode": oct(stat.S_IMODE(path.stat().st_mode)),
-            "required_mode": "0o750",
-        }
-        for path in required
-        if path.is_dir() and stat.S_IMODE(path.stat().st_mode) != 0o750
-    ]
+    permission_mismatches = _permission_mismatches(required)
     if missing_after:
         status = "directories_missing"
     elif permission_mismatches:
@@ -137,6 +187,10 @@ def provision_directories(
         "missing_after": missing_after,
         "created": created,
         "created_count": len(created),
+        "permission_mismatches_before": permission_mismatches_before,
+        "permission_mismatch_before_count": len(
+            permission_mismatches_before
+        ),
         "permission_mismatches": permission_mismatches,
         "permission_mismatch_count": len(permission_mismatches),
         "launchctl_called_count": 0,
@@ -158,36 +212,19 @@ def main() -> None:
         choices=("check", "create"),
         default="check",
     )
-    parser.add_argument(
-        "--allowed-root",
-        type=Path,
-        default=DEFAULT_ALLOWED_ROOT,
-    )
-    parser.add_argument(
-        "--plist",
-        type=Path,
-        action="append",
-        default=[],
-    )
     args = parser.parse_args()
-    directories = collect_required_directories(
-        args.plist or DEFAULT_PLISTS,
-        allowed_root=args.allowed_root,
-    )
+    plan = build_directory_provision_plan()
     summary = provision_directories(
-        directories,
+        plan,
         create=args.mode == "create",
     )
     summary.update(
         {
-            "allowed_root": str(
-                args.allowed_root.expanduser().resolve(strict=False)
-            ),
-            "plists": [
-                str(Path(path).expanduser().resolve(strict=False))
-                for path in (args.plist or DEFAULT_PLISTS)
+            "allowed_root": str(plan.allowed_root),
+            "plists": [str(path) for path in plan.plist_paths],
+            "required_directories": [
+                str(path) for path in plan.directories
             ],
-            "required_directories": [str(path) for path in directories],
         }
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
