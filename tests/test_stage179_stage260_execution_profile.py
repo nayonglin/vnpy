@@ -19,6 +19,7 @@ PORTFOLIO_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_ba
 if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
+import qmt_roll_official_execution_profile as execution_profiles
 from qmt_roll_official_execution_profile import STAGE372_20W_PROFILE
 from qmt_roll_official_pending_artifact import (
     load_validated_artifact_snapshot,
@@ -44,6 +45,12 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             pending_orders_path=temp_dir / "pending.csv",
             pending_orders_audit_path=temp_dir / "audit.json",
         )
+        registry_patch = patch.dict(
+            execution_profiles._PROFILES,
+            {self.profile.profile_key: self.profile},
+        )
+        registry_patch.start()
+        self.addCleanup(registry_patch.stop)
 
     def _official_summary(self) -> dict[str, object]:
         return {
@@ -280,12 +287,45 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
 
         with self.assertRaisesRegex(
             ValueError,
-            "pending_artifact_snapshot_paths_mismatch",
+            "execution_profile_not_canonical",
         ):
             materialize_validated_artifact_snapshot(
                 STAGE372_20W_PROFILE,
                 snapshot,
             )
+
+    def test_public_loader_rejects_pre_rebound_profile_paths(self) -> None:
+        self._snapshot()
+
+        with patch.dict(
+            execution_profiles._PROFILES,
+            {STAGE372_20W_PROFILE.profile_key: STAGE372_20W_PROFILE},
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "execution_profile_not_canonical",
+            ):
+                load_validated_artifact_snapshot(self.profile)
+
+    def test_stage260_rejects_pre_rebound_profile_and_snapshot(self) -> None:
+        snapshot = self._snapshot()
+
+        with patch.dict(
+            execution_profiles._PROFILES,
+            {STAGE372_20W_PROFILE.profile_key: STAGE372_20W_PROFILE},
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "execution_profile_not_canonical",
+            ):
+                run_daily_execution_gate(
+                    self.profile,
+                    artifact_snapshot=snapshot,
+                    readonly_summary={},
+                    positions=pd.DataFrame(),
+                    orders=pd.DataFrame(),
+                    write_outputs=False,
+                )
 
     def test_audit_generation_change_during_snapshot_read_fails_closed(self) -> None:
         self._snapshot()

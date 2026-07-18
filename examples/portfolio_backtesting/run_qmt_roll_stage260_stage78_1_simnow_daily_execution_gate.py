@@ -14,6 +14,7 @@ from pandas.errors import EmptyDataError
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
     OfficialExecutionProfile,
+    assert_canonical_execution_profile,
     assert_profile_identity,
     resolve_execution_profile,
 )
@@ -489,6 +490,7 @@ def run_daily_execution_gate(
     now: datetime | None = None,
     write_outputs: bool = True,
 ) -> Stage260RunResult:
+    assert_canonical_execution_profile(profile)
     artifact_hashes: Mapping[str, str] = {}
     pending_cohort_id = ""
     if not profile.intraday_stop_retry_enabled:

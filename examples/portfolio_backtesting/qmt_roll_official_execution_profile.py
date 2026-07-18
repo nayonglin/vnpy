@@ -167,6 +167,19 @@ def assert_profile_identity(
         )
 
 
+def assert_canonical_execution_profile(
+    profile: OfficialExecutionProfile,
+) -> None:
+    if not isinstance(profile, OfficialExecutionProfile):
+        raise ValueError("execution_profile_not_canonical")
+    try:
+        registered = resolve_execution_profile(profile.profile_key)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("execution_profile_not_canonical") from exc
+    if profile != registered:
+        raise ValueError("execution_profile_not_canonical")
+
+
 def assert_intent_source_allowed(
     profile: OfficialExecutionProfile,
     source: Any,
@@ -184,6 +197,7 @@ __all__ = [
     "ExecutionStrategyMode",
     "OfficialExecutionProfile",
     "STAGE372_20W_PROFILE",
+    "assert_canonical_execution_profile",
     "assert_intent_source_allowed",
     "assert_profile_identity",
     "resolve_execution_profile",

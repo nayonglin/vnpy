@@ -13,6 +13,7 @@ from pandas.errors import EmptyDataError
 
 from qmt_roll_official_execution_profile import (
     OfficialExecutionProfile,
+    assert_canonical_execution_profile,
     assert_profile_identity,
 )
 
@@ -322,6 +323,7 @@ def _build_validated_artifact_snapshot(
 def load_validated_artifact_snapshot(
     profile: OfficialExecutionProfile,
 ) -> ValidatedArtifactSnapshot:
+    assert_canonical_execution_profile(profile)
     try:
         audit_before = profile.pending_orders_audit_path.read_bytes()
         official_summary_bytes = profile.summary_path.read_bytes()
@@ -347,6 +349,7 @@ def materialize_validated_artifact_snapshot(
     profile: OfficialExecutionProfile,
     snapshot: ValidatedArtifactSnapshot | None,
 ) -> MaterializedArtifactSnapshot:
+    assert_canonical_execution_profile(profile)
     if (
         not isinstance(snapshot, ValidatedArtifactSnapshot)
         or snapshot._seal is not _SNAPSHOT_SEAL

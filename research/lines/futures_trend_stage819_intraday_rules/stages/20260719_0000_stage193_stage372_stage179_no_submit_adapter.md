@@ -123,6 +123,14 @@
 - 本修复不调整入场、止损、重进场、AI 池或仓位参数；没有运行新回测、没有连接 CTP、没有调用报撤单 API。
 - 快照修复提交 `513b3028c7baf108a8ab5222158b3fcdeaa9fcb1` 后，从干净 detached worktree 重新生成 61 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-513b3028c`，manifest digest `cc88bf26658c3099a1828e818c83247896e2bf705d4528156d4ecbd5a0048533e`，文件 SHA-256 `cf50ce2b530a78f2e2ee983c78efece3e710171b270d2e91aa81ef70c2aa954a`。实际 loader 验证 production-readonly 通过；SimNow、broker-test、production-live 均以 runtime profile 不允许而拒绝。
 
+### 2026-07-19 00:49-01:05 canonical profile 换绑 P1 修复
+
+- 独立 Agent 对 HEAD `245410f5e` 再次复审得到 `P0=0、P1=1、P2=4`。原外部 DataFrame 覆盖攻击已关闭，但复现出公共调用者可用 `dataclasses.replace` 保留 `stage372-20w` 身份、把五个路径改到临时目录，再用同一替代 profile 自签/加载/执行任意信号。
+- 根因：上一版证明了“snapshot 与传入 profile 一致”，但没有证明“传入 profile 就是 registry 中唯一的 canonical profile”。修复后公共 loader、materializer 与 Stage260 gate 均将完整 frozen profile 与 `resolve_execution_profile(profile_key)` 的注册实例做精确相等校验；任何身份或五路路径替换均返回 `execution_profile_not_canonical`。
+- 新增两条直接复现测试：公共 loader 拒绝预先换绑路径的 profile；即使 snapshot 已在替代 registry 下生成，恢复正式 registry 后 Stage260 也拒绝该 profile/snapshot。测试使用临时 patch registry 隔离文件，不放宽生产 API。
+- 修复后聚焦测试：`49 passed, 11 subtests passed`；扩大回归两组共 `663 passed, 245 subtests passed`，其中 Stage179/Stage372 组 `394 passed, 190 subtests passed`，历史 C9/账本/CTP gate 组 `269 passed, 55 subtests passed`。Python 静态编译与 `git diff --check` 通过。
+- 本轮仍未运行新回测、未连接 CTP、未读取生产 env、未加载 launchd、未调用报撤单 API。当前 manifest 因关键源码变化必须从本修复提交再次刷新，旧 digest 只作历史记录。
+
 ## 结论与硬门禁
 
 - 代码合入判断：首轮四个 P1 与 follow-up 新发现的快照 P1 已修复并通过扩大回归；仍需从新冻结 HEAD 刷新干净树 no-submit manifest，并由独立 Agent 再次复审后才能给最终 GO/NO-GO。
