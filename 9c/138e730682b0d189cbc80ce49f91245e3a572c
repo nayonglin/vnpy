@@ -1,0 +1,21 @@
+examples/portfolio_backtesting/release_manifests/stage179/stage372-candidate.json
+  s_57fbbdfeac5414::t_91344e854ef13e 8,37-38,42-43,347-348,367,369,371,376
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9c138e730682b0d189cbc80ce49f91245e3a572c",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
