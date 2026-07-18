@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable, Iterator
 import hashlib
 import json
 import math
 import os
+import signal
+import sys
 import tempfile
 import time
+import uuid
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import date, datetime
 from pathlib import Path
-from threading import Lock, local
-from typing import Any, Callable, Iterator
+from threading import Event, Lock, local
+from typing import Any
 
 import pandas as pd
 
@@ -25,13 +29,21 @@ from qmt_roll_official_live_config import (
 from qmt_roll_official_live_execution_ledger import (
     append_execution_ledger_event,
     duplicate_blocker,
-    intent_fingerprint,
     ledger_order_api_counts,
     read_execution_ledger,
     reserve_execution_api_slot,
     reserve_execution_api_slots,
     reserve_execution_ledger_intent,
 )
+from qmt_roll_official_live_execution_service import (
+    ExecutionResult,
+    ExecutorServicePaths,
+    SQLiteIntentSpool,
+    TdReadinessLease,
+    revoke_readiness,
+    serve_executor,
+)
+from qmt_roll_official_live_intent_spool import open_spool
 from qmt_roll_official_live_phase_d_config import (
     KILL_SWITCH_PATH,
     LIVE_EXECUTION_LEDGER_PATH,
@@ -59,7 +71,7 @@ from run_qmt_roll_stage914_official_live_ctp_runtime_preflight import (
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 from vnpy.event import EVENT_TIMER, EventEngine
-from vnpy.trader.constant import Direction, Exchange, Offset, OrderType, Status
+from vnpy.trader.constant import Direction, Exchange, Offset, OrderType
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import EVENT_ACCOUNT, EVENT_LOG, EVENT_ORDER, EVENT_POSITION, EVENT_TICK, EVENT_TRADE
 from vnpy.trader.object import CancelRequest, OrderRequest, SubscribeRequest
@@ -227,6 +239,18 @@ def _read_json(path: Path) -> dict[str, Any]:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
         return {"_read_error": repr(exc)}
+
+
+def _kill_switch_blockers(path: Path = KILL_SWITCH_PATH) -> list[str]:
+    payload = _read_json(path)
+    if payload.get("_read_error"):
+        return ["kill_switch_unreadable"]
+    if bool(
+        payload.get("enabled", False)
+        or payload.get("kill_switch_active", False)
+    ):
+        return ["kill_switch_active"]
+    return []
 
 
 def _read_csv_maybe(path: Path) -> pd.DataFrame:
@@ -465,6 +489,298 @@ class CtpReadinessState:
 
     def to_summary(self) -> dict[str, Any]:
         return asdict(self)
+
+
+class CtpExecutionSession:
+    """Generation-bound owner of one warm CTP transport.
+
+    Connection setup is intentionally injected.  The production builder owns
+    vn.py/CTP construction, while this lifecycle object enforces the same
+    readiness generation and absolute-deadline rules in both production and
+    deterministic tests.
+    """
+
+    def __init__(
+        self,
+        *,
+        runtime: Any,
+        service_generation: str,
+        official_version: str,
+        capital: float,
+        readiness_ttl_seconds: float,
+        connect_startup_bundle: Callable[[], dict[str, Any]],
+        disconnect_transport: Callable[[], None],
+        fresh_bundle: Callable[[Any, float], Any],
+        reserve_api_slot: Callable[[Any], str],
+        send_order: Callable[[Any], str],
+        revoke_readiness: Callable[[str], None] | None = None,
+        transport_probe: Callable[[], list[str]] | None = None,
+        pre_api_slot_blockers: Callable[[Any], list[str]] | None = None,
+        epoch_ns: Callable[[], int] = time.time_ns,
+        monotonic: Callable[[], float] = time.monotonic,
+    ) -> None:
+        if readiness_ttl_seconds <= 0:
+            raise ValueError("stage179_readiness_ttl_must_be_positive")
+        self.runtime = runtime
+        self.service_generation = str(service_generation)
+        self.official_version = str(official_version)
+        self.capital = float(capital)
+        self.readiness_ttl_seconds = float(readiness_ttl_seconds)
+        self._connect_startup_bundle = connect_startup_bundle
+        self._disconnect_transport = disconnect_transport
+        self._revoke_readiness = revoke_readiness or (lambda _: None)
+        self._transport_probe = transport_probe or (lambda: [])
+        self._fresh_bundle = fresh_bundle
+        self._reserve_api_slot = reserve_api_slot
+        self._send_order = send_order
+        self._pre_api_slot_blockers = pre_api_slot_blockers or (lambda _: [])
+        self._epoch_ns = epoch_ns
+        self._monotonic = monotonic
+        self._connected = False
+        self._connection_generation = ""
+        self._last_complete_startup_bundle_epoch_ns = 0
+        self._lifecycle_lock = Lock()
+        self.api_slot_call_count = 0
+        self.send_order_call_count = 0
+
+    @classmethod
+    def for_callbacks(cls, **kwargs: Any) -> CtpExecutionSession:
+        return cls(**kwargs)
+
+    @property
+    def connection_generation(self) -> str:
+        with self._lifecycle_lock:
+            return self._connection_generation
+
+    def connect(self) -> None:
+        with self._lifecycle_lock:
+            if self._connected:
+                return
+            startup = self._connect_startup_bundle()
+            if not isinstance(startup, dict) or startup.get("ready") is not True:
+                try:
+                    self._revoke_readiness("ctp_startup_bundle_not_ready")
+                finally:
+                    self._disconnect_transport()
+                raise RuntimeError("stage179_ctp_startup_bundle_not_ready")
+            self._connection_generation = uuid.uuid4().hex
+            self._last_complete_startup_bundle_epoch_ns = int(self._epoch_ns())
+            self._connected = True
+
+    def _revoke_in_memory(self) -> bool:
+        with self._lifecycle_lock:
+            was_connected = self._connected
+            self._connected = False
+            self._connection_generation = ""
+            self._last_complete_startup_bundle_epoch_ns = 0
+            return was_connected
+
+    def disconnect(self) -> None:
+        was_connected = self._revoke_in_memory()
+        if was_connected:
+            try:
+                self._revoke_readiness("ctp_session_disconnected")
+            finally:
+                self._disconnect_transport()
+
+    def reconnect(self) -> None:
+        self.disconnect()
+        self.connect()
+
+    def close(self) -> None:
+        self.disconnect()
+
+    def readiness_lease(self, *, now_epoch_ns: int) -> TdReadinessLease:
+        with self._lifecycle_lock:
+            if not self._connected or not self._connection_generation:
+                raise RuntimeError("stage179_ctp_readiness_revoked")
+            issued = int(now_epoch_ns)
+            ttl_ns = int(self.readiness_ttl_seconds * 1_000_000_000)
+            profile = getattr(getattr(self.runtime, "profile", ""), "value", "")
+            return TdReadinessLease(
+                service_generation=self.service_generation,
+                connection_generation=self._connection_generation,
+                runtime_profile=str(profile),
+                official_version=self.official_version,
+                capital=self.capital,
+                issued_epoch_ns=issued,
+                expires_epoch_ns=issued + ttl_ns,
+                last_complete_startup_bundle_epoch_ns=(
+                    self._last_complete_startup_bundle_epoch_ns
+                ),
+            )
+
+    def transport_blockers(self) -> list[str]:
+        blockers: list[str] = []
+        with self._lifecycle_lock:
+            if not self._connected or not self._connection_generation:
+                blockers.append("stage179_ctp_transport_not_connected")
+        try:
+            blockers.extend(self._transport_probe())
+        except BaseException as exc:
+            blockers.append(
+                f"stage179_ctp_transport_probe_exception:{type(exc).__name__}"
+            )
+        return list(dict.fromkeys(str(item) for item in blockers if str(item)))
+
+    @staticmethod
+    def _bundle_blockers(bundle: Any) -> list[str]:
+        if bundle is None:
+            return []
+        if isinstance(bundle, dict):
+            return [str(item) for item in bundle.get("blockers", []) if str(item)]
+        if isinstance(bundle, (list, tuple)):
+            return [str(item) for item in bundle if str(item)]
+        raise RuntimeError("stage179_fresh_bundle_result_invalid")
+
+    def _deadline_blocker(self, phase: str, hard_deadline_monotonic: float) -> str:
+        if self._monotonic() >= hard_deadline_monotonic:
+            return f"stage179_execution_deadline_exceeded:{phase}"
+        return ""
+
+    def _readiness_blockers(
+        self,
+        readiness: TdReadinessLease,
+        *,
+        check_expiry: bool = True,
+    ) -> list[str]:
+        now_epoch = int(self._epoch_ns())
+        with self._lifecycle_lock:
+            current_generation = self._connection_generation
+            connected = self._connected
+        blockers: list[str] = []
+        if not connected:
+            blockers.append("stage179_readiness_revoked")
+        if readiness.service_generation != self.service_generation:
+            blockers.append("stage179_readiness_service_generation_mismatch")
+        if readiness.connection_generation != current_generation:
+            blockers.append("stage179_readiness_connection_generation_mismatch")
+        if check_expiry and now_epoch >= readiness.expires_epoch_ns:
+            blockers.append("stage179_readiness_lease_expired")
+        profile = getattr(getattr(self.runtime, "profile", ""), "value", "")
+        if readiness.runtime_profile != str(profile):
+            blockers.append("stage179_readiness_runtime_profile_mismatch")
+        blockers.extend(self.transport_blockers())
+        return list(dict.fromkeys(blockers))
+
+    def execute_with_readiness(
+        self,
+        *,
+        readiness: TdReadinessLease,
+        lease: Any,
+        hard_deadline_monotonic: float,
+    ) -> ExecutionResult:
+        intent_id = str(lease.intent.intent_id)
+        blockers = self._readiness_blockers(readiness)
+        if blockers:
+            return ExecutionResult.blocked(intent_id, blockers[0])
+        deadline = self._deadline_blocker("fresh_bundle", hard_deadline_monotonic)
+        if deadline:
+            return ExecutionResult.blocked(intent_id, deadline)
+
+        bundle = self._fresh_bundle(lease, hard_deadline_monotonic)
+        ledger_fingerprint = (
+            str(bundle.get("ledger_fingerprint", ""))
+            if isinstance(bundle, dict)
+            else ""
+        )
+        blockers = self._bundle_blockers(bundle)
+        blockers.extend(self._readiness_blockers(readiness, check_expiry=False))
+        deadline = self._deadline_blocker("post_fresh_bundle", hard_deadline_monotonic)
+        if deadline:
+            blockers.append(deadline)
+        blockers = list(dict.fromkeys(blockers))
+        if blockers:
+            return ExecutionResult.blocked(intent_id, blockers[0])
+
+        blockers = list(self._pre_api_slot_blockers(lease))
+        deadline = self._deadline_blocker("pre_api_slot", hard_deadline_monotonic)
+        if deadline:
+            blockers.append(deadline)
+        blockers.extend(self._readiness_blockers(readiness, check_expiry=False))
+        blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
+        if blockers:
+            return ExecutionResult.blocked(intent_id, blockers[0])
+
+        api_slot_batch_id = ""
+        send_called = 0
+        try:
+            self.api_slot_call_count += 1
+            api_slot_batch_id = str(self._reserve_api_slot(lease))
+            if not api_slot_batch_id:
+                return ExecutionResult.blocked(
+                    intent_id,
+                    "stage179_api_slot_reservation_failed",
+                )
+            post_slot_blockers = self._readiness_blockers(
+                readiness,
+                check_expiry=False,
+            )
+            if post_slot_blockers:
+                return ExecutionResult(
+                    intent_id=intent_id,
+                    disposition="side_effect_unknown",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                    blockers=tuple(post_slot_blockers),
+                    send_order_call_count=0,
+                    cancel_order_call_count=0,
+                )
+            deadline = self._deadline_blocker("pre_send_order", hard_deadline_monotonic)
+            if deadline:
+                return ExecutionResult(
+                    intent_id=intent_id,
+                    disposition="side_effect_unknown",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                    blockers=(deadline,),
+                    send_order_call_count=0,
+                    cancel_order_call_count=0,
+                )
+            self.send_order_call_count += 1
+            send_called = 1
+            order_id = str(self._send_order(lease))
+        except BaseException as exc:
+            return ExecutionResult(
+                intent_id=intent_id,
+                disposition="side_effect_unknown" if api_slot_batch_id else "blocked",
+                ledger_fingerprint=ledger_fingerprint,
+                api_slot_batch_id=api_slot_batch_id,
+                blockers=(f"stage179_execution_exception:{type(exc).__name__}",),
+                send_order_call_count=send_called,
+                cancel_order_call_count=0,
+            )
+        if not order_id:
+            return ExecutionResult(
+                intent_id=intent_id,
+                disposition="side_effect_unknown",
+                ledger_fingerprint=ledger_fingerprint,
+                api_slot_batch_id=api_slot_batch_id,
+                blockers=("stage179_send_order_returned_empty",),
+                send_order_call_count=1,
+                cancel_order_call_count=0,
+            )
+        return ExecutionResult(
+            intent_id=intent_id,
+            disposition="sent",
+            ledger_fingerprint=ledger_fingerprint,
+            api_slot_batch_id=api_slot_batch_id,
+            blockers=(),
+            send_order_call_count=1,
+            cancel_order_call_count=0,
+        )
+
+    def execute_spool_lease(
+        self,
+        *,
+        lease: Any,
+        hard_deadline_monotonic: float,
+    ) -> ExecutionResult:
+        return self.execute_with_readiness(
+            readiness=self.readiness_lease(now_epoch_ns=int(self._epoch_ns())),
+            lease=lease,
+            hard_deadline_monotonic=hard_deadline_monotonic,
+        )
 
 
 def _callback_result(
@@ -877,9 +1193,12 @@ def _wait_for_ctp_readiness(
     sleeper: Callable[[float], None] = time.sleep,
     query_interval_seconds: float = 1.1,
     poll_seconds: float = 0.05,
+    hard_deadline_monotonic: float | None = None,
 ) -> tuple[bool, dict[str, Any], list[str], CtpReadinessState]:
     started = monotonic()
     deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
     state = CtpReadinessState(
         account_required=bool(account_required),
         started_monotonic=started,
@@ -914,6 +1233,15 @@ def _wait_for_ctp_readiness(
         _append_unique(blockers, blocker)
     if not ready and state.elapsed_seconds >= max(0.0, float(max_wait_seconds)):
         _append_unique(blockers, f"ctp_readiness_timeout:{state.elapsed_seconds:.3f}s")
+    if (
+        not ready
+        and hard_deadline_monotonic is not None
+        and monotonic() >= float(hard_deadline_monotonic)
+    ):
+        _append_unique(
+            blockers,
+            "stage179_execution_deadline_exceeded:ctp_readiness",
+        )
     return ready, flags, blockers, state
 
 
@@ -926,11 +1254,14 @@ def _final_order_query_epoch(
     sleeper: Callable[[float], None] = time.sleep,
     query_interval_seconds: float = CTP_QUERY_INTERVAL_SECONDS,
     poll_seconds: float = 0.05,
+    hard_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Obtain one complete, reqid-bound order snapshot from this CTP session."""
 
     started = monotonic()
     deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
     result: dict[str, Any] = {
         "success": False,
         "confirmed": False,
@@ -943,6 +1274,14 @@ def _final_order_query_epoch(
         "ignored_callback_count": 0,
         "elapsed_seconds": 0.0,
     }
+    if (
+        hard_deadline_monotonic is not None
+        and monotonic() >= float(hard_deadline_monotonic)
+    ):
+        result["blockers"] = [
+            "stage179_execution_deadline_exceeded:final_order_query"
+        ]
+        return result
     broker_id = str(getattr(td_api, "brokerid", "") or "").strip()
     investor_id = str(getattr(td_api, "userid", "") or "").strip()
     if not broker_id or not investor_id:
@@ -962,7 +1301,12 @@ def _final_order_query_epoch(
         remaining = min(next_allowed, deadline) - monotonic()
         if remaining <= 0:
             result["elapsed_seconds"] = max(0.0, monotonic() - started)
-            result["blockers"] = ["final_order_query_pacing_timeout"]
+            result["blockers"] = [
+                "stage179_execution_deadline_exceeded:final_order_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else "final_order_query_pacing_timeout"
+            ]
             return result
         sleeper(min(max(0.001, float(poll_seconds)), remaining))
 
@@ -1055,7 +1399,12 @@ def _final_order_query_epoch(
             )
             break
         if monotonic() >= deadline:
-            result["blockers"] = [f"final_order_query_timeout:reqid={reqid}"]
+            result["blockers"] = [
+                "stage179_execution_deadline_exceeded:final_order_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else f"final_order_query_timeout:reqid={reqid}"
+            ]
             break
         remaining = deadline - monotonic()
         sleeper(min(max(0.001, float(poll_seconds)), remaining))
@@ -1074,11 +1423,14 @@ def _final_position_query_epoch(
     sleeper: Callable[[float], None] = time.sleep,
     query_interval_seconds: float = CTP_QUERY_INTERVAL_SECONDS,
     poll_seconds: float = 0.05,
+    hard_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Replace readiness-era positions with one fresh reqid-bound snapshot."""
 
     started = monotonic()
     deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
     result: dict[str, Any] = {
         "success": False,
         "confirmed": False,
@@ -1090,6 +1442,14 @@ def _final_position_query_epoch(
         "ignored_callback_count": 0,
         "elapsed_seconds": 0.0,
     }
+    if (
+        hard_deadline_monotonic is not None
+        and monotonic() >= float(hard_deadline_monotonic)
+    ):
+        result["blockers"] = [
+            "stage179_execution_deadline_exceeded:final_position_query"
+        ]
+        return result
     broker_id = str(getattr(td_api, "brokerid", "") or "").strip()
     investor_id = str(getattr(td_api, "userid", "") or "").strip()
     if not broker_id or not investor_id:
@@ -1108,7 +1468,12 @@ def _final_position_query_epoch(
         remaining = min(next_allowed, deadline) - monotonic()
         if remaining <= 0:
             result["elapsed_seconds"] = max(0.0, monotonic() - started)
-            result["blockers"] = ["final_position_query_pacing_timeout"]
+            result["blockers"] = [
+                "stage179_execution_deadline_exceeded:final_position_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else "final_position_query_pacing_timeout"
+            ]
             return result
         sleeper(min(max(0.001, float(poll_seconds)), remaining))
 
@@ -1198,7 +1563,10 @@ def _final_position_query_epoch(
             break
         if monotonic() >= deadline:
             result["blockers"] = [
-                f"final_position_query_timeout:reqid={reqid}"
+                "stage179_execution_deadline_exceeded:final_position_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else f"final_position_query_timeout:reqid={reqid}"
             ]
             break
         remaining = deadline - monotonic()
@@ -1324,11 +1692,14 @@ def _final_pre_send_snapshot_epoch(
     readiness_state: CtpReadinessState | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleeper: Callable[[float], None] = time.sleep,
+    hard_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Run order-position-order under one bounded final pre-send budget."""
 
     started = monotonic()
     deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
     result: dict[str, Any] = {
         "success": False,
         "confirmed": False,
@@ -1358,6 +1729,7 @@ def _final_pre_send_snapshot_epoch(
         max_wait_seconds=remaining_budget(),
         monotonic=monotonic,
         sleeper=sleeper,
+        hard_deadline_monotonic=hard_deadline_monotonic,
     )
     result["order_q1"] = order_q1
     if not order_q1.get("confirmed"):
@@ -1374,6 +1746,7 @@ def _final_pre_send_snapshot_epoch(
         max_wait_seconds=remaining_budget(),
         monotonic=monotonic,
         sleeper=sleeper,
+        hard_deadline_monotonic=hard_deadline_monotonic,
     )
     result["position"] = position
     if not position.get("confirmed"):
@@ -1402,6 +1775,7 @@ def _final_pre_send_snapshot_epoch(
         max_wait_seconds=remaining_budget(),
         monotonic=monotonic,
         sleeper=sleeper,
+        hard_deadline_monotonic=hard_deadline_monotonic,
     )
     # This cutoff shares the same monotonic clock as EVENT_TICK collection.
     # A quote already buffered before the final Q2 callback cannot authorize
@@ -1470,7 +1844,12 @@ def _connect_ctp_without_timer_queries(
 
 
 @contextmanager
-def _instrument_ctp_readiness_callbacks(td_api_class: Any, rows: dict[str, list[dict[str, Any]]]) -> Iterator[None]:
+def _instrument_ctp_readiness_callbacks(
+    td_api_class: Any,
+    rows: dict[str, list[dict[str, Any]]],
+    *,
+    on_front_disconnected: Callable[[int], None] | None = None,
+) -> Iterator[None]:
     original_settlement_rsp = td_api_class.onRspSettlementInfoConfirm
     original_account_rsp = td_api_class.onRspQryTradingAccount
     original_position_rsp = td_api_class.onRspQryInvestorPosition
@@ -1478,6 +1857,12 @@ def _instrument_ctp_readiness_callbacks(td_api_class: Any, rows: dict[str, list[
     original_order_rsp = getattr(td_api_class, "onRspQryOrder", None)
     order_insert_existed = hasattr(td_api_class, "reqOrderInsert")
     original_order_insert = getattr(td_api_class, "reqOrderInsert", None)
+    front_disconnected_existed = hasattr(td_api_class, "onFrontDisconnected")
+    original_front_disconnected = getattr(
+        td_api_class,
+        "onFrontDisconnected",
+        None,
+    )
 
     def _callback_row(data: Any, error: Any, reqid: int, last: bool) -> dict[str, Any]:
         if error is None or error == {}:
@@ -1697,6 +2082,16 @@ def _instrument_ctp_readiness_callbacks(td_api_class: Any, rows: dict[str, list[
         finally:
             rows.setdefault("order_insert_requests", []).append(audit)
 
+    def instrumented_front_disconnected(self: Any, reason: int) -> Any:
+        rows["_stage179_transport_disconnect_count"] = (
+            _to_int(rows.get("_stage179_transport_disconnect_count"), 0) + 1
+        )
+        if on_front_disconnected is not None:
+            on_front_disconnected(int(reason))
+        if callable(original_front_disconnected):
+            return original_front_disconnected(self, reason)
+        return None
+
     try:
         td_api_class.onRspSettlementInfoConfirm = instrumented_settlement_rsp
         td_api_class.onRspQryTradingAccount = instrumented_account_rsp
@@ -1704,6 +2099,8 @@ def _instrument_ctp_readiness_callbacks(td_api_class: Any, rows: dict[str, list[
         td_api_class.onRspQryOrder = instrumented_order_rsp
         if order_insert_existed and callable(original_order_insert):
             td_api_class.reqOrderInsert = instrumented_order_insert
+        if front_disconnected_existed:
+            td_api_class.onFrontDisconnected = instrumented_front_disconnected
         yield
     finally:
         td_api_class.onRspSettlementInfoConfirm = original_settlement_rsp
@@ -1715,6 +2112,8 @@ def _instrument_ctp_readiness_callbacks(td_api_class: Any, rows: dict[str, list[
             delattr(td_api_class, "onRspQryOrder")
         if order_insert_existed:
             td_api_class.reqOrderInsert = original_order_insert
+        if front_disconnected_existed:
+            td_api_class.onFrontDisconnected = original_front_disconnected
 
 
 def _normalize_direction_text(value: Any) -> str:
@@ -2422,6 +2821,7 @@ def _post_reprice_final_state_gate(
     max_tick_age_seconds: int,
     max_wait_seconds: float,
     readiness_state: CtpReadinessState,
+    hard_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Close the Q2-to-send race without starting a query/tick loop.
 
@@ -2469,6 +2869,7 @@ def _post_reprice_final_state_gate(
         rows,
         max_wait_seconds=max(0.0, float(max_wait_seconds)),
         readiness_state=readiness_state,
+        hard_deadline_monotonic=hard_deadline_monotonic,
     )
     blockers.extend(
         f"post_reprice_snapshot:{blocker}"
@@ -4435,9 +4836,15 @@ def _submit_pre_reserved_child(
     return result
 
 
-def main() -> None:
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Official-live CTP submit adapter, hard-gated by Stage927.")
-    parser.add_argument("--target-date", required=True)
+    parser.add_argument(
+        "--command",
+        choices=("once", "serve"),
+        default="once",
+        help="Run one backward-compatible cold cycle or the Stage179 warm executor.",
+    )
+    parser.add_argument("--target-date", default="")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument(
@@ -4501,8 +4908,20 @@ def main() -> None:
             "order-position-order snapshot sandwich, including CTP pacing."
         ),
     )
-    args = parser.parse_args()
+    return parser
 
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = _build_parser()
+    args = parser.parse_args(argv)
+    if args.command == "once" and not str(args.target_date).strip():
+        parser.error("--target-date is required when --command=once")
+    if args.command == "serve" and not args.stage179_warm_executor:
+        parser.error("--command=serve requires --stage179-warm-executor")
+    return args
+
+
+def run_once(args: argparse.Namespace) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)
     stage905_intents = _stage905_intents(args.target_date)
@@ -5625,6 +6044,713 @@ def main() -> None:
         durable=True,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+    return summary
+
+
+def _load_runtime_env_values(path: Path | None) -> dict[str, str]:
+    if path is None:
+        return {}
+    values: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export ") :].strip()
+        if "=" not in line:
+            raise RuntimeProfileError("runtime_env_line_invalid")
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key or not key.replace("_", "A").isalnum() or key[0].isdigit():
+            raise RuntimeProfileError("runtime_env_key_invalid")
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        values[key] = value
+    return values
+
+
+def _stage179_spool_lease_row(lease: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    payload = dict(lease.intent.payload)
+    order_payload = payload.get("order_request")
+    if not isinstance(order_payload, dict) or not order_payload:
+        raise ValueError("stage179_spool_order_request_missing")
+    row = {
+        **payload,
+        "intent_id": lease.intent.intent_id,
+        # The Task7 payload keeps this nested for stable hashing; legacy
+        # Stage931 validators consume the equivalent materialized columns.
+        "order_request_json": json.dumps(
+            order_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        "symbol": order_payload.get("symbol", ""),
+        "exchange": order_payload.get("exchange", ""),
+        "direction": order_payload.get("direction", ""),
+        "offset": order_payload.get("offset", payload.get("offset", "")),
+        "vt_symbol": order_payload.get(
+            "vt_symbol",
+            payload.get("vt_symbol", ""),
+        ),
+        "order_request_price": order_payload.get("price", 0.0),
+        "order_request_volume": order_payload.get("volume", 0.0),
+    }
+    return row, dict(order_payload)
+
+
+def _prune_stage179_warm_rows(rows: dict[str, Any]) -> None:
+    """Bound long-lived diagnostic buffers without weakening ingress counts."""
+
+    limits = {
+        "ticks": 4096,
+        "logs": 2048,
+        "orders": 2048,
+        "trades": 2048,
+        "accounts": 128,
+        "position_events_unscoped": 2048,
+        "order_insert_requests": 2048,
+    }
+    for key, limit in limits.items():
+        buffer = rows.get(key)
+        if isinstance(buffer, list) and len(buffer) > limit * 2:
+            # Slice deletion preserves the list object used by callbacks.  In
+            # live mode order/trade race authority is the pre-enqueue ingress
+            # counter, so pruning diagnostic rows cannot hide a send blocker.
+            if key == "logs":
+                # Readiness derives auth/login evidence from the startup log
+                # prefix; retain that prefix as well as the recent tail.
+                buffer[:] = buffer[:128] + buffer[-limit:]
+            else:
+                del buffer[:-limit]
+
+
+def _build_stage179_warm_ctp_session(
+    args: argparse.Namespace,
+    runtime: Any,
+    paths: ExecutorServicePaths,
+) -> CtpExecutionSession:
+    """Build the real warm backend only after the Task9 gate has passed."""
+
+    service_generation = uuid.uuid4().hex
+    state: dict[str, Any] = {
+        "main_engine": None,
+        "event_engine": None,
+        "gateway": None,
+        "td_api": None,
+        "readiness_state": None,
+        "callback_context": None,
+        "transport_generation_invalidated": False,
+        "rows": {
+            "orders": [],
+            "trades": [],
+            "accounts": [],
+            "positions": [],
+            "ticks": [],
+            "logs": [],
+            "settlement_callbacks": [],
+            "account_query_callbacks": [],
+            "position_query_callbacks": [],
+            "order_query_callbacks": [],
+            "order_insert_requests": [],
+            "position_events_unscoped": [],
+        },
+        "intent_contexts": {},
+    }
+
+    def connect_startup_bundle() -> dict[str, Any]:
+        # This import is deliberately inside the post-gate adapter factory.
+        from vnpy_ctp import CtpGateway
+        from vnpy_ctp.gateway import ctp_gateway as ctp_gateway_module
+
+        rows = state["rows"]
+        def on_front_disconnected(_reason: int) -> None:
+            state["transport_generation_invalidated"] = True
+
+        callback_context = _instrument_ctp_readiness_callbacks(
+            ctp_gateway_module.CtpTdApi,
+            rows,
+            on_front_disconnected=on_front_disconnected,
+        )
+        callback_context.__enter__()
+        state["callback_context"] = callback_context
+        try:
+            event_engine = EventEngine()
+            main_engine = MainEngine(event_engine)
+            gateway = main_engine.add_gateway(CtpGateway)
+            td_api = gateway.td_api
+            state.update(
+                main_engine=main_engine,
+                event_engine=event_engine,
+                gateway=gateway,
+                td_api=td_api,
+            )
+
+            ingress_lock = Lock()
+            ingress_counts = {"order": 0, "trade": 0, "position": 0}
+            rows["_execution_event_ingress_counts"] = ingress_counts
+
+            original_tick = gateway.on_tick
+            original_order = gateway.on_order
+            original_trade = gateway.on_trade
+            original_position = gateway.on_position
+
+            def increment(name: str) -> None:
+                with ingress_lock:
+                    ingress_counts[name] += 1
+
+            def ingress_tick(tick: Any) -> Any:
+                _stamp_tick_before_event_enqueue(tick)
+                return original_tick(tick)
+
+            def ingress_order(order: Any) -> Any:
+                if not int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0)):
+                    increment("order")
+                return original_order(order)
+
+            def ingress_trade(trade: Any) -> Any:
+                increment("trade")
+                return original_trade(trade)
+
+            def ingress_position(position: Any) -> Any:
+                increment("position")
+                return original_position(position)
+
+            gateway.on_tick = ingress_tick
+            gateway.on_order = ingress_order
+            gateway.on_trade = ingress_trade
+            gateway.on_position = ingress_position
+
+            event_engine.register(
+                EVENT_ORDER,
+                lambda event: rows["orders"].append(_object_to_row(event.data)),
+            )
+            event_engine.register(
+                EVENT_TRADE,
+                lambda event: rows["trades"].append(_object_to_row(event.data)),
+            )
+            event_engine.register(
+                EVENT_ACCOUNT,
+                lambda event: rows["accounts"].append(_object_to_row(event.data)),
+            )
+            event_engine.register(
+                EVENT_POSITION,
+                lambda event: rows["position_events_unscoped"].append(
+                    _object_to_row(event.data)
+                ),
+            )
+            event_engine.register(
+                EVENT_TICK,
+                lambda event: rows["ticks"].append(_tick_event_row(event.data)),
+            )
+            event_engine.register(
+                EVENT_LOG,
+                lambda event: rows["logs"].append(_object_to_row(event.data)),
+            )
+            _connect_ctp_without_timer_queries(main_engine, gateway, event_engine)
+            ready, flags, blockers, readiness_state = _wait_for_ctp_readiness(
+                td_api,
+                rows,
+                account_required=True,
+                max_wait_seconds=max(0.0, float(args.connect_wait_seconds)),
+            )
+            state["readiness_state"] = readiness_state
+            if ready and not blockers:
+                state["transport_generation_invalidated"] = False
+            return {
+                "ready": bool(ready and not blockers),
+                "flags": flags,
+                "blockers": blockers,
+            }
+        except BaseException:
+            main_engine = state.get("main_engine")
+            if main_engine is not None:
+                main_engine.close()
+            callback_context.__exit__(*sys.exc_info())
+            state["callback_context"] = None
+            raise
+
+    def disconnect_transport() -> None:
+        main_engine = state.get("main_engine")
+        callback_context = state.get("callback_context")
+        state.update(
+            main_engine=None,
+            event_engine=None,
+            gateway=None,
+            td_api=None,
+            readiness_state=None,
+            callback_context=None,
+            transport_generation_invalidated=True,
+        )
+        if main_engine is not None:
+            main_engine.close()
+        if callback_context is not None:
+            callback_context.__exit__(None, None, None)
+
+    def fresh_bundle(lease: Any, hard_deadline_monotonic: float) -> dict[str, Any]:
+        _prune_stage179_warm_rows(state["rows"])
+        state["intent_contexts"].clear()
+        rows = state["rows"]
+        main_engine = state.get("main_engine")
+        td_api = state.get("td_api")
+        readiness_state = state.get("readiness_state")
+        try:
+            row, order_payload = _stage179_spool_lease_row(lease)
+        except ValueError:
+            return {"blockers": ["stage179_spool_order_request_missing"]}
+        if main_engine is None or td_api is None or readiness_state is None:
+            return {"blockers": ["stage179_ctp_session_state_missing"]}
+        kill_switch_blockers = _kill_switch_blockers()
+        if kill_switch_blockers:
+            return {"blockers": kill_switch_blockers}
+        if time.monotonic() >= hard_deadline_monotonic:
+            return {
+                "blockers": [
+                    "stage179_execution_deadline_exceeded:final_snapshot"
+                ]
+            }
+
+        req = _order_request_from_payload(dict(order_payload))
+        rows["_position_vt_symbol_by_instrument"] = {
+            req.symbol.upper(): req.vt_symbol
+        }
+        reserve = reserve_execution_ledger_intent(
+            target_date=lease.intent.target_date,
+            row=row,
+            order_request=dict(order_payload),
+            close_retry_after_cancel_seconds=max(
+                1,
+                int(args.close_retry_after_cancel_seconds),
+            ),
+            path=paths.ledger_path,
+            base_event={
+                "intent_id": lease.intent.intent_id,
+                "vt_symbol": lease.intent.vt_symbol,
+                "mode": "live-real",
+                "adapter": "Stage931Warm",
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+            },
+        )
+        if not reserve.get("reserved"):
+            return {
+                "blockers": [
+                    str(
+                        reserve.get(
+                            "duplicate_blocker",
+                            "stage179_ledger_intent_reserve_failed",
+                        )
+                    )
+                ]
+            }
+
+        remaining = max(0.0, hard_deadline_monotonic - time.monotonic())
+        snapshot = _final_pre_send_snapshot_epoch(
+            td_api,
+            rows,
+            max_wait_seconds=min(
+                remaining,
+                max(0.0, float(args.final_order_query_wait_seconds)),
+            ),
+            readiness_state=readiness_state,
+            hard_deadline_monotonic=hard_deadline_monotonic,
+        )
+        blockers = list(snapshot.get("blockers", []))
+        blockers.extend(
+            _final_pre_send_blockers(
+                rows,
+                req,
+                req.vt_symbol,
+                authoritative_active_orders=list(snapshot.get("active_orders", [])),
+                order_query_confirmed=bool(snapshot.get("confirmed")),
+            )
+        )
+        blockers.extend(_final_ctp_transport_blockers(td_api, rows, readiness_state))
+        reprice_result: dict[str, Any] = {}
+        final_gate: dict[str, Any] = {}
+        if not blockers:
+            remaining = max(0.0, hard_deadline_monotonic - time.monotonic())
+            reprice_result = _post_snapshot_final_reprice(
+                main_engine,
+                rows,
+                row,
+                req,
+                max_tick_age_seconds=int(
+                    build_phase_d_config().hard_limits.max_tick_age_seconds
+                ),
+                q2_completed_monotonic=snapshot.get("q2_completed_monotonic"),
+                tick_wait_seconds=min(
+                    2,
+                    max(0, int(min(remaining, args.final_reprice_tick_wait_seconds))),
+                ),
+            )
+            blockers.extend(_final_reprice_blockers(reprice_result))
+        if not blockers:
+            remaining = max(0.0, hard_deadline_monotonic - time.monotonic())
+            final_gate = _post_reprice_final_state_gate(
+                main_engine,
+                td_api,
+                rows,
+                row,
+                req,
+                initial_snapshot=snapshot,
+                initial_reprice_result=reprice_result,
+                max_tick_age_seconds=int(
+                    build_phase_d_config().hard_limits.max_tick_age_seconds
+                ),
+                max_wait_seconds=min(
+                    remaining,
+                    max(0.0, float(args.final_order_query_wait_seconds)),
+                ),
+                readiness_state=readiness_state,
+                hard_deadline_monotonic=hard_deadline_monotonic,
+            )
+            blockers.extend(final_gate.get("blockers", []))
+        conversion: dict[str, Any] = {}
+        if not blockers:
+            conversion = _final_offset_conversion(main_engine, rows, req)
+            blockers.extend(conversion.get("blockers", []))
+            requests = list(conversion.get("requests", []))
+            if len(requests) != 1:
+                blockers.append(
+                    f"stage179_warm_executor_requires_one_physical_order:{len(requests)}"
+                )
+        blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
+        state["intent_contexts"][lease.intent.intent_id] = {
+            "row": row,
+            "request": (
+                list(conversion.get("requests", []))[0]
+                if not blockers
+                else req
+            ),
+            "fingerprint": str(reserve.get("intent_fingerprint", "")),
+            "close_submit_attempt_no": int(
+                reserve.get("close_submit_attempt_no", 0) or 0
+            ),
+            "close_attempt_lease_token": str(
+                reserve.get("close_attempt_lease_token", "") or ""
+            ),
+            "final_watermark": dict(final_gate.get("final_event_watermark", {})),
+        }
+        if blockers:
+            append_execution_ledger_event(
+                {
+                    "event_type": "final_pre_send_gate_blocked_after_reserve",
+                    "target_date": lease.intent.target_date,
+                    "intent_id": lease.intent.intent_id,
+                    "intent_fingerprint": str(
+                        reserve.get("intent_fingerprint", "")
+                    ),
+                    "vt_symbol": lease.intent.vt_symbol,
+                    "adapter": "Stage931Warm",
+                    "final_blockers": blockers,
+                    "spool_lease_owner": lease.intent.lease_owner,
+                    "spool_lease_token": lease.lease_token,
+                },
+                path=paths.ledger_path,
+            )
+        return {
+            "blockers": blockers,
+            "ledger_fingerprint": str(reserve.get("intent_fingerprint", "")),
+        }
+
+    def pre_api_slot_blockers(lease: Any) -> list[str]:
+        context = state["intent_contexts"].get(lease.intent.intent_id, {})
+        blockers = _post_final_gate_pre_api_slot_blockers(
+            state["rows"],
+            dict(context.get("final_watermark", {})),
+        )
+        for blocker in _kill_switch_blockers():
+            blockers.append(f"{blocker}_before_api_slot")
+        if not any(
+            item.get("role") == "market_and_execution"
+            for item in _current_phase_d_sessions()
+        ):
+            blockers.append("live_real_not_in_execution_session_before_api_slot")
+        blockers.extend(_continuous_submit_blockers())
+        row = dict(context.get("row", {}))
+        request = context.get("request")
+        if request is None:
+            blockers.append("stage179_send_context_missing_before_api_slot")
+        else:
+            blockers.extend(_pre_reserved_child_intent_blockers(row, request))
+            if (
+                str(row.get("source", "")).strip()
+                == "stage904_c9_intraday_retry_open"
+                and _normalize_offset_text(request.offset.value) == "open"
+            ):
+                blockers.extend(
+                    _stage904_retry_open_pre_send_blockers(
+                        row,
+                        target_date=lease.intent.target_date,
+                        max_age_seconds=args.max_stage904_age_seconds,
+                    )
+                )
+        if blockers:
+            append_execution_ledger_event(
+                {
+                    "event_type": "post_final_gate_pre_api_slot_blocked",
+                    "target_date": lease.intent.target_date,
+                    "intent_id": lease.intent.intent_id,
+                    "intent_fingerprint": context.get("fingerprint", ""),
+                    "vt_symbol": lease.intent.vt_symbol,
+                    "adapter": "Stage931Warm",
+                    "blockers": blockers,
+                },
+                path=paths.ledger_path,
+            )
+        return blockers
+
+    def reserve_api_slot(lease: Any) -> str:
+        context = state["intent_contexts"].get(lease.intent.intent_id, {})
+        request = context.get("request")
+        if request is None:
+            return ""
+        base_event = {
+            "intent_id": lease.intent.intent_id,
+            "intent_fingerprint": context.get("fingerprint", ""),
+            "parent_intent_fingerprint": context.get("fingerprint", ""),
+            "vt_symbol": lease.intent.vt_symbol,
+            "adapter": "Stage931Warm",
+            "spool_lease_owner": lease.intent.lease_owner,
+            "spool_lease_token": lease.lease_token,
+            "child_order_id": f"{context.get('fingerprint', '')}:1/1",
+            "child_order_index": 0,
+            "child_order_count": 1,
+            "child_order_offset": request.offset.value,
+            "child_order_volume": float(request.volume),
+        }
+        if int(context.get("close_submit_attempt_no", 0)) > 0:
+            base_event["close_submit_attempt_no"] = int(
+                context["close_submit_attempt_no"]
+            )
+            base_event["close_attempt_lease_token"] = str(
+                context.get("close_attempt_lease_token", "")
+            )
+        result = reserve_execution_api_slots(
+            target_date=lease.intent.target_date,
+            slot_type="send_order",
+            daily_limit=build_phase_d_config().hard_limits.max_order_count_per_day,
+            path=paths.ledger_path,
+            base_events=[base_event],
+        )
+        if not result.get("reserved"):
+            blocker = str(
+                result.get("blocker")
+                or "send_order_api_slot_batch_reservation_failed"
+            )
+            context["api_slot_blocker"] = blocker
+            append_execution_ledger_event(
+                {
+                    "event_type": "api_slot_reservation_blocked",
+                    **base_event,
+                    "target_date": lease.intent.target_date,
+                    "api_slot_type": "send_order",
+                    "api_slot_requested_count": 1,
+                    "api_slot_blocker": blocker,
+                },
+                path=paths.ledger_path,
+            )
+            return ""
+        return str(result.get("api_slot_batch_id", ""))
+
+    def send_order(lease: Any) -> str:
+        context = state["intent_contexts"].get(lease.intent.intent_id, {})
+        request = context.get("request")
+        main_engine = state.get("main_engine")
+        if request is None or main_engine is None:
+            raise RuntimeError("stage179_send_context_missing")
+        vt_orderid = str(main_engine.send_order(request, "CTP") or "")
+        append_execution_ledger_event(
+            {
+                "event_type": "send_order_returned",
+                "target_date": lease.intent.target_date,
+                "intent_id": lease.intent.intent_id,
+                "intent_fingerprint": context.get("fingerprint", ""),
+                "vt_symbol": lease.intent.vt_symbol,
+                "vt_orderid": vt_orderid,
+                "send_order_called": 1,
+                "adapter": "Stage931Warm",
+            },
+            path=paths.ledger_path,
+        )
+        return vt_orderid
+
+    def transport_probe() -> list[str]:
+        _prune_stage179_warm_rows(state["rows"])
+        blockers: list[str] = []
+        if state.get("transport_generation_invalidated"):
+            blockers.append("stage179_ctp_transport_generation_invalidated")
+        td_api = state.get("td_api")
+        readiness_state = state.get("readiness_state")
+        if td_api is None or readiness_state is None:
+            blockers.append("stage179_ctp_session_state_missing")
+        else:
+            blockers.extend(
+                _final_ctp_transport_blockers(
+                    td_api,
+                    state["rows"],
+                    readiness_state,
+                )
+            )
+        return list(dict.fromkeys(blockers))
+
+    return CtpExecutionSession.for_callbacks(
+        runtime=runtime,
+        service_generation=service_generation,
+        official_version=OFFICIAL_LIVE_VERSION,
+        capital=OFFICIAL_LIVE_CAPITAL,
+        readiness_ttl_seconds=(
+            build_phase_d_config().hard_limits.readiness_lease_ttl_seconds
+        ),
+        connect_startup_bundle=connect_startup_bundle,
+        disconnect_transport=disconnect_transport,
+        revoke_readiness=lambda reason: revoke_readiness(
+            paths.readiness_path,
+            service_generation=service_generation,
+            reason=reason,
+        ),
+        transport_probe=transport_probe,
+        fresh_bundle=fresh_bundle,
+        pre_api_slot_blockers=pre_api_slot_blockers,
+        reserve_api_slot=reserve_api_slot,
+        send_order=send_order,
+    )
+
+
+def run_serve(args: argparse.Namespace) -> int:
+    if not args.stage179_warm_executor:
+        raise RuntimeProfileError("stage179_warm_executor_opt_in_missing")
+    if args.mode != "live-real":
+        raise RuntimeProfileError("stage179_serve_requires_submit_mode")
+    permitted_submit_profiles = {
+        (ExecutionRuntimeProfile.SIMNOW.value, OrderScope.TEST.value),
+        (ExecutionRuntimeProfile.BROKER_TEST.value, OrderScope.TEST.value),
+        (ExecutionRuntimeProfile.PRODUCTION_LIVE.value, OrderScope.LIVE.value),
+    }
+    if (args.runtime_profile, args.order_scope) not in permitted_submit_profiles:
+        raise RuntimeProfileError(
+            "stage179_serve_runtime_profile_does_not_permit_submit"
+        )
+    runtime = resolve_runtime_profile(
+        profile=args.runtime_profile,
+        order_scope=args.order_scope,
+        repo_root=Path(__file__).resolve().parents[2],
+    )
+    environment = dict(os.environ)
+    environment.update(_load_runtime_env_values(runtime.env_file))
+    if runtime.framework_path:
+        existing_framework = environment.get("DYLD_FRAMEWORK_PATH", "")
+        canonical_framework = [str(path) for path in runtime.framework_path]
+        if existing_framework:
+            canonical_framework.append(existing_framework)
+        environment["DYLD_FRAMEWORK_PATH"] = ":".join(canonical_framework)
+    submit_arming_blockers: list[str] = []
+    if environment.get(PHASE_D_REAL_ADAPTER_ENV) != "1":
+        submit_arming_blockers.append("real_adapter_env_missing")
+    if environment.get(PHASE_D_REAL_ENABLED_ENV) != "1":
+        submit_arming_blockers.append("real_submit_env_missing")
+    if args.confirm_live_real != PHASE_D_CONFIRM_TEXT:
+        submit_arming_blockers.append("confirm_live_real_missing")
+    missing_ctp = [key for key in CTP_ENV_KEYS if not environment.get(key, "")]
+    if missing_ctp:
+        submit_arming_blockers.append("missing_ctp_env:" + ",".join(missing_ctp))
+    if submit_arming_blockers:
+        raise RuntimeProfileError(
+            "stage179_submit_arming_blocked:"
+            + ";".join(submit_arming_blockers)
+        )
+    gate = evaluate_stage179_pre_adapter_gate(
+        resolved=runtime,
+        release_manifest_path=args.stage179_release_manifest,
+        repo_root=runtime.repo_root,
+        expected_official_version=OFFICIAL_LIVE_VERSION,
+        expected_capital=OFFICIAL_LIVE_CAPITAL,
+        expected_capital_label=OFFICIAL_LIVE_CAPITAL_LABEL,
+        environment=environment,
+        confirmation=args.confirm_stage179_activation,
+        activation_receipt_path=(args.stage179_activation_receipt or None),
+        phase_d_real_submit_ready=bool(
+            environment.get(PHASE_D_REAL_ADAPTER_ENV) == "1"
+            and environment.get(PHASE_D_REAL_ENABLED_ENV) == "1"
+            and args.confirm_live_real == PHASE_D_CONFIRM_TEXT
+            and not [key for key in CTP_ENV_KEYS if not environment.get(key, "")]
+        ),
+        stage927_ready=False,
+        kill_switch_clear=not _kill_switch_blockers(),
+        broker_gates_fresh=False,
+    )
+    if gate.blockers:
+        raise RuntimeProfileError(
+            "stage179_warm_executor_gate_blocked:" + ";".join(gate.blockers)
+        )
+
+    # Secrets enter the process only after the pre-adapter gate succeeds.
+    previous_environment = {key: os.environ.get(key) for key in environment}
+    os.environ.update(environment)
+    try:
+        connection = open_spool(runtime.spool_path)
+    except BaseException:
+        for key, previous in previous_environment.items():
+            if previous is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = previous
+        raise
+    paths = ExecutorServicePaths.for_spool(
+        spool_path=runtime.spool_path,
+        ledger_path=runtime.ledger_path,
+        readiness_path=runtime.readiness_path,
+    )
+    stop = Event()
+    previous_handlers: dict[int, Any] = {}
+
+    def request_stop(_signum: int, _frame: Any) -> None:
+        stop.set()
+
+    try:
+        for signum in (signal.SIGINT, signal.SIGTERM):
+            previous_handlers[signum] = signal.getsignal(signum)
+            signal.signal(signum, request_stop)
+        return serve_executor(
+            paths=paths,
+            spool=SQLiteIntentSpool(connection),
+            backend_factory=lambda: _build_stage179_warm_ctp_session(
+                args,
+                runtime,
+                paths,
+            ),
+            runtime=runtime,
+            stop_requested=stop.is_set,
+            poll_seconds=build_phase_d_config().hard_limits.executor_spool_poll_seconds,
+            readiness_heartbeat_seconds=(
+                build_phase_d_config().hard_limits.readiness_heartbeat_seconds
+            ),
+            max_dequeue_seconds=(
+                build_phase_d_config().hard_limits.max_executor_dequeue_seconds
+            ),
+            dequeue_to_send_seconds=(
+                build_phase_d_config().hard_limits.max_dequeue_to_send_seconds
+            ),
+            lease_seconds=build_phase_d_config().hard_limits.readiness_lease_ttl_seconds,
+        )
+    finally:
+        connection.close()
+        for signum, handler in previous_handlers.items():
+            signal.signal(signum, handler)
+        for key, previous in previous_environment.items():
+            if previous is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = previous
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    if args.command == "serve":
+        raise SystemExit(run_serve(args))
+    run_once(args)
 
 
 if __name__ == "__main__":

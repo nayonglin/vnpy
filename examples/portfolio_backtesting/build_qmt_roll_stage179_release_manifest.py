@@ -27,6 +27,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py",

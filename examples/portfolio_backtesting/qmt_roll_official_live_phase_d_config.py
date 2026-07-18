@@ -85,6 +85,12 @@ class PhaseDHardLimits:
     max_open_order_count: int = 0
     max_slippage_ticks: int = 5
     max_controller_cycle_seconds: int = 30
+    max_executor_dequeue_seconds: float = 0.5
+    max_dequeue_to_send_seconds: float = 20.0
+    max_ingress_to_send_seconds: float = 25.0
+    readiness_heartbeat_seconds: float = 1.0
+    readiness_lease_ttl_seconds: float = 3.0
+    executor_spool_poll_seconds: float = 0.1
 
 
 @dataclass(frozen=True)

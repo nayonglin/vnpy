@@ -27,7 +27,7 @@ from qmt_roll_official_live_release_manifest import (
 
 class Stage179ReleaseManifestTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.tempdir = tempfile.TemporaryDirectory()
+        self.tempdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(self.tempdir.cleanup)
         self.repo = Path(self.tempdir.name) / "repo"
         self.repo.mkdir()
@@ -257,6 +257,10 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         )
         self.assertIn(
             "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+            defaults,
+        )
+        self.assertIn(
+            "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
             defaults,
         )
         for stage in ("902", "903", "904", "905", "927"):
