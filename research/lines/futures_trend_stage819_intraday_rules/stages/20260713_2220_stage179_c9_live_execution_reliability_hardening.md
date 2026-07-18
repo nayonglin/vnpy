@@ -152,6 +152,7 @@
 - 开始时间：`2026-07-18 20:57 CST`
 - 完成时间：`2026-07-18 21:12 CST`
 - 代码提交：`43c61f7f3f275b53975d5535b355ff5325697fb6`
+- manifest 完整 reader contract 补写提交：`fa3f0f0e0f23f4faa88462a1aba5fefb5ab19612`
 - 代码提交 tree fingerprint：`4787b5ad84a75af9a0671bf1da4b34e4f434a368`
 - 是否重要突破版本：否。P0 通过只允许代码集成且保持激活默认关闭；P1 只读 CTP、P2 SimNow/券商测试和 P3 一手生产 canary 均未完成。
 - 实盘边界：未安装/加载 LaunchAgent，未加载真实 env，未连接 CTP/SimNow，真实 `send_order/cancel_order=0/0`。
@@ -168,6 +169,7 @@
 - 新增：100 轮真实 fork API-slot 竞争；每轮两个 executor 恰好一个 fake send winner，最大 winner `1`，真实订单 API `0/0`。
 - 新增：`tests/stage179_performance_gate.py`，严格执行 20 合约、2,000 tick/s、60 秒、120,000 tick、25ms writer barrier 延迟与强制 overflow 门。
 - 新增：release manifest 默认 critical files 扩展到 Stage179 tick/trace/spool/ledger/executor、Stage608/904/905/930/931/941、rollback guard、supervisor helper 和四份生产/canary plist，避免 manifest 只冻结部分代码。
+- 修改：manifest reader capabilities 从仅 `intent_fingerprint_v2` 补齐为 ledger 当前完整能力集合，包括 `batch_api_slot_cas_v1` 与 `spool_crash_recovery_v1`；避免兼容回滚低估 reader 要求。
 - 修改：`AsyncTickJournalWriter` 增加 64 条 eager flush 自适应门；最大 batch 256、最大等待 50ms、durability barrier 和 cursor 提交顺序不变。
 - 修改：Stage930/Stage931/runtime profile 测试按 warm owner 新契约更新；默认仍为 `legacy-once`，production-live 激活仍失败关闭。
 - 删除：无生产功能删除；无 alpha、AI 池、0.5R、重进场次数、资金、品种、方向、手数或仓位参数变化。
@@ -201,6 +203,7 @@
 - 第一次扩大回归：`597 passed, 1 failed, 238 subtests passed`。唯一失败为旧测试仍要求 Stage930 源码完全不出现 warm child 参数；不是运行时错误。按新 owner 契约修正后单项通过。
 - 第二次扩大回归：`598 passed, 238 subtests passed`，耗时 `54.89s`。
 - manifest critical files 补齐后最终冻结回归：`599 passed, 238 subtests passed`，耗时 `51.57s`。
+- manifest 完整 reader contract 补齐后最终复验：`599 passed, 238 subtests passed`，耗时 `52.40s`。
 - Task12 生命周期/manifest/Stage930：`56/56`。
 - Task13 fault matrix：`2/2`，其中含 22 个合同 subcase 与 100 轮 fork。
 - `py_compile`、新增/修改生产文件 `ruff check`、`git diff --check`、supervisor `bash -n`、8 份 plist `plutil -lint`：通过。
