@@ -1,0 +1,45 @@
+examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_b90fe434863d25 5,30-33,49-75,82-83,97-98,111-153,166-168,201-207,232-233,240-241,276,294,296,300-301,392-394,396,405-407,427-428,430-431,433-466,474-476,484,487,490-491,511-512,514,517,522-527,540-541,551-590,606,665-669,674-677
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_eb5d9d6b123da6 65,88
+examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py
+  s_57fbbdfeac5414::t_1a11d74ab4e487 65-182,845,879-892,925-926,957-958,1058-1101,1157-1163,1225-1227,1358,1369-1377,1486-1492
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_6277c52333bbeb 212-274,1725-1729,1773-1775,1808-1813,1829-1830,1877,1896
+examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py
+  s_57fbbdfeac5414::t_3112b3d4eb90a3 52-81,341-355,358,386-398
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_4180bdc81187d7 2333-2360,2380-2382,2400-2412,3203-3210,3239,3243-3244,3247-3248,3250,3255-3258,3313-3326,3496,3499,3512-3515,3672,3828-3829
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_8de28f25fcb75d 6232-6233,7043-7044
+tests/test_stage174_query_bundle.py
+  s_57fbbdfeac5414::t_f8499b3fcac025 205-301
+tests/test_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_fc21678f3535cd 6,17-19,27-29,44-46,58-60,87-88,104-125,163,178-181,191-194,223-237,241-247,320-321,327-337,341-343,351,356-413
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_c199f5d0ecb48d 86,97
+tests/test_stage179_stage372_daemon_boundary.py
+  s_57fbbdfeac5414::t_4b191ec79c5df2 28-71
+tests/test_stage907_readonly_refresh_gate.py
+  s_57fbbdfeac5414::t_5c90236e3518a4 1-51
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_e5d72af5d7a8fa 117-121,147,153-154,159-160,165-166,171-216,273-280
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "740c4f7a3e67ad39d0888522154d2232c66ef122",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
