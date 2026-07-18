@@ -171,6 +171,21 @@
 - 独立 51 项聚焦测试通过；62/62 critical files 唯一且 hash 匹配，manifest digest 与文件 SHA-256 重算一致，source `b1d05d8c8...` 是冻结 HEAD 的祖先；offline/production-readonly loader 接受，SimNow/broker-test/production-live 拒绝。3 份 plist lint、Python compile 与 `git diff --check` 通过。
 - 四类结论：no-submit 代码与 dormant plist 合入 `GO`；production-readonly `NO-GO`；SimNow/broker-test `NO-GO`；production-live `NO-GO`。唯一 P2 是可用交易服务窗口下严格 `0/0` CTP 与真实 `20:55→21:00 decision/submit-ready` 时间戳证据。
 
+### 2026-07-19 01:30-02:06 只读 canary 证据契约与延迟资格闸门
+
+- 改动时间：2026-07-19 01:30-02:06 CST；是否重要突破版本：否。这是运行态证据和资格验收收口，不改变策略 alpha，也不把离线通过误写成实盘已启用。
+- 新增只读 canary 资格审计器：每个会话必须绑定同一冻结 manifest/source commit、Stage372/20万身份、daemon 与 plist 的双重 runtime/mode/submit-mode、08:55 或 20:55 调度、完整 Stage914/Stage907 只读快照、会话完成状态和显式订单 API 证据。
+- Stage608 心跳新增严格整数 `generated_epoch_ns`，每个 watched symbol watermark 新增入口 `ingress_epoch_ns`；Stage930 固化 daemon/cycle 纳秒时间、首个开盘分钟行情入口与耐久发布时间。只读资格要求日盘 09:00、夜盘 21:00 后首分钟内出现行情，`ingress -> durable` 不超过 1 秒，缺时间戳或类型错误均失败关闭。
+- Stage903 新增 Stage907 刷新后的只读状态/持仓快照状态，以及 Stage905 的显式 `send_order_api_called_count/cancel_order_api_called_count`。Stage930 对慢控制器、fast lane、warm Stage931 和 post-submit reducer 分源累计 send/cancel，并输出 `order_api_evidence_complete`；任何来源缺计数、fast-lane 异常或 cycle 异常均不能用默认零洗白。
+- P1 资格固定要求至少 5 个唯一完整日/夜盘会话、日夜覆盖、全量 `send/cancel/order=0/0` 和一次断线重连。断线重连不能由布尔参数自报，必须绑定同一 session/profile 的旧/新 connection generation、readiness 撤销/恢复时间和该证明自身的 `send/cancel=0/0`。
+- 资格 evidence 文件使用只新建、不覆盖的原子写入与父目录 fsync；capture 时重新用当前仓库字节校验冻结 manifest，qualify 时精确绑定 manifest digest/source commit。审计器只读文件，不调用 `launchctl`、不连接 CTP、不导入报单适配器。
+- 新增参数：`capture --session-id/--session-date/--session-kind/--scheduled-start-epoch-ns/--disconnect-evidence`，`qualify --session-evidence/--expected-manifest-sha256/--expected-source-commit/--required-session-count`。修改参数：无策略参数变化。删除参数：无正式参数删除。
+- 最终扩大回归：`715 passed, 245 subtests passed`，耗时 `68.54s`；另一次相关全组回归 `237 passed, 115 subtests passed`。Python compile、`git diff --check` 与 3 份 Stage372 plist lint 全部通过；环境缺少 `ruff`，因此没有声称 ruff 通过。
+- 本轮没有运行新回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有加载生产 env、没有连接 CTP/SimNow、没有安装或加载 LaunchAgent、没有调用真实报单或撤单 API，真实调用保持 `send=0/cancel=0`。
+- 延迟判断：代码现在能机器判定“20:55 是否准时拉起、21:00 首 tick 是否及时耐久、证据是否完整”，并继续沿既有 trace/SLA 判定真实信号到执行的 25 秒 hard deadline；但当前仍没有 5 场真实服务窗口证据，因此不能宣称今天的线上延迟已被运行态证明解决。
+- 过拟合反思：否。没有根据 JM 单晚结果或收益曲线调参，只补时间因果、显式证据和失败关闭。
+- 继续价值反思：是。下一步价值已经从继续堆离线规则转为冻结 manifest、独立终审和真实服务窗口的严格 0/0 验收。
+
 ## 结论与硬门禁
 
 - 代码合入判断：`GO`，严格限定 no-submit 代码与 dormant plist。最终冻结独立复审为 `P0=0、P1=0、P2=1`；合入不等于部署或激活。

@@ -1473,11 +1473,23 @@ def _persistent_detector_fast_lane_status(
         },
         "stage931": {
             "submit_status": "persistent_detector_submit_disabled_task8",
-            "summary": {"order_api_called_count": 0},
+            "summary": {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
         },
         "reduce_close_ready_count": 0,
         "blockers": blockers,
+        "send_order_api_called_count": send_order_api_count,
+        "cancel_order_api_called_count": cancel_order_api_count,
         "order_api_called_count": order_api_count,
+        "order_api_evidence_complete": int(order_api_counts_valid),
+        "order_api_evidence_missing_fields": (
+            []
+            if order_api_counts_valid
+            else ["persistent_detector_order_api_count_invalid"]
+        ),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
 
@@ -1684,7 +1696,11 @@ def _run_fast_intraday_lane(
             "stage905": {"summary": {"ready_count": 0}},
             "stage931": {"summary": {"order_api_called_count": 0}},
             "reduce_close_ready_count": 0,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
             "order_api_called_count": 0,
+            "order_api_evidence_complete": 1,
+            "order_api_evidence_missing_fields": [],
             "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
     if getattr(args, "detector_mode", "legacy-subprocess") == "persistent":
@@ -1742,9 +1758,20 @@ def _run_fast_intraday_lane(
                 else "fast_lane_submit_skipped_no_reduce_close_or_not_live_real"
             ),
             "exit_code": 0,
-            "summary": {"order_api_called_count": 0},
+            "summary": {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
         }
-    order_api_called = _to_int(submit.get("summary", {}).get("order_api_called_count"), 0)
+    submit_summary = submit.get("summary", {})
+    send_order_api_called = _to_int(
+        submit_summary.get("send_order_api_called_count"), 0
+    )
+    cancel_order_api_called = _to_int(
+        submit_summary.get("cancel_order_api_called_count"), 0
+    )
+    order_api_called = _to_int(submit_summary.get("order_api_called_count"), 0)
     return {
         "fast_lane_status": (
             "fast_lane_reduce_close_submit_attempted"
@@ -1761,7 +1788,21 @@ def _run_fast_intraday_lane(
         "stage905": {**{key: value for key, value in stage905.items() if key != "stdout"}, "summary": stage905_summary},
         "stage931": submit,
         "reduce_close_ready_count": reduce_close_ready_count,
+        "send_order_api_called_count": send_order_api_called,
+        "cancel_order_api_called_count": cancel_order_api_called,
         "order_api_called_count": order_api_called,
+        "order_api_evidence_complete": int(
+            type(submit_summary.get("send_order_api_called_count")) is int
+            and type(submit_summary.get("cancel_order_api_called_count")) is int
+        ),
+        "order_api_evidence_missing_fields": [
+            field
+            for field in (
+                "send_order_api_called_count",
+                "cancel_order_api_called_count",
+            )
+            if type(submit_summary.get(field)) is not int
+        ],
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
 
@@ -1788,7 +1829,13 @@ def _safe_run_fast_intraday_lane(
             "target_date": target_date,
             "exception": repr(exc),
             "reduce_close_ready_count": 0,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
             "order_api_called_count": 0,
+            "order_api_evidence_complete": 0,
+            "order_api_evidence_missing_fields": [
+                "fast_lane_exception_order_api_evidence_unavailable"
+            ],
             "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
@@ -1820,12 +1867,28 @@ def _run_idle_fast_lane(
     deadline = monotonic() + max(0.0, float(wait_seconds))
     recent_runs: list[dict[str, Any]] = []
     run_count = 0
+    send_order_api_called_count = 0
+    cancel_order_api_called_count = 0
     order_api_called_count = 0
+    order_api_evidence_missing_fields: list[str] = []
     while monotonic() < deadline:
         if _market_execution_session_active():
             result = _safe_run_fast_intraday_lane(args, target_date, paths)
             run_count += 1
+            send_order_api_called_count += _to_int(
+                result.get("send_order_api_called_count"), 0
+            )
+            cancel_order_api_called_count += _to_int(
+                result.get("cancel_order_api_called_count"), 0
+            )
             order_api_called_count += _to_int(result.get("order_api_called_count"), 0)
+            if result.get("order_api_evidence_complete") != 1:
+                details = result.get("order_api_evidence_missing_fields")
+                order_api_evidence_missing_fields.extend(
+                    list(details)
+                    if isinstance(details, list) and details
+                    else ["fast_lane_order_api_evidence_incomplete"]
+                )
             recent_runs.append(result)
             recent_runs = recent_runs[-FAST_LANE_RECENT_RUN_LIMIT:]
             try:
@@ -1838,7 +1901,13 @@ def _run_idle_fast_lane(
         sleeper(min(max(0.1, float(args.fast_poll_seconds)), remaining))
     return {
         "run_count": run_count,
+        "send_order_api_called_count": send_order_api_called_count,
+        "cancel_order_api_called_count": cancel_order_api_called_count,
         "order_api_called_count": order_api_called_count,
+        "order_api_evidence_complete": int(
+            not order_api_evidence_missing_fields
+        ),
+        "order_api_evidence_missing_fields": order_api_evidence_missing_fields,
         "recent_runs": recent_runs,
     }
 
@@ -1860,7 +1929,10 @@ def _run_command_with_fast_lane(
     started = datetime.now()
     fast_lane_runs: list[dict[str, Any]] = []
     fast_lane_run_count = 0
+    fast_lane_send_order_api_called_count = 0
+    fast_lane_cancel_order_api_called_count = 0
     fast_lane_order_api_called_count = 0
+    fast_lane_order_api_evidence_missing_fields: list[str] = []
     timed_out = False
     proc: subprocess.Popen[Any] | None = None
     stdout = ""
@@ -1890,9 +1962,24 @@ def _run_command_with_fast_lane(
                         submit_reduce_close=submit_reduce_close,
                     )
                     fast_lane_run_count += 1
+                    fast_lane_send_order_api_called_count += _to_int(
+                        fast_result.get("send_order_api_called_count"), 0
+                    )
+                    fast_lane_cancel_order_api_called_count += _to_int(
+                        fast_result.get("cancel_order_api_called_count"), 0
+                    )
                     fast_lane_order_api_called_count += _to_int(
                         fast_result.get("order_api_called_count"), 0
                     )
+                    if fast_result.get("order_api_evidence_complete") != 1:
+                        details = fast_result.get(
+                            "order_api_evidence_missing_fields"
+                        )
+                        fast_lane_order_api_evidence_missing_fields.extend(
+                            list(details)
+                            if isinstance(details, list) and details
+                            else ["fast_lane_order_api_evidence_incomplete"]
+                        )
                     fast_lane_runs.append(fast_result)
                     fast_lane_runs = fast_lane_runs[-FAST_LANE_RECENT_RUN_LIMIT:]
                     try:
@@ -1932,7 +2019,13 @@ def _run_command_with_fast_lane(
         "stdout_tail": (stdout or "")[-4000:],
         "fast_lane_runs": fast_lane_runs,
         "fast_lane_run_count": fast_lane_run_count,
+        "fast_lane_send_order_api_called_count": fast_lane_send_order_api_called_count,
+        "fast_lane_cancel_order_api_called_count": fast_lane_cancel_order_api_called_count,
         "fast_lane_order_api_called_count": fast_lane_order_api_called_count,
+        "fast_lane_order_api_evidence_complete": int(
+            not fast_lane_order_api_evidence_missing_fields
+        ),
+        "fast_lane_order_api_evidence_missing_fields": fast_lane_order_api_evidence_missing_fields,
     }
 
 
@@ -2093,7 +2186,15 @@ def _run_stage931(
     reduce_close_only: bool = False,
 ) -> dict[str, Any]:
     if args.submit_mode != "live-real":
-        return {"submit_status": "submit_adapter_skipped", "exit_code": 0}
+        return {
+            "submit_status": "submit_adapter_skipped",
+            "exit_code": 0,
+            "summary": {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
+        }
     stage_args = [
         "--target-date",
         target_date,
@@ -3057,7 +3158,132 @@ def _stage931_submit_blockers(
     return blockers
 
 
+def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
+    summary = tick_result.get("summary")
+    if not isinstance(summary, dict):
+        return None
+    latest_ticks = summary.get("symbol_tick_watermarks")
+    if not isinstance(latest_ticks, dict):
+        latest_ticks = summary.get("latest_ticks")
+    if not isinstance(latest_ticks, dict):
+        return None
+    values = [
+        row.get("ingress_epoch_ns")
+        for row in latest_ticks.values()
+        if isinstance(row, dict)
+        and type(row.get("ingress_epoch_ns")) is int
+        and row.get("ingress_epoch_ns") > 0
+    ]
+    return max(values) if values else None
+
+
+def _tick_result_durable_epoch_ns(tick_result: dict[str, Any]) -> int | None:
+    summary = tick_result.get("summary")
+    if not isinstance(summary, dict):
+        return None
+    value = summary.get("generated_epoch_ns")
+    return value if type(value) is int and value > 0 else None
+
+
+def _session_timing_evidence(cycles: list[dict[str, Any]]) -> dict[str, int | None]:
+    for cycle in cycles:
+        ingress = cycle.get("first_market_tick_ingress_epoch_ns")
+        if type(ingress) is not int or ingress <= 0:
+            continue
+        return {
+            "first_market_tick_ingress_epoch_ns": ingress,
+            "first_market_tick_cycle_started_epoch_ns": cycle.get(
+                "cycle_started_epoch_ns"
+            ),
+            "first_market_tick_durable_epoch_ns": cycle.get(
+                "first_market_tick_durable_epoch_ns"
+            ),
+            "first_market_tick_cycle_finished_epoch_ns": cycle.get(
+                "cycle_finished_epoch_ns"
+            ),
+        }
+    return {
+        "first_market_tick_ingress_epoch_ns": None,
+        "first_market_tick_cycle_started_epoch_ns": None,
+        "first_market_tick_durable_epoch_ns": None,
+        "first_market_tick_cycle_finished_epoch_ns": None,
+    }
+
+
+def _readonly_qualification_cycle(
+    cycles: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    qualified: dict[str, Any] | None = None
+    for cycle in cycles:
+        stage903 = cycle.get("stage903")
+        summary = (
+            stage903.get("summary")
+            if isinstance(stage903, dict)
+            and isinstance(stage903.get("summary"), dict)
+            else {}
+        )
+        if (
+            summary.get("stage914_exit_code") == 0
+            and summary.get("stage914_preflight_status")
+            == "production_readonly_preflight_passed"
+            and summary.get("stage914_blocking_failure_count") == 0
+            and summary.get("stage907_refresh_status")
+            == "readonly_refresh_completed_snapshot_ready"
+            and summary.get("stage907_readonly_status_after")
+            == "readonly_snapshots_received"
+            and summary.get("stage907_position_snapshot_state_after")
+            in {"confirmed_flat", "positions_received"}
+        ):
+            qualified = cycle
+    return qualified
+
+
+def _missing_order_api_evidence_fields(
+    *,
+    stage903_result: dict[str, Any],
+    stage927_result: dict[str, Any],
+    stage931_result: dict[str, Any],
+    post_submit_reduce_close: dict[str, Any],
+) -> list[str]:
+    missing: list[str] = []
+    for label, result in (
+        ("stage903", stage903_result),
+        ("stage931", stage931_result),
+        ("post_submit_reduce_close", post_submit_reduce_close),
+    ):
+        summary = result.get("summary")
+        if not isinstance(summary, dict):
+            summary = {}
+        for field in (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+        ):
+            value = summary.get(field)
+            if type(value) is not int or value < 0:
+                missing.append(f"{label}.summary.{field}")
+    for label, result in (
+        ("stage903", stage903_result),
+        ("stage927", stage927_result),
+        ("stage931", stage931_result),
+    ):
+        if "fast_lane_run_count" not in result:
+            continue
+        for field in (
+            "fast_lane_send_order_api_called_count",
+            "fast_lane_cancel_order_api_called_count",
+        ):
+            value = result.get(field)
+            if type(value) is not int or value < 0:
+                missing.append(f"{label}.{field}")
+        if result.get("fast_lane_order_api_evidence_complete") != 1:
+            missing.append(
+                f"{label}.fast_lane_order_api_evidence_complete"
+            )
+    return missing
+
+
 def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
+    cycle_started_epoch_ns = time.time_ns()
     warm_execution = (
         getattr(args, "stage179_execution_mode", "legacy-once") == "warm"
     )
@@ -3157,7 +3383,11 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     post_submit_reduce_close: dict[str, Any] = {
         "submit_status": "post_submit_reduce_close_not_needed",
         "exit_code": 0,
-        "summary": {"order_api_called_count": 0},
+        "summary": {
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0,
+        },
     }
     if (
         resolved_target_date
@@ -3183,8 +3413,46 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         + _to_int(stage931_result.get("fast_lane_order_api_called_count"), 0)
         + _to_int(post_submit_reduce_close.get("summary", {}).get("order_api_called_count"), 0)
     )
+    send_order_api_called = (
+        _to_int(stage903_result.get("summary", {}).get("send_order_api_called_count"), 0)
+        + _to_int(stage903_result.get("fast_lane_send_order_api_called_count"), 0)
+        + _to_int(stage927_result.get("fast_lane_send_order_api_called_count"), 0)
+        + _to_int(stage931_result.get("summary", {}).get("send_order_api_called_count"), 0)
+        + _to_int(stage931_result.get("fast_lane_send_order_api_called_count"), 0)
+        + _to_int(post_submit_reduce_close.get("summary", {}).get("send_order_api_called_count"), 0)
+    )
+    cancel_order_api_called = (
+        _to_int(stage903_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
+        + _to_int(stage903_result.get("fast_lane_cancel_order_api_called_count"), 0)
+        + _to_int(stage927_result.get("fast_lane_cancel_order_api_called_count"), 0)
+        + _to_int(stage931_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
+        + _to_int(stage931_result.get("fast_lane_cancel_order_api_called_count"), 0)
+        + _to_int(post_submit_reduce_close.get("summary", {}).get("cancel_order_api_called_count"), 0)
+    )
+    cycle_finished_epoch_ns = time.time_ns()
+    first_market_tick_ingress_epoch_ns = _tick_result_ingress_epoch_ns(
+        tick_result
+    )
+    first_market_tick_durable_epoch_ns = _tick_result_durable_epoch_ns(
+        tick_result
+    )
+    order_api_evidence_missing_fields = _missing_order_api_evidence_fields(
+        stage903_result=stage903_result,
+        stage927_result=stage927_result,
+        stage931_result=stage931_result,
+        post_submit_reduce_close=post_submit_reduce_close,
+    )
     return {
         "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "cycle_started_epoch_ns": cycle_started_epoch_ns,
+        "cycle_finished_epoch_ns": cycle_finished_epoch_ns,
+        "first_market_tick_ingress_epoch_ns": first_market_tick_ingress_epoch_ns,
+        "first_market_tick_durable_epoch_ns": (
+            first_market_tick_durable_epoch_ns
+            if first_market_tick_ingress_epoch_ns is not None
+            else None
+        ),
+        "runtime_profile": getattr(args, "runtime_profile", "offline"),
         "target_date": resolved_target_date,
         "requested_target_date": target_date,
         "watched_symbols": symbols,
@@ -3195,7 +3463,13 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "stage931": stage931_result,
         "post_submit_reduce_close": post_submit_reduce_close,
         "stage931_submit_blockers": submit_blockers,
+        "send_order_api_called_count": send_order_api_called,
+        "cancel_order_api_called_count": cancel_order_api_called,
         "order_api_called_count": order_api_called,
+        "order_api_evidence_complete": int(
+            not order_api_evidence_missing_fields
+        ),
+        "order_api_evidence_missing_fields": order_api_evidence_missing_fields,
     }
 
 
@@ -3301,7 +3575,10 @@ def _initialize_runtime_services(
 
 
 def main() -> None:
+    daemon_started_epoch_ns = time.time_ns()
     args = _build_parser().parse_args()
+    execution_profile = _execution_profile_for_args(args)
+    runtime_profile = getattr(args, "runtime_profile", "offline")
     startup_blockers = _startup_configuration_blockers(args)
     if startup_blockers:
         print(
@@ -3473,6 +3750,7 @@ def main() -> None:
     consecutive_errors = 0
 
     while True:
+        cycle_attempt_started_epoch_ns = time.time_ns()
         try:
             cycle = run_cycle(args, target_date, paths)
             consecutive_errors = 0
@@ -3481,25 +3759,66 @@ def main() -> None:
             consecutive_errors += 1
             cycle = {
                 "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "cycle_started_epoch_ns": cycle_attempt_started_epoch_ns,
+                "cycle_finished_epoch_ns": time.time_ns(),
+                "first_market_tick_ingress_epoch_ns": None,
+                "first_market_tick_durable_epoch_ns": None,
+                "runtime_profile": runtime_profile,
                 "target_date": target_date,
                 "watched_symbols": _watched_symbols_for_args(args),
                 "tick_refresh": {"refresh_status": "cycle_exception_before_or_during_refresh"},
                 "stage903": {"summary": {"controller_status": "stage930_cycle_exception_fail_closed"}},
                 "stage927": {"summary": {"arming_status": "stage927_skipped_cycle_exception", "real_submit_permitted": 0}},
                 "stage931": {"summary": {"adapter_status": "stage931_skipped_cycle_exception"}},
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
                 "order_api_called_count": 0,
+                "order_api_evidence_complete": 0,
+                "order_api_evidence_missing_fields": [
+                    "cycle_exception_order_api_evidence_unavailable"
+                ],
                 "cycle_exception": repr(exc),
                 "consecutive_cycle_errors": consecutive_errors,
             }
             status = "daemon_cycle_exception_fail_closed"
         cycles.append(cycle)
         _append_event(paths["events_ndjson"], {"event_type": "stage930_cycle", **cycle})
+        total_send_order_api = sum(
+            _to_int(item.get("send_order_api_called_count"), 0)
+            for item in cycles
+        )
+        total_cancel_order_api = sum(
+            _to_int(item.get("cancel_order_api_called_count"), 0)
+            for item in cycles
+        )
         total_order_api = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
+        order_api_evidence_missing_fields = [
+            f"cycle[{index}]:{field}"
+            for index, item in enumerate(cycles)
+            for field in (
+                item.get("order_api_evidence_missing_fields")
+                if isinstance(
+                    item.get("order_api_evidence_missing_fields"), list
+                )
+                else ["order_api_evidence_missing_fields_invalid"]
+            )
+        ]
+        if any(
+            item.get("order_api_evidence_complete") != 1 for item in cycles
+        ) and not order_api_evidence_missing_fields:
+            order_api_evidence_missing_fields.append(
+                "cycle_order_api_evidence_incomplete_without_detail"
+            )
+        session_timing = _session_timing_evidence(cycles)
         summary = {
             "model_tag": MODEL_TAG,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "execution_profile": _execution_profile_for_args(args).profile_key,
-            "official_live_version": _execution_profile_for_args(args).official_version,
+            "daemon_started_epoch_ns": daemon_started_epoch_ns,
+            "execution_profile": execution_profile.profile_key,
+            "official_live_version": execution_profile.official_version,
+            "capital": execution_profile.capital,
+            "capital_label": execution_profile.capital_label,
+            "runtime_profile": runtime_profile,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
             "detector_mode": args.detector_mode,
@@ -3509,10 +3828,20 @@ def main() -> None:
             "daemon_status": status,
             "consecutive_cycle_errors": consecutive_errors,
             "current_session_names": _current_session_names(),
+            "send_order_api_called_count": total_send_order_api,
+            "cancel_order_api_called_count": total_cancel_order_api,
             "order_api_called_count": total_order_api,
+            "order_api_evidence_complete": int(
+                not order_api_evidence_missing_fields
+            ),
+            "order_api_evidence_missing_fields": order_api_evidence_missing_fields,
+            **session_timing,
             "ai_pool_preflight": ai_pool_preflight,
             "detector_supervisor": _detector_supervisor_public(
                 detector_supervisor
+            ),
+            "readonly_qualification_cycle": _readonly_qualification_cycle(
+                cycles
             ),
             "latest_cycle": cycle,
             "email_notifications": email_notifications,
@@ -3584,12 +3913,65 @@ def main() -> None:
                 pass
         if _to_int(idle_fast_lane.get("run_count"), 0) > 0:
             cycle["between_cycle_fast_lane"] = idle_fast_lane
+            cycle["send_order_api_called_count"] = _to_int(
+                cycle.get("send_order_api_called_count"), 0
+            ) + _to_int(idle_fast_lane.get("send_order_api_called_count"), 0)
+            cycle["cancel_order_api_called_count"] = _to_int(
+                cycle.get("cancel_order_api_called_count"), 0
+            ) + _to_int(idle_fast_lane.get("cancel_order_api_called_count"), 0)
             cycle["order_api_called_count"] = _to_int(cycle.get("order_api_called_count"), 0) + _to_int(
                 idle_fast_lane.get("order_api_called_count"), 0
             )
+            idle_fast_lane_exceptions = [
+                str(item.get("fast_lane_status"))
+                for item in idle_fast_lane.get("recent_runs", [])
+                if isinstance(item, dict)
+                and item.get("fast_lane_status")
+                == "fast_lane_exception_fail_closed"
+            ]
+            if idle_fast_lane.get("idle_fast_lane_exception"):
+                idle_fast_lane_exceptions.append("idle_fast_lane_exception")
+            if idle_fast_lane_exceptions:
+                cycle["order_api_evidence_complete"] = 0
+                missing = cycle.get("order_api_evidence_missing_fields")
+                if not isinstance(missing, list):
+                    missing = []
+                cycle["order_api_evidence_missing_fields"] = [
+                    *missing,
+                    *[
+                        f"between_cycle_fast_lane:{item}"
+                        for item in idle_fast_lane_exceptions
+                    ],
+                ]
             summary["latest_cycle"] = cycle
             summary["generated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            summary["send_order_api_called_count"] = sum(
+                _to_int(item.get("send_order_api_called_count"), 0)
+                for item in cycles
+            )
+            summary["cancel_order_api_called_count"] = sum(
+                _to_int(item.get("cancel_order_api_called_count"), 0)
+                for item in cycles
+            )
             summary["order_api_called_count"] = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
+            summary["order_api_evidence_missing_fields"] = [
+                f"cycle[{index}]:{field}"
+                for index, item in enumerate(cycles)
+                for field in (
+                    item.get("order_api_evidence_missing_fields")
+                    if isinstance(
+                        item.get("order_api_evidence_missing_fields"), list
+                    )
+                    else ["order_api_evidence_missing_fields_invalid"]
+                )
+            ]
+            summary["order_api_evidence_complete"] = int(
+                not summary["order_api_evidence_missing_fields"]
+                and all(
+                    item.get("order_api_evidence_complete") == 1
+                    for item in cycles
+                )
+            )
             _write_outputs(paths, summary)
         if args.duration_seconds and time.monotonic() - started >= args.duration_seconds:
             status = "daemon_completed_duration"

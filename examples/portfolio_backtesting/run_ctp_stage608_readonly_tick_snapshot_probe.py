@@ -93,6 +93,7 @@ def _symbol_tick_watermarks(
         durable = (durable_watermarks or {}).get(vt_symbol)
         result[vt_symbol] = {
             "received_at": _clean(row.get("received_at")),
+            "ingress_epoch_ns": int(row.get("ingress_epoch_ns", 0) or 0),
             "stream_sequence": int(row.get("stream_sequence", 0) or 0),
             "symbol_stream_sequence": int(
                 row.get("symbol_stream_sequence", row.get("stream_sequence", 0))
@@ -2666,6 +2667,7 @@ def _run_stream_owned(
         heartbeat = {
             **summary,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "generated_epoch_ns": time.time_ns(),
             "status": (
                 "tick_stream_stopped"
                 if stopped

@@ -81,6 +81,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
             "examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py",
             "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
+            "examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
             "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
             "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
             "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -91,6 +92,8 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
             "tests/stage179_performance_gate.py",
             "tests/test_stage179_performance_gate_diagnostics.py",
+            "tests/test_stage179_readonly_canary_qualification.py",
+            "tests/test_stage608_continuous_tick_stream.py",
             "tests/test_stage930_fast_lane.py",
         }
 

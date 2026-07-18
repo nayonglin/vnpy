@@ -111,6 +111,148 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual("legacy-once", args.stage179_execution_mode)
         self.assertEqual("offline", args.runtime_profile)
 
+    def test_tick_ingress_evidence_uses_newest_exact_integer(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "summary": {
+                    "latest_ticks": {
+                        "JM609.DCE": {"ingress_epoch_ns": 200},
+                        "I609.DCE": {"ingress_epoch_ns": 100},
+                        "J609.DCE": {"ingress_epoch_ns": True},
+                    }
+                }
+            }
+        )
+
+        self.assertEqual(200, result)
+
+    def test_tick_durable_evidence_requires_exact_heartbeat_epoch(self) -> None:
+        self.assertEqual(
+            300,
+            stage930._tick_result_durable_epoch_ns(
+                {"summary": {"generated_epoch_ns": 300}}
+            ),
+        )
+        self.assertIsNone(
+            stage930._tick_result_durable_epoch_ns(
+                {"summary": {"generated_epoch_ns": True}}
+            )
+        )
+
+    def test_session_timing_evidence_keeps_first_market_tick_cycle(self) -> None:
+        result = stage930._session_timing_evidence(
+            [
+                {
+                    "cycle_started_epoch_ns": 10,
+                    "cycle_finished_epoch_ns": 20,
+                    "first_market_tick_ingress_epoch_ns": None,
+                    "first_market_tick_durable_epoch_ns": None,
+                },
+                {
+                    "cycle_started_epoch_ns": 30,
+                    "cycle_finished_epoch_ns": 50,
+                    "first_market_tick_ingress_epoch_ns": 40,
+                    "first_market_tick_durable_epoch_ns": 41,
+                },
+                {
+                    "cycle_started_epoch_ns": 60,
+                    "cycle_finished_epoch_ns": 80,
+                    "first_market_tick_ingress_epoch_ns": 70,
+                    "first_market_tick_durable_epoch_ns": 71,
+                },
+            ]
+        )
+
+        self.assertEqual(40, result["first_market_tick_ingress_epoch_ns"])
+        self.assertEqual(30, result["first_market_tick_cycle_started_epoch_ns"])
+        self.assertEqual(41, result["first_market_tick_durable_epoch_ns"])
+        self.assertEqual(50, result["first_market_tick_cycle_finished_epoch_ns"])
+
+    def test_readonly_qualification_cycle_keeps_latest_complete_snapshot(self) -> None:
+        ready = {
+            "cycle_started_epoch_ns": 30,
+            "stage903": {
+                "summary": {
+                    "stage914_exit_code": 0,
+                    "stage914_preflight_status": "production_readonly_preflight_passed",
+                    "stage914_blocking_failure_count": 0,
+                    "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
+                    "stage907_readonly_status_after": "readonly_snapshots_received",
+                    "stage907_position_snapshot_state_after": "confirmed_flat",
+                }
+            },
+        }
+        newer_ready = json.loads(json.dumps(ready))
+        newer_ready["cycle_started_epoch_ns"] = 40
+        outside_session = {
+            "cycle_started_epoch_ns": 50,
+            "stage903": {
+                "summary": {
+                    "stage914_exit_code": 0,
+                    "stage914_preflight_status": "production_readonly_preflight_passed",
+                    "stage914_blocking_failure_count": 0,
+                    "stage907_refresh_status": "readonly_refresh_planned",
+                }
+            },
+        }
+
+        result = stage930._readonly_qualification_cycle(
+            [ready, newer_ready, outside_session]
+        )
+
+        self.assertEqual(40, result["cycle_started_epoch_ns"])
+
+    def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
+        missing = stage930._missing_order_api_evidence_fields(
+            stage903_result={
+                "summary": {"send_order_api_called_count": 0}
+            },
+            stage927_result={"summary": {}},
+            stage931_result={
+                "summary": {
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                }
+            },
+            post_submit_reduce_close={
+                "summary": {
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                }
+            },
+        )
+
+        self.assertEqual(
+            ["stage903.summary.cancel_order_api_called_count"],
+            missing,
+        )
+
+    def test_order_api_evidence_rejects_incomplete_fast_lane_provenance(self) -> None:
+        complete_summary = {
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+        }
+        missing = stage930._missing_order_api_evidence_fields(
+            stage903_result={"summary": complete_summary},
+            stage927_result={
+                "summary": {},
+                "fast_lane_run_count": 1,
+                "fast_lane_send_order_api_called_count": 0,
+                "fast_lane_cancel_order_api_called_count": 0,
+                "fast_lane_order_api_evidence_complete": 0,
+                "fast_lane_order_api_evidence_missing_fields": [
+                    "persistent_detector_order_api_count_invalid"
+                ],
+            },
+            stage931_result={"summary": complete_summary},
+            post_submit_reduce_close={"summary": complete_summary},
+        )
+
+        self.assertIn(
+            "stage927.fast_lane_order_api_evidence_complete",
+            missing,
+        )
+
     def test_warm_stage931_service_is_singleton_across_cycle_starts(self) -> None:
         args = self.args()
         args.stage179_execution_mode = "warm"
@@ -151,13 +293,19 @@ class Stage930FastLaneTest(unittest.TestCase):
             "summary": {
                 "target_date": "2026-07-16",
                 "stage905_ready_count": 0,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
                 "order_api_called_count": 0,
             }
         }
         warm_status = {
             "submit_status": "warm_executor_no_submit_ready",
             "exit_code": 0,
-            "summary": {"order_api_called_count": 0},
+            "summary": {
+                "order_api_called_count": 0,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+            },
         }
         with (
             patch.object(stage930, "_start_stage931_service") as start,
@@ -183,6 +331,15 @@ class Stage930FastLaneTest(unittest.TestCase):
         legacy.assert_not_called()
         self.assertEqual("warm_executor_no_submit_ready", cycle["stage931"]["submit_status"])
         self.assertEqual(0, cycle["stage931"]["wake_socket_notified"])
+        self.assertEqual("offline", cycle["runtime_profile"])
+        self.assertEqual(0, cycle["send_order_api_called_count"])
+        self.assertEqual(0, cycle["cancel_order_api_called_count"])
+        self.assertIsInstance(cycle["cycle_started_epoch_ns"], int)
+        self.assertIsInstance(cycle["cycle_finished_epoch_ns"], int)
+        self.assertLessEqual(
+            cycle["cycle_started_epoch_ns"],
+            cycle["cycle_finished_epoch_ns"],
+        )
 
     def test_warm_live_cycle_publishes_authorization_before_wake(self) -> None:
         args = self.args()

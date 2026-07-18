@@ -4672,6 +4672,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
         latest = {
             "JM609.DCE": {
                 "received_at": "2026-07-13T21:00:01.123456",
+                "ingress_epoch_ns": 1_234_567_890,
                 "stream_sequence": 17,
                 "symbol_stream_sequence": 9,
                 "last_price": 1245.0,
@@ -4691,6 +4692,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
             watermarks["JM609.DCE"],
             {
                 "received_at": "2026-07-13T21:00:01.123456",
+                "ingress_epoch_ns": 1_234_567_890,
                 "stream_sequence": 17,
                 "symbol_stream_sequence": 9,
                 "durable_symbol_sequence": 0,
@@ -4702,6 +4704,7 @@ class ContinuousTickStreamTest(unittest.TestCase):
             watermarks["I609.DCE"],
             {
                 "received_at": "",
+                "ingress_epoch_ns": 0,
                 "stream_sequence": 0,
                 "symbol_stream_sequence": 0,
                 "durable_symbol_sequence": 0,
