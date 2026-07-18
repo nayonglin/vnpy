@@ -57,6 +57,8 @@ FAULT_CASES = (
     FaultCase("review_policy_conflict", "tests.test_stage179_runtime_profile", "Stage179RuntimeProfileTest", "test_policy_conflict_blocks_even_with_env_and_confirm", "not_started", "operator_policy_conflict", "adapter_not_created", 0, 0),
     FaultCase("runtime_profile_mismatch", "tests.test_stage179_runtime_profile", "Stage179RuntimeProfileTest", "test_profile_and_order_scope_mismatch_fails_closed", "not_started", "profile_scope_mismatch", "startup_blocked", 0, 0),
     FaultCase("two_executor_singleton", "tests.test_stage179_executor_serve", "Stage179ExecutorServeTest", "test_readiness_file_is_atomic_and_singleton_rejects_second_executor", "leased_once", "singleton_lock", "one_owner", 0, 0),
+    FaultCase("authorization_missing_before_lease", "tests.test_stage179_executor_serve", "Stage179ExecutorServeTest", "test_cycle_authorization_blocks_before_spool_lease", "ready", "authorization_missing", "no_lease_no_send", 0, 0),
+    FaultCase("authorization_revoked_mid_child_batch", "tests.test_stage179_executor_serve", "Stage179ExecutorServeTest", "test_multi_child_revalidates_authorization_before_every_physical_send", "side_effect_unknown", "first_child_sent_then_authorization_revoked", "reconcile_only_remaining_child_not_sent", 1, 0),
 )
 
 
@@ -99,8 +101,6 @@ def _slot_race_worker(
         {
             "worker_id": worker_id,
             "api_slot_winner": won,
-            "fake_send_calls": won,
-            "fake_cancel_calls": 0,
         }
     )
 
@@ -122,7 +122,22 @@ class Stage179FaultMatrixTest(unittest.TestCase):
                 self.assertTrue(result.wasSuccessful(), "\n".join(details))
                 evidence.append(
                     {
-                        **asdict(case),
+                        "case_name": case.name,
+                        "selected_test": (
+                            f"{case.test_module}.{case.test_class}."
+                            f"{case.test_method}"
+                        ),
+                        "declared_expected_metadata": {
+                            key: value
+                            for key, value in asdict(case).items()
+                            if key
+                            not in {
+                                "name",
+                                "test_module",
+                                "test_class",
+                                "test_method",
+                            }
+                        },
                         "production_contract_test_passed": True,
                         "real_send_order_api_called_count": 0,
                         "real_cancel_order_api_called_count": 0,
@@ -131,6 +146,10 @@ class Stage179FaultMatrixTest(unittest.TestCase):
 
         payload = {
             "status": "passed",
+            "claim_scope": (
+                "selected_contract_tests_passed; state/ledger/recovery fields "
+                "are declared expectations, not runtime extraction"
+            ),
             "case_count": len(evidence),
             "cases": evidence,
             "real_send_order_api_called_count": 0,
@@ -139,7 +158,7 @@ class Stage179FaultMatrixTest(unittest.TestCase):
         _write_evidence("stage179_fault_matrix_cases.json", payload)
         self.assertEqual(len(FAULT_CASES), len(evidence))
 
-    def test_one_hundred_process_races_have_at_most_one_send_winner(self) -> None:
+    def test_one_hundred_process_races_have_one_api_slot_cas_winner(self) -> None:
         context = multiprocessing.get_context("fork")
         rounds: list[dict[str, Any]] = []
         with tempfile.TemporaryDirectory() as directory:
@@ -169,7 +188,7 @@ class Stage179FaultMatrixTest(unittest.TestCase):
                 results = [result_queue.get(timeout=2) for _ in workers]
                 result_queue.close()
                 result_queue.join_thread()
-                winners = sum(item["fake_send_calls"] for item in results)
+                winners = sum(item["api_slot_winner"] for item in results)
                 counts = ledger.ledger_order_api_counts(
                     ledger.read_execution_ledger(ledger_path),
                     target_date,
@@ -180,8 +199,7 @@ class Stage179FaultMatrixTest(unittest.TestCase):
                 rounds.append(
                     {
                         "round": index + 1,
-                        "send_winners": winners,
-                        "cancel_winners": 0,
+                        "api_slot_cas_winners": winners,
                         "ledger_send_slot_usage": counts[
                             "send_order_slot_usage"
                         ],
@@ -189,14 +207,16 @@ class Stage179FaultMatrixTest(unittest.TestCase):
                 )
 
         _write_evidence(
-            "stage179_fault_matrix_process_races.json",
+            "stage179_api_slot_process_races.json",
             {
                 "status": "passed",
                 "round_count": len(rounds),
-                "max_send_winners_per_round": max(
-                    item["send_winners"] for item in rounds
+                "max_api_slot_cas_winners_per_round": max(
+                    item["api_slot_cas_winners"] for item in rounds
                 ),
                 "rounds": rounds,
+                "claim_scope": "ledger_api_slot_cas_only",
+                "physical_fake_send_call_count": 0,
                 "real_send_order_api_called_count": 0,
                 "real_cancel_order_api_called_count": 0,
             },

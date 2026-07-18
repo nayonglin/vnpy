@@ -33,6 +33,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py",
@@ -62,6 +63,9 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
+    "tests/test_stage179_fault_matrix.py",
+    "tests/test_stage179_submit_authorization.py",
+    "tests/test_stage179_two_executor_process_race.py",
 )
 
 

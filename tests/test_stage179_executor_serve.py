@@ -5,6 +5,9 @@ import tempfile
 import unittest
 from contextlib import contextmanager
 import json
+import os
+import subprocess
+import time
 from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
@@ -31,6 +34,11 @@ from qmt_roll_official_live_runtime_profile import (  # noqa: E402
     ExecutionRuntimeProfile,
     OrderScope,
     resolve_runtime_profile,
+)
+from qmt_roll_official_live_submit_authorization import (  # noqa: E402
+    publish_submit_authorization,
+    revoke_submit_authorization,
+    submit_authorization_path,
 )
 import run_qmt_roll_stage931_official_live_ctp_submit_adapter as stage931  # noqa: E402
 import qmt_roll_official_live_execution_service as execution_service  # noqa: E402
@@ -120,6 +128,8 @@ class FakeWarmSession:
         self.events: list[str] = []
         self.connection_generation = ""
         self._lease: Any = None
+        self.pre_lease_blocker_values: list[str] = []
+        self.pre_lease_calls = 0
 
     def connect(self) -> None:
         self.connect_calls += 1
@@ -146,6 +156,10 @@ class FakeWarmSession:
             if self.transport_failures > 0
             else []
         )
+
+    def pre_lease_blockers(self) -> list[str]:
+        self.pre_lease_calls += 1
+        return list(self.pre_lease_blocker_values)
 
     def reconnect(self) -> None:
         self.transport_failures = max(0, self.transport_failures - 1)
@@ -244,6 +258,126 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             ],
             spool.transitions,
         )
+
+    def test_cycle_authorization_blocks_before_spool_lease(self) -> None:
+        spool = FakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+        session.pre_lease_blocker_values = [
+            "stage179_submit_authorization_missing"
+        ]
+
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: session.pre_lease_calls >= 1,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(1, session.pre_lease_calls)
+        self.assertEqual(["intent-1"], [item.intent.intent_id for item in spool.ready])
+        self.assertEqual([], spool.transitions)
+        self.assertEqual(0, session.send_calls)
+
+    def test_multi_child_revalidates_authorization_before_every_physical_send(self) -> None:
+        args = SimpleNamespace(target_date="2026-07-18")
+        session = stage931._build_stage179_warm_ctp_session(
+            args,
+            self.runtime,
+            self.paths,
+        )
+        state = next(
+            cell.cell_contents
+            for cell in session._send_order.__closure__ or ()
+            if isinstance(cell.cell_contents, dict)
+            and "intent_contexts" in cell.cell_contents
+        )
+        state["connection_generation"] = "connection-1"
+        authorization_path = submit_authorization_path(self.runtime.output_root)
+        publish_submit_authorization(
+            path=authorization_path,
+            target_date="2026-07-18",
+            runtime_profile="simnow",
+            order_scope="test",
+            service_generation=session.service_generation,
+            connection_generation="connection-1",
+            cycle_id="cycle-1",
+            intent_scope="all",
+            issued_epoch_ns=time.time_ns(),
+            expires_epoch_ns=time.time_ns() + 30_000_000_000,
+            controller_evidence={
+                "target_date": "2026-07-18",
+                "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                "stage905_executor_status": "executor_dry_run_ready",
+                "stage905_blocked_count": 0,
+                "stage905_ready_count": 1,
+            },
+            stage927_evidence={"real_submit_permitted": 1},
+            broker_gate_evidence={
+                "status": "ready",
+                "service_generation": session.service_generation,
+                "connection_generation": "connection-1",
+            },
+            tick_watermark_evidence={"all_symbols_ready": 1},
+        )
+
+        class FakeMainEngine:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def send_order(self, _request: Any, _gateway: str) -> str:
+                self.calls += 1
+                revoke_submit_authorization(
+                    authorization_path,
+                    reason="test_mid_batch_revoke",
+                    revoked_epoch_ns=time.time_ns(),
+                )
+                return f"CTP.order-{self.calls}"
+
+        engine = FakeMainEngine()
+        state["main_engine"] = engine
+        def request() -> SimpleNamespace:
+            return SimpleNamespace(
+                offset=SimpleNamespace(value="close"),
+                volume=1.0,
+            )
+        state["intent_contexts"]["intent-1"] = {
+            "requests": [request(), request()],
+            "fingerprint": "fingerprint-1",
+        }
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(
+                intent_id="intent-1",
+                target_date="2026-07-18",
+                intent_kind="close",
+                vt_symbol="JM609.DCE",
+                lease_owner="service-1",
+            ),
+            lease_token="lease-1",
+        )
+        ledger_events: list[dict[str, Any]] = []
+        with patch.object(
+            stage931,
+            "append_execution_ledger_event",
+            side_effect=lambda event, **_: ledger_events.append(dict(event)),
+        ):
+            with self.assertRaises(stage931.BrokerSendBatchError) as raised:
+                session._send_order(lease)
+
+        self.assertEqual(1, raised.exception.send_order_call_count)
+        self.assertEqual(1, engine.calls)
+        blocked = [
+            event
+            for event in ledger_events
+            if event.get("event_type")
+            == "submit_authorization_blocked_before_child_send"
+        ]
+        self.assertEqual(1, len(blocked))
+        self.assertEqual(1, blocked[0]["reconciliation_required"])
+        self.assertEqual(1, blocked[0]["send_order_call_count"])
 
     def test_api_slot_is_durable_before_spool_sending_and_broker_call(self) -> None:
         session = FakeWarmSession(self.clock)
@@ -807,6 +941,8 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 "--stage179-warm-executor",
                 "--mode",
                 "live-real",
+                "--target-date",
+                "2026-07-18",
                 "--runtime-profile",
                 "offline",
                 "--order-scope",
@@ -823,6 +959,69 @@ class Stage179ExecutorServeTest(unittest.TestCase):
 
         gate.assert_not_called()
         builder.assert_not_called()
+
+    def test_real_cli_no_submit_prewarm_never_opens_spool_or_loads_ctp(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            runtime_root = Path(directory) / "runtime"
+            runtime = resolve_runtime_profile(
+                profile=ExecutionRuntimeProfile.OFFLINE,
+                order_scope=OrderScope.NONE,
+                repo_root=ROOT,
+                output_root=runtime_root,
+            )
+            command = [
+                sys.executable,
+                str(
+                    PORTFOLIO_DIR
+                    / "run_qmt_roll_stage931_official_live_ctp_submit_adapter.py"
+                ),
+                "--command",
+                "serve",
+                "--stage179-warm-executor",
+                "--mode",
+                "dry-run",
+                "--runtime-profile",
+                "offline",
+                "--order-scope",
+                "none",
+                "--stage179-runtime-root",
+                str(runtime_root),
+            ]
+            environment = dict(os.environ)
+            environment["QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR"] = "1"
+            process = subprocess.Popen(
+                command,
+                cwd=ROOT,
+                env=environment,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self.addCleanup(
+                lambda: process.kill() if process.poll() is None else None
+            )
+            deadline = time.monotonic() + 8.0
+            status: dict[str, Any] = {}
+            while time.monotonic() < deadline:
+                try:
+                    status = json.loads(
+                        runtime.readiness_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, ValueError):
+                    time.sleep(0.05)
+                    continue
+                if status.get("status") == "prewarm_no_submit":
+                    break
+                time.sleep(0.05)
+            process.terminate()
+            stdout, stderr = process.communicate(timeout=8.0)
+
+            self.assertEqual(0, process.returncode, msg=stdout + stderr)
+            self.assertEqual("prewarm_no_submit", status.get("status"))
+            self.assertEqual(0, status.get("spool_opened"))
+            self.assertEqual(0, status.get("ctp_module_loaded"))
+            self.assertEqual(0, status.get("order_api_called_count"))
+            self.assertFalse(runtime.spool_path.exists())
 
     def test_warm_dry_run_does_not_import_ctp_or_require_activation_receipt(self) -> None:
         args = stage931.parse_args(
@@ -884,6 +1083,8 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 "--stage179-warm-executor",
                 "--mode",
                 "live-real",
+                "--target-date",
+                "2026-07-18",
                 "--runtime-profile",
                 "production-live",
                 "--order-scope",
@@ -927,6 +1128,8 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 "--stage179-warm-executor",
                 "--mode",
                 "live-real",
+                "--target-date",
+                "2026-07-18",
                 "--runtime-profile",
                 "simnow",
                 "--order-scope",

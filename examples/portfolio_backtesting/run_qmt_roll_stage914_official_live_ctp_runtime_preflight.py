@@ -163,6 +163,7 @@ def evaluate_stage179_pre_adapter_gate(
     stage927_ready: bool,
     kill_switch_clear: bool,
     broker_gates_fresh: bool,
+    defer_cycle_authorization: bool = False,
     adapter_factory: Callable[[], Any] | None = None,
 ) -> Stage179PreAdapterGateResult:
     """Fail closed before the submit adapter can be imported or constructed."""
@@ -199,11 +200,11 @@ def evaluate_stage179_pre_adapter_gate(
             blockers.append("stage179_activation_confirmation_missing")
         if not phase_d_real_submit_ready:
             blockers.append("phase_d_real_submit_not_ready")
-        if not stage927_ready:
+        if not stage927_ready and not defer_cycle_authorization:
             blockers.append("stage927_not_ready")
         if not kill_switch_clear:
             blockers.append("kill_switch_not_clear")
-        if not broker_gates_fresh:
+        if not broker_gates_fresh and not defer_cycle_authorization:
             blockers.append("broker_gates_not_fresh")
         if manifest_sha256 and phase_d_real_submit_ready:
             blockers.extend(

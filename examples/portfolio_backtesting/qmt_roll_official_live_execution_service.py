@@ -147,6 +147,8 @@ class ExecutionSession(Protocol):
 
     def transport_blockers(self) -> list[str]: ...
 
+    def pre_lease_blockers(self) -> list[str]: ...
+
     def reconnect(self) -> None: ...
 
     def execute_spool_lease(
@@ -556,6 +558,26 @@ def serve_executor(
                         now_monotonic_ns=now_monotonic_ns,
                         clock_domain_id=domain_id,
                     )
+                    pre_lease_blockers = session.pre_lease_blockers()
+                    if pre_lease_blockers:
+                        if (
+                            float(monotonic())
+                            - last_readiness_publish_monotonic
+                            >= readiness_heartbeat_seconds
+                        ):
+                            publish_readiness(
+                                paths.readiness_path,
+                                session.readiness_lease(
+                                    now_epoch_ns=int(epoch_ns())
+                                ),
+                            )
+                            last_readiness_publish_monotonic = float(monotonic())
+                        _wait_for_work(
+                            wake_socket,
+                            poll_seconds=poll_seconds,
+                            sleeper=sleeper,
+                        )
+                        continue
                     dequeue_started_monotonic_ns = int(monotonic_ns_now())
                     lease = spool.lease_next(
                         owner_id=service_generation,

@@ -42,8 +42,13 @@ from qmt_roll_official_live_execution_service import (
     TdReadinessLease,
     revoke_readiness,
     serve_executor,
+    singleton_executor_lock,
 )
 from qmt_roll_official_live_intent_spool import open_spool
+from qmt_roll_official_live_submit_authorization import (
+    submit_authorization_path,
+    validate_submit_authorization,
+)
 from qmt_roll_official_live_phase_d_config import (
     KILL_SWITCH_PATH,
     LIVE_EXECUTION_LEDGER_PATH,
@@ -528,6 +533,7 @@ class CtpExecutionSession:
         revoke_readiness: Callable[[str], None] | None = None,
         transport_probe: Callable[[], list[str]] | None = None,
         pre_api_slot_blockers: Callable[[Any], list[str]] | None = None,
+        pre_lease_blockers: Callable[[], list[str]] | None = None,
         connection_generation_observer: Callable[[str], None] | None = None,
         epoch_ns: Callable[[], int] = time.time_ns,
         monotonic: Callable[[], float] = time.monotonic,
@@ -547,6 +553,7 @@ class CtpExecutionSession:
         self._reserve_api_slot = reserve_api_slot
         self._send_order = send_order
         self._pre_api_slot_blockers = pre_api_slot_blockers or (lambda _: [])
+        self._pre_lease_blockers = pre_lease_blockers or (lambda: [])
         self._connection_generation_observer = (
             connection_generation_observer or (lambda _: None)
         )
@@ -680,6 +687,21 @@ class CtpExecutionSession:
             blockers.append("stage179_readiness_runtime_profile_mismatch")
         blockers.extend(self.transport_blockers())
         return list(dict.fromkeys(blockers))
+
+    def pre_lease_blockers(self) -> list[str]:
+        try:
+            return list(
+                dict.fromkeys(
+                    str(item)
+                    for item in self._pre_lease_blockers()
+                    if str(item)
+                )
+            )
+        except BaseException as exc:
+            return [
+                "stage179_pre_lease_authorization_exception:"
+                f"{type(exc).__name__}"
+            ]
 
     def execute_with_readiness(
         self,
@@ -6202,6 +6224,25 @@ def _build_stage179_warm_ctp_session(
         },
         "intent_contexts": {},
     }
+    authorization_path = submit_authorization_path(runtime.output_root)
+
+    def authorization_blockers(
+        *,
+        target_date: str | None = None,
+        intent_kind: str | None = None,
+        child_offset: str | None = None,
+    ) -> list[str]:
+        return validate_submit_authorization(
+            path=authorization_path,
+            target_date=target_date,
+            runtime_profile=runtime.profile.value,
+            order_scope=runtime.order_scope.value,
+            service_generation=service_generation,
+            connection_generation=str(state.get("connection_generation", "")),
+            now_epoch_ns=time.time_ns(),
+            intent_kind=intent_kind,
+            child_offset=child_offset,
+        )
 
     def connect_startup_bundle() -> dict[str, Any]:
         # This import is deliberately inside the post-gate adapter factory.
@@ -6343,6 +6384,12 @@ def _build_stage179_warm_ctp_session(
             row, order_payload = _stage179_spool_lease_row(lease)
         except ValueError:
             return {"blockers": ["stage179_spool_order_request_missing"]}
+        cycle_authorization_blockers = authorization_blockers(
+            target_date=lease.intent.target_date,
+            intent_kind=lease.intent.intent_kind,
+        )
+        if cycle_authorization_blockers:
+            return {"blockers": cycle_authorization_blockers}
         if main_engine is None or td_api is None or readiness_state is None:
             return {"blockers": ["stage179_ctp_session_state_missing"]}
         kill_switch_blockers = _kill_switch_blockers()
@@ -6502,10 +6549,14 @@ def _build_stage179_warm_ctp_session(
 
     def pre_api_slot_blockers(lease: Any) -> list[str]:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
-        blockers = _post_final_gate_pre_api_slot_blockers(
+        blockers = authorization_blockers(
+            target_date=lease.intent.target_date,
+            intent_kind=lease.intent.intent_kind,
+        )
+        blockers.extend(_post_final_gate_pre_api_slot_blockers(
             state["rows"],
             dict(context.get("final_watermark", {})),
-        )
+        ))
         for blocker in _kill_switch_blockers():
             blockers.append(f"{blocker}_before_api_slot")
         if not any(
@@ -6619,6 +6670,32 @@ def _build_stage179_warm_ctp_session(
             raise RuntimeError("stage179_send_context_missing")
         order_ids: list[str] = []
         for index, request in enumerate(requests):
+            child_authorization_blockers = authorization_blockers(
+                target_date=lease.intent.target_date,
+                intent_kind=lease.intent.intent_kind,
+                child_offset=request.offset.value,
+            )
+            if child_authorization_blockers:
+                append_execution_ledger_event(
+                    {
+                        "event_type": "submit_authorization_blocked_before_child_send",
+                        "target_date": lease.intent.target_date,
+                        "intent_id": lease.intent.intent_id,
+                        "intent_fingerprint": context.get("fingerprint", ""),
+                        "vt_symbol": lease.intent.vt_symbol,
+                        "adapter": "Stage931Warm",
+                        "blockers": child_authorization_blockers,
+                        "send_order_call_count": len(order_ids),
+                        "child_order_index": index,
+                        "child_order_count": len(requests),
+                        "reconciliation_required": int(bool(order_ids)),
+                    },
+                    path=paths.ledger_path,
+                )
+                raise BrokerSendBatchError(
+                    "stage179_submit_authorization_blocked_before_child_send",
+                    send_order_call_count=len(order_ids),
+                )
             try:
                 vt_orderid = str(main_engine.send_order(request, "CTP") or "")
             except BaseException as exc:
@@ -6729,6 +6806,9 @@ def _build_stage179_warm_ctp_session(
             reason=reason,
         ),
         transport_probe=transport_probe,
+        pre_lease_blockers=lambda: authorization_blockers(
+            target_date=args.target_date,
+        ),
         fresh_bundle=fresh_bundle,
         pre_api_slot_blockers=pre_api_slot_blockers,
         connection_generation_observer=lambda generation: state.__setitem__(
@@ -6739,20 +6819,79 @@ def _build_stage179_warm_ctp_session(
     )
 
 
+def _atomic_write_stage179_status(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, ensure_ascii=False, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def _serve_stage179_no_submit_prewarm(runtime: Any) -> int:
+    """Heartbeat-only process: never opens the spool or imports/loads CTP."""
+
+    paths = ExecutorServicePaths.for_spool(
+        spool_path=runtime.spool_path,
+        ledger_path=runtime.ledger_path,
+        readiness_path=runtime.readiness_path,
+    )
+    stop = Event()
+    service_generation = uuid.uuid4().hex
+    previous_handlers: dict[int, Any] = {}
+
+    def request_stop(_signum: int, _frame: Any) -> None:
+        stop.set()
+
+    def write_status(status: str, *, reason: str = "") -> None:
+        now = time.time_ns()
+        _atomic_write_stage179_status(
+            paths.readiness_path,
+            {
+                "schema_version": 1,
+                "status": status,
+                "service_kind": "no_submit_prewarm",
+                "service_generation": service_generation,
+                "connection_generation": "",
+                "runtime_profile": runtime.profile.value,
+                "order_scope": runtime.order_scope.value,
+                "issued_epoch_ns": now,
+                "expires_epoch_ns": now + 2_000_000_000,
+                "reason": reason,
+                "order_api_called_count": 0,
+                "spool_opened": 0,
+                "ctp_module_loaded": int("vnpy_ctp" in sys.modules),
+            },
+        )
+
+    try:
+        for signum in (signal.SIGINT, signal.SIGTERM):
+            previous_handlers[signum] = signal.getsignal(signum)
+            signal.signal(signum, request_stop)
+        with singleton_executor_lock(paths.singleton_lock_path):
+            while not stop.is_set():
+                write_status("prewarm_no_submit")
+                stop.wait(0.25)
+    finally:
+        write_status("revoked", reason="no_submit_prewarm_stopped")
+        for signum, handler in previous_handlers.items():
+            signal.signal(signum, handler)
+    return 0
+
+
 def run_serve(args: argparse.Namespace) -> int:
     if not args.stage179_warm_executor:
         raise RuntimeProfileError("stage179_warm_executor_opt_in_missing")
-    if args.mode != "live-real":
-        raise RuntimeProfileError("stage179_serve_requires_submit_mode")
-    permitted_submit_profiles = {
-        (ExecutionRuntimeProfile.SIMNOW.value, OrderScope.TEST.value),
-        (ExecutionRuntimeProfile.BROKER_TEST.value, OrderScope.TEST.value),
-        (ExecutionRuntimeProfile.PRODUCTION_LIVE.value, OrderScope.LIVE.value),
-    }
-    if (args.runtime_profile, args.order_scope) not in permitted_submit_profiles:
-        raise RuntimeProfileError(
-            "stage179_serve_runtime_profile_does_not_permit_submit"
-        )
     runtime = resolve_runtime_profile(
         profile=args.runtime_profile,
         order_scope=args.order_scope,
@@ -6763,6 +6902,30 @@ def run_serve(args: argparse.Namespace) -> int:
         ),
         repo_root=Path(__file__).resolve().parents[2],
     )
+    if args.mode != "live-real":
+        permitted_no_submit_profiles = {
+            (ExecutionRuntimeProfile.OFFLINE.value, OrderScope.NONE.value),
+            (
+                ExecutionRuntimeProfile.PRODUCTION_READONLY.value,
+                OrderScope.READONLY.value,
+            ),
+        }
+        if (args.runtime_profile, args.order_scope) not in permitted_no_submit_profiles:
+            raise RuntimeProfileError(
+                "stage179_no_submit_prewarm_profile_invalid"
+            )
+        return _serve_stage179_no_submit_prewarm(runtime)
+    if not str(args.target_date).strip():
+        raise RuntimeProfileError("stage179_serve_requires_target_date")
+    permitted_submit_profiles = {
+        (ExecutionRuntimeProfile.SIMNOW.value, OrderScope.TEST.value),
+        (ExecutionRuntimeProfile.BROKER_TEST.value, OrderScope.TEST.value),
+        (ExecutionRuntimeProfile.PRODUCTION_LIVE.value, OrderScope.LIVE.value),
+    }
+    if (args.runtime_profile, args.order_scope) not in permitted_submit_profiles:
+        raise RuntimeProfileError(
+            "stage179_serve_runtime_profile_does_not_permit_submit"
+        )
     environment = dict(os.environ)
     environment.update(_load_runtime_env_values(runtime.env_file))
     if runtime.framework_path:
@@ -6805,6 +6968,7 @@ def run_serve(args: argparse.Namespace) -> int:
         stage927_ready=False,
         kill_switch_clear=not _kill_switch_blockers(),
         broker_gates_fresh=False,
+        defer_cycle_authorization=True,
     )
     if gate.blockers:
         raise RuntimeProfileError(

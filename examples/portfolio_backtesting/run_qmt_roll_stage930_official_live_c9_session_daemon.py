@@ -29,6 +29,12 @@ from qmt_roll_official_live_config import (
 from qmt_roll_official_live_execution_ledger import ledger_order_api_counts, read_execution_ledger
 from qmt_roll_official_live_execution_service import revoke_readiness
 from qmt_roll_official_live_intent_spool import notify_executor, wakeup_socket_path
+from qmt_roll_official_live_submit_authorization import (
+    publish_submit_authorization,
+    revoke_submit_authorization,
+    submit_authorization_path,
+    validate_submit_authorization,
+)
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_CONFIRM_TEXT,
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
@@ -1105,12 +1111,24 @@ def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
     if getattr(args, "detector_mode", "legacy-subprocess") != "persistent":
         return []
     blockers: list[str] = []
-    if args.mode != "dry-run" or args.submit_mode != "disabled":
-        blockers.append(
-            "persistent_detector_requires_warm_executor_and_runtime_profile"
-        )
     if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
         blockers.append("persistent_detector_requires_stage179_warm_executor")
+    runtime_profile = getattr(args, "runtime_profile", "offline")
+    if (args.mode, args.submit_mode) == ("dry-run", "disabled"):
+        if runtime_profile not in {
+            ExecutionRuntimeProfile.OFFLINE.value,
+            ExecutionRuntimeProfile.PRODUCTION_READONLY.value,
+        }:
+            blockers.append("persistent_detector_no_submit_profile_invalid")
+    elif (args.mode, args.submit_mode) == ("live-real", "live-real"):
+        if runtime_profile not in {
+            ExecutionRuntimeProfile.SIMNOW.value,
+            ExecutionRuntimeProfile.BROKER_TEST.value,
+            ExecutionRuntimeProfile.PRODUCTION_LIVE.value,
+        }:
+            blockers.append("persistent_detector_submit_profile_invalid")
+    else:
+        blockers.append("persistent_detector_controller_submit_mode_mismatch")
     if args.tick_refresh_mode != "stream":
         blockers.append("persistent_detector_requires_stream_tick_owner")
     if not _startup_target_date(args):
@@ -2105,6 +2123,8 @@ def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] |
         runtime.order_scope.value,
         "--stage179-runtime-root",
         str(runtime.output_root),
+        "--target-date",
+        _startup_target_date(args),
     ]
     release_manifest = _clean(getattr(args, "release_manifest", ""))
     activation_receipt = _clean(getattr(args, "activation_receipt", ""))
@@ -2139,7 +2159,10 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
     blockers: list[str] = []
     if process is None or not _process_alive(process):
         blockers.append("stage931_warm_service_not_running")
-    if readiness.get("status") != "ready":
+    expected_status = (
+        "ready" if args.submit_mode == "live-real" else "prewarm_no_submit"
+    )
+    if readiness.get("status") != expected_status:
         blockers.append(
             f"stage931_warm_readiness_not_ready:{readiness.get('status', '')}"
         )
@@ -2149,7 +2172,13 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("stage931_warm_readiness_profile_mismatch")
     return {
         "submit_status": (
-            "warm_executor_ready" if not blockers else "warm_executor_blocked"
+            (
+                "warm_executor_ready"
+                if args.submit_mode == "live-real"
+                else "warm_executor_no_submit_ready"
+            )
+            if not blockers
+            else "warm_executor_blocked"
         ),
         "exit_code": 0 if not blockers else 2,
         "process_pid": getattr(process, "pid", None),
@@ -2170,11 +2199,105 @@ def _wake_stage931_service(args: argparse.Namespace) -> bool:
     return notify_executor(wakeup_socket_path(runtime.spool_path))
 
 
+def _revoke_stage931_submit_authorization(
+    args: argparse.Namespace,
+    reason: str,
+) -> None:
+    runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+    revoke_submit_authorization(
+        submit_authorization_path(runtime.output_root),
+        reason=reason,
+        revoked_epoch_ns=time.time_ns(),
+    )
+
+
+def _publish_stage931_submit_authorization(
+    args: argparse.Namespace,
+    *,
+    target_date: str,
+    controller_summary: dict[str, Any],
+    stage927_summary: dict[str, Any],
+    tick_gate: dict[str, Any],
+    service_status: dict[str, Any],
+    reduce_close_only: bool,
+) -> dict[str, Any]:
+    runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+    readiness = service_status.get("readiness")
+    if service_status.get("submit_status") != "warm_executor_ready":
+        return {"authorized": 0, "blocker": "stage931_warm_service_not_ready"}
+    if not isinstance(readiness, dict):
+        return {"authorized": 0, "blocker": "stage931_warm_readiness_missing"}
+    service_generation = _clean(readiness.get("service_generation"))
+    connection_generation = _clean(readiness.get("connection_generation"))
+    if not service_generation or not connection_generation:
+        return {
+            "authorized": 0,
+            "blocker": "stage931_warm_readiness_generation_missing",
+        }
+    issued_epoch_ns = time.time_ns()
+    ttl_seconds = min(
+        60.0,
+        max(5.0, float(getattr(args, "poll_seconds", 30)) + 5.0),
+    )
+    payload = publish_submit_authorization(
+        path=submit_authorization_path(runtime.output_root),
+        target_date=target_date,
+        runtime_profile=runtime.profile.value,
+        order_scope=runtime.order_scope.value,
+        service_generation=service_generation,
+        connection_generation=connection_generation,
+        cycle_id=uuid.uuid4().hex,
+        intent_scope="reduce_close_only" if reduce_close_only else "all",
+        issued_epoch_ns=issued_epoch_ns,
+        expires_epoch_ns=issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
+        controller_evidence=controller_summary,
+        stage927_evidence=stage927_summary,
+        broker_gate_evidence=readiness,
+        tick_watermark_evidence=tick_gate,
+    )
+    validation_blockers = validate_submit_authorization(
+        path=submit_authorization_path(runtime.output_root),
+        target_date=target_date,
+        runtime_profile=runtime.profile.value,
+        order_scope=runtime.order_scope.value,
+        service_generation=service_generation,
+        connection_generation=connection_generation,
+        now_epoch_ns=time.time_ns(),
+    )
+    if validation_blockers:
+        revoke_submit_authorization(
+            submit_authorization_path(runtime.output_root),
+            reason="stage930_published_authorization_validation_failed",
+            revoked_epoch_ns=time.time_ns(),
+        )
+        return {
+            "authorized": 0,
+            "blocker": ";".join(validation_blockers),
+        }
+    return {
+        "authorized": 1,
+        "authorization_path": str(
+            submit_authorization_path(runtime.output_root)
+        ),
+        "cycle_id": payload["cycle_id"],
+        "expires_epoch_ns": payload["expires_epoch_ns"],
+        "intent_scope": payload["intent_scope"],
+    }
+
+
 def _stop_stage931_service(reason: str) -> None:
     global _STAGE931_SERVICE_PROCESS, _STAGE931_SERVICE_RUNTIME
     process = _STAGE931_SERVICE_PROCESS
     runtime = _STAGE931_SERVICE_RUNTIME
     if runtime is not None:
+        try:
+            revoke_submit_authorization(
+                submit_authorization_path(runtime.output_root),
+                reason=reason,
+                revoked_epoch_ns=time.time_ns(),
+            )
+        except Exception:
+            pass
         readiness = _read_json(runtime.readiness_path)
         try:
             revoke_readiness(
@@ -2713,6 +2836,7 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     )
     if warm_execution:
         _start_stage931_service(args)
+        _revoke_stage931_submit_authorization(args, "stage930_cycle_refreshing")
     symbols = _watched_symbols_for_args(args)
     if _market_execution_session_active():
         tick_result = _run_tick_refresh(args, target_date, symbols, paths)
@@ -2755,8 +2879,45 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     )
     if warm_execution:
         stage931_result = _status_stage931_service(args)
+        authorization: dict[str, Any]
+        if submit_blockers:
+            _revoke_stage931_submit_authorization(
+                args,
+                "stage930_cycle_submit_blocked",
+            )
+            authorization = {
+                "authorized": 0,
+                "blocker": ";".join(submit_blockers),
+            }
+        else:
+            authorization = _publish_stage931_submit_authorization(
+                args,
+                target_date=resolved_target_date,
+                controller_summary=controller_summary,
+                stage927_summary=stage927_summary,
+                tick_gate=pre_submit_tick_gate,
+                service_status=stage931_result,
+                reduce_close_only=_ready_intents_close_only(
+                    resolved_target_date
+                ),
+            )
+            if not authorization.get("authorized"):
+                submit_blockers.append(
+                    str(
+                        authorization.get(
+                            "blocker",
+                            "stage931_submit_authorization_not_published",
+                        )
+                    )
+                )
+                _revoke_stage931_submit_authorization(
+                    args,
+                    "stage930_cycle_authorization_publish_blocked",
+                )
+        stage931_result["submit_authorization"] = authorization
         stage931_result["wake_socket_notified"] = int(
-            _wake_stage931_service(args)
+            bool(authorization.get("authorized"))
+            and _wake_stage931_service(args)
         )
     elif not submit_blockers:
         stage931_result = _run_stage931(args, resolved_target_date, paths)

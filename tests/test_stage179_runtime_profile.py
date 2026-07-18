@@ -211,6 +211,43 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
         self.assertIn("operator_policy_conflict_unresolved", result.blockers)
         self.assertEqual([], calls)
 
+    def test_persistent_startup_defers_only_cycle_authorization_gates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            resolved = self._production_live(root)
+            with (
+                patch.object(
+                    stage914,
+                    "load_and_validate_release_manifest",
+                    return_value={"manifest_sha256": "a" * 64},
+                ),
+                patch.object(
+                    stage914,
+                    "validate_stage179_activation_receipt",
+                    return_value=(),
+                ),
+            ):
+                result = stage914.evaluate_stage179_pre_adapter_gate(
+                    resolved=resolved,
+                    release_manifest_path=root / "release.json",
+                    repo_root=root,
+                    expected_official_version="official-v",
+                    expected_capital=200_000,
+                    expected_capital_label="20w",
+                    environment={STAGE179_ACTIVATION_ENV: "1"},
+                    confirmation=STAGE179_ACTIVATION_CONFIRM_TEXT,
+                    activation_receipt_path=root / "receipt.json",
+                    phase_d_real_submit_ready=True,
+                    stage927_ready=False,
+                    kill_switch_clear=True,
+                    broker_gates_fresh=False,
+                    defer_cycle_authorization=True,
+                )
+
+        self.assertNotIn("stage927_not_ready", result.blockers)
+        self.assertNotIn("broker_gates_not_fresh", result.blockers)
+        self.assertIn("operator_policy_conflict_unresolved", result.blockers)
+
     def test_hand_built_string_profile_cannot_skip_live_gate(self) -> None:
         calls: list[str] = []
         with tempfile.TemporaryDirectory() as tmp:

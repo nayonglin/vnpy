@@ -24,6 +24,9 @@ import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930
 import run_qmt_roll_stage929_official_live_15w_timed_cycle as stage929
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
 import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
+from qmt_roll_official_live_submit_authorization import (  # noqa: E402
+    validate_submit_authorization,
+)
 
 
 class _ShortLivedController:
@@ -137,7 +140,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             stage930._STAGE931_SERVICE_PROCESS = None
             stage930._STAGE931_SERVICE_RUNTIME = None
 
-    def test_warm_cycle_wakes_service_and_never_spawns_legacy_stage931(self) -> None:
+    def test_warm_no_submit_cycle_never_wakes_or_spawns_legacy_stage931(self) -> None:
         args = self.args()
         args.stage179_execution_mode = "warm"
         args.runtime_profile = "offline"
@@ -150,7 +153,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             }
         }
         warm_status = {
-            "submit_status": "warm_executor_ready",
+            "submit_status": "warm_executor_no_submit_ready",
             "exit_code": 0,
             "summary": {"order_api_called_count": 0},
         }
@@ -161,6 +164,8 @@ class Stage930FastLaneTest(unittest.TestCase):
             patch.object(stage930, "_run_stage903", return_value=controller),
             patch.object(stage930, "_status_stage931_service", return_value=warm_status),
             patch.object(stage930, "_wake_stage931_service", return_value=True) as wake,
+            patch.object(stage930, "_revoke_stage931_submit_authorization") as revoke,
+            patch.object(stage930, "_publish_stage931_submit_authorization") as publish,
             patch.object(stage930, "_run_stage931") as legacy,
         ):
             cycle = stage930.run_cycle(
@@ -170,10 +175,136 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
 
         start.assert_called_once_with(args)
-        wake.assert_called_once_with(args)
+        wake.assert_not_called()
+        publish.assert_not_called()
+        self.assertGreaterEqual(revoke.call_count, 1)
         legacy.assert_not_called()
-        self.assertEqual("warm_executor_ready", cycle["stage931"]["submit_status"])
+        self.assertEqual("warm_executor_no_submit_ready", cycle["stage931"]["submit_status"])
+        self.assertEqual(0, cycle["stage931"]["wake_socket_notified"])
+
+    def test_warm_live_cycle_publishes_authorization_before_wake(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
+        args.stage179_runtime_root = ""
+        args.ai_pool_preflight_allowed = 1
+        controller_summary = {
+            "target_date": "2026-07-16",
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+            "order_api_called_count": 0,
+        }
+        stage927_summary = {
+            "real_submit_permitted": 1,
+            "order_api_called_count": 0,
+        }
+        tick_gate = {
+            "refresh_status": "tick_stream_ready",
+            "all_symbols_ready": 1,
+            "symbol_tick_freshness": {"blocked_new_risk_symbols": []},
+        }
+        warm_status = {
+            "submit_status": "warm_executor_ready",
+            "exit_code": 0,
+            "readiness": {
+                "status": "ready",
+                "service_generation": "service-1",
+                "connection_generation": "connection-1",
+            },
+            "summary": {"order_api_called_count": 0},
+        }
+        events: list[str] = []
+        with (
+            patch.object(stage930, "_start_stage931_service"),
+            patch.object(stage930, "_revoke_stage931_submit_authorization"),
+            patch.object(stage930, "_market_execution_session_active", return_value=True),
+            patch.object(stage930, "_watched_symbols_for_args", return_value=["JM609.DCE"]),
+            patch.object(stage930, "_run_tick_refresh", return_value=tick_gate),
+            patch.object(stage930, "_run_stage903", return_value={"summary": controller_summary}),
+            patch.object(stage930, "_run_stage927", return_value={"summary": stage927_summary}),
+            patch.object(stage930, "_managed_tick_stream_status", return_value=tick_gate),
+            patch.object(stage930, "_ready_intents_close_only", return_value=False),
+            patch.object(stage930, "_ready_reduce_close_count", return_value=0),
+            patch.object(stage930, "_status_stage931_service", return_value=warm_status),
+            patch.object(
+                stage930,
+                "_publish_stage931_submit_authorization",
+                side_effect=lambda *_args, **_kwargs: events.append("publish")
+                or {"authorized": 1, "cycle_id": "cycle-1"},
+            ),
+            patch.object(
+                stage930,
+                "_wake_stage931_service",
+                side_effect=lambda *_: events.append("wake") or True,
+            ),
+            patch.object(stage930, "_run_stage931") as legacy,
+        ):
+            cycle = stage930.run_cycle(
+                args,
+                "2026-07-16",
+                {"command_log": Path("unused")},
+            )
+
+        self.assertEqual(["publish", "wake"], events)
+        legacy.assert_not_called()
         self.assertEqual(1, cycle["stage931"]["wake_socket_notified"])
+        self.assertEqual(1, cycle["stage931"]["submit_authorization"]["authorized"])
+
+    def test_published_live_authorization_is_self_validating(self) -> None:
+        args = self.args()
+        args.runtime_profile = "simnow"
+        args.poll_seconds = 30
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            runtime = stage930._stage179_runtime(args)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            try:
+                readiness = {
+                    "status": "ready",
+                    "service_generation": "service-1",
+                    "connection_generation": "connection-1",
+                    "runtime_profile": "simnow",
+                    "order_scope": "test",
+                }
+                controller = {
+                    "target_date": "2026-07-16",
+                    "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                    "stage905_executor_status": "executor_dry_run_ready",
+                    "stage905_blocked_count": 0,
+                    "stage905_ready_count": 1,
+                }
+                result = stage930._publish_stage931_submit_authorization(
+                    args,
+                    target_date="2026-07-16",
+                    controller_summary=controller,
+                    stage927_summary={"real_submit_permitted": 1},
+                    tick_gate={"all_symbols_ready": 1},
+                    service_status={
+                        "submit_status": "warm_executor_ready",
+                        "readiness": readiness,
+                    },
+                    reduce_close_only=False,
+                )
+
+                blockers = validate_submit_authorization(
+                    path=result["authorization_path"],
+                    target_date="2026-07-16",
+                    runtime_profile="simnow",
+                    order_scope="test",
+                    service_generation="service-1",
+                    connection_generation="connection-1",
+                    now_epoch_ns=time.time_ns(),
+                )
+            finally:
+                stage930._STAGE931_SERVICE_RUNTIME = None
+
+        self.assertEqual(1, result["authorized"])
+        self.assertEqual([], blockers)
 
     def test_stage931_stop_revokes_readiness_before_terminating_child(self) -> None:
         events: list[str] = []
@@ -222,26 +353,38 @@ class Stage930FastLaneTest(unittest.TestCase):
             blockers,
         )
 
-    def test_persistent_mode_with_live_submit_fails_before_child_start(self) -> None:
+    def test_persistent_mode_with_live_submit_and_warm_simnow_is_reachable(self) -> None:
         args = self.args()
         args.detector_mode = "persistent"
         args.mode = "live-real"
         args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
 
         blockers = stage930._startup_configuration_blockers(args)
-        with patch.object(stage930, "_managed_popen") as managed_popen:
-            supervisor = stage930._initialize_detector_supervisor(
-                args,
-                {"command_log": Path("/tmp/stage930-test.log")},
-                target_date="2026-07-16",
-            )
+
+        self.assertEqual([], blockers)
+
+    def test_persistent_no_submit_offline_prewarm_is_reachable(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "offline"
+
+        self.assertEqual([], stage930._startup_configuration_blockers(args))
+
+    def test_persistent_mixed_controller_and_submit_modes_fail_closed(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
+        args.mode = "dry-run"
+        args.submit_mode = "live-real"
 
         self.assertIn(
-            "persistent_detector_requires_warm_executor_and_runtime_profile",
-            blockers,
+            "persistent_detector_controller_submit_mode_mismatch",
+            stage930._startup_configuration_blockers(args),
         )
-        self.assertEqual(0, supervisor["enabled"])
-        managed_popen.assert_not_called()
 
     def test_persistent_mode_never_spawns_stage904_or_stage905_subprocess(self) -> None:
         args = self.args()
