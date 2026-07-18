@@ -1,0 +1,49 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_cb7d5b663a18b7 32,203-209
+examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py
+  s_57fbbdfeac5414::t_4bb5e8e50169b7 6,10,21-22,25-28,38-55,116,123-259,336-338,340,342-351,355,366,375-380
+examples/portfolio_backtesting/qmt_roll_official_execution_profile.py
+  s_57fbbdfeac5414::t_df5e318dbb867b 40,60,66,75,92,102,119
+examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py
+  s_57fbbdfeac5414::t_50bdef0a58f8b5 368-374
+examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py
+  s_57fbbdfeac5414::t_b129f2d9355e52 1-147
+examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py
+  s_57fbbdfeac5414::t_2ddeb266d49305 21-24,150,155-158,176,369-372,482-483,493-505,508-515,559-560,596-597,607-611,613-617,677-686
+examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py
+  s_57fbbdfeac5414::t_26ff138adfc9de 15-16,19-22,138-172,296,302-331,352-357,403-405,407-411,477-480,483-487,507,509-517,642-643
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_f1f84484db0f53 418-422,428-429,1501-1504
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_cb671c9409945c 561-571,614,616-617,628
+examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py
+  s_57fbbdfeac5414::t_dc22f760a769a0 13,25-28,65-73,343-358,390
+examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py
+  s_57fbbdfeac5414::t_ab8180b7952a1d 17-21,78-83,408-412,414,424-425,427-429,575-579
+tests/test_stage179_runtime_profile.py
+  s_57fbbdfeac5414::t_013e368dda0607 32-41
+tests/test_stage179_stage260_execution_profile.py
+  s_57fbbdfeac5414::t_98f188864b62ed 24-67,72,88-89,117,142,149-218
+tests/test_stage179_stage372_daily_intents.py
+  s_57fbbdfeac5414::t_a129815358616f 22-23,33-34,73-74,111-114,139-154
+tests/test_stage179_stage372_shadow_precompute.py
+  s_57fbbdfeac5414::t_b1383fbd50400d 3-5,9,12,14-15,23-27,100-189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d113a4bd4065b895f7bed06098abe556fa4b021b",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
