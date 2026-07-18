@@ -142,3 +142,86 @@
 - 是否更新本线 `LINE.md`：否；同线并行只写唯一 Stage179 文件，待口径澄清和受控验收后由合入者统一整理。
 - 是否更新 `research/registry.md`：否。
 - 是否追加根目录 `memory.md/back_log.md`：否；尚未完成测试环境与实盘激活验收，不应提前写成正式突破。
+
+---
+
+## 2026-07-18 Stage179 P0 离线故障与延迟门收口
+
+### 基本信息
+
+- 开始时间：`2026-07-18 20:57 CST`
+- 完成时间：`2026-07-18 21:12 CST`
+- 代码提交：`43c61f7f3f275b53975d5535b355ff5325697fb6`
+- 代码提交 tree fingerprint：`4787b5ad84a75af9a0671bf1da4b34e4f434a368`
+- 是否重要突破版本：否。P0 通过只允许代码集成且保持激活默认关闭；P1 只读 CTP、P2 SimNow/券商测试和 P3 一手生产 canary 均未完成。
+- 实盘边界：未安装/加载 LaunchAgent，未加载真实 env，未连接 CTP/SimNow，真实 `send_order/cancel_order=0/0`。
+
+### 外部调研与判断
+
+- 复核 SQLite transaction/WAL、Python `sqlite3`、`subprocess`/`setsid`/process group、VeighNa CTP gateway/BaseGateway/EventEngine 的官方语义。
+- 调研判断：不能用缩短固定 sleep、放宽 tick freshness 或针对 JM 单晚调参解决延迟；必须从 gateway ingress 因果、异步耐久化、持久 detector、close-priority spool、warm TD、ledger API-slot/CAS、LaunchAgent owner 和进程组回收形成端到端证据。
+- 60 秒门第一次短测在原 50ms writer 聚合逻辑下得到 durable lag p99 `136.524ms`，超过 `100ms` 硬门。没有豁免；最终采用“仍保持最大 256 条/最迟 50ms，但高吞吐累计到 64 条且队列短暂清空就提前 flush”的自适应成批，避免用 5ms 固定窗口换取过高 fsync 频率。
+
+### 版本改动
+
+- 新增：`tests/test_stage179_fault_matrix.py`，覆盖 22 类断连、crash boundary、empty/exception/ack timeout、部分成交/撤单/late fill、generation/watermark/deadline/socket、spool/ledger/disk、kill switch/政策/profile 和双 executor 故障合同。
+- 新增：100 轮真实 fork API-slot 竞争；每轮两个 executor 恰好一个 fake send winner，最大 winner `1`，真实订单 API `0/0`。
+- 新增：`tests/stage179_performance_gate.py`，严格执行 20 合约、2,000 tick/s、60 秒、120,000 tick、25ms writer barrier 延迟与强制 overflow 门。
+- 新增：release manifest 默认 critical files 扩展到 Stage179 tick/trace/spool/ledger/executor、Stage608/904/905/930/931/941、rollback guard、supervisor helper 和四份生产/canary plist，避免 manifest 只冻结部分代码。
+- 修改：`AsyncTickJournalWriter` 增加 64 条 eager flush 自适应门；最大 batch 256、最大等待 50ms、durability barrier 和 cursor 提交顺序不变。
+- 修改：Stage930/Stage931/runtime profile 测试按 warm owner 新契约更新；默认仍为 `legacy-once`，production-live 激活仍失败关闭。
+- 删除：无生产功能删除；无 alpha、AI 池、0.5R、重进场次数、资金、品种、方向、手数或仓位参数变化。
+
+### 参数变化
+
+- 新增参数：无策略参数。新增内部常量 `EAGER_FLUSH_BATCH_SIZE=64`。
+- 修改参数：无用户可见 alpha/资金/风控参数；writer 的 256 条/50ms 上限未变。
+- 删除参数：无。
+
+### P0 故障矩阵
+
+- 22/22 故障合同通过；每项记录 spool state、ledger evidence、recovery disposition、fake send/cancel 和真实 API `0/0`。
+- 100/100 真实 fork 竞态通过；`max_send_winners_per_round=1`，ledger send slot 每轮为 `1`、cancel slot 为 `0`。
+- evidence：`/tmp/stage179-p0-fault-matrix-20260718-2106/stage179_fault_matrix_cases.json`、`stage179_fault_matrix_process_races.json`。
+
+### 60 秒性能门
+
+- 参数：20 合约、2,000 tick/s、60 秒、writer delay 25ms、总 tick 120,000。
+- 注入耗时：`59.999846s`；durable `120000/120000`；drop `0`、gap `0`、writer fault `0`。
+- ingress：p99 `0.105083ms`、max `2.570208ms`，通过 `1ms/5ms` 门。
+- EventEngine sentinel：1,183 样本，p99 `1.918834ms`、max `8.736875ms`，通过 `20ms/100ms` 门。
+- durable lag：120,000 样本，p99 `83.560875ms`、max `120.077208ms`，通过 `100ms/500ms` 门。
+- shutdown drain：`0.055693s`，通过 `2s` 门。
+- RSS 增长：`31.921875MiB`，通过 `64MiB` 门。
+- 强制 overflow：fault latch `0.082166ms`、readiness revoke `0.119291ms`；`drop=1 && stream_ready=false`。
+- evidence：`/tmp/stage179-p0-performance-20260718-2106/stage179_performance_gate.json`；tick journal 仅为临时离线压力文件，不纳入 Git。
+
+### 联合回归与静态门
+
+- 第一次扩大回归：`597 passed, 1 failed, 238 subtests passed`。唯一失败为旧测试仍要求 Stage930 源码完全不出现 warm child 参数；不是运行时错误。按新 owner 契约修正后单项通过。
+- 最终扩大回归：`598 passed, 238 subtests passed`，耗时 `54.89s`。
+- Task12 生命周期/manifest/Stage930：`56/56`。
+- Task13 fault matrix：`2/2`，其中含 22 个合同 subcase 与 100 轮 fork。
+- `py_compile`、新增/修改生产文件 `ruff check`、`git diff --check`、supervisor `bash -n`、8 份 plist `plutil -lint`：通过。
+- 真实订单 API：send `0`、cancel `0`。
+
+### 回测结果
+
+本阶段未改变策略 alpha，未运行收益回测：
+
+- 期末权益：N/A
+- 总收益：N/A
+- 最大回撤：N/A
+- Sharpe：N/A
+- 总滑点：N/A
+- 总交易次数：N/A
+- 胜率：N/A
+- 新增/修改/删除回测结果：无
+
+### 反思与发布边界
+
+- 开始前是否过拟合：否。目标是跨品种执行因果、持久化、唯一副作用和 SLA，不使用 JM 单晚盈亏调参。
+- 完成后是否过拟合：否。自适应 batch、spool/ledger 恢复、process group 和 runtime gates 不依赖品种、方向或收益曲线。
+- 是否仍值得继续：是，但下一步不再是堆离线规则；最高价值是独立全分支终审、真实 `0/0` 只读 CTP 的至少五个完整会话与断线重连、随后在用户另行授权下做 P2 测试单。
+- 合入与激活：P0 与独立终审通过后可合入代码，但 warm/production-live 激活保持默认关闭。合入绝不等于“开仓日实时止损重进场已在线上运行”。
+- 口径阻断：`AGENTS.md` 的 Stage372/20万与当前配置 Stage847-C9/15万冲突仍未澄清；不得擅自修改资金/策略口径或生成 production activation receipt。
