@@ -1,21 +1,21 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
+import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import pandas as pd
 from pandas.errors import EmptyDataError
 
-from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
-    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
-    build_official_live_risk_snapshot,
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    assert_profile_identity,
+    resolve_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import STAGE901_PENDING_ORDERS_PATH
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -37,6 +37,13 @@ ACTIVE_ORDER_STATUSES = {
     "未成交",
     "部分成交",
 }
+
+
+@dataclass(frozen=True)
+class Stage260RunResult:
+    decisions: pd.DataFrame
+    summary: dict[str, Any]
+    paths: Mapping[str, Path]
 
 
 def _paths(trade_date: str) -> dict[str, Path]:
@@ -91,6 +98,89 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     if pd.isna(number):
         return default
     return float(number)
+
+
+def _build_risk_snapshot(summary: Mapping[str, Any]) -> dict[str, Any]:
+    variant = summary.get("current_variant", {}) or {}
+    if not isinstance(variant, Mapping):
+        variant = {}
+    deployable = int(_to_float(variant.get("deployable_pass"), 0.0)) == 1
+    days_over_100 = int(_to_float(variant.get("days_over_100pct"), 0.0))
+    days_over_90 = int(_to_float(variant.get("days_over_90pct"), 0.0))
+    max_margin = _to_float(
+        variant.get("max_broker10_margin_to_equity_pct"),
+        999.0,
+    )
+    reasons: list[str] = []
+    if not deployable:
+        reasons.append("official_live_deployable_gate_failed")
+    if days_over_100 > 0:
+        reasons.append("broker10_margin_over_100")
+    if days_over_90 > 0:
+        reasons.append("broker10_margin_over_90")
+    if max_margin >= 90:
+        reasons.append("broker10_margin_watch")
+    if not reasons:
+        reasons.append("official_live_profile_normal")
+    allow_real_new_orders = int(
+        deployable and days_over_100 == 0 and max_margin < 90
+    )
+    return {
+        "risk_level": "normal" if allow_real_new_orders else "review",
+        "allow_shadow_record": 1,
+        "allow_real_new_orders": allow_real_new_orders,
+        "reasons": reasons,
+        "drawdown_pct_abs": abs(_to_float(variant.get("max_dd_pct"), 0.0)),
+        "daily_loss_cash": 0.0,
+        "net_pnl": 0.0,
+        "balance": _to_float(variant.get("end_equity"), 0.0),
+        "execution_adverse_cash": 0.0,
+    }
+
+
+def _validate_explicit_summary_identity(
+    profile: OfficialExecutionProfile,
+    summary: Mapping[str, Any],
+) -> None:
+    identity_fields = {
+        "official_live_version",
+        "capital",
+        "capital_label",
+    }
+    if not identity_fields.intersection(summary):
+        return
+    assert_profile_identity(
+        profile,
+        official_version=summary.get("official_live_version"),
+        capital=summary.get("capital"),
+        capital_label=summary.get("capital_label"),
+    )
+
+
+def _decision_id(
+    profile: OfficialExecutionProfile,
+    *,
+    trade_date: str,
+    row: Mapping[str, Any],
+) -> str:
+    payload = {
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "trade_date": trade_date,
+        "vt_symbol": _clean_scalar(row.get("vt_symbol")),
+        "direction": _normalize_direction(row.get("direction")),
+        "offset": _normalize_offset(row.get("offset")),
+        "volume": _to_float(row.get("planned_volume", row.get("volume")), 0.0),
+        "theoretical_price": _to_float(row.get("theoretical_price"), 0.0),
+    }
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _normalize_direction(value: Any) -> str:
@@ -313,105 +403,31 @@ def _to_markdown(df: pd.DataFrame, columns: list[str], max_rows: int = 20) -> st
     return view.to_markdown(index=False)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Official live daily execution gate from latest official live signal.")
-    parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
-    args = parser.parse_args()
-
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-    candidates = _execution_candidates(signal_plan, pending_orders)
-    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
-    readonly_summary = _read_json(READONLY_SUMMARY_PATH)
-    readonly_outputs = readonly_summary.get("outputs", {})
-    positions = _read_csv_maybe(readonly_outputs.get("positions"))
-    orders = _read_csv_maybe(readonly_outputs.get("orders"))
-
-    trade_date = str(official_summary.get("analysis_end", "latest"))
-    paths = _paths(trade_date)
-    generated_at = str(readonly_summary.get("generated_at", ""))
-    generated_dt = _parse_generated_at(generated_at)
-    snapshot_age_seconds = None
-    if generated_dt:
-        snapshot_age_seconds = round((datetime.now() - generated_dt).total_seconds(), 3)
-    broker_snapshot = readonly_summary.get("broker_snapshot", {})
-    position_state = str(broker_snapshot.get("position_snapshot_state", ""))
-    readonly_gate = {
-        "status": readonly_summary.get("status", ""),
-        "position_snapshot_state": position_state,
-        "generated_at": generated_at,
-        "snapshot_age_seconds": snapshot_age_seconds,
-        "passed": (
-            readonly_summary.get("status") == "readonly_snapshots_received"
-            and position_state in {"confirmed_flat", "positions_received"}
-            and snapshot_age_seconds is not None
-            and snapshot_age_seconds <= args.max_snapshot_age_seconds
-        ),
-    }
-    active_orders = _active_order_count(orders)
-    risk_snapshot = build_official_live_risk_snapshot(official_summary)
-    decisions = pd.DataFrame(
-        [
-            _decision_for_signal(row, risk_snapshot, readonly_gate, positions, current_positions, active_orders)
-            for row in candidates.to_dict(orient="records")
-        ]
-    )
-    executable_count = int(decisions["execution_action"].astype(str).eq("simnow_executable").sum()) if not decisions.empty else 0
-    skipped_flat_count = int(decisions["execution_action"].astype(str).eq("skip_broker_flat_for_close").sum()) if not decisions.empty else 0
-    skipped_position_mismatch_count = int(decisions["execution_action"].astype(str).eq("skip_broker_position_mismatch_for_close").sum()) if not decisions.empty else 0
-    blocked_count = int(decisions["execution_action"].astype(str).eq("blocked").sum()) if not decisions.empty else 0
-
-    decisions.to_csv(paths["decision_csv"], index=False, encoding="utf-8-sig")
-    summary = {
-        "model_tag": MODEL_TAG,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "trade_date": trade_date,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
-        "official_summary_analysis_end": official_summary.get("analysis_end", ""),
-        "official_summary_generated_at": official_summary.get("generated_at", ""),
-        "ai_pool_latest_eval_date": official_summary.get("ai_pool_audit", {}).get("max_eval_date", ""),
-        "risk_snapshot": risk_snapshot,
-        "readonly_gate": readonly_gate,
-        "signal_count": int(len(signal_plan)),
-        "pending_order_count": int(len(pending_orders)),
-        "execution_candidate_count": int(len(candidates)),
-        "execution_candidate_source": "stage901_pending_order" if not pending_orders.empty else "stage901_signal_plan",
-        "executable_count": executable_count,
-        "skipped_flat_count": skipped_flat_count,
-        "skipped_position_mismatch_count": skipped_position_mismatch_count,
-        "blocked_count": blocked_count,
-        "order_api_called_count": 0,
-        "outputs": {key: str(value.resolve()) for key, value in paths.items()},
-        "judgement": {
-            "overfit_before": "否。每日执行闸门只比较既有信号和SimNow持仓，不改策略参数。",
-            "continue_before": "是。进入虚拟盘后必须把理论信号和真实账户状态逐笔对齐。",
-            "overfit_after": "否。没有根据执行结果调整策略。",
-            "continue_after": "是。若出现可执行信号，可进入SimNow委托草案和提交前复核。",
-        },
-    }
-    paths["summary_json"].write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-
+def _build_report(
+    summary: Mapping[str, Any],
+    decisions: pd.DataFrame,
+) -> str:
+    risk_snapshot = summary["risk_snapshot"]
+    readonly_gate = summary["readonly_gate"]
     lines = [
         "# Stage260 Official Live Daily Execution Gate",
         "",
-        f"- 目标交易日：`{trade_date}`",
-        f"- 官方实盘版本：`{OFFICIAL_LIVE_VERSION}`",
-        f"- 官方实盘别名：`{OFFICIAL_LIVE_ALIAS}`",
-        f"- 官方影子生成时间：`{official_summary.get('generated_at', '')}`",
+        f"- 目标交易日：`{summary['trade_date']}`",
+        f"- Execution profile：`{summary['execution_profile']}`",
+        f"- 官方实盘版本：`{summary['official_live_version']}`",
+        f"- 官方实盘别名：`{summary['official_live_alias']}`",
+        f"- 官方影子生成时间：`{summary['official_summary_generated_at']}`",
         f"- AI池最新eval_date：`{summary['ai_pool_latest_eval_date']}`",
         f"- 风险级别：`{risk_snapshot.get('risk_level', '')}`",
-        f"- signal_plan 行数：`{len(signal_plan)}`",
-        f"- pending_order 行数：`{len(pending_orders)}`",
+        f"- signal_plan 行数：`{summary['signal_count']}`",
+        f"- pending_order 行数：`{summary['pending_order_count']}`",
         f"- 执行候选来源：`{summary['execution_candidate_source']}`",
         f"- 只读快照状态：`{readonly_gate['status']}` / `{readonly_gate['position_snapshot_state']}`",
         f"- 只读快照年龄秒数：`{readonly_gate['snapshot_age_seconds']}`",
-        f"- 可执行信号数：`{executable_count}`",
-        f"- 因账户空仓跳过平仓数：`{skipped_flat_count}`",
-        f"- 因账户持仓数量不匹配跳过平仓数：`{skipped_position_mismatch_count}`",
-        f"- 阻断数：`{blocked_count}`",
+        f"- 可执行信号数：`{summary['executable_count']}`",
+        f"- 因账户空仓跳过平仓数：`{summary['skipped_flat_count']}`",
+        f"- 因账户持仓数量不匹配跳过平仓数：`{summary['skipped_position_mismatch_count']}`",
+        f"- 阻断数：`{summary['blocked_count']}`",
         f"- 委托API调用次数：`0`",
         "",
         "## 执行判断",
@@ -443,8 +459,182 @@ def main() -> None:
         "- `review` 风险级别允许降风险/平仓，但不允许新开仓。",
         "",
     ]
-    paths["report_md"].write_text("\n".join(lines), encoding="utf-8")
-    print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
+    return "\n".join(lines)
+
+
+def run_daily_execution_gate(
+    profile: OfficialExecutionProfile,
+    *,
+    official_summary: Mapping[str, Any],
+    signal_plan: pd.DataFrame,
+    pending_orders: pd.DataFrame,
+    current_positions: pd.DataFrame,
+    readonly_summary: Mapping[str, Any],
+    positions: pd.DataFrame,
+    orders: pd.DataFrame,
+    max_snapshot_age_seconds: int = 300,
+    now: datetime | None = None,
+    write_outputs: bool = True,
+) -> Stage260RunResult:
+    _validate_explicit_summary_identity(profile, official_summary)
+    observed_now = now or datetime.now()
+    candidates = _execution_candidates(signal_plan, pending_orders)
+    trade_date = str(official_summary.get("analysis_end", "latest"))
+    paths = _paths(trade_date)
+    generated_at = str(readonly_summary.get("generated_at", ""))
+    generated_dt = _parse_generated_at(generated_at)
+    snapshot_age_seconds = None
+    if generated_dt:
+        snapshot_age_seconds = round(
+            (observed_now - generated_dt).total_seconds(),
+            3,
+        )
+    broker_snapshot = readonly_summary.get("broker_snapshot", {})
+    if not isinstance(broker_snapshot, Mapping):
+        broker_snapshot = {}
+    position_state = str(broker_snapshot.get("position_snapshot_state", ""))
+    readonly_gate = {
+        "status": readonly_summary.get("status", ""),
+        "position_snapshot_state": position_state,
+        "generated_at": generated_at,
+        "snapshot_age_seconds": snapshot_age_seconds,
+        "passed": (
+            readonly_summary.get("status") == "readonly_snapshots_received"
+            and position_state in {"confirmed_flat", "positions_received"}
+            and snapshot_age_seconds is not None
+            and 0 <= snapshot_age_seconds <= max_snapshot_age_seconds
+        ),
+    }
+    active_orders = _active_order_count(orders)
+    risk_snapshot = _build_risk_snapshot(official_summary)
+    decision_rows: list[dict[str, Any]] = []
+    for raw in candidates.to_dict(orient="records"):
+        row = _decision_for_signal(
+            raw,
+            risk_snapshot,
+            readonly_gate,
+            positions,
+            current_positions,
+            active_orders,
+        )
+        row.update(
+            {
+                "execution_profile": profile.profile_key,
+                "official_live_version": profile.official_version,
+                "capital": profile.capital,
+                "capital_label": profile.capital_label,
+                "upstream_execution_source": row.get("execution_source", ""),
+                "intent_source": (
+                    "stage260_stage372_daily"
+                    if profile.profile_key
+                    == ExecutionStrategyMode.STAGE372_20W.value
+                    else row.get("execution_source", "")
+                ),
+            }
+        )
+        row["decision_id"] = _decision_id(
+            profile,
+            trade_date=trade_date,
+            row=row,
+        )
+        decision_rows.append(row)
+    decisions = pd.DataFrame(decision_rows)
+    action = decisions.get("execution_action", pd.Series(dtype=str)).astype(str)
+    executable_count = int(action.eq("simnow_executable").sum())
+    skipped_flat_count = int(action.eq("skip_broker_flat_for_close").sum())
+    skipped_position_mismatch_count = int(
+        action.eq("skip_broker_position_mismatch_for_close").sum()
+    )
+    blocked_count = int(action.eq("blocked").sum())
+    ai_pool_audit = official_summary.get("ai_pool_audit", {})
+    if not isinstance(ai_pool_audit, Mapping):
+        ai_pool_audit = {}
+    summary = {
+        "model_tag": MODEL_TAG,
+        "generated_at": observed_now.strftime("%Y-%m-%d %H:%M:%S"),
+        "trade_date": trade_date,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "official_summary_analysis_end": official_summary.get("analysis_end", ""),
+        "official_summary_generated_at": official_summary.get("generated_at", ""),
+        "ai_pool_latest_eval_date": ai_pool_audit.get("max_eval_date", ""),
+        "risk_snapshot": risk_snapshot,
+        "readonly_gate": readonly_gate,
+        "signal_count": int(len(signal_plan)),
+        "pending_order_count": int(len(pending_orders)),
+        "execution_candidate_count": int(len(candidates)),
+        "execution_candidate_source": (
+            "stage901_pending_order"
+            if not pending_orders.empty
+            else "stage901_signal_plan"
+        ),
+        "executable_count": executable_count,
+        "skipped_flat_count": skipped_flat_count,
+        "skipped_position_mismatch_count": skipped_position_mismatch_count,
+        "blocked_count": blocked_count,
+        "order_api_called_count": 0,
+        "outputs": {key: str(value.resolve()) for key, value in paths.items()},
+        "judgement": {
+            "overfit_before": "否。每日执行闸门只比较既有信号和 broker 持仓，不改策略参数。",
+            "continue_before": "是。自动执行前必须把理论信号和真实账户状态逐笔对齐。",
+            "overfit_after": "否。没有根据执行结果调整策略。",
+            "continue_after": "是。可执行 decision 仍需进入 Stage905、账本和提交授权。",
+        },
+    }
+    if write_outputs:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        decisions.to_csv(
+            paths["decision_csv"],
+            index=False,
+            encoding="utf-8-sig",
+        )
+        paths["summary_json"].write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2, default=str),
+            encoding="utf-8",
+        )
+        paths["report_md"].write_text(
+            _build_report(summary, decisions),
+            encoding="utf-8",
+        )
+    return Stage260RunResult(
+        decisions=decisions,
+        summary=summary,
+        paths=paths,
+    )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Official live daily execution gate from latest official live signal."
+    )
+    parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
+    args = parser.parse_args()
+    profile = resolve_execution_profile(args.execution_profile)
+    readonly_summary = _read_json(READONLY_SUMMARY_PATH)
+    readonly_outputs = readonly_summary.get("outputs", {})
+    if not isinstance(readonly_outputs, Mapping):
+        readonly_outputs = {}
+    result = run_daily_execution_gate(
+        profile,
+        official_summary=_read_json(profile.summary_path),
+        signal_plan=_read_csv_maybe(profile.signal_plan_path),
+        pending_orders=_read_csv_maybe(STAGE901_PENDING_ORDERS_PATH),
+        current_positions=_read_csv_maybe(profile.current_positions_path),
+        readonly_summary=readonly_summary,
+        positions=_read_csv_maybe(readonly_outputs.get("positions")),
+        orders=_read_csv_maybe(readonly_outputs.get("orders")),
+        max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        write_outputs=True,
+    )
+    print(json.dumps(result.summary, ensure_ascii=False, indent=2, default=str))
 
 
 if __name__ == "__main__":
