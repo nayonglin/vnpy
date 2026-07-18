@@ -324,19 +324,57 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(30, result["cycle_started_epoch_ns"])
 
-    def test_reconnect_observation_once_consumes_only_after_real_refresh_attempt(self) -> None:
+    def test_reconnect_observation_once_is_pending_after_real_refresh_attempt(self) -> None:
         args = SimpleNamespace(readonly_observe_reconnect_once=True)
 
-        not_consumed = stage930._consume_readonly_reconnect_observation_once(
+        not_pending = stage930._readonly_reconnect_observation_consumption_pending(
             args, {"stage907_refresh_attempted": 0}
         )
-        consumed = stage930._consume_readonly_reconnect_observation_once(
+        pending = stage930._readonly_reconnect_observation_consumption_pending(
             args, {"stage907_refresh_attempted": 1}
         )
 
-        self.assertEqual(0, not_consumed)
-        self.assertEqual(1, consumed)
+        self.assertEqual(0, not_pending)
+        self.assertEqual(1, pending)
+        self.assertTrue(args.readonly_observe_reconnect_once)
+
+    def test_reconnect_observation_once_commits_only_after_summary_persistence(self) -> None:
+        args = SimpleNamespace(readonly_observe_reconnect_once=True)
+        cycle = {
+            "readonly_observe_reconnect_consumption_pending": 1,
+            "readonly_observe_reconnect_consumed": 0,
+        }
+        summary = {"latest_cycle": cycle}
+
+        with patch.object(
+            stage930,
+            "_write_outputs",
+            side_effect=OSError("simulated persistence failure"),
+        ):
+            with self.assertRaisesRegex(OSError, "simulated persistence failure"):
+                stage930._write_cycle_outputs_and_commit_reconnect_observation(
+                    {}, summary, args, cycle
+                )
+
+        self.assertTrue(args.readonly_observe_reconnect_once)
+        self.assertEqual(1, cycle["readonly_observe_reconnect_consumption_pending"])
+        self.assertEqual(0, cycle["readonly_observe_reconnect_consumed"])
+
+        persisted: list[dict] = []
+
+        def capture_write(_paths: dict, payload: dict) -> None:
+            persisted.append(json.loads(json.dumps(payload)))
+
+        with patch.object(stage930, "_write_outputs", side_effect=capture_write):
+            committed = stage930._write_cycle_outputs_and_commit_reconnect_observation(
+                {}, summary, args, cycle
+            )
+
+        self.assertEqual(1, committed)
         self.assertFalse(args.readonly_observe_reconnect_once)
+        self.assertEqual(0, cycle["readonly_observe_reconnect_consumption_pending"])
+        self.assertEqual(1, cycle["readonly_observe_reconnect_consumed"])
+        self.assertEqual(1, persisted[0]["latest_cycle"]["readonly_observe_reconnect_consumed"])
 
     def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
         missing = stage930._missing_order_api_evidence_fields(

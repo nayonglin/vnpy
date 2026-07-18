@@ -3367,16 +3367,39 @@ def _readonly_qualification_cycle(
     return qualified
 
 
-def _consume_readonly_reconnect_observation_once(
+def _readonly_reconnect_observation_consumption_pending(
     args: argparse.Namespace, controller_summary: dict[str, Any]
 ) -> int:
-    consumed = int(
+    return int(
         bool(getattr(args, "readonly_observe_reconnect_once", False))
         and controller_summary.get("stage907_refresh_attempted") == 1
     )
-    if consumed:
-        args.readonly_observe_reconnect_once = False
-    return consumed
+
+
+def _write_cycle_outputs_and_commit_reconnect_observation(
+    paths: dict[str, Path],
+    summary: dict[str, Any],
+    args: argparse.Namespace,
+    cycle: dict[str, Any],
+) -> int:
+    pending = int(
+        bool(getattr(args, "readonly_observe_reconnect_once", False))
+        and cycle.get("readonly_observe_reconnect_consumption_pending") == 1
+    )
+    if not pending:
+        _write_outputs(paths, summary)
+        return 0
+
+    cycle["readonly_observe_reconnect_consumption_pending"] = 0
+    cycle["readonly_observe_reconnect_consumed"] = 1
+    try:
+        _write_outputs(paths, summary)
+    except Exception:
+        cycle["readonly_observe_reconnect_consumption_pending"] = 1
+        cycle["readonly_observe_reconnect_consumed"] = 0
+        raise
+    args.readonly_observe_reconnect_once = False
+    return 1
 
 
 def _missing_order_api_evidence_fields(
@@ -3461,8 +3484,8 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         }
     stage903_result = _run_stage903(args, target_date, paths)
     controller_summary = stage903_result.get("summary", {}) if isinstance(stage903_result.get("summary"), dict) else {}
-    readonly_observe_reconnect_consumed = (
-        _consume_readonly_reconnect_observation_once(
+    readonly_observe_reconnect_consumption_pending = (
+        _readonly_reconnect_observation_consumption_pending(
             args, controller_summary
         )
     )
@@ -3621,7 +3644,10 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "tick_refresh": tick_result,
         "pre_submit_tick_gate": pre_submit_tick_gate,
         "stage903": stage903_result,
-        "readonly_observe_reconnect_consumed": readonly_observe_reconnect_consumed,
+        "readonly_observe_reconnect_consumption_pending": (
+            readonly_observe_reconnect_consumption_pending
+        ),
+        "readonly_observe_reconnect_consumed": 0,
         "stage927": stage927_result,
         "stage931": stage931_result,
         "post_submit_reduce_close": post_submit_reduce_close,
@@ -4027,7 +4053,9 @@ def main() -> None:
                 "continue_after": "是。若要真实自动开平仓，还需 Stage927 permit 与 Stage931 live-real submit evidence。",
             },
         }
-        _write_outputs(paths, summary)
+        _write_cycle_outputs_and_commit_reconnect_observation(
+            paths, summary, args, cycle
+        )
         email_result = _send_cycle_email_if_needed(paths=paths, summary=summary, cycle=cycle, sent_keys=sent_email_keys)
         if email_result is not None:
             email_notifications.append(email_result)

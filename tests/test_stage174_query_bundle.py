@@ -18,6 +18,28 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import run_ctp_stage174_readonly_probe as stage174
 
 
+class _TrackingRLock:
+    def __init__(self) -> None:
+        self._lock = threading.RLock()
+        self.thread_ids: set[int] = set()
+        self.acquire_count = 0
+
+    def __enter__(self) -> "_TrackingRLock":
+        self.acquire()
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        self.release()
+
+    def acquire(self) -> bool:
+        self.thread_ids.add(threading.get_ident())
+        self.acquire_count += 1
+        return self._lock.acquire()
+
+    def release(self) -> None:
+        self._lock.release()
+
+
 class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
     def setUp(self) -> None:
         self.generation = "11111111-2222-4333-8444-555555555555"
@@ -537,6 +559,7 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         from vnpy_ctp.gateway import ctp_gateway as ctp_gateway_module
 
         timers: list[threading.Timer] = []
+        state_lock = _TrackingRLock()
 
         class FakeEventEngine:
             def register(self, *args: object) -> None:
@@ -725,6 +748,11 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             ),
             mock.patch.object(stage174, "_required_env_missing", return_value=[]),
             mock.patch.object(stage174, "_debug_report", return_value=None),
+            mock.patch.object(
+                stage174,
+                "_new_probe_state_lock",
+                return_value=state_lock,
+            ),
             mock.patch.dict(os.environ, env, clear=False),
         ):
             result = stage174._run_probe(
@@ -747,6 +775,11 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         self.assertTrue(result["broker_query_bundle"]["complete"])
         self.assertEqual(0, result["order_api_called_count"])
         self.assertEqual(0, result["native_mutation_api_called_count"])
+        self.assertEqual(
+            "threading_rlock_v1", lifecycle["state_synchronization"]
+        )
+        self.assertGreater(state_lock.acquire_count, 0)
+        self.assertGreaterEqual(len(state_lock.thread_ids), 2)
 
 
 if __name__ == "__main__":
