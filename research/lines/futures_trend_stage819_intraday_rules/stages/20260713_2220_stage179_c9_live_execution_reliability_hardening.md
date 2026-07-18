@@ -199,7 +199,8 @@
 ### 联合回归与静态门
 
 - 第一次扩大回归：`597 passed, 1 failed, 238 subtests passed`。唯一失败为旧测试仍要求 Stage930 源码完全不出现 warm child 参数；不是运行时错误。按新 owner 契约修正后单项通过。
-- 最终扩大回归：`598 passed, 238 subtests passed`，耗时 `54.89s`。
+- 第二次扩大回归：`598 passed, 238 subtests passed`，耗时 `54.89s`。
+- manifest critical files 补齐后最终冻结回归：`599 passed, 238 subtests passed`，耗时 `51.57s`。
 - Task12 生命周期/manifest/Stage930：`56/56`。
 - Task13 fault matrix：`2/2`，其中含 22 个合同 subcase 与 100 轮 fork。
 - `py_compile`、新增/修改生产文件 `ruff check`、`git diff --check`、supervisor `bash -n`、8 份 plist `plutil -lint`：通过。
