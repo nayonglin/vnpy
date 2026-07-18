@@ -114,13 +114,21 @@
 - 生产只读 CTP：Stage174 combined gateway 连接尝试在 native teardown 以 `exit 139` 退出且未落完整 summary；随后 Stage655 TD-only 使用正式 env、`0600` 权限与正式 framework 优先运行 35 秒，`send/cancel=0/0`，但 `front_connected/auth/login/account/position` 全部未就绪。summary SHA-256 `6e7c62d82bd8c35c3dc6491dbabadb6231dd01bfa2fd5beaf5c17a58a0b72eb7`。结论为 production-readonly NO-GO，不得继续提交链。
 - 修复后不可变清单：由干净 detached worktree 从源码提交 `d113a4bd4065b895f7bed06098abe556fa4b021b` 生成 `release_manifests/stage179/stage372-candidate.json`，schema v2、61 个 critical files、profile `stage372-20w`、资格 `blocked`、仅允许 `offline/production-readonly`；manifest digest `c0dde1dead9d2e00140dd1be4dcde63f2d39c73e7e7a2466bde79f6c03f9363e`，文件 SHA-256 `1969762c185d214d3703876c51cf264a5fe86a44cf6f9f2021b50652d389f0eb`。loader 的 production-readonly 校验通过，SimNow/broker-test/production-live 均拒绝。
 
+### 2026-07-19 00:27-00:48 冻结复审与产物快照 P1 修复
+
+- 独立 Agent 对冻结 HEAD `e5750f6d9` 的 follow-up 结果为 `P0=0、P1=1、P2=3`。前述身份、cohort、语义资格和不可变清单四项 P1 均确认关闭；新发现的唯一 P1 是 Stage260 公共接口可同时接收已解析 DataFrame 与调用方提供的 hash，无法证明“被校验的字节”就是“生成执行候选的字节”。独立 Agent 已用自洽假 hash 加替换信号表复现可执行候选。
+- 修复方式：Stage372 的 official summary、signal plan、current positions、pending orders 与 audit 现在由 loader 在 audit-before/audit-after 同一代次窗口内读取为不可变字节快照；按快照原始字节重新计算四个 SHA-256、校验 profile/date/cohort/row identity 后才物化 DataFrame。Stage260、Stage902、Stage909 只消费这份密封快照，不再接受调用方拼接的 Stage372 DataFrame/hash 组合。
+- 快照额外绑定五个 canonical artifact 路径，不能从另一组文件加载后换绑到当前 profile；构造器不再作为公共 API 暴露。读取期间 audit 变化、路径换绑、外部 signal DataFrame 覆盖均新增失败关闭测试。
+- 修复后聚焦测试：`47 passed, 11 subtests passed`；扩大回归两组共 `661 passed, 245 subtests passed`，其中 Stage179/Stage372 组 `392 passed, 190 subtests passed`，历史 C9/账本/CTP gate 组 `269 passed, 55 subtests passed`。Python 静态编译与 `git diff --check` 通过。
+- 本修复不调整入场、止损、重进场、AI 池或仓位参数；没有运行新回测、没有连接 CTP、没有调用报撤单 API。
+
 ## 结论与硬门禁
 
-- 代码合入判断：首轮独立终审的四个 P1 已修复并通过扩大回归；仍需在新冻结 HEAD 生成干净树 no-submit manifest，并由独立 Agent follow-up 复审后才能给最终 GO/NO-GO。
+- 代码合入判断：首轮四个 P1 与 follow-up 新发现的快照 P1 已修复并通过扩大回归；仍需从新冻结 HEAD 刷新干净树 no-submit manifest，并由独立 Agent 再次复审后才能给最终 GO/NO-GO。
 - 部署判断：新增 plist 尚未安装/加载；合入不等于部署。
 - 激活判断：当前只允许离线和 `production-readonly`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：提交 P1 修复；生成新冻结 HEAD 的干净树 no-submit manifest；独立 Agent follow-up 复审。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：提交快照 P1 修复；生成新冻结 HEAD 的干净树 no-submit manifest；独立 Agent 再次复审。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 

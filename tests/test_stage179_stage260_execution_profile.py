@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
+import hashlib
+import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -15,6 +20,10 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 from qmt_roll_official_execution_profile import STAGE372_20W_PROFILE
+from qmt_roll_official_pending_artifact import (
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
+)
 from run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate import (
     run_daily_execution_gate,
 )
@@ -22,12 +31,19 @@ from run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate import (
 
 class Stage260ExecutionProfileTest(unittest.TestCase):
     _COHORT_ID = "c" * 64
-    _ARTIFACT_HASHES = {
-        "official_summary": "1" * 64,
-        "signal_plan": "2" * 64,
-        "current_positions": "3" * 64,
-        "pending_orders": "4" * 64,
-    }
+
+    def setUp(self) -> None:
+        temp_context = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_context.cleanup)
+        temp_dir = Path(temp_context.name)
+        self.profile = replace(
+            STAGE372_20W_PROFILE,
+            summary_path=temp_dir / "summary.json",
+            signal_plan_path=temp_dir / "signal.csv",
+            current_positions_path=temp_dir / "current.csv",
+            pending_orders_path=temp_dir / "pending.csv",
+            pending_orders_audit_path=temp_dir / "audit.json",
+        )
 
     def _official_summary(self) -> dict[str, object]:
         return {
@@ -47,8 +63,35 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             },
         }
 
-    def _pending_audit(self, *, count: int = 0) -> dict[str, object]:
-        return {
+    def _snapshot(
+        self,
+        *,
+        summary: dict[str, object] | None = None,
+        signal_plan: pd.DataFrame | None = None,
+        pending_orders: pd.DataFrame | None = None,
+        current_positions: pd.DataFrame | None = None,
+    ):
+        summary = summary or self._official_summary()
+        signal_plan = (
+            signal_plan
+            if signal_plan is not None
+            else pd.DataFrame()
+        )
+        pending_orders = (
+            pending_orders
+            if pending_orders is not None
+            else pd.DataFrame()
+        )
+        current_positions = (
+            current_positions
+            if current_positions is not None
+            else pd.DataFrame()
+        )
+        summary_bytes = json.dumps(summary).encode("utf-8")
+        signal_bytes = signal_plan.to_csv(index=False).encode("utf-8-sig")
+        current_bytes = current_positions.to_csv(index=False).encode("utf-8-sig")
+        pending_bytes = pending_orders.to_csv(index=False).encode("utf-8-sig")
+        audit = {
             "schema_version": 1,
             "status": "ready",
             "cohort_id": self._COHORT_ID,
@@ -57,37 +100,41 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             "official_live_version": STAGE372_20W_PROFILE.official_version,
             "capital": STAGE372_20W_PROFILE.capital,
             "capital_label": STAGE372_20W_PROFILE.capital_label,
-            "official_summary_sha256": self._ARTIFACT_HASHES["official_summary"],
-            "signal_plan_sha256": self._ARTIFACT_HASHES["signal_plan"],
-            "current_positions_sha256": self._ARTIFACT_HASHES["current_positions"],
-            "pending_orders_sha256": self._ARTIFACT_HASHES["pending_orders"],
-            "pending_order_count": count,
+            "official_summary_sha256": hashlib.sha256(summary_bytes).hexdigest(),
+            "signal_plan_sha256": hashlib.sha256(signal_bytes).hexdigest(),
+            "current_positions_sha256": hashlib.sha256(current_bytes).hexdigest(),
+            "pending_orders_sha256": hashlib.sha256(pending_bytes).hexdigest(),
+            "pending_order_count": len(pending_orders),
             "order_api_called_count": 0,
         }
+        self.profile.summary_path.write_bytes(summary_bytes)
+        self.profile.signal_plan_path.write_bytes(signal_bytes)
+        self.profile.current_positions_path.write_bytes(current_bytes)
+        self.profile.pending_orders_path.write_bytes(pending_bytes)
+        self.profile.pending_orders_audit_path.write_bytes(
+            json.dumps(audit).encode("utf-8")
+        )
+        return load_validated_artifact_snapshot(self.profile)
 
     def _run(self):
         now = datetime(2026, 7, 18, 21, 0, 10)
+        signal_plan = pd.DataFrame(
+            [
+                {
+                    "shadow_session_id": "stage372-20260718",
+                    "trade_id": "trade-1",
+                    "vt_symbol": "JM609.DCE",
+                    "direction": "short",
+                    "offset": "open",
+                    "volume": 1,
+                    "theoretical_price": 1000.0,
+                    "exit_reason": "stage372_daily_open",
+                }
+            ]
+        )
         return run_daily_execution_gate(
-            STAGE372_20W_PROFILE,
-            official_summary=self._official_summary(),
-            signal_plan=pd.DataFrame(
-                [
-                    {
-                        "shadow_session_id": "stage372-20260718",
-                        "trade_id": "trade-1",
-                        "vt_symbol": "JM609.DCE",
-                        "direction": "short",
-                        "offset": "open",
-                        "volume": 1,
-                        "theoretical_price": 1000.0,
-                        "exit_reason": "stage372_daily_open",
-                    }
-                ]
-            ),
-            pending_orders=pd.DataFrame(),
-            pending_artifact_audit=self._pending_audit(),
-            artifact_hashes=self._ARTIFACT_HASHES,
-            current_positions=pd.DataFrame(),
+            self.profile,
+            artifact_snapshot=self._snapshot(signal_plan=signal_plan),
             readonly_summary={
                 "status": "readonly_snapshots_received",
                 "generated_at": "2026-07-18 21:00:00",
@@ -136,19 +183,14 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             "execution_profile_version_mismatch",
         ):
             run_daily_execution_gate(
-                STAGE372_20W_PROFILE,
-                official_summary={
+                self.profile,
+                artifact_snapshot=self._snapshot(summary={
                     "analysis_end": "2026-07-18",
                     "execution_profile": STAGE372_20W_PROFILE.profile_key,
                     "official_live_version": "wrong-version",
                     "capital": 200_000.0,
                     "capital_label": "20w",
-                },
-                signal_plan=pd.DataFrame(),
-                pending_orders=pd.DataFrame(),
-                pending_artifact_audit=self._pending_audit(),
-                artifact_hashes=self._ARTIFACT_HASHES,
-                current_positions=pd.DataFrame(),
+                }),
                 readonly_summary={},
                 positions=pd.DataFrame(),
                 orders=pd.DataFrame(),
@@ -174,13 +216,8 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
                     "execution_profile_identity_missing",
                 ):
                     run_daily_execution_gate(
-                        STAGE372_20W_PROFILE,
-                        official_summary=summary,
-                        signal_plan=pd.DataFrame(),
-                        pending_orders=pd.DataFrame(),
-                        pending_artifact_audit=self._pending_audit(),
-                        artifact_hashes=self._ARTIFACT_HASHES,
-                        current_positions=pd.DataFrame(),
+                        self.profile,
+                        artifact_snapshot=self._snapshot(summary=summary),
                         readonly_summary={},
                         positions=pd.DataFrame(),
                         orders=pd.DataFrame(),
@@ -209,19 +246,67 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             ValueError,
             "pending_artifact_row_target_date_mismatch",
         ):
-            run_daily_execution_gate(
-                STAGE372_20W_PROFILE,
-                official_summary=self._official_summary(),
-                signal_plan=pd.DataFrame(),
+            self._snapshot(
                 pending_orders=stale_pending,
-                pending_artifact_audit=self._pending_audit(count=1),
-                artifact_hashes=self._ARTIFACT_HASHES,
-                current_positions=pd.DataFrame(),
-                readonly_summary={},
-                positions=pd.DataFrame(),
-                orders=pd.DataFrame(),
-                write_outputs=False,
             )
+
+    def test_external_signal_frame_cannot_override_validated_snapshot(self) -> None:
+        attacker_signal = pd.DataFrame(
+            [
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "direction": "short",
+                    "offset": "open",
+                    "volume": 1,
+                    "theoretical_price": 1000.0,
+                }
+            ]
+        )
+        result = run_daily_execution_gate(
+            self.profile,
+            artifact_snapshot=self._snapshot(),
+            signal_plan=attacker_signal,
+            readonly_summary={},
+            positions=pd.DataFrame(),
+            orders=pd.DataFrame(),
+            write_outputs=False,
+        )
+
+        self.assertEqual(result.summary["execution_candidate_count"], 0)
+        self.assertEqual(result.summary["executable_count"], 0)
+
+    def test_snapshot_cannot_be_rebound_to_different_artifact_paths(self) -> None:
+        snapshot = self._snapshot()
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "pending_artifact_snapshot_paths_mismatch",
+        ):
+            materialize_validated_artifact_snapshot(
+                STAGE372_20W_PROFILE,
+                snapshot,
+            )
+
+    def test_audit_generation_change_during_snapshot_read_fails_closed(self) -> None:
+        self._snapshot()
+        original_read_bytes = Path.read_bytes
+        audit_reads = 0
+
+        def changing_audit(path: Path) -> bytes:
+            nonlocal audit_reads
+            payload = original_read_bytes(path)
+            if path == self.profile.pending_orders_audit_path:
+                audit_reads += 1
+                if audit_reads == 2:
+                    return payload + b"\n"
+            return payload
+
+        with patch.object(Path, "read_bytes", new=changing_audit):
+            with self.assertRaisesRegex(
+                ValueError,
+                "pending_artifact_snapshot_generation_changed",
+            ):
+                load_validated_artifact_snapshot(self.profile)
 
 
 if __name__ == "__main__":

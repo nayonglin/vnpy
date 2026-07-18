@@ -23,8 +23,8 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SHADOW_REFRESH_ENV,
 )
 from qmt_roll_official_pending_artifact import (
-    artifact_hashes_for_profile,
-    validate_pending_artifact_cohort,
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
 )
 from run_qmt_roll_stage922_official_live_target_date_resolver import (
     _resolve_latest_completed,
@@ -339,23 +339,26 @@ def main() -> None:
                 break
 
     official_summary = _read_json(profile.summary_path)
-    shadow_target_ready = str(official_summary.get("analysis_end", "")) == target_date
     pending_target_error = ""
     if profile.intraday_stop_retry_enabled:
         pending_target_ready = True
     else:
         try:
-            validate_pending_artifact_cohort(
+            materialized = materialize_validated_artifact_snapshot(
                 profile,
-                target_date=target_date,
-                pending_orders=_read_csv_maybe(profile.pending_orders_path),
-                audit=_read_json(profile.pending_orders_audit_path),
-                artifact_hashes=artifact_hashes_for_profile(profile),
+                load_validated_artifact_snapshot(profile),
             )
-            pending_target_ready = True
+            official_summary = materialized.official_summary
+            pending_target_ready = (
+                str(materialized.audit.get("target_date", ""))
+                == target_date
+            )
+            if not pending_target_ready:
+                pending_target_error = "pending_artifact_target_date_mismatch"
         except (OSError, TypeError, ValueError) as exc:
             pending_target_ready = False
             pending_target_error = str(exc)
+    shadow_target_ready = str(official_summary.get("analysis_end", "")) == target_date
     if args.mode == "plan-only":
         shadow_refresh_status = "shadow_refresh_plan_only"
     elif not blocking.empty:

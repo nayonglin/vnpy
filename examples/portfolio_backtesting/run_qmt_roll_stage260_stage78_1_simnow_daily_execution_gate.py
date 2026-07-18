@@ -19,8 +19,9 @@ from qmt_roll_official_execution_profile import (
 )
 from qmt_roll_official_live_phase_d_config import STAGE901_PENDING_ORDERS_PATH
 from qmt_roll_official_pending_artifact import (
-    artifact_hashes_for_profile,
-    validate_pending_artifact_cohort,
+    ValidatedArtifactSnapshot,
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -476,12 +477,11 @@ def _build_report(
 def run_daily_execution_gate(
     profile: OfficialExecutionProfile,
     *,
-    official_summary: Mapping[str, Any],
-    signal_plan: pd.DataFrame,
-    pending_orders: pd.DataFrame,
-    pending_artifact_audit: Mapping[str, Any] | None = None,
-    artifact_hashes: Mapping[str, str] | None = None,
-    current_positions: pd.DataFrame,
+    official_summary: Mapping[str, Any] | None = None,
+    signal_plan: pd.DataFrame | None = None,
+    pending_orders: pd.DataFrame | None = None,
+    current_positions: pd.DataFrame | None = None,
+    artifact_snapshot: ValidatedArtifactSnapshot | None = None,
     readonly_summary: Mapping[str, Any],
     positions: pd.DataFrame,
     orders: pd.DataFrame,
@@ -489,20 +489,38 @@ def run_daily_execution_gate(
     now: datetime | None = None,
     write_outputs: bool = True,
 ) -> Stage260RunResult:
+    artifact_hashes: Mapping[str, str] = {}
+    pending_cohort_id = ""
+    if not profile.intraday_stop_retry_enabled:
+        materialized = materialize_validated_artifact_snapshot(
+            profile,
+            artifact_snapshot,
+        )
+        official_summary = materialized.official_summary
+        signal_plan = materialized.signal_plan
+        current_positions = materialized.current_positions
+        pending_orders = materialized.pending_orders
+        artifact_hashes = materialized.artifact_hashes
+        pending_cohort_id = _clean_scalar(
+            materialized.audit.get("cohort_id")
+        )
+    else:
+        official_summary = dict(official_summary or {})
+        signal_plan = (
+            signal_plan if signal_plan is not None else pd.DataFrame()
+        )
+        current_positions = (
+            current_positions
+            if current_positions is not None
+            else pd.DataFrame()
+        )
+        pending_orders = (
+            pending_orders if pending_orders is not None else pd.DataFrame()
+        )
     _validate_explicit_summary_identity(profile, official_summary)
     trade_date = _clean_scalar(official_summary.get("analysis_end"))
     if not trade_date:
         raise ValueError("official_summary_analysis_end_missing")
-    pending_cohort_id = ""
-    if not profile.intraday_stop_retry_enabled:
-        pending_audit = validate_pending_artifact_cohort(
-            profile,
-            target_date=trade_date,
-            pending_orders=pending_orders,
-            audit=pending_artifact_audit,
-            artifact_hashes=artifact_hashes,
-        )
-        pending_cohort_id = _clean_scalar(pending_audit.get("cohort_id"))
     observed_now = now or datetime.now()
     candidates = _execution_candidates(signal_plan, pending_orders)
     if not profile.intraday_stop_retry_enabled and not candidates.empty:
@@ -669,22 +687,31 @@ def main() -> None:
         readonly_outputs = {}
     result = run_daily_execution_gate(
         profile,
-        official_summary=_read_json(profile.summary_path),
-        signal_plan=_read_csv_maybe(profile.signal_plan_path),
+        official_summary=(
+            _read_json(profile.summary_path)
+            if profile.intraday_stop_retry_enabled
+            else None
+        ),
+        signal_plan=(
+            _read_csv_maybe(profile.signal_plan_path)
+            if profile.intraday_stop_retry_enabled
+            else None
+        ),
         pending_orders=(
             _read_csv_maybe(profile.pending_orders_path)
-        ),
-        pending_artifact_audit=(
-            _read_json(profile.pending_orders_audit_path)
-            if not profile.intraday_stop_retry_enabled
+            if profile.intraday_stop_retry_enabled
             else None
         ),
-        artifact_hashes=(
-            artifact_hashes_for_profile(profile)
-            if not profile.intraday_stop_retry_enabled
+        current_positions=(
+            _read_csv_maybe(profile.current_positions_path)
+            if profile.intraday_stop_retry_enabled
             else None
         ),
-        current_positions=_read_csv_maybe(profile.current_positions_path),
+        artifact_snapshot=(
+            None
+            if profile.intraday_stop_retry_enabled
+            else load_validated_artifact_snapshot(profile)
+        ),
         readonly_summary=readonly_summary,
         positions=_read_csv_maybe(readonly_outputs.get("positions")),
         orders=_read_csv_maybe(readonly_outputs.get("orders")),

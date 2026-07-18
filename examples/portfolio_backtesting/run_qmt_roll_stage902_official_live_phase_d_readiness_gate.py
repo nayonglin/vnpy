@@ -17,8 +17,8 @@ from qmt_roll_official_execution_profile import (
     resolve_execution_profile,
 )
 from qmt_roll_official_pending_artifact import (
-    artifact_hashes_for_profile,
-    validate_pending_artifact_cohort,
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
 )
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_FAMILY_VERSION,
@@ -274,6 +274,26 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     official_summary = _read_json(profile.summary_path)
+    signal_plan = _read_csv_maybe(profile.signal_plan_path)
+    current_positions = _read_csv_maybe(profile.current_positions_path)
+    pending_orders = _read_csv_maybe(profile.pending_orders_path)
+    pending_cohort_id = ""
+    pending_cohort_error = ""
+    if not profile.intraday_stop_retry_enabled:
+        try:
+            materialized = materialize_validated_artifact_snapshot(
+                profile,
+                load_validated_artifact_snapshot(profile),
+            )
+            official_summary = materialized.official_summary
+            signal_plan = materialized.signal_plan
+            current_positions = materialized.current_positions
+            pending_orders = materialized.pending_orders
+            pending_cohort_id = str(
+                materialized.audit.get("cohort_id", "")
+            )
+        except (OSError, TypeError, ValueError) as exc:
+            pending_cohort_error = str(exc)
     if profile.intraday_stop_retry_enabled:
         manifest = build_official_live_manifest()
     else:
@@ -290,10 +310,6 @@ def main() -> None:
     target_date = args.target_date or str(official_summary.get("analysis_end", ""))
     paths = _paths(target_date)
 
-    signal_plan = _read_csv_maybe(profile.signal_plan_path)
-    current_positions = _read_csv_maybe(profile.current_positions_path)
-    pending_orders = _read_csv_maybe(profile.pending_orders_path)
-    pending_audit = _read_json(profile.pending_orders_audit_path)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     stage260_summary = _read_json(_stage260_summary_path(target_date))
     stage251_summary = _read_json(_stage251_summary_path(target_date))
@@ -311,23 +327,6 @@ def main() -> None:
         )
     except (TypeError, ValueError) as exc:
         official_identity_error = str(exc)
-
-    pending_cohort_id = ""
-    pending_cohort_error = ""
-    if not profile.intraday_stop_retry_enabled:
-        try:
-            validated_pending_audit = validate_pending_artifact_cohort(
-                profile,
-                target_date=target_date,
-                pending_orders=pending_orders,
-                audit=pending_audit,
-                artifact_hashes=artifact_hashes_for_profile(profile),
-            )
-            pending_cohort_id = str(
-                validated_pending_audit.get("cohort_id", "")
-            )
-        except (OSError, TypeError, ValueError) as exc:
-            pending_cohort_error = str(exc)
 
     risk_snapshot = build_official_live_risk_snapshot(official_summary)
     execution_policy = manifest.get("execution_policy", {})
