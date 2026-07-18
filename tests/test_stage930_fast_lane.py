@@ -91,7 +91,115 @@ class Stage930FastLaneTest(unittest.TestCase):
             fast_tick_age_seconds=10,
             fast_step_timeout_seconds=20,
             vt_symbol=["JM609.DCE"],
+            detector_mode="legacy-subprocess",
+            detector_poll_seconds=0.05,
+            detector_batch_size=1024,
+            detector_max_restarts=3,
+            detector_restart_backoff_seconds=2.0,
+            target_date="2026-07-16",
         )
+
+    def test_parser_defaults_to_legacy_detector_mode(self) -> None:
+        args = stage930._build_parser().parse_args([])
+
+        self.assertEqual("legacy-subprocess", args.detector_mode)
+
+    def test_legacy_empty_target_date_stays_unresolved_for_latest_completed(self) -> None:
+        args = stage930._build_parser().parse_args([])
+
+        self.assertEqual("", stage930._startup_target_date(args))
+
+    def test_persistent_mode_requires_explicit_authoritative_target_date(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.target_date = ""
+
+        blockers = stage930._startup_configuration_blockers(args)
+
+        self.assertIn(
+            "persistent_detector_requires_explicit_target_date",
+            blockers,
+        )
+
+    def test_persistent_mode_with_live_submit_fails_before_child_start(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+
+        blockers = stage930._startup_configuration_blockers(args)
+        with patch.object(stage930, "_managed_popen") as managed_popen:
+            supervisor = stage930._initialize_detector_supervisor(
+                args,
+                {"command_log": Path("/tmp/stage930-test.log")},
+                target_date="2026-07-16",
+            )
+
+        self.assertIn(
+            "persistent_detector_requires_warm_executor_and_runtime_profile",
+            blockers,
+        )
+        self.assertEqual(0, supervisor["enabled"])
+        managed_popen.assert_not_called()
+
+    def test_persistent_mode_never_spawns_stage904_or_stage905_subprocess(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        persistent_status = {
+            "fast_lane_status": "persistent_detector_ready_no_submit",
+            "target_date": "2026-07-16",
+            "order_api_called_count": 0,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = {"command_log": Path(tmp) / "commands.log"}
+            with (
+                patch.object(
+                    stage930,
+                    "_persistent_detector_fast_lane_status",
+                    return_value=persistent_status,
+                ) as status_reader,
+                patch.object(stage930, "_run_command") as run_command,
+                patch.object(stage930, "_run_stage931") as stage931_run,
+            ):
+                result = stage930._run_fast_intraday_lane(
+                    args,
+                    "2026-07-16",
+                    paths,
+                )
+
+        self.assertEqual(persistent_status, result)
+        status_reader.assert_called_once()
+        run_command.assert_not_called()
+        stage931_run.assert_not_called()
+
+    def test_runtime_service_start_order_is_tick_detector_then_ai(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        events: list[str] = []
+        with (
+            patch.object(
+                stage930,
+                "_initialize_tick_stream_supervisor",
+                side_effect=lambda *_: events.append("tick") or {"enabled": 1},
+            ),
+            patch.object(
+                stage930,
+                "_initialize_detector_supervisor",
+                side_effect=lambda *_, **__: events.append("detector") or {"enabled": 1},
+            ),
+            patch.object(
+                stage930,
+                "_run_stage935_preflight",
+                side_effect=lambda *_: events.append("ai") or {"allowed_to_continue": 1},
+            ),
+        ):
+            stage930._initialize_runtime_services(
+                args,
+                {"command_log": Path("unused")},
+                target_date="2026-07-16",
+            )
+
+        self.assertEqual(["tick", "detector", "ai"], events)
 
     def test_slow_controller_uses_external_intraday_mode_and_runs_fast_lane(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -737,6 +845,495 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertIsNone(exhausted["process"])
         self.assertEqual(exhausted["restart_count"], 1)
         exhausted_start.assert_not_called()
+
+    def test_persistent_tick_restart_waits_for_clean_detector_drain(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.tick_stream_max_restarts = 1
+        args.tick_stream_restart_backoff_seconds = 0.0
+        dead = _TickStreamProcess(101, 7)
+        replacement = _TickStreamProcess(202, None)
+        args._tick_stream_supervisor = {
+            "enabled": 1,
+            "process": dead,
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tick_heartbeat = root / "tick-heartbeat.json"
+            detector_heartbeat = root / "detector-heartbeat.json"
+            terminal = {
+                "journal_authority_committed": True,
+                "journal_session_state": "clean_stopped",
+                "clean_shutdown": True,
+                "stopped": True,
+                "stream_ready": False,
+                "transport_ready": False,
+                "writer_alive": False,
+                "accepting": False,
+                "gap_latched": False,
+                "writer_fault": None,
+                "dropped_tick_count": 0,
+                "queue_depth": 0,
+                "feed_session_id": "feed-a",
+                "durable_ingress_sequence": 5,
+                "last_ingress_sequence": 5,
+                "durable_journal_byte_offset": 500,
+                "journal_schema": "stage179_framed_v1",
+                "journal_segment_path": str(root / "feed-a.ndjson"),
+                "heartbeat_revision_uuid": "terminal-a",
+            }
+            tick_heartbeat.write_text(json.dumps(terminal), encoding="utf-8")
+            detector_heartbeat.write_text(
+                json.dumps(
+                    {
+                        "cursor_after": {
+                            "feed_session_id": "feed-a",
+                            "ingress_sequence": 4,
+                            "journal_byte_offset": 400,
+                            "journal_schema": "stage179_framed_v1",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(stage930, "TICK_STREAM_HEARTBEAT_PATH", tick_heartbeat),
+                patch.object(stage930, "STAGE941_HEARTBEAT_PATH", detector_heartbeat),
+                patch.object(stage930, "_start_tick_stream", return_value=replacement) as start,
+            ):
+                waiting = stage930._supervise_tick_stream(
+                    args,
+                    {"command_log": root / "commands.log"},
+                    monotonic=lambda: 1.0,
+                )
+                assert waiting is not None
+                waiting_process = waiting["process"]
+                waiting_phase = waiting["restart_phase"]
+                detector_heartbeat.write_text(
+                    json.dumps(
+                        {
+                            "cursor_after": {
+                                "feed_session_id": "feed-a",
+                                "ingress_sequence": 5,
+                                "journal_byte_offset": 500,
+                                "journal_schema": "stage179_framed_v1",
+                            }
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                restarted = stage930._supervise_tick_stream(
+                    args,
+                    {"command_log": root / "commands.log"},
+                    monotonic=lambda: 2.0,
+                )
+
+        assert restarted is not None
+        self.assertIsNone(waiting_process)
+        self.assertEqual("awaiting_detector_drain", waiting_phase)
+        self.assertIs(restarted["process"], replacement)
+        self.assertEqual("running", restarted["restart_phase"])
+        start.assert_called_once()
+
+    def test_persistent_tick_restart_blocks_unclean_terminal_feed(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.tick_stream_max_restarts = 1
+        args.tick_stream_restart_backoff_seconds = 0.0
+        dead = _TickStreamProcess(101, 7)
+        args._tick_stream_supervisor = {
+            "enabled": 1,
+            "process": dead,
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+            "restart_phase": "running",
+            "restart_blocker": "",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat = root / "tick-heartbeat.json"
+            heartbeat.write_text(
+                json.dumps(
+                    {
+                        "journal_authority_committed": True,
+                        "journal_session_state": "unclean_stopped",
+                        "clean_shutdown": False,
+                        "stopped": True,
+                        "stream_ready": False,
+                        "transport_ready": False,
+                        "writer_alive": False,
+                        "accepting": False,
+                        "gap_latched": True,
+                        "writer_fault": {"kind": "forced_shutdown"},
+                        "dropped_tick_count": 0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(stage930, "TICK_STREAM_HEARTBEAT_PATH", heartbeat),
+                patch.object(stage930, "_start_tick_stream") as start,
+            ):
+                supervisor = stage930._supervise_tick_stream(
+                    args,
+                    {"command_log": root / "commands.log"},
+                    monotonic=lambda: 1.0,
+                )
+
+                again = stage930._supervise_tick_stream(
+                    args,
+                    {"command_log": root / "commands.log"},
+                    monotonic=lambda: 2.0,
+                )
+
+        assert supervisor is not None
+        assert again is not None
+        self.assertIsNone(supervisor["process"])
+        self.assertEqual(
+            "blocked_unclean_previous_feed",
+            supervisor["restart_phase"],
+        )
+        self.assertIn(
+            "terminal_tick_heartbeat_invalid",
+            supervisor["restart_blocker"],
+        )
+        self.assertEqual(0, supervisor["restart_count"])
+        self.assertIsNone(again["process"])
+        self.assertEqual(
+            "blocked_unclean_previous_feed",
+            again["restart_phase"],
+        )
+        self.assertEqual(0, again["restart_count"])
+        start.assert_not_called()
+
+    def test_persistent_tick_restart_rejects_terminal_watermark_behind_last_ingress(self) -> None:
+        terminal = {
+            "journal_authority_committed": True,
+            "journal_session_state": "clean_stopped",
+            "clean_shutdown": True,
+            "stopped": True,
+            "stream_ready": False,
+            "transport_ready": False,
+            "writer_alive": False,
+            "accepting": False,
+            "gap_latched": False,
+            "writer_fault": None,
+            "dropped_tick_count": 0,
+            "queue_depth": 0,
+            "feed_session_id": "feed-a",
+            "last_ingress_sequence": 6,
+            "durable_ingress_sequence": 5,
+            "durable_journal_byte_offset": 500,
+            "journal_schema": "stage179_framed_v1",
+            "journal_segment_path": "/tmp/feed-a.ndjson",
+            "heartbeat_revision_uuid": "terminal-a",
+        }
+
+        blocker = stage930._clean_terminal_tick_heartbeat_blocker(terminal)
+
+        self.assertEqual("terminal_tick_heartbeat_not_fully_durable", blocker)
+
+    def test_persistent_tick_restart_accepts_detector_drain_of_clean_empty_feed(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.tick_stream_max_restarts = 1
+        args.tick_stream_restart_backoff_seconds = 0.0
+        dead = _TickStreamProcess(101, 0)
+        replacement = _TickStreamProcess(202, None)
+        args._tick_stream_supervisor = {
+            "enabled": 1,
+            "process": dead,
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+            "restart_phase": "running",
+            "restart_blocker": "",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tick_heartbeat = root / "tick-heartbeat.json"
+            detector_heartbeat = root / "detector-heartbeat.json"
+            terminal = {
+                "journal_authority_committed": True,
+                "journal_session_state": "clean_stopped",
+                "clean_shutdown": True,
+                "stopped": True,
+                "stream_ready": False,
+                "transport_ready": False,
+                "writer_alive": False,
+                "accepting": False,
+                "gap_latched": False,
+                "writer_fault": None,
+                "dropped_tick_count": 0,
+                "queue_depth": 0,
+                "feed_session_id": "feed-b",
+                "last_ingress_sequence": 0,
+                "durable_ingress_sequence": 0,
+                "durable_journal_byte_offset": 0,
+                "journal_schema": "stage179_framed_v1",
+                "journal_segment_path": str(root / "feed-b.ndjson"),
+                "heartbeat_revision_uuid": "heartbeat-b-terminal",
+                "prior_authoritative_feed_session_id": "feed-a",
+                "prior_authoritative_journal_segment_path": str(root / "feed-a.ndjson"),
+                "prior_authoritative_heartbeat_revision_uuid": "heartbeat-a-terminal",
+                "prior_authoritative_journal_session_state": "clean_stopped",
+                "prior_authoritative_clean_shutdown": True,
+                "recovery_previous_durable_cursor": {
+                    "feed_session_id": "feed-a",
+                    "ingress_sequence": 5,
+                    "journal_byte_offset": 500,
+                    "journal_schema": "stage179_framed_v1",
+                },
+                "prior_uncommitted_gaps": [],
+                "prior_authoritative_empty_feed_sessions": [],
+            }
+            tick_heartbeat.write_text(json.dumps(terminal), encoding="utf-8")
+            detector_heartbeat.write_text(
+                json.dumps(
+                    {
+                        "ready": True,
+                        "stopped": False,
+                        "cycle_status": "detector_idle_caught_up",
+                        "tick_count": 0,
+                        "blockers": [],
+                        "cursor_after": {
+                            "feed_session_id": "feed-a",
+                            "ingress_sequence": 5,
+                            "journal_byte_offset": 500,
+                            "journal_schema": "stage179_framed_v1",
+                        },
+                        "durable_through": {
+                            "feed_session_id": "feed-b",
+                            "ingress_sequence": 0,
+                            "journal_byte_offset": 0,
+                            "journal_schema": "stage179_framed_v1",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(stage930, "TICK_STREAM_HEARTBEAT_PATH", tick_heartbeat),
+                patch.object(stage930, "STAGE941_HEARTBEAT_PATH", detector_heartbeat),
+                patch.object(stage930, "_start_tick_stream", return_value=replacement) as start,
+            ):
+                supervisor = stage930._supervise_tick_stream(
+                    args,
+                    {"command_log": root / "commands.log"},
+                    monotonic=lambda: 1.0,
+                )
+
+        assert supervisor is not None
+        self.assertIs(replacement, supervisor["process"])
+        self.assertEqual("running", supervisor["restart_phase"])
+        self.assertEqual(1, supervisor["restart_count"])
+        start.assert_called_once()
+
+    def test_dead_persistent_detector_restarts_with_new_instance_id_once(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args.detector_max_restarts = 1
+        args.detector_restart_backoff_seconds = 0.0
+        dead = _TickStreamProcess(301, 9)
+        replacement = _TickStreamProcess(302, None)
+        args._detector_supervisor = {
+            "enabled": 1,
+            "process": dead,
+            "instance_id": "old-instance",
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+            "blockers": [],
+            "target_date": "2026-07-16",
+        }
+        with patch.object(
+            stage930,
+            "_start_detector",
+            return_value=replacement,
+        ) as start:
+            supervisor = stage930._supervise_detector(
+                args,
+                {"command_log": Path("unused")},
+                monotonic=lambda: 1.0,
+            )
+
+        assert supervisor is not None
+        self.assertIs(supervisor["process"], replacement)
+        self.assertEqual(1, supervisor["restart_count"])
+        self.assertNotEqual("old-instance", supervisor["instance_id"])
+        start.assert_called_once_with(
+            args,
+            {"command_log": Path("unused")},
+            target_date="2026-07-16",
+            instance_id=supervisor["instance_id"],
+        )
+
+    def test_persistent_detector_rejects_fresh_old_instance_heartbeat(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        args._detector_supervisor = {
+            "enabled": 1,
+            "process": _TickStreamProcess(401, None),
+            "instance_id": "new-instance",
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+            "blockers": [],
+            "target_date": "2026-07-16",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            heartbeat = Path(tmp) / "detector-heartbeat.json"
+            heartbeat.write_text(
+                json.dumps(
+                    {
+                        "detector_instance_id": "old-instance",
+                        "parent_pid": stage930.os.getpid(),
+                        "ready": True,
+                        "stopped": False,
+                        "target_date": "2026-07-16",
+                        "send_order_api_called_count": 0,
+                        "cancel_order_api_called_count": 0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(stage930, "STAGE941_HEARTBEAT_PATH", heartbeat),
+                patch.object(
+                    stage930,
+                    "_managed_tick_stream_status",
+                    return_value={"refresh_status": "tick_stream_ready"},
+                ),
+            ):
+                result = stage930._persistent_detector_fast_lane_status(
+                    args,
+                    "2026-07-16",
+                    {"command_log": Path(tmp) / "commands.log"},
+                )
+
+        self.assertEqual(
+            "persistent_detector_unready_fail_closed",
+            result["fast_lane_status"],
+        )
+        self.assertIn(
+            "persistent_detector_heartbeat_instance_mismatch",
+            result["blockers"],
+        )
+
+    def test_persistent_detector_rejects_alive_process_with_stale_heartbeat(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        process = _TickStreamProcess(401, None)
+        args._detector_supervisor = {
+            "enabled": 1,
+            "process": process,
+            "instance_id": "instance-a",
+            "restart_count": 0,
+            "max_restarts": 1,
+            "next_restart_monotonic": 0.0,
+            "last_exit_code": None,
+            "last_start_error": "",
+            "blockers": [],
+            "target_date": "2026-07-16",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            heartbeat = Path(tmp) / "detector-heartbeat.json"
+            heartbeat_payload = {
+                "model_tag": "stage941_official_live_c9_detector_v1",
+                "detector_instance_id": "instance-a",
+                "owner_pid": 401,
+                "parent_pid": stage930.os.getpid(),
+                "generated_epoch_ns": 1,
+                "ready": True,
+                "stopped": False,
+                "target_date": "2026-07-16",
+                "consumer_id": "stage941",
+                "spool_path": str(stage930.STAGE941_SPOOL_PATH.resolve()),
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+            }
+            heartbeat.write_text(json.dumps(heartbeat_payload), encoding="utf-8")
+            with (
+                patch.object(stage930, "STAGE941_HEARTBEAT_PATH", heartbeat),
+                patch.object(
+                    stage930,
+                    "_managed_tick_stream_status",
+                    return_value={"refresh_status": "tick_stream_ready"},
+                ),
+            ):
+                result = stage930._persistent_detector_fast_lane_status(
+                    args,
+                    "2026-07-16",
+                    {"command_log": Path(tmp) / "commands.log"},
+                )
+                heartbeat_payload["generated_epoch_ns"] = (
+                    stage930.time.time_ns() + 10_000_000_000
+                )
+                heartbeat.write_text(
+                    json.dumps(heartbeat_payload),
+                    encoding="utf-8",
+                )
+                future = stage930._persistent_detector_fast_lane_status(
+                    args,
+                    "2026-07-16",
+                    {"command_log": Path(tmp) / "commands.log"},
+                )
+                heartbeat_payload["generated_epoch_ns"] = stage930.time.time_ns()
+                heartbeat.write_text(
+                    json.dumps(heartbeat_payload),
+                    encoding="utf-8",
+                )
+                ready = stage930._persistent_detector_fast_lane_status(
+                    args,
+                    "2026-07-16",
+                    {"command_log": Path(tmp) / "commands.log"},
+                )
+                heartbeat_payload["send_order_api_called_count"] = "0"
+                heartbeat.write_text(
+                    json.dumps(heartbeat_payload),
+                    encoding="utf-8",
+                )
+                malformed_count = stage930._persistent_detector_fast_lane_status(
+                    args,
+                    "2026-07-16",
+                    {"command_log": Path(tmp) / "commands.log"},
+                )
+
+        self.assertEqual(
+            "persistent_detector_unready_fail_closed",
+            result["fast_lane_status"],
+        )
+        self.assertIn(
+            "persistent_detector_heartbeat_stale",
+            result["blockers"],
+        )
+        self.assertIn(
+            "persistent_detector_heartbeat_from_future",
+            future["blockers"],
+        )
+        self.assertEqual(
+            "persistent_detector_ready_no_submit",
+            ready["fast_lane_status"],
+        )
+        self.assertEqual([], ready["blockers"])
+        self.assertIn(
+            "persistent_detector_order_api_count_invalid",
+            malformed_count["blockers"],
+        )
 
     def test_dead_tick_stream_cannot_reuse_a_fresh_old_heartbeat(self) -> None:
         dead = _TickStreamProcess(303, 9)

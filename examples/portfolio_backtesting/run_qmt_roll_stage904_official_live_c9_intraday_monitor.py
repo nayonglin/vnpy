@@ -419,6 +419,7 @@ def _durable_batch_tick_frame(
     durable_batch: DurableTickBatch,
     *,
     clock: Clock,
+    allow_partial: bool = False,
 ) -> tuple[pd.DataFrame, str]:
     """Build Stage904 tick input without touching compatibility CSV output."""
 
@@ -432,7 +433,7 @@ def _durable_batch_tick_frame(
             f"{durable_batch.gap.start_ingress_sequence}-"
             f"{durable_batch.gap.end_ingress_sequence}",
         )
-    if durable_batch.caught_up is not True:
+    if durable_batch.caught_up is not True and not allow_partial:
         return pd.DataFrame(), "durable_tick_batch_not_caught_up"
     cursor = durable_batch.next_cursor
     if durable_batch.records and cursor is None:
@@ -458,7 +459,15 @@ def _durable_batch_tick_frame(
     if cursor is None and durable_through.ingress_sequence != 0:
         return pd.DataFrame(), "durable_tick_batch_cursor_missing"
     if cursor is not None and cursor != durable_through:
-        return pd.DataFrame(), "durable_tick_batch_cursor_not_at_watermark"
+        if not allow_partial or durable_batch.caught_up is True:
+            return pd.DataFrame(), "durable_tick_batch_cursor_not_at_watermark"
+        if (
+            cursor.feed_session_id != durable_through.feed_session_id
+            or cursor.journal_schema != durable_through.journal_schema
+            or cursor.ingress_sequence >= durable_through.ingress_sequence
+            or cursor.journal_byte_offset >= durable_through.journal_byte_offset
+        ):
+            return pd.DataFrame(), "durable_tick_batch_partial_cursor_invalid"
     rows: list[dict[str, Any]] = []
     for raw in durable_batch.records:
         row = dict(raw)
@@ -4710,6 +4719,7 @@ def run_intraday_monitor(
     durable_batch: DurableTickBatch | None = None,
     clock: Clock = SYSTEM_CLOCK,
     write_compat_outputs: bool = True,
+    allow_partial_durable_batch: bool = False,
 ) -> Stage904RunResult:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
@@ -4765,6 +4775,7 @@ def run_intraday_monitor(
         ticks, tick_snapshot_commit_error = _durable_batch_tick_frame(
             durable_batch,
             clock=clock,
+            allow_partial=allow_partial_durable_batch,
         )
         tick_stream_heartbeat = _read_json(TICK_STREAM_HEARTBEAT_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)

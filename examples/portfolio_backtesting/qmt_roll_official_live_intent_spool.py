@@ -160,6 +160,20 @@ class LeaseRecoveryEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class DetectorFeedRolloverEvidence:
+    previous_cursor: DurableTickCursor
+    previous_journal_segment_path: str
+    previous_heartbeat_revision_uuid: str
+    previous_clean_shutdown: bool
+    recovery_previous_durable_cursor: DurableTickCursor
+    prior_uncommitted_gap_count: int
+    new_feed_session_id: str
+    new_journal_segment_path: str
+    new_heartbeat_revision_uuid: str
+    bridged_empty_feed_sessions: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class TraceObservation:
     epoch_ns: int
     monotonic_ns: int
@@ -903,6 +917,7 @@ def commit_detector_batch(
     now_epoch_ns: int,
     now_monotonic_ns: int,
     clock_domain_id: str,
+    feed_rollover_evidence: DetectorFeedRolloverEvidence | None = None,
 ) -> CommitDetectorBatchResult:
     normalized_consumer = _required_text(
         consumer_id,
@@ -920,6 +935,112 @@ def commit_detector_batch(
         now_monotonic_ns=now_monotonic_ns,
         clock_domain_id=clock_domain_id,
     )
+    rollover_json = ""
+    rollover_sha256 = ""
+    if feed_rollover_evidence is not None:
+        if not isinstance(feed_rollover_evidence, DetectorFeedRolloverEvidence):
+            raise SpoolValidationError("feed_rollover_evidence_type_invalid")
+        if normalized_expected is None:
+            raise DetectorCursorConflictError("feed_rollover_expected_cursor_missing")
+        previous_cursor = _validate_cursor(
+            feed_rollover_evidence.previous_cursor,
+            field_name="feed_rollover_previous_cursor",
+        )
+        recovered_cursor = _validate_cursor(
+            feed_rollover_evidence.recovery_previous_durable_cursor,
+            field_name="feed_rollover_recovery_previous_durable_cursor",
+        )
+        previous_path = _required_text(
+            feed_rollover_evidence.previous_journal_segment_path,
+            field_name="feed_rollover_previous_journal_segment_path",
+            max_bytes=4096,
+        )
+        previous_revision = _required_text(
+            feed_rollover_evidence.previous_heartbeat_revision_uuid,
+            field_name="feed_rollover_previous_heartbeat_revision_uuid",
+            max_bytes=256,
+        )
+        new_feed = _required_text(
+            feed_rollover_evidence.new_feed_session_id,
+            field_name="feed_rollover_new_feed_session_id",
+            max_bytes=256,
+        )
+        new_path = _required_text(
+            feed_rollover_evidence.new_journal_segment_path,
+            field_name="feed_rollover_new_journal_segment_path",
+            max_bytes=4096,
+        )
+        new_revision = _required_text(
+            feed_rollover_evidence.new_heartbeat_revision_uuid,
+            field_name="feed_rollover_new_heartbeat_revision_uuid",
+            max_bytes=256,
+        )
+        gap_count = _exact_int(
+            feed_rollover_evidence.prior_uncommitted_gap_count,
+            field_name="feed_rollover_prior_uncommitted_gap_count",
+        )
+        if feed_rollover_evidence.previous_clean_shutdown is not True:
+            raise DetectorCursorConflictError("feed_rollover_previous_not_clean")
+        if gap_count != 0:
+            raise DetectorCursorConflictError("feed_rollover_prior_gap_present")
+        if previous_cursor != normalized_expected:
+            raise DetectorCursorConflictError(
+                "feed_rollover_previous_cursor_expected_mismatch"
+            )
+        if recovered_cursor != previous_cursor:
+            raise DetectorCursorConflictError(
+                "feed_rollover_previous_cursor_not_caught_up"
+            )
+        if new_feed != normalized_next.feed_session_id:
+            raise DetectorCursorConflictError("feed_rollover_new_feed_mismatch")
+        if new_feed == previous_cursor.feed_session_id:
+            raise DetectorCursorConflictError("feed_rollover_feed_not_changed")
+        if new_path == previous_path:
+            raise DetectorCursorConflictError("feed_rollover_segment_not_changed")
+        bridged_empty_feeds = feed_rollover_evidence.bridged_empty_feed_sessions
+        if type(bridged_empty_feeds) is not tuple or len(bridged_empty_feeds) > 64:
+            raise SpoolValidationError("feed_rollover_empty_feed_lineage_invalid")
+        normalized_empty_feeds: list[str] = []
+        for feed in bridged_empty_feeds:
+            normalized_feed = _required_text(
+                feed,
+                field_name="feed_rollover_bridged_empty_feed_session_id",
+                max_bytes=256,
+            )
+            if (
+                normalized_feed in {previous_cursor.feed_session_id, new_feed}
+                or normalized_feed in normalized_empty_feeds
+            ):
+                raise DetectorCursorConflictError(
+                    "feed_rollover_empty_feed_lineage_conflict"
+                )
+            normalized_empty_feeds.append(normalized_feed)
+        rollover_json = _canonical_json_text(
+            {
+                "previous_cursor": {
+                    "feed_session_id": previous_cursor.feed_session_id,
+                    "ingress_sequence": previous_cursor.ingress_sequence,
+                    "journal_byte_offset": previous_cursor.journal_byte_offset,
+                    "journal_schema": previous_cursor.journal_schema,
+                },
+                "previous_journal_segment_path": previous_path,
+                "previous_heartbeat_revision_uuid": previous_revision,
+                "previous_clean_shutdown": True,
+                "recovery_previous_durable_cursor": {
+                    "feed_session_id": recovered_cursor.feed_session_id,
+                    "ingress_sequence": recovered_cursor.ingress_sequence,
+                    "journal_byte_offset": recovered_cursor.journal_byte_offset,
+                    "journal_schema": recovered_cursor.journal_schema,
+                },
+                "prior_uncommitted_gap_count": gap_count,
+                "new_feed_session_id": new_feed,
+                "new_journal_segment_path": new_path,
+                "new_heartbeat_revision_uuid": new_revision,
+                "bridged_empty_feed_sessions": normalized_empty_feeds,
+            },
+            field_name="feed_rollover_evidence",
+        )
+        rollover_sha256 = hashlib.sha256(rollover_json.encode("utf-8")).hexdigest()
     if isinstance(intents, (str, bytes, bytearray)) or not isinstance(intents, Sequence):
         raise SpoolValidationError("intents_must_be_sequence")
 
@@ -999,6 +1120,24 @@ def commit_detector_batch(
     idempotent_count = 0
     idempotent_replay = False
     with _write_transaction(connection):
+        if feed_rollover_evidence is not None:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS detector_feed_rollovers (
+                    consumer_id TEXT NOT NULL,
+                    previous_feed_session_id TEXT NOT NULL,
+                    previous_ingress_sequence INTEGER NOT NULL,
+                    previous_journal_byte_offset INTEGER NOT NULL,
+                    new_feed_session_id TEXT NOT NULL,
+                    new_ingress_sequence INTEGER NOT NULL,
+                    new_journal_byte_offset INTEGER NOT NULL,
+                    evidence_json TEXT NOT NULL,
+                    evidence_sha256 TEXT NOT NULL,
+                    created_epoch_ns INTEGER NOT NULL,
+                    PRIMARY KEY (consumer_id, new_feed_session_id)
+                ) WITHOUT ROWID
+                """
+            )
         current = _read_detector_cursor_locked(
             connection,
             consumer_id=normalized_consumer,
@@ -1022,6 +1161,19 @@ def commit_detector_batch(
                 raise DetectorCursorConflictError(
                     "detector_cursor_lost_ack_replay_missing_intent"
                 )
+            if feed_rollover_evidence is not None:
+                stored_rollover = connection.execute(
+                    "SELECT evidence_sha256 FROM detector_feed_rollovers "
+                    "WHERE consumer_id=? AND new_feed_session_id=?",
+                    (normalized_consumer, normalized_next.feed_session_id),
+                ).fetchone()
+                if (
+                    stored_rollover is None
+                    or stored_rollover["evidence_sha256"] != rollover_sha256
+                ):
+                    raise DetectorCursorConflictError(
+                        "detector_cursor_lost_ack_rollover_evidence_mismatch"
+                    )
             idempotent_count = len(prepared)
             idempotent_replay = True
         elif current != normalized_expected:
@@ -1032,8 +1184,13 @@ def commit_detector_batch(
             pass
         elif current is not None:
             if normalized_next.feed_session_id != current.feed_session_id:
-                raise DetectorCursorConflictError("detector_cursor_feed_session_changed")
-            if (
+                if feed_rollover_evidence is None:
+                    raise DetectorCursorConflictError(
+                        "detector_cursor_feed_session_changed"
+                    )
+            elif feed_rollover_evidence is not None:
+                raise DetectorCursorConflictError("feed_rollover_not_required")
+            elif (
                 normalized_next.ingress_sequence <= current.ingress_sequence
                 or normalized_next.journal_byte_offset
                 <= current.journal_byte_offset
@@ -1095,6 +1252,42 @@ def commit_detector_batch(
                     ),
                 )
                 inserted_count += 1
+
+            if feed_rollover_evidence is not None:
+                existing_rollover = connection.execute(
+                    "SELECT evidence_sha256 FROM detector_feed_rollovers "
+                    "WHERE consumer_id=? AND new_feed_session_id=?",
+                    (normalized_consumer, normalized_next.feed_session_id),
+                ).fetchone()
+                if existing_rollover is None:
+                    connection.execute(
+                        """
+                        INSERT INTO detector_feed_rollovers(
+                            consumer_id, previous_feed_session_id,
+                            previous_ingress_sequence,
+                            previous_journal_byte_offset,
+                            new_feed_session_id, new_ingress_sequence,
+                            new_journal_byte_offset, evidence_json,
+                            evidence_sha256, created_epoch_ns
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            normalized_consumer,
+                            normalized_expected.feed_session_id,
+                            normalized_expected.ingress_sequence,
+                            normalized_expected.journal_byte_offset,
+                            normalized_next.feed_session_id,
+                            normalized_next.ingress_sequence,
+                            normalized_next.journal_byte_offset,
+                            rollover_json,
+                            rollover_sha256,
+                            normalized_now,
+                        ),
+                    )
+                elif existing_rollover["evidence_sha256"] != rollover_sha256:
+                    raise DetectorCursorConflictError(
+                        "feed_rollover_evidence_conflict"
+                    )
 
             if cursor_metadata is None:
                 connection.execute(

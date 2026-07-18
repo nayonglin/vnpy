@@ -29,6 +29,82 @@ import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
 
 
 class ContinuousTickStreamTest(unittest.TestCase):
+    def test_prior_authority_lineage_preserves_clean_shutdown_evidence(self) -> None:
+        previous = {
+            "feed_session_id": "feed-a",
+            "journal_segment_path": "/tmp/feed-a.ndjson",
+            "heartbeat_revision_uuid": "heartbeat-a-terminal",
+            "journal_session_state": "clean_stopped",
+            "clean_shutdown": True,
+        }
+
+        lineage = stage608._prior_authority_lineage(previous)
+
+        self.assertEqual(
+            {
+                "prior_authoritative_feed_session_id": "feed-a",
+                "prior_authoritative_journal_segment_path": "/tmp/feed-a.ndjson",
+                "prior_authoritative_heartbeat_revision_uuid": "heartbeat-a-terminal",
+                "prior_authoritative_journal_session_state": "clean_stopped",
+                "prior_authoritative_clean_shutdown": True,
+            },
+            lineage,
+        )
+
+    def test_clean_empty_feed_bridge_collapses_to_last_nonempty_authority(self) -> None:
+        previous = {
+            "journal_authority_committed": True,
+            "journal_session_state": "clean_stopped",
+            "clean_shutdown": True,
+            "stopped": True,
+            "stream_ready": False,
+            "transport_ready": False,
+            "writer_alive": False,
+            "accepting": False,
+            "gap_latched": False,
+            "writer_fault": None,
+            "dropped_tick_count": 0,
+            "queue_depth": 0,
+            "feed_session_id": "feed-b",
+            "journal_segment_path": "/tmp/feed-b.ndjson",
+            "heartbeat_revision_uuid": "heartbeat-b-terminal",
+            "last_ingress_sequence": 0,
+            "durable_ingress_sequence": 0,
+            "durable_journal_byte_offset": 0,
+            "journal_schema": "stage179_framed_v1",
+            "prior_authoritative_feed_session_id": "feed-a",
+            "prior_authoritative_journal_segment_path": "/tmp/feed-a.ndjson",
+            "prior_authoritative_heartbeat_revision_uuid": "heartbeat-a-terminal",
+            "prior_authoritative_journal_session_state": "clean_stopped",
+            "prior_authoritative_clean_shutdown": True,
+            "recovery_previous_durable_cursor": {
+                "feed_session_id": "feed-a",
+                "ingress_sequence": 5,
+                "journal_byte_offset": 500,
+                "journal_schema": "stage179_framed_v1",
+            },
+            "prior_uncommitted_gaps": [],
+            "prior_authoritative_empty_feed_sessions": [],
+        }
+
+        bridge = stage608._clean_empty_feed_bridge(previous)
+
+        assert bridge is not None
+        self.assertEqual("feed-a", bridge["lineage"]["prior_authoritative_feed_session_id"])
+        self.assertEqual(
+            previous["recovery_previous_durable_cursor"],
+            bridge["recovery_previous_durable_cursor"],
+        )
+        self.assertEqual(
+            ["feed-b"],
+            [item["feed_session_id"] for item in bridge["empty_feed_sessions"]],
+        )
+
+        previous["prior_authoritative_empty_feed_sessions"] = [
+            {"feed_session_id": "tampered"}
+        ]
+        self.assertIsNone(stage608._clean_empty_feed_bridge(previous))
+
     @staticmethod
     def _ingress_tick(last_price: float = 1245.5) -> SimpleNamespace:
         return SimpleNamespace(

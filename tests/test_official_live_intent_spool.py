@@ -382,6 +382,122 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             spool.read_detector_cursor(self.connection, consumer_id="stage941"),
         )
 
+    def test_clean_feed_rollover_cas_succeeds_once(self) -> None:
+        old_cursor = self.cursor(1)
+        new_cursor = DurableTickCursor(
+            feed_session_id="feed-b",
+            ingress_sequence=1,
+            journal_byte_offset=120,
+        )
+        self.commit([], next_cursor=old_cursor)
+        evidence = spool.DetectorFeedRolloverEvidence(
+            previous_cursor=old_cursor,
+            previous_journal_segment_path="/tmp/feed-a.ndjson",
+            previous_heartbeat_revision_uuid="heartbeat-a-terminal",
+            previous_clean_shutdown=True,
+            recovery_previous_durable_cursor=old_cursor,
+            prior_uncommitted_gap_count=0,
+            new_feed_session_id="feed-b",
+            new_journal_segment_path="/tmp/feed-b.ndjson",
+            new_heartbeat_revision_uuid="heartbeat-b-running",
+        )
+
+        first = spool.commit_detector_batch(
+            self.connection,
+            consumer_id="stage941",
+            expected_cursor=old_cursor,
+            next_cursor=new_cursor,
+            intents=[],
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            feed_rollover_evidence=evidence,
+        )
+        replay = spool.commit_detector_batch(
+            self.connection,
+            consumer_id="stage941",
+            expected_cursor=old_cursor,
+            next_cursor=new_cursor,
+            intents=[],
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+            feed_rollover_evidence=evidence,
+        )
+
+        self.assertEqual(new_cursor, first.cursor)
+        self.assertTrue(replay.idempotent_replay)
+        self.assertEqual(
+            1,
+            self.connection.execute(
+                "SELECT COUNT(*) FROM detector_feed_rollovers"
+            ).fetchone()[0],
+        )
+
+    def test_feed_rollover_requires_caught_up_clean_gap_free_lineage(self) -> None:
+        old_cursor = self.cursor(1)
+        new_cursor = DurableTickCursor(
+            feed_session_id="feed-b",
+            ingress_sequence=1,
+            journal_byte_offset=120,
+        )
+        self.commit([], next_cursor=old_cursor)
+        invalid_evidence = (
+            spool.DetectorFeedRolloverEvidence(
+                previous_cursor=old_cursor,
+                previous_journal_segment_path="/tmp/feed-a.ndjson",
+                previous_heartbeat_revision_uuid="heartbeat-a-terminal",
+                previous_clean_shutdown=False,
+                recovery_previous_durable_cursor=old_cursor,
+                prior_uncommitted_gap_count=0,
+                new_feed_session_id="feed-b",
+                new_journal_segment_path="/tmp/feed-b.ndjson",
+                new_heartbeat_revision_uuid="heartbeat-b-running",
+            ),
+            spool.DetectorFeedRolloverEvidence(
+                previous_cursor=old_cursor,
+                previous_journal_segment_path="/tmp/feed-a.ndjson",
+                previous_heartbeat_revision_uuid="heartbeat-a-terminal",
+                previous_clean_shutdown=True,
+                recovery_previous_durable_cursor=self.cursor(2),
+                prior_uncommitted_gap_count=0,
+                new_feed_session_id="feed-b",
+                new_journal_segment_path="/tmp/feed-b.ndjson",
+                new_heartbeat_revision_uuid="heartbeat-b-running",
+            ),
+            spool.DetectorFeedRolloverEvidence(
+                previous_cursor=old_cursor,
+                previous_journal_segment_path="/tmp/feed-a.ndjson",
+                previous_heartbeat_revision_uuid="heartbeat-a-terminal",
+                previous_clean_shutdown=True,
+                recovery_previous_durable_cursor=old_cursor,
+                prior_uncommitted_gap_count=1,
+                new_feed_session_id="feed-b",
+                new_journal_segment_path="/tmp/feed-b.ndjson",
+                new_heartbeat_revision_uuid="heartbeat-b-running",
+            ),
+        )
+
+        for evidence in invalid_evidence:
+            with self.subTest(evidence=evidence):
+                with self.assertRaises(spool.DetectorCursorConflictError):
+                    spool.commit_detector_batch(
+                        self.connection,
+                        consumer_id="stage941",
+                        expected_cursor=old_cursor,
+                        next_cursor=new_cursor,
+                        intents=[],
+                        now_epoch_ns=200,
+                        now_monotonic_ns=200,
+                        clock_domain_id="boot-a",
+                        feed_rollover_evidence=evidence,
+                    )
+
+        self.assertEqual(
+            old_cursor,
+            spool.read_detector_cursor(self.connection, consumer_id="stage941"),
+        )
+
     def test_batch_cursor_must_cover_every_intent_durable_cursor(self) -> None:
         intent = self.intent("open-1")
         business = json.loads(intent["spool_payload_json"])

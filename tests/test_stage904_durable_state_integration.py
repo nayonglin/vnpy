@@ -339,6 +339,29 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         )
         self.assertEqual("durable_tick_batch_not_caught_up", partial_error)
 
+        partial_watermark = DurableTickCursor(
+            feed_session_id="feed-a",
+            ingress_sequence=13,
+            journal_byte_offset=9000,
+        )
+        partial_ticks, opt_in_partial_error = stage904._durable_batch_tick_frame(
+            DurableTickBatch(
+                records=durable_batch.records,
+                next_cursor=durable_batch.next_cursor,
+                durable_through=partial_watermark,
+                caught_up=False,
+                gap=None,
+            ),
+            clock=FakeClock(),
+            allow_partial=True,
+        )
+        self.assertEqual("", opt_in_partial_error)
+        self.assertEqual(2, len(partial_ticks))
+        self.assertEqual(
+            12,
+            partial_ticks.iloc[-1]["durable_cursor_ingress_sequence"],
+        )
+
         cursor_past_records = DurableTickCursor(
             feed_session_id="feed-a",
             ingress_sequence=13,

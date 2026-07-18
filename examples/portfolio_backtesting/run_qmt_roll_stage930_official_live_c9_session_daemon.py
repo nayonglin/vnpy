@@ -56,6 +56,7 @@ STAGE905_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage905_official_live_executor_dr
 STAGE927_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage927_official_live_real_submit_arming_gate.py"
 STAGE931_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage931_official_live_ctp_submit_adapter.py"
 STAGE935_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py"
+STAGE941_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage941_official_live_c9_detector.py"
 OWNED_CHILD_GUARD_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage930_owned_child_guard.py"
 STAGE905_MODEL_TAG = "stage905_official_live_executor_dry_run_v1"
 STAGE905_PREFIX = "qmt_roll_stage905_official_live_executor_dry_run"
@@ -74,9 +75,15 @@ EMAIL_CONTENT_VERSION = "stage930_plain_text_v2"
 TICK_STREAM_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_tick_stream_heartbeat_stage608_readonly_tick_snapshot_probe_v1.json"
 TICK_STREAM_JOURNAL_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_tick_stream_stage608_readonly_tick_snapshot_probe_v1.ndjson"
 TICK_STREAM_MANIFEST_PATH = OUTPUT_DIR / "qmt_roll_stage930_official_live_c9_tick_stream_manifest.json"
+STAGE941_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_c9_detector_heartbeat.json"
+STAGE941_SPOOL_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_intent_spool.sqlite3"
 FAST_LANE_RECENT_RUN_LIMIT = 20
 TICK_STREAM_MAX_RESTARTS = 3
 TICK_STREAM_RESTART_BACKOFF_SECONDS = 2.0
+DETECTOR_MAX_RESTARTS = 3
+DETECTOR_RESTART_BACKOFF_SECONDS = 2.0
+DETECTOR_HEARTBEAT_MIN_MAX_AGE_SECONDS = 1.0
+DETECTOR_HEARTBEAT_POLL_MULTIPLIER = 10.0
 TICK_CLOCK_SKEW_SECONDS = 2.0
 CHILD_TERM_GRACE_SECONDS = 5.0
 CHILD_KILL_WAIT_SECONDS = 5.0
@@ -779,6 +786,8 @@ def _initialize_tick_stream_supervisor(args: argparse.Namespace, paths: dict[str
         "next_restart_monotonic": 0.0,
         "last_exit_code": None,
         "last_start_error": "",
+        "restart_phase": "running",
+        "restart_blocker": "",
     }
     setattr(args, "_tick_stream_supervisor", supervisor)
     if args.tick_refresh_mode != "stream":
@@ -817,7 +826,32 @@ def _supervise_tick_stream(
         supervisor["last_exit_code"] = exit_code
         supervisor["process"] = None
         _unregister_active_child(process)
-        _revoke_tick_stream_heartbeat(f"tick_stream_child_exited:{exit_code}")
+        if getattr(args, "detector_mode", "legacy-subprocess") == "persistent":
+            supervisor["restart_phase"] = "awaiting_detector_drain"
+        else:
+            _revoke_tick_stream_heartbeat(f"tick_stream_child_exited:{exit_code}")
+    if (
+        getattr(args, "detector_mode", "legacy-subprocess") == "persistent"
+        and supervisor.get("restart_phase") == "awaiting_detector_drain"
+    ):
+        terminal_heartbeat = _read_json(TICK_STREAM_HEARTBEAT_PATH)
+        terminal_blocker = _clean_terminal_tick_heartbeat_blocker(
+            terminal_heartbeat
+        )
+        if terminal_blocker:
+            supervisor["restart_phase"] = "blocked_unclean_previous_feed"
+            supervisor["restart_blocker"] = terminal_blocker
+            return supervisor
+        if not _persistent_detector_caught_up_for_heartbeat(terminal_heartbeat):
+            supervisor["restart_blocker"] = "detector_cursor_not_at_terminal_watermark"
+            return supervisor
+        supervisor["restart_phase"] = "ready_to_restart"
+        supervisor["restart_blocker"] = ""
+    if (
+        getattr(args, "detector_mode", "legacy-subprocess") == "persistent"
+        and supervisor.get("restart_phase") == "blocked_unclean_previous_feed"
+    ):
+        return supervisor
     if not supervisor.get("enabled"):
         return supervisor
     if _SHUTDOWN_REQUESTED:
@@ -835,9 +869,194 @@ def _supervise_tick_stream(
     try:
         supervisor["process"] = _start_tick_stream(args, paths)
         supervisor["last_start_error"] = ""
+        supervisor["restart_phase"] = "running"
     except Exception as exc:
         supervisor["last_start_error"] = repr(exc)
     return supervisor
+
+
+def _clean_terminal_tick_heartbeat_blocker(
+    heartbeat: dict[str, Any],
+) -> str:
+    if not heartbeat:
+        return "terminal_tick_heartbeat_missing"
+    expected = {
+        "journal_authority_committed": True,
+        "journal_session_state": "clean_stopped",
+        "clean_shutdown": True,
+        "stopped": True,
+        "stream_ready": False,
+        "transport_ready": False,
+        "writer_alive": False,
+        "accepting": False,
+        "gap_latched": False,
+    }
+    for field, expected_value in expected.items():
+        if heartbeat.get(field) != expected_value:
+            return f"terminal_tick_heartbeat_invalid:{field}"
+    if heartbeat.get("writer_fault") not in (None, "", {}):
+        return "terminal_tick_heartbeat_writer_fault"
+    if heartbeat.get("dropped_tick_count") != 0:
+        return "terminal_tick_heartbeat_dropped_ticks"
+    if heartbeat.get("queue_depth") != 0:
+        return "terminal_tick_heartbeat_queue_not_empty"
+    feed = _clean(heartbeat.get("feed_session_id"))
+    last_sequence = heartbeat.get("last_ingress_sequence")
+    sequence = heartbeat.get("durable_ingress_sequence")
+    offset = heartbeat.get("durable_journal_byte_offset")
+    if (
+        not feed
+        or type(last_sequence) is not int
+        or last_sequence < 0
+        or type(sequence) is not int
+        or sequence < 0
+        or type(offset) is not int
+        or offset < 0
+        or ((sequence == 0) != (offset == 0))
+    ):
+        return "terminal_tick_heartbeat_cursor_invalid"
+    if last_sequence != sequence:
+        return "terminal_tick_heartbeat_not_fully_durable"
+    return ""
+
+
+def _persistent_detector_caught_up_for_heartbeat(
+    terminal_heartbeat: dict[str, Any],
+) -> bool:
+    detector_heartbeat = _read_json(STAGE941_HEARTBEAT_PATH)
+    cursor = detector_heartbeat.get("cursor_after")
+    if not isinstance(cursor, dict):
+        return False
+    direct_match = bool(
+        _clean(cursor.get("feed_session_id"))
+        == _clean(terminal_heartbeat.get("feed_session_id"))
+        and cursor.get("ingress_sequence")
+        == terminal_heartbeat.get("durable_ingress_sequence")
+        and cursor.get("journal_byte_offset")
+        == terminal_heartbeat.get("durable_journal_byte_offset")
+        and _clean(cursor.get("journal_schema"))
+        == _clean(terminal_heartbeat.get("journal_schema"))
+    )
+    if direct_match:
+        return True
+    recovery_cursor = _clean_empty_terminal_recovery_cursor(terminal_heartbeat)
+    durable_through = detector_heartbeat.get("durable_through")
+    if recovery_cursor is None or not isinstance(durable_through, dict):
+        return False
+    return bool(
+        detector_heartbeat.get("ready") is True
+        and detector_heartbeat.get("stopped") is False
+        and detector_heartbeat.get("cycle_status") == "detector_idle_caught_up"
+        and detector_heartbeat.get("tick_count") == 0
+        and detector_heartbeat.get("blockers") == []
+        and _cursor_payload_matches(cursor, recovery_cursor)
+        and _cursor_payload_matches(
+            durable_through,
+            {
+                "feed_session_id": _clean(
+                    terminal_heartbeat.get("feed_session_id")
+                ),
+                "ingress_sequence": 0,
+                "journal_byte_offset": 0,
+                "journal_schema": _clean(
+                    terminal_heartbeat.get("journal_schema")
+                ),
+            },
+        )
+    )
+
+
+def _cursor_payload_matches(
+    actual: dict[str, Any],
+    expected: dict[str, Any],
+) -> bool:
+    return bool(
+        _clean(actual.get("feed_session_id"))
+        == _clean(expected.get("feed_session_id"))
+        and actual.get("ingress_sequence") == expected.get("ingress_sequence")
+        and actual.get("journal_byte_offset")
+        == expected.get("journal_byte_offset")
+        and _clean(actual.get("journal_schema"))
+        == _clean(expected.get("journal_schema"))
+    )
+
+
+def _clean_empty_terminal_recovery_cursor(
+    terminal_heartbeat: dict[str, Any],
+) -> dict[str, Any] | None:
+    if (
+        terminal_heartbeat.get("last_ingress_sequence") != 0
+        or terminal_heartbeat.get("durable_ingress_sequence") != 0
+        or terminal_heartbeat.get("durable_journal_byte_offset") != 0
+        or terminal_heartbeat.get("prior_uncommitted_gaps") != []
+    ):
+        return None
+    feed = _clean(terminal_heartbeat.get("feed_session_id"))
+    prior_feed = _clean(
+        terminal_heartbeat.get("prior_authoritative_feed_session_id")
+    )
+    recovery = terminal_heartbeat.get("recovery_previous_durable_cursor")
+    if (
+        not feed
+        or not prior_feed
+        or feed == prior_feed
+        or not _clean(
+            terminal_heartbeat.get("prior_authoritative_journal_segment_path")
+        )
+        or not _clean(
+            terminal_heartbeat.get("prior_authoritative_heartbeat_revision_uuid")
+        )
+        or terminal_heartbeat.get("prior_authoritative_journal_session_state")
+        != "clean_stopped"
+        or terminal_heartbeat.get("prior_authoritative_clean_shutdown") is not True
+        or not isinstance(recovery, dict)
+        or _clean(recovery.get("feed_session_id")) != prior_feed
+        or type(recovery.get("ingress_sequence")) is not int
+        or recovery.get("ingress_sequence") <= 0
+        or type(recovery.get("journal_byte_offset")) is not int
+        or recovery.get("journal_byte_offset") <= 0
+        or _clean(recovery.get("journal_schema")) != "stage179_framed_v1"
+    ):
+        return None
+    existing = terminal_heartbeat.get(
+        "prior_authoritative_empty_feed_sessions",
+        [],
+    )
+    required_fields = {
+        "feed_session_id",
+        "journal_segment_path",
+        "heartbeat_revision_uuid",
+        "journal_session_state",
+        "clean_shutdown",
+        "durable_ingress_sequence",
+        "durable_journal_byte_offset",
+    }
+    if not isinstance(existing, list) or len(existing) > 63:
+        return None
+    seen: set[str] = set()
+    for item in existing:
+        if not isinstance(item, dict) or set(item) != required_fields:
+            return None
+        empty_feed = _clean(item.get("feed_session_id"))
+        if (
+            not empty_feed
+            or empty_feed in {feed, prior_feed}
+            or empty_feed in seen
+            or not _clean(item.get("journal_segment_path"))
+            or not _clean(item.get("heartbeat_revision_uuid"))
+            or item.get("journal_session_state") != "clean_stopped"
+            or item.get("clean_shutdown") is not True
+            or item.get("durable_ingress_sequence") != 0
+            or item.get("durable_journal_byte_offset") != 0
+        ):
+            return None
+        seen.add(empty_feed)
+    return {
+        "feed_session_id": prior_feed,
+        "ingress_sequence": recovery["ingress_sequence"],
+        "journal_byte_offset": recovery["journal_byte_offset"],
+        "journal_schema": "stage179_framed_v1",
+    }
 
 
 def _tick_stream_supervisor_public(supervisor: dict[str, Any] | None) -> dict[str, Any]:
@@ -867,6 +1086,332 @@ def _tick_stream_supervisor_public(supervisor: dict[str, Any] | None) -> dict[st
         "max_restarts": _to_int(supervisor.get("max_restarts"), TICK_STREAM_MAX_RESTARTS),
         "last_exit_code": supervisor.get("last_exit_code"),
         "last_start_error": _clean(supervisor.get("last_start_error")),
+        "restart_phase": _clean(supervisor.get("restart_phase")),
+        "restart_blocker": _clean(supervisor.get("restart_blocker")),
+    }
+
+
+def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
+    if getattr(args, "detector_mode", "legacy-subprocess") != "persistent":
+        return []
+    blockers: list[str] = []
+    if args.mode != "dry-run" or args.submit_mode != "disabled":
+        blockers.append(
+            "persistent_detector_requires_warm_executor_and_runtime_profile"
+        )
+    if args.tick_refresh_mode != "stream":
+        blockers.append("persistent_detector_requires_stream_tick_owner")
+    if not _startup_target_date(args):
+        blockers.append("persistent_detector_requires_explicit_target_date")
+    return blockers
+
+
+def _startup_target_date(args: argparse.Namespace) -> str:
+    """Preserve legacy latest-completed resolution; persistent must be pinned."""
+
+    return _clean(getattr(args, "target_date", ""))
+
+
+def _revoke_detector_heartbeat(*, instance_id: str, reason: str) -> None:
+    previous = _read_json(STAGE941_HEARTBEAT_PATH)
+    _atomic_write_json(
+        STAGE941_HEARTBEAT_PATH,
+        {
+            **previous,
+            "model_tag": "stage941_official_live_c9_detector_v1",
+            "detector_instance_id": instance_id,
+            "parent_pid": os.getpid(),
+            "generated_epoch_ns": time.time_ns(),
+            "status": "detector_supervisor_revoked",
+            "ready": False,
+            "stopped": True,
+            "supervisor_revocation_reason": reason,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+        },
+    )
+
+
+def _start_detector(
+    args: argparse.Namespace,
+    paths: dict[str, Path],
+    *,
+    target_date: str,
+    instance_id: str,
+) -> subprocess.Popen[str]:
+    _revoke_detector_heartbeat(
+        instance_id=instance_id,
+        reason="detector_child_starting",
+    )
+    cmd = [
+        str(PYTHON_PATH),
+        str(STAGE941_SCRIPT),
+        "--target-date",
+        target_date,
+        "--tick-stream-heartbeat-path",
+        str(TICK_STREAM_HEARTBEAT_PATH),
+        "--spool-path",
+        str(STAGE941_SPOOL_PATH),
+        "--detector-heartbeat-path",
+        str(STAGE941_HEARTBEAT_PATH),
+        "--poll-seconds",
+        str(args.detector_poll_seconds),
+        "--max-batch-size",
+        str(args.detector_batch_size),
+        "--max-tick-age-seconds",
+        str(args.fast_tick_age_seconds),
+        "--instance-id",
+        instance_id,
+        "--parent-pid",
+        str(os.getpid()),
+        "--publish-compat-outputs",
+    ]
+    log_handle = paths["command_log"].open("a", encoding="utf-8")
+    log_handle.write(
+        f"\n===== stage941_detector started_at={datetime.now():%Y-%m-%d %H:%M:%S} =====\n"
+    )
+    log_handle.flush()
+    try:
+        return _managed_popen(
+            cmd,
+            cwd=REPO_ROOT,
+            text=True,
+            stdout=log_handle,
+            stderr=subprocess.STDOUT,
+        )
+    finally:
+        log_handle.close()
+
+
+def _initialize_detector_supervisor(
+    args: argparse.Namespace,
+    paths: dict[str, Path],
+    *,
+    target_date: str,
+) -> dict[str, Any]:
+    blockers = _startup_configuration_blockers(args)
+    enabled = int(
+        getattr(args, "detector_mode", "legacy-subprocess") == "persistent"
+        and not blockers
+    )
+    supervisor: dict[str, Any] = {
+        "enabled": enabled,
+        "process": None,
+        "instance_id": "",
+        "restart_count": 0,
+        "max_restarts": max(
+            0,
+            _to_int(
+                getattr(args, "detector_max_restarts", DETECTOR_MAX_RESTARTS),
+                DETECTOR_MAX_RESTARTS,
+            ),
+        ),
+        "next_restart_monotonic": 0.0,
+        "last_exit_code": None,
+        "last_start_error": "",
+        "blockers": list(blockers),
+        "target_date": target_date,
+    }
+    setattr(args, "_detector_supervisor", supervisor)
+    if not enabled:
+        return supervisor
+    instance_id = str(uuid.uuid4())
+    supervisor["instance_id"] = instance_id
+    try:
+        supervisor["process"] = _start_detector(
+            args,
+            paths,
+            target_date=target_date,
+            instance_id=instance_id,
+        )
+    except Exception as exc:
+        supervisor["last_start_error"] = repr(exc)
+    return supervisor
+
+
+def _stop_detector_supervisor(supervisor: dict[str, Any] | None) -> None:
+    if isinstance(supervisor, dict):
+        _terminate_managed_child(supervisor.get("process"), term_timeout_seconds=10.0)
+
+
+def _supervise_detector(
+    args: argparse.Namespace,
+    paths: dict[str, Path],
+    *,
+    monotonic: Any = time.monotonic,
+) -> dict[str, Any] | None:
+    supervisor = getattr(args, "_detector_supervisor", None)
+    if not isinstance(supervisor, dict):
+        return None
+    process = supervisor.get("process")
+    exit_code: int | None = None
+    if process is not None:
+        try:
+            exit_code = process.poll()
+        except Exception as exc:
+            exit_code = -1
+            supervisor["last_start_error"] = f"poll_error:{exc!r}"
+    if process is not None and exit_code is None:
+        return supervisor
+    if process is not None:
+        supervisor["last_exit_code"] = exit_code
+        supervisor["process"] = None
+        _unregister_active_child(process)
+    if not supervisor.get("enabled") or _SHUTDOWN_REQUESTED:
+        return supervisor
+    restart_count = _to_int(supervisor.get("restart_count"), 0)
+    max_restarts = _to_int(supervisor.get("max_restarts"), DETECTOR_MAX_RESTARTS)
+    if restart_count >= max_restarts:
+        return supervisor
+    now = float(monotonic())
+    if now < float(supervisor.get("next_restart_monotonic", 0.0) or 0.0):
+        return supervisor
+    supervisor["restart_count"] = restart_count + 1
+    backoff = max(
+        0.0,
+        float(
+            getattr(
+                args,
+                "detector_restart_backoff_seconds",
+                DETECTOR_RESTART_BACKOFF_SECONDS,
+            )
+        ),
+    )
+    supervisor["next_restart_monotonic"] = now + backoff
+    instance_id = str(uuid.uuid4())
+    supervisor["instance_id"] = instance_id
+    try:
+        supervisor["process"] = _start_detector(
+            args,
+            paths,
+            target_date=_clean(supervisor.get("target_date")),
+            instance_id=instance_id,
+        )
+        supervisor["last_start_error"] = ""
+    except Exception as exc:
+        supervisor["last_start_error"] = repr(exc)
+    return supervisor
+
+
+def _detector_supervisor_public(supervisor: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(supervisor, dict):
+        return {"managed": 0}
+    process = supervisor.get("process")
+    alive = False
+    exit_code: int | None = None
+    if process is not None:
+        try:
+            exit_code = process.poll()
+            alive = exit_code is None
+        except Exception:
+            exit_code = -1
+    return {
+        "managed": 1,
+        "enabled": _to_int(supervisor.get("enabled"), 0),
+        "process_alive": int(alive),
+        "process_pid": getattr(process, "pid", None) if process is not None else None,
+        "process_exit_code": exit_code,
+        "instance_id": _clean(supervisor.get("instance_id")),
+        "restart_count": _to_int(supervisor.get("restart_count"), 0),
+        "max_restarts": _to_int(supervisor.get("max_restarts"), 0),
+        "last_exit_code": supervisor.get("last_exit_code"),
+        "last_start_error": _clean(supervisor.get("last_start_error")),
+        "blockers": list(supervisor.get("blockers") or []),
+    }
+
+
+def _persistent_detector_fast_lane_status(
+    args: argparse.Namespace,
+    target_date: str,
+    paths: dict[str, Path],
+) -> dict[str, Any]:
+    heartbeat = _read_json(STAGE941_HEARTBEAT_PATH)
+    supervisor = _supervise_detector(args, paths)
+    public = _detector_supervisor_public(supervisor)
+    blockers: list[str] = []
+    expected_instance = _clean(
+        supervisor.get("instance_id") if isinstance(supervisor, dict) else ""
+    )
+    if public.get("process_alive") != 1:
+        blockers.append("persistent_detector_process_not_alive")
+    if _clean(heartbeat.get("model_tag")) != "stage941_official_live_c9_detector_v1":
+        blockers.append("persistent_detector_heartbeat_model_mismatch")
+    if _clean(heartbeat.get("detector_instance_id")) != expected_instance:
+        blockers.append("persistent_detector_heartbeat_instance_mismatch")
+    if heartbeat.get("owner_pid") != public.get("process_pid"):
+        blockers.append("persistent_detector_heartbeat_owner_mismatch")
+    if heartbeat.get("parent_pid") != os.getpid():
+        blockers.append("persistent_detector_heartbeat_parent_mismatch")
+    if heartbeat.get("ready") is not True or heartbeat.get("stopped") is not False:
+        blockers.append("persistent_detector_heartbeat_unready")
+    if _clean(heartbeat.get("target_date")) != target_date:
+        blockers.append("persistent_detector_target_date_mismatch")
+    if _clean(heartbeat.get("consumer_id")) != "stage941":
+        blockers.append("persistent_detector_heartbeat_consumer_mismatch")
+    if _clean(heartbeat.get("spool_path")) != str(STAGE941_SPOOL_PATH.resolve()):
+        blockers.append("persistent_detector_heartbeat_spool_mismatch")
+    generated_epoch_ns = heartbeat.get("generated_epoch_ns")
+    if type(generated_epoch_ns) is not int or generated_epoch_ns <= 0:
+        blockers.append("persistent_detector_heartbeat_time_invalid")
+    else:
+        heartbeat_age_seconds = (time.time_ns() - generated_epoch_ns) / 1_000_000_000
+        max_heartbeat_age_seconds = max(
+            DETECTOR_HEARTBEAT_MIN_MAX_AGE_SECONDS,
+            float(getattr(args, "detector_poll_seconds", 0.05))
+            * DETECTOR_HEARTBEAT_POLL_MULTIPLIER,
+        )
+        if heartbeat_age_seconds < -TICK_CLOCK_SKEW_SECONDS:
+            blockers.append("persistent_detector_heartbeat_from_future")
+        elif heartbeat_age_seconds > max_heartbeat_age_seconds:
+            blockers.append("persistent_detector_heartbeat_stale")
+    send_order_api_count = heartbeat.get("send_order_api_called_count")
+    cancel_order_api_count = heartbeat.get("cancel_order_api_called_count")
+    order_api_counts_valid = bool(
+        type(send_order_api_count) is int
+        and send_order_api_count >= 0
+        and type(cancel_order_api_count) is int
+        and cancel_order_api_count >= 0
+    )
+    order_api_count = (
+        send_order_api_count + cancel_order_api_count
+        if order_api_counts_valid
+        else 0
+    )
+    if not order_api_counts_valid:
+        blockers.append("persistent_detector_order_api_count_invalid")
+    elif order_api_count:
+        blockers.append("persistent_detector_order_api_nonzero")
+    return {
+        "fast_lane_status": (
+            "persistent_detector_ready_no_submit"
+            if not blockers
+            else "persistent_detector_unready_fail_closed"
+        ),
+        "target_date": target_date,
+        "tick_stream": _managed_tick_stream_status(
+            args,
+            paths,
+            _watched_symbols_for_args(args),
+        ),
+        "detector_supervisor": public,
+        "detector_heartbeat": heartbeat,
+        "stage904": {"summary": {"source": "persistent_detector_heartbeat"}},
+        "stage905": {
+            "summary": {
+                "source": "persistent_detector_spool_commit",
+                "ready_count": _to_int(heartbeat.get("ready_count"), 0),
+                "blocked_count": _to_int(heartbeat.get("blocked_count"), 0),
+                "expired_count": _to_int(heartbeat.get("expired_count"), 0),
+            }
+        },
+        "stage931": {
+            "submit_status": "persistent_detector_submit_disabled_task8",
+            "summary": {"order_api_called_count": 0},
+        },
+        "reduce_close_ready_count": 0,
+        "blockers": blockers,
+        "order_api_called_count": order_api_count,
+        "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
 
 
@@ -1059,6 +1604,12 @@ def _run_fast_intraday_lane(
     submit_reduce_close: bool = True,
 ) -> dict[str, Any]:
     """Run the risk reducer while the full controller refreshes slow gates."""
+    if getattr(args, "detector_mode", "legacy-subprocess") == "persistent":
+        return _persistent_detector_fast_lane_status(
+            args,
+            target_date,
+            paths,
+        )
     symbols = _watched_symbols_for_args(args)
     stream = _managed_tick_stream_status(args, paths, symbols)
     monitor_args = [
@@ -2104,7 +2655,7 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     }
 
 
-def main() -> None:
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="C9 official live session daemon with tick refresh and submit gating.")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--submit-mode", choices=["disabled", "live-real"], default="disabled")
@@ -2134,6 +2685,23 @@ def main() -> None:
     parser.add_argument("--fast-step-timeout-seconds", type=int, default=20)
     parser.add_argument("--tick-stream-max-restarts", type=int, default=TICK_STREAM_MAX_RESTARTS)
     parser.add_argument("--tick-stream-restart-backoff-seconds", type=float, default=TICK_STREAM_RESTART_BACKOFF_SECONDS)
+    parser.add_argument(
+        "--detector-mode",
+        choices=["legacy-subprocess", "persistent"],
+        default="legacy-subprocess",
+    )
+    parser.add_argument("--detector-poll-seconds", type=float, default=0.05)
+    parser.add_argument("--detector-batch-size", type=int, default=1024)
+    parser.add_argument(
+        "--detector-max-restarts",
+        type=int,
+        default=DETECTOR_MAX_RESTARTS,
+    )
+    parser.add_argument(
+        "--detector-restart-backoff-seconds",
+        type=float,
+        default=DETECTOR_RESTART_BACKOFF_SECONDS,
+    )
     parser.add_argument("--max-consecutive-cycle-errors", type=int, default=3)
     parser.add_argument(
         "--ai-pool-preflight-mode",
@@ -2150,7 +2718,45 @@ def main() -> None:
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
     parser.add_argument("--require-current-session-name", action="append", default=[])
-    args = parser.parse_args()
+    return parser
+
+
+def _initialize_runtime_services(
+    args: argparse.Namespace,
+    paths: dict[str, Path],
+    *,
+    target_date: str,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    tick_stream_supervisor = _initialize_tick_stream_supervisor(args, paths)
+    detector_supervisor = _initialize_detector_supervisor(
+        args,
+        paths,
+        target_date=target_date,
+    )
+    ai_pool_preflight = _run_stage935_preflight(args, paths)
+    return tick_stream_supervisor, detector_supervisor, ai_pool_preflight
+
+
+def main() -> None:
+    args = _build_parser().parse_args()
+    startup_blockers = _startup_configuration_blockers(args)
+    if startup_blockers:
+        print(
+            json.dumps(
+                {
+                    "model_tag": MODEL_TAG,
+                    "daemon_status": "daemon_blocked_startup_configuration",
+                    "mode": args.mode,
+                    "submit_mode": args.submit_mode,
+                    "detector_mode": args.detector_mode,
+                    "startup_blockers": startup_blockers,
+                    "order_api_called_count": 0,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        raise SystemExit(2)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     required_sessions = [_clean(item) for item in args.require_current_session_name if _clean(item)]
@@ -2216,8 +2822,16 @@ def main() -> None:
     _activate_runtime_ownership()
     # Market-data coverage starts before the AI-pool check.  The pool governs
     # new risk, but must not delay establishing the read-only risk feed.
-    tick_stream_supervisor = _initialize_tick_stream_supervisor(args, paths)
-    ai_pool_preflight = _run_stage935_preflight(args, paths)
+    effective_target_date = _startup_target_date(args)
+    (
+        tick_stream_supervisor,
+        detector_supervisor,
+        ai_pool_preflight,
+    ) = _initialize_runtime_services(
+        args,
+        paths,
+        target_date=effective_target_date,
+    )
     args.ai_pool_preflight_allowed = int(ai_pool_preflight.get("allowed_to_continue", 0))
     if args.ai_pool_preflight_allowed != 1 and args.stop_all_on_ai_pool_failure:
         summary = {
@@ -2226,6 +2840,7 @@ def main() -> None:
             "official_live_version": OFFICIAL_LIVE_VERSION,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
+            "detector_mode": args.detector_mode,
             "target_date": args.target_date,
             "requested_target_date": args.target_date,
             "cycle_count": 0,
@@ -2234,6 +2849,9 @@ def main() -> None:
             "current_session_names": _current_session_names(),
             "order_api_called_count": 0,
             "ai_pool_preflight": ai_pool_preflight,
+            "detector_supervisor": _detector_supervisor_public(
+                detector_supervisor
+            ),
             "latest_cycle": {
                 "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "target_date": args.target_date,
@@ -2279,7 +2897,7 @@ def main() -> None:
         )
         print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
         sys.exit(2)
-    target_date = args.target_date
+    target_date = effective_target_date
     started = time.monotonic()
     cycles: list[dict[str, Any]] = []
     email_notifications: list[dict[str, Any]] = []
@@ -2316,6 +2934,7 @@ def main() -> None:
             "official_live_version": OFFICIAL_LIVE_VERSION,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
+            "detector_mode": args.detector_mode,
             "target_date": _clean(cycle.get("target_date")) or target_date,
             "requested_target_date": target_date,
             "cycle_count": len(cycles),
@@ -2324,6 +2943,9 @@ def main() -> None:
             "current_session_names": _current_session_names(),
             "order_api_called_count": total_order_api,
             "ai_pool_preflight": ai_pool_preflight,
+            "detector_supervisor": _detector_supervisor_public(
+                detector_supervisor
+            ),
             "latest_cycle": cycle,
             "email_notifications": email_notifications,
             "outputs": {key: str(value.resolve()) for key, value in paths.items()},

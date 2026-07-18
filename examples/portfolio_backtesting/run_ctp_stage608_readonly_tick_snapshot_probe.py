@@ -213,6 +213,147 @@ def _clean(value: Any) -> str:
     return "" if text.lower() == "nan" else text
 
 
+def _prior_authority_lineage(
+    previous_heartbeat: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "prior_authoritative_feed_session_id": _clean(
+            previous_heartbeat.get("feed_session_id")
+        ),
+        "prior_authoritative_journal_segment_path": _clean(
+            previous_heartbeat.get("journal_segment_path")
+            or previous_heartbeat.get("journal_path")
+        ),
+        "prior_authoritative_heartbeat_revision_uuid": _clean(
+            previous_heartbeat.get("heartbeat_revision_uuid")
+        ),
+        "prior_authoritative_journal_session_state": _clean(
+            previous_heartbeat.get("journal_session_state")
+        ),
+        "prior_authoritative_clean_shutdown": (
+            previous_heartbeat.get("clean_shutdown") is True
+        ),
+    }
+
+
+def _clean_empty_feed_bridge(
+    previous_heartbeat: dict[str, Any],
+) -> dict[str, Any] | None:
+    required_state = {
+        "journal_authority_committed": True,
+        "journal_session_state": "clean_stopped",
+        "clean_shutdown": True,
+        "stopped": True,
+        "stream_ready": False,
+        "transport_ready": False,
+        "writer_alive": False,
+        "accepting": False,
+        "gap_latched": False,
+    }
+    if any(previous_heartbeat.get(key) != value for key, value in required_state.items()):
+        return None
+    if (
+        previous_heartbeat.get("writer_fault") not in (None, "", {})
+        or previous_heartbeat.get("dropped_tick_count") != 0
+        or previous_heartbeat.get("queue_depth") != 0
+        or previous_heartbeat.get("last_ingress_sequence") != 0
+        or previous_heartbeat.get("durable_ingress_sequence") != 0
+        or previous_heartbeat.get("durable_journal_byte_offset") != 0
+        or _clean(previous_heartbeat.get("journal_schema"))
+        != JOURNAL_SCHEMA_FRAMED_V1
+        or previous_heartbeat.get("prior_uncommitted_gaps") != []
+    ):
+        return None
+    empty_feed = _clean(previous_heartbeat.get("feed_session_id"))
+    empty_path = _clean(
+        previous_heartbeat.get("journal_segment_path")
+        or previous_heartbeat.get("journal_path")
+    )
+    empty_revision = _clean(previous_heartbeat.get("heartbeat_revision_uuid"))
+    prior_feed = _clean(
+        previous_heartbeat.get("prior_authoritative_feed_session_id")
+    )
+    prior_path = _clean(
+        previous_heartbeat.get("prior_authoritative_journal_segment_path")
+    )
+    prior_revision = _clean(
+        previous_heartbeat.get("prior_authoritative_heartbeat_revision_uuid")
+    )
+    recovered = previous_heartbeat.get("recovery_previous_durable_cursor")
+    if (
+        not empty_feed
+        or not empty_path
+        or not empty_revision
+        or not prior_feed
+        or not prior_path
+        or not prior_revision
+        or previous_heartbeat.get("prior_authoritative_journal_session_state")
+        != "clean_stopped"
+        or previous_heartbeat.get("prior_authoritative_clean_shutdown") is not True
+        or not isinstance(recovered, dict)
+        or _clean(recovered.get("feed_session_id")) != prior_feed
+        or type(recovered.get("ingress_sequence")) is not int
+        or recovered.get("ingress_sequence") <= 0
+        or type(recovered.get("journal_byte_offset")) is not int
+        or recovered.get("journal_byte_offset") <= 0
+        or _clean(recovered.get("journal_schema")) != JOURNAL_SCHEMA_FRAMED_V1
+    ):
+        return None
+    existing = previous_heartbeat.get(
+        "prior_authoritative_empty_feed_sessions",
+        [],
+    )
+    if not isinstance(existing, list) or len(existing) >= 64:
+        return None
+    required_empty_fields = {
+        "feed_session_id",
+        "journal_segment_path",
+        "heartbeat_revision_uuid",
+        "journal_session_state",
+        "clean_shutdown",
+        "durable_ingress_sequence",
+        "durable_journal_byte_offset",
+    }
+    seen_feeds: set[str] = set()
+    for item in existing:
+        if not isinstance(item, dict) or set(item) != required_empty_fields:
+            return None
+        feed = _clean(item.get("feed_session_id"))
+        if (
+            not feed
+            or feed in {prior_feed, empty_feed}
+            or feed in seen_feeds
+            or not _clean(item.get("journal_segment_path"))
+            or not _clean(item.get("heartbeat_revision_uuid"))
+            or item.get("journal_session_state") != "clean_stopped"
+            or item.get("clean_shutdown") is not True
+            or item.get("durable_ingress_sequence") != 0
+            or item.get("durable_journal_byte_offset") != 0
+        ):
+            return None
+        seen_feeds.add(feed)
+    empty_record = {
+        "feed_session_id": empty_feed,
+        "journal_segment_path": empty_path,
+        "heartbeat_revision_uuid": empty_revision,
+        "journal_session_state": "clean_stopped",
+        "clean_shutdown": True,
+        "durable_ingress_sequence": 0,
+        "durable_journal_byte_offset": 0,
+    }
+    return {
+        "lineage": {
+            "prior_authoritative_feed_session_id": prior_feed,
+            "prior_authoritative_journal_segment_path": prior_path,
+            "prior_authoritative_heartbeat_revision_uuid": prior_revision,
+            "prior_authoritative_journal_session_state": "clean_stopped",
+            "prior_authoritative_clean_shutdown": True,
+        },
+        "recovery_previous_durable_cursor": dict(recovered),
+        "empty_feed_sessions": [*existing, empty_record],
+    }
+
+
 def _split_vt_symbol(vt_symbol: str) -> tuple[str, Exchange] | None:
     if "." not in vt_symbol:
         return None
@@ -2282,18 +2423,26 @@ def _run_stream_owned(
     summary["prior_uncommitted_gaps"] = [
         asdict(gap) for gap in effective_recovery_gaps
     ]
-    summary["prior_authoritative_feed_session_id"] = _clean(
-        previous_heartbeat.get("feed_session_id")
-    )
-    summary["prior_authoritative_journal_segment_path"] = _clean(
-        previous_heartbeat.get("journal_segment_path")
-        or previous_heartbeat.get("journal_path")
-    )
-    summary["recovery_previous_durable_cursor"] = (
+    recovery_previous_durable_cursor = (
         asdict(recovery.previous_durable_cursor)
         if recovery.previous_durable_cursor is not None
         else None
     )
+    empty_feed_bridge = _clean_empty_feed_bridge(previous_heartbeat)
+    if empty_feed_bridge is None:
+        summary.update(_prior_authority_lineage(previous_heartbeat))
+        summary["recovery_previous_durable_cursor"] = (
+            recovery_previous_durable_cursor
+        )
+        summary["prior_authoritative_empty_feed_sessions"] = []
+    else:
+        summary.update(empty_feed_bridge["lineage"])
+        summary["recovery_previous_durable_cursor"] = empty_feed_bridge[
+            "recovery_previous_durable_cursor"
+        ]
+        summary["prior_authoritative_empty_feed_sessions"] = empty_feed_bridge[
+            "empty_feed_sessions"
+        ]
     summary["recovery_isolated_tail_path"] = (
         str(recovery.isolated_tail_path.resolve())
         if recovery.isolated_tail_path is not None
