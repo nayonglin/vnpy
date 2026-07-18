@@ -293,6 +293,49 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         self.assertEqual("cancelled", FakeTdApi().cancel_order(object()))
         self.assertEqual(0, FakeTdApi().reqOrderInsert({}, 1))
 
+    def test_bound_firewall_wrapper_cannot_mutate_frozen_evidence_window(self) -> None:
+        calls: list[str] = []
+
+        class FakeGateway:
+            def send_order(self, *args: object, **kwargs: object) -> str:
+                calls.append("gateway_send")
+                return "sent"
+
+            def cancel_order(self, *args: object, **kwargs: object) -> None:
+                calls.append("gateway_cancel")
+
+        class FakeTdApi(FakeGateway):
+            pass
+
+        counters = stage174._new_order_api_counters()
+        state_lock = threading.RLock()
+        evidence_window = stage174._new_order_api_evidence_window()
+        originals = stage174._install_readonly_order_api_firewall(
+            FakeGateway,
+            FakeTdApi,
+            counters,
+            state_lock,
+            evidence_window,
+        )
+        bound_wrapper = FakeTdApi().send_order
+        stage174._restore_readonly_order_api_firewall(
+            FakeGateway, FakeTdApi, originals
+        )
+        closed = stage174._close_order_api_evidence_window(
+            state_lock, evidence_window
+        )
+        frozen_counters = dict(counters)
+
+        with self.assertRaisesRegex(
+            RuntimeError, "readonly_order_api_blocked_after_evidence_window"
+        ):
+            bound_wrapper(object())
+
+        self.assertEqual([], calls)
+        self.assertEqual(frozen_counters, counters)
+        self.assertEqual(1, closed["closed"])
+        self.assertIs(type(closed["closed_epoch_ns"]), int)
+
     def test_dry_run_publishes_exact_zero_order_api_counters(self) -> None:
         result = stage174._run_probe(connect=False, wait_seconds=1)
 

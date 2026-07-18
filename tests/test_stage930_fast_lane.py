@@ -341,14 +341,15 @@ class Stage930FastLaneTest(unittest.TestCase):
     def test_reconnect_observation_once_commits_only_after_summary_persistence(self) -> None:
         args = SimpleNamespace(readonly_observe_reconnect_once=True)
         cycle = {
+            "cycle_started_epoch_ns": 123,
             "readonly_observe_reconnect_consumption_pending": 1,
             "readonly_observe_reconnect_consumed": 0,
         }
-        summary = {"latest_cycle": cycle}
+        summary = {"run_id": "run-1", "latest_cycle": cycle}
 
         with patch.object(
             stage930,
-            "_write_outputs",
+            "_write_summary_commit_point",
             side_effect=OSError("simulated persistence failure"),
         ):
             with self.assertRaisesRegex(OSError, "simulated persistence failure"):
@@ -361,13 +362,30 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(0, cycle["readonly_observe_reconnect_consumed"])
 
         persisted: list[dict] = []
+        events: list[dict] = []
+        call_order: list[str] = []
 
         def capture_write(_paths: dict, payload: dict) -> None:
+            call_order.append("summary")
             persisted.append(json.loads(json.dumps(payload)))
 
-        with patch.object(stage930, "_write_outputs", side_effect=capture_write):
+        def capture_event(_path: Path, payload: dict) -> None:
+            call_order.append("event")
+            events.append(dict(payload))
+
+        with (
+            patch.object(
+                stage930, "_write_summary_commit_point", side_effect=capture_write
+            ),
+            patch.object(stage930, "_append_event", side_effect=capture_event),
+            patch.object(
+                stage930,
+                "_write_auxiliary_outputs",
+                side_effect=lambda _paths, _summary: call_order.append("aux"),
+            ),
+        ):
             committed = stage930._write_cycle_outputs_and_commit_reconnect_observation(
-                {}, summary, args, cycle
+                {"events_ndjson": Path("events.ndjson")}, summary, args, cycle
             )
 
         self.assertEqual(1, committed)
@@ -375,6 +393,57 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(0, cycle["readonly_observe_reconnect_consumption_pending"])
         self.assertEqual(1, cycle["readonly_observe_reconnect_consumed"])
         self.assertEqual(1, persisted[0]["latest_cycle"]["readonly_observe_reconnect_consumed"])
+        self.assertEqual(["summary", "event", "aux"], call_order)
+        self.assertEqual(
+            "stage930_readonly_reconnect_observation_committed",
+            events[0]["event_type"],
+        )
+        self.assertEqual(1, events[0]["readonly_observe_reconnect_consumed"])
+
+    def test_reconnect_once_stays_committed_when_auxiliary_outputs_fail(self) -> None:
+        args = SimpleNamespace(readonly_observe_reconnect_once=True)
+        cycle = {
+            "cycle_started_epoch_ns": 123,
+            "readonly_observe_reconnect_consumption_pending": 1,
+            "readonly_observe_reconnect_consumed": 0,
+        }
+        summary = {"run_id": "run-1", "latest_cycle": cycle}
+
+        with (
+            patch.object(stage930, "_write_summary_commit_point"),
+            patch.object(stage930, "_append_event"),
+            patch.object(
+                stage930,
+                "_write_auxiliary_outputs",
+                side_effect=OSError("simulated report failure"),
+            ),
+        ):
+            with self.assertRaisesRegex(OSError, "simulated report failure"):
+                stage930._write_cycle_outputs_and_commit_reconnect_observation(
+                    {"events_ndjson": Path("events.ndjson")},
+                    summary,
+                    args,
+                    cycle,
+                )
+
+        self.assertFalse(args.readonly_observe_reconnect_once)
+        self.assertEqual(0, cycle["readonly_observe_reconnect_consumption_pending"])
+        self.assertEqual(1, cycle["readonly_observe_reconnect_consumed"])
+
+    def test_summary_commit_point_publishes_canonical_run_summary_last(self) -> None:
+        paths = {"summary_json": Path("canonical.json")}
+        writes: list[Path] = []
+
+        with patch.object(
+            stage930,
+            "_atomic_write_text",
+            side_effect=lambda path, _text: writes.append(path),
+        ):
+            stage930._write_summary_commit_point(paths, {"run_id": "run-1"})
+
+        self.assertEqual(
+            [stage930.LATEST_SUMMARY_PATH, paths["summary_json"]], writes
+        )
 
     def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
         missing = stage930._missing_order_api_evidence_fields(

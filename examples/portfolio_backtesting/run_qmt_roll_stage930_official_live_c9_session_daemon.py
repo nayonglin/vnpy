@@ -2818,10 +2818,20 @@ def _build_report(summary: dict[str, Any]) -> str:
     )
 
 
-def _write_outputs(paths: dict[str, Path], summary: dict[str, Any]) -> None:
+def _write_summary_commit_point(
+    paths: dict[str, Path], summary: dict[str, Any]
+) -> None:
     text = json.dumps(summary, ensure_ascii=False, indent=2, default=str)
-    _atomic_write_text(paths["summary_json"], text)
     _atomic_write_text(LATEST_SUMMARY_PATH, text)
+    # The run-scoped summary is the canonical commit point.  Publish the
+    # convenience latest view first so a successful return means the durable
+    # run record contains the committed state.
+    _atomic_write_text(paths["summary_json"], text)
+
+
+def _write_auxiliary_outputs(
+    paths: dict[str, Path], summary: dict[str, Any]
+) -> None:
     report = _build_report(summary)
     _atomic_write_text(paths["report_md"], report)
     _atomic_write_text(LATEST_REPORT_PATH, report)
@@ -2835,6 +2845,11 @@ def _write_outputs(paths: dict[str, Path], summary: dict[str, Any]) -> None:
         "summary_path": str(paths["summary_json"].resolve()),
     }
     _atomic_write_json(LATEST_HEARTBEAT_PATH, heartbeat)
+
+
+def _write_outputs(paths: dict[str, Path], summary: dict[str, Any]) -> None:
+    _write_summary_commit_point(paths, summary)
+    _write_auxiliary_outputs(paths, summary)
 
 
 def _append_event(path: Path, payload: dict[str, Any]) -> None:
@@ -3393,12 +3408,23 @@ def _write_cycle_outputs_and_commit_reconnect_observation(
     cycle["readonly_observe_reconnect_consumption_pending"] = 0
     cycle["readonly_observe_reconnect_consumed"] = 1
     try:
-        _write_outputs(paths, summary)
+        _write_summary_commit_point(paths, summary)
     except Exception:
         cycle["readonly_observe_reconnect_consumption_pending"] = 1
         cycle["readonly_observe_reconnect_consumed"] = 0
         raise
     args.readonly_observe_reconnect_once = False
+    _append_event(
+        paths["events_ndjson"],
+        {
+            "event_type": "stage930_readonly_reconnect_observation_committed",
+            "run_id": summary.get("run_id"),
+            "cycle_started_epoch_ns": cycle.get("cycle_started_epoch_ns"),
+            "readonly_observe_reconnect_consumption_pending": 0,
+            "readonly_observe_reconnect_consumed": 1,
+        },
+    )
+    _write_auxiliary_outputs(paths, summary)
     return 1
 
 

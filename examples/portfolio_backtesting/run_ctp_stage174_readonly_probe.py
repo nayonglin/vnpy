@@ -108,8 +108,26 @@ def _new_probe_state_lock() -> Any:
     return threading.RLock()
 
 
+def _new_order_api_evidence_window() -> dict[str, Any]:
+    return {
+        "model_tag": "stage174_order_api_evidence_window_v1",
+        "closed": 0,
+        "closed_epoch_ns": None,
+    }
+
+
 def _state_guard(state_lock: Any | None) -> Any:
     return state_lock if state_lock is not None else nullcontext()
+
+
+def _close_order_api_evidence_window(
+    state_lock: Any | None,
+    evidence_window: dict[str, Any],
+) -> dict[str, Any]:
+    with _state_guard(state_lock):
+        evidence_window["closed"] = 1
+        evidence_window["closed_epoch_ns"] = time.time_ns()
+        return dict(evidence_window)
 
 
 def _install_readonly_order_api_firewall(
@@ -117,6 +135,7 @@ def _install_readonly_order_api_firewall(
     td_api_class: type,
     counters: dict[str, int],
     state_lock: Any | None = None,
+    evidence_window: dict[str, Any] | None = None,
 ) -> dict[tuple[type, str], Any]:
     """Block every order mutation at both vn.py CTP boundaries.
 
@@ -138,9 +157,14 @@ def _install_readonly_order_api_firewall(
                 _counter_name: str = counter_name,
                 _method_name: str = method_name,
                 _state_lock: Any | None = state_lock,
+                _evidence_window: dict[str, Any] | None = evidence_window,
                 **kwargs: Any,
             ) -> Any:
                 with _state_guard(_state_lock):
+                    if _evidence_window is not None and _evidence_window.get("closed") == 1:
+                        raise RuntimeError(
+                            f"readonly_order_api_blocked_after_evidence_window:{_method_name}"
+                        )
                     counters[_counter_name] += 1
                 raise RuntimeError(f"readonly_order_api_blocked:{_method_name}")
 
@@ -156,9 +180,14 @@ def _install_readonly_order_api_firewall(
             *args: Any,
             _method_name: str = method_name,
             _state_lock: Any | None = state_lock,
+            _evidence_window: dict[str, Any] | None = evidence_window,
             **kwargs: Any,
         ) -> Any:
             with _state_guard(_state_lock):
+                if _evidence_window is not None and _evidence_window.get("closed") == 1:
+                    raise RuntimeError(
+                        f"readonly_native_ctp_mutation_blocked_after_evidence_window:{_method_name}"
+                    )
                 counters["native_mutation_api_attempted_count"] += 1
             raise RuntimeError(f"readonly_native_ctp_mutation_blocked:{_method_name}")
 
@@ -1076,6 +1105,7 @@ def _run_probe(
     query_generation_uuid = str(uuid.uuid4())
     state_lock = _new_probe_state_lock()
     order_api_counters = _new_order_api_counters()
+    order_api_evidence_window = _new_order_api_evidence_window()
     gateway_import = _gateway_import_status()
     import_available = bool(gateway_import["ctp_gateway_import_available"])
     # #region debug-point A:probe-start
@@ -1153,6 +1183,7 @@ def _run_probe(
         },
     }
     _publish_order_api_counters(summary, order_api_counters, state_lock)
+    summary["order_api_evidence_window"] = dict(order_api_evidence_window)
     summary["connection_lifecycle"] = dict(connection_lifecycle)
 
     if not connect:
@@ -1565,6 +1596,7 @@ def _run_probe(
         ctp_gateway_module.CtpTdApi,
         order_api_counters,
         state_lock,
+        order_api_evidence_window,
     )
 
     td_api: Any = None
@@ -1897,6 +1929,10 @@ def _run_probe(
                 order_api_originals,
             )
 
+        final_order_api_evidence_window = _close_order_api_evidence_window(
+            state_lock,
+            order_api_evidence_window,
+        )
         with state_lock:
             final_rows = copy.deepcopy(rows)
             final_query_requests = copy.deepcopy(query_requests)
@@ -1906,6 +1942,7 @@ def _run_probe(
             final_order_api_counters = dict(order_api_counters)
         result_rows = final_rows
         _publish_order_api_counters(summary, final_order_api_counters)
+        summary["order_api_evidence_window"] = final_order_api_evidence_window
 
         if "log_analysis" not in summary:
             summary["log_analysis"] = _analyze_logs(final_rows["logs"])
