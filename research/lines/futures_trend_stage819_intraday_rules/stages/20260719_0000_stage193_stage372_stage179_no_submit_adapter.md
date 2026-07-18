@@ -234,9 +234,24 @@
 - 过拟合反思：运行前“否”，运行后仍“否”；原因是只修状态机、时间因果、只读边界与证据绑定，没有按 JM 单晚结果或收益曲线调参。
 - 继续价值反思：运行前“是”，运行后仍“是”；下一步最高价值是 5 场真实 production-readonly 严格 `0/0` canary（至少一次完整断线—重连—新快照恢复），不是继续增加离线规则。
 
+### 2026-07-19 03:59-04:19 callback 同步与 once 持久化边界收口
+
+- 改动时间：2026-07-19 03:59-04:19 CST；是否重要突破版本：否。本轮消除冻结终审遗留的两个可本地修复 P2，不改变策略 alpha、资金或任何报单权限。
+- 根因一：Stage174 的 CTP callback 与主线程并发读写 lifecycle、query request、settlement、rows 和 order counters，原先依赖 GIL，不能保证跨字段状态转换原子化。修复后同一 `threading.RLock` 覆盖 callback/main 状态读写；不在锁内等待 callback、flow gap 或执行原生网络请求；关闭前先置 `probe_closing=1`，恢复 wrapper 后在锁内 deep-copy 冻结证据快照，后续 normalization/bundle/proof 只读取副本。
+- 根因二：Stage930 原先在 Stage903 refresh attempted 后立即修改 CLI once 状态，后续 event、汇总或输出失败会丢失本进程内重试机会。修复后 `run_cycle()` 只生成 pending，只有 `_write_outputs()` 成功后才提交 consumed 并关闭 once；持久化异常会回滚内存 pending，canonical launchd 下次仍携带 once。
+- TDD 红测先稳定失败：Stage174 缺 `_new_probe_state_lock`；Stage930 缺 pending/commit helper，共 `3 failed`。实现后对应测试 `3 passed`；Stage174/930 文件回归 `76 passed, 4 subtests passed`，相关执行链 `111 passed, 4 subtests passed`。
+- 最终扩大执行链回归：`747 passed, 245 subtests passed`，耗时 `85.20s`；manifest 相关复验 `99 passed, 13 subtests passed`。Python compile、`git diff --check` 与 3 份 Stage372 plist lint 均通过；仍未安装 `ruff`，不声称 ruff 通过。
+- 源码提交 `84e618dadab52021057c0e1ca161ab62e9017927`；干净 detached source 重建 68 个唯一 critical files 的 schema v2 manifest，release id `stage179-stage372-readonly-84e618dad`，内部 digest `139604c6a79eef321e0a270126895cafa7f96946caad904655521dc1f57dcecb`，文件 SHA-256 `289351fb1b71b532d0072708627e67c6b99980abe63327b9e7c7a4d0c3c7a7d6`，冻结提交 `a5b5653cd223d15526d5f4461a14fbfc45343f65`。允许 profile 仍只有 `offline/production-readonly`，Stage372 语义资格继续 `blocked`。
+- 两轮独立审查（源码范围与冻结 HEAD）均为 `P0=0、P1=0、P2=3`；冻结终审独立通过 `126 passed, 13 subtests passed`、68/68 blob SHA/size、官方 validator、source 直接父关系、compile/diff/plist。代码合入及 production-readonly 采证部署为 `GO`；production-readonly 验收通过、SimNow、broker-test、production-live 均为 `NO-GO`。
+- 保留 P2：Stage930 五路输出不是跨文件原子事务；event NDJSON 在 once commit 前记录 pending，而最终 summary 记录 consumed；极窄的已绑定旧 firewall wrapper 在冻结后执行时可能漏记 attempted counter。它们可能导致重复观察或诊断投影差异，但原生 mutation API 仍不调用、authoritative proof 不会被伪造，不阻断只读候选冻结。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有加载、kickstart 或停止 launchd、没有调用报撤单 API。
+- 外部调研判断：本轮不需要新增外部资料；沿用前序已核验的官方 vn.py/vnpy_ctp callback 与 reconnect 语义。独立审查以 Git blob、官方 manifest validator 和离线故障回归为权威证据。
+- 过拟合反思：运行前“否”，运行后仍“否”；并发锁和证据提交边界与 JM 单晚收益、品种、方向、阈值均无关。
+- 继续价值反思：运行前“是”，运行后仍“是”；本地可修复的两个 P2 已收口，下一步最高价值明确转为 5 场真实 production-readonly canary，不继续堆离线规则。
+
 ## 结论与硬门禁
 
-- 代码合入判断：冻结候选 `509caa817` 已完成独立终审，结果 `P0=0、P1=0、P2=3`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
+- 代码合入判断：冻结候选 `a5b5653cd` 已完成独立终审，结果 `P0=0、P1=0、P2=3`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
 - 激活判断：release manifest 只允许离线和 `production-readonly`；可以部署只读链路采证，但 production-readonly 验收仍缺五场真实会话及一次完整断线重连，当前验收为 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后预计算与正常 readonly refresh 的提前返回已经消除两类代码层结构性等待，一次性重连观察只在预启动采证；但真实只读 CTP 与 LaunchAgent 时间戳证据完成前，不能宣称已解决线上端到端延迟。
