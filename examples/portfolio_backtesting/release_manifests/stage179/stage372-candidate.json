@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T19:03:37.926329Z",
+  "created_at_utc": "2026-07-18T19:52:51.936952Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -14,13 +14,13 @@
     },
     {
       "path": "examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
-      "sha256": "f75c48d2fc1ab3b6407a3d4e2647cea771ca30336338ee150c510f65cd16baff",
-      "size_bytes": 36649
+      "sha256": "29fc413cfcbdfbd152a9ebb2c5a345c91a37ea474f4cdeaf335ca9283c86f4e3",
+      "size_bytes": 39530
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
-      "sha256": "d059d147a1321eb500d86a6813542f47608c90c1a52fb663a5359fcc5a164c11",
-      "size_bytes": 13610
+      "sha256": "30718b6e2e606c4918ce74bfb9641c4b2330c1eb9235160cfd39ef99fe8edd18",
+      "size_bytes": 13653
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
@@ -44,13 +44,13 @@
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
-      "sha256": "8bd2f71121fc55ef7f1093f294bc3d3b2df3fde467bc7f1e11e2e7ee544afaf6",
-      "size_bytes": 2826
+      "sha256": "8d72b5c4672b2d31018db4714e9bc1613a17f7873881565056fac6c728b8cf1d",
+      "size_bytes": 2881
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
-      "sha256": "023accf2f46d45f9cff59771d56bba980649dbe3dd2415eb2ec7ea3f71cb8ccc",
-      "size_bytes": 2840
+      "sha256": "2e9e23229fbb6b04a8ea87071415eaaee63586ea4cc37ab547e1473d53c5e06a",
+      "size_bytes": 2895
     },
     {
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist",
@@ -174,8 +174,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
-      "sha256": "3cda7f3169f6821015a210abbcba6fdc75f9512f6b04b1f626558d5682e58e7d",
-      "size_bytes": 69378
+      "sha256": "7d72ca8fe11c0e8808c07183f525f9bd45bfd5ec883e2cadcea3e76a99c4ece9",
+      "size_bytes": 86438
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
@@ -199,8 +199,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
-      "sha256": "51863151b4c84e1289a7ccfd964eebb2c2e6808fb50828015719d6155b331b08",
-      "size_bytes": 82950
+      "sha256": "04fa85dd03b47e5353968c778e281d100031a1db8e24616a477bc3d5a077f8c8",
+      "size_bytes": 84943
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
@@ -214,8 +214,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py",
-      "sha256": "8f0989daf5e80a34cd0616b84d269a4f22a3055d7e7feda0d559f3f40c7db5bd",
-      "size_bytes": 20362
+      "sha256": "172484152e5185802118796082a0d4531bd8b12fa4ed8195acb93187f78786a6",
+      "size_bytes": 24225
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
@@ -239,8 +239,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
-      "sha256": "a2fd21ab8ece708ed506b20b2440d52569af6ea0e9c09b2f38ab752a060ef14f",
-      "size_bytes": 171352
+      "sha256": "037ab71c7d8b5c8f9c6e7b6c20810e859ae64c97b98fa885bffce5a445e1bae2",
+      "size_bytes": 173726
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -273,6 +273,11 @@
       "size_bytes": 26246
     },
     {
+      "path": "tests/test_stage174_query_bundle.py",
+      "sha256": "9d94d718061a63f09d24fcb18acae4c88a4026dfcaf4170fdd92114a6bdee9fd",
+      "size_bytes": 29272
+    },
+    {
       "path": "tests/test_stage179_fault_matrix.py",
       "sha256": "77e5f97628380b29562324a00660bfec55f2233086cce7898206aa4688acf793",
       "size_bytes": 12864
@@ -289,8 +294,8 @@
     },
     {
       "path": "tests/test_stage179_readonly_canary_qualification.py",
-      "sha256": "fa469bc6a31d52ebae1acce9504e4551fa62079e1722af370580a005c1802330",
-      "size_bytes": 24699
+      "sha256": "414940fbd779717f2703df7c5a1c0b30d4e28df9875a2b850079d2b8a69d097f",
+      "size_bytes": 29270
     },
     {
       "path": "tests/test_stage179_stage260_execution_profile.py",
@@ -299,8 +304,8 @@
     },
     {
       "path": "tests/test_stage179_stage372_daemon_boundary.py",
-      "sha256": "6d888fde0e4caa6530865de8f69e44f05c0e354d357657d4e1dff2023b864018",
-      "size_bytes": 14842
+      "sha256": "956e913bd0f3c6093fdf67e16aaf5883f32541609146468eef80bde51b2cb29b",
+      "size_bytes": 15015
     },
     {
       "path": "tests/test_stage179_stage372_daily_intents.py",
@@ -334,13 +339,13 @@
     },
     {
       "path": "tests/test_stage907_readonly_refresh_gate.py",
-      "sha256": "e1583073014598ac3619db9a7eb639d5d6c089f764c4a5aa1151c83bc81100ca",
-      "size_bytes": 3296
+      "sha256": "9f882749cc724ec091b342009d2e0ee0157533972a7f96c5e2f86425aae0771e",
+      "size_bytes": 6011
     },
     {
       "path": "tests/test_stage930_fast_lane.py",
-      "sha256": "632f40d7dd3daa3efb211c97f48bd4be13fff1be65ae7c3115634f84730e144e",
-      "size_bytes": 94726
+      "sha256": "cd0fffe125abf061c0bf78e6d5786bbb7a2f50dd6e60b703adcf6476e7dc73c1",
+      "size_bytes": 97926
     }
   ],
   "execution_profile": "stage372-20w",
@@ -359,14 +364,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "e3a7f9409b7855304fa97bec4e7b50c5d20cea2b5bb57958535566c3c2fbdff4",
+  "manifest_sha256": "386a0c2185a548d18b590990a961a8fb9ad101bb3f6b27213d04f4e4e9f7a889",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-aebf148f8",
+  "release_id": "stage179-stage372-readonly-1695c9ffc",
   "schema_version": 2,
-  "source_commit": "aebf148f86bdf0a0bd17c41042cc146bb2d1f345",
+  "source_commit": "1695c9ffc2654670f0fb667f40bbeee88a64f406",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "05f3d7021af19d1cbb48938cab914289ec1c2f9dff9edd3a4a1f2a8f2b4c2b2f"
+  "tree_fingerprint": "9bb2c8d44c68db9e02642b4cd264a20f499ae310d866dbcd83128677d7b1ccab"
 }
