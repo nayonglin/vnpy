@@ -299,6 +299,10 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             created_at_utc="2026-07-18T11:00:00Z",
         )
         self.assertEqual(first, same)
+        self.assertEqual(
+            set(builder.EXECUTION_LEDGER_READER_CAPABILITIES),
+            set(first["ledger_contract"]["reader_capabilities"]),
+        )
         with self.assertRaises(ReleaseManifestError):
             build_release_manifest_file(
                 output_path=output,

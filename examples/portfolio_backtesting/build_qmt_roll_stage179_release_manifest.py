@@ -8,11 +8,11 @@ from pathlib import Path
 import subprocess
 
 from qmt_roll_official_live_execution_ledger import (
+    EXECUTION_LEDGER_READER_CAPABILITIES,
     INTENT_FINGERPRINT_VERSION_V2,
     LEDGER_SCHEMA_VERSION,
 )
 from qmt_roll_official_live_release_manifest import (
-    REQUIRED_V2_READER_CAPABILITY,
     ReleaseManifestError,
     build_release_manifest,
     serialize_release_manifest,
@@ -170,7 +170,7 @@ def build_release_manifest_file(
         created_at_utc=created,
         ledger_schema_version=LEDGER_SCHEMA_VERSION,
         intent_fingerprint_versions=(1, INTENT_FINGERPRINT_VERSION_V2),
-        reader_capabilities=(REQUIRED_V2_READER_CAPABILITY,),
+        reader_capabilities=tuple(sorted(EXECUTION_LEDGER_READER_CAPABILITIES)),
     )
     _assert_manifest_matches_source_commit(repo, source_commit, payload)
     _assert_clean_source_tree(repo, source_commit)
