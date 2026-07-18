@@ -626,7 +626,11 @@ def main() -> None:
         profile,
         official_summary=_read_json(profile.summary_path),
         signal_plan=_read_csv_maybe(profile.signal_plan_path),
-        pending_orders=_read_csv_maybe(STAGE901_PENDING_ORDERS_PATH),
+        pending_orders=(
+            _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+            if profile.intraday_stop_retry_enabled
+            else pd.DataFrame()
+        ),
         current_positions=_read_csv_maybe(profile.current_positions_path),
         readonly_summary=readonly_summary,
         positions=_read_csv_maybe(readonly_outputs.get("positions")),

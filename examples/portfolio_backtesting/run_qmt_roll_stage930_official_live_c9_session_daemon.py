@@ -20,6 +20,11 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
+)
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
@@ -192,6 +197,22 @@ def _to_int(value: Any, default: int = 0) -> int:
 
 def _env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _execution_profile_for_args(
+    args: argparse.Namespace,
+) -> OfficialExecutionProfile:
+    return resolve_execution_profile(
+        getattr(
+            args,
+            "execution_profile",
+            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+        )
+    )
+
+
+def _profile_uses_intraday_detector(args: argparse.Namespace) -> bool:
+    return _execution_profile_for_args(args).intraday_stop_retry_enabled
 
 
 def _shell_python_command(script: Path, args: list[str]) -> list[str]:
@@ -656,6 +677,11 @@ def _manifest_symbols() -> list[str]:
 def _watched_symbols(
     extra_symbols: list[str],
     *,
+    artifact_paths: tuple[Path, ...] = (
+        STAGE901_PENDING_ORDERS_PATH,
+        OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
+        OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
+    ),
     retained_broker_symbols: set[str] | None = None,
     max_readonly_age_seconds: int = 300,
 ) -> list[str]:
@@ -664,7 +690,7 @@ def _watched_symbols(
         text = _clean(item)
         if text:
             symbols.append(text)
-    for path in (STAGE901_PENDING_ORDERS_PATH, OFFICIAL_LIVE_SIGNAL_PLAN_PATH, OFFICIAL_LIVE_CURRENT_POSITIONS_PATH):
+    for path in artifact_paths:
         symbols.extend(_symbols_from_frame(_read_csv_maybe(path)))
     symbols.extend(_durable_non_done_symbols())
     snapshot_complete, broker_symbols, _snapshot_status = _fresh_broker_position_symbols(max_readonly_age_seconds)
@@ -686,6 +712,7 @@ def _watched_symbols(
 
 
 def _watched_symbols_for_args(args: argparse.Namespace) -> list[str]:
+    profile = _execution_profile_for_args(args)
     retained = getattr(args, "_retained_broker_symbols", None)
     if retained is None:
         # A daemon restart must not drop a broker-only contract merely because
@@ -694,7 +721,19 @@ def _watched_symbols_for_args(args: argparse.Namespace) -> list[str]:
         retained = set(_manifest_symbols())
         setattr(args, "_retained_broker_symbols", retained)
     return _watched_symbols(
-        args.vt_symbol,
+        getattr(args, "vt_symbol", []),
+        artifact_paths=(
+            (
+                STAGE901_PENDING_ORDERS_PATH,
+                profile.signal_plan_path,
+                profile.current_positions_path,
+            )
+            if profile.intraday_stop_retry_enabled
+            else (
+                profile.signal_plan_path,
+                profile.current_positions_path,
+            )
+        ),
         retained_broker_symbols=retained,
         max_readonly_age_seconds=_to_int(getattr(args, "max_snapshot_age_seconds", 300), 300),
     )
@@ -1108,6 +1147,11 @@ def _tick_stream_supervisor_public(supervisor: dict[str, Any] | None) -> dict[st
 
 
 def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
+    if (
+        not _profile_uses_intraday_detector(args)
+        and getattr(args, "detector_mode", "legacy-subprocess") == "persistent"
+    ):
+        return ["stage372_profile_forbids_c9_persistent_detector"]
     if getattr(args, "detector_mode", "legacy-subprocess") != "persistent":
         return []
     blockers: list[str] = []
@@ -1634,6 +1678,22 @@ def _run_fast_intraday_lane(
     submit_reduce_close: bool = True,
 ) -> dict[str, Any]:
     """Run the risk reducer while the full controller refreshes slow gates."""
+    if not _profile_uses_intraday_detector(args):
+        return {
+            "fast_lane_status": "intraday_not_applicable_profile_disabled",
+            "target_date": target_date,
+            "stage904": {
+                "summary": {
+                    "monitor_status": "intraday_not_applicable_profile_disabled",
+                    "order_api_called_count": 0,
+                }
+            },
+            "stage905": {"summary": {"ready_count": 0}},
+            "stage931": {"summary": {"order_api_called_count": 0}},
+            "reduce_close_ready_count": 0,
+            "order_api_called_count": 0,
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
     if getattr(args, "detector_mode", "legacy-subprocess") == "persistent":
         return _persistent_detector_fast_lane_status(
             args,
@@ -1748,6 +1808,13 @@ def _run_idle_fast_lane(
     sleeper: Any = time.sleep,
 ) -> dict[str, Any]:
     """Keep the risk reducer active during the old inter-cycle sleep window."""
+    if not _profile_uses_intraday_detector(args):
+        return {
+            "run_count": 0,
+            "order_api_called_count": 0,
+            "recent_runs": [],
+            "fast_lane_status": "intraday_not_applicable_profile_disabled",
+        }
     deadline = monotonic() + max(0.0, float(wait_seconds))
     recent_runs: list[dict[str, Any]] = []
     run_count = 0
@@ -1871,6 +1938,8 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
     cmd = [
         str(PYTHON_PATH),
         str(STAGE903_SCRIPT),
+        "--execution-profile",
+        _execution_profile_for_args(args).profile_key,
         "--mode",
         args.mode,
         "--shadow-refresh-mode",
@@ -1910,7 +1979,10 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
     else:
         env[PHASE_D_REAL_ADAPTER_ENV] = "1"
         env.pop(PHASE_D_REAL_ENABLED_ENV, None)
-    if args.tick_refresh_mode != "stream":
+    if (
+        args.tick_refresh_mode != "stream"
+        or not _profile_uses_intraday_detector(args)
+    ):
         result = _run_command(
             cmd,
             timeout_seconds=args.controller_timeout_seconds,
@@ -3121,6 +3193,11 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="C9 official live session daemon with tick refresh and submit gating.")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--submit-mode", choices=["disabled", "live-real"], default="disabled")
     parser.add_argument("--target-date", default="")
@@ -3245,7 +3322,8 @@ def main() -> None:
         summary = {
             "model_tag": MODEL_TAG,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "execution_profile": _execution_profile_for_args(args).profile_key,
+            "official_live_version": _execution_profile_for_args(args).official_version,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
             "target_date": args.target_date,
@@ -3285,7 +3363,8 @@ def main() -> None:
         summary = {
             "model_tag": MODEL_TAG,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "execution_profile": _execution_profile_for_args(args).profile_key,
+            "official_live_version": _execution_profile_for_args(args).official_version,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
             "target_date": args.target_date,
@@ -3316,7 +3395,8 @@ def main() -> None:
         summary = {
             "model_tag": MODEL_TAG,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "execution_profile": _execution_profile_for_args(args).profile_key,
+            "official_live_version": _execution_profile_for_args(args).official_version,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
             "detector_mode": args.detector_mode,
@@ -3410,7 +3490,8 @@ def main() -> None:
         summary = {
             "model_tag": MODEL_TAG,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "execution_profile": _execution_profile_for_args(args).profile_key,
+            "official_live_version": _execution_profile_for_args(args).official_version,
             "mode": args.mode,
             "submit_mode": args.submit_mode,
             "detector_mode": args.detector_mode,

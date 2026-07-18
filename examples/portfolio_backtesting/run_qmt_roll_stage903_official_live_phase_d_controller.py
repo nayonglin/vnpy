@@ -15,13 +15,13 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
+)
 from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
 )
 from qmt_roll_official_live_phase_d_config import (
     CONTROLLER_HEARTBEAT_PATH,
@@ -282,13 +282,22 @@ def _kill_switch_active() -> tuple[bool, dict[str, Any]]:
     return active, payload
 
 
-def _run_stage902(target_date: str, mode: str, max_snapshot_age_seconds: int, confirm_live_real: str) -> dict[str, Any]:
+def _run_stage902(
+    target_date: str,
+    mode: str,
+    max_snapshot_age_seconds: int,
+    confirm_live_real: str,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     readiness_mode = "live-real" if mode == "live-real" else "dry-run"
     cmd = [
         sys.executable,
         str(STAGE902_SCRIPT),
         "--target-date",
         target_date,
+        "--execution-profile",
+        execution_profile.profile_key,
         "--mode",
         readiness_mode,
         "--max-snapshot-age-seconds",
@@ -559,12 +568,19 @@ def _run_stage922(*, data_ready_time: str, as_of: str) -> dict[str, Any]:
     }
 
 
-def _run_stage260(target_date: str, max_snapshot_age_seconds: int) -> dict[str, Any]:
+def _run_stage260(
+    target_date: str,
+    max_snapshot_age_seconds: int,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE260_SCRIPT),
         "--max-snapshot-age-seconds",
         str(max_snapshot_age_seconds),
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -712,7 +728,42 @@ def _skip_stage904_outside_market_session() -> dict[str, Any]:
     }
 
 
-def _run_stage905(target_date: str) -> dict[str, Any]:
+def _run_stage904_for_profile(
+    profile: OfficialExecutionProfile,
+    *,
+    target_date: str,
+    require_broker_fill_price: bool,
+) -> dict[str, Any]:
+    if profile.intraday_stop_retry_enabled:
+        return _run_stage904(
+            target_date,
+            require_broker_fill_price=require_broker_fill_price,
+        )
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return {
+        "command": [],
+        "exit_code": 0,
+        "stdout_tail": "",
+        "started_at": now,
+        "finished_at": now,
+        "monitor_max_tick_age_seconds": "",
+        "summary": {
+            "execution_profile": profile.profile_key,
+            "monitor_status": "intraday_not_applicable_profile_disabled",
+            "action_count": 0,
+            "close_dry_run_count": 0,
+            "retry_open_dry_run_count": 0,
+            "retry_watch_count": 0,
+            "order_api_called_count": 0,
+        },
+    }
+
+
+def _run_stage905(
+    target_date: str,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE905_SCRIPT),
@@ -720,6 +771,8 @@ def _run_stage905(target_date: str) -> dict[str, Any]:
         target_date,
         "--mode",
         "dry-run",
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -1137,8 +1190,21 @@ def _build_cycle_plan(
     rows.append(
         _plan_row(
             "c9_intraday_monitor",
-            "blocked" if stage904_status == "intraday_monitor_blocked" or "c9_intraday_session_daemon_enabled" in stage902_blockers else "passed",
-            "monitor C9 0.5R stop/retry during active sessions",
+            (
+                "skipped"
+                if stage904_status
+                == "intraday_not_applicable_profile_disabled"
+                else "blocked"
+                if stage904_status == "intraday_monitor_blocked"
+                or "c9_intraday_session_daemon_enabled" in stage902_blockers
+                else "passed"
+            ),
+            (
+                "C9 intraday monitor is not applicable to Stage372"
+                if stage904_status
+                == "intraday_not_applicable_profile_disabled"
+                else "monitor C9 0.5R stop/retry during active sessions"
+            ),
             (
                 f"stage904={stage904_status};"
                 f"retry_open_dry_run={stage904_retry_open_dry_run};"
@@ -1356,12 +1422,19 @@ def _build_report(summary: dict[str, Any], plan: pd.DataFrame) -> str:
 
 def run_once(args: argparse.Namespace) -> dict[str, Any]:
     config = build_phase_d_config()
+    execution_profile = resolve_execution_profile(
+        getattr(
+            args,
+            "execution_profile",
+            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+        )
+    )
     now = datetime.now()
     run_id = now.strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    official_summary = _read_json(execution_profile.summary_path)
     target_resolver_result: dict[str, Any] = {
         "command": [],
         "exit_code": 0,
@@ -1398,18 +1471,41 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         )
         official_target_mismatch = str(official_summary.get("analysis_end", "")) != target_date
         effective_shadow_refresh_mode = "run" if resolver_needs_refresh or official_target_mismatch else "plan-only"
-    stage909_result = _run_stage909(
-        target_date=target_date,
-        shadow_refresh_mode=effective_shadow_refresh_mode,
-        analysis_start=args.shadow_analysis_start,
-        mapping_start=args.shadow_mapping_start,
-        bar_start=args.shadow_bar_start,
-        confirm_shadow_refresh=args.confirm_shadow_refresh,
+    if execution_profile.intraday_stop_retry_enabled:
+        stage909_result = _run_stage909(
+            target_date=target_date,
+            shadow_refresh_mode=effective_shadow_refresh_mode,
+            analysis_start=args.shadow_analysis_start,
+            mapping_start=args.shadow_mapping_start,
+            bar_start=args.shadow_bar_start,
+            confirm_shadow_refresh=args.confirm_shadow_refresh,
+        )
+    else:
+        stage909_result = {
+            "command": [],
+            "exit_code": 0 if effective_shadow_refresh_mode == "plan-only" else 2,
+            "stdout_tail": "",
+            "summary": {
+                "execution_profile": execution_profile.profile_key,
+                "shadow_refresh_status": (
+                    "profile_input_refresh_not_requested"
+                    if effective_shadow_refresh_mode == "plan-only"
+                    else "profile_input_refresh_not_implemented_fail_closed"
+                ),
+                "refresh_attempted": 0,
+                "order_api_called_count": 0,
+            },
+        }
+    official_summary = _read_json(execution_profile.summary_path)
+    signal_plan = _read_csv_maybe(execution_profile.signal_plan_path)
+    pending_orders = (
+        _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+        if execution_profile.intraday_stop_retry_enabled
+        else pd.DataFrame()
     )
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
+    current_positions = _read_csv_maybe(
+        execution_profile.current_positions_path
+    )
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     kill_active, kill_payload = _kill_switch_active()
     sessions = _current_sessions(now)
@@ -1457,6 +1553,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     stage260_result = _run_stage260(
         target_date=target_date,
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        execution_profile=execution_profile,
     )
     stage251_result = _run_stage251(
         target_date=target_date,
@@ -1473,6 +1570,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         mode=args.mode,
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
         confirm_live_real=args.confirm_live_real,
+        execution_profile=execution_profile,
     )
     broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
     broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
@@ -1487,15 +1585,35 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         pre_subscribe_wait_seconds=args.intraday_pre_subscribe_wait_seconds,
         stage914_ready=stage914_ready,
     )
-    if args.intraday_execution_mode == "external":
+    if not execution_profile.intraday_stop_retry_enabled:
+        stage904_result = _run_stage904_for_profile(
+            execution_profile,
+            target_date=target_date,
+            require_broker_fill_price=False,
+        )
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
+    elif args.intraday_execution_mode == "external":
         stage904_result = _read_external_intraday_stage(target_date, stage="stage904")
         stage905_result = _read_external_intraday_stage(target_date, stage="stage905")
     elif market_execution_session_active:
-        stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
-        stage905_result = _run_stage905(target_date=target_date)
+        stage904_result = _run_stage904_for_profile(
+            execution_profile,
+            target_date=target_date,
+            require_broker_fill_price=args.mode == "live-real",
+        )
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
     else:
         stage904_result = _skip_stage904_outside_market_session()
-        stage905_result = _run_stage905(target_date=target_date)
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
     stage906_max_snapshot_age_seconds = (
         int(args.reconciliation_max_snapshot_age_seconds)
         if int(args.reconciliation_max_snapshot_age_seconds) > 0
@@ -1549,8 +1667,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage922_resolver_status": target_resolver_result.get("summary", {}).get("resolver_status", ""),
         "stage922_requires_shadow_refresh": target_resolver_result.get("summary", {}).get("requires_shadow_refresh", ""),
         "stage922_requires_data_update": target_resolver_result.get("summary", {}).get("requires_data_update", ""),
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": execution_profile.profile_key,
+        "official_live_version": execution_profile.official_version,
+        "official_live_alias": execution_profile.alias,
+        "capital": execution_profile.capital,
+        "capital_label": execution_profile.capital_label,
         "controller_status": controller_status,
         "current_sessions": sessions,
         "current_session_names": current_session_names,
@@ -1714,6 +1835,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live Phase D controller scaffold.")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument(
         "--target-date-mode",

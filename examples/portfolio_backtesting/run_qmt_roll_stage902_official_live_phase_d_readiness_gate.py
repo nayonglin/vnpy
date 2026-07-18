@@ -10,15 +10,13 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    resolve_execution_profile,
+)
 from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
-    OFFICIAL_LIVE_EXECUTION_POLICY,
     OFFICIAL_LIVE_FAMILY_VERSION,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
     build_official_live_manifest,
     build_official_live_risk_snapshot,
 )
@@ -211,6 +209,11 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fail-closed readiness gate for official-live Phase D automation.")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
@@ -226,17 +229,34 @@ def main() -> None:
     )
     parser.add_argument("--confirm-live-real", default="")
     args = parser.parse_args()
+    profile = resolve_execution_profile(args.execution_profile)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    manifest = build_official_live_manifest()
+    official_summary = _read_json(profile.summary_path)
+    if profile.intraday_stop_retry_enabled:
+        manifest = build_official_live_manifest()
+    else:
+        manifest = {
+            "alias": profile.alias,
+            "version": profile.official_version,
+            "source_stage": profile.source_stage,
+            "capital": profile.capital,
+            "capital_label": profile.capital_label,
+            "execution_policy": {
+                "real_submit_default": "fail_closed",
+            },
+        }
     target_date = args.target_date or str(official_summary.get("analysis_end", ""))
     paths = _paths(target_date)
 
-    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
-    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+    signal_plan = _read_csv_maybe(profile.signal_plan_path)
+    current_positions = _read_csv_maybe(profile.current_positions_path)
+    pending_orders = (
+        _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+        if profile.intraday_stop_retry_enabled
+        else pd.DataFrame()
+    )
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     stage260_summary = _read_json(_stage260_summary_path(target_date))
     stage251_summary = _read_json(_stage251_summary_path(target_date))
@@ -286,12 +306,23 @@ def main() -> None:
     checks: list[dict[str, Any]] = []
     _check(
         checks,
-        name="official_live_profile_resolved_to_c9",
-        passed=OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry",
+        name="official_execution_profile_resolved",
+        passed=(
+            profile.official_version
+            in {
+                "official_live_stage372_20w_recovery_sleeve",
+                "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+            }
+            and (
+                not profile.intraday_stop_retry_enabled
+                or OFFICIAL_LIVE_FAMILY_VERSION
+                == "stage819_c9_intraday_stop_retry"
+            )
+        ),
         severity="block",
-        observed=f"{OFFICIAL_LIVE_VERSION}/{OFFICIAL_LIVE_FAMILY_VERSION}",
-        required="stage819_c9_intraday_stop_retry family",
-        blocker="current_official_live_profile_not_c9",
+        observed=f"{profile.profile_key}/{profile.official_version}",
+        required="registered Stage372 daily-only or explicit historical C9 profile",
+        blocker="official_execution_profile_unregistered",
     )
     _check(
         checks,
@@ -307,10 +338,18 @@ def main() -> None:
         name="target_date_matches_shadow",
         passed=bool(target_date)
         and str(official_summary.get("analysis_end", "")) == target_date
-        and str(official_summary.get("analysis_start", "")) == OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+        and (
+            not profile.intraday_stop_retry_enabled
+            or str(official_summary.get("analysis_start", ""))
+            == OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+        ),
         severity="block",
         observed=f"start={official_summary.get('analysis_start', '')};end={official_summary.get('analysis_end', '')}",
-        required=f"start={OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE};end={target_date}",
+        required=(
+            f"end={target_date}"
+            if not profile.intraday_stop_retry_enabled
+            else f"start={OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE};end={target_date}"
+        ),
         blocker="target_date_not_equal_official_shadow_analysis_end",
     )
     _check(
@@ -354,10 +393,20 @@ def main() -> None:
     _check(
         checks,
         name="signal_and_pending_exports_available",
-        passed=OFFICIAL_LIVE_SIGNAL_PLAN_PATH.exists() and STAGE901_PENDING_ORDERS_PATH.exists(),
+        passed=(
+            profile.signal_plan_path.exists()
+            and (
+                not profile.intraday_stop_retry_enabled
+                or STAGE901_PENDING_ORDERS_PATH.exists()
+            )
+        ),
         severity="block",
         observed=f"signal={len(signal_plan)} pending={len(pending_orders)} positions={len(current_positions)}",
-        required="signal_plan and pending_orders csv",
+        required=(
+            "Stage372 signal_plan csv"
+            if not profile.intraday_stop_retry_enabled
+            else "signal_plan and pending_orders csv"
+        ),
         blocker="signal_or_pending_export_missing",
     )
     _check(
@@ -407,10 +456,18 @@ def main() -> None:
     _check(
         checks,
         name="c9_intraday_session_daemon_enabled",
-        passed=session_daemon_env,
-        severity="block",
+        passed=(
+            session_daemon_env
+            if profile.intraday_stop_retry_enabled
+            else True
+        ),
+        severity="block" if profile.intraday_stop_retry_enabled else "info",
         observed=f"{PHASE_D_SESSION_DAEMON_ENV}={os.getenv(PHASE_D_SESSION_DAEMON_ENV, '')}",
-        required=f"{PHASE_D_SESSION_DAEMON_ENV}=1",
+        required=(
+            f"{PHASE_D_SESSION_DAEMON_ENV}=1"
+            if profile.intraday_stop_retry_enabled
+            else "not applicable for Stage372 daily-only profile"
+        ),
         blocker="entry_day_05r_stop_retry_requires_session_daemon",
         note="C9 的 0.5R 止损/重试不是日终 cron 能完成的职责。",
     )
@@ -478,8 +535,14 @@ def main() -> None:
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "requested_mode": args.mode,
         "target_date": target_date,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "intraday_stop_retry_enabled": int(
+            profile.intraday_stop_retry_enabled
+        ),
         "official_manifest": manifest,
         "risk_snapshot": risk_snapshot,
         "allow_new_open": allow_new_open,
