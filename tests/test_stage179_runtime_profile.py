@@ -29,6 +29,16 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 class Stage179RuntimeProfileTest(unittest.TestCase):
+    def test_stage914_preflight_resolves_stage372_without_c9_global(self) -> None:
+        profile = stage914.resolve_preflight_execution_profile("stage372-20w")
+
+        self.assertEqual(profile.profile_key, "stage372-20w")
+        self.assertEqual(
+            profile.official_version,
+            "official_live_stage372_20w_recovery_sleeve",
+        )
+        self.assertFalse(profile.intraday_stop_retry_enabled)
+
     def test_profiles_have_exact_env_mapping_and_distinct_runtime_roots(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp).resolve()

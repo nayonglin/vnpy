@@ -29,6 +29,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PROJECT_DIR.parent.parent
 DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+    "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
     "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
@@ -199,6 +200,13 @@ def build_release_manifest_file(
         item.value if isinstance(item, ExecutionRuntimeProfile) else str(item)
         for item in allowed_runtime_profiles
     )
+    if (
+        execution_profile == ExecutionStrategyMode.STAGE372_20W.value
+        and submit_profiles.intersection(normalized_runtime_profiles)
+    ):
+        raise ReleaseManifestError(
+            "release_builder_stage372_semantics_promotion_unsupported"
+        )
     if (
         qualification.get("status") != "passed"
         and submit_profiles.intersection(normalized_runtime_profiles)

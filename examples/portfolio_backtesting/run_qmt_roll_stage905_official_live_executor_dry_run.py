@@ -558,6 +558,17 @@ def _stage260_daily_intents(
         return []
     if _clean(summary.get("execution_profile")) != profile.profile_key:
         raise ValueError("stage260_execution_profile_mismatch")
+    if _clean(summary.get("trade_date")) != target_date:
+        raise ValueError("stage260_summary_target_date_mismatch")
+    pending_cohort_id = _clean(summary.get("pending_cohort_id"))
+    if (
+        len(pending_cohort_id) != 64
+        or any(
+            character not in "0123456789abcdef"
+            for character in pending_cohort_id
+        )
+    ):
+        raise ValueError("stage260_summary_pending_cohort_invalid")
     assert_profile_identity(
         profile,
         official_version=summary.get("official_live_version"),
@@ -600,8 +611,10 @@ def _stage260_daily_intents(
         ):
             raise ValueError("stage260_decision_id_invalid")
         row_target_date = _clean(raw.get("trade_date"))
-        if row_target_date and row_target_date != target_date:
+        if row_target_date != target_date:
             raise ValueError("stage260_decision_target_date_mismatch")
+        if _clean(raw.get("pending_cohort_id")) != pending_cohort_id:
+            raise ValueError("stage260_decision_pending_cohort_mismatch")
         rows.append(
             {
                 "intent_id": f"STAGE905-STAGE260-{decision_id}",
@@ -612,6 +625,7 @@ def _stage260_daily_intents(
                 "official_live_version": profile.official_version,
                 "capital": profile.capital,
                 "capital_label": profile.capital_label,
+                "pending_cohort_id": pending_cohort_id,
                 "vt_symbol": _clean(raw.get("vt_symbol")),
                 "direction": _normalize_direction_text(raw.get("direction")),
                 "offset": _normalize_offset_text(raw.get("offset")),

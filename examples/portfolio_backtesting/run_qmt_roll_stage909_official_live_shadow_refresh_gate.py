@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from pandas.errors import EmptyDataError
 
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
@@ -20,6 +21,10 @@ from qmt_roll_official_live_config import OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DA
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT,
     PHASE_D_SHADOW_REFRESH_ENV,
+)
+from qmt_roll_official_pending_artifact import (
+    artifact_hashes_for_profile,
+    validate_pending_artifact_cohort,
 )
 from run_qmt_roll_stage922_official_live_target_date_resolver import (
     _resolve_latest_completed,
@@ -55,6 +60,15 @@ def _read_json(path: Path) -> dict[str, Any]:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
         return {"_read_error": repr(exc)}
+
+
+def _read_csv_maybe(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path, encoding="utf-8-sig")
+    except EmptyDataError:
+        return pd.DataFrame()
 
 
 def _env_enabled(name: str) -> bool:
@@ -326,23 +340,22 @@ def main() -> None:
 
     official_summary = _read_json(profile.summary_path)
     shadow_target_ready = str(official_summary.get("analysis_end", "")) == target_date
-    pending_audit_summary = _read_json(
-        OUTPUT_DIR
-        / (
-            "qmt_roll_stage179_stage372_pending_audit_"
-            f"{target_date.replace('-', '')}.json"
-        )
-    )
-    pending_target_ready = (
-        profile.intraday_stop_retry_enabled
-        or (
-            str(pending_audit_summary.get("target_date", ""))
-            == target_date
-            and str(pending_audit_summary.get("execution_profile", ""))
-            == profile.profile_key
-            and profile.pending_orders_path.exists()
-        )
-    )
+    pending_target_error = ""
+    if profile.intraday_stop_retry_enabled:
+        pending_target_ready = True
+    else:
+        try:
+            validate_pending_artifact_cohort(
+                profile,
+                target_date=target_date,
+                pending_orders=_read_csv_maybe(profile.pending_orders_path),
+                audit=_read_json(profile.pending_orders_audit_path),
+                artifact_hashes=artifact_hashes_for_profile(profile),
+            )
+            pending_target_ready = True
+        except (OSError, TypeError, ValueError) as exc:
+            pending_target_ready = False
+            pending_target_error = str(exc)
     if args.mode == "plan-only":
         shadow_refresh_status = "shadow_refresh_plan_only"
     elif not blocking.empty:
@@ -374,6 +387,7 @@ def main() -> None:
         "official_summary_analysis_end_after": official_summary.get("analysis_end", ""),
         "official_summary_generated_at_after": official_summary.get("generated_at", ""),
         "pending_order_audit_target_ready": int(pending_target_ready),
+        "pending_order_audit_error": pending_target_error,
         "blocking_failure_count": int(len(blocking)),
         "commands": commands,
         "sanitized_command_plan": command_plan,

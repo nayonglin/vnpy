@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import replace
+import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 import sys
+import tempfile
 import unittest
 
+import pandas as pd
 
+
+os.environ.setdefault("QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR", "1")
 PORTFOLIO_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_backtesting"
 if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
@@ -13,6 +20,11 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow as stage659
 import export_qmt_roll_stage372_official_shadow_events as pending_audit
 from qmt_roll_official_execution_profile import STAGE372_20W_PROFILE
+from qmt_roll_official_pending_artifact import (
+    artifact_hashes_for_profile,
+    validate_pending_artifact_cohort,
+)
+import run_qmt_roll_stage902_official_live_phase_d_readiness_gate as stage902
 import run_qmt_roll_stage909_official_live_shadow_refresh_gate as stage909
 
 
@@ -84,6 +96,96 @@ class Stage372ShadowPrecomputeTest(unittest.TestCase):
             shadow_command[shadow_command.index("--execution-profile") + 1],
             "stage372-20w",
         )
+
+    def test_pending_cohort_binds_all_execution_inputs_and_publishes_audit_last(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            profile = replace(
+                STAGE372_20W_PROFILE,
+                summary_path=root / "summary.json",
+                signal_plan_path=root / "signal.csv",
+                current_positions_path=root / "positions.csv",
+                pending_orders_path=root / "pending.csv",
+                pending_orders_audit_path=root / "pending-audit.json",
+            )
+            profile.summary_path.write_text(
+                json.dumps(
+                    {
+                        "analysis_end": "2026-07-17",
+                        "execution_profile": profile.profile_key,
+                        "official_live_version": profile.official_version,
+                        "capital": profile.capital,
+                        "capital_label": profile.capital_label,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            pd.DataFrame([{"vt_symbol": "jm2609.DCE"}]).to_csv(
+                profile.signal_plan_path,
+                index=False,
+            )
+            pd.DataFrame(columns=["vt_symbol", "direction", "end_pos"]).to_csv(
+                profile.current_positions_path,
+                index=False,
+            )
+            pending, audit = pending_audit._publish_pending_cohort(
+                profile=profile,
+                target_date="2026-07-17",
+                pending_orders=pd.DataFrame(
+                    [
+                        {
+                            "vt_orderid": "BACKTEST.42",
+                            "orderid": "42",
+                            "vt_symbol": "jm2609.DCE",
+                            "direction": "short",
+                            "offset": "close",
+                            "price": 1360.0,
+                            "volume": 2,
+                            "traded": 0,
+                            "datetime": "2026-07-17 15:00:00",
+                            "status": "submitting",
+                        }
+                    ]
+                ),
+                generated_at="2026-07-17 16:35:00",
+                pending_orders_path=profile.pending_orders_path,
+                audit_path=profile.pending_orders_audit_path,
+            )
+
+            validated = validate_pending_artifact_cohort(
+                profile,
+                target_date="2026-07-17",
+                pending_orders=pd.read_csv(profile.pending_orders_path),
+                audit=json.loads(profile.pending_orders_audit_path.read_text()),
+                artifact_hashes=artifact_hashes_for_profile(profile),
+            )
+            self.assertEqual(validated["cohort_id"], audit["cohort_id"])
+            self.assertEqual(pending.iloc[0]["target_date"], "2026-07-17")
+            self.assertEqual(
+                pending.iloc[0]["execution_profile"],
+                "stage372-20w",
+            )
+            self.assertFalse(list(root.glob(".*.tmp")))
+
+    def test_stage902_rejects_stage260_summary_from_another_cohort(self) -> None:
+        error = stage902._stage260_binding_error(
+            {
+                "execution_profile": STAGE372_20W_PROFILE.profile_key,
+                "official_live_version": STAGE372_20W_PROFILE.official_version,
+                "capital": STAGE372_20W_PROFILE.capital,
+                "capital_label": STAGE372_20W_PROFILE.capital_label,
+                "trade_date": "2026-07-17",
+                "pending_cohort_id": "d" * 64,
+                "order_api_called_count": 0,
+            },
+            profile=STAGE372_20W_PROFILE,
+            target_date="2026-07-17",
+            pending_cohort_id="c" * 64,
+        )
+
+        self.assertEqual(error, "stage260_pending_cohort_mismatch")
 
 
 if __name__ == "__main__":

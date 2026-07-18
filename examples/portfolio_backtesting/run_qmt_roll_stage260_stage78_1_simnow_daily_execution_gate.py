@@ -18,6 +18,10 @@ from qmt_roll_official_execution_profile import (
     resolve_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import STAGE901_PENDING_ORDERS_PATH
+from qmt_roll_official_pending_artifact import (
+    artifact_hashes_for_profile,
+    validate_pending_artifact_cohort,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -143,12 +147,15 @@ def _validate_explicit_summary_identity(
     summary: Mapping[str, Any],
 ) -> None:
     identity_fields = {
+        "execution_profile",
         "official_live_version",
         "capital",
         "capital_label",
     }
-    if not identity_fields.intersection(summary):
-        return
+    if not identity_fields.issubset(summary):
+        raise ValueError("execution_profile_identity_missing")
+    if _clean_scalar(summary.get("execution_profile")) != profile.profile_key:
+        raise ValueError("execution_profile_key_mismatch")
     assert_profile_identity(
         profile,
         official_version=summary.get("official_live_version"),
@@ -166,6 +173,7 @@ def _decision_id(
     payload = {
         "execution_profile": profile.profile_key,
         "official_live_version": profile.official_version,
+        "pending_cohort_id": _clean_scalar(row.get("pending_cohort_id")),
         "trade_date": trade_date,
         "vt_symbol": _clean_scalar(row.get("vt_symbol")),
         "direction": _normalize_direction(row.get("direction")),
@@ -358,7 +366,10 @@ def _decision_for_signal(
             reasons.append(f"insufficient_position:{matching_position_volume:.4f}<{volume:.4f}")
     elif offset != "open":
         reasons.append(f"unsupported_offset={offset}")
-    elif _clean_scalar(row.get("execution_source")) == "stage901_signal_plan":
+    elif _clean_scalar(row.get("execution_source")) in {
+        "stage901_signal_plan",
+        "stage372_signal_plan",
+    }:
         shadow_matching_position_volume = _shadow_position_volume(current_positions, vt_symbol, direction)
         if shadow_matching_position_volume >= volume > 0:
             reasons.append(f"shadow_position_already_contains_signal_open:{shadow_matching_position_volume:.4f}")
@@ -468,6 +479,8 @@ def run_daily_execution_gate(
     official_summary: Mapping[str, Any],
     signal_plan: pd.DataFrame,
     pending_orders: pd.DataFrame,
+    pending_artifact_audit: Mapping[str, Any] | None = None,
+    artifact_hashes: Mapping[str, str] | None = None,
     current_positions: pd.DataFrame,
     readonly_summary: Mapping[str, Any],
     positions: pd.DataFrame,
@@ -477,9 +490,29 @@ def run_daily_execution_gate(
     write_outputs: bool = True,
 ) -> Stage260RunResult:
     _validate_explicit_summary_identity(profile, official_summary)
+    trade_date = _clean_scalar(official_summary.get("analysis_end"))
+    if not trade_date:
+        raise ValueError("official_summary_analysis_end_missing")
+    pending_cohort_id = ""
+    if not profile.intraday_stop_retry_enabled:
+        pending_audit = validate_pending_artifact_cohort(
+            profile,
+            target_date=trade_date,
+            pending_orders=pending_orders,
+            audit=pending_artifact_audit,
+            artifact_hashes=artifact_hashes,
+        )
+        pending_cohort_id = _clean_scalar(pending_audit.get("cohort_id"))
     observed_now = now or datetime.now()
     candidates = _execution_candidates(signal_plan, pending_orders)
-    trade_date = str(official_summary.get("analysis_end", "latest"))
+    if not profile.intraday_stop_retry_enabled and not candidates.empty:
+        candidates = candidates.copy()
+        candidates["execution_source"] = candidates["execution_source"].replace(
+            {
+                "stage901_pending_order": "stage372_pending_order",
+                "stage901_signal_plan": "stage372_signal_plan",
+            }
+        )
     paths = _paths(trade_date)
     generated_at = str(readonly_summary.get("generated_at", ""))
     generated_dt = _parse_generated_at(generated_at)
@@ -523,6 +556,8 @@ def run_daily_execution_gate(
                 "official_live_version": profile.official_version,
                 "capital": profile.capital,
                 "capital_label": profile.capital_label,
+                "trade_date": trade_date,
+                "pending_cohort_id": pending_cohort_id,
                 "upstream_execution_source": row.get("execution_source", ""),
                 "intent_source": (
                     "stage260_stage372_daily"
@@ -558,6 +593,8 @@ def run_daily_execution_gate(
         "official_live_alias": profile.alias,
         "capital": profile.capital,
         "capital_label": profile.capital_label,
+        "pending_cohort_id": pending_cohort_id,
+        "pending_artifact_hashes": dict(artifact_hashes or {}),
         "official_summary_analysis_end": official_summary.get("analysis_end", ""),
         "official_summary_generated_at": official_summary.get("generated_at", ""),
         "ai_pool_latest_eval_date": ai_pool_audit.get("max_eval_date", ""),
@@ -567,9 +604,17 @@ def run_daily_execution_gate(
         "pending_order_count": int(len(pending_orders)),
         "execution_candidate_count": int(len(candidates)),
         "execution_candidate_source": (
-            "stage901_pending_order"
+            (
+                "stage901_pending_order"
+                if profile.intraday_stop_retry_enabled
+                else "stage372_pending_order"
+            )
             if not pending_orders.empty
-            else "stage901_signal_plan"
+            else (
+                "stage901_signal_plan"
+                if profile.intraday_stop_retry_enabled
+                else "stage372_signal_plan"
+            )
         ),
         "executable_count": executable_count,
         "skipped_flat_count": skipped_flat_count,
@@ -628,6 +673,16 @@ def main() -> None:
         signal_plan=_read_csv_maybe(profile.signal_plan_path),
         pending_orders=(
             _read_csv_maybe(profile.pending_orders_path)
+        ),
+        pending_artifact_audit=(
+            _read_json(profile.pending_orders_audit_path)
+            if not profile.intraday_stop_retry_enabled
+            else None
+        ),
+        artifact_hashes=(
+            artifact_hashes_for_profile(profile)
+            if not profile.intraday_stop_retry_enabled
+            else None
         ),
         current_positions=_read_csv_maybe(profile.current_positions_path),
         readonly_summary=readonly_summary,

@@ -14,6 +14,11 @@ from typing import Any, Callable, Mapping
 
 import pandas as pd
 
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
+)
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
     STAGE179_ACTIVATION_CONFIRM_TEXT,
@@ -68,6 +73,12 @@ _ACTIVATION_RECEIPT_FIELDS = {
     "created_at_utc",
     "receipt_sha256",
 }
+
+
+def resolve_preflight_execution_profile(
+    value: str | ExecutionStrategyMode,
+) -> OfficialExecutionProfile:
+    return resolve_execution_profile(value)
 
 
 @dataclass(frozen=True, slots=True)
@@ -392,17 +403,15 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame, env_rows: pd.Da
 
 
 def main() -> None:
-    # Keep module import side-effect free for pre-adapter gating. The legacy
-    # official config pulls in the backtest stack and is needed only by this CLI.
-    from qmt_roll_official_live_config import (
-        OFFICIAL_LIVE_ALIAS,
-        OFFICIAL_LIVE_FAMILY_VERSION,
-        OFFICIAL_LIVE_VERSION,
-    )
-
     parser = argparse.ArgumentParser(description="Production-live CTP runtime preflight for official Phase D.")
     parser.add_argument("--wait-seconds", type=int, default=30)
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     args = parser.parse_args()
+    profile = resolve_preflight_execution_profile(args.execution_profile)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -412,12 +421,12 @@ def main() -> None:
 
     _check_row(
         checks,
-        check="official_live_profile_is_c9",
-        passed=OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry",
+        check="official_execution_profile_is_explicitly_registered",
+        passed=profile.profile_key == args.execution_profile,
         severity="block",
-        observed=f"{OFFICIAL_LIVE_VERSION}/{OFFICIAL_LIVE_FAMILY_VERSION}",
-        required="stage819_c9_intraday_stop_retry family",
-        blocker="official_live_profile_not_c9",
+        observed=f"{profile.profile_key}/{profile.official_version}",
+        required="explicit registered execution profile",
+        blocker="official_execution_profile_unregistered",
     )
     _check_row(
         checks,
@@ -563,8 +572,11 @@ def main() -> None:
     summary = {
         "model_tag": MODEL_TAG,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
         "preflight_status": preflight_status,
         "blocking_failure_count": int(len(blocking)),
         "warning_failure_count": int(len(warnings)),

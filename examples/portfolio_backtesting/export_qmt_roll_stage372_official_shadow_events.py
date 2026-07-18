@@ -3,9 +3,11 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 from datetime import datetime, timedelta
+import hashlib
 import json
 import os
 from pathlib import Path
+import uuid
 from typing import Any
 
 import pandas as pd
@@ -16,7 +18,13 @@ import analyze_qmt_roll_stage517_portfolio_margin_deleverage_frontier as s517
 import analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow as s659
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    assert_profile_identity,
     resolve_execution_profile,
+)
+from qmt_roll_official_pending_artifact import (
+    PENDING_ARTIFACT_SCHEMA_VERSION,
+    sha256_path,
 )
 import qmt_roll_official_stage372_shadow_config as stage372_cfg
 from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy
@@ -27,6 +35,24 @@ OUTPUT_DIR = Path(
     os.environ.get("OFFICIAL_LIVE_OUTPUT_DIR", PROJECT_DIR / "backtest_outputs")
 ).expanduser().resolve(strict=False)
 MODEL_TAG = "stage179_stage372_pending_order_audit_v1"
+PENDING_ORDER_COLUMNS = (
+    "cohort_id",
+    "target_date",
+    "execution_profile",
+    "official_live_version",
+    "capital",
+    "capital_label",
+    "vt_orderid",
+    "orderid",
+    "vt_symbol",
+    "direction",
+    "offset",
+    "price",
+    "volume",
+    "traded",
+    "datetime",
+    "status",
+)
 
 
 def _json_safe(value: Any) -> Any:
@@ -87,10 +113,148 @@ def _output_paths(target_date: str) -> dict[str, Path]:
     date_key = target_date.replace("-", "")
     return {
         "pending_orders": profile.pending_orders_path,
+        "pending_audit": profile.pending_orders_audit_path,
         "target_events": OUTPUT_DIR / f"qmt_roll_stage179_stage372_target_events_{date_key}.csv",
         "target_entry_candidates": OUTPUT_DIR / f"qmt_roll_stage179_stage372_entry_candidates_{date_key}.csv",
         "summary": OUTPUT_DIR / f"qmt_roll_stage179_stage372_pending_audit_{date_key}.json",
     }
+
+
+def _fsync_parent(path: Path) -> None:
+    try:
+        directory_fd = os.open(str(path.parent), os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+
+
+def _atomic_write_bytes(path: Path, payload: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(
+        f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp"
+    )
+    try:
+        with temporary.open("wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        _fsync_parent(path)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _read_bound_summary(
+    profile: OfficialExecutionProfile,
+    *,
+    target_date: str,
+) -> dict[str, Any]:
+    try:
+        summary = json.loads(profile.summary_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise ValueError("pending_artifact_official_summary_unreadable") from exc
+    if not isinstance(summary, dict):
+        raise ValueError("pending_artifact_official_summary_invalid")
+    if summary.get("execution_profile") != profile.profile_key:
+        raise ValueError("pending_artifact_official_summary_profile_mismatch")
+    assert_profile_identity(
+        profile,
+        official_version=summary.get("official_live_version"),
+        capital=summary.get("capital"),
+        capital_label=summary.get("capital_label"),
+    )
+    if str(summary.get("analysis_end", "")) != target_date:
+        raise ValueError("pending_artifact_official_summary_target_mismatch")
+    return summary
+
+
+def _publish_pending_cohort(
+    *,
+    profile: OfficialExecutionProfile,
+    target_date: str,
+    pending_orders: pd.DataFrame,
+    generated_at: str,
+    pending_orders_path: Path,
+    audit_path: Path,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    _read_bound_summary(profile, target_date=target_date)
+    upstream_hashes = {
+        "official_summary": sha256_path(profile.summary_path),
+        "signal_plan": sha256_path(profile.signal_plan_path),
+        "current_positions": sha256_path(profile.current_positions_path),
+    }
+    raw_rows = _json_safe(pending_orders.to_dict(orient="records"))
+    cohort_seed = {
+        "target_date": target_date,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "upstream_hashes": upstream_hashes,
+        "pending_orders": raw_rows,
+    }
+    cohort_id = hashlib.sha256(
+        json.dumps(
+            cohort_seed,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    enriched = pending_orders.copy(deep=True)
+    metadata = {
+        "cohort_id": cohort_id,
+        "target_date": target_date,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+    }
+    for field, value in reversed(tuple(metadata.items())):
+        enriched.insert(0, field, value)
+    enriched = enriched.reindex(columns=PENDING_ORDER_COLUMNS)
+    pending_bytes = enriched.to_csv(index=False).encode("utf-8-sig")
+    _atomic_write_bytes(pending_orders_path, pending_bytes)
+    pending_sha256 = hashlib.sha256(pending_bytes).hexdigest()
+    audit = {
+        "schema_version": PENDING_ARTIFACT_SCHEMA_VERSION,
+        "status": "ready",
+        "generated_at": generated_at,
+        **metadata,
+        "official_summary_sha256": upstream_hashes["official_summary"],
+        "signal_plan_sha256": upstream_hashes["signal_plan"],
+        "current_positions_sha256": upstream_hashes["current_positions"],
+        "pending_orders_sha256": pending_sha256,
+        "pending_order_count": int(len(enriched)),
+        "order_api_called_count": 0,
+        "outputs": {
+            "pending_orders": str(pending_orders_path),
+            "official_summary": str(profile.summary_path),
+            "signal_plan": str(profile.signal_plan_path),
+            "current_positions": str(profile.current_positions_path),
+        },
+    }
+    _atomic_write_bytes(
+        audit_path,
+        (
+            json.dumps(
+                audit,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            )
+            + "\n"
+        ).encode("utf-8"),
+    )
+    return enriched, audit
 
 
 def run_pending_audit(
@@ -169,20 +333,26 @@ def run_pending_audit(
         target_candidates = _target_rows(entry_candidates, target_date)
         paths = _output_paths(target_date)
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        pending_orders.to_csv(
-            paths["pending_orders"], index=False, encoding="utf-8-sig"
+        _atomic_write_bytes(
+            paths["target_events"],
+            target_events.to_csv(index=False).encode("utf-8-sig"),
         )
-        target_events.to_csv(
-            paths["target_events"], index=False, encoding="utf-8-sig"
-        )
-        target_candidates.to_csv(
+        _atomic_write_bytes(
             paths["target_entry_candidates"],
-            index=False,
-            encoding="utf-8-sig",
+            target_candidates.to_csv(index=False).encode("utf-8-sig"),
+        )
+        generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        pending_orders, pending_audit = _publish_pending_cohort(
+            profile=profile,
+            target_date=target_date,
+            pending_orders=pending_orders,
+            generated_at=generated_at,
+            pending_orders_path=paths["pending_orders"],
+            audit_path=paths["pending_audit"],
         )
         summary = {
             "model_tag": MODEL_TAG,
-            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "generated_at": generated_at,
             "execution_profile": profile.profile_key,
             "official_live_version": profile.official_version,
             "capital": profile.capital,
@@ -193,6 +363,7 @@ def run_pending_audit(
             "target_event_count": int(len(target_events)),
             "target_entry_candidate_count": int(len(target_candidates)),
             "pending_orders": pending_orders.to_dict(orient="records"),
+            "pending_artifact_audit": pending_audit,
             "target_events": target_events.to_dict(orient="records"),
             "target_entry_candidates": target_candidates.to_dict(
                 orient="records"
@@ -201,10 +372,12 @@ def run_pending_audit(
             "outputs": {key: str(path) for key, path in paths.items()},
         }
         safe = _json_safe(summary)
-        paths["summary"].write_text(
-            json.dumps(safe, ensure_ascii=False, indent=2, allow_nan=False)
-            + "\n",
-            encoding="utf-8",
+        _atomic_write_bytes(
+            paths["summary"],
+            (
+                json.dumps(safe, ensure_ascii=False, indent=2, allow_nan=False)
+                + "\n"
+            ).encode("utf-8"),
         )
         return safe
     finally:

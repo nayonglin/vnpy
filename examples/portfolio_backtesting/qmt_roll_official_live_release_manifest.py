@@ -365,6 +365,13 @@ def load_and_validate_release_manifest(
         raise ReleaseManifestError(
             "release_manifest_strategy_semantics_unqualified"
         )
+    if (
+        required_profile in submit_profiles
+        and execution_profile == "stage372-20w"
+    ):
+        raise ReleaseManifestError(
+            "release_manifest_stage372_semantics_promotion_unsupported"
+        )
     ledger = payload.get("ledger_contract")
     if not isinstance(ledger, dict) or set(ledger) != {
         "schema_version",

@@ -100,13 +100,26 @@
 - plist：3 份 Stage372 plist 均通过 `plutil -lint`；修改/新增 Python 通过静态编译；`git diff --check` 通过。
 - Stage909 plan-only：正确解析最新已完成交易日 `2026-07-17`，profile/资金/命令均为 Stage372/20万，未运行命令、未连接 CTP、未报单。
 
+### 2026-07-19 00:08-00:26 独立终审与 P1 修复
+
+- 冻结 HEAD `31d2793a6` 的独立 Agent 终审结果：`P0=0、P1=4、P2=5`；代码合入、production-readonly、SimNow、production-live 均判定 NO-GO。
+- P1-1 身份缺失：Stage260 原来允许 summary 的 version/capital/label 全缺失并反向注入 Stage372 身份。修复后强制 `execution_profile/version/capital/capital_label` 四项全部存在且精确匹配；全缺失、部分缺失和错 profile/version 均失败关闭。
+- P1-2 旧 pending 重标日期：新增 schema v1 pending cohort audit；cohort 精确绑定 target date、profile、version、capital、official summary、signal plan、current positions 与 pending CSV 的 SHA-256。CSV 使用临时文件、fsync、rename 发布，audit 最后发布；Stage260/902/905/909 全链校验同一 cohort，decision 和 intent 必须携带相同 trade date/cohort。
+- P1-3 语义资格自签：当前分支硬拒 Stage372 的任何 `passed + simnow/broker-test/production-live` manifest；公共 builder 和 loader 两侧均失败关闭。未来只有引入专用、可验证资格证书后才允许另行改代码放开。
+- P1-4 不可变清单：旧清单不复用；P1 修复提交后必须重新从干净树生成 Stage372 no-submit manifest。
+- 同时关闭 P2 的 Stage914 旧 C9 口径：Stage914 改为显式 execution profile，Stage903 精确透传 Stage372/C9 profile；Stage260 审计来源改为 `stage372_pending_order/stage372_signal_plan`。
+- 修复后执行回归：两组共 `657 passed, 245 subtests passed`；新增缺身份、旧日期 pending、cohort 交叉、Stage372 自签 passed、原子发布和 Stage914 profile 测试全部通过。
+- 修复后 60 秒性能门：20 合约、2000 tick/s、120,000 tick，`17/17` 通过；ingress p99/max `0.090917/2.217292ms`，EventEngine p99/max `2.327750/6.642583ms`，durable lag p99/max `72.243000/96.236291ms`，drain `0.054519s`，RSS 增量 `44.406250MiB`。证据目录 `/tmp/stage179-stage372-p1fix-performance.52VB0L`，gate SHA-256 `b641af1adfdd1703bc56f8dbe2f159d1f97dfa9d4d44476fd63333fc4b2fdd56`，ticks SHA-256 `af2cad5f8f24deba0ef553a16a126c5dafecdcc6903a8d0d95b146b452f4c526`。
+- 修复后故障门：`3 passed, 24 subtests passed`；24 类故障、100 轮 API-slot race、100 轮双 executor race 全部失败关闭/单赢家。证据目录 `/tmp/stage179-stage372-p1fix-fault.1VFE0D`；fault cases SHA-256 `520ed47c1e6ab812377b5b402c00244234036a4627dc1e282b9a2ef08db433a7`，API-slot race SHA-256 `050280daf729bb08600c4b3d28b70946bd2c03a6c2d6890f56a3336efe5ec8fb`，two-executor race SHA-256 `56db189defcf1fe2f836a4d9f19f0d843a08df6acc999b303548f273eb7b1331`。
+- 生产只读 CTP：Stage174 combined gateway 连接尝试在 native teardown 以 `exit 139` 退出且未落完整 summary；随后 Stage655 TD-only 使用正式 env、`0600` 权限与正式 framework 优先运行 35 秒，`send/cancel=0/0`，但 `front_connected/auth/login/account/position` 全部未就绪。summary SHA-256 `6e7c62d82bd8c35c3dc6491dbabadb6231dd01bfa2fd5beaf5c17a58a0b72eb7`。结论为 production-readonly NO-GO，不得继续提交链。
+
 ## 结论与硬门禁
 
-- 代码合入判断：执行适配和失败关闭边界可作为 no-submit 候选合入；最终结论仍以干净工作树 manifest 和独立 Agent 终审为准。
+- 代码合入判断：首轮独立终审的四个 P1 已修复并通过扩大回归；仍需在新冻结 HEAD 生成干净树 no-submit manifest，并由独立 Agent follow-up 复审后才能给最终 GO/NO-GO。
 - 部署判断：新增 plist 尚未安装/加载；合入不等于部署。
 - 激活判断：当前只允许离线和 `production-readonly`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：生成干净树 no-submit manifest；独立 Agent 全面审查代码、证据与资格边界；修复 P0/P1；执行生产只读 CTP `0/0` 验收。未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：提交 P1 修复；生成新冻结 HEAD 的干净树 no-submit manifest；独立 Agent follow-up 复审。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 

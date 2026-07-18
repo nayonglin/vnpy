@@ -133,4 +133,3 @@ Stage372 profile 对 source 使用 allowlist。任何 `stage904_c9_intraday_clos
 - 不给 Stage372 增加实时止损或重进场；如未来需要，必须另建策略研究线、回测、A/B 与独立批准。
 - 不在本设计实施期间发送 SimNow、券商测试或真实订单。
 - 不自动部署或替换当前 LaunchAgent。
-

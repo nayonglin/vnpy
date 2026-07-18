@@ -415,12 +415,18 @@ def _run_stage907(
     }
 
 
-def _run_stage914(wait_seconds: int) -> dict[str, Any]:
+def _run_stage914(
+    wait_seconds: int,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE914_SCRIPT),
         "--wait-seconds",
         str(wait_seconds),
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -1492,7 +1498,10 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         _clean(session.get("role")) == "market_and_execution" for session in sessions
     )
 
-    stage914_result = _run_stage914(wait_seconds=args.readonly_wait_seconds)
+    stage914_result = _run_stage914(
+        wait_seconds=args.readonly_wait_seconds,
+        execution_profile=execution_profile,
+    )
     stage914_summary = stage914_result.get("summary", {})
     stage914_ready = (
         stage914_summary.get("preflight_status") == "production_readonly_preflight_passed"

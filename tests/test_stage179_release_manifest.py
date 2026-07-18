@@ -61,15 +61,14 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             capital=200_000,
             capital_label="20w",
             strategy_semantics_qualification={
-                "status": "passed",
-                "evidence_id": "unit-test-anchor",
+                "status": "blocked",
+                "evidence_id": "stage372-source-inputs-not-reproducible",
             },
             source_commit=self.commit,
             critical_files=("a.py", "b.json"),
             allowed_runtime_profiles=(
                 "offline",
                 "production-readonly",
-                "simnow",
             ),
             created_at_utc="2026-07-18T11:00:00Z",
             ledger_schema_version=1,
@@ -166,6 +165,22 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         with self.assertRaisesRegex(
             ReleaseManifestError,
             "release_manifest_strategy_semantics_unqualified",
+        ):
+            self.validate(profile="simnow")
+
+    def test_stage372_self_declared_passed_manifest_is_rejected(self) -> None:
+        payload = self.payload()
+        payload["strategy_semantics_qualification"] = {
+            "status": "passed",
+            "evidence_id": "anything-the-caller-wants",
+        }
+        payload["allowed_runtime_profiles"] = ["offline", "simnow"]
+        self.reseal(payload)
+        write_release_manifest(self.manifest_path, payload)
+
+        with self.assertRaisesRegex(
+            ReleaseManifestError,
+            "release_manifest_stage372_semantics_promotion_unsupported",
         ):
             self.validate(profile="simnow")
 
@@ -361,6 +376,28 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 capital_label="20w",
                 critical_files=("a.py", "b.json"),
                 allowed_runtime_profiles=("offline",),
+                created_at_utc="2026-07-18T11:00:00Z",
+            )
+
+    def test_builder_refuses_stage372_submit_even_with_self_declared_pass(self) -> None:
+        with self.assertRaisesRegex(
+            ReleaseManifestError,
+            "release_builder_stage372_semantics_promotion_unsupported",
+        ):
+            build_release_manifest_file(
+                output_path=Path(self.tempdir.name) / "unsafe-release.json",
+                repo_root=self.repo,
+                release_id="unsafe",
+                execution_profile="stage372-20w",
+                official_version="official-v",
+                capital=200_000,
+                capital_label="20w",
+                critical_files=("a.py", "b.json"),
+                allowed_runtime_profiles=("offline", "simnow"),
+                strategy_semantics_qualification={
+                    "status": "passed",
+                    "evidence_id": "caller-self-declared",
+                },
                 created_at_utc="2026-07-18T11:00:00Z",
             )
 

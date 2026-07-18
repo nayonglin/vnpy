@@ -19,6 +19,8 @@ import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
 
 
 class Stage372DailyIntentTest(unittest.TestCase):
+    _COHORT_ID = "c" * 64
+
     def _decisions(self) -> pd.DataFrame:
         return pd.DataFrame(
             [
@@ -28,6 +30,8 @@ class Stage372DailyIntentTest(unittest.TestCase):
                     "official_live_version": STAGE372_20W_PROFILE.official_version,
                     "capital": 200_000.0,
                     "capital_label": "20w",
+                    "trade_date": "2026-07-18",
+                    "pending_cohort_id": self._COHORT_ID,
                     "intent_source": "stage260_stage372_daily",
                     "execution_action": "simnow_executable",
                     "vt_symbol": "JM609.DCE",
@@ -66,6 +70,8 @@ class Stage372DailyIntentTest(unittest.TestCase):
                 "official_live_version": STAGE372_20W_PROFILE.official_version,
                 "capital": 200_000.0,
                 "capital_label": "20w",
+                "trade_date": "2026-07-18",
+                "pending_cohort_id": self._COHORT_ID,
                 "executable_count": 1,
                 "order_api_called_count": 0,
             },
@@ -102,6 +108,10 @@ class Stage372DailyIntentTest(unittest.TestCase):
             first.intents.iloc[0]["source"],
             "stage260_stage372_daily",
         )
+        self.assertEqual(
+            first.intents.iloc[0]["pending_cohort_id"],
+            self._COHORT_ID,
+        )
 
     def test_stage372_rejects_any_c9_action_input(self) -> None:
         with self.assertRaisesRegex(
@@ -121,6 +131,22 @@ class Stage372DailyIntentTest(unittest.TestCase):
                 ),
                 stage904_summary={"target_date": "2026-07-18"},
                 stage260_decisions=self._decisions(),
+                snapshots=self._snapshots(),
+                include_stage901_pending=False,
+                write_compat_outputs=False,
+            )
+
+    def test_stage372_rejects_missing_or_stale_pending_cohort(self) -> None:
+        decisions = self._decisions()
+        decisions.loc[0, "pending_cohort_id"] = "d" * 64
+        with self.assertRaisesRegex(
+            ValueError,
+            "stage260_decision_pending_cohort_mismatch",
+        ):
+            stage905.run_executor_dry_run(
+                "2026-07-18",
+                execution_profile=STAGE372_20W_PROFILE,
+                stage260_decisions=decisions,
                 snapshots=self._snapshots(),
                 include_stage901_pending=False,
                 write_compat_outputs=False,
