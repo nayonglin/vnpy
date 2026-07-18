@@ -181,6 +181,7 @@
 - 资格 evidence 文件使用只新建、不覆盖的原子写入与父目录 fsync；capture 时重新用当前仓库字节校验冻结 manifest，qualify 时精确绑定 manifest digest/source commit。审计器只读文件，不调用 `launchctl`、不连接 CTP、不导入报单适配器。
 - 新增参数：`capture --session-id/--session-date/--session-kind/--scheduled-start-epoch-ns/--disconnect-evidence`，`qualify --session-evidence/--expected-manifest-sha256/--expected-source-commit/--required-session-count`。修改参数：无策略参数变化。删除参数：无正式参数删除。
 - 最终扩大回归：`715 passed, 245 subtests passed`，耗时 `68.54s`；另一次相关全组回归 `237 passed, 115 subtests passed`。Python compile、`git diff --check` 与 3 份 Stage372 plist lint 全部通过；环境缺少 `ruff`，因此没有声称 ruff 通过。
+- 证据代码提交 `eaa62fa609b2041987132a73d811dcf376d56a5d` 后，已从干净 detached worktree 生成 65 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-eaa62fa60`，manifest digest `86ca4ac818d5fef24d5eac0468d66d9d39f72cdad07d9d8f4694836d297e6978`，文件 SHA-256 `127062b96bb26d2cba1b83138ad1a6d8ce1522c34692204699fd71b00f64fd7e`；实际 loader 对 `production-readonly` 校验通过，资格保持 `blocked`，允许 profile 仍只有 `offline/production-readonly`。
 - 本轮没有运行新回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有加载生产 env、没有连接 CTP/SimNow、没有安装或加载 LaunchAgent、没有调用真实报单或撤单 API，真实调用保持 `send=0/cancel=0`。
 - 延迟判断：代码现在能机器判定“20:55 是否准时拉起、21:00 首 tick 是否及时耐久、证据是否完整”，并继续沿既有 trace/SLA 判定真实信号到执行的 25 秒 hard deadline；但当前仍没有 5 场真实服务窗口证据，因此不能宣称今天的线上延迟已被运行态证明解决。
 - 过拟合反思：否。没有根据 JM 单晚结果或收益曲线调参，只补时间因果、显式证据和失败关闭。

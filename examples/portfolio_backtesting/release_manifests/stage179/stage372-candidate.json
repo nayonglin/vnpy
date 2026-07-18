@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T17:21:50.055606Z",
+  "created_at_utc": "2026-07-18T18:07:56.737952Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -13,9 +13,14 @@
       "size_bytes": 23159
     },
     {
+      "path": "examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
+      "sha256": "92034a93e49f5945258786eb3938459c1eb7f5a5c6a1588f5c5a61d01cc1fbd3",
+      "size_bytes": 22692
+    },
+    {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
-      "sha256": "f9e0fac1428181642f4f30e96d03849479e98fa0195fac88db172552e15805d8",
-      "size_bytes": 13251
+      "sha256": "4e3aa2f2ebacb4d02a0da3b61585fd855ffda52a1eeea98f1b412fb4b0fd1df2",
+      "size_bytes": 13459
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
@@ -174,8 +179,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
-      "sha256": "7cc317d72e4598ef8239b0ac921230ad27b55247531dc5e2d3fa8d89771c8c7d",
-      "size_bytes": 126944
+      "sha256": "7b3e54194aa6121f4311e066dfad94e2f8d77bf53019d7e16eebd9bc110ee0b2",
+      "size_bytes": 127068
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
@@ -194,8 +199,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
-      "sha256": "24b8d823484ba9128e4b1554d442071eb36fab6fd3866c851ba7cc16a395060f",
-      "size_bytes": 79192
+      "sha256": "4f5d6c69983296ff5426e420331c836bf8b39f3d29431ce309895aec2211636f",
+      "size_bytes": 79662
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
@@ -229,8 +234,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
-      "sha256": "c08d76c9e24bbeab64a53d97e82aac555526c844bfd62921c49edfcac66f26eb",
-      "size_bytes": 149958
+      "sha256": "06a634b8ff89a0f7a4f62934a49e111242f9cd2dbac70f720975f28703c9d409",
+      "size_bytes": 166756
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -278,6 +283,11 @@
       "size_bytes": 5354
     },
     {
+      "path": "tests/test_stage179_readonly_canary_qualification.py",
+      "sha256": "fab6f21eec8bb200c945fa145438d87494ecfa582bb465c8a937d5ebe5d63898",
+      "size_bytes": 12782
+    },
+    {
       "path": "tests/test_stage179_stage260_execution_profile.py",
       "sha256": "6386dbdea1ed7a73e983b6a1fdf9630a5fe9487d685a4e28b8a11967672ef0db",
       "size_bytes": 13110
@@ -313,9 +323,14 @@
       "size_bytes": 15687
     },
     {
+      "path": "tests/test_stage608_continuous_tick_stream.py",
+      "sha256": "098b238f2a586df0f9e2e1c377a0adfcf2cd2701a82848538efc8aef4cb0532d",
+      "size_bytes": 370672
+    },
+    {
       "path": "tests/test_stage930_fast_lane.py",
-      "sha256": "b18d68f86388c6cb3aaa33956f5317e7f39f49d1d195ed99d6a0a7c996ad13ca",
-      "size_bytes": 85269
+      "sha256": "0d1146fec16b0373d11cef49a4b6ea6587f8e9dffa965f4d12061a0a4e8904d0",
+      "size_bytes": 91485
     }
   ],
   "execution_profile": "stage372-20w",
@@ -334,14 +349,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "e2abd74d53d7e4d26752db1534209c445a6a956ad027d3cd59ee6ead5bd79c57",
+  "manifest_sha256": "86ca4ac818d5fef24d5eac0468d66d9d39f72cdad07d9d8f4694836d297e6978",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-no-submit-b1d05d8c8",
+  "release_id": "stage179-stage372-no-submit-eaa62fa60",
   "schema_version": 2,
-  "source_commit": "b1d05d8c8a18b0652b8730e748f401ed3f01bdbb",
+  "source_commit": "eaa62fa609b2041987132a73d811dcf376d56a5d",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "6321494a67455523888bec75926d341660f1d7b4bc9c35988063473f3e024184"
+  "tree_fingerprint": "a77cdcbf3285558d9b2df23a2aa864a2008b04967b48f822f195a08eeba3a808"
 }
