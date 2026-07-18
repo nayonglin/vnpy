@@ -13,7 +13,14 @@ from typing import Any, Mapping, Sequence
 import pandas as pd
 from pandas.errors import EmptyDataError
 
-from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_execution_profile import (
+    C9_15W_HISTORICAL_PROFILE,
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    assert_intent_source_allowed,
+    assert_profile_identity,
+    resolve_execution_profile,
+)
 from qmt_roll_official_live_c9_intraday_state import (
     INITIAL_STOP_ACTION_ROLE,
     RETRY_OPEN_ACTION_ROLE,
@@ -192,6 +199,11 @@ def _stage904_summary_path(target_date: str) -> Path:
 def _stage260_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"{STAGE260_PREFIX}_summary_{date_key}_{STAGE260_MODEL_TAG}.json"
+
+
+def _stage260_decisions_path(target_date: str) -> Path:
+    date_key = target_date.replace("-", "") if target_date else "latest"
+    return OUTPUT_DIR / f"{STAGE260_PREFIX}_decisions_{date_key}_{STAGE260_MODEL_TAG}.csv"
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -533,6 +545,82 @@ def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") 
             if planned_epoch_id:
                 item["position_epoch_id"] = planned_epoch_id
         rows.append(item)
+    return rows
+
+
+def _stage260_daily_intents(
+    decisions: pd.DataFrame,
+    *,
+    summary: Mapping[str, Any],
+    profile: OfficialExecutionProfile,
+    target_date: str,
+) -> list[dict[str, Any]]:
+    if profile.intraday_stop_retry_enabled:
+        return []
+    if _clean(summary.get("execution_profile")) != profile.profile_key:
+        raise ValueError("stage260_execution_profile_mismatch")
+    assert_profile_identity(
+        profile,
+        official_version=summary.get("official_live_version"),
+        capital=_to_float(summary.get("capital"), 0.0),
+        capital_label=summary.get("capital_label"),
+    )
+    if int(_to_float(summary.get("order_api_called_count"), -1.0)) != 0:
+        raise ValueError("stage260_order_api_count_nonzero")
+    executable = decisions[
+        decisions.get(
+            "execution_action",
+            pd.Series([""] * len(decisions), index=decisions.index),
+        )
+        .fillna("")
+        .astype(str)
+        .eq("simnow_executable")
+    ]
+    declared_executable = int(_to_float(summary.get("executable_count"), -1.0))
+    if declared_executable != len(executable):
+        raise ValueError(
+            "stage260_executable_count_mismatch:"
+            f"{declared_executable}!={len(executable)}"
+        )
+    rows: list[dict[str, Any]] = []
+    for raw in executable.to_dict(orient="records"):
+        if _clean(raw.get("execution_profile")) != profile.profile_key:
+            raise ValueError("stage260_decision_execution_profile_mismatch")
+        assert_profile_identity(
+            profile,
+            official_version=raw.get("official_live_version"),
+            capital=_to_float(raw.get("capital"), 0.0),
+            capital_label=raw.get("capital_label"),
+        )
+        source = _clean(raw.get("intent_source"))
+        assert_intent_source_allowed(profile, source)
+        decision_id = _clean(raw.get("decision_id"))
+        if (
+            len(decision_id) != 64
+            or any(character not in "0123456789abcdef" for character in decision_id)
+        ):
+            raise ValueError("stage260_decision_id_invalid")
+        row_target_date = _clean(raw.get("trade_date"))
+        if row_target_date and row_target_date != target_date:
+            raise ValueError("stage260_decision_target_date_mismatch")
+        rows.append(
+            {
+                "intent_id": f"STAGE905-STAGE260-{decision_id}",
+                "decision_id": decision_id,
+                "target_date": target_date,
+                "source": source,
+                "execution_profile": profile.profile_key,
+                "official_live_version": profile.official_version,
+                "capital": profile.capital,
+                "capital_label": profile.capital_label,
+                "vt_symbol": _clean(raw.get("vt_symbol")),
+                "direction": _normalize_direction_text(raw.get("direction")),
+                "offset": _normalize_offset_text(raw.get("offset")),
+                "planned_volume": _to_float(raw.get("planned_volume"), 0.0),
+                "limit_price": _to_float(raw.get("theoretical_price"), 0.0),
+                "source_reason": _clean(raw.get("execution_reason")),
+            }
+        )
     return rows
 
 
@@ -1409,9 +1497,31 @@ def run_executor_dry_run(
     stage904_summary: Mapping[str, Any] | None = None,
     snapshots: Stage905SnapshotInputs | None = None,
     include_stage901_pending: bool = True,
+    execution_profile: (
+        OfficialExecutionProfile | str | ExecutionStrategyMode
+    ) = C9_15W_HISTORICAL_PROFILE,
+    stage260_decisions: pd.DataFrame | None = None,
     clock: Clock = SYSTEM_CLOCK,
     write_compat_outputs: bool = True,
 ) -> Stage905RunResult:
+    profile = (
+        execution_profile
+        if isinstance(execution_profile, OfficialExecutionProfile)
+        else resolve_execution_profile(execution_profile)
+    )
+    intraday_inputs_supplied = (
+        stage904_actions is not None or stage904_summary is not None
+    )
+    if not profile.intraday_stop_retry_enabled:
+        if intraday_inputs_supplied:
+            raise ValueError("stage372_intraday_input_forbidden")
+        if include_stage901_pending:
+            raise ValueError("stage372_stage901_pending_forbidden")
+        stage904_actions = pd.DataFrame(columns=["monitor_action"])
+        stage904_summary = {
+            "target_date": target_date,
+            "monitor_status": "intraday_not_applicable_profile_disabled",
+        }
     if stage904_actions is not None and not isinstance(stage904_actions, pd.DataFrame):
         result_actions = getattr(stage904_actions, "actions", None)
         result_summary = getattr(stage904_actions, "summary", None)
@@ -1428,7 +1538,9 @@ def run_executor_dry_run(
         stage904_actions = result_actions
     if (stage904_actions is None) != (stage904_summary is None):
         raise ValueError("stage904_in_memory_inputs_must_be_paired")
-    in_memory_stage904 = stage904_actions is not None
+    in_memory_stage904 = bool(
+        profile.intraday_stop_retry_enabled and stage904_actions is not None
+    )
     if (
         in_memory_stage904
         and _clean(stage904_summary.get("target_date")) != target_date
@@ -1485,6 +1597,10 @@ def run_executor_dry_run(
         stage902_summary = _read_json(_stage902_summary_path(target_date))
         stage260_summary = _read_json(_stage260_summary_path(target_date))
         execution_ledger_rows = read_execution_ledger()
+        if stage260_decisions is None:
+            stage260_decisions = _read_csv_maybe(
+                _stage260_decisions_path(target_date)
+            )
     else:
         pending_orders = snapshots.pending_orders.copy(deep=True)
         contracts = snapshots.contracts.copy(deep=True)
@@ -1493,6 +1609,10 @@ def run_executor_dry_run(
         stage902_summary = dict(snapshots.stage902_summary)
         stage260_summary = dict(snapshots.stage260_summary)
         execution_ledger_rows = [dict(row) for row in snapshots.execution_ledger_rows]
+    if stage260_decisions is None:
+        stage260_decisions = pd.DataFrame()
+    else:
+        stage260_decisions = stage260_decisions.copy(deep=True)
 
     pending_intents = []
     if include_stage901_pending:
@@ -1501,8 +1621,16 @@ def run_executor_dry_run(
             ledger_rows=execution_ledger_rows,
             target_date=target_date,
         )
+    stage260_intents = _stage260_daily_intents(
+        stage260_decisions,
+        summary=stage260_summary,
+        profile=profile,
+        target_date=target_date,
+    )
     raw_intents = _dedupe_intents(
-        pending_intents + _stage904_intents(stage904_actions)
+        pending_intents
+        + stage260_intents
+        + _stage904_intents(stage904_actions)
     )
     intent_rows = [
         _validate_intent(
@@ -1549,8 +1677,14 @@ def run_executor_dry_run(
         "model_tag": MODEL_TAG,
         "generated_at": generated_at,
         "target_date": target_date,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "intraday_stop_retry_enabled": int(
+            profile.intraday_stop_retry_enabled
+        ),
         "executor_status": executor_status,
         "intent_count": int(len(intents)),
         "ready_count": ready_count,
@@ -1586,9 +1720,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live Phase D executor dry-run.")
     parser.add_argument("--target-date", required=True)
     parser.add_argument("--mode", choices=["dry-run"], default="dry-run")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     args = parser.parse_args()
 
-    result = run_executor_dry_run(args.target_date, mode=args.mode)
+    profile = resolve_execution_profile(args.execution_profile)
+    result = run_executor_dry_run(
+        args.target_date,
+        mode=args.mode,
+        execution_profile=profile,
+        include_stage901_pending=profile.intraday_stop_retry_enabled,
+    )
     print(json.dumps(result.summary, ensure_ascii=False, indent=2, default=str))
 
 
