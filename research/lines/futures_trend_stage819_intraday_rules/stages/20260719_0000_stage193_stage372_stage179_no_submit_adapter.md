@@ -132,13 +132,21 @@
 - 本轮仍未运行新回测、未连接 CTP、未读取生产 env、未加载 launchd、未调用报撤单 API。当前 manifest 因关键源码变化必须从本修复提交再次刷新，旧 digest 只作历史记录。
 - canonical profile 修复提交 `acbe4825df9266cedf4dc5f59356d7e7725054a8` 后，从干净 detached worktree 再次生成 61 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-acbe4825d`，manifest digest `df99726f0c1bb17c5cd7e7e04fbe72d3045c530d09e43d1d6ca80d3ceb3d2d91`，文件 SHA-256 `458e6d069338e5afc8bd341cc3df58c7cbb5ed74da488a16f031e1c83006e545`；资格保持 `blocked`，只允许 offline/production-readonly。
 
+### 2026-07-19 01:06-01:12 最终独立终审
+
+- 最终冻结 HEAD `1f2a7cae211c122af756cbfc80ba60ed13553dc5` 的独立 Agent 结论：`P0=0、P1=0、P2=4`。
+- 独立重放外部 DataFrame/hash 覆盖攻击和 `dataclasses.replace` 五路径预换绑攻击，前者无法覆盖密封 snapshot，后者在公共 loader、materializer、Stage260 三处均以 `execution_profile_not_canonical` 失败关闭。
+- 独立复跑 49 个聚焦测试全部通过；manifest source `acbe4825d...` 的 61 个 critical files/hash/digest/祖先关系全部通过；当前 HEAD 仅 production-readonly 资格可加载，SimNow、broker-test、production-live 均拒绝。
+- 最终四类判断：no-submit 代码与 dormant plist 合入 `GO`；production-readonly `NO-GO`；SimNow/券商测试 `NO-GO`；production-live `NO-GO`。
+- 剩余 P2：安装前需创建并校验 Stage372 日志/output/runtime 目录；Stage903 后续应使用唯一 run id 绑定本次 Stage914 结果；尚无真实 20:55 启动至 21:00 decision/submit-ready 的端到端时间戳证据。以上不影响 no-submit 代码合入，但全部属于部署/激活前置。
+
 ## 结论与硬门禁
 
-- 代码合入判断：首轮四个 P1 与 follow-up 新发现的快照 P1 已修复并通过扩大回归；仍需从新冻结 HEAD 刷新干净树 no-submit manifest，并由独立 Agent 再次复审后才能给最终 GO/NO-GO。
+- 代码合入判断：`GO`，严格限定为 no-submit 代码与 dormant plist。两轮 follow-up 新发现的产物快照和 canonical profile 换绑 P1 均已修复；最终独立终审为 `P0=0、P1=0`。
 - 部署判断：新增 plist 尚未安装/加载；合入不等于部署。
-- 激活判断：当前只允许离线和 `production-readonly`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
+- 激活判断：release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍因 CTP 未就绪而 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：提交快照 P1 修复；生成新冻结 HEAD 的干净树 no-submit manifest；独立 Agent 再次复审。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：由合入者将 no-submit 候选合入线上代码库，但保持所有 plist dormant；完成目录 provisioning 后再做 production-readonly 严格 `0/0` CTP 与真实 LaunchAgent 时间戳验收。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 
