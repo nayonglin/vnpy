@@ -14,6 +14,8 @@
   <array>
     <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
     <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
+    <string>--execution-profile</string>
+    <string>c9-15w-historical</string>
     <string>--mode</string>
     <string>live-real</string>
     <string>--submit-mode</string>

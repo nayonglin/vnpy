@@ -2375,6 +2375,26 @@ class Stage930FastLaneTest(unittest.TestCase):
             self.assertEqual(15, payload.get("ExitTimeOut"))
             self.assertEqual("Interactive", payload.get("ProcessType"))
 
+    def test_c9_launchd_jobs_parse_to_explicit_15w_execution_profile(self) -> None:
+        launchd = PORTFOLIO_DIR / "launchd"
+        for name in (
+            "local.qmt-roll.official-live.15w.c9-night-session.plist",
+            "local.qmt-roll.official-live.15w.c9-day-session.plist",
+        ):
+            with self.subTest(name=name):
+                with (launchd / name).open("rb") as handle:
+                    program_arguments = plistlib.load(handle)["ProgramArguments"]
+                args = stage930._build_parser().parse_args(program_arguments[2:])
+                profile = stage930.resolve_execution_profile(args.execution_profile)
+
+                self.assertEqual("c9-15w-historical", args.execution_profile)
+                self.assertEqual(
+                    "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+                    profile.official_version,
+                )
+                self.assertEqual(150_000.0, profile.capital)
+                self.assertEqual("15w", profile.capital_label)
+
     def test_supervisor_forwards_term_waits_and_never_restarts(self) -> None:
         supervisor = PORTFOLIO_DIR / "run_qmt_roll_stage930_official_live_c9_session_supervisor.sh"
         with tempfile.TemporaryDirectory() as tmp:
