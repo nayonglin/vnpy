@@ -8,12 +8,12 @@
   ],
   "capital": 150000.0,
   "capital_label": "15w",
-  "created_at_utc": "2026-07-18T13:17:36.861002Z",
+  "created_at_utc": "2026-07-18T13:52:48.310624Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
-      "sha256": "af521338e947f163ea4ade58072f8d03b27506a158b6a95c804a436e4a221e12",
-      "size_bytes": 9368
+      "sha256": "bc79ddb2af8e48cc61283b177f602080d432fb2bac47f6de8a308bf581a41b76",
+      "size_bytes": 9603
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
@@ -57,8 +57,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
-      "sha256": "b371c2c855c3020eaf18b8d9665ae55c5a8a15e361598ffeee58c70db15977a8",
-      "size_bytes": 23829
+      "sha256": "d3217f6479de25d48d9ea9ab4f42729173e4753ef274a70fecdc9fde22a9ceaf",
+      "size_bytes": 24829
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
@@ -84,6 +84,11 @@
       "path": "examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
       "sha256": "8c5eec22c377d250511822b27721c15f3c3ca23e0c4a3b0adb092f2086f65a7b",
       "size_bytes": 6981
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py",
+      "sha256": "322b5b4d71e3cb209226c63d5bebc9da1ee78c24313670c472cbfd3a1654bb83",
+      "size_bytes": 10805
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
@@ -157,8 +162,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
-      "sha256": "e748dfa7701d9096b093805eb7b72c333dd806e3407f0d31ae91c9ba02bdab21",
-      "size_bytes": 22915
+      "sha256": "2e26e022fe7ce87e706b0085c69bc9611b61c591ac21e7c82e9654028b3a3f98",
+      "size_bytes": 23028
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage927_official_live_real_submit_arming_gate.py",
@@ -172,8 +177,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
-      "sha256": "e6c1f3e998e5bcc2491d61f66324c201902b738194fc9f537c59bc4a62e76515",
-      "size_bytes": 135243
+      "sha256": "3d58f007ed0845d19a96e8b92cb58f14c83ebd6640b8b8486ca39ee23b45a520",
+      "size_bytes": 141465
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -192,13 +197,28 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
-      "sha256": "65025538e2fa5218003e172671c3a72beb84bf175ad47a3678472b21ad6a88f9",
-      "size_bytes": 295766
+      "sha256": "2ef996be6b2d242d17ffae316311b283b077faec0822b96d251e7af2da52b45b",
+      "size_bytes": 302301
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
       "sha256": "8aa1dfc6cddfce81d9c84dd09721754b9d882f50acf0eec542806d757b695e72",
       "size_bytes": 43364
+    },
+    {
+      "path": "tests/test_stage179_fault_matrix.py",
+      "sha256": "77e5f97628380b29562324a00660bfec55f2233086cce7898206aa4688acf793",
+      "size_bytes": 12864
+    },
+    {
+      "path": "tests/test_stage179_submit_authorization.py",
+      "sha256": "53f46b9731b7370d96f9a5ec67cfdbc10f9747e89ccf238e0895df442c05c0da",
+      "size_bytes": 4523
+    },
+    {
+      "path": "tests/test_stage179_two_executor_process_race.py",
+      "sha256": "510a4430c2ae7c98e616562809f3b6b866a348ce60bc98212aaa5c75d71a4bca",
+      "size_bytes": 15687
     }
   ],
   "ledger_contract": {
@@ -216,10 +236,10 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "0af6b62ea9bbf33136a54ab49a4719d468b991233291b610c1a49b3a112d14da",
+  "manifest_sha256": "f3a237db0e793a5c732577474fbd63feda5587f0296ae49c7b11b70d82e55aec",
   "official_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
   "release_id": "stage179-p0-20260718",
   "schema_version": 1,
-  "source_commit": "e10018dd347e5a7e4b71b3b6ad58b7f816309c91",
-  "tree_fingerprint": "15d99336888ce5ad9b709f7a6f61df2d992ae25f7b807f64b0d21d6e94a64300"
+  "source_commit": "c79119127b46deb70e549fae3cea35da5e6de6db",
+  "tree_fingerprint": "3b62380fea8d913b52a6745c8cd22fe284ccbce9654d6e772186ce66f30a2019"
 }
