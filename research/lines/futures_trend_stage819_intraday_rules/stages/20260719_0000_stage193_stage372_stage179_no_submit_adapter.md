@@ -204,6 +204,19 @@
 - 过拟合反思：否。修复对象是身份、时间因果、来源完整性和 fail-closed 不变量，不使用 JM 单晚收益或价格结果调参。
 - 继续价值反思：是。离线证据链已值得重新冻结和对抗终审；只有终审 `P0/P1=0` 后，才进入五场真实 production-readonly 会话和一次真实断线重连，仍不能提前宣称线上延迟已解决。
 
+### 2026-07-19 02:44-03:04 第二轮对抗终审与强制降级修复
+
+- 独立 Agent 对冻结 HEAD `658794bda9f39b5a997d679b54b1c21808dc9392` 的结论为 `P0=0、P1=2、P2=2`，旧候选再次 `NO-GO`。P1-1 是 2 份 Stage930 day/night summary 仅改 session id、重算无密钥 record digest 即可克隆成 5 场，disconnect 顶层字段也能脱离 embedded lifecycle 改写；P1-2 是 Stage174 reconnect helper 只证明新 generation 上 order/trade/position 三查询，缺 settlement/account/contract 和真实 readiness lease 转移。P2 是缺 launchd job instance provenance，以及 Stage907 未要求本次命令产生的新鲜 complete broker bundle。
+- qualifier 现在从 embedded Stage930 payload 重算 `run_id/session_date/scheduled_start`，逐项重放 Stage914/907、cycle timing、launchd provenance 和 Stage907 connection lifecycle 投影；record 顶层任何独立改写即使重算无密钥 digest 也会失败。五场资格同时要求五个唯一 Stage930 原文件 SHA 和五个唯一 canonical payload SHA，同一 summary 无法复制计数。
+- Stage174 现有 reconnect 输出明确降级为 `one_shot_query_proof_complete`。只有未来 `stage174_ctp_connection_lifecycle_v2` 同时证明 authoritative readiness transition 与 settlement/account/contract/order/trade/position 全量 current-generation snapshot 后，才允许 `proof_complete=1`；当前 producer 是 v1，因此全局 `AUTHORITATIVE_RECONNECT_PROOF_ENABLED=False`，production-readonly 资格必定保持 blocked，不会用半证据晋级。
+- Stage907 在 refresh 前记录旧 generation；refresh 后必须看到不同且非空的新 generation、summary 生成时间不早于本次 command start、`broker_query_bundle.complete is True` 且 bundle generation 与 summary generation 一致。旧文件、命令失败后残留文件或 incomplete bundle 均失败关闭。
+- Stage930 启动时只读采集 launchd provenance：`XPC_SERVICE_NAME` 必须是 canonical Stage372 日/夜 label、父进程必须为 PID 1，并通过 `/bin/launchctl print gui/<uid>/<label>` 读回当前 job PID 与自身 PID 精确相等。手工运行相同命令不能形成合格 LaunchAgent 证据；该调用只读，不 load/kickstart/stop job。
+- 新增对抗回归直接覆盖“2 份 summary 克隆 5 场”“disconnect 顶层脱链重写”“Stage907 同 generation/stale/incomplete bundle”“手工进程伪装 launchd”“Stage174 one-shot 不得升级为完整 proof”。聚焦回归 `142 passed, 13 subtests passed`；最终扩大执行链回归 `732 passed, 245 subtests passed`，耗时 `84.71s`。Python compile、`git diff --check` 和 3 份 Stage372 plist lint 全部通过。
+- 修复提交 `aebf148f86bdf0a0bd17c41042cc146bb2d1f345` 后，从干净 detached worktree 生成 67 个 critical files 的 schema v2 readonly/no-submit manifest。release id `stage179-stage372-readonly-aebf148f8`，manifest digest `e3a7f9409b7855304fa97bec4e7b50c5d20cea2b5bb57958535566c3c2fbdff4`，文件 SHA-256 `08af1f117339b5241a48c7e4518d487521363b29e0399076f1640642792c298b`；允许 profile 保持 `offline/production-readonly`，但 reconnect hard gate 仍主动 blocked。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有加载、kickstart 或停止 LaunchAgent、没有调用真实报单或撤单 API。
+- 过拟合反思：否。全部改动是证据来源、身份、进程和状态转换不变量，不涉及 JM 或任一品种收益参数。
+- 继续价值反思：是，但价值边界更清楚：代码可重新冻结终审；production-readonly 不能晋级，直到完整 v2 reconnect producer 实现并在真实窗口验证。
+
 ## 结论与硬门禁
 
 - 代码合入判断：旧冻结候选已因 readonly-canary `P1=5` 作废；新候选已完成修复、回归和 manifest 重建，但在新一轮独立冻结终审给出 `P0/P1=0` 前暂为 `NO-GO`。合入不等于部署或激活。

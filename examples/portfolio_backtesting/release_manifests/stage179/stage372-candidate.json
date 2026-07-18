@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T18:42:43.009212Z",
+  "created_at_utc": "2026-07-18T19:03:37.926329Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -14,8 +14,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
-      "sha256": "1bea992f6a81426961a0bc073107b83b633389389d56132c06febdb9dc15953a",
-      "size_bytes": 28341
+      "sha256": "f75c48d2fc1ab3b6407a3d4e2647cea771ca30336338ee150c510f65cd16baff",
+      "size_bytes": 36649
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
@@ -174,8 +174,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
-      "sha256": "78b2e0949a17e474fa25c12d799aeaf159ea548dd251d23e825d7d962275920b",
-      "size_bytes": 68140
+      "sha256": "3cda7f3169f6821015a210abbcba6fdc75f9512f6b04b1f626558d5682e58e7d",
+      "size_bytes": 69378
     },
     {
       "path": "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
@@ -214,8 +214,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py",
-      "sha256": "31b999a11eb94eef21b2c632f061746c84b445b462cde9baf31d2cc7cbf59aef",
-      "size_bytes": 17344
+      "sha256": "8f0989daf5e80a34cd0616b84d269a4f22a3055d7e7feda0d559f3f40c7db5bd",
+      "size_bytes": 20362
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
@@ -239,8 +239,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
-      "sha256": "9e3c6bfc2dfc27a0c908c44bbbb0d17f68d486237d258849c4dd8cb8601cffb0",
-      "size_bytes": 169323
+      "sha256": "a2fd21ab8ece708ed506b20b2440d52569af6ea0e9c09b2f38ab752a060ef14f",
+      "size_bytes": 171352
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
@@ -289,8 +289,8 @@
     },
     {
       "path": "tests/test_stage179_readonly_canary_qualification.py",
-      "sha256": "e69d29f421903669f7cb0c5678589bfdcfb5ab72910308b626421a487da45eae",
-      "size_bytes": 18635
+      "sha256": "fa469bc6a31d52ebae1acce9504e4551fa62079e1722af370580a005c1802330",
+      "size_bytes": 24699
     },
     {
       "path": "tests/test_stage179_stage260_execution_profile.py",
@@ -334,13 +334,13 @@
     },
     {
       "path": "tests/test_stage907_readonly_refresh_gate.py",
-      "sha256": "1a7ba830a51af9eab53cf815d8ca0a83a676aa6ec6ce318be7e37204d99f9586",
-      "size_bytes": 1872
+      "sha256": "e1583073014598ac3619db9a7eb639d5d6c089f764c4a5aa1151c83bc81100ca",
+      "size_bytes": 3296
     },
     {
       "path": "tests/test_stage930_fast_lane.py",
-      "sha256": "dd1257181c08c2ec1bd1c3e507659aa3247c4a86e2390dcd9950afebdbc7f21f",
-      "size_bytes": 93524
+      "sha256": "632f40d7dd3daa3efb211c97f48bd4be13fff1be65ae7c3115634f84730e144e",
+      "size_bytes": 94726
     }
   ],
   "execution_profile": "stage372-20w",
@@ -359,14 +359,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "ad391bac1c13a87aba2efe1d06c5c4e8866580c4912eefe91fa1a005b6960a86",
+  "manifest_sha256": "e3a7f9409b7855304fa97bec4e7b50c5d20cea2b5bb57958535566c3c2fbdff4",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-740c4f7a3",
+  "release_id": "stage179-stage372-readonly-aebf148f8",
   "schema_version": 2,
-  "source_commit": "740c4f7a3e67ad39d0888522154d2232c66ef122",
+  "source_commit": "aebf148f86bdf0a0bd17c41042cc146bb2d1f345",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "49c0983832352baf59fd52902591558c13c99ad02b9d1046fe109755e42da347"
+  "tree_fingerprint": "05f3d7021af19d1cbb48938cab914289ec1c2f9dff9edd3a4a1f2a8f2b4c2b2f"
 }
