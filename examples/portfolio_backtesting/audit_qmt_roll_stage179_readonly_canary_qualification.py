@@ -31,13 +31,6 @@ CANONICAL_PLISTS = {
     "day": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
     "night": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
 }
-# Stage174 currently publishes a one-shot order/trade/position reconnect
-# diagnostic, not a full current-generation settlement/account/contract
-# readiness transition.  Keep qualification fail-closed until that producer
-# is implemented and independently reviewed.
-AUTHORITATIVE_RECONNECT_PROOF_ENABLED = False
-
-
 def _strict_int(value: Any) -> int | None:
     return value if type(value) is int else None
 
@@ -118,6 +111,9 @@ def _disconnect_projection(
         "old_connection_generation": lifecycle.get("old_connection_generation", ""),
         "new_connection_generation": lifecycle.get("new_connection_generation", ""),
         "readiness_revoked_epoch_ns": lifecycle.get("readiness_revoked_epoch_ns"),
+        "reconnect_connected_epoch_ns": lifecycle.get(
+            "reconnect_connected_epoch_ns"
+        ),
         "readiness_restored_epoch_ns": lifecycle.get("readiness_restored_epoch_ns"),
         "disconnect_send_order_api_called_count": lifecycle.get(
             "send_order_api_called_count"
@@ -129,12 +125,25 @@ def _disconnect_projection(
 
 
 def _disconnect_reconnect_proof_valid(record: Mapping[str, Any]) -> bool:
-    if not AUTHORITATIVE_RECONNECT_PROOF_ENABLED:
-        return False
     revoked = _strict_int(record.get("readiness_revoked_epoch_ns"))
+    connected = _strict_int(record.get("reconnect_connected_epoch_ns"))
     restored = _strict_int(record.get("readiness_restored_epoch_ns"))
     old_generation = _clean(record.get("old_connection_generation"))
     new_generation = _clean(record.get("new_connection_generation"))
+    expected_evidence_id = ""
+    if (
+        old_generation
+        and new_generation
+        and revoked is not None
+        and connected is not None
+        and restored is not None
+    ):
+        expected_evidence_id = hashlib.sha256(
+            (
+                f"{old_generation}:{new_generation}:"
+                f"{revoked}:{connected}:{restored}"
+            ).encode("utf-8")
+        ).hexdigest()
     return bool(
         record.get("disconnect_lifecycle_model_tag")
         == "stage174_ctp_connection_lifecycle_v2"
@@ -148,19 +157,21 @@ def _disconnect_reconnect_proof_valid(record: Mapping[str, Any]) -> bool:
         == 1
         and _strict_int(record.get("disconnect_observed")) == 1
         and _strict_int(record.get("reconnect_observed")) == 1
-        and _clean(record.get("disconnect_evidence_id"))
+        and _clean(record.get("disconnect_evidence_id")) == expected_evidence_id
         and _clean(record.get("disconnect_session_id"))
         == _clean(record.get("session_id"))
         and record.get("disconnect_runtime_profile")
         == EXPECTED_RUNTIME_PROFILE
         and record.get("disconnect_execution_profile")
         == EXPECTED_EXECUTION_PROFILE
+        and _strict_int(record.get("stage907_observe_reconnect")) == 1
         and old_generation
         and new_generation
         and old_generation != new_generation
         and revoked is not None
+        and connected is not None
         and restored is not None
-        and 0 < revoked < restored
+        and 0 < revoked <= connected <= restored
         and _strict_int(record.get("disconnect_send_order_api_called_count")) == 0
         and _strict_int(record.get("disconnect_cancel_order_api_called_count")) == 0
     )
@@ -298,6 +309,14 @@ def _record_blockers(
             "stage907_refresh_status",
             "stage907_readonly_status_after",
             "stage907_position_snapshot_state_after",
+            "stage907_observe_reconnect",
+            "stage907_snapshot_evidence_complete",
+            "stage907_snapshot_generation_uuid",
+            "stage907_stage174_invocation_id",
+            "stage907_stage174_file_summary_sha256",
+            "stage907_stage174_stdout_summary_sha256",
+            "stage907_stage174_stdout_file_payload_match",
+            "stage907_broker_query_bundle_complete",
         ):
             if record.get(field) != source_stage903.get(field):
                 blockers.append(f"{session_id}:stage903_{field}_projection_mismatch")
@@ -326,6 +345,7 @@ def _record_blockers(
         "plist_runtime_profile": EXPECTED_RUNTIME_PROFILE,
         "plist_mode": EXPECTED_MODE,
         "plist_submit_mode": EXPECTED_SUBMIT_MODE,
+        "plist_readonly_observe_reconnect_once": 1,
         "launchd_plist_relative_path": CANONICAL_PLISTS.get(
             _clean(record.get("session_kind")), ""
         ),
@@ -336,6 +356,9 @@ def _record_blockers(
         "stage914_blocking_failure_count": 0,
         "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
         "stage907_readonly_status_after": "readonly_snapshots_received",
+        "stage907_snapshot_evidence_complete": 1,
+        "stage907_stage174_stdout_file_payload_match": 1,
+        "stage907_broker_query_bundle_complete": True,
         "session_completed": 1,
         "launchd_provenance_complete": 1,
     }
@@ -350,6 +373,23 @@ def _record_blockers(
         "positions_received",
     }:
         blockers.append(f"{session_id}:position_snapshot_not_ready")
+    for field in (
+        "stage907_snapshot_generation_uuid",
+        "stage907_stage174_invocation_id",
+    ):
+        if not _clean(record.get(field)):
+            blockers.append(f"{session_id}:{field}_missing")
+    file_summary_sha256 = _clean(
+        record.get("stage907_stage174_file_summary_sha256")
+    )
+    stdout_summary_sha256 = _clean(
+        record.get("stage907_stage174_stdout_summary_sha256")
+    )
+    if (
+        len(file_summary_sha256) != 64
+        or file_summary_sha256 != stdout_summary_sha256
+    ):
+        blockers.append(f"{session_id}:stage174_stdout_file_binding_invalid")
 
     session_kind = record.get("session_kind")
     if session_kind not in {"day", "night"}:
@@ -587,6 +627,10 @@ def _single_argument_value(arguments: list[Any], flag: str) -> str:
     return _clean(arguments[index + 1]) if index + 1 < len(arguments) else ""
 
 
+def _argument_count(arguments: list[Any], flag: str) -> int:
+    return sum(value == flag for value in arguments)
+
+
 def build_readonly_session_evidence(
     *,
     stage930_summary: Mapping[str, Any],
@@ -687,6 +731,9 @@ def build_readonly_session_evidence(
         ),
         "plist_mode": _single_argument_value(arguments, "--mode"),
         "plist_submit_mode": _single_argument_value(arguments, "--submit-mode"),
+        "plist_readonly_observe_reconnect_once": _argument_count(
+            arguments, "--readonly-observe-reconnect-once"
+        ),
         "release_manifest_sha256": validated_manifest.get("manifest_sha256"),
         "release_source_commit": validated_manifest.get("source_commit"),
         "stage914_exit_code": stage903_summary.get("stage914_exit_code"),
@@ -695,6 +742,30 @@ def build_readonly_session_evidence(
         "stage907_refresh_status": stage903_summary.get("stage907_refresh_status"),
         "stage907_readonly_status_after": stage903_summary.get("stage907_readonly_status_after"),
         "stage907_position_snapshot_state_after": stage903_summary.get("stage907_position_snapshot_state_after"),
+        "stage907_observe_reconnect": stage903_summary.get(
+            "stage907_observe_reconnect"
+        ),
+        "stage907_snapshot_evidence_complete": stage903_summary.get(
+            "stage907_snapshot_evidence_complete"
+        ),
+        "stage907_snapshot_generation_uuid": stage903_summary.get(
+            "stage907_snapshot_generation_uuid"
+        ),
+        "stage907_stage174_invocation_id": stage903_summary.get(
+            "stage907_stage174_invocation_id"
+        ),
+        "stage907_stage174_file_summary_sha256": stage903_summary.get(
+            "stage907_stage174_file_summary_sha256"
+        ),
+        "stage907_stage174_stdout_summary_sha256": stage903_summary.get(
+            "stage907_stage174_stdout_summary_sha256"
+        ),
+        "stage907_stage174_stdout_file_payload_match": stage903_summary.get(
+            "stage907_stage174_stdout_file_payload_match"
+        ),
+        "stage907_broker_query_bundle_complete": stage903_summary.get(
+            "stage907_broker_query_bundle_complete"
+        ),
         "send_order_api_called_count": stage930_summary.get("send_order_api_called_count"),
         "cancel_order_api_called_count": stage930_summary.get("cancel_order_api_called_count"),
         "order_api_called_count": stage930_summary.get("order_api_called_count"),

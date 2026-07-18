@@ -28,6 +28,7 @@
     <string>stream</string>
     <string>--shadow-refresh-mode</string>
     <string>plan-only</string>
+    <string>--readonly-observe-reconnect-once</string>
     <string>--stage179-runtime-root</string>
     <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_stage372/readonly-day/runtime</string>
     <string>--duration-seconds</string>

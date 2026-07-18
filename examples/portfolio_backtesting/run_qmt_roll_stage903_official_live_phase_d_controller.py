@@ -223,6 +223,9 @@ def _aggregate_order_api_evidence(
             "cancel_order_api_attempted_count",
             "send_order_api_called_count",
             "cancel_order_api_called_count",
+            "native_mutation_api_attempted_count",
+            "native_mutation_api_called_count",
+            "order_api_attempted_count",
             "order_api_called_count",
         ),
         "stage905": (
@@ -243,8 +246,12 @@ def _aggregate_order_api_evidence(
         send = summary.get("send_order_api_called_count")
         cancel = summary.get("cancel_order_api_called_count")
         total = summary.get("order_api_called_count")
-        if all(type(value) is int and value >= 0 for value in (send, cancel, total)):
-            if total != send + cancel:
+        native = summary.get("native_mutation_api_called_count", 0)
+        if all(
+            type(value) is int and value >= 0
+            for value in (send, cancel, native, total)
+        ):
+            if total != send + cancel + native:
                 missing.append(f"{label}.summary.order_api_called_count_inconsistent")
     stage907_summary = sources["stage907"] if isinstance(sources["stage907"], dict) else {}
     if stage907_summary.get("order_api_evidence_complete") != 1:
@@ -257,6 +264,7 @@ def _aggregate_order_api_evidence(
 
     send = sum(count(label, "send_order_api_called_count") for label in sources)
     cancel = sum(count(label, "cancel_order_api_called_count") for label in sources)
+    native = count("stage907", "native_mutation_api_called_count")
     return {
         "send_order_api_attempted_count": count(
             "stage907", "send_order_api_attempted_count"
@@ -264,9 +272,16 @@ def _aggregate_order_api_evidence(
         "cancel_order_api_attempted_count": count(
             "stage907", "cancel_order_api_attempted_count"
         ),
+        "native_mutation_api_attempted_count": count(
+            "stage907", "native_mutation_api_attempted_count"
+        ),
+        "native_mutation_api_called_count": native,
+        "order_api_attempted_count": count(
+            "stage907", "order_api_attempted_count"
+        ),
         "send_order_api_called_count": send,
         "cancel_order_api_called_count": cancel,
-        "order_api_called_count": send + cancel,
+        "order_api_called_count": send + cancel + native,
         "order_api_evidence_complete": int(not missing),
         "order_api_evidence_missing_fields": missing,
     }
@@ -433,6 +448,7 @@ def _run_stage907(
     env_profile: str,
     wait_seconds: int,
     confirm_readonly_refresh: str,
+    observe_reconnect: bool,
 ) -> dict[str, Any]:
     cmd = [
         sys.executable,
@@ -446,6 +462,8 @@ def _run_stage907(
     ]
     if confirm_readonly_refresh:
         cmd.extend(["--confirm-readonly-refresh", confirm_readonly_refresh])
+    if observe_reconnect:
+        cmd.append("--observe-reconnect")
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
     started = datetime.now()
@@ -1618,6 +1636,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         env_profile=args.readonly_env_profile,
         wait_seconds=args.readonly_wait_seconds,
         confirm_readonly_refresh=args.confirm_readonly_refresh,
+        observe_reconnect=bool(args.readonly_observe_reconnect),
     )
     stage260_result = _run_stage260(
         target_date=target_date,
@@ -1767,9 +1786,33 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage914_order_api_called_count": stage914_result.get("summary", {}).get("order_api_called_count", ""),
         "stage907_refresh_status": stage907_result.get("summary", {}).get("refresh_status", ""),
         "stage907_refresh_attempted": stage907_result.get("summary", {}).get("refresh_attempted", ""),
+        "stage907_observe_reconnect": stage907_result.get("summary", {}).get(
+            "observe_reconnect", 0
+        ),
         "stage907_env_profile": stage907_result.get("summary", {}).get("env_profile", ""),
         "stage907_readonly_status_after": stage907_result.get("summary", {}).get("readonly_status_after", ""),
         "stage907_position_snapshot_state_after": stage907_result.get("summary", {}).get("position_snapshot_state_after", ""),
+        "stage907_snapshot_evidence_complete": stage907_result.get("summary", {}).get(
+            "snapshot_evidence_complete"
+        ),
+        "stage907_snapshot_generation_uuid": stage907_result.get("summary", {}).get(
+            "snapshot_generation_uuid", ""
+        ),
+        "stage907_stage174_invocation_id": stage907_result.get("summary", {}).get(
+            "stage174_invocation_id", ""
+        ),
+        "stage907_stage174_file_summary_sha256": stage907_result.get("summary", {}).get(
+            "stage174_file_summary_sha256", ""
+        ),
+        "stage907_stage174_stdout_summary_sha256": stage907_result.get("summary", {}).get(
+            "stage174_stdout_summary_sha256", ""
+        ),
+        "stage907_stage174_stdout_file_payload_match": stage907_result.get("summary", {}).get(
+            "stage174_stdout_file_payload_match"
+        ),
+        "stage907_broker_query_bundle_complete": stage907_result.get("summary", {}).get(
+            "broker_query_bundle_complete"
+        ),
         "stage907_connection_lifecycle": stage907_result.get("summary", {}).get(
             "connection_lifecycle", {}
         ),
@@ -1954,6 +1997,7 @@ def main() -> None:
     parser.add_argument("--readonly-refresh-mode", choices=["plan-only", "refresh", "auto"], default="plan-only")
     parser.add_argument("--readonly-env-profile", choices=["production-live", "simnow", "broker-test"], default="production-live")
     parser.add_argument("--readonly-wait-seconds", type=int, default=30)
+    parser.add_argument("--readonly-observe-reconnect", action="store_true")
     parser.add_argument("--confirm-readonly-refresh", default="")
     parser.add_argument("--stage251-mode", choices=["skip", "auto", "force"], default="skip")
     parser.add_argument("--stage251-readonly-wrapper", choices=["simnow", "broker-test"], default="simnow")

@@ -2108,6 +2108,8 @@ def _run_stage903(args: argparse.Namespace, target_date: str, paths: dict[str, P
     ]
     if args.tick_refresh_mode == "stream":
         cmd.extend(["--intraday-tick-refresh-mode", "skip", "--intraday-execution-mode", "external"])
+    if bool(getattr(args, "readonly_observe_reconnect_once", False)):
+        cmd.append("--readonly-observe-reconnect")
     if target_date:
         cmd.extend(["--target-date", target_date])
     else:
@@ -3315,6 +3317,7 @@ def _readonly_qualification_cycle(
     cycles: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
     qualified: dict[str, Any] | None = None
+    authoritative_reconnect_found = False
     for cycle in cycles:
         stage903 = cycle.get("stage903")
         summary = (
@@ -3334,9 +3337,46 @@ def _readonly_qualification_cycle(
             == "readonly_snapshots_received"
             and summary.get("stage907_position_snapshot_state_after")
             in {"confirmed_flat", "positions_received"}
+            and summary.get("stage907_snapshot_evidence_complete") == 1
+            and bool(_clean(summary.get("stage907_snapshot_generation_uuid")))
+            and bool(_clean(summary.get("stage907_stage174_invocation_id")))
+            and summary.get("stage907_stage174_stdout_file_payload_match") == 1
+            and _clean(summary.get("stage907_stage174_file_summary_sha256"))
+            == _clean(summary.get("stage907_stage174_stdout_summary_sha256"))
+            and len(
+                _clean(summary.get("stage907_stage174_file_summary_sha256"))
+            )
+            == 64
+            and summary.get("stage907_broker_query_bundle_complete") is True
         ):
-            qualified = cycle
+            lifecycle = summary.get("stage907_connection_lifecycle")
+            if not isinstance(lifecycle, dict):
+                lifecycle = {}
+            has_authoritative_reconnect = bool(
+                summary.get("stage907_observe_reconnect") == 1
+                and lifecycle.get("proof_complete") == 1
+                and lifecycle.get("authoritative_readiness_transition_complete")
+                == 1
+                and lifecycle.get("full_snapshot_generation_complete") == 1
+            )
+            if has_authoritative_reconnect or not authoritative_reconnect_found:
+                qualified = cycle
+            authoritative_reconnect_found = bool(
+                authoritative_reconnect_found or has_authoritative_reconnect
+            )
     return qualified
+
+
+def _consume_readonly_reconnect_observation_once(
+    args: argparse.Namespace, controller_summary: dict[str, Any]
+) -> int:
+    consumed = int(
+        bool(getattr(args, "readonly_observe_reconnect_once", False))
+        and controller_summary.get("stage907_refresh_attempted") == 1
+    )
+    if consumed:
+        args.readonly_observe_reconnect_once = False
+    return consumed
 
 
 def _missing_order_api_evidence_fields(
@@ -3366,6 +3406,8 @@ def _missing_order_api_evidence_fields(
             for field in (
                 "send_order_api_attempted_count",
                 "cancel_order_api_attempted_count",
+                "native_mutation_api_attempted_count",
+                "native_mutation_api_called_count",
             ):
                 value = summary.get(field)
                 if type(value) is not int or value != 0:
@@ -3419,6 +3461,11 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         }
     stage903_result = _run_stage903(args, target_date, paths)
     controller_summary = stage903_result.get("summary", {}) if isinstance(stage903_result.get("summary"), dict) else {}
+    readonly_observe_reconnect_consumed = (
+        _consume_readonly_reconnect_observation_once(
+            args, controller_summary
+        )
+    )
     resolved_target_date = _clean(controller_summary.get("target_date")) or target_date
     ready_count = _to_int(controller_summary.get("stage905_ready_count"), 0)
     stage927_result = _run_stage927(args, resolved_target_date, paths) if resolved_target_date and (args.mode == "live-real" or args.submit_mode == "live-real") else {
@@ -3574,6 +3621,7 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "tick_refresh": tick_result,
         "pre_submit_tick_gate": pre_submit_tick_gate,
         "stage903": stage903_result,
+        "readonly_observe_reconnect_consumed": readonly_observe_reconnect_consumed,
         "stage927": stage927_result,
         "stage931": stage931_result,
         "post_submit_reduce_close": post_submit_reduce_close,
@@ -3606,6 +3654,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--pre-subscribe-wait-seconds", type=int, default=4)
     parser.add_argument("--readonly-refresh-mode", choices=["plan-only", "refresh", "auto"], default="auto")
     parser.add_argument("--readonly-wait-seconds", type=int, default=30)
+    parser.add_argument("--readonly-observe-reconnect-once", action="store_true")
     parser.add_argument("--shadow-refresh-mode", choices=["plan-only", "run", "auto"], default="auto")
     parser.add_argument("--stage251-mode", choices=["skip", "auto", "force"], default="skip")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)

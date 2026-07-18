@@ -5,7 +5,9 @@ from types import SimpleNamespace
 import os
 import sys
 import tempfile
+import threading
 import unittest
+from unittest import mock
 
 
 os.environ.setdefault("QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR", "1")
@@ -223,6 +225,14 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
                 calls.append("td_cancel")
                 return "cancelled"
 
+            def reqOrderInsert(self, *args: object, **kwargs: object) -> int:
+                calls.append("native_order_insert")
+                return 0
+
+            def reqOrderAction(self, *args: object, **kwargs: object) -> int:
+                calls.append("native_order_action")
+                return 0
+
         counters = stage174._new_order_api_counters()
         originals = stage174._install_readonly_order_api_firewall(
             FakeGateway,
@@ -238,6 +248,11 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             ):
                 with self.assertRaisesRegex(RuntimeError, "readonly_order_api_blocked"):
                     getattr(instance, method_name)(object())
+            for method_name in ("reqOrderInsert", "reqOrderAction"):
+                with self.assertRaisesRegex(
+                    RuntimeError, "readonly_native_ctp_mutation_blocked"
+                ):
+                    getattr(FakeTdApi(), method_name)({}, 1)
         finally:
             stage174._restore_readonly_order_api_firewall(
                 FakeGateway,
@@ -250,8 +265,11 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         self.assertEqual(2, counters["cancel_order_api_attempted_count"])
         self.assertEqual(0, counters["send_order_api_called_count"])
         self.assertEqual(0, counters["cancel_order_api_called_count"])
+        self.assertEqual(2, counters["native_mutation_api_attempted_count"])
+        self.assertEqual(0, counters["native_mutation_api_called_count"])
         self.assertEqual("sent", FakeGateway().send_order(object()))
         self.assertEqual("cancelled", FakeTdApi().cancel_order(object()))
+        self.assertEqual(0, FakeTdApi().reqOrderInsert({}, 1))
 
     def test_dry_run_publishes_exact_zero_order_api_counters(self) -> None:
         result = stage174._run_probe(connect=False, wait_seconds=1)
@@ -261,10 +279,43 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             "cancel_order_api_attempted_count",
             "send_order_api_called_count",
             "cancel_order_api_called_count",
+            "native_mutation_api_attempted_count",
+            "native_mutation_api_called_count",
+            "order_api_attempted_count",
             "order_api_called_count",
         ):
             self.assertIs(type(result[field]), int)
             self.assertEqual(0, result[field])
+
+    def test_native_ctp_mutation_firewall_covers_every_non_readonly_surface(self) -> None:
+        from vnpy_ctp.gateway.ctp_gateway import CtpTdApi
+
+        allowed_session_or_readonly_requests = {
+            "reqAuthenticate",
+            "reqGenUserCaptcha",
+            "reqGenUserText",
+            "reqQueryBankAccountMoneyByFuture",
+            "reqQueryCFMMCTradingAccountToken",
+            "reqSettlementInfoConfirm",
+            "reqUserAuthMethod",
+            "reqUserLogin",
+            "reqUserLoginWithCaptcha",
+            "reqUserLoginWithOTP",
+            "reqUserLoginWithText",
+            "reqUserLogout",
+        }
+        non_query_requests = {
+            name
+            for name in dir(CtpTdApi)
+            if name.startswith("req") and not name.startswith("reqQry")
+        }
+        mutation_surfaces = (
+            non_query_requests - allowed_session_or_readonly_requests
+        )
+
+        self.assertEqual(
+            set(stage174.NATIVE_CTP_MUTATION_METHODS), mutation_surfaces
+        )
 
     def test_reconnect_proof_requires_fresh_queries_on_new_generation(self) -> None:
         lifecycle = {
@@ -303,6 +354,399 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
         self.assertIsNone(proof["readiness_restored_epoch_ns"])
         self.assertEqual(0, stale["proof_complete"])
         self.assertIsNone(stale["readiness_restored_epoch_ns"])
+
+    def test_authoritative_reconnect_requires_full_snapshot_and_real_readiness_transition(self) -> None:
+        lifecycle = {
+            "model_tag": "stage174_ctp_connection_lifecycle_v2",
+            "disconnect_observed": 1,
+            "reconnect_observed": 1,
+            "old_connection_generation": "old",
+            "new_connection_generation": "new",
+            "current_connection_generation": "new",
+            "readiness_generation_before_disconnect": "old",
+            "readiness_generation": "new",
+            "readiness_was_ready_before_disconnect": 1,
+            "readiness_revoked_epoch_ns": 10,
+            "reconnect_connected_epoch_ns": 15,
+            "readiness_restored_epoch_ns": 20,
+            "snapshot_connection_generations": {
+                name: "new"
+                for name in (
+                    "settlement",
+                    "account",
+                    "contracts",
+                    "orders",
+                    "trades",
+                    "positions",
+                )
+            },
+        }
+        queries = {
+            name: {"connection_generation": "new"}
+            for name in ("orders", "trades", "positions")
+        }
+
+        proof = stage174._finalize_connection_lifecycle(
+            lifecycle,
+            query_requests=queries,
+            query_bundle_complete=True,
+            order_api_counters=stage174._new_order_api_counters(),
+            restored_epoch_ns=999,
+        )
+
+        self.assertEqual(1, proof["authoritative_readiness_transition_complete"])
+        self.assertEqual(1, proof["full_snapshot_generation_complete"])
+        self.assertEqual(1, proof["proof_complete"])
+        self.assertEqual(20, proof["readiness_restored_epoch_ns"])
+        self.assertTrue(proof["disconnect_evidence_id"])
+
+    def test_authoritative_reconnect_fails_without_contract_snapshot_on_new_generation(self) -> None:
+        lifecycle = {
+            "model_tag": "stage174_ctp_connection_lifecycle_v2",
+            "disconnect_observed": 1,
+            "reconnect_observed": 1,
+            "old_connection_generation": "old",
+            "new_connection_generation": "new",
+            "current_connection_generation": "new",
+            "readiness_generation_before_disconnect": "old",
+            "readiness_generation": "new",
+            "readiness_was_ready_before_disconnect": 1,
+            "readiness_revoked_epoch_ns": 10,
+            "reconnect_connected_epoch_ns": 15,
+            "readiness_restored_epoch_ns": 20,
+            "snapshot_connection_generations": {
+                "settlement": "new",
+                "account": "new",
+                "contracts": "old",
+                "orders": "new",
+                "trades": "new",
+                "positions": "new",
+            },
+        }
+        queries = {
+            name: {"connection_generation": "new"}
+            for name in ("orders", "trades", "positions")
+        }
+
+        proof = stage174._finalize_connection_lifecycle(
+            lifecycle,
+            query_requests=queries,
+            query_bundle_complete=True,
+            order_api_counters=stage174._new_order_api_counters(),
+            restored_epoch_ns=999,
+        )
+
+        self.assertEqual(0, proof["full_snapshot_generation_complete"])
+        self.assertEqual(0, proof["proof_complete"])
+        self.assertIn("full_current_generation_snapshot_missing", proof["proof_blockers"])
+
+    def test_authoritative_reconnect_fails_when_disconnect_happened_before_ready(self) -> None:
+        lifecycle = {
+            "model_tag": "stage174_ctp_connection_lifecycle_v2",
+            "disconnect_observed": 1,
+            "reconnect_observed": 1,
+            "old_connection_generation": "old",
+            "new_connection_generation": "new",
+            "current_connection_generation": "new",
+            "readiness_generation_before_disconnect": "",
+            "readiness_generation": "new",
+            "readiness_was_ready_before_disconnect": 0,
+            "readiness_revoked_epoch_ns": 10,
+            "reconnect_connected_epoch_ns": 15,
+            "readiness_restored_epoch_ns": 20,
+            "snapshot_connection_generations": {
+                name: "new"
+                for name in (
+                    "settlement",
+                    "account",
+                    "contracts",
+                    "orders",
+                    "trades",
+                    "positions",
+                )
+            },
+        }
+        queries = {
+            name: {"connection_generation": "new"}
+            for name in ("orders", "trades", "positions")
+        }
+
+        proof = stage174._finalize_connection_lifecycle(
+            lifecycle,
+            query_requests=queries,
+            query_bundle_complete=True,
+            order_api_counters=stage174._new_order_api_counters(),
+            restored_epoch_ns=999,
+        )
+
+        self.assertEqual(0, proof["authoritative_readiness_transition_complete"])
+        self.assertEqual(0, proof["proof_complete"])
+        self.assertIn("authoritative_readiness_transition_missing", proof["proof_blockers"])
+
+    def test_runtime_lifecycle_helpers_revoke_and_restore_full_snapshot_readiness(self) -> None:
+        lifecycle = stage174._new_connection_lifecycle()
+        stage174._record_front_connected(
+            lifecycle, generation="old", epoch_ns=5
+        )
+        stage174._record_snapshot_readiness(
+            lifecycle,
+            generation="old",
+            snapshot_generations={
+                name: "old" for name in stage174.FULL_READINESS_SNAPSHOT_COMPONENTS
+            },
+            epoch_ns=8,
+        )
+        stage174._record_front_disconnected(
+            lifecycle, reason=4097, epoch_ns=10
+        )
+        stage174._record_front_connected(
+            lifecycle, generation="new", epoch_ns=15
+        )
+        stage174._record_snapshot_readiness(
+            lifecycle,
+            generation="new",
+            snapshot_generations={
+                name: "new" for name in stage174.FULL_READINESS_SNAPSHOT_COMPONENTS
+            },
+            epoch_ns=20,
+        )
+
+        self.assertEqual("stage174_ctp_connection_lifecycle_v2", lifecycle["model_tag"])
+        self.assertEqual("old", lifecycle["readiness_generation_before_disconnect"])
+        self.assertEqual(1, lifecycle["readiness_was_ready_before_disconnect"])
+        self.assertEqual(10, lifecycle["readiness_revoked_epoch_ns"])
+        self.assertEqual(15, lifecycle["reconnect_connected_epoch_ns"])
+        self.assertEqual("new", lifecycle["readiness_generation"])
+        self.assertEqual(20, lifecycle["readiness_restored_epoch_ns"])
+
+    def test_runtime_lifecycle_does_not_claim_revocation_before_first_readiness(self) -> None:
+        lifecycle = stage174._new_connection_lifecycle()
+        stage174._record_front_connected(
+            lifecycle, generation="old", epoch_ns=5
+        )
+        stage174._record_front_disconnected(
+            lifecycle, reason=4097, epoch_ns=10
+        )
+
+        self.assertEqual(0, lifecycle["readiness_was_ready_before_disconnect"])
+        self.assertEqual("", lifecycle["readiness_generation_before_disconnect"])
+        self.assertIsNone(lifecycle["readiness_revoked_epoch_ns"])
+
+    def test_mocked_ctp_slow_callbacks_rebuild_full_snapshot_after_reconnect(self) -> None:
+        import vnpy_ctp
+        from vnpy_ctp.gateway import ctp_gateway as ctp_gateway_module
+
+        timers: list[threading.Timer] = []
+
+        class FakeEventEngine:
+            def register(self, *args: object) -> None:
+                return None
+
+            def unregister(self, *args: object) -> None:
+                return None
+
+        class FakeTdApi:
+            def __init__(self) -> None:
+                self.reqid = 0
+                self.login_status = False
+                self.contract_inited = False
+                self.brokerid = "9999"
+                self.userid = "00001234"
+                self.contract_query_count = 0
+                self.position_query_count = 0
+
+            def _later(self, delay: float, callback: object) -> None:
+                timer = threading.Timer(delay, callback)
+                timer.daemon = True
+                timers.append(timer)
+                timer.start()
+
+            def onFrontConnected(self) -> None:
+                self.login_status = True
+                self.reqid += 1
+                reqid = self.reqid
+                self.reqSettlementInfoConfirm({}, reqid)
+                self.onRspSettlementInfoConfirm({}, {"ErrorID": 0}, reqid, True)
+
+            def onFrontDisconnected(self, reason: int) -> None:
+                self.login_status = False
+
+            def reqSettlementInfoConfirm(self, request: dict, reqid: int) -> int:
+                return 0
+
+            def onRspSettlementInfoConfirm(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+            def onRspQryOrder(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+            def onRspQryTrade(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+            def onRspQryInvestorPosition(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+            def onRspQryTradingAccount(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+            def onRspQryInstrument(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                if last:
+                    self.contract_inited = True
+
+            def reqQryOrder(self, request: dict, reqid: int) -> int:
+                self._later(
+                    0.01,
+                    lambda: self.onRspQryOrder(
+                        {}, {"ErrorID": 0}, reqid, True
+                    ),
+                )
+                return 0
+
+            def reqQryTrade(self, request: dict, reqid: int) -> int:
+                self._later(
+                    0.01,
+                    lambda: self.onRspQryTrade(
+                        {}, {"ErrorID": 0}, reqid, True
+                    ),
+                )
+                return 0
+
+            def reqQryInvestorPosition(self, request: dict, reqid: int) -> int:
+                self.position_query_count += 1
+                self._later(
+                    3.2 if self.position_query_count == 1 else 0.05,
+                    lambda: self.onRspQryInvestorPosition(
+                        {}, {"ErrorID": 0}, reqid, True
+                    ),
+                )
+                return 0
+
+            def reqQryTradingAccount(self, request: dict, reqid: int) -> int:
+                data = {
+                    "BrokerID": "9999",
+                    "InvestorID": "00001234",
+                    "AccountID": "00001234",
+                }
+                self._later(
+                    0.01,
+                    lambda: self.onRspQryTradingAccount(
+                        data, {"ErrorID": 0}, reqid, True
+                    ),
+                )
+                return 0
+
+            def reqQryInstrument(self, request: dict, reqid: int) -> int:
+                self.contract_query_count += 1
+                query_count = self.contract_query_count
+                data = {"InstrumentID": "JM9999", "ProductClass": "1"}
+                self._later(
+                    0.01,
+                    lambda: self.onRspQryInstrument(
+                        data, {"ErrorID": 0}, reqid, True
+                    ),
+                )
+                if query_count == 1:
+                    self._later(0.08, lambda: self.onFrontDisconnected(4097))
+                    self._later(0.10, self.onFrontConnected)
+                return 0
+
+            def getTradingDay(self) -> str:
+                return "20260719"
+
+            def send_order(self, *args: object, **kwargs: object) -> str:
+                return ""
+
+            def cancel_order(self, *args: object, **kwargs: object) -> None:
+                return None
+
+        class FakeGateway:
+            def __init__(self) -> None:
+                self.td_api = FakeTdApi()
+
+            def process_timer_event(self, event: object) -> None:
+                return None
+
+            def send_order(self, *args: object, **kwargs: object) -> str:
+                return ""
+
+            def cancel_order(self, *args: object, **kwargs: object) -> None:
+                return None
+
+        class FakeMainEngine:
+            def __init__(self, event_engine: object) -> None:
+                self.gateway: FakeGateway | None = None
+
+            def add_gateway(self, gateway_class: type) -> None:
+                self.gateway = gateway_class()
+
+            def connect(self, setting: dict, gateway_name: str) -> None:
+                assert self.gateway is not None
+                self.gateway.td_api.onFrontConnected()
+
+            def get_gateway(self, gateway_name: str) -> FakeGateway:
+                assert self.gateway is not None
+                return self.gateway
+
+            def close(self) -> None:
+                assert self.gateway is not None
+                self.gateway.td_api.onFrontDisconnected(0)
+
+        env = {
+            "CTP_USERID": "00001234",
+            "CTP_PASSWORD": "secret",
+            "CTP_BROKERID": "9999",
+            "CTP_TD_ADDRESS": "tcp://127.0.0.1:1",
+            "CTP_MD_ADDRESS": "tcp://127.0.0.1:2",
+            "CTP_APPID": "app",
+            "CTP_AUTH_CODE": "auth",
+            "CTP_PRODUCT_INFO": "",
+        }
+        with (
+            mock.patch.object(stage174, "EventEngine", FakeEventEngine),
+            mock.patch.object(stage174, "MainEngine", FakeMainEngine),
+            mock.patch.object(vnpy_ctp, "CtpGateway", FakeGateway),
+            mock.patch.object(ctp_gateway_module, "CtpTdApi", FakeTdApi),
+            mock.patch.object(
+                stage174,
+                "_gateway_import_status",
+                return_value={"ctp_gateway_import_available": True},
+            ),
+            mock.patch.object(stage174, "_required_env_missing", return_value=[]),
+            mock.patch.object(stage174, "_debug_report", return_value=None),
+            mock.patch.dict(os.environ, env, clear=False),
+        ):
+            result = stage174._run_probe(
+                connect=True,
+                wait_seconds=8,
+                observe_reconnect=True,
+                query_flow_gap_seconds=0.001,
+            )
+
+        for timer in timers:
+            timer.join(timeout=0.5)
+        lifecycle = result["connection_lifecycle"]
+        self.assertEqual(1, lifecycle["proof_complete"])
+        self.assertEqual(1, lifecycle["full_snapshot_generation_complete"])
+        self.assertEqual(1, lifecycle["authoritative_readiness_transition_complete"])
+        self.assertNotEqual(
+            lifecycle["old_connection_generation"],
+            lifecycle["new_connection_generation"],
+        )
+        self.assertTrue(result["broker_query_bundle"]["complete"])
+        self.assertEqual(0, result["order_api_called_count"])
+        self.assertEqual(0, result["native_mutation_api_called_count"])
 
 
 if __name__ == "__main__":

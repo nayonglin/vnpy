@@ -34,6 +34,9 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
                     "cancel_order_api_attempted_count": 0,
                     "send_order_api_called_count": 0,
                     "cancel_order_api_called_count": 0,
+                    "native_mutation_api_attempted_count": 0,
+                    "native_mutation_api_called_count": 0,
+                    "order_api_attempted_count": 0,
                     "order_api_called_count": 0,
                 }
             },

@@ -256,6 +256,14 @@ class Stage930FastLaneTest(unittest.TestCase):
                     "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
                     "stage907_readonly_status_after": "readonly_snapshots_received",
                     "stage907_position_snapshot_state_after": "confirmed_flat",
+                    "stage907_observe_reconnect": 0,
+                    "stage907_snapshot_evidence_complete": 1,
+                    "stage907_snapshot_generation_uuid": "snapshot-generation",
+                    "stage907_stage174_invocation_id": "invocation",
+                    "stage907_stage174_file_summary_sha256": "d" * 64,
+                    "stage907_stage174_stdout_summary_sha256": "d" * 64,
+                    "stage907_stage174_stdout_file_payload_match": 1,
+                    "stage907_broker_query_bundle_complete": True,
                 }
             },
         }
@@ -278,6 +286,57 @@ class Stage930FastLaneTest(unittest.TestCase):
         )
 
         self.assertEqual(40, result["cycle_started_epoch_ns"])
+
+    def test_readonly_qualification_cycle_preserves_authoritative_reconnect(self) -> None:
+        base = {
+            "cycle_started_epoch_ns": 30,
+            "stage903": {
+                "summary": {
+                    "stage914_exit_code": 0,
+                    "stage914_preflight_status": "production_readonly_preflight_passed",
+                    "stage914_blocking_failure_count": 0,
+                    "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
+                    "stage907_readonly_status_after": "readonly_snapshots_received",
+                    "stage907_position_snapshot_state_after": "confirmed_flat",
+                    "stage907_observe_reconnect": 1,
+                    "stage907_snapshot_evidence_complete": 1,
+                    "stage907_snapshot_generation_uuid": "snapshot-generation",
+                    "stage907_stage174_invocation_id": "invocation",
+                    "stage907_stage174_file_summary_sha256": "d" * 64,
+                    "stage907_stage174_stdout_summary_sha256": "d" * 64,
+                    "stage907_stage174_stdout_file_payload_match": 1,
+                    "stage907_broker_query_bundle_complete": True,
+                    "stage907_connection_lifecycle": {
+                        "proof_complete": 1,
+                        "authoritative_readiness_transition_complete": 1,
+                        "full_snapshot_generation_complete": 1,
+                    },
+                }
+            },
+        }
+        later_normal = json.loads(json.dumps(base))
+        later_normal["cycle_started_epoch_ns"] = 40
+        later_summary = later_normal["stage903"]["summary"]
+        later_summary["stage907_observe_reconnect"] = 0
+        later_summary["stage907_connection_lifecycle"] = {}
+
+        result = stage930._readonly_qualification_cycle([base, later_normal])
+
+        self.assertEqual(30, result["cycle_started_epoch_ns"])
+
+    def test_reconnect_observation_once_consumes_only_after_real_refresh_attempt(self) -> None:
+        args = SimpleNamespace(readonly_observe_reconnect_once=True)
+
+        not_consumed = stage930._consume_readonly_reconnect_observation_once(
+            args, {"stage907_refresh_attempted": 0}
+        )
+        consumed = stage930._consume_readonly_reconnect_observation_once(
+            args, {"stage907_refresh_attempted": 1}
+        )
+
+        self.assertEqual(0, not_consumed)
+        self.assertEqual(1, consumed)
+        self.assertFalse(args.readonly_observe_reconnect_once)
 
     def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
         missing = stage930._missing_order_api_evidence_fields(
@@ -304,6 +363,8 @@ class Stage930FastLaneTest(unittest.TestCase):
                 "stage903.summary.cancel_order_api_called_count",
                 "stage903.summary.send_order_api_attempted_count",
                 "stage903.summary.cancel_order_api_attempted_count",
+                "stage903.summary.native_mutation_api_attempted_count",
+                "stage903.summary.native_mutation_api_called_count",
                 "stage903.summary.order_api_evidence_complete",
                 "stage931.summary.order_api_evidence_complete",
             },

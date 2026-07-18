@@ -81,6 +81,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
     "tests/stage179_performance_gate.py",
+    "tests/test_stage174_query_bundle.py",
     "tests/test_stage179_fault_matrix.py",
     "tests/test_stage179_official_execution_profile.py",
     "tests/test_stage179_performance_gate_diagnostics.py",

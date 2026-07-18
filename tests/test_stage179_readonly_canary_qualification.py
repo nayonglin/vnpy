@@ -21,6 +21,7 @@ from audit_qmt_roll_stage179_readonly_canary_qualification import (  # noqa: E40
     build_readonly_session_evidence,
     evaluate_readonly_qualification,
 )
+import audit_qmt_roll_stage179_readonly_canary_qualification as auditor  # noqa: E402
 
 
 MANIFEST_SHA256 = "a" * 64
@@ -42,6 +43,14 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
     )
     scheduled_epoch_ns = int(scheduled.timestamp() * 1_000_000_000)
     ingress = scheduled_epoch_ns + 300_000_000_000
+    revoked = ingress + 400_000_000
+    connected = ingress + 450_000_000
+    restored = ingress + 500_000_000
+    disconnect_evidence_id = hashlib.sha256(
+        f"connection-old:connection-new:{revoked}:{connected}:{restored}".encode(
+            "utf-8"
+        )
+    ).hexdigest()
     record: dict[str, object] = {
         "capture_schema_version": 2,
         "stage930_summary_sha256": hashlib.sha256(
@@ -82,6 +91,7 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "plist_runtime_profile": "production-readonly",
         "plist_mode": "dry-run",
         "plist_submit_mode": "disabled",
+        "plist_readonly_observe_reconnect_once": 1,
         "release_manifest_sha256": MANIFEST_SHA256,
         "release_source_commit": SOURCE_COMMIT,
         "stage914_exit_code": 0,
@@ -90,6 +100,14 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
         "stage907_readonly_status_after": "readonly_snapshots_received",
         "stage907_position_snapshot_state_after": "confirmed_flat",
+        "stage907_observe_reconnect": int(index == 4),
+        "stage907_snapshot_evidence_complete": 1,
+        "stage907_snapshot_generation_uuid": f"snapshot-generation-{index}",
+        "stage907_stage174_invocation_id": f"invocation-{index}",
+        "stage907_stage174_file_summary_sha256": "d" * 64,
+        "stage907_stage174_stdout_summary_sha256": "d" * 64,
+        "stage907_stage174_stdout_file_payload_match": 1,
+        "stage907_broker_query_bundle_complete": True,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,
         "order_api_called_count": 0,
@@ -106,14 +124,15 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "disconnect_full_snapshot_generation_complete": int(index == 4),
         "disconnect_observed": int(index == 4),
         "reconnect_observed": int(index == 4),
-        "disconnect_evidence_id": "disconnect-session-4" if index == 4 else "",
+        "disconnect_evidence_id": disconnect_evidence_id if index == 4 else "",
         "disconnect_session_id": "session-4" if index == 4 else "",
         "disconnect_runtime_profile": "production-readonly" if index == 4 else "",
         "disconnect_execution_profile": "stage372-20w" if index == 4 else "",
         "old_connection_generation": "connection-old" if index == 4 else "",
         "new_connection_generation": "connection-new" if index == 4 else "",
-        "readiness_revoked_epoch_ns": ingress + 400_000_000 if index == 4 else None,
-        "readiness_restored_epoch_ns": ingress + 500_000_000 if index == 4 else None,
+        "readiness_revoked_epoch_ns": revoked if index == 4 else None,
+        "reconnect_connected_epoch_ns": connected if index == 4 else None,
+        "readiness_restored_epoch_ns": restored if index == 4 else None,
         "disconnect_send_order_api_called_count": 0 if index == 4 else None,
         "disconnect_cancel_order_api_called_count": 0 if index == 4 else None,
     }
@@ -174,6 +193,30 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
                         "stage907_position_snapshot_state_after": record[
                             "stage907_position_snapshot_state_after"
                         ],
+                        "stage907_observe_reconnect": record[
+                            "stage907_observe_reconnect"
+                        ],
+                        "stage907_snapshot_evidence_complete": record[
+                            "stage907_snapshot_evidence_complete"
+                        ],
+                        "stage907_snapshot_generation_uuid": record[
+                            "stage907_snapshot_generation_uuid"
+                        ],
+                        "stage907_stage174_invocation_id": record[
+                            "stage907_stage174_invocation_id"
+                        ],
+                        "stage907_stage174_file_summary_sha256": record[
+                            "stage907_stage174_file_summary_sha256"
+                        ],
+                        "stage907_stage174_stdout_summary_sha256": record[
+                            "stage907_stage174_stdout_summary_sha256"
+                        ],
+                        "stage907_stage174_stdout_file_payload_match": record[
+                            "stage907_stage174_stdout_file_payload_match"
+                        ],
+                        "stage907_broker_query_bundle_complete": record[
+                            "stage907_broker_query_bundle_complete"
+                        ],
                         "stage907_connection_lifecycle": {
                             "model_tag": "stage174_ctp_connection_lifecycle_v2",
                             "authoritative_readiness_transition_complete": int(index == 4),
@@ -192,6 +235,9 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
                             ],
                             "readiness_revoked_epoch_ns": record[
                                 "readiness_revoked_epoch_ns"
+                            ],
+                            "reconnect_connected_epoch_ns": record[
+                                "reconnect_connected_epoch_ns"
                             ],
                             "readiness_restored_epoch_ns": record[
                                 "readiness_restored_epoch_ns"
@@ -279,6 +325,21 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
                         "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
                         "stage907_readonly_status_after": "readonly_snapshots_received",
                         "stage907_position_snapshot_state_after": "confirmed_flat",
+                        "stage907_snapshot_evidence_complete": 1,
+                        "stage907_snapshot_generation_uuid": source[
+                            "stage907_snapshot_generation_uuid"
+                        ],
+                        "stage907_stage174_invocation_id": source[
+                            "stage907_stage174_invocation_id"
+                        ],
+                        "stage907_stage174_file_summary_sha256": source[
+                            "stage907_stage174_file_summary_sha256"
+                        ],
+                        "stage907_stage174_stdout_summary_sha256": source[
+                            "stage907_stage174_stdout_summary_sha256"
+                        ],
+                        "stage907_stage174_stdout_file_payload_match": 1,
+                        "stage907_broker_query_bundle_complete": True,
                         "stage907_connection_lifecycle": {
                             "disconnect_observed": 0,
                             "reconnect_observed": 0,
@@ -301,6 +362,7 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
                 "stage372-20w",
                 "--runtime-profile",
                 "production-readonly",
+                "--readonly-observe-reconnect-once",
             ],
         }
 
@@ -337,16 +399,37 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
         self.assertEqual(_record_digest(captured), captured["capture_record_sha256"])
         self.assertEqual(captured["session_id"], captured_again["session_id"])
 
-    def test_five_sessions_remain_blocked_until_authoritative_reconnect_exists(self) -> None:
+    def test_five_sessions_qualify_with_reviewed_v2_reconnect(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
 
         result = self.qualify(records)
 
-        self.assertEqual("blocked", result["qualification_status"])
-        self.assertIn("disconnect_reconnect_proof_missing", result["blockers"])
-        self.assertEqual(4, result["qualified_session_count"])
+        self.assertEqual("qualified", result["qualification_status"])
+        self.assertNotIn("disconnect_reconnect_proof_missing", result["blockers"])
+        self.assertEqual(5, result["qualified_session_count"])
         self.assertEqual(["day", "night"], result["session_kinds"])
-        self.assertEqual(0, result["disconnect_reconnect_proof_count"])
+        self.assertEqual(1, result["disconnect_reconnect_proof_count"])
+
+    def test_flag_on_five_sessions_qualify_only_with_observed_reconnect(self) -> None:
+        with_reconnect = [
+            session_record(
+                index, session_kind="day" if index < 2 else "night"
+            )
+            for index in range(5)
+        ]
+        without_reconnect = [
+            session_record(
+                index, session_kind="day" if index < 2 else "night"
+            )
+            for index in (0, 1, 2, 3, 5)
+        ]
+        qualified = self.qualify(with_reconnect)
+        blocked = self.qualify(without_reconnect)
+
+        self.assertEqual("qualified", qualified["qualification_status"])
+        self.assertEqual(1, qualified["disconnect_reconnect_proof_count"])
+        self.assertEqual("blocked", blocked["qualification_status"])
+        self.assertIn("disconnect_reconnect_proof_missing", blocked["blockers"])
 
     def test_disconnect_booleans_without_generation_evidence_do_not_qualify(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
@@ -358,6 +441,12 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
 
         self.assertIn("session-4:disconnect_reconnect_evidence_invalid", result["blockers"])
         self.assertIn("disconnect_reconnect_proof_missing", result["blockers"])
+
+    def test_disconnect_evidence_id_is_recomputed_from_generation_timeline(self) -> None:
+        record = session_record(4, session_kind="night")
+        self.assertTrue(auditor._disconnect_reconnect_proof_valid(record))
+        record["disconnect_evidence_id"] = "self-consistent-looking-forgery"
+        self.assertFalse(auditor._disconnect_reconnect_proof_valid(record))
 
     def test_disconnect_evidence_must_bind_same_session_and_profile(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
