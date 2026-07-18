@@ -151,6 +151,7 @@
 - Stage655 TD-only 用正式 env/framework 运行 35 秒，严格 `send/cancel=0/0`，但 `front_connected/auth/login/settlement/account/position` 全部未就绪，状态 `readonly_no_account_margin_received`。summary SHA-256 `6f10c5044ae28abf6c806d9a997940e77784f4f18e99914daa130f179084ca4f`。
 - 随后的不打印地址 TCP 探测确认 TD/MD 前置端口均不可达，当前失败根因收敛为周末/外部生产前置不可用，而不是本地 framework、Stage179 执行链或策略逻辑。production-readonly 继续 `NO-GO`，等待交易服务窗口复验；不得绕过只读 gate。
 - 本轮没有新回测、没有加载 launchd、没有调用任何报撤单 API。新增关键源码后 manifest 必须从新干净 HEAD 再次冻结，旧 digest 只作历史证据。
+- P2 修复提交 `270819ea6837a590302007eaef12e192d5fb74a5` 后，从干净 detached worktree 生成 62 个 critical files 的 schema v2 no-submit manifest；新增 provisioner 已纳入冻结范围。release id `stage179-stage372-no-submit-270819ea6`，manifest digest `4341c58ae238d66f354fe72a54cf6815edb2a356d099f68aa9fd03c77d8bd1a8`，文件 SHA-256 `e1e212e3d90c40f9779f3a72b78cba0447fcb2d9d3aaed1e8423d549fc594cd7`；资格保持 `blocked`，只允许 offline/production-readonly。
 
 ## 结论与硬门禁
 

@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T16:52:05.018581Z",
+  "created_at_utc": "2026-07-18T17:07:56.501424Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -14,8 +14,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
-      "sha256": "c125a73526ab64a1d054abd6f5c91100c4a911579566a596a23dce6c0eb6ae7e",
-      "size_bytes": 13162
+      "sha256": "f9e0fac1428181642f4f30e96d03849479e98fa0195fac88db172552e15805d8",
+      "size_bytes": 13251
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
@@ -61,6 +61,11 @@
       "path": "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
       "sha256": "eec8d03284d53e6cfe498889e3f3014b4030c00203a33b581f30723783ce2554",
       "size_bytes": 2107
+    },
+    {
+      "path": "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
+      "sha256": "60894c85b40e56551e24b730854fe5e9a0711c50faa15365b0c26807755225cc",
+      "size_bytes": 6334
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
@@ -189,8 +194,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
-      "sha256": "ab774b258699f243b46c04d5be5394bfdb1359e8f6ee5084591ab5a42370632d",
-      "size_bytes": 78797
+      "sha256": "a6790b621257610630793e6cb8910144f42e0acaa765c6e7797c9d4d36a32a0c",
+      "size_bytes": 78380
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
@@ -279,8 +284,8 @@
     },
     {
       "path": "tests/test_stage179_stage372_daemon_boundary.py",
-      "sha256": "bc34c61eeca58dabd54604a9dc9442ce24f61a0a3fb00b06344063c380ebfa7d",
-      "size_bytes": 4136
+      "sha256": "0d8e52320ac5fb0cbf16d21124c1d96bec782e389c3197ab8fbad9b1555986e7",
+      "size_bytes": 9321
     },
     {
       "path": "tests/test_stage179_stage372_daily_intents.py",
@@ -329,14 +334,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "df99726f0c1bb17c5cd7e7e04fbe72d3045c530d09e43d1d6ca80d3ceb3d2d91",
+  "manifest_sha256": "4341c58ae238d66f354fe72a54cf6815edb2a356d099f68aa9fd03c77d8bd1a8",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-no-submit-acbe4825d",
+  "release_id": "stage179-stage372-no-submit-270819ea6",
   "schema_version": 2,
-  "source_commit": "acbe4825df9266cedf4dc5f59356d7e7725054a8",
+  "source_commit": "270819ea6837a590302007eaef12e192d5fb74a5",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "1765c15a25253e69634579d6ae298e786633a9085a3602136adaa91c271f75cc"
+  "tree_fingerprint": "742e9fa4e776c5fb63d9b0eac93122ab7d6c11ebebe201a9d9e074fff157f594"
 }
