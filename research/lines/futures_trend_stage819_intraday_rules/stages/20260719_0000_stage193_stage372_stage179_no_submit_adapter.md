@@ -163,13 +163,21 @@
 - 本轮没有调整任何 alpha 参数，没有运行新回测，没有连接 CTP/SimNow，没有加载 launchd，也没有调用报撤单 API。由于关键源码再次变化，`aa810...` manifest 已失效，必须从修复提交重新冻结并再次独立审查。
 - P1/P2 修复提交 `b1d05d8c8a18b0652b8730e748f401ed3f01bdbb` 后，已从干净 detached worktree 重新生成 62 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-b1d05d8c8`，manifest digest `e2abd74d53d7e4d26752db1534209c445a6a956ad027d3cd59ee6ead5bd79c57`，文件 SHA-256 `80f580328ff6b7f2bb42dde64f0b11c1f176394f12930a86233d502400d87e14`；实际 loader 验证 production-readonly 通过，SimNow、broker-test、production-live 均以 runtime profile 不允许而拒绝。
 
+### 2026-07-19 01:22-01:29 最终冻结独立复审
+
+- 独立 Agent 对冻结 HEAD `f98c66054c3967a08d0594670f0e038e622a25a3` 复审结论为 `P0=0、P1=0、P2=1`，没有新的代码合入阻断。
+- 审查独立重放旧 `--allowed-root /Users/bytedance` 与 `--plist` 攻击均得到 argparse `exit 2`；密封 plan 在恢复 canonical 默认后拒绝复用。create/权限修复前后证据正确，`launchctl/send/cancel/order API=0`。
+- Stage903 只有严格整数 `exit_code=0`、同一 stdout 的有效 JSON、完整 Stage372 profile/version/capital/label、passed 状态且 blocker 为 0 才 ready；`exit 139`、字符串 `"0"`、错身份、错状态、blocker、空或坏 stdout 全部失败关闭。
+- 独立 51 项聚焦测试通过；62/62 critical files 唯一且 hash 匹配，manifest digest 与文件 SHA-256 重算一致，source `b1d05d8c8...` 是冻结 HEAD 的祖先；offline/production-readonly loader 接受，SimNow/broker-test/production-live 拒绝。3 份 plist lint、Python compile 与 `git diff --check` 通过。
+- 四类结论：no-submit 代码与 dormant plist 合入 `GO`；production-readonly `NO-GO`；SimNow/broker-test `NO-GO`；production-live `NO-GO`。唯一 P2 是可用交易服务窗口下严格 `0/0` CTP 与真实 `20:55→21:00 decision/submit-ready` 时间戳证据。
+
 ## 结论与硬门禁
 
-- 代码合入判断：`待最终独立复审`。最新 P1 已按失败关闭原则修复且 697 条扩大回归通过，但在新 manifest 冻结与独立 Agent 将 `P0/P1` 重新清零前，不恢复 no-submit 合入 `GO`。
+- 代码合入判断：`GO`，严格限定 no-submit 代码与 dormant plist。最终冻结独立复审为 `P0=0、P1=0、P2=1`；合入不等于部署或激活。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
 - 激活判断：release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍因 CTP 未就绪而 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：先提交本轮 P1/P2 修复，从干净 detached worktree 冻结新 manifest，再让独立 Agent 重放宽根 CLI 与 `exit 139 + passed JSON` 攻击并给出四类 GO/NO-GO。之后才可由合入者合入 no-submit 候选，且保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：可由合入者合入冻结 no-submit 候选，但必须保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 
