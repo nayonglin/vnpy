@@ -4910,6 +4910,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--stage179-release-manifest", default="")
     parser.add_argument("--stage179-activation-receipt", default="")
+    parser.add_argument("--stage179-runtime-root", default="")
     parser.add_argument("--confirm-stage179-activation", default="")
     parser.add_argument("--max-orders", type=int, default=1)
     parser.add_argument(
@@ -6755,6 +6756,11 @@ def run_serve(args: argparse.Namespace) -> int:
     runtime = resolve_runtime_profile(
         profile=args.runtime_profile,
         order_scope=args.order_scope,
+        output_root=(
+            Path(args.stage179_runtime_root)
+            if str(args.stage179_runtime_root).strip()
+            else None
+        ),
         repo_root=Path(__file__).resolve().parents[2],
     )
     environment = dict(os.environ)

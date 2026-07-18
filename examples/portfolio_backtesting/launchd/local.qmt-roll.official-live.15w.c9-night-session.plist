@@ -6,9 +6,12 @@
   <string>local.qmt-roll.official-live.15w.c9-night-session</string>
   <key>AbandonProcessGroup</key>
   <false/>
+  <key>ExitTimeOut</key>
+  <integer>15</integer>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
     <string>--mode</string>
     <string>live-real</string>
     <string>--submit-mode</string>
@@ -36,10 +39,6 @@
     <string>1</string>
     <key>OFFICIAL_LIVE_PHASE_D_SESSION_DAEMON_ENABLED</key>
     <string>1</string>
-    <key>STAGE930_SUPERVISOR_MAX_RESTARTS</key>
-    <string>3</string>
-    <key>STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS</key>
-    <string>15</string>
   </dict>
   <key>WorkingDirectory</key>
   <string>/Users/bytedance/Desktop/person/vnpy</string>

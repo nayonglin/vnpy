@@ -15,6 +15,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import build_qmt_roll_stage179_release_manifest as builder
+import build_qmt_roll_stage179_rollback_guard as rollback_guard
 from build_qmt_roll_stage179_release_manifest import build_release_manifest_file
 from qmt_roll_official_live_release_manifest import (
     ReleaseManifestError,
@@ -164,6 +165,81 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 path = self.write(mutation, f"invalid-structure-{index}.json")
                 with self.assertRaises(ReleaseManifestError):
                     self.validate(path)
+
+    def test_ledger_rollback_safety_requires_v2_reader_after_side_effect(self) -> None:
+        no_v2 = rollback_guard.inspect_ledger_rollback_safety(
+            [{"event_type": "reserved", "intent_fingerprint_version": 1}]
+        )
+        reservation_only = rollback_guard.inspect_ledger_rollback_safety(
+            [
+                {
+                    "event_type": "reserved",
+                    "intent_fingerprint_version": 2,
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+                {
+                    "event_type": "spool_crash_recovery_pre_send_safe_terminal",
+                    "intent_fingerprint_version": 2,
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+            ]
+        )
+        side_effect = rollback_guard.inspect_ledger_rollback_safety(
+            [
+                {
+                    "event_type": "api_slot_reserved",
+                    "intent_fingerprint_version": 2,
+                    "api_slot_type": "send_order",
+                }
+            ]
+        )
+
+        self.assertEqual("v1_code_and_plist_rollback_allowed", no_v2.disposition)
+        self.assertEqual(
+            "broker_snapshot_required_keep_v2_reader",
+            reservation_only.disposition,
+        )
+        self.assertEqual(
+            "v2_reader_required_reconcile_and_roll_forward",
+            side_effect.disposition,
+        )
+
+    def test_rollback_cli_is_readonly_and_writes_separate_evidence(self) -> None:
+        ledger_path = Path(self.tempdir.name) / "ledger.ndjson"
+        original = (
+            json.dumps(
+                {
+                    "event_type": "api_slot_reserved",
+                    "intent_fingerprint_version": 2,
+                    "api_slot_type": "send_order",
+                }
+            )
+            + "\n"
+        ).encode()
+        ledger_path.write_bytes(original)
+        json_output = Path(self.tempdir.name) / "rollback.json"
+        markdown_output = Path(self.tempdir.name) / "rollback.md"
+
+        with patch("sys.stdout"):
+            rollback_guard.main(
+                [
+                    "--ledger",
+                    str(ledger_path),
+                    "--json-output",
+                    str(json_output),
+                    "--markdown-output",
+                    str(markdown_output),
+                ]
+            )
+
+        self.assertEqual(original, ledger_path.read_bytes())
+        self.assertEqual(
+            "v2_reader_required_reconcile_and_roll_forward",
+            json.loads(json_output.read_text(encoding="utf-8"))["disposition"],
+        )
+        self.assertIn("只读 ledger", markdown_output.read_text(encoding="utf-8"))
 
     def test_builder_requires_clean_tree_and_refuses_different_overwrite(self) -> None:
         output = Path(self.tempdir.name) / "built-release.json"

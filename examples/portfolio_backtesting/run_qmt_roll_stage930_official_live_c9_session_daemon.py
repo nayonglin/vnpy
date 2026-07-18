@@ -27,6 +27,8 @@ from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_VERSION,
 )
 from qmt_roll_official_live_execution_ledger import ledger_order_api_counts, read_execution_ledger
+from qmt_roll_official_live_execution_service import revoke_readiness
+from qmt_roll_official_live_intent_spool import notify_executor, wakeup_socket_path
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_CONFIRM_TEXT,
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
@@ -43,6 +45,11 @@ from qmt_roll_official_live_phase_d_config import (
     build_phase_d_config,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
+from qmt_roll_official_live_runtime_profile import (
+    ExecutionRuntimeProfile,
+    OrderScope,
+    resolve_runtime_profile,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -109,6 +116,8 @@ _SHUTDOWN_SIGNAL = 0
 _SPAWN_IN_PROGRESS = False
 _DEFERRED_SHUTDOWN_SIGNAL = 0
 _CLEANUP_IN_PROGRESS = False
+_STAGE931_SERVICE_PROCESS: subprocess.Popen[Any] | None = None
+_STAGE931_SERVICE_RUNTIME: Any | None = None
 
 
 def _paths(run_id: str) -> dict[str, Path]:
@@ -423,6 +432,7 @@ def _shutdown_runtime(reason: str) -> None:
             except Exception:
                 pass
             _RUNTIME_OWNS_HEARTBEAT = False
+        _stop_stage931_service(reason)
         _terminate_all_active_children()
     finally:
         _CLEANUP_IN_PROGRESS = False
@@ -1099,6 +1109,8 @@ def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
         blockers.append(
             "persistent_detector_requires_warm_executor_and_runtime_profile"
         )
+    if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
+        blockers.append("persistent_detector_requires_stage179_warm_executor")
     if args.tick_refresh_mode != "stream":
         blockers.append("persistent_detector_requires_stream_tick_owner")
     if not _startup_target_date(args):
@@ -2048,6 +2060,139 @@ def _run_stage931(
     return {**{key: value for key, value in result.items() if key != "stdout"}, "summary": summary}
 
 
+def _stage179_order_scope(runtime_profile: str) -> OrderScope:
+    return {
+        ExecutionRuntimeProfile.OFFLINE.value: OrderScope.NONE,
+        ExecutionRuntimeProfile.PRODUCTION_READONLY.value: OrderScope.READONLY,
+        ExecutionRuntimeProfile.SIMNOW.value: OrderScope.TEST,
+        ExecutionRuntimeProfile.BROKER_TEST.value: OrderScope.TEST,
+        ExecutionRuntimeProfile.PRODUCTION_LIVE.value: OrderScope.LIVE,
+    }[str(runtime_profile)]
+
+
+def _stage179_runtime(args: argparse.Namespace) -> Any:
+    runtime_root = _clean(getattr(args, "stage179_runtime_root", ""))
+    return resolve_runtime_profile(
+        profile=getattr(args, "runtime_profile", "offline"),
+        order_scope=_stage179_order_scope(
+            getattr(args, "runtime_profile", "offline")
+        ),
+        output_root=Path(runtime_root) if runtime_root else None,
+        repo_root=REPO_ROOT,
+    )
+
+
+def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] | None:
+    global _STAGE931_SERVICE_PROCESS, _STAGE931_SERVICE_RUNTIME
+    if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
+        return None
+    if _STAGE931_SERVICE_PROCESS is not None:
+        if _process_alive(_STAGE931_SERVICE_PROCESS):
+            return _STAGE931_SERVICE_PROCESS
+        _unregister_active_child(_STAGE931_SERVICE_PROCESS)
+        _STAGE931_SERVICE_PROCESS = None
+
+    runtime = _stage179_runtime(args)
+    stage_args = [
+        "--command",
+        "serve",
+        "--stage179-warm-executor",
+        "--mode",
+        "live-real" if args.submit_mode == "live-real" else "dry-run",
+        "--runtime-profile",
+        runtime.profile.value,
+        "--order-scope",
+        runtime.order_scope.value,
+        "--stage179-runtime-root",
+        str(runtime.output_root),
+    ]
+    release_manifest = _clean(getattr(args, "release_manifest", ""))
+    activation_receipt = _clean(getattr(args, "activation_receipt", ""))
+    if release_manifest:
+        stage_args.extend(["--stage179-release-manifest", release_manifest])
+    if activation_receipt:
+        stage_args.extend(["--stage179-activation-receipt", activation_receipt])
+    if _clean(getattr(args, "confirm_live_real", "")):
+        stage_args.extend(
+            ["--confirm-live-real", _clean(args.confirm_live_real)]
+        )
+    if _clean(getattr(args, "confirm_stage179_activation", "")):
+        stage_args.extend(
+            [
+                "--confirm-stage179-activation",
+                _clean(args.confirm_stage179_activation),
+            ]
+        )
+    _STAGE931_SERVICE_RUNTIME = runtime
+    _STAGE931_SERVICE_PROCESS = _managed_popen(
+        [str(PYTHON_PATH), str(STAGE931_SCRIPT), *stage_args],
+        text=True,
+    )
+    return _STAGE931_SERVICE_PROCESS
+
+
+def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
+    process = _STAGE931_SERVICE_PROCESS
+    runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+    readiness = _read_json(runtime.readiness_path)
+    expires_epoch_ns = _to_int(readiness.get("expires_epoch_ns"), 0)
+    blockers: list[str] = []
+    if process is None or not _process_alive(process):
+        blockers.append("stage931_warm_service_not_running")
+    if readiness.get("status") != "ready":
+        blockers.append(
+            f"stage931_warm_readiness_not_ready:{readiness.get('status', '')}"
+        )
+    if expires_epoch_ns <= time.time_ns():
+        blockers.append("stage931_warm_readiness_expired")
+    if _clean(readiness.get("runtime_profile")) != runtime.profile.value:
+        blockers.append("stage931_warm_readiness_profile_mismatch")
+    return {
+        "submit_status": (
+            "warm_executor_ready" if not blockers else "warm_executor_blocked"
+        ),
+        "exit_code": 0 if not blockers else 2,
+        "process_pid": getattr(process, "pid", None),
+        "runtime_profile": runtime.profile.value,
+        "readiness_path": str(runtime.readiness_path),
+        "readiness": readiness,
+        "blockers": blockers,
+        "summary": {
+            "order_api_called_count": 0,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+        },
+    }
+
+
+def _wake_stage931_service(args: argparse.Namespace) -> bool:
+    runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+    return notify_executor(wakeup_socket_path(runtime.spool_path))
+
+
+def _stop_stage931_service(reason: str) -> None:
+    global _STAGE931_SERVICE_PROCESS, _STAGE931_SERVICE_RUNTIME
+    process = _STAGE931_SERVICE_PROCESS
+    runtime = _STAGE931_SERVICE_RUNTIME
+    if runtime is not None:
+        readiness = _read_json(runtime.readiness_path)
+        try:
+            revoke_readiness(
+                runtime.readiness_path,
+                service_generation=(
+                    _clean(readiness.get("service_generation"))
+                    or "stage930-owner"
+                ),
+                reason=reason,
+                revoked_epoch_ns=time.time_ns(),
+            )
+        except Exception:
+            pass
+    _terminate_managed_child(process)
+    _STAGE931_SERVICE_PROCESS = None
+    _STAGE931_SERVICE_RUNTIME = None
+
+
 def _current_session_name_list() -> list[str]:
     config = build_phase_d_config()
     now = datetime.now().time()
@@ -2563,6 +2708,11 @@ def _stage931_submit_blockers(
 
 
 def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
+    warm_execution = (
+        getattr(args, "stage179_execution_mode", "legacy-once") == "warm"
+    )
+    if warm_execution:
+        _start_stage931_service(args)
     symbols = _watched_symbols_for_args(args)
     if _market_execution_session_active():
         tick_result = _run_tick_refresh(args, target_date, symbols, paths)
@@ -2603,7 +2753,12 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         ready_count,
         pre_submit_tick_gate,
     )
-    if not submit_blockers:
+    if warm_execution:
+        stage931_result = _status_stage931_service(args)
+        stage931_result["wake_socket_notified"] = int(
+            _wake_stage931_service(args)
+        )
+    elif not submit_blockers:
         stage931_result = _run_stage931(args, resolved_target_date, paths)
     else:
         stage931_result = {
@@ -2619,6 +2774,7 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     if (
         resolved_target_date
         and args.submit_mode == "live-real"
+        and not warm_execution
         and _ready_reduce_close_count(resolved_target_date) > 0
     ):
         # The normal adapter owns submission while it runs; its companion fast
@@ -2716,6 +2872,20 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Legacy behavior. Default keeps the daemon alive for risk-reducing closes while blocking opens.",
     )
     parser.add_argument("--confirm-live-real", default="")
+    parser.add_argument(
+        "--stage179-execution-mode",
+        choices=("legacy-once", "warm"),
+        default="legacy-once",
+    )
+    parser.add_argument(
+        "--runtime-profile",
+        choices=[item.value for item in ExecutionRuntimeProfile],
+        default=ExecutionRuntimeProfile.OFFLINE.value,
+    )
+    parser.add_argument("--release-manifest", default="")
+    parser.add_argument("--activation-receipt", default="")
+    parser.add_argument("--stage179-runtime-root", default="")
+    parser.add_argument("--confirm-stage179-activation", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
     parser.add_argument("--require-current-session-name", action="append", default=[])
     return parser
@@ -2820,6 +2990,7 @@ def main() -> None:
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
     _activate_runtime_ownership()
+    _start_stage931_service(args)
     # Market-data coverage starts before the AI-pool check.  The pool governs
     # new risk, but must not delay establishing the read-only risk feed.
     effective_target_date = _startup_target_date(args)

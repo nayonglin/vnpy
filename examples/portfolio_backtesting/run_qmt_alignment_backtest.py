@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 import html
 import json
+import os
 from pathlib import Path
 import re
 from typing import Any
@@ -20,7 +21,12 @@ from vnpy_portfoliostrategy import BacktestingEngine
 from qmt_alignment_portfolio_strategy import QmtAlignmentPortfolioStrategy
 from qmt_universe import END_DT, MARGIN_RATIOS, PRICETICKS, RATES, SIZES, SLIPPAGES, START_DT, VT_SYMBOLS
 
-OUTPUT_DIR: Path = Path(__file__).resolve().parent / "backtest_outputs"
+OUTPUT_DIR: Path = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_OUTPUT_DIR",
+        str(Path(__file__).resolve().parent / "backtest_outputs"),
+    )
+).expanduser().resolve(strict=False)
 OPEN_BROWSER_CHART: bool = False
 MONTH_LABELS: list[str] = [f"{month}月" for month in range(1, 13)]
 TRADE_REVIEW_LOOKBACK_BARS: int = 30

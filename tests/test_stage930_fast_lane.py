@@ -103,6 +103,107 @@ class Stage930FastLaneTest(unittest.TestCase):
         args = stage930._build_parser().parse_args([])
 
         self.assertEqual("legacy-subprocess", args.detector_mode)
+        self.assertEqual("legacy-once", args.stage179_execution_mode)
+        self.assertEqual("offline", args.runtime_profile)
+
+    def test_warm_stage931_service_is_singleton_across_cycle_starts(self) -> None:
+        args = self.args()
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "offline"
+        args.stage179_runtime_root = ""
+        args.release_manifest = ""
+        args.activation_receipt = ""
+        args.confirm_stage179_activation = ""
+        process = _TickStreamProcess(pid=777777, exit_code=None)
+        stage930._STAGE931_SERVICE_PROCESS = None
+        stage930._STAGE931_SERVICE_RUNTIME = None
+        try:
+            with patch.object(
+                stage930,
+                "_managed_popen",
+                return_value=process,
+            ) as popen:
+                first = stage930._start_stage931_service(args)
+                second = stage930._start_stage931_service(args)
+
+            self.assertIs(first, process)
+            self.assertIs(second, process)
+            popen.assert_called_once()
+            command = popen.call_args.args[0]
+            self.assertIn("serve", command)
+            self.assertIn("--stage179-warm-executor", command)
+            self.assertIn("offline", command)
+        finally:
+            stage930._STAGE931_SERVICE_PROCESS = None
+            stage930._STAGE931_SERVICE_RUNTIME = None
+
+    def test_warm_cycle_wakes_service_and_never_spawns_legacy_stage931(self) -> None:
+        args = self.args()
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "offline"
+        args.stage179_runtime_root = ""
+        controller = {
+            "summary": {
+                "target_date": "2026-07-16",
+                "stage905_ready_count": 0,
+                "order_api_called_count": 0,
+            }
+        }
+        warm_status = {
+            "submit_status": "warm_executor_ready",
+            "exit_code": 0,
+            "summary": {"order_api_called_count": 0},
+        }
+        with (
+            patch.object(stage930, "_start_stage931_service") as start,
+            patch.object(stage930, "_market_execution_session_active", return_value=False),
+            patch.object(stage930, "_watched_symbols_for_args", return_value=[]),
+            patch.object(stage930, "_run_stage903", return_value=controller),
+            patch.object(stage930, "_status_stage931_service", return_value=warm_status),
+            patch.object(stage930, "_wake_stage931_service", return_value=True) as wake,
+            patch.object(stage930, "_run_stage931") as legacy,
+        ):
+            cycle = stage930.run_cycle(
+                args,
+                "2026-07-16",
+                {"command_log": Path("unused")},
+            )
+
+        start.assert_called_once_with(args)
+        wake.assert_called_once_with(args)
+        legacy.assert_not_called()
+        self.assertEqual("warm_executor_ready", cycle["stage931"]["submit_status"])
+        self.assertEqual(1, cycle["stage931"]["wake_socket_notified"])
+
+    def test_stage931_stop_revokes_readiness_before_terminating_child(self) -> None:
+        events: list[str] = []
+        with tempfile.TemporaryDirectory() as directory:
+            runtime = SimpleNamespace(
+                readiness_path=Path(directory) / "readiness.json"
+            )
+            runtime.readiness_path.write_text(
+                json.dumps({"service_generation": "service-1"}),
+                encoding="utf-8",
+            )
+            process = _TickStreamProcess(pid=777778, exit_code=None)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            stage930._STAGE931_SERVICE_PROCESS = process
+            with (
+                patch.object(
+                    stage930,
+                    "revoke_readiness",
+                    side_effect=lambda *_args, **_kwargs: events.append("revoke"),
+                ),
+                patch.object(
+                    stage930,
+                    "_terminate_managed_child",
+                    side_effect=lambda *_: events.append("terminate"),
+                ),
+            ):
+                stage930._stop_stage931_service("test")
+
+        self.assertEqual(["revoke", "terminate"], events)
+        self.assertIsNone(stage930._STAGE931_SERVICE_PROCESS)
 
     def test_legacy_empty_target_date_stays_unresolved_for_latest_completed(self) -> None:
         args = stage930._build_parser().parse_args([])
@@ -1501,7 +1602,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         write_json.assert_called_once()
         self.assertEqual(write_json.call_args.args[0], stage930.LATEST_HEARTBEAT_PATH)
 
-    def test_launchd_session_jobs_use_the_restart_supervisor(self) -> None:
+    def test_launchd_session_jobs_keep_direct_python_owner(self) -> None:
         launchd = PORTFOLIO_DIR / "launchd"
         for name in (
             "local.qmt-roll.official-live.15w.c9-night-session.plist",
@@ -1512,13 +1613,16 @@ class Stage930FastLaneTest(unittest.TestCase):
                 program_arguments = payload["ProgramArguments"]
             self.assertTrue(
                 program_arguments[0].endswith(
-                    "run_qmt_roll_stage930_official_live_c9_session_supervisor.sh"
+                    "/.py311/bin/python"
                 )
             )
-            self.assertFalse(
-                any(value.endswith("c9_session_daemon.py") for value in program_arguments)
+            self.assertTrue(
+                program_arguments[1].endswith(
+                    "run_qmt_roll_stage930_official_live_c9_session_daemon.py"
+                )
             )
             self.assertIs(payload.get("AbandonProcessGroup"), False)
+            self.assertEqual(15, payload.get("ExitTimeOut"))
 
     def test_supervisor_forwards_term_waits_and_never_restarts(self) -> None:
         supervisor = PORTFOLIO_DIR / "run_qmt_roll_stage930_official_live_c9_session_supervisor.sh"
