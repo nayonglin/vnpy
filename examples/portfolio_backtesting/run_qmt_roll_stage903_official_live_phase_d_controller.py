@@ -20,9 +20,6 @@ from qmt_roll_official_execution_profile import (
     OfficialExecutionProfile,
     resolve_execution_profile,
 )
-from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-)
 from qmt_roll_official_live_phase_d_config import (
     CONTROLLER_HEARTBEAT_PATH,
     CONTROLLER_STATE_PATH,
@@ -39,7 +36,6 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_SUMMARY_PATH,
     READONLY_TICKS_PATH,
     READONLY_TRADES_PATH,
-    STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
     phase_d_config_to_dict,
 )
@@ -330,6 +326,7 @@ def _run_stage902(
 
 def _run_stage909(
     *,
+    execution_profile: OfficialExecutionProfile,
     target_date: str,
     shadow_refresh_mode: str,
     analysis_start: str,
@@ -342,6 +339,8 @@ def _run_stage909(
         str(STAGE909_SCRIPT),
         "--target-date",
         target_date,
+        "--execution-profile",
+        execution_profile.profile_key,
         "--mode",
         shadow_refresh_mode,
         "--analysis-start",
@@ -1071,7 +1070,7 @@ def _build_cycle_plan(
         _plan_row(
             "shadow_refresh",
             stage909_plan_status,
-            "plan or run official data update and C9 shadow signal calculation",
+            "plan or run official data update and profile-bound shadow calculation",
             f"stage909={stage909_status};mode={stage909_mode};attempted={stage909_summary.get('refresh_attempted', '')}",
         )
     )
@@ -1079,7 +1078,7 @@ def _build_cycle_plan(
         _plan_row(
             "load_official_shadow",
             "passed" if official_summary.get("analysis_end") == target_date else "blocked",
-            "load Stage901 official C9 summary/signal/pending/current positions",
+            "load profile-bound official summary/signal/pending/current positions",
             f"analysis_end={official_summary.get('analysis_end', '')};signal={len(signal_plan)};pending={len(pending_orders)};positions={len(current_positions)}",
         )
     )
@@ -1408,7 +1407,7 @@ def _build_report(summary: dict[str, Any], plan: pd.DataFrame) -> str:
             "## 说明",
             "",
             "- Stage903 是常驻控制器骨架：负责心跳、状态、kill switch、readiness gate 和周期计划。",
-            "- Stage909 覆盖日终数据更新和官方 C9 shadow 信号计算，默认 `plan-only`。",
+            "- Stage909 覆盖日终数据更新和当前 execution profile 的官方 shadow 信号计算，默认 `plan-only`。",
             "- Stage903 当前已串联 Stage904 盘中监控、Stage905 executor dry-run 和 Stage906 对账 worker。",
             "- Stage914 在 Stage907 前检查 production-live env 与 vnpy_ctp runtime；预检不通过时只读刷新会降级为 `plan-only`。",
             "- Stage908 覆盖最后一层提交 adapter 合约审计，但不连接 broker、不提交委托。",
@@ -1471,38 +1470,18 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         )
         official_target_mismatch = str(official_summary.get("analysis_end", "")) != target_date
         effective_shadow_refresh_mode = "run" if resolver_needs_refresh or official_target_mismatch else "plan-only"
-    if execution_profile.intraday_stop_retry_enabled:
-        stage909_result = _run_stage909(
-            target_date=target_date,
-            shadow_refresh_mode=effective_shadow_refresh_mode,
-            analysis_start=args.shadow_analysis_start,
-            mapping_start=args.shadow_mapping_start,
-            bar_start=args.shadow_bar_start,
-            confirm_shadow_refresh=args.confirm_shadow_refresh,
-        )
-    else:
-        stage909_result = {
-            "command": [],
-            "exit_code": 0 if effective_shadow_refresh_mode == "plan-only" else 2,
-            "stdout_tail": "",
-            "summary": {
-                "execution_profile": execution_profile.profile_key,
-                "shadow_refresh_status": (
-                    "profile_input_refresh_not_requested"
-                    if effective_shadow_refresh_mode == "plan-only"
-                    else "profile_input_refresh_not_implemented_fail_closed"
-                ),
-                "refresh_attempted": 0,
-                "order_api_called_count": 0,
-            },
-        }
+    stage909_result = _run_stage909(
+        execution_profile=execution_profile,
+        target_date=target_date,
+        shadow_refresh_mode=effective_shadow_refresh_mode,
+        analysis_start=args.shadow_analysis_start,
+        mapping_start=args.shadow_mapping_start,
+        bar_start=args.shadow_bar_start,
+        confirm_shadow_refresh=args.confirm_shadow_refresh,
+    )
     official_summary = _read_json(execution_profile.summary_path)
     signal_plan = _read_csv_maybe(execution_profile.signal_plan_path)
-    pending_orders = (
-        _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-        if execution_profile.intraday_stop_retry_enabled
-        else pd.DataFrame()
-    )
+    pending_orders = _read_csv_maybe(execution_profile.pending_orders_path)
     current_positions = _read_csv_maybe(
         execution_profile.current_positions_path
     )
@@ -1862,7 +1841,7 @@ def main() -> None:
     )
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--shadow-refresh-mode", choices=["plan-only", "run", "auto"], default="plan-only")
-    parser.add_argument("--shadow-analysis-start", default=OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE)
+    parser.add_argument("--shadow-analysis-start", default="")
     parser.add_argument("--shadow-mapping-start", default="")
     parser.add_argument("--shadow-bar-start", default="")
     parser.add_argument("--confirm-shadow-refresh", default="")

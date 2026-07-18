@@ -4,21 +4,25 @@ import argparse
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
 )
+from qmt_roll_official_live_config import OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT,
     PHASE_D_SHADOW_REFRESH_ENV,
+)
+from run_qmt_roll_stage922_official_live_target_date_resolver import (
+    _resolve_latest_completed,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -29,6 +33,9 @@ MODEL_TAG = "stage909_official_live_shadow_refresh_gate_v1"
 OUTPUT_PREFIX = "qmt_roll_stage909_official_live_shadow_refresh_gate"
 STAGE173_SCRIPT = PROJECT_DIR / "build_qmt_roll_stage173_forward_main_contract_data_update.py"
 OFFICIAL_SHADOW_SCRIPT = PROJECT_DIR / "analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py"
+STAGE372_PENDING_AUDIT_SCRIPT = (
+    PROJECT_DIR / "export_qmt_roll_stage372_official_shadow_events.py"
+)
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -113,12 +120,18 @@ def _run_command(name: str, cmd: list[str], log_path: Path) -> dict[str, Any]:
     }
 
 
-def _command_specs(target_date: str, mapping_start: str, bar_start: str, analysis_start: str) -> list[tuple[str, list[str]]]:
-    return [
+def _command_specs(
+    target_date: str,
+    mapping_start: str,
+    bar_start: str,
+    analysis_start: str,
+    execution_profile: OfficialExecutionProfile,
+) -> list[tuple[str, list[str]]]:
+    specs = [
         (
             "stage173_data_update",
             [
-                str(REPO_ROOT / ".py311/bin/python"),
+                str(Path(sys.executable).resolve()),
                 str(STAGE173_SCRIPT),
                 "--mapping-start",
                 mapping_start,
@@ -131,8 +144,10 @@ def _command_specs(target_date: str, mapping_start: str, bar_start: str, analysi
         (
             "official_live_shadow",
             [
-                str(REPO_ROOT / ".py311/bin/python"),
+                str(Path(sys.executable).resolve()),
                 str(OFFICIAL_SHADOW_SCRIPT),
+                "--execution-profile",
+                execution_profile.profile_key,
                 "--analysis-start",
                 analysis_start,
                 "--target-date",
@@ -140,6 +155,21 @@ def _command_specs(target_date: str, mapping_start: str, bar_start: str, analysi
             ],
         ),
     ]
+    if not execution_profile.intraday_stop_retry_enabled:
+        specs.append(
+            (
+                "stage372_pending_order_audit",
+                [
+                    str(Path(sys.executable).resolve()),
+                    str(STAGE372_PENDING_AUDIT_SCRIPT),
+                    "--analysis-start",
+                    analysis_start,
+                    "--target-date",
+                    target_date,
+                ],
+            )
+        )
+    return specs
 
 
 def _to_markdown(df: pd.DataFrame, columns: list[str]) -> str:
@@ -183,20 +213,53 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live shadow refresh gate.")
-    parser.add_argument("--target-date", required=True)
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
+    parser.add_argument("--target-date", default="")
+    parser.add_argument(
+        "--target-date-mode",
+        choices=["explicit", "latest-completed"],
+        default="explicit",
+    )
+    parser.add_argument("--target-date-data-ready-time", default="16:30")
     parser.add_argument("--mode", choices=["plan-only", "run"], default="plan-only")
-    parser.add_argument("--analysis-start", default=OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE)
+    parser.add_argument("--analysis-start", default="")
     parser.add_argument("--mapping-start", default="")
     parser.add_argument("--bar-start", default="")
     parser.add_argument("--confirm-shadow-refresh", default="")
     args = parser.parse_args()
+    profile = resolve_execution_profile(args.execution_profile)
+    if args.target_date_mode == "latest-completed":
+        target_date, target_date_evidence = _resolve_latest_completed(
+            datetime.now(),
+            args.target_date_data_ready_time,
+        )
+    else:
+        target_date = str(args.target_date).strip()
+        target_date_evidence = {"source": "explicit"}
+    if not target_date:
+        parser.error("--target-date is required in explicit mode")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    paths = _paths(args.target_date)
+    paths = _paths(target_date)
     paths["command_log"].write_text("", encoding="utf-8")
-    mapping_start = args.mapping_start or _month_start(args.target_date)
-    bar_start = args.bar_start or args.target_date
-    specs = _command_specs(args.target_date, mapping_start, bar_start, args.analysis_start)
+    mapping_start = args.mapping_start or _month_start(target_date)
+    bar_start = args.bar_start or target_date
+    analysis_start = args.analysis_start or (
+        "2026-01-01"
+        if profile.profile_key == ExecutionStrategyMode.STAGE372_20W.value
+        else OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+    )
+    specs = _command_specs(
+        target_date,
+        mapping_start,
+        bar_start,
+        analysis_start,
+        profile,
+    )
     command_plan = [" ".join(cmd) for _, cmd in specs]
     refresh_env_enabled = _env_enabled(PHASE_D_SHADOW_REFRESH_ENV)
     confirm_ok = args.confirm_shadow_refresh == PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT
@@ -220,6 +283,16 @@ def main() -> None:
         required="official shadow script exists",
         blocker="official_shadow_script_missing",
     )
+    if not profile.intraday_stop_retry_enabled:
+        _check_row(
+            checks,
+            check="stage372_pending_audit_script_present",
+            passed=STAGE372_PENDING_AUDIT_SCRIPT.exists(),
+            severity="block",
+            observed=str(STAGE372_PENDING_AUDIT_SCRIPT),
+            required="Stage372 pending-order audit script exists",
+            blocker="stage372_pending_audit_script_missing",
+        )
     _check_row(
         checks,
         check="shadow_refresh_env_gate_enabled",
@@ -251,15 +324,32 @@ def main() -> None:
             if row["exit_code"] != 0:
                 break
 
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    shadow_target_ready = str(official_summary.get("analysis_end", "")) == args.target_date
+    official_summary = _read_json(profile.summary_path)
+    shadow_target_ready = str(official_summary.get("analysis_end", "")) == target_date
+    pending_audit_summary = _read_json(
+        OUTPUT_DIR
+        / (
+            "qmt_roll_stage179_stage372_pending_audit_"
+            f"{target_date.replace('-', '')}.json"
+        )
+    )
+    pending_target_ready = (
+        profile.intraday_stop_retry_enabled
+        or (
+            str(pending_audit_summary.get("target_date", ""))
+            == target_date
+            and str(pending_audit_summary.get("execution_profile", ""))
+            == profile.profile_key
+            and profile.pending_orders_path.exists()
+        )
+    )
     if args.mode == "plan-only":
         shadow_refresh_status = "shadow_refresh_plan_only"
     elif not blocking.empty:
         shadow_refresh_status = "shadow_refresh_blocked"
     elif any(row["exit_code"] != 0 for row in commands) or len(commands) != len(specs):
         shadow_refresh_status = "shadow_refresh_command_failed"
-    elif shadow_target_ready:
+    elif shadow_target_ready and pending_target_ready:
         shadow_refresh_status = "shadow_refresh_completed"
     else:
         shadow_refresh_status = "shadow_refresh_completed_but_target_not_ready"
@@ -267,17 +357,23 @@ def main() -> None:
     summary = {
         "model_tag": MODEL_TAG,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "target_date": args.target_date,
+        "target_date": target_date,
+        "target_date_mode": args.target_date_mode,
+        "target_date_evidence": target_date_evidence,
         "mode": args.mode,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
-        "analysis_start": args.analysis_start,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "analysis_start": analysis_start,
         "mapping_start": mapping_start,
         "bar_start": bar_start,
         "shadow_refresh_status": shadow_refresh_status,
         "refresh_attempted": int(refresh_attempted),
         "official_summary_analysis_end_after": official_summary.get("analysis_end", ""),
         "official_summary_generated_at_after": official_summary.get("generated_at", ""),
+        "pending_order_audit_target_ready": int(pending_target_ready),
         "blocking_failure_count": int(len(blocking)),
         "commands": commands,
         "sanitized_command_plan": command_plan,

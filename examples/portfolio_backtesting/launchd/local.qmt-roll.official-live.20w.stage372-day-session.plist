@@ -47,6 +47,8 @@
   <dict>
     <key>OFFICIAL_LIVE_OUTPUT_DIR</key>
     <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_stage372/readonly-day/official-live</string>
+    <key>OFFICIAL_LIVE_SIGNAL_INPUT_DIR</key>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_stage372/signal-input</string>
   </dict>
   <key>WorkingDirectory</key>
   <string>/Users/bytedance/Desktop/person/vnpy</string>

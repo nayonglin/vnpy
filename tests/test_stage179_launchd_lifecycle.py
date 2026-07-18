@@ -73,6 +73,7 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
         )
         runtime_roots: list[str] = []
         output_roots: list[str] = []
+        signal_input_roots: list[str] = []
         for payload in payloads:
             arguments = payload["ProgramArguments"]
             joined = " ".join(arguments)
@@ -97,16 +98,58 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             output_roots.append(
                 payload["EnvironmentVariables"]["OFFICIAL_LIVE_OUTPUT_DIR"]
             )
+            signal_input_roots.append(
+                payload["EnvironmentVariables"][
+                    "OFFICIAL_LIVE_SIGNAL_INPUT_DIR"
+                ]
+            )
             self.assertNotIn(runtime_root, c9_text)
             self.assertNotIn(output_roots[-1], c9_text)
 
         self.assertEqual(2, len(set(runtime_roots)))
         self.assertEqual(2, len(set(output_roots)))
+        self.assertEqual(1, len(set(signal_input_roots)))
+        self.assertTrue(
+            all(signal_input_roots[0] != root for root in output_roots)
+        )
         self.assertNotEqual(
             payloads[0]["StandardOutPath"], payloads[1]["StandardOutPath"]
         )
         self.assertNotEqual(
             payloads[0]["StandardErrorPath"], payloads[1]["StandardErrorPath"]
+        )
+
+    def test_stage372_postclose_job_precomputes_without_ctp_or_submit(self) -> None:
+        payload = _plist(
+            "local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist"
+        )
+        arguments = payload["ProgramArguments"]
+        joined = " ".join(arguments)
+
+        self.assertEqual("Interactive", payload["ProcessType"])
+        self.assertTrue(
+            arguments[1].endswith(
+                "run_qmt_roll_stage909_official_live_shadow_refresh_gate.py"
+            )
+        )
+        self.assertIn("--execution-profile stage372-20w", joined)
+        self.assertIn("--target-date-mode latest-completed", joined)
+        self.assertIn("--mode run", joined)
+        self.assertNotIn("stage903_official_live_phase_d_controller", joined)
+        self.assertNotIn("readonly-refresh", joined)
+        self.assertNotIn("intraday-tick", joined)
+        self.assertNotIn("live-real", joined)
+        self.assertNotIn("--confirm-live-real", joined)
+        self.assertEqual(
+            payload["EnvironmentVariables"][
+                "OFFICIAL_LIVE_PHASE_D_SHADOW_REFRESH_ENABLED"
+            ],
+            "1",
+        )
+        self.assertEqual(payload["StartCalendarInterval"], {"Hour": 16, "Minute": 35})
+        self.assertEqual(
+            payload["EnvironmentVariables"]["OFFICIAL_LIVE_SIGNAL_INPUT_DIR"],
+            "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_stage372/signal-input",
         )
 
     def test_production_session_jobs_keep_direct_python_owner(self) -> None:

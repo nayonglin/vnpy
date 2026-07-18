@@ -13,6 +13,9 @@ OUTPUT_DIR = Path(
         str(Path(__file__).resolve().parent / "backtest_outputs"),
     )
 ).expanduser().resolve(strict=False)
+SIGNAL_INPUT_DIR = Path(
+    os.environ.get("OFFICIAL_LIVE_SIGNAL_INPUT_DIR", str(OUTPUT_DIR))
+).expanduser().resolve(strict=False)
 
 
 class ExecutionStrategyMode(str, Enum):
@@ -33,6 +36,7 @@ class OfficialExecutionProfile:
     summary_path: Path
     signal_plan_path: Path
     current_positions_path: Path
+    pending_orders_path: Path
     allowed_intent_sources: tuple[str, ...]
     intraday_stop_retry_enabled: bool
 
@@ -49,11 +53,15 @@ class OfficialExecutionProfile:
             raise ValueError("execution_profile_intent_sources_duplicate")
 
 
-def _artifact_paths(prefix: str, model_tag: str) -> tuple[Path, Path, Path]:
+def _artifact_paths(
+    prefix: str,
+    model_tag: str,
+) -> tuple[Path, Path, Path, Path]:
     return (
-        OUTPUT_DIR / f"{prefix}_decision_{model_tag}.json",
-        OUTPUT_DIR / f"{prefix}_signal_plan_{model_tag}.csv",
-        OUTPUT_DIR / f"{prefix}_current_positions_{model_tag}.csv",
+        SIGNAL_INPUT_DIR / f"{prefix}_decision_{model_tag}.json",
+        SIGNAL_INPUT_DIR / f"{prefix}_signal_plan_{model_tag}.csv",
+        SIGNAL_INPUT_DIR / f"{prefix}_current_positions_{model_tag}.csv",
+        SIGNAL_INPUT_DIR / f"{prefix}_pending_orders_{model_tag}.csv",
     )
 
 
@@ -61,6 +69,7 @@ def _artifact_paths(prefix: str, model_tag: str) -> tuple[Path, Path, Path]:
     _STAGE372_SUMMARY_PATH,
     _STAGE372_SIGNAL_PLAN_PATH,
     _STAGE372_CURRENT_POSITIONS_PATH,
+    _STAGE372_PENDING_ORDERS_PATH,
 ) = _artifact_paths(
     "qmt_roll_stage659_stage372_2026_ytd_latest_ai_shadow",
     "stage659_stage372_2026_ytd_latest_ai_shadow_v1",
@@ -76,6 +85,7 @@ STAGE372_20W_PROFILE = OfficialExecutionProfile(
     summary_path=_STAGE372_SUMMARY_PATH,
     signal_plan_path=_STAGE372_SIGNAL_PLAN_PATH,
     current_positions_path=_STAGE372_CURRENT_POSITIONS_PATH,
+    pending_orders_path=_STAGE372_PENDING_ORDERS_PATH,
     allowed_intent_sources=("stage260_stage372_daily",),
     intraday_stop_retry_enabled=False,
 )
@@ -84,6 +94,7 @@ STAGE372_20W_PROFILE = OfficialExecutionProfile(
     _C9_SUMMARY_PATH,
     _C9_SIGNAL_PLAN_PATH,
     _C9_CURRENT_POSITIONS_PATH,
+    _C9_PENDING_ORDERS_PATH,
 ) = _artifact_paths(
     "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow",
     "stage901_stage847_c9_2026_ytd_live_shadow_v1",
@@ -99,6 +110,7 @@ C9_15W_HISTORICAL_PROFILE = OfficialExecutionProfile(
     summary_path=_C9_SUMMARY_PATH,
     signal_plan_path=_C9_SIGNAL_PLAN_PATH,
     current_positions_path=_C9_CURRENT_POSITIONS_PATH,
+    pending_orders_path=_C9_PENDING_ORDERS_PATH,
     allowed_intent_sources=(
         "stage901_pending_order",
         "stage904_c9_intraday_close",

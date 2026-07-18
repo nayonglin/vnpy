@@ -28,7 +28,6 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_REAL_ENABLED_ENV,
     PHASE_D_SESSION_DAEMON_ENV,
     READONLY_SUMMARY_PATH,
-    STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -252,11 +251,7 @@ def main() -> None:
 
     signal_plan = _read_csv_maybe(profile.signal_plan_path)
     current_positions = _read_csv_maybe(profile.current_positions_path)
-    pending_orders = (
-        _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-        if profile.intraday_stop_retry_enabled
-        else pd.DataFrame()
-    )
+    pending_orders = _read_csv_maybe(profile.pending_orders_path)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     stage260_summary = _read_json(_stage260_summary_path(target_date))
     stage251_summary = _read_json(_stage251_summary_path(target_date))
@@ -395,15 +390,12 @@ def main() -> None:
         name="signal_and_pending_exports_available",
         passed=(
             profile.signal_plan_path.exists()
-            and (
-                not profile.intraday_stop_retry_enabled
-                or STAGE901_PENDING_ORDERS_PATH.exists()
-            )
+            and profile.pending_orders_path.exists()
         ),
         severity="block",
         observed=f"signal={len(signal_plan)} pending={len(pending_orders)} positions={len(current_positions)}",
         required=(
-            "Stage372 signal_plan csv"
+            "Stage372 signal_plan and pending_orders csv"
             if not profile.intraday_stop_retry_enabled
             else "signal_plan and pending_orders csv"
         ),

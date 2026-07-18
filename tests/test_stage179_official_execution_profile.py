@@ -16,6 +16,7 @@ from qmt_roll_official_execution_profile import (
     assert_profile_identity,
     resolve_execution_profile,
 )
+import qmt_roll_official_stage372_shadow_config as stage372_shadow
 
 
 class OfficialExecutionProfileTest(unittest.TestCase):
@@ -40,6 +41,7 @@ class OfficialExecutionProfileTest(unittest.TestCase):
         self.assertIn("stage659_stage372", profile.summary_path.name)
         self.assertIn("stage659_stage372", profile.signal_plan_path.name)
         self.assertIn("stage659_stage372", profile.current_positions_path.name)
+        self.assertIn("stage659_stage372", profile.pending_orders_path.name)
 
     def test_profile_resolution_accepts_enum_and_rejects_unknown(self) -> None:
         self.assertIs(
@@ -94,6 +96,16 @@ class OfficialExecutionProfileTest(unittest.TestCase):
         self.assertTrue(profile.intraday_stop_retry_enabled)
         self.assertIn("stage904_c9_intraday_close", profile.allowed_intent_sources)
         self.assertNotEqual(profile, STAGE372_20W_PROFILE)
+
+    def test_stage372_shadow_config_is_frozen_and_not_c9(self) -> None:
+        self.assertEqual(stage372_shadow.PROFILE_KEY, "stage372-20w")
+        self.assertEqual(stage372_shadow.CAPITAL, 200_000.0)
+        self.assertEqual(
+            stage372_shadow.BASE_PROFILE_NAME,
+            "stage526_200k_force95_to80_largest_margin_r080_pc25_maxpos4",
+        )
+        self.assertEqual(stage372_shadow.STRATEGY_OVERRIDES["recovery_sleeve_volume"], 1)
+        self.assertNotIn("intraday", stage372_shadow.PROFILE_NAME)
 
 
 if __name__ == "__main__":

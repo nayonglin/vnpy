@@ -453,7 +453,7 @@ def _build_report(
         "## 说明",
         "",
         "- 本阶段只做执行闸门，不发单。",
-        "- 本阶段优先读取 Stage901 pending orders；只有 pending 为空时才读取 `signal_plan`，避免漏掉最后一天 engine pending order 或重复执行已体现在 shadow 持仓里的历史开仓。",
+        "- 本阶段优先读取当前 execution profile 的 pending orders；只有 pending 为空时才读取 `signal_plan`，避免漏掉最后一天 engine pending order 或重复执行已体现在 shadow 持仓里的历史开仓。",
         "- `skip_broker_flat_for_close` 表示策略理论上要平仓，但 broker 账户没有对应持仓，不能对空仓发送平仓单。",
         "- `skip_broker_position_mismatch_for_close` 表示 broker 账户有对应持仓但数量不足，不能按理论数量平仓。",
         "- `review` 风险级别允许降风险/平仓，但不允许新开仓。",
@@ -627,9 +627,7 @@ def main() -> None:
         official_summary=_read_json(profile.summary_path),
         signal_plan=_read_csv_maybe(profile.signal_plan_path),
         pending_orders=(
-            _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-            if profile.intraday_stop_retry_enabled
-            else pd.DataFrame()
+            _read_csv_maybe(profile.pending_orders_path)
         ),
         current_positions=_read_csv_maybe(profile.current_positions_path),
         readonly_summary=readonly_summary,

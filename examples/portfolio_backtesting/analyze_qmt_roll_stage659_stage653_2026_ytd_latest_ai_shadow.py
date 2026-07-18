@@ -4,7 +4,9 @@ import argparse
 from dataclasses import replace
 from datetime import datetime
 import json
+import os
 from pathlib import Path
+import sys
 from typing import Any
 
 import pandas as pd
@@ -13,6 +15,9 @@ import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513  #
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as s650  # noqa: E402
 import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653  # noqa: E402
 import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658  # noqa: E402
+from qmt_roll_official_execution_profile import ExecutionStrategyMode  # noqa: E402
+import qmt_roll_official_stage372_shadow_config as stage372_cfg  # noqa: E402
+import qmt_roll_official_live_config as current_live_cfg  # noqa: E402
 from qmt_roll_official_live_config import (  # noqa: E402
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
@@ -27,7 +32,15 @@ from qmt_roll_official_live_config import (  # noqa: E402
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = PROJECT_DIR / "backtest_outputs"
+OUTPUT_DIR = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_SIGNAL_INPUT_DIR",
+        os.environ.get(
+            "OFFICIAL_LIVE_OUTPUT_DIR",
+            PROJECT_DIR / "backtest_outputs",
+        ),
+    )
+).expanduser().resolve(strict=False)
 
 MODEL_TAG = OFFICIAL_LIVE_STAGE659_MODEL_TAG
 OUTPUT_PREFIX = OFFICIAL_LIVE_STAGE659_PREFIX
@@ -53,6 +66,86 @@ DECISION_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_decision_{MODEL_TAG}.json"
 REPORT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 
 DEFAULT_AI_ELIGIBILITY_PATH = OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+
+
+def _configure_output_paths() -> None:
+    global SUMMARY_PATH, COST_PATH, DAILY_PATH, POSITIONS_PATH
+    global PRODUCT_MARGIN_PATH, MONTHLY_PATH, CURRENT_POSITIONS_PATH
+    global TRADE_USAGE_PATH, SIGNAL_PLAN_PATH, EVENT_PATH
+    global FORCED_EVENTS_PATH, FORCED_SUMMARY_PATH, DECISION_PATH, REPORT_PATH
+
+    SUMMARY_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.csv"
+    COST_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_cost_stress_{MODEL_TAG}.csv"
+    DAILY_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_daily_{MODEL_TAG}.csv"
+    POSITIONS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_positions_{MODEL_TAG}.csv"
+    PRODUCT_MARGIN_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_product_margin_{MODEL_TAG}.csv"
+    MONTHLY_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_monthly_{MODEL_TAG}.csv"
+    CURRENT_POSITIONS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_current_positions_{MODEL_TAG}.csv"
+    TRADE_USAGE_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_trade_usage_{MODEL_TAG}.csv"
+    SIGNAL_PLAN_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_signal_plan_{MODEL_TAG}.csv"
+    EVENT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_event_days_{MODEL_TAG}.csv"
+    FORCED_EVENTS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_forced_events_{MODEL_TAG}.csv"
+    FORCED_SUMMARY_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_forced_summary_{MODEL_TAG}.csv"
+    DECISION_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_decision_{MODEL_TAG}.json"
+    REPORT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
+
+
+def _configure_execution_profile(value: str) -> dict[str, Any]:
+    global MODEL_TAG, OUTPUT_PREFIX, CURRENT_VARIANT
+    global OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_BASE_PROFILE_NAME
+    global OFFICIAL_LIVE_PROFILE_NAME, OFFICIAL_LIVE_STRATEGY_OVERRIDES
+    global OFFICIAL_LIVE_VERSION, DEFAULT_AI_ELIGIBILITY_PATH
+    global OFFICIAL_LIVE_FAMILY_VERSION
+
+    if value == ExecutionStrategyMode.STAGE372_20W.value:
+        MODEL_TAG = stage372_cfg.MODEL_TAG
+        OUTPUT_PREFIX = stage372_cfg.OUTPUT_PREFIX
+        CURRENT_VARIANT = stage372_cfg.PROFILE_NAME
+        OFFICIAL_LIVE_ALIAS = stage372_cfg.OFFICIAL_ALIAS
+        OFFICIAL_LIVE_BASE_PROFILE_NAME = stage372_cfg.BASE_PROFILE_NAME
+        OFFICIAL_LIVE_PROFILE_NAME = stage372_cfg.PROFILE_NAME
+        OFFICIAL_LIVE_STRATEGY_OVERRIDES = dict(stage372_cfg.STRATEGY_OVERRIDES)
+        OFFICIAL_LIVE_VERSION = stage372_cfg.OFFICIAL_VERSION
+        OFFICIAL_LIVE_FAMILY_VERSION = "stage526_stage372_recovery_sleeve"
+        DEFAULT_AI_ELIGIBILITY_PATH = stage372_cfg.AI_ELIGIBILITY_PATH
+    elif value == ExecutionStrategyMode.C9_15W_HISTORICAL.value:
+        MODEL_TAG = current_live_cfg.OFFICIAL_LIVE_STAGE659_MODEL_TAG
+        OUTPUT_PREFIX = current_live_cfg.OFFICIAL_LIVE_STAGE659_PREFIX
+        CURRENT_VARIANT = current_live_cfg.OFFICIAL_LIVE_PROFILE_NAME
+        OFFICIAL_LIVE_ALIAS = current_live_cfg.OFFICIAL_LIVE_ALIAS
+        OFFICIAL_LIVE_BASE_PROFILE_NAME = (
+            current_live_cfg.OFFICIAL_LIVE_BASE_PROFILE_NAME
+        )
+        OFFICIAL_LIVE_PROFILE_NAME = current_live_cfg.OFFICIAL_LIVE_PROFILE_NAME
+        OFFICIAL_LIVE_STRATEGY_OVERRIDES = (
+            current_live_cfg.OFFICIAL_LIVE_STRATEGY_OVERRIDES
+        )
+        OFFICIAL_LIVE_VERSION = current_live_cfg.OFFICIAL_LIVE_VERSION
+        OFFICIAL_LIVE_FAMILY_VERSION = (
+            current_live_cfg.OFFICIAL_LIVE_FAMILY_VERSION
+        )
+        DEFAULT_AI_ELIGIBILITY_PATH = (
+            current_live_cfg.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+        )
+    else:
+        raise ValueError(f"execution_profile_unknown:{value}")
+    _configure_output_paths()
+    return {
+        "execution_profile": value,
+        "official_live_version": OFFICIAL_LIVE_VERSION,
+        "capital": (
+            stage372_cfg.CAPITAL
+            if value == ExecutionStrategyMode.STAGE372_20W.value
+            else 150_000.0
+        ),
+        "capital_label": (
+            stage372_cfg.CAPITAL_LABEL
+            if value == ExecutionStrategyMode.STAGE372_20W.value
+            else "15w"
+        ),
+        "model_tag": MODEL_TAG,
+        "output_prefix": OUTPUT_PREFIX,
+    }
 
 
 def _json_safe(value: Any) -> Any:
@@ -289,21 +382,47 @@ def _signal_plan_from_usage(usage: pd.DataFrame, target_date: datetime) -> pd.Da
 
 
 def main() -> None:
-    if OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry":
-        import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901  # noqa: WPS433
-
-        s901.main()
-        return
-
     parser = argparse.ArgumentParser(description="Run current official live 20w YTD shadow with latest monthly AI pool.")
-    parser.add_argument("--analysis-start", default="2026-01-01")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
+    parser.add_argument("--analysis-start", default="")
     parser.add_argument("--target-date", default="2026-06-04")
-    parser.add_argument("--ai-eligibility-path", default=str(DEFAULT_AI_ELIGIBILITY_PATH))
+    parser.add_argument("--ai-eligibility-path", default="")
     args = parser.parse_args()
 
-    analysis_start = datetime.strptime(str(args.analysis_start), "%Y-%m-%d")
+    identity = _configure_execution_profile(args.execution_profile)
+    if args.execution_profile == ExecutionStrategyMode.C9_15W_HISTORICAL.value:
+        import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901  # noqa: WPS433
+
+        original_argv = list(sys.argv)
+        try:
+            filtered = [sys.argv[0]]
+            skip_next = False
+            for item in sys.argv[1:]:
+                if skip_next:
+                    skip_next = False
+                    continue
+                if item == "--execution-profile":
+                    skip_next = True
+                    continue
+                filtered.append(item)
+            sys.argv = filtered
+            s901.main()
+        finally:
+            sys.argv = original_argv
+        return
+
+    analysis_start_text = str(args.analysis_start).strip() or stage372_cfg.ANALYSIS_START
+    analysis_start = datetime.strptime(analysis_start_text, "%Y-%m-%d")
     analysis_end = datetime.strptime(str(args.target_date), "%Y-%m-%d")
-    ai_eligibility_path = Path(str(args.ai_eligibility_path)).expanduser().resolve()
+    ai_path_text = str(args.ai_eligibility_path).strip() or str(
+        DEFAULT_AI_ELIGIBILITY_PATH
+    )
+    ai_eligibility_path = Path(ai_path_text).expanduser().resolve()
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     metadata = s513._metadata()
     identity_map = s653.s519._product_identity_cluster_map(metadata)
@@ -378,6 +497,7 @@ def main() -> None:
         "script_stage": "Stage659",
         "line_id": LINE_ID,
         "model_tag": MODEL_TAG,
+        "execution_profile": identity["execution_profile"],
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "analysis_start": analysis_start.date().isoformat(),
         "analysis_end": analysis_end.date().isoformat(),
@@ -386,6 +506,8 @@ def main() -> None:
         "current_variant": current_row[0] if current_row else {},
         "baseline_variant": baseline_row[0] if baseline_row else {},
         "official_live_version": OFFICIAL_LIVE_VERSION,
+        "capital": identity["capital"],
+        "capital_label": identity["capital_label"],
         "decision": "stage372_2026_ytd_latest_ai_shadow_measured_no_order_api",
         "execution_scope": "read-only backtest/shadow performance only; no CTP connection and no order API call",
         "target_signal_count": int(len(signal_plan)),

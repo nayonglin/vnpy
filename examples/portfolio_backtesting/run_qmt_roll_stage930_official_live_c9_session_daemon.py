@@ -723,16 +723,9 @@ def _watched_symbols_for_args(args: argparse.Namespace) -> list[str]:
     return _watched_symbols(
         getattr(args, "vt_symbol", []),
         artifact_paths=(
-            (
-                STAGE901_PENDING_ORDERS_PATH,
-                profile.signal_plan_path,
-                profile.current_positions_path,
-            )
-            if profile.intraday_stop_retry_enabled
-            else (
-                profile.signal_plan_path,
-                profile.current_positions_path,
-            )
+            profile.pending_orders_path,
+            profile.signal_plan_path,
+            profile.current_positions_path,
         ),
         retained_broker_symbols=retained,
         max_readonly_age_seconds=_to_int(getattr(args, "max_snapshot_age_seconds", 300), 300),
@@ -1718,7 +1711,16 @@ def _run_fast_intraday_lane(
     )
     stage904_summary = _read_json(_stage904_summary_path(target_date))
     stage905 = _run_command(
-        [str(PYTHON_PATH), str(STAGE905_SCRIPT), "--target-date", target_date, "--mode", "dry-run"],
+        [
+            str(PYTHON_PATH),
+            str(STAGE905_SCRIPT),
+            "--target-date",
+            target_date,
+            "--execution-profile",
+            _execution_profile_for_args(args).profile_key,
+            "--mode",
+            "dry-run",
+        ],
         timeout_seconds=max(5, args.fast_step_timeout_seconds),
         log_path=paths["command_log"],
         label=f"stage905_fast_lane_{target_date}",

@@ -34,7 +34,6 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_CONTRACTS_PATH,
     READONLY_ORDERS_PATH,
     READONLY_POSITIONS_PATH,
-    STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -1596,7 +1595,7 @@ def run_executor_dry_run(
         else ()
     )
     if snapshots is None:
-        pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
+        pending_orders = _read_csv_maybe(profile.pending_orders_path)
         contracts = _read_csv_maybe(READONLY_CONTRACTS_PATH)
         positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
         orders = _read_csv_maybe(READONLY_ORDERS_PATH)
