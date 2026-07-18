@@ -1,0 +1,29 @@
+examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py
+  s_57fbbdfeac5414::t_4f84e75d0721a1 3,5-6,12,52-74,97-115,194-366
+examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py
+  s_57fbbdfeac5414::t_fcecfab19c48ee 22-24,480-484,492,495,497-518,520-523,690-699,702,705-707,710-714
+examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py
+  s_57fbbdfeac5414::t_bd8961fdd101e8 20-21,277-296
+examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py
+  s_57fbbdfeac5414::t_5ac5dbb0a033c4 26-27,347,349-354,356-357,361
+tests/test_stage179_stage260_execution_profile.py
+  s_57fbbdfeac5414::t_948cee7d84e1df 3,5-6,10,12,23-26,34-46,66-94,103-107,110-117,121-134,136-137,186-187,193,219-220,249,253-310
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "513b3028c7baf108a8ab5222158b3fcdeaa9fcb1",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
