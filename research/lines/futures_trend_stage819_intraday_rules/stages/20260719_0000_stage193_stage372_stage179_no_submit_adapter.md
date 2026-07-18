@@ -121,6 +121,7 @@
 - 快照额外绑定五个 canonical artifact 路径，不能从另一组文件加载后换绑到当前 profile；构造器不再作为公共 API 暴露。读取期间 audit 变化、路径换绑、外部 signal DataFrame 覆盖均新增失败关闭测试。
 - 修复后聚焦测试：`47 passed, 11 subtests passed`；扩大回归两组共 `661 passed, 245 subtests passed`，其中 Stage179/Stage372 组 `392 passed, 190 subtests passed`，历史 C9/账本/CTP gate 组 `269 passed, 55 subtests passed`。Python 静态编译与 `git diff --check` 通过。
 - 本修复不调整入场、止损、重进场、AI 池或仓位参数；没有运行新回测、没有连接 CTP、没有调用报撤单 API。
+- 快照修复提交 `513b3028c7baf108a8ab5222158b3fcdeaa9fcb1` 后，从干净 detached worktree 重新生成 61 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-513b3028c`，manifest digest `cc88bf26658c3099a1828e818c83247896e2bf705d4528156d4ecbd5a0048533e`，文件 SHA-256 `cf50ce2b530a78f2e2ee983c78efece3e710171b270d2e91aa81ef70c2aa954a`。实际 loader 验证 production-readonly 通过；SimNow、broker-test、production-live 均以 runtime profile 不允许而拒绝。
 
 ## 结论与硬门禁
 

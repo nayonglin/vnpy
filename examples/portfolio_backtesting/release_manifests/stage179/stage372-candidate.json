@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T16:28:34.823204Z",
+  "created_at_utc": "2026-07-18T16:44:05.035368Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -154,8 +154,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
-      "sha256": "0cfc4c592ab3ad3ffa119d6b3713c80c2a15c207880bbe208d986d1b8092ba0c",
-      "size_bytes": 5069
+      "sha256": "e0cd09323b85d667a1ef1d9b15c55220a583e2289b22e28e1ff59f02054d51a6",
+      "size_bytes": 12384
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
@@ -179,13 +179,13 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
-      "sha256": "beec65aecd565de89b25b4792f2ffcacb5ee7e5bedc6ab79ce830c3da1749332",
-      "size_bytes": 27283
+      "sha256": "e2a6ee30910c289f9375c199d8a6d4c89c1e27a7bb18d801769db2d06055c972",
+      "size_bytes": 28164
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
-      "sha256": "4233d5dc3504e0b3f3da5b233f962bdab4f9eae7c74bf2c0568d282d282ef019",
-      "size_bytes": 28469
+      "sha256": "dd27c28c167e5d1543956938b3217b94e4c02970abc532294f95034751b399c0",
+      "size_bytes": 28501
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
@@ -204,8 +204,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
-      "sha256": "e28a4c434f24fcd83cda4ef6d70f0c7d1aa16f16a3ca1b831b753c94ec0a9f27",
-      "size_bytes": 14981
+      "sha256": "ca42b061233653b9ad0117febc780ea5bccfc84823b42f1f0f8529a34b4e8f82",
+      "size_bytes": 15103
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
@@ -274,8 +274,8 @@
     },
     {
       "path": "tests/test_stage179_stage260_execution_profile.py",
-      "sha256": "8999a2dc0d15038e4eb09c09a63ef97a87ab196c7bb758233366a803b438c2ce",
-      "size_bytes": 8880
+      "sha256": "9d15e2edbfea485ace3e878370a43a05ec7a8d736609e471f79fa2201dbe9a5a",
+      "size_bytes": 11674
     },
     {
       "path": "tests/test_stage179_stage372_daemon_boundary.py",
@@ -329,14 +329,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "c0dde1dead9d2e00140dd1be4dcde63f2d39c73e7e7a2466bde79f6c03f9363e",
+  "manifest_sha256": "cc88bf26658c3099a1828e818c83247896e2bf705d4528156d4ecbd5a0048533",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-no-submit-d113a4bd4",
+  "release_id": "stage179-stage372-no-submit-513b3028c",
   "schema_version": 2,
-  "source_commit": "d113a4bd4065b895f7bed06098abe556fa4b021b",
+  "source_commit": "513b3028c7baf108a8ab5222158b3fcdeaa9fcb1",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "d6a06c8832cd5206d20a82b915e00a58245e84b83f30258970d82ea9a4625396"
+  "tree_fingerprint": "dd7318f51c0e7100cf5bf01985406065ffcdb86e77b98c6fadc8549ed1be80d5"
 }
