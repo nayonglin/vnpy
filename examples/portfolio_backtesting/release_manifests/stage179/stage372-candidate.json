@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T17:07:56.501424Z",
+  "created_at_utc": "2026-07-18T17:21:50.055606Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -64,8 +64,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
-      "sha256": "60894c85b40e56551e24b730854fe5e9a0711c50faa15365b0c26807755225cc",
-      "size_bytes": 6334
+      "sha256": "1eabcf38a8c28d6113bc9fefd990bad2f902bab0b8b0e2e70a283aa5547050e0",
+      "size_bytes": 7791
     },
     {
       "path": "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
@@ -194,8 +194,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
-      "sha256": "a6790b621257610630793e6cb8910144f42e0acaa765c6e7797c9d4d36a32a0c",
-      "size_bytes": 78380
+      "sha256": "24b8d823484ba9128e4b1554d442071eb36fab6fd3866c851ba7cc16a395060f",
+      "size_bytes": 79192
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
@@ -284,8 +284,8 @@
     },
     {
       "path": "tests/test_stage179_stage372_daemon_boundary.py",
-      "sha256": "0d8e52320ac5fb0cbf16d21124c1d96bec782e389c3197ab8fbad9b1555986e7",
-      "size_bytes": 9321
+      "sha256": "f20a5e83453d70de5537739544814ec3a4e3e22cc17b518481776038d9d713a8",
+      "size_bytes": 13080
     },
     {
       "path": "tests/test_stage179_stage372_daily_intents.py",
@@ -334,14 +334,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "4341c58ae238d66f354fe72a54cf6815edb2a356d099f68aa9fd03c77d8bd1a8",
+  "manifest_sha256": "e2abd74d53d7e4d26752db1534209c445a6a956ad027d3cd59ee6ead5bd79c57",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-no-submit-270819ea6",
+  "release_id": "stage179-stage372-no-submit-b1d05d8c8",
   "schema_version": 2,
-  "source_commit": "270819ea6837a590302007eaef12e192d5fb74a5",
+  "source_commit": "b1d05d8c8a18b0652b8730e748f401ed3f01bdbb",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "742e9fa4e776c5fb63d9b0eac93122ab7d6c11ebebe201a9d9e074fff157f594"
+  "tree_fingerprint": "6321494a67455523888bec75926d341660f1d7b4bc9c35988063473f3e024184"
 }

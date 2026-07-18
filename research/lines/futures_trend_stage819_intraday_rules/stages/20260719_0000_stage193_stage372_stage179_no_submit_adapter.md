@@ -161,6 +161,7 @@
 - Stage903 的 Stage914 readiness 现同时要求：同一子进程 `exit_code` 为严格整数 `0`、summary 为本次 stdout JSON、profile key 精确匹配、official version/capital/capital label 完整匹配、preflight passed 且 blocker 为 0。独立审查复现的 `exit 139 + passed JSON` 和错 profile/资金 summary 均不能进入 ready。
 - TDD 聚焦验证 `7 passed`；扩大执行链回归覆盖 `test_qmt_* + test_official_live_* + test_stage*`，结果 `697 passed, 245 subtests passed`，耗时 `74.66s`。Python compile 与 `git diff --check` 通过。
 - 本轮没有调整任何 alpha 参数，没有运行新回测，没有连接 CTP/SimNow，没有加载 launchd，也没有调用报撤单 API。由于关键源码再次变化，`aa810...` manifest 已失效，必须从修复提交重新冻结并再次独立审查。
+- P1/P2 修复提交 `b1d05d8c8a18b0652b8730e748f401ed3f01bdbb` 后，已从干净 detached worktree 重新生成 62 个 critical files 的 schema v2 no-submit manifest。release id `stage179-stage372-no-submit-b1d05d8c8`，manifest digest `e2abd74d53d7e4d26752db1534209c445a6a956ad027d3cd59ee6ead5bd79c57`，文件 SHA-256 `80f580328ff6b7f2bb42dde64f0b11c1f176394f12930a86233d502400d87e14`；实际 loader 验证 production-readonly 通过，SimNow、broker-test、production-live 均以 runtime profile 不允许而拒绝。
 
 ## 结论与硬门禁
 
