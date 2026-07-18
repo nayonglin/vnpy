@@ -85,6 +85,9 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
+            "tests/stage179_performance_gate.py",
+            "tests/test_stage179_performance_gate_diagnostics.py",
+            "tests/test_stage930_fast_lane.py",
         }
 
         self.assertTrue(required.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
