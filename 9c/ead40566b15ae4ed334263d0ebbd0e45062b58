@@ -1,0 +1,31 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_1d2e6d9497493b::t_dfa7c78789ca6b 30
+examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py
+  s_57fbbdfeac5414::t_dfbe8be08b79b0 88-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9cead40566b15ae4ed334263d0ebbd0e45062b58",
+  "prompts": {},
+  "sessions": {
+    "s_1d2e6d9497493b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7515-0efa-7a20-bdbe-0cb1e42c83f3",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
