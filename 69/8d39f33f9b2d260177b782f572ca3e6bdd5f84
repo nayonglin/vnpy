@@ -1,0 +1,39 @@
+examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py
+  s_57fbbdfeac5414::t_f24e8f63fc5bf9 162-175,920,938-1043,1123-1140,1164-1176,1187-1193,1256-1291
+examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py
+  s_57fbbdfeac5414::t_8b070a2bb7ef92 216-356,2426,2431-2445
+examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py
+  s_57fbbdfeac5414::t_b3a1e15db980b4 422,436,462-470,4722,4778
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_121d8db17e4893 59,78-79,83-86,789-790,829-854,872,878-1061,1089-1414,1607-1612,2658,2688-2704,2721-2759,2825-2834,2843,2852-2854,2900,2937,2946-2948
+examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py
+  s_57fbbdfeac5414::t_ce65750b8763da 1-1180
+tests/test_official_live_c9_detector.py
+  s_57fbbdfeac5414::t_7a3e18491f016c 1-979
+tests/test_official_live_intent_spool.py
+  s_57fbbdfeac5414::t_276801c4718a1d 385-500
+tests/test_stage608_continuous_tick_stream.py
+  s_57fbbdfeac5414::t_0bc8bec3fd0ce3 32-107
+tests/test_stage904_durable_state_integration.py
+  s_57fbbdfeac5414::t_e67a41aa2bb6fa 342-364
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_9827f071316e2c 94-99,102-203,849-1337
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "698d39f33f9b2d260177b782f572ca3e6bdd5f84",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
