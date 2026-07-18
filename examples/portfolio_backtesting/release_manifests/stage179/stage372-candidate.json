@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T21:01:58.247376Z",
+  "created_at_utc": "2026-07-18T21:14:28.049117Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -364,11 +364,11 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "143245cf891986b63ff814efbd27381e1c4eba734a836203d6da5c30ca3c4aa2",
+  "manifest_sha256": "575be4283f390defa2e00062a41811edba930322b290c709d2dfae5dd63b238d",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-integration-feee18cc5",
+  "release_id": "stage179-stage372-readonly-integration-ef3b28eee",
   "schema_version": 2,
-  "source_commit": "feee18cc55d775e45974993a9314898dbd1f20da",
+  "source_commit": "ef3b28eeed745aa61f54cf4de0286e43253755c0",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
