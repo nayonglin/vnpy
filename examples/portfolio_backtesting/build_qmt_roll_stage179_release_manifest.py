@@ -67,6 +67,8 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
     "tests/stage179_performance_gate.py",

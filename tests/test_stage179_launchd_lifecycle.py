@@ -42,6 +42,73 @@ def _process_alive(pid: int) -> bool:
 
 
 class Stage179LaunchdLifecycleTest(unittest.TestCase):
+    def test_stage372_readonly_jobs_are_isolated_and_never_enable_submit(self) -> None:
+        names = (
+            "local.qmt-roll.official-live.20w.stage372-day-session.plist",
+            "local.qmt-roll.official-live.20w.stage372-night-session.plist",
+        )
+        payloads = [_plist(name) for name in names]
+        c9_text = " ".join(
+            " ".join(
+                _plist(name)["ProgramArguments"]
+            )
+            for name in (
+                "local.qmt-roll.official-live.15w.c9-day-session.plist",
+                "local.qmt-roll.official-live.15w.c9-night-session.plist",
+            )
+        )
+
+        self.assertEqual(2, len({item["Label"] for item in payloads}))
+        self.assertEqual(
+            {"day_am", "night"},
+            {
+                item["ProgramArguments"][
+                    item["ProgramArguments"].index(
+                        "--require-current-session-name"
+                    )
+                    + 1
+                ]
+                for item in payloads
+            },
+        )
+        runtime_roots: list[str] = []
+        output_roots: list[str] = []
+        for payload in payloads:
+            arguments = payload["ProgramArguments"]
+            joined = " ".join(arguments)
+            self.assertEqual("Interactive", payload["ProcessType"])
+            self.assertEqual(15, payload["ExitTimeOut"])
+            self.assertFalse(payload["AbandonProcessGroup"])
+            self.assertIn("--execution-profile stage372-20w", joined)
+            self.assertIn("--mode dry-run", joined)
+            self.assertIn("--submit-mode disabled", joined)
+            self.assertIn("--runtime-profile production-readonly", joined)
+            self.assertIn("--stage179-execution-mode warm", joined)
+            self.assertIn("--tick-refresh-mode stream", joined)
+            self.assertNotIn("live-real", joined)
+            self.assertNotIn("--confirm-live-real", joined)
+            self.assertNotIn("--confirm-stage179-activation", joined)
+            self.assertNotIn(
+                "OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED",
+                payload.get("EnvironmentVariables", {}),
+            )
+            runtime_root = arguments[arguments.index("--stage179-runtime-root") + 1]
+            runtime_roots.append(runtime_root)
+            output_roots.append(
+                payload["EnvironmentVariables"]["OFFICIAL_LIVE_OUTPUT_DIR"]
+            )
+            self.assertNotIn(runtime_root, c9_text)
+            self.assertNotIn(output_roots[-1], c9_text)
+
+        self.assertEqual(2, len(set(runtime_roots)))
+        self.assertEqual(2, len(set(output_roots)))
+        self.assertNotEqual(
+            payloads[0]["StandardOutPath"], payloads[1]["StandardOutPath"]
+        )
+        self.assertNotEqual(
+            payloads[0]["StandardErrorPath"], payloads[1]["StandardErrorPath"]
+        )
+
     def test_production_session_jobs_keep_direct_python_owner(self) -> None:
         for name in (
             "local.qmt-roll.official-live.15w.c9-day-session.plist",
