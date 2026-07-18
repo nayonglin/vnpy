@@ -217,13 +217,30 @@
 - 过拟合反思：否。全部改动是证据来源、身份、进程和状态转换不变量，不涉及 JM 或任一品种收益参数。
 - 继续价值反思：是，但价值边界更清楚：代码可重新冻结终审；production-readonly 不能晋级，直到完整 v2 reconnect producer 实现并在真实窗口验证。
 
+### 2026-07-19 03:05-03:58 authoritative reconnect v2 与冻结终审
+
+- 改动时间：2026-07-19 03:05-03:58 CST；是否重要突破版本：否。这是 production-readonly 证据生产器与冻结链路的完整性修复，不改变策略 alpha，也不代表线上已激活。
+- Stage174 新增 connection lifecycle v2：断线后撤销旧代 readiness，重连后只有 settlement、account、contracts、orders、trades、positions 六类快照均绑定当前 connection generation，且 readiness 在同一新代恢复，才产生 authoritative reconnect proof；正常 refresh 在首个完整快照后返回，只有显式 observe 模式才等待断线重连，避免把固定观察等待强加给每轮控制链。
+- Stage174 在 gateway、TD API 与当前安装的原生 `CtpTdApi` mutation surface 三层建立只读防火墙；报单、撤单及其他非查询 mutation 调用全部先计数再失败关闭，原生 called counter 保持权威零。Stage907 使用随机 invocation id，并要求同一子进程 stdout 与落盘 payload 的 canonical SHA、generation、命令时间和完整 bundle 全部一致。
+- Stage903 完整投影 invocation、双 hash、generation、bundle、lifecycle 与 native counters；Stage930 保留 authoritative qualification cycle，后续普通周期不得覆盖。日/夜 canonical plist 各且仅携带一次 `--readonly-observe-reconnect-once`，auditor 同样要求精确计数为 1。
+- 新增参数：Stage174 `--observe-reconnect`、Stage903 `--readonly-observe-reconnect`、Stage930 `--readonly-observe-reconnect-once`；修改参数：日/夜 dormant plist 加入一次性只读重连观察；删除参数：无。没有新增、修改或删除任何入场、止损、重进场、AI 池、仓位或资金策略参数。
+- 主代理最终扩大回归：`746 passed, 245 subtests passed`，耗时 `79.04s`；冻结清单相关复验：`98 passed, 13 subtests passed`。Python compile、`git diff --check` 与 3 份 Stage372 plist lint 全部通过；环境仍无 `ruff`，不声称 ruff 通过。
+- 源码提交 `1695c9ffc2654670f0fb667f40bbeee88a64f406`；从该干净 detached source 生成 68 个唯一 critical files 的 schema v2 manifest，release id `stage179-stage372-readonly-1695c9ffc`，内部 digest `386a0c2185a548d18b590990a961a8fb9ad101bb3f6b27213d04f4e4e9f7a889`，文件 SHA-256 `57b40ce20052cd78688c72efa7ebfa286b9a84980ec785d50f9ec17b47893d00`；冻结提交 `509caa817b854aa82dedc87c73045d1db3461c40`。清单只允许 `offline/production-readonly`，Stage372 语义资格继续 `blocked`。
+- 独立 Agent 对冻结 HEAD 的最终结论：`P0=0、P1=0、P2=3`；独立聚焦测试 `125 passed, 13 subtests passed`，68/68 文件的 SHA-256、size、builder 集合、manifest digest、source 父子关系与 3 份 plist 均验证通过。代码合入与 production-readonly 采证部署为 `GO`；production-readonly 验收通过、SimNow、broker-test、production-live 均为 `NO-GO`。
+- 剩余 P2：Stage174 callback 与主线程共享生命周期状态尚无显式锁；once 标记可能在 Stage930 整轮持久化完成前消费，异常时需等下一 session 重试；证据仍是可信本机链路内自证明，不是外部不可篡改证明。这三项不阻断 no-submit/readonly 代码合入，但必须在真实验收结论中保留风险说明。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数和胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有加载、kickstart 或停止 LaunchAgent、没有调用真实报单或撤单 API，真实调用保持 `send=0/cancel=0`。
+- 外部调研与底层判断：沿用已核验的官方 vn.py/vnpy_ctp gateway 重连回调语义，连接代际必须在重新认证、登录、结算确认及完整快照后重建 readiness；launchd 配置只证明调度意图，不能替代真实进程与行情时间戳。本实现与该底层语义一致，但仍需真实窗口证据。
+- 延迟判断：正常 Stage174 refresh 已取消为观察重连而固定等待的结构性阻塞，一次性重连观察被隔离到 session 预启动只读采证；因此代码层能消除一类确定的控制链等待。但尚无 5 场真实 LaunchAgent/CTP 会话与 20:55→21:00 时间戳，不能宣称今天的线上延迟已经被实盘验证解决。
+- 过拟合反思：运行前“否”，运行后仍“否”；原因是只修状态机、时间因果、只读边界与证据绑定，没有按 JM 单晚结果或收益曲线调参。
+- 继续价值反思：运行前“是”，运行后仍“是”；下一步最高价值是 5 场真实 production-readonly 严格 `0/0` canary（至少一次完整断线—重连—新快照恢复），不是继续增加离线规则。
+
 ## 结论与硬门禁
 
-- 代码合入判断：旧冻结候选已因 readonly-canary `P1=5` 作废；新候选已完成修复、回归和 manifest 重建，但在新一轮独立冻结终审给出 `P0/P1=0` 前暂为 `NO-GO`。合入不等于部署或激活。
+- 代码合入判断：冻结候选 `509caa817` 已完成独立终审，结果 `P0=0、P1=0、P2=3`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
-- 激活判断：新 release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍缺五场真实会话和断线重连证据，当前 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
-- 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：可由合入者合入冻结 no-submit 候选，但必须保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 激活判断：release manifest 只允许离线和 `production-readonly`；可以部署只读链路采证，但 production-readonly 验收仍缺五场真实会话及一次完整断线重连，当前验收为 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
+- 延迟判断：盘后预计算与正常 readonly refresh 的提前返回已经消除两类代码层结构性等待，一次性重连观察只在预启动采证；但真实只读 CTP 与 LaunchAgent 时间戳证据完成前，不能宣称已解决线上端到端延迟。
+- 后续：可由合入者合入冻结候选并部署 production-readonly 采证，所有报单 profile 继续关闭。待交易服务窗口完成 5 场严格 `0/0` 会话且至少一次真实断线—重连—完整新快照恢复后，才能判定只读验收；未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 
