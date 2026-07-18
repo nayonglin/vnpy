@@ -1,0 +1,31 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_97d810bd80a729 32,55-56,62,76,87,157,166,189-208,212,216,219,262,267-274
+examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py
+  s_57fbbdfeac5414::t_65dacd7b36d94d 20,27,31,126,130,141,145-150,152-166,203,207,292,319-326,345-367
+examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py
+  s_57fbbdfeac5414::t_918ca376f6271a 159,190
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_f47546cf42fc9d 5304,7130
+research/lines/futures_trend_stage819_intraday_rules/stages/20260719_0000_stage193_stage372_stage179_no_submit_adapter.md
+  s_57fbbdfeac5414::t_bea2bbc2373a7b 1-127
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_6024d95aac36ba 59,63-66,107,133-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "31d2793a6dca5bd09b1de44185da6e48fd8a177e",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
