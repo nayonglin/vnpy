@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime
+import hashlib
 from pathlib import Path
 import tempfile
 import sys
@@ -43,7 +44,9 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
     ingress = scheduled_epoch_ns + 300_000_000_000
     record: dict[str, object] = {
         "capture_schema_version": 2,
-        "stage930_summary_sha256": "d" * 64,
+        "stage930_summary_sha256": hashlib.sha256(
+            f"stage930-summary-{index}".encode()
+        ).hexdigest(),
         "session_id": f"session-{index}",
         "session_date": session_date,
         "session_kind": session_kind,
@@ -55,6 +58,16 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         ),
         "launchd_start_hour": 8 if session_kind == "day" else 20,
         "launchd_start_minute": 55,
+        "launchd_provenance_complete": 1,
+        "launchd_xpc_service_name": (
+            "local.qmt-roll.official-live.20w.stage372-day-session"
+            if session_kind == "day"
+            else "local.qmt-roll.official-live.20w.stage372-night-session"
+        ),
+        "launchd_process_pid": 1000 + index,
+        "launchd_parent_pid": 1,
+        "launchctl_print_exit_code": 0,
+        "launchctl_job_pid": 1000 + index,
         "launchd_plist_relative_path": DAY_PLIST if session_kind == "day" else NIGHT_PLIST,
         "launchd_plist_sha256": PLIST_SHA256,
         "manifest_launchd_plist_sha256": PLIST_SHA256,
@@ -88,6 +101,9 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "open_minute_tick_durable_epoch_ns": ingress + 100_000_000,
         "cycle_started_epoch_ns": ingress + 1_000_000,
         "cycle_finished_epoch_ns": ingress + 300_000_000,
+        "disconnect_lifecycle_model_tag": "stage174_ctp_connection_lifecycle_v2",
+        "disconnect_authoritative_readiness_transition_complete": int(index == 4),
+        "disconnect_full_snapshot_generation_complete": int(index == 4),
         "disconnect_observed": int(index == 4),
         "reconnect_observed": int(index == 4),
         "disconnect_evidence_id": "disconnect-session-4" if index == 4 else "",
@@ -119,6 +135,81 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "open_minute_tick_durable_epoch_ns",
     )
     payload = {field: record[field] for field in payload_fields}
+    payload.update(
+        {
+            "run_id": f"session-{index}",
+            "daemon_status": "daemon_completed_duration",
+            "launchd_provenance": {
+                "model_tag": "stage930_launchd_provenance_v1",
+                "complete": 1,
+                "xpc_service_name": record["launchd_xpc_service_name"],
+                "pid": record["launchd_process_pid"],
+                "parent_pid": 1,
+                "launchctl_print_exit_code": 0,
+                "launchctl_job_pid": record["launchd_process_pid"],
+                "daemon_started_epoch_ns": record["daemon_started_epoch_ns"],
+            },
+            "open_minute_tick_cycle_started_epoch_ns": record[
+                "cycle_started_epoch_ns"
+            ],
+            "open_minute_tick_cycle_finished_epoch_ns": record[
+                "cycle_finished_epoch_ns"
+            ],
+            "readonly_qualification_cycle": {
+                "stage903": {
+                    "summary": {
+                        "stage914_exit_code": record["stage914_exit_code"],
+                        "stage914_preflight_status": record[
+                            "stage914_preflight_status"
+                        ],
+                        "stage914_blocking_failure_count": record[
+                            "stage914_blocking_failure_count"
+                        ],
+                        "stage907_refresh_status": record[
+                            "stage907_refresh_status"
+                        ],
+                        "stage907_readonly_status_after": record[
+                            "stage907_readonly_status_after"
+                        ],
+                        "stage907_position_snapshot_state_after": record[
+                            "stage907_position_snapshot_state_after"
+                        ],
+                        "stage907_connection_lifecycle": {
+                            "model_tag": "stage174_ctp_connection_lifecycle_v2",
+                            "authoritative_readiness_transition_complete": int(index == 4),
+                            "full_snapshot_generation_complete": int(index == 4),
+                            "proof_complete": int(index == 4),
+                            "disconnect_observed": record["disconnect_observed"],
+                            "reconnect_observed": record["reconnect_observed"],
+                            "disconnect_evidence_id": record[
+                                "disconnect_evidence_id"
+                            ],
+                            "old_connection_generation": record[
+                                "old_connection_generation"
+                            ],
+                            "new_connection_generation": record[
+                                "new_connection_generation"
+                            ],
+                            "readiness_revoked_epoch_ns": record[
+                                "readiness_revoked_epoch_ns"
+                            ],
+                            "readiness_restored_epoch_ns": record[
+                                "readiness_restored_epoch_ns"
+                            ],
+                            **(
+                                {
+                                    "send_order_api_called_count": 0,
+                                    "cancel_order_api_called_count": 0,
+                                }
+                                if index == 4
+                                else {}
+                            ),
+                        },
+                    }
+                }
+            },
+        }
+    )
     record["stage930_summary_payload"] = payload
     record["stage930_summary_payload_sha256"] = _mapping_digest(payload)
     record["capture_record_sha256"] = _record_digest(record)
@@ -246,16 +337,16 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
         self.assertEqual(_record_digest(captured), captured["capture_record_sha256"])
         self.assertEqual(captured["session_id"], captured_again["session_id"])
 
-    def test_five_day_night_sessions_and_reconnect_qualify(self) -> None:
+    def test_five_sessions_remain_blocked_until_authoritative_reconnect_exists(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
 
         result = self.qualify(records)
 
-        self.assertEqual("qualified", result["qualification_status"])
-        self.assertEqual([], result["blockers"])
-        self.assertEqual(5, result["qualified_session_count"])
+        self.assertEqual("blocked", result["qualification_status"])
+        self.assertIn("disconnect_reconnect_proof_missing", result["blockers"])
+        self.assertEqual(4, result["qualified_session_count"])
         self.assertEqual(["day", "night"], result["session_kinds"])
-        self.assertEqual(1, result["disconnect_reconnect_proof_count"])
+        self.assertEqual(0, result["disconnect_reconnect_proof_count"])
 
     def test_disconnect_booleans_without_generation_evidence_do_not_qualify(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]
@@ -288,6 +379,51 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
         self.assertEqual("blocked", result["qualification_status"])
         self.assertIn("duplicate_session_id:session-4", result["blockers"])
         self.assertIn("session-4:cancel_order_api_called_count_nonzero", result["blockers"])
+
+    def test_two_summaries_cannot_be_cloned_into_five_sessions(self) -> None:
+        sources = [
+            session_record(0, session_kind="day"),
+            session_record(1, session_kind="night"),
+        ]
+        records: list[dict[str, object]] = []
+        for index in range(5):
+            clone = deepcopy(sources[index % 2])
+            clone["session_id"] = f"forged-session-{index}"
+            clone["capture_record_sha256"] = _record_digest(clone)
+            records.append(clone)
+
+        result = self.qualify(records)
+
+        self.assertEqual("blocked", result["qualification_status"])
+        self.assertTrue(
+            any(
+                "session_id_not_derived_from_stage930" in blocker
+                for blocker in result["blockers"]
+            )
+        )
+        self.assertTrue(
+            any(
+                blocker.startswith("duplicate_stage930_summary_payload_sha256:")
+                for blocker in result["blockers"]
+            )
+        )
+
+    def test_disconnect_fields_cannot_detach_from_nested_lifecycle(self) -> None:
+        records = [
+            session_record(index, session_kind="day" if index < 2 else "night")
+            for index in range(5)
+        ]
+        records[4]["old_connection_generation"] = "forged-old"
+        records[4]["new_connection_generation"] = "forged-new"
+        records[4]["capture_record_sha256"] = _record_digest(records[4])
+
+        result = self.qualify(records)
+
+        self.assertEqual("blocked", result["qualification_status"])
+        self.assertIn(
+            "session-4:old_connection_generation_projection_mismatch",
+            result["blockers"],
+        )
 
     def test_launchd_schedule_must_be_exact_0855_or_2055(self) -> None:
         records = [session_record(index, session_kind="day" if index < 2 else "night") for index in range(5)]

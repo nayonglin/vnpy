@@ -79,6 +79,60 @@ def _readonly_order_api_evidence(summary: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _datetime_epoch(value: Any) -> float | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.astimezone()
+    return parsed.timestamp()
+
+
+def _readonly_snapshot_evidence(
+    summary: dict[str, Any],
+    *,
+    previous_generation: str,
+    command_started_at: str,
+    refresh_attempted: bool,
+) -> dict[str, Any]:
+    missing: list[str] = []
+    generation = str(summary.get("query_generation_uuid") or "").strip()
+    bundle = summary.get("broker_query_bundle")
+    if not isinstance(bundle, dict):
+        bundle = {}
+        missing.append("broker_query_bundle")
+    if bundle.get("complete") is not True:
+        missing.append("broker_query_bundle.complete")
+    if not generation:
+        missing.append("query_generation_uuid")
+    if str(bundle.get("generation_uuid") or "").strip() != generation:
+        missing.append("broker_query_bundle.generation_uuid")
+    if refresh_attempted and previous_generation and generation == previous_generation:
+        missing.append("query_generation_uuid_not_new")
+    generated_epoch = _datetime_epoch(summary.get("generated_at"))
+    command_epoch = _datetime_epoch(command_started_at)
+    if refresh_attempted and (
+        generated_epoch is None
+        or command_epoch is None
+        or generated_epoch < command_epoch
+    ):
+        missing.append("summary_generated_before_command_start")
+    if not refresh_attempted:
+        missing.append("refresh_not_attempted")
+    return {
+        "complete": not missing,
+        "missing_fields": missing,
+        "generation_uuid": generation,
+        "bundle_complete": bundle.get("complete"),
+        "generated_epoch": generated_epoch,
+        "command_started_epoch": command_epoch,
+    }
+
+
 def _check_row(
     rows: list[dict[str, Any]],
     *,
@@ -325,6 +379,7 @@ def main() -> None:
 
     checks_df = pd.DataFrame(checks)
     blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
+    readonly_summary_before = _read_json(READONLY_SUMMARY_PATH)
     command_result: dict[str, Any] = {}
     refresh_attempted = False
     if args.mode == "refresh" and blocking.empty:
@@ -339,6 +394,14 @@ def main() -> None:
 
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     order_api_evidence = _readonly_order_api_evidence(readonly_summary)
+    snapshot_evidence = _readonly_snapshot_evidence(
+        readonly_summary,
+        previous_generation=str(
+            readonly_summary_before.get("query_generation_uuid") or ""
+        ).strip(),
+        command_started_at=str(command_result.get("started_at") or ""),
+        refresh_attempted=refresh_attempted,
+    )
     _check_row(
         checks,
         check="readonly_order_api_exact_zero_evidence",
@@ -351,11 +414,20 @@ def main() -> None:
         required="Stage174 gateway and TD API attempted/called counters are exact integer 0/0",
         blocker="readonly_order_api_evidence_incomplete_or_nonzero",
     )
+    _check_row(
+        checks,
+        check="readonly_snapshot_new_complete_bundle",
+        passed=bool(snapshot_evidence["complete"]),
+        severity="block",
+        observed=f"missing={snapshot_evidence['missing_fields']}",
+        required="new Stage174 generation after command start with broker_query_bundle.complete=true",
+        blocker="readonly_snapshot_stale_or_incomplete",
+    )
     checks_df = pd.DataFrame(checks)
     blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
     broker_snapshot = readonly_summary.get("broker_snapshot", {}) if isinstance(readonly_summary.get("broker_snapshot"), dict) else {}
     position_state = str(broker_snapshot.get("position_snapshot_state", ""))
-    readonly_ready = bool(order_api_evidence["complete"]) and readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
+    readonly_ready = bool(order_api_evidence["complete"]) and bool(snapshot_evidence["complete"]) and readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
         "confirmed_flat",
         "positions_received",
     }
@@ -391,6 +463,10 @@ def main() -> None:
         "order_api_evidence_complete": int(bool(order_api_evidence["complete"])),
         "order_api_evidence_missing_fields": order_api_evidence["missing_fields"],
         "order_api_evidence_nonzero_fields": order_api_evidence["nonzero_fields"],
+        "snapshot_evidence_complete": int(bool(snapshot_evidence["complete"])),
+        "snapshot_evidence_missing_fields": snapshot_evidence["missing_fields"],
+        "snapshot_generation_uuid": snapshot_evidence["generation_uuid"],
+        "broker_query_bundle_complete": snapshot_evidence["bundle_complete"],
         "connection_lifecycle": (
             readonly_summary.get("connection_lifecycle")
             if isinstance(readonly_summary.get("connection_lifecycle"), dict)

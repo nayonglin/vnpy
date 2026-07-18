@@ -71,6 +71,36 @@ class _LongLivedController:
 
 
 class Stage930FastLaneTest(unittest.TestCase):
+    def test_launchd_provenance_requires_xpc_label_and_launchd_parent(self) -> None:
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "XPC_SERVICE_NAME": "local.qmt-roll.official-live.20w.stage372-night-session"
+                },
+                clear=False,
+            ),
+            patch.object(stage930.os, "getpid", return_value=123),
+            patch.object(stage930.os, "getppid", return_value=1),
+            patch.object(stage930.os, "getuid", return_value=501),
+            patch.object(
+                stage930.subprocess,
+                "run",
+                return_value=SimpleNamespace(returncode=0, stdout="pid = 123\n"),
+            ),
+        ):
+            valid = stage930._launchd_provenance(456)
+        with (
+            patch.dict(os.environ, {"XPC_SERVICE_NAME": ""}, clear=False),
+            patch.object(stage930.os, "getppid", return_value=999),
+        ):
+            manual = stage930._launchd_provenance(456)
+
+        self.assertEqual(1, valid["complete"])
+        self.assertEqual(123, valid["pid"])
+        self.assertEqual(123, valid["launchctl_job_pid"])
+        self.assertEqual(0, manual["complete"])
+
     @staticmethod
     def wait_for_path(path: Path, timeout_seconds: float = 5.0) -> bool:
         deadline = time.monotonic() + timeout_seconds

@@ -31,6 +31,11 @@ CANONICAL_PLISTS = {
     "day": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
     "night": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
 }
+# Stage174 currently publishes a one-shot order/trade/position reconnect
+# diagnostic, not a full current-generation settlement/account/contract
+# readiness transition.  Keep qualification fail-closed until that producer
+# is implemented and independently reviewed.
+AUTHORITATIVE_RECONNECT_PROOF_ENABLED = False
 
 
 def _strict_int(value: Any) -> int | None:
@@ -73,13 +78,75 @@ def _mapping_digest(value: Mapping[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _stage903_summary_from_stage930(
+    stage930_summary: Mapping[str, Any],
+) -> Mapping[str, Any]:
+    cycle = stage930_summary.get("readonly_qualification_cycle")
+    if not isinstance(cycle, Mapping):
+        cycle = stage930_summary.get("latest_cycle")
+    if not isinstance(cycle, Mapping):
+        return {}
+    stage903 = cycle.get("stage903")
+    if not isinstance(stage903, Mapping):
+        return {}
+    summary = stage903.get("summary")
+    return summary if isinstance(summary, Mapping) else {}
+
+
+def _disconnect_projection(
+    lifecycle: Mapping[str, Any],
+    *,
+    session_id: str,
+    runtime_profile: Any,
+    execution_profile: Any,
+) -> dict[str, Any]:
+    proof_complete = _strict_int(lifecycle.get("proof_complete")) == 1
+    return {
+        "disconnect_lifecycle_model_tag": lifecycle.get("model_tag", ""),
+        "disconnect_authoritative_readiness_transition_complete": lifecycle.get(
+            "authoritative_readiness_transition_complete", 0
+        ),
+        "disconnect_full_snapshot_generation_complete": lifecycle.get(
+            "full_snapshot_generation_complete", 0
+        ),
+        "disconnect_observed": lifecycle.get("disconnect_observed", 0),
+        "reconnect_observed": lifecycle.get("reconnect_observed", 0),
+        "disconnect_evidence_id": lifecycle.get("disconnect_evidence_id", ""),
+        "disconnect_session_id": session_id if proof_complete else "",
+        "disconnect_runtime_profile": runtime_profile if proof_complete else "",
+        "disconnect_execution_profile": execution_profile if proof_complete else "",
+        "old_connection_generation": lifecycle.get("old_connection_generation", ""),
+        "new_connection_generation": lifecycle.get("new_connection_generation", ""),
+        "readiness_revoked_epoch_ns": lifecycle.get("readiness_revoked_epoch_ns"),
+        "readiness_restored_epoch_ns": lifecycle.get("readiness_restored_epoch_ns"),
+        "disconnect_send_order_api_called_count": lifecycle.get(
+            "send_order_api_called_count"
+        ),
+        "disconnect_cancel_order_api_called_count": lifecycle.get(
+            "cancel_order_api_called_count"
+        ),
+    }
+
+
 def _disconnect_reconnect_proof_valid(record: Mapping[str, Any]) -> bool:
+    if not AUTHORITATIVE_RECONNECT_PROOF_ENABLED:
+        return False
     revoked = _strict_int(record.get("readiness_revoked_epoch_ns"))
     restored = _strict_int(record.get("readiness_restored_epoch_ns"))
     old_generation = _clean(record.get("old_connection_generation"))
     new_generation = _clean(record.get("new_connection_generation"))
     return bool(
-        _strict_int(record.get("disconnect_observed")) == 1
+        record.get("disconnect_lifecycle_model_tag")
+        == "stage174_ctp_connection_lifecycle_v2"
+        and _strict_int(
+            record.get("disconnect_authoritative_readiness_transition_complete")
+        )
+        == 1
+        and _strict_int(
+            record.get("disconnect_full_snapshot_generation_complete")
+        )
+        == 1
+        and _strict_int(record.get("disconnect_observed")) == 1
         and _strict_int(record.get("reconnect_observed")) == 1
         and _clean(record.get("disconnect_evidence_id"))
         and _clean(record.get("disconnect_session_id"))
@@ -150,6 +217,102 @@ def _record_blockers(
         ):
             if record.get(field) != source_payload.get(field):
                 blockers.append(f"{session_id}:stage930_payload_{field}_mismatch")
+        payload_run_id = _clean(source_payload.get("run_id"))
+        payload_daemon_epoch_ns = _strict_int(
+            source_payload.get("daemon_started_epoch_ns")
+        )
+        session_kind = _clean(record.get("session_kind"))
+        if (
+            not payload_run_id
+            or payload_daemon_epoch_ns is None
+            or payload_daemon_epoch_ns <= 0
+            or session_kind not in CANONICAL_PLISTS
+        ):
+            blockers.append(f"{session_id}:stage930_payload_session_identity_invalid")
+        else:
+            payload_started_at = datetime.fromtimestamp(
+                payload_daemon_epoch_ns // 1_000_000_000,
+                tz=SHANGHAI_TZ,
+            )
+            expected_session_date = payload_started_at.date().isoformat()
+            expected_session_id = payload_run_id
+            expected_hour = 8 if session_kind == "day" else 20
+            expected_scheduled_epoch_ns = int(
+                datetime(
+                    payload_started_at.year,
+                    payload_started_at.month,
+                    payload_started_at.day,
+                    expected_hour,
+                    55,
+                    tzinfo=SHANGHAI_TZ,
+                ).timestamp()
+            ) * 1_000_000_000
+            if session_id != expected_session_id:
+                blockers.append(f"{session_id}:session_id_not_derived_from_stage930")
+            if record.get("session_date") != expected_session_date:
+                blockers.append(f"{session_id}:session_date_not_derived_from_stage930")
+            if record.get("scheduled_start_epoch_ns") != expected_scheduled_epoch_ns:
+                blockers.append(
+                    f"{session_id}:scheduled_start_not_derived_from_stage930"
+                )
+        expected_completed = int(
+            _clean(source_payload.get("daemon_status")).startswith(
+                "daemon_completed_"
+            )
+        )
+        if record.get("session_completed") != expected_completed:
+            blockers.append(f"{session_id}:session_completed_projection_mismatch")
+        for record_field, payload_field in (
+            ("cycle_started_epoch_ns", "open_minute_tick_cycle_started_epoch_ns"),
+            ("cycle_finished_epoch_ns", "open_minute_tick_cycle_finished_epoch_ns"),
+        ):
+            if record.get(record_field) != source_payload.get(payload_field):
+                blockers.append(
+                    f"{session_id}:stage930_payload_{record_field}_mismatch"
+                )
+        provenance = source_payload.get("launchd_provenance")
+        if not isinstance(provenance, Mapping):
+            provenance = {}
+        provenance_projection = {
+            "launchd_provenance_complete": provenance.get("complete"),
+            "launchd_xpc_service_name": provenance.get("xpc_service_name"),
+            "launchd_process_pid": provenance.get("pid"),
+            "launchd_parent_pid": provenance.get("parent_pid"),
+            "launchctl_print_exit_code": provenance.get(
+                "launchctl_print_exit_code"
+            ),
+            "launchctl_job_pid": provenance.get("launchctl_job_pid"),
+        }
+        for field, expected in provenance_projection.items():
+            if record.get(field) != expected:
+                blockers.append(f"{session_id}:{field}_projection_mismatch")
+        if provenance.get("daemon_started_epoch_ns") != source_payload.get(
+            "daemon_started_epoch_ns"
+        ):
+            blockers.append(f"{session_id}:launchd_provenance_epoch_mismatch")
+        source_stage903 = _stage903_summary_from_stage930(source_payload)
+        for field in (
+            "stage914_exit_code",
+            "stage914_preflight_status",
+            "stage914_blocking_failure_count",
+            "stage907_refresh_status",
+            "stage907_readonly_status_after",
+            "stage907_position_snapshot_state_after",
+        ):
+            if record.get(field) != source_stage903.get(field):
+                blockers.append(f"{session_id}:stage903_{field}_projection_mismatch")
+        lifecycle = source_stage903.get("stage907_connection_lifecycle")
+        if not isinstance(lifecycle, Mapping):
+            lifecycle = {}
+        expected_disconnect = _disconnect_projection(
+            lifecycle,
+            session_id=session_id,
+            runtime_profile=source_payload.get("runtime_profile"),
+            execution_profile=source_payload.get("execution_profile"),
+        )
+        for field, expected in expected_disconnect.items():
+            if record.get(field) != expected:
+                blockers.append(f"{session_id}:{field}_projection_mismatch")
 
     expected_values = {
         "execution_profile": EXPECTED_EXECUTION_PROFILE,
@@ -174,6 +337,7 @@ def _record_blockers(
         "stage907_refresh_status": "readonly_refresh_completed_snapshot_ready",
         "stage907_readonly_status_after": "readonly_snapshots_received",
         "session_completed": 1,
+        "launchd_provenance_complete": 1,
     }
     for field, expected in expected_values.items():
         if field not in record:
@@ -198,6 +362,17 @@ def _record_blockers(
     )
     if label != expected_label:
         blockers.append(f"{session_id}:launchd_label_mismatch")
+    if record.get("launchd_xpc_service_name") != expected_label:
+        blockers.append(f"{session_id}:launchd_xpc_service_name_mismatch")
+    if _strict_int(record.get("launchd_parent_pid")) != 1:
+        blockers.append(f"{session_id}:launchd_parent_pid_mismatch")
+    process_pid = _strict_int(record.get("launchd_process_pid"))
+    if process_pid is None or process_pid <= 1:
+        blockers.append(f"{session_id}:launchd_process_pid_invalid")
+    if _strict_int(record.get("launchctl_print_exit_code")) != 0:
+        blockers.append(f"{session_id}:launchctl_print_failed")
+    if _strict_int(record.get("launchctl_job_pid")) != process_pid:
+        blockers.append(f"{session_id}:launchctl_job_pid_mismatch")
     plist_sha256 = _clean(record.get("launchd_plist_sha256"))
     if len(plist_sha256) != 64 or any(
         char not in "0123456789abcdef" for char in plist_sha256
@@ -323,6 +498,8 @@ def evaluate_readonly_qualification(
     rows = [dict(record) for record in records]
     blockers: list[str] = []
     seen: set[str] = set()
+    seen_stage930_file_hashes: set[str] = set()
+    seen_stage930_payload_hashes: set[str] = set()
     qualified_session_count = 0
     kinds: set[str] = set()
     disconnect_reconnect_proof_count = 0
@@ -337,6 +514,17 @@ def evaluate_readonly_qualification(
             _append_unique(blockers, f"duplicate_session_id:{session_id}")
         else:
             seen.add(session_id)
+        for field, seen_hashes in (
+            ("stage930_summary_sha256", seen_stage930_file_hashes),
+            ("stage930_summary_payload_sha256", seen_stage930_payload_hashes),
+        ):
+            value = _clean(record.get(field))
+            if not value:
+                continue
+            if value in seen_hashes:
+                _append_unique(blockers, f"duplicate_{field}:{value}")
+            else:
+                seen_hashes.add(value)
         row_blockers = _record_blockers(
             record,
             expected_manifest_sha256=expected_manifest_sha256,
@@ -366,6 +554,8 @@ def evaluate_readonly_qualification(
         "required_session_count": required_session_count,
         "observed_record_count": len(rows),
         "unique_session_count": len(seen),
+        "unique_stage930_summary_count": len(seen_stage930_file_hashes),
+        "unique_stage930_payload_count": len(seen_stage930_payload_hashes),
         "qualified_session_count": qualified_session_count,
         "session_kinds": sorted(kinds),
         "disconnect_reconnect_proof_count": disconnect_reconnect_proof_count,
@@ -407,17 +597,7 @@ def build_readonly_session_evidence(
     stage930_summary_sha256: str,
     session_kind: str,
 ) -> dict[str, Any]:
-    cycle = stage930_summary.get("readonly_qualification_cycle")
-    if not isinstance(cycle, Mapping):
-        cycle = stage930_summary.get("latest_cycle")
-    if not isinstance(cycle, Mapping):
-        cycle = {}
-    stage903 = cycle.get("stage903")
-    stage903_summary = (
-        stage903.get("summary")
-        if isinstance(stage903, Mapping) and isinstance(stage903.get("summary"), Mapping)
-        else {}
-    )
+    stage903_summary = _stage903_summary_from_stage930(stage930_summary)
     arguments = launchd_plist.get("ProgramArguments")
     if not isinstance(arguments, list):
         arguments = []
@@ -455,8 +635,16 @@ def build_readonly_session_evidence(
             tzinfo=SHANGHAI_TZ,
         ).timestamp()
     ) * 1_000_000_000
-    session_id = f"{session_date}:{session_kind}:{run_id}:{daemon_started_epoch_ns}"
-    proof_complete = disconnect.get("proof_complete") == 1
+    session_id = run_id
+    disconnect_projection = _disconnect_projection(
+        disconnect,
+        session_id=session_id,
+        runtime_profile=stage930_summary.get("runtime_profile"),
+        execution_profile=stage930_summary.get("execution_profile"),
+    )
+    launchd_provenance = stage930_summary.get("launchd_provenance")
+    if not isinstance(launchd_provenance, Mapping):
+        launchd_provenance = {}
     record = {
         "capture_schema_version": 2,
         "stage930_summary_sha256": _clean(stage930_summary_sha256),
@@ -474,6 +662,16 @@ def build_readonly_session_evidence(
         "launchd_plist_relative_path": _clean(launchd_plist_relative_path),
         "launchd_plist_sha256": _clean(launchd_plist_sha256),
         "manifest_launchd_plist_sha256": _clean(launchd_plist_sha256),
+        "launchd_provenance_complete": launchd_provenance.get("complete"),
+        "launchd_xpc_service_name": launchd_provenance.get(
+            "xpc_service_name"
+        ),
+        "launchd_process_pid": launchd_provenance.get("pid"),
+        "launchd_parent_pid": launchd_provenance.get("parent_pid"),
+        "launchctl_print_exit_code": launchd_provenance.get(
+            "launchctl_print_exit_code"
+        ),
+        "launchctl_job_pid": launchd_provenance.get("launchctl_job_pid"),
         "execution_profile": stage930_summary.get("execution_profile"),
         "official_live_version": stage930_summary.get("official_live_version"),
         "capital": stage930_summary.get("capital"),
@@ -516,26 +714,7 @@ def build_readonly_session_evidence(
         "cycle_finished_epoch_ns": stage930_summary.get(
             "open_minute_tick_cycle_finished_epoch_ns"
         ),
-        "disconnect_observed": disconnect.get("disconnect_observed", 0),
-        "reconnect_observed": disconnect.get("reconnect_observed", 0),
-        "disconnect_evidence_id": disconnect.get("disconnect_evidence_id", ""),
-        "disconnect_session_id": session_id if proof_complete else "",
-        "disconnect_runtime_profile": (
-            stage930_summary.get("runtime_profile") if proof_complete else ""
-        ),
-        "disconnect_execution_profile": (
-            stage930_summary.get("execution_profile") if proof_complete else ""
-        ),
-        "old_connection_generation": disconnect.get("old_connection_generation", ""),
-        "new_connection_generation": disconnect.get("new_connection_generation", ""),
-        "readiness_revoked_epoch_ns": disconnect.get("readiness_revoked_epoch_ns"),
-        "readiness_restored_epoch_ns": disconnect.get("readiness_restored_epoch_ns"),
-        "disconnect_send_order_api_called_count": disconnect.get(
-            "send_order_api_called_count"
-        ),
-        "disconnect_cancel_order_api_called_count": disconnect.get(
-            "cancel_order_api_called_count"
-        ),
+        **disconnect_projection,
     }
     record["capture_record_sha256"] = _record_digest(record)
     return record

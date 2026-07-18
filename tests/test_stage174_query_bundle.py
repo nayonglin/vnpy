@@ -294,8 +294,13 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             restored_epoch_ns=20,
         )
 
-        self.assertEqual(1, proof["proof_complete"])
-        self.assertEqual(20, proof["readiness_restored_epoch_ns"])
+        self.assertEqual(1, proof["one_shot_query_proof_complete"])
+        self.assertEqual(0, proof["proof_complete"])
+        self.assertIn(
+            "authoritative_current_generation_readiness_transition_missing",
+            proof["proof_blockers"],
+        )
+        self.assertIsNone(proof["readiness_restored_epoch_ns"])
         self.assertEqual(0, stale["proof_complete"])
         self.assertIsNone(stale["readiness_restored_epoch_ns"])
 

@@ -83,6 +83,58 @@ STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 
 MODEL_TAG = "stage930_official_live_c9_session_daemon_v1"
 OUTPUT_PREFIX = "qmt_roll_stage930_official_live_c9_session_daemon"
+STAGE372_LAUNCHD_LABELS = {
+    "local.qmt-roll.official-live.20w.stage372-day-session",
+    "local.qmt-roll.official-live.20w.stage372-night-session",
+}
+
+
+def _launchd_provenance(daemon_started_epoch_ns: int) -> dict[str, Any]:
+    label = _clean(os.getenv("XPC_SERVICE_NAME", ""))
+    pid = os.getpid()
+    parent_pid = os.getppid()
+    launchctl_exit_code: int | None = None
+    launchctl_job_pid: int | None = None
+    if label in STAGE372_LAUNCHD_LABELS:
+        try:
+            result = subprocess.run(
+                [
+                    "/bin/launchctl",
+                    "print",
+                    f"gui/{os.getuid()}/{label}",
+                ],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=False,
+                timeout=3,
+            )
+            launchctl_exit_code = result.returncode
+            for line in result.stdout.splitlines():
+                stripped = line.strip()
+                if stripped.startswith("pid ="):
+                    try:
+                        launchctl_job_pid = int(stripped.split("=", 1)[1].strip())
+                    except ValueError:
+                        launchctl_job_pid = None
+                    break
+        except (OSError, subprocess.SubprocessError):
+            launchctl_exit_code = None
+    return {
+        "model_tag": "stage930_launchd_provenance_v1",
+        "pid": pid,
+        "parent_pid": parent_pid,
+        "xpc_service_name": label,
+        "launchctl_print_exit_code": launchctl_exit_code,
+        "launchctl_job_pid": launchctl_job_pid,
+        "daemon_started_epoch_ns": daemon_started_epoch_ns,
+        "complete": int(
+            parent_pid == 1
+            and label in STAGE372_LAUNCHD_LABELS
+            and launchctl_exit_code == 0
+            and launchctl_job_pid == pid
+        ),
+    }
 LATEST_SUMMARY_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_latest_summary.json"
 LATEST_REPORT_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_latest_report.md"
 LATEST_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_heartbeat.json"
@@ -3725,6 +3777,7 @@ def main() -> None:
         sys.exit(3)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
+    launchd_provenance = _launchd_provenance(daemon_started_epoch_ns)
     _activate_runtime_ownership()
     _start_stage931_service(args)
     # Market-data coverage starts before the AI-pool check.  The pool governs
@@ -3876,8 +3929,10 @@ def main() -> None:
         session_timing = _session_timing_evidence(cycles)
         summary = {
             "model_tag": MODEL_TAG,
+            "run_id": run_id,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "daemon_started_epoch_ns": daemon_started_epoch_ns,
+            "launchd_provenance": launchd_provenance,
             "execution_profile": execution_profile.profile_key,
             "official_live_version": execution_profile.official_version,
             "capital": execution_profile.capital,

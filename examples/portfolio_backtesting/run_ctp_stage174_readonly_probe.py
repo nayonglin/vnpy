@@ -145,7 +145,7 @@ def _finalize_connection_lifecycle(
         new_generation
         and all(value == new_generation for value in query_generations.values())
     )
-    proof_complete = bool(
+    one_shot_query_proof_complete = bool(
         lifecycle.get("disconnect_observed") == 1
         and lifecycle.get("reconnect_observed") == 1
         and old_generation
@@ -157,6 +157,21 @@ def _finalize_connection_lifecycle(
         and fresh_queries_on_new_generation
         and all(value == 0 for value in order_api_counters.values())
     )
+    authoritative_transition_complete = bool(
+        lifecycle.get("model_tag") == "stage174_ctp_connection_lifecycle_v2"
+        and type(lifecycle.get("authoritative_readiness_transition_complete")) is int
+        and lifecycle.get("authoritative_readiness_transition_complete") == 1
+        and type(lifecycle.get("full_snapshot_generation_complete")) is int
+        and lifecycle.get("full_snapshot_generation_complete") == 1
+    )
+    proof_complete = bool(
+        one_shot_query_proof_complete and authoritative_transition_complete
+    )
+    proof_blockers: list[str] = []
+    if one_shot_query_proof_complete and not authoritative_transition_complete:
+        proof_blockers.append(
+            "authoritative_current_generation_readiness_transition_missing"
+        )
     evidence_id = ""
     if proof_complete:
         evidence_id = hashlib.sha256(
@@ -168,7 +183,16 @@ def _finalize_connection_lifecycle(
         "new_connection_generation": new_generation,
         "query_connection_generations": query_generations,
         "fresh_queries_on_new_generation": int(fresh_queries_on_new_generation),
+        "one_shot_query_proof_complete": int(one_shot_query_proof_complete),
+        "authoritative_readiness_transition_complete": int(
+            authoritative_transition_complete
+        ),
+        "full_snapshot_generation_complete": int(
+            type(lifecycle.get("full_snapshot_generation_complete")) is int
+            and lifecycle.get("full_snapshot_generation_complete") == 1
+        ),
         "proof_complete": int(proof_complete),
+        "proof_blockers": proof_blockers,
         "disconnect_evidence_id": evidence_id,
         "readiness_restored_epoch_ns": restored_epoch_ns if proof_complete else None,
         "send_order_api_called_count": order_api_counters[
