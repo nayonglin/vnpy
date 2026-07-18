@@ -1,0 +1,33 @@
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py
+  s_57fbbdfeac5414::t_620df5bc24ff9a 150-151,561-580
+examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py
+  s_57fbbdfeac5414::t_b17007c41a7597 166,203,207
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_6456d00e854802 32-37,1116-1131,2126-2127,2162-2165,2175-2181,2202-2287,2293-2300,2839,2882-2917,2919-2920
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_2cd59147597136 45,48-51,536,556,691-705,6227-6245,6387-6392,6552-6556,6559,6673-6698,6809-6811,6822-6891,6905-6928,6971
+tests/test_stage179_runtime_profile.py
+  s_57fbbdfeac5414::t_e0bdaed2522081 214-250
+tests/test_stage179_submit_authorization.py
+  s_57fbbdfeac5414::t_a41b9169dd2e99 1-128
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_8fb84e44bdc72c 27-29,143,156,167-168,178-253,256-307,356,361-362,365-382,385-386
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c79119127b46deb70e549fae3cea35da5e6de6db",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
