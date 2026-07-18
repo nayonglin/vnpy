@@ -2822,16 +2822,16 @@ def _write_summary_commit_point(
     paths: dict[str, Path], summary: dict[str, Any]
 ) -> None:
     text = json.dumps(summary, ensure_ascii=False, indent=2, default=str)
-    _atomic_write_text(LATEST_SUMMARY_PATH, text)
-    # The run-scoped summary is the canonical commit point.  Publish the
-    # convenience latest view first so a successful return means the durable
-    # run record contains the committed state.
+    # The run-scoped summary is the only canonical commit point.  Convenience
+    # latest/report/heartbeat views are published after this succeeds.
     _atomic_write_text(paths["summary_json"], text)
 
 
 def _write_auxiliary_outputs(
     paths: dict[str, Path], summary: dict[str, Any]
 ) -> None:
+    text = json.dumps(summary, ensure_ascii=False, indent=2, default=str)
+    _atomic_write_text(LATEST_SUMMARY_PATH, text)
     report = _build_report(summary)
     _atomic_write_text(paths["report_md"], report)
     _atomic_write_text(LATEST_REPORT_PATH, report)
@@ -3407,6 +3407,7 @@ def _write_cycle_outputs_and_commit_reconnect_observation(
 
     cycle["readonly_observe_reconnect_consumption_pending"] = 0
     cycle["readonly_observe_reconnect_consumed"] = 1
+    cycle["readonly_observe_reconnect_post_commit_output_errors"] = []
     try:
         _write_summary_commit_point(paths, summary)
     except Exception:
@@ -3414,17 +3415,27 @@ def _write_cycle_outputs_and_commit_reconnect_observation(
         cycle["readonly_observe_reconnect_consumed"] = 0
         raise
     args.readonly_observe_reconnect_once = False
-    _append_event(
-        paths["events_ndjson"],
-        {
-            "event_type": "stage930_readonly_reconnect_observation_committed",
-            "run_id": summary.get("run_id"),
-            "cycle_started_epoch_ns": cycle.get("cycle_started_epoch_ns"),
-            "readonly_observe_reconnect_consumption_pending": 0,
-            "readonly_observe_reconnect_consumed": 1,
-        },
+    post_commit_errors: list[str] = []
+    try:
+        _append_event(
+            paths["events_ndjson"],
+            {
+                "event_type": "stage930_readonly_reconnect_observation_committed",
+                "run_id": summary.get("run_id"),
+                "cycle_started_epoch_ns": cycle.get("cycle_started_epoch_ns"),
+                "readonly_observe_reconnect_consumption_pending": 0,
+                "readonly_observe_reconnect_consumed": 1,
+            },
+        )
+    except Exception as exc:
+        post_commit_errors.append(f"committed_event:{type(exc).__name__}")
+    try:
+        _write_auxiliary_outputs(paths, summary)
+    except Exception as exc:
+        post_commit_errors.append(f"auxiliary_outputs:{type(exc).__name__}")
+    cycle["readonly_observe_reconnect_post_commit_output_errors"] = (
+        post_commit_errors
     )
-    _write_auxiliary_outputs(paths, summary)
     return 1
 
 

@@ -418,19 +418,57 @@ class Stage930FastLaneTest(unittest.TestCase):
                 side_effect=OSError("simulated report failure"),
             ),
         ):
-            with self.assertRaisesRegex(OSError, "simulated report failure"):
-                stage930._write_cycle_outputs_and_commit_reconnect_observation(
-                    {"events_ndjson": Path("events.ndjson")},
-                    summary,
-                    args,
-                    cycle,
-                )
+            committed = stage930._write_cycle_outputs_and_commit_reconnect_observation(
+                {"events_ndjson": Path("events.ndjson")},
+                summary,
+                args,
+                cycle,
+            )
 
+        self.assertEqual(1, committed)
         self.assertFalse(args.readonly_observe_reconnect_once)
         self.assertEqual(0, cycle["readonly_observe_reconnect_consumption_pending"])
         self.assertEqual(1, cycle["readonly_observe_reconnect_consumed"])
+        self.assertEqual(
+            ["auxiliary_outputs:OSError"],
+            cycle["readonly_observe_reconnect_post_commit_output_errors"],
+        )
 
-    def test_summary_commit_point_publishes_canonical_run_summary_last(self) -> None:
+    def test_reconnect_once_keeps_running_when_committed_event_fails(self) -> None:
+        args = SimpleNamespace(readonly_observe_reconnect_once=True)
+        cycle = {
+            "cycle_started_epoch_ns": 123,
+            "readonly_observe_reconnect_consumption_pending": 1,
+            "readonly_observe_reconnect_consumed": 0,
+        }
+        summary = {"run_id": "run-1", "latest_cycle": cycle}
+
+        with (
+            patch.object(stage930, "_write_summary_commit_point"),
+            patch.object(
+                stage930,
+                "_append_event",
+                side_effect=OSError("simulated event failure"),
+            ),
+            patch.object(stage930, "_write_auxiliary_outputs") as auxiliary,
+        ):
+            committed = stage930._write_cycle_outputs_and_commit_reconnect_observation(
+                {"events_ndjson": Path("events.ndjson")},
+                summary,
+                args,
+                cycle,
+            )
+
+        self.assertEqual(1, committed)
+        auxiliary.assert_called_once_with(
+            {"events_ndjson": Path("events.ndjson")}, summary
+        )
+        self.assertEqual(
+            ["committed_event:OSError"],
+            cycle["readonly_observe_reconnect_post_commit_output_errors"],
+        )
+
+    def test_summary_commit_point_only_publishes_canonical_run_summary(self) -> None:
         paths = {"summary_json": Path("canonical.json")}
         writes: list[Path] = []
 
@@ -441,9 +479,27 @@ class Stage930FastLaneTest(unittest.TestCase):
         ):
             stage930._write_summary_commit_point(paths, {"run_id": "run-1"})
 
-        self.assertEqual(
-            [stage930.LATEST_SUMMARY_PATH, paths["summary_json"]], writes
-        )
+        self.assertEqual([paths["summary_json"]], writes)
+
+    def test_latest_summary_is_an_auxiliary_view(self) -> None:
+        paths = {
+            "summary_json": Path("canonical.json"),
+            "report_md": Path("report.md"),
+        }
+        writes: list[Path] = []
+
+        with (
+            patch.object(
+                stage930,
+                "_atomic_write_text",
+                side_effect=lambda path, _text: writes.append(path),
+            ),
+            patch.object(stage930, "_build_report", return_value="report"),
+            patch.object(stage930, "_atomic_write_json"),
+        ):
+            stage930._write_auxiliary_outputs(paths, {"run_id": "run-1"})
+
+        self.assertEqual(stage930.LATEST_SUMMARY_PATH, writes[0])
 
     def test_order_api_evidence_reports_missing_explicit_source_counter(self) -> None:
         missing = stage930._missing_order_api_evidence_fields(

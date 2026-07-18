@@ -130,6 +130,17 @@ def _close_order_api_evidence_window(
         return dict(evidence_window)
 
 
+def _freeze_order_api_evidence(
+    state_lock: Any | None,
+    evidence_window: dict[str, Any],
+    counters: dict[str, int],
+) -> tuple[dict[str, Any], dict[str, int]]:
+    with _state_guard(state_lock):
+        evidence_window["closed"] = 1
+        evidence_window["closed_epoch_ns"] = time.time_ns()
+        return dict(evidence_window), dict(counters)
+
+
 def _install_readonly_order_api_firewall(
     gateway_class: type,
     td_api_class: type,
@@ -144,13 +155,18 @@ def _install_readonly_order_api_firewall(
     """
     originals: dict[tuple[type, str], Any] = {}
     for owner in (gateway_class, td_api_class):
+        for method_name in ("send_order", "cancel_order"):
+            originals[(owner, method_name)] = getattr(owner, method_name)
+    for method_name in NATIVE_CTP_MUTATION_METHODS:
+        original = getattr(td_api_class, method_name, None)
+        if original is not None:
+            originals[(td_api_class, method_name)] = original
+
+    for owner in (gateway_class, td_api_class):
         for method_name, counter_name in (
             ("send_order", "send_order_api_attempted_count"),
             ("cancel_order", "cancel_order_api_attempted_count"),
         ):
-            original = getattr(owner, method_name)
-            originals[(owner, method_name)] = original
-
             def blocked(
                 self: Any,
                 *args: Any,
@@ -170,10 +186,8 @@ def _install_readonly_order_api_firewall(
 
             setattr(owner, method_name, blocked)
     for method_name in NATIVE_CTP_MUTATION_METHODS:
-        original = getattr(td_api_class, method_name, None)
-        if original is None:
+        if (td_api_class, method_name) not in originals:
             continue
-        originals[(td_api_class, method_name)] = original
 
         def blocked_native(
             self: Any,
@@ -1923,23 +1937,30 @@ def _run_probe(
             ctp_gateway_module.CtpTdApi.onRspQryInstrument = original_contract_query_rsp
             ctp_gateway_module.CtpTdApi.onFrontConnected = original_front_connected
             ctp_gateway_module.CtpTdApi.onFrontDisconnected = original_front_disconnected
+        try:
+            (
+                final_order_api_evidence_window,
+                final_order_api_counters,
+            ) = _freeze_order_api_evidence(
+                state_lock,
+                order_api_evidence_window,
+                order_api_counters,
+            )
+            with state_lock:
+                final_rows = copy.deepcopy(rows)
+                final_query_requests = copy.deepcopy(query_requests)
+                final_connection_lifecycle = copy.deepcopy(connection_lifecycle)
+                final_settlement_response = copy.deepcopy(settlement_response)
+                final_settlement_request = copy.deepcopy(settlement_request)
+        finally:
+            # Keep every mutation surface fail-closed until all authoritative
+            # evidence has been frozen.  Restoring earlier permits a fresh
+            # method lookup to bypass both the firewall and exact counters.
             _restore_readonly_order_api_firewall(
                 CtpGateway,
                 ctp_gateway_module.CtpTdApi,
                 order_api_originals,
             )
-
-        final_order_api_evidence_window = _close_order_api_evidence_window(
-            state_lock,
-            order_api_evidence_window,
-        )
-        with state_lock:
-            final_rows = copy.deepcopy(rows)
-            final_query_requests = copy.deepcopy(query_requests)
-            final_connection_lifecycle = copy.deepcopy(connection_lifecycle)
-            final_settlement_response = copy.deepcopy(settlement_response)
-            final_settlement_request = copy.deepcopy(settlement_request)
-            final_order_api_counters = dict(order_api_counters)
         result_rows = final_rows
         _publish_order_api_counters(summary, final_order_api_counters)
         summary["order_api_evidence_window"] = final_order_api_evidence_window
