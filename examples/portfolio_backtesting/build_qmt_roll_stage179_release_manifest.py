@@ -29,6 +29,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PROJECT_DIR.parent.parent
 DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+    "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
@@ -51,11 +52,14 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
     "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
     "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
+    "examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage927_official_live_real_submit_arming_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py",
@@ -69,6 +73,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
     "tests/stage179_performance_gate.py",
@@ -79,6 +84,7 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage179_stage372_daemon_boundary.py",
     "tests/test_stage179_stage372_daily_intents.py",
     "tests/test_stage179_stage372_submit_boundary.py",
+    "tests/test_stage179_stage372_shadow_precompute.py",
     "tests/test_stage179_submit_authorization.py",
     "tests/test_stage179_two_executor_process_race.py",
     "tests/test_stage930_fast_lane.py",
@@ -148,6 +154,7 @@ def build_release_manifest_file(
     output_path: Path | str,
     repo_root: Path | str = REPO_ROOT,
     release_id: str,
+    execution_profile: str = ExecutionStrategyMode.STAGE372_20W.value,
     official_version: str | None = None,
     capital: int | float | None = None,
     capital_label: str | None = None,
@@ -156,6 +163,7 @@ def build_release_manifest_file(
         ExecutionRuntimeProfile
     ),
     created_at_utc: str | None = None,
+    strategy_semantics_qualification: dict[str, str] | None = None,
 ) -> dict[str, object]:
     if official_version is None or capital is None or capital_label is None:
         # CLI convenience only. Tests and release automation should pass the
@@ -178,15 +186,37 @@ def build_release_manifest_file(
         "+00:00",
         "Z",
     )
+    qualification = strategy_semantics_qualification or {
+        "status": "blocked",
+        "evidence_id": "strategy-semantics-evidence-not-provided",
+    }
+    submit_profiles = {
+        ExecutionRuntimeProfile.SIMNOW.value,
+        ExecutionRuntimeProfile.BROKER_TEST.value,
+        ExecutionRuntimeProfile.PRODUCTION_LIVE.value,
+    }
+    normalized_runtime_profiles = tuple(
+        item.value if isinstance(item, ExecutionRuntimeProfile) else str(item)
+        for item in allowed_runtime_profiles
+    )
+    if (
+        qualification.get("status") != "passed"
+        and submit_profiles.intersection(normalized_runtime_profiles)
+    ):
+        raise ReleaseManifestError(
+            "release_builder_strategy_semantics_qualification_required_for_submit"
+        )
     payload = build_release_manifest(
         repo_root=repo,
         release_id=release_id,
+        execution_profile=execution_profile,
         official_version=official_version,
         capital=capital,
         capital_label=capital_label,
+        strategy_semantics_qualification=qualification,
         source_commit=source_commit,
         critical_files=critical_files,
-        allowed_runtime_profiles=allowed_runtime_profiles,
+        allowed_runtime_profiles=normalized_runtime_profiles,
         created_at_utc=created,
         ledger_schema_version=LEDGER_SCHEMA_VERSION,
         intent_fingerprint_versions=(1, INTENT_FINGERPRINT_VERSION_V2),
@@ -229,10 +259,19 @@ def main() -> None:
     payload = build_release_manifest_file(
         output_path=args.output,
         release_id=args.release_id,
+        execution_profile=profile.profile_key,
         official_version=profile.official_version,
         capital=profile.capital,
         capital_label=profile.capital_label,
         critical_files=args.critical_file or DEFAULT_CRITICAL_FILES,
+        allowed_runtime_profiles=(
+            ExecutionRuntimeProfile.OFFLINE,
+            ExecutionRuntimeProfile.PRODUCTION_READONLY,
+        ),
+        strategy_semantics_qualification={
+            "status": "blocked",
+            "evidence_id": "stage372-source-inputs-not-reproducible",
+        },
     )
     print(payload["manifest_sha256"])
 

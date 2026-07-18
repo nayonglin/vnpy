@@ -156,6 +156,7 @@ def evaluate_stage179_pre_adapter_gate(
     expected_official_version: str,
     expected_capital: int | float,
     expected_capital_label: str,
+    expected_execution_profile: str | None = None,
     environment: Mapping[str, str],
     confirmation: str,
     activation_receipt_path: Path | str | None,
@@ -186,6 +187,7 @@ def evaluate_stage179_pre_adapter_gate(
             expected_official_version=expected_official_version,
             expected_capital=expected_capital,
             expected_capital_label=expected_capital_label,
+            expected_execution_profile=expected_execution_profile,
             required_runtime_profile=resolved.profile,
             current_commit=_current_repo_commit(repo),
         )

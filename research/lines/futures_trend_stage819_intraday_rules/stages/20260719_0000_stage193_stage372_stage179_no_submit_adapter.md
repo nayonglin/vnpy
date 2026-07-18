@@ -1,0 +1,127 @@
+# Stage193 Stage372/20万接入 Stage179 执行可靠性链与 no-submit 资格闸门
+
+## 基本信息
+
+- 改动时间：2026-07-19 00:00 CST
+- 研究线：`futures_trend_stage819_intraday_rules`
+- 当前模式：day/night 共用的盘后预计算与会话执行适配
+- 工作区：`/Users/bytedance/Desktop/person/vnpy_stage179_live_reliability`
+- 分支：`codex/stage179-live-execution-reliability`
+- 基线提交：`699210f61`
+- 阶段性质：正式 Stage372/20万执行适配、最终 K 线意图预计算、语义资格闸门与离线可靠性验收
+- 是否重要突破版本：否。这是执行可靠性里程碑，不改变 alpha；当前只具备 no-submit 合入候选条件，尚不具备 SimNow 或实盘激活条件。
+- 是否触发 A/B：否。没有产生新策略版本，也没有调整 Stage372 的入场、止损、重进场、AI 池、选品、资金或仓位参数。
+- 实盘边界：未安装、加载或启动任何新增 LaunchAgent；未连接 CTP/SimNow，未调用真实报单或撤单 API，真实 `send=0/cancel=0`。
+
+## 外部调研与判断
+
+- 参考 vn.py 官方 `BaseGateway`、`EventEngine` 与 CTP gateway 实现，确认行情时间应在 gateway 入队前采集，策略与持久化 I/O 不应阻塞行情线程：
+  - <https://github.com/vnpy/vnpy/blob/master/vnpy/trader/gateway.py>
+  - <https://github.com/vnpy/vnpy/blob/master/vnpy/event/engine.py>
+  - <https://github.com/vnpy/vnpy_ctp>
+- 同时复核本线 Stage152 输入重建审计：旧 `tqsdk_main_contract_mapping_2020_2026_04.csv`、旧日线数据库/AI/pairwise 快照和 Stage149 执行代理 detail 当前无法复原；旧提交配当前输入也不能复现冻结收益。
+- 我的判断：Stage179 的入口时间、持久化、租约/CAS、故障恢复和预计算改造具有跨品种、跨周期价值，可按 no-submit 方式合入；但 Stage372 策略语义资格必须失败关闭。不能用当前重建回测冒充 Stage435 冻结基准，更不能通过调 alpha 参数贴历史曲线。
+
+## 本次变更
+
+### 新增
+
+- 新增 Stage372 冻结影子配置，绑定 `stage372-20w`、`official_live_stage372_20w_recovery_sleeve`、20万元与恢复袖套覆盖，不引入任何 C9 的 0.5R 实时止损/重进场逻辑。
+- 新增 Stage372 最终 K 线事件导出器，独立导出 canonical pending orders、trade events 和 entry candidates，订单 API 始终为 0。
+- 新增 16:35 盘后预计算 LaunchAgent 定义，只运行数据刷新、Stage372 决策和 pending audit，不运行 CTP preflight、账户 gate 或 executor；文件仅入库，未安装/加载。
+- 新增 `OFFICIAL_LIVE_SIGNAL_INPUT_DIR`，把盘后只读信号输入与每个会话的 runtime/output 目录隔离。
+- 发布清单升级到 schema v2，新增 `execution_profile` 与 `strategy_semantics_qualification={status,evidence_id}`；语义未通过时只允许 `offline/production-readonly`，禁止 `simnow/broker-test/production-live`。
+- 新增 Stage372 预计算、execution profile、release manifest、launchd 隔离与失败关闭回归测试。
+
+### 修改
+
+- Stage659 支持显式 `--execution-profile`，Stage372 决策补齐 profile、version、capital 和 capital label，避免下游身份门因字段缺失误拦截。
+- Stage260/902/903/905/909/930 使用 profile 绑定的 pending path；Stage930 仅显式 C9 profile 才启用 C9 detector fast lane，Stage372 保持 dormant。
+- Stage909 支持 `latest-completed`，Stage372 顺序固定为数据刷新、决策生成、pending audit，并使用当前解释器避免 worktree 缺失 `.py311`。
+- Stage914/931 在 CTP preflight 与提交边界校验 execution profile；profile、资金、版本或语义资格任一不一致均失败关闭。
+- Stage372 day/night plist 使用隔离 runtime/output 与共享只读 signal input，不改变现有调度时间，且未部署。
+
+### 删除
+
+- 删除 Stage372 走 C9 detector、C9 0.5R 实时止损/重进场和 C9 15万口径的隐式路径。
+- 删除 controller 对 Stage372 `profile_input_refresh_not_implemented` 的永久阻断；由独立盘后预计算链提供最终意图。
+- 未删除或修改任何策略 alpha 参数和正式历史基准。
+
+## 参数变化
+
+- 新增参数：`--execution-profile stage372-20w`、`--target-date-mode latest-completed`、`OFFICIAL_LIVE_SIGNAL_INPUT_DIR`、release manifest `strategy_semantics_qualification`。
+- 修改参数：Stage372 资金/版本身份显式固定为 `200000/20w` 与 `official_live_stage372_20w_recovery_sleeve`；会话 output/runtime 改为互相隔离。
+- 删除参数：Stage372 对 C9 profile、15万资金和 0.5R detector fast lane 的隐式继承。
+- 策略参数变化：无。
+
+## 回测/归因参数
+
+- 数据区间：2026-01-01 至当前可用日线（诊断复跑）；冻结比较点为 2026-06-09 Stage435 记录。
+- 账户规模：200,000。
+- 成本口径：沿 Stage372/Stage435 既有口径，不改滑点。
+- 样本过滤：不手工挑选 JM 或其他品种；只比较冻结记录和当前输入重建结果。
+- 策略/归因口径：只诊断输入可复现性，不把当前重建曲线晋升为正式基准。
+
+## 回测结果
+
+### 冻结 Stage435 期望基准
+
+- 期末权益：`204,470`
+- 总收益：`2.235%`
+- 最大回撤：`-16.3027%`
+- Sharpe：`0.3314`
+- 总滑点：`1,580`
+- 总交易次数：`23`
+- 胜率：`45.4545%`
+- JM 关键事件：`jm2609.DCE Short Close 2 @1360`，原因 `long_prev2day_stop`
+
+### 当前可用输入诊断复跑
+
+- 期末权益：`172,030`
+- 总收益：`-13.985%`
+- 最大回撤：`-25.502%`
+- Sharpe：`-1.183`
+- 总交易次数：`34`
+- 总滑点：本轮临时诊断产物未保留稳定 artifact，不作为候选指标。
+- 胜率：本轮临时诊断产物未保留稳定 artifact，不作为候选指标。
+- 关键差异：未复现上述 JM pending event。
+- 结论：当前结果与冻结基准显著不一致，原因落在 Stage152 已确认的历史输入快照不可复原；发布清单必须标记 `blocked`，当前结果不得覆盖或修改正式回测结果。
+- 新增回测结果：仅新增上述诊断对比，不形成新正式候选。
+- 修改回测结果：无。
+- 删除回测结果：无。
+
+## 执行可靠性验证
+
+- 精确执行回归：`650 passed, 243 subtests passed`，覆盖 28 个 Stage179/Stage372/Stage930/Stage931 执行模块，耗时 `69.79s`。
+- 60 秒性能门：20 合约、2000 tick/s、共 120,000 tick，`17/17` 检查通过；ingress p99/max `0.021541/0.449666ms`，EventEngine sentinel p99/max `0.749416/1.413875ms`，durable lag p99/max `62.999750/103.937958ms`，drain `0.054907s`，RSS 增量 `44.734375MiB`。
+- 性能证据：`/tmp/stage179-stage372-performance.*`；gate SHA-256 `24db1027cbe65bb9c078d8c8713f5f10c7d192ac6bacbf45cc0f26085baf457f`，ticks SHA-256 `0822ec5b8a136a9f0dedf3d7404e92def438e833c3b8725d1b8bd9818536ed21`。
+- 故障门：24 个故障场景、100 轮 API-slot fork race、100 轮双 executor process race 全部通过；每轮最多一个发送赢家/一次 fake physical send，真实 `send=0/cancel=0`。
+- 故障证据：`/tmp/stage179-stage372-fault.MkjQee`；process race SHA-256 `e8a6bc3207d08d723035d515209500bca303ec7f52f068c2b3b6da3b027e6688`。
+- plist：3 份 Stage372 plist 均通过 `plutil -lint`；修改/新增 Python 通过静态编译；`git diff --check` 通过。
+- Stage909 plan-only：正确解析最新已完成交易日 `2026-07-17`，profile/资金/命令均为 Stage372/20万，未运行命令、未连接 CTP、未报单。
+
+## 结论与硬门禁
+
+- 代码合入判断：执行适配和失败关闭边界可作为 no-submit 候选合入；最终结论仍以干净工作树 manifest 和独立 Agent 终审为准。
+- 部署判断：新增 plist 尚未安装/加载；合入不等于部署。
+- 激活判断：当前只允许离线和 `production-readonly`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
+- 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
+- 后续：生成干净树 no-submit manifest；独立 Agent 全面审查代码、证据与资格边界；修复 P0/P1；执行生产只读 CTP `0/0` 验收。未获得用户新的明确报单授权前，不做 SimNow smoke order。
+
+## 过拟合反思
+
+- 运行前判断：否。
+- 运行后判断：否。
+- 原因：本轮只治理时间因果、阻塞 I/O、持久化、身份、租约/CAS、故障恢复和资格闸门，没有按单晚 JM 结果或收益曲线调整 alpha。发现历史输入漂移后选择失败关闭，而不是调参数贴基准。
+
+## 继续价值反思
+
+- 运行前判断：是。
+- 运行后判断：是，但下一步价值集中在发布资格、独立审查和只读 CTP 证据，不在继续堆离线规则或反复跑不可复现的旧回测。
+- 原因：执行可靠性门已形成可复验的跨品种证据；剩余风险是策略语义来源与真实运行通路，边界明确且能用 fail-closed 控制。
+
+## 合入建议
+
+- 是否更新本线 `LINE.md`：否；同线并行按规则只新增唯一 stage 文件，待合入者统一整理。
+- 是否更新 `research/registry.md`：否。
+- 是否追加根目录 `memory.md/back_log.md`：否；尚未通过生产只读 CTP 与语义资格，不记为正式实盘候选里程碑。

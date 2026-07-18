@@ -56,9 +56,14 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         return build_release_manifest(
             repo_root=self.repo,
             release_id="stage179-test-release",
+            execution_profile="stage372-20w",
             official_version="official-v",
             capital=200_000,
             capital_label="20w",
+            strategy_semantics_qualification={
+                "status": "passed",
+                "evidence_id": "unit-test-anchor",
+            },
             source_commit=self.commit,
             critical_files=("a.py", "b.json"),
             allowed_runtime_profiles=(
@@ -99,6 +104,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             expected_official_version="official-v",
             expected_capital=200_000,
             expected_capital_label="20w",
+            expected_execution_profile="stage372-20w",
             required_runtime_profile=profile,
             current_commit=self._git("rev-parse", "HEAD").stdout.strip(),
             required_reader_capabilities=("intent_fingerprint_v2",),
@@ -123,6 +129,45 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
 
         self.assertEqual("stage179-test-release", loaded["release_id"])
         self.assertEqual(self.commit, loaded["source_commit"])
+
+    def test_manifest_rejects_execution_profile_mismatch(self) -> None:
+        write_release_manifest(self.manifest_path, self.payload())
+
+        with self.assertRaisesRegex(
+            ReleaseManifestError,
+            "release_manifest_execution_profile_mismatch",
+        ):
+            load_and_validate_release_manifest(
+                self.manifest_path,
+                repo_root=self.repo,
+                expected_official_version="official-v",
+                expected_capital=200_000,
+                expected_capital_label="20w",
+                expected_execution_profile="c9-15w-historical",
+                required_runtime_profile="offline",
+                current_commit=self._git("rev-parse", "HEAD").stdout.strip(),
+            )
+
+    def test_blocked_strategy_semantics_allows_readonly_but_not_submit_profiles(self) -> None:
+        payload = self.payload()
+        payload["strategy_semantics_qualification"] = {
+            "status": "blocked",
+            "evidence_id": "stage372-source-inputs-not-reproducible",
+        }
+        payload["allowed_runtime_profiles"] = [
+            "offline",
+            "production-readonly",
+            "simnow",
+        ]
+        self.reseal(payload)
+        write_release_manifest(self.manifest_path, payload)
+
+        self.validate(profile="production-readonly")
+        with self.assertRaisesRegex(
+            ReleaseManifestError,
+            "release_manifest_strategy_semantics_unqualified",
+        ):
+            self.validate(profile="simnow")
 
     def test_manifest_rejects_digest_version_capital_profile_or_capability_tamper(self) -> None:
         base = self.payload()

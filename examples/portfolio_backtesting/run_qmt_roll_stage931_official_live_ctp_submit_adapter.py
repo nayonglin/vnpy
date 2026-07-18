@@ -5301,6 +5301,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                 expected_official_version=execution_profile.official_version,
                 expected_capital=execution_profile.capital,
                 expected_capital_label=execution_profile.capital_label,
+                expected_execution_profile=execution_profile.profile_key,
                 environment=os.environ,
                 confirmation=args.confirm_stage179_activation,
                 activation_receipt_path=(
@@ -7126,6 +7127,7 @@ def run_serve(args: argparse.Namespace) -> int:
         expected_official_version=execution_profile.official_version,
         expected_capital=execution_profile.capital,
         expected_capital_label=execution_profile.capital_label,
+        expected_execution_profile=execution_profile.profile_key,
         environment=environment,
         confirmation=args.confirm_stage179_activation,
         activation_receipt_path=(args.stage179_activation_receipt or None),

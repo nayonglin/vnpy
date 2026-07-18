@@ -17,16 +17,18 @@ from qmt_roll_official_live_execution_ledger import (
 from qmt_roll_official_live_runtime_profile import ExecutionRuntimeProfile
 
 
-RELEASE_MANIFEST_SCHEMA_VERSION = 1
+RELEASE_MANIFEST_SCHEMA_VERSION = 2
 REQUIRED_V2_READER_CAPABILITY = "intent_fingerprint_v2"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 _MANIFEST_FIELDS = {
     "schema_version",
     "release_id",
+    "execution_profile",
     "official_version",
     "capital",
     "capital_label",
+    "strategy_semantics_qualification",
     "source_commit",
     "critical_files",
     "tree_fingerprint",
@@ -121,9 +123,11 @@ def build_release_manifest(
     *,
     repo_root: Path | str,
     release_id: str,
+    execution_profile: str,
     official_version: str,
     capital: int | float,
     capital_label: str,
+    strategy_semantics_qualification: Mapping[str, Any],
     source_commit: str,
     critical_files: Iterable[str | Path],
     allowed_runtime_profiles: Iterable[str | ExecutionRuntimeProfile],
@@ -134,11 +138,32 @@ def build_release_manifest(
 ) -> dict[str, Any]:
     repo = Path(repo_root).expanduser().resolve(strict=True)
     normalized_release_id = str(release_id).strip()
+    normalized_execution_profile = str(execution_profile).strip()
     normalized_version = str(official_version).strip()
     normalized_label = str(capital_label).strip()
     normalized_commit = str(source_commit).strip().lower()
-    if not normalized_release_id or not normalized_version or not normalized_label:
+    if (
+        not normalized_release_id
+        or not normalized_execution_profile
+        or not normalized_version
+        or not normalized_label
+    ):
         raise ReleaseManifestError("release_manifest_identity_missing")
+    qualification = dict(strategy_semantics_qualification)
+    if set(qualification) != {"status", "evidence_id"}:
+        raise ReleaseManifestError(
+            "release_manifest_strategy_semantics_qualification_invalid"
+        )
+    if qualification.get("status") not in {"passed", "blocked"}:
+        raise ReleaseManifestError(
+            "release_manifest_strategy_semantics_qualification_invalid"
+        )
+    if not isinstance(qualification.get("evidence_id"), str) or not str(
+        qualification["evidence_id"]
+    ).strip():
+        raise ReleaseManifestError(
+            "release_manifest_strategy_semantics_qualification_invalid"
+        )
     if type(capital) not in (int, float) or capital <= 0:
         raise ReleaseManifestError("release_manifest_capital_invalid")
     if not _COMMIT_RE.fullmatch(normalized_commit):
@@ -175,9 +200,11 @@ def build_release_manifest(
     core: dict[str, Any] = {
         "schema_version": RELEASE_MANIFEST_SCHEMA_VERSION,
         "release_id": normalized_release_id,
+        "execution_profile": normalized_execution_profile,
         "official_version": normalized_version,
         "capital": capital,
         "capital_label": normalized_label,
+        "strategy_semantics_qualification": qualification,
         "source_commit": normalized_commit,
         "critical_files": critical_rows,
         "tree_fingerprint": _tree_fingerprint(critical_rows),
@@ -262,6 +289,7 @@ def load_and_validate_release_manifest(
     expected_capital_label: str,
     required_runtime_profile: str | ExecutionRuntimeProfile,
     current_commit: str,
+    expected_execution_profile: str | None = None,
     required_reader_capabilities: Iterable[str] = (
         REQUIRED_V2_READER_CAPABILITY,
     ),
@@ -288,6 +316,14 @@ def load_and_validate_release_manifest(
         raise ReleaseManifestError("release_manifest_digest_mismatch")
     if payload.get("official_version") != expected_official_version:
         raise ReleaseManifestError("release_manifest_official_version_mismatch")
+    execution_profile = payload.get("execution_profile")
+    if not isinstance(execution_profile, str) or not execution_profile.strip():
+        raise ReleaseManifestError("release_manifest_execution_profile_invalid")
+    if (
+        expected_execution_profile is not None
+        and execution_profile != str(expected_execution_profile).strip()
+    ):
+        raise ReleaseManifestError("release_manifest_execution_profile_mismatch")
     if type(payload.get("capital")) not in (int, float) or payload.get("capital") != expected_capital:
         raise ReleaseManifestError("release_manifest_capital_mismatch")
     if payload.get("capital_label") != expected_capital_label:
@@ -306,6 +342,29 @@ def load_and_validate_release_manifest(
         or required_profile not in profiles
     ):
         raise ReleaseManifestError("release_manifest_runtime_profile_not_allowed")
+    qualification = payload.get("strategy_semantics_qualification")
+    if (
+        not isinstance(qualification, dict)
+        or set(qualification) != {"status", "evidence_id"}
+        or qualification.get("status") not in {"passed", "blocked"}
+        or not isinstance(qualification.get("evidence_id"), str)
+        or not qualification["evidence_id"].strip()
+    ):
+        raise ReleaseManifestError(
+            "release_manifest_strategy_semantics_qualification_invalid"
+        )
+    submit_profiles = {
+        ExecutionRuntimeProfile.SIMNOW.value,
+        ExecutionRuntimeProfile.BROKER_TEST.value,
+        ExecutionRuntimeProfile.PRODUCTION_LIVE.value,
+    }
+    if (
+        required_profile in submit_profiles
+        and qualification.get("status") != "passed"
+    ):
+        raise ReleaseManifestError(
+            "release_manifest_strategy_semantics_unqualified"
+        )
     ledger = payload.get("ledger_contract")
     if not isinstance(ledger, dict) or set(ledger) != {
         "schema_version",
