@@ -1,0 +1,35 @@
+examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_f63a725611e82e 34-38,81-130,132-133,139-149,220-315,340,365-375,501-502,517-527,557-558,600,638-647,665-674,717
+examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py
+  s_57fbbdfeac5414::t_742c58563f6e3c 148,160-174,186-193,195
+examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py
+  s_57fbbdfeac5414::t_b729289ec0f8a5 82-135,382,397-404,417-425,430,466-469
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_e10a4db7a194d7 86-137,3780,3932,3935
+tests/test_stage174_query_bundle.py
+  s_57fbbdfeac5414::t_d5da911ed8c079 297-303
+tests/test_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_b3d4230167e966 5,47-49,61-70,104-106,138-212,340,345-347,349,383-427
+tests/test_stage907_readonly_refresh_gate.py
+  s_57fbbdfeac5414::t_8ccf09c62b2468 52-95
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_60be9028d8522e 74-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "aebf148f86bdf0a0bd17c41042cc146bb2d1f345",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
