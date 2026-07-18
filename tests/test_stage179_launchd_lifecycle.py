@@ -236,13 +236,16 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
             daemon_path = temp / "cooperative.py"
+            ready_path = temp / "cooperative.ready"
             daemon_path.write_text(
-                "import signal,time\n"
+                "from pathlib import Path\n"
+                "import signal,sys,time\n"
                 "stop = False\n"
                 "def request_stop(*_):\n"
                 "    global stop\n"
                 "    stop = True\n"
                 "signal.signal(signal.SIGTERM, request_stop)\n"
+                "Path(sys.argv[1]).write_text('ready', encoding='utf-8')\n"
                 "while not stop:\n"
                 "    time.sleep(0.01)\n",
                 encoding="utf-8",
@@ -259,13 +262,18 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
                 }
             )
             supervisor = subprocess.Popen(
-                [str(SUPERVISOR)],
+                [str(SUPERVISOR), str(ready_path)],
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 env=environment,
             )
-            time.sleep(0.2)
+            deadline = time.monotonic() + 5
+            while not ready_path.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertTrue(
+                ready_path.exists(), "cooperative daemon never became signal-ready"
+            )
             supervisor.send_signal(signal.SIGTERM)
             output, _ = supervisor.communicate(timeout=4)
 
