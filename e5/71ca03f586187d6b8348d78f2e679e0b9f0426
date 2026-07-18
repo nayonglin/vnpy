@@ -1,0 +1,21 @@
+research/lines/futures_trend_stage819_intraday_rules/stages/20260718_2017_stage190_stage179_task10_warm_executor.md
+  s_57fbbdfeac5414::t_e66c43bfe1c2a8 1-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e571ca03f586187d6b8348d78f2e679e0b9f0426",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

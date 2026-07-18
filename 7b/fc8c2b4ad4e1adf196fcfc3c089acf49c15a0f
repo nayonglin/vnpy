@@ -1,0 +1,23 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_813da666db4617 11,173
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_f6b1d9c041c187 302-305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7bfc8c2b4ad4e1adf196fcfc3c089acf49c15a0f",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

@@ -1,0 +1,23 @@
+examples/portfolio_backtesting/release_manifests/stage179/stage372-candidate.json
+  s_57fbbdfeac5414::t_37758f04708f70 8,17-18,22-23,177-178,202-203,215-219,242-243,262-263,292-293,302-303,335-339,342-343,362,364,366,371
+research/lines/futures_trend_stage819_intraday_rules/stages/20260719_0000_stage193_stage372_stage179_no_submit_adapter.md
+  s_57fbbdfeac5414::t_222cce9b2eb005 190-206,209,211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c843626e542dfb1fa5067175a3f8e29e734f41a1",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

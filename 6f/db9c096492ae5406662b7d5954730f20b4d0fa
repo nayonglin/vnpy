@@ -1,0 +1,21 @@
+research/lines/futures_trend_stage819_intraday_rules/stages/20260715_1813_stage181_stage179_task2_followup_crash_consistency.md
+  s_57fbbdfeac5414::t_a7428717326bdf 11,74,87,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6fdb9c096492ae5406662b7d5954730f20b4d0fa",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

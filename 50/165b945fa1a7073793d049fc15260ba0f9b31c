@@ -1,0 +1,163 @@
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist
+  s_6727c0fbd65ee1::t_bd37529b507906 7-8,11
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist
+  s_6727c0fbd65ee1::t_e87f6fbeafa33f 7-8,11
+examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py
+  s_57fbbdfeac5414::t_88f3f855bb55f6 1-1111
+examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py
+  s_099a9133e18cb8::t_79792c2dfb0ec6 6-7,18-49,62-63,73-100,161-231,243-292,310-326,330,332-338,340-365,370-380,385,390,392-419,425,433-543,553-555,559,562-660,662-663,666-677,679-846,858-917,924-925,929,931-933,936-944,948-949,953-954,958-1040,1043-1063,1092-1626,1634,1637-1647,1654-1659
+examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py
+  s_7d2e0606f09acf::t_76a64cb743aaac 1-823
+examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py
+  s_7d2e0606f09acf::t_3de00e67934e9b 23-27
+examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py
+  s_3b7334af3925f6::t_3fd7a2bd514afc 4,8,11,21-29,46-51,189,193-638,680-684,705-709,726,750-762,767-768,791-793,823-834,837-838,841-844,847,850-851,854-860,862-923,942,944,948,950,972-983,992-1134,1138,1170-1181,1184-1288,1294,1320-1451
+examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py
+  s_57fbbdfeac5414::t_e8f45009cc38bd 4-5,9-10,12-13,35-83,95-96,252-396,417-418,424,427,437-444,651-890,894,899-905,909-926
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_3c2651e0d9b9ab 747-771,1480-1482,1485,1490-1493,1495,1498,1753-1758
+examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py
+  s_57fbbdfeac5414::t_34170a224637ae 4-6,8-11,18-55,63-64,66,81-92,104-146,155-157,170-172,179-192,197-1157,1196-1203,1270-1284,1287-1302,1307-1309,1311-1312,1320-1328,1332-1336,1338-1486,1490,1494-1498,1545-1546,1587,1607-1610,1627,1673-1675,1678,1727-1736,1800-1819,1825,1832,1840-1843,1845-1850,1926-1927,2009-2011,2013-2019,2024,2054-2055,2062-2063,2067,2094-2096,2109-2195,2203-2209,2217-2218,2220-2224,2227-2230,2243-2250,2276-2282,2291-2292,2342-2348,2352-2385,2423-3952,4019-4022,4024-4041,4043-4051,4055-4062,4064-4069,4072-4090,4092-4096,4107-4109,4111,4113-4179,4185-4186,4197,4213,4215-4220,4223-4240,4250-4252
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_15c2fd0f99449e 6,15-19,39,43-66,115-119,134-145,158-171,392,396-398,402-403,408-443,542-544,558,561-568,571-573,590,593-600,619,622,668,697-736,769,773,775-776,847-849,936-953,956,965,978,1023-1025
+examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py
+  s_6905d6c36d6612::t_c7c56988883fa0 1130-1142
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_8cc4802be6f367 4,13-14,16,39-40,54-55,59,62-63,74-104,156-163,208-449,459,470-483,533-638,646-654,665-1005,1007-1008,1044-1288,1312-1313,1332-1352,1377-1394,1416-1428,1433-1439,1454-1455,1457-1469,1581-1582,1584-1585,1595,1638-1649,1973,1983-1998,2015,2036-2054,2063-2081,2084,2086,2088-2089,2097,2101,2115,2125-2130,2132-2136,2138-2143,2145-2149,2216-2219,2221-2222,2300,2367-2409,2413-2421
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh
+  s_9932ec8543a103::t_8018133391363a 4-8,15-54,71,85-98,100,110-120
+examples/portfolio_backtesting/run_qmt_roll_stage930_owned_child_guard.py
+  s_76feb16af438cb::t_e2bc0111a6df37 1-176
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_5f87f671c723bc 8,10-11,14-15,26-27,42,58-62,82-153,255-271,353-386,397-621,623-639,643-645,647-668,671,675-680,682,684-711,715-733,736-745,748-853,855-862,865-875,877-895,897-918,920-933,935-950,952-1006,1008-1010,1013-1023,1025-1042,1044-1064,1066-1103,1105-1150,1152-1154,1157-1160,1162-1797,1802,1853,1862,1864-1878,1881,1895-1896,1900-1901,1916-1923,1925,1934,1936,1955-1999,2001,2003,2005,2007,2045-2096,2122-2134,2165,2168-2182,2185-2194,2197,2200-2262,2270-2271,2274-2279,2281,2289-2293,2295-2302,2313-2597,2599,2602-2606,2612-2711,2720-2816,2830-3025,3041-3164,3178-3216,3361-4001,4008-4018,4020-4025,4031-4045,4050-4056,4061-4064,4073-4093,4097,4104-4105,4107-4114,4120-4128,4139-4150,4167,4173-4183,4203-4204,4222-4225,4230-4232,4236-4279,4291-4296,4299,4310-4317,4334,4345,4365-4406,4413,4415,4423,4426,4428-4429,4432-4535,4540-4545,4547-4691,4716-4722,4725-4732,4735-4758,4766,4768,4774-4811,4814-4828,4831-4839,4842-4860,4862-4868,4871-4879,4882-4887,4890-4909,4911-4919,4923,4927,4930-4934,4937-4938,4951-4952,4968-4969,4980-5023,5030-5035,5043-5047,5053,5064,5071-5076,5078-5082
+research/lines/futures_trend_stage819_intraday_rules/stages/20260713_2220_stage179_c9_live_execution_reliability_hardening.md
+  s_57fbbdfeac5414::t_a301722d9238d8 1-144
+tests/test_official_live_c9_intraday_state.py
+  s_4a459b6d0c007d::t_62431d9fa92cb1 1-490
+tests/test_official_live_execution_ledger_cycles.py
+  s_099a9133e18cb8::t_5be7d9a498b198 1-1880
+tests/test_official_live_late_retry_fill.py
+  s_3b7334af3925f6::t_5c61621ed8d555 1-535
+tests/test_stage174_query_bundle.py
+  s_787a457c9239e4::t_585757340a5ce4 1-207
+tests/test_stage608_continuous_tick_stream.py
+  s_4b184203c00059::t_38a05a4ecea0c6 1-255
+tests/test_stage904_durable_state_integration.py
+  s_099a9133e18cb8::t_e6a04081985370 1-2982
+tests/test_stage905_c9_cycle_intents.py
+  s_57fbbdfeac5414::t_e57dbbc3ca7ca1 1-194
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_3267ba689124f8 1-1012
+tests/test_stage931_ctp_readiness.py
+  s_b78cfed73c1d2c::t_534c9c440f8763 1-1246
+tests/test_stage931_post_reprice_final_gate.py
+  s_57fbbdfeac5414::t_38db3d39b436d9 1-501
+tests/test_stage931_trade_fill_accounting.py
+  s_57fbbdfeac5414::t_09cc0d35de88be 1-1826
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "50165b945fa1a7073793d049fc15260ba0f9b31c",
+  "prompts": {},
+  "sessions": {
+    "s_099a9133e18cb8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5ca3-e92f-7c82-ae42-2cc7b67a40ab",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_3b7334af3925f6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c5e-d0ab-7ee2-ad3a-c1a2da119afe",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_4a459b6d0c007d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5bff-a98f-7840-921b-5898e69f7d11",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_4b184203c00059": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c89-75cc-7f51-9377-18034b5e700c",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_6727c0fbd65ee1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c25-72fa-7b62-9456-f29c2bdb4a31",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_6905d6c36d6612": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5bee-f01f-7712-a06e-005ccb73d373",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_76feb16af438cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c45-cdce-78e0-ac3f-9e6cf8d3ba81",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_787a457c9239e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c63-0d12-76f2-a458-815946c41840",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_7d2e0606f09acf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1692-4a55-7962-8ce8-c454f47b8fe1",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_9932ec8543a103": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c26-861a-7b20-92d6-6c2b0e441101",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_b78cfed73c1d2c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c91-1c60-7761-b757-a5015dbadddd",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

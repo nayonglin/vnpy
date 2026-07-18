@@ -1,0 +1,35 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_d0a970f509b51a 1-192
+examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py
+  s_57fbbdfeac5414::t_b648a17f1c401d 7-8,20-24
+examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py
+  s_57fbbdfeac5414::t_f58d84da925667 1-389
+examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py
+  s_57fbbdfeac5414::t_755fe77d722cc0 1-212
+examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py
+  s_57fbbdfeac5414::t_685b8aba138ad8 4-5,10,13,17-32,37,61-234,392-399
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_88e5ebfe36206b 19-24,51-59,4443-4463,4640-4708,5582
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_ef72b9ef08e579 1-270
+tests/test_stage179_runtime_profile.py
+  s_57fbbdfeac5414::t_7668c9450565cd 1-370
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fce8d85b381af1ad39d12ef9552bb6650964cdf4",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

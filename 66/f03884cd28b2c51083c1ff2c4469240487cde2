@@ -1,0 +1,37 @@
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_2f29e65338c389 22-25,31,54,74,76-79,219-223,226,230-232
+examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py
+  s_57fbbdfeac5414::t_e0dc5ee8667551 13,128,149,258,281
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_2e6257d21e66ee 1349-1354,1641-1646
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_f62ce6c3616d54 2098-2099,2192-2193,2457,2484
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_267ad42dde4df7 23-27,3399-3414,3494-3507,3558-3619,5024-5028,5106-5119,5121,5193-5209,5301-5303,6152-6156,6353,6392,6730-6732,6962-6963,7064,7126-7128
+tests/test_stage179_executor_serve.py
+  s_57fbbdfeac5414::t_21f367398e8abd 333
+tests/test_stage179_stage372_submit_boundary.py
+  s_57fbbdfeac5414::t_477e3609c67777 1-80
+tests/test_stage179_submit_authorization.py
+  s_57fbbdfeac5414::t_12624b17c818d1 32,78,101-104
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_4aa6c8429e2b77 326,404
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "66f03884cd28b2c51083c1ff2c4469240487cde2",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

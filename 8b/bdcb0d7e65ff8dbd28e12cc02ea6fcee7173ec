@@ -1,0 +1,21 @@
+research/lines/futures_trend_stage819_intraday_rules/stages/20260718_2040_stage191_stage179_task11_crash_recovery.md
+  s_57fbbdfeac5414::t_4c3e402a3cb00c 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8bbdcb0d7e65ff8dbd28e12cc02ea6fcee7173ec",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

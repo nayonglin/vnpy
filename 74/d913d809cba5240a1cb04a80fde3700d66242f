@@ -1,0 +1,27 @@
+examples/portfolio_backtesting/qmt_roll_official_execution_profile.py
+  s_57fbbdfeac5414::t_73a8f0e3096e01 170-182,200
+examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py
+  s_57fbbdfeac5414::t_a4c986630bafba 16,326,352
+examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py
+  s_57fbbdfeac5414::t_f6334749fecaaf 17,493
+tests/test_stage179_stage260_execution_profile.py
+  s_57fbbdfeac5414::t_c083c7dabd3a8e 22,48-53,290,297-329
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "74d913d809cba5240a1cb04a80fde3700d66242f",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

@@ -1,0 +1,25 @@
+examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py
+  s_57fbbdfeac5414::t_539bbc4073d3a2 4,31-39,52,102-152,154,158-159,166,175,190-193,216,218,223-226
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_69f33887553c76 21,443-471,1524-1526
+tests/test_stage179_stage372_daemon_boundary.py
+  s_57fbbdfeac5414::t_4625560ea81b0b 154-205,219-220,248-253,265-269,271-275,283-287,290-297,306-316,328-346
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d953368337bc2f0ceeae4581ef91f4dfcc6b937c",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

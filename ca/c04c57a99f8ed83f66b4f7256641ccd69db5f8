@@ -1,0 +1,21 @@
+research/lines/futures_trend_stage819_intraday_rules/stages/20260718_1935_stage189_stage179_task9_runtime_release_gates.md
+  s_57fbbdfeac5414::t_1ffc4f68a7b407 1-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cac04c57a99f8ed83f66b4f7256641ccd69db5f8",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

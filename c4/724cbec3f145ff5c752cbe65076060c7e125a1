@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-07-14-stage179-live-execution-latency-reliability.md
+  s_57fbbdfeac5414::t_eb9b9c3adacfd7 1-1187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c4724cbec3f145ff5c752cbe65076060c7e125a1",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

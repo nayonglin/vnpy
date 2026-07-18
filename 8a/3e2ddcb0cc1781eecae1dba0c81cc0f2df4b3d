@@ -1,0 +1,23 @@
+examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py
+  s_57fbbdfeac5414::t_e7350d4733bf85 893-957,965-970
+tests/test_stage904_durable_state_integration.py
+  s_57fbbdfeac5414::t_52cb6248f4918a 2460-2579,2625-2627,2633-2635
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8a3e2ddcb0cc1781eecae1dba0c81cc0f2df4b3d",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

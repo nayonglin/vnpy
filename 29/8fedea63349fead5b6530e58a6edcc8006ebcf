@@ -1,0 +1,27 @@
+examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py
+  s_57fbbdfeac5414::t_4482d86bee5624 52,2541-2543
+examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py
+  s_57fbbdfeac5414::t_4094645e0ab1df 87,898,915-928,977,982,2681,2892,3757,3951-3953,3991-3993
+tests/test_stage608_continuous_tick_stream.py
+  s_57fbbdfeac5414::t_70482e48c67a36 833-836
+tests/test_stage904_durable_state_integration.py
+  s_57fbbdfeac5414::t_9a4c28371a46f0 244,407,461,477-479,1985,2028,2487,2525-2690,2697,2732,2794,2899
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "298fedea63349fead5b6530e58a6edcc8006ebcf",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

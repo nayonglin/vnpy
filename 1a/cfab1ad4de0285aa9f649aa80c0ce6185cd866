@@ -1,0 +1,51 @@
+examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py
+  s_57fbbdfeac5414::t_eed6ed83d18fe1 7,9,18-20,35-43,71-150,386-391,393,396-419,421-425,500,509-510
+examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py
+  s_57fbbdfeac5414::t_274fe9d0922061 1-230
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist
+  s_57fbbdfeac5414::t_b021c5e3156e54 50-51
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist
+  s_57fbbdfeac5414::t_1a46050697a231 50-51
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist
+  s_57fbbdfeac5414::t_b7e8556f55edfa 1-51
+examples/portfolio_backtesting/qmt_roll_official_execution_profile.py
+  s_57fbbdfeac5414::t_1791d42dee33b8 16-18,39,56-59,61-64,72,88,97,113
+examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py
+  s_57fbbdfeac5414::t_a2aabc2e4b5dda 1-62
+examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py
+  s_57fbbdfeac5414::t_1667801787b20b 456,630
+examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py
+  s_57fbbdfeac5414::t_b64d496405e48d 254,393,398
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_9410c6366ad461 329,342-343,1073,1081,1410,1473-1481,1484,1844
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_e392dfefc33674 1598
+examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py
+  s_57fbbdfeac5414::t_2801bab784587f 7,14-17,19,24-26,36-38,123-130,134,147,149-150,158-172,216-227,229,234-244,247,249-262,286-295,327-345,352,360-362,364-369,376
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_67de71a9b812e2 726-728,1714-1723
+tests/test_stage179_launchd_lifecycle.py
+  s_57fbbdfeac5414::t_2bb70201278c5a 76,101-105,111-114,122-154
+tests/test_stage179_official_execution_profile.py
+  s_57fbbdfeac5414::t_a8d919dbdc3456 19,44,100-109
+tests/test_stage179_stage372_shadow_precompute.py
+  s_57fbbdfeac5414::t_5cb2f856d5c2cc 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1acfab1ad4de0285aa9f649aa80c0ce6185cd866",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
