@@ -1,0 +1,37 @@
+examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_4cdd6e5c7459e2 1-547
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_1d62994cedd493 51,86-87
+examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py
+  s_57fbbdfeac5414::t_e2a2ce26ad5e54 96,2670
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_a8f28f0abd114c 1704-1705,1738-1739
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_57fbbdfeac5414::t_66fb0459e68453 1476-1480,1484-1485,1487-1492,1699-1700,1702-1703,1761-1765,1767-1774,1791-1792,1794-1805,1832-1833,1835-1838,1870-1871,1873,1878-1883,1885-1891,1904-1905,1907-1910,1932-1933,1935,1965-1970,1974-1982,2022-2023,2025-2028,2189-2197,3161-3284,3286,3386-3390,3416-3444,3447-3455,3466-3467,3469-3472,3578,3580-3581,3753,3762-3766,3773-3774,3776-3779,3786-3793,3795-3812,3816-3821,3831-3832,3834-3838,3843-3845,3916-3921,3925-3945,3948-3955,3957-3974
+tests/test_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_7aa63139e9bc59 1-291
+tests/test_stage179_release_manifest.py
+  s_57fbbdfeac5414::t_d02bbab1c8147d 84,95-96
+tests/test_stage608_continuous_tick_stream.py
+  s_57fbbdfeac5414::t_6e5e990259332f 4675,4695,4707
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_4f84d492649380 114-255,296-297,304-308,334-342
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "eaa62fa609b2041987132a73d811dcf376d56a5d",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
