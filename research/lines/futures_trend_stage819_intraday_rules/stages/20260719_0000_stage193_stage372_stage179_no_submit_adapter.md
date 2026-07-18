@@ -249,9 +249,27 @@
 - 过拟合反思：运行前“否”，运行后仍“否”；并发锁和证据提交边界与 JM 单晚收益、品种、方向、阈值均无关。
 - 继续价值反思：运行前“是”，运行后仍“是”；本地可修复的两个 P2 已收口，下一步最高价值明确转为 5 场真实 production-readonly canary，不继续堆离线规则。
 
+### 2026-07-19 04:20-04:52 canonical 提交、teardown 防火墙与最终冻结
+
+- 改动时间：2026-07-19 04:20-04:52 CST；是否重要突破版本：否。本轮收口只读证据提交与 teardown 的最后安全窗口，不改变策略 alpha、资金、开仓、止损、重进场或 AI 池参数。
+- 外部调研：重新核验 POSIX/Open Group `rename` 与 Python 3.11 `os.replace` 官方语义。结论是原子性只覆盖单个目录项替换，不存在跨 summary/report/heartbeat/event 的多文件事务；因此以 run-scoped summary 作为唯一 canonical commit point，latest/report/heartbeat/event 全部降为提交后的辅助投影。来源：`https://pubs.opengroup.org/onlinepubs/9799919799/functions/rename.html`、`https://docs.python.org/3.11/library/os.html`。
+- Stage930 一次性重连观察现在先把 cycle 从 pending 转为 consumed，再只写 run-scoped canonical summary；canonical 写失败会回滚 pending 和 once，canonical 成功后 once 不再回滚。committed event 明确记录 `pending=0/consumed=1`，event 与 auxiliary 输出分别独立尝试，任一失败不阻止另一项，也不再终止 daemon 或触发重复 once。
+- 普通 `_write_outputs()` 同样统一为“canonical 失败才上抛”；canonical 成功后的 latest/report/heartbeat 故障只返回并写入内存 `post_commit_output_errors`。唯一保留 P2 是本次 auxiliary 故障发生在 canonical 提交之后，错误列表不一定已经持久化到该次 canonical；这是诊断完整性问题，不影响只读安全、once commit 或 qualification proof。
+- Stage174 在 mutation firewall 仍安装时关闭 evidence window，并在同一锁域冻结 counters、rows、query requests、connection lifecycle 与 settlement；所有权威证据 deep-copy 完成后才恢复原方法。freeze 后旧 bound wrapper 与 fresh method lookup 都继续失败关闭且不得修改 counters，彻底消除“restore 后、freeze 前可直接调用 original 但仍留下 `0/0`”的 P1 窗口。
+- firewall 安装前一次性快照所有 owner 的原方法及“是否为 owner 自有属性”；恢复时自有方法用 `setattr`，继承方法删除临时子类属性，类 `__dict__` 和继承结构均精确还原。该修复同时关闭了先 patch 父类再误把 wrapper 记录为子类 original 的恢复缺陷。
+- TDD 红测：第一轮 4 个缺失接口/语义测试稳定失败；独立审查发现 fresh lookup P1 后新增 5 个对抗测试稳定失败；继承结构和普通输出故障再新增 2 个红测稳定失败。对应实现完成后，Stage174/930 文件回归最终 `82 passed, 4 subtests passed`。
+- 扩大执行链最终回归：`753 passed, 245 subtests passed`，耗时 `75.49s`。此前一轮 SIGTERM 子进程启动用例单次超时，单独重放 `1 passed`，随后完整同组重跑全绿；没有修改超时或降低断言。manifest/只读链最终聚焦回归 `123 passed, 13 subtests passed`。Python compile、`git diff --check` 与 3 份 Stage372 plist lint 全部通过；环境无 `ruff`，不声称 ruff 通过。
+- 源码提交 `ba8799fd60b35258a8e4e9e4a8930c8983ef9f81`；从干净 detached source 生成 68 个唯一 critical files 的 schema v2 readonly/no-submit manifest。release id `stage179-stage372-readonly-ba8799fd6`，内部 digest `b9edeec12877b2093130549ed8b9fd392b1708ff82036e820523ac4b8aa2b73d`，文件 SHA-256 `dcb0e9ef43e127ee554867f629674c76ef1b47828a50cc4629b7f31b5766b3a2`，冻结提交 `b081b5258f9470bdae4a16518bb0510dd9ae5ed1`。
+- 实际 loader 验证：`offline`、`production-readonly` 接受；`simnow`、`broker-test`、`production-live` 全部以 `release_manifest_runtime_profile_not_allowed` 拒绝；Stage372 strategy semantics 保持 `blocked`。
+- 独立 Agent 三轮对抗审查依次为 `P0=0/P1=1/P2=2`、`P0=0/P1=0/P2=2`、最终 `P0=0/P1=0/P2=1`。最终独立聚焦回归 `132 passed, 13 subtests passed`，68/68 source blob SHA/size、builder 集合、manifest digest、文件 SHA、tree fingerprint、source direct-parent、官方 loader、compile/diff/plist 全部通过。裁决：代码合入与 production-readonly 采证部署 `GO`；production-readonly 验收、SimNow/broker-test、production-live 均 `NO-GO`。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有安装、加载、kickstart 或停止 LaunchAgent、没有调用真实报单或撤单 API。
+- 延迟判断：代码层已去除固定重连观察等待、阻塞辅助输出和 teardown 证据竞争三类结构性风险，可以合入并进入只读采证；但还没有 5 场真实 LaunchAgent/CTP 会话及真实 `20:55→21:00` 时间戳，不能宣称今天的线上端到端延迟已被实盘验证解决。
+- 过拟合反思：运行前“否”，运行后仍“否”；所有改动都是跨品种的持久化、并发、原子提交和 fail-closed 不变量，没有按 JM 单晚结果调参。
+- 继续价值反思：运行前“是”，运行后仍“是”；离线继续堆规则的边际价值已经很低，下一步最高价值是 5 场 production-readonly 严格 `0/0` canary 和真实 20:55→21:00 延迟验收。
+
 ## 结论与硬门禁
 
-- 代码合入判断：冻结候选 `a5b5653cd` 已完成独立终审，结果 `P0=0、P1=0、P2=3`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
+- 代码合入判断：冻结候选 `b081b5258` 已完成独立终审，结果 `P0=0、P1=0、P2=1`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
 - 激活判断：release manifest 只允许离线和 `production-readonly`；可以部署只读链路采证，但 production-readonly 验收仍缺五场真实会话及一次完整断线重连，当前验收为 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后预计算与正常 readonly refresh 的提前返回已经消除两类代码层结构性等待，一次性重连观察只在预启动采证；但真实只读 CTP 与 LaunchAgent 时间戳证据完成前，不能宣称已解决线上端到端延迟。
