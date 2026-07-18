@@ -258,8 +258,10 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
         stage930_source = (
             PORTFOLIO_DIR / "run_qmt_roll_stage930_official_live_c9_session_daemon.py"
         ).read_text(encoding="utf-8")
-        self.assertNotIn('"--stage179-warm-executor"', stage930_source)
-        self.assertNotIn('"--stage179-release-manifest"', stage930_source)
+        self.assertIn('"--stage179-warm-executor"', stage930_source)
+        self.assertIn('"--stage179-execution-mode"', stage930_source)
+        self.assertIn('"--release-manifest"', stage930_source)
+        self.assertIn('"--confirm-stage179-activation"', stage930_source)
 
     def test_production_readonly_does_not_require_activation_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

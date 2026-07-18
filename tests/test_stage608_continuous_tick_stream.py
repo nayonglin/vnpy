@@ -5134,6 +5134,33 @@ class ContinuousTickStreamTest(unittest.TestCase):
             [1],
         )
 
+    def test_writer_eager_flushes_high_rate_batch_before_50ms_deadline(self) -> None:
+        from qmt_roll_official_live_tick_journal import (
+            AsyncTickJournalWriter,
+            EAGER_FLUSH_BATCH_SIZE,
+        )
+        from qmt_roll_official_live_tick_stream import TickStreamPipeline
+
+        pipeline = TickStreamPipeline(
+            feed_session_id="feed-eager-batch",
+            journal_segment_path=Path("unused-eager-batch.ndjson"),
+            clock=stage608.SystemClock(),
+            queue_capacity=EAGER_FLUSH_BATCH_SIZE,
+            max_buffer_ticks=EAGER_FLUSH_BATCH_SIZE,
+            writer_batch_size=256,
+            writer_flush_seconds=0.050,
+        )
+        for index in range(EAGER_FLUSH_BATCH_SIZE):
+            pipeline.capture_ingress(self._ingress_tick(float(index + 1)))
+        writer = AsyncTickJournalWriter(pipeline)
+
+        started = time.monotonic()
+        batch = writer._next_batch()
+        elapsed = time.monotonic() - started
+
+        self.assertEqual(EAGER_FLUSH_BATCH_SIZE, len(batch))
+        self.assertLess(elapsed, 0.020)
+
     def test_writer_error_latches_fault_and_rejects_ready_heartbeat(self) -> None:
         from qmt_roll_official_live_tick_stream import TickStreamPipeline
 

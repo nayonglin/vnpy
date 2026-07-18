@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 from queue import Empty
-from typing import Any, Mapping
+from typing import Any
 from contextlib import contextmanager
 import errno
 import fcntl
@@ -23,6 +24,7 @@ from qmt_roll_official_live_tick_types import (
 
 MAX_JOURNAL_LINE_BYTES = 4 * 1024 * 1024
 MAX_JOURNAL_BATCH_BYTES = 4 * 1024 * 1024
+EAGER_FLUSH_BATCH_SIZE = 64
 
 
 def _clean(value: Any) -> str:
@@ -242,14 +244,22 @@ class AsyncTickJournalWriter:
         batch = [first]
         deadline = time.monotonic() + self.pipeline.writer_flush_seconds
         while len(batch) < self.pipeline.writer_batch_size:
-            if self._stop_requested.is_set():
-                timeout = 0.0
-            else:
-                timeout = max(0.0, deadline - time.monotonic())
             try:
-                item = queue.get_nowait() if timeout <= 0 else queue.get(timeout=timeout)
+                item = queue.get_nowait()
             except Empty:
-                break
+                if (
+                    self._stop_requested.is_set()
+                    or len(batch)
+                    >= min(EAGER_FLUSH_BATCH_SIZE, self.pipeline.writer_batch_size)
+                ):
+                    break
+                timeout = max(0.0, deadline - time.monotonic())
+                if timeout <= 0:
+                    break
+                try:
+                    item = queue.get(timeout=timeout)
+                except Empty:
+                    break
             batch.append(item)
         return batch
 

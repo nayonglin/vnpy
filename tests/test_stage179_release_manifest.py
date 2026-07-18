@@ -72,6 +72,23 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             reader_capabilities=("intent_fingerprint_v2",),
         )
 
+    def test_default_manifest_covers_runtime_and_deployment_boundary(self) -> None:
+        required = {
+            "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
+            "examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py",
+            "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
+            "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
+            "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
+            "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
+            "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
+        }
+
+        self.assertTrue(required.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
+
     def validate(self, path: Path | None = None, *, profile: str = "offline") -> dict[str, object]:
         return load_and_validate_release_manifest(
             path or self.manifest_path,

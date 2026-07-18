@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import subprocess
-from typing import Iterable
 
 from qmt_roll_official_live_execution_ledger import (
     INTENT_FINGERPRINT_VERSION_V2,
@@ -26,21 +26,42 @@ REPO_ROOT = PROJECT_DIR.parent.parent
 DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_time.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_trace.py",
     "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
+    "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
+    "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
+    "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage927_official_live_real_submit_arming_gate.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
+    "examples/portfolio_backtesting/run_qmt_roll_stage930_owned_child_guard.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage930_supervisor_child.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
 )
 
 
@@ -49,8 +70,7 @@ def _git(repo_root: Path, *args: str) -> str:
         ["git", *args],
         cwd=repo_root,
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     if result.returncode != 0:
@@ -64,8 +84,7 @@ def _git_blob(repo_root: Path, source_commit: str, path: str) -> bytes:
     result = subprocess.run(
         ["git", "show", f"{source_commit}:{path}"],
         cwd=repo_root,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     if result.returncode != 0:
