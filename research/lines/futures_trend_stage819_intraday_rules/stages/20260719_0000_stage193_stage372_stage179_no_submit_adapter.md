@@ -267,10 +267,28 @@
 - 过拟合反思：运行前“否”，运行后仍“否”；所有改动都是跨品种的持久化、并发、原子提交和 fail-closed 不变量，没有按 JM 单晚结果调参。
 - 继续价值反思：运行前“是”，运行后仍“是”；离线继续堆规则的边际价值已经很低，下一步最高价值是 5 场 production-readonly 严格 `0/0` canary 和真实 20:55→21:00 延迟验收。
 
+### 2026-07-19 04:53-05:28 clean master 集成重建、C9 身份修复与最终重冻结
+
+- 改动时间：2026-07-19 04:53-05:28 CST；是否重要突破版本：否。这是发布分支污染隔离、测试可移植性、既有 C9 策略身份保护和冻结链重建，不改变策略 alpha、资金、开仓、止损、重进场或 AI 池参数。
+- 合入审计发现原 Stage179 worktree 的分支基于含未合入 Stage130 研究的祖先提交；若直接合入 `master` 会带入 158 个文件及约 10.9 万行无关 Stage130-134、紧止损研究和历史分钟 CSV。为避免把执行可靠性候选与无关研究捆绑，已从 clean `master` `a2cffba007e2f0afee9d447f689080af04052b0c` 新建隔离分支 `codex/stage179-live-execution-integration`，按 Stage179 提交边界迁移 89 个提交，零冲突。
+- clean 集成分支相对 `master` 仅有 102 个 Stage179/Stage372 相关文件；`533fa961...` 不是当前 HEAD 的祖先，路径扫描未发现 Stage130-134、tight-stop、SH609、SM609 或 lh2609 历史 CSV 污染。既有 Stage847-C9/15万官方配置和两份 C9 plist 没有被换绑到 Stage179 execution mode、activation confirm 或 Stage372 profile。
+- clean `master` 基线在标准隔离环境 `QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR=1` 下为 `31 passed`。迁移后发现 supervisor cooperative child 用例会在子进程 SIGTERM handler 就绪前发送信号；修复为由受管 daemon 写 ready marker 后再发送 SIGTERM，连续 20 次重放通过，文件回归 `7 passed, 2 subtests passed`。该改动只消除测试竞态，不放宽生产超时或断言。
+- 独立预审发现 output-root import-time 隔离测试的子进程继承共享解释器时未显式设置 worktree guard override，导致测试依赖调用方环境。修复后子进程局部设置标准隔离变量，裸跑该文件仍为 `7 passed, 2 subtests passed`；不改变生产 runtime guard。
+- 第一次 clean 集成独立终审发现新的 `P1`：Stage930 新 parser 默认 profile 是 `stage372-20w`，但两份现役 Stage847-C9/15万 plist 没有显式 `--execution-profile`。使用真实 `ProgramArguments` 纯解析复现，两份 C9 `live-real` 任务都会静默解析成 Stage372/20万，并继续把该身份传入 legacy Stage931 路径，因此旧候选立即判为合入与生产部署 `NO-GO`。
+- TDD 修复：先新增完整 plist 参数解析测试，稳定得到两个 subtest 失败；再给两份 C9 plist 显式加入 `--execution-profile c9-15w-historical`。修复后两份均解析为 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once / 150000 / 15w`，聚焦回归 `8 passed, 4 subtests passed`。这不是启用 Stage179，而是防止共享 daemon 新默认值改变既有 C9 任务语义。
+- 最终扩大执行链回归：`754 passed, 247 subtests passed`，耗时 `76.33s`。全部变更 Python 文件 `py_compile`、7 份相关 plist lint、supervisor `bash -n`、`git diff --check` 与污染/祖先检查通过。
+- 最终源提交 `8bd235ee01ea9cb7f76f59e4715903678a4d4932`；从该 clean source 重建 68 个唯一 critical files 的 schema v2 manifest，release id `stage179-stage372-readonly-integration-8bd235ee0`，内部 digest `7d3140602757919269e9f71c535b40b7f8c923890d97782016fb04da0ebeb0e4`，文件 SHA-256 `70fc4508a422cb516329d288e6f1ca20501f53e0141f4366eb90a61f65c2f395`，冻结提交 `9c138e730682b0d189cbc80ce49f91245e3a572c`；source 是 manifest 提交的直接父提交。
+- 官方 loader 在最终 HEAD 实测：`offline`、`production-readonly` 接受；`simnow`、`broker-test`、`production-live` 均以 runtime profile 不允许而拒绝。Stage372 strategy semantics 继续 `blocked`，因此 clean 集成与重冻结没有扩大报单权限。
+- 第二轮独立终审结论 `P0=0、P1=0、P2=0`，确认旧 C9 身份 P1 已关闭。独立聚焦回归 `8 passed, 4 subtests passed`，变更相关 30 模块回归 `723 passed, 247 subtests passed`；68/68 source blob、direct-parent、manifest digest、文件 SHA、loader、73 个变更 Python、7 份 plist、supervisor shell、diff 和污染扫描全部通过。裁决：代码合入与按最终 commit/tree 部署 production-readonly 采证为 `GO`；production-readonly 验收、SimNow/broker-test 和 production-live 仍为 `NO-GO`。部署必须使用提交树，不能直接打包含未提交阶段记录的 raw worktree。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有安装、加载、kickstart 或停止 LaunchAgent、没有调用报单或撤单 API。
+- 延迟判断：clean 集成证明代码修复、故障回归和发布边界可安全落到 `master` 候选，但仍没有 5 场真实 LaunchAgent/CTP 会话及真实 `20:55→21:00` 时间戳，不能宣称线上端到端延迟已经被实盘验证解决。
+- 过拟合反思：运行前“否”，运行后仍“否”；本轮只处理分支污染、进程信号就绪、测试环境隔离和不可变发布绑定，与 JM 单晚收益和策略阈值无关。
+- 继续价值反思：运行前“是”，运行后仍“是”；本地代码合入证据已接近封闭，下一步最高价值是 production-readonly 严格 `0/0` canary，而不是继续增加离线规则。
+
 ## 结论与硬门禁
 
-- 代码合入判断：冻结候选 `b081b5258` 已完成独立终审，结果 `P0=0、P1=0、P2=1`，no-submit/production-readonly 代码合入为 `GO`。合入不等于部署、激活或验收通过。
-- 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
+- 代码合入判断：clean master 集成冻结候选 `9c138e730` 已通过主代理完整回归和第二轮独立终审，结果 `P0=0、P1=0、P2=0`，代码合入为 `GO`。合入不等于部署、激活或验收通过。
+- 部署判断：按最终 commit/tree 部署 production-readonly 采证代码为 `GO`；9 个 Stage372 专属部署目录已完成 `0750` provisioning，但新增 plist 尚未安装/加载。禁止从 raw dirty worktree 打包，部署也不等于只读验收通过。
 - 激活判断：release manifest 只允许离线和 `production-readonly`；可以部署只读链路采证，但 production-readonly 验收仍缺五场真实会话及一次完整断线重连，当前验收为 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后预计算与正常 readonly refresh 的提前返回已经消除两类代码层结构性等待，一次性重连观察只在预启动采证；但真实只读 CTP 与 LaunchAgent 时间戳证据完成前，不能宣称已解决线上端到端延迟。
 - 后续：可由合入者合入冻结候选并部署 production-readonly 采证，所有报单 profile 继续关闭。待交易服务窗口完成 5 场严格 `0/0` 会话且至少一次真实断线—重连—完整新快照恢复后，才能判定只读验收；未获得用户新的明确报单授权前，不做 SimNow smoke order。
