@@ -71,6 +71,11 @@ class FakeSpool:
             for intent_id in intent_ids
         ]
         self.transitions: list[tuple[str, str]] = []
+        self.recovery_calls = 0
+
+    def recover_expired(self, **_: Any) -> list[str]:
+        self.recovery_calls += 1
+        return []
 
     def expire_due(self, **_: Any) -> None:
         return None
@@ -112,6 +117,7 @@ class FakeWarmSession:
         self.send_calls = 0
         self.close_calls = 0
         self.transport_failures = 0
+        self.events: list[str] = []
         self.connection_generation = ""
         self._lease: Any = None
 
@@ -146,7 +152,13 @@ class FakeWarmSession:
         self.close()
         self.connect()
 
-    def execute_spool_lease(self, *, lease: Any, hard_deadline_monotonic: float) -> ExecutionResult:
+    def execute_spool_lease(
+        self,
+        *,
+        lease: Any,
+        hard_deadline_monotonic: float,
+        api_slot_durable: Any = None,
+    ) -> ExecutionResult:
         self.fresh_bundle_calls += 1
         if self.clock.monotonic() >= hard_deadline_monotonic:
             return ExecutionResult.blocked(
@@ -154,7 +166,21 @@ class FakeWarmSession:
                 "stage179_execution_deadline_exceeded:fresh_bundle",
             )
         self.api_slot_calls += 1
+        self.events.append("api_slot_durable")
+        if api_slot_durable is not None and not api_slot_durable(
+            f"slot-{lease.intent.intent_id}"
+        ):
+            return ExecutionResult(
+                intent_id=lease.intent.intent_id,
+                disposition="side_effect_unknown",
+                ledger_fingerprint=f"fp-{lease.intent.intent_id}",
+                api_slot_batch_id=f"slot-{lease.intent.intent_id}",
+                blockers=("stage179_spool_sending_cas_lost_after_api_slot",),
+                send_order_call_count=0,
+                cancel_order_call_count=0,
+            )
         self.send_calls += 1
+        self.events.append("broker_send")
         return ExecutionResult(
             intent_id=lease.intent.intent_id,
             disposition="sent",
@@ -207,6 +233,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual(2, session.fresh_bundle_calls)
         self.assertEqual(2, session.api_slot_calls)
         self.assertEqual(2, session.send_calls)
+        self.assertGreaterEqual(spool.recovery_calls, 2)
         self.assertEqual(1, session.close_calls)
         self.assertEqual(
             [
@@ -217,6 +244,199 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             ],
             spool.transitions,
         )
+
+    def test_api_slot_is_durable_before_spool_sending_and_broker_call(self) -> None:
+        session = FakeWarmSession(self.clock)
+
+        class OrderedSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **kwargs: Any) -> None:
+                session.events.append("spool_sending")
+                super().mark_sending(lease, **kwargs)
+
+        spool = OrderedSpool(["intent-1"], self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(
+            ["api_slot_durable", "spool_sending", "broker_send"],
+            session.events,
+        )
+
+    def test_spool_sending_cas_loss_after_api_slot_never_calls_broker(self) -> None:
+        session = FakeWarmSession(self.clock)
+
+        class LostCasSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **_: Any) -> Any:
+                return SimpleNamespace(state="leased")
+
+        spool = LostCasSpool(["intent-1"], self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(1, session.api_slot_calls)
+        self.assertEqual(0, session.send_calls)
+        self.assertEqual(
+            ("intent-1", "side_effect_unknown"),
+            spool.transitions[-1],
+        )
+
+    def test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send(self) -> None:
+        sent: list[str] = []
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: sent.append("send") or "CTP.1",
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+
+        class CasErrorSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **_: Any) -> Any:
+                raise execution_service.SpoolTransitionError("lease CAS lost")
+
+            def mark_result(
+                self,
+                lease: Any,
+                result: ExecutionResult,
+                **_: Any,
+            ) -> None:
+                raise execution_service.SpoolTransitionError("state mismatch")
+
+        spool = CasErrorSpool(["intent-1"], self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(1, session.api_slot_call_count)
+        self.assertEqual([], sent)
+
+    def test_multi_child_batch_slot_sends_each_child_once(self) -> None:
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: stage931.BrokerSendBatchResult(
+                order_ids=("CTP.1", "CTP.2"),
+                send_order_call_count=2,
+            ),
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+        durable_slots: list[str] = []
+
+        result = session.execute_spool_lease(
+            lease=SimpleNamespace(intent=SimpleNamespace(intent_id="intent-1")),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+            api_slot_durable=lambda batch_id: not durable_slots.append(batch_id),
+        )
+
+        self.assertEqual("sent", result.disposition)
+        self.assertEqual(2, result.send_order_call_count)
+        self.assertEqual(2, session.send_order_call_count)
+        self.assertEqual(["batch-slot-1"], durable_slots)
+
+    def test_multi_child_empty_return_is_unknown_and_does_not_retry(self) -> None:
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: stage931.BrokerSendBatchResult(
+                order_ids=("CTP.1", ""),
+                send_order_call_count=2,
+            ),
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+
+        result = session.execute_spool_lease(
+            lease=SimpleNamespace(intent=SimpleNamespace(intent_id="intent-1")),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+            api_slot_durable=lambda _: True,
+        )
+
+        self.assertEqual("side_effect_unknown", result.disposition)
+        self.assertEqual(2, result.send_order_call_count)
+        self.assertEqual(("stage179_send_order_returned_empty",), result.blockers)
+
+    def test_multi_child_second_send_exception_is_unknown_with_call_count(self) -> None:
+        def raise_after_second_call(_lease: Any) -> object:
+            raise stage931.BrokerSendBatchError(
+                "second child failed",
+                send_order_call_count=2,
+            )
+
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=raise_after_second_call,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+
+        result = session.execute_spool_lease(
+            lease=SimpleNamespace(intent=SimpleNamespace(intent_id="intent-1")),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+            api_slot_durable=lambda _: True,
+        )
+
+        self.assertEqual("side_effect_unknown", result.disposition)
+        self.assertEqual(2, result.send_order_call_count)
+        self.assertEqual(2, session.send_order_call_count)
 
     def test_socket_loss_is_recovered_by_point_one_second_poll(self) -> None:
         spool = DelayedFakeSpool(["intent-1"], self.clock)

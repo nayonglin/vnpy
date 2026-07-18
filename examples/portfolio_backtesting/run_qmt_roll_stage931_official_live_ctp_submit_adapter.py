@@ -491,6 +491,18 @@ class CtpReadinessState:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class BrokerSendBatchResult:
+    order_ids: tuple[str, ...]
+    send_order_call_count: int
+
+
+class BrokerSendBatchError(RuntimeError):
+    def __init__(self, message: str, *, send_order_call_count: int) -> None:
+        super().__init__(message)
+        self.send_order_call_count = max(0, int(send_order_call_count))
+
+
 class CtpExecutionSession:
     """Generation-bound owner of one warm CTP transport.
 
@@ -512,10 +524,11 @@ class CtpExecutionSession:
         disconnect_transport: Callable[[], None],
         fresh_bundle: Callable[[Any, float], Any],
         reserve_api_slot: Callable[[Any], str],
-        send_order: Callable[[Any], str],
+        send_order: Callable[[Any], Any],
         revoke_readiness: Callable[[str], None] | None = None,
         transport_probe: Callable[[], list[str]] | None = None,
         pre_api_slot_blockers: Callable[[Any], list[str]] | None = None,
+        connection_generation_observer: Callable[[str], None] | None = None,
         epoch_ns: Callable[[], int] = time.time_ns,
         monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
@@ -534,6 +547,9 @@ class CtpExecutionSession:
         self._reserve_api_slot = reserve_api_slot
         self._send_order = send_order
         self._pre_api_slot_blockers = pre_api_slot_blockers or (lambda _: [])
+        self._connection_generation_observer = (
+            connection_generation_observer or (lambda _: None)
+        )
         self._epoch_ns = epoch_ns
         self._monotonic = monotonic
         self._connected = False
@@ -564,6 +580,7 @@ class CtpExecutionSession:
                     self._disconnect_transport()
                 raise RuntimeError("stage179_ctp_startup_bundle_not_ready")
             self._connection_generation = uuid.uuid4().hex
+            self._connection_generation_observer(self._connection_generation)
             self._last_complete_startup_bundle_epoch_ns = int(self._epoch_ns())
             self._connected = True
 
@@ -572,6 +589,7 @@ class CtpExecutionSession:
             was_connected = self._connected
             self._connected = False
             self._connection_generation = ""
+            self._connection_generation_observer("")
             self._last_complete_startup_bundle_epoch_ns = 0
             return was_connected
 
@@ -669,6 +687,7 @@ class CtpExecutionSession:
         readiness: TdReadinessLease,
         lease: Any,
         hard_deadline_monotonic: float,
+        api_slot_durable: Callable[[str], bool] | None = None,
     ) -> ExecutionResult:
         intent_id = str(lease.intent.intent_id)
         blockers = self._readiness_blockers(readiness)
@@ -712,6 +731,18 @@ class CtpExecutionSession:
                     intent_id,
                     "stage179_api_slot_reservation_failed",
                 )
+            if api_slot_durable is not None and not api_slot_durable(
+                api_slot_batch_id
+            ):
+                return ExecutionResult(
+                    intent_id=intent_id,
+                    disposition="side_effect_unknown",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                    blockers=("stage179_spool_sending_cas_lost_after_api_slot",),
+                    send_order_call_count=0,
+                    cancel_order_call_count=0,
+                )
             post_slot_blockers = self._readiness_blockers(
                 readiness,
                 check_expiry=False,
@@ -737,10 +768,20 @@ class CtpExecutionSession:
                     send_order_call_count=0,
                     cancel_order_call_count=0,
                 )
-            self.send_order_call_count += 1
-            send_called = 1
-            order_id = str(self._send_order(lease))
+            raw_send_result = self._send_order(lease)
+            if isinstance(raw_send_result, BrokerSendBatchResult):
+                order_ids = tuple(str(item) for item in raw_send_result.order_ids)
+                send_called = int(raw_send_result.send_order_call_count)
+            else:
+                order_ids = (str(raw_send_result or ""),)
+                send_called = 1
+            self.send_order_call_count += send_called
         except BaseException as exc:
+            send_called = max(
+                send_called,
+                int(getattr(exc, "send_order_call_count", 0) or 0),
+            )
+            self.send_order_call_count += send_called
             return ExecutionResult(
                 intent_id=intent_id,
                 disposition="side_effect_unknown" if api_slot_batch_id else "blocked",
@@ -750,14 +791,14 @@ class CtpExecutionSession:
                 send_order_call_count=send_called,
                 cancel_order_call_count=0,
             )
-        if not order_id:
+        if send_called <= 0 or not order_ids or any(not item for item in order_ids):
             return ExecutionResult(
                 intent_id=intent_id,
                 disposition="side_effect_unknown",
                 ledger_fingerprint=ledger_fingerprint,
                 api_slot_batch_id=api_slot_batch_id,
                 blockers=("stage179_send_order_returned_empty",),
-                send_order_call_count=1,
+                send_order_call_count=send_called,
                 cancel_order_call_count=0,
             )
         return ExecutionResult(
@@ -766,7 +807,7 @@ class CtpExecutionSession:
             ledger_fingerprint=ledger_fingerprint,
             api_slot_batch_id=api_slot_batch_id,
             blockers=(),
-            send_order_call_count=1,
+            send_order_call_count=send_called,
             cancel_order_call_count=0,
         )
 
@@ -775,11 +816,13 @@ class CtpExecutionSession:
         *,
         lease: Any,
         hard_deadline_monotonic: float,
+        api_slot_durable: Callable[[str], bool] | None = None,
     ) -> ExecutionResult:
         return self.execute_with_readiness(
             readiness=self.readiness_lease(now_epoch_ns=int(self._epoch_ns())),
             lease=lease,
             hard_deadline_monotonic=hard_deadline_monotonic,
+            api_slot_durable=api_slot_durable,
         )
 
 
@@ -6329,6 +6372,8 @@ def _build_stage179_warm_ctp_session(
                 "vt_symbol": lease.intent.vt_symbol,
                 "mode": "live-real",
                 "adapter": "Stage931Warm",
+                "service_generation": lease.intent.lease_owner,
+                "connection_generation": state.get("connection_generation", ""),
                 "spool_lease_owner": lease.intent.lease_owner,
                 "spool_lease_token": lease.lease_token,
             },
@@ -6412,17 +6457,16 @@ def _build_stage179_warm_ctp_session(
             conversion = _final_offset_conversion(main_engine, rows, req)
             blockers.extend(conversion.get("blockers", []))
             requests = list(conversion.get("requests", []))
-            if len(requests) != 1:
-                blockers.append(
-                    f"stage179_warm_executor_requires_one_physical_order:{len(requests)}"
-                )
+            if not requests:
+                blockers.append("stage179_warm_executor_no_physical_order")
         blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
         state["intent_contexts"][lease.intent.intent_id] = {
             "row": row,
             "request": (
-                list(conversion.get("requests", []))[0]
-                if not blockers
-                else req
+                list(conversion.get("requests", []))[0] if not blockers else req
+            ),
+            "requests": (
+                list(conversion.get("requests", [])) if not blockers else []
             ),
             "fingerprint": str(reserve.get("intent_fingerprint", "")),
             "close_submit_attempt_no": int(
@@ -6470,11 +6514,15 @@ def _build_stage179_warm_ctp_session(
             blockers.append("live_real_not_in_execution_session_before_api_slot")
         blockers.extend(_continuous_submit_blockers())
         row = dict(context.get("row", {}))
+        requests = list(context.get("requests", []))
         request = context.get("request")
-        if request is None:
+        if request is None or not requests:
             blockers.append("stage179_send_context_missing_before_api_slot")
         else:
-            blockers.extend(_pre_reserved_child_intent_blockers(row, request))
+            for child_request in requests:
+                blockers.extend(
+                    _pre_reserved_child_intent_blockers(row, child_request)
+                )
             if (
                 str(row.get("source", "")).strip()
                 == "stage904_c9_intraday_retry_open"
@@ -6504,36 +6552,43 @@ def _build_stage179_warm_ctp_session(
 
     def reserve_api_slot(lease: Any) -> str:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
-        request = context.get("request")
-        if request is None:
+        requests = list(context.get("requests", []))
+        if not requests:
             return ""
-        base_event = {
-            "intent_id": lease.intent.intent_id,
-            "intent_fingerprint": context.get("fingerprint", ""),
-            "parent_intent_fingerprint": context.get("fingerprint", ""),
-            "vt_symbol": lease.intent.vt_symbol,
-            "adapter": "Stage931Warm",
-            "spool_lease_owner": lease.intent.lease_owner,
-            "spool_lease_token": lease.lease_token,
-            "child_order_id": f"{context.get('fingerprint', '')}:1/1",
-            "child_order_index": 0,
-            "child_order_count": 1,
-            "child_order_offset": request.offset.value,
-            "child_order_volume": float(request.volume),
-        }
-        if int(context.get("close_submit_attempt_no", 0)) > 0:
-            base_event["close_submit_attempt_no"] = int(
-                context["close_submit_attempt_no"]
-            )
-            base_event["close_attempt_lease_token"] = str(
-                context.get("close_attempt_lease_token", "")
-            )
+        base_events: list[dict[str, Any]] = []
+        for index, request in enumerate(requests):
+            base_event = {
+                "intent_id": lease.intent.intent_id,
+                "intent_fingerprint": context.get("fingerprint", ""),
+                "parent_intent_fingerprint": context.get("fingerprint", ""),
+                "vt_symbol": lease.intent.vt_symbol,
+                "adapter": "Stage931Warm",
+                "service_generation": lease.intent.lease_owner,
+                "connection_generation": state.get("connection_generation", ""),
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+                "child_order_id": (
+                    f"{context.get('fingerprint', '')}:{index + 1}/{len(requests)}"
+                ),
+                "child_order_index": index,
+                "child_order_count": len(requests),
+                "child_order_offset": request.offset.value,
+                "child_order_volume": float(request.volume),
+            }
+            if int(context.get("close_submit_attempt_no", 0)) > 0:
+                base_event["close_submit_attempt_no"] = int(
+                    context["close_submit_attempt_no"]
+                )
+                base_event["close_attempt_lease_token"] = str(
+                    context.get("close_attempt_lease_token", "")
+                )
+            base_events.append(base_event)
         result = reserve_execution_api_slots(
             target_date=lease.intent.target_date,
             slot_type="send_order",
             daily_limit=build_phase_d_config().hard_limits.max_order_count_per_day,
             path=paths.ledger_path,
-            base_events=[base_event],
+            base_events=base_events,
         )
         if not result.get("reserved"):
             blocker = str(
@@ -6544,10 +6599,10 @@ def _build_stage179_warm_ctp_session(
             append_execution_ledger_event(
                 {
                     "event_type": "api_slot_reservation_blocked",
-                    **base_event,
+                    **base_events[0],
                     "target_date": lease.intent.target_date,
                     "api_slot_type": "send_order",
-                    "api_slot_requested_count": 1,
+                    "api_slot_requested_count": len(base_events),
                     "api_slot_blocker": blocker,
                 },
                 path=paths.ledger_path,
@@ -6555,27 +6610,88 @@ def _build_stage179_warm_ctp_session(
             return ""
         return str(result.get("api_slot_batch_id", ""))
 
-    def send_order(lease: Any) -> str:
+    def send_order(lease: Any) -> BrokerSendBatchResult:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
-        request = context.get("request")
+        requests = list(context.get("requests", []))
         main_engine = state.get("main_engine")
-        if request is None or main_engine is None:
+        if not requests or main_engine is None:
             raise RuntimeError("stage179_send_context_missing")
-        vt_orderid = str(main_engine.send_order(request, "CTP") or "")
-        append_execution_ledger_event(
-            {
-                "event_type": "send_order_returned",
-                "target_date": lease.intent.target_date,
-                "intent_id": lease.intent.intent_id,
-                "intent_fingerprint": context.get("fingerprint", ""),
-                "vt_symbol": lease.intent.vt_symbol,
-                "vt_orderid": vt_orderid,
-                "send_order_called": 1,
-                "adapter": "Stage931Warm",
-            },
-            path=paths.ledger_path,
+        order_ids: list[str] = []
+        for index, request in enumerate(requests):
+            try:
+                vt_orderid = str(main_engine.send_order(request, "CTP") or "")
+            except BaseException as exc:
+                audit_append_error = ""
+                try:
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "adapter_exception_after_send",
+                            "target_date": lease.intent.target_date,
+                            "intent_id": lease.intent.intent_id,
+                            "intent_fingerprint": context.get("fingerprint", ""),
+                            "vt_symbol": lease.intent.vt_symbol,
+                            "adapter": "Stage931Warm",
+                            "exception_type": type(exc).__name__,
+                            "send_order_call_count": len(order_ids) + 1,
+                            "service_generation": lease.intent.lease_owner,
+                            "connection_generation": state.get(
+                                "connection_generation", ""
+                            ),
+                            "spool_lease_owner": lease.intent.lease_owner,
+                            "spool_lease_token": lease.lease_token,
+                            "child_order_index": index,
+                            "child_order_count": len(requests),
+                        },
+                        path=paths.ledger_path,
+                    )
+                except BaseException as audit_exc:
+                    audit_append_error = (
+                        f":audit_append_failed:{type(audit_exc).__name__}"
+                    )
+                raise BrokerSendBatchError(
+                    "stage179_broker_send_batch_exception:"
+                    f"{type(exc).__name__}{audit_append_error}",
+                    send_order_call_count=len(order_ids) + 1,
+                ) from exc
+            order_ids.append(vt_orderid)
+            try:
+                append_execution_ledger_event(
+                    {
+                        "event_type": "send_order_returned",
+                        "target_date": lease.intent.target_date,
+                        "intent_id": lease.intent.intent_id,
+                        "intent_fingerprint": context.get("fingerprint", ""),
+                        "vt_symbol": lease.intent.vt_symbol,
+                        "vt_orderid": vt_orderid,
+                        "send_order_called": 1,
+                        "adapter": "Stage931Warm",
+                        "service_generation": lease.intent.lease_owner,
+                        "connection_generation": state.get(
+                            "connection_generation", ""
+                        ),
+                        "spool_lease_owner": lease.intent.lease_owner,
+                        "spool_lease_token": lease.lease_token,
+                        "child_order_id": (
+                            f"{context.get('fingerprint', '')}:{index + 1}/{len(requests)}"
+                        ),
+                        "child_order_index": index,
+                        "child_order_count": len(requests),
+                        "child_order_offset": request.offset.value,
+                        "child_order_volume": float(request.volume),
+                    },
+                    path=paths.ledger_path,
+                )
+            except BaseException as exc:
+                raise BrokerSendBatchError(
+                    f"stage179_send_audit_append_failed:{type(exc).__name__}",
+                    send_order_call_count=len(order_ids),
+                ) from exc
+            if not vt_orderid:
+                break
+        return BrokerSendBatchResult(
+            order_ids=tuple(order_ids),
+            send_order_call_count=len(order_ids),
         )
-        return vt_orderid
 
     def transport_probe() -> list[str]:
         _prune_stage179_warm_rows(state["rows"])
@@ -6614,6 +6730,9 @@ def _build_stage179_warm_ctp_session(
         transport_probe=transport_probe,
         fresh_bundle=fresh_bundle,
         pre_api_slot_blockers=pre_api_slot_blockers,
+        connection_generation_observer=lambda generation: state.__setitem__(
+            "connection_generation", generation
+        ),
         reserve_api_slot=reserve_api_slot,
         send_order=send_order,
     )
@@ -6715,7 +6834,14 @@ def run_serve(args: argparse.Namespace) -> int:
             signal.signal(signum, request_stop)
         return serve_executor(
             paths=paths,
-            spool=SQLiteIntentSpool(connection),
+            spool=SQLiteIntentSpool(
+                connection,
+                ledger_path=paths.ledger_path,
+                close_retry_after_cancel_seconds=max(
+                    1,
+                    int(args.close_retry_after_cancel_seconds),
+                ),
+            ),
             backend_factory=lambda: _build_stage179_warm_ctp_session(
                 args,
                 runtime,

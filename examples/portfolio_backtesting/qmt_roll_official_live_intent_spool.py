@@ -44,7 +44,7 @@ OUTSTANDING_CLOSE_STATES = (
 )
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _ALLOWED_TRANSITIONS = {
-    "leased": {"sending", "blocked"},
+    "leased": {"sending", "expired", "blocked"},
     "sending": {"side_effect_unknown", "sent", "blocked"},
     "side_effect_unknown": {"sent", "reconciled", "blocked"},
     "sent": {"reconciled"},
@@ -1663,6 +1663,42 @@ def lease_next(
         return IntentLease(intent=intent, lease_token=token)
 
 
+def expired_inflight_leases(
+    connection: sqlite3.Connection,
+    *,
+    now_epoch_ns: int,
+    now_monotonic_ns: int,
+    clock_domain_id: str,
+) -> list[IntentLease]:
+    normalized_now, normalized_monotonic, normalized_domain = _validate_now_stamp(
+        now_epoch_ns=now_epoch_ns,
+        now_monotonic_ns=now_monotonic_ns,
+        clock_domain_id=clock_domain_id,
+    )
+    rows = connection.execute(
+        """
+        SELECT * FROM intents
+        WHERE state IN ('leased', 'sending')
+          AND lease_token<>''
+          AND (
+                lease_clock_domain_id<>?
+             OR lease_expires_epoch_ns<=?
+             OR lease_expires_monotonic_ns<=?
+          )
+        ORDER BY CASE WHEN intent_kind='close' THEN 0 ELSE 1 END,
+                 spool_sequence
+        """,
+        (normalized_domain, normalized_now, normalized_monotonic),
+    ).fetchall()
+    return [
+        IntentLease(
+            intent=_row_to_intent(row),
+            lease_token=str(row["lease_token"]),
+        )
+        for row in rows
+    ]
+
+
 def recover_expired_lease(
     connection: sqlite3.Connection,
     *,
@@ -1718,6 +1754,8 @@ def recover_expired_lease(
         "no_side_effect": "ready",
         "unknown": "side_effect_unknown",
         "side_effect_present": "side_effect_unknown",
+        "reconciled": "reconciled",
+        "blocked_ledger_integrity": "blocked",
     }
     if disposition not in state_by_disposition:
         raise SpoolValidationError("ledger_disposition_invalid")
@@ -1758,6 +1796,9 @@ def recover_expired_lease(
         if not lease_expired:
             raise SpoolTransitionError("lease_not_expired")
         if recovery_state == "sending" and new_state == "ready":
+            # A sending row created before Stage179 Task11 did not prove the
+            # API slot ordering.  New rows become sending only after the
+            # durable batch slot and therefore classify as unknown above.
             new_state = "side_effect_unknown"
         absolute_deadline_due = (
             row["clock_domain_id"] != normalized_domain
@@ -2136,6 +2177,7 @@ __all__ = [
     "TraceObservation",
     "commit_detector_batch",
     "expire_due_intents",
+    "expired_inflight_leases",
     "initialize_spool",
     "lease_next",
     "notify_executor",

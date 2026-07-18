@@ -4,6 +4,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, is_dataclass
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -15,10 +16,18 @@ from typing import Any, Protocol
 
 from qmt_roll_official_live_intent_spool import (
     IntentLease,
+    LeaseRecoveryEvidence,
+    SpoolTransitionError,
     expire_due_intents,
+    expired_inflight_leases,
     lease_next,
+    recover_expired_lease,
     transition_intent,
     wakeup_socket_path,
+)
+from qmt_roll_official_live_execution_ledger import (
+    read_execution_ledger,
+    recover_expired_spool_lease,
 )
 from qmt_roll_official_live_time import system_clock_domain_id
 
@@ -115,6 +124,8 @@ class ExecutionResult:
 
 
 class IntentSpool(Protocol):
+    def recover_expired(self, **kwargs: Any) -> Any: ...
+
     def expire_due(self, **kwargs: Any) -> Any: ...
 
     def lease_next(self, **kwargs: Any) -> Any: ...
@@ -143,6 +154,7 @@ class ExecutionSession(Protocol):
         *,
         lease: Any,
         hard_deadline_monotonic: float,
+        api_slot_durable: Callable[[str], bool] | None = None,
     ) -> ExecutionResult: ...
 
     def close(self) -> None: ...
@@ -151,8 +163,117 @@ class ExecutionSession(Protocol):
 class SQLiteIntentSpool:
     """Small transition adapter over the Task7 SQLite spool contract."""
 
-    def __init__(self, connection: Any) -> None:
+    def __init__(
+        self,
+        connection: Any,
+        *,
+        ledger_path: str | Path | None = None,
+        close_retry_after_cancel_seconds: int = 30,
+    ) -> None:
         self.connection = connection
+        self.ledger_path = (
+            Path(ledger_path).expanduser().resolve(strict=False)
+            if ledger_path is not None
+            else None
+        )
+        self.close_retry_after_cancel_seconds = max(
+            1,
+            int(close_retry_after_cancel_seconds),
+        )
+
+    @staticmethod
+    def _ledger_inputs(lease: IntentLease) -> tuple[dict[str, Any], dict[str, Any]]:
+        payload = dict(lease.intent.payload)
+        raw_order_request = payload.get("order_request")
+        if not isinstance(raw_order_request, dict):
+            raise ExecutorServiceError("spool_recovery_order_request_missing")
+        order_request = dict(raw_order_request)
+        row = dict(payload)
+        row["order_request_json"] = json.dumps(
+            order_request,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        for key in (
+            "vt_symbol",
+            "symbol",
+            "exchange",
+            "direction",
+            "offset",
+            "price",
+            "volume",
+        ):
+            if key in order_request:
+                row[key] = order_request[key]
+        return row, order_request
+
+    def recover_expired(self, **kwargs: Any) -> list[str]:
+        if self.ledger_path is None:
+            return []
+        leases = expired_inflight_leases(self.connection, **kwargs)
+        classified: list[tuple[IntentLease, Any]] = []
+        for lease in leases:
+            row, order_request = self._ledger_inputs(lease)
+            decision = recover_expired_spool_lease(
+                target_date=lease.intent.target_date,
+                row=row,
+                order_request=order_request,
+                spool_lease_owner=lease.intent.lease_owner,
+                spool_lease_token=lease.lease_token,
+                close_retry_after_cancel_seconds=(
+                    self.close_retry_after_cancel_seconds
+                ),
+                path=self.ledger_path,
+            )
+            classified.append((lease, decision))
+        if not classified:
+            return []
+
+        # All per-lease classification/append operations finish before one
+        # shared evidence snapshot.  This avoids O(expired_count) additional
+        # full-ledger reads while keeping every spool CAS tied to a durable
+        # ledger state that contains its decision evidence.
+        ledger_rows = read_execution_ledger(self.ledger_path)
+        last_checksum = str(
+            (ledger_rows[-1] if ledger_rows else {}).get(
+                "record_checksum", ""
+            )
+        )
+        if len(last_checksum) != 64:
+            last_checksum = hashlib.sha256(
+                json.dumps(
+                    ledger_rows,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest()
+        recovered_states: list[str] = []
+        for lease, decision in classified:
+            spool_disposition = {
+                "requeue_pre_send": "no_side_effect",
+                "reconcile_only_side_effect_unknown": "unknown",
+                "reconciled": "reconciled",
+                "blocked_ledger_integrity": "blocked_ledger_integrity",
+            }.get(decision.disposition, "unknown")
+            recovered_states.append(
+                recover_expired_lease(
+                    self.connection,
+                    evidence=LeaseRecoveryEvidence(
+                        intent_id=lease.intent.intent_id,
+                        lease_owner=lease.intent.lease_owner,
+                        lease_token=lease.lease_token,
+                        ledger_disposition=spool_disposition,
+                        ledger_fingerprint=decision.intent_fingerprint,
+                        ledger_watermark=len(ledger_rows),
+                        ledger_checksum_sha256=last_checksum,
+                    ),
+                    **kwargs,
+                )
+            )
+        return recovered_states
 
     def expire_due(self, **kwargs: Any) -> Any:
         return expire_due_intents(self.connection, **kwargs)
@@ -177,11 +298,13 @@ class SQLiteIntentSpool:
         result: ExecutionResult,
         **kwargs: Any,
     ) -> Any:
-        expected = "sending"
+        expected = "sending" if result.api_slot_batch_id else "leased"
         if result.disposition == "sent":
             target = "sent"
         elif result.disposition == "side_effect_unknown":
             target = "side_effect_unknown"
+        elif result.disposition == "expired":
+            target = "expired"
         else:
             target = "blocked"
         return transition_intent(
@@ -421,6 +544,13 @@ def serve_executor(
                         last_readiness_publish_monotonic = float(monotonic())
                     now_epoch = int(epoch_ns())
                     now_monotonic_ns = int(monotonic_ns_now())
+                    recover_expired = getattr(spool, "recover_expired", None)
+                    if callable(recover_expired):
+                        recover_expired(
+                            now_epoch_ns=now_epoch,
+                            now_monotonic_ns=now_monotonic_ns,
+                            clock_domain_id=domain_id,
+                        )
                     spool.expire_due(
                         now_epoch_ns=now_epoch,
                         now_monotonic_ns=now_monotonic_ns,
@@ -466,17 +596,6 @@ def serve_executor(
                         dequeued_monotonic_ns
                         + int(float(dequeue_to_send_seconds) * 1_000_000_000),
                     )
-                    marked = spool.mark_sending(
-                        lease,
-                        now_epoch_ns=int(epoch_ns()),
-                        now_monotonic_ns=int(monotonic_ns_now()),
-                        clock_domain_id=domain_id,
-                    )
-                    marked_state = str(getattr(marked, "state", "sending"))
-                    if marked_state != "sending":
-                        # The durable CAS itself can expire an open or block a
-                        # close if the deadline crossed after dequeue.
-                        continue
                     if dequeue_sla_exceeded:
                         result = ExecutionResult.blocked(
                             lease.intent.intent_id,
@@ -485,17 +604,41 @@ def serve_executor(
                     elif dequeued_monotonic_ns >= hard_deadline_ns:
                         result = _deadline_result(lease)
                     else:
+                        def mark_api_slot_durable(
+                            _batch_id: str,
+                            leased: Any = lease,
+                        ) -> bool:
+                            marked = spool.mark_sending(
+                                leased,
+                                now_epoch_ns=int(epoch_ns()),
+                                now_monotonic_ns=int(monotonic_ns_now()),
+                                clock_domain_id=domain_id,
+                            )
+                            return (
+                                str(getattr(marked, "state", "sending"))
+                                == "sending"
+                            )
+
                         result = session.execute_spool_lease(
                             lease=lease,
                             hard_deadline_monotonic=hard_deadline_ns / 1e9,
+                            api_slot_durable=mark_api_slot_durable,
                         )
-                    spool.mark_result(
-                        lease,
-                        result,
-                        now_epoch_ns=int(epoch_ns()),
-                        now_monotonic_ns=int(monotonic_ns_now()),
-                        clock_domain_id=domain_id,
-                    )
+                    try:
+                        spool.mark_result(
+                            lease,
+                            result,
+                            now_epoch_ns=int(epoch_ns()),
+                            now_monotonic_ns=int(monotonic_ns_now()),
+                            clock_domain_id=domain_id,
+                        )
+                    except SpoolTransitionError:
+                        if not result.api_slot_batch_id:
+                            raise
+                        # The durable API slot is the safety boundary.  A lost
+                        # spool CAS must never trigger another send; leave the
+                        # lease for the bounded ledger recovery pass instead
+                        # of killing the warm service.
                     publish_readiness(
                         paths.readiness_path,
                         session.readiness_lease(now_epoch_ns=int(epoch_ns())),

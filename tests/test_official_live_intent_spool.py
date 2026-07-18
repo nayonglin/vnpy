@@ -1032,6 +1032,52 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         self.assertEqual("side_effect_unknown", state)
         self.assertEqual(1, spool.spool_counts(self.connection)["side_effect_unknown"])
 
+    def test_expired_inflight_scan_and_terminal_reconciliation_are_durable(self) -> None:
+        self.commit([self.intent("close-1", offset="close")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=1,
+        )
+        self.assertIsNotNone(lease)
+
+        before = spool.expired_inflight_leases(
+            self.connection,
+            now_epoch_ns=1_000_000_199,
+            now_monotonic_ns=1_000_000_199,
+            clock_domain_id="boot-a",
+        )
+        expired = spool.expired_inflight_leases(
+            self.connection,
+            now_epoch_ns=1_000_000_200,
+            now_monotonic_ns=1_000_000_200,
+            clock_domain_id="boot-a",
+        )
+        self.assertEqual([], before)
+        self.assertEqual(["close-1"], [item.intent.intent_id for item in expired])
+
+        state = spool.recover_expired_lease(
+            self.connection,
+            now_epoch_ns=1_000_000_200,
+            now_monotonic_ns=1_000_000_200,
+            clock_domain_id="boot-a",
+            evidence=spool.LeaseRecoveryEvidence(
+                intent_id="close-1",
+                lease_owner="executor-a",
+                lease_token=lease.lease_token,
+                ledger_disposition="reconciled",
+                ledger_fingerprint="ledger-v2:test",
+                ledger_watermark=11,
+                ledger_checksum_sha256=hashlib.sha256(b"ledger-11").hexdigest(),
+            ),
+        )
+
+        self.assertEqual("reconciled", state)
+        self.assertEqual(1, spool.spool_counts(self.connection)["reconciled"])
+
     def test_confirmed_side_effect_recovery_remains_cas_reconcilable(self) -> None:
         self.commit([self.intent("close-1", offset="close")])
         lease = spool.lease_next(

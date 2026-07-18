@@ -1875,6 +1875,493 @@ class OfficialLiveExecutionLedgerCycleTest(unittest.TestCase):
         self.assertEqual(weighted["price"], 1246.0)
         self.assertEqual(weighted["trade_count"], 2)
 
+    def test_spool_recovery_without_ledger_evidence_is_pre_send_requeue(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=_cycle_row(cycle_no=0, intent_role="c9_initial_open"),
+                order_request=_order_request(),
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=Path(directory) / "ledger.jsonl",
+            )
+
+        self.assertEqual("requeue_pre_send", decision.disposition)
+        self.assertEqual("", decision.blocker)
+        self.assertEqual("", decision.evidence_event_type)
+        self.assertFalse(decision.safe_terminal_appended)
+
+    def test_spool_recovery_matching_reservation_appends_safe_terminal_once(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_stop_close", offset="close")
+            request = _order_request(offset="close")
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-close",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                    "service_generation": "service-1",
+                    "connection_generation": "connection-1",
+                },
+                path=path,
+            )
+            self.assertTrue(reserved["reserved"])
+
+            first = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+            second = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+            recovery_rows = [
+                item
+                for item in ledger.read_execution_ledger(path)
+                if item.get("event_type")
+                == "spool_crash_recovery_pre_send_safe_terminal"
+            ]
+
+        self.assertEqual("requeue_pre_send", first.disposition)
+        self.assertTrue(first.safe_terminal_appended)
+        self.assertEqual("requeue_pre_send", second.disposition)
+        self.assertFalse(second.safe_terminal_appended)
+        self.assertEqual(1, len(recovery_rows))
+
+    def test_spool_recovery_after_batch_api_slot_is_reconcile_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_stop_close", offset="close")
+            request = _order_request(offset="close")
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-close",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                    "service_generation": "service-1",
+                    "connection_generation": "connection-1",
+                },
+                path=path,
+            )
+            slot = ledger.reserve_execution_api_slots(
+                target_date=TARGET_DATE,
+                slot_type="send_order",
+                daily_limit=12,
+                base_events=[
+                    {
+                        "intent_id": "intent-close",
+                        "intent_fingerprint": reserved["intent_fingerprint"],
+                        "spool_lease_owner": "service-1",
+                        "spool_lease_token": "lease-1",
+                        "close_submit_attempt_no": reserved["close_submit_attempt_no"],
+                        "close_attempt_lease_token": reserved["close_attempt_lease_token"],
+                        "child_order_id": "close:1/1",
+                        "child_order_index": 0,
+                        "child_order_offset": "close",
+                    }
+                ],
+                path=path,
+            )
+            self.assertTrue(slot["reserved"])
+
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual("reconcile_only_side_effect_unknown", decision.disposition)
+        self.assertEqual("api_slot_reserved", decision.evidence_event_type)
+        self.assertFalse(decision.safe_terminal_appended)
+
+    def test_spool_recovery_all_post_slot_evidence_is_never_requeued(self) -> None:
+        evidence_types = (
+            "send_order_called",
+            "send_order_returned_empty",
+            "adapter_exception_after_reserve",
+            "unknown_order_status_after_send",
+            "residual_order_unknown_after_cancel",
+        )
+        for event_type in evidence_types:
+            with self.subTest(event_type=event_type):
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "ledger.jsonl"
+                    row = _cycle_row(
+                        cycle_no=0,
+                        intent_role="c9_initial_stop_close",
+                        offset="close",
+                    )
+                    request = _order_request(offset="close")
+                    reserved = ledger.reserve_execution_ledger_intent(
+                        target_date=TARGET_DATE,
+                        row=row,
+                        order_request=request,
+                        close_retry_after_cancel_seconds=30,
+                        base_event={
+                            "intent_id": "intent-close",
+                            "spool_lease_owner": "service-1",
+                            "spool_lease_token": "lease-1",
+                        },
+                        path=path,
+                    )
+                    event = {
+                        "event_type": event_type,
+                        "target_date": TARGET_DATE,
+                        "intent_fingerprint": reserved["intent_fingerprint"],
+                    }
+                    if event_type == "adapter_exception_after_reserve":
+                        event["send_slot_reserved"] = 1
+                    ledger.append_execution_ledger_event(event, path=path)
+
+                    decision = ledger.recover_expired_spool_lease(
+                        target_date=TARGET_DATE,
+                        row=row,
+                        order_request=request,
+                        spool_lease_owner="service-1",
+                        spool_lease_token="lease-1",
+                        close_retry_after_cancel_seconds=30,
+                        path=path,
+                    )
+
+                self.assertEqual(
+                    "reconcile_only_side_effect_unknown",
+                    decision.disposition,
+                )
+                self.assertEqual(event_type, decision.evidence_event_type)
+
+    def test_concurrent_spool_recovery_appends_one_safe_terminal(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+                path=path,
+            )
+
+            def recover() -> object:
+                return ledger.recover_expired_spool_lease(
+                    target_date=TARGET_DATE,
+                    row=row,
+                    order_request=request,
+                    spool_lease_owner="service-1",
+                    spool_lease_token="lease-1",
+                    close_retry_after_cancel_seconds=30,
+                    path=path,
+                )
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                decisions = list(executor.map(lambda _: recover(), range(2)))
+            recovery_rows = [
+                item
+                for item in ledger.read_execution_ledger(path)
+                if item.get("event_type")
+                == "spool_crash_recovery_pre_send_safe_terminal"
+            ]
+
+        self.assertEqual(
+            1,
+            sum(bool(item.safe_terminal_appended) for item in decisions),
+        )
+        self.assertEqual(1, len(recovery_rows))
+
+    def test_post_slot_evidence_dominates_earlier_recovery_safe_terminal(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+                path=path,
+            )
+            pre_slot = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+            slot = ledger.reserve_execution_api_slots(
+                target_date=TARGET_DATE,
+                slot_type="send_order",
+                daily_limit=12,
+                base_events=[
+                    {
+                        "intent_id": "intent-open",
+                        "intent_fingerprint": reserved["intent_fingerprint"],
+                        "spool_lease_owner": "service-1",
+                        "spool_lease_token": "lease-1",
+                        "child_order_id": "open:1/1",
+                        "child_order_index": 0,
+                        "child_order_offset": "open",
+                    }
+                ],
+                path=path,
+            )
+            post_slot = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertTrue(pre_slot.safe_terminal_appended)
+        self.assertTrue(slot["reserved"])
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown",
+            post_slot.disposition,
+        )
+        self.assertEqual("api_slot_reserved", post_slot.evidence_event_type)
+
+    def test_spool_recovery_terminal_fill_is_reconciled(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                    "service_generation": "service-1",
+                    "connection_generation": "connection-1",
+                },
+                path=path,
+            )
+            ledger.append_execution_ledger_event(
+                _fill(
+                    str(reserved["intent_fingerprint"]),
+                    price=1245.5,
+                    volume=2,
+                    vt_tradeid="TRADE-1",
+                ),
+                path=path,
+            )
+
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual("reconciled", decision.disposition)
+        self.assertEqual("filled_or_part_filled", decision.evidence_event_type)
+
+    def test_spool_recovery_corrupt_ledger_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            path.write_text("{not-json}\n", encoding="utf-8")
+
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=_cycle_row(cycle_no=0, intent_role="c9_initial_open"),
+                order_request=_order_request(),
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual("blocked_ledger_integrity", decision.disposition)
+        self.assertIn("ledger_decode_error", decision.blocker)
+
+    def test_spool_recovery_accepts_safe_v1_alias_but_blocks_ambiguous_retry_stop(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            initial_row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "reserved",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": _legacy_digest(offset="open"),
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-initial",
+                },
+                path=path,
+            )
+            initial = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=initial_row,
+                order_request=_order_request(),
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-initial",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+            retry_stop_row = _cycle_row(
+                cycle_no=1,
+                intent_role="c9_retry_stop_close",
+                offset="close",
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "reserved",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": _legacy_digest(offset="close"),
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-retry-stop",
+                },
+                path=path,
+            )
+            retry_stop = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=retry_stop_row,
+                order_request=_order_request(offset="close"),
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-retry-stop",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual("requeue_pre_send", initial.disposition)
+        self.assertTrue(initial.safe_terminal_appended)
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown",
+            retry_stop.disposition,
+        )
+        self.assertEqual(
+            "spool_crash_recovery_unaccepted_fingerprint_lease_evidence",
+            retry_stop.blocker,
+        )
+        self.assertFalse(retry_stop.safe_terminal_appended)
+
+    def test_duplicate_trade_callback_cannot_fake_complete_reconciliation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+                path=path,
+            )
+            duplicated_fill = _fill(
+                str(reserved["intent_fingerprint"]),
+                price=1245.5,
+                volume=1,
+                vt_tradeid="TRADE-DUP",
+            )
+            ledger.append_execution_ledger_event(duplicated_fill, path=path)
+            ledger.append_execution_ledger_event(duplicated_fill, path=path)
+
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown",
+            decision.disposition,
+        )
+        self.assertEqual("filled_or_part_filled", decision.evidence_event_type)
+
+    def test_duplicate_anonymous_fill_cannot_fake_complete_reconciliation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-1",
+                },
+                path=path,
+            )
+            anonymous_fill = _fill(
+                str(reserved["intent_fingerprint"]),
+                price=1245.5,
+                volume=1,
+            )
+            ledger.append_execution_ledger_event(anonymous_fill, path=path)
+            ledger.append_execution_ledger_event(anonymous_fill, path=path)
+
+            decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-1",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown",
+            decision.disposition,
+        )
+        self.assertEqual("filled_or_part_filled", decision.evidence_event_type)
+
 
 if __name__ == "__main__":
     unittest.main()

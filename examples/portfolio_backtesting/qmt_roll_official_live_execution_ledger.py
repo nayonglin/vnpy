@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -98,7 +99,45 @@ CLOSE_ATTEMPT_LEASE_SAFE_TERMINAL_EVENTS = {
     "final_pre_send_gate_blocked_after_reserve",
     "api_slot_reservation_blocked",
     "adapter_exception_after_reserve",
+    "spool_crash_recovery_pre_send_safe_terminal",
 }
+EXECUTION_LEDGER_READER_CAPABILITIES = frozenset(
+    {
+        "ledger_schema_1",
+        "intent_fingerprint_v1",
+        "intent_fingerprint_v2",
+        "close_uuid_lease_v1",
+        "batch_api_slot_cas_v1",
+        "spool_crash_recovery_v1",
+    }
+)
+RECOVERY_SIDE_EFFECT_EVENTS = {
+    "api_slot_reserved",
+    "send_order_called",
+    "send_order_returned",
+    "send_order_returned_empty",
+    "submitted_to_ctp",
+    "adapter_exception_after_send",
+    "unknown_order_status_after_send",
+    "residual_order_active_after_cancel",
+    "residual_order_unknown_after_cancel",
+    "cancel_order_called",
+    "fill_reconciliation_pending",
+    "order_traded_volume_observed_without_trade_detail",
+    "filled_or_part_filled",
+}
+RECOVERY_RECONCILED_EVENTS = {
+    "close_volume_reconciled_without_trade_detail",
+}
+
+
+@dataclass(frozen=True)
+class LedgerRecoveryDecision:
+    disposition: str
+    blocker: str
+    intent_fingerprint: str
+    evidence_event_type: str
+    safe_terminal_appended: bool
 
 
 def _clean(value: Any) -> str:
@@ -842,6 +881,292 @@ def reserve_execution_api_slots(
                 "api_slot_batch_id": batch_id,
                 "ledger_event": durable_payload,
             }
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def _recovery_event_matches_lease(
+    event: dict[str, Any],
+    *,
+    spool_lease_owner: str,
+    spool_lease_token: str,
+) -> bool:
+    if (
+        _clean(event.get("spool_lease_owner")) == spool_lease_owner
+        and _clean(event.get("spool_lease_token")) == spool_lease_token
+    ):
+        return True
+    children = event.get("api_slot_batch_children")
+    if not isinstance(children, list):
+        return False
+    return any(
+        isinstance(child, dict)
+        and _clean(child.get("spool_lease_owner")) == spool_lease_owner
+        and _clean(child.get("spool_lease_token")) == spool_lease_token
+        for child in children
+    )
+
+
+def _recovery_fill_volume(events: list[dict[str, Any]]) -> float:
+    identified_total = 0.0
+    anonymous_max = 0.0
+    seen_trade_ids: set[str] = set()
+    for event in events:
+        if _clean(event.get("event_type")) != "filled_or_part_filled":
+            continue
+        trade_identity = _event_trade_identity(event)
+        if trade_identity:
+            if trade_identity in seen_trade_ids:
+                continue
+            seen_trade_ids.add(trade_identity)
+        volume = max(
+            0.0,
+            _to_float(
+                event.get("trade_volume_delta", event.get("volume")),
+                0.0,
+            ),
+        )
+        if trade_identity:
+            identified_total += volume
+        else:
+            # Anonymous legacy callbacks cannot prove that two rows are two
+            # distinct fills.  A single full-volume row is usable, but rows
+            # without identity must never be accumulated into a false fill.
+            anonymous_max = max(anonymous_max, volume)
+    return max(identified_total, anonymous_max)
+
+
+def recover_expired_spool_lease(
+    *,
+    target_date: str,
+    row: dict[str, Any],
+    order_request: dict[str, Any],
+    spool_lease_owner: str,
+    spool_lease_token: str,
+    close_retry_after_cancel_seconds: int,
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+) -> LedgerRecoveryDecision:
+    """Classify one expired spool lease while holding the ledger write lock.
+
+    A matching reservation without any broker/API evidence is still pre-send
+    and receives one durable safe-terminal marker.  Once an API slot or later
+    side-effect evidence exists, recovery is reconciliation-only and must
+    never make the intent sendable again.
+    """
+
+    owner = _clean(spool_lease_owner)
+    token = _clean(spool_lease_token)
+    if not owner:
+        raise ValueError("spool_lease_owner_required")
+    if not token:
+        raise ValueError("spool_lease_token_required")
+    fingerprint, fingerprint_payload = intent_fingerprint(
+        target_date,
+        row,
+        order_request,
+    )
+    accepted_fingerprints = {
+        fingerprint,
+        *_legacy_alias_fingerprints(fingerprint_payload),
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path_was_missing = not path.exists()
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            rows = _parse_ledger_lines(handle.read().splitlines())
+            integrity_error = _ledger_integrity_blocker(rows)
+            if integrity_error:
+                return LedgerRecoveryDecision(
+                    disposition="blocked_ledger_integrity",
+                    blocker=integrity_error,
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type=integrity_error.split(":", 2)[1],
+                    safe_terminal_appended=False,
+                )
+
+            unaccepted_lease_evidence = next(
+                (
+                    event
+                    for event in reversed(rows)
+                    if _clean(event.get("target_date")) == target_date
+                    and _clean(event.get("intent_fingerprint"))
+                    not in accepted_fingerprints
+                    and _recovery_event_matches_lease(
+                        event,
+                        spool_lease_owner=owner,
+                        spool_lease_token=token,
+                    )
+                ),
+                None,
+            )
+            if unaccepted_lease_evidence is not None:
+                return LedgerRecoveryDecision(
+                    disposition="reconcile_only_side_effect_unknown",
+                    blocker=(
+                        "spool_crash_recovery_unaccepted_fingerprint_lease_evidence"
+                    ),
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type=_clean(
+                        unaccepted_lease_evidence.get("event_type")
+                    ),
+                    safe_terminal_appended=False,
+                )
+
+            matched = [
+                event
+                for event in rows
+                if _clean(event.get("target_date")) == target_date
+                and _clean(event.get("intent_fingerprint"))
+                in accepted_fingerprints
+            ]
+            exact_reservation_indexes = [
+                index
+                for index, event in enumerate(matched)
+                if _clean(event.get("event_type")) == "reserved"
+                and _recovery_event_matches_lease(
+                    event,
+                    spool_lease_owner=owner,
+                    spool_lease_token=token,
+                )
+            ]
+            if not exact_reservation_indexes:
+                if matched:
+                    return LedgerRecoveryDecision(
+                        disposition="reconcile_only_side_effect_unknown",
+                        blocker="spool_crash_recovery_lease_evidence_mismatch",
+                        intent_fingerprint=fingerprint,
+                        evidence_event_type=_clean(matched[-1].get("event_type")),
+                        safe_terminal_appended=False,
+                    )
+                return LedgerRecoveryDecision(
+                    disposition="requeue_pre_send",
+                    blocker="",
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type="",
+                    safe_terminal_appended=False,
+                )
+
+            reservation_index = exact_reservation_indexes[-1]
+            reservation = matched[reservation_index]
+            after_reservation = matched[reservation_index + 1 :]
+            safe_terminals = [
+                event
+                for event in after_reservation
+                if _clean(event.get("event_type"))
+                == "spool_crash_recovery_pre_send_safe_terminal"
+                and _recovery_event_matches_lease(
+                    event,
+                    spool_lease_owner=owner,
+                    spool_lease_token=token,
+                )
+            ]
+            requested_volume = max(
+                0.0,
+                _to_float(fingerprint_payload.get("volume"), 0.0),
+            )
+            filled_volume = _recovery_fill_volume(after_reservation)
+            explicit_reconciled = next(
+                (
+                    event
+                    for event in reversed(after_reservation)
+                    if _clean(event.get("event_type"))
+                    in RECOVERY_RECONCILED_EVENTS
+                ),
+                None,
+            )
+            if explicit_reconciled is not None or (
+                requested_volume > 0 and filled_volume >= requested_volume
+            ):
+                evidence = explicit_reconciled or next(
+                    event
+                    for event in reversed(after_reservation)
+                    if _clean(event.get("event_type"))
+                    == "filled_or_part_filled"
+                )
+                return LedgerRecoveryDecision(
+                    disposition="reconciled",
+                    blocker="",
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type=_clean(evidence.get("event_type")),
+                    safe_terminal_appended=False,
+                )
+
+            side_effect = next(
+                (
+                    event
+                    for event in reversed(after_reservation)
+                    if _clean(event.get("event_type"))
+                    in RECOVERY_SIDE_EFFECT_EVENTS
+                    or (
+                        _clean(event.get("event_type"))
+                        == "adapter_exception_after_reserve"
+                        and _to_float(event.get("send_slot_reserved"), 0.0)
+                        == 1.0
+                    )
+                ),
+                None,
+            )
+            if side_effect is not None:
+                return LedgerRecoveryDecision(
+                    disposition="reconcile_only_side_effect_unknown",
+                    blocker="",
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type=_clean(side_effect.get("event_type")),
+                    safe_terminal_appended=False,
+                )
+
+            if safe_terminals:
+                return LedgerRecoveryDecision(
+                    disposition="requeue_pre_send",
+                    blocker="",
+                    intent_fingerprint=fingerprint,
+                    evidence_event_type=(
+                        "spool_crash_recovery_pre_send_safe_terminal"
+                    ),
+                    safe_terminal_appended=False,
+                )
+
+            payload = {
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "event_type": "spool_crash_recovery_pre_send_safe_terminal",
+                "target_date": target_date,
+                "intent_fingerprint": fingerprint,
+                "intent_payload": fingerprint_payload,
+                "spool_lease_owner": owner,
+                "spool_lease_token": token,
+                "pre_send_exception_confirmed": 1,
+                "send_slot_reserved": 0,
+                "recovered_from_event_type": _clean(
+                    reservation.get("event_type")
+                ),
+            }
+            for key in (
+                "intent_id",
+                "service_generation",
+                "connection_generation",
+                "close_submit_attempt_no",
+                "close_attempt_lease_token",
+            ):
+                value = reservation.get(key)
+                if _clean(value):
+                    payload[key] = value
+            _durable_append_locked(
+                handle,
+                payload,
+                created_path=path if path_was_missing else None,
+            )
+            return LedgerRecoveryDecision(
+                disposition="requeue_pre_send",
+                blocker="",
+                intent_fingerprint=fingerprint,
+                evidence_event_type=(
+                    "spool_crash_recovery_pre_send_safe_terminal"
+                ),
+                safe_terminal_appended=True,
+            )
         finally:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
