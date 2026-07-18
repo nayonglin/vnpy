@@ -187,11 +187,28 @@
 - 过拟合反思：否。没有根据 JM 单晚结果或收益曲线调参，只补时间因果、显式证据和失败关闭。
 - 继续价值反思：是。下一步价值已经从继续堆离线规则转为冻结 manifest、独立终审和真实服务窗口的严格 0/0 验收。
 
+### 2026-07-19 02:07-02:43 readonly canary P1 对抗修复
+
+- 独立 Agent 对旧冻结 HEAD `b4619a7a9175e228fe721c13d86ada3d0c6e0a11` 的结论为 `P0=0、P1=5、P2=1`，因此旧 manifest 和“可开始 production-readonly 验收”的结论同时作废。五个 P1 分别是：Stage174/907 的 `0/0` 无权威来源、断线证据可由任意 JSON 自报、所谓首 tick 实为未绑定 ready heartbeat 的最新 watermark、session/plist/manifest 可替换或复制、manifest 漏掉直接生产者 Stage907；P2 是开盘分钟窗口错误包含 `09:01:00/21:01:00`。
+- Stage174 现在在 `CtpGateway` 与 `CtpTdApi` 两层同时安装只读 order firewall，任何 `send_order/cancel_order` 尝试先计数再抛错，原 API 永不调用；summary 明确区分 attempted 与 called，Stage907 只在五个计数均为严格整数零时 ready，Stage903/930 不再用默认零补齐缺失来源。
+- Stage174 同时从真实 `onFrontConnected/onFrontDisconnected` callback 生成 connection generation。断线后只有在新 generation 上重新完成 order/trade/position 三项 reqid-bound query bundle、readiness 先撤销后恢复且 order API 仍为 `0/0` 时，才产生完整 reconnect proof；探针主动关闭产生的 disconnect 被明确排除。Stage907/903 原样传递该证明，capture CLI 删除任意 `--disconnect-evidence` 输入。
+- 行情资格字段由“首 tick”更名为“开盘首分钟内观测 tick”，保持语义真实。Stage930 只有在 stream/transport/all-symbol freshness 均 ready、heartbeat PID 与受管进程一致时才采纳 ingress；durable 时间仍来自同一 heartbeat 的严格整数 `generated_epoch_ns`。审计窗口改为半开区间 `[open, open+60s)`，不再接受 09:01:00/21:01:00。
+- capture CLI 删除调用者提供的 session id/date/kind/scheduled time 和 tick 覆盖值。session identity、交易日和 08:55/20:55 调度由 Stage930 自身 `run_id + daemon_started_epoch_ns` 及 canonical plist 推导；同一 daemon summary 被复制五次会得到同一 session id，从而被 duplicate gate 拒绝。
+- 只允许仓库内两份 Stage372 日/夜 canonical plist，且 supplied path、当前文件 SHA、manifest critical row 三者必须一致；重复 `--mode/--runtime-profile/--execution-profile/--submit-mode` 直接解析为空并失败关闭。capture evidence 嵌入完整 Stage930 summary，分别保存原文件 SHA、canonical payload SHA 和完整 record SHA，首次写入后 chmod `0444`；qualification 会重算摘要并核对 top-level 投影，修改或替换均失败。
+- Stage931 no-submit prewarm readiness 现在显式发布 send/cancel/order 三项计数，并同时证明 `spool_opened=0`、`ctp_module_loaded=0`；Stage930 从 readiness 读取，不再无条件补零。Stage907 脚本及其新测试已加入 manifest critical files。
+- 参数变化：删除 `capture --session-id/--session-date/--session-kind/--scheduled-start-epoch-ns/--disconnect-evidence` 及所有 tick 时间覆盖参数；capture 仅接受 Stage930 summary、canonical plist、冻结 manifest、repo root 和不可覆盖 output。策略参数没有新增、修改或删除。
+- TDD 聚焦回归：`137 passed, 13 subtests passed`；最终扩大执行链回归：`727 passed, 245 subtests passed`，耗时 `71.53s`。Python compile、`git diff --check` 和 3 份 Stage372 plist lint 全部通过；环境仍无 `ruff`，不声称 ruff 通过。
+- P1 修复代码提交 `740c4f7a3e67ad39d0888522154d2232c66ef122` 后，从干净 detached worktree 生成 67 个 critical files 的 schema v2 readonly/no-submit manifest。release id `stage179-stage372-readonly-740c4f7a3`，manifest digest `ad391bac1c13a87aba2efe1d06c5c4e8866580c4912eefe91fa1a005b6960a86`，文件 SHA-256 `867ef1403ee4b72c29400454645ba8668707f86bfed6b789708c91bb590ed2cb`；source commit 为 `740c4f7a3...`，Stage907 已确认在 critical files 内，允许 profile 仍只有 `offline/production-readonly`。
+- 外部调研结论：Apple 的 launchd schedule 只能证明配置的调度意图，不能代替真实进程拉起和行情 ready 时间戳；Git 的内容寻址/精确字节模型适合冻结证据，但前提是所有直接证据生产者都进入 manifest。本轮实现按这两个底层约束收口，没有把“配置存在”误当“线上已准时”。
+- 本轮没有运行回测；期末权益、总收益、最大回撤、Sharpe、总滑点、总交易次数、胜率均为“不适用/未变更”。没有读取生产 env、没有连接 CTP/SimNow、没有加载或启动 LaunchAgent、没有调用真实报单或撤单 API。
+- 过拟合反思：否。修复对象是身份、时间因果、来源完整性和 fail-closed 不变量，不使用 JM 单晚收益或价格结果调参。
+- 继续价值反思：是。离线证据链已值得重新冻结和对抗终审；只有终审 `P0/P1=0` 后，才进入五场真实 production-readonly 会话和一次真实断线重连，仍不能提前宣称线上延迟已解决。
+
 ## 结论与硬门禁
 
-- 代码合入判断：`GO`，严格限定 no-submit 代码与 dormant plist。最终冻结独立复审为 `P0=0、P1=0、P2=1`；合入不等于部署或激活。
+- 代码合入判断：旧冻结候选已因 readonly-canary `P1=5` 作废；新候选已完成修复、回归和 manifest 重建，但在新一轮独立冻结终审给出 `P0/P1=0` 前暂为 `NO-GO`。合入不等于部署或激活。
 - 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
-- 激活判断：release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍因 CTP 未就绪而 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
+- 激活判断：新 release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍缺五场真实会话和断线重连证据，当前 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
 - 后续：可由合入者合入冻结 no-submit 候选，但必须保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
