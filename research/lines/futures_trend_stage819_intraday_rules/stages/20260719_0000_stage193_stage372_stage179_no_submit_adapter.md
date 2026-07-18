@@ -140,13 +140,25 @@
 - 最终四类判断：no-submit 代码与 dormant plist 合入 `GO`；production-readonly `NO-GO`；SimNow/券商测试 `NO-GO`；production-live `NO-GO`。
 - 剩余 P2：安装前需创建并校验 Stage372 日志/output/runtime 目录；Stage903 后续应使用唯一 run id 绑定本次 Stage914 结果；尚无真实 20:55 启动至 21:00 decision/submit-ready 的端到端时间戳证据。以上不影响 no-submit 代码合入，但全部属于部署/激活前置。
 
+### 2026-07-19 01:02-01:07 部署前 P2 收口与生产只读复验
+
+- Stage903 串读根因已定位并修复：Stage914 本身会在本次子进程 stdout 输出完整 JSON，但 Stage903 原来忽略 stdout、按 mtime 扫描“最新 summary 文件”，并发或隔离 output root 配置漂移时可能串读另一轮/profile。新增失败测试先复现 stale C9 文件覆盖本次 Stage372 blocked summary；修复后 Stage903 直接解析同一 `subprocess.run` 的 stdout，解析失败即 `_read_error` 并失败关闭。
+- 新增 Stage372 LaunchAgent 目录 provisioner。它从 3 份 dormant plist 提取 log parent、official-live output、signal input 和 Stage179 runtime root，只允许 `stage179_stage372` 专属根内路径；默认 check，显式 create 才创建，永不调用 `launchctl`。
+- 已在真实部署根创建/校验专属根与 8 个子目录，共 9 个 required directories，全部 `bytedance:staff`、权限 `0750`；重复 create 的 `created_count=0`，最终 check 为 `directories_ready`、permission mismatch `0`、`launchctl=0`、order API `0/0`。三份 plist 仍未加载。
+- 发布清单 builder 已把 provisioner 纳入 critical files；对应默认清单覆盖测试先红后绿。
+- 修复后扩大回归：Stage179/Stage372 组 `396 passed, 190 subtests passed`，历史 C9/账本/CTP gate 组 `269 passed, 55 subtests passed`，合计 `665 passed, 245 subtests passed`；3 份 plist lint、Python compile、`git diff --check` 均通过。
+- 生产只读 guard：`ctp_live.local.env` 权限 `0600`，9 个必需 env key 全部存在且未输出明文；formal trader/MD frameworks 存在并优先于 `.py311/lib`。
+- Stage655 TD-only 用正式 env/framework 运行 35 秒，严格 `send/cancel=0/0`，但 `front_connected/auth/login/settlement/account/position` 全部未就绪，状态 `readonly_no_account_margin_received`。summary SHA-256 `6f10c5044ae28abf6c806d9a997940e77784f4f18e99914daa130f179084ca4f`。
+- 随后的不打印地址 TCP 探测确认 TD/MD 前置端口均不可达，当前失败根因收敛为周末/外部生产前置不可用，而不是本地 framework、Stage179 执行链或策略逻辑。production-readonly 继续 `NO-GO`，等待交易服务窗口复验；不得绕过只读 gate。
+- 本轮没有新回测、没有加载 launchd、没有调用任何报撤单 API。新增关键源码后 manifest 必须从新干净 HEAD 再次冻结，旧 digest 只作历史证据。
+
 ## 结论与硬门禁
 
 - 代码合入判断：`GO`，严格限定为 no-submit 代码与 dormant plist。两轮 follow-up 新发现的产物快照和 canonical profile 换绑 P1 均已修复；最终独立终审为 `P0=0、P1=0`。
-- 部署判断：新增 plist 尚未安装/加载；合入不等于部署。
+- 部署判断：9 个 Stage372 专属部署目录已完成 `0750` provisioning；新增 plist 尚未安装/加载，合入不等于部署。
 - 激活判断：release manifest 只允许离线和 `production-readonly`，但实际 production-readonly 仍因 CTP 未就绪而 `NO-GO`。Stage372 语义资格为 `blocked`，SimNow、broker-test 和 production-live 必须拒绝。
 - 延迟判断：盘后在 16:35 预计算最终 K 线意图，消除了 21:00 会话启动时现算回测/信号链导致的结构性延迟；但在真实只读 CTP 与运行态时间戳证据完成前，不能宣称已解决线上端到端延迟。
-- 后续：由合入者将 no-submit 候选合入线上代码库，但保持所有 plist dormant；完成目录 provisioning 后再做 production-readonly 严格 `0/0` CTP 与真实 LaunchAgent 时间戳验收。production-readonly 因 front 未连接与 Stage174 `exit 139` 保持阻断；未获得用户新的明确报单授权前，不做 SimNow smoke order。
+- 后续：冻结包含 Stage903/run-binding 与 provisioner 的新 manifest，再做独立审查；由合入者将 no-submit 候选合入线上代码库，但保持所有 plist dormant。待生产前置在交易服务窗口恢复后，重跑 production-readonly 严格 `0/0` CTP；通过后才允许真实 LaunchAgent 20:55→21:00 时间戳 canary。未获得用户新的明确报单授权前，不做 SimNow smoke order。
 
 ## 过拟合反思
 

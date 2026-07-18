@@ -445,6 +445,10 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
             defaults,
         )
+        self.assertIn(
+            "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
+            defaults,
+        )
         for stage in ("902", "903", "904", "905", "927"):
             self.assertTrue(
                 any(f"stage{stage}_" in path for path in defaults),

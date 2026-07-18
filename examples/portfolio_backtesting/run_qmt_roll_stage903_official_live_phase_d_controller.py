@@ -74,8 +74,6 @@ STAGE909_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage909_official_live_shadow_refr
 STAGE909_MODEL_TAG = "stage909_official_live_shadow_refresh_gate_v1"
 STAGE909_PREFIX = "qmt_roll_stage909_official_live_shadow_refresh_gate"
 STAGE914_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py"
-STAGE914_MODEL_TAG = "stage914_official_live_ctp_runtime_preflight_v1"
-STAGE914_PREFIX = "qmt_roll_stage914_official_live_ctp_runtime_preflight"
 STAGE922_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage922_official_live_target_date_resolver.py"
 STAGE923_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage923_official_live_fail_closed_incident.py"
 STAGE924_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage924_official_live_account_recovery_gate.py"
@@ -131,15 +129,6 @@ def _stage908_summary_path(target_date: str) -> Path:
 def _stage909_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"{STAGE909_PREFIX}_summary_{date_key}_{STAGE909_MODEL_TAG}.json"
-
-
-def _latest_stage914_summary_path() -> Path | None:
-    rows = sorted(
-        OUTPUT_DIR.glob(f"{STAGE914_PREFIX}_summary_*_{STAGE914_MODEL_TAG}.json"),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    return rows[0] if rows else None
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -446,7 +435,7 @@ def _run_stage914(
         "stdout_tail": result.stdout[-4000:],
         "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "summary": _read_json(_latest_stage914_summary_path()),
+        "summary": _parse_json_stdout(result.stdout),
     }
 
 

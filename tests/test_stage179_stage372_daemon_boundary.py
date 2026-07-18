@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
+import json
 import os
 from pathlib import Path
+import plistlib
+import stat
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -110,6 +115,138 @@ class Stage372DaemonBoundaryTest(unittest.TestCase):
         command = run_command.call_args.args[0]
         index = command.index("--execution-profile")
         self.assertEqual(command[index + 1], "stage372-20w")
+
+    def test_stage903_uses_stage914_stdout_from_the_same_process(self) -> None:
+        same_run_summary = {
+            "execution_profile": "stage372-20w",
+            "preflight_status": "production_readonly_preflight_blocked",
+            "blocking_failure_count": 1,
+            "run_marker": "same-process",
+        }
+        stale_latest_summary = {
+            "execution_profile": "c9-15w-historical",
+            "preflight_status": "production_readonly_preflight_passed",
+            "blocking_failure_count": 0,
+            "run_marker": "stale-file",
+        }
+        with (
+            patch.object(
+                stage903.subprocess,
+                "run",
+                return_value=SimpleNamespace(
+                    returncode=0,
+                    stdout=json.dumps(same_run_summary),
+                ),
+            ),
+            patch.object(
+                stage903,
+                "_read_json",
+                return_value=stale_latest_summary,
+            ),
+        ):
+            result = stage903._run_stage914(
+                1,
+                execution_profile=STAGE372_20W_PROFILE,
+            )
+
+        self.assertEqual(result["summary"], same_run_summary)
+
+    def test_stage372_directory_provisioner_is_bounded_and_idempotent(self) -> None:
+        script = (
+            PORTFOLIO_DIR
+            / "provision_qmt_roll_stage372_launchd_directories.py"
+        )
+        self.assertTrue(script.exists(), "Stage372 provisioner is missing")
+        spec = importlib.util.spec_from_file_location(
+            "stage372_directory_provisioner",
+            script,
+        )
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "stage179_stage372"
+            plist_path = Path(tmp) / "stage372.plist"
+            plist_path.write_bytes(
+                plistlib.dumps(
+                    {
+                        "StandardOutPath": str(root / "day" / "out.log"),
+                        "StandardErrorPath": str(root / "day" / "err.log"),
+                        "EnvironmentVariables": {
+                            "OFFICIAL_LIVE_OUTPUT_DIR": str(
+                                root / "day" / "official-live"
+                            ),
+                            "OFFICIAL_LIVE_SIGNAL_INPUT_DIR": str(
+                                root / "signal-input"
+                            ),
+                        },
+                        "ProgramArguments": [
+                            "python",
+                            "daemon.py",
+                            "--stage179-runtime-root",
+                            str(root / "day" / "runtime"),
+                        ],
+                    }
+                )
+            )
+
+            required = module.collect_required_directories(
+                [plist_path],
+                allowed_root=root,
+            )
+            resolved_root = root.resolve(strict=False)
+            self.assertEqual(
+                set(required),
+                {
+                    resolved_root,
+                    resolved_root / "day",
+                    resolved_root / "day" / "official-live",
+                    resolved_root / "day" / "runtime",
+                    resolved_root / "signal-input",
+                },
+            )
+            check = module.provision_directories(required, create=False)
+            self.assertEqual(check["status"], "directories_missing")
+            created = module.provision_directories(required, create=True)
+            self.assertEqual(created["status"], "directories_ready")
+            self.assertEqual(created["launchctl_called_count"], 0)
+            self.assertEqual(created["order_api_called_count"], 0)
+            self.assertEqual(
+                stat.S_IMODE(resolved_root.stat().st_mode),
+                0o750,
+            )
+            repeated = module.provision_directories(required, create=True)
+            self.assertEqual(repeated["created_count"], 0)
+            resolved_root.chmod(0o755)
+            permission_drift = module.provision_directories(
+                required,
+                create=False,
+            )
+            self.assertEqual(
+                permission_drift["status"],
+                "directories_permission_mismatch",
+            )
+            self.assertEqual(
+                permission_drift["permission_mismatch_count"],
+                1,
+            )
+
+            outside_plist = Path(tmp) / "outside.plist"
+            outside_plist.write_bytes(
+                plistlib.dumps(
+                    {"StandardOutPath": str(Path(tmp) / "outside.log")}
+                )
+            )
+            with self.assertRaisesRegex(
+                ValueError,
+                "stage372_launchd_directory_outside_allowed_root",
+            ):
+                module.collect_required_directories(
+                    [outside_plist],
+                    allowed_root=root,
+                )
 
 
 if __name__ == "__main__":

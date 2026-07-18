@@ -50,6 +50,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_live_trace.py",
     "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
     "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
+    "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
     "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
     "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
     "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
