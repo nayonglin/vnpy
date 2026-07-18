@@ -1,0 +1,29 @@
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist
+  s_57fbbdfeac5414::t_342c1d58952f85 7-8
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist
+  s_57fbbdfeac5414::t_dc1f987accf5b5 7-8
+tests/stage179_performance_gate.py
+  s_57fbbdfeac5414::t_cdfca7362c37e1 4,7-10,15,18,41-130,144-286,356-379,382-396,399-402,427-456,472,495,497,500-527,563-566,582-602,649-656,660
+tests/test_stage179_performance_gate_diagnostics.py
+  s_57fbbdfeac5414::t_a42dbef2b38af7 1-148
+tests/test_stage930_fast_lane.py
+  s_57fbbdfeac5414::t_a35ff8bb7ce2bf 1881
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "640d36b2dbd6a610573e8def2179a75276ef65f2",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
