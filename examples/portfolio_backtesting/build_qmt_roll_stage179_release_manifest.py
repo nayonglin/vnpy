@@ -96,6 +96,7 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage179_submit_authorization.py",
     "tests/test_stage179_two_executor_process_race.py",
     "tests/test_stage930_fast_lane.py",
+    "tests/test_stage931_post_reprice_final_gate.py",
 )
 
 

@@ -173,6 +173,43 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 readiness_state=self.readiness,
             )
 
+    @staticmethod
+    def _stage372_intent(*, pricetick: float = 0.5) -> dict[str, object]:
+        return {
+            "vt_symbol": "jm2609.DCE",
+            "source": "stage260_stage372_daily",
+            "pricetick": pricetick,
+        }
+
+    @staticmethod
+    def _stage372_engine(*, pricetick: float = 0.5) -> SimpleNamespace:
+        contract = SimpleNamespace(
+            vt_symbol="jm2609.DCE",
+            pricetick=pricetick,
+            gateway_name="CTP",
+        )
+        return SimpleNamespace(
+            subscribe=lambda *_args, **_kwargs: None,
+            get_contract=lambda vt_symbol: (
+                contract if vt_symbol == contract.vt_symbol else None
+            ),
+        )
+
+    def _stage372_tick(self, **overrides: object) -> dict[str, object]:
+        tick: dict[str, object] = {
+            "vt_symbol": "jm2609.DCE",
+            "datetime": datetime.now().isoformat(),
+            "received_monotonic": 121.0,
+            "gateway_name": "CTP",
+            "last_price": 100.0,
+            "bid_price_1": 99.5,
+            "ask_price_1": 100.0,
+            "limit_down": 90.0,
+            "limit_up": 110.0,
+        }
+        tick.update(overrides)
+        return tick
+
     def test_no_change_regular_open_passes_one_second_snapshot(self) -> None:
         initial = self._snapshot()
         second = self._snapshot(q2_completed_monotonic=120.0)
@@ -194,6 +231,399 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
             result["final_reprice_result"]["final_reprice_status"],
             "skipped_not_stage904_intraday_close",
         )
+
+    def test_stage372_long_uses_post_q2_ask_and_live_ctp_pricetick(self) -> None:
+        request = self._request(
+            direction=stage931.Direction.LONG,
+            offset=stage931.Offset.CLOSE,
+        )
+        rows = {"ticks": [self._stage372_tick()]}
+
+        with patch.object(
+            stage931,
+            "_latest_fresh_tick_from_file",
+            side_effect=AssertionError("Stage372 must not use tick-file fallback"),
+        ):
+            result = stage931._post_snapshot_final_reprice(
+                self._stage372_engine(),
+                rows,
+                self._stage372_intent(),
+                request,
+                max_tick_age_seconds=30,
+                q2_completed_monotonic=120.0,
+                tick_wait_seconds=0,
+            )
+
+        self.assertEqual(result["final_reprice_status"], "applied")
+        self.assertEqual(result["final_reprice_source"], "ctp_event_tick")
+        self.assertEqual(result["final_reprice_tick_file_fallback_allowed"], 0)
+        self.assertGreaterEqual(request.price, 100.0)
+        self.assertTrue(stage931._price_on_tick(request.price, 0.5))
+        self.assertLessEqual(request.price, 110.0)
+        self.assertEqual(result["final_reprice_live_contract_pricetick"], 0.5)
+
+    def test_stage372_open_passes_complete_post_reprice_state_gate(self) -> None:
+        self.engine = self._stage372_engine()
+        initial = self._snapshot(q2_completed_monotonic=100.0)
+        second = self._snapshot(q2_completed_monotonic=120.0)
+        request = self._request(
+            direction=stage931.Direction.SHORT,
+            offset=stage931.Offset.OPEN,
+        )
+        self.rows["ticks"].append(self._stage372_tick())
+
+        result = self._run_gate(
+            initial_snapshot=initial,
+            second_snapshot=second,
+            intent=self._stage372_intent(),
+            request=request,
+        )
+
+        self.assertTrue(result["success"])
+        self.assertEqual(result["blockers"], [])
+        self.assertEqual(
+            result["final_reprice_result"]["final_reprice_status"],
+            "applied",
+        )
+        self.assertLessEqual(request.price, 99.5)
+        self.assertTrue(stage931._price_on_tick(request.price, 0.5))
+
+    def test_stage372_short_clamps_to_tick_aligned_lower_limit(self) -> None:
+        request = self._request(
+            direction=stage931.Direction.SHORT,
+            offset=stage931.Offset.OPEN,
+        )
+        rows = {
+            "ticks": [
+                self._stage372_tick(
+                    bid_price_1=91.0,
+                    ask_price_1=91.5,
+                    limit_down=90.2,
+                    limit_up=110.3,
+                )
+            ]
+        }
+
+        result = stage931._post_snapshot_final_reprice(
+            self._stage372_engine(),
+            rows,
+            self._stage372_intent(),
+            request,
+            max_tick_age_seconds=30,
+            q2_completed_monotonic=120.0,
+            tick_wait_seconds=0,
+        )
+
+        self.assertEqual(result["final_reprice_status"], "applied")
+        self.assertEqual(request.price, 90.5)
+        self.assertLessEqual(request.price, 91.0)
+        self.assertGreaterEqual(request.price, 90.2)
+        self.assertTrue(stage931._price_on_tick(request.price, 0.5))
+        self.assertEqual(result["final_reprice_aligned_limit_down"], 90.5)
+        self.assertEqual(result["final_reprice_aligned_limit_up"], 110.0)
+
+    def test_stage372_missing_post_q2_tick_fails_closed(self) -> None:
+        request = self._request(
+            direction=stage931.Direction.LONG,
+            offset=stage931.Offset.OPEN,
+        )
+
+        result = stage931._post_snapshot_final_reprice(
+            self._stage372_engine(),
+            {"ticks": []},
+            self._stage372_intent(),
+            request,
+            max_tick_age_seconds=30,
+            q2_completed_monotonic=120.0,
+            tick_wait_seconds=0,
+        )
+
+        self.assertEqual(
+            result["final_reprice_status"],
+            "blocked_stage372_no_fresh_post_q2_ctp_tick",
+        )
+        self.assertTrue(stage931._final_reprice_blockers(result))
+        self.assertEqual(request.price, 100.0)
+
+    def test_stage372_tick_must_have_strict_post_q2_ingress_stamp(self) -> None:
+        for label, received_monotonic in {
+            "missing": None,
+            "before": 119.9,
+            "equal": 120.0,
+        }.items():
+            with self.subTest(label=label):
+                request = self._request(
+                    direction=stage931.Direction.LONG,
+                    offset=stage931.Offset.OPEN,
+                )
+                tick = self._stage372_tick(
+                    received_monotonic=received_monotonic
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(),
+                    {"ticks": [tick]},
+                    self._stage372_intent(),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    result["final_reprice_status"],
+                    "blocked_stage372_no_fresh_post_q2_ctp_tick",
+                )
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(request.price, 100.0)
+
+    def test_stage372_requires_contract_from_same_ctp_session(self) -> None:
+        cases = {
+            "missing": (
+                SimpleNamespace(
+                    subscribe=lambda *_args, **_kwargs: None,
+                    get_contract=lambda _vt_symbol: None,
+                ),
+                "blocked_stage372_live_contract_missing",
+            ),
+            "other_gateway": (
+                SimpleNamespace(
+                    subscribe=lambda *_args, **_kwargs: None,
+                    get_contract=lambda _vt_symbol: SimpleNamespace(
+                        pricetick=0.5,
+                        gateway_name="SIM",
+                    ),
+                ),
+                "blocked_stage372_live_contract_not_ctp",
+            ),
+            "other_contract": (
+                SimpleNamespace(
+                    subscribe=lambda *_args, **_kwargs: None,
+                    get_contract=lambda _vt_symbol: SimpleNamespace(
+                        vt_symbol="i2609.DCE",
+                        pricetick=0.5,
+                        gateway_name="CTP",
+                    ),
+                ),
+                "blocked_stage372_live_contract_vt_symbol_mismatch",
+            ),
+        }
+
+        for label, (engine, expected_status) in cases.items():
+            with self.subTest(label=label):
+                request = self._request(
+                    direction=stage931.Direction.LONG,
+                    offset=stage931.Offset.OPEN,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    engine,
+                    {"ticks": [self._stage372_tick()]},
+                    self._stage372_intent(),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(result["final_reprice_status"], expected_status)
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(request.price, 100.0)
+
+    def test_stage372_quote_tick_and_limits_are_mandatory(self) -> None:
+        cases = {
+            "quote_missing": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(ask_price_1=0.0),
+                "blocked_stage372_executable_quote_missing",
+            ),
+            "crossed_quote": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(bid_price_1=101.0, ask_price_1=100.0),
+                "blocked_stage372_crossed_quote",
+            ),
+            "intent_pricetick_missing": (
+                self._stage372_engine(),
+                self._stage372_intent(pricetick=0.0),
+                self._stage372_tick(),
+                "blocked_stage372_intent_pricetick_missing",
+            ),
+            "live_pricetick_missing": (
+                self._stage372_engine(pricetick=0.0),
+                self._stage372_intent(),
+                self._stage372_tick(),
+                "blocked_stage372_live_contract_pricetick_missing",
+            ),
+            "pricetick_mismatch": (
+                self._stage372_engine(pricetick=1.0),
+                self._stage372_intent(pricetick=0.5),
+                self._stage372_tick(),
+                "blocked_stage372_pricetick_mismatch",
+            ),
+            "sub_tolerance_pricetick_mismatch": (
+                self._stage372_engine(pricetick=0.5000000000005),
+                self._stage372_intent(pricetick=0.5),
+                self._stage372_tick(),
+                "blocked_stage372_pricetick_mismatch",
+            ),
+            "unrepresentable_pricetick": (
+                self._stage372_engine(pricetick=5e-324),
+                self._stage372_intent(pricetick=5e-324),
+                self._stage372_tick(),
+                "blocked_stage372_pricetick_not_representable",
+            ),
+            "limit_missing": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(limit_up=0.0),
+                "blocked_stage372_price_limits_missing",
+            ),
+            "limit_invalid": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(limit_down=111.0, limit_up=110.0),
+                "blocked_stage372_invalid_price_limits",
+            ),
+            "quote_outside_limit": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(ask_price_1=110.5),
+                "blocked_stage372_quote_outside_price_limits",
+            ),
+            "quote_not_on_tick": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(bid_price_1=99.4),
+                "blocked_stage372_quote_not_on_tick",
+            ),
+            "ctp_max_float_quote": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(ask_price_1=sys.float_info.max),
+                "blocked_stage372_executable_quote_missing",
+            ),
+            "ctp_max_float_limit": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(limit_up=sys.float_info.max),
+                "blocked_stage372_price_limits_missing",
+            ),
+            "non_ctp_tick_gateway": (
+                self._stage372_engine(),
+                self._stage372_intent(),
+                self._stage372_tick(gateway_name="SIM"),
+                "blocked_stage372_tick_not_ctp",
+            ),
+        }
+
+        for label, (engine, intent, tick, expected_status) in cases.items():
+            with self.subTest(label=label):
+                request = self._request(
+                    direction=stage931.Direction.LONG,
+                    offset=stage931.Offset.OPEN,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    engine,
+                    {"ticks": [tick]},
+                    intent,
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+                self.assertEqual(result["final_reprice_status"], expected_status)
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(request.price, 100.0)
+
+    def test_stage372_monotonic_cutoff_must_be_positive(self) -> None:
+        request = self._request(
+            direction=stage931.Direction.LONG,
+            offset=stage931.Offset.OPEN,
+        )
+        result = stage931._post_snapshot_final_reprice(
+            self._stage372_engine(),
+            {"ticks": [self._stage372_tick(received_monotonic=1.0)]},
+            self._stage372_intent(),
+            request,
+            max_tick_age_seconds=30,
+            q2_completed_monotonic=0.0,
+            tick_wait_seconds=0,
+        )
+
+        self.assertEqual(
+            result["final_reprice_status"],
+            "blocked_post_snapshot_tick_cutoff_missing",
+        )
+        self.assertTrue(stage931._final_reprice_blockers(result))
+        self.assertEqual(request.price, 100.0)
+
+    def test_stage372_tick_tolerance_cannot_authorize_non_marketable_price(self) -> None:
+        cases = (
+            (
+                stage931.Direction.LONG,
+                self._stage372_tick(
+                    bid_price_1=99.5,
+                    ask_price_1=100.000000001,
+                    limit_up=100.000000004,
+                ),
+            ),
+            (
+                stage931.Direction.SHORT,
+                self._stage372_tick(
+                    bid_price_1=99.999999999,
+                    ask_price_1=100.5,
+                    limit_down=99.999999996,
+                ),
+            ),
+        )
+
+        for direction, tick in cases:
+            with self.subTest(direction=direction.value):
+                request = self._request(
+                    direction=direction,
+                    offset=stage931.Offset.OPEN,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(),
+                    {"ticks": [tick]},
+                    self._stage372_intent(),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    result["final_reprice_status"],
+                    "blocked_stage372_no_executable_price_within_limits",
+                )
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(request.price, 100.0)
+
+    def test_stage372_pre_snapshot_price_is_not_repriced_or_subscribed(self) -> None:
+        subscribe_calls: list[object] = []
+        engine = self._stage372_engine()
+        engine.subscribe = lambda *args, **_kwargs: subscribe_calls.append(args)
+        request = self._request(
+            direction=stage931.Direction.SHORT,
+            offset=stage931.Offset.OPEN,
+        )
+
+        result = stage931._final_close_reprice(
+            engine,
+            {"ticks": []},
+            self._stage372_intent(),
+            request,
+            max_tick_age_seconds=30,
+            tick_wait_seconds=2,
+        )
+
+        self.assertEqual(
+            result["final_reprice_status"],
+            "skipped_not_stage904_intraday_close",
+        )
+        self.assertEqual(subscribe_calls, [])
+        self.assertEqual(request.price, 100.0)
 
     def test_manual_active_order_during_tick_wait_blocks_open(self) -> None:
         initial = self._snapshot()

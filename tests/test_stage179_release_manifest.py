@@ -447,6 +447,10 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             defaults,
         )
         self.assertIn(
+            "tests/test_stage931_post_reprice_final_gate.py",
+            defaults,
+        )
+        self.assertIn(
             "examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
             defaults,
         )

@@ -95,6 +95,7 @@ STAGE902_PREFIX = "qmt_roll_stage902_official_live_phase_d_readiness_gate"
 STAGE927_MODEL_TAG = "stage927_official_live_real_submit_arming_gate_v1"
 STAGE927_PREFIX = "qmt_roll_stage927_official_live_real_submit_arming_gate"
 ALLOWED_TICK_CLOCK_SKEW_SECONDS = 2.0
+MAX_EXACT_FLOAT_INTEGER = 2**53
 CTP_QUERY_INTERVAL_SECONDS = 1.1
 CTP_ACTIVE_ORDER_STATUSES = {"1", "3", "a", "b", "c"}
 CTP_TERMINAL_ORDER_STATUSES = {"0", "2", "4", "5"}
@@ -2280,6 +2281,8 @@ def _price_on_tick(price: float, pricetick: float) -> bool:
     if pricetick <= 0 or price <= 0:
         return True
     units = price / pricetick
+    if not math.isfinite(units):
+        return False
     return math.isclose(units, round(units), rel_tol=0.0, abs_tol=1e-8)
 
 
@@ -2287,6 +2290,8 @@ def _snap_price_to_tick(price: float, pricetick: float, direction: str) -> float
     if pricetick <= 0 or price <= 0:
         return price
     units = price / pricetick
+    if not math.isfinite(units):
+        return 0.0
     if direction == "short":
         return round(math.floor(units) * pricetick, 10)
     if direction == "long":
@@ -2300,6 +2305,44 @@ def _clip_price(price: float, lower: float, upper: float) -> float:
     if upper > 0:
         price = min(price, upper)
     return price
+
+
+def _tick_aligned_price_band(
+    lower: float,
+    upper: float,
+    pricetick: float,
+) -> tuple[float, float] | None:
+    """Return the inclusive, tick-aligned subset of an exchange price band."""
+
+    if not all(math.isfinite(value) and value > 0 for value in (lower, upper, pricetick)):
+        return None
+    if lower >= upper:
+        return None
+    # The epsilon only neutralizes binary float noise at an exact tick.  It is
+    # deliberately much smaller than the tolerance used by _price_on_tick.
+    lower_units = lower / pricetick
+    upper_units = upper / pricetick
+    if not math.isfinite(lower_units) or not math.isfinite(upper_units):
+        return None
+    epsilon = 1e-10
+    aligned_lower = math.ceil(lower_units - epsilon) * pricetick
+    aligned_upper = math.floor(upper_units + epsilon) * pricetick
+    if aligned_lower > aligned_upper or aligned_lower <= 0:
+        return None
+    return aligned_lower, aligned_upper
+
+
+def _valid_ctp_market_price(value: Any) -> float:
+    """Normalize a CTP price and reject missing/MAX_FLOAT sentinel values."""
+
+    number = _to_float(value, 0.0)
+    if (
+        not math.isfinite(number)
+        or number <= 0
+        or number >= sys.float_info.max / 2
+    ):
+        return 0.0
+    return number
 
 
 def _tick_datetime(row: dict[str, Any]) -> datetime | None:
@@ -2580,6 +2623,335 @@ def _final_close_reprice(
     return result
 
 
+def _stage372_post_q2_final_reprice(
+    main_engine: MainEngine,
+    rows: dict[str, list[dict[str, Any]]],
+    intent_row: dict[str, Any],
+    req: OrderRequest,
+    *,
+    max_tick_age_seconds: int,
+    q2_completed_monotonic: float | None,
+    tick_wait_seconds: int,
+) -> dict[str, Any]:
+    """Build a Stage372 executable limit price from one causal CTP session.
+
+    The Stage905 theoretical price is never an execution fallback here.  A
+    missing live contract, post-Q2 CTP tick, executable quote, price tick, or
+    exchange price band blocks the order before the broker API slot.
+    """
+
+    original_price = float(req.price)
+    vt_symbol = str(intent_row.get("vt_symbol", "") or req.vt_symbol).strip()
+    result: dict[str, Any] = {
+        "final_reprice_status": "blocked_stage372_price_gate_not_evaluated",
+        "final_reprice_source": "",
+        "final_reprice_reason": "",
+        "final_reprice_price_before": original_price,
+        "final_reprice_price_after": original_price,
+        "final_reprice_tick_age_seconds": "",
+        "final_reprice_bid_price_1": "",
+        "final_reprice_ask_price_1": "",
+        "final_reprice_live_price": "",
+        "final_reprice_basis_price": "",
+        "final_reprice_protection_ticks": "",
+        "final_reprice_intent_pricetick": "",
+        "final_reprice_live_contract_pricetick": "",
+        "final_reprice_limit_down": "",
+        "final_reprice_limit_up": "",
+        "final_reprice_aligned_limit_down": "",
+        "final_reprice_aligned_limit_up": "",
+        "final_reprice_tick_not_before_monotonic": "",
+        "final_reprice_tick_file_fallback_allowed": 0,
+        "post_sandwich_reprice": 1,
+    }
+
+    cutoff = pd.to_numeric(q2_completed_monotonic, errors="coerce")
+    if (
+        pd.isna(cutoff)
+        or not math.isfinite(float(cutoff))
+        or float(cutoff) <= 0
+    ):
+        result["final_reprice_status"] = "blocked_post_snapshot_tick_cutoff_missing"
+        result["final_reprice_reason"] = "q2_completed_monotonic missing or invalid"
+        return result
+    cutoff_value = float(cutoff)
+    result["final_reprice_tick_not_before_monotonic"] = cutoff_value
+
+    if vt_symbol != req.vt_symbol:
+        result["final_reprice_status"] = "blocked_stage372_vt_symbol_mismatch"
+        result["final_reprice_reason"] = (
+            f"intent_vt_symbol={vt_symbol};request_vt_symbol={req.vt_symbol}"
+        )
+        return result
+
+    tick, tick_age, tick_source = _subscribe_and_wait_fresh_tick(
+        main_engine,
+        vt_symbol,
+        rows,
+        wait_seconds=max(0, int(tick_wait_seconds)),
+        max_tick_age_seconds=max_tick_age_seconds,
+        not_before_received_monotonic=cutoff_value,
+    )
+    if tick is None:
+        result["final_reprice_status"] = (
+            "blocked_stage372_no_fresh_post_q2_ctp_tick"
+        )
+        result["final_reprice_reason"] = tick_source
+        return result
+    result["final_reprice_source"] = tick_source
+    result["final_reprice_tick_age_seconds"] = (
+        tick_age if tick_age is not None else ""
+    )
+    if tick_source != "ctp_event_tick":
+        result["final_reprice_status"] = "blocked_stage372_non_ctp_event_tick"
+        result["final_reprice_reason"] = f"tick_source={tick_source}"
+        return result
+    tick_gateway_name = str(tick.get("gateway_name", "") or "").strip().upper()
+    if tick_gateway_name != "CTP":
+        result["final_reprice_status"] = "blocked_stage372_tick_not_ctp"
+        result["final_reprice_reason"] = f"gateway_name={tick_gateway_name}"
+        return result
+
+    received_monotonic = pd.to_numeric(
+        tick.get("received_monotonic"), errors="coerce"
+    )
+    if (
+        pd.isna(received_monotonic)
+        or not math.isfinite(float(received_monotonic))
+        or float(received_monotonic) <= 0
+        or float(received_monotonic) <= cutoff_value
+    ):
+        result["final_reprice_status"] = (
+            "blocked_stage372_tick_not_strictly_after_q2"
+        )
+        result["final_reprice_reason"] = (
+            f"received_monotonic={tick.get('received_monotonic')};q2={cutoff_value}"
+        )
+        return result
+    if not _tick_age_is_fresh(tick_age, max_tick_age_seconds):
+        result["final_reprice_status"] = "blocked_stage372_tick_not_fresh"
+        result["final_reprice_reason"] = f"tick_age_seconds={tick_age}"
+        return result
+
+    get_contract = getattr(main_engine, "get_contract", None)
+    contract = None
+    if callable(get_contract):
+        try:
+            contract = get_contract(req.vt_symbol)
+        except Exception as exc:
+            result["final_reprice_status"] = (
+                "blocked_stage372_live_contract_query_exception"
+            )
+            result["final_reprice_reason"] = repr(exc)
+            return result
+    if contract is None:
+        result["final_reprice_status"] = "blocked_stage372_live_contract_missing"
+        result["final_reprice_reason"] = f"vt_symbol={req.vt_symbol}"
+        return result
+    gateway_name = str(getattr(contract, "gateway_name", "") or "").strip().upper()
+    if gateway_name != "CTP":
+        result["final_reprice_status"] = "blocked_stage372_live_contract_not_ctp"
+        result["final_reprice_reason"] = f"gateway_name={gateway_name}"
+        return result
+    contract_vt_symbol = str(getattr(contract, "vt_symbol", "") or "").strip()
+    if contract_vt_symbol != req.vt_symbol:
+        result["final_reprice_status"] = (
+            "blocked_stage372_live_contract_vt_symbol_mismatch"
+        )
+        result["final_reprice_reason"] = (
+            f"contract_vt_symbol={contract_vt_symbol};request_vt_symbol={req.vt_symbol}"
+        )
+        return result
+
+    intent_pricetick = _valid_ctp_market_price(intent_row.get("pricetick"))
+    live_pricetick = _valid_ctp_market_price(getattr(contract, "pricetick", 0.0))
+    result["final_reprice_intent_pricetick"] = intent_pricetick or ""
+    result["final_reprice_live_contract_pricetick"] = live_pricetick or ""
+    if intent_pricetick <= 0:
+        result["final_reprice_status"] = (
+            "blocked_stage372_intent_pricetick_missing"
+        )
+        result["final_reprice_reason"] = f"intent_pricetick={intent_row.get('pricetick')}"
+        return result
+    if live_pricetick <= 0:
+        result["final_reprice_status"] = (
+            "blocked_stage372_live_contract_pricetick_missing"
+        )
+        result["final_reprice_reason"] = (
+            f"live_contract_pricetick={getattr(contract, 'pricetick', None)}"
+        )
+        return result
+    if intent_pricetick != live_pricetick:
+        result["final_reprice_status"] = "blocked_stage372_pricetick_mismatch"
+        result["final_reprice_reason"] = (
+            f"intent_pricetick={intent_pricetick};live_pricetick={live_pricetick}"
+        )
+        return result
+
+    bid = _valid_ctp_market_price(tick.get("bid_price_1"))
+    ask = _valid_ctp_market_price(tick.get("ask_price_1"))
+    lower = _valid_ctp_market_price(tick.get("limit_down"))
+    upper = _valid_ctp_market_price(tick.get("limit_up"))
+    raw_live_price, live_price_source = _tick_price(tick)
+    live_price = _valid_ctp_market_price(raw_live_price)
+    result.update(
+        {
+            "final_reprice_bid_price_1": bid or "",
+            "final_reprice_ask_price_1": ask or "",
+            "final_reprice_live_price": live_price,
+            "final_reprice_limit_down": lower or "",
+            "final_reprice_limit_up": upper or "",
+        }
+    )
+    if bid <= 0 or ask <= 0:
+        result["final_reprice_status"] = (
+            "blocked_stage372_executable_quote_missing"
+        )
+        result["final_reprice_reason"] = (
+            f"bid={tick.get('bid_price_1')};ask={tick.get('ask_price_1')}"
+        )
+        return result
+    if bid > ask:
+        result["final_reprice_status"] = "blocked_stage372_crossed_quote"
+        result["final_reprice_reason"] = f"bid={bid};ask={ask}"
+        return result
+    if lower <= 0 or upper <= 0:
+        result["final_reprice_status"] = "blocked_stage372_price_limits_missing"
+        result["final_reprice_reason"] = (
+            f"limit_down={tick.get('limit_down')};limit_up={tick.get('limit_up')}"
+        )
+        return result
+    if lower >= upper:
+        result["final_reprice_status"] = "blocked_stage372_invalid_price_limits"
+        result["final_reprice_reason"] = f"limit_down={lower};limit_up={upper}"
+        return result
+    if bid < lower or ask > upper:
+        result["final_reprice_status"] = (
+            "blocked_stage372_quote_outside_price_limits"
+        )
+        result["final_reprice_reason"] = (
+            f"limit_down={lower};bid={bid};ask={ask};limit_up={upper}"
+        )
+        return result
+    protection_ticks = max(
+        1,
+        int(build_phase_d_config().hard_limits.max_slippage_ticks),
+    )
+    unit_values = {
+        "limit_down": lower / live_pricetick,
+        "bid": bid / live_pricetick,
+        "ask": ask / live_pricetick,
+        "limit_up": upper / live_pricetick,
+    }
+    max_safe_units = MAX_EXACT_FLOAT_INTEGER - protection_ticks - 1
+    if any(
+        not math.isfinite(units)
+        or units <= 0
+        or units > max_safe_units
+        for units in unit_values.values()
+    ):
+        result["final_reprice_status"] = (
+            "blocked_stage372_pricetick_not_representable"
+        )
+        result["final_reprice_reason"] = (
+            f"pricetick={live_pricetick};price_units={unit_values};"
+            f"max_safe_units={max_safe_units}"
+        )
+        return result
+    if not _price_on_tick(bid, live_pricetick) or not _price_on_tick(
+        ask, live_pricetick
+    ):
+        result["final_reprice_status"] = "blocked_stage372_quote_not_on_tick"
+        result["final_reprice_reason"] = (
+            f"bid={bid};ask={ask};pricetick={live_pricetick}"
+        )
+        return result
+
+    aligned_band = _tick_aligned_price_band(lower, upper, live_pricetick)
+    if aligned_band is None:
+        result["final_reprice_status"] = (
+            "blocked_stage372_no_tick_aligned_price_within_limits"
+        )
+        result["final_reprice_reason"] = (
+            f"limit_down={lower};limit_up={upper};pricetick={live_pricetick}"
+        )
+        return result
+    aligned_lower, aligned_upper = aligned_band
+    result["final_reprice_aligned_limit_down"] = aligned_lower
+    result["final_reprice_aligned_limit_up"] = aligned_upper
+
+    direction_text = _normalize_direction_text(req.direction.value)
+    aligned_lower_units = math.ceil(lower / live_pricetick - 1e-10)
+    aligned_upper_units = math.floor(upper / live_pricetick + 1e-10)
+    bid_units = round(bid / live_pricetick)
+    ask_units = round(ask / live_pricetick)
+    if direction_text == "long":
+        basis = ask
+        desired_units = ask_units + protection_ticks
+        price_units = min(
+            max(desired_units, aligned_lower_units),
+            aligned_upper_units,
+        )
+        marketable = price_units >= ask_units
+        side_reason = "marketable_buy_stage372_post_q2_final_reprice"
+    elif direction_text == "short":
+        basis = bid
+        desired_units = bid_units - protection_ticks
+        price_units = min(
+            max(desired_units, aligned_lower_units),
+            aligned_upper_units,
+        )
+        marketable = price_units <= bid_units
+        side_reason = "marketable_sell_stage372_post_q2_final_reprice"
+    else:
+        result["final_reprice_status"] = "blocked_stage372_invalid_direction"
+        result["final_reprice_reason"] = f"direction={direction_text}"
+        return result
+
+    price = float(price_units * live_pricetick)
+    if direction_text == "long":
+        marketable = marketable and price >= ask
+    else:
+        marketable = marketable and price <= bid
+    if (
+        not math.isfinite(price)
+        or price <= 0
+        or not _price_on_tick(price, live_pricetick)
+        or price < lower
+        or price > upper
+    ):
+        result["final_reprice_status"] = "blocked_stage372_invalid_final_price"
+        result["final_reprice_reason"] = (
+            f"price={price};limit_down={lower};limit_up={upper};"
+            f"pricetick={live_pricetick}"
+        )
+        return result
+    if not marketable:
+        result["final_reprice_status"] = (
+            "blocked_stage372_no_executable_price_within_limits"
+        )
+        result["final_reprice_reason"] = (
+            f"direction={direction_text};price={price};bid={bid};ask={ask};"
+            f"limit_down={lower};limit_up={upper}"
+        )
+        return result
+
+    req.price = price
+    result.update(
+        {
+            "final_reprice_status": "applied",
+            "final_reprice_reason": (
+                f"{side_reason};basis={basis};live_price_source={live_price_source};"
+                f"protection_ticks={protection_ticks};pricetick={live_pricetick}"
+            ),
+            "final_reprice_price_after": price,
+            "final_reprice_basis_price": basis,
+            "final_reprice_protection_ticks": protection_ticks,
+        }
+    )
+    return result
+
+
 def _post_snapshot_final_reprice(
     main_engine: MainEngine,
     rows: dict[str, list[dict[str, Any]]],
@@ -2591,6 +2963,18 @@ def _post_snapshot_final_reprice(
     tick_wait_seconds: int,
 ) -> dict[str, Any]:
     """Revalidate quote/reclaim using only an EVENT_TICK received after Q2."""
+
+    source = str(intent_row.get("source", "") or "").strip()
+    if source == "stage260_stage372_daily":
+        return _stage372_post_q2_final_reprice(
+            main_engine,
+            rows,
+            intent_row,
+            req,
+            max_tick_age_seconds=max_tick_age_seconds,
+            q2_completed_monotonic=q2_completed_monotonic,
+            tick_wait_seconds=tick_wait_seconds,
+        )
 
     parsed_cutoff = pd.to_numeric(q2_completed_monotonic, errors="coerce")
     if pd.isna(parsed_cutoff):
