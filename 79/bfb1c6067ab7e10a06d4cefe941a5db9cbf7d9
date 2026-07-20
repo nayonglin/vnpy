@@ -1,0 +1,115 @@
+AGENTS.md
+  s_57fbbdfeac5414::t_0dac346dc5a0f0 58
+examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py
+  s_57fbbdfeac5414::t_e5a97dbf99f060 111,389,397
+examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py
+  s_6a25ea44de6bde::t_de4c06af2e5fe9 19,27,59,70-84,867
+examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_e351e2602c08a9 18,21-24,32-33,400,882
+examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py
+  s_6a25ea44de6bde::t_3f7d62a5abd3b3 24,35-38,59-62,67-68,85-86,88-90,96,111,178,183-185,202-212,294,313
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist
+  s_57fbbdfeac5414::t_a6ccdf6d1691b6 6,18,20,22-35,51-54,66,68
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist
+  s_57fbbdfeac5414::t_30a1c1aa0bb004 6,18,20,22-35,51-54,66,68
+examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute.plist
+  s_57fbbdfeac5414::t_76dc96b7ed4e2f 1-51
+examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist
+  s_57fbbdfeac5414::t_5a9b2abd680cd3 15-16,23-26
+examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist
+  s_6a25ea44de6bde::t_5491bff4e15385 14-15,22-25
+examples/portfolio_backtesting/provision_qmt_roll_c9_launchd_directories.py
+  s_57fbbdfeac5414::t_7de2ad21fd07da 1-206
+examples/portfolio_backtesting/qmt_roll_official_execution_profile.py
+  s_57fbbdfeac5414::t_2d4bb42e26c531 24,108-109,130,133-137,140,201
+examples/portfolio_backtesting/qmt_roll_official_live_config.py
+  s_57fbbdfeac5414::t_e17a7db680287e 4,9-11,16-21,158-159,162-163,166-171,174-175,194,308
+examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py
+  s_57fbbdfeac5414::t_1fabbb7bb72bf9 20,112
+examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py
+  s_57fbbdfeac5414::t_8a58c9885aa3b8 682
+examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py
+  s_57fbbdfeac5414::t_349a25a2946ae6 173-191,274,337-340
+examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py
+  s_57fbbdfeac5414::t_d5c6b948304d77 1534,1969
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py
+  s_57fbbdfeac5414::t_76849bf2db59b8 17,1521,1751
+examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py
+  s_57fbbdfeac5414::t_3f51b46eb9bde4 233
+examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py
+  s_57fbbdfeac5414::t_8c7d4803828a37 18,211-219,417
+examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py
+  s_57fbbdfeac5414::t_6cbe903b73acff 13,1103-1104
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py
+  s_6a25ea44de6bde::t_f702551c55a818 86-88,98,133,261,359-363,1200-1237,1242-1243,1245,1248,1254,1263,1267,2294-2305,3297-3298,3757
+examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh
+  s_57fbbdfeac5414::t_21eeb499b84358 17,35,37,102,105,115-119,150,152,156
+examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py
+  s_57fbbdfeac5414::t_a971eace6b7cea 24,67-68,189-224,2386-2415,2605-2606,2608-2617,2648,2702,2711-2713,2715,2722-2727,2731,2753-2760,2774,2790,2799,2804,2818,2825,2836,2841,2846,2852,2865,2871,2878,2901,2908,2912,2918,2923,2947,2957,2966,2977-3025,3038-3040,3049-3051,3053,3069,3077,3115,3123-3143,3471-3477,3577,3588,3607-3610,3631,4055-4115,4585,5649,5725-5726,5739,5817-5818
+examples/portfolio_backtesting/run_qmt_roll_stage934_official_live_automation_health_check.py
+  s_6fd24e415bf0c4::t_7f2b492d168ef0 13,29,34-35,37-42,50-52,83-88,188-201,203-212,226-230,233,236-248,343-350,353-362,366,369-445,448-452,456-458,460,462,472-474,476,483,487,531-542,544-545,547-551,558-562,586-591,593,601-602,612,617,639,645
+skills/futures-live-automation-startup/SKILL.md
+  s_57fbbdfeac5414::t_33ee25f69af41f 29,34,36,38-39,41-44,62-64,68,91,96,130,133,136
+tests/test_official_live_config_import.py
+  s_57fbbdfeac5414::t_f5f2300b6d7596 4-5,7,9,43-46,50-172
+tests/test_stage179_c9_launchd_directories.py
+  s_57fbbdfeac5414::t_5620bc70200a89 1-62
+tests/test_stage179_executor_serve.py
+  s_57fbbdfeac5414::t_7b7557a8490ce4 333,969,978-979,981,1126,1145,1165
+tests/test_stage179_fault_matrix.py
+  s_57fbbdfeac5414::t_59a0e418a3f56d 57
+tests/test_stage179_launchd_lifecycle.py
+  s_6fd24e415bf0c4::t_60f74dce59d577 45-54,56-74,76-84,86,110,115,181,187,192-198,203-204,215-219,226,232-234
+tests/test_stage179_official_execution_profile.py
+  s_57fbbdfeac5414::t_aa06d0dbdba902 13,24,27-28,31,33-37,40-44,46-49,53-54,57-58,60-61,99,102-103,108-116
+tests/test_stage179_readonly_canary_qualification.py
+  s_57fbbdfeac5414::t_3a8a6a59303724 29-30,64,66,72,74,83-86,90,130,362,610
+tests/test_stage179_release_manifest.py
+  s_6fd24e415bf0c4::t_3ce200559a119a 20-23,94-102,111,350-352,359-374,379-381,390-392,407-409,425-427,437-454,473-475,504
+tests/test_stage179_runtime_profile.py
+  s_57fbbdfeac5414::t_9c9610996c0f02 25,186,209-212,223,226-264,285-288,301,385
+tests/test_stage179_stage372_submit_boundary.py
+  s_57fbbdfeac5414::t_aa6063dc86b0a5 71,76
+tests/test_stage930_fast_lane.py
+  s_6fd24e415bf0c4::t_e832bdaaa53535 79,819,897,970-971,977-1028,1346,1406-1410,2417-2418,2440-2441,2449
+tests/test_stage931_post_reprice_final_gate.py
+  s_57fbbdfeac5414::t_473e4c00c64310 118,157-160,172-175,189-203,311-537,1082,1099,1103-1104,1145,1157,1161-1162
+tests/test_stage931_trade_fill_accounting.py
+  s_57fbbdfeac5414::t_ff3c4def2bcbdd 128-151,960-992,1066-1071,1077,1081,1089,1113-1118,1124,1128,1137,1148,1182,1211,1306,1310,1314-1318,1321,1833-1992
+tests/test_stage934_readonly_health_check.py
+  s_6fd24e415bf0c4::t_9531e472ce3527 1-392
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "79bfb1c6067ab7e10a06d4cefe941a5db9cbf7d9",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_6a25ea44de6bde": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7f82-45cb-7711-a463-27c20121e63f",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    },
+    "s_6fd24e415bf0c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7f79-3bc3-7853-b2d4-f742c043db70",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
