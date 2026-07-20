@@ -5,7 +5,7 @@
   ],
   "capital": 200000.0,
   "capital_label": "20w",
-  "created_at_utc": "2026-07-18T21:21:45.804958Z",
+  "created_at_utc": "2026-07-20T12:45:46.778692Z",
   "critical_files": [
     {
       "path": "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
@@ -19,8 +19,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
-      "sha256": "30718b6e2e606c4918ce74bfb9641c4b2330c1eb9235160cfd39ef99fe8edd18",
-      "size_bytes": 13653
+      "sha256": "f48cb985807aa2570a72e639a7c42c02db3e6de2fde17284841e2a2c26c124c1",
+      "size_bytes": 13707
     },
     {
       "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
@@ -259,8 +259,8 @@
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
-      "sha256": "e5c6f21294b33af497cea5164a63dabde92eefb99dad11612d709d02e606c568",
-      "size_bytes": 309392
+      "sha256": "b844b6aaaa64444f84f53afe36ff3d0dbf34384ae4c62a3b0e6faa18a8f4aaa3",
+      "size_bytes": 324270
     },
     {
       "path": "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
@@ -346,6 +346,11 @@
       "path": "tests/test_stage930_fast_lane.py",
       "sha256": "6413bc57c286d9799d519df7a0b14e2bab555a4f5be70099fa3ee9d2c350f705",
       "size_bytes": 106609
+    },
+    {
+      "path": "tests/test_stage931_post_reprice_final_gate.py",
+      "sha256": "8cb936dc36189337f15614f45b715360494a239a30c154335f7772bc7262a226",
+      "size_bytes": 33955
     }
   ],
   "execution_profile": "stage372-20w",
@@ -364,14 +369,14 @@
     ],
     "schema_version": 1
   },
-  "manifest_sha256": "7d3140602757919269e9f71c535b40b7f8c923890d97782016fb04da0ebeb0e4",
+  "manifest_sha256": "854f2a23da9aaff71c505e984c1c5e6990105ccd57b47da12df260c7f46db6ff",
   "official_version": "official_live_stage372_20w_recovery_sleeve",
-  "release_id": "stage179-stage372-readonly-integration-8bd235ee0",
+  "release_id": "stage179-stage372-readonly-9c0aa7873",
   "schema_version": 2,
-  "source_commit": "8bd235ee01ea9cb7f76f59e4715903678a4d4932",
+  "source_commit": "9c0aa78737ca27d8f679c0a61f47423e022b4a34",
   "strategy_semantics_qualification": {
     "evidence_id": "stage372-source-inputs-not-reproducible",
     "status": "blocked"
   },
-  "tree_fingerprint": "232670892a1d6b06b695403dabcc13caae54ba15990b4ca6367d9defd8de75a6"
+  "tree_fingerprint": "9b5be11a1cd97a1823f609d05e5ca5b28a3abf115478e584b6124997ff6b5d45"
 }

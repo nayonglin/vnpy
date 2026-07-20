@@ -68,11 +68,12 @@
 - data update summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage173_forward_main_contract_data_update_summary_stage173_forward_main_contract_data_update_v1.json`
 - shadow decision：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_decision_stage901_stage847_c9_2026_ytd_live_shadow_v1.json`
 - pending audit：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_pending_orders_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv`，0 行。
-- release manifest：本阶段代码形成干净 source commit 后重新生成 `examples/portfolio_backtesting/release_manifests/stage179/stage372-candidate.json`；允许 profile 必须继续只有 offline/production-readonly。
+- release manifest：`examples/portfolio_backtesting/release_manifests/stage179/stage372-candidate.json`；source commit `9c0aa78737ca27d8f679c0a61f47423e022b4a34`，release id `stage179-stage372-readonly-9c0aa7873`，69 个 critical files，manifest digest `854f2a23da9aaff71c505e984c1c5e6990105ccd57b47da12df260c7f46db6ff`，文件 SHA-256 `8724069207518dde2eec4d5f3b5068a44eade1716611635e1085d3268d9e8c25`。
+- manifest 实际校验：offline、production-readonly ACCEPT；SimNow、broker-test、production-live 均以 `release_manifest_runtime_profile_not_allowed` REJECT；strategy semantics 保持 `blocked`。
 
 ## 结论
 
-- 本阶段结论：Stage372 价格 P1 已按 fail-closed 原则修复并通过本地扩大回归；初始 Stage179 集成已以 merge commit `9610df2d9c8260a5f41917c3fea9f49c25415bd8` 推送到 `origin/master`。本阶段价格补丁需独立终审、重建 manifest 后再推送。
+- 本阶段结论：Stage372 价格 P1 已按 fail-closed 原则修复并通过本地扩大回归；初始 Stage179 集成已以 merge commit `9610df2d9c8260a5f41917c3fea9f49c25415bd8` 推送到 `origin/master`。价格源码提交为 `9c0aa78737ca27d8f679c0a61f47423e022b4a34`，独立终审与 manifest 重建均已完成，待把最终 manifest 子提交推送 master。
 - production-live 结论：NO-GO。价格代码修复不等于实盘资格；发布清单仍禁止 submit，Stage372/20万与当前 C9/15万官方口径冲突未解决，生产目录尚未安全部署新 master，5 场真实 0/0 canary、完整重连和 broker 只读快照仍缺失。
 - 是否进入下一步：是，进入干净 source commit、manifest 重冻结、独立终审和 master 推送；之后只能做 production-readonly 验收，不能越级真实报单。
 - 下一步：在真实交易服务窗口完成严格 0/0 CTP 只读、5 场日夜 canary 与 authoritative reconnect v2；明确官方 Stage372/20万口径后再讨论 SimNow，production-live 仍需单独资格晋级。
