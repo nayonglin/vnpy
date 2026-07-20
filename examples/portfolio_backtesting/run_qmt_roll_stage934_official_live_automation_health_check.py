@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_live_config import OFFICIAL_LIVE_VERSION
 from qmt_roll_official_live_phase_d_config import build_phase_d_config
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -25,19 +26,29 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PYTHON_PATH = REPO_ROOT / ".py311/bin/python"
 STAGE930_DAEMON_PATH = Path(__file__).resolve().parent / "run_qmt_roll_stage930_official_live_c9_session_daemon.py"
 STAGE907_READONLY_PATH = Path(__file__).resolve().parent / "run_qmt_roll_stage907_official_live_readonly_refresh_gate.py"
+STAGE909_PRECOMPUTE_PATH = Path(__file__).resolve().parent / "run_qmt_roll_stage909_official_live_shadow_refresh_gate.py"
 STAGE935_MONTHLY_AI_PATH = Path(__file__).resolve().parent / "run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py"
 LAUNCHD_REPO_DIR = Path(__file__).resolve().parent / "launchd"
 LAUNCHD_INSTALL_DIR = Path.home() / "Library/LaunchAgents"
 SESSION_LABELS = {
-    "day": "local.qmt-roll.official-live.15w.c9-day-session",
-    "night": "local.qmt-roll.official-live.15w.c9-night-session",
+    "day": "local.qmt-roll.official-live.15w.c9-readonly-day-session",
+    "night": "local.qmt-roll.official-live.15w.c9-readonly-night-session",
 }
+CANONICAL_SESSION_LABELS = frozenset(SESSION_LABELS.values())
+EXPECTED_EXECUTION_PROFILE = C9_15W_PROFILE.profile_key
+EXPECTED_OFFICIAL_VERSION = C9_15W_PROFILE.official_version
+EXPECTED_CAPITAL = C9_15W_PROFILE.capital
+EXPECTED_CAPITAL_LABEL = C9_15W_PROFILE.capital_label
+EXPECTED_RUNTIME_PROFILE = "production-readonly"
 REPORT_LABELS = {
     "postclose": "local.qmt-roll.official-live.15w.postclose",
     "evening_report": "local.qmt-roll.official-live.15w.evening-report",
 }
 READONLY_LABELS = {
     "day_close_readonly": "local.qmt-roll.official-live.15w.day-close-readonly",
+}
+PRECOMPUTE_LABELS = {
+    "c9_postclose_precompute": "local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute",
 }
 MONTHLY_LABELS = {
     "monthly_ai_pool": "local.qmt-roll.official-live.15w.monthly-ai-pool",
@@ -67,6 +78,12 @@ def _to_int(value: Any, default: int = 0) -> int:
         return int(float(value))
     except (TypeError, ValueError):
         return default
+
+
+def _strict_nonnegative_int(value: Any) -> int | None:
+    if type(value) is not int or value < 0:
+        return None
+    return value
 
 
 def _read_plist(path: Path) -> dict[str, Any]:
@@ -168,8 +185,31 @@ def _plist_status(label: str, expected_args: list[str] | None = None) -> dict[st
     return row
 
 
+def _stage930_output_dirs() -> tuple[Path, ...]:
+    roots = {OUTPUT_DIR.resolve(strict=False)}
+    for label in SESSION_LABELS.values():
+        for launchd_dir in (LAUNCHD_REPO_DIR, LAUNCHD_INSTALL_DIR):
+            payload = _read_plist(launchd_dir / f"{label}.plist")
+            environment = payload.get("EnvironmentVariables")
+            if not isinstance(environment, dict):
+                continue
+            value = environment.get("OFFICIAL_LIVE_OUTPUT_DIR")
+            if value:
+                roots.add(Path(str(value)).expanduser().resolve(strict=False))
+    return tuple(sorted(roots, key=str))
+
+
 def _latest_stage930_summary() -> dict[str, Any]:
-    paths = sorted(OUTPUT_DIR.glob(f"{STAGE930_PREFIX}_summary_*_{STAGE930_MODEL_TAG}.json"), key=lambda item: item.stat().st_mtime)
+    paths = sorted(
+        {
+            path
+            for output_dir in _stage930_output_dirs()
+            for path in output_dir.glob(
+                f"{STAGE930_PREFIX}_summary_*_{STAGE930_MODEL_TAG}.json"
+            )
+        },
+        key=lambda item: item.stat().st_mtime,
+    )
     if not paths:
         return {"path": "", "exists": False}
     path = paths[-1]
@@ -183,11 +223,29 @@ def _latest_stage930_summary() -> dict[str, Any]:
         "age_seconds": max(0.0, time.time() - path.stat().st_mtime),
         "generated_at": payload.get("generated_at", ""),
         "daemon_status": payload.get("daemon_status", ""),
+        "execution_profile": payload.get("execution_profile"),
+        "official_live_version": payload.get("official_live_version"),
+        "capital": payload.get("capital"),
+        "capital_label": payload.get("capital_label"),
+        "runtime_profile": payload.get("runtime_profile"),
         "mode": payload.get("mode", ""),
         "submit_mode": payload.get("submit_mode", ""),
+        "launchd_provenance": payload.get("launchd_provenance"),
         "cycle_count": payload.get("cycle_count", 0),
         "target_date": payload.get("target_date", ""),
-        "order_api_called_count": payload.get("order_api_called_count", 0),
+        "send_order_api_called_count": payload.get(
+            "send_order_api_called_count"
+        ),
+        "cancel_order_api_called_count": payload.get(
+            "cancel_order_api_called_count"
+        ),
+        "order_api_called_count": payload.get("order_api_called_count"),
+        "order_api_evidence_complete": payload.get(
+            "order_api_evidence_complete"
+        ),
+        "order_api_evidence_missing_fields": payload.get(
+            "order_api_evidence_missing_fields"
+        ),
         "ai_pool_preflight": payload.get("ai_pool_preflight", {}),
         "latest_cycle": payload.get("latest_cycle", {}),
     }
@@ -282,50 +340,126 @@ def _cycle_summary(latest: dict[str, Any], key: str) -> dict[str, Any]:
     return {}
 
 
-def _execution_readiness(latest: dict[str, Any], *, summary_fresh: bool, process_running: bool, daemon_running: bool) -> dict[str, Any]:
+def _execution_readiness(
+    latest: dict[str, Any],
+    *,
+    summary_fresh: bool,
+    process_running: bool,
+    daemon_running: bool,
+    expected_launchd_label: str = "",
+) -> dict[str, Any]:
     readiness_blockers: list[str] = []
     readiness_warnings: list[str] = []
-    ai_pool = latest.get("ai_pool_preflight") if isinstance(latest.get("ai_pool_preflight"), dict) else {}
-    cycle = latest.get("latest_cycle") if isinstance(latest.get("latest_cycle"), dict) else {}
+    ai_pool = (
+        latest.get("ai_pool_preflight")
+        if isinstance(latest.get("ai_pool_preflight"), dict)
+        else {}
+    )
+    cycle = (
+        latest.get("latest_cycle")
+        if isinstance(latest.get("latest_cycle"), dict)
+        else {}
+    )
     controller = _cycle_summary(latest, "stage903")
     arming = _cycle_summary(latest, "stage927")
     submit = _cycle_summary(latest, "stage931")
-    submit_blockers = list(cycle.get("stage931_submit_blockers") or []) if isinstance(cycle, dict) else []
+    submit_blockers = list(cycle.get("stage931_submit_blockers") or [])
     ai_status = str(ai_pool.get("automation_status", ""))
 
-    if not process_running or not daemon_running or not summary_fresh:
-        return {
-            "execution_readiness_status": "not_evaluated_stage930_not_current",
-            "readiness_blockers": readiness_blockers,
-            "readiness_warnings": readiness_warnings,
-            "ai_pool_preflight": ai_pool,
-            "stage927": arming,
-            "stage931": submit,
-            "stage931_submit_blockers": submit_blockers,
-            "stage905_ready_count": controller.get("stage905_ready_count", ""),
-            "stage905_executor_status": controller.get("stage905_executor_status", ""),
-        }
+    identity_expectations = {
+        "execution_profile": EXPECTED_EXECUTION_PROFILE,
+        "official_live_version": EXPECTED_OFFICIAL_VERSION,
+        "capital": EXPECTED_CAPITAL,
+        "capital_label": EXPECTED_CAPITAL_LABEL,
+        "runtime_profile": EXPECTED_RUNTIME_PROFILE,
+        "mode": "dry-run",
+        "submit_mode": "disabled",
+    }
+    for field_name, expected in identity_expectations.items():
+        observed = latest.get(field_name)
+        if field_name == "capital":
+            matches = (
+                type(observed) in (int, float)
+                and not isinstance(observed, bool)
+                and float(observed) == float(expected)
+            )
+        else:
+            matches = observed == expected
+        if not matches:
+            readiness_blockers.append(
+                f"stage930_readonly_{field_name}_mismatch"
+            )
 
-    if not ai_pool:
-        readiness_blockers.append("stage930_ai_pool_preflight_missing")
-    elif ai_status not in AI_POOL_ALLOWED_STATUSES:
-        readiness_blockers.append(f"stage930_ai_pool_preflight_not_passed:{ai_status}")
+    provenance = latest.get("launchd_provenance")
+    if (
+        not isinstance(provenance, dict)
+        or type(provenance.get("complete")) is not int
+        or provenance.get("complete") != 1
+    ):
+        readiness_blockers.append("stage930_launchd_provenance_incomplete")
+        provenance = provenance if isinstance(provenance, dict) else {}
+    provenance_label = str(provenance.get("xpc_service_name", ""))
+    if provenance_label not in CANONICAL_SESSION_LABELS:
+        readiness_blockers.append(
+            "stage930_launchd_provenance_label_not_canonical"
+        )
+    if expected_launchd_label and provenance_label != expected_launchd_label:
+        readiness_blockers.append("stage930_launchd_provenance_label_mismatch")
+
+    order_api_counts: dict[str, int | None] = {}
+    for field_name in (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    ):
+        count = _strict_nonnegative_int(latest.get(field_name))
+        order_api_counts[field_name] = count
+        if count is None:
+            readiness_blockers.append(
+                f"stage930_readonly_{field_name}_missing_or_invalid"
+            )
+        elif count != 0:
+            readiness_blockers.append(
+                f"stage930_readonly_{field_name}={count}"
+            )
+    evidence_complete = latest.get("order_api_evidence_complete")
+    evidence_missing = latest.get("order_api_evidence_missing_fields")
+    if (
+        type(evidence_complete) is not int
+        or evidence_complete != 1
+        or evidence_missing != []
+    ):
+        readiness_blockers.append(
+            "stage930_readonly_order_api_evidence_incomplete"
+        )
+
+    stage930_current = bool(process_running and summary_fresh)
+    if stage930_current and not daemon_running:
+        readiness_blockers.append("stage930_readonly_daemon_contract_mismatch")
+    if stage930_current:
+        if not ai_pool:
+            readiness_blockers.append("stage930_ai_pool_preflight_missing")
+        elif ai_status not in AI_POOL_ALLOWED_STATUSES:
+            readiness_blockers.append(
+                f"stage930_ai_pool_preflight_not_passed:{ai_status}"
+            )
 
     ready_count = _to_int(controller.get("stage905_ready_count"), 0)
-    real_submit_permitted = _to_int(arming.get("real_submit_permitted"), 0)
-    if submit_blockers:
-        readiness_blockers.extend(f"stage931_submit_blocker:{item}" for item in submit_blockers)
-    if ready_count <= 0:
+    if stage930_current and submit_blockers:
+        readiness_warnings.extend(
+            f"stage931_live_submit_blocker:{item}" for item in submit_blockers
+        )
+    if stage930_current and ready_count <= 0:
         readiness_warnings.append("stage905_no_ready_intents")
-    if real_submit_permitted != 1:
-        readiness_blockers.append(f"stage927_real_submit_permitted={real_submit_permitted}")
 
     if readiness_blockers:
-        status = "submit_blocked"
+        status = "readonly_observation_blocked"
+    elif not stage930_current or not daemon_running:
+        status = "not_evaluated_stage930_not_current"
     elif ready_count <= 0:
-        status = "daemon_ready_no_order_intents"
+        status = "readonly_observation_ready_no_order_intents"
     else:
-        status = "ready_for_live_submit"
+        status = "readonly_observation_ready_with_intents"
     return {
         "execution_readiness_status": status,
         "readiness_blockers": list(dict.fromkeys(readiness_blockers)),
@@ -335,17 +469,22 @@ def _execution_readiness(latest: dict[str, Any], *, summary_fresh: bool, process
         "stage931": submit,
         "stage931_submit_blockers": submit_blockers,
         "stage905_ready_count": ready_count,
-        "stage905_executor_status": controller.get("stage905_executor_status", ""),
+        "stage905_executor_status": controller.get(
+            "stage905_executor_status", ""
+        ),
         "controller_status": controller.get("controller_status", ""),
+        **order_api_counts,
     }
 
 
 def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
     stage930_expected = [str(PYTHON_PATH), str(STAGE930_DAEMON_PATH)]
     stage907_expected = [str(PYTHON_PATH), str(STAGE907_READONLY_PATH)]
+    stage909_expected = [str(PYTHON_PATH), str(STAGE909_PRECOMPUTE_PATH)]
     stage935_expected = [str(PYTHON_PATH), str(STAGE935_MONTHLY_AI_PATH)]
     session_plists = {name: _plist_status(label, stage930_expected) for name, label in SESSION_LABELS.items()}
     readonly_plists = {name: _plist_status(label, stage907_expected) for name, label in READONLY_LABELS.items()}
+    precompute_plists = {name: _plist_status(label, stage909_expected) for name, label in PRECOMPUTE_LABELS.items()}
     monthly_plists = {name: _plist_status(label, stage935_expected) for name, label in MONTHLY_LABELS.items()}
     report_launchd = {name: _launchctl_print(label) for name, label in REPORT_LABELS.items()}
     latest = _latest_stage930_summary()
@@ -389,18 +528,40 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
             blockers.append(f"{name}_launchd_not_loaded")
         if launchctl.get("last_exit_code") in {"126", "Operation not permitted"}:
             blockers.append(f"{name}_launchd_last_exit_126_operation_not_permitted")
+    for name, row in precompute_plists.items():
+        if not row.get("installed_expected_program_head_match"):
+            blockers.append(f"{name}_launchd_not_stage909")
+        if not row.get("repo_installed_arguments_match"):
+            warnings.append(f"{name}_repo_installed_program_arguments_mismatch")
+        if not row.get("repo_installed_start_calendar_interval_match"):
+            warnings.append(f"{name}_repo_installed_start_calendar_interval_mismatch")
+        launchctl = row.get("launchctl") or {}
+        if not launchctl.get("loaded"):
+            blockers.append(f"{name}_launchd_not_loaded")
+        if launchctl.get("last_exit_code") in {"126", "Operation not permitted"}:
+            blockers.append(f"{name}_launchd_last_exit_126_operation_not_permitted")
     current_sessions = _current_sessions()
+    expected_launchd_key = _expected_session_launchd_key(current_sessions)
+    expected_launchd_label = SESSION_LABELS.get(expected_launchd_key, "")
     summary_fresh = bool(latest.get("exists")) and float(latest.get("age_seconds") or 999999.0) <= max_summary_age_seconds
-    daemon_running = latest.get("daemon_status") == "daemon_running" and latest.get("mode") == "live-real" and latest.get("submit_mode") == "live-real"
+    daemon_running = (
+        latest.get("daemon_status") == "daemon_running"
+        and latest.get("mode") == "dry-run"
+        and latest.get("submit_mode") == "disabled"
+    )
     process_running = int(process.get("stage930_process_count") or 0) > 0
     execution_readiness = _execution_readiness(
         latest,
         summary_fresh=summary_fresh,
         process_running=process_running,
         daemon_running=daemon_running,
+        expected_launchd_label=expected_launchd_label,
+    )
+    blockers.extend(
+        f"stage930_readonly:{blocker}"
+        for blocker in execution_readiness.get("readiness_blockers", [])
     )
     execution_session_now = any(name in {"night", "late_night", "day_am", "day_pm"} for name in current_sessions)
-    expected_launchd_key = _expected_session_launchd_key(current_sessions)
     if expected_launchd_key:
         expected_state = str((session_plists.get(expected_launchd_key, {}).get("launchctl") or {}).get("state", ""))
         if expected_state != "running":
@@ -422,14 +583,14 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
         health_status = "blocked"
     elif process_running and daemon_running and summary_fresh:
         readiness_status = str(execution_readiness.get("execution_readiness_status", ""))
-        if readiness_status == "ready_for_live_submit":
-            health_status = "healthy_stage930_live_real_daemon_running_submit_ready"
-        elif readiness_status == "daemon_ready_no_order_intents":
-            health_status = "healthy_stage930_live_real_daemon_running_no_ready_intents"
-        elif readiness_status == "submit_blocked":
-            health_status = "healthy_stage930_live_real_daemon_running_submit_blocked"
+        if readiness_status == "readonly_observation_ready_with_intents":
+            health_status = "healthy_stage930_c9_readonly_running_with_intents"
+        elif readiness_status == "readonly_observation_ready_no_order_intents":
+            health_status = "healthy_stage930_c9_readonly_running_no_order_intents"
+        elif readiness_status == "readonly_observation_blocked":
+            health_status = "blocked"
         else:
-            health_status = "healthy_stage930_live_real_daemon_running"
+            health_status = "healthy_stage930_c9_readonly_running"
     else:
         health_status = "scheduled_launchd_ready_no_current_daemon"
     return {
@@ -437,8 +598,8 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "health_status": health_status,
-        "blockers": blockers,
-        "warnings": warnings,
+        "blockers": list(dict.fromkeys(blockers)),
+        "warnings": list(dict.fromkeys(warnings)),
         "current_sessions": current_sessions,
         "expected_session_launchd_key": expected_launchd_key,
         "max_summary_age_seconds": max_summary_age_seconds,
@@ -448,11 +609,12 @@ def _build_summary(max_summary_age_seconds: int) -> dict[str, Any]:
         "process_status": process,
         "session_launchd": session_plists,
         "readonly_launchd": readonly_plists,
+        "precompute_launchd": precompute_plists,
         "report_launchd": report_launchd,
         "monthly_launchd": monthly_plists,
         "judgement": {
             "overfit_before": "否。健康检查只读取运行态和配置，不改策略参数、AI排序或信号。",
-            "continue_before": "是。自动交易必须能证明守护进程、定时报告和月度AI池更新任务都真实接入。",
+            "continue_before": "是。只读候选必须先证明守护进程、定时报告和月度AI池更新任务都真实接入。",
             "overfit_after": "否。输出只用于执行可观测性，不反向影响策略。",
             "continue_after": "是。后续应把该检查纳入每日邮件或外部监控，避免 launchd/screen 状态误判。",
         },
@@ -474,12 +636,13 @@ def _build_report(summary: dict[str, Any]) -> str:
         f"- screen 夜盘兜底：{'active' if process.get('screen_qmt_c9_night_active') else 'inactive'}",
         f"- 最新 Stage930：{latest.get('daemon_status', '')} / {latest.get('mode', '')} / {latest.get('submit_mode', '')}",
         f"- 最新 summary 年龄秒：{latest.get('age_seconds', '')}",
-        f"- 真实提交状态：{readiness.get('execution_readiness_status', '')}",
+        f"- C9/15万只读状态：{readiness.get('execution_readiness_status', '')}",
         f"- Stage930 AI池预检查：{(readiness.get('ai_pool_preflight') or {}).get('automation_status', '')}",
         f"- Stage927 放行：{(readiness.get('stage927') or {}).get('real_submit_permitted', '')}",
         f"- Stage931 阻断：{';'.join(map(str, readiness.get('stage931_submit_blockers') or [])) or 'none'}",
         f"- 月度AI池任务：{latest_stage935.get('automation_status', '')} / expected_eval={latest_stage935.get('expected_eval_date', '')} / current_eval={latest_stage935.get('current_eval_date', '')}",
         f"- 日盘收后只读快照任务：{';'.join((summary.get('readonly_launchd') or {}).keys()) or 'none'}",
+        f"- C9 收盘预计算任务：{';'.join((summary.get('precompute_launchd') or {}).keys()) or 'none'}",
         f"- 订单 API 次数：{latest.get('order_api_called_count', 0)}",
         f"- 阻断：{';'.join(summary.get('blockers') or []) or 'none'}",
         f"- 警告：{';'.join(summary.get('warnings') or []) or 'none'}",

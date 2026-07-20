@@ -55,11 +55,10 @@
 
 1. 当用户要求运行或解释官方实盘版本、当前实盘候选、每日影子盘、SimNow/券商测试虚拟盘、CTP/SimNow通路、Phase B委托草案/提交前闸门、1手报撤smoke order、AI池月更、`review`风险层级、每日对账或“今天/今晚/下个交易时段是否需要交易”时，先读取并遵循 `skills/futures-live-execution-sop/SKILL.md`。
 2. 该 skill 只约束执行纪律与SOP，不用于优化策略alpha；若同时涉及新策略版本或A/B实验，仍需遵循 `skills/version-ab-experiment/SKILL.md`。
-3. 从 2026-06-05 起，虚拟盘和实盘前流程默认只认 Stage372 20万口径：`official_live_stage372_20w_recovery_sleeve`。Stage653 20万原版和 Stage78-1 50万入口只作为历史/研究对照，不得作为当前实盘默认执行路径；旧30万入口继续只作历史对照。
+3. 从 2026-07-20 起，虚拟盘和实盘前流程默认只认 C9 15万口径：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，canonical execution profile 为 `c9-15w`。Stage372 20万、Stage653 20万原版、Stage78-1 50万和旧30万入口只作为历史/研究对照，不得作为当前实盘默认执行路径；旧 `c9-15w-historical` 仅用于读取历史证据，不得写入新委托、授权、清单或启动参数。
 4. CTP 实盘/虚拟盘连接前必须先确认 env 与 runtime：实盘生产前置使用 `ctp_live.local.env`，不要误用默认读取 `ctp_broker_test.local.env` 的 broker-test shell；macOS 生产前置必须让 `vnpy_ctp/api/libs` 的正式 framework 优先于 `.py311/lib` 的 `v6.7.7_MacOS_CP` 评测 framework。若出现 `4040 CTP:API Front shake hand err: decode err`、`Decrypt handshake data failed`、只读 gate 长时间 `front_connected=false` 或 vn.py native segfault，先按 `skills/futures-live-execution-sop/SKILL.md` 的 CTP runtime guard 排查，不得跳过只读账户/持仓 gate 直接报单。
 
 ## 每次开始与结束都要反思
 
 1. 每次开始运行和运行完，都要反思我们现在做的事情是不是在过拟合；明确告诉我，是或否，以及原因逻辑是什么。
 2. 每次开始运行和运行完，都要反思我们现在做的事情是不是还有价值继续做下去；明确告诉我，是或否，以及原因逻辑是什么。
-

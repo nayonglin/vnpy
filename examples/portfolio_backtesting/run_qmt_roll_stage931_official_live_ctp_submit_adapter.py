@@ -21,7 +21,7 @@ from typing import Any
 import pandas as pd
 
 from qmt_roll_official_execution_profile import (
-    C9_15W_HISTORICAL_PROFILE,
+    C9_15W_PROFILE,
     ExecutionStrategyMode,
     OfficialExecutionProfile,
     resolve_execution_profile,
@@ -64,6 +64,8 @@ from qmt_roll_official_live_c9_intraday_state import (
     INITIAL_STOP_ACTION_ROLE,
     RETRY_OPEN_ACTION_ROLE,
     RETRY_STOP_ACTION_ROLE,
+    generate_position_cycle_id,
+    generate_root_position_id,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
 from qmt_roll_official_live_runtime_profile import (
@@ -182,6 +184,42 @@ LEDGER_METADATA_FIELDS = (
     "recommended_operator_action",
     "stage904_monitor_status",
     "stage904_summary_generated_at",
+)
+
+STAGE904_ONLY_INTENT_FIELDS = (
+    "action_id",
+    "monitor_run_id",
+    "manual_intervention_required",
+    "risk_alert_level",
+    "migration_blocker",
+    "recommended_operator_action",
+    "stage904_monitor_status",
+    "stage904_summary_generated_at",
+    "entry_risk_date",
+    "open_trade_id",
+    "parent_position_cycle_id",
+    "parent_intent_fingerprint",
+    "retry_trigger_price",
+    "retry_stop_price",
+    "retry_original_fill_price",
+    "strategy_stop_price",
+    "stop_trigger_price",
+    "trigger_price",
+    "triggered_at",
+    "trace_json",
+    "trace_id",
+    "source_feed_session_id",
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+    "durable_cursor_feed_session_id",
+    "durable_cursor_ingress_sequence",
+    "durable_cursor_journal_byte_offset",
+    "durable_cursor_journal_schema",
+    "state_generation",
 )
 
 
@@ -2345,6 +2383,36 @@ def _valid_ctp_market_price(value: Any) -> float:
     return number
 
 
+def _retry_reclaim_trigger(
+    intent_row: Mapping[str, Any],
+) -> tuple[float, str, str]:
+    """Return a finite CTP trigger, preserving explicit-invalid evidence."""
+
+    for field_name in (
+        "retry_trigger_price",
+        "strategy_entry_price",
+        "retry_original_fill_price",
+    ):
+        if field_name not in intent_row:
+            continue
+        raw_value = intent_row.get(field_name)
+        if raw_value is None or (
+            isinstance(raw_value, str) and not raw_value.strip()
+        ):
+            continue
+        invalid_explicit_value = isinstance(raw_value, bool)
+        if not invalid_explicit_value:
+            try:
+                invalid_explicit_value = bool(pd.isna(raw_value))
+            except (TypeError, ValueError):
+                invalid_explicit_value = True
+        candidate = _valid_ctp_market_price(raw_value)
+        if invalid_explicit_value or candidate <= 0:
+            return 0.0, field_name, "invalid"
+        return candidate, field_name, "valid"
+    return 0.0, "", "missing"
+
+
 def _tick_datetime(row: dict[str, Any]) -> datetime | None:
     for key in ("localtime", "datetime", "snapshot_at", "generated_at", "received_at"):
         if key not in row:
@@ -2534,12 +2602,19 @@ def _final_close_reprice(
     tick_value = pricetick if pricetick > 0 else 0.0
 
     if intraday_retry_open:
-        retry_trigger = (
-            _to_float(intent_row.get("retry_trigger_price"), 0.0)
-            or _to_float(intent_row.get("strategy_entry_price"), 0.0)
-            or _to_float(intent_row.get("retry_original_fill_price"), 0.0)
+        retry_trigger, retry_trigger_source, retry_trigger_status = (
+            _retry_reclaim_trigger(intent_row)
         )
-        if retry_trigger <= 0:
+        if retry_trigger_status == "invalid":
+            result["final_reprice_status"] = (
+                "blocked_retry_reclaim_trigger_invalid"
+            )
+            result["final_reprice_reason"] = (
+                f"{retry_trigger_source}="
+                f"{intent_row.get(retry_trigger_source)}"
+            )
+            return result
+        if retry_trigger_status == "missing":
             result["final_reprice_status"] = "blocked_retry_reclaim_trigger_missing"
             result["final_reprice_reason"] = "retry_trigger_price/strategy_entry_price/retry_original_fill_price missing"
             return result
@@ -2570,6 +2645,7 @@ def _final_close_reprice(
             result["final_reprice_status"] = "blocked_retry_reclaim_no_longer_favorable"
             result["final_reprice_reason"] = (
                 f"direction={direction_text};executable_price={executable_price};retry_trigger={retry_trigger};"
+                f"retry_trigger_source={retry_trigger_source};"
                 f"executable_price_source={executable_price_source}"
             )
             result["final_reprice_tick_age_seconds"] = tick_age if tick_age is not None else ""
@@ -2623,7 +2699,7 @@ def _final_close_reprice(
     return result
 
 
-def _stage372_post_q2_final_reprice(
+def _strict_post_q2_final_reprice(
     main_engine: MainEngine,
     rows: dict[str, list[dict[str, Any]]],
     intent_row: dict[str, Any],
@@ -2632,18 +2708,27 @@ def _stage372_post_q2_final_reprice(
     max_tick_age_seconds: int,
     q2_completed_monotonic: float | None,
     tick_wait_seconds: int,
+    status_namespace: str,
+    expected_offset: str | None = None,
+    retry_reclaim_required: bool = False,
 ) -> dict[str, Any]:
-    """Build a Stage372 executable limit price from one causal CTP session.
+    """Build one executable limit price from a single causal CTP session.
 
     The Stage905 theoretical price is never an execution fallback here.  A
     missing live contract, post-Q2 CTP tick, executable quote, price tick, or
     exchange price band blocks the order before the broker API slot.
     """
 
+    if status_namespace not in {"stage372", "c9"}:
+        raise ValueError("strict_reprice_status_namespace_invalid")
+
+    def blocked(suffix: str) -> str:
+        return f"blocked_{status_namespace}_{suffix}"
+
     original_price = float(req.price)
     vt_symbol = str(intent_row.get("vt_symbol", "") or req.vt_symbol).strip()
     result: dict[str, Any] = {
-        "final_reprice_status": "blocked_stage372_price_gate_not_evaluated",
+        "final_reprice_status": blocked("price_gate_not_evaluated"),
         "final_reprice_source": "",
         "final_reprice_reason": "",
         "final_reprice_price_before": original_price,
@@ -2665,6 +2750,14 @@ def _stage372_post_q2_final_reprice(
         "post_sandwich_reprice": 1,
     }
 
+    offset_text = _normalize_offset_text(req.offset.value)
+    if expected_offset is not None and offset_text != expected_offset:
+        result["final_reprice_status"] = blocked("source_offset_mismatch")
+        result["final_reprice_reason"] = (
+            f"expected_offset={expected_offset};actual_offset={offset_text}"
+        )
+        return result
+
     cutoff = pd.to_numeric(q2_completed_monotonic, errors="coerce")
     if (
         pd.isna(cutoff)
@@ -2678,7 +2771,7 @@ def _stage372_post_q2_final_reprice(
     result["final_reprice_tick_not_before_monotonic"] = cutoff_value
 
     if vt_symbol != req.vt_symbol:
-        result["final_reprice_status"] = "blocked_stage372_vt_symbol_mismatch"
+        result["final_reprice_status"] = blocked("vt_symbol_mismatch")
         result["final_reprice_reason"] = (
             f"intent_vt_symbol={vt_symbol};request_vt_symbol={req.vt_symbol}"
         )
@@ -2694,7 +2787,7 @@ def _stage372_post_q2_final_reprice(
     )
     if tick is None:
         result["final_reprice_status"] = (
-            "blocked_stage372_no_fresh_post_q2_ctp_tick"
+            blocked("no_fresh_post_q2_ctp_tick")
         )
         result["final_reprice_reason"] = tick_source
         return result
@@ -2703,12 +2796,12 @@ def _stage372_post_q2_final_reprice(
         tick_age if tick_age is not None else ""
     )
     if tick_source != "ctp_event_tick":
-        result["final_reprice_status"] = "blocked_stage372_non_ctp_event_tick"
+        result["final_reprice_status"] = blocked("non_ctp_event_tick")
         result["final_reprice_reason"] = f"tick_source={tick_source}"
         return result
     tick_gateway_name = str(tick.get("gateway_name", "") or "").strip().upper()
     if tick_gateway_name != "CTP":
-        result["final_reprice_status"] = "blocked_stage372_tick_not_ctp"
+        result["final_reprice_status"] = blocked("tick_not_ctp")
         result["final_reprice_reason"] = f"gateway_name={tick_gateway_name}"
         return result
 
@@ -2722,14 +2815,14 @@ def _stage372_post_q2_final_reprice(
         or float(received_monotonic) <= cutoff_value
     ):
         result["final_reprice_status"] = (
-            "blocked_stage372_tick_not_strictly_after_q2"
+            blocked("tick_not_strictly_after_q2")
         )
         result["final_reprice_reason"] = (
             f"received_monotonic={tick.get('received_monotonic')};q2={cutoff_value}"
         )
         return result
     if not _tick_age_is_fresh(tick_age, max_tick_age_seconds):
-        result["final_reprice_status"] = "blocked_stage372_tick_not_fresh"
+        result["final_reprice_status"] = blocked("tick_not_fresh")
         result["final_reprice_reason"] = f"tick_age_seconds={tick_age}"
         return result
 
@@ -2740,23 +2833,23 @@ def _stage372_post_q2_final_reprice(
             contract = get_contract(req.vt_symbol)
         except Exception as exc:
             result["final_reprice_status"] = (
-                "blocked_stage372_live_contract_query_exception"
+                blocked("live_contract_query_exception")
             )
             result["final_reprice_reason"] = repr(exc)
             return result
     if contract is None:
-        result["final_reprice_status"] = "blocked_stage372_live_contract_missing"
+        result["final_reprice_status"] = blocked("live_contract_missing")
         result["final_reprice_reason"] = f"vt_symbol={req.vt_symbol}"
         return result
     gateway_name = str(getattr(contract, "gateway_name", "") or "").strip().upper()
     if gateway_name != "CTP":
-        result["final_reprice_status"] = "blocked_stage372_live_contract_not_ctp"
+        result["final_reprice_status"] = blocked("live_contract_not_ctp")
         result["final_reprice_reason"] = f"gateway_name={gateway_name}"
         return result
     contract_vt_symbol = str(getattr(contract, "vt_symbol", "") or "").strip()
     if contract_vt_symbol != req.vt_symbol:
         result["final_reprice_status"] = (
-            "blocked_stage372_live_contract_vt_symbol_mismatch"
+            blocked("live_contract_vt_symbol_mismatch")
         )
         result["final_reprice_reason"] = (
             f"contract_vt_symbol={contract_vt_symbol};request_vt_symbol={req.vt_symbol}"
@@ -2769,20 +2862,20 @@ def _stage372_post_q2_final_reprice(
     result["final_reprice_live_contract_pricetick"] = live_pricetick or ""
     if intent_pricetick <= 0:
         result["final_reprice_status"] = (
-            "blocked_stage372_intent_pricetick_missing"
+            blocked("intent_pricetick_missing")
         )
         result["final_reprice_reason"] = f"intent_pricetick={intent_row.get('pricetick')}"
         return result
     if live_pricetick <= 0:
         result["final_reprice_status"] = (
-            "blocked_stage372_live_contract_pricetick_missing"
+            blocked("live_contract_pricetick_missing")
         )
         result["final_reprice_reason"] = (
             f"live_contract_pricetick={getattr(contract, 'pricetick', None)}"
         )
         return result
     if intent_pricetick != live_pricetick:
-        result["final_reprice_status"] = "blocked_stage372_pricetick_mismatch"
+        result["final_reprice_status"] = blocked("pricetick_mismatch")
         result["final_reprice_reason"] = (
             f"intent_pricetick={intent_pricetick};live_pricetick={live_pricetick}"
         )
@@ -2805,29 +2898,29 @@ def _stage372_post_q2_final_reprice(
     )
     if bid <= 0 or ask <= 0:
         result["final_reprice_status"] = (
-            "blocked_stage372_executable_quote_missing"
+            blocked("executable_quote_missing")
         )
         result["final_reprice_reason"] = (
             f"bid={tick.get('bid_price_1')};ask={tick.get('ask_price_1')}"
         )
         return result
     if bid > ask:
-        result["final_reprice_status"] = "blocked_stage372_crossed_quote"
+        result["final_reprice_status"] = blocked("crossed_quote")
         result["final_reprice_reason"] = f"bid={bid};ask={ask}"
         return result
     if lower <= 0 or upper <= 0:
-        result["final_reprice_status"] = "blocked_stage372_price_limits_missing"
+        result["final_reprice_status"] = blocked("price_limits_missing")
         result["final_reprice_reason"] = (
             f"limit_down={tick.get('limit_down')};limit_up={tick.get('limit_up')}"
         )
         return result
     if lower >= upper:
-        result["final_reprice_status"] = "blocked_stage372_invalid_price_limits"
+        result["final_reprice_status"] = blocked("invalid_price_limits")
         result["final_reprice_reason"] = f"limit_down={lower};limit_up={upper}"
         return result
     if bid < lower or ask > upper:
         result["final_reprice_status"] = (
-            "blocked_stage372_quote_outside_price_limits"
+            blocked("quote_outside_price_limits")
         )
         result["final_reprice_reason"] = (
             f"limit_down={lower};bid={bid};ask={ask};limit_up={upper}"
@@ -2851,7 +2944,7 @@ def _stage372_post_q2_final_reprice(
         for units in unit_values.values()
     ):
         result["final_reprice_status"] = (
-            "blocked_stage372_pricetick_not_representable"
+            blocked("pricetick_not_representable")
         )
         result["final_reprice_reason"] = (
             f"pricetick={live_pricetick};price_units={unit_values};"
@@ -2861,7 +2954,7 @@ def _stage372_post_q2_final_reprice(
     if not _price_on_tick(bid, live_pricetick) or not _price_on_tick(
         ask, live_pricetick
     ):
-        result["final_reprice_status"] = "blocked_stage372_quote_not_on_tick"
+        result["final_reprice_status"] = blocked("quote_not_on_tick")
         result["final_reprice_reason"] = (
             f"bid={bid};ask={ask};pricetick={live_pricetick}"
         )
@@ -2870,7 +2963,7 @@ def _stage372_post_q2_final_reprice(
     aligned_band = _tick_aligned_price_band(lower, upper, live_pricetick)
     if aligned_band is None:
         result["final_reprice_status"] = (
-            "blocked_stage372_no_tick_aligned_price_within_limits"
+            blocked("no_tick_aligned_price_within_limits")
         )
         result["final_reprice_reason"] = (
             f"limit_down={lower};limit_up={upper};pricetick={live_pricetick}"
@@ -2881,6 +2974,55 @@ def _stage372_post_q2_final_reprice(
     result["final_reprice_aligned_limit_up"] = aligned_upper
 
     direction_text = _normalize_direction_text(req.direction.value)
+    if retry_reclaim_required:
+        retry_trigger, retry_trigger_source, retry_trigger_status = (
+            _retry_reclaim_trigger(intent_row)
+        )
+        if retry_trigger_status == "invalid":
+            result["final_reprice_status"] = (
+                "blocked_retry_reclaim_trigger_invalid"
+            )
+            result["final_reprice_reason"] = (
+                f"{retry_trigger_source}="
+                f"{intent_row.get(retry_trigger_source)}"
+            )
+            return result
+        if retry_trigger_status == "missing":
+            result["final_reprice_status"] = (
+                "blocked_retry_reclaim_trigger_missing"
+            )
+            result["final_reprice_reason"] = (
+                "retry_trigger_price/strategy_entry_price/"
+                "retry_original_fill_price missing"
+            )
+            return result
+        if direction_text == "short":
+            executable_price = bid
+            executable_price_source = "bid_price_1"
+            reclaim_still_favorable = executable_price <= retry_trigger
+        elif direction_text == "long":
+            executable_price = ask
+            executable_price_source = "ask_price_1"
+            reclaim_still_favorable = executable_price >= retry_trigger
+        else:
+            result["final_reprice_status"] = (
+                "blocked_retry_reclaim_invalid_direction"
+            )
+            result["final_reprice_reason"] = f"direction={direction_text}"
+            return result
+        if not reclaim_still_favorable:
+            result["final_reprice_status"] = (
+                "blocked_retry_reclaim_no_longer_favorable"
+            )
+            result["final_reprice_reason"] = (
+                f"direction={direction_text};"
+                f"executable_price={executable_price};"
+                f"retry_trigger={retry_trigger};"
+                f"retry_trigger_source={retry_trigger_source};"
+                f"executable_price_source={executable_price_source}"
+            )
+            return result
+
     aligned_lower_units = math.ceil(lower / live_pricetick - 1e-10)
     aligned_upper_units = math.floor(upper / live_pricetick + 1e-10)
     bid_units = round(bid / live_pricetick)
@@ -2893,7 +3035,9 @@ def _stage372_post_q2_final_reprice(
             aligned_upper_units,
         )
         marketable = price_units >= ask_units
-        side_reason = "marketable_buy_stage372_post_q2_final_reprice"
+        side_reason = (
+            f"marketable_buy_{status_namespace}_post_q2_final_reprice"
+        )
     elif direction_text == "short":
         basis = bid
         desired_units = bid_units - protection_ticks
@@ -2902,9 +3046,11 @@ def _stage372_post_q2_final_reprice(
             aligned_upper_units,
         )
         marketable = price_units <= bid_units
-        side_reason = "marketable_sell_stage372_post_q2_final_reprice"
+        side_reason = (
+            f"marketable_sell_{status_namespace}_post_q2_final_reprice"
+        )
     else:
-        result["final_reprice_status"] = "blocked_stage372_invalid_direction"
+        result["final_reprice_status"] = blocked("invalid_direction")
         result["final_reprice_reason"] = f"direction={direction_text}"
         return result
 
@@ -2920,7 +3066,7 @@ def _stage372_post_q2_final_reprice(
         or price < lower
         or price > upper
     ):
-        result["final_reprice_status"] = "blocked_stage372_invalid_final_price"
+        result["final_reprice_status"] = blocked("invalid_final_price")
         result["final_reprice_reason"] = (
             f"price={price};limit_down={lower};limit_up={upper};"
             f"pricetick={live_pricetick}"
@@ -2928,7 +3074,7 @@ def _stage372_post_q2_final_reprice(
         return result
     if not marketable:
         result["final_reprice_status"] = (
-            "blocked_stage372_no_executable_price_within_limits"
+            blocked("no_executable_price_within_limits")
         )
         result["final_reprice_reason"] = (
             f"direction={direction_text};price={price};bid={bid};ask={ask};"
@@ -2966,7 +3112,7 @@ def _post_snapshot_final_reprice(
 
     source = str(intent_row.get("source", "") or "").strip()
     if source == "stage260_stage372_daily":
-        return _stage372_post_q2_final_reprice(
+        return _strict_post_q2_final_reprice(
             main_engine,
             rows,
             intent_row,
@@ -2974,6 +3120,27 @@ def _post_snapshot_final_reprice(
             max_tick_age_seconds=max_tick_age_seconds,
             q2_completed_monotonic=q2_completed_monotonic,
             tick_wait_seconds=tick_wait_seconds,
+            status_namespace="stage372",
+        )
+
+    c9_source_policy = {
+        "stage901_pending_order": ("open", False),
+        "stage904_c9_intraday_close": ("close", False),
+        "stage904_c9_intraday_retry_open": ("open", True),
+    }
+    if source in c9_source_policy:
+        expected_offset, retry_reclaim_required = c9_source_policy[source]
+        return _strict_post_q2_final_reprice(
+            main_engine,
+            rows,
+            intent_row,
+            req,
+            max_tick_age_seconds=max_tick_age_seconds,
+            q2_completed_monotonic=q2_completed_monotonic,
+            tick_wait_seconds=tick_wait_seconds,
+            status_namespace="c9",
+            expected_offset=expected_offset,
+            retry_reclaim_required=retry_reclaim_required,
         )
 
     parsed_cutoff = pd.to_numeric(q2_completed_monotonic, errors="coerce")
@@ -3301,6 +3468,13 @@ def _post_reprice_final_state_gate(
     Any uncertainty defers this cycle to the one-second fast lane.
     """
 
+    preliminary_price_before = _to_float(
+        initial_reprice_result.get("final_reprice_price_before"),
+        float(req.price),
+    )
+    if not math.isfinite(preliminary_price_before) or preliminary_price_before <= 0:
+        preliminary_price_before = float(req.price)
+
     q2_before_watermark = dict(
         initial_snapshot.get("event_watermark_before_q2", {})
     )
@@ -3400,7 +3574,7 @@ def _post_reprice_final_state_gate(
     after_second_snapshot = _execution_event_watermark(rows)
 
     # Do not wait for another tick here.  Reuse only the newest causal
-    # EVENT_TICK observed after the *first* Q2, with Stage608 fallback disabled.
+    # EVENT_TICK observed after the *second* Q2, with Stage608 fallback disabled.
     # If that evidence is no longer fresh/favourable, the fast lane retries the
     # whole bounded sequence instead of entering an unbounded query-tick loop.
     final_reprice_result = dict(initial_reprice_result)
@@ -3411,7 +3585,7 @@ def _post_reprice_final_state_gate(
             intent_row,
             req,
             max_tick_age_seconds=max_tick_age_seconds,
-            q2_completed_monotonic=initial_snapshot.get(
+            q2_completed_monotonic=second_snapshot.get(
                 "q2_completed_monotonic"
             ),
             tick_wait_seconds=0,
@@ -3430,6 +3604,10 @@ def _post_reprice_final_state_gate(
         )
     )
     blockers = list(dict.fromkeys(blockers))
+    if blockers:
+        # The first post-Q2 price is only a candidate.  Never leave the shared
+        # OrderRequest mutated when the second O-P-O/causal-tick gate fails.
+        req.price = preliminary_price_before
     return {
         "success": not blockers,
         "confirmed": bool(second_snapshot.get("confirmed")) and not blockers,
@@ -3450,6 +3628,7 @@ def _post_reprice_final_state_gate(
         "final_canonical_positions": second_positions,
         "snapshot": second_snapshot,
         "final_reprice_result": final_reprice_result,
+        "request_price_restored_after_block": int(bool(blockers)),
     }
 
 
@@ -3873,8 +4052,67 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
             }:
                 blockers.append(f"stage905_close_source_role_offset_mismatch:{label}")
         elif source == "stage901_pending_order":
-            if row_offset == "open" and role != "c9_initial_open":
-                blockers.append(f"stage905_initial_open_source_role_mismatch:{label}")
+            if row_offset != "open" or role != "c9_initial_open":
+                blockers.append(
+                    f"stage905_initial_open_source_role_offset_mismatch:{label}"
+                )
+            if role != "c9_initial_open":
+                blockers.append(
+                    f"stage905_initial_open_source_role_mismatch:{label}"
+                )
+            root_position_id = _artifact_text(row.get("root_position_id"))
+            position_cycle_id = _artifact_text(row.get("position_cycle_id"))
+            if not root_position_id or not position_cycle_id:
+                blockers.append(
+                    f"stage905_initial_open_cycle_identity_missing:{label}"
+                )
+            target_date = _artifact_text(row.get("target_date"))
+            vt_symbol = _artifact_text(row.get("vt_symbol"))
+            direction = _normalize_direction_text(row.get("direction"))
+            if not target_date or not vt_symbol or direction not in {"long", "short"}:
+                blockers.append(
+                    f"stage905_initial_open_root_identity_input_missing:{label}"
+                )
+            elif root_position_id:
+                expected_root_id = generate_root_position_id(
+                    target_date=target_date,
+                    vt_symbol=vt_symbol,
+                    direction=direction,
+                )
+                if root_position_id != expected_root_id:
+                    blockers.append(
+                        f"stage905_initial_open_root_identity_mismatch:{label}"
+                    )
+            cycle_raw = row.get("position_cycle_no")
+            cycle_numeric = pd.to_numeric(cycle_raw, errors="coerce")
+            cycle_is_zero = (
+                not isinstance(cycle_raw, bool)
+                and not pd.isna(cycle_numeric)
+                and float(cycle_numeric) == 0.0
+            )
+            if not cycle_is_zero:
+                blockers.append(
+                    f"stage905_initial_open_cycle_no_invalid:{label}"
+                )
+            if root_position_id and position_cycle_id and cycle_is_zero:
+                expected_cycle_id = generate_position_cycle_id(
+                    root_position_id=root_position_id,
+                    cycle_no=0,
+                )
+                if position_cycle_id != expected_cycle_id:
+                    blockers.append(
+                        f"stage905_initial_open_cycle_identity_mismatch:{label}"
+                    )
+            forbidden_fields = [
+                key
+                for key in STAGE904_ONLY_INTENT_FIELDS
+                if _artifact_text(row.get(key)) or _artifact_text(payload.get(key))
+            ]
+            if forbidden_fields:
+                blockers.append(
+                    "stage905_initial_open_stage904_lineage_forbidden:"
+                    f"{label}:{','.join(forbidden_fields)}"
+                )
         elif source == "stage260_stage372_daily":
             if role or any(
                 _artifact_text(row.get(key))
@@ -4344,7 +4582,7 @@ def _final_offset_conversion(
             child_blockers.append(f"{prefix}:exchange={child.exchange.value}!={req.exchange.value}")
         if child.direction != req.direction:
             child_blockers.append(f"{prefix}:direction={child.direction.value}!={req.direction.value}")
-        if not math.isclose(float(child.price), float(req.price), rel_tol=0.0, abs_tol=1e-9):
+        if float(child.price) != float(req.price):
             child_blockers.append(f"{prefix}:price={child.price}!={req.price}")
         if float(child.volume) <= 0:
             child_blockers.append(f"{prefix}:nonpositive_volume={child.volume}")
@@ -5408,7 +5646,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--confirm-live-real", default="")
@@ -5484,6 +5722,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--target-date is required when --command=once")
     if args.command == "serve" and not args.stage179_warm_executor:
         parser.error("--command=serve requires --stage179-warm-executor")
+    if args.mode == "live-real" and not args.stage179_warm_executor:
+        parser.error("--mode=live-real requires --stage179-warm-executor")
     return args
 
 
@@ -5496,7 +5736,7 @@ def _execution_profile_for_args(
         getattr(
             args,
             "execution_profile",
-            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+            ExecutionStrategyMode.C9_15W.value,
         )
     )
 
@@ -5574,6 +5814,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
     }
 
     blockers: list[str] = []
+    if args.mode == "live-real" and not args.stage179_warm_executor:
+        blockers.append("live_real_requires_stage179_warm_executor")
     blockers.extend(
         _stage905_execution_profile_blockers(
             execution_profile,

@@ -14,7 +14,7 @@ import pandas as pd
 from pandas.errors import EmptyDataError
 
 from qmt_roll_official_execution_profile import (
-    C9_15W_HISTORICAL_PROFILE,
+    C9_15W_PROFILE,
     ExecutionStrategyMode,
     OfficialExecutionProfile,
     assert_intent_source_allowed,
@@ -1518,7 +1518,7 @@ def run_executor_dry_run(
     include_stage901_pending: bool = True,
     execution_profile: (
         OfficialExecutionProfile | str | ExecutionStrategyMode
-    ) = C9_15W_HISTORICAL_PROFILE,
+    ) = C9_15W_PROFILE,
     stage260_decisions: pd.DataFrame | None = None,
     clock: Clock = SYSTEM_CLOCK,
     write_compat_outputs: bool = True,
@@ -1748,7 +1748,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     args = parser.parse_args()
 

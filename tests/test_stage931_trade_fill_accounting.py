@@ -125,6 +125,30 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         self.assertNotIn(stage931.Offset.CLOSE, [child.offset for child in children])
         self.assertEqual(sum(float(child.volume) for child in children), request.volume)
 
+    def test_shfe_child_must_inherit_parent_price_exactly(self) -> None:
+        engine, rows, request = self._shfe_conversion_case(
+            volume=1,
+            yesterday_volume=0,
+        )
+        converter = engine.get_converter("CTP")
+        original_convert = converter.convert_order_request
+
+        def drifted_convert(*args: object, **kwargs: object) -> list[object]:
+            children = list(original_convert(*args, **kwargs))
+            for child in children:
+                child.price = float(request.price) + 5e-10
+            return children
+
+        converter.convert_order_request = drifted_convert
+
+        result = stage931._final_offset_conversion(engine, rows, request)
+
+        self.assertEqual([], result["requests"])
+        self.assertTrue(
+            any(":price=" in blocker for blocker in result["blockers"]),
+            result["blockers"],
+        )
+
     def test_shfe_conversion_missing_converter_fails_closed(self) -> None:
         _, rows, request = self._shfe_conversion_case(volume=1, yesterday_volume=0)
         engine = SimpleNamespace(get_converter=lambda _gateway: None)
@@ -933,6 +957,39 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "strategy_entry_price": 1245.5,
         }
 
+    @staticmethod
+    def _strict_reprice_engine() -> SimpleNamespace:
+        contract = SimpleNamespace(
+            vt_symbol="jm2609.DCE",
+            pricetick=0.5,
+            gateway_name="CTP",
+        )
+        return SimpleNamespace(
+            subscribe=lambda *_args, **_kwargs: None,
+            get_contract=lambda vt_symbol: (
+                contract if vt_symbol == contract.vt_symbol else None
+            ),
+        )
+
+    @staticmethod
+    def _strict_reprice_tick(
+        *,
+        received_monotonic: float,
+        bid: float,
+        ask: float,
+    ) -> dict[str, object]:
+        return {
+            "vt_symbol": "jm2609.DCE",
+            "datetime": datetime.now().isoformat(),
+            "received_monotonic": received_monotonic,
+            "gateway_name": "CTP",
+            "last_price": bid,
+            "bid_price_1": bid,
+            "ask_price_1": ask,
+            "limit_down": 1100.0,
+            "limit_up": 1400.0,
+        }
+
     def test_retry_open_is_blocked_when_latest_tick_loses_reclaim_condition(self) -> None:
         req = self._retry_request()
         tick = {"last_price": 1245.0, "bid_price_1": 1246.0, "ask_price_1": 1246.5}
@@ -1006,21 +1063,22 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "bid_price_1": 1245.0,
             "ask_price_1": 1245.5,
         }
-        after_q2 = {
-            "last_price": 1246.0,
-            "bid_price_1": 1246.0,
-            "ask_price_1": 1246.5,
-        }
+        after_q2 = self._strict_reprice_tick(
+            received_monotonic=100.1,
+            bid=1246.0,
+            ask=1246.5,
+        )
+        engine = self._strict_reprice_engine()
         with patch.object(
             stage931,
             "_subscribe_and_wait_fresh_tick",
             side_effect=[
                 (before_queries, 0.1, "pre_snapshot_tick"),
-                (after_q2, 0.1, "post_q2_tick"),
+                (after_q2, 0.1, "ctp_event_tick"),
             ],
         ):
             warmup = stage931._final_close_reprice(
-                SimpleNamespace(),
+                engine,
                 {"ticks": []},
                 self._retry_intent(),
                 req,
@@ -1028,7 +1086,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 tick_wait_seconds=2,
             )
             final = stage931._post_snapshot_final_reprice(
-                SimpleNamespace(),
+                engine,
                 {"ticks": []},
                 self._retry_intent(),
                 req,
@@ -1052,21 +1110,22 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "bid_price_1": 1245.0,
             "ask_price_1": 1245.5,
         }
-        after_q2 = {
-            "last_price": 1244.0,
-            "bid_price_1": 1244.0,
-            "ask_price_1": 1244.5,
-        }
+        after_q2 = self._strict_reprice_tick(
+            received_monotonic=100.1,
+            bid=1244.0,
+            ask=1244.5,
+        )
+        engine = self._strict_reprice_engine()
         with patch.object(
             stage931,
             "_subscribe_and_wait_fresh_tick",
             side_effect=[
                 (before_queries, 0.1, "pre_snapshot_tick"),
-                (after_q2, 0.1, "post_q2_tick"),
+                (after_q2, 0.1, "ctp_event_tick"),
             ],
         ):
             warmup = stage931._final_close_reprice(
-                SimpleNamespace(),
+                engine,
                 {"ticks": []},
                 self._retry_intent(),
                 req,
@@ -1075,7 +1134,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             )
             warmup_price = req.price
             final = stage931._post_snapshot_final_reprice(
-                SimpleNamespace(),
+                engine,
                 {"ticks": []},
                 self._retry_intent(),
                 req,
@@ -1086,7 +1145,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
 
         self.assertEqual(warmup["final_reprice_status"], "applied")
         self.assertEqual(final["final_reprice_status"], "applied")
-        self.assertEqual(final["final_reprice_source"], "post_q2_tick")
+        self.assertEqual(final["final_reprice_source"], "ctp_event_tick")
         self.assertEqual(final["post_sandwich_reprice"], 1)
         self.assertNotEqual(req.price, warmup_price)
         self.assertEqual(req.price, final["final_reprice_price_after"])
@@ -1120,7 +1179,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
 
         self.assertEqual(
             final["final_reprice_status"],
-            "skipped_no_fresh_tick_keep_stage905_price",
+            "blocked_c9_no_fresh_post_q2_ctp_tick",
         )
         self.assertEqual(final["final_reprice_tick_file_fallback_allowed"], 0)
         self.assertTrue(stage931._final_reprice_blockers(final))
@@ -1149,7 +1208,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
 
         self.assertEqual(
             final["final_reprice_status"],
-            "skipped_no_fresh_tick_keep_stage905_price",
+            "blocked_c9_no_fresh_post_q2_ctp_tick",
         )
         self.assertTrue(stage931._final_reprice_blockers(final))
 
@@ -1244,25 +1303,22 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         for result in (retry_result, close_result):
             self.assertEqual(
                 result["final_reprice_status"],
-                "skipped_no_fresh_tick_keep_stage905_price",
+                "blocked_c9_no_fresh_post_q2_ctp_tick",
             )
             self.assertTrue(stage931._final_reprice_blockers(result))
 
-    def test_post_snapshot_reprice_accepts_only_event_tick_at_or_after_q2(self) -> None:
+    def test_post_snapshot_reprice_accepts_only_event_tick_strictly_after_q2(self) -> None:
         req = self._retry_request()
         rows = {
             "ticks": [
-                {
-                    "vt_symbol": req.vt_symbol,
-                    "datetime": datetime.now().isoformat(),
-                    "received_monotonic": 100.1,
-                    "last_price": 1244.0,
-                    "bid_price_1": 1244.0,
-                    "ask_price_1": 1244.5,
-                }
+                self._strict_reprice_tick(
+                    received_monotonic=100.1,
+                    bid=1244.0,
+                    ask=1244.5,
+                )
             ]
         }
-        engine = SimpleNamespace(subscribe=lambda *_args, **_kwargs: None)
+        engine = self._strict_reprice_engine()
 
         final = stage931._post_snapshot_final_reprice(
             engine,
@@ -1773,6 +1829,166 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "stage905_initial_open_source_role_mismatch:retry-open-1",
             pending_blockers,
         )
+
+        spoofed_payload = {
+            **payload,
+            "source": "stage901_pending_order",
+            "intent_role": "c9_initial_open",
+        }
+        spoofed_pending = {
+            **base,
+            "source": "stage901_pending_order",
+            "intent_role": "c9_initial_open",
+            "order_request_json": stage931.json.dumps(
+                spoofed_payload,
+                sort_keys=True,
+            ),
+        }
+        spoofed_blockers = stage931._stage905_ready_intent_artifact_blockers(
+            pd.DataFrame([spoofed_pending])
+        )
+        self.assertIn(
+            "stage905_initial_open_cycle_no_invalid:retry-open-1",
+            spoofed_blockers,
+        )
+        self.assertTrue(
+            any(
+                blocker.startswith(
+                    "stage905_initial_open_stage904_lineage_forbidden:"
+                    "retry-open-1:"
+                )
+                for blocker in spoofed_blockers
+            ),
+            spoofed_blockers,
+        )
+
+    def test_stage901_initial_open_requires_deterministic_cycle_zero_lineage(self) -> None:
+        target_date = "2026-07-13"
+        vt_symbol = "JM609.DCE"
+        root_position_id = stage931.generate_root_position_id(
+            target_date=target_date,
+            vt_symbol=vt_symbol,
+            direction="short",
+        )
+        position_cycle_id = stage931.generate_position_cycle_id(
+            root_position_id=root_position_id,
+            cycle_no=0,
+        )
+        payload = {
+            "intent_id": "STAGE905-PENDING-001",
+            "target_date": target_date,
+            "source": "stage901_pending_order",
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "direction": stage931.Direction.SHORT.value,
+            "type": stage931.OrderType.LIMIT.value,
+            "volume": 1,
+            "price": 1245.5,
+            "offset": stage931.Offset.OPEN.value,
+            "reference": "Stage905PhaseD:STAGE905-PENDING-001",
+            "gateway_name": "CTP",
+            "vt_symbol": vt_symbol,
+            "root_position_id": root_position_id,
+            "position_cycle_id": position_cycle_id,
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+        }
+        row = {
+            "intent_id": payload["intent_id"],
+            "target_date": target_date,
+            "source": payload["source"],
+            "symbol": payload["symbol"],
+            "exchange": payload["exchange"],
+            "direction": "short",
+            "offset": "open",
+            "planned_volume": 1,
+            "order_request_price": 1245.5,
+            "order_request_volume": 1,
+            "vt_symbol": vt_symbol,
+            "root_position_id": root_position_id,
+            "position_cycle_id": position_cycle_id,
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+            "executor_status": "dry_run_order_request_payload_ready",
+            "order_request_json": stage931.json.dumps(payload, sort_keys=True),
+        }
+
+        self.assertEqual(
+            [],
+            stage931._stage905_ready_intent_artifact_blockers(
+                pd.DataFrame([row])
+            ),
+        )
+
+        stage904_only_evidence = {
+            "manual_intervention_required": 1,
+            "risk_alert_level": "P1",
+            "migration_blocker": "legacy_state_unproven",
+            "recommended_operator_action": "manual_reconcile",
+            "stage904_monitor_status": "monitor_blocked",
+            "stage904_summary_generated_at": "2026-07-13 21:00:01",
+            "entry_risk_date": "2026-07-13",
+            "open_trade_id": "CTP.TRADE-001",
+        }
+        payload_evidence_fields = {
+            "manual_intervention_required",
+            "risk_alert_level",
+            "migration_blocker",
+            "recommended_operator_action",
+            "entry_risk_date",
+            "open_trade_id",
+        }
+        for field, value in stage904_only_evidence.items():
+            contaminated_payload = dict(payload)
+            if field in payload_evidence_fields:
+                contaminated_payload[field] = value
+            contaminated_row = {
+                **row,
+                field: value,
+                "order_request_json": stage931.json.dumps(
+                    contaminated_payload,
+                    sort_keys=True,
+                ),
+            }
+            blockers = stage931._stage905_ready_intent_artifact_blockers(
+                pd.DataFrame([contaminated_row])
+            )
+            self.assertTrue(
+                any(
+                    blocker.startswith(
+                        "stage905_initial_open_stage904_lineage_forbidden:"
+                        "STAGE905-PENDING-001:"
+                    )
+                    and field in blocker.split(":", maxsplit=2)[-1].split(",")
+                    for blocker in blockers
+                ),
+                (field, blockers),
+            )
+            request = stage931.OrderRequest(
+                symbol="JM609",
+                exchange=stage931.Exchange.DCE,
+                direction=stage931.Direction.SHORT,
+                type=stage931.OrderType.LIMIT,
+                volume=1,
+                price=1245.5,
+                offset=stage931.Offset.OPEN,
+                reference="Stage905PhaseD:STAGE905-PENDING-001",
+            )
+            final_child_blockers = stage931._pre_reserved_child_intent_blockers(
+                contaminated_row,
+                request,
+            )
+            self.assertTrue(
+                any(
+                    blocker.startswith(
+                        "stage905_initial_open_stage904_lineage_forbidden:"
+                        "STAGE905-PENDING-001:"
+                    )
+                    and field in blocker.split(":", maxsplit=2)[-1].split(",")
+                    for blocker in final_child_blockers
+                ),
+                (field, final_child_blockers),
+            )
 
     def test_close_only_artifact_scope_ignores_unrelated_broken_open(self) -> None:
         close_payload = {

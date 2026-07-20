@@ -26,18 +26,22 @@ Start and end with:
 - Current line: `futures_trend_stage819_intraday_rules`.
 - Current capital: `150000`.
 - Python: `.py311/bin/python`.
+- Current automation qualification state: C9/15w production-readonly; real submit remains fail closed until the release manifest, installed runtime, CTP read-only chain, and activation receipt all pass.
 - Do not fall back to old Stage372/20w, Stage653, Stage78-1, old 30w, or research candidates unless the user explicitly asks for a comparison.
 
 ## Standard Automation Set
 
-The full local automation set is:
+The safe C9/15w qualification set is:
 
-- `local.qmt-roll.official-live.15w.c9-day-session`
+- `local.qmt-roll.official-live.15w.c9-readonly-day-session`
   - Starts Stage930 at 08:55.
-  - Runs `run_qmt_roll_stage930_official_live_c9_session_daemon.py --mode live-real --submit-mode live-real`.
-- `local.qmt-roll.official-live.15w.c9-night-session`
+  - Runs Stage930 with `--execution-profile c9-15w --mode dry-run --submit-mode disabled --runtime-profile production-readonly --stage179-execution-mode warm`.
+- `local.qmt-roll.official-live.15w.c9-readonly-night-session`
   - Starts Stage930 at 20:55.
-  - Runs `run_qmt_roll_stage930_official_live_c9_session_daemon.py --mode live-real --submit-mode live-real`.
+  - Uses the same C9/15w production-readonly and no-submit contract as the day job.
+- `local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute`
+  - Runs Stage909 at 16:35 for the latest completed session.
+  - Precomputes the C9/15w shadow artifacts without calling broker order APIs.
 - `local.qmt-roll.official-live.15w.postclose`
   - Runs Stage929 post-close report at 16:35.
   - Stage929 runs Stage935 AI-pool preflight before generating the report.
@@ -55,11 +59,13 @@ The full local automation set is:
   - This is a standalone backup/health check. It is not the only protection before reports or trading.
   - Stage935 checks whether Stage182 monthly AI pool is stale versus the latest complete month. It only refreshes Stage183/Stage182 when stale or forced.
 
-Stage930 day/night session daemons also run Stage935 AI-pool preflight at startup. If the pool is stale and Stage935 cannot update it, Stage930 must fail closed instead of generating new open orders from an old pool.
+Stage930 day/night read-only session daemons also run Stage935 AI-pool preflight at startup. If the pool is stale and Stage935 cannot update it, Stage930 must fail closed instead of generating new open-order intents from an old pool.
+
+The deleted `local.qmt-roll.official-live.15w.c9-day-session` and `local.qmt-roll.official-live.15w.c9-night-session` jobs are legacy armed entrypoints. Keep them disabled and uninstalled; never recreate or bootstrap them from an old checkout.
 
 ## Install Or Reload LaunchAgents
 
-Install from `examples/portfolio_backtesting/launchd/` into `~/Library/LaunchAgents/`.
+Install the three `c9-readonly-*` plists from `examples/portfolio_backtesting/launchd/` into `~/Library/LaunchAgents/`. Do not install an armed real-submit plist during qualification.
 
 Use `launchctl bootout gui/$(id -u)/<label>` before bootstrap when reloading an existing label. Ignore bootout "not found" errors.
 
@@ -82,12 +88,12 @@ Run:
 
 Require Stage934 to show:
 
-- day and night Stage930 launchd labels loaded;
+- day and night C9/15w read-only Stage930 launchd labels loaded;
 - day-close Stage907 read-only launchd label loaded;
 - monthly AI pool launchd label loaded;
 - installed arguments match repo arguments;
 - Stage930 process present during a trading session, or scheduled-ready outside session;
-- latest Stage930 and Stage935 summaries have `order_api_called_count=0` unless a real strategy order was intentionally submitted by the live adapter.
+- latest Stage930 and Stage935 summaries have `order_api_called_count=0`; any non-zero value fails read-only qualification.
 - latest Stage930 summary includes `ai_pool_preflight.automation_status` equal to `monthly_ai_pool_already_current` or `monthly_ai_pool_updated`.
 
 Also check:
@@ -121,13 +127,13 @@ Rules:
 
 ## Kickstart Rules
 
-Only kickstart a session daemon when the user asks for immediate start or when fixing a missed launch during an active or imminent trading session:
+Only kickstart a read-only session daemon when the user asks for immediate start or when fixing a missed read-only observation during an active or imminent trading session:
 
 ```bash
-launchctl kickstart -k gui/$(id -u)/local.qmt-roll.official-live.15w.c9-night-session
+launchctl kickstart -k gui/$(id -u)/local.qmt-roll.official-live.15w.c9-readonly-night-session
 ```
 
-Do not bypass Stage927/931, kill switch, readonly account/position gate, or continuous-auction submit guards. Starting launchd is allowed; forcing an order is not.
+Do not kickstart either deleted armed label. Do not bypass the release manifest, activation receipt, Stage927/931, kill switch, read-only account/position gate, or continuous-auction submit guards. Starting the read-only launchd job is allowed; forcing an order is not.
 
 ## Fail Closed
 

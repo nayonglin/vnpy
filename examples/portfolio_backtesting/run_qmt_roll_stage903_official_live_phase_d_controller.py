@@ -1531,7 +1531,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         getattr(
             args,
             "execution_profile",
-            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+            ExecutionStrategyMode.C9_15W.value,
         )
     )
     now = datetime.now()
@@ -1966,7 +1966,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument(

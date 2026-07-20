@@ -115,6 +115,7 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
         intent: dict[str, object],
         request: stage931.OrderRequest,
         reprice_side_effect: object | None = None,
+        initial_reprice_result: dict[str, object] | None = None,
     ) -> dict[str, object]:
         def snapshot_side_effect(*_args: object, **_kwargs: object) -> dict[str, object]:
             self.rows["positions"] = list(second_snapshot.get("positions", []))
@@ -153,9 +154,10 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                         intent,
                         request,
                         initial_snapshot=initial_snapshot,
-                        initial_reprice_result={
-                            "final_reprice_status": "applied"
-                        },
+                        initial_reprice_result=(
+                            initial_reprice_result
+                            or {"final_reprice_status": "applied"}
+                        ),
                         max_tick_age_seconds=30,
                         max_wait_seconds=8.0,
                         readiness_state=self.readiness,
@@ -167,7 +169,10 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 intent,
                 request,
                 initial_snapshot=initial_snapshot,
-                initial_reprice_result={"final_reprice_status": "applied"},
+                initial_reprice_result=(
+                    initial_reprice_result
+                    or {"final_reprice_status": "applied"}
+                ),
                 max_tick_age_seconds=30,
                 max_wait_seconds=8.0,
                 readiness_state=self.readiness,
@@ -180,6 +185,21 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
             "source": "stage260_stage372_daily",
             "pricetick": pricetick,
         }
+
+    @staticmethod
+    def _c9_intent(
+        source: str,
+        *,
+        pricetick: float = 0.5,
+    ) -> dict[str, object]:
+        intent: dict[str, object] = {
+            "vt_symbol": "jm2609.DCE",
+            "source": source,
+            "pricetick": pricetick,
+        }
+        if source == "stage904_c9_intraday_retry_open":
+            intent["retry_trigger_price"] = 100.0
+        return intent
 
     @staticmethod
     def _stage372_engine(*, pricetick: float = 0.5) -> SimpleNamespace:
@@ -287,6 +307,233 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
         )
         self.assertLessEqual(request.price, 99.5)
         self.assertTrue(stage931._price_on_tick(request.price, 0.5))
+
+    def test_all_c9_sources_use_the_same_strict_post_q2_price_gate(self) -> None:
+        cases = (
+            ("stage901_pending_order", stage931.Offset.OPEN),
+            ("stage904_c9_intraday_close", stage931.Offset.CLOSE),
+            ("stage904_c9_intraday_retry_open", stage931.Offset.OPEN),
+        )
+
+        for source, offset in cases:
+            with self.subTest(source=source):
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=offset,
+                )
+                with patch.object(
+                    stage931,
+                    "_latest_fresh_tick_from_file",
+                    side_effect=AssertionError("C9 must not use tick-file fallback"),
+                ):
+                    result = stage931._post_snapshot_final_reprice(
+                        self._stage372_engine(),
+                        {"ticks": [self._stage372_tick()]},
+                        self._c9_intent(source),
+                        request,
+                        max_tick_age_seconds=30,
+                        q2_completed_monotonic=120.0,
+                        tick_wait_seconds=0,
+                    )
+
+                self.assertEqual("applied", result["final_reprice_status"])
+                self.assertEqual("ctp_event_tick", result["final_reprice_source"])
+                self.assertEqual(0, result["final_reprice_tick_file_fallback_allowed"])
+                self.assertEqual(0.5, result["final_reprice_live_contract_pricetick"])
+                self.assertLessEqual(request.price, 99.5)
+                self.assertGreaterEqual(request.price, 90.0)
+                self.assertTrue(stage931._price_on_tick(request.price, 0.5))
+
+    def test_all_c9_sources_reject_tick_between_first_and_second_q2(self) -> None:
+        self.engine = self._stage372_engine(pricetick=0.5)
+        cases = (
+            ("stage901_pending_order", stage931.Offset.OPEN),
+            ("stage904_c9_intraday_close", stage931.Offset.CLOSE),
+            ("stage904_c9_intraday_retry_open", stage931.Offset.OPEN),
+        )
+
+        for source, offset in cases:
+            with self.subTest(source=source):
+                self.rows["ticks"] = [
+                    self._stage372_tick(received_monotonic=110.0)
+                ]
+                positions = (
+                    [self._position(direction="long", volume=1.0)]
+                    if offset == stage931.Offset.CLOSE
+                    else []
+                )
+                initial = self._snapshot(
+                    positions=positions,
+                    q2_completed_monotonic=100.0,
+                )
+                second = self._snapshot(
+                    positions=positions,
+                    q2_completed_monotonic=120.0,
+                )
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=offset,
+                )
+                request.price = 98.0
+
+                result = self._run_gate(
+                    initial_snapshot=initial,
+                    second_snapshot=second,
+                    intent=self._c9_intent(source),
+                    request=request,
+                    initial_reprice_result={
+                        "final_reprice_status": "applied",
+                        "final_reprice_price_before": 100.0,
+                        "final_reprice_price_after": 98.0,
+                    },
+                )
+
+                self.assertFalse(result["success"])
+                self.assertIn(
+                    "final_close_reprice_not_applied:"
+                    "blocked_c9_no_fresh_post_q2_ctp_tick",
+                    result["blockers"],
+                )
+                self.assertEqual(100.0, request.price)
+                self.assertEqual(1, result["request_price_restored_after_block"])
+
+    def test_retry_open_rejects_explicit_invalid_trigger_values(self) -> None:
+        invalid_values = (
+            float("nan"),
+            float("inf"),
+            float("-inf"),
+            sys.float_info.max,
+            True,
+        )
+
+        for invalid in invalid_values:
+            with self.subTest(trigger=repr(invalid)):
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=stage931.Offset.OPEN,
+                )
+                intent = self._c9_intent(
+                    "stage904_c9_intraday_retry_open",
+                    pricetick=0.5,
+                )
+                intent.update(
+                    {
+                        "retry_trigger_price": invalid,
+                        # An explicit invalid primary trigger must not silently
+                        # fall through to a later valid-looking field.
+                        "strategy_entry_price": 100.0,
+                    }
+                )
+
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(pricetick=0.5),
+                    {"ticks": [self._stage372_tick()]},
+                    intent,
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    "blocked_retry_reclaim_trigger_invalid",
+                    result["final_reprice_status"],
+                )
+                self.assertEqual(100.0, request.price)
+
+    def test_all_c9_sources_require_a_contract_from_the_same_ctp_session(self) -> None:
+        engine = SimpleNamespace(
+            subscribe=lambda *_args, **_kwargs: None,
+            get_contract=lambda _vt_symbol: None,
+        )
+        cases = (
+            ("stage901_pending_order", stage931.Offset.OPEN),
+            ("stage904_c9_intraday_close", stage931.Offset.CLOSE),
+            ("stage904_c9_intraday_retry_open", stage931.Offset.OPEN),
+        )
+
+        for source, offset in cases:
+            with self.subTest(source=source):
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=offset,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    engine,
+                    {"ticks": [self._stage372_tick()]},
+                    self._c9_intent(source),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    "blocked_c9_live_contract_missing",
+                    result["final_reprice_status"],
+                )
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(100.0, request.price)
+
+    def test_c9_source_names_cannot_disguise_the_wrong_offset(self) -> None:
+        cases = (
+            ("stage901_pending_order", stage931.Offset.CLOSE),
+            ("stage904_c9_intraday_close", stage931.Offset.OPEN),
+            ("stage904_c9_intraday_retry_open", stage931.Offset.CLOSE),
+        )
+
+        for source, offset in cases:
+            with self.subTest(source=source):
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=offset,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(),
+                    {"ticks": [self._stage372_tick()]},
+                    self._c9_intent(source),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=120.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    "blocked_c9_source_offset_mismatch",
+                    result["final_reprice_status"],
+                )
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(100.0, request.price)
+
+    def test_all_c9_sources_require_a_positive_post_q2_cutoff(self) -> None:
+        cases = (
+            ("stage901_pending_order", stage931.Offset.OPEN),
+            ("stage904_c9_intraday_close", stage931.Offset.CLOSE),
+            ("stage904_c9_intraday_retry_open", stage931.Offset.OPEN),
+        )
+
+        for source, offset in cases:
+            with self.subTest(source=source):
+                request = self._request(
+                    direction=stage931.Direction.SHORT,
+                    offset=offset,
+                )
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(),
+                    {"ticks": [self._stage372_tick()]},
+                    self._c9_intent(source),
+                    request,
+                    max_tick_age_seconds=30,
+                    q2_completed_monotonic=0.0,
+                    tick_wait_seconds=0,
+                )
+
+                self.assertEqual(
+                    "blocked_post_snapshot_tick_cutoff_missing",
+                    result["final_reprice_status"],
+                )
+                self.assertTrue(stage931._final_reprice_blockers(result))
+                self.assertEqual(100.0, request.price)
 
     def test_stage372_short_clamps_to_tick_aligned_lower_limit(self) -> None:
         request = self._request(
@@ -832,6 +1079,7 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
         )
 
     def test_protective_close_rechecks_real_event_tick_without_file_fallback(self) -> None:
+        self.engine = self._stage372_engine(pricetick=1.0)
         position = self._position(direction="short", volume=2.0)
         initial = self._snapshot(positions=[position])
         second = self._snapshot(
@@ -848,9 +1096,12 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 "vt_symbol": request.vt_symbol,
                 "datetime": datetime.now().isoformat(),
                 "received_monotonic": 121.0,
+                "gateway_name": "CTP",
                 "last_price": 100.0,
                 "bid_price_1": 99.0,
                 "ask_price_1": 100.0,
+                "limit_down": 90.0,
+                "limit_up": 110.0,
             }
         )
         # vn.py's own reqQryInvestorPosition echo is intentionally unscoped;
@@ -891,6 +1142,7 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
         self.assertEqual(result["position_event_watermark_changed"], 1)
 
     def test_retry_open_latest_tick_no_longer_favourable_fails_closed(self) -> None:
+        self.engine = self._stage372_engine(pricetick=1.0)
         initial = self._snapshot()
         second = self._snapshot(q2_completed_monotonic=120.0)
         request = self._request(
@@ -902,9 +1154,12 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 "vt_symbol": request.vt_symbol,
                 "datetime": datetime.now().isoformat(),
                 "received_monotonic": 121.0,
+                "gateway_name": "CTP",
                 "last_price": 101.0,
                 "bid_price_1": 101.0,
                 "ask_price_1": 102.0,
+                "limit_down": 90.0,
+                "limit_up": 110.0,
             }
         )
 

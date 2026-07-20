@@ -679,7 +679,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     args = parser.parse_args()
     profile = resolve_execution_profile(args.execution_profile)

@@ -17,6 +17,10 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import build_qmt_roll_stage179_release_manifest as builder
 import build_qmt_roll_stage179_rollback_guard as rollback_guard
 from build_qmt_roll_stage179_release_manifest import build_release_manifest_file
+from qmt_roll_official_execution_profile import (
+    C9_15W_PROFILE,
+    STAGE372_20W_PROFILE,
+)
 from qmt_roll_official_live_release_manifest import (
     ReleaseManifestError,
     build_release_manifest,
@@ -87,8 +91,15 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
             "examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh",
             "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
-            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
-            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
+            "examples/portfolio_backtesting/run_qmt_roll_stage934_official_live_automation_health_check.py",
+            "examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py",
+            "examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py",
+            "examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
+            "examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+            "examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+            "examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
+            "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
             "tests/stage179_performance_gate.py",
@@ -97,6 +108,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_stage907_readonly_refresh_gate.py",
             "tests/test_stage608_continuous_tick_stream.py",
             "tests/test_stage930_fast_lane.py",
+            "tests/test_stage934_readonly_health_check.py",
         }
 
         self.assertTrue(required.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
@@ -335,22 +347,38 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 output_path=output,
                 repo_root=self.repo,
                 release_id="r1",
-                official_version="official-v",
-                capital=200_000,
-                capital_label="20w",
+                official_version=C9_15W_PROFILE.official_version,
+                capital=C9_15W_PROFILE.capital,
+                capital_label=C9_15W_PROFILE.capital_label,
                 critical_files=("a.py", "b.json"),
                 allowed_runtime_profiles=("offline",),
                 created_at_utc="2026-07-18T11:00:00Z",
             )
         dirty.unlink()
 
+        default_output = Path(self.tempdir.name) / "default-built-release.json"
+        readonly_default = build_release_manifest_file(
+            output_path=default_output,
+            repo_root=self.repo,
+            release_id="readonly-default",
+            official_version=C9_15W_PROFILE.official_version,
+            capital=C9_15W_PROFILE.capital,
+            capital_label=C9_15W_PROFILE.capital_label,
+            critical_files=("a.py", "b.json"),
+            created_at_utc="2026-07-18T11:00:00Z",
+        )
+        self.assertEqual(
+            ["offline", "production-readonly"],
+            readonly_default["allowed_runtime_profiles"],
+        )
+
         first = build_release_manifest_file(
             output_path=output,
             repo_root=self.repo,
             release_id="r1",
-            official_version="official-v",
-            capital=200_000,
-            capital_label="20w",
+            official_version=C9_15W_PROFILE.official_version,
+            capital=C9_15W_PROFILE.capital,
+            capital_label=C9_15W_PROFILE.capital_label,
             critical_files=("a.py", "b.json"),
             allowed_runtime_profiles=("offline",),
             created_at_utc="2026-07-18T11:00:00Z",
@@ -359,9 +387,9 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             output_path=output,
             repo_root=self.repo,
             release_id="r1",
-            official_version="official-v",
-            capital=200_000,
-            capital_label="20w",
+            official_version=C9_15W_PROFILE.official_version,
+            capital=C9_15W_PROFILE.capital,
+            capital_label=C9_15W_PROFILE.capital_label,
             critical_files=("a.py", "b.json"),
             allowed_runtime_profiles=("offline",),
             created_at_utc="2026-07-18T11:00:00Z",
@@ -376,9 +404,9 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 output_path=output,
                 repo_root=self.repo,
                 release_id="r2",
-                official_version="official-v",
-                capital=200_000,
-                capital_label="20w",
+                official_version=C9_15W_PROFILE.official_version,
+                capital=C9_15W_PROFILE.capital,
+                capital_label=C9_15W_PROFILE.capital_label,
                 critical_files=("a.py", "b.json"),
                 allowed_runtime_profiles=("offline",),
                 created_at_utc="2026-07-18T11:00:00Z",
@@ -394,15 +422,33 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 repo_root=self.repo,
                 release_id="unsafe",
                 execution_profile="stage372-20w",
-                official_version="official-v",
-                capital=200_000,
-                capital_label="20w",
+                official_version=STAGE372_20W_PROFILE.official_version,
+                capital=STAGE372_20W_PROFILE.capital,
+                capital_label=STAGE372_20W_PROFILE.capital_label,
                 critical_files=("a.py", "b.json"),
                 allowed_runtime_profiles=("offline", "simnow"),
                 strategy_semantics_qualification={
                     "status": "passed",
                     "evidence_id": "caller-self-declared",
                 },
+                created_at_utc="2026-07-18T11:00:00Z",
+            )
+
+    def test_builder_rejects_deprecated_c9_historical_profile_key(self) -> None:
+        with self.assertRaisesRegex(
+            ReleaseManifestError,
+            "release_builder_deprecated_execution_profile_forbidden",
+        ):
+            build_release_manifest_file(
+                output_path=Path(self.tempdir.name) / "deprecated-release.json",
+                repo_root=self.repo,
+                release_id="deprecated",
+                execution_profile="c9-15w-historical",
+                official_version=C9_15W_PROFILE.official_version,
+                capital=C9_15W_PROFILE.capital,
+                capital_label=C9_15W_PROFILE.capital_label,
+                critical_files=("a.py", "b.json"),
+                allowed_runtime_profiles=("offline",),
                 created_at_utc="2026-07-18T11:00:00Z",
             )
 
@@ -424,9 +470,9 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                     output_path=Path(self.tempdir.name) / "race-release.json",
                     repo_root=self.repo,
                     release_id="race",
-                    official_version="official-v",
-                    capital=200_000,
-                    capital_label="20w",
+                    official_version=C9_15W_PROFILE.official_version,
+                    capital=C9_15W_PROFILE.capital,
+                    capital_label=C9_15W_PROFILE.capital_label,
                     critical_files=("a.py", "b.json"),
                     allowed_runtime_profiles=("offline",),
                     created_at_utc="2026-07-18T11:00:00Z",
@@ -455,7 +501,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             defaults,
         )
         self.assertIn(
-            "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
+            "examples/portfolio_backtesting/provision_qmt_roll_c9_launchd_directories.py",
             defaults,
         )
         for stage in ("902", "903", "904", "905", "927"):

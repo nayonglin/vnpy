@@ -26,8 +26,8 @@ import audit_qmt_roll_stage179_readonly_canary_qualification as auditor  # noqa:
 
 MANIFEST_SHA256 = "a" * 64
 SOURCE_COMMIT = "b" * 40
-DAY_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist"
-NIGHT_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist"
+DAY_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist"
+NIGHT_PLIST = "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist"
 PLIST_SHA256 = "c" * 64
 
 
@@ -61,17 +61,17 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "session_kind": session_kind,
         "session_completed": 1,
         "launchd_label": (
-            "local.qmt-roll.official-live.20w.stage372-day-session"
+            "local.qmt-roll.official-live.15w.c9-readonly-day-session"
             if session_kind == "day"
-            else "local.qmt-roll.official-live.20w.stage372-night-session"
+            else "local.qmt-roll.official-live.15w.c9-readonly-night-session"
         ),
         "launchd_start_hour": 8 if session_kind == "day" else 20,
         "launchd_start_minute": 55,
         "launchd_provenance_complete": 1,
         "launchd_xpc_service_name": (
-            "local.qmt-roll.official-live.20w.stage372-day-session"
+            "local.qmt-roll.official-live.15w.c9-readonly-day-session"
             if session_kind == "day"
-            else "local.qmt-roll.official-live.20w.stage372-night-session"
+            else "local.qmt-roll.official-live.15w.c9-readonly-night-session"
         ),
         "launchd_process_pid": 1000 + index,
         "launchd_parent_pid": 1,
@@ -80,14 +80,14 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "launchd_plist_relative_path": DAY_PLIST if session_kind == "day" else NIGHT_PLIST,
         "launchd_plist_sha256": PLIST_SHA256,
         "manifest_launchd_plist_sha256": PLIST_SHA256,
-        "execution_profile": "stage372-20w",
-        "official_live_version": "official_live_stage372_20w_recovery_sleeve",
-        "capital": 200_000,
-        "capital_label": "20w",
+        "execution_profile": "c9-15w",
+        "official_live_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+        "capital": 150_000,
+        "capital_label": "15w",
         "runtime_profile": "production-readonly",
         "mode": "dry-run",
         "submit_mode": "disabled",
-        "plist_execution_profile": "stage372-20w",
+        "plist_execution_profile": "c9-15w",
         "plist_runtime_profile": "production-readonly",
         "plist_mode": "dry-run",
         "plist_submit_mode": "disabled",
@@ -127,7 +127,7 @@ def session_record(index: int, *, session_kind: str) -> dict[str, object]:
         "disconnect_evidence_id": disconnect_evidence_id if index == 4 else "",
         "disconnect_session_id": "session-4" if index == 4 else "",
         "disconnect_runtime_profile": "production-readonly" if index == 4 else "",
-        "disconnect_execution_profile": "stage372-20w" if index == 4 else "",
+        "disconnect_execution_profile": "c9-15w" if index == 4 else "",
         "old_connection_generation": "connection-old" if index == 4 else "",
         "new_connection_generation": "connection-new" if index == 4 else "",
         "readiness_revoked_epoch_ns": revoked if index == 4 else None,
@@ -359,7 +359,7 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
                 "--submit-mode",
                 "disabled",
                 "--execution-profile",
-                "stage372-20w",
+                "c9-15w",
                 "--runtime-profile",
                 "production-readonly",
                 "--readonly-observe-reconnect-once",
@@ -607,7 +607,7 @@ class Stage179ReadonlyCanaryQualificationTest(unittest.TestCase):
             "StartCalendarInterval": {"Hour": 20, "Minute": 55},
             "ProgramArguments": [
                 "python", "daemon.py", "--mode", "dry-run", "--mode", "live-real",
-                "--submit-mode", "disabled", "--execution-profile", "stage372-20w",
+                "--submit-mode", "disabled", "--execution-profile", "c9-15w",
                 "--runtime-profile", "production-readonly",
             ],
         }

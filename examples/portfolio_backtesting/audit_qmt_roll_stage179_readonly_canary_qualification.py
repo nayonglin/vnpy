@@ -15,12 +15,13 @@ from zoneinfo import ZoneInfo
 from qmt_roll_official_live_release_manifest import (
     load_and_validate_release_manifest,
 )
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
-EXPECTED_EXECUTION_PROFILE = "stage372-20w"
-EXPECTED_OFFICIAL_VERSION = "official_live_stage372_20w_recovery_sleeve"
-EXPECTED_CAPITAL = 200_000
-EXPECTED_CAPITAL_LABEL = "20w"
+EXPECTED_EXECUTION_PROFILE = C9_15W_PROFILE.profile_key
+EXPECTED_OFFICIAL_VERSION = C9_15W_PROFILE.official_version
+EXPECTED_CAPITAL = C9_15W_PROFILE.capital
+EXPECTED_CAPITAL_LABEL = C9_15W_PROFILE.capital_label
 EXPECTED_RUNTIME_PROFILE = "production-readonly"
 EXPECTED_MODE = "dry-run"
 EXPECTED_SUBMIT_MODE = "disabled"
@@ -28,8 +29,8 @@ INGRESS_DURABLE_HARD_DEADLINE_NS = 1_000_000_000
 LAUNCHD_START_HARD_DEADLINE_NS = 60_000_000_000
 SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 CANONICAL_PLISTS = {
-    "day": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
-    "night": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
+    "day": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
+    "night": "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
 }
 def _strict_int(value: Any) -> int | None:
     return value if type(value) is int else None
@@ -396,7 +397,7 @@ def _record_blockers(
         blockers.append(f"{session_id}:session_kind_invalid")
     label = _clean(record.get("launchd_label"))
     expected_label = (
-        f"local.qmt-roll.official-live.20w.stage372-{session_kind}-session"
+        f"local.qmt-roll.official-live.15w.c9-readonly-{session_kind}-session"
         if session_kind in {"day", "night"}
         else ""
     )
@@ -878,7 +879,7 @@ def _current_commit(repo_root: Path) -> str:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Capture and qualify Stage372 Stage179 production-readonly canary evidence."
+        description="Capture and qualify C9/15w Stage179 production-readonly canary evidence."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     capture = subparsers.add_parser("capture")

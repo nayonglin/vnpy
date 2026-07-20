@@ -42,21 +42,48 @@ def _process_alive(pid: int) -> bool:
 
 
 class Stage179LaunchdLifecycleTest(unittest.TestCase):
-    def test_stage372_readonly_jobs_are_isolated_and_never_enable_submit(self) -> None:
+    def test_invalid_pgid_handshake_attempts_fail_before_child_spawn(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temp = Path(directory)
+            marker = temp / "daemon-started"
+            daemon = temp / "marker_daemon.py"
+            daemon.write_text(
+                "from pathlib import Path\n"
+                "import sys\n"
+                "Path(sys.argv[1]).write_text('started', encoding='utf-8')\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "STAGE930_PYTHON_PATH": sys.executable,
+                    "STAGE930_DAEMON_SCRIPT": str(daemon),
+                    "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
+                    "STAGE930_SUPERVISOR_PGID_HANDSHAKE_ATTEMPTS": "invalid",
+                    "STAGE930_LOG_DIR": str(temp),
+                }
+            )
+
+            result = subprocess.run(
+                [str(SUPERVISOR), str(marker)],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment,
+                timeout=5,
+                check=False,
+            )
+
+        self.assertEqual(2, result.returncode, result.stdout)
+        self.assertIn("invalid PGID handshake attempts", result.stdout)
+        self.assertFalse(marker.exists())
+
+    def test_c9_readonly_jobs_are_isolated_and_never_enable_submit(self) -> None:
         names = (
-            "local.qmt-roll.official-live.20w.stage372-day-session.plist",
-            "local.qmt-roll.official-live.20w.stage372-night-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
         )
         payloads = [_plist(name) for name in names]
-        c9_text = " ".join(
-            " ".join(
-                _plist(name)["ProgramArguments"]
-            )
-            for name in (
-                "local.qmt-roll.official-live.15w.c9-day-session.plist",
-                "local.qmt-roll.official-live.15w.c9-night-session.plist",
-            )
-        )
 
         self.assertEqual(2, len({item["Label"] for item in payloads}))
         self.assertEqual(
@@ -80,11 +107,12 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             self.assertEqual("Interactive", payload["ProcessType"])
             self.assertEqual(15, payload["ExitTimeOut"])
             self.assertFalse(payload["AbandonProcessGroup"])
-            self.assertIn("--execution-profile stage372-20w", joined)
+            self.assertIn("--execution-profile c9-15w", joined)
             self.assertIn("--mode dry-run", joined)
             self.assertIn("--submit-mode disabled", joined)
             self.assertIn("--runtime-profile production-readonly", joined)
             self.assertIn("--stage179-execution-mode warm", joined)
+            self.assertIn("--release-manifest", joined)
             self.assertIn("--tick-refresh-mode stream", joined)
             self.assertNotIn("live-real", joined)
             self.assertNotIn("--confirm-live-real", joined)
@@ -103,8 +131,6 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
                     "OFFICIAL_LIVE_SIGNAL_INPUT_DIR"
                 ]
             )
-            self.assertNotIn(runtime_root, c9_text)
-            self.assertNotIn(output_roots[-1], c9_text)
 
         self.assertEqual(2, len(set(runtime_roots)))
         self.assertEqual(2, len(set(output_roots)))
@@ -152,38 +178,30 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_stage372/signal-input",
         )
 
-    def test_production_session_jobs_keep_direct_python_owner(self) -> None:
+    def test_legacy_armed_c9_job_definitions_are_removed(self) -> None:
         for name in (
             "local.qmt-roll.official-live.15w.c9-day-session.plist",
             "local.qmt-roll.official-live.15w.c9-night-session.plist",
         ):
             with self.subTest(name=name):
-                payload = _plist(name)
-                arguments = payload["ProgramArguments"]
-                self.assertTrue(arguments[0].endswith("/.py311/bin/python"))
-                self.assertTrue(
-                    arguments[1].endswith(
-                        "run_qmt_roll_stage930_official_live_c9_session_daemon.py"
-                    )
-                )
-                self.assertEqual(15, payload["ExitTimeOut"])
-                self.assertFalse(payload["AbandonProcessGroup"])
-                joined = " ".join(arguments)
-                self.assertNotIn("--stage179-execution-mode", joined)
-                self.assertNotIn("--confirm-stage179-activation", joined)
+                self.assertFalse((LAUNCHD_DIR / name).exists())
 
     def test_canary_paths_are_independent_and_have_no_live_submit(self) -> None:
         direct = _plist("local.qmt-roll.stage179.no-submit-direct.plist")
         supervisor = _plist("local.qmt-roll.stage179.no-submit-supervisor.plist")
-        production = [
-            _plist("local.qmt-roll.official-live.15w.c9-day-session.plist"),
-            _plist("local.qmt-roll.official-live.15w.c9-night-session.plist"),
+        canonical_readonly = [
+            _plist(
+                "local.qmt-roll.official-live.15w.c9-readonly-day-session.plist"
+            ),
+            _plist(
+                "local.qmt-roll.official-live.15w.c9-readonly-night-session.plist"
+            ),
         ]
 
         canary_arguments = [direct["ProgramArguments"], supervisor["ProgramArguments"]]
         joined = [" ".join(arguments) for arguments in canary_arguments]
-        production_text = " ".join(
-            " ".join(item["ProgramArguments"]) for item in production
+        canonical_readonly_text = " ".join(
+            " ".join(item["ProgramArguments"]) for item in canonical_readonly
         )
         self.assertNotEqual(direct["Label"], supervisor["Label"])
         self.assertNotIn("StartCalendarInterval", direct)
@@ -194,19 +212,26 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
         self.assertIn("--runtime-profile offline", joined[1])
         self.assertTrue(all("live-real" not in item for item in joined))
         self.assertTrue(all("--submit-mode disabled" in item for item in joined))
+        self.assertTrue(all("--execution-profile c9-15w" in item for item in joined))
+        self.assertTrue(all("--release-manifest" in item for item in joined))
+        self.assertTrue(
+            all("--stage179-execution-mode warm" in item for item in joined)
+        )
 
         roots: list[str] = []
         for arguments in canary_arguments:
             root_index = arguments.index("--stage179-runtime-root") + 1
             roots.append(arguments[root_index])
         self.assertEqual(2, len(set(roots)))
-        self.assertTrue(all(root not in production_text for root in roots))
+        self.assertTrue(all(root not in canonical_readonly_text for root in roots))
         output_roots = [
             item["EnvironmentVariables"]["OFFICIAL_LIVE_OUTPUT_DIR"]
             for item in (direct, supervisor)
         ]
         self.assertEqual(2, len(set(output_roots)))
-        self.assertTrue(all(root not in production_text for root in output_roots))
+        self.assertTrue(
+            all(root not in canonical_readonly_text for root in output_roots)
+        )
         self.assertNotEqual(direct["StandardOutPath"], supervisor["StandardOutPath"])
         self.assertNotEqual(direct["StandardErrorPath"], supervisor["StandardErrorPath"])
 

@@ -21,8 +21,8 @@ SIGNAL_INPUT_DIR = Path(
 class ExecutionStrategyMode(str, Enum):
     """Strategy semantics accepted by the shared execution reliability layer."""
 
+    C9_15W = "c9-15w"
     STAGE372_20W = "stage372-20w"
-    C9_15W_HISTORICAL = "c9-15w-historical"
 
 
 @dataclass(frozen=True)
@@ -105,8 +105,8 @@ STAGE372_20W_PROFILE = OfficialExecutionProfile(
     "stage901_stage847_c9_2026_ytd_live_shadow_v1",
 )
 
-C9_15W_HISTORICAL_PROFILE = OfficialExecutionProfile(
-    profile_key=ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+C9_15W_PROFILE = OfficialExecutionProfile(
+    profile_key=ExecutionStrategyMode.C9_15W.value,
     official_version="official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
     alias="Stage847-C9-15w",
     source_stage="Stage847/Stage928",
@@ -127,12 +127,17 @@ C9_15W_HISTORICAL_PROFILE = OfficialExecutionProfile(
 
 _PROFILES = {
     profile.profile_key: profile
-    for profile in (STAGE372_20W_PROFILE, C9_15W_HISTORICAL_PROFILE)
+    for profile in (C9_15W_PROFILE, STAGE372_20W_PROFILE)
 }
+
+# Import compatibility only. New artifacts and command lines must use
+# C9_15W_PROFILE/profile_key="c9-15w" so old evidence cannot masquerade as a
+# newly qualified release.
+C9_15W_HISTORICAL_PROFILE = C9_15W_PROFILE
 
 
 def resolve_execution_profile(
-    value: str | ExecutionStrategyMode = ExecutionStrategyMode.STAGE372_20W,
+    value: str | ExecutionStrategyMode = ExecutionStrategyMode.C9_15W,
 ) -> OfficialExecutionProfile:
     key = value.value if isinstance(value, ExecutionStrategyMode) else str(value)
     try:
@@ -193,6 +198,7 @@ def assert_intent_source_allowed(
 
 
 __all__ = [
+    "C9_15W_PROFILE",
     "C9_15W_HISTORICAL_PROFILE",
     "ExecutionStrategyMode",
     "OfficialExecutionProfile",

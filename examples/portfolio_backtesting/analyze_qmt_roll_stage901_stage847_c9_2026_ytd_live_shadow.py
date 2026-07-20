@@ -16,6 +16,7 @@ import analyze_qmt_roll_stage658_stage653_2026_ytd_shadow as s658
 import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
 from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
@@ -23,6 +24,7 @@ from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_CAPITAL,
     OFFICIAL_LIVE_CAPITAL_LABEL,
     OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
+    OFFICIAL_LIVE_PENDING_ORDERS_PATH,
     OFFICIAL_LIVE_PROFILE_NAME,
     OFFICIAL_LIVE_REPORT_PATH,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
@@ -54,7 +56,7 @@ ENTRY_RISK_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_entry_risk_{MODEL_TAG}.csv"
 ENTRY_CANDIDATES_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_entry_candidates_{MODEL_TAG}.csv"
 TRADE_EVENTS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_trade_events_{MODEL_TAG}.csv"
 INTRADAY_EVENTS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_intraday_events_{MODEL_TAG}.csv"
-PENDING_ORDERS_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_pending_orders_{MODEL_TAG}.csv"
+PENDING_ORDERS_PATH = OFFICIAL_LIVE_PENDING_ORDERS_PATH
 SIGNAL_PLAN_PATH = OFFICIAL_LIVE_SIGNAL_PLAN_PATH
 DECISION_PATH = OFFICIAL_LIVE_SUMMARY_PATH
 REPORT_PATH = OFFICIAL_LIVE_REPORT_PATH
@@ -63,6 +65,21 @@ LIVE_STOP_ALIGNMENT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_live_stop_alignment_{M
 _FULL_MINUTE_BY_SYMBOL_CACHE: dict[str, pd.DataFrame] | None = None
 _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS: set[str] = set()
 _LAST_MINUTE_AUDIT: dict[str, Any] = {}
+
+
+def _official_live_identity() -> dict[str, Any]:
+    if (
+        OFFICIAL_LIVE_VERSION != C9_15W_PROFILE.official_version
+        or OFFICIAL_LIVE_CAPITAL != C9_15W_PROFILE.capital
+        or OFFICIAL_LIVE_CAPITAL_LABEL != C9_15W_PROFILE.capital_label
+    ):
+        raise ValueError("stage901_official_identity_config_mismatch")
+    return {
+        "execution_profile": C9_15W_PROFILE.profile_key,
+        "official_live_version": C9_15W_PROFILE.official_version,
+        "capital": C9_15W_PROFILE.capital,
+        "capital_label": C9_15W_PROFILE.capital_label,
+    }
 
 
 def _json_safe(value: Any) -> Any:
@@ -847,7 +864,7 @@ def main() -> None:
         "analysis_start": analysis_start.date().isoformat(),
         "analysis_end": analysis_end.date().isoformat(),
         "latest_available_data_date": latest_date.date().isoformat(),
-        "official_live_version": OFFICIAL_LIVE_VERSION,
+        **_official_live_identity(),
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "ai_pool_audit": ai_pool_audit,
         "minute_audit": dict(_LAST_MINUTE_AUDIT),

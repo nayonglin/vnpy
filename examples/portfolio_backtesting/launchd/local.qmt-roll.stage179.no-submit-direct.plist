@@ -12,12 +12,18 @@
   <array>
     <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
     <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py</string>
+    <string>--execution-profile</string>
+    <string>c9-15w</string>
     <string>--mode</string>
     <string>dry-run</string>
     <string>--submit-mode</string>
     <string>disabled</string>
     <string>--runtime-profile</string>
     <string>production-readonly</string>
+    <string>--stage179-execution-mode</string>
+    <string>warm</string>
+    <string>--release-manifest</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/release_manifests/stage179/c9-15w-candidate.json</string>
     <string>--stage179-runtime-root</string>
     <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_canary/direct</string>
     <string>--duration-seconds</string>

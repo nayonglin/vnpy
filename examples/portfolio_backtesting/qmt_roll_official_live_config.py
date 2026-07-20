@@ -1,15 +1,24 @@
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
+import os
 from pathlib import Path
 from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
-from qmt_roll_official_live_phase_d_config import PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE
+from qmt_roll_official_live_phase_d_config import (
+    PHASE_D_LIVE_REAL_POLICY_DISABLED_VALUE,
+)
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
+SIGNAL_INPUT_DIR: Path = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_SIGNAL_INPUT_DIR",
+        os.environ.get("OFFICIAL_LIVE_OUTPUT_DIR", str(OUTPUT_DIR)),
+    )
+).expanduser().resolve(strict=False)
 
 OFFICIAL_LIVE_ALIAS: str = "Stage847-C9-15w"
 OFFICIAL_LIVE_VERSION: str = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
@@ -146,16 +155,24 @@ OFFICIAL_LIVE_AI_ELIGIBILITY_PATH: Path = (
 OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage901_stage847_c9_2026_ytd_live_shadow_v1"
 OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow"
 OFFICIAL_LIVE_SUMMARY_PATH: Path = (
-    OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_decision_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.json"
+    SIGNAL_INPUT_DIR
+    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_decision_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.json"
 )
 OFFICIAL_LIVE_SIGNAL_PLAN_PATH: Path = (
-    OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_signal_plan_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
+    SIGNAL_INPUT_DIR
+    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_signal_plan_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
 )
 OFFICIAL_LIVE_CURRENT_POSITIONS_PATH: Path = (
-    OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_current_positions_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
+    SIGNAL_INPUT_DIR
+    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_current_positions_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
+)
+OFFICIAL_LIVE_PENDING_ORDERS_PATH: Path = (
+    SIGNAL_INPUT_DIR
+    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_pending_orders_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
 )
 OFFICIAL_LIVE_REPORT_PATH: Path = (
-    OUTPUT_DIR / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_report_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.md"
+    SIGNAL_INPUT_DIR
+    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_report_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.md"
 )
 
 OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
@@ -174,7 +191,7 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
         "changes only the deployment capital profile to match the funded live account."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
-    "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
+    "real_submit_default": PHASE_D_LIVE_REAL_POLICY_DISABLED_VALUE,
 }
 
 
@@ -288,6 +305,7 @@ def build_official_live_manifest() -> dict[str, Any]:
         "summary_path": str(OFFICIAL_LIVE_SUMMARY_PATH),
         "signal_plan_path": str(OFFICIAL_LIVE_SIGNAL_PLAN_PATH),
         "current_positions_path": str(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH),
+        "pending_orders_path": str(OFFICIAL_LIVE_PENDING_ORDERS_PATH),
         "report_path": str(OFFICIAL_LIVE_REPORT_PATH),
         "execution_policy": OFFICIAL_LIVE_EXECUTION_POLICY,
         "strategy_overrides": OFFICIAL_LIVE_STRATEGY_OVERRIDES,

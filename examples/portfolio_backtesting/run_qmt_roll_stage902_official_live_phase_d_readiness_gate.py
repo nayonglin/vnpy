@@ -170,6 +170,25 @@ def _stage260_binding_error(
     return ""
 
 
+def _official_summary_identity_error(
+    summary: dict[str, Any],
+    *,
+    profile: OfficialExecutionProfile,
+) -> str:
+    try:
+        if summary.get("execution_profile") != profile.profile_key:
+            raise ValueError("execution_profile_key_mismatch")
+        assert_profile_identity(
+            profile,
+            official_version=summary.get("official_live_version"),
+            capital=summary.get("capital"),
+            capital_label=summary.get("capital_label"),
+        )
+    except (TypeError, ValueError) as exc:
+        return str(exc)
+    return ""
+
+
 def _stage260_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"qmt_roll_stage260_official_live_daily_execution_gate_summary_{date_key}_stage260_official_live_daily_execution_gate_v1.json"
@@ -252,7 +271,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
@@ -315,18 +334,10 @@ def main() -> None:
     stage251_summary = _read_json(_stage251_summary_path(target_date))
     kill_switch = _read_json(KILL_SWITCH_PATH)
 
-    official_identity_error = ""
-    try:
-        if official_summary.get("execution_profile") != profile.profile_key:
-            raise ValueError("execution_profile_key_mismatch")
-        assert_profile_identity(
-            profile,
-            official_version=official_summary.get("official_live_version"),
-            capital=official_summary.get("capital"),
-            capital_label=official_summary.get("capital_label"),
-        )
-    except (TypeError, ValueError) as exc:
-        official_identity_error = str(exc)
+    official_identity_error = _official_summary_identity_error(
+        official_summary,
+        profile=profile,
+    )
 
     risk_snapshot = build_official_live_risk_snapshot(official_summary)
     execution_policy = manifest.get("execution_policy", {})

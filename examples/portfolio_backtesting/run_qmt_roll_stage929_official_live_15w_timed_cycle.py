@@ -10,6 +10,7 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_SUMMARY_PATH,
@@ -1099,6 +1100,8 @@ def _stage903_command(args: argparse.Namespace, target_date: str) -> list[str]:
     cmd = [
         str(PYTHON_PATH),
         str(STAGE903_SCRIPT),
+        "--execution-profile",
+        C9_15W_PROFILE.profile_key,
         "--target-date",
         target_date,
         "--mode",

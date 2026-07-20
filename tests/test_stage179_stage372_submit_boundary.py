@@ -68,12 +68,12 @@ class Stage372SubmitBoundaryTest(unittest.TestCase):
 
         self.assertIn("execution_profile_capital_mismatch", blockers)
 
-    def test_stage931_cli_defaults_to_stage372_profile(self) -> None:
+    def test_stage931_cli_defaults_to_c9_15w_profile(self) -> None:
         args = stage931.parse_args(
             ["--command", "once", "--target-date", "2026-07-18"]
         )
 
-        self.assertEqual(args.execution_profile, "stage372-20w")
+        self.assertEqual(args.execution_profile, "c9-15w")
 
 
 if __name__ == "__main__":

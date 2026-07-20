@@ -230,7 +230,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--target-date", default="")
     parser.add_argument(

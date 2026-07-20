@@ -21,6 +21,7 @@ from qmt_roll_official_live_release_manifest import (
 from qmt_roll_official_live_runtime_profile import ExecutionRuntimeProfile
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
+    assert_profile_identity,
     resolve_execution_profile,
 )
 
@@ -31,6 +32,10 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
     "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
+    "examples/portfolio_backtesting/qmt_roll_official_candidate_stage777_config.py",
+    "examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py",
+    "examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py",
+    "examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
@@ -51,11 +56,16 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
     "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
     "examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
-    "examples/portfolio_backtesting/provision_qmt_roll_stage372_launchd_directories.py",
+    "examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py",
+    "examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
+    "examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+    "examples/portfolio_backtesting/provision_qmt_roll_c9_launchd_directories.py",
     "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
     "examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
     "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
     "examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py",
     "examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
@@ -72,17 +82,18 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/run_qmt_roll_stage930_owned_child_guard.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage930_supervisor_child.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage934_official_live_automation_health_check.py",
+    "examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
-    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-day-session.plist",
-    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-night-session.plist",
-    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-day-session.plist",
-    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-night-session.plist",
-    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.20w.stage372-postclose-precompute.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
+    "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-direct.plist",
     "examples/portfolio_backtesting/launchd/local.qmt-roll.stage179.no-submit-supervisor.plist",
     "tests/stage179_performance_gate.py",
     "tests/test_stage174_query_bundle.py",
     "tests/test_stage179_fault_matrix.py",
+    "tests/test_stage179_c9_launchd_directories.py",
     "tests/test_stage179_official_execution_profile.py",
     "tests/test_stage179_performance_gate_diagnostics.py",
     "tests/test_stage179_readonly_canary_qualification.py",
@@ -97,6 +108,7 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage179_two_executor_process_race.py",
     "tests/test_stage930_fast_lane.py",
     "tests/test_stage931_post_reprice_final_gate.py",
+    "tests/test_stage934_readonly_health_check.py",
 )
 
 
@@ -163,13 +175,14 @@ def build_release_manifest_file(
     output_path: Path | str,
     repo_root: Path | str = REPO_ROOT,
     release_id: str,
-    execution_profile: str = ExecutionStrategyMode.STAGE372_20W.value,
+    execution_profile: str = ExecutionStrategyMode.C9_15W.value,
     official_version: str | None = None,
     capital: int | float | None = None,
     capital_label: str | None = None,
     critical_files: Iterable[str | Path] = DEFAULT_CRITICAL_FILES,
-    allowed_runtime_profiles: Iterable[str | ExecutionRuntimeProfile] = tuple(
-        ExecutionRuntimeProfile
+    allowed_runtime_profiles: Iterable[str | ExecutionRuntimeProfile] = (
+        ExecutionRuntimeProfile.OFFLINE,
+        ExecutionRuntimeProfile.PRODUCTION_READONLY,
     ),
     created_at_utc: str | None = None,
     strategy_semantics_qualification: dict[str, str] | None = None,
@@ -186,6 +199,17 @@ def build_release_manifest_file(
         official_version = official_version or OFFICIAL_LIVE_VERSION
         capital = OFFICIAL_LIVE_CAPITAL if capital is None else capital
         capital_label = capital_label or OFFICIAL_LIVE_CAPITAL_LABEL
+    if str(execution_profile) == "c9-15w-historical":
+        raise ReleaseManifestError(
+            "release_builder_deprecated_execution_profile_forbidden"
+        )
+    profile = resolve_execution_profile(execution_profile)
+    assert_profile_identity(
+        profile,
+        official_version=official_version,
+        capital=capital,
+        capital_label=capital_label,
+    )
     repo = Path(repo_root).expanduser().resolve(strict=True)
     dirty = _git(repo, "status", "--porcelain", "--untracked-files=all")
     if dirty:
@@ -267,7 +291,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--critical-file", action="append", default=[])
     args = parser.parse_args()
@@ -286,7 +310,7 @@ def main() -> None:
         ),
         strategy_semantics_qualification={
             "status": "blocked",
-            "evidence_id": "stage372-source-inputs-not-reproducible",
+            "evidence_id": "c9-15w-live-semantics-not-qualified",
         },
     )
     print(payload["manifest_sha256"])

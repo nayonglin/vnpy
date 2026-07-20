@@ -83,9 +83,9 @@ STAGE904_PREFIX = "qmt_roll_stage904_official_live_c9_intraday_monitor"
 
 MODEL_TAG = "stage930_official_live_c9_session_daemon_v1"
 OUTPUT_PREFIX = "qmt_roll_stage930_official_live_c9_session_daemon"
-STAGE372_LAUNCHD_LABELS = {
-    "local.qmt-roll.official-live.20w.stage372-day-session",
-    "local.qmt-roll.official-live.20w.stage372-night-session",
+STAGE179_CANONICAL_LAUNCHD_LABELS = {
+    "local.qmt-roll.official-live.15w.c9-readonly-day-session",
+    "local.qmt-roll.official-live.15w.c9-readonly-night-session",
 }
 
 
@@ -95,7 +95,7 @@ def _launchd_provenance(daemon_started_epoch_ns: int) -> dict[str, Any]:
     parent_pid = os.getppid()
     launchctl_exit_code: int | None = None
     launchctl_job_pid: int | None = None
-    if label in STAGE372_LAUNCHD_LABELS:
+    if label in STAGE179_CANONICAL_LAUNCHD_LABELS:
         try:
             result = subprocess.run(
                 [
@@ -130,7 +130,7 @@ def _launchd_provenance(daemon_started_epoch_ns: int) -> dict[str, Any]:
         "daemon_started_epoch_ns": daemon_started_epoch_ns,
         "complete": int(
             parent_pid == 1
-            and label in STAGE372_LAUNCHD_LABELS
+            and label in STAGE179_CANONICAL_LAUNCHD_LABELS
             and launchctl_exit_code == 0
             and launchctl_job_pid == pid
         ),
@@ -258,7 +258,7 @@ def _execution_profile_for_args(
         getattr(
             args,
             "execution_profile",
-            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+            ExecutionStrategyMode.C9_15W.value,
         )
     )
 
@@ -356,6 +356,11 @@ def _managed_popen(cmd: list[str], **kwargs: Any) -> subprocess.Popen[Any]:
             raise ValueError("managed Stage930 children must not start a new session")
         guard_cmd = [
             sys.executable,
+            # The guard is intentionally stdlib-only.  Skipping site startup
+            # avoids loading vn.py once in the guard and again in the real
+            # target, while the target command keeps its normal interpreter
+            # startup and project runtime guard.
+            "-S",
             str(OWNED_CHILD_GUARD_SCRIPT),
             "--owner-fd",
             str(owner_read_fd),
@@ -1192,24 +1197,61 @@ def _tick_stream_supervisor_public(supervisor: dict[str, Any] | None) -> dict[st
 
 
 def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
+    blockers: list[str] = []
+    controller_mode = getattr(args, "mode", "dry-run")
+    submit_mode = getattr(args, "submit_mode", "disabled")
+    stage179_mode = getattr(args, "stage179_execution_mode", "legacy-once")
+    runtime_profile = getattr(args, "runtime_profile", "offline")
+    execution_profile = getattr(
+        args,
+        "execution_profile",
+        ExecutionStrategyMode.C9_15W.value,
+    )
+    live_requested = "live-real" in {controller_mode, submit_mode}
+    if live_requested:
+        if (controller_mode, submit_mode) != ("live-real", "live-real"):
+            blockers.append("controller_submit_mode_mismatch")
+        if stage179_mode != "warm":
+            blockers.append("live_real_requires_stage179_warm_executor")
+        if getattr(args, "detector_mode", "legacy-subprocess") != "persistent":
+            blockers.append("live_real_requires_persistent_detector")
+        if execution_profile != ExecutionStrategyMode.C9_15W.value:
+            blockers.append("live_real_requires_c9_15w_execution_profile")
+        if runtime_profile not in {
+            ExecutionRuntimeProfile.SIMNOW.value,
+            ExecutionRuntimeProfile.BROKER_TEST.value,
+            ExecutionRuntimeProfile.PRODUCTION_LIVE.value,
+        }:
+            blockers.append("live_real_runtime_profile_invalid")
+        if not _clean(getattr(args, "release_manifest", "")):
+            blockers.append("live_real_release_manifest_missing")
+        if runtime_profile == ExecutionRuntimeProfile.PRODUCTION_LIVE.value:
+            if not _clean(getattr(args, "activation_receipt", "")):
+                blockers.append("production_live_activation_receipt_missing")
+            if not _clean(
+                getattr(args, "confirm_stage179_activation", "")
+            ):
+                blockers.append("production_live_activation_confirmation_missing")
+    elif (controller_mode, submit_mode) != ("dry-run", "disabled"):
+        blockers.append("controller_submit_mode_mismatch")
+
     if (
         not _profile_uses_intraday_detector(args)
         and getattr(args, "detector_mode", "legacy-subprocess") == "persistent"
     ):
-        return ["stage372_profile_forbids_c9_persistent_detector"]
+        blockers.append("stage372_profile_forbids_c9_persistent_detector")
+        return list(dict.fromkeys(blockers))
     if getattr(args, "detector_mode", "legacy-subprocess") != "persistent":
-        return []
-    blockers: list[str] = []
+        return list(dict.fromkeys(blockers))
     if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
         blockers.append("persistent_detector_requires_stage179_warm_executor")
-    runtime_profile = getattr(args, "runtime_profile", "offline")
-    if (args.mode, args.submit_mode) == ("dry-run", "disabled"):
+    if (controller_mode, submit_mode) == ("dry-run", "disabled"):
         if runtime_profile not in {
             ExecutionRuntimeProfile.OFFLINE.value,
             ExecutionRuntimeProfile.PRODUCTION_READONLY.value,
         }:
             blockers.append("persistent_detector_no_submit_profile_invalid")
-    elif (args.mode, args.submit_mode) == ("live-real", "live-real"):
+    elif (controller_mode, submit_mode) == ("live-real", "live-real"):
         if runtime_profile not in {
             ExecutionRuntimeProfile.SIMNOW.value,
             ExecutionRuntimeProfile.BROKER_TEST.value,
@@ -1218,11 +1260,11 @@ def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
             blockers.append("persistent_detector_submit_profile_invalid")
     else:
         blockers.append("persistent_detector_controller_submit_mode_mismatch")
-    if args.tick_refresh_mode != "stream":
+    if getattr(args, "tick_refresh_mode", "snapshot") != "stream":
         blockers.append("persistent_detector_requires_stream_tick_owner")
     if not _startup_target_date(args):
         blockers.append("persistent_detector_requires_explicit_target_date")
-    return blockers
+    return list(dict.fromkeys(blockers))
 
 
 def _startup_target_date(args: argparse.Namespace) -> str:
@@ -2249,6 +2291,18 @@ def _run_stage931(
                 "order_api_called_count": 0,
             },
         }
+    if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
+        return {
+            "submit_status": "submit_adapter_blocked_stage179_warm_required",
+            "exit_code": 2,
+            "summary": {
+                "adapter_status": "adapter_blocked_stage179_warm_required",
+                "blockers": ["live_real_requires_stage179_warm_executor"],
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
+        }
     stage_args = [
         "--target-date",
         target_date,
@@ -3240,6 +3294,8 @@ def _stage931_submit_blockers(
 ) -> list[str]:
     blockers: list[str] = []
     close_only_reduce_risk = _ready_intents_close_only(target_date)
+    if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
+        blockers.append("live_real_requires_stage179_warm_executor")
     if args.submit_mode != "live-real":
         blockers.append(f"submit_mode_not_live_real:{args.submit_mode}")
     if args.mode != "live-real":
@@ -3620,21 +3676,6 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
             "order_api_called_count": 0,
         },
     }
-    if (
-        resolved_target_date
-        and args.submit_mode == "live-real"
-        and not warm_execution
-        and _ready_reduce_close_count(resolved_target_date) > 0
-    ):
-        # The normal adapter owns submission while it runs; its companion fast
-        # loop only monitors.  Drain any protective close latched during that
-        # window immediately after the owner exits.
-        post_submit_reduce_close = _run_stage931(
-            args,
-            resolved_target_date,
-            paths,
-            reduce_close_only=True,
-        )
     order_api_called = (
         _to_int(stage903_result.get("summary", {}).get("order_api_called_count"), 0)
         + _to_int(stage903_result.get("fast_lane_order_api_called_count"), 0)
@@ -3713,7 +3754,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--submit-mode", choices=["disabled", "live-real"], default="disabled")

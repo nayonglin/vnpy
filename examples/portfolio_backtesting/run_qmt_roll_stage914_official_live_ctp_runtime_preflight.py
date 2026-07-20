@@ -15,6 +15,7 @@ from typing import Any, Callable, Mapping
 import pandas as pd
 
 from qmt_roll_official_execution_profile import (
+    C9_15W_PROFILE,
     ExecutionStrategyMode,
     OfficialExecutionProfile,
     resolve_execution_profile,
@@ -207,6 +208,15 @@ def evaluate_stage179_pre_adapter_gate(
         blockers.append("stage179_release_manifest_invalid")
 
     if resolved.profile is ExecutionRuntimeProfile.PRODUCTION_LIVE:
+        if (
+            expected_execution_profile != C9_15W_PROFILE.profile_key
+            or expected_official_version != C9_15W_PROFILE.official_version
+            or expected_capital != C9_15W_PROFILE.capital
+            or expected_capital_label != C9_15W_PROFILE.capital_label
+        ):
+            blockers.append(
+                "production_live_execution_profile_not_current_official"
+            )
         if environment.get(STAGE179_ACTIVATION_ENV) != "1":
             blockers.append("stage179_activation_disabled")
         if confirmation != STAGE179_ACTIVATION_CONFIRM_TEXT:
@@ -231,10 +241,6 @@ def evaluate_stage179_pre_adapter_gate(
             )
         elif phase_d_real_submit_ready:
             blockers.append("stage179_activation_receipt_unverifiable")
-
-        # AGENTS.md names Stage372/20w while the checked-in official config still
-        # names Stage847-C9/15w. Never choose an operator policy in code.
-        blockers.append("operator_policy_conflict_unresolved")
 
     blockers_tuple = tuple(dict.fromkeys(blockers))
     adapter_created = False
@@ -408,7 +414,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     args = parser.parse_args()
     profile = resolve_preflight_execution_profile(args.execution_profile)

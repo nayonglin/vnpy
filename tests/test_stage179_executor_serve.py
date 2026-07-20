@@ -330,7 +330,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         publish_submit_authorization(
             path=authorization_path,
             target_date="2026-07-18",
-            execution_profile="c9-15w-historical",
+            execution_profile="c9-15w",
             runtime_profile="simnow",
             order_scope="test",
             service_generation=session.service_generation,
@@ -966,7 +966,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual("dry-run", args.mode)
         self.assertFalse(args.stage179_warm_executor)
 
-    def test_legacy_live_real_dispatch_does_not_enter_warm_service(self) -> None:
+    def test_legacy_live_real_cli_is_rejected_before_dispatch(self) -> None:
         argv = [
             "--target-date",
             "2026-07-18",
@@ -975,9 +975,10 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         ]
         with patch.object(stage931, "run_once", return_value={}) as run_once:
             with patch.object(stage931, "run_serve") as run_serve:
-                stage931.main(argv)
+                with self.assertRaises(SystemExit):
+                    stage931.main(argv)
 
-        run_once.assert_called_once()
+        run_once.assert_not_called()
         run_serve.assert_not_called()
 
     def test_warm_live_real_wrong_profile_fails_before_gate_or_ctp_builder(self) -> None:
@@ -1122,7 +1123,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             gate.call_args.kwargs["activation_receipt_path"]
         )
 
-    def test_warm_production_live_correct_profile_still_policy_conflict_blocks_before_ctp(self) -> None:
+    def test_warm_production_live_policy_blocker_stops_before_ctp(self) -> None:
         args = stage931.parse_args(
             [
                 "--command",
@@ -1141,7 +1142,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             ]
         )
         gate_result = SimpleNamespace(
-            blockers=("operator_policy_conflict_unresolved",),
+            blockers=("production_live_execution_profile_not_current_official",),
         )
         armed_environment = {
             stage931.PHASE_D_REAL_ADAPTER_ENV: "1",
@@ -1161,7 +1162,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 with patch.object(stage931, "_build_stage179_warm_ctp_session") as builder:
                     with self.assertRaisesRegex(
                         stage931.RuntimeProfileError,
-                        "operator_policy_conflict_unresolved",
+                        "production_live_execution_profile_not_current_official",
                     ):
                         stage931.run_serve(args)
 

@@ -22,6 +22,7 @@ from qmt_roll_official_live_runtime_profile import (
     resolve_runtime_profile,
 )
 import run_qmt_roll_stage914_official_live_ctp_runtime_preflight as stage914
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, STAGE372_20W_PROFILE
 from qmt_roll_official_live_phase_d_config import (
     STAGE179_ACTIVATION_CONFIRM_TEXT,
     STAGE179_ACTIVATION_ENV,
@@ -182,7 +183,7 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
         self.assertEqual([], calls)
         self.assertFalse(result.adapter_created)
 
-    def test_policy_conflict_blocks_even_with_env_and_confirm(self) -> None:
+    def test_legacy_stage372_identity_blocks_even_with_env_and_confirm(self) -> None:
         calls: list[str] = []
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -205,9 +206,10 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     resolved=resolved,
                     release_manifest_path=root / "release.json",
                     repo_root=root,
-                    expected_official_version="official-v",
-                    expected_capital=200_000,
-                    expected_capital_label="20w",
+                    expected_official_version=STAGE372_20W_PROFILE.official_version,
+                    expected_capital=STAGE372_20W_PROFILE.capital,
+                    expected_capital_label=STAGE372_20W_PROFILE.capital_label,
+                    expected_execution_profile=STAGE372_20W_PROFILE.profile_key,
                     environment={STAGE179_ACTIVATION_ENV: "1"},
                     confirmation=STAGE179_ACTIVATION_CONFIRM_TEXT,
                     activation_receipt_path=receipt,
@@ -218,8 +220,47 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     adapter_factory=lambda: calls.append("adapter"),
                 )
 
-        self.assertIn("operator_policy_conflict_unresolved", result.blockers)
+        self.assertIn("production_live_execution_profile_not_current_official", result.blockers)
         self.assertEqual([], calls)
+
+    def test_c9_15w_identity_does_not_add_an_operator_policy_blocker(self) -> None:
+        calls: list[str] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            resolved = self._production_live(root)
+            with (
+                patch.object(
+                    stage914,
+                    "load_and_validate_release_manifest",
+                    return_value={"manifest_sha256": "a" * 64},
+                ),
+                patch.object(
+                    stage914,
+                    "validate_stage179_activation_receipt",
+                    return_value=(),
+                ),
+            ):
+                result = stage914.evaluate_stage179_pre_adapter_gate(
+                    resolved=resolved,
+                    release_manifest_path=root / "release.json",
+                    repo_root=root,
+                    expected_official_version=C9_15W_PROFILE.official_version,
+                    expected_capital=C9_15W_PROFILE.capital,
+                    expected_capital_label=C9_15W_PROFILE.capital_label,
+                    expected_execution_profile=C9_15W_PROFILE.profile_key,
+                    environment={STAGE179_ACTIVATION_ENV: "1"},
+                    confirmation=STAGE179_ACTIVATION_CONFIRM_TEXT,
+                    activation_receipt_path=root / "receipt.json",
+                    phase_d_real_submit_ready=True,
+                    stage927_ready=True,
+                    kill_switch_clear=True,
+                    broker_gates_fresh=True,
+                    adapter_factory=lambda: calls.append("adapter"),
+                )
+
+        self.assertEqual((), result.blockers)
+        self.assertEqual(["adapter"], calls)
+        self.assertTrue(result.adapter_created)
 
     def test_persistent_startup_defers_only_cycle_authorization_gates(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -241,9 +282,10 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     resolved=resolved,
                     release_manifest_path=root / "release.json",
                     repo_root=root,
-                    expected_official_version="official-v",
-                    expected_capital=200_000,
-                    expected_capital_label="20w",
+                    expected_official_version=C9_15W_PROFILE.official_version,
+                    expected_capital=C9_15W_PROFILE.capital,
+                    expected_capital_label=C9_15W_PROFILE.capital_label,
+                    expected_execution_profile=C9_15W_PROFILE.profile_key,
                     environment={STAGE179_ACTIVATION_ENV: "1"},
                     confirmation=STAGE179_ACTIVATION_CONFIRM_TEXT,
                     activation_receipt_path=root / "receipt.json",
@@ -256,7 +298,7 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
 
         self.assertNotIn("stage927_not_ready", result.blockers)
         self.assertNotIn("broker_gates_not_fresh", result.blockers)
-        self.assertIn("operator_policy_conflict_unresolved", result.blockers)
+        self.assertNotIn("production_live_execution_profile_not_current_official", result.blockers)
 
     def test_hand_built_string_profile_cannot_skip_live_gate(self) -> None:
         calls: list[str] = []
@@ -340,7 +382,7 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                 )
 
         self.assertNotIn("stage179_activation_receipt_missing", result.blockers)
-        self.assertNotIn("operator_policy_conflict_unresolved", result.blockers)
+        self.assertNotIn("production_live_execution_profile_not_current_official", result.blockers)
 
     def test_submit_disabled_canary_does_not_require_activation_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

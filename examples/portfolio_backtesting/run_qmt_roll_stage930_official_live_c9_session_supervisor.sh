@@ -14,6 +14,7 @@ max_restarts="${STAGE930_SUPERVISOR_MAX_RESTARTS:-3}"
 restart_delay="${STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS:-15}"
 term_timeout="${STAGE930_SUPERVISOR_TERM_TIMEOUT_SECONDS:-5}"
 kill_wait="${STAGE930_SUPERVISOR_KILL_WAIT_SECONDS:-5}"
+pgid_handshake_attempts="${STAGE930_SUPERVISOR_PGID_HANDSHAKE_ATTEMPTS:-100}"
 duration_seconds=0
 args=("$@")
 termination_requested=0
@@ -31,9 +32,9 @@ wait_for_group_exit() {
   local pgid="$1"
   local timeout="$2"
   local deadline
-  deadline="$(${PYTHON_PATH} -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${timeout}")"
+  deadline="$(${PYTHON_PATH} -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${timeout}")"
   while group_alive "${pgid}"; do
-    if "${PYTHON_PATH}" -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then
+    if "${PYTHON_PATH}" -S -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then
       return 1
     fi
     sleep 0.05
@@ -98,10 +99,10 @@ exit_if_terminated() {
 
 interruptible_restart_delay() {
   local deadline
-  deadline="$(${PYTHON_PATH} -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${restart_delay}")"
+  deadline="$(${PYTHON_PATH} -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${restart_delay}")"
   while true; do
     exit_if_terminated
-    if "${PYTHON_PATH}" -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then
+    if "${PYTHON_PATH}" -S -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then
       return 0
     fi
     sleep 0.05
@@ -110,6 +111,11 @@ interruptible_restart_delay() {
 
 trap 'forward_signal TERM' TERM
 trap 'forward_signal INT' INT
+
+if [[ ! "${pgid_handshake_attempts}" =~ ^[0-9]+$ || "${pgid_handshake_attempts}" -le 0 ]]; then
+  echo "Stage930 supervisor invalid PGID handshake attempts: ${pgid_handshake_attempts}"
+  exit 2
+fi
 
 for ((idx = 0; idx < ${#args[@]}; idx++)); do
   if [[ "${args[$idx]}" == "--duration-seconds" && $((idx + 1)) -lt ${#args[@]} ]]; then
@@ -141,13 +147,13 @@ while true; do
 
   echo "Stage930 supervisor starting daemon at $(date '+%Y-%m-%d %H:%M:%S'), restart_count=${restart_count}"
   if [[ "${#args[@]}" -gt 0 ]]; then
-    "${PYTHON_PATH}" "${CHILD_HELPER}" "${PYTHON_PATH}" "${DAEMON_SCRIPT}" "${args[@]}" &
+    "${PYTHON_PATH}" -S "${CHILD_HELPER}" "${PYTHON_PATH}" "${DAEMON_SCRIPT}" "${args[@]}" &
   else
-    "${PYTHON_PATH}" "${CHILD_HELPER}" "${PYTHON_PATH}" "${DAEMON_SCRIPT}" &
+    "${PYTHON_PATH}" -S "${CHILD_HELPER}" "${PYTHON_PATH}" "${DAEMON_SCRIPT}" &
   fi
   active_pid=$!
   active_pgid=""
-  for _ in {1..20}; do
+  for ((attempt = 0; attempt < pgid_handshake_attempts; attempt++)); do
     candidate_pgid="$(ps -o pgid= -p "${active_pid}" 2>/dev/null | tr -d '[:space:]')"
     if [[ "${candidate_pgid}" == "${active_pid}" ]]; then
       active_pgid="${candidate_pgid}"

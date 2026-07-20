@@ -108,7 +108,7 @@ def _configure_execution_profile(value: str) -> dict[str, Any]:
         OFFICIAL_LIVE_VERSION = stage372_cfg.OFFICIAL_VERSION
         OFFICIAL_LIVE_FAMILY_VERSION = "stage526_stage372_recovery_sleeve"
         DEFAULT_AI_ELIGIBILITY_PATH = stage372_cfg.AI_ELIGIBILITY_PATH
-    elif value == ExecutionStrategyMode.C9_15W_HISTORICAL.value:
+    elif value == ExecutionStrategyMode.C9_15W.value:
         MODEL_TAG = current_live_cfg.OFFICIAL_LIVE_STAGE659_MODEL_TAG
         OUTPUT_PREFIX = current_live_cfg.OFFICIAL_LIVE_STAGE659_PREFIX
         CURRENT_VARIANT = current_live_cfg.OFFICIAL_LIVE_PROFILE_NAME
@@ -386,7 +386,7 @@ def main() -> None:
     parser.add_argument(
         "--execution-profile",
         choices=[item.value for item in ExecutionStrategyMode],
-        default=ExecutionStrategyMode.STAGE372_20W.value,
+        default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--analysis-start", default="")
     parser.add_argument("--target-date", default="2026-06-04")
@@ -394,7 +394,7 @@ def main() -> None:
     args = parser.parse_args()
 
     identity = _configure_execution_profile(args.execution_profile)
-    if args.execution_profile == ExecutionStrategyMode.C9_15W_HISTORICAL.value:
+    if args.execution_profile == ExecutionStrategyMode.C9_15W.value:
         import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901  # noqa: WPS433
 
         original_argv = list(sys.argv)

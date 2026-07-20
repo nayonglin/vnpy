@@ -76,7 +76,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             patch.dict(
                 os.environ,
                 {
-                    "XPC_SERVICE_NAME": "local.qmt-roll.official-live.20w.stage372-night-session"
+                    "XPC_SERVICE_NAME": "local.qmt-roll.official-live.15w.c9-readonly-night-session"
                 },
                 clear=False,
             ),
@@ -816,7 +816,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                 blockers = validate_submit_authorization(
                     path=result["authorization_path"],
                     target_date="2026-07-16",
-                    execution_profile="c9-15w-historical",
+                    execution_profile="c9-15w",
                     runtime_profile="simnow",
                     order_scope="test",
                     service_generation="service-1",
@@ -894,7 +894,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                 blocker = validate_submit_authorization(
                     path=result["authorization_path"],
                     target_date="2026-07-16",
-                    execution_profile="c9-15w-historical",
+                    execution_profile="c9-15w",
                     runtime_profile="simnow",
                     order_scope="test",
                     service_generation="service-1",
@@ -967,10 +967,64 @@ class Stage930FastLaneTest(unittest.TestCase):
         args.submit_mode = "live-real"
         args.stage179_execution_mode = "warm"
         args.runtime_profile = "simnow"
+        args.execution_profile = "c9-15w"
+        args.release_manifest = "/tmp/c9-15w-candidate.json"
 
         blockers = stage930._startup_configuration_blockers(args)
 
         self.assertEqual([], blockers)
+
+    def test_live_submit_legacy_once_is_blocked_before_adapter_dispatch(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "legacy-once"
+        args.runtime_profile = "production-live"
+        args.execution_profile = "c9-15w"
+        args.release_manifest = "/tmp/c9-15w-candidate.json"
+        args.activation_receipt = "/tmp/c9-15w-activation.json"
+        args.confirm_stage179_activation = "confirmed"
+
+        blockers = stage930._startup_configuration_blockers(args)
+
+        self.assertIn("live_real_requires_stage179_warm_executor", blockers)
+        self.assertIn("live_real_requires_persistent_detector", blockers)
+
+    def test_live_submit_warm_legacy_detector_is_blocked(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
+        args.execution_profile = "c9-15w"
+        args.release_manifest = "/tmp/c9-15w-candidate.json"
+
+        blockers = stage930._startup_configuration_blockers(args)
+
+        self.assertEqual(
+            ["live_real_requires_persistent_detector"],
+            blockers,
+        )
+
+    def test_production_live_requires_manifest_and_activation_receipt(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "production-live"
+        args.execution_profile = "c9-15w"
+        args.release_manifest = ""
+        args.activation_receipt = ""
+        args.confirm_stage179_activation = ""
+
+        blockers = stage930._startup_configuration_blockers(args)
+
+        self.assertIn("live_real_release_manifest_missing", blockers)
+        self.assertIn("production_live_activation_receipt_missing", blockers)
+        self.assertIn(
+            "production_live_activation_confirmation_missing",
+            blockers,
+        )
 
     def test_persistent_no_submit_offline_prewarm_is_reachable(self) -> None:
         args = self.args()
@@ -1289,6 +1343,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
             env = os.environ.copy()
             env["QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR"] = "1"
+            env["QMT_BACKTEST_DISABLE_STARTUP_CWD_GUARD"] = "1"
             owner = subprocess.Popen(
                 [sys.executable, "-c", harness],
                 cwd=PORTFOLIO_DIR.parents[1],
@@ -1348,7 +1403,11 @@ class Stage930FastLaneTest(unittest.TestCase):
             owner = subprocess.Popen(
                 [sys.executable, "-c", harness],
                 cwd=PORTFOLIO_DIR.parents[1],
-                env={**os.environ, "QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR": "1"},
+                env={
+                    **os.environ,
+                    "QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR": "1",
+                    "QMT_BACKTEST_DISABLE_STARTUP_CWD_GUARD": "1",
+                },
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -2355,8 +2414,8 @@ class Stage930FastLaneTest(unittest.TestCase):
     def test_launchd_session_jobs_keep_direct_python_owner(self) -> None:
         launchd = PORTFOLIO_DIR / "launchd"
         for name in (
-            "local.qmt-roll.official-live.15w.c9-night-session.plist",
-            "local.qmt-roll.official-live.15w.c9-day-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
         ):
             with (launchd / name).open("rb") as handle:
                 payload = plistlib.load(handle)
@@ -2378,8 +2437,8 @@ class Stage930FastLaneTest(unittest.TestCase):
     def test_c9_launchd_jobs_parse_to_explicit_15w_execution_profile(self) -> None:
         launchd = PORTFOLIO_DIR / "launchd"
         for name in (
-            "local.qmt-roll.official-live.15w.c9-night-session.plist",
-            "local.qmt-roll.official-live.15w.c9-day-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
+            "local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
         ):
             with self.subTest(name=name):
                 with (launchd / name).open("rb") as handle:
@@ -2387,7 +2446,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                 args = stage930._build_parser().parse_args(program_arguments[2:])
                 profile = stage930.resolve_execution_profile(args.execution_profile)
 
-                self.assertEqual("c9-15w-historical", args.execution_profile)
+                self.assertEqual("c9-15w", args.execution_profile)
                 self.assertEqual(
                     "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
                     profile.official_version,
