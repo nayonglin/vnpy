@@ -69,6 +69,7 @@
   - 最新全量筛选回归：`1229 passed, 6 deselected, 331 subtests passed`
   - 6 个 deselected 均为已复现的基线/环境项：4 个 Alpha101 `cast_to_int` 既有缺失、1 个硬编码 worktree 目录名、1 个缺少历史 backtest output；`git diff origin/master` 对这些文件为 0
   - 第一轮全量筛选曾有 1 个真实 SIGTERM 子进程 5 秒启动标记超时；该单测立即复跑通过，去掉临时 pycache 环境后的完整筛选集也通过，判定为压力时序抖动而非本轮逻辑回归
+  - manifest/readonly/launchd 冻结回归：`54 passed, 36 subtests passed`
   - Stage930 受监管子进程冷启动探针：约 `7.3s -> 3.0s`
   - CTP 连接：0；报单 API：0；撤单 API：0
   - 本机旧 armed C9 日/夜 label：持久 disabled、未加载、无进程；旧 plist 已移至 `~/Library/LaunchAgents.disabled-stage179-c9-legacy-20260720/` 并去除写权限
@@ -76,7 +77,12 @@
 ## 输出文件
 
 - report：本阶段记录
-- summary：待生成 `examples/portfolio_backtesting/release_manifests/stage179/c9-15w-candidate.json`
+- summary：`examples/portfolio_backtesting/release_manifests/stage179/c9-15w-candidate.json`
+  - source commit：`79bfb1c6067ab7e10a06d4cefe941a5db9cbf7d9`
+  - manifest SHA256：`92188d607bdbe36a444cc175a6371bcdd3a1a494166f5e755c86642e7e90a0c1`
+  - profile/capital：`c9-15w / 150000 / 15w`
+  - runtime allow-list：`offline`、`production-readonly`
+  - strategy semantics：`blocked`
 - orders：无
 - daily：无
 - quality：聚焦/全量 pytest、`py_compile`、`bash -n`、`plutil -lint`、`git diff --check`
@@ -88,7 +94,7 @@
 - 独立终审新边界：persistent detector 会在约 50ms 内生成并 durable commit 止损/重进场意图，但当前 fast lane 明确 `submit_disabled`；新意图的真实 Stage931 authorization/wake 仍依赖下一轮 slow cycle。故本轮只能合入 readonly 代码，不能声称实时止损/重进场已获得 production-live 延迟资格。
 - 独立终审分级：C9/15万 production-readonly 为 `GO`，当前增量 `P0=0、P1=0`；production-live 为 `NO-GO`，另有 persistent no-submit 与账本预留后授权失效造成平仓约 30 秒重试锁两项阻断，必须在下一独立阶段关闭。
 - 是否进入下一步：是
-- 下一步：完成最终独立 agent 增量终审；冻结 clean source commit 和 C9 schema-v2 readonly manifest；推送 master。之后在独立干净运行目录做 CTP 只读 0/0 canary；另立阶段补 persistent detector → fresh gate → bounded authorization/wake 的实时提交闭环，在 SimNow/真实只读证据前不签发 activation receipt、不启动真实报单。
+- 下一步：推送 master。之后在独立干净运行目录做 CTP 只读 0/0 canary；另立阶段补 persistent detector → fresh gate → bounded authorization/wake 的实时提交闭环，在 SimNow/真实只读证据前不签发 activation receipt、不启动真实报单。
 
 ## 过拟合反思
 
