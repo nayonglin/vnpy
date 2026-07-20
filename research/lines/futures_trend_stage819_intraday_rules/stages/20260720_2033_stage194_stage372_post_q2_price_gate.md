@@ -78,6 +78,17 @@
 - 是否进入下一步：是，进入干净 source commit、manifest 重冻结、独立终审和 master 推送；之后只能做 production-readonly 验收，不能越级真实报单。
 - 下一步：在真实交易服务窗口完成严格 0/0 CTP 只读、5 场日夜 canary 与 authoritative reconnect v2；明确官方 Stage372/20万口径后再讨论 SimNow，production-live 仍需单独资格晋级。
 
+## 2026-07-20 20:49 生产 CTP 严格只读与旧任务降级
+
+- 使用 `ctp_live.local.env`（权限 `0600`）和正式 `vnpy_ctp/api/libs` framework 优先级，从最终 master 工作树执行 Stage174 严格只读探针；没有加载 submit adapter，没有发送或撤销委托。
+- TD/MD 前置连接、授权、登录、结算确认、order/trade/position/account/contract 查询均完成；broker trading day 为 `20260721`，query bundle `complete=true`，同一 connection generation 的完整快照成立。
+- broker 结果：账户行 1、持仓 0、订单 0、成交 0，`position_snapshot_state=confirmed_flat`；合约归一化 507 行。所有 `send_order/cancel_order/native mutation` attempted 与 called 计数均为严格 `0`。
+- 输出 summary：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json`，SHA-256 `be2b8d2997e3d76d957fa8c951cf3bac4ee36fd0bbb499baa0760f7353d8d53e`。
+- query bundle manifest：`examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_stage174_ctp_vnpy_readonly_probe_v1.json`，SHA-256 `14bcc5c9f63d82731386154354647ea62c9d356a513f71daa9acf7f4311a64a9`。
+- 运行态冲突：发现已安装的旧 C9/15万 day/night LaunchAgent 分别计划 08:55/20:55 从 `/Users/bytedance/Desktop/person/vnpy` 脏旧工作区以 `live-real` 和真实提交环境启动，不包含本阶段 Stage372 价格闸门。
+- 安全处置：broker 已确认空仓后，对两份旧 C9 day/night live-real job 执行可逆 `launchctl bootout`；plist 未删除，未停止任何持仓管理进程。复查两 job 均不在 launchctl domain、无 Stage903/904/905/914/927/930/931 进程；保留只读快照、月更与报告任务。
+- 最终判断：生产 CTP 当前可读且账户空仓，但单场 one-shot 只读不计入 5 场 canonical launchd canary，也没有重连证明；因此 production-readonly 证据增加，但 production-live 继续 NO-GO。让旧 live-real 任务自动启动反而会违反“交易价格正确”的目标。
+
 ## 过拟合反思
 
 - 运行前判断：否。
