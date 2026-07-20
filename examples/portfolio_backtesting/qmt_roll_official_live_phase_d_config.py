@@ -4,7 +4,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from run_qmt_alignment_backtest import OUTPUT_DIR
+PROJECT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = PROJECT_DIR / "backtest_outputs"
 
 
 PHASE_D_REAL_ENABLED_ENV = "OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED"
@@ -16,9 +17,19 @@ PHASE_D_CONFIRM_TEXT = "I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING"
 PHASE_D_READONLY_REFRESH_CONFIRM_TEXT = "I_UNDERSTAND_THIS_RUNS_CTP_READONLY_REFRESH_ONLY"
 PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT = "I_UNDERSTAND_THIS_RUNS_OFFICIAL_SHADOW_REFRESH"
 PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE = "explicit_live_real_enabled"
+STAGE179_ACTIVATION_ENV = "OFFICIAL_LIVE_STAGE179_WARM_EXECUTOR_ENABLED"
+STAGE179_ACTIVATION_CONFIRM_TEXT = (
+    "I_UNDERSTAND_THIS_ACTIVATES_STAGE179_WARM_CTP_EXECUTION"
+)
+STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION = 1
 
 READONLY_SUMMARY_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
+)
+READONLY_QUERY_BUNDLE_MANIFEST_PATH = (
+    OUTPUT_DIR
+    / "qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_"
+    "stage174_ctp_vnpy_readonly_probe_v1.json"
 )
 STAGE901_PENDING_ORDERS_PATH = (
     OUTPUT_DIR
@@ -74,6 +85,12 @@ class PhaseDHardLimits:
     max_open_order_count: int = 0
     max_slippage_ticks: int = 5
     max_controller_cycle_seconds: int = 30
+    max_executor_dequeue_seconds: float = 0.5
+    max_dequeue_to_send_seconds: float = 20.0
+    max_ingress_to_send_seconds: float = 25.0
+    readiness_heartbeat_seconds: float = 1.0
+    readiness_lease_ttl_seconds: float = 3.0
+    executor_spool_poll_seconds: float = 0.1
 
 
 @dataclass(frozen=True)

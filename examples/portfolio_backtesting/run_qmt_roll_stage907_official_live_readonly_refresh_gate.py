@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
 import subprocess
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -49,6 +51,140 @@ def _env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+def _readonly_order_api_evidence(summary: dict[str, Any]) -> dict[str, Any]:
+    fields = (
+        "send_order_api_attempted_count",
+        "cancel_order_api_attempted_count",
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "native_mutation_api_attempted_count",
+        "native_mutation_api_called_count",
+        "order_api_attempted_count",
+        "order_api_called_count",
+    )
+    missing = [
+        field
+        for field in fields
+        if type(summary.get(field)) is not int
+        or int(summary[field]) < 0
+    ]
+    nonzero = [
+        field
+        for field in fields
+        if field not in missing and int(summary[field]) != 0
+    ]
+    return {
+        "complete": not missing and not nonzero,
+        "missing_fields": missing,
+        "nonzero_fields": nonzero,
+        **{
+            field: summary.get(field) if field not in missing else None
+            for field in fields
+        },
+    }
+
+
+def _datetime_epoch(value: Any) -> float | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.astimezone()
+    return parsed.timestamp()
+
+
+def _readonly_snapshot_evidence(
+    summary: dict[str, Any],
+    *,
+    previous_generation: str,
+    command_started_at: str,
+    refresh_attempted: bool,
+    expected_invocation_id: str,
+    command_stdout_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    missing: list[str] = []
+    generation = str(summary.get("query_generation_uuid") or "").strip()
+    bundle = summary.get("broker_query_bundle")
+    if not isinstance(bundle, dict):
+        bundle = {}
+        missing.append("broker_query_bundle")
+    if bundle.get("complete") is not True:
+        missing.append("broker_query_bundle.complete")
+    if not generation:
+        missing.append("query_generation_uuid")
+    if str(bundle.get("generation_uuid") or "").strip() != generation:
+        missing.append("broker_query_bundle.generation_uuid")
+    if refresh_attempted and previous_generation and generation == previous_generation:
+        missing.append("query_generation_uuid_not_new")
+    generated_epoch = _datetime_epoch(summary.get("generated_at"))
+    command_epoch = _datetime_epoch(command_started_at)
+    if refresh_attempted and (
+        generated_epoch is None
+        or command_epoch is None
+        or generated_epoch < command_epoch
+    ):
+        missing.append("summary_generated_before_command_start")
+    if not refresh_attempted:
+        missing.append("refresh_not_attempted")
+    invocation_id = str(summary.get("invocation_id") or "").strip()
+    if not expected_invocation_id or invocation_id != expected_invocation_id:
+        missing.append("invocation_id_mismatch")
+    stdout_summary = (
+        command_stdout_summary if isinstance(command_stdout_summary, dict) else {}
+    )
+    file_summary_sha256 = _canonical_json_sha256(summary)
+    stdout_summary_sha256 = (
+        _canonical_json_sha256(stdout_summary) if stdout_summary else ""
+    )
+    stdout_file_payload_match = bool(
+        stdout_summary_sha256 and stdout_summary_sha256 == file_summary_sha256
+    )
+    if refresh_attempted:
+        if not stdout_summary:
+            missing.append("stage174_stdout_summary_missing")
+        elif not stdout_file_payload_match:
+            missing.append("stage174_stdout_file_payload_mismatch")
+    return {
+        "complete": not missing,
+        "missing_fields": missing,
+        "generation_uuid": generation,
+        "bundle_complete": bundle.get("complete"),
+        "generated_epoch": generated_epoch,
+        "command_started_epoch": command_epoch,
+        "invocation_id": invocation_id,
+        "expected_invocation_id": expected_invocation_id,
+        "file_summary_sha256": file_summary_sha256,
+        "stdout_summary_sha256": stdout_summary_sha256,
+        "stdout_file_payload_match": int(stdout_file_payload_match),
+    }
+
+
+def _canonical_json_sha256(payload: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _extract_stage174_stdout_summary(stdout: str) -> dict[str, Any]:
+    start = stdout.find("{")
+    if start < 0:
+        return {}
+    try:
+        payload, _ = json.JSONDecoder().raw_decode(stdout[start:])
+    except (TypeError, ValueError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 def _check_row(
     rows: list[dict[str, Any]],
     *,
@@ -71,12 +207,17 @@ def _check_row(
     )
 
 
-def _production_live_command(wait_seconds: int) -> tuple[list[str], str]:
+def _production_live_command(
+    wait_seconds: int,
+    invocation_id: str,
+    observe_reconnect: bool = False,
+) -> tuple[list[str], str]:
     env_file = PROJECT_DIR / "ctp_live.local.env"
     framework_dir = REPO_ROOT / ".py311/lib/python3.11/site-packages/vnpy_ctp/api/libs"
     py311_lib = REPO_ROOT / ".py311/lib"
     python_path = REPO_ROOT / ".py311/bin/python"
     probe = PROJECT_DIR / "run_ctp_stage174_readonly_probe.py"
+    reconnect_arg = " --observe-reconnect" if observe_reconnect else ""
     shell = "\n".join(
         [
             "set -euo pipefail",
@@ -86,27 +227,55 @@ def _production_live_command(wait_seconds: int) -> tuple[list[str], str]:
                 f"{shlex.quote(str(framework_dir))}:{shlex.quote(str(py311_lib))}"
                 "${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}"
             ),
-            f"{shlex.quote(str(python_path))} {shlex.quote(str(probe))} --connect --wait-seconds {int(wait_seconds)}",
+            (
+                f"{shlex.quote(str(python_path))} {shlex.quote(str(probe))} "
+                f"--connect --wait-seconds {int(wait_seconds)} "
+                f"--invocation-id {shlex.quote(invocation_id)}{reconnect_arg}"
+            ),
         ]
     )
     return ["bash", "-lc", shell], shell
 
 
-def _wrapper_command(env_profile: str, wait_seconds: int) -> tuple[list[str], str]:
+def _wrapper_command(
+    env_profile: str,
+    wait_seconds: int,
+    invocation_id: str,
+    observe_reconnect: bool = False,
+) -> tuple[list[str], str]:
     if env_profile == "simnow":
         wrapper = PROJECT_DIR / "run_ctp_stage177_simnow_readonly_probe.sh"
     elif env_profile == "broker-test":
         wrapper = PROJECT_DIR / "run_ctp_stage267_broker_test_readonly_probe.sh"
     else:
         raise ValueError(f"Unsupported wrapper env profile: {env_profile}")
-    cmd = ["bash", str(wrapper), "--connect", "--wait-seconds", str(int(wait_seconds))]
+    cmd = [
+        "bash",
+        str(wrapper),
+        "--connect",
+        "--wait-seconds",
+        str(int(wait_seconds)),
+        "--invocation-id",
+        invocation_id,
+    ]
+    if observe_reconnect:
+        cmd.append("--observe-reconnect")
     return cmd, " ".join(shlex.quote(part) for part in cmd)
 
 
-def _command_for_profile(env_profile: str, wait_seconds: int) -> tuple[list[str], str]:
+def _command_for_profile(
+    env_profile: str,
+    wait_seconds: int,
+    invocation_id: str,
+    observe_reconnect: bool = False,
+) -> tuple[list[str], str]:
     if env_profile == "production-live":
-        return _production_live_command(wait_seconds)
-    return _wrapper_command(env_profile, wait_seconds)
+        return _production_live_command(
+            wait_seconds, invocation_id, observe_reconnect
+        )
+    return _wrapper_command(
+        env_profile, wait_seconds, invocation_id, observe_reconnect
+    )
 
 
 def _profile_checks(rows: list[dict[str, Any]], env_profile: str) -> None:
@@ -167,6 +336,7 @@ def _run_command(cmd: list[str], command_log: Path, timeout_seconds: int) -> dic
         "finished_at": finished.strftime("%Y-%m-%d %H:%M:%S"),
         "duration_seconds": round((finished - started).total_seconds(), 3),
         "stdout_tail": result.stdout[-4000:],
+        "stage174_stdout_summary": _extract_stage174_stdout_summary(result.stdout),
     }
 
 
@@ -264,12 +434,19 @@ def main() -> None:
     parser.add_argument("--wait-seconds", type=int, default=30)
     parser.add_argument("--confirm-readonly-refresh", default="")
     parser.add_argument("--email-policy", choices=["never", "on-failure", "always"], default="never")
+    parser.add_argument("--observe-reconnect", action="store_true")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
-    cmd, command_plan = _command_for_profile(args.env_profile, args.wait_seconds)
+    invocation_id = uuid.uuid4().hex
+    cmd, command_plan = _command_for_profile(
+        args.env_profile,
+        args.wait_seconds,
+        invocation_id,
+        bool(args.observe_reconnect),
+    )
     checks: list[dict[str, Any]] = []
     _profile_checks(checks, args.env_profile)
     refresh_env_enabled = _env_enabled(PHASE_D_READONLY_REFRESH_ENV)
@@ -295,6 +472,7 @@ def main() -> None:
 
     checks_df = pd.DataFrame(checks)
     blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
+    readonly_summary_before = _read_json(READONLY_SUMMARY_PATH)
     command_result: dict[str, Any] = {}
     refresh_attempted = False
     if args.mode == "refresh" and blocking.empty:
@@ -308,9 +486,43 @@ def main() -> None:
         paths["command_log"].write_text("", encoding="utf-8")
 
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
+    order_api_evidence = _readonly_order_api_evidence(readonly_summary)
+    snapshot_evidence = _readonly_snapshot_evidence(
+        readonly_summary,
+        previous_generation=str(
+            readonly_summary_before.get("query_generation_uuid") or ""
+        ).strip(),
+        command_started_at=str(command_result.get("started_at") or ""),
+        refresh_attempted=refresh_attempted,
+        expected_invocation_id=invocation_id,
+        command_stdout_summary=command_result.get("stage174_stdout_summary"),
+    )
+    _check_row(
+        checks,
+        check="readonly_order_api_exact_zero_evidence",
+        passed=bool(order_api_evidence["complete"]),
+        severity="block",
+        observed=(
+            f"missing={order_api_evidence['missing_fields']};"
+            f"nonzero={order_api_evidence['nonzero_fields']}"
+        ),
+        required="Stage174 gateway and TD API attempted/called counters are exact integer 0/0",
+        blocker="readonly_order_api_evidence_incomplete_or_nonzero",
+    )
+    _check_row(
+        checks,
+        check="readonly_snapshot_new_complete_bundle",
+        passed=bool(snapshot_evidence["complete"]),
+        severity="block",
+        observed=f"missing={snapshot_evidence['missing_fields']}",
+        required="new Stage174 generation after command start with broker_query_bundle.complete=true",
+        blocker="readonly_snapshot_stale_or_incomplete",
+    )
+    checks_df = pd.DataFrame(checks)
+    blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
     broker_snapshot = readonly_summary.get("broker_snapshot", {}) if isinstance(readonly_summary.get("broker_snapshot"), dict) else {}
     position_state = str(broker_snapshot.get("position_snapshot_state", ""))
-    readonly_ready = readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
+    readonly_ready = bool(order_api_evidence["complete"]) and bool(snapshot_evidence["complete"]) and readonly_summary.get("status") == "readonly_snapshots_received" and position_state in {
         "confirmed_flat",
         "positions_received",
     }
@@ -334,11 +546,47 @@ def main() -> None:
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "refresh_status": refresh_status,
         "refresh_attempted": int(refresh_attempted),
+        "observe_reconnect": int(bool(args.observe_reconnect)),
         "readonly_status_after": readonly_summary.get("status", ""),
         "position_snapshot_state_after": position_state,
         "command_exit_code": command_result.get("exit_code", ""),
         "blocking_failure_count": int(len(blocking)),
-        "order_api_called_count": 0,
+        "send_order_api_attempted_count": order_api_evidence.get("send_order_api_attempted_count"),
+        "cancel_order_api_attempted_count": order_api_evidence.get("cancel_order_api_attempted_count"),
+        "send_order_api_called_count": order_api_evidence.get("send_order_api_called_count"),
+        "cancel_order_api_called_count": order_api_evidence.get("cancel_order_api_called_count"),
+        "native_mutation_api_attempted_count": order_api_evidence.get(
+            "native_mutation_api_attempted_count"
+        ),
+        "native_mutation_api_called_count": order_api_evidence.get(
+            "native_mutation_api_called_count"
+        ),
+        "order_api_attempted_count": order_api_evidence.get(
+            "order_api_attempted_count"
+        ),
+        "order_api_called_count": order_api_evidence.get("order_api_called_count"),
+        "order_api_evidence_complete": int(bool(order_api_evidence["complete"])),
+        "order_api_evidence_missing_fields": order_api_evidence["missing_fields"],
+        "order_api_evidence_nonzero_fields": order_api_evidence["nonzero_fields"],
+        "snapshot_evidence_complete": int(bool(snapshot_evidence["complete"])),
+        "snapshot_evidence_missing_fields": snapshot_evidence["missing_fields"],
+        "snapshot_generation_uuid": snapshot_evidence["generation_uuid"],
+        "stage174_invocation_id": snapshot_evidence["invocation_id"],
+        "stage174_file_summary_sha256": snapshot_evidence[
+            "file_summary_sha256"
+        ],
+        "stage174_stdout_summary_sha256": snapshot_evidence[
+            "stdout_summary_sha256"
+        ],
+        "stage174_stdout_file_payload_match": snapshot_evidence[
+            "stdout_file_payload_match"
+        ],
+        "broker_query_bundle_complete": snapshot_evidence["bundle_complete"],
+        "connection_lifecycle": (
+            readonly_summary.get("connection_lifecycle")
+            if isinstance(readonly_summary.get("connection_lifecycle"), dict)
+            else {}
+        ),
         "sanitized_command_plan": command_plan,
         "outputs": {key: str(value.resolve()) for key, value in paths.items()},
         "judgement": {

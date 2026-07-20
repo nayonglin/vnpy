@@ -10,15 +10,19 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    assert_profile_identity,
+    resolve_execution_profile,
+)
+from qmt_roll_official_pending_artifact import (
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
+)
 from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
-    OFFICIAL_LIVE_EXECUTION_POLICY,
     OFFICIAL_LIVE_FAMILY_VERSION,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
     build_official_live_manifest,
     build_official_live_risk_snapshot,
 )
@@ -30,7 +34,6 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_REAL_ENABLED_ENV,
     PHASE_D_SESSION_DAEMON_ENV,
     READONLY_SUMMARY_PATH,
-    STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -132,6 +135,41 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     return float(number)
 
 
+def _stage260_binding_error(
+    summary: dict[str, Any],
+    *,
+    profile: OfficialExecutionProfile,
+    target_date: str,
+    pending_cohort_id: str,
+) -> str:
+    if not summary or summary.get("_read_error"):
+        return "stage260_summary_missing_or_unreadable"
+    if _to_int(summary.get("order_api_called_count"), -1) != 0:
+        return "stage260_order_api_count_nonzero"
+    if summary.get("execution_profile") != profile.profile_key:
+        return "stage260_execution_profile_mismatch"
+    try:
+        assert_profile_identity(
+            profile,
+            official_version=summary.get("official_live_version"),
+            capital=summary.get("capital"),
+            capital_label=summary.get("capital_label"),
+        )
+    except (TypeError, ValueError) as exc:
+        return str(exc)
+    if summary.get("trade_date") != target_date:
+        return "stage260_target_date_mismatch"
+    if (
+        not profile.intraday_stop_retry_enabled
+        and (
+            not pending_cohort_id
+            or summary.get("pending_cohort_id") != pending_cohort_id
+        )
+    ):
+        return "stage260_pending_cohort_mismatch"
+    return ""
+
+
 def _stage260_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"qmt_roll_stage260_official_live_daily_execution_gate_summary_{date_key}_stage260_official_live_daily_execution_gate_v1.json"
@@ -211,6 +249,11 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fail-closed readiness gate for official-live Phase D automation.")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--max-snapshot-age-seconds", type=int, default=300)
@@ -226,21 +269,64 @@ def main() -> None:
     )
     parser.add_argument("--confirm-live-real", default="")
     args = parser.parse_args()
+    profile = resolve_execution_profile(args.execution_profile)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    manifest = build_official_live_manifest()
+    official_summary = _read_json(profile.summary_path)
+    signal_plan = _read_csv_maybe(profile.signal_plan_path)
+    current_positions = _read_csv_maybe(profile.current_positions_path)
+    pending_orders = _read_csv_maybe(profile.pending_orders_path)
+    pending_cohort_id = ""
+    pending_cohort_error = ""
+    if not profile.intraday_stop_retry_enabled:
+        try:
+            materialized = materialize_validated_artifact_snapshot(
+                profile,
+                load_validated_artifact_snapshot(profile),
+            )
+            official_summary = materialized.official_summary
+            signal_plan = materialized.signal_plan
+            current_positions = materialized.current_positions
+            pending_orders = materialized.pending_orders
+            pending_cohort_id = str(
+                materialized.audit.get("cohort_id", "")
+            )
+        except (OSError, TypeError, ValueError) as exc:
+            pending_cohort_error = str(exc)
+    if profile.intraday_stop_retry_enabled:
+        manifest = build_official_live_manifest()
+    else:
+        manifest = {
+            "alias": profile.alias,
+            "version": profile.official_version,
+            "source_stage": profile.source_stage,
+            "capital": profile.capital,
+            "capital_label": profile.capital_label,
+            "execution_policy": {
+                "real_submit_default": "fail_closed",
+            },
+        }
     target_date = args.target_date or str(official_summary.get("analysis_end", ""))
     paths = _paths(target_date)
 
-    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
-    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     stage260_summary = _read_json(_stage260_summary_path(target_date))
     stage251_summary = _read_json(_stage251_summary_path(target_date))
     kill_switch = _read_json(KILL_SWITCH_PATH)
+
+    official_identity_error = ""
+    try:
+        if official_summary.get("execution_profile") != profile.profile_key:
+            raise ValueError("execution_profile_key_mismatch")
+        assert_profile_identity(
+            profile,
+            official_version=official_summary.get("official_live_version"),
+            capital=official_summary.get("capital"),
+            capital_label=official_summary.get("capital_label"),
+        )
+    except (TypeError, ValueError) as exc:
+        official_identity_error = str(exc)
 
     risk_snapshot = build_official_live_risk_snapshot(official_summary)
     execution_policy = manifest.get("execution_policy", {})
@@ -262,6 +348,12 @@ def main() -> None:
 
     stage260_executable_count = _to_int(stage260_summary.get("executable_count"), 0)
     stage260_order_api_called = _to_int(stage260_summary.get("order_api_called_count"), 0)
+    stage260_binding_error = _stage260_binding_error(
+        stage260_summary,
+        profile=profile,
+        target_date=target_date,
+        pending_cohort_id=pending_cohort_id,
+    )
     stage251_status = str(stage251_summary.get("overall_status", ""))
     stage251_order_api_called = _to_int(stage251_summary.get("total_order_api_called_count"), 0)
     stage251_required = args.legacy_stage251_policy == "require" and stage260_executable_count > 0
@@ -286,20 +378,36 @@ def main() -> None:
     checks: list[dict[str, Any]] = []
     _check(
         checks,
-        name="official_live_profile_resolved_to_c9",
-        passed=OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry",
+        name="official_execution_profile_resolved",
+        passed=(
+            profile.official_version
+            in {
+                "official_live_stage372_20w_recovery_sleeve",
+                "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+            }
+            and (
+                not profile.intraday_stop_retry_enabled
+                or OFFICIAL_LIVE_FAMILY_VERSION
+                == "stage819_c9_intraday_stop_retry"
+            )
+        ),
         severity="block",
-        observed=f"{OFFICIAL_LIVE_VERSION}/{OFFICIAL_LIVE_FAMILY_VERSION}",
-        required="stage819_c9_intraday_stop_retry family",
-        blocker="current_official_live_profile_not_c9",
+        observed=f"{profile.profile_key}/{profile.official_version}",
+        required="registered Stage372 daily-only or explicit historical C9 profile",
+        blocker="official_execution_profile_unregistered",
     )
     _check(
         checks,
         name="official_shadow_summary_available",
-        passed=bool(official_summary.get("analysis_end")) and not official_summary.get("_read_error"),
+        passed=bool(official_summary.get("analysis_end"))
+        and not official_summary.get("_read_error")
+        and not official_identity_error,
         severity="block",
-        observed=official_summary.get("analysis_end", ""),
-        required="latest official shadow decision json",
+        observed=(
+            official_identity_error
+            or official_summary.get("analysis_end", "")
+        ),
+        required="latest official shadow decision json with exact profile identity",
         blocker="official_shadow_summary_missing_or_unreadable",
     )
     _check(
@@ -307,10 +415,18 @@ def main() -> None:
         name="target_date_matches_shadow",
         passed=bool(target_date)
         and str(official_summary.get("analysis_end", "")) == target_date
-        and str(official_summary.get("analysis_start", "")) == OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+        and (
+            not profile.intraday_stop_retry_enabled
+            or str(official_summary.get("analysis_start", ""))
+            == OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+        ),
         severity="block",
         observed=f"start={official_summary.get('analysis_start', '')};end={official_summary.get('analysis_end', '')}",
-        required=f"start={OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE};end={target_date}",
+        required=(
+            f"end={target_date}"
+            if not profile.intraday_stop_retry_enabled
+            else f"start={OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE};end={target_date}"
+        ),
         blocker="target_date_not_equal_official_shadow_analysis_end",
     )
     _check(
@@ -354,10 +470,25 @@ def main() -> None:
     _check(
         checks,
         name="signal_and_pending_exports_available",
-        passed=OFFICIAL_LIVE_SIGNAL_PLAN_PATH.exists() and STAGE901_PENDING_ORDERS_PATH.exists(),
+        passed=(
+            profile.signal_plan_path.exists()
+            and profile.pending_orders_path.exists()
+            and (
+                profile.intraday_stop_retry_enabled
+                or not pending_cohort_error
+            )
+        ),
         severity="block",
-        observed=f"signal={len(signal_plan)} pending={len(pending_orders)} positions={len(current_positions)}",
-        required="signal_plan and pending_orders csv",
+        observed=(
+            f"signal={len(signal_plan)} pending={len(pending_orders)} "
+            f"positions={len(current_positions)} cohort={pending_cohort_id} "
+            f"cohort_error={pending_cohort_error}"
+        ),
+        required=(
+            "Stage372 signal_plan and pending_orders csv"
+            if not profile.intraday_stop_retry_enabled
+            else "signal_plan and pending_orders csv"
+        ),
         blocker="signal_or_pending_export_missing",
     )
     _check(
@@ -372,10 +503,17 @@ def main() -> None:
     _check(
         checks,
         name="stage260_execution_gate_available",
-        passed=bool(stage260_summary) and not stage260_summary.get("_read_error") and stage260_order_api_called == 0,
+        passed=not stage260_binding_error,
         severity="block",
-        observed=f"exists={bool(stage260_summary)} executable={stage260_executable_count} order_api={stage260_order_api_called}",
-        required="fresh Stage260 execution gate with order_api=0",
+        observed=(
+            f"exists={bool(stage260_summary)} executable={stage260_executable_count} "
+            f"order_api={stage260_order_api_called} "
+            f"profile={stage260_summary.get('execution_profile', '')} "
+            f"date={stage260_summary.get('trade_date', '')} "
+            f"cohort={stage260_summary.get('pending_cohort_id', '')} "
+            f"binding_error={stage260_binding_error}"
+        ),
+        required="fresh profile/date/cohort-bound Stage260 execution gate with order_api=0",
         blocker="stage260_gate_missing_or_order_api_called",
     )
     _check(
@@ -407,10 +545,18 @@ def main() -> None:
     _check(
         checks,
         name="c9_intraday_session_daemon_enabled",
-        passed=session_daemon_env,
-        severity="block",
+        passed=(
+            session_daemon_env
+            if profile.intraday_stop_retry_enabled
+            else True
+        ),
+        severity="block" if profile.intraday_stop_retry_enabled else "info",
         observed=f"{PHASE_D_SESSION_DAEMON_ENV}={os.getenv(PHASE_D_SESSION_DAEMON_ENV, '')}",
-        required=f"{PHASE_D_SESSION_DAEMON_ENV}=1",
+        required=(
+            f"{PHASE_D_SESSION_DAEMON_ENV}=1"
+            if profile.intraday_stop_retry_enabled
+            else "not applicable for Stage372 daily-only profile"
+        ),
         blocker="entry_day_05r_stop_retry_requires_session_daemon",
         note="C9 的 0.5R 止损/重试不是日终 cron 能完成的职责。",
     )
@@ -478,14 +624,22 @@ def main() -> None:
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "requested_mode": args.mode,
         "target_date": target_date,
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
+        "intraday_stop_retry_enabled": int(
+            profile.intraday_stop_retry_enabled
+        ),
         "official_manifest": manifest,
         "risk_snapshot": risk_snapshot,
         "allow_new_open": allow_new_open,
         "allow_reduce_close": allow_reduce_close,
         "signal_count": int(len(signal_plan)),
         "pending_order_count": int(len(pending_orders)),
+        "pending_cohort_id": pending_cohort_id,
+        "pending_cohort_error": pending_cohort_error,
         "signal_or_pending_count": signal_or_pending_count,
         "current_position_count": int(len(current_positions)),
         "readonly_snapshot_age_seconds": readonly_age,

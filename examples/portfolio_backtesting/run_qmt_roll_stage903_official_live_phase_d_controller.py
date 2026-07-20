@@ -15,13 +15,11 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
-from qmt_roll_official_live_config import (
-    OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
-    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
-    OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-    OFFICIAL_LIVE_SUMMARY_PATH,
-    OFFICIAL_LIVE_VERSION,
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    assert_profile_identity,
+    resolve_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import (
     CONTROLLER_HEARTBEAT_PATH,
@@ -39,7 +37,6 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_SUMMARY_PATH,
     READONLY_TICKS_PATH,
     READONLY_TRADES_PATH,
-    STAGE901_PENDING_ORDERS_PATH,
     build_phase_d_config,
     phase_d_config_to_dict,
 )
@@ -78,8 +75,6 @@ STAGE909_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage909_official_live_shadow_refr
 STAGE909_MODEL_TAG = "stage909_official_live_shadow_refresh_gate_v1"
 STAGE909_PREFIX = "qmt_roll_stage909_official_live_shadow_refresh_gate"
 STAGE914_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py"
-STAGE914_MODEL_TAG = "stage914_official_live_ctp_runtime_preflight_v1"
-STAGE914_PREFIX = "qmt_roll_stage914_official_live_ctp_runtime_preflight"
 STAGE922_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage922_official_live_target_date_resolver.py"
 STAGE923_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage923_official_live_fail_closed_incident.py"
 STAGE924_SCRIPT = PROJECT_DIR / "run_qmt_roll_stage924_official_live_account_recovery_gate.py"
@@ -135,15 +130,6 @@ def _stage908_summary_path(target_date: str) -> Path:
 def _stage909_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / f"{STAGE909_PREFIX}_summary_{date_key}_{STAGE909_MODEL_TAG}.json"
-
-
-def _latest_stage914_summary_path() -> Path | None:
-    rows = sorted(
-        OUTPUT_DIR.glob(f"{STAGE914_PREFIX}_summary_*_{STAGE914_MODEL_TAG}.json"),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    return rows[0] if rows else None
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -223,6 +209,84 @@ def _to_int(value: Any, default: int = 0) -> int:
     return int(number)
 
 
+def _aggregate_order_api_evidence(
+    stage907_result: dict[str, Any],
+    stage905_result: dict[str, Any],
+) -> dict[str, Any]:
+    sources = {
+        "stage907": stage907_result.get("summary"),
+        "stage905": stage905_result.get("summary"),
+    }
+    required = {
+        "stage907": (
+            "send_order_api_attempted_count",
+            "cancel_order_api_attempted_count",
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "native_mutation_api_attempted_count",
+            "native_mutation_api_called_count",
+            "order_api_attempted_count",
+            "order_api_called_count",
+        ),
+        "stage905": (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        ),
+    }
+    missing: list[str] = []
+    for label, fields in required.items():
+        summary = sources[label]
+        if not isinstance(summary, dict):
+            summary = {}
+        for field in fields:
+            value = summary.get(field)
+            if type(value) is not int or value < 0:
+                missing.append(f"{label}.summary.{field}")
+        send = summary.get("send_order_api_called_count")
+        cancel = summary.get("cancel_order_api_called_count")
+        total = summary.get("order_api_called_count")
+        native = summary.get("native_mutation_api_called_count", 0)
+        if all(
+            type(value) is int and value >= 0
+            for value in (send, cancel, native, total)
+        ):
+            if total != send + cancel + native:
+                missing.append(f"{label}.summary.order_api_called_count_inconsistent")
+    stage907_summary = sources["stage907"] if isinstance(sources["stage907"], dict) else {}
+    if stage907_summary.get("order_api_evidence_complete") != 1:
+        missing.append("stage907.summary.order_api_evidence_complete")
+
+    def count(label: str, field: str) -> int:
+        summary = sources[label]
+        value = summary.get(field) if isinstance(summary, dict) else None
+        return value if type(value) is int and value >= 0 else 0
+
+    send = sum(count(label, "send_order_api_called_count") for label in sources)
+    cancel = sum(count(label, "cancel_order_api_called_count") for label in sources)
+    native = count("stage907", "native_mutation_api_called_count")
+    return {
+        "send_order_api_attempted_count": count(
+            "stage907", "send_order_api_attempted_count"
+        ),
+        "cancel_order_api_attempted_count": count(
+            "stage907", "cancel_order_api_attempted_count"
+        ),
+        "native_mutation_api_attempted_count": count(
+            "stage907", "native_mutation_api_attempted_count"
+        ),
+        "native_mutation_api_called_count": native,
+        "order_api_attempted_count": count(
+            "stage907", "order_api_attempted_count"
+        ),
+        "send_order_api_called_count": send,
+        "cancel_order_api_called_count": cancel,
+        "order_api_called_count": send + cancel + native,
+        "order_api_evidence_complete": int(not missing),
+        "order_api_evidence_missing_fields": missing,
+    }
+
+
 def _clean(value: Any) -> str:
     if value is None:
         return ""
@@ -282,13 +346,22 @@ def _kill_switch_active() -> tuple[bool, dict[str, Any]]:
     return active, payload
 
 
-def _run_stage902(target_date: str, mode: str, max_snapshot_age_seconds: int, confirm_live_real: str) -> dict[str, Any]:
+def _run_stage902(
+    target_date: str,
+    mode: str,
+    max_snapshot_age_seconds: int,
+    confirm_live_real: str,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     readiness_mode = "live-real" if mode == "live-real" else "dry-run"
     cmd = [
         sys.executable,
         str(STAGE902_SCRIPT),
         "--target-date",
         target_date,
+        "--execution-profile",
+        execution_profile.profile_key,
         "--mode",
         readiness_mode,
         "--max-snapshot-age-seconds",
@@ -321,6 +394,7 @@ def _run_stage902(target_date: str, mode: str, max_snapshot_age_seconds: int, co
 
 def _run_stage909(
     *,
+    execution_profile: OfficialExecutionProfile,
     target_date: str,
     shadow_refresh_mode: str,
     analysis_start: str,
@@ -333,6 +407,8 @@ def _run_stage909(
         str(STAGE909_SCRIPT),
         "--target-date",
         target_date,
+        "--execution-profile",
+        execution_profile.profile_key,
         "--mode",
         shadow_refresh_mode,
         "--analysis-start",
@@ -372,6 +448,7 @@ def _run_stage907(
     env_profile: str,
     wait_seconds: int,
     confirm_readonly_refresh: str,
+    observe_reconnect: bool,
 ) -> dict[str, Any]:
     cmd = [
         sys.executable,
@@ -385,6 +462,8 @@ def _run_stage907(
     ]
     if confirm_readonly_refresh:
         cmd.extend(["--confirm-readonly-refresh", confirm_readonly_refresh])
+    if observe_reconnect:
+        cmd.append("--observe-reconnect")
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
     started = datetime.now()
@@ -407,12 +486,18 @@ def _run_stage907(
     }
 
 
-def _run_stage914(wait_seconds: int) -> dict[str, Any]:
+def _run_stage914(
+    wait_seconds: int,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE914_SCRIPT),
         "--wait-seconds",
         str(wait_seconds),
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -432,8 +517,37 @@ def _run_stage914(wait_seconds: int) -> dict[str, Any]:
         "stdout_tail": result.stdout[-4000:],
         "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "summary": _read_json(_latest_stage914_summary_path()),
+        "summary": _parse_json_stdout(result.stdout),
     }
+
+
+def _stage914_result_ready(
+    result: dict[str, Any],
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> bool:
+    exit_code = result.get("exit_code")
+    if type(exit_code) is not int or exit_code != 0:
+        return False
+    summary = result.get("summary", {})
+    if not isinstance(summary, dict):
+        return False
+    if summary.get("execution_profile") != execution_profile.profile_key:
+        return False
+    try:
+        assert_profile_identity(
+            execution_profile,
+            official_version=summary.get("official_live_version"),
+            capital=summary.get("capital"),
+            capital_label=summary.get("capital_label"),
+        )
+    except (TypeError, ValueError):
+        return False
+    return (
+        summary.get("preflight_status")
+        == "production_readonly_preflight_passed"
+        and _to_int(summary.get("blocking_failure_count"), 999) == 0
+    )
 
 
 def _run_stage608_intraday_tick_refresh(
@@ -559,12 +673,19 @@ def _run_stage922(*, data_ready_time: str, as_of: str) -> dict[str, Any]:
     }
 
 
-def _run_stage260(target_date: str, max_snapshot_age_seconds: int) -> dict[str, Any]:
+def _run_stage260(
+    target_date: str,
+    max_snapshot_age_seconds: int,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE260_SCRIPT),
         "--max-snapshot-age-seconds",
         str(max_snapshot_age_seconds),
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -712,7 +833,42 @@ def _skip_stage904_outside_market_session() -> dict[str, Any]:
     }
 
 
-def _run_stage905(target_date: str) -> dict[str, Any]:
+def _run_stage904_for_profile(
+    profile: OfficialExecutionProfile,
+    *,
+    target_date: str,
+    require_broker_fill_price: bool,
+) -> dict[str, Any]:
+    if profile.intraday_stop_retry_enabled:
+        return _run_stage904(
+            target_date,
+            require_broker_fill_price=require_broker_fill_price,
+        )
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return {
+        "command": [],
+        "exit_code": 0,
+        "stdout_tail": "",
+        "started_at": now,
+        "finished_at": now,
+        "monitor_max_tick_age_seconds": "",
+        "summary": {
+            "execution_profile": profile.profile_key,
+            "monitor_status": "intraday_not_applicable_profile_disabled",
+            "action_count": 0,
+            "close_dry_run_count": 0,
+            "retry_open_dry_run_count": 0,
+            "retry_watch_count": 0,
+            "order_api_called_count": 0,
+        },
+    }
+
+
+def _run_stage905(
+    target_date: str,
+    *,
+    execution_profile: OfficialExecutionProfile,
+) -> dict[str, Any]:
     cmd = [
         sys.executable,
         str(STAGE905_SCRIPT),
@@ -720,6 +876,8 @@ def _run_stage905(target_date: str) -> dict[str, Any]:
         target_date,
         "--mode",
         "dry-run",
+        "--execution-profile",
+        execution_profile.profile_key,
     ]
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}".rstrip(os.pathsep)
@@ -741,6 +899,31 @@ def _run_stage905(target_date: str) -> dict[str, Any]:
         "started_at": started.strftime("%Y-%m-%d %H:%M:%S"),
         "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": summary,
+    }
+
+
+def _read_external_intraday_stage(target_date: str, *, stage: str) -> dict[str, Any]:
+    """Consume atomically published fast-lane outputs without launching a second monitor."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if stage == "stage904":
+        summary = _read_json(_stage904_summary_path(target_date))
+        missing_status = "intraday_monitor_external_output_missing"
+    elif stage == "stage905":
+        summary = _read_json(_stage905_summary_path(target_date))
+        missing_status = "executor_external_output_missing"
+    else:
+        raise ValueError(f"unsupported external intraday stage: {stage}")
+    if not summary:
+        key = "monitor_status" if stage == "stage904" else "executor_status"
+        summary = {key: missing_status, "order_api_called_count": 0}
+    return {
+        "command": [],
+        "exit_code": 0,
+        "stdout_tail": "",
+        "started_at": now,
+        "finished_at": now,
+        "summary": summary,
+        "external_fast_lane": 1,
     }
 
 
@@ -993,7 +1176,7 @@ def _build_cycle_plan(
         _plan_row(
             "shadow_refresh",
             stage909_plan_status,
-            "plan or run official data update and C9 shadow signal calculation",
+            "plan or run official data update and profile-bound shadow calculation",
             f"stage909={stage909_status};mode={stage909_mode};attempted={stage909_summary.get('refresh_attempted', '')}",
         )
     )
@@ -1001,7 +1184,7 @@ def _build_cycle_plan(
         _plan_row(
             "load_official_shadow",
             "passed" if official_summary.get("analysis_end") == target_date else "blocked",
-            "load Stage901 official C9 summary/signal/pending/current positions",
+            "load profile-bound official summary/signal/pending/current positions",
             f"analysis_end={official_summary.get('analysis_end', '')};signal={len(signal_plan)};pending={len(pending_orders)};positions={len(current_positions)}",
         )
     )
@@ -1112,8 +1295,21 @@ def _build_cycle_plan(
     rows.append(
         _plan_row(
             "c9_intraday_monitor",
-            "blocked" if stage904_status == "intraday_monitor_blocked" or "c9_intraday_session_daemon_enabled" in stage902_blockers else "passed",
-            "monitor C9 0.5R stop/retry during active sessions",
+            (
+                "skipped"
+                if stage904_status
+                == "intraday_not_applicable_profile_disabled"
+                else "blocked"
+                if stage904_status == "intraday_monitor_blocked"
+                or "c9_intraday_session_daemon_enabled" in stage902_blockers
+                else "passed"
+            ),
+            (
+                "C9 intraday monitor is not applicable to Stage372"
+                if stage904_status
+                == "intraday_not_applicable_profile_disabled"
+                else "monitor C9 0.5R stop/retry during active sessions"
+            ),
             (
                 f"stage904={stage904_status};"
                 f"retry_open_dry_run={stage904_retry_open_dry_run};"
@@ -1317,7 +1513,7 @@ def _build_report(summary: dict[str, Any], plan: pd.DataFrame) -> str:
             "## 说明",
             "",
             "- Stage903 是常驻控制器骨架：负责心跳、状态、kill switch、readiness gate 和周期计划。",
-            "- Stage909 覆盖日终数据更新和官方 C9 shadow 信号计算，默认 `plan-only`。",
+            "- Stage909 覆盖日终数据更新和当前 execution profile 的官方 shadow 信号计算，默认 `plan-only`。",
             "- Stage903 当前已串联 Stage904 盘中监控、Stage905 executor dry-run 和 Stage906 对账 worker。",
             "- Stage914 在 Stage907 前检查 production-live env 与 vnpy_ctp runtime；预检不通过时只读刷新会降级为 `plan-only`。",
             "- Stage908 覆盖最后一层提交 adapter 合约审计，但不连接 broker、不提交委托。",
@@ -1331,12 +1527,19 @@ def _build_report(summary: dict[str, Any], plan: pd.DataFrame) -> str:
 
 def run_once(args: argparse.Namespace) -> dict[str, Any]:
     config = build_phase_d_config()
+    execution_profile = resolve_execution_profile(
+        getattr(
+            args,
+            "execution_profile",
+            ExecutionStrategyMode.C9_15W_HISTORICAL.value,
+        )
+    )
     now = datetime.now()
     run_id = now.strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    official_summary = _read_json(execution_profile.summary_path)
     target_resolver_result: dict[str, Any] = {
         "command": [],
         "exit_code": 0,
@@ -1374,6 +1577,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         official_target_mismatch = str(official_summary.get("analysis_end", "")) != target_date
         effective_shadow_refresh_mode = "run" if resolver_needs_refresh or official_target_mismatch else "plan-only"
     stage909_result = _run_stage909(
+        execution_profile=execution_profile,
         target_date=target_date,
         shadow_refresh_mode=effective_shadow_refresh_mode,
         analysis_start=args.shadow_analysis_start,
@@ -1381,10 +1585,12 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         bar_start=args.shadow_bar_start,
         confirm_shadow_refresh=args.confirm_shadow_refresh,
     )
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
-    signal_plan = _read_csv_maybe(OFFICIAL_LIVE_SIGNAL_PLAN_PATH)
-    pending_orders = _read_csv_maybe(STAGE901_PENDING_ORDERS_PATH)
-    current_positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
+    official_summary = _read_json(execution_profile.summary_path)
+    signal_plan = _read_csv_maybe(execution_profile.signal_plan_path)
+    pending_orders = _read_csv_maybe(execution_profile.pending_orders_path)
+    current_positions = _read_csv_maybe(
+        execution_profile.current_positions_path
+    )
     readonly_summary = _read_json(READONLY_SUMMARY_PATH)
     kill_active, kill_payload = _kill_switch_active()
     sessions = _current_sessions(now)
@@ -1392,11 +1598,13 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         _clean(session.get("role")) == "market_and_execution" for session in sessions
     )
 
-    stage914_result = _run_stage914(wait_seconds=args.readonly_wait_seconds)
-    stage914_summary = stage914_result.get("summary", {})
-    stage914_ready = (
-        stage914_summary.get("preflight_status") == "production_readonly_preflight_passed"
-        and _to_int(stage914_summary.get("blocking_failure_count"), 999) == 0
+    stage914_result = _run_stage914(
+        wait_seconds=args.readonly_wait_seconds,
+        execution_profile=execution_profile,
+    )
+    stage914_ready = _stage914_result_ready(
+        stage914_result,
+        execution_profile=execution_profile,
     )
     readonly_age = _age_seconds(readonly_summary.get("generated_at"), now)
     broker_snapshot = readonly_summary.get("broker_snapshot", {}) if isinstance(readonly_summary.get("broker_snapshot"), dict) else {}
@@ -1428,10 +1636,12 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         env_profile=args.readonly_env_profile,
         wait_seconds=args.readonly_wait_seconds,
         confirm_readonly_refresh=args.confirm_readonly_refresh,
+        observe_reconnect=bool(args.readonly_observe_reconnect),
     )
     stage260_result = _run_stage260(
         target_date=target_date,
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        execution_profile=execution_profile,
     )
     stage251_result = _run_stage251(
         target_date=target_date,
@@ -1448,22 +1658,50 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         mode=args.mode,
         max_snapshot_age_seconds=args.max_snapshot_age_seconds,
         confirm_live_real=args.confirm_live_real,
+        execution_profile=execution_profile,
     )
     broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
     broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
     symbols = _extract_order_symbols(signal_plan, pending_orders, current_positions, broker_positions, broker_trades)
+    effective_intraday_refresh_mode = (
+        "skip" if args.intraday_execution_mode == "external" else args.intraday_tick_refresh_mode
+    )
     stage608_intraday_result = _run_stage608_intraday_tick_refresh(
         symbols=symbols,
-        refresh_mode=args.intraday_tick_refresh_mode if market_execution_session_active else "skip",
+        refresh_mode=effective_intraday_refresh_mode if market_execution_session_active else "skip",
         wait_seconds=args.intraday_tick_wait_seconds,
         pre_subscribe_wait_seconds=args.intraday_pre_subscribe_wait_seconds,
         stage914_ready=stage914_ready,
     )
-    if market_execution_session_active:
-        stage904_result = _run_stage904(target_date=target_date, require_broker_fill_price=args.mode == "live-real")
+    if not execution_profile.intraday_stop_retry_enabled:
+        stage904_result = _run_stage904_for_profile(
+            execution_profile,
+            target_date=target_date,
+            require_broker_fill_price=False,
+        )
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
+    elif args.intraday_execution_mode == "external":
+        stage904_result = _read_external_intraday_stage(target_date, stage="stage904")
+        stage905_result = _read_external_intraday_stage(target_date, stage="stage905")
+    elif market_execution_session_active:
+        stage904_result = _run_stage904_for_profile(
+            execution_profile,
+            target_date=target_date,
+            require_broker_fill_price=args.mode == "live-real",
+        )
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
     else:
         stage904_result = _skip_stage904_outside_market_session()
-    stage905_result = _run_stage905(target_date=target_date)
+        stage905_result = _run_stage905(
+            target_date=target_date,
+            execution_profile=execution_profile,
+        )
     stage906_max_snapshot_age_seconds = (
         int(args.reconciliation_max_snapshot_age_seconds)
         if int(args.reconciliation_max_snapshot_age_seconds) > 0
@@ -1503,7 +1741,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         current_sessions=sessions,
     )
     controller_status = _controller_status(args.mode, kill_active, stage902_result, plan)
-    order_api_called = int(plan["order_api_called"].sum()) if not plan.empty else 0
+    plan_order_api_called = int(plan["order_api_called"].sum()) if not plan.empty else 0
+    order_api_evidence = _aggregate_order_api_evidence(
+        stage907_result,
+        stage905_result,
+    )
     current_session_names = ",".join(row["name"] for row in sessions) if sessions else ""
 
     summary = {
@@ -1517,8 +1759,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage922_resolver_status": target_resolver_result.get("summary", {}).get("resolver_status", ""),
         "stage922_requires_shadow_refresh": target_resolver_result.get("summary", {}).get("requires_shadow_refresh", ""),
         "stage922_requires_data_update": target_resolver_result.get("summary", {}).get("requires_data_update", ""),
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": execution_profile.profile_key,
+        "official_live_version": execution_profile.official_version,
+        "official_live_alias": execution_profile.alias,
+        "capital": execution_profile.capital,
+        "capital_label": execution_profile.capital_label,
         "controller_status": controller_status,
         "current_sessions": sessions,
         "current_session_names": current_session_names,
@@ -1541,7 +1786,36 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage914_order_api_called_count": stage914_result.get("summary", {}).get("order_api_called_count", ""),
         "stage907_refresh_status": stage907_result.get("summary", {}).get("refresh_status", ""),
         "stage907_refresh_attempted": stage907_result.get("summary", {}).get("refresh_attempted", ""),
+        "stage907_observe_reconnect": stage907_result.get("summary", {}).get(
+            "observe_reconnect", 0
+        ),
         "stage907_env_profile": stage907_result.get("summary", {}).get("env_profile", ""),
+        "stage907_readonly_status_after": stage907_result.get("summary", {}).get("readonly_status_after", ""),
+        "stage907_position_snapshot_state_after": stage907_result.get("summary", {}).get("position_snapshot_state_after", ""),
+        "stage907_snapshot_evidence_complete": stage907_result.get("summary", {}).get(
+            "snapshot_evidence_complete"
+        ),
+        "stage907_snapshot_generation_uuid": stage907_result.get("summary", {}).get(
+            "snapshot_generation_uuid", ""
+        ),
+        "stage907_stage174_invocation_id": stage907_result.get("summary", {}).get(
+            "stage174_invocation_id", ""
+        ),
+        "stage907_stage174_file_summary_sha256": stage907_result.get("summary", {}).get(
+            "stage174_file_summary_sha256", ""
+        ),
+        "stage907_stage174_stdout_summary_sha256": stage907_result.get("summary", {}).get(
+            "stage174_stdout_summary_sha256", ""
+        ),
+        "stage907_stage174_stdout_file_payload_match": stage907_result.get("summary", {}).get(
+            "stage174_stdout_file_payload_match"
+        ),
+        "stage907_broker_query_bundle_complete": stage907_result.get("summary", {}).get(
+            "broker_query_bundle_complete"
+        ),
+        "stage907_connection_lifecycle": stage907_result.get("summary", {}).get(
+            "connection_lifecycle", {}
+        ),
         "stage907_requested_refresh_mode": args.readonly_refresh_mode,
         "stage907_effective_refresh_mode": effective_readonly_refresh_mode,
         "stage907_readonly_age_seconds_before_refresh": readonly_age,
@@ -1574,6 +1848,12 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage905_executor_status": stage905_result.get("summary", {}).get("executor_status", ""),
         "stage905_ready_count": stage905_result.get("summary", {}).get("ready_count", 0),
         "stage905_blocked_count": stage905_result.get("summary", {}).get("blocked_count", 0),
+        "send_order_api_attempted_count": order_api_evidence["send_order_api_attempted_count"],
+        "cancel_order_api_attempted_count": order_api_evidence["cancel_order_api_attempted_count"],
+        "send_order_api_called_count": order_api_evidence["send_order_api_called_count"],
+        "cancel_order_api_called_count": order_api_evidence["cancel_order_api_called_count"],
+        "order_api_evidence_complete": order_api_evidence["order_api_evidence_complete"],
+        "order_api_evidence_missing_fields": order_api_evidence["order_api_evidence_missing_fields"],
         "stage906_exit_code": stage906_result.get("exit_code"),
         "stage906_reconciliation_status": stage906_result.get("summary", {}).get("reconciliation_status", ""),
         "stage906_account_state_alignment": stage906_result.get("summary", {}).get("account_state_alignment", ""),
@@ -1589,7 +1869,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage924_exit_code": stage924_result.get("exit_code"),
         "stage924_recovery_status": stage924_result.get("summary", {}).get("recovery_status", ""),
         "stage924_operator_action_required": stage924_result.get("summary", {}).get("operator_action_required", ""),
-        "order_api_called_count": order_api_called,
+        "order_api_called_count": order_api_evidence["order_api_called_count"],
+        "plan_order_api_called_count": plan_order_api_called,
         "env_gates": {
             PHASE_D_SESSION_DAEMON_ENV: _env_enabled(PHASE_D_SESSION_DAEMON_ENV),
             PHASE_D_REAL_ADAPTER_ENV: _env_enabled(PHASE_D_REAL_ADAPTER_ENV),
@@ -1636,7 +1917,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "target_date_mode": args.target_date_mode,
         "target_date_source": target_date_source,
         "current_session_names": current_session_names,
-        "order_api_called_count": order_api_called,
+        "order_api_called_count": order_api_evidence["order_api_called_count"],
         "kill_switch_active": kill_active,
         "watched_symbols": symbols,
         "summary_path": str(paths["summary_json"].resolve()),
@@ -1655,7 +1936,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                 "run_id": run_id,
                 "controller_status": controller_status,
                 "target_date": target_date,
-                "order_api_called_count": order_api_called,
+                "order_api_called_count": order_api_evidence["order_api_called_count"],
                 "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             },
             *[
@@ -1682,6 +1963,11 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live Phase D controller scaffold.")
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     parser.add_argument("--target-date", default="", help="Target completed trading day. Defaults to official summary analysis_end.")
     parser.add_argument(
         "--target-date-mode",
@@ -1704,13 +1990,14 @@ def main() -> None:
     )
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--shadow-refresh-mode", choices=["plan-only", "run", "auto"], default="plan-only")
-    parser.add_argument("--shadow-analysis-start", default=OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE)
+    parser.add_argument("--shadow-analysis-start", default="")
     parser.add_argument("--shadow-mapping-start", default="")
     parser.add_argument("--shadow-bar-start", default="")
     parser.add_argument("--confirm-shadow-refresh", default="")
     parser.add_argument("--readonly-refresh-mode", choices=["plan-only", "refresh", "auto"], default="plan-only")
     parser.add_argument("--readonly-env-profile", choices=["production-live", "simnow", "broker-test"], default="production-live")
     parser.add_argument("--readonly-wait-seconds", type=int, default=30)
+    parser.add_argument("--readonly-observe-reconnect", action="store_true")
     parser.add_argument("--confirm-readonly-refresh", default="")
     parser.add_argument("--stage251-mode", choices=["skip", "auto", "force"], default="skip")
     parser.add_argument("--stage251-readonly-wrapper", choices=["simnow", "broker-test"], default="simnow")
@@ -1718,6 +2005,12 @@ def main() -> None:
     parser.add_argument("--stage251-wait-seconds", type=int, default=90)
     parser.add_argument("--stage251-skip-real-block-test", action="store_true")
     parser.add_argument("--intraday-tick-refresh-mode", choices=["skip", "refresh"], default="refresh")
+    parser.add_argument(
+        "--intraday-execution-mode",
+        choices=["integrated", "external"],
+        default="integrated",
+        help="external lets Stage930 own the single fast Stage904/905 lane.",
+    )
     parser.add_argument("--intraday-tick-wait-seconds", type=int, default=8)
     parser.add_argument("--intraday-pre-subscribe-wait-seconds", type=int, default=2)
     parser.add_argument("--loop", action="store_true", help="Run continuously with heartbeat updates.")

@@ -1,23 +1,45 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
+import hashlib
 import json
 import re
 import shlex
 import stat
+import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Mapping
 
 import pandas as pd
 
-from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_FAMILY_VERSION, OFFICIAL_LIVE_VERSION
-from qmt_roll_official_live_phase_d_config import PHASE_D_READONLY_REFRESH_CONFIRM_TEXT
-from run_qmt_alignment_backtest import OUTPUT_DIR
+from qmt_roll_official_execution_profile import (
+    ExecutionStrategyMode,
+    OfficialExecutionProfile,
+    resolve_execution_profile,
+)
+from qmt_roll_official_live_phase_d_config import (
+    PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
+    STAGE179_ACTIVATION_CONFIRM_TEXT,
+    STAGE179_ACTIVATION_ENV,
+    STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION,
+)
+from qmt_roll_official_live_release_manifest import (
+    ReleaseManifestError,
+    load_and_validate_release_manifest,
+)
+from qmt_roll_official_live_runtime_profile import (
+    ExecutionRuntimeProfile,
+    ResolvedRuntimeProfile,
+    RuntimeProfileError,
+    validate_resolved_runtime_profile,
+)
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PROJECT_DIR.parent.parent
+OUTPUT_DIR = PROJECT_DIR / "backtest_outputs"
 MODEL_TAG = "stage914_official_live_ctp_runtime_preflight_v1"
 OUTPUT_PREFIX = "qmt_roll_stage914_official_live_ctp_runtime_preflight"
 
@@ -41,6 +63,189 @@ REQUIRED_ENV_KEYS = (
 )
 SECRET_KEYS = {"CTP_USERID", "CTP_PASSWORD", "CTP_APPID", "CTP_AUTH_CODE", "CTP_PRODUCT_INFO"}
 EXPECTED_TRUE_VALUES = {"1", "true", "yes", "y", "on"}
+_ACTIVATION_RECEIPT_FIELDS = {
+    "schema_version",
+    "manifest_sha256",
+    "official_version",
+    "capital",
+    "capital_label",
+    "policy_decision",
+    "created_at_utc",
+    "receipt_sha256",
+}
+
+
+def resolve_preflight_execution_profile(
+    value: str | ExecutionStrategyMode,
+) -> OfficialExecutionProfile:
+    return resolve_execution_profile(value)
+
+
+@dataclass(frozen=True, slots=True)
+class Stage179PreAdapterGateResult:
+    blockers: tuple[str, ...]
+    manifest_sha256: str
+    adapter_created: bool
+
+
+def _canonical_receipt_digest(payload: Mapping[str, Any]) -> str:
+    core = {key: value for key, value in payload.items() if key != "receipt_sha256"}
+    encoded = json.dumps(
+        core,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def validate_stage179_activation_receipt(
+    path: Path | str | None,
+    *,
+    manifest_sha256: str,
+    official_version: str,
+    capital: int | float,
+    capital_label: str,
+) -> tuple[str, ...]:
+    """Validate an operator-created receipt without ever creating or modifying it."""
+
+    if path is None:
+        return ("stage179_activation_receipt_missing",)
+    receipt_path = Path(path)
+    try:
+        raw = receipt_path.read_bytes()
+        payload = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return ("stage179_activation_receipt_missing",)
+    if not isinstance(payload, dict) or set(payload) != _ACTIVATION_RECEIPT_FIELDS:
+        return ("stage179_activation_receipt_invalid",)
+    expected = {
+        "schema_version": STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION,
+        "manifest_sha256": manifest_sha256,
+        "official_version": official_version,
+        "capital": capital,
+        "capital_label": capital_label,
+        "policy_decision": "approved",
+    }
+    if any(payload.get(key) != value for key, value in expected.items()):
+        return ("stage179_activation_receipt_mismatch",)
+    created_at = payload.get("created_at_utc")
+    if not isinstance(created_at, str) or not created_at.endswith("Z"):
+        return ("stage179_activation_receipt_invalid",)
+    try:
+        datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+    except ValueError:
+        return ("stage179_activation_receipt_invalid",)
+    digest = payload.get("receipt_sha256")
+    if (
+        not isinstance(digest, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", digest)
+        or digest != _canonical_receipt_digest(payload)
+    ):
+        return ("stage179_activation_receipt_digest_mismatch",)
+    return ()
+
+
+def _current_repo_commit(repo_root: Path) -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD^{commit}"],
+        cwd=repo_root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 else ""
+
+
+def evaluate_stage179_pre_adapter_gate(
+    *,
+    resolved: ResolvedRuntimeProfile,
+    release_manifest_path: Path | str,
+    repo_root: Path | str,
+    expected_official_version: str,
+    expected_capital: int | float,
+    expected_capital_label: str,
+    expected_execution_profile: str | None = None,
+    environment: Mapping[str, str],
+    confirmation: str,
+    activation_receipt_path: Path | str | None,
+    phase_d_real_submit_ready: bool,
+    stage927_ready: bool,
+    kill_switch_clear: bool,
+    broker_gates_fresh: bool,
+    defer_cycle_authorization: bool = False,
+    adapter_factory: Callable[[], Any] | None = None,
+) -> Stage179PreAdapterGateResult:
+    """Fail closed before the submit adapter can be imported or constructed."""
+
+    blockers: list[str] = []
+    manifest_sha256 = ""
+    repo = Path(repo_root).expanduser().resolve(strict=False)
+    try:
+        resolved = validate_resolved_runtime_profile(resolved, repo_root=repo)
+    except (RuntimeProfileError, OSError, ValueError):
+        return Stage179PreAdapterGateResult(
+            blockers=("stage179_runtime_profile_invalid",),
+            manifest_sha256="",
+            adapter_created=False,
+        )
+    try:
+        manifest = load_and_validate_release_manifest(
+            release_manifest_path,
+            repo_root=repo,
+            expected_official_version=expected_official_version,
+            expected_capital=expected_capital,
+            expected_capital_label=expected_capital_label,
+            expected_execution_profile=expected_execution_profile,
+            required_runtime_profile=resolved.profile,
+            current_commit=_current_repo_commit(repo),
+        )
+        manifest_sha256 = str(manifest["manifest_sha256"])
+    except (ReleaseManifestError, KeyError, OSError, ValueError):
+        blockers.append("stage179_release_manifest_invalid")
+
+    if resolved.profile is ExecutionRuntimeProfile.PRODUCTION_LIVE:
+        if environment.get(STAGE179_ACTIVATION_ENV) != "1":
+            blockers.append("stage179_activation_disabled")
+        if confirmation != STAGE179_ACTIVATION_CONFIRM_TEXT:
+            blockers.append("stage179_activation_confirmation_missing")
+        if not phase_d_real_submit_ready:
+            blockers.append("phase_d_real_submit_not_ready")
+        if not stage927_ready and not defer_cycle_authorization:
+            blockers.append("stage927_not_ready")
+        if not kill_switch_clear:
+            blockers.append("kill_switch_not_clear")
+        if not broker_gates_fresh and not defer_cycle_authorization:
+            blockers.append("broker_gates_not_fresh")
+        if manifest_sha256 and phase_d_real_submit_ready:
+            blockers.extend(
+                validate_stage179_activation_receipt(
+                    activation_receipt_path,
+                    manifest_sha256=manifest_sha256,
+                    official_version=expected_official_version,
+                    capital=expected_capital,
+                    capital_label=expected_capital_label,
+                )
+            )
+        elif phase_d_real_submit_ready:
+            blockers.append("stage179_activation_receipt_unverifiable")
+
+        # AGENTS.md names Stage372/20w while the checked-in official config still
+        # names Stage847-C9/15w. Never choose an operator policy in code.
+        blockers.append("operator_policy_conflict_unresolved")
+
+    blockers_tuple = tuple(dict.fromkeys(blockers))
+    adapter_created = False
+    if not blockers_tuple and adapter_factory is not None:
+        adapter_factory()
+        adapter_created = True
+    return Stage179PreAdapterGateResult(
+        blockers=blockers_tuple,
+        manifest_sha256=manifest_sha256,
+        adapter_created=adapter_created,
+    )
 
 
 def _paths(run_id: str) -> dict[str, Path]:
@@ -200,7 +405,13 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame, env_rows: pd.Da
 def main() -> None:
     parser = argparse.ArgumentParser(description="Production-live CTP runtime preflight for official Phase D.")
     parser.add_argument("--wait-seconds", type=int, default=30)
+    parser.add_argument(
+        "--execution-profile",
+        choices=[item.value for item in ExecutionStrategyMode],
+        default=ExecutionStrategyMode.STAGE372_20W.value,
+    )
     args = parser.parse_args()
+    profile = resolve_preflight_execution_profile(args.execution_profile)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -210,12 +421,12 @@ def main() -> None:
 
     _check_row(
         checks,
-        check="official_live_profile_is_c9",
-        passed=OFFICIAL_LIVE_FAMILY_VERSION == "stage819_c9_intraday_stop_retry",
+        check="official_execution_profile_is_explicitly_registered",
+        passed=profile.profile_key == args.execution_profile,
         severity="block",
-        observed=f"{OFFICIAL_LIVE_VERSION}/{OFFICIAL_LIVE_FAMILY_VERSION}",
-        required="stage819_c9_intraday_stop_retry family",
-        blocker="official_live_profile_not_c9",
+        observed=f"{profile.profile_key}/{profile.official_version}",
+        required="explicit registered execution profile",
+        blocker="official_execution_profile_unregistered",
     )
     _check_row(
         checks,
@@ -361,8 +572,11 @@ def main() -> None:
     summary = {
         "model_tag": MODEL_TAG,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "official_live_version": OFFICIAL_LIVE_VERSION,
-        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": profile.profile_key,
+        "official_live_version": profile.official_version,
+        "official_live_alias": profile.alias,
+        "capital": profile.capital,
+        "capital_label": profile.capital_label,
         "preflight_status": preflight_status,
         "blocking_failure_count": int(len(blocking)),
         "warning_failure_count": int(len(warnings)),
