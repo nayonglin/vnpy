@@ -1989,6 +1989,393 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         self.assertEqual(0, base["broker_epoch_reconstruction_complete"])
         self.assertIn("trades_count_or_hash_mismatch", base["monitor_reason"])
 
+    def test_live_real_shadow_candidate_uses_exact_partial_ledger_fill_volume(self) -> None:
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            direction="short",
+        )
+        ledger = [{
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(self.entry_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "source": "stage901_pending_order",
+            "root_position_id": root,
+            "position_epoch_id": "epoch-partial",
+            "position_cycle_id": "cycle-partial",
+            "intent_role": "c9_initial_open",
+            "fill_price_source": "event_trade_weighted_avg",
+            "trade_volume_delta": 1.0,
+            "volume": 1.0,
+            "price": 1246.0,
+            "trade_fill_key": "CTP.T-partial",
+        }]
+
+        base = stage904._action_for_position(
+            {
+                "vt_symbol": "JM609.DCE", "direction": "short",
+                "volume": 2.0, "position_source": "shadow",
+            },
+            trades=pd.DataFrame(), broker_trades=pd.DataFrame(),
+            execution_ledger_rows=ledger,
+            entry_risk=pd.DataFrame([{
+                "date": self.target_date,
+                "contract_vt_symbol": "JM609.DCE",
+                "direction": "short", "stop_price": 1258.0,
+            }]),
+            ticks=self.ticks([(1, 1252.0)]),
+            target_date=self.target_date,
+            max_tick_age_seconds=30,
+            require_broker_fill_price=True,
+        )
+
+        self.assertEqual(1.0, base["volume"])
+        self.assertEqual("execution_ledger_current_cycle", base["position_source"])
+        self.assertEqual(1246.0, base["fill_price"])
+        self.assertNotIn(
+            "broker_or_execution_open_trade_fill_price_missing",
+            base["monitor_reason"],
+        )
+        close = {
+            "event_type": "filled_or_part_filled", "target_date": self.target_date,
+            "generated_at": self.iso(self.entry_at + timedelta(seconds=2)),
+            "vt_symbol": "JM609.DCE", "direction": "long", "offset": "close",
+            "source": "stage904_c9_intraday_close", "position_epoch_id": "epoch-partial",
+            "position_cycle_id": "cycle-partial",
+            "intent_role": "c9_initial_stop_close", "trade_volume_delta": 1.0,
+            "volume": 1.0, "price": 1258.0,
+        }
+        second_open = {
+            **ledger[0], "generated_at": self.iso(self.entry_at + timedelta(seconds=1)),
+            "trade_fill_key": "CTP.T-partial-2", "price": 1248.0,
+        }
+        after_partial_close = stage904._action_for_position(
+            {
+                "vt_symbol": "JM609.DCE", "direction": "short",
+                "volume": 2.0, "position_source": "shadow",
+            },
+            trades=pd.DataFrame(), broker_trades=pd.DataFrame(),
+            execution_ledger_rows=[ledger[0], second_open, close],
+            entry_risk=pd.DataFrame([{
+                "date": self.target_date, "contract_vt_symbol": "JM609.DCE",
+                "direction": "short", "stop_price": 1258.0,
+            }]),
+            ticks=self.ticks([(1, 1252.0)]), target_date=self.target_date,
+            max_tick_age_seconds=30, require_broker_fill_price=True,
+        )
+        self.assertEqual(1.0, after_partial_close["volume"])
+
+    def test_pre_fill_broker_snapshot_defers_to_post_snapshot_exact_ledger_fill(self) -> None:
+        generation = "11111111-2222-4333-8444-555555555555"
+        snapshot_at = self.entry_at
+        fill_at = snapshot_at + timedelta(seconds=1)
+        summary, manifest, evidence = self.complete_query_bundle(
+            trade_count=1,
+            generation=generation,
+            query_completed_at=snapshot_at,
+        )
+        broker_trades = pd.DataFrame([{
+            "query_generation_uuid": generation,
+            "vt_symbol": "JM609.DCE",
+            "vt_orderid": "CTP.1_2_3",
+            "order_mapping_complete": 1,
+            "broker_trade_identity": "ctp:9999:test:DCE:SYS-1:T-1",
+            "stable_trade_identity_complete": 1,
+            "direction": "short",
+            "offset": "open",
+            "price": 1246.0,
+            "volume": 1.0,
+            "datetime": self.iso(snapshot_at - timedelta(seconds=1)),
+        }])
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            direction="short",
+        )
+        ledger = [{
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(fill_at),
+            "broker_trade_at": self.iso(fill_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "source": "stage901_pending_order",
+            "root_position_id": root,
+            "position_epoch_id": "epoch-late-fill",
+            "position_cycle_id": "cycle-late-fill",
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+            "fill_price_source": "event_trade_weighted_avg",
+            "trade_volume_delta": 2.0,
+            "volume": 2.0,
+            "price": 1247.0,
+            "vt_tradeid": "CTP.late-fill",
+        }]
+
+        base = stage904._action_for_position(
+            {
+                "vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "volume": 1.0,
+                "position_source": "broker",
+                "broker_fill_price": 1246.0,
+            },
+            trades=pd.DataFrame(),
+            broker_trades=broker_trades,
+            execution_ledger_rows=ledger,
+            entry_risk=pd.DataFrame([{
+                "date": self.target_date,
+                "contract_vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "stop_price": 1258.0,
+            }]),
+            ticks=self.ticks([(1, 1252.0)]),
+            target_date=self.target_date,
+            max_tick_age_seconds=30,
+            require_broker_fill_price=True,
+            readonly_summary=summary,
+            readonly_bundle_manifest=manifest,
+            readonly_bundle_evidence=evidence,
+        )
+
+        self.assertEqual(2.0, base["volume"])
+        self.assertEqual("execution_ledger_current_cycle", base["position_source"])
+        self.assertEqual(1247.0, base["fill_price"])
+        self.assertEqual(1, base["broker_snapshot_precedes_ledger_fill"])
+        self.assertEqual(0, base["fresh_broker_ledger_residual_conflict"])
+        self.assertNotIn(
+            "fresh_broker_position_ledger_residual_conflict",
+            base["monitor_reason"],
+        )
+
+    def test_legacy_naive_fill_time_compares_as_shanghai_against_aware_query(self) -> None:
+        naive_fill = stage904._comparable_timestamp_ns(
+            "2026-07-21 09:00:01"
+        )
+        same_aware_fill = stage904._comparable_timestamp_ns(
+            "2026-07-21T09:00:01+08:00"
+        )
+        pre_fill_query = stage904._comparable_timestamp_ns(
+            "2026-07-21T09:00:00+08:00"
+        )
+        post_fill_query = stage904._comparable_timestamp_ns(
+            "2026-07-21T09:00:02+08:00"
+        )
+
+        self.assertEqual(naive_fill, same_aware_fill)
+        assert pre_fill_query is not None and naive_fill is not None
+        assert post_fill_query is not None
+        self.assertLess(pre_fill_query, naive_fill)
+        self.assertGreater(post_fill_query, naive_fill)
+
+    def test_post_snapshot_exact_close_uses_newer_ledger_residual(self) -> None:
+        open_at = self.entry_at
+        snapshot_at = open_at + timedelta(seconds=1)
+        close_at = snapshot_at + timedelta(seconds=1)
+        summary, manifest, evidence = self.complete_query_bundle(
+            trade_count=0,
+            query_completed_at=snapshot_at,
+        )
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            direction="short",
+        )
+        open_fill = {
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(open_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "source": "stage901_pending_order",
+            "root_position_id": root,
+            "position_epoch_id": "epoch-late-close",
+            "position_cycle_id": "cycle-late-close",
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+            "fill_price_source": "event_trade_weighted_avg",
+            "trade_volume_delta": 2.0,
+            "volume": 2.0,
+            "price": 1246.0,
+            "vt_tradeid": "CTP.open",
+        }
+        close_fill = {
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(close_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "long",
+            "offset": "close",
+            "source": "stage904_c9_intraday_close",
+            "position_epoch_id": "epoch-late-close",
+            "position_cycle_id": "cycle-late-close",
+            "intent_role": "c9_initial_stop_close",
+            "trade_volume_delta": 1.0,
+            "volume": 1.0,
+            "price": 1258.0,
+            "vt_tradeid": "CTP.close",
+        }
+        base = stage904._action_for_position(
+            {
+                "vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "volume": 2.0,
+                "position_source": "broker",
+                "broker_fill_price": 1246.0,
+            },
+            trades=pd.DataFrame(),
+            broker_trades=pd.DataFrame(),
+            execution_ledger_rows=[open_fill, close_fill],
+            entry_risk=pd.DataFrame([{
+                "date": self.target_date,
+                "contract_vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "stop_price": 1258.0,
+            }]),
+            ticks=self.ticks([(1, 1252.0)]),
+            target_date=self.target_date,
+            max_tick_age_seconds=30,
+            require_broker_fill_price=True,
+            readonly_summary=summary,
+            readonly_bundle_manifest=manifest,
+            readonly_bundle_evidence=evidence,
+        )
+
+        self.assertEqual(1.0, base["volume"])
+        self.assertEqual("execution_ledger_current_cycle", base["position_source"])
+        self.assertEqual(1, base["broker_snapshot_precedes_ledger_fill"])
+        self.assertEqual(self.iso(close_at), base["ledger_fill_observed_at"])
+
+    def test_post_fill_complete_broker_snapshot_conflict_fails_closed(self) -> None:
+        generation = "11111111-2222-4333-8444-555555555555"
+        fill_at = self.entry_at
+        snapshot_at = fill_at + timedelta(seconds=1)
+        summary, manifest, evidence = self.complete_query_bundle(
+            trade_count=1,
+            generation=generation,
+            query_completed_at=snapshot_at,
+        )
+        broker_trades = pd.DataFrame([{
+            "query_generation_uuid": generation,
+            "vt_symbol": "JM609.DCE",
+            "vt_orderid": "CTP.1_2_3",
+            "order_mapping_complete": 1,
+            "broker_trade_identity": "ctp:9999:test:DCE:SYS-1:T-1",
+            "stable_trade_identity_complete": 1,
+            "direction": "short",
+            "offset": "open",
+            "price": 1246.0,
+            "volume": 1.0,
+            "datetime": self.iso(fill_at - timedelta(seconds=1)),
+        }])
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            direction="short",
+        )
+        ledger = [{
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(fill_at),
+            "broker_trade_at": self.iso(fill_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "source": "stage901_pending_order",
+            "root_position_id": root,
+            "position_epoch_id": "epoch-conflict",
+            "position_cycle_id": "cycle-conflict",
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+            "fill_price_source": "event_trade_weighted_avg",
+            "trade_volume_delta": 2.0,
+            "volume": 2.0,
+            "price": 1247.0,
+            "vt_tradeid": "CTP.conflict-fill",
+        }]
+
+        base = stage904._action_for_position(
+            {
+                "vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "volume": 1.0,
+                "position_source": "broker",
+                "broker_fill_price": 1246.0,
+            },
+            trades=pd.DataFrame(),
+            broker_trades=broker_trades,
+            execution_ledger_rows=ledger,
+            entry_risk=pd.DataFrame([{
+                "date": self.target_date,
+                "contract_vt_symbol": "JM609.DCE",
+                "direction": "short",
+                "stop_price": 1258.0,
+            }]),
+            ticks=self.ticks([(1, 1252.0)]),
+            target_date=self.target_date,
+            max_tick_age_seconds=30,
+            require_broker_fill_price=True,
+            readonly_summary=summary,
+            readonly_bundle_manifest=manifest,
+            readonly_bundle_evidence=evidence,
+        )
+
+        self.assertEqual("block", base["monitor_action"])
+        self.assertEqual(0, base["broker_snapshot_precedes_ledger_fill"])
+        self.assertEqual(1, base["fresh_broker_ledger_residual_conflict"])
+        self.assertIn(
+            "fresh_broker_position_ledger_residual_conflict:broker=1.0;ledger=2.0",
+            base["monitor_reason"],
+        )
+
+    def test_ledger_only_candidate_tracks_late_fill_and_close_residual_without_ghost(self) -> None:
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date, vt_symbol="JM609.DCE", direction="short"
+        )
+        open1 = {
+            "event_type": "filled_or_part_filled", "target_date": self.target_date,
+            "generated_at": self.iso(self.entry_at), "vt_symbol": "JM609.DCE",
+            "direction": "short", "offset": "open", "source": "stage901_pending_order",
+            "root_position_id": root, "position_epoch_id": "epoch-ledger-only",
+            "position_cycle_id": "cycle-ledger-only", "intent_role": "c9_initial_open",
+            "fill_price_source": "event_trade_weighted_avg", "trade_volume_delta": 1.0,
+            "volume": 1.0, "price": 1246.0, "trade_fill_key": "T1",
+        }
+        open2 = {
+            **open1, "generated_at": self.iso(self.entry_at + timedelta(seconds=1)),
+            "price": 1248.0, "trade_fill_key": "T2",
+        }
+        close1 = {
+            "event_type": "filled_or_part_filled", "target_date": self.target_date,
+            "generated_at": self.iso(self.entry_at + timedelta(seconds=2)),
+            "vt_symbol": "JM609.DCE", "direction": "long", "offset": "close",
+            "source": "stage904_c9_intraday_close", "position_epoch_id": "epoch-ledger-only",
+            "position_cycle_id": "cycle-ledger-only",
+            "intent_role": "c9_initial_stop_close", "trade_volume_delta": 1.0,
+            "volume": 1.0, "price": 1258.0, "fill_price_source": "event_trade_weighted_avg",
+            "trade_fill_key": "C1",
+        }
+        empty = pd.DataFrame()
+
+        first = stage904._ledger_only_live_position_rows([open1], empty, self.target_date)
+        expanded = stage904._ledger_only_live_position_rows([open1, open2], empty, self.target_date)
+        residual = stage904._ledger_only_live_position_rows([open1, open2, close1], empty, self.target_date)
+        flat = stage904._ledger_only_live_position_rows(
+            [open1, open2, close1, {**close1, "generated_at": self.iso(self.entry_at + timedelta(seconds=3)), "trade_fill_key": "C2"}],
+            empty, self.target_date,
+        )
+
+        self.assertEqual(1.0, first[0]["volume"])
+        self.assertEqual(2.0, expanded[0]["volume"])
+        self.assertEqual(1247.0, expanded[0]["close_price"])
+        self.assertEqual(1.0, residual[0]["volume"])
+        self.assertEqual([], flat)
+
     def test_broker_epoch_reconstruction_blocks_incomplete_query_bundle(self) -> None:
         summary, manifest, evidence = self.complete_query_bundle(trade_count=1)
         for bundle in (summary["broker_query_bundle"], manifest):
@@ -4219,7 +4606,7 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
                     journal_path=journal_path,
                 )
 
-    def test_partial_initial_close_reissues_only_fresh_broker_residual(self) -> None:
+    def test_partial_initial_close_requires_terminal_identity_before_reissue(self) -> None:
         store = stage904._new_state_store(self.target_date)
         original = self.base()
         original["volume"] = 15.0
@@ -4233,8 +4620,203 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
             self.ticks([(1, 1252.0), (2, 1253.0)]),
             base=residual,
         )
+        self.assertEqual("block", second["monitor_action"])
+        self.assertIn(
+            "partial_close_residual_terminal_identity_missing",
+            second["monitor_reason"],
+        )
+
+    def test_zero_fill_terminal_mints_one_deterministic_second_close_action(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+        original = self.base()
+        original["volume"] = 15.0
+        first = self.apply(store, self.ticks([(1, 1252.0)]), base=original)
+        terminal = {
+            "event_type": "broker_order_query_terminal_observed",
+            "target_date": self.target_date,
+            "intent_id": first["action_id"],
+            "intent_fingerprint": "fp-first-close",
+            "vt_symbol": first["vt_symbol"],
+            "direction": "long",
+            "offset": "close",
+            "source": "stage904_c9_intraday_close",
+            "root_position_id": first["root_position_id"],
+            "position_epoch_id": first["position_epoch_id"],
+            "position_cycle_id": first["position_cycle_id"],
+            "intent_role": INITIAL_STOP_ACTION_ROLE,
+            "close_submit_attempt_no": 1,
+            "child_order_id": "fp-first-close:1/1",
+            "child_order_count": 1,
+            "vt_orderid": "CTP.1_2_3",
+            "fill_price_reconciliation_pending": 0,
+            "record_checksum": "a" * 64,
+        }
+        attempted = dict(original)
+        attempted["close_residual_attempt_no"] = 1
+        attempted["close_residual_terminal_identity"] = json.dumps(
+            ["a" * 64], separators=(",", ":")
+        )
+        second = self.apply(
+            store,
+            self.ticks([(1, 1252.0), (2, 1253.0)]),
+            ledger=[terminal],
+            base=attempted,
+        )
         self.assertEqual("close_dry_run", second["monitor_action"])
-        self.assertEqual(10.0, second["volume"])
+        self.assertNotEqual(first["action_id"], second["action_id"])
+        self.assertEqual(2, second["close_execution_attempt_no"])
+        replay = self.apply(
+            store,
+            self.ticks([(1, 1252.0), (2, 1253.0), (3, 1254.0)]),
+            ledger=[terminal],
+            base=attempted,
+        )
+        self.assertEqual(second["action_id"], replay["action_id"])
+
+    def test_action_for_position_derives_zero_fill_terminal_attempt_full_chain(self) -> None:
+        epoch = "epoch-full-chain"
+        root = stage904.generate_root_position_id(
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            direction="short",
+        )
+        cycle = f"{root}:cycle0"
+        open_fill = {
+            "event_type": "filled_or_part_filled",
+            "target_date": self.target_date,
+            "generated_at": self.iso(self.entry_at),
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "volume": 15.0,
+            "trade_volume_delta": 15.0,
+            "price": 1245.5,
+            "trade_fill_key": "ctp:DCE:open-full-chain",
+            "fill_price_source": "event_trade_weighted_avg",
+            "root_position_id": root,
+            "position_epoch_id": epoch,
+            "position_cycle_id": cycle,
+            "position_cycle_no": 0,
+            "intent_role": "c9_initial_open",
+        }
+        terminal = {
+            "event_type": "broker_order_query_terminal_observed",
+            "target_date": self.target_date,
+            "vt_symbol": "JM609.DCE",
+            "direction": "long",
+            "offset": "close",
+            "source": "stage904_c9_intraday_close",
+            "position_epoch_id": epoch,
+            "position_cycle_id": cycle,
+            "intent_role": INITIAL_STOP_ACTION_ROLE,
+            "intent_fingerprint": "fp-full-chain-close",
+            "close_submit_attempt_no": 1,
+            "child_order_id": "fp-full-chain-close:1/1",
+            "child_order_index": 0,
+            "child_order_count": 1,
+            "vt_orderid": "CTP.8_9_10",
+            "fill_price_reconciliation_pending": 0,
+            "record_checksum": "b" * 64,
+        }
+        kwargs = dict(
+            trades=pd.DataFrame(),
+            broker_trades=pd.DataFrame(),
+            entry_risk=pd.DataFrame(
+                [{
+                    "date": self.target_date,
+                    "contract_vt_symbol": "JM609.DCE",
+                    "direction": "short",
+                    "stop_price": 1258.0,
+                }]
+            ),
+            ticks=self.ticks([(1, 1252.0)]),
+            target_date=self.target_date,
+            max_tick_age_seconds=30,
+            require_broker_fill_price=True,
+        )
+        position = {
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "volume": 15.0,
+            "position_source": "shadow",
+        }
+        before = stage904._action_for_position(
+            position,
+            execution_ledger_rows=[open_fill],
+            **kwargs,
+        )
+        after = stage904._action_for_position(
+            position,
+            execution_ledger_rows=[open_fill, terminal],
+            **kwargs,
+        )
+        self.assertEqual(epoch, before["position_epoch_id"])
+        self.assertEqual(epoch, after["position_epoch_id"])
+        self.assertEqual(0, before["close_residual_attempt_no"])
+        self.assertEqual(1, after["close_residual_attempt_no"])
+        self.assertEqual('["' + "b" * 64 + '"]', after["close_residual_terminal_identity"])
+        store = stage904._new_state_store(self.target_date)
+        first = self.apply(store, self.ticks([(1, 1252.0)]), base=before)
+        second = self.apply(
+            store,
+            self.ticks([(1, 1252.0), (2, 1253.0)]),
+            ledger=[open_fill, terminal],
+            base=after,
+        )
+        self.assertNotEqual(first["action_id"], second["action_id"])
+        self.assertEqual(2, second["close_execution_attempt_no"])
+
+    def test_terminal_bundle_requires_all_children_and_exact_epoch(self) -> None:
+        base = {
+            "event_type": "broker_order_query_terminal_observed",
+            "target_date": self.target_date,
+            "vt_symbol": "JM609.DCE",
+            "direction": "long",
+            "offset": "close",
+            "position_epoch_id": "epoch-new",
+            "position_cycle_id": "cycle-new",
+            "intent_fingerprint": "fp-two-child",
+            "close_submit_attempt_no": 1,
+            "child_order_count": 2,
+            "fill_price_reconciliation_pending": 0,
+        }
+        child1 = {
+            **base,
+            "child_order_id": "fp-two-child:1/2",
+            "child_order_index": 0,
+            "vt_orderid": "CTP.1_1_1",
+            "record_checksum": "1" * 64,
+        }
+        child2 = {
+            **base,
+            "child_order_id": "fp-two-child:2/2",
+            "child_order_index": 1,
+            "vt_orderid": "CTP.1_1_2",
+            "record_checksum": "2" * 64,
+        }
+        kwargs = dict(
+            close_fills=[],
+            target_date=self.target_date,
+            vt_symbol="JM609.DCE",
+            original_direction="short",
+            position_epoch_id="epoch-new",
+            position_cycle_id="cycle-new",
+        )
+        self.assertEqual(
+            (0, ""),
+            stage904._partial_close_terminal_attempt_identity([child1], **kwargs),
+        )
+        attempt, identity = stage904._partial_close_terminal_attempt_identity(
+            [child1, child2], **kwargs
+        )
+        self.assertEqual(1, attempt)
+        self.assertEqual(["1" * 64, "2" * 64], json.loads(identity))
+        self.assertEqual(
+            (0, ""),
+            stage904._partial_close_terminal_attempt_identity(
+                [{**child1, "position_epoch_id": "epoch-old"}], **kwargs
+            ),
+        )
 
     def test_corrupt_store_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

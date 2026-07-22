@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import math
 import re
 import sys
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -163,13 +164,49 @@ def _fetch_mapping_rows(product_symbols: list[str], mapping_start: date, end: da
     auth = TqAuth(username, password)
     auth.login()
     tq_symbols = [row["continuous_symbol_tq"] for row in product_rows]
-    calendar = TqContCalendar(start_dt=mapping_start, end_dt=end, symbols=tq_symbols, headers=auth._base_headers)
+    calendar_end = end + timedelta(days=14)
+    calendar = TqContCalendar(
+        start_dt=mapping_start,
+        end_dt=calendar_end,
+        symbols=tq_symbols,
+        headers=auth._base_headers,
+    )
     calendar_df = calendar.df.copy()
+
+    trading_dates = sorted(
+        {
+            (value.date() if hasattr(value, "date") else value).isoformat()
+            for value in calendar_df["date"].tolist()
+        }
+    )
+    next_dates = [value for value in trading_dates if value > end.isoformat()]
+    if not next_dates:
+        raise RuntimeError(
+            "tqsdk_forward_trading_calendar_missing_next_session"
+        )
+    forward_calendar = {
+        "source": "tqsdk.TqContCalendar",
+        "calendar_start": mapping_start.isoformat(),
+        "calendar_end": calendar_end.isoformat(),
+        "completed_target_date": end.isoformat(),
+        "next_trading_session_date": next_dates[0],
+        "trading_date_count": len(trading_dates),
+        "trading_dates_sha256": hashlib.sha256(
+            json.dumps(
+                trading_dates,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+    }
 
     rows: list[dict[str, str]] = []
     product_by_tq = {row["continuous_symbol_tq"]: row for row in product_rows}
     for _, row in calendar_df.iterrows():
         trade_date = row["date"].date() if hasattr(row["date"], "date") else row["date"]
+        if trade_date > end:
+            continue
         for tq_symbol in tq_symbols:
             info = product_by_tq[tq_symbol]
             underlying = str(row[tq_symbol] or "")
@@ -188,6 +225,7 @@ def _fetch_mapping_rows(product_symbols: list[str], mapping_start: date, end: da
     mapping_rows = pd.DataFrame(rows)
     mapping_rows.sort_values(["date", "exchange", "product"], inplace=True)
     mapping_rows.reset_index(drop=True, inplace=True)
+    mapping_rows.attrs["forward_calendar"] = forward_calendar
     return mapping_rows
 
 
@@ -380,6 +418,7 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     product_symbols = _official_universe()
     mapping_rows = _fetch_mapping_rows(product_symbols, mapping_start, end_date)
+    forward_calendar = dict(mapping_rows.attrs.get("forward_calendar", {}))
     mapping_update = _update_mapping_file(mapping_rows, product_symbols, mapping_start, end_date)
     contract_symbols = _contracts_from_mapping(product_symbols, bar_start_date, end_date)
     status_df = _fetch_and_save_contract_bars(
@@ -409,6 +448,7 @@ def main() -> None:
         "elapsed_seconds": round(time.time() - started_at, 2),
         "credential_status": _credential_status(),
         "mapping_update": mapping_update,
+        "forward_trading_calendar": forward_calendar,
         "judgement": {
             "overfit_before": "否。Stage173只补主力映射和真实合约行情，不改信号、参数或筛选规则。",
             "continue_before": "是。Stage172证明回测仍停在2026-04-21，断点在数据链而不是日报模板。",

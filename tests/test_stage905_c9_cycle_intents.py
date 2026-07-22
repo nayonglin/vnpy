@@ -141,6 +141,8 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         *,
         pending_orders: pd.DataFrame | None = None,
         positions: pd.DataFrame | None = None,
+        stage260_executable: int = 0,
+        stage902_blocking: int = 0,
     ) -> object:
         return stage905.Stage905SnapshotInputs(
             pending_orders=(
@@ -173,12 +175,12 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
             ),
             orders=pd.DataFrame(),
             stage902_summary={
-                "blocking_failure_count": 0,
+                "blocking_failure_count": stage902_blocking,
                 "blocking_failure_count_for_reduce_close": 0,
-                "allow_new_open": 1,
+                "allow_new_open": int(stage902_blocking == 0),
                 "allow_reduce_close": 1,
             },
-            stage260_summary={"executable_count": 0},
+            stage260_summary={"executable_count": stage260_executable},
             execution_ledger_rows=(),
         )
 
@@ -928,6 +930,170 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         self.assertEqual(row["position_cycle_no"], 0)
         self.assertTrue(row["position_epoch_id"].startswith("c9pos-"))
 
+    def test_pending_identity_is_row_order_stable_date_scoped_and_preallocates_epoch(self) -> None:
+        pending = pd.DataFrame(
+            [
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "direction": "short",
+                    "offset": "open",
+                    "volume": 2,
+                    "price": 1245.5,
+                    "stop_price": 1258.0,
+                },
+                {
+                    "vt_symbol": "RB610.SHFE",
+                    "direction": "long",
+                    "offset": "open",
+                    "volume": 1,
+                    "price": 3300.0,
+                    "stop_price": 3250.0,
+                },
+            ]
+        )
+
+        first = stage905._pending_order_intents(pending, "2026-07-13")
+        reordered = stage905._pending_order_intents(
+            pending.iloc[::-1].reset_index(drop=True),
+            "2026-07-13",
+        )
+        next_date = stage905._pending_order_intents(pending, "2026-07-14")
+
+        first_ids = {row["vt_symbol"]: row["intent_id"] for row in first}
+        self.assertEqual(
+            first_ids,
+            {row["vt_symbol"]: row["intent_id"] for row in reordered},
+        )
+        self.assertNotEqual(first_ids["JM609.DCE"], next_date[0]["intent_id"])
+        self.assertTrue(first_ids["JM609.DCE"].startswith("STAGE905-PENDING-"))
+        self.assertEqual(
+            "preallocated_stage901_pending_order",
+            first[0]["position_epoch_source"],
+        )
+        self.assertEqual(
+            f"{first[0]['position_epoch_id']}:0",
+            first[0]["state_generation"],
+        )
+
+    def test_traced_pending_open_requires_exact_symbol_and_commits_real_spool(self) -> None:
+        action = self._traced_action(
+            monitor_action="retry_open_dry_run",
+            action_id="unused-action-id",
+        )
+        provenance = {
+            key: action[key]
+            for key in stage905.STAGE904_PROVENANCE_FIELDS
+            if key in action and key != "state_generation"
+        }
+        provenance["vt_symbol"] = "JM609.DCE"
+        pending = pd.DataFrame(
+            [
+                {
+                    "vt_symbol": "JM609.DCE",
+                    "direction": "short",
+                    "offset": "open",
+                    "volume": 2,
+                    "price": 1245.5,
+                    "stop_price": 1258.0,
+                },
+                {
+                    "vt_symbol": "RB610.SHFE",
+                    "direction": "long",
+                    "offset": "open",
+                    "volume": 1,
+                    "price": 3300.0,
+                    "stop_price": 3250.0,
+                },
+            ]
+        )
+        clock = _FakeClock(
+            epoch_ns=int(action["ingress_epoch_ns"]) + 1_000_000_000,
+            monotonic_ns=int(action["ingress_monotonic_ns"]) + 1_000_000_000,
+        )
+        generated_at = datetime.fromtimestamp(
+            clock.epoch_ns() / 1_000_000_000
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame(),
+            stage904_summary=self._stage904_summary(
+                generated_at,
+                action_count=0,
+                retry_count=0,
+            ),
+            snapshots=self._snapshots(
+                pending_orders=pending,
+                positions=pd.DataFrame(),
+                stage260_executable=1,
+            ),
+            pending_initial_open_provenance={"JM609.DCE": provenance},
+            clock=clock,
+            write_compat_outputs=False,
+        )
+
+        self.assertEqual(["JM609.DCE"], result.intents["vt_symbol"].tolist())
+        intent = dict(result.intents.iloc[0])
+        self.assertEqual("dry_run_order_request_payload_ready", intent["executor_status"])
+        trace = LatencyTrace.from_json(intent["trace_json"])
+        self.assertIn("stage905_intent_ready", trace.stamps)
+        self.assertNotIn("trace_json", json.loads(intent["spool_payload_json"]))
+        with tempfile.TemporaryDirectory() as tempdir:
+            connection = intent_spool.open_spool(Path(tempdir) / "pending.sqlite3")
+            try:
+                committed = intent_spool.commit_detector_batch(
+                    connection,
+                    consumer_id="stage941",
+                    expected_cursor=None,
+                    next_cursor=DurableTickCursor("feed-a", 12, 8192),
+                    intents=[intent],
+                    now_epoch_ns=clock.epoch_ns(),
+                    now_monotonic_ns=clock.monotonic_ns(),
+                    clock_domain_id=clock.clock_domain_id(),
+                )
+                self.assertEqual(1, committed.inserted_count)
+            finally:
+                connection.close()
+
+    def test_traced_pending_open_deadline_expiry_fails_closed(self) -> None:
+        action = self._traced_action(
+            monitor_action="retry_open_dry_run",
+            action_id="unused-action-id",
+        )
+        provenance = {
+            key: action[key]
+            for key in stage905.STAGE904_PROVENANCE_FIELDS
+            if key in action and key != "state_generation"
+        }
+        provenance["vt_symbol"] = "JM609.DCE"
+        clock = _FakeClock(
+            epoch_ns=int(action["deadline_epoch_ns"]),
+            monotonic_ns=int(action["deadline_monotonic_ns"]),
+        )
+        generated_at = datetime.fromtimestamp(
+            clock.epoch_ns() / 1_000_000_000
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame(),
+            stage904_summary=self._stage904_summary(
+                generated_at,
+                action_count=0,
+                retry_count=0,
+            ),
+            snapshots=self._snapshots(
+                pending_orders=pd.DataFrame(
+                    [{"vt_symbol": "JM609.DCE", "direction": "short", "offset": "open", "volume": 2, "price": 1245.5, "stop_price": 1258.0}]
+                ),
+                positions=pd.DataFrame(),
+                stage260_executable=1,
+            ),
+            pending_initial_open_provenance={"JM609.DCE": provenance},
+            clock=clock,
+            write_compat_outputs=False,
+        )
+
+        self.assertEqual("expired", result.intents.iloc[0]["executor_status"])
+
     def test_stage904_close_and_retry_metadata_are_preserved(self) -> None:
         actions = pd.DataFrame(
             [
@@ -1132,6 +1298,8 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         self.assertEqual("retry-action", payload["intent_id"])
         self.assertEqual("stage904_c9_intraday_retry_open", payload["source"])
         self.assertEqual("2026-07-13", payload["target_date"])
+        self.assertEqual("FAK", payload["type"])
+        self.assertEqual("stage179_open_fak_v1", payload["physical_tif_policy_version"])
         self.assertEqual(0, payload["manual_intervention_required"])
         self.assertEqual("blocked", blocked_summary["executor_status"])
         self.assertIn(

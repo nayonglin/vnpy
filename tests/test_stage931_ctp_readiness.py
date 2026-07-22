@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import sys
+import threading
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Callable
 
 
@@ -78,6 +80,23 @@ def _base_rows() -> dict[str, list[dict[str, Any]]]:
         "orders": [],
         "trades": [],
     }
+
+
+class _InstrumentableCallbackApi:
+    def onRspSettlementInfoConfirm(
+        self, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        return None
+
+    def onRspQryTradingAccount(
+        self, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        return None
+
+    def onRspQryInvestorPosition(
+        self, data: dict, error: dict, reqid: int, last: bool
+    ) -> None:
+        return None
 
 
 def _install_success_callback_hook(
@@ -272,7 +291,159 @@ def _open_request() -> stage931.OrderRequest:
     )
 
 
+class FakeFundsTdApi(_InstrumentableCallbackApi):
+    def __init__(
+        self,
+        clock: FakeClock,
+        *,
+        account_data: dict[str, Any] | None = None,
+        account_error: dict[str, Any] | None = None,
+        account_ret: int = 0,
+        account_callback: bool = True,
+        max_data: dict[str, Any] | None = None,
+        max_error: dict[str, Any] | None = None,
+        max_ret: int = 0,
+        max_callback: bool = True,
+        max_omit_fields: set[str] | None = None,
+        post_max_reqid_jump: int = 0,
+    ) -> None:
+        self.clock = clock
+        self.reqid = 100
+        self.brokerid = "fake-broker"
+        self.userid = "fake-user"
+        self.login_status = True
+        self.contract_inited = True
+        self.account_data = dict(
+            account_data
+            if account_data is not None
+            else {
+                "BrokerID": self.brokerid,
+                "AccountID": self.userid,
+                "Available": 100_000.0,
+                "CurrMargin": 20_000.0,
+            }
+        )
+        self.account_error = dict(account_error or {})
+        self.account_ret = int(account_ret)
+        self.account_callback = bool(account_callback)
+        self.max_data = dict(max_data or {})
+        self.max_error = dict(max_error or {})
+        self.max_ret = int(max_ret)
+        self.max_callback = bool(max_callback)
+        self.max_omit_fields = set(max_omit_fields or set())
+        self.post_max_reqid_jump = int(post_max_reqid_jump)
+        self.calls: list[dict[str, Any]] = []
+        self.send_order_api_called_count = 0
+        self.cancel_order_api_called_count = 0
+
+    def reqQryTradingAccount(
+        self, request: dict[str, Any], reqid: int
+    ) -> int:
+        self.calls.append(
+            {"kind": "account", "request": dict(request), "reqid": reqid}
+        )
+        if self.account_ret == 0 and self.account_callback:
+            self.onRspQryTradingAccount(
+                dict(self.account_data),
+                dict(self.account_error),
+                reqid,
+                True,
+            )
+        return self.account_ret
+
+    def reqQryMaxOrderVolume(
+        self, request: dict[str, Any], reqid: int
+    ) -> int:
+        self.calls.append(
+            {"kind": "max_volume", "request": dict(request), "reqid": reqid}
+        )
+        if self.max_ret == 0 and self.max_callback:
+            response = {
+                key: request[key]
+                for key in (
+                    "BrokerID",
+                    "InvestorID",
+                    "InstrumentID",
+                    "ExchangeID",
+                    "Direction",
+                    "OffsetFlag",
+                    "HedgeFlag",
+                    "InvestUnitID",
+                )
+            }
+            response["MaxVolume"] = 99
+            response.update(self.max_data)
+            for field_name in self.max_omit_fields:
+                response.pop(field_name, None)
+            self.onRspQryMaxOrderVolume(
+                response,
+                dict(self.max_error),
+                reqid,
+                True,
+            )
+        self.reqid += self.post_max_reqid_jump
+        return self.max_ret
+
+
 class Stage931CtpReadinessTests(unittest.TestCase):
+    @staticmethod
+    def _funds_rows() -> dict[str, Any]:
+        rows = _base_rows()
+        rows["max_order_volume_query_callbacks"] = []
+        rows["position_events_unscoped"] = []
+        rows["ticks"] = []
+        rows["_execution_event_ingress_counts"] = {
+            "order": 0,
+            "trade": 0,
+            "position": 0,
+        }
+        return rows
+
+    @staticmethod
+    def _physical_open_requests() -> list[stage931.OrderRequest]:
+        return [
+            stage931.OrderRequest(
+                symbol="jm2609",
+                exchange=stage931.Exchange.DCE,
+                direction=stage931.Direction.SHORT,
+                type=stage931.OrderType.FAK,
+                volume=volume,
+                price=1200.5,
+                offset=stage931.Offset.OPEN,
+                reference="test-final-open-funds",
+            )
+            for volume in (1, 2)
+        ]
+
+    def test_reconciliation_identity_containers_snapshot_concurrently(self) -> None:
+        lock = threading.RLock()
+        blockers = stage931._RecoverableReconciliationBlockers(lock)
+        pending = stage931._ThreadSafeIdentitySet(lock)
+        state = {
+            "reconciliation_lock": lock,
+            "reconciliation_blockers": blockers,
+            "reconciliation_pending_order_ids": pending,
+        }
+        failures: list[BaseException] = []
+
+        def mutate() -> None:
+            try:
+                for index in range(1000):
+                    vt_orderid = f"CTP.1_2_{index % 7}"
+                    pending.add(vt_orderid)
+                    blockers.append(f"query_timeout:{vt_orderid}")
+                    if index % 2:
+                        stage931._resolve_reconciliation_order(state, vt_orderid)
+            except BaseException as exc:
+                failures.append(exc)
+
+        worker = threading.Thread(target=mutate)
+        worker.start()
+        while worker.is_alive():
+            list(pending)
+            list(blockers)
+        worker.join()
+        self.assertEqual([], failures)
     def test_missing_or_stale_stage174_orders_are_diagnostic_only(self) -> None:
         missing = stage931._readonly_order_snapshot_diagnostic(
             None, max_age_seconds=180
@@ -646,7 +817,7 @@ class Stage931CtpReadinessTests(unittest.TestCase):
         self.assertIn("ctp_td_login_live_missing", final_blockers)
 
     def test_callback_monkeypatches_restore_after_exception(self) -> None:
-        class FakeCallbackApi:
+        class FakeCallbackApi(_InstrumentableCallbackApi):
             def onRspSettlementInfoConfirm(self, data: dict, error: dict, reqid: int, last: bool) -> str:
                 return "settlement"
 
@@ -670,6 +841,12 @@ class Stage931CtpReadinessTests(unittest.TestCase):
             FakeCallbackApi.reqOrderInsert,
         )
         rows = _base_rows()
+        native_order: list[tuple[str, int]] = []
+        rows["_before_native_order_insert"] = (
+            lambda _api, data, reqid: native_order.append(
+                (str(data.get("OrderRef", "")), reqid)
+            )
+        )
 
         with self.assertRaisesRegex(RuntimeError, "boom"):
             with stage931._instrument_ctp_readiness_callbacks(FakeCallbackApi, rows):
@@ -689,9 +866,13 @@ class Stage931CtpReadinessTests(unittest.TestCase):
                             ],
                             "request_ret": -2,
                             "exception": "",
+                            "front_id": "",
+                            "session_id": "",
+                            "order_ref": "",
                         }
                     ],
                 )
+                self.assertEqual([("", 77)], native_order)
                 raise RuntimeError("boom")
 
         self.assertIs(FakeCallbackApi.onRspSettlementInfoConfirm, originals[0])
@@ -699,6 +880,225 @@ class Stage931CtpReadinessTests(unittest.TestCase):
         self.assertIs(FakeCallbackApi.onRspQryInvestorPosition, originals[2])
         self.assertIs(FakeCallbackApi.onRspQryOrder, originals[3])
         self.assertIs(FakeCallbackApi.reqOrderInsert, originals[4])
+
+    def test_native_order_identity_hook_runs_before_req_order_insert(self) -> None:
+        order: list[str] = []
+
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            frontid = 11
+            sessionid = 22
+
+            def reqOrderInsert(self, data: dict, reqid: int) -> int:
+                order.append("native")
+                return 0
+
+        rows = _base_rows()
+        rows["_before_native_order_insert"] = (
+            lambda _api, data, reqid: order.append(
+                f"durable:{data['OrderRef']}:{reqid}"
+            )
+        )
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            ret = FakeCallbackApi().reqOrderInsert({"OrderRef": "33"}, 44)
+
+        self.assertEqual(0, ret)
+        self.assertEqual(["durable:33:44", "native"], order)
+        self.assertEqual("11", rows["order_insert_requests"][0]["front_id"])
+        self.assertEqual("22", rows["order_insert_requests"][0]["session_id"])
+        self.assertEqual("33", rows["order_insert_requests"][0]["order_ref"])
+
+    def test_native_order_insert_holds_ingress_lock_through_native_boundary(
+        self,
+    ) -> None:
+        ingress_attempted = threading.Event()
+        ingress_complete = threading.Event()
+        begin_ingress = threading.Event()
+        observations: list[tuple[bool, int]] = []
+        workers: list[threading.Thread] = []
+        counter = {"order": 0}
+        ingress_lock = threading.RLock()
+
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            def reqOrderInsert(self, data: dict, reqid: int) -> int:
+                # The competing callback has attempted to enter after the
+                # final hook started.  It must still be blocked until this
+                # native boundary returns.
+                self.assert_native_boundary(data, reqid)
+                return 0
+
+            @staticmethod
+            def assert_native_boundary(_data: dict, _reqid: int) -> None:
+                if not ingress_attempted.wait(timeout=2.0):
+                    raise AssertionError("competing ingress did not start")
+                observations.append(
+                    (ingress_complete.is_set(), counter["order"])
+                )
+
+        rows = _base_rows()
+        rows["_execution_event_ingress_lock"] = ingress_lock
+
+        def before_native(*_args: object) -> None:
+            def competing_ingress() -> None:
+                begin_ingress.wait(timeout=2.0)
+                ingress_attempted.set()
+                with ingress_lock:
+                    counter["order"] += 1
+                    ingress_complete.set()
+
+            worker = threading.Thread(target=competing_ingress)
+            workers.append(worker)
+            worker.start()
+            begin_ingress.set()
+
+        rows["_before_native_order_insert"] = before_native
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            ret = FakeCallbackApi().reqOrderInsert({"OrderRef": "33"}, 44)
+
+        for worker in workers:
+            worker.join(timeout=2.0)
+            self.assertFalse(worker.is_alive())
+        self.assertEqual(0, ret)
+        self.assertEqual([(False, 0)], observations)
+        self.assertTrue(ingress_complete.is_set())
+        self.assertEqual(1, counter["order"])
+
+    def test_disconnect_invalidation_uses_same_native_ingress_boundary(
+        self,
+    ) -> None:
+        disconnect_attempted = threading.Event()
+        disconnect_observed = threading.Event()
+        workers: list[threading.Thread] = []
+        observations: list[bool] = []
+
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            def onFrontDisconnected(self, _reason: int) -> None:
+                return None
+
+            def reqOrderInsert(self, _data: dict, _reqid: int) -> int:
+                if not disconnect_attempted.wait(timeout=2.0):
+                    raise AssertionError("disconnect callback did not start")
+                observations.append(disconnect_observed.is_set())
+                return 0
+
+        rows = _base_rows()
+        rows["_execution_event_ingress_lock"] = threading.RLock()
+
+        def before_native(native_api: object, *_args: object) -> None:
+            def disconnect() -> None:
+                disconnect_attempted.set()
+                native_api.onFrontDisconnected(4097)
+
+            worker = threading.Thread(target=disconnect)
+            workers.append(worker)
+            worker.start()
+
+        rows["_before_native_order_insert"] = before_native
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi,
+            rows,
+            on_front_disconnected=(
+                lambda _reason: disconnect_observed.set()
+            ),
+        ):
+            ret = FakeCallbackApi().reqOrderInsert({"OrderRef": "33"}, 44)
+
+        for worker in workers:
+            worker.join(timeout=2.0)
+            self.assertFalse(worker.is_alive())
+        self.assertEqual(0, ret)
+        self.assertEqual([False], observations)
+        self.assertTrue(disconnect_observed.is_set())
+        self.assertEqual(1, rows["_stage179_transport_disconnect_count"])
+
+    def test_native_order_identity_hook_failure_prevents_native_call(self) -> None:
+        native_calls: list[int] = []
+
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            def reqOrderInsert(self, data: dict, reqid: int) -> int:
+                native_calls.append(reqid)
+                return 0
+
+        rows = _base_rows()
+
+        def fail_durable(*_args: object) -> None:
+            raise RuntimeError("durable-failed")
+
+        rows["_before_native_order_insert"] = fail_durable
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            with self.assertRaisesRegex(RuntimeError, "durable-failed"):
+                FakeCallbackApi().reqOrderInsert({"OrderRef": "33"}, 44)
+
+        self.assertEqual([], native_calls)
+        self.assertIn(
+            "durable-failed", rows["order_insert_requests"][0]["exception"]
+        )
+
+    def test_trade_query_identity_is_namespaced_by_exchange(self) -> None:
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            def onRspQryTrade(
+                self, data: dict, error: dict, reqid: int, last: bool
+            ) -> None:
+                return None
+
+        def trade(exchange: str, *, price: float = 100.0) -> dict[str, Any]:
+            return {
+                "BrokerID": "fake-broker",
+                "InvestorID": "fake-user",
+                "InstrumentID": "X2609",
+                "ExchangeID": exchange,
+                "OrderSysID": f"SYS-{exchange}",
+                "TradeID": "SAME-ID",
+                "Direction": "1",
+                "OffsetFlag": "0",
+                "TradeDate": "20260721",
+                "TradeTime": "09:00:01",
+                "Price": price,
+                "Volume": 1,
+            }
+
+        rows = _base_rows()
+        rows["_trade_query_epoch"] = {
+            "active_reqid": 77,
+            "complete_reqid": None,
+            "pending_callbacks": [],
+            "authoritative_trades": [],
+            "identity_blockers": [],
+        }
+        api = FakeCallbackApi()
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            api.onRspQryTrade(trade("DCE"), {}, 77, False)
+            api.onRspQryTrade(trade("SHFE"), {}, 77, True)
+
+        epoch = rows["_trade_query_epoch"]
+        self.assertEqual([], epoch["identity_blockers"])
+        self.assertEqual(2, len(epoch["authoritative_trades"]))
+
+        rows = _base_rows()
+        rows["_trade_query_epoch"] = {
+            "active_reqid": 78,
+            "complete_reqid": None,
+            "pending_callbacks": [],
+            "authoritative_trades": [],
+            "identity_blockers": [],
+        }
+        api = FakeCallbackApi()
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            api.onRspQryTrade(trade("DCE"), {}, 78, False)
+            api.onRspQryTrade(trade("DCE", price=101.0), {}, 78, True)
+        self.assertIn(
+            "final_trade_query_duplicate_trade_identity",
+            rows["_trade_query_epoch"]["identity_blockers"],
+        )
 
     def test_position_callbacks_publish_only_complete_active_query_epoch(self) -> None:
         forwarded: list[tuple[str, int, bool]] = []
@@ -873,6 +1273,15 @@ class Stage931CtpReadinessTests(unittest.TestCase):
         self.assertEqual(
             [call["reqid"] for call in td_api.calls], [51, 52, 53]
         )
+        self.assertEqual(
+            {
+                "broker_id": "fake-broker",
+                "investor_id": "fake-user",
+                "td_reqid_before_batch": 53,
+                "ctp_last_query_monotonic": td_api.calls[2]["at"],
+            },
+            snapshot["query_watermark"],
+        )
         self.assertGreaterEqual(td_api.calls[0]["at"], 1.1 - 1e-9)
         self.assertGreaterEqual(
             td_api.calls[1]["at"] - td_api.calls[0]["at"], 1.1 - 1e-9
@@ -893,6 +1302,19 @@ class Stage931CtpReadinessTests(unittest.TestCase):
                 td_api, rows, readiness_state
             ),
             [],
+        )
+        td_api.reqid += 1
+        self.assertTrue(
+            any(
+                "physical_batch_td_reqid_not_exact_owned_sequence"
+                in blocker
+                for blocker in stage931._physical_batch_query_watermark_blockers(
+                    td_api,
+                    rows,
+                    snapshot["query_watermark"],
+                    owned_native_insert_count=0,
+                )
+            )
         )
 
     def test_final_snapshot_stable_historical_terminal_order_passes(self) -> None:
@@ -1240,6 +1662,516 @@ class Stage931CtpReadinessTests(unittest.TestCase):
             ),
             snapshot["blockers"],
         )
+
+    def test_final_open_funds_gate_binds_raw_account_and_total_broker_capacity(self) -> None:
+        clock = FakeClock()
+        rows = self._funds_rows()
+        td_api = FakeFundsTdApi(clock, max_data={"MaxVolume": 3})
+        readiness = stage931.CtpReadinessState(account_required=True)
+        requests = self._physical_open_requests()
+
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeFundsTdApi, rows
+        ):
+            gate = stage931._final_open_funds_margin_gate(
+                td_api,
+                rows,
+                requests,
+                max_wait_seconds=5.0,
+                readiness_state=readiness,
+                monotonic=clock.monotonic,
+                sleeper=clock.sleep,
+            )
+
+        self.assertTrue(gate["confirmed"], gate["blockers"])
+        self.assertEqual("confirmed", gate["status"])
+        self.assertEqual(2, gate["query_api_called_count"])
+        self.assertEqual(3, gate["max_volume_queries"][0]["required_volume"])
+        self.assertEqual(3, gate["max_volume_queries"][0]["max_volume"])
+        self.assertEqual(100_000.0, gate["account"]["available"])
+        self.assertEqual(20_000.0, gate["account"]["curr_margin"])
+        max_request = td_api.calls[1]["request"]
+        self.assertEqual(
+            {
+                "BrokerID": "fake-broker",
+                "InvestorID": "fake-user",
+                "InstrumentID": "jm2609",
+                "ExchangeID": "DCE",
+                "Direction": stage931.CTP_DIRECTION_SELL,
+                "OffsetFlag": stage931.CTP_OFFSET_OPEN,
+                "HedgeFlag": stage931.CTP_HEDGE_SPECULATION,
+                "InvestUnitID": "",
+                "MaxVolume": 0,
+            },
+            max_request,
+        )
+        self.assertEqual(gate["account"]["reqid"], readiness.expected_account_reqid)
+        self.assertEqual(
+            [],
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, requests, gate
+            ),
+        )
+        self.assertEqual(0, td_api.send_order_api_called_count)
+        self.assertEqual(0, td_api.cancel_order_api_called_count)
+
+        td_api.reqid += 1
+        self.assertIn(
+            "final_open_funds_td_reqid_watermark_changed",
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, requests, gate
+            ),
+        )
+        td_api.reqid -= 1
+        rows["_ctp_last_query_monotonic"] = float(
+            rows["_ctp_last_query_monotonic"]
+        ) + 0.001
+        self.assertIn(
+            "final_open_funds_query_watermark_changed",
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, requests, gate
+            ),
+        )
+        rows["_ctp_last_query_monotonic"] = gate["query_watermark"][
+            "ctp_last_query_monotonic"
+        ]
+        requests[0].price += 0.5
+        self.assertIn(
+            "final_open_funds_request_bundle_changed",
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, requests, gate
+            ),
+        )
+
+    def test_open_funds_watermark_does_not_absorb_unowned_reqid_jump(self) -> None:
+        clock = FakeClock()
+        rows = self._funds_rows()
+        td_api = FakeFundsTdApi(
+            clock,
+            max_data={"MaxVolume": 3},
+            post_max_reqid_jump=1,
+        )
+        requests = self._physical_open_requests()
+
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeFundsTdApi, rows
+        ):
+            gate = stage931._final_open_funds_margin_gate(
+                td_api,
+                rows,
+                requests,
+                max_wait_seconds=5.0,
+                monotonic=clock.monotonic,
+                sleeper=clock.sleep,
+            )
+
+        self.assertTrue(gate["confirmed"], gate["blockers"])
+        self.assertEqual(102, gate["query_watermark"]["td_reqid_after"])
+        self.assertEqual(103, td_api.reqid)
+        self.assertIn(
+            "final_open_funds_td_reqid_watermark_changed",
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, requests, gate
+            ),
+        )
+
+    def test_final_open_funds_account_failure_matrix_is_zero_order_api(self) -> None:
+        cases = {
+            "available_missing": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "CurrMargin": 1.0,
+            }, {}, 0, True, "available_invalid"),
+            "available_nan": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": float("nan"),
+                "CurrMargin": 1.0,
+            }, {}, 0, True, "available_invalid"),
+            "available_sentinel": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": sys.float_info.max,
+                "CurrMargin": 1.0,
+            }, {}, 0, True, "available_invalid"),
+            "available_negative": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": -1.0,
+                "CurrMargin": 1.0,
+            }, {}, 0, True, "available_not_positive"),
+            "margin_negative": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": -1.0,
+            }, {}, 0, True, "curr_margin_negative"),
+            "margin_nan": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": float("nan"),
+            }, {}, 0, True, "curr_margin_invalid"),
+            "margin_sentinel": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": sys.float_info.max,
+            }, {}, 0, True, "curr_margin_invalid"),
+            "broker_mismatch": ({
+                "BrokerID": "other",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": 0.0,
+            }, {}, 0, True, "broker_identity_mismatch"),
+            "account_mismatch": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "other",
+                "Available": 1.0,
+                "CurrMargin": 0.0,
+            }, {}, 0, True, "account_identity_mismatch"),
+            "callback_error": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": 0.0,
+            }, {"ErrorID": 7, "ErrorMsg": "bad"}, 0, True, "error_ids"),
+            "request_ret": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": 0.0,
+            }, {}, -2, True, "request_ret=-2"),
+            "timeout": ({
+                "BrokerID": "fake-broker",
+                "AccountID": "fake-user",
+                "Available": 1.0,
+                "CurrMargin": 0.0,
+            }, {}, 0, False, "timeout"),
+        }
+        for name, (
+            account_data,
+            account_error,
+            account_ret,
+            callback,
+            expected,
+        ) in cases.items():
+            with self.subTest(name=name):
+                clock = FakeClock()
+                rows = self._funds_rows()
+                td_api = FakeFundsTdApi(
+                    clock,
+                    account_data=account_data,
+                    account_error=account_error,
+                    account_ret=account_ret,
+                    account_callback=callback,
+                )
+                with stage931._instrument_ctp_readiness_callbacks(
+                    FakeFundsTdApi, rows
+                ):
+                    gate = stage931._final_open_funds_margin_gate(
+                        td_api,
+                        rows,
+                        self._physical_open_requests(),
+                        max_wait_seconds=0.25 if name == "timeout" else 3.0,
+                        monotonic=clock.monotonic,
+                        sleeper=clock.sleep,
+                    )
+                self.assertFalse(gate["confirmed"])
+                self.assertTrue(
+                    any(expected in blocker for blocker in gate["blockers"]),
+                    gate["blockers"],
+                )
+                self.assertEqual(
+                    [],
+                    [call for call in td_api.calls if call["kind"] == "max_volume"],
+                )
+                self.assertEqual(0, td_api.send_order_api_called_count)
+                self.assertEqual(0, td_api.cancel_order_api_called_count)
+
+    def test_warm_lifecycle_query_between_funds_and_send_blocks_before_api_slot(self) -> None:
+        clock = FakeClock()
+        rows = self._funds_rows()
+        td_api = FakeFundsTdApi(clock, max_data={"MaxVolume": 3})
+        requests = self._physical_open_requests()
+        api_slots: list[str] = []
+        sends: list[str] = []
+        gates: list[dict[str, Any]] = []
+
+        def fresh_bundle(_lease: object, _deadline: float) -> dict[str, Any]:
+            with stage931._instrument_ctp_readiness_callbacks(
+                FakeFundsTdApi, rows
+            ):
+                gate = stage931._final_open_funds_margin_gate(
+                    td_api,
+                    rows,
+                    requests,
+                    max_wait_seconds=3.0,
+                    monotonic=clock.monotonic,
+                    sleeper=clock.sleep,
+                )
+            self.assertTrue(gate["confirmed"], gate["blockers"])
+            gates.append(gate)
+            # Model any unrelated CTP query that wins the shared query lock
+            # after the funds gate and before the API-slot reservation.
+            td_api.reqid += 1
+            rows["_ctp_last_query_monotonic"] = clock.monotonic() + 0.001
+            return {
+                "blockers": [],
+                "ledger_fingerprint": "funds-query-watermark-fingerprint",
+            }
+
+        runtime = SimpleNamespace(
+            profile=SimpleNamespace(value="production-live")
+        )
+        session = stage931.CtpExecutionSession(
+            runtime=runtime,
+            service_generation="service-1",
+            official_version="official-v1",
+            capital=150000.0,
+            readiness_ttl_seconds=60.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=fresh_bundle,
+            pre_api_slot_blockers=lambda _lease: (
+                stage931._open_funds_gate_consistency_blockers(
+                    td_api, rows, requests, gates[-1]
+                )
+            ),
+            reserve_api_slot=lambda _lease: api_slots.append("slot") or "slot",
+            send_order=lambda _lease: sends.append("send") or "CTP.1",
+            pre_api_slot_safe_terminal=lambda *_args: {"appended": True},
+            monotonic=clock.monotonic,
+            epoch_ns=lambda: 1_000_000_000,
+        )
+        session.connect()
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(intent_id="intent-open")
+        )
+        result = session.execute_with_readiness(
+            readiness=session.readiness_lease(now_epoch_ns=1_000_000_000),
+            lease=lease,
+            hard_deadline_monotonic=10.0,
+        )
+
+        self.assertEqual("no_side_effect_retryable", result.disposition)
+        self.assertIn(
+            "final_open_funds_td_reqid_watermark_changed",
+            result.blockers,
+        )
+        self.assertIn(
+            "final_open_funds_query_watermark_changed",
+            result.blockers,
+        )
+        self.assertEqual([], api_slots)
+        self.assertEqual([], sends)
+        self.assertEqual(0, session.api_slot_call_count)
+        self.assertEqual(0, session.send_order_call_count)
+        self.assertEqual(0, td_api.send_order_api_called_count)
+        self.assertEqual(0, td_api.cancel_order_api_called_count)
+
+    def test_final_open_max_volume_failure_matrix_is_zero_order_api(self) -> None:
+        identity_fields = {
+            "BrokerID": "other-broker",
+            "InvestorID": "other-user",
+            "InstrumentID": "other2609",
+            "ExchangeID": "SHFE",
+            "Direction": stage931.CTP_DIRECTION_BUY,
+            "OffsetFlag": "1",
+            "HedgeFlag": "3",
+            "InvestUnitID": "other-unit",
+        }
+        cases: list[tuple[str, dict[str, Any], dict[str, Any], int, bool, str]] = [
+            ("insufficient", {"MaxVolume": 2}, {}, 0, True, "insufficient"),
+            ("nan", {"MaxVolume": float("nan")}, {}, 0, True, "value_invalid"),
+            ("negative", {"MaxVolume": -1}, {}, 0, True, "value_invalid"),
+            ("callback_error", {}, {"ErrorID": 8}, 0, True, "error_ids"),
+            ("request_ret", {}, {}, -3, True, "request_ret=-3"),
+            ("timeout", {}, {}, 0, False, "timeout"),
+        ]
+        cases.extend(
+            (
+                f"identity_{field_name}",
+                {field_name: bad_value, "MaxVolume": 99},
+                {},
+                0,
+                True,
+                f"field={field_name}",
+            )
+            for field_name, bad_value in identity_fields.items()
+        )
+        for name, max_data, max_error, max_ret, callback, expected in cases:
+            with self.subTest(name=name):
+                clock = FakeClock()
+                rows = self._funds_rows()
+                td_api = FakeFundsTdApi(
+                    clock,
+                    max_data=max_data,
+                    max_error=max_error,
+                    max_ret=max_ret,
+                    max_callback=callback,
+                )
+                with stage931._instrument_ctp_readiness_callbacks(
+                    FakeFundsTdApi, rows
+                ):
+                    gate = stage931._final_open_funds_margin_gate(
+                        td_api,
+                        rows,
+                        self._physical_open_requests(),
+                        max_wait_seconds=3.0,
+                        monotonic=clock.monotonic,
+                        sleeper=clock.sleep,
+                    )
+                self.assertFalse(gate["confirmed"])
+                self.assertTrue(
+                    any(expected in blocker for blocker in gate["blockers"]),
+                    gate["blockers"],
+                )
+                self.assertEqual(0, td_api.send_order_api_called_count)
+                self.assertEqual(0, td_api.cancel_order_api_called_count)
+
+    def test_final_open_max_volume_missing_identity_field_matrix_is_zero_order_api(self) -> None:
+        for field_name in (
+            "BrokerID",
+            "InvestorID",
+            "InstrumentID",
+            "ExchangeID",
+            "Direction",
+            "OffsetFlag",
+            "HedgeFlag",
+            "InvestUnitID",
+        ):
+            with self.subTest(field_name=field_name):
+                clock = FakeClock()
+                rows = self._funds_rows()
+                td_api = FakeFundsTdApi(
+                    clock,
+                    max_data={"MaxVolume": 99},
+                    max_omit_fields={field_name},
+                )
+                with stage931._instrument_ctp_readiness_callbacks(
+                    FakeFundsTdApi, rows
+                ):
+                    gate = stage931._final_open_funds_margin_gate(
+                        td_api,
+                        rows,
+                        self._physical_open_requests(),
+                        max_wait_seconds=3.0,
+                        monotonic=clock.monotonic,
+                        sleeper=clock.sleep,
+                    )
+
+                self.assertFalse(gate["confirmed"])
+                self.assertTrue(
+                    any(
+                        f"field={field_name}" in blocker
+                        and "actual=<missing>" in blocker
+                        for blocker in gate["blockers"]
+                    ),
+                    gate["blockers"],
+                )
+                self.assertEqual(0, td_api.send_order_api_called_count)
+                self.assertEqual(0, td_api.cancel_order_api_called_count)
+
+    def test_protective_close_bypasses_all_funds_queries(self) -> None:
+        class NoFundsQueryApi:
+            calls = 0
+
+            def reqQryTradingAccount(self, *_args: object) -> int:
+                self.calls += 1
+                raise AssertionError("CLOSE must not query account funds")
+
+            def reqQryMaxOrderVolume(self, *_args: object) -> int:
+                self.calls += 1
+                raise AssertionError("CLOSE must not query max volume")
+
+        td_api = NoFundsQueryApi()
+        rows = self._funds_rows()
+        request = stage931.OrderRequest(
+            symbol="jm2609",
+            exchange=stage931.Exchange.DCE,
+            direction=stage931.Direction.LONG,
+            type=stage931.OrderType.LIMIT,
+            volume=3,
+            price=1200.5,
+            offset=stage931.Offset.CLOSE,
+            reference="test-protective-close-funds-bypass",
+        )
+
+        gate = stage931._final_open_funds_margin_gate(
+            td_api, rows, [request], max_wait_seconds=0.0
+        )
+
+        self.assertTrue(gate["confirmed"])
+        self.assertEqual("bypassed_close_only", gate["status"])
+        self.assertEqual(1, gate["bypassed_close_only"])
+        self.assertEqual(0, gate["query_api_called_count"])
+        self.assertEqual(0, td_api.calls)
+        self.assertEqual(
+            [],
+            stage931._open_funds_gate_consistency_blockers(
+                td_api, rows, [request], {}
+            ),
+        )
+
+    def test_warm_lifecycle_insufficient_max_volume_blocks_before_api_slot(self) -> None:
+        clock = FakeClock()
+        rows = self._funds_rows()
+        td_api = FakeFundsTdApi(clock, max_data={"MaxVolume": 2})
+        api_slots: list[str] = []
+        sends: list[str] = []
+
+        def fresh_bundle(_lease: object, _deadline: float) -> dict[str, Any]:
+            with stage931._instrument_ctp_readiness_callbacks(
+                FakeFundsTdApi, rows
+            ):
+                gate = stage931._final_open_funds_margin_gate(
+                    td_api,
+                    rows,
+                    self._physical_open_requests(),
+                    max_wait_seconds=3.0,
+                    monotonic=clock.monotonic,
+                    sleeper=clock.sleep,
+                )
+            return {
+                "blockers": list(gate["blockers"]),
+                "ledger_fingerprint": "funds-gate-fingerprint",
+            }
+
+        runtime = SimpleNamespace(
+            profile=SimpleNamespace(value="production-live")
+        )
+        session = stage931.CtpExecutionSession(
+            runtime=runtime,
+            service_generation="service-1",
+            official_version="official-v1",
+            capital=150000.0,
+            readiness_ttl_seconds=60.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=fresh_bundle,
+            reserve_api_slot=lambda _lease: api_slots.append("slot") or "slot",
+            send_order=lambda _lease: sends.append("send") or "CTP.1",
+            pre_api_slot_safe_terminal=lambda *_args: {"appended": True},
+            monotonic=lambda: 0.0,
+            epoch_ns=lambda: 1_000_000_000,
+        )
+        session.connect()
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(intent_id="intent-open")
+        )
+        result = session.execute_with_readiness(
+            readiness=session.readiness_lease(now_epoch_ns=1_000_000_000),
+            lease=lease,
+            hard_deadline_monotonic=10.0,
+        )
+
+        self.assertEqual("no_side_effect_retryable", result.disposition)
+        self.assertIn("final_open_max_volume_insufficient", result.blockers[0])
+        self.assertEqual([], api_slots)
+        self.assertEqual([], sends)
+        self.assertEqual(0, td_api.send_order_api_called_count)
+        self.assertEqual(0, td_api.cancel_order_api_called_count)
 
 
 if __name__ == "__main__":

@@ -51,6 +51,19 @@ def _env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+def _source_commit() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD^{commit}"],
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    value = result.stdout.strip()
+    return value if result.returncode == 0 else ""
+
+
 def _readonly_order_api_evidence(summary: dict[str, Any]) -> dict[str, Any]:
     fields = (
         "send_order_api_attempted_count",
@@ -539,6 +552,8 @@ def main() -> None:
 
     summary = {
         "model_tag": MODEL_TAG,
+        "source_commit": _source_commit(),
+        "stage174_source_commit": readonly_summary.get("source_commit", ""),
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "mode": args.mode,
         "env_profile": args.env_profile,

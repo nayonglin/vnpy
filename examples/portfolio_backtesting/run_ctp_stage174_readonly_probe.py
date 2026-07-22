@@ -7,6 +7,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import subprocess
 import threading
 import time
 import urllib.request
@@ -32,6 +33,7 @@ from vnpy.trader.event import (
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
+REPO_ROOT: Path = PROJECT_DIR.parent.parent
 OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
 
 MODEL_TAG: str = "stage174_ctp_vnpy_readonly_probe_v1"
@@ -80,6 +82,19 @@ NATIVE_CTP_MUTATION_METHODS: tuple[str, ...] = (
     "reqTradingAccountPasswordUpdate",
     "reqUserPasswordUpdate",
 )
+
+
+def _source_commit() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD^{commit}"],
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    value = result.stdout.strip()
+    return value if result.returncode == 0 else ""
 
 CTP_ENV_KEYS: dict[str, str] = {
     "userid": "CTP_USERID",
@@ -2180,6 +2195,7 @@ def main() -> None:
         wait_seconds=int(args.wait_seconds),
         observe_reconnect=bool(args.observe_reconnect),
     )
+    result["source_commit"] = _source_commit()
     result["invocation_id"] = str(args.invocation_id).strip()
     rows = result.pop("rows")
     frames = {

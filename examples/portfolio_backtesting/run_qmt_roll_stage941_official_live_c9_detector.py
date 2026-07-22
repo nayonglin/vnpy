@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -13,6 +14,7 @@ import threading
 import time
 from typing import Any, Mapping
 import uuid
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -20,6 +22,7 @@ from qmt_roll_official_live_intent_spool import (
     CommitDetectorBatchResult,
     DetectorFeedRolloverEvidence,
     commit_detector_batch,
+    inspect_close_delivery_candidate,
     notify_executor,
     open_spool,
     read_detector_cursor,
@@ -34,7 +37,7 @@ from qmt_roll_official_live_tick_types import (
     JOURNAL_SCHEMA_FRAMED_V1,
 )
 from qmt_roll_official_live_time import Clock, SystemClock
-from qmt_roll_official_live_trace import LatencyTrace
+from qmt_roll_official_live_trace import ClockStamp, LatencyTrace
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
 import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -52,6 +55,7 @@ DEFAULT_TICK_HEARTBEAT_PATH = OUTPUT_DIR / (
 DEFAULT_SPOOL_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_intent_spool.sqlite3"
 DEFAULT_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_c9_detector_heartbeat.json"
 SYSTEM_CLOCK = SystemClock()
+SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 
 
 @dataclass(frozen=True, slots=True)
@@ -536,6 +540,292 @@ def _validate_batch_traces(batch: DurableTickBatch, *, clock: Clock) -> None:
         LatencyTrace.from_ingress_row(row, clock=clock)
 
 
+def _pending_initial_open_provenance(
+    batch: DurableTickBatch,
+    *,
+    clock: Clock,
+) -> dict[str, dict[str, Any]]:
+    """Bind each symbol to its newest record in this exact durable batch."""
+
+    cursor = batch.next_cursor
+    if cursor is None:
+        raise ValueError("pending_initial_open_durable_cursor_missing")
+    latest: dict[str, tuple[int, Mapping[str, Any]]] = {}
+    for raw in batch.records:
+        trace = LatencyTrace.from_ingress_row(raw, clock=clock)
+        if (
+            trace.feed_session_id != cursor.feed_session_id
+            or trace.ingress_sequence > cursor.ingress_sequence
+        ):
+            raise ValueError("pending_initial_open_durable_cursor_identity_mismatch")
+        previous = latest.get(trace.vt_symbol)
+        if previous is None or trace.ingress_sequence > previous[0]:
+            latest[trace.vt_symbol] = (trace.ingress_sequence, raw)
+
+    provenance: dict[str, dict[str, Any]] = {}
+    for vt_symbol, (_, raw) in latest.items():
+        trace = LatencyTrace.from_ingress_row(raw, clock=clock).record_stamp(
+            "stage904_detected",
+            ClockStamp.from_clock(clock),
+        )
+        ingress = trace.stamps["gateway_ingress"]
+        ingress_local = datetime.fromtimestamp(
+            ingress.epoch_ns / 1_000_000_000,
+            tz=SHANGHAI_TZ,
+        )
+        window_expiry_epoch_ns = 0
+        window_label = ""
+        if ingress_local.weekday() < 5:
+            for label, start_hour, start_minute, end_hour, end_minute in (
+                ("day_open", 9, 0, 9, 5),
+                ("night_open", 21, 0, 21, 5),
+            ):
+                start = ingress_local.replace(
+                    hour=start_hour, minute=start_minute, second=0, microsecond=0
+                )
+                end = ingress_local.replace(
+                    hour=end_hour, minute=end_minute, second=0, microsecond=0
+                )
+                if start <= ingress_local < end:
+                    window_expiry_epoch_ns = int(
+                        end.timestamp() * 1_000_000_000
+                    )
+                    window_label = label
+                    break
+        # A pre-open or late tick must not consume the stable Stage901 ID.
+        # The same pending order remains eligible for a later in-window batch.
+        if not window_expiry_epoch_ns:
+            continue
+        provenance[vt_symbol] = {
+            "vt_symbol": vt_symbol,
+            "trace_json": trace.to_json(),
+            "trace_id": trace.trace_id,
+            "source_feed_session_id": trace.feed_session_id,
+            "source_ingress_sequence": trace.ingress_sequence,
+            "source_symbol_sequence": trace.symbol_sequence,
+            "ingress_epoch_ns": ingress.epoch_ns,
+            "ingress_monotonic_ns": ingress.monotonic_ns,
+            "deadline_epoch_ns": trace.deadline_epoch_ns,
+            "deadline_monotonic_ns": trace.deadline_monotonic_ns,
+            "initial_open_ingress_window": window_label,
+            "initial_open_window_expiry_epoch_ns": window_expiry_epoch_ns,
+            "durable_cursor_feed_session_id": cursor.feed_session_id,
+            "durable_cursor_ingress_sequence": cursor.ingress_sequence,
+            "durable_cursor_journal_byte_offset": cursor.journal_byte_offset,
+            "durable_cursor_journal_schema": cursor.journal_schema,
+        }
+    return provenance
+
+
+_CLOSE_TRIGGER_AUDIT_FIELDS = (
+    "trace_id",
+    "source_feed_session_id",
+    "source_ingress_sequence",
+    "source_symbol_sequence",
+    "ingress_epoch_ns",
+    "ingress_monotonic_ns",
+    "deadline_epoch_ns",
+    "deadline_monotonic_ns",
+)
+
+
+def _refresh_close_delivery_provenance(
+    stage904_result: Any,
+    batch: DurableTickBatch,
+    *,
+    clock: Clock,
+) -> Any:
+    """Authorize a latched protective close from this exact durable batch.
+
+    Stage904 deliberately keeps the original business stop trigger latched.  A
+    25-second trace deadline, however, is a delivery authorization and must not
+    permanently consume that business close when no native API call happened.
+    Bind every emitted close to the newest durable tick for its symbol while
+    retaining the original trigger identity for audit.  A batch without a tick
+    for the at-risk symbol is visibly blocked and cannot create an intent.
+    """
+
+    actions = getattr(stage904_result, "actions", None)
+    summary = getattr(stage904_result, "summary", None)
+    if not isinstance(actions, pd.DataFrame) or not isinstance(summary, Mapping):
+        raise TypeError("stage904_result_shape_invalid")
+    if actions.empty or "monitor_action" not in actions.columns:
+        return stage904_result
+    close_mask = actions["monitor_action"].astype(str).eq("close_dry_run")
+    if not bool(close_mask.any()):
+        return stage904_result
+    cursor = batch.next_cursor
+    if cursor is None:
+        raise ValueError("close_delivery_durable_cursor_missing")
+
+    latest: dict[str, tuple[int, Mapping[str, Any], LatencyTrace]] = {}
+    for raw in batch.records:
+        trace = LatencyTrace.from_ingress_row(raw, clock=clock)
+        if (
+            trace.feed_session_id != cursor.feed_session_id
+            or trace.ingress_sequence > cursor.ingress_sequence
+        ):
+            raise ValueError("close_delivery_durable_cursor_identity_mismatch")
+        previous = latest.get(trace.vt_symbol)
+        if previous is None or trace.ingress_sequence > previous[0]:
+            latest[trace.vt_symbol] = (trace.ingress_sequence, raw, trace)
+
+    refreshed_count = 0
+    missing_count = 0
+    action_rows: list[dict[str, Any]] = []
+    for raw_action in actions.to_dict(orient="records"):
+        action = dict(raw_action)
+        if _clean(action.get("monitor_action")) != "close_dry_run":
+            action_rows.append(action)
+            continue
+        vt_symbol = _clean(action.get("vt_symbol"))
+        latest_item = latest.get(vt_symbol)
+        if latest_item is None:
+            missing_count += 1
+            original_reason = _clean(action.get("monitor_reason"))
+            suffix = "close_delivery_requires_fresh_durable_symbol_tick"
+            action["monitor_action"] = "block"
+            action["monitor_reason"] = (
+                f"{original_reason};{suffix}" if original_reason else suffix
+            )
+            action["delivery_authorization_status"] = (
+                "blocked_no_fresh_durable_symbol_tick"
+            )
+            action_rows.append(action)
+            continue
+
+        for field_name in _CLOSE_TRIGGER_AUDIT_FIELDS:
+            value = action.get(field_name)
+            if value is not None and not (
+                isinstance(value, float) and pd.isna(value)
+            ):
+                action[f"business_trigger_{field_name}"] = value
+
+        trace = latest_item[2].record_stamp(
+            "stage904_detected",
+            ClockStamp.from_clock(clock),
+        )
+        ingress = trace.stamps["gateway_ingress"]
+        action.update(
+            {
+                "business_action_id": _clean(action.get("action_id")),
+                "delivery_trace_id": trace.trace_id,
+                "delivery_authorization_status": "fresh_durable_tick_ready",
+                "trace_json": trace.to_json(),
+                "trace_id": trace.trace_id,
+                "source_feed_session_id": trace.feed_session_id,
+                "source_ingress_sequence": trace.ingress_sequence,
+                "source_symbol_sequence": trace.symbol_sequence,
+                "ingress_epoch_ns": ingress.epoch_ns,
+                "ingress_monotonic_ns": ingress.monotonic_ns,
+                "deadline_epoch_ns": trace.deadline_epoch_ns,
+                "deadline_monotonic_ns": trace.deadline_monotonic_ns,
+                "durable_cursor_feed_session_id": cursor.feed_session_id,
+                "durable_cursor_ingress_sequence": cursor.ingress_sequence,
+                "durable_cursor_journal_byte_offset": cursor.journal_byte_offset,
+                "durable_cursor_journal_schema": cursor.journal_schema,
+            }
+        )
+        refreshed_count += 1
+        action_rows.append(action)
+
+    refreshed_actions = stage904._action_frame(action_rows)
+    refreshed_summary = dict(summary)
+    monitor_actions = refreshed_actions.get(
+        "monitor_action", pd.Series(dtype=str)
+    ).astype(str)
+    refreshed_summary.update(
+        {
+            "action_count": int(len(refreshed_actions)),
+            "close_dry_run_count": int(monitor_actions.eq("close_dry_run").sum()),
+            "retry_open_dry_run_count": int(
+                monitor_actions.eq("retry_open_dry_run").sum()
+            ),
+            "retry_watch_count": int(monitor_actions.eq("retry_watch").sum()),
+            "blocked_count": int(
+                monitor_actions.isin(["block", "retry_block"]).sum()
+            ),
+            "close_delivery_fresh_authorization_count": refreshed_count,
+            "close_delivery_missing_symbol_tick_count": missing_count,
+        }
+    )
+    if missing_count:
+        refreshed_summary["monitor_status"] = "intraday_monitor_blocked"
+    elif refreshed_count:
+        refreshed_summary["monitor_status"] = "intraday_monitor_close_dry_run"
+    return stage904.Stage904RunResult(
+        target_date=_clean(getattr(stage904_result, "target_date", "")),
+        monitor_run_id=_clean(getattr(stage904_result, "monitor_run_id", "")),
+        actions=refreshed_actions,
+        summary=refreshed_summary,
+        paths=getattr(stage904_result, "paths", {}),
+    )
+
+
+def _existing_stage901_pending_intent_ids(
+    connection: sqlite3.Connection,
+    *,
+    target_date: str,
+) -> set[str]:
+    return {
+        str(row[0])
+        for row in connection.execute(
+            "SELECT intent_id FROM intents WHERE source=? AND target_date=?",
+            ("stage901_pending_order", target_date),
+        )
+    }
+
+
+def _intents_for_detector_commit(
+    intents: list[dict[str, Any]],
+    *,
+    existing_stage901_pending_ids: set[str],
+    connection: sqlite3.Connection | None = None,
+) -> list[dict[str, Any]]:
+    accepted: list[dict[str, Any]] = []
+    for intent in intents:
+        source = _clean(intent.get("source"))
+        if source == "stage901_pending_order":
+            if _clean(intent.get("executor_status")) != (
+                "dry_run_order_request_payload_ready"
+            ):
+                continue
+            if _clean(intent.get("intent_id")) in existing_stage901_pending_ids:
+                continue
+        if source == "stage904_c9_intraday_close" and connection is not None:
+            disposition = inspect_close_delivery_candidate(
+                connection,
+                business_action_id=_clean(intent.get("action_id")),
+                candidate_intent_id=_clean(intent.get("intent_id")),
+            )
+            if disposition not in {
+                "first_delivery",
+                "idempotent_delivery",
+                "safe_zero_native_rearm",
+            }:
+                continue
+            if (
+                disposition == "safe_zero_native_rearm"
+                and _clean(intent.get("executor_status"))
+                != "dry_run_order_request_payload_ready"
+            ):
+                continue
+        accepted.append(intent)
+
+    def priority(intent: Mapping[str, Any]) -> tuple[int, str]:
+        source = _clean(intent.get("source"))
+        offset = _clean(intent.get("offset")).lower()
+        if offset == "close":
+            return (0, _clean(intent.get("intent_id")))
+        if source.startswith("stage904_c9_intraday_"):
+            return (1, _clean(intent.get("intent_id")))
+        if source == "stage901_pending_order":
+            return (2, _clean(intent.get("intent_id")))
+        return (3, _clean(intent.get("intent_id")))
+
+    return sorted(accepted, key=priority)
+
+
 def _unstamped_committed_intent_ids(connection: sqlite3.Connection) -> list[str]:
     return [
         str(row[0])
@@ -886,6 +1176,11 @@ def run_detector_once(
             write_compat_outputs=False,
             allow_partial_durable_batch=True,
         )
+        stage904_result = _refresh_close_delivery_provenance(
+            stage904_result,
+            batch,
+            clock=clock,
+        )
         try:
             after_stage904_heartbeat = _read_json_object(
                 config.tick_stream_heartbeat_path
@@ -912,14 +1207,25 @@ def run_detector_once(
             config.target_date,
             mode="dry-run",
             stage904_actions=stage904_result,
-            include_stage901_pending=False,
+            include_stage901_pending=True,
+            pending_initial_open_provenance=_pending_initial_open_provenance(
+                batch,
+                clock=clock,
+            ),
             clock=clock,
             write_compat_outputs=False,
         )
         intents_frame = stage905_result.intents
         if not isinstance(intents_frame, pd.DataFrame):
             raise TypeError("stage905_result_intents_must_be_dataframe")
-        intents = intents_frame.to_dict(orient="records")
+        intents = _intents_for_detector_commit(
+            intents_frame.to_dict(orient="records"),
+            existing_stage901_pending_ids=_existing_stage901_pending_intent_ids(
+                connection,
+                target_date=config.target_date,
+            ),
+            connection=connection,
+        )
         publication: dict[str, Any] | None = None
         if config.publish_compat_outputs:
             publication = _build_compat_publication(

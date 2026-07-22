@@ -30,6 +30,24 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 class Stage179RuntimeProfileTest(unittest.TestCase):
+    @staticmethod
+    def _runtime_binary_identity(root: Path) -> dict[str, object]:
+        return {
+            "python_sha256": "1" * 64,
+            "vnpy_ctp_extension_sha256s": {
+                "vnctpmd": "2" * 64,
+                "vnctptd": "3" * 64,
+            },
+            "formal_framework_executable_sha256s": {
+                "thostmduserapi_se": "4" * 64,
+                "thosttraderapi_se": "5" * 64,
+            },
+            "formal_framework_realpaths": [
+                str(root / ".py311/lib/python3.11/site-packages/vnpy_ctp/api/libs"),
+                str(root / ".py311/lib"),
+            ],
+        }
+
     def test_stage914_preflight_resolves_stage372_without_c9_global(self) -> None:
         profile = stage914.resolve_preflight_execution_profile("stage372-20w")
 
@@ -201,6 +219,11 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     "validate_stage179_activation_receipt",
                     return_value=(),
                 ),
+                patch.object(
+                    stage914,
+                    "_production_runtime_identity",
+                    return_value=self._runtime_binary_identity(root),
+                ),
             ):
                 result = stage914.evaluate_stage179_pre_adapter_gate(
                     resolved=resolved,
@@ -238,6 +261,11 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     stage914,
                     "validate_stage179_activation_receipt",
                     return_value=(),
+                ),
+                patch.object(
+                    stage914,
+                    "_production_runtime_identity",
+                    return_value=self._runtime_binary_identity(root),
                 ),
             ):
                 result = stage914.evaluate_stage179_pre_adapter_gate(
@@ -417,23 +445,24 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "receipt.json"
             payload = {
-                "schema_version": 1,
+                "schema_version": (
+                    stage914.STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION
+                ),
                 "manifest_sha256": "a" * 64,
                 "official_version": "official-v",
                 "capital": 200_000,
                 "capital_label": "20w",
                 "policy_decision": "approved",
                 "created_at_utc": "2026-07-18T11:00:00Z",
+                **self._runtime_binary_identity(Path(tmp)),
             }
-            encoded = json.dumps(
-                payload,
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-                allow_nan=False,
-            ).encode("utf-8")
-            payload["receipt_sha256"] = hashlib.sha256(encoded).hexdigest()
-            path.write_text(json.dumps(payload), encoding="utf-8")
+            payload["receipt_sha256"] = (
+                stage914.stage179_activation_receipt_digest(payload)
+            )
+            path.write_bytes(
+                stage914.serialize_stage179_activation_receipt(payload)
+            )
+            path.chmod(0o600)
 
             self.assertEqual(
                 (),
@@ -455,6 +484,71 @@ class Stage179RuntimeProfileTest(unittest.TestCase):
                     capital_label="20w",
                 ),
             )
+
+    def test_runtime_hash_drift_after_receipt_blocks_adapter_creation(self) -> None:
+        calls: list[str] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            resolved = self._production_live(root)
+            receipt = root / "receipt.json"
+            signed_identity = self._runtime_binary_identity(root)
+            payload = {
+                "schema_version": (
+                    stage914.STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION
+                ),
+                "manifest_sha256": "a" * 64,
+                "official_version": C9_15W_PROFILE.official_version,
+                "capital": C9_15W_PROFILE.capital,
+                "capital_label": C9_15W_PROFILE.capital_label,
+                "policy_decision": "approved",
+                "created_at_utc": "2026-07-18T11:00:00Z",
+                **signed_identity,
+            }
+            payload["receipt_sha256"] = (
+                stage914.stage179_activation_receipt_digest(payload)
+            )
+            receipt.write_bytes(
+                stage914.serialize_stage179_activation_receipt(payload)
+            )
+            receipt.chmod(0o600)
+            drifted_identity = dict(signed_identity)
+            drifted_identity["python_sha256"] = "9" * 64
+            with (
+                patch.object(
+                    stage914,
+                    "load_and_validate_release_manifest",
+                    return_value={"manifest_sha256": "a" * 64},
+                ),
+                patch.object(
+                    stage914,
+                    "_production_runtime_identity",
+                    return_value=drifted_identity,
+                ),
+            ):
+                result = stage914.evaluate_stage179_pre_adapter_gate(
+                    resolved=resolved,
+                    release_manifest_path=root / "release.json",
+                    repo_root=root,
+                    expected_official_version=C9_15W_PROFILE.official_version,
+                    expected_capital=C9_15W_PROFILE.capital,
+                    expected_capital_label=C9_15W_PROFILE.capital_label,
+                    expected_execution_profile=C9_15W_PROFILE.profile_key,
+                    environment={STAGE179_ACTIVATION_ENV: "1"},
+                    confirmation=STAGE179_ACTIVATION_CONFIRM_TEXT,
+                    activation_receipt_path=receipt,
+                    phase_d_real_submit_ready=True,
+                    stage927_ready=True,
+                    kill_switch_clear=True,
+                    broker_gates_fresh=True,
+                    adapter_factory=lambda: calls.append("adapter"),
+                )
+
+        self.assertIn(
+            "stage179_activation_receipt_runtime_binary_identity_mismatch",
+            result.blockers,
+        )
+        self.assertEqual([], calls)
+        self.assertFalse(result.adapter_created)
 
 
 if __name__ == "__main__":

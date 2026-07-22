@@ -3,8 +3,13 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 from datetime import datetime
+from io import BytesIO
+import hashlib
 import json
+import os
 from pathlib import Path
+import stat
+import tempfile
 from typing import Any
 
 import pandas as pd
@@ -17,6 +22,7 @@ import analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine as s847
 import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
 from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_pending_artifact import PENDING_ARTIFACT_SCHEMA_VERSION
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
@@ -491,7 +497,9 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
             "required_eval_dates": required_eval_dates,
             "missing_required_eval_dates": required_eval_dates,
         }
-    frame = pd.read_csv(path, encoding="utf-8-sig")
+    payload = path.read_bytes()
+    eligibility_sha256 = hashlib.sha256(payload).hexdigest()
+    frame = pd.read_csv(BytesIO(payload), encoding="utf-8-sig")
     strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
     if "strategy" in frame.columns:
         frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
@@ -500,6 +508,7 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
             "path": str(path),
             "exists": True,
             "rows": 0,
+            "eligibility_sha256": eligibility_sha256,
             "required_eval_dates": required_eval_dates,
             "missing_required_eval_dates": required_eval_dates,
         }
@@ -514,6 +523,7 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
         "path": str(path),
         "exists": True,
         "rows": int(len(frame)),
+        "eligibility_sha256": eligibility_sha256,
         "min_eval_date": frame["eval_date"].min().date().isoformat(),
         "max_eval_date": latest_date.date().isoformat(),
         "unique_eval_dates": int(frame["eval_date"].nunique()),
@@ -523,6 +533,168 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
             date for date in required_eval_dates if date not in available_eval_dates
         ],
     }
+
+
+def _csv_bytes(frame: pd.DataFrame) -> bytes:
+    return frame.to_csv(index=False).encode("utf-8-sig")
+
+
+def _json_bytes(payload: dict[str, Any]) -> bytes:
+    return (
+        json.dumps(
+            _json_safe(payload),
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
+def _write_private_temp(*, parent: Path, destination_name: str, payload: bytes) -> Path:
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{destination_name}.",
+        suffix=".tmp",
+        dir=parent,
+    )
+    temporary = Path(temporary_name)
+    try:
+        os.fchmod(descriptor, 0o600)
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
+        temporary.unlink(missing_ok=True)
+        raise
+    return temporary
+
+
+def _publish_execution_artifact_cohort(
+    *,
+    decision: dict[str, Any],
+    signal_plan: pd.DataFrame,
+    current_positions: pd.DataFrame,
+    pending_orders: pd.DataFrame,
+    profile=C9_15W_PROFILE,
+) -> tuple[dict[str, Any], pd.DataFrame, dict[str, Any]]:
+    """Publish the executable Stage901 inputs with the audit seal last.
+
+    Readers snapshot the audit before and after reading the other four files.
+    Replacing the audit last means an interrupted publication can only yield a
+    hash mismatch and fail closed; it cannot bless a mixed generation.
+    """
+
+    paths = {
+        "official_summary": profile.summary_path,
+        "signal_plan": profile.signal_plan_path,
+        "current_positions": profile.current_positions_path,
+        "pending_orders": profile.pending_orders_path,
+        "audit": profile.pending_orders_audit_path,
+    }
+    parents = {path.parent.resolve(strict=True) for path in paths.values()}
+    if len(parents) != 1:
+        raise ValueError("stage901_artifact_cohort_parent_mismatch")
+    parent = next(iter(parents))
+    parent_metadata = parent.lstat()
+    if (
+        stat.S_ISLNK(parent_metadata.st_mode)
+        or not stat.S_ISDIR(parent_metadata.st_mode)
+        or parent_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(parent_metadata.st_mode) & 0o022
+    ):
+        raise ValueError("stage901_artifact_cohort_parent_security_invalid")
+
+    target_date = _clean_text(decision.get("analysis_end"))
+    expected_identity = _official_live_identity()
+    if not target_date or any(
+        decision.get(key) != value for key, value in expected_identity.items()
+    ):
+        raise ValueError("stage901_artifact_cohort_identity_invalid")
+    seed_pending = pending_orders.copy()
+    seed_payloads = {
+        "official_summary": _json_bytes(decision),
+        "signal_plan": _csv_bytes(signal_plan),
+        "current_positions": _csv_bytes(current_positions),
+        "pending_orders": _csv_bytes(seed_pending),
+    }
+    cohort_seed = {
+        "target_date": target_date,
+        **expected_identity,
+        "generated_at": _clean_text(decision.get("generated_at")),
+        "artifact_sha256s": {
+            name: hashlib.sha256(payload).hexdigest()
+            for name, payload in seed_payloads.items()
+        },
+    }
+    cohort_id = hashlib.sha256(_json_bytes(cohort_seed)).hexdigest()
+
+    published_pending = pending_orders.copy()
+    row_identity = {
+        "cohort_id": cohort_id,
+        "target_date": target_date,
+        **expected_identity,
+    }
+    for key, value in row_identity.items():
+        published_pending[key] = value
+    published_decision = {
+        **decision,
+        "cohort_id": cohort_id,
+        "pending_order_count": int(len(published_pending)),
+        "pending_orders": published_pending.to_dict(orient="records"),
+    }
+    artifact_payloads = {
+        "official_summary": _json_bytes(published_decision),
+        "signal_plan": _csv_bytes(signal_plan),
+        "current_positions": _csv_bytes(current_positions),
+        "pending_orders": _csv_bytes(published_pending),
+    }
+    audit = {
+        "schema_version": PENDING_ARTIFACT_SCHEMA_VERSION,
+        "status": "ready",
+        "cohort_id": cohort_id,
+        "target_date": target_date,
+        **expected_identity,
+        **{
+            f"{name}_sha256": hashlib.sha256(payload).hexdigest()
+            for name, payload in artifact_payloads.items()
+        },
+        "pending_order_count": int(len(published_pending)),
+        "order_api_called_count": 0,
+        "publish_protocol": "four_artifacts_then_audit_generation_seal",
+    }
+    payloads = {**artifact_payloads, "audit": _json_bytes(audit)}
+    temporary_paths: dict[str, Path] = {}
+    try:
+        for name, payload in payloads.items():
+            temporary_paths[name] = _write_private_temp(
+                parent=parent,
+                destination_name=paths[name].name,
+                payload=payload,
+            )
+        for name in (
+            "official_summary",
+            "signal_plan",
+            "current_positions",
+            "pending_orders",
+        ):
+            os.replace(temporary_paths.pop(name), paths[name])
+        parent_fd = os.open(parent, os.O_RDONLY)
+        try:
+            os.fsync(parent_fd)
+            os.replace(temporary_paths.pop("audit"), paths["audit"])
+            os.fsync(parent_fd)
+        finally:
+            os.close(parent_fd)
+    finally:
+        for temporary in temporary_paths.values():
+            temporary.unlink(missing_ok=True)
+    return published_decision, published_pending, audit
 
 
 def _load_stage861_full_minute_bars(vt_symbols: set[str]) -> pd.DataFrame:
@@ -892,18 +1064,20 @@ def main() -> None:
     positions.to_csv(POSITIONS_PATH, index=False, encoding="utf-8-sig")
     product_margin.to_csv(PRODUCT_MARGIN_PATH, index=False, encoding="utf-8-sig")
     monthly.to_csv(MONTHLY_PATH, index=False, encoding="utf-8-sig")
-    current_positions.to_csv(CURRENT_POSITIONS_PATH, index=False, encoding="utf-8-sig")
     trades.to_csv(TRADES_PATH, index=False, encoding="utf-8-sig")
     entry_risk.to_csv(ENTRY_RISK_PATH, index=False, encoding="utf-8-sig")
     entry_candidates.to_csv(ENTRY_CANDIDATES_PATH, index=False, encoding="utf-8-sig")
     trade_events.to_csv(TRADE_EVENTS_PATH, index=False, encoding="utf-8-sig")
     intraday_events.to_csv(INTRADAY_EVENTS_PATH, index=False, encoding="utf-8-sig")
-    pending_orders.to_csv(PENDING_ORDERS_PATH, index=False, encoding="utf-8-sig")
-    signal_plan.to_csv(SIGNAL_PLAN_PATH, index=False, encoding="utf-8-sig")
     live_stop_events.to_csv(LIVE_STOP_ALIGNMENT_PATH, index=False, encoding="utf-8-sig")
     summary.to_csv(SUMMARY_PATH, index=False, encoding="utf-8-sig")
     cost.to_csv(COST_PATH, index=False, encoding="utf-8-sig")
-    DECISION_PATH.write_text(json.dumps(_json_safe(decision), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    decision, pending_orders, _artifact_audit = _publish_execution_artifact_cohort(
+        decision=decision,
+        signal_plan=signal_plan,
+        current_positions=current_positions,
+        pending_orders=pending_orders,
+    )
     _write_report(summary, cost, monthly, current_positions, signal_plan, pending_orders, decision)
     print(json.dumps(_json_safe(decision), ensure_ascii=False, indent=2))
 

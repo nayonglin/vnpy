@@ -71,6 +71,34 @@ class _LongLivedController:
 
 
 class Stage930FastLaneTest(unittest.TestCase):
+    def test_unknown_open_source_role_has_no_authorization_scope(self) -> None:
+        self.assertEqual(
+            ("", ""),
+            stage930._fast_lane_scope(
+                SimpleNamespace(
+                    intent_kind="open",
+                    source="stage999_unknown",
+                    intent_role="unknown_open",
+                )
+            ),
+        )
+
+    def test_live_real_persistent_detector_requires_broker_fill_price(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            log_path = Path(directory) / "detector.log"
+            with patch.object(stage930, "_managed_popen", return_value=SimpleNamespace()) as popen:
+                stage930._start_detector(
+                    args,
+                    {"command_log": log_path},
+                    target_date="2026-07-21",
+                    instance_id="detector-1",
+                )
+
+        self.assertIn("--require-broker-fill-price", popen.call_args.args[0])
+
     def test_launchd_provenance_requires_xpc_label_and_launchd_parent(self) -> None:
         with (
             patch.dict(
@@ -133,6 +161,147 @@ class Stage930FastLaneTest(unittest.TestCase):
             detector_restart_backoff_seconds=2.0,
             target_date="2026-07-16",
         )
+
+    def spool_candidate(
+        self,
+        *,
+        intent_id: str = "approved-intent",
+        payload_sha256: str = "a" * 64,
+        intent_kind: str = "open",
+        source: str = "stage901_pending_order",
+        intent_role: str = "c9_initial_open",
+        target_date: str = "2026-07-16",
+    ) -> SimpleNamespace:
+        return SimpleNamespace(
+            intent_id=intent_id,
+            payload_sha256=payload_sha256,
+            intent_kind=intent_kind,
+            intent_role=intent_role,
+            trace_id=f"trace-{intent_id}",
+            target_date=target_date,
+            source=source,
+            vt_symbol="JM609.DCE",
+            state_generation="epoch-1:0",
+            position_epoch_id="epoch-1",
+            root_position_id="root-1",
+            position_cycle_id="cycle-1",
+            spool_sequence=1,
+            state_revision=0,
+            deadline_epoch_ns=time.time_ns() + 20_000_000_000,
+            deadline_monotonic_ns=time.monotonic_ns() + 20_000_000_000,
+            clock_domain_id="test-clock",
+        )
+
+    def spool_snapshot(
+        self,
+        candidate: SimpleNamespace | None,
+        *,
+        inflight_count: int = 0,
+        side_effect_unknown_count: int = 0,
+    ) -> SimpleNamespace:
+        leased_count = max(0, inflight_count - side_effect_unknown_count)
+        return SimpleNamespace(
+            candidate=candidate,
+            inflight_count=inflight_count,
+            leased_count=leased_count,
+            sending_count=0,
+            side_effect_unknown_count=side_effect_unknown_count,
+            ready_close_count=int(
+                candidate is not None and candidate.intent_kind == "close"
+            ),
+            ready_open_count=int(
+                candidate is not None and candidate.intent_kind == "open"
+            ),
+            snapshot_digest="1" * 64,
+            cursor_digest="2" * 64,
+        )
+
+    def test_historical_unknown_is_not_an_active_native_submit(self) -> None:
+        historical_unknown = self.spool_snapshot(
+            self.spool_candidate(
+                intent_kind="close",
+                source="stage904_c9_intraday_close",
+                intent_role="c9_initial_stop_close",
+            ),
+            inflight_count=1,
+            side_effect_unknown_count=1,
+        )
+        active_lease = self.spool_snapshot(
+            self.spool_candidate(
+                intent_kind="close",
+                source="stage904_c9_intraday_close",
+                intent_role="c9_initial_stop_close",
+            ),
+            inflight_count=1,
+        )
+
+        self.assertEqual(0, stage930._active_submit_inflight_count(historical_unknown))
+        self.assertEqual(1, stage930._active_submit_inflight_count(active_lease))
+
+    def test_historical_unknown_does_not_block_protective_close_authorization(self) -> None:
+        args = self.args()
+        args.runtime_profile = "simnow"
+        args.poll_seconds = 30
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            runtime = stage930._stage179_runtime(args)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            candidate = self.spool_candidate(
+                intent_id="protective-close-after-unknown",
+                intent_kind="close",
+                source="stage904_c9_intraday_close",
+                intent_role="c9_initial_stop_close",
+            )
+            snapshot = self.spool_snapshot(
+                candidate,
+                inflight_count=1,
+                side_effect_unknown_count=1,
+            )
+            generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                with (
+                    patch.object(
+                        stage930,
+                        "_spool_authorization_snapshot",
+                        return_value=snapshot,
+                    ),
+                    patch.object(
+                        stage930,
+                        "_read_json",
+                        return_value={"model_tag": "stage902-test-evidence"},
+                    ),
+                ):
+                    result = stage930._publish_stage931_submit_authorization(
+                        args,
+                        target_date="2026-07-16",
+                        controller_summary={
+                            "generated_at": generated_at,
+                            "target_date": "2026-07-16",
+                            "stage905_ready_count": 1,
+                        },
+                        stage927_summary={
+                            "generated_at": generated_at,
+                            "real_submit_permitted": 1,
+                            "reduce_close_submit_permitted": 1,
+                        },
+                        tick_gate={"all_symbols_ready": 0},
+                        service_status={
+                            "submit_status": "warm_executor_ready",
+                            "readiness": {
+                                "status": "ready",
+                                "service_generation": "service-1",
+                                "connection_generation": "connection-1",
+                                "expires_epoch_ns": time.time_ns()
+                                + 3_000_000_000,
+                            },
+                        },
+                        reduce_close_only=True,
+                    )
+            finally:
+                stage930._STAGE931_SERVICE_RUNTIME = None
+
+        self.assertEqual(1, result["authorized"], result)
+        self.assertEqual("reduce_close_only", result["intent_scope"])
 
     def test_parser_defaults_to_legacy_detector_mode(self) -> None:
         args = stage930._build_parser().parse_args([])
@@ -723,6 +892,11 @@ class Stage930FastLaneTest(unittest.TestCase):
             patch.object(stage930, "_run_stage903", return_value={"summary": controller_summary}),
             patch.object(stage930, "_run_stage927", return_value={"summary": stage927_summary}),
             patch.object(stage930, "_managed_tick_stream_status", return_value=tick_gate),
+            patch.object(
+                stage930,
+                "_spool_authorization_snapshot",
+                return_value=self.spool_snapshot(self.spool_candidate()),
+            ),
             patch.object(stage930, "_ready_intents_close_only", return_value=False),
             patch.object(stage930, "_ready_reduce_close_count", return_value=0),
             patch.object(stage930, "_status_stage931_service", return_value=warm_status),
@@ -787,10 +961,32 @@ class Stage930FastLaneTest(unittest.TestCase):
                         }
                     ]
                 ).to_csv(intents_path, index=False)
-                with patch.object(
-                    stage930,
-                    "_stage905_intents_path",
-                    return_value=intents_path,
+                with (
+                    patch.object(
+                        stage930,
+                        "_stage905_intents_path",
+                        return_value=intents_path,
+                    ),
+                    patch.object(
+                        stage930,
+                        "_spool_authorization_snapshot",
+                        return_value=self.spool_snapshot(
+                            self.spool_candidate(
+                                source="stage904_c9_intraday_retry_open",
+                                intent_role="c9_retry_open_once",
+                            )
+                        ),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_tick_result_ingress_epoch_ns",
+                        return_value=time.time_ns(),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_read_json",
+                        return_value={"model_tag": "stage902-test-evidence"},
+                    ),
                 ):
                     result = stage930._publish_stage931_submit_authorization(
                         args,
@@ -799,6 +995,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
+                            "retry_open_submit_permitted": 1,
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -813,6 +1010,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         reduce_close_only=False,
                     )
 
+                exact = json.loads(
+                    Path(result["authorization_path"]).read_text(encoding="utf-8")
+                )["authorized_intents"][0]
                 blockers = validate_submit_authorization(
                     path=result["authorization_path"],
                     target_date="2026-07-16",
@@ -822,9 +1022,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                     service_generation="service-1",
                     connection_generation="connection-1",
                     now_epoch_ns=time.time_ns(),
-                    intent_id="approved-intent",
-                    payload_sha256="a" * 64,
-                    intent_kind="open",
+                    **exact,
                 )
             finally:
                 stage930._STAGE931_SERVICE_RUNTIME = None
@@ -854,10 +1052,33 @@ class Stage930FastLaneTest(unittest.TestCase):
             ).to_csv(intents_path, index=False)
             now_ns = time.time_ns()
             try:
-                with patch.object(
-                    stage930,
-                    "_stage905_intents_path",
-                    return_value=intents_path,
+                with (
+                    patch.object(
+                        stage930,
+                        "_stage905_intents_path",
+                        return_value=intents_path,
+                    ),
+                    patch.object(
+                        stage930,
+                        "_spool_authorization_snapshot",
+                        return_value=self.spool_snapshot(
+                            self.spool_candidate(
+                                intent_id="cycle-approved",
+                                source="stage904_c9_intraday_retry_open",
+                                intent_role="c9_retry_open_once",
+                            )
+                        ),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_tick_result_ingress_epoch_ns",
+                        return_value=time.time_ns(),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_read_json",
+                        return_value={"model_tag": "stage902-test-evidence"},
+                    ),
                 ):
                     result = stage930._publish_stage931_submit_authorization(
                         args,
@@ -873,6 +1094,7 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
+                            "retry_open_submit_permitted": 1,
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -1580,11 +1802,28 @@ class Stage930FastLaneTest(unittest.TestCase):
             "symbol_tick_freshness": {"blocked_new_risk_symbols": ["JM609.DCE"]},
         }
 
-        with patch.object(stage930, "_ready_intents_close_only", return_value=False):
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(target_date="2026-07-13")
+            ),
+        ):
             open_blockers = stage930._stage931_submit_blockers(
                 args, "2026-07-13", controller, stage927, 1, tick_result
             )
-        with patch.object(stage930, "_ready_intents_close_only", return_value=True):
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(
+                    intent_kind="close",
+                    source="stage904_c9_intraday_close",
+                    intent_role="c9_initial_stop_close",
+                    target_date="2026-07-13",
+                )
+            ),
+        ):
             close_blockers = stage930._stage931_submit_blockers(
                 args, "2026-07-13", controller, stage927, 1, tick_result
             )
@@ -1702,9 +1941,26 @@ class Stage930FastLaneTest(unittest.TestCase):
         }
         stage927 = {"real_submit_permitted": 1}
 
-        with patch.object(stage930, "_ready_intents_close_only", return_value=False):
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(target_date="2026-07-13")
+            ),
+        ):
             open_blockers = stage930._stage931_submit_blockers(args, "2026-07-13", controller, stage927, 1)
-        with patch.object(stage930, "_ready_intents_close_only", return_value=True):
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(
+                    intent_kind="close",
+                    source="stage904_c9_intraday_close",
+                    intent_role="c9_initial_stop_close",
+                    target_date="2026-07-13",
+                )
+            ),
+        ):
             close_blockers = stage930._stage931_submit_blockers(args, "2026-07-13", controller, stage927, 1)
 
         self.assertIn("ai_pool_preflight_blocked_new_risk_but_reduce_close_remains_allowed", open_blockers)
@@ -2172,7 +2428,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                 "stopped": False,
                 "target_date": "2026-07-16",
                 "consumer_id": "stage941",
-                "spool_path": str(stage930.STAGE941_SPOOL_PATH.resolve()),
+                "spool_path": str(
+                    stage930._stage179_runtime(args).spool_path.resolve()
+                ),
                 "send_order_api_called_count": 0,
                 "cancel_order_api_called_count": 0,
             }
@@ -2183,6 +2441,11 @@ class Stage930FastLaneTest(unittest.TestCase):
                     stage930,
                     "_managed_tick_stream_status",
                     return_value={"refresh_status": "tick_stream_ready"},
+                ),
+                patch.object(
+                    stage930,
+                    "_spool_authorization_snapshot",
+                    return_value=self.spool_snapshot(None),
                 ),
             ):
                 result = stage930._persistent_detector_fast_lane_status(
@@ -2236,7 +2499,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             future["blockers"],
         )
         self.assertEqual(
-            "persistent_detector_ready_no_submit",
+            "persistent_detector_ready_no_authorizable_intent",
             ready["fast_lane_status"],
         )
         self.assertEqual([], ready["blockers"])

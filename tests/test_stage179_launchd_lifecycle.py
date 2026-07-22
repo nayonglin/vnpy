@@ -42,6 +42,156 @@ def _process_alive(pid: int) -> bool:
 
 
 class Stage179LaunchdLifecycleTest(unittest.TestCase):
+    def test_c9_production_live_jobs_use_one_shared_runtime_and_exact_launcher(self) -> None:
+        names = (
+            "local.qmt-roll.official-live.15w.c9-production-live-day-session.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-night-session.plist",
+        )
+        payloads = [_plist(name) for name in names]
+        self.assertEqual(2, len({item["Label"] for item in payloads}))
+        runtime_roots: set[str] = set()
+        output_roots: set[str] = set()
+        signal_roots: set[str] = set()
+        for payload in payloads:
+            arguments = payload["ProgramArguments"]
+            environment = payload["EnvironmentVariables"]
+            self.assertTrue(
+                arguments[1].endswith(
+                    "run_qmt_roll_stage945_official_live_production_session_launcher.py"
+                )
+            )
+            self.assertNotIn("run_qmt_roll_stage930", arguments[1])
+            self.assertEqual("1", environment["OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED"])
+            self.assertEqual("1", environment["OFFICIAL_LIVE_STAGE179_WARM_EXECUTOR_ENABLED"])
+            self.assertNotIn("CTP_PASSWORD", environment)
+            self.assertNotIn("CTP_AUTH_CODE", environment)
+            self.assertEqual({"SuccessfulExit": False}, payload["KeepAlive"])
+            self.assertEqual(60, payload["ThrottleInterval"])
+            self.assertEqual("Interactive", payload["ProcessType"])
+            self.assertFalse(payload["AbandonProcessGroup"])
+            runtime_roots.add(
+                arguments[arguments.index("--stage179-runtime-root") + 1]
+            )
+            output_roots.add(environment["OFFICIAL_LIVE_OUTPUT_DIR"])
+            signal_roots.add(environment["OFFICIAL_LIVE_SIGNAL_INPUT_DIR"])
+        self.assertEqual(1, len(runtime_roots))
+        self.assertEqual(1, len(output_roots))
+        self.assertEqual(1, len(signal_roots))
+
+    def test_production_support_jobs_are_serialized_and_never_enable_submit(self) -> None:
+        names = (
+            "local.qmt-roll.official-live.15w.c9-production-live-day-close-readonly.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-precompute.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-report.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-health.plist",
+        )
+        payloads = {name: _plist(name) for name in names}
+        expected_jobs = {
+            names[0]: "day-close-readonly",
+            names[1]: "postclose-precompute",
+            names[2]: "postclose-report",
+            names[3]: "monthly-ai-pool",
+            names[4]: "health",
+        }
+        for name, payload in payloads.items():
+            joined = " ".join(payload["ProgramArguments"])
+            environment = payload.get("EnvironmentVariables", {})
+            self.assertNotIn("--mode live-real", joined, name)
+            self.assertNotIn("--submit-mode live-real", joined, name)
+            self.assertNotIn(
+                "OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED",
+                environment,
+                name,
+            )
+            self.assertNotIn(
+                "OFFICIAL_LIVE_STAGE179_WARM_EXECUTOR_ENABLED",
+                environment,
+                name,
+            )
+            self.assertFalse(
+                any(str(key).startswith("CTP_") for key in environment),
+                name,
+            )
+            self.assertEqual(
+                "/Users/bytedance/Desktop/person/vnpy_production_live",
+                payload["WorkingDirectory"],
+                name,
+            )
+            self.assertTrue(
+                payload["ProgramArguments"][1].endswith(
+                    "run_qmt_roll_stage947_official_live_production_support_launcher.py"
+                ),
+                name,
+            )
+            self.assertEqual(
+                ["--job", expected_jobs[name]],
+                payload["ProgramArguments"][2:],
+                name,
+            )
+        precompute = payloads[
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-precompute.plist"
+        ]
+        report = payloads[
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-report.plist"
+        ]
+        precompute_minutes = {
+            item["Hour"] * 60 + item["Minute"]
+            for item in precompute["StartCalendarInterval"]
+        }
+        report_minutes = {
+            item["Hour"] * 60 + item["Minute"]
+            for item in report["StartCalendarInterval"]
+        }
+        self.assertEqual({16 * 60 + 35}, precompute_minutes)
+        self.assertEqual({16 * 60 + 55}, report_minutes)
+
+        health = payloads[
+            "local.qmt-roll.official-live.15w.c9-production-live-health.plist"
+        ]
+        self.assertTrue(
+            health["ProgramArguments"][1].endswith(
+                "run_qmt_roll_stage947_official_live_production_support_launcher.py"
+            )
+        )
+        health_minutes = {
+            item["Hour"] * 60 + item["Minute"]
+            for item in health["StartCalendarInterval"]
+        }
+        self.assertEqual({9 * 60 + 3, 13 * 60 + 33, 21 * 60 + 3}, health_minutes)
+
+    def test_all_seven_production_plists_bind_exact_stable_root_and_labels(self) -> None:
+        names = (
+            "local.qmt-roll.official-live.15w.c9-production-live-day-session.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-night-session.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-day-close-readonly.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-precompute.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-postclose-report.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool.plist",
+            "local.qmt-roll.official-live.15w.c9-production-live-health.plist",
+        )
+        expected_root = "/Users/bytedance/Desktop/person/vnpy_production_live"
+        payloads = [_plist(name) for name in names]
+        self.assertEqual(7, len({payload["Label"] for payload in payloads}))
+        self.assertEqual(
+            {name.removesuffix(".plist") for name in names},
+            {payload["Label"] for payload in payloads},
+        )
+        for payload in payloads:
+            arguments = payload["ProgramArguments"]
+            self.assertEqual("077", payload["Umask"])
+            self.assertEqual(expected_root, payload["WorkingDirectory"])
+            self.assertEqual(f"{expected_root}/.py311/bin/python", arguments[0])
+            self.assertTrue(arguments[1].startswith(f"{expected_root}/"))
+            self.assertFalse(
+                any("ctp_live.local.env" in str(item) for item in arguments)
+            )
+            intervals = payload["StartCalendarInterval"]
+            if isinstance(intervals, dict):
+                intervals = [intervals]
+            weekdays = {int(item["Weekday"]) for item in intervals}
+            self.assertEqual({1, 2, 3, 4, 5}, weekdays)
+            self.assertNotIn(6, weekdays)
     def test_invalid_pgid_handshake_attempts_fail_before_child_spawn(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
@@ -257,6 +407,47 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
                 check=True,
             )
         self.assertEqual(str(Path(directory).resolve()), result.stdout.strip())
+
+    def test_phase_d_runtime_and_stage901_signal_roots_are_isolated(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temp = Path(directory)
+            output_root = temp / "official-live"
+            signal_root = temp / "signal-input"
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "OFFICIAL_LIVE_OUTPUT_DIR": str(output_root),
+                    "OFFICIAL_LIVE_SIGNAL_INPUT_DIR": str(signal_root),
+                    "QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR": "1",
+                }
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import json,sys; "
+                        f"sys.path.insert(0, {str(PORTFOLIO_DIR)!r}); "
+                        "import qmt_roll_official_live_phase_d_config as c; "
+                        "print(json.dumps({"
+                        "'output': str(c.OUTPUT_DIR), "
+                        "'pending': str(c.STAGE901_PENDING_ORDERS_PATH), "
+                        "'trades': str(c.STAGE901_TRADES_PATH), "
+                        "'risk': str(c.STAGE901_ENTRY_RISK_PATH)}))"
+                    ),
+                ],
+                text=True,
+                capture_output=True,
+                env=environment,
+                check=True,
+            )
+        payload = json.loads(result.stdout)
+        self.assertEqual(str(output_root.resolve()), payload["output"])
+        for key in ("pending", "trades", "risk"):
+            self.assertTrue(
+                Path(payload[key]).is_relative_to(signal_root.resolve()),
+                payload,
+            )
 
     def test_cooperative_child_exits_on_term_without_escalation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

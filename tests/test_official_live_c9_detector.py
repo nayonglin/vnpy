@@ -97,19 +97,23 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
         *,
         feed_session_id: str = "feed-a",
         ingress_sequence: int = 1,
+        symbol_sequence: int = 1,
+        vt_symbol: str = "JM609.DCE",
+        ingress_epoch_ns: int = 100,
+        ingress_monotonic_ns: int = 100,
     ) -> dict[str, object]:
         return {
             "feed_session_id": feed_session_id,
             "ingress_sequence": ingress_sequence,
-            "symbol_sequence": 1,
-            "received_at_utc": utc_iso_from_epoch_ns(100),
-            "ingress_epoch_ns": 100,
-            "ingress_monotonic_ns": 100,
+            "symbol_sequence": symbol_sequence,
+            "received_at_utc": utc_iso_from_epoch_ns(ingress_epoch_ns),
+            "ingress_epoch_ns": ingress_epoch_ns,
+            "ingress_monotonic_ns": ingress_monotonic_ns,
             "clock_domain_id": "boot-a",
             "trace_id": (
                 f"stage179-tick/{feed_session_id}/{ingress_sequence}"
             ),
-            "vt_symbol": "JM609.DCE",
+            "vt_symbol": vt_symbol,
             "last_price": 1245.5,
         }
 
@@ -144,6 +148,8 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
         )
         business = {
             "intent_id": label,
+            "action_id": f"business-{label}",
+            "business_action_id": f"business-{label}",
             "trace_id": trace.trace_id,
             "target_date": "2026-07-16",
             "source": "stage904_c9_intraday_close",
@@ -187,6 +193,27 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
             paths={},
         )
 
+    def spool_intent_with_business_overrides(
+        self,
+        label: str,
+        **overrides: object,
+    ) -> dict[str, object]:
+        intent = self.valid_spool_intent(label)
+        business = json.loads(str(intent["spool_payload_json"]))
+        business.update(overrides)
+        canonical = json.dumps(
+            business,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        return {
+            **intent,
+            **overrides,
+            "spool_payload_json": canonical,
+            "payload_sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        }
+
     def stage905_result(self, intents: list[dict[str, object]]) -> SimpleNamespace:
         return SimpleNamespace(
             intents=pd.DataFrame(intents),
@@ -216,6 +243,303 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
         self.assertLess(events.index("stage904_wal_fsync"), events.index("spool_begin"))
         self.assertLess(events.index("spool_begin"), events.index("spool_commit"))
         self.assertTrue(monitor.call_args.kwargs["allow_partial_durable_batch"])
+
+    def test_pending_provenance_uses_latest_exact_symbol_and_batch_cursor(self) -> None:
+        open_epoch_ns = 1_784_206_800_000_000_000
+        cursor = self.cursor(3, 300)
+        batch = DurableTickBatch(
+            records=(
+                self.tick_record(ingress_sequence=1, symbol_sequence=1, ingress_epoch_ns=open_epoch_ns),
+                self.tick_record(
+                    ingress_sequence=2,
+                    symbol_sequence=1,
+                    vt_symbol="RB610.SHFE",
+                    ingress_epoch_ns=open_epoch_ns,
+                ),
+                self.tick_record(ingress_sequence=3, symbol_sequence=2, ingress_epoch_ns=open_epoch_ns),
+            ),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+
+        provenance = detector._pending_initial_open_provenance(
+            batch,
+            clock=_Clock(),
+        )
+
+        self.assertEqual(3, provenance["JM609.DCE"]["source_ingress_sequence"])
+        self.assertEqual(2, provenance["RB610.SHFE"]["source_ingress_sequence"])
+        self.assertEqual(3, provenance["JM609.DCE"]["durable_cursor_ingress_sequence"])
+        trace = LatencyTrace.from_json(provenance["JM609.DCE"]["trace_json"])
+        self.assertEqual({"gateway_ingress", "stage904_detected"}, set(trace.stamps))
+
+    def test_latched_close_gets_new_delivery_identity_from_each_fresh_symbol_tick(
+        self,
+    ) -> None:
+        original_tick = self.tick_record()
+        original_trace = LatencyTrace.from_ingress_row(
+            original_tick,
+            clock=_Clock(100, 100),
+        )
+        action_id = "business-close-action"
+        action = {
+            "target_date": "2026-07-16",
+            "monitor_run_id": "stage904-close",
+            "monitor_action": "close_dry_run",
+            "monitor_reason": "initial_stop_triggered",
+            "vt_symbol": "JM609.DCE",
+            "direction": "long",
+            "volume": 1,
+            "stage847_stop_price": 1245.0,
+            "live_price": 1244.5,
+            "action_id": action_id,
+            "logical_close_root_id": "logical-close-root",
+            "position_epoch_id": "position-epoch-1",
+            "state_generation": "position-epoch-1:2",
+            "trace_json": original_trace.to_json(),
+            "trace_id": original_trace.trace_id,
+            "source_feed_session_id": original_trace.feed_session_id,
+            "source_ingress_sequence": original_trace.ingress_sequence,
+            "source_symbol_sequence": original_trace.symbol_sequence,
+            "ingress_epoch_ns": 100,
+            "ingress_monotonic_ns": 100,
+            "deadline_epoch_ns": original_trace.deadline_epoch_ns,
+            "deadline_monotonic_ns": original_trace.deadline_monotonic_ns,
+            "durable_cursor_feed_session_id": "feed-a",
+            "durable_cursor_ingress_sequence": 1,
+            "durable_cursor_journal_byte_offset": 100,
+            "durable_cursor_journal_schema": "stage179_framed_v1",
+            "order_api_called": 0,
+        }
+        stage904_result = SimpleNamespace(
+            target_date="2026-07-16",
+            monitor_run_id="stage904-close",
+            actions=pd.DataFrame([action]),
+            summary={
+                "target_date": "2026-07-16",
+                "monitor_run_id": "stage904-close",
+                "monitor_status": "intraday_monitor_close_dry_run",
+                "action_count": 1,
+                "close_dry_run_count": 1,
+                "retry_open_dry_run_count": 0,
+                "retry_watch_count": 0,
+                "blocked_count": 0,
+                "order_api_called_count": 0,
+            },
+            paths={},
+        )
+
+        def authorize(sequence: int, ingress_ns: int) -> object:
+            cursor = self.cursor(sequence, sequence * 100)
+            batch = DurableTickBatch(
+                records=(
+                    self.tick_record(
+                        ingress_sequence=sequence,
+                        symbol_sequence=sequence,
+                        ingress_epoch_ns=ingress_ns,
+                        ingress_monotonic_ns=ingress_ns,
+                    ),
+                ),
+                next_cursor=cursor,
+                durable_through=cursor,
+                caught_up=True,
+                gap=None,
+            )
+            return detector._refresh_close_delivery_provenance(
+                stage904_result,
+                batch,
+                clock=_Clock(ingress_ns + 1, ingress_ns + 1),
+            )
+
+        second = authorize(2, 200)
+        third = authorize(3, 300)
+        second_intent = detector.stage905._stage904_intents(second.actions)[0]
+        third_intent = detector.stage905._stage904_intents(third.actions)[0]
+
+        self.assertEqual(action_id, second_intent["action_id"])
+        self.assertEqual(action_id, second_intent["business_action_id"])
+        self.assertNotEqual(second_intent["intent_id"], third_intent["intent_id"])
+        self.assertTrue(second_intent["intent_id"].startswith("c9-close-delivery:"))
+        self.assertEqual(2, second_intent["source_ingress_sequence"])
+        self.assertEqual(3, third_intent["source_ingress_sequence"])
+        self.assertEqual(
+            original_trace.trace_id,
+            second_intent["business_trigger_trace_id"],
+        )
+        refreshed_trace = LatencyTrace.from_json(second_intent["trace_json"])
+        self.assertEqual(
+            {"gateway_ingress", "stage904_detected"},
+            set(refreshed_trace.stamps),
+        )
+
+    def test_latched_close_without_current_symbol_tick_creates_no_delivery(self) -> None:
+        action = {
+            "target_date": "2026-07-16",
+            "monitor_run_id": "stage904-close",
+            "monitor_action": "close_dry_run",
+            "monitor_reason": "initial_stop_triggered",
+            "vt_symbol": "JM609.DCE",
+            "action_id": "business-close-action",
+            "trace_id": "old-trace",
+            "order_api_called": 0,
+        }
+        stage904_result = SimpleNamespace(
+            target_date="2026-07-16",
+            monitor_run_id="stage904-close",
+            actions=pd.DataFrame([action]),
+            summary={
+                "target_date": "2026-07-16",
+                "monitor_run_id": "stage904-close",
+                "monitor_status": "intraday_monitor_close_dry_run",
+                "action_count": 1,
+                "close_dry_run_count": 1,
+                "retry_open_dry_run_count": 0,
+                "retry_watch_count": 0,
+                "blocked_count": 0,
+                "order_api_called_count": 0,
+            },
+            paths={},
+        )
+        cursor = self.cursor(2, 200)
+        batch = DurableTickBatch(
+            records=(
+                self.tick_record(
+                    ingress_sequence=2,
+                    symbol_sequence=1,
+                    vt_symbol="RB610.SHFE",
+                ),
+            ),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+
+        refreshed = detector._refresh_close_delivery_provenance(
+            stage904_result,
+            batch,
+            clock=_Clock(),
+        )
+
+        self.assertEqual("block", refreshed.actions.iloc[0]["monitor_action"])
+        self.assertEqual("intraday_monitor_blocked", refreshed.summary["monitor_status"])
+        self.assertEqual(1, refreshed.summary["blocked_count"])
+        self.assertEqual([], detector.stage905._stage904_intents(refreshed.actions))
+
+    def test_pending_initial_open_is_not_materialized_at_2059_but_is_at_2100(self) -> None:
+        before = self.tick_record(
+            ingress_epoch_ns=1_784_206_740_000_000_000
+        )
+        opening = self.tick_record(
+            ingress_sequence=2,
+            symbol_sequence=2,
+            ingress_epoch_ns=1_784_206_800_000_000_000,
+        )
+        before_batch = DurableTickBatch(
+            records=(before,), next_cursor=self.cursor(1, 100),
+            durable_through=self.cursor(1, 100), caught_up=True, gap=None,
+        )
+        opening_batch = DurableTickBatch(
+            records=(opening,), next_cursor=self.cursor(2, 200),
+            durable_through=self.cursor(2, 200), caught_up=True, gap=None,
+        )
+
+        self.assertEqual(
+            {}, detector._pending_initial_open_provenance(before_batch, clock=_Clock())
+        )
+        provenance = detector._pending_initial_open_provenance(
+            opening_batch, clock=_Clock()
+        )
+
+        self.assertIn("JM609.DCE", provenance)
+        self.assertEqual("night_open", provenance["JM609.DCE"]["initial_open_ingress_window"])
+        self.assertEqual(
+            1_784_207_100_000_000_000,
+            provenance["JM609.DCE"]["initial_open_window_expiry_epoch_ns"],
+        )
+
+    def test_initial_open_filter_allows_recheck_skips_replay_and_keeps_close_first(self) -> None:
+        blocked = {
+            "intent_id": "STAGE905-PENDING-stable",
+            "source": "stage901_pending_order",
+            "offset": "open",
+            "executor_status": "blocked",
+        }
+        ready = {
+            **blocked,
+            "executor_status": "dry_run_order_request_payload_ready",
+        }
+        close = {
+            "intent_id": "close-action",
+            "source": "stage904_c9_intraday_close",
+            "offset": "close",
+            "executor_status": "dry_run_order_request_payload_ready",
+        }
+
+        self.assertEqual(
+            [],
+            detector._intents_for_detector_commit(
+                [blocked],
+                existing_stage901_pending_ids=set(),
+            ),
+        )
+        retried = detector._intents_for_detector_commit(
+            [ready, close],
+            existing_stage901_pending_ids=set(),
+        )
+        self.assertEqual(["close-action", "STAGE905-PENDING-stable"], [row["intent_id"] for row in retried])
+        self.assertEqual(
+            [close],
+            detector._intents_for_detector_commit(
+                [ready, close],
+                existing_stage901_pending_ids={"STAGE905-PENDING-stable"},
+            ),
+        )
+
+        connection = spool.open_spool(self.spool_path)
+        self.addCleanup(connection.close)
+        ready_open = self.spool_intent_with_business_overrides(
+            "STAGE905-PENDING-stable",
+            source="stage901_pending_order",
+            offset="open",
+            executor_status="dry_run_order_request_payload_ready",
+        )
+        ready_close = self.valid_spool_intent("close-action")
+        committed = spool.commit_detector_batch(
+            connection,
+            consumer_id="stage941",
+            expected_cursor=None,
+            next_cursor=self.cursor(),
+            intents=[ready_close, ready_open],
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+        self.assertEqual(2, committed.inserted_count)
+        self.assertEqual(
+            ["close-action", "STAGE905-PENDING-stable"],
+            [
+                row[0]
+                for row in connection.execute(
+                    "SELECT intent_id FROM intents ORDER BY spool_sequence"
+                )
+            ],
+        )
+        existing = detector._existing_stage901_pending_intent_ids(
+            connection,
+            target_date="2026-07-16",
+        )
+        self.assertEqual({"STAGE905-PENDING-stable"}, existing)
+        self.assertEqual(
+            [],
+            detector._intents_for_detector_commit(
+                [ready],
+                existing_stage901_pending_ids=existing,
+            ),
+        )
+        self.assertEqual(2, spool.spool_counts(connection)["total"])
 
     def test_crash_after_state_commit_before_spool_replays_once(self) -> None:
         events: list[str] = []

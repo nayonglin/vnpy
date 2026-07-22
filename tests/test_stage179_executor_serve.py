@@ -3,10 +3,12 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr
+from io import StringIO
 import json
 import os
 import subprocess
+import threading
 import time
 from unittest.mock import patch
 from pathlib import Path
@@ -234,6 +236,694 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             output_root=root / "runtime",
         )
 
+    def test_warm_builder_binds_one_ingress_lock_to_state_and_instrumentation_rows(
+        self,
+    ) -> None:
+        session = stage931._build_stage179_warm_ctp_session(
+            SimpleNamespace(target_date="2026-07-18"),
+            self.runtime,
+            self.paths,
+        )
+        closure = {
+            name: cell.cell_contents
+            for name, cell in zip(
+                session._send_order.__code__.co_freevars,
+                session._send_order.__closure__ or (),
+            )
+        }
+        state = closure["state"]
+
+        self.assertIs(
+            state["execution_event_ingress_lock"],
+            state["rows"]["_execution_event_ingress_lock"],
+        )
+
+    def _run_strict_physical_batch_case(
+        self,
+        requests: list[Any],
+        *,
+        reqid_jump: int = 1,
+        external_event: str = "",
+        own_trade_after_first: bool = False,
+        mutate_after_first: str = "",
+    ) -> dict[str, Any]:
+        args = SimpleNamespace(
+            target_date="2026-07-18",
+            fill_wait_seconds=0.0,
+            final_order_query_wait_seconds=0.0,
+            post_cancel_wait_seconds=0.0,
+            max_stage904_age_seconds=30,
+        )
+        session = stage931._build_stage179_warm_ctp_session(
+            args, self.runtime, self.paths
+        )
+        closure = {
+            name: cell.cell_contents
+            for name, cell in zip(
+                session._send_order.__code__.co_freevars,
+                session._send_order.__closure__ or (),
+            )
+        }
+        state = closure["state"]
+
+        class FakeTdApi:
+            reqid = 700
+            brokerid = "fake-broker"
+            userid = "fake-user"
+            login_status = True
+            contract_inited = True
+
+        td_api = FakeTdApi()
+        state["td_api"] = td_api
+        state["readiness_state"] = stage931.CtpReadinessState(
+            account_required=True
+        )
+        state["connection_generation"] = "connection-1"
+        state["transport_generation_invalidated"] = False
+        rows = state["rows"]
+        rows["_ctp_last_query_monotonic"] = 12.5
+        rows["_execution_event_ingress_counts"] = {
+            "order": 0,
+            "trade": 0,
+            "position": 0,
+        }
+        rows["orders"].clear()
+        rows["trades"].clear()
+        rows["account_query_callbacks"].clear()
+        rows["max_order_volume_query_callbacks"].clear()
+        baseline = stage931._execution_event_watermark(rows)
+        open_funds_gate: dict[str, Any] = {}
+        if any(request.offset == stage931.Offset.OPEN for request in requests):
+            empty_sha = stage931._canonical_evidence_sha256([])
+            open_funds_gate = {
+                "confirmed": True,
+                "status": "confirmed",
+                "request_bundle_sha256": stage931._canonical_evidence_sha256(
+                    stage931._physical_request_bundle(requests)
+                ),
+                "event_watermark": dict(baseline),
+                "query_watermark": {
+                    "broker_id": td_api.brokerid,
+                    "investor_id": td_api.userid,
+                    "td_reqid_after": td_api.reqid,
+                    "ctp_last_query_monotonic": 12.5,
+                    "account_reqid": -1,
+                    "max_volume_reqids": [],
+                    "account_callback_count": 0,
+                    "max_volume_callback_count": 0,
+                    "account_callbacks_sha256": empty_sha,
+                    "max_volume_callbacks_sha256": empty_sha,
+                },
+            }
+        intent_kind = (
+            "open"
+            if any(request.offset == stage931.Offset.OPEN for request in requests)
+            else "close"
+        )
+        intent_id = f"strict-batch-{intent_kind}"
+        state["intent_contexts"][intent_id] = {
+            "requests": list(requests),
+            "request": requests[0],
+            "row": {},
+            "fingerprint": f"fingerprint-{intent_kind}",
+            "final_watermark": dict(baseline),
+            "open_funds_gate": open_funds_gate,
+            "physical_batch_query_watermark": (
+                stage931._physical_batch_query_watermark(td_api, rows)
+            ),
+            "hard_deadline_monotonic": time.monotonic() + 60.0,
+        }
+        state["authorization_pin"] = {
+            "record": {"state_revision": 3},
+            "authorization_lane": "all",
+            "intent_scope": "all",
+        }
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(
+                intent_id=intent_id,
+                payload_sha256="a" * 64,
+                target_date="2026-07-18",
+                intent_kind=intent_kind,
+                vt_symbol=requests[0].vt_symbol,
+                source="",
+                trace_id="trace-1",
+                spool_sequence=1,
+                state_revision=4,
+                state="leased",
+                state_generation="epoch-1:0",
+                position_epoch_id="epoch-1",
+                deadline_epoch_ns=time.time_ns() + 60_000_000_000,
+                lease_owner=session.service_generation,
+                payload={
+                    "intent_role": "test",
+                    "root_position_id": "root-1",
+                    "position_cycle_id": "cycle-1",
+                },
+            ),
+            lease_token="lease-1",
+        )
+        kill_blockers: list[str] = []
+        ledger_events: list[dict[str, Any]] = []
+        broker_events: list[dict[str, Any]] = []
+        lock_probe_acquired: list[bool] = []
+
+        class FakeMainEngine:
+            def __init__(self) -> None:
+                self.send_attempts = 0
+                self.native_calls = 0
+                self.native_gate_blockers: list[str] = []
+                self.native_prices: list[float] = []
+
+            @staticmethod
+            def native_request(request: Any, order_ref: str) -> dict[str, Any]:
+                direction = {
+                    stage931.Direction.LONG: stage931.CTP_DIRECTION_BUY,
+                    stage931.Direction.SHORT: stage931.CTP_DIRECTION_SELL,
+                }[request.direction]
+                offset = {
+                    stage931.Offset.OPEN: stage931.CTP_OFFSET_OPEN,
+                    stage931.Offset.CLOSE: stage931.CTP_OFFSET_CLOSE,
+                    stage931.Offset.CLOSETODAY: (
+                        stage931.CTP_OFFSET_CLOSE_TODAY
+                    ),
+                    stage931.Offset.CLOSEYESTERDAY: (
+                        stage931.CTP_OFFSET_CLOSE_YESTERDAY
+                    ),
+                }[request.offset]
+                order_type = {
+                    stage931.OrderType.LIMIT: ("2", "3", "1"),
+                    stage931.OrderType.FAK: ("2", "1", "1"),
+                }[request.type]
+                return {
+                    "BrokerID": td_api.brokerid,
+                    "InvestorID": td_api.userid,
+                    "UserID": td_api.userid,
+                    "InstrumentID": request.symbol,
+                    "ExchangeID": request.exchange.value,
+                    "Direction": direction,
+                    "CombOffsetFlag": offset,
+                    "CombHedgeFlag": stage931.CTP_HEDGE_SPECULATION,
+                    "OrderPriceType": order_type[0],
+                    "TimeCondition": order_type[1],
+                    "VolumeCondition": order_type[2],
+                    "VolumeTotalOriginal": int(request.volume),
+                    "LimitPrice": float(request.price),
+                    "OrderRef": order_ref,
+                }
+
+            @staticmethod
+            def append_ingress(kind: str, row: dict[str, Any]) -> None:
+                rows[f"{kind}s"].append(row)
+                rows["_execution_event_ingress_counts"][kind] += 1
+
+            def send_order(self, request: Any, _gateway: str) -> str:
+                self.send_attempts += 1
+                td_api.reqid += reqid_jump
+                native_request = self.native_request(
+                    request, str(self.send_attempts)
+                )
+                native_gate = state["native_dynamic_gate"]
+                blockers = list(
+                    native_gate(td_api, native_request, td_api.reqid)
+                )
+                if blockers:
+                    self.native_gate_blockers = blockers
+                    raise stage931.BrokerSendBatchError(
+                        "fake_native_gate_blocked:" + ";".join(blockers),
+                        send_order_call_count=self.native_calls,
+                    )
+                vt_orderid = f"CTP.1_2_{self.send_attempts}"
+                child_context = state["native_child_context"]
+                batch = state["active_physical_batch"]
+                batch["owned_children"][vt_orderid] = {
+                    "child_order_id": child_context["child_order_id"],
+                    "child_order_index": child_context["child_order_index"],
+                    "native_reqid": td_api.reqid,
+                    "vt_orderid": vt_orderid,
+                    "request": request,
+                    "trade_identities": {},
+                }
+                state["order_contexts"][vt_orderid] = child_context
+                state["native_insert_identity"] = {
+                    "vt_orderid": vt_orderid
+                }
+                rows["order_insert_requests"].append(
+                    {
+                        "reqid": td_api.reqid,
+                        "request_ret": 0,
+                        "exception": "",
+                    }
+                )
+                self.native_calls += 1
+                self.native_prices.append(float(request.price))
+                self.append_ingress(
+                    "order",
+                    {
+                        "gateway_name": "CTP",
+                        "vt_orderid": vt_orderid,
+                        "vt_symbol": request.vt_symbol,
+                        "direction": request.direction.value,
+                        "offset": request.offset.value,
+                        "reference": request.reference,
+                        "volume": float(request.volume),
+                        "price": float(request.price),
+                        "traded": 0.0,
+                        "status": "submitting",
+                        "_stage179_callback_persistence_confirmed": 1,
+                    },
+                )
+                if self.send_attempts == 1 and own_trade_after_first:
+                    self.append_ingress(
+                        "trade",
+                        {
+                            "gateway_name": "CTP",
+                            "vt_orderid": vt_orderid,
+                            "vt_tradeid": "CTP.trade-1",
+                            "vt_symbol": request.vt_symbol,
+                            "direction": request.direction.value,
+                            "offset": request.offset.value,
+                            "volume": float(request.volume),
+                            "price": float(request.price),
+                            "_stage179_callback_persistence_confirmed": 1,
+                        },
+                    )
+                if self.send_attempts == 1 and external_event:
+                    if external_event == "position":
+                        rows["position_events_unscoped"].append(
+                            {
+                                "gateway_name": "CTP",
+                                "vt_symbol": request.vt_symbol,
+                                "direction": request.direction.value,
+                                "volume": float(request.volume),
+                            }
+                        )
+                        rows["_execution_event_ingress_counts"][
+                            "position"
+                        ] += 1
+                        external = None
+                    else:
+                        external = {
+                            "gateway_name": "CTP",
+                            "vt_orderid": "CTP.external",
+                            "vt_symbol": request.vt_symbol,
+                            "direction": request.direction.value,
+                            "offset": request.offset.value,
+                            "volume": 1.0,
+                            "price": float(request.price),
+                            "_stage179_callback_persistence_confirmed": 1,
+                        }
+                    if external_event == "order" and external is not None:
+                        external.update(
+                            {
+                                "reference": "external",
+                                "traded": 0.0,
+                                "status": "submitting",
+                            }
+                        )
+                    elif external_event == "trade" and external is not None:
+                        external["vt_tradeid"] = "CTP.external-trade"
+                    if external is not None:
+                        self.append_ingress(external_event, external)
+                if self.send_attempts == 1 and len(requests) > 1:
+                    def probe_lock() -> None:
+                        acquired = state["ctp_query_lock"].acquire(
+                            blocking=False
+                        )
+                        lock_probe_acquired.append(acquired)
+                        if acquired:
+                            state["ctp_query_lock"].release()
+
+                    probe = threading.Thread(target=probe_lock)
+                    probe.start()
+                    probe.join(timeout=2.0)
+                if self.send_attempts == 1:
+                    if mutate_after_first == "revoke":
+                        state["authorization_pin"] = None
+                    elif mutate_after_first == "kill":
+                        kill_blockers.append("kill_switch_active")
+                    elif mutate_after_first == "disconnect":
+                        state["transport_generation_invalidated"] = True
+                return vt_orderid
+
+        engine = FakeMainEngine()
+        state["main_engine"] = engine
+
+        class NoStartThread:
+            def __init__(self, **_kwargs: Any) -> None:
+                pass
+
+            def start(self) -> None:
+                return None
+
+        result: Any = None
+        error: BaseException | None = None
+        with (
+            patch.object(
+                stage931,
+                "validate_submit_authorization",
+                return_value=[],
+            ),
+            patch.object(
+                stage931,
+                "_kill_switch_blockers",
+                side_effect=lambda: list(kill_blockers),
+            ),
+            patch.object(
+                stage931,
+                "_current_phase_d_sessions",
+                return_value=[{"role": "market_and_execution"}],
+            ),
+            patch.object(
+                stage931, "_continuous_submit_blockers", return_value=[]
+            ),
+            patch.object(
+                stage931, "_final_ctp_transport_blockers", return_value=[]
+            ),
+            patch.object(stage931, "read_execution_ledger", return_value=[]),
+            patch.object(
+                stage931,
+                "append_execution_ledger_event",
+                side_effect=lambda event, **_kwargs: (
+                    ledger_events.append(dict(event))
+                    or {"appended": True}
+                ),
+            ),
+            patch.object(
+                stage931,
+                "append_broker_callback_event_once",
+                side_effect=lambda event, *_args, **_kwargs: (
+                    broker_events.append(dict(event))
+                    or {"appended": True}
+                ),
+            ),
+            patch.object(stage931, "Thread", NoStartThread),
+        ):
+            try:
+                result = session._send_order(lease)
+            except BaseException as exc:
+                error = exc
+        return {
+            "result": result,
+            "error": error,
+            "engine": engine,
+            "td_api": td_api,
+            "state": state,
+            "ledger_events": ledger_events,
+            "broker_events": broker_events,
+            "lock_probe_acquired": lock_probe_acquired,
+        }
+
+    def test_single_open_native_reqid_accepts_exact_plus_one_and_rejects_jump(self) -> None:
+        request = stage931.OrderRequest(
+            symbol="jm2609",
+            exchange=stage931.Exchange.DCE,
+            direction=stage931.Direction.SHORT,
+            type=stage931.OrderType.FAK,
+            volume=1,
+            price=1200.5,
+            offset=stage931.Offset.OPEN,
+            reference="Stage905PhaseD:strict-batch-open",
+        )
+
+        accepted = self._run_strict_physical_batch_case([request])
+        self.assertIsNone(accepted["error"])
+        self.assertEqual(1, accepted["engine"].send_attempts)
+        self.assertEqual(1, accepted["engine"].native_calls)
+        self.assertEqual(701, accepted["td_api"].reqid)
+        self.assertEqual(
+            ("CTP.1_2_1",), accepted["result"].order_ids
+        )
+
+        jumped = self._run_strict_physical_batch_case(
+            [request], reqid_jump=2
+        )
+        self.assertIsInstance(
+            jumped["error"], stage931.BrokerSendBatchError
+        )
+        self.assertEqual(1, jumped["engine"].send_attempts)
+        self.assertEqual(0, jumped["engine"].native_calls)
+        self.assertEqual(702, jumped["td_api"].reqid)
+        self.assertTrue(
+            any(
+                "physical_batch_td_reqid_not_exact_owned_sequence"
+                in blocker
+                for blocker in jumped["engine"].native_gate_blockers
+            ),
+            jumped["engine"].native_gate_blockers,
+        )
+
+    def test_shfe_ine_two_close_children_share_price_and_batch_lock(self) -> None:
+        for exchange, symbol in (
+            (stage931.Exchange.SHFE, "rb2610"),
+            (stage931.Exchange.INE, "sc2610"),
+        ):
+            with self.subTest(exchange=exchange.value):
+                price = 3200.5
+                requests = [
+                    stage931.OrderRequest(
+                        symbol=symbol,
+                        exchange=exchange,
+                        direction=stage931.Direction.SHORT,
+                        type=stage931.OrderType.LIMIT,
+                        volume=1,
+                        price=price,
+                        offset=offset,
+                        reference="Stage905PhaseD:strict-batch-close",
+                    )
+                    for offset in (
+                        stage931.Offset.CLOSETODAY,
+                        stage931.Offset.CLOSEYESTERDAY,
+                    )
+                ]
+                observed = self._run_strict_physical_batch_case(requests)
+
+                self.assertIsNone(observed["error"])
+                self.assertEqual(2, observed["engine"].native_calls)
+                self.assertEqual(
+                    [price, price], observed["engine"].native_prices
+                )
+                self.assertEqual([False], observed["lock_probe_acquired"])
+                attributed_orders = [
+                    event
+                    for event in observed["broker_events"]
+                    if event.get("event_type")
+                    == "physical_batch_event_attributed"
+                    and event.get("callback_kind") == "order"
+                ]
+                self.assertEqual(2, len(attributed_orders))
+                self.assertEqual(
+                    {0, 1},
+                    {
+                        event["child_order_index"]
+                        for event in attributed_orders
+                    },
+                )
+
+    def test_external_execution_event_between_children_blocks_second_native(self) -> None:
+        for external_kind in ("order", "trade", "position"):
+            with self.subTest(external_kind=external_kind):
+                requests = [
+                    stage931.OrderRequest(
+                        symbol="rb2610",
+                        exchange=stage931.Exchange.SHFE,
+                        direction=stage931.Direction.SHORT,
+                        type=stage931.OrderType.LIMIT,
+                        volume=1,
+                        price=3200.0,
+                        offset=offset,
+                        reference="Stage905PhaseD:strict-batch-close",
+                    )
+                    for offset in (
+                        stage931.Offset.CLOSETODAY,
+                        stage931.Offset.CLOSEYESTERDAY,
+                    )
+                ]
+                observed = self._run_strict_physical_batch_case(
+                    requests, external_event=external_kind
+                )
+
+                self.assertIsInstance(
+                    observed["error"], stage931.BrokerSendBatchError
+                )
+                self.assertEqual(1, observed["engine"].native_calls)
+                self.assertEqual(1, observed["engine"].send_attempts)
+                blocked = [
+                    event
+                    for event in observed["ledger_events"]
+                    if event.get("event_type")
+                    == "submit_authorization_blocked_before_child_send"
+                ]
+                self.assertEqual(1, len(blocked))
+                expected_blocker = (
+                    "physical_batch_external_position_event"
+                    if external_kind == "position"
+                    else "physical_batch_external_event_unbound"
+                )
+                self.assertTrue(
+                    any(
+                        expected_blocker in blocker
+                        for blocker in blocked[0]["blockers"]
+                    ),
+                    blocked[0]["blockers"],
+                )
+                self.assertEqual(1, blocked[0]["reconciliation_required"])
+
+    def test_exactly_attributed_batch_fill_allows_second_close_child(self) -> None:
+        requests = [
+            stage931.OrderRequest(
+                symbol="rb2610",
+                exchange=stage931.Exchange.SHFE,
+                direction=stage931.Direction.SHORT,
+                type=stage931.OrderType.LIMIT,
+                volume=1,
+                price=3200.0,
+                offset=offset,
+                reference="Stage905PhaseD:strict-batch-close",
+            )
+            for offset in (
+                stage931.Offset.CLOSETODAY,
+                stage931.Offset.CLOSEYESTERDAY,
+            )
+        ]
+        observed = self._run_strict_physical_batch_case(
+            requests, own_trade_after_first=True
+        )
+
+        self.assertIsNone(observed["error"])
+        self.assertEqual(2, observed["engine"].native_calls)
+        attributed_trades = [
+            event
+            for event in observed["broker_events"]
+            if event.get("event_type")
+            == "physical_batch_event_attributed"
+            and event.get("callback_kind") == "trade"
+        ]
+        self.assertEqual(1, len(attributed_trades))
+        self.assertEqual(0, attributed_trades[0]["child_order_index"])
+
+    def test_revoke_kill_or_disconnect_between_children_blocks_second_native(self) -> None:
+        expected_blockers = {
+            "revoke": "stage179_submit_authorization_pin_missing",
+            "kill": "kill_switch_active_before_child_send",
+            "disconnect": "stage179_ctp_transport_generation_invalidated",
+        }
+        for mutation, expected in expected_blockers.items():
+            with self.subTest(mutation=mutation):
+                requests = [
+                    stage931.OrderRequest(
+                        symbol="rb2610",
+                        exchange=stage931.Exchange.SHFE,
+                        direction=stage931.Direction.SHORT,
+                        type=stage931.OrderType.LIMIT,
+                        volume=1,
+                        price=3200.0,
+                        offset=offset,
+                        reference="Stage905PhaseD:strict-batch-close",
+                    )
+                    for offset in (
+                        stage931.Offset.CLOSETODAY,
+                        stage931.Offset.CLOSEYESTERDAY,
+                    )
+                ]
+                observed = self._run_strict_physical_batch_case(
+                    requests, mutate_after_first=mutation
+                )
+
+                self.assertIsInstance(
+                    observed["error"], stage931.BrokerSendBatchError
+                )
+                self.assertEqual(1, observed["engine"].native_calls)
+                self.assertEqual(1, observed["engine"].send_attempts)
+                blocked = [
+                    event
+                    for event in observed["ledger_events"]
+                    if event.get("event_type")
+                    == "submit_authorization_blocked_before_child_send"
+                ]
+                self.assertEqual(1, len(blocked))
+                self.assertIn(expected, blocked[0]["blockers"])
+                self.assertEqual(1, blocked[0]["reconciliation_required"])
+
+    def test_warm_pre_api_block_closes_exact_close_attempt_without_side_effect(self) -> None:
+        events: list[dict[str, Any]] = []
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(
+                target_date="2026-07-18",
+                intent_id="close-1",
+                payload_sha256="a" * 64,
+                intent_kind="close",
+                vt_symbol="JM609.DCE",
+                lease_owner="service-1",
+            ),
+            lease_token="spool-lease-1",
+        )
+        context = {
+            "fingerprint": "fingerprint-1",
+            "reservation_record_checksum": "b" * 64,
+            "close_submit_attempt_no": 2,
+            "close_attempt_lease_token": "ledger-lease-2",
+        }
+
+        with patch.object(
+            stage931,
+            "append_pre_api_slot_no_side_effect_terminal",
+            side_effect=lambda **event: events.append(dict(event)) or {
+                "appended": True
+            },
+        ):
+            stage931._append_stage179_warm_pre_send_safe_terminal(
+                lease=lease,
+                context=context,
+                blockers=["authorization_expired"],
+                ledger_path=self.paths.ledger_path,
+            )
+
+        self.assertEqual(1, len(events))
+        event = events[0]
+        self.assertEqual("close", event["intent_kind"])
+        self.assertEqual("b" * 64, event["reservation_record_checksum"])
+        self.assertEqual("spool-lease-1", event["spool_lease_token"])
+        self.assertEqual(2, event["base_event"]["close_submit_attempt_no"])
+        self.assertEqual(
+            "ledger-lease-2",
+            event["base_event"]["close_attempt_lease_token"],
+        )
+
+    def test_warm_pre_api_open_block_uses_same_auditable_safe_terminal(self) -> None:
+        events: list[dict[str, Any]] = []
+        lease = SimpleNamespace(
+            intent=SimpleNamespace(
+                target_date="2026-07-18",
+                intent_id="open-1",
+                payload_sha256="c" * 64,
+                intent_kind="open",
+                vt_symbol="JM609.DCE",
+                lease_owner="service-1",
+            ),
+            lease_token="spool-lease-open",
+        )
+        with patch.object(
+            stage931,
+            "append_pre_api_slot_no_side_effect_terminal",
+            side_effect=lambda **event: events.append(dict(event)) or {
+                "appended": True
+            },
+        ):
+            stage931._append_stage179_warm_pre_send_safe_terminal(
+                lease=lease,
+                context={
+                    "fingerprint": "open-fingerprint",
+                    "reservation_record_checksum": "d" * 64,
+                },
+                blockers=["final_watermark_changed"],
+                ledger_path=self.paths.ledger_path,
+            )
+
+        self.assertEqual("open", events[0]["intent_kind"])
+        self.assertNotIn("close_submit_attempt_no", events[0]["base_event"])
+        self.assertNotIn("close_attempt_lease_token", events[0]["base_event"])
+        self.assertEqual(["final_watermark_changed"], events[0]["blockers"])
+
     def test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles(self) -> None:
         spool = FakeSpool(["intent-1", "intent-2"], self.clock)
         session = FakeWarmSession(self.clock)
@@ -310,6 +1000,178 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             spool.last_lease_kwargs["authorized_intents"],
         )
 
+    def test_lease_execution_guard_covers_lease_send_and_durable_result(self) -> None:
+        events: list[str] = []
+
+        class GuardedSession(FakeWarmSession):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__(clock)
+                self.guard_depth = 0
+
+            @contextmanager
+            def lease_execution_guard(self) -> Any:
+                events.append("guard_enter")
+                self.guard_depth += 1
+                try:
+                    yield
+                finally:
+                    self.guard_depth -= 1
+                    events.append("guard_exit")
+
+            def pre_lease_blockers(self) -> list[str]:
+                self.assert_guarded("pre_lease")
+                return super().pre_lease_blockers()
+
+            def pre_lease_authorized_intents(self) -> dict[str, str] | None:
+                self.assert_guarded("authorized_map")
+                return super().pre_lease_authorized_intents()
+
+            def execute_spool_lease(self, **kwargs: Any) -> ExecutionResult:
+                self.assert_guarded("execute")
+                return super().execute_spool_lease(**kwargs)
+
+            def assert_guarded(self, phase: str) -> None:
+                if self.guard_depth != 1:
+                    raise AssertionError(f"guard_missing:{phase}")
+                events.append(phase)
+
+        session = GuardedSession(self.clock)
+
+        class GuardedSpool(FakeSpool):
+            def lease_next(self, **kwargs: Any) -> Any:
+                session.assert_guarded("lease")
+                return super().lease_next(**kwargs)
+
+            def mark_sending(self, lease: Any, **kwargs: Any) -> Any:
+                session.assert_guarded("mark_sending")
+                return super().mark_sending(lease, **kwargs)
+
+            def mark_result(
+                self,
+                lease: Any,
+                result: ExecutionResult,
+                **kwargs: Any,
+            ) -> None:
+                session.assert_guarded("mark_result")
+                super().mark_result(lease, result, **kwargs)
+
+        spool = GuardedSpool(["intent-1"], self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+        self.assertEqual(
+            [
+                "guard_enter",
+                "pre_lease",
+                "authorized_map",
+                "lease",
+                "execute",
+                "mark_sending",
+                "mark_result",
+                "guard_exit",
+            ],
+            events,
+        )
+        self.assertEqual(0, session.guard_depth)
+
+    def test_lease_execution_guard_releases_on_empty_lease_and_exception(self) -> None:
+        class GuardedSession(FakeWarmSession):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__(clock)
+                self.guard_depth = 0
+                self.guard_exits = 0
+
+            @contextmanager
+            def lease_execution_guard(self) -> Any:
+                self.guard_depth += 1
+                try:
+                    yield
+                finally:
+                    self.guard_depth -= 1
+                    self.guard_exits += 1
+
+        empty_session = GuardedSession(self.clock)
+
+        class EmptySpool(FakeSpool):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__([], clock)
+                self.lease_calls = 0
+
+            def lease_next(self, **kwargs: Any) -> Any:
+                self.lease_calls += 1
+                return None
+
+        empty_spool = EmptySpool(self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=empty_spool,
+            backend_factory=lambda: empty_session,
+            runtime=self.runtime,
+            stop_requested=lambda: empty_spool.lease_calls >= 1,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+        self.assertEqual(0, empty_session.guard_depth)
+        self.assertEqual(1, empty_session.guard_exits)
+
+        blocked_session = GuardedSession(self.clock)
+        blocked_session.pre_lease_blocker_values = [
+            "stage179_submit_authorization_missing"
+        ]
+        blocked_spool = FakeSpool(["intent-blocked"], self.clock)
+        serve_executor(
+            paths=self.paths,
+            spool=blocked_spool,
+            backend_factory=lambda: blocked_session,
+            runtime=self.runtime,
+            stop_requested=lambda: blocked_session.pre_lease_calls >= 1,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+        self.assertEqual(0, blocked_session.guard_depth)
+        self.assertEqual(1, blocked_session.guard_exits)
+        self.assertEqual([], blocked_spool.transitions)
+
+        failing_session = GuardedSession(self.clock)
+
+        class FailingSpool(FakeSpool):
+            def mark_result(
+                self,
+                lease: Any,
+                result: ExecutionResult,
+                **kwargs: Any,
+            ) -> None:
+                raise RuntimeError("durable_result_failed")
+
+        failing_spool = FailingSpool(["intent-2"], self.clock)
+        with self.assertRaisesRegex(RuntimeError, "durable_result_failed"):
+            serve_executor(
+                paths=self.paths,
+                spool=failing_spool,
+                backend_factory=lambda: failing_session,
+                runtime=self.runtime,
+                stop_requested=lambda: not failing_spool.ready,
+                epoch_ns=self.clock.time_ns,
+                monotonic=self.clock.monotonic,
+                monotonic_ns=lambda: self.clock.monotonic_ns,
+                sleeper=lambda _: None,
+            )
+        self.assertEqual(0, failing_session.guard_depth)
+        self.assertEqual(1, failing_session.guard_exits)
+
     def test_multi_child_revalidates_authorization_before_every_physical_send(self) -> None:
         args = SimpleNamespace(target_date="2026-07-18")
         session = stage931._build_stage179_warm_ctp_session(
@@ -327,6 +1189,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         authorization_path = submit_authorization_path(self.runtime.output_root)
         authorization_now_ns = time.time_ns()
         authorization_expires_ns = authorization_now_ns + 30_000_000_000
+        intent_deadline_ns = authorization_now_ns + 60_000_000_000
         publish_submit_authorization(
             path=authorization_path,
             target_date="2026-07-18",
@@ -342,6 +1205,16 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                     "intent_id": "intent-1",
                     "payload_sha256": "a" * 64,
                     "intent_kind": "close",
+                    "source": "stage904_c9_intraday_close",
+                    "intent_role": "c9_initial_stop_close",
+                    "trace_id": "trace-1",
+                    "spool_sequence": 7,
+                    "state_revision": 3,
+                    "state_generation": "epoch-1:0",
+                    "position_epoch_id": "epoch-1",
+                    "root_position_id": "root-1",
+                    "position_cycle_id": "cycle-1",
+                    "deadline_epoch_ns": intent_deadline_ns,
                 }
             ],
             issued_epoch_ns=authorization_now_ns,
@@ -368,6 +1241,11 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 "all_symbols_ready": 1,
                 "expires_epoch_ns": authorization_expires_ns,
             },
+            spool_path=self.paths.spool_path,
+            spool_snapshot_digest="b" * 64,
+            cursor_digest="c" * 64,
+            stage902_evidence_digest="d" * 64,
+            stage927_evidence_digest="e" * 64,
         )
 
         class FakeMainEngine:
@@ -376,6 +1254,9 @@ class Stage179ExecutorServeTest(unittest.TestCase):
 
             def send_order(self, _request: Any, _gateway: str) -> str:
                 self.calls += 1
+                state["native_insert_identity"] = {
+                    "vt_orderid": f"CTP.order-{self.calls}"
+                }
                 revoke_submit_authorization(
                     authorization_path,
                     reason="test_mid_batch_revoke",
@@ -401,18 +1282,38 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                 target_date="2026-07-18",
                 intent_kind="close",
                 vt_symbol="JM609.DCE",
-                lease_owner="service-1",
+                source="stage904_c9_intraday_close",
+                trace_id="trace-1",
+                spool_sequence=7,
+                state_revision=4,
+                state="leased",
+                state_generation="epoch-1:0",
+                position_epoch_id="epoch-1",
+                deadline_epoch_ns=intent_deadline_ns,
+                lease_owner=session.service_generation,
+                payload={
+                    "intent_role": "c9_initial_stop_close",
+                    "root_position_id": "root-1",
+                    "position_cycle_id": "cycle-1",
+                },
             ),
             lease_token="lease-1",
         )
         ledger_events: list[dict[str, Any]] = []
-        with patch.object(
-            stage931,
-            "append_execution_ledger_event",
-            side_effect=lambda event, **_: ledger_events.append(dict(event)),
-        ):
-            with self.assertRaises(stage931.BrokerSendBatchError) as raised:
-                session._send_order(lease)
+        with session.lease_execution_guard():
+            self.assertEqual([], session.pre_lease_blockers())
+            self.assertEqual(
+                {"intent-1": "a" * 64},
+                session.pre_lease_authorized_intents(),
+            )
+            self.assertEqual([], session.post_lease_blockers(lease))
+            with patch.object(
+                stage931,
+                "append_execution_ledger_event",
+                side_effect=lambda event, **_: ledger_events.append(dict(event)),
+            ):
+                with self.assertRaises(stage931.BrokerSendBatchError) as raised:
+                    session._send_order(lease)
 
         self.assertEqual(1, raised.exception.send_order_call_count)
         self.assertEqual(1, engine.calls)
@@ -425,6 +1326,125 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual(1, len(blocked))
         self.assertEqual(1, blocked[0]["reconciliation_required"])
         self.assertEqual(1, blocked[0]["send_order_call_count"])
+
+    def test_cancel_takeover_query_missing_retries_without_external_callback(self) -> None:
+        args = SimpleNamespace(
+            target_date="2026-07-18",
+            fill_wait_seconds=0.0,
+            final_order_query_wait_seconds=0.0,
+            post_cancel_wait_seconds=0.0,
+        )
+        session = stage931._build_stage179_warm_ctp_session(
+            args,
+            self.runtime,
+            self.paths,
+        )
+        closure = {
+            name: cell.cell_contents
+            for name, cell in zip(
+                session._send_order.__code__.co_freevars,
+                session._send_order.__closure__ or (),
+            )
+        }
+        state = closure["state"]
+        schedule_residual_cancel = closure["schedule_residual_cancel"]
+        state["connection_generation"] = "connection-1"
+        state["main_engine"] = object()
+        state["td_api"] = object()
+        vt_orderid = "CTP.1_2_3"
+        state["rows"]["orders"].append(
+            {
+                "vt_orderid": vt_orderid,
+                "status": "not traded",
+                "traded": 0,
+            }
+        )
+        request = stage931.OrderRequest(
+            symbol="JM2609",
+            exchange=stage931.Exchange.DCE,
+            direction=stage931.Direction.SHORT,
+            type=stage931.OrderType.LIMIT,
+            volume=1,
+            price=1200.0,
+            offset=stage931.Offset.CLOSE,
+            reference="test-cancel-retry",
+        )
+        child_context = {
+            "target_date": "2026-07-18",
+            "intent_id": "intent-cancel-retry",
+            "fingerprint": "fingerprint-cancel-retry",
+            "child_order_id": "child-1",
+            "request": request,
+            "connection_generation": "connection-1",
+            "service_generation": session.service_generation,
+        }
+        query_calls: list[str] = []
+        exhausted = stage931.Event()
+        ledger_events: list[dict[str, Any]] = []
+
+        def query_without_owned_order(*_: Any, **__: Any) -> dict[str, Any]:
+            query_calls.append("order")
+            return {"confirmed": True, "orders": [], "blockers": [], "reqid": 7}
+
+        def append_event(event: dict[str, Any], **_: Any) -> dict[str, Any]:
+            ledger_events.append(dict(event))
+            if event.get("event_type") == "cancel_reconciliation_retry_exhausted":
+                exhausted.set()
+            return dict(event)
+
+        prior_duty = {
+            "cancel_duty_state": "reserved",
+            "cancel_duty_generation": 1,
+            "cancel_duty_owner_id": "other-worker",
+        }
+        with (
+            patch.object(
+                stage931,
+                "advance_cancel_duty_state",
+                return_value={
+                    "advanced": False,
+                    "blocker": "cancel_duty_owner_lease_active",
+                    "ledger_event": prior_duty,
+                },
+            ),
+            patch.object(
+                stage931,
+                "_final_order_query_epoch",
+                side_effect=query_without_owned_order,
+            ),
+            patch.object(
+                stage931,
+                "append_execution_ledger_event",
+                side_effect=append_event,
+            ),
+            patch.object(stage931, "revoke_readiness") as revoke,
+        ):
+            schedule_residual_cancel(vt_orderid, child_context)
+            self.assertTrue(exhausted.wait(2.0))
+
+        self.assertEqual(["order", "order"], query_calls)
+        self.assertTrue(state["transport_generation_invalidated"])
+        self.assertIn(
+            "stage179_ctp_transport_generation_invalidated",
+            session.transport_blockers(),
+        )
+        self.assertIn(
+            f"stage179_cancel_reconciliation_retry_exhausted:{vt_orderid}",
+            list(state["reconciliation_blockers"]),
+        )
+        revoke.assert_called_once_with(
+            self.paths.readiness_path,
+            service_generation=session.service_generation,
+            reason=f"cancel_reconciliation_retry_exhausted:{vt_orderid}",
+        )
+        self.assertEqual(
+            1,
+            sum(
+                event.get("event_type")
+                == "cancel_reconciliation_retry_exhausted"
+                for event in ledger_events
+            ),
+        )
 
     def test_api_slot_is_durable_before_spool_sending_and_broker_call(self) -> None:
         session = FakeWarmSession(self.clock)
@@ -820,8 +1840,43 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual(0, session.api_slot_call_count)
         self.assertEqual(0, session.send_order_call_count)
 
+    def test_pre_api_block_after_reserve_returns_retryable_only_after_atomic_terminal(self) -> None:
+        terminal_calls: list[tuple[list[str], str]] = []
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: {"ledger_fingerprint": "fingerprint-1"},
+            pre_api_slot_blockers=lambda *_: ["authorization_expired"],
+            pre_api_slot_safe_terminal=lambda _lease, blockers, phase: (
+                terminal_calls.append((list(blockers), phase))
+                or {"appended": True, "blocker": ""}
+            ),
+            reserve_api_slot=lambda *_: "slot-1",
+            send_order=lambda *_: "order-1",
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+
+        result = session.execute_spool_lease(
+            lease=SimpleNamespace(intent=SimpleNamespace(intent_id="intent-1")),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+        )
+
+        self.assertEqual("no_side_effect_retryable", result.disposition)
+        self.assertEqual("fingerprint-1", result.ledger_fingerprint)
+        self.assertEqual([(["authorization_expired"], "pre_api_slot")], terminal_calls)
+        self.assertEqual(0, session.api_slot_call_count)
+        self.assertEqual(0, session.send_order_call_count)
+
     def test_disconnect_during_api_slot_reservation_blocks_send(self) -> None:
         disconnected = {"value": False}
+        terminal_calls: list[tuple[str, list[str], str]] = []
 
         def reserve(_lease: Any) -> str:
             disconnected["value"] = True
@@ -843,6 +1898,12 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             fresh_bundle=lambda *_: (),
             reserve_api_slot=reserve,
             send_order=lambda *_: "order-1",
+            post_api_slot_safe_terminal=(
+                lambda _lease, batch_id, blockers, phase: (
+                    terminal_calls.append((batch_id, blockers, phase))
+                    or {"appended": True}
+                )
+            ),
             epoch_ns=self.clock.time_ns,
             monotonic=self.clock.monotonic,
         )
@@ -853,9 +1914,46 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             hard_deadline_monotonic=self.clock.monotonic() + 20.0,
         )
 
-        self.assertEqual("side_effect_unknown", result.disposition)
+        self.assertEqual("post_slot_no_native_retryable", result.disposition)
         self.assertEqual(0, result.send_order_call_count)
         self.assertEqual(0, session.send_order_call_count)
+        self.assertEqual("slot-1", terminal_calls[0][0])
+
+    def test_deadline_after_api_slot_uses_zero_native_safe_terminal(self) -> None:
+        terminal_calls: list[tuple[str, list[str], str]] = []
+
+        def reserve(_lease: Any) -> str:
+            self.clock.advance(21.0)
+            return "slot-deadline"
+
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=reserve,
+            send_order=lambda *_: self.fail("native send must remain zero"),
+            post_api_slot_safe_terminal=(
+                lambda _lease, batch_id, blockers, phase: (
+                    terminal_calls.append((batch_id, blockers, phase))
+                    or {"appended": True}
+                )
+            ),
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+        result = session.execute_spool_lease(
+            lease=SimpleNamespace(intent=SimpleNamespace(intent_id="intent-1")),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+        )
+        self.assertEqual("post_slot_no_native_retryable", result.disposition)
+        self.assertEqual(0, session.send_order_call_count)
+        self.assertEqual("pre_send_order_deadline", terminal_calls[0][2])
 
     def test_readiness_file_is_atomic_and_singleton_rejects_second_executor(self) -> None:
         readiness = stage931.TdReadinessLease(
@@ -980,6 +2078,83 @@ class Stage179ExecutorServeTest(unittest.TestCase):
 
         run_once.assert_not_called()
         run_serve.assert_not_called()
+
+    def test_warm_flag_cannot_reenable_one_shot_live_real(self) -> None:
+        argv = [
+            "--command",
+            "once",
+            "--target-date",
+            "2026-07-18",
+            "--stage179-warm-executor",
+            "--mode",
+            "live-real",
+            "--runtime-profile",
+            "production-live",
+            "--order-scope",
+            "live",
+        ]
+        stderr = StringIO()
+        with patch.object(stage931, "run_once", return_value={}) as run_once:
+            with patch.object(stage931, "run_serve") as run_serve:
+                with patch.object(
+                    stage931, "_build_stage179_warm_ctp_session"
+                ) as build_ctp:
+                    with redirect_stderr(stderr):
+                        with self.assertRaisesRegex(SystemExit, "^2$"):
+                            stage931.main(argv)
+
+        run_once.assert_not_called()
+        run_serve.assert_not_called()
+        build_ctp.assert_not_called()
+        self.assertIn(
+            "error: --command=once does not permit --mode=live-real; "
+            "production submission requires --command=serve",
+            stderr.getvalue(),
+        )
+
+    def test_import_level_one_shot_live_real_stops_before_any_ctp_construction(self) -> None:
+        args = SimpleNamespace(mode="live-real")
+        with patch.object(stage931, "EventEngine") as event_engine:
+            with patch.object(stage931, "MainEngine") as main_engine:
+                with patch.object(
+                    stage931, "_build_stage179_warm_ctp_session"
+                ) as build_ctp:
+                    with self.assertRaisesRegex(
+                        stage931.RuntimeProfileError,
+                        "^stage931_once_live_real_disabled_use_command_serve$",
+                    ):
+                        stage931.run_once(args)
+
+        event_engine.assert_not_called()
+        main_engine.assert_not_called()
+        build_ctp.assert_not_called()
+
+    def test_import_level_production_live_one_shot_cannot_bypass_serve(self) -> None:
+        args = SimpleNamespace(
+            command="once",
+            mode="live-real",
+            runtime_profile="production-live",
+            order_scope="live",
+            stage179_warm_executor=True,
+        )
+        with patch.object(stage931, "EventEngine") as event_engine:
+            with patch.object(stage931, "MainEngine") as main_engine:
+                with patch.object(
+                    stage931, "_build_stage179_warm_ctp_session"
+                ) as build_ctp:
+                    with patch.object(
+                        stage931, "reserve_execution_api_slots"
+                    ) as reserve_slots:
+                        with self.assertRaisesRegex(
+                            stage931.RuntimeProfileError,
+                            "^stage931_once_live_real_disabled_use_command_serve$",
+                        ):
+                            stage931.run_once(args)
+
+        event_engine.assert_not_called()
+        main_engine.assert_not_called()
+        build_ctp.assert_not_called()
+        reserve_slots.assert_not_called()
 
     def test_warm_live_real_wrong_profile_fails_before_gate_or_ctp_builder(self) -> None:
         args = stage931.parse_args(
@@ -1213,7 +2388,8 @@ class Stage179ExecutorServeTest(unittest.TestCase):
             "symbol": "JM609",
             "exchange": "DCE",
             "direction": "short",
-            "type": "limit",
+            "type": "FAK",
+            "physical_tif_policy_version": "stage179_open_fak_v1",
             "volume": 1,
             "price": 1245.5,
             "offset": "open",

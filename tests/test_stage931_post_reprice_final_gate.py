@@ -847,6 +847,243 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 self.assertTrue(stage931._final_reprice_blockers(result))
                 self.assertEqual(request.price, 100.0)
 
+    def test_c9_exchange_tick_price_matrix_is_marketable_or_zero_api(self) -> None:
+        exchanges = (
+            stage931.Exchange.CFFEX,
+            stage931.Exchange.SHFE,
+            stage931.Exchange.INE,
+            stage931.Exchange.DCE,
+            stage931.Exchange.CZCE,
+            stage931.Exchange.GFEX,
+        )
+        priceticks = (0.1, 0.2, 0.5, 1.0, 5.0, 10.0)
+
+        for exchange in exchanges:
+            for pricetick in priceticks:
+                symbol = "x2609"
+                vt_symbol = f"{symbol}.{exchange.value}"
+                contract = SimpleNamespace(
+                    vt_symbol=vt_symbol,
+                    pricetick=pricetick,
+                    gateway_name="CTP",
+                )
+                send_calls: list[object] = []
+                engine = SimpleNamespace(
+                    subscribe=lambda *_args, **_kwargs: None,
+                    get_contract=lambda requested, current=contract: (
+                        current if requested == current.vt_symbol else None
+                    ),
+                    send_order=lambda *args: send_calls.append(args),
+                )
+                intent = {
+                    "vt_symbol": vt_symbol,
+                    "source": "stage901_pending_order",
+                    "pricetick": pricetick,
+                }
+                base = 1000.0 * pricetick
+                lower = base - 10.0 * pricetick
+                upper = base + 10.0 * pricetick
+
+                edge_cases = (
+                    (
+                        "long_upper_limit",
+                        stage931.Direction.LONG,
+                        upper - pricetick,
+                        upper,
+                        lower,
+                        upper,
+                    ),
+                    (
+                        "short_lower_limit",
+                        stage931.Direction.SHORT,
+                        lower,
+                        lower + pricetick,
+                        lower,
+                        upper,
+                    ),
+                )
+                for (
+                    name,
+                    direction,
+                    bid,
+                    ask,
+                    limit_down,
+                    limit_up,
+                ) in edge_cases:
+                    with self.subTest(
+                        exchange=exchange.value,
+                        pricetick=pricetick,
+                        case=name,
+                    ):
+                        request = stage931.OrderRequest(
+                            symbol=symbol,
+                            exchange=exchange,
+                            direction=direction,
+                            type=stage931.OrderType.FAK,
+                            volume=1,
+                            price=base,
+                            offset=stage931.Offset.OPEN,
+                            reference="c9-price-matrix",
+                        )
+                        tick = {
+                            "vt_symbol": vt_symbol,
+                            "datetime": datetime.now().isoformat(),
+                            "received_monotonic": 101.0,
+                            "gateway_name": "CTP",
+                            "last_price": (bid + ask) / 2.0,
+                            "bid_price_1": bid,
+                            "ask_price_1": ask,
+                            "limit_down": limit_down,
+                            "limit_up": limit_up,
+                        }
+                        with patch.object(
+                            stage931,
+                            "_subscribe_and_wait_fresh_tick",
+                            return_value=(tick, 0.01, "ctp_event_tick"),
+                        ):
+                            result = stage931._post_snapshot_final_reprice(
+                                engine,
+                                {"ticks": []},
+                                intent,
+                                request,
+                                max_tick_age_seconds=30,
+                                q2_completed_monotonic=100.0,
+                                tick_wait_seconds=0,
+                            )
+                        self.assertEqual("applied", result["final_reprice_status"])
+                        self.assertTrue(
+                            stage931._price_on_tick(request.price, pricetick)
+                        )
+                        self.assertGreaterEqual(request.price, limit_down)
+                        self.assertLessEqual(request.price, limit_up)
+                        if direction == stage931.Direction.LONG:
+                            self.assertGreaterEqual(request.price, ask)
+                        else:
+                            self.assertLessEqual(request.price, bid)
+                        self.assertEqual([], send_calls)
+
+                invalid_cases = (
+                    (
+                        "missing_bid",
+                        stage931.Direction.LONG,
+                        0.0,
+                        base,
+                        lower,
+                        upper,
+                        "blocked_c9_executable_quote_missing",
+                    ),
+                    (
+                        "missing_ask",
+                        stage931.Direction.SHORT,
+                        base,
+                        0.0,
+                        lower,
+                        upper,
+                        "blocked_c9_executable_quote_missing",
+                    ),
+                    (
+                        "crossed",
+                        stage931.Direction.LONG,
+                        base + pricetick,
+                        base,
+                        lower,
+                        upper,
+                        "blocked_c9_crossed_quote",
+                    ),
+                    (
+                        "max_float_quote",
+                        stage931.Direction.LONG,
+                        sys.float_info.max,
+                        base,
+                        lower,
+                        upper,
+                        "blocked_c9_executable_quote_missing",
+                    ),
+                    (
+                        "max_float_limit",
+                        stage931.Direction.LONG,
+                        base - pricetick,
+                        base,
+                        lower,
+                        sys.float_info.max,
+                        "blocked_c9_price_limits_missing",
+                    ),
+                    (
+                        "long_tolerance_non_marketable",
+                        stage931.Direction.LONG,
+                        base - pricetick,
+                        base + pricetick * 1e-9,
+                        lower,
+                        base + pricetick * 4e-9,
+                        "blocked_c9_no_executable_price_within_limits",
+                    ),
+                    (
+                        "short_tolerance_non_marketable",
+                        stage931.Direction.SHORT,
+                        base - pricetick * 1e-9,
+                        base + pricetick,
+                        base - pricetick * 4e-9,
+                        upper,
+                        "blocked_c9_no_executable_price_within_limits",
+                    ),
+                )
+                for (
+                    name,
+                    direction,
+                    bid,
+                    ask,
+                    limit_down,
+                    limit_up,
+                    expected_status,
+                ) in invalid_cases:
+                    with self.subTest(
+                        exchange=exchange.value,
+                        pricetick=pricetick,
+                        case=name,
+                    ):
+                        request = stage931.OrderRequest(
+                            symbol=symbol,
+                            exchange=exchange,
+                            direction=direction,
+                            type=stage931.OrderType.FAK,
+                            volume=1,
+                            price=base,
+                            offset=stage931.Offset.OPEN,
+                            reference="c9-price-matrix",
+                        )
+                        tick = {
+                            "vt_symbol": vt_symbol,
+                            "datetime": datetime.now().isoformat(),
+                            "received_monotonic": 101.0,
+                            "gateway_name": "CTP",
+                            "last_price": base,
+                            "bid_price_1": bid,
+                            "ask_price_1": ask,
+                            "limit_down": limit_down,
+                            "limit_up": limit_up,
+                        }
+                        with patch.object(
+                            stage931,
+                            "_subscribe_and_wait_fresh_tick",
+                            return_value=(tick, 0.01, "ctp_event_tick"),
+                        ):
+                            result = stage931._post_snapshot_final_reprice(
+                                engine,
+                                {"ticks": []},
+                                intent,
+                                request,
+                                max_tick_age_seconds=30,
+                                q2_completed_monotonic=100.0,
+                                tick_wait_seconds=0,
+                            )
+                        self.assertEqual(
+                            expected_status,
+                            result["final_reprice_status"],
+                        )
+                        self.assertTrue(stage931._final_reprice_blockers(result))
+                        self.assertEqual(base, request.price)
+                        self.assertEqual([], send_calls)
+
     def test_stage372_pre_snapshot_price_is_not_repriced_or_subscribed(self) -> None:
         subscribe_calls: list[object] = []
         engine = self._stage372_engine()

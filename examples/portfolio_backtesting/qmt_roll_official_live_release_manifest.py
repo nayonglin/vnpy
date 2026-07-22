@@ -119,6 +119,21 @@ def _tree_fingerprint(rows: list[dict[str, Any]]) -> str:
     return hashlib.sha256(_canonical_json_bytes(rows)).hexdigest()
 
 
+def release_critical_file_rows(
+    *,
+    repo_root: Path | str,
+    critical_files: Iterable[str | Path],
+) -> list[dict[str, Any]]:
+    """Return the canonical byte-level binding used by release manifests."""
+    repo = Path(repo_root).expanduser().resolve(strict=True)
+    return _critical_file_rows(repo_root=repo, critical_files=critical_files)
+
+
+def release_tree_fingerprint(rows: list[dict[str, Any]]) -> str:
+    """Return the canonical fingerprint for an already-normalized file table."""
+    return _tree_fingerprint(rows)
+
+
 def build_release_manifest(
     *,
     repo_root: Path | str,
@@ -432,6 +447,24 @@ def load_and_validate_release_manifest(
         source_commit=source_commit,
         current_commit=str(current_commit).strip().lower(),
     )
+    if required_profile == ExecutionRuntimeProfile.PRODUCTION_LIVE.value:
+        normalized_current_commit = str(current_commit).strip().lower()
+        if source_commit != normalized_current_commit:
+            raise ReleaseManifestError(
+                "release_manifest_production_source_commit_mismatch"
+            )
+        tree_status = _git(
+            repo,
+            "status",
+            "--porcelain",
+            "--untracked-files=all",
+        )
+        if tree_status.returncode != 0:
+            raise ReleaseManifestError(
+                "release_manifest_production_tree_status_failed"
+            )
+        if tree_status.stdout.strip():
+            raise ReleaseManifestError("release_manifest_production_tree_dirty")
     try:
         parsed_time = datetime.fromisoformat(
             str(payload.get("created_at_utc", "")).replace("Z", "+00:00")
@@ -449,7 +482,9 @@ __all__ = [
     "ReleaseManifestError",
     "build_release_manifest",
     "load_and_validate_release_manifest",
+    "release_critical_file_rows",
     "release_manifest_digest",
+    "release_tree_fingerprint",
     "serialize_release_manifest",
     "write_release_manifest",
 ]

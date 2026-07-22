@@ -1753,6 +1753,69 @@ def _parse_dt(value: Any) -> datetime | None:
     return None
 
 
+def _comparable_timestamp_ns(value: Any) -> int | None:
+    """Normalize one evidence timestamp for strict causal comparisons."""
+
+    text = _clean(value)
+    if not text:
+        return None
+    try:
+        timestamp = pd.Timestamp(text)
+    except (TypeError, ValueError):
+        return None
+    if pd.isna(timestamp):
+        return None
+    if timestamp.tzinfo is None:
+        # Legacy ledger rows used naive wall-clock strings, but every Stage904
+        # production timestamp is defined in the exchange-local Shanghai
+        # clock.  Localize before converting so aware +08 query evidence and
+        # legacy naive fill evidence share one timeline.
+        timestamp = timestamp.tz_localize("Asia/Shanghai")
+    timestamp = timestamp.tz_convert("UTC").tz_localize(None)
+    return int(timestamp.value)
+
+
+def _broker_position_snapshot_at(
+    position: dict[str, Any],
+    readonly_summary: dict[str, Any] | None,
+    readonly_bundle_manifest: dict[str, Any] | None,
+) -> str:
+    """Return the broker-position evidence time bound to the query bundle."""
+
+    summary = readonly_summary if isinstance(readonly_summary, dict) else {}
+    manifest = (
+        readonly_bundle_manifest
+        if isinstance(readonly_bundle_manifest, dict)
+        else {}
+    )
+    summary_bundle = (
+        summary.get("broker_query_bundle")
+        if isinstance(summary.get("broker_query_bundle"), dict)
+        else {}
+    )
+    for bundle in (summary_bundle, manifest):
+        queries = bundle.get("queries") if isinstance(bundle.get("queries"), dict) else {}
+        query = queries.get("positions") if isinstance(queries.get("positions"), dict) else {}
+        completed_at = _clean(query.get("completed_at"))
+        if completed_at:
+            return completed_at
+    for key in ("query_completed_at", "snapshot_at", "generated_at"):
+        value = _clean(position.get(key))
+        if value:
+            return value
+    return ""
+
+
+def _ledger_fill_observed_at(row: dict[str, Any] | None) -> str:
+    if not row:
+        return ""
+    return _clean(
+        row.get("broker_trade_at")
+        or row.get("trade_at")
+        or row.get("generated_at")
+    )
+
+
 def _age_seconds(value: Any) -> float | None:
     dt = _parse_dt(value)
     if dt is None:
@@ -2391,6 +2454,7 @@ def _stage904_stop_close_fills(
     vt_symbol: str,
     original_direction: str,
     position_epoch_id: str | None = None,
+    position_cycle_id: str | None = None,
 ) -> list[dict[str, Any]]:
     close_direction = _opposite_direction(original_direction)
     matched: list[dict[str, Any]] = []
@@ -2409,6 +2473,12 @@ def _stage904_stop_close_fills(
             payload = _ledger_intent_payload(row)
             if _clean(row.get("position_epoch_id") or payload.get("position_epoch_id")) != position_epoch_id:
                 continue
+        if position_cycle_id is not None:
+            payload = _ledger_intent_payload(row)
+            if _clean(
+                row.get("position_cycle_id") or payload.get("position_cycle_id")
+            ) != position_cycle_id:
+                continue
         intent_id = _clean(row.get("intent_id"))
         if (
             intent_id.startswith("STAGE905-C9MON")
@@ -2418,6 +2488,88 @@ def _stage904_stop_close_fills(
         ):
             matched.append(row)
     return matched
+
+
+def _partial_close_terminal_attempt_identity(
+    rows: list[dict[str, Any]],
+    close_fills: list[dict[str, Any]],
+    *,
+    target_date: str,
+    vt_symbol: str,
+    original_direction: str,
+    position_epoch_id: str,
+    position_cycle_id: str,
+) -> tuple[int, str]:
+    """Bind a residual re-close to one exact, terminal broker attempt.
+
+    A smaller position snapshot by itself is not an idempotency boundary: it
+    may race a still-active prior close.  Only a durable priced fill plus the
+    terminal identity of that same physical order may mint the next action.
+    """
+
+    del close_fills  # Positive fills are not required: zero-fill terminal is an attempt.
+    close_direction = _opposite_direction(original_direction)
+    matched_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if _clean(row.get("target_date")) != target_date:
+            continue
+        if _ledger_vt_symbol(row) != vt_symbol:
+            continue
+        if _ledger_direction(row) != close_direction or _ledger_offset(row) != "close":
+            continue
+        payload = _ledger_intent_payload(row)
+        if position_epoch_id and _clean(
+            row.get("position_epoch_id") or payload.get("position_epoch_id")
+        ) != position_epoch_id:
+            continue
+        if position_cycle_id and _clean(
+            row.get("position_cycle_id") or payload.get("position_cycle_id")
+        ) != position_cycle_id:
+            continue
+        if int(_to_float(row.get("close_submit_attempt_no"), 0.0)) > 0:
+            matched_rows.append(row)
+    groups: dict[tuple[str, int], list[dict[str, Any]]] = {}
+    for row in matched_rows:
+        key = (
+            _clean(row.get("intent_fingerprint")),
+            int(_to_float(row.get("close_submit_attempt_no"), 0.0)),
+        )
+        groups.setdefault(key, []).append(row)
+    for (_, attempt_no), group in reversed(list(groups.items())):
+        expected_count = max(
+            1,
+            max(
+                int(_to_float(row.get("child_order_count"), 1.0))
+                for row in group
+            ),
+        )
+        terminal_by_child: dict[str, dict[str, Any]] = {}
+        for row in group:
+            event_type = _clean(row.get("event_type"))
+            terminal = bool(
+                event_type == "broker_order_query_terminal_observed"
+                and int(
+                    _to_float(row.get("fill_price_reconciliation_pending"), 1.0)
+                )
+                == 0
+            ) or bool(
+                event_type == "rejected_or_inactive"
+                and int(_to_float(row.get("close_retry_audit_version"), 0.0)) > 0
+                and int(_to_float(row.get("close_retry_known_zero"), 0.0)) == 1
+            )
+            child_identity = _clean(row.get("child_order_id")) or _clean(
+                row.get("vt_orderid")
+            )
+            if terminal and child_identity and _clean(row.get("record_checksum")):
+                terminal_by_child[child_identity] = row
+        if len(terminal_by_child) != expected_count:
+            continue
+        checksums = sorted(
+            _clean(row.get("record_checksum"))
+            for row in terminal_by_child.values()
+        )
+        return attempt_no, json.dumps(checksums, separators=(",", ":"))
+    return 0, ""
 
 
 def _stage904_retry_open_attempted(
@@ -2648,6 +2800,67 @@ def _retry_actions(
     return pd.DataFrame(rows)
 
 
+def _ledger_only_live_position_rows(
+    execution_ledger_rows: list[dict[str, Any]],
+    candidate_positions: pd.DataFrame,
+    target_date: str,
+) -> list[dict[str, Any]]:
+    represented = {
+        (_clean(row.get("vt_symbol")), _normalize_direction(row.get("direction")))
+        for row in candidate_positions.to_dict(orient="records")
+    }
+    ledger_keys = {
+        (_ledger_vt_symbol(row), _ledger_direction(row))
+        for row in execution_ledger_rows
+        if _clean(row.get("target_date")) == target_date
+        and _clean(row.get("event_type")) == "filled_or_part_filled"
+        and _ledger_offset(row) == "open"
+        and _to_float(row.get("trade_volume_delta"), 0.0) > 0
+        and _to_float(row.get("price"), 0.0) > 0
+    }
+    result: list[dict[str, Any]] = []
+    for vt_symbol, direction in sorted(ledger_keys - represented):
+        if not vt_symbol or direction not in {"long", "short"}:
+            continue
+        root_id = generate_root_position_id(
+            target_date=target_date, vt_symbol=vt_symbol, direction=direction
+        )
+        fill = latest_position_cycle_open_fill(
+            execution_ledger_rows,
+            target_date,
+            vt_symbol,
+            direction,
+            root_position_id=root_id,
+        )
+        if not fill:
+            continue
+        close_fills = _stage904_stop_close_fills(
+            execution_ledger_rows,
+            target_date,
+            vt_symbol,
+            direction,
+            position_epoch_id=_clean(fill.get("position_epoch_id")) or None,
+            position_cycle_id=_clean(fill.get("position_cycle_id")) or None,
+        )
+        residual_volume = max(
+            0.0,
+            _to_float(fill.get("volume"), 0.0) - _filled_volume(close_fills),
+        )
+        if residual_volume <= 1e-9:
+            continue
+        result.append(
+            {
+                "vt_symbol": vt_symbol,
+                "direction": direction,
+                "volume": residual_volume,
+                "end_pos": residual_volume,
+                "close_price": _to_float(fill.get("price"), 0.0),
+                "position_source": "execution_ledger_current_cycle",
+            }
+        )
+    return result
+
+
 def _action_for_position(
     position: dict[str, Any],
     *,
@@ -2686,6 +2899,40 @@ def _action_for_position(
         direction,
         root_position_id=root_position_id or None,
     ) or weighted_open_fill(execution_ledger_rows, target_date, vt_symbol, direction)
+    ledger_actual_volume = 0.0
+    ledger_residual_volume = 0.0
+    ledger_close_fills: list[dict[str, Any]] = []
+    if ledger_open_candidate is not None:
+        ledger_actual_volume = _to_float(ledger_open_candidate.get("volume"), 0.0)
+        ledger_close_fills = _stage904_stop_close_fills(
+            execution_ledger_rows,
+            target_date,
+            vt_symbol,
+            direction,
+            position_epoch_id=(
+                _clean(ledger_open_candidate.get("position_epoch_id")) or None
+            ),
+            position_cycle_id=(
+                _clean(ledger_open_candidate.get("position_cycle_id")) or None
+            ),
+        )
+        ledger_residual_volume = max(
+            0.0, ledger_actual_volume - _filled_volume(ledger_close_fills)
+        )
+    close_residual_attempt_no = 0
+    close_residual_terminal_identity = ""
+    if (
+        require_broker_fill_price
+        and position_source == "shadow"
+        and ledger_open_candidate is not None
+    ):
+        # Production may observe EVENT_TRADE before the next readonly broker
+        # position bundle.  Exact current-cycle ledger fills are already
+        # vt_tradeid-idempotent and priced; use their *actual filled volume*
+        # (including partial fills), never the Stage901 planned volume.
+        if ledger_actual_volume > 0:
+            volume = ledger_residual_volume
+            position_source = "execution_ledger_current_cycle"
     bundle_manifest = (
         readonly_bundle_manifest
         if isinstance(readonly_bundle_manifest, dict)
@@ -2701,6 +2948,74 @@ def _action_for_position(
         bundle_manifest=bundle_manifest,
         bundle_evidence=readonly_bundle_evidence or {},
     )
+    broker_position_snapshot_at = _broker_position_snapshot_at(
+        position,
+        readonly_summary,
+        bundle_manifest,
+    )
+    mutation_times = [
+        (_comparable_timestamp_ns(observed_at), observed_at)
+        for item in [ledger_open_candidate, *ledger_close_fills]
+        if item is not None
+        for observed_at in [_ledger_fill_observed_at(item)]
+        if _comparable_timestamp_ns(observed_at) is not None
+    ]
+    ledger_fill_observed_at = (
+        max(mutation_times, key=lambda item: int(item[0] or 0))[1]
+        if mutation_times
+        else ""
+    )
+    broker_position_snapshot_ns = _comparable_timestamp_ns(
+        broker_position_snapshot_at
+    )
+    ledger_fill_observed_ns = _comparable_timestamp_ns(ledger_fill_observed_at)
+    broker_snapshot_precedes_ledger_fill = False
+    fresh_broker_ledger_residual_conflict = False
+    if (
+        require_broker_fill_price
+        and position_source == "broker"
+        and broker_bundle_valid
+        and ledger_open_candidate is not None
+        and ledger_actual_volume > 0
+    ):
+        if (
+            broker_position_snapshot_ns is not None
+            and ledger_fill_observed_ns is not None
+            and broker_position_snapshot_ns < ledger_fill_observed_ns
+        ):
+            # The exact EVENT_TRADE is causally newer than this position
+            # snapshot.  The broker row cannot be current-epoch authority.
+            broker_snapshot_precedes_ledger_fill = True
+            volume = ledger_residual_volume
+            position_source = "execution_ledger_current_cycle"
+        elif (
+            broker_position_snapshot_ns is not None
+            and ledger_fill_observed_ns is not None
+            and broker_position_snapshot_ns >= ledger_fill_observed_ns
+            and abs(volume - ledger_residual_volume) > 1e-9
+        ):
+            # A complete position snapshot after the last exact fill must
+            # agree with the ledger residual.  Divergence is evidence of an
+            # unresolved external/manual trade or missing callback, never a
+            # precedence choice that Stage904 may make silently.
+            fresh_broker_ledger_residual_conflict = True
+            reasons.append(
+                "fresh_broker_position_ledger_residual_conflict:"
+                f"broker={volume};ledger={ledger_residual_volume};"
+                f"broker_snapshot_at={broker_position_snapshot_at};"
+                f"ledger_fill_at={ledger_fill_observed_at}"
+            )
+        elif (
+            broker_position_snapshot_ns is None
+            or ledger_fill_observed_ns is None
+        ) and abs(volume - ledger_residual_volume) > 1e-9:
+            fresh_broker_ledger_residual_conflict = True
+            reasons.append(
+                "broker_ledger_residual_temporal_order_unresolved_fail_closed:"
+                f"broker={volume};ledger={ledger_residual_volume};"
+                f"broker_snapshot_at={broker_position_snapshot_at or 'missing'};"
+                f"ledger_fill_at={ledger_fill_observed_at or 'missing'}"
+            )
     broker_open_trade = None
     if broker_bundle_valid:
         broker_open_trade = _weighted_broker_open_trade(
@@ -2775,6 +3090,21 @@ def _action_for_position(
         direction,
         position_epoch_id=selected_position_epoch_id or None,
     )
+    if selected_position_epoch_id:
+        (
+            close_residual_attempt_no,
+            close_residual_terminal_identity,
+        ) = _partial_close_terminal_attempt_identity(
+            execution_ledger_rows,
+            stop_close_fills,
+            target_date=target_date,
+            vt_symbol=vt_symbol,
+            original_direction=direction,
+            position_epoch_id=selected_position_epoch_id,
+            position_cycle_id=_clean(
+                (ledger_open_trade or {}).get("position_cycle_id")
+            ),
+        )
 
     if not vt_symbol:
         reasons.append("missing_vt_symbol")
@@ -2950,6 +3280,16 @@ def _action_for_position(
         "broker_query_trading_day": broker_query_trading_day,
         "broker_query_bundle_valid": int(broker_bundle_valid),
         "broker_query_bundle_reason": broker_bundle_reason,
+        "broker_position_snapshot_at": broker_position_snapshot_at,
+        "ledger_fill_observed_at": ledger_fill_observed_at,
+        "broker_snapshot_precedes_ledger_fill": int(
+            broker_snapshot_precedes_ledger_fill
+        ),
+        "fresh_broker_ledger_residual_conflict": int(
+            fresh_broker_ledger_residual_conflict
+        ),
+        "close_residual_attempt_no": close_residual_attempt_no,
+        "close_residual_terminal_identity": close_residual_terminal_identity,
         "broker_trade_snapshot_rows": int(len(broker_trades)),
         "entry_risk_date": risk_date,
         "entry_day_active": int(entry_day_active),
@@ -3320,13 +3660,32 @@ def _apply_state_to_position_action(
         )
     if (
         state.get("phase") == PHASE_INITIAL_STOP_LATCHED
-        and _clean(base.get("position_source")) == "broker"
+        and _clean(base.get("position_source"))
+        in {"broker", "execution_ledger_current_cycle"}
     ):
-        broker_residual = int(round(_to_float(base.get("volume"), 0.0)))
-        if broker_residual > 0:
-            state = update_current_position_volume(
-                state, volume=broker_residual
-            )
+        # An exact current-cycle EVENT_TRADE ledger is authoritative for our
+        # own filled volume before the next readonly broker bundle arrives.
+        # Its terminal child checksum may therefore mint the one bounded
+        # residual/zero-fill close reissue.  Stage931 still performs a fresh
+        # same-connection broker position O-P-O immediately before any send.
+        current_residual = int(round(_to_float(base.get("volume"), 0.0)))
+        if current_residual > 0:
+            try:
+                state = update_current_position_volume(
+                    state,
+                    volume=current_residual,
+                    close_residual_attempt_no=int(
+                        _to_float(base.get("close_residual_attempt_no"), 0.0)
+                    ),
+                    close_residual_terminal_identity=_clean(
+                        base.get("close_residual_terminal_identity")
+                    ),
+                )
+            except ValueError as exc:
+                return _blocked_state_row(
+                    base,
+                    f"partial_close_residual_terminal_identity_missing:{exc}",
+                )
 
     retry_broker_blocker = ""
     retry_position_volume_source = ""
@@ -3362,9 +3721,22 @@ def _apply_state_to_position_action(
         if not retry_broker_blocker and rounded_broker_volume > 0:
             # The broker row is authoritative for the protective second stop;
             # it may be smaller than the retry target after a partial fill.
-            state = update_current_position_volume(
-                state, volume=rounded_broker_volume
-            )
+            try:
+                state = update_current_position_volume(
+                    state,
+                    volume=rounded_broker_volume,
+                    close_residual_attempt_no=int(
+                        _to_float(base.get("close_residual_attempt_no"), 0.0)
+                    ),
+                    close_residual_terminal_identity=_clean(
+                        base.get("close_residual_terminal_identity")
+                    ),
+                )
+            except ValueError as exc:
+                return _blocked_state_row(
+                    base,
+                    f"partial_close_residual_terminal_identity_missing:{exc}",
+                )
             retry_position_volume_source = "fresh_complete_broker_position_generation"
         elif ledger_retry_volume > 0:
             # EVENT_TRADE is definitive evidence that risk exists even when the
@@ -3472,6 +3844,13 @@ def _apply_state_to_position_action(
         "attempt_no": state["attempt_no"],
         "intent_role": _clean((pending or {}).get("intent_role")),
         "action_id": _clean((pending or {}).get("action_id")),
+        "logical_close_root_id": _clean((pending or {}).get("logical_close_root_id")),
+        "prior_close_terminal_checksum": _clean(
+            (pending or {}).get("prior_close_terminal_checksum")
+        ),
+        "close_execution_attempt_no": int(
+            _to_float((pending or {}).get("close_execution_attempt_no"), 0.0)
+        ),
         "state_phase": phase,
         "state_revision": state.get("revision", 0),
         "feed_gap_latched": int(bool(state.get("feed_gap_latched"))),
@@ -3567,6 +3946,13 @@ def _state_only_action_row(
         "attempt_no": state.get("attempt_no"),
         "intent_role": _clean((pending or {}).get("intent_role")),
         "action_id": _clean((pending or {}).get("action_id")),
+        "logical_close_root_id": _clean((pending or {}).get("logical_close_root_id")),
+        "prior_close_terminal_checksum": _clean(
+            (pending or {}).get("prior_close_terminal_checksum")
+        ),
+        "close_execution_attempt_no": int(
+            _to_float((pending or {}).get("close_execution_attempt_no"), 0.0)
+        ),
         "state_phase": state.get("phase"),
         "state_revision": state.get("revision", 0),
         "feed_gap_latched": int(bool(state.get("feed_gap_latched"))),
@@ -4808,8 +5194,16 @@ def run_intraday_monitor(
             state_store_error = f"state_corrupt_fail_closed:{exc}"
 
         candidate_positions = monitor_positions
-        if require_broker_fill_price and not candidate_positions.empty and "position_source" in candidate_positions.columns:
-            candidate_positions = candidate_positions[candidate_positions["position_source"].astype(str).eq("broker")].copy()
+        if require_broker_fill_price:
+            ledger_only_rows = _ledger_only_live_position_rows(
+                execution_ledger_rows, candidate_positions, target_date
+            )
+            if ledger_only_rows:
+                candidate_positions = pd.concat(
+                    [candidate_positions, pd.DataFrame(ledger_only_rows)],
+                    ignore_index=True,
+                    sort=False,
+                )
 
         base_rows = [
             _action_for_position(

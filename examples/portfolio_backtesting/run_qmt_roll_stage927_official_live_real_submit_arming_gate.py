@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import os
 from datetime import datetime
@@ -9,7 +11,14 @@ from typing import Any
 
 import pandas as pd
 
-from qmt_roll_official_live_config import OFFICIAL_LIVE_ALIAS, OFFICIAL_LIVE_FAMILY_VERSION, OFFICIAL_LIVE_VERSION
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_CAPITAL,
+    OFFICIAL_LIVE_CAPITAL_LABEL,
+    OFFICIAL_LIVE_FAMILY_VERSION,
+    OFFICIAL_LIVE_VERSION,
+)
 from qmt_roll_official_live_phase_d_config import (
     KILL_SWITCH_PATH,
     PHASE_D_CONFIRM_TEXT,
@@ -21,6 +30,48 @@ from run_qmt_alignment_backtest import OUTPUT_DIR
 MODEL_TAG = "stage927_official_live_real_submit_arming_gate_v1"
 OUTPUT_PREFIX = "qmt_roll_stage927_official_live_real_submit_arming_gate"
 CURRENT_C9_FAMILY_VERSION = "stage819_c9_intraday_stop_retry"
+SCOPE_CAPABILITY_SCHEMA_VERSION = 1
+_SHA256_HEX_LENGTH = 64
+
+_SCOPE_COMMON_REQUIRED_CHECKS = (
+    "profile_is_current_c9",
+    "acceptance_suite_passed_fail_closed",
+    "completion_audit_proven",
+    "controller_not_killed_and_no_order_api",
+    "health_alive",
+    "static_order_boundary_passed",
+    "scheduler_dynamic_target_ready",
+    "no_unresolved_fail_closed_incident",
+    "account_recovery_not_required",
+    "account_recovery_ack_suite_passed",
+    "aligned_idle_integration_passed",
+    "kill_switch_inactive",
+    "scope_evidence_current_official_identity",
+    "scope_controller_capability_baseline",
+    "scope_broker_account_snapshot_usable",
+    "scope_order_api_evidence_complete_zero",
+    "scope_real_submit_env_enabled",
+    "scope_real_submit_confirm_exact",
+)
+_SCOPE_REQUIRED_CHECKS = {
+    "reduce_close": _SCOPE_COMMON_REQUIRED_CHECKS,
+    "retry_open": (
+        *_SCOPE_COMMON_REQUIRED_CHECKS,
+        "broker_shadow_reconcile_aligned",
+    ),
+    "initial_open": (
+        *_SCOPE_COMMON_REQUIRED_CHECKS,
+        "broker_shadow_reconcile_aligned",
+    ),
+}
+_SCOPE_EXCLUDED_TRANSIENT_CHECKS = {
+    "reduce_close": (
+        "controller_live_real_clean_ready",
+        "broker_shadow_reconcile_aligned",
+    ),
+    "retry_open": ("controller_live_real_clean_ready",),
+    "initial_open": ("controller_live_real_clean_ready",),
+}
 
 
 def _date_key(target_date: str) -> str:
@@ -77,6 +128,276 @@ def _active(payload: dict[str, Any]) -> bool:
     return bool(payload.get("enabled", False) or payload.get("kill_switch_active", False))
 
 
+def _canonical_json_sha256(payload: Any) -> str:
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _is_sha256(value: Any) -> bool:
+    text = str(value or "").strip().lower()
+    return len(text) == _SHA256_HEX_LENGTH and all(
+        character in "0123456789abcdef" for character in text
+    )
+
+
+def _flag_one(value: Any) -> bool:
+    return (type(value) is int and value == 1) or value is True
+
+
+def _strict_zero(value: Any) -> bool:
+    return type(value) is int and value == 0
+
+
+def _strict_source_order_api_zero(
+    payloads: dict[str, dict[str, Any]],
+    *,
+    account_recovery_not_required: bool,
+) -> tuple[bool, dict[str, Any]]:
+    required_sources = [
+        "stage903",
+        "stage906",
+        "stage910",
+        "stage912",
+        "stage913",
+        "stage916",
+        "stage921",
+        "stage923",
+        "stage924",
+        "stage926",
+    ]
+    if not account_recovery_not_required:
+        required_sources.append("stage925")
+    observed = {
+        name: payloads.get(name, {}).get("order_api_called_count")
+        for name in required_sources
+    }
+    return all(_strict_zero(value) for value in observed.values()), observed
+
+
+def _scope_identity_observed(
+    payloads: dict[str, dict[str, Any]],
+    *,
+    target_date: str,
+    account_recovery_not_required: bool,
+) -> tuple[bool, dict[str, Any]]:
+    identity_sources = [
+        "stage903",
+        "stage906",
+        "stage910",
+        "stage912",
+        "stage913",
+        "stage916",
+        "stage921",
+        "stage923",
+        "stage924",
+        "stage926",
+    ]
+    if not account_recovery_not_required:
+        identity_sources.append("stage925")
+    dated_sources = {"stage903", "stage906", "stage923", "stage924", "stage925"}
+    observed: dict[str, Any] = {}
+    passed = True
+    for name in identity_sources:
+        payload = payloads.get(name, {})
+        row = {
+            "official_live_version": payload.get("official_live_version"),
+            "official_live_alias": payload.get("official_live_alias"),
+        }
+        row_passed = bool(payload)
+        row_passed = (
+            row_passed
+            and payload.get("official_live_version") == OFFICIAL_LIVE_VERSION
+        )
+        row_passed = (
+            row_passed and payload.get("official_live_alias") == OFFICIAL_LIVE_ALIAS
+        )
+        if name in dated_sources:
+            row["target_date"] = payload.get("target_date")
+            row_passed = row_passed and payload.get("target_date") == target_date
+        observed[name] = row
+        passed = passed and row_passed
+
+    controller = payloads.get("stage903", {})
+    observed["execution_identity"] = {
+        "execution_profile": controller.get("execution_profile"),
+        "capital": controller.get("capital"),
+        "capital_label": controller.get("capital_label"),
+    }
+    passed = passed and controller.get("execution_profile") == C9_15W_PROFILE.profile_key
+    passed = passed and type(controller.get("capital")) in (int, float)
+    passed = passed and not isinstance(controller.get("capital"), bool)
+    passed = passed and float(controller.get("capital", -1)) == OFFICIAL_LIVE_CAPITAL
+    passed = passed and controller.get("capital_label") == OFFICIAL_LIVE_CAPITAL_LABEL
+    return bool(passed), observed
+
+
+def _controller_scope_baseline(
+    stage903: dict[str, Any],
+    *,
+    target_date: str,
+) -> tuple[bool, dict[str, Any]]:
+    executor_status = stage903.get("stage905_executor_status")
+    ready_count = stage903.get("stage905_ready_count")
+    blocked_count = stage903.get("stage905_blocked_count")
+    ready_state_valid = (
+        executor_status == "executor_dry_run_ready"
+        and type(ready_count) is int
+        and ready_count > 0
+    )
+    idle_state_valid = (
+        executor_status == "executor_no_intents"
+        and _strict_zero(ready_count)
+    )
+    controller_state_valid = (
+        ready_state_valid
+        and stage903.get("controller_status")
+        == "phase_d_controller_live_real_ready_no_submit_step"
+    ) or (
+        idle_state_valid
+        and stage903.get("controller_status")
+        == "phase_d_controller_live_real_blocked"
+    )
+    observed = {
+        "target_date": stage903.get("target_date"),
+        "mode": stage903.get("mode"),
+        "controller_status": stage903.get("controller_status"),
+        "kill_switch_active": stage903.get("kill_switch_active"),
+        "execution_profile": stage903.get("execution_profile"),
+        "capital": stage903.get("capital"),
+        "capital_label": stage903.get("capital_label"),
+        "order_api_called_count": stage903.get("order_api_called_count"),
+        "send_order_api_called_count": stage903.get("send_order_api_called_count"),
+        "cancel_order_api_called_count": stage903.get("cancel_order_api_called_count"),
+        "order_api_evidence_complete": stage903.get("order_api_evidence_complete"),
+        "stage905_exit_code": stage903.get("stage905_exit_code"),
+        "stage905_executor_status": executor_status,
+        "stage905_ready_count": ready_count,
+        "stage905_blocked_count": blocked_count,
+        "stage914_exit_code": stage903.get("stage914_exit_code"),
+        "stage914_preflight_status": stage903.get("stage914_preflight_status"),
+        "stage914_blocking_failure_count": stage903.get("stage914_blocking_failure_count"),
+        "stage914_order_api_called_count": stage903.get("stage914_order_api_called_count"),
+    }
+    passed = (
+        bool(stage903)
+        and stage903.get("target_date") == target_date
+        and stage903.get("mode") == "live-real"
+        and stage903.get("official_live_version") == OFFICIAL_LIVE_VERSION
+        and stage903.get("official_live_alias") == OFFICIAL_LIVE_ALIAS
+        and stage903.get("execution_profile") == C9_15W_PROFILE.profile_key
+        and type(stage903.get("capital")) in (int, float)
+        and not isinstance(stage903.get("capital"), bool)
+        and float(stage903.get("capital", -1)) == OFFICIAL_LIVE_CAPITAL
+        and stage903.get("capital_label") == OFFICIAL_LIVE_CAPITAL_LABEL
+        and stage903.get("kill_switch_active") is False
+        and _strict_zero(stage903.get("order_api_called_count"))
+        and _strict_zero(stage903.get("send_order_api_called_count"))
+        and _strict_zero(stage903.get("cancel_order_api_called_count"))
+        and _flag_one(stage903.get("order_api_evidence_complete"))
+        and _strict_zero(stage903.get("stage905_exit_code"))
+        and _strict_zero(blocked_count)
+        and controller_state_valid
+        and _strict_zero(stage903.get("stage914_exit_code"))
+        and stage903.get("stage914_preflight_status")
+        == "production_readonly_preflight_passed"
+        and _strict_zero(stage903.get("stage914_blocking_failure_count"))
+        and _strict_zero(stage903.get("stage914_order_api_called_count"))
+    )
+    return bool(passed), observed
+
+
+def _broker_scope_baseline(
+    stage903: dict[str, Any],
+    stage906: dict[str, Any],
+    *,
+    target_date: str,
+) -> tuple[bool, dict[str, Any]]:
+    snapshot_age = _to_float(stage906.get("readonly_snapshot_age_seconds"), -1.0)
+    max_snapshot_age = _to_float(
+        stage906.get(
+            "max_snapshot_age_seconds",
+            (stage906.get("phase_d_hard_limits") or {}).get("max_snapshot_age_seconds")
+            if isinstance(stage906.get("phase_d_hard_limits"), dict)
+            else None,
+        ),
+        -1.0,
+    )
+    stage907_hashes = (
+        stage903.get("stage907_stage174_file_summary_sha256"),
+        stage903.get("stage907_stage174_stdout_summary_sha256"),
+    )
+    observed = {
+        "stage906": {
+            "target_date": stage906.get("target_date"),
+            "official_live_version": stage906.get("official_live_version"),
+            "broker_snapshot_ready": stage906.get("broker_snapshot_ready"),
+            "readonly_status": stage906.get("readonly_status"),
+            "readonly_snapshot_age_seconds": stage906.get(
+                "readonly_snapshot_age_seconds"
+            ),
+            "max_snapshot_age_seconds": max_snapshot_age,
+            "position_snapshot_state": stage906.get("position_snapshot_state"),
+            "active_broker_order_count": stage906.get("active_broker_order_count"),
+            "order_api_called_count": stage906.get("order_api_called_count"),
+        },
+        "stage907_via_controller": {
+            "env_profile": stage903.get("stage907_env_profile"),
+            "refresh_status": stage903.get("stage907_refresh_status"),
+            "readonly_status_after": stage903.get("stage907_readonly_status_after"),
+            "position_snapshot_state_after": stage903.get(
+                "stage907_position_snapshot_state_after"
+            ),
+            "snapshot_evidence_complete": stage903.get(
+                "stage907_snapshot_evidence_complete"
+            ),
+            "broker_query_bundle_complete": stage903.get(
+                "stage907_broker_query_bundle_complete"
+            ),
+            "stdout_file_payload_match": stage903.get(
+                "stage907_stage174_stdout_file_payload_match"
+            ),
+            "snapshot_generation_uuid": stage903.get("stage907_snapshot_generation_uuid"),
+            "stage174_invocation_id": stage903.get("stage907_stage174_invocation_id"),
+            "file_summary_sha256": stage907_hashes[0],
+            "stdout_summary_sha256": stage907_hashes[1],
+        },
+    }
+    passed = (
+        bool(stage906)
+        and stage906.get("target_date") == target_date
+        and stage906.get("official_live_version") == OFFICIAL_LIVE_VERSION
+        and _flag_one(stage906.get("broker_snapshot_ready"))
+        and stage906.get("readonly_status") == "readonly_snapshots_received"
+        and snapshot_age >= 0
+        and max_snapshot_age > 0
+        and snapshot_age <= max_snapshot_age
+        and stage906.get("position_snapshot_state")
+        in {"confirmed_flat", "positions_received"}
+        and _strict_zero(stage906.get("active_broker_order_count"))
+        and _strict_zero(stage906.get("order_api_called_count"))
+        and stage903.get("stage907_env_profile") == "production-live"
+        and stage903.get("stage907_refresh_status")
+        == "readonly_refresh_completed_snapshot_ready"
+        and stage903.get("stage907_readonly_status_after") == "readonly_snapshots_received"
+        and stage903.get("stage907_position_snapshot_state_after")
+        in {"confirmed_flat", "positions_received"}
+        and _flag_one(stage903.get("stage907_snapshot_evidence_complete"))
+        and _flag_one(stage903.get("stage907_broker_query_bundle_complete"))
+        and _flag_one(stage903.get("stage907_stage174_stdout_file_payload_match"))
+        and bool(str(stage903.get("stage907_snapshot_generation_uuid") or "").strip())
+        and bool(str(stage903.get("stage907_stage174_invocation_id") or "").strip())
+        and all(_is_sha256(value) for value in stage907_hashes)
+        and stage907_hashes[0] == stage907_hashes[1]
+    )
+    return bool(passed), observed
+
+
 def _check(
     rows: list[dict[str, Any]],
     *,
@@ -101,6 +422,230 @@ def _check(
     )
 
 
+def _append_scope_capability_checks(
+    rows: list[dict[str, Any]],
+    *,
+    payloads: dict[str, dict[str, Any]],
+    target_date: str,
+    account_recovery_not_required: bool,
+    real_submit_env_enabled: bool,
+    confirm_live_real_ok: bool,
+) -> None:
+    identity_passed, identity_observed = _scope_identity_observed(
+        payloads,
+        target_date=target_date,
+        account_recovery_not_required=account_recovery_not_required,
+    )
+    _check(
+        rows,
+        check="scope_evidence_current_official_identity",
+        category="scope_capability",
+        passed=identity_passed,
+        severity="scope_block",
+        observed=identity_observed,
+        required=(
+            f"all required evidence uses {OFFICIAL_LIVE_VERSION}/{OFFICIAL_LIVE_ALIAS}; "
+            f"execution_profile={C9_15W_PROFILE.profile_key};capital={OFFICIAL_LIVE_CAPITAL:g};"
+            f"capital_label={OFFICIAL_LIVE_CAPITAL_LABEL};dated evidence matches {target_date}"
+        ),
+        blocker="scope_evidence_official_identity_mismatch",
+    )
+
+    controller_passed, controller_observed = _controller_scope_baseline(
+        payloads.get("stage903", {}),
+        target_date=target_date,
+    )
+    _check(
+        rows,
+        check="scope_controller_capability_baseline",
+        category="scope_capability",
+        passed=controller_passed,
+        severity="scope_block",
+        observed=controller_observed,
+        required=(
+            "current C9/15w live-real controller + production runtime preflight + complete zero order-API "
+            "evidence + Stage905 either exact ready or exact no-intents idle with blocked=0"
+        ),
+        blocker="scope_controller_capability_baseline_not_proven",
+    )
+
+    broker_passed, broker_observed = _broker_scope_baseline(
+        payloads.get("stage903", {}),
+        payloads.get("stage906", {}),
+        target_date=target_date,
+    )
+    _check(
+        rows,
+        check="scope_broker_account_snapshot_usable",
+        category="scope_capability",
+        passed=broker_passed,
+        severity="scope_block",
+        observed=broker_observed,
+        required=(
+            "fresh production-live account/position query bundle with matched immutable readback digests, "
+            "usable position state, no active broker order, and order_api=0"
+        ),
+        blocker="scope_broker_account_snapshot_not_usable",
+    )
+
+    order_api_passed, order_api_observed = _strict_source_order_api_zero(
+        payloads,
+        account_recovery_not_required=account_recovery_not_required,
+    )
+    _check(
+        rows,
+        check="scope_order_api_evidence_complete_zero",
+        category="scope_capability",
+        passed=order_api_passed,
+        severity="scope_block",
+        observed=order_api_observed,
+        required="every required source has an explicit integer order_api_called_count=0",
+        blocker="scope_order_api_evidence_missing_or_nonzero",
+    )
+    _check(
+        rows,
+        check="scope_real_submit_env_enabled",
+        category="scope_capability",
+        passed=real_submit_env_enabled,
+        severity="scope_block",
+        observed=real_submit_env_enabled,
+        required=f"{PHASE_D_REAL_ENABLED_ENV}=1",
+        blocker="scope_real_submit_env_not_enabled",
+    )
+    _check(
+        rows,
+        check="scope_real_submit_confirm_exact",
+        category="scope_capability",
+        passed=confirm_live_real_ok,
+        severity="scope_block",
+        observed=confirm_live_real_ok,
+        required="exact production-live confirmation text",
+        blocker="scope_real_submit_confirm_missing_or_wrong",
+    )
+
+
+def _check_evidence(checks: pd.DataFrame) -> dict[str, dict[str, Any]]:
+    evidence: dict[str, dict[str, Any]] = {}
+    if checks.empty:
+        return evidence
+    for row in checks.to_dict(orient="records"):
+        name = str(row.get("check", ""))
+        if not name:
+            continue
+        if name in evidence:
+            raise ValueError(f"stage927_duplicate_check_name:{name}")
+        evidence[name] = {
+            "passed": _to_int(row.get("passed"), 0),
+            "severity": str(row.get("severity", "")),
+            "observed": row.get("observed"),
+            "required": row.get("required"),
+            "blocker": str(row.get("blocker", "")),
+        }
+    return evidence
+
+
+def _build_scope_capabilities(
+    *,
+    checks: pd.DataFrame,
+    payloads: dict[str, dict[str, Any]],
+    source_paths: dict[str, Path | None],
+    target_date: str,
+    real_submit_env_enabled: bool,
+    confirm_live_real_ok: bool,
+) -> tuple[dict[str, Any], dict[str, Any], str]:
+    check_evidence = _check_evidence(checks)
+    capabilities: dict[str, Any] = {}
+    permit_fields = {
+        "reduce_close": "reduce_close_submit_permitted",
+        "retry_open": "retry_open_submit_permitted",
+        "initial_open": "initial_open_submit_permitted",
+    }
+    for scope_name, required_checks in _SCOPE_REQUIRED_CHECKS.items():
+        failed_checks = [
+            check_name
+            for check_name in required_checks
+            if check_evidence.get(check_name, {}).get("passed") != 1
+        ]
+        capabilities[scope_name] = {
+            "permit_field": permit_fields[scope_name],
+            "permitted": int(not failed_checks),
+            "required_checks": list(required_checks),
+            "failed_checks": failed_checks,
+            "excluded_transient_checks": list(
+                _SCOPE_EXCLUDED_TRANSIENT_CHECKS[scope_name]
+            ),
+            "requires_fresh_downstream_gates": [
+                "Stage902 scope-specific readiness",
+                "exact durable spool candidate snapshot",
+                "fresh broker generation/account/position gate",
+                "final tick/price/order boundary gate",
+            ],
+        }
+
+    source_evidence = {
+        name: {
+            "path": str(path.resolve()) if path else "",
+            "payload_sha256": _canonical_json_sha256(payloads.get(name, {})),
+        }
+        for name, path in sorted(source_paths.items())
+    }
+    relevant_check_names = sorted(
+        set(_SCOPE_COMMON_REQUIRED_CHECKS)
+        | {"broker_shadow_reconcile_aligned"}
+    )
+    scope_inputs = {
+        "schema_version": SCOPE_CAPABILITY_SCHEMA_VERSION,
+        "model_tag": MODEL_TAG,
+        "target_date": target_date,
+        "official_live_version": OFFICIAL_LIVE_VERSION,
+        "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": C9_15W_PROFILE.profile_key,
+        "capital": OFFICIAL_LIVE_CAPITAL,
+        "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
+        "env_real_submit_enabled": int(real_submit_env_enabled),
+        "confirm_live_real_ok": int(confirm_live_real_ok),
+        "check_evidence": {
+            name: check_evidence.get(
+                name,
+                {
+                    "passed": 0,
+                    "severity": "missing",
+                    "observed": None,
+                    "required": None,
+                    "blocker": "scope_required_check_missing",
+                },
+            )
+            for name in relevant_check_names
+        },
+        "source_evidence": source_evidence,
+    }
+    scope_evidence_digest = _canonical_json_sha256(
+        {
+            "scope_evidence_inputs": scope_inputs,
+            "scope_capabilities": capabilities,
+        }
+    )
+    return scope_inputs, capabilities, scope_evidence_digest
+
+
+def verify_scope_evidence_digest(
+    *,
+    scope_evidence_inputs: dict[str, Any],
+    scope_capabilities: dict[str, Any],
+    scope_evidence_digest: str,
+) -> bool:
+    """Verify the exact Stage927 capability inputs and decisions as one unit."""
+
+    expected = _canonical_json_sha256(
+        {
+            "scope_evidence_inputs": scope_evidence_inputs,
+            "scope_capabilities": scope_capabilities,
+        }
+    )
+    normalized = str(scope_evidence_digest).strip().lower()
+    return _is_sha256(normalized) and hmac.compare_digest(expected, normalized)
+
+
 def _to_markdown(df: pd.DataFrame, columns: list[str]) -> str:
     if df.empty:
         return "_empty_"
@@ -115,12 +660,36 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
             "",
             f"- Generated at: `{summary['generated_at']}`",
             f"- Official live: `{summary['official_live_version']}` / `{summary['official_live_alias']}`",
+            f"- Execution identity: `{summary['execution_profile']}` / `{summary['capital']:g}` / `{summary['capital_label']}`",
             f"- Target date: `{summary['target_date']}`",
             f"- Arming status: `{summary['arming_status']}`",
             f"- Real submit permitted: `{summary['real_submit_permitted']}`",
             f"- Auto submit permitted: `{summary['auto_submit_permitted']}`",
+            f"- Reduce-close capability: `{summary['reduce_close_submit_permitted']}`",
+            f"- Retry-open capability: `{summary['retry_open_submit_permitted']}`",
+            f"- Initial-open capability: `{summary['initial_open_submit_permitted']}`",
+            f"- Scope evidence digest: `{summary['scope_evidence_digest']}`",
             f"- Blockers: `{summary['blocking_failure_count']}`",
             f"- Order API calls: `{summary['order_api_called_count']}`",
+            "",
+            "## Scope Capabilities",
+            "",
+            _to_markdown(
+                pd.DataFrame(
+                    [
+                        {
+                            "scope": name,
+                            "permitted": payload.get("permitted", 0),
+                            "failed_checks": ",".join(payload.get("failed_checks", [])),
+                            "excluded_transient_checks": ",".join(
+                                payload.get("excluded_transient_checks", [])
+                            ),
+                        }
+                        for name, payload in summary.get("scope_capabilities", {}).items()
+                    ]
+                ),
+                ["scope", "permitted", "failed_checks", "excluded_transient_checks"],
+            ),
             "",
             "## Failed Checks",
             "",
@@ -135,6 +704,9 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
             "- Stage927 is a read-only arming gate. It does not connect CTP, refresh data, submit, or cancel orders.",
             "- Stage912 may pass while fail-closed. Stage927 requires completion, reconciliation, incident, recovery, scheduler, heartbeat, and static-boundary evidence before live arming.",
             "- Even with all evidence green, live submit still requires the real-submit env switch and the exact confirmation text.",
+            "- Scope capability is not an order authorization. Stage902, the exact durable spool candidate, broker generation/account/position, and the final tick/price boundary must all be revalidated downstream.",
+            "- Reduce-close capability may ignore only current ready-intent absence and a transient shadow reconciliation mismatch; it still requires a complete production-live broker account/position query bundle.",
+            "- Retry-open and initial-open are new-risk capabilities: both continue to require shadow/broker reconciliation alignment, while current Stage905 ready-intent presence is delegated to the exact downstream spool admission gate.",
             "",
         ]
     )
@@ -472,6 +1044,14 @@ def main() -> None:
         required="exact confirm text is required when real-submit env is enabled",
         blocker="real_submit_confirm_missing_or_wrong",
     )
+    _append_scope_capability_checks(
+        rows,
+        payloads=payloads,
+        target_date=args.target_date,
+        account_recovery_not_required=account_recovery_not_required,
+        real_submit_env_enabled=real_submit_env_enabled,
+        confirm_live_real_ok=confirm_live_real_ok,
+    )
 
     checks = pd.DataFrame(rows)
     blocking_failures = checks[checks["severity"].eq("block") & checks["passed"].eq(0)]
@@ -498,15 +1078,48 @@ def main() -> None:
         _to_int(stage925.get("order_api_called_count"), 0),
         _to_int(stage926.get("order_api_called_count"), 0),
     )
+    scope_evidence_inputs, scope_capabilities, scope_evidence_digest = (
+        _build_scope_capabilities(
+            checks=checks,
+            payloads=payloads,
+            source_paths=source_paths,
+            target_date=args.target_date,
+            real_submit_env_enabled=real_submit_env_enabled,
+            confirm_live_real_ok=confirm_live_real_ok,
+        )
+    )
+    reduce_close_submit_permitted = int(
+        scope_capabilities["reduce_close"]["permitted"]
+    )
+    retry_open_submit_permitted = int(
+        scope_capabilities["retry_open"]["permitted"]
+    )
+    initial_open_submit_permitted = int(
+        scope_capabilities["initial_open"]["permitted"]
+    )
     summary = {
         "model_tag": MODEL_TAG,
+        "scope_capability_schema_version": SCOPE_CAPABILITY_SCHEMA_VERSION,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "target_date": args.target_date,
         "official_live_version": OFFICIAL_LIVE_VERSION,
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
+        "execution_profile": C9_15W_PROFILE.profile_key,
+        "capital": OFFICIAL_LIVE_CAPITAL,
+        "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
         "arming_status": arming_status,
         "real_submit_permitted": real_submit_permitted,
         "auto_submit_permitted": real_submit_permitted,
+        "reduce_close_submit_permitted": reduce_close_submit_permitted,
+        "retry_open_submit_permitted": retry_open_submit_permitted,
+        "initial_open_submit_permitted": initial_open_submit_permitted,
+        "scope_evidence_inputs": scope_evidence_inputs,
+        "scope_capabilities": scope_capabilities,
+        "scope_evidence_digest": scope_evidence_digest,
+        "scope_evidence_digest_payload_fields": [
+            "scope_evidence_inputs",
+            "scope_capabilities",
+        ],
         "pre_smoke_permitted": pre_smoke_permitted,
         "pre_smoke_blocking_failure_count": int(len(pre_smoke_blockers)),
         "pre_smoke_blocking_failures": pre_smoke_blockers.to_dict(orient="records"),

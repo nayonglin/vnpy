@@ -161,6 +161,29 @@ class C9IntradayStateTest(unittest.TestCase):
             ),
         )
 
+    def test_zero_fill_terminal_advances_close_attempt_once_and_revision(self) -> None:
+        state = self.latch_initial_stop()
+        first_action = c9.get_pending_action(state)
+        first_revision = state["revision"]
+        advanced = c9.update_current_position_volume(
+            state,
+            volume=1,
+            close_residual_attempt_no=1,
+            close_residual_terminal_identity='["terminal-checksum-1"]',
+        )
+        second_action = c9.get_pending_action(advanced)
+        self.assertEqual(first_revision + 1, advanced["revision"])
+        self.assertNotEqual(first_action["action_id"], second_action["action_id"])
+        self.assertEqual(2, second_action["close_execution_attempt_no"])
+        replay = c9.update_current_position_volume(
+            advanced,
+            volume=1,
+            close_residual_attempt_no=1,
+            close_residual_terminal_identity='["terminal-checksum-1"]',
+        )
+        self.assertEqual(advanced["revision"], replay["revision"])
+        self.assertEqual(second_action["action_id"], c9.get_pending_action(replay)["action_id"])
+
     def test_ticks_are_ordered_idempotent_and_pre_fill_is_ignored(self) -> None:
         state = self.make_state()
         ticks = [

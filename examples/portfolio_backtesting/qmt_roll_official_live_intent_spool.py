@@ -42,10 +42,31 @@ OUTSTANDING_CLOSE_STATES = (
     "side_effect_unknown",
     "blocked",
 )
+_CLOSE_DELIVERY_ACTIVE_STATES = {
+    "ready",
+    "leased",
+    "sending",
+    "side_effect_unknown",
+    "sent",
+    "reconciled",
+}
+_SAFE_ZERO_NATIVE_CLOSE_BLOCK_ERRORS = {
+    "deadline_expired_close_critical",
+    "deadline_clock_domain_mismatch",
+    "deadline_monotonic_rollback",
+    "pre_send_absolute_deadline_exceeded",
+    "pre_send_clock_domain_mismatch",
+    "pre_send_monotonic_rollback",
+}
+_SAFE_ZERO_NATIVE_LEDGER_DISPOSITIONS = {
+    "",
+    "no_side_effect_retryable",
+    "post_slot_no_native_retryable",
+}
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _ALLOWED_TRANSITIONS = {
-    "leased": {"sending", "expired", "blocked"},
-    "sending": {"side_effect_unknown", "sent", "blocked"},
+    "leased": {"ready", "sending", "expired", "blocked"},
+    "sending": {"ready", "side_effect_unknown", "sent", "blocked"},
     "side_effect_unknown": {"sent", "reconciled", "blocked"},
     "sent": {"reconciled"},
 }
@@ -201,6 +222,52 @@ class ExpireDueResult:
 
 
 @dataclass(frozen=True, slots=True)
+class AuthorizableIntentCandidate:
+    intent_id: str
+    payload_sha256: str
+    intent_kind: str
+    intent_role: str
+    trace_id: str
+    target_date: str
+    source: str
+    vt_symbol: str
+    state_generation: str
+    position_epoch_id: str
+    root_position_id: str
+    position_cycle_id: str
+    spool_sequence: int
+    state_revision: int
+    deadline_epoch_ns: int
+    deadline_monotonic_ns: int
+    clock_domain_id: str
+    ingress_epoch_ns: int
+
+
+@dataclass(frozen=True, slots=True)
+class AuthorizableIntentSnapshot:
+    spool_uuid: str
+    schema_version: str
+    snapshot_digest: str
+    cursor_digest: str
+    candidate: AuthorizableIntentCandidate | None
+    total_intent_count: int
+    outstanding_close_count: int
+    ready_close_count: int
+    ready_open_count: int
+    leased_count: int
+    sending_count: int
+    side_effect_unknown_count: int
+
+    @property
+    def inflight_count(self) -> int:
+        return (
+            self.leased_count
+            + self.sending_count
+            + self.side_effect_unknown_count
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class _ValidatedIntent:
     intent_id: str
     payload_sha256: str
@@ -228,6 +295,7 @@ class _ValidatedIntent:
     clock_domain_id: str
     stage904_detected_json: str
     stage905_intent_ready_json: str
+    initial_last_error: str
 
 
 def _required_text(value: Any, *, field_name: str, max_bytes: int = 1024) -> str:
@@ -781,19 +849,35 @@ def _validated_intent_payload(
     ingress_stamp = trace.stamps.get("gateway_ingress")
     if ingress_stamp is None:
         raise SpoolValidationError("trace_gateway_ingress_missing")
-    if clock_domain_id != ingress_stamp.clock_domain_id:
-        deadline_due = True
-    elif now_monotonic_ns < ingress_stamp.monotonic_ns:
-        deadline_due = True
-    else:
-        deadline_due = (
-            now_epoch_ns >= deadline_epoch_ns
-            or now_monotonic_ns >= deadline_monotonic_ns
-        )
+    deadline_domain_mismatch = clock_domain_id != ingress_stamp.clock_domain_id
+    deadline_monotonic_rollback = (
+        not deadline_domain_mismatch
+        and now_monotonic_ns < ingress_stamp.monotonic_ns
+    )
+    deadline_due = (
+        deadline_domain_mismatch
+        or deadline_monotonic_rollback
+        or now_epoch_ns >= deadline_epoch_ns
+        or now_monotonic_ns >= deadline_monotonic_ns
+    )
     priority = 0 if intent_kind == "close" else 1
     state = state_by_status[executor_status]
+    initial_last_error = ""
     if state == "ready" and deadline_due:
         state = "blocked" if intent_kind == "close" else "expired"
+        initial_last_error = (
+            "detector_deadline_clock_domain_mismatch"
+            if deadline_domain_mismatch
+            else "detector_deadline_monotonic_rollback"
+            if deadline_monotonic_rollback
+            else "detector_deadline_expired_close_critical"
+            if intent_kind == "close"
+            else "detector_deadline_expired_open"
+        )
+    elif state == "blocked":
+        initial_last_error = "detector_executor_blocked_zero_native"
+    elif state == "expired":
+        initial_last_error = "detector_executor_expired_zero_native"
     state_generation = _required_text(
         spool_payload.get("state_generation"),
         field_name="state_generation",
@@ -904,7 +988,104 @@ def _validated_intent_payload(
         clock_domain_id=ingress_stamp.clock_domain_id,
         stage904_detected_json=stage904_json,
         stage905_intent_ready_json=stage905_json,
+        initial_last_error=initial_last_error,
     )
+
+
+def _close_business_action_id(payload_json: str) -> str:
+    payload = _strict_json_loads(
+        payload_json,
+        field_name="close_delivery_payload_json",
+    )
+    action_id = _required_text(
+        payload.get("action_id"),
+        field_name="close_delivery_business_action_id",
+        max_bytes=512,
+    )
+    explicit = payload.get("business_action_id")
+    if explicit is not None and _required_text(
+        explicit,
+        field_name="close_delivery_explicit_business_action_id",
+        max_bytes=512,
+    ) != action_id:
+        raise SpoolValidationError("close_delivery_business_action_id_mismatch")
+    return action_id
+
+
+def _close_delivery_rows_locked(
+    connection: sqlite3.Connection,
+    *,
+    business_action_id: str,
+) -> list[sqlite3.Row]:
+    rows: list[sqlite3.Row] = []
+    for row in connection.execute(
+        "SELECT * FROM intents WHERE intent_kind='close' "
+        "AND source='stage904_c9_intraday_close' ORDER BY spool_sequence"
+    ).fetchall():
+        _row_to_intent(row)
+        if _close_business_action_id(row["payload_json"]) == business_action_id:
+            rows.append(row)
+    return rows
+
+
+def _blocked_close_has_safe_zero_native_proof(row: sqlite3.Row) -> bool:
+    if row["state"] != "blocked":
+        return False
+    attempt_count = _exact_int(
+        row["attempt_count"],
+        field_name="close_delivery_attempt_count",
+    )
+    ledger_disposition = str(row["ledger_disposition"] or "").strip()
+    last_error = str(row["last_error"] or "").strip()
+    if attempt_count == 0 and not ledger_disposition:
+        return True
+    return bool(
+        last_error in _SAFE_ZERO_NATIVE_CLOSE_BLOCK_ERRORS
+        and ledger_disposition in _SAFE_ZERO_NATIVE_LEDGER_DISPOSITIONS
+    )
+
+
+def inspect_close_delivery_candidate(
+    connection: sqlite3.Connection,
+    *,
+    business_action_id: str,
+    candidate_intent_id: str,
+) -> str:
+    """Classify one delivery without weakening the stable business close latch."""
+
+    normalized_action_id = _required_text(
+        business_action_id,
+        field_name="close_delivery_business_action_id",
+        max_bytes=512,
+    )
+    normalized_candidate = _required_text(
+        candidate_intent_id,
+        field_name="close_delivery_candidate_intent_id",
+        max_bytes=512,
+    )
+    rows = _close_delivery_rows_locked(
+        connection,
+        business_action_id=normalized_action_id,
+    )
+    exact = [row for row in rows if row["intent_id"] == normalized_candidate]
+    if exact:
+        if len(exact) != 1:
+            raise SpoolValidationError("close_delivery_candidate_identity_duplicate")
+        return "idempotent_delivery"
+    collision = connection.execute(
+        "SELECT 1 FROM intents WHERE intent_id=?",
+        (normalized_candidate,),
+    ).fetchone()
+    if collision is not None:
+        raise SpoolConflictError("close_delivery_candidate_intent_id_collision")
+    if not rows:
+        return "first_delivery"
+    if any(row["state"] in _CLOSE_DELIVERY_ACTIVE_STATES for row in rows):
+        return "existing_delivery_active_or_terminal"
+    latest = rows[-1]
+    if _blocked_close_has_safe_zero_native_proof(latest):
+        return "safe_zero_native_rearm"
+    return "existing_delivery_not_rearmable"
 
 
 def commit_detector_batch(
@@ -1054,6 +1235,10 @@ def commit_detector_batch(
         for raw_payload in intents
     ]
     for item in prepared:
+        if item.source == "stage904_c9_intraday_close":
+            if item.intent_kind != "close":
+                raise SpoolValidationError("close_delivery_intent_kind_mismatch")
+            _close_business_action_id(item.payload_json)
         if item.durable_cursor_feed_session_id != normalized_next.feed_session_id:
             raise DetectorCursorConflictError(
                 f"intent_cursor_feed_mismatch:{item.intent_id}"
@@ -1100,12 +1285,11 @@ def commit_detector_batch(
             existing["payload_sha256"] != item.payload_sha256
             or existing["trace_id"] != item.trace_id
             or existing["payload_json"] != item.payload_json
-            or existing["stage904_detected_json"]
-            != item.stage904_detected_json
         ):
             raise SpoolConflictError(f"intent_replay_conflict:{item.intent_id}")
         try:
             stored_trace = LatencyTrace.from_json(existing["trace_json"])
+            replay_trace = LatencyTrace.from_json(item.trace_json)
         except TraceValidationError as exc:
             raise SpoolConflictError(
                 f"intent_replay_stored_trace_invalid:{item.intent_id}"
@@ -1113,6 +1297,28 @@ def commit_detector_batch(
         if stored_trace.trace_id != item.trace_id:
             raise SpoolConflictError(
                 f"intent_replay_stored_trace_mismatch:{item.intent_id}"
+            )
+        volatile_stages = {
+            "stage904_detected",
+            "stage905_intent_ready",
+            "spool_committed",
+            "executor_dequeued",
+        }
+        stored_material = stored_trace.to_dict()
+        replay_material = replay_trace.to_dict()
+        stored_material["stamps"] = {
+            key: value
+            for key, value in stored_material["stamps"].items()
+            if key not in volatile_stages
+        }
+        replay_material["stamps"] = {
+            key: value
+            for key, value in replay_material["stamps"].items()
+            if key not in volatile_stages
+        }
+        if stored_material != replay_material:
+            raise SpoolConflictError(
+                f"intent_replay_trace_immutable_material_mismatch:{item.intent_id}"
             )
         return True
 
@@ -1202,6 +1408,47 @@ def commit_detector_batch(
                 if assert_existing_identical(item):
                     idempotent_count += 1
                     continue
+                if item.source == "stage904_c9_intraday_close":
+                    business_action_id = _close_business_action_id(
+                        item.payload_json
+                    )
+                    delivery_disposition = inspect_close_delivery_candidate(
+                        connection,
+                        business_action_id=business_action_id,
+                        candidate_intent_id=item.intent_id,
+                    )
+                    if delivery_disposition == "safe_zero_native_rearm":
+                        if item.state != "ready":
+                            raise SpoolConflictError(
+                                "close_delivery_rearm_requires_fresh_ready_authorization"
+                            )
+                        prior_rows = _close_delivery_rows_locked(
+                            connection,
+                            business_action_id=business_action_id,
+                        )
+                        prior = prior_rows[-1]
+                        prior_error = str(prior["last_error"] or "").strip()
+                        changed = connection.execute(
+                            "UPDATE intents SET state='expired', updated_epoch_ns=?, "
+                            "last_error=?, state_revision=state_revision+1 "
+                            "WHERE intent_id=? AND state='blocked' AND state_revision=?",
+                            (
+                                normalized_now,
+                                "close_delivery_rearmed_after_safe_zero_native_expiry:"
+                                + (prior_error or "no_prior_error"),
+                                prior["intent_id"],
+                                prior["state_revision"],
+                            ),
+                        ).rowcount
+                        if changed != 1:
+                            raise SpoolConflictError(
+                                "close_delivery_rearm_prior_state_cas_lost"
+                            )
+                    elif delivery_disposition != "first_delivery":
+                        raise SpoolConflictError(
+                            "close_delivery_business_action_not_rearmable:"
+                            f"{delivery_disposition}"
+                        )
                 connection.execute(
                     """
                     INSERT INTO intents(
@@ -1217,8 +1464,9 @@ def commit_detector_batch(
                         deadline_epoch_ns, deadline_monotonic_ns,
                         ingress_monotonic_ns, clock_domain_id,
                         created_epoch_ns, updated_epoch_ns,
-                        stage904_detected_json, stage905_intent_ready_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        stage904_detected_json, stage905_intent_ready_json,
+                        last_error
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         item.intent_id,
@@ -1249,6 +1497,7 @@ def commit_detector_batch(
                         normalized_now,
                         item.stage904_detected_json,
                         item.stage905_intent_ready_json,
+                        item.initial_last_error,
                     ),
                 )
                 inserted_count += 1
@@ -1631,6 +1880,18 @@ def lease_next(
             now_monotonic_ns=normalized_monotonic,
             clock_domain_id=normalized_domain,
         )
+        # This is the last authority boundary before an executor owns work.
+        # Stage930's authorization snapshot is necessarily stale by the time
+        # we arrive here, so serialize the global one-inflight invariant in
+        # the same SQLite write transaction as the lease CAS.
+        inflight = connection.execute(
+            "SELECT 1 FROM intents WHERE state IN ('leased', 'sending') LIMIT 1"
+        ).fetchone()
+        if inflight is not None:
+            return None
+        unknown_exists = connection.execute(
+            "SELECT 1 FROM intents WHERE state='side_effect_unknown' LIMIT 1"
+        ).fetchone() is not None
         close_rows = connection.execute(
             "SELECT * FROM intents WHERE state='ready' AND intent_kind='close' "
             "AND spool_committed_json<>'' "
@@ -1640,6 +1901,11 @@ def lease_next(
             (candidate for candidate in close_rows if row_is_authorized(candidate)),
             None,
         )
+        if unknown_exists and normalized_authorized is None:
+            # An unknown side effect may coexist only with a freshly
+            # broker-authorized protective CLOSE.  A generic caller without
+            # the Stage930 authorization map cannot prove that boundary.
+            row = None
         if row is None:
             placeholders = ",".join("?" for _ in OUTSTANDING_CLOSE_STATES)
             outstanding = connection.execute(
@@ -1648,6 +1914,10 @@ def lease_next(
                 OUTSTANDING_CLOSE_STATES,
             ).fetchone()
             if outstanding is not None:
+                return None
+            if unknown_exists:
+                # OPEN is never safe while any earlier external side effect
+                # remains unknown, even if a stale authorization map lists it.
                 return None
             open_rows = connection.execute(
                 "SELECT * FROM intents WHERE state='ready' AND intent_kind='open' "
@@ -1726,6 +1996,29 @@ def expired_inflight_leases(
                  spool_sequence
         """,
         (normalized_domain, normalized_now, normalized_monotonic),
+    ).fetchall()
+    return [
+        IntentLease(
+            intent=_row_to_intent(row),
+            lease_token=str(row["lease_token"]),
+        )
+        for row in rows
+    ]
+
+
+def side_effect_unknown_leases(
+    connection: sqlite3.Connection,
+) -> list[IntentLease]:
+    """Return reconciliation-only intents without making them sendable."""
+
+    rows = connection.execute(
+        """
+        SELECT * FROM intents
+        WHERE state='side_effect_unknown'
+          AND lease_owner<>''
+          AND lease_token<>''
+        ORDER BY spool_sequence
+        """
     ).fetchall()
     return [
         IntentLease(
@@ -1878,6 +2171,120 @@ def recover_expired_lease(
             ),
         )
     return new_state
+
+
+def reconcile_side_effect_unknown(
+    connection: sqlite3.Connection,
+    *,
+    now_epoch_ns: int,
+    now_monotonic_ns: int,
+    clock_domain_id: str,
+    evidence: LeaseRecoveryEvidence,
+) -> SpoolIntent:
+    """CAS one unknown side effect to terminal using exact durable proof.
+
+    This transition deliberately has no path back to ``ready``.  The retained
+    owner/token bind broker reconciliation to the exact lease that may have
+    crossed the native order API boundary before the process crashed.
+    """
+
+    if not isinstance(evidence, LeaseRecoveryEvidence):
+        raise SpoolValidationError("recovery_evidence_type_invalid")
+    normalized_id = _required_text(
+        evidence.intent_id, field_name="intent_id", max_bytes=512
+    )
+    normalized_owner = _required_text(
+        evidence.lease_owner, field_name="lease_owner", max_bytes=256
+    )
+    normalized_token = _required_text(
+        evidence.lease_token, field_name="lease_token", max_bytes=256
+    )
+    if evidence.ledger_disposition != "reconciled":
+        raise SpoolValidationError(
+            "side_effect_unknown_reconciliation_disposition_invalid"
+        )
+    fingerprint = _required_text(
+        evidence.ledger_fingerprint,
+        field_name="ledger_fingerprint",
+        max_bytes=512,
+    )
+    watermark = _exact_int(
+        evidence.ledger_watermark, field_name="ledger_watermark"
+    )
+    checksum = _required_text(
+        evidence.ledger_checksum_sha256,
+        field_name="ledger_checksum_sha256",
+        max_bytes=64,
+    )
+    if _SHA256_RE.fullmatch(checksum) is None:
+        raise SpoolValidationError("ledger_checksum_sha256_invalid")
+    normalized_now, normalized_monotonic, normalized_domain = _validate_now_stamp(
+        now_epoch_ns=now_epoch_ns,
+        now_monotonic_ns=now_monotonic_ns,
+        clock_domain_id=clock_domain_id,
+    )
+    evidence_json = _canonical_json_text(
+        {
+            "intent_id": normalized_id,
+            "lease_owner": normalized_owner,
+            "lease_token": normalized_token,
+            "ledger_disposition": "reconciled",
+            "ledger_fingerprint": fingerprint,
+            "ledger_watermark": watermark,
+            "ledger_checksum_sha256": checksum,
+            "observed_epoch_ns": normalized_now,
+            "observed_monotonic_ns": normalized_monotonic,
+            "clock_domain_id": normalized_domain,
+        },
+        field_name="recovery_evidence",
+    )
+    with _write_transaction(connection):
+        row = connection.execute(
+            "SELECT * FROM intents WHERE intent_id=?", (normalized_id,)
+        ).fetchone()
+        if (
+            row is None
+            or row["state"] != "side_effect_unknown"
+            or row["lease_owner"] != normalized_owner
+            or row["lease_token"] != normalized_token
+        ):
+            raise SpoolTransitionError(
+                "side_effect_unknown_reconciliation_compare_and_swap_mismatch"
+            )
+        _row_to_intent(row)
+        changed = connection.execute(
+            """
+            UPDATE intents
+            SET state='reconciled', updated_epoch_ns=?,
+                lease_owner='', lease_token='',
+                lease_expires_epoch_ns=0, lease_expires_monotonic_ns=0,
+                lease_clock_domain_id='', ledger_disposition='reconciled',
+                recovery_evidence_json=?, last_error='',
+                state_revision=state_revision+1
+            WHERE intent_id=? AND state='side_effect_unknown'
+              AND lease_owner=? AND lease_token=? AND state_revision=?
+            """,
+            (
+                normalized_now,
+                evidence_json,
+                normalized_id,
+                normalized_owner,
+                normalized_token,
+                int(row["state_revision"]),
+            ),
+        ).rowcount
+        if changed != 1:
+            raise SpoolTransitionError(
+                "side_effect_unknown_reconciliation_compare_and_swap_lost"
+            )
+        updated = connection.execute(
+            "SELECT * FROM intents WHERE intent_id=?", (normalized_id,)
+        ).fetchone()
+        if updated is None:
+            raise SpoolStorageError(
+                "side_effect_unknown_reconciliation_readback_missing"
+            )
+        return _row_to_intent(updated)
 
 
 def record_trace_observation(
@@ -2091,7 +2498,7 @@ def transition_intent(
         _row_to_intent(row)
         effective_target = target
         effective_error = normalized_error
-        if expected == "leased" and target == "sending":
+        if expected == "leased" and target in {"ready", "sending"}:
             domain_mismatch = row["clock_domain_id"] != normalized_domain
             monotonic_rollback = (
                 not domain_mismatch
@@ -2114,7 +2521,7 @@ def transition_intent(
                     if monotonic_rollback
                     else "pre_send_absolute_deadline_exceeded"
                 )
-            elif row["intent_kind"] == "open":
+            elif target == "sending" and row["intent_kind"] == "open":
                 placeholders = ",".join("?" for _ in OUTSTANDING_CLOSE_STATES)
                 outstanding_close = connection.execute(
                     "SELECT 1 FROM intents WHERE intent_kind='close' "
@@ -2124,7 +2531,12 @@ def transition_intent(
                 if outstanding_close is not None:
                     effective_target = "blocked"
                     effective_error = "pre_send_outstanding_close_preempts_open"
-        clear_lease = effective_target in {"reconciled", "blocked", "expired"}
+        clear_lease = effective_target in {
+            "ready",
+            "reconciled",
+            "blocked",
+            "expired",
+        }
         changed = connection.execute(
             """
             UPDATE intents
@@ -2163,6 +2575,336 @@ def transition_intent(
         ).fetchone()
         assert updated is not None
         return _row_to_intent(updated)
+
+
+def _validate_snapshot_schema_locked(
+    connection: sqlite3.Connection,
+) -> dict[str, str]:
+    user_version = int(connection.execute("PRAGMA user_version").fetchone()[0])
+    if user_version != int(SCHEMA_VERSION):
+        raise SpoolValidationError(
+            f"spool_snapshot_user_version_mismatch:{user_version}!={SCHEMA_VERSION}"
+        )
+    actual_fingerprint = _schema_contract_fingerprint(connection)
+    if actual_fingerprint != EXPECTED_SCHEMA_FINGERPRINT:
+        raise SpoolValidationError(
+            "spool_snapshot_schema_fingerprint_mismatch:"
+            f"{actual_fingerprint}!={EXPECTED_SCHEMA_FINGERPRINT}"
+        )
+    metadata = dict(connection.execute("SELECT key, value FROM spool_meta"))
+    if set(metadata) != {
+        "schema_version",
+        "spool_uuid",
+        "created_epoch_ns",
+        "schema_fingerprint",
+    }:
+        raise SpoolValidationError("spool_snapshot_meta_keys_invalid")
+    if metadata["schema_version"] != SCHEMA_VERSION:
+        raise SpoolValidationError("spool_snapshot_schema_version_mismatch")
+    if metadata["schema_fingerprint"] != actual_fingerprint:
+        raise SpoolValidationError("spool_snapshot_meta_fingerprint_mismatch")
+    try:
+        canonical_uuid = str(uuid.UUID(metadata["spool_uuid"]))
+    except (ValueError, AttributeError) as exc:
+        raise SpoolValidationError("spool_snapshot_uuid_invalid") from exc
+    if canonical_uuid != metadata["spool_uuid"]:
+        raise SpoolValidationError("spool_snapshot_uuid_not_canonical")
+    if re.fullmatch(r"[1-9][0-9]*", metadata["created_epoch_ns"]) is None:
+        raise SpoolValidationError("spool_snapshot_created_epoch_ns_invalid")
+    return metadata
+
+
+def _snapshot_cursor_material_locked(
+    connection: sqlite3.Connection,
+) -> list[dict[str, Any]]:
+    rows = connection.execute(
+        "SELECT * FROM detector_cursors ORDER BY consumer_id"
+    ).fetchall()
+    material: list[dict[str, Any]] = []
+    stage941_count = 0
+    for row in rows:
+        consumer_id = _required_text(
+            row["consumer_id"],
+            field_name="snapshot_cursor_consumer_id",
+            max_bytes=256,
+        )
+        if consumer_id == "stage941":
+            stage941_count += 1
+        cursor = _validate_cursor(
+            DurableTickCursor(
+                feed_session_id=row["feed_session_id"],
+                ingress_sequence=row["ingress_sequence"],
+                journal_byte_offset=row["journal_byte_offset"],
+                journal_schema=row["journal_schema"],
+            ),
+            field_name=f"snapshot_cursor_{consumer_id}",
+        )
+        cursor_revision = _exact_int(
+            row["cursor_revision"],
+            field_name=f"snapshot_cursor_revision_{consumer_id}",
+            minimum=1,
+        )
+        manifest_sha256 = _required_text(
+            row["batch_manifest_sha256"],
+            field_name=f"snapshot_cursor_manifest_{consumer_id}",
+            max_bytes=64,
+        ).lower()
+        if _SHA256_RE.fullmatch(manifest_sha256) is None:
+            raise SpoolValidationError(
+                f"snapshot_cursor_manifest_invalid:{consumer_id}"
+            )
+        material.append(
+            {
+                "consumer_id": consumer_id,
+                "feed_session_id": cursor.feed_session_id,
+                "ingress_sequence": cursor.ingress_sequence,
+                "journal_byte_offset": cursor.journal_byte_offset,
+                "journal_schema": cursor.journal_schema,
+                "cursor_revision": cursor_revision,
+                "batch_manifest_sha256": manifest_sha256,
+                "batch_intent_count": _exact_int(
+                    row["batch_intent_count"],
+                    field_name=f"snapshot_cursor_batch_count_{consumer_id}",
+                ),
+                "updated_epoch_ns": _exact_int(
+                    row["updated_epoch_ns"],
+                    field_name=f"snapshot_cursor_updated_epoch_ns_{consumer_id}",
+                ),
+            }
+        )
+    if stage941_count != 1:
+        raise SpoolValidationError(
+            f"spool_snapshot_stage941_cursor_count_invalid:{stage941_count}"
+        )
+    return material
+
+
+def _snapshot_digest(value: Any) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def snapshot_authorizable_intents(
+    connection: sqlite3.Connection,
+    *,
+    now_epoch_ns: int,
+    now_monotonic_ns: int,
+    clock_domain_id: str,
+) -> AuthorizableIntentSnapshot:
+    """Read one complete, mutation-free authorization view of the spool.
+
+    Selection is deliberately limited to structural state and deadlines.
+    Stage930 remains responsible for source/role/profile whitelisting.  The
+    savepoint pins schema, Stage941 cursor metadata and every intent row to one
+    SQLite read transaction so two snapshots can be compared without mixing
+    generations.
+    """
+
+    normalized_now, normalized_monotonic, normalized_domain = _validate_now_stamp(
+        now_epoch_ns=now_epoch_ns,
+        now_monotonic_ns=now_monotonic_ns,
+        clock_domain_id=clock_domain_id,
+    )
+    savepoint = "stage179_authorizable_snapshot"
+    try:
+        connection.execute(f"SAVEPOINT {savepoint}")
+        metadata = _validate_snapshot_schema_locked(connection)
+        cursor_material = _snapshot_cursor_material_locked(connection)
+        rows = connection.execute(
+            "SELECT * FROM intents ORDER BY spool_sequence"
+        ).fetchall()
+        intents: list[tuple[SpoolIntent, sqlite3.Row]] = []
+        intent_material: list[dict[str, Any]] = []
+        for row in rows:
+            intent = _row_to_intent(row)
+            intents.append((intent, row))
+            intent_material.append(dict(row))
+
+        counts = {state: 0 for state in INTENT_STATES}
+        for intent, _row in intents:
+            if intent.state not in counts:
+                raise SpoolValidationError(
+                    f"spool_snapshot_intent_state_invalid:{intent.state}"
+                )
+            counts[intent.state] += 1
+
+        def deadline_eligible(item: tuple[SpoolIntent, sqlite3.Row]) -> bool:
+            intent, row = item
+            return bool(
+                intent.clock_domain_id == normalized_domain
+                and normalized_monotonic >= row["ingress_monotonic_ns"]
+                and normalized_now < intent.deadline_epoch_ns
+                and normalized_monotonic < intent.deadline_monotonic_ns
+            )
+
+        ready_close = [
+            item
+            for item in intents
+            if item[0].state == "ready"
+            and item[0].intent_kind == "close"
+            and bool(item[1]["spool_committed_json"])
+        ]
+        ready_open = [
+            item
+            for item in intents
+            if item[0].state == "ready"
+            and item[0].intent_kind == "open"
+            and bool(item[1]["spool_committed_json"])
+        ]
+        outstanding_close_count = sum(
+            1
+            for intent, _row in intents
+            if intent.intent_kind == "close"
+            and intent.state in OUTSTANDING_CLOSE_STATES
+        )
+        active_lease_count = counts["leased"] + counts["sending"]
+        inflight_count = active_lease_count + counts["side_effect_unknown"]
+        selected: SpoolIntent | None = None
+        if active_lease_count == 0:
+            eligible_closes = [item for item in ready_close if deadline_eligible(item)]
+            if eligible_closes:
+                # An unresolved historical/open side effect must never permit
+                # another OPEN, but it must not strand a broker-proven
+                # position without a protective CLOSE.  Stage931 still runs
+                # complete O-P-O, active-order, broker-residual and auth gates
+                # before this close can reach the native API.
+                selected = eligible_closes[0][0]
+            elif (
+                counts["side_effect_unknown"] == 0
+                and outstanding_close_count == 0
+            ):
+                eligible_opens = [item for item in ready_open if deadline_eligible(item)]
+                if eligible_opens:
+                    selected = eligible_opens[0][0]
+
+        candidate = (
+            None
+            if selected is None
+            else AuthorizableIntentCandidate(
+                intent_id=selected.intent_id,
+                payload_sha256=selected.payload_sha256,
+                intent_kind=selected.intent_kind,
+                intent_role=_required_text(
+                    selected.payload.get("intent_role"),
+                    field_name="snapshot_candidate_intent_role",
+                    max_bytes=256,
+                ),
+                trace_id=_required_text(
+                    selected.trace_id,
+                    field_name="snapshot_candidate_trace_id",
+                    max_bytes=512,
+                ),
+                target_date=selected.target_date,
+                source=selected.source,
+                vt_symbol=selected.vt_symbol,
+                state_generation=_required_text(
+                    selected.state_generation,
+                    field_name="snapshot_candidate_state_generation",
+                    max_bytes=512,
+                ),
+                position_epoch_id=_required_text(
+                    selected.position_epoch_id,
+                    field_name="snapshot_candidate_position_epoch_id",
+                    max_bytes=512,
+                ),
+                root_position_id=_required_text(
+                    selected.payload.get("root_position_id"),
+                    field_name="snapshot_candidate_root_position_id",
+                    max_bytes=512,
+                ),
+                position_cycle_id=_required_text(
+                    selected.payload.get("position_cycle_id"),
+                    field_name="snapshot_candidate_position_cycle_id",
+                    max_bytes=512,
+                ),
+                spool_sequence=selected.spool_sequence,
+                state_revision=selected.state_revision,
+                deadline_epoch_ns=selected.deadline_epoch_ns,
+                deadline_monotonic_ns=selected.deadline_monotonic_ns,
+                clock_domain_id=selected.clock_domain_id,
+                ingress_epoch_ns=_exact_int(
+                    next(
+                        LatencyTrace.from_json(row["trace_json"])
+                        .stamps["gateway_ingress"]
+                        .epoch_ns
+                        for intent, row in intents
+                        if intent.intent_id == selected.intent_id
+                    ),
+                    field_name="snapshot_candidate_ingress_epoch_ns",
+                ),
+            )
+        )
+        cursor_digest = _snapshot_digest(cursor_material)
+        snapshot_material = {
+            "schema_version": SCHEMA_VERSION,
+            "schema_fingerprint": metadata["schema_fingerprint"],
+            "spool_uuid": metadata["spool_uuid"],
+            "cursor_digest": cursor_digest,
+            "intents": intent_material,
+            "candidate": (
+                None
+                if candidate is None
+                else {
+                    field_name: getattr(candidate, field_name)
+                    for field_name in candidate.__dataclass_fields__
+                }
+            ),
+            "counts": counts,
+            "outstanding_close_count": outstanding_close_count,
+        }
+        result = AuthorizableIntentSnapshot(
+            spool_uuid=metadata["spool_uuid"],
+            schema_version=SCHEMA_VERSION,
+            snapshot_digest=_snapshot_digest(snapshot_material),
+            cursor_digest=cursor_digest,
+            candidate=candidate,
+            total_intent_count=len(intents),
+            outstanding_close_count=outstanding_close_count,
+            ready_close_count=len(ready_close),
+            ready_open_count=len(ready_open),
+            leased_count=counts["leased"],
+            sending_count=counts["sending"],
+            side_effect_unknown_count=counts["side_effect_unknown"],
+        )
+        connection.execute(f"RELEASE SAVEPOINT {savepoint}")
+        return result
+    except sqlite3.Error as exc:
+        try:
+            connection.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+            connection.execute(f"RELEASE SAVEPOINT {savepoint}")
+        except sqlite3.Error:
+            pass
+        raise SpoolStorageError(
+            "spool_snapshot_transaction_failed:"
+            f"{getattr(exc, 'sqlite_errorname', type(exc).__name__)}"
+        ) from exc
+    except BaseException:
+        try:
+            connection.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+            connection.execute(f"RELEASE SAVEPOINT {savepoint}")
+        except sqlite3.Error:
+            pass
+        raise
+
+
+def authorization_snapshots_match(
+    first: AuthorizableIntentSnapshot,
+    second: AuthorizableIntentSnapshot,
+) -> bool:
+    return bool(
+        isinstance(first, AuthorizableIntentSnapshot)
+        and isinstance(second, AuthorizableIntentSnapshot)
+        and first.spool_uuid == second.spool_uuid
+        and first.snapshot_digest == second.snapshot_digest
+        and first.cursor_digest == second.cursor_digest
+        and first.candidate == second.candidate
+    )
 
 
 def spool_counts(connection: sqlite3.Connection) -> dict[str, int]:
@@ -2216,6 +2958,7 @@ __all__ = [
     "expire_due_intents",
     "expired_inflight_leases",
     "initialize_spool",
+    "inspect_close_delivery_candidate",
     "lease_next",
     "notify_executor",
     "open_spool",
@@ -2223,6 +2966,8 @@ __all__ = [
     "read_trace_observations",
     "record_trace_observation",
     "recover_expired_lease",
+    "reconcile_side_effect_unknown",
+    "side_effect_unknown_leases",
     "spool_counts",
     "transition_intent",
     "wakeup_socket_path",

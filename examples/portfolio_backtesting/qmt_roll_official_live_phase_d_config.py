@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import os
 from pathlib import Path
 from typing import Any
 
 PROJECT_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = PROJECT_DIR / "backtest_outputs"
+OUTPUT_DIR = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_OUTPUT_DIR",
+        str(PROJECT_DIR / "backtest_outputs"),
+    )
+).expanduser().resolve(strict=False)
+SIGNAL_INPUT_DIR = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_SIGNAL_INPUT_DIR",
+        str(OUTPUT_DIR),
+    )
+).expanduser().resolve(strict=False)
 
 
 PHASE_D_REAL_ENABLED_ENV = "OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED"
@@ -22,7 +34,7 @@ STAGE179_ACTIVATION_ENV = "OFFICIAL_LIVE_STAGE179_WARM_EXECUTOR_ENABLED"
 STAGE179_ACTIVATION_CONFIRM_TEXT = (
     "I_UNDERSTAND_THIS_ACTIVATES_STAGE179_WARM_CTP_EXECUTION"
 )
-STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION = 1
+STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION = 2
 
 READONLY_SUMMARY_PATH = (
     OUTPUT_DIR / "qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json"
@@ -33,15 +45,15 @@ READONLY_QUERY_BUNDLE_MANIFEST_PATH = (
     "stage174_ctp_vnpy_readonly_probe_v1.json"
 )
 STAGE901_PENDING_ORDERS_PATH = (
-    OUTPUT_DIR
+    SIGNAL_INPUT_DIR
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_pending_orders_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
 )
 STAGE901_TRADES_PATH = (
-    OUTPUT_DIR
+    SIGNAL_INPUT_DIR
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_trades_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
 )
 STAGE901_ENTRY_RISK_PATH = (
-    OUTPUT_DIR
+    SIGNAL_INPUT_DIR
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_entry_risk_stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
 )
 READONLY_TICKS_PATH = (

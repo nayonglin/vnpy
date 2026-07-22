@@ -280,6 +280,10 @@ def generate_action_id(
     attempt_no: int,
     action: str,
     position_epoch_id: str | None = None,
+    action_volume: int | None = None,
+    close_residual_attempt_no: int | None = None,
+    close_residual_terminal_identity: str | None = None,
+    logical_close_root_id: str | None = None,
 ) -> str:
     """Generate an idempotency key independent of tick time and process lifetime.
 
@@ -314,6 +318,25 @@ def generate_action_id(
         payload["position_epoch_id"] = _required_text(
             position_epoch_id, field="position_epoch_id"
         )
+    if normalized_action == ACTION_CLOSE and action_volume is not None:
+        payload["close_residual_volume"] = _nonnegative_int(
+            action_volume, field="action_volume"
+        )
+        if close_residual_attempt_no is not None:
+            payload["close_residual_attempt_no"] = _nonnegative_int(
+                close_residual_attempt_no,
+                field="close_residual_attempt_no",
+            )
+        if close_residual_terminal_identity is not None:
+            payload["close_residual_terminal_identity"] = _required_text(
+                close_residual_terminal_identity,
+                field="close_residual_terminal_identity",
+            )
+        if logical_close_root_id is not None:
+            payload["logical_close_root_id"] = _required_text(
+                logical_close_root_id,
+                field="logical_close_root_id",
+            )
     return f"c9act-{_stable_digest(payload)}"
 
 
@@ -411,6 +434,8 @@ def new_state(
         "retry_target_volume": normalized_volume,
         "retry_filled_volume": 0,
         "current_position_volume": normalized_volume,
+        "close_residual_attempt_no": 1,
+        "close_residual_terminal_identity": "",
         "retry_stop_latched_at": None,
         "retry_stop_latched_price": None,
         "retry_stop_trigger_provenance": None,
@@ -530,6 +555,12 @@ def _build_action(
     reason: str,
 ) -> dict[str, Any]:
     generation = generation_for_action(attempt_no=attempt_no, action=action)
+    action_volume = state["volume"]
+    if action == ACTION_CLOSE:
+        action_volume = state.get(
+            "current_position_volume",
+            state.get("retry_filled_volume", state["volume"]),
+        )
     action_id = generate_action_id(
         target_date=str(state["target_date"]),
         vt_symbol=str(state["vt_symbol"]),
@@ -537,6 +568,22 @@ def _build_action(
         attempt_no=attempt_no,
         action=action,
         position_epoch_id=str(state["position_epoch_id"]),
+        action_volume=int(action_volume) if action == ACTION_CLOSE else None,
+        close_residual_attempt_no=(
+            int(state.get("close_residual_attempt_no", 0))
+            if action == ACTION_CLOSE
+            else None
+        ),
+        close_residual_terminal_identity=(
+            str(state.get("close_residual_terminal_identity", "")) or None
+            if action == ACTION_CLOSE
+            else None
+        ),
+        logical_close_root_id=(
+            f"{state['position_epoch_id']}:{attempt_no}:close"
+            if action == ACTION_CLOSE
+            else None
+        ),
     )
     position_direction = str(state["direction"])
     if action == ACTION_CLOSE:
@@ -545,12 +592,6 @@ def _build_action(
     else:
         order_direction = position_direction
         offset = "open"
-    action_volume = state["volume"]
-    if action == ACTION_CLOSE:
-        action_volume = state.get(
-            "current_position_volume",
-            state.get("retry_filled_volume", state["volume"]),
-        )
     trigger_field = ""
     if attempt_no == ATTEMPT_INITIAL and action == ACTION_CLOSE:
         trigger_field = "initial_stop_trigger_provenance"
@@ -564,7 +605,7 @@ def _build_action(
         "trigger_state_revision",
         state.get("revision", 0),
     )
-    return {
+    result = {
         "action_id": action_id,
         **generation,
         **trigger,
@@ -589,6 +630,23 @@ def _build_action(
         "reason": reason,
         "ready": True,
     }
+    if action == ACTION_CLOSE:
+        result["logical_close_root_id"] = (
+            f"{state['position_epoch_id']}:{attempt_no}:close"
+        )
+        result["close_execution_attempt_no"] = int(
+            state.get("close_residual_attempt_no", 1)
+        )
+        result["prior_close_terminal_checksum"] = str(
+            state.get("close_residual_terminal_identity", "")
+        )
+        result["close_residual_attempt_no"] = int(
+            state.get("close_residual_attempt_no", 1)
+        )
+        result["close_residual_terminal_identity"] = str(
+            state.get("close_residual_terminal_identity", "")
+        )
+    return result
 
 
 def _retry_open_trigger_provenance_blocker(
@@ -1300,7 +1358,11 @@ def mark_retry_filled(
 
 
 def update_current_position_volume(
-    state: Mapping[str, Any], *, volume: int
+    state: Mapping[str, Any],
+    *,
+    volume: int,
+    close_residual_attempt_no: int | None = None,
+    close_residual_terminal_identity: str | None = None,
 ) -> dict[str, Any]:
     """Refresh the exact broker/ledger residual used by a protective close."""
 
@@ -1308,8 +1370,49 @@ def update_current_position_volume(
     if normalized_volume <= 0:
         raise ValueError("current_position_volume must be positive")
     result = _copy_state(state)
-    if int(result.get("current_position_volume", 0)) != normalized_volume:
+    current_volume = int(result.get("current_position_volume", 0))
+    close_latched = result.get("phase") in {
+        PHASE_INITIAL_STOP_LATCHED,
+        PHASE_RETRY_STOP_LATCHED,
+    }
+    supplied_terminal_identity = str(close_residual_terminal_identity or "").strip()
+    supplied_attempt_no = (
+        0
+        if close_residual_attempt_no is None
+        else _nonnegative_int(
+            close_residual_attempt_no,
+            field="close_residual_attempt_no",
+        )
+    )
+    terminal_attempt_advance = bool(
+        close_latched
+        and supplied_terminal_identity
+        and supplied_terminal_identity
+        != str(result.get("close_residual_terminal_identity", ""))
+        and supplied_attempt_no
+        >= int(result.get("close_residual_attempt_no", 1))
+    )
+    residual_reissue = bool(
+        close_latched
+        and (normalized_volume < current_volume or terminal_attempt_advance)
+    )
+    if residual_reissue:
+        prior_attempt_no = supplied_attempt_no
+        terminal_identity = _required_text(
+            close_residual_terminal_identity,
+            field="close_residual_terminal_identity",
+        )
+        if prior_attempt_no <= 0:
+            raise ValueError("close_residual_attempt_no must be positive")
+        next_attempt_no = prior_attempt_no + 1
+        if next_attempt_no > 2:
+            raise ValueError("logical close execution attempt cap reached")
+        result["close_residual_attempt_no"] = next_attempt_no
+        result["close_residual_terminal_identity"] = terminal_identity
+    changed = current_volume != normalized_volume
+    if changed:
         result["current_position_volume"] = normalized_volume
+    if changed or residual_reissue:
         result["revision"] = int(result.get("revision", 0)) + 1
     return _refresh_pending_action(result)
 

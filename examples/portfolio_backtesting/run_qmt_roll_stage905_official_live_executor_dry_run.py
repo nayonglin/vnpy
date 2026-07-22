@@ -63,12 +63,15 @@ IDENTITY_TEXT_FIELDS = (
     "root_position_id",
     "position_cycle_id",
     "position_epoch_id",
+    "position_epoch_source",
     "parent_position_cycle_id",
     "intent_role",
     "position_direction",
     "entry_risk_date",
     "open_trade_id",
     "action_id",
+    "logical_close_root_id",
+    "prior_close_terminal_checksum",
 )
 IDENTITY_NUMBER_FIELDS = (
     "position_cycle_no",
@@ -81,6 +84,7 @@ IDENTITY_NUMBER_FIELDS = (
     "root_entry_price",
     "root_initial_stop_price",
     "root_entry_volume",
+    "close_execution_attempt_no",
 )
 STAGE904_MIGRATION_AUDIT_FIELDS = (
     "manual_intervention_required",
@@ -125,11 +129,26 @@ STAGE904_PROVENANCE_FIELDS = (
     "ingress_monotonic_ns",
     "deadline_epoch_ns",
     "deadline_monotonic_ns",
+    "initial_open_ingress_window",
+    "initial_open_window_expiry_epoch_ns",
     "durable_cursor_feed_session_id",
     "durable_cursor_ingress_sequence",
     "durable_cursor_journal_byte_offset",
     "durable_cursor_journal_schema",
     "state_generation",
+)
+STAGE904_CLOSE_DELIVERY_AUDIT_FIELDS = (
+    "business_action_id",
+    "delivery_trace_id",
+    "delivery_authorization_status",
+    "business_trigger_trace_id",
+    "business_trigger_source_feed_session_id",
+    "business_trigger_source_ingress_sequence",
+    "business_trigger_source_symbol_sequence",
+    "business_trigger_ingress_epoch_ns",
+    "business_trigger_ingress_monotonic_ns",
+    "business_trigger_deadline_epoch_ns",
+    "business_trigger_deadline_monotonic_ns",
 )
 STAGE904_EXACT_INT_FIELDS = (
     "source_ingress_sequence",
@@ -138,6 +157,7 @@ STAGE904_EXACT_INT_FIELDS = (
     "ingress_monotonic_ns",
     "deadline_epoch_ns",
     "deadline_monotonic_ns",
+    "initial_open_window_expiry_epoch_ns",
     "durable_cursor_ingress_sequence",
     "durable_cursor_journal_byte_offset",
 )
@@ -491,14 +511,84 @@ def _protective_close_price(intent: dict[str, Any], direction_text: str, priceti
     return fallback_price, "protective_close_price_invalid_direction"
 
 
-def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") -> list[dict[str, Any]]:
+def _normalized_pending_datetime(value: Any) -> str:
+    text = _clean(value)
+    if not text:
+        return ""
+    try:
+        timestamp = pd.Timestamp(text)
+    except (TypeError, ValueError):
+        return text
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.tz_localize("Asia/Shanghai")
+    return timestamp.tz_convert("UTC").isoformat()
+
+
+def _pending_business_identity(
+    row: Mapping[str, Any],
+    *,
+    target_date: str,
+) -> tuple[dict[str, Any], str]:
+    upstream_identity = {
+        key: value
+        for key, value in (
+            ("vt_orderid", _clean(row.get("vt_orderid"))),
+            ("orderid", _clean(row.get("orderid"))),
+            ("intent_id", _clean(row.get("intent_id"))),
+            (
+                "datetime",
+                _normalized_pending_datetime(
+                    row.get("datetime") or row.get("generated_at")
+                ),
+            ),
+        )
+        if value
+    }
+    identity = {
+        "target_date": _clean(target_date),
+        "vt_symbol": _clean(row.get("vt_symbol")).upper(),
+        "direction": _normalize_direction_text(row.get("direction")),
+        "offset": _normalize_offset_text(row.get("offset")),
+        "volume": _to_float(row.get("volume"), 0.0),
+        "price": _to_float(row.get("price"), 0.0),
+        "stop_price": _to_float(row.get("stop_price"), 0.0),
+        "upstream_identity": upstream_identity,
+    }
+    encoded = json.dumps(
+        _canonical_spool_json_value(identity),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return identity, hashlib.sha256(encoded).hexdigest()
+
+
+def _pending_order_intents(
+    pending_orders: pd.DataFrame,
+    target_date: str = "",
+    *,
+    pending_initial_open_provenance: Mapping[str, Mapping[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for idx, row in enumerate(pending_orders.to_dict(orient="records"), start=1):
+    for row in pending_orders.to_dict(orient="records"):
         vt_symbol = _clean(row.get("vt_symbol"))
         direction = _normalize_direction_text(row.get("direction"))
         offset = _normalize_offset_text(row.get("offset"))
+        if pending_initial_open_provenance is not None:
+            provenance = pending_initial_open_provenance.get(vt_symbol)
+            if offset != "open" or not isinstance(provenance, Mapping):
+                continue
+            if _clean(provenance.get("vt_symbol")) != vt_symbol:
+                continue
+        else:
+            provenance = None
+        business_identity, pending_identity = _pending_business_identity(
+            row,
+            target_date=target_date,
+        )
         item = {
-                "intent_id": f"STAGE905-PENDING-{idx:03d}",
+                "intent_id": f"STAGE905-PENDING-{pending_identity}",
                 "target_date": target_date,
                 "source": "stage901_pending_order",
                 "vt_symbol": vt_symbol,
@@ -514,19 +604,16 @@ def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") 
                 vt_symbol=vt_symbol,
                 direction=direction,
             )
-            planned_epoch_id = ""
-            planned_entry_at = _clean(row.get("datetime") or row.get("generated_at"))
-            planned_fill_identity = _clean(
-                row.get("vt_orderid") or row.get("orderid") or row.get("intent_id")
+            planned_entry_at = _clean(
+                business_identity["upstream_identity"].get("datetime")
+            ) or f"{target_date}T00:00:00+08:00"
+            planned_epoch_id = generate_position_epoch_id(
+                target_date=target_date,
+                vt_symbol=vt_symbol,
+                direction=direction,
+                entry_filled_at=planned_entry_at,
+                fill_identity=f"stage901_pending:{pending_identity}",
             )
-            if planned_entry_at and planned_fill_identity:
-                planned_epoch_id = generate_position_epoch_id(
-                    target_date=target_date,
-                    vt_symbol=vt_symbol,
-                    direction=direction,
-                    entry_filled_at=planned_entry_at,
-                    fill_identity=f"stage901_pending:{planned_fill_identity}",
-                )
             item.update(
                 {
                     "root_position_id": root_position_id,
@@ -539,10 +626,13 @@ def _pending_order_intents(pending_orders: pd.DataFrame, target_date: str = "") 
                     "root_entry_price": _to_float(row.get("price"), 0.0),
                     "root_initial_stop_price": _to_float(row.get("stop_price"), 0.0),
                     "root_entry_volume": _to_float(row.get("volume"), 0.0),
+                    "position_epoch_id": planned_epoch_id,
+                    "position_epoch_source": "preallocated_stage901_pending_order",
+                    "state_generation": f"{planned_epoch_id}:0",
                 }
             )
-            if planned_epoch_id:
-                item["position_epoch_id"] = planned_epoch_id
+            if provenance is not None:
+                _copy_stage904_provenance(item, provenance)
         rows.append(item)
     return rows
 
@@ -734,6 +824,19 @@ def _copy_stage904_provenance(
             intent[field_name] = value
 
 
+def _close_delivery_intent_id(action_id: Any, trace_id: Any) -> str:
+    """Separate the durable business close from one price/time authorization."""
+
+    normalized_action_id = _clean(action_id)
+    normalized_trace_id = _clean(trace_id)
+    if not normalized_action_id or not normalized_trace_id:
+        return normalized_action_id
+    digest = hashlib.sha256(
+        f"{normalized_action_id}\x00{normalized_trace_id}".encode("utf-8")
+    ).hexdigest()
+    return f"c9-close-delivery:{digest}"
+
+
 def _stable_payload_sha256(intent: Mapping[str, Any]) -> str:
     payload: dict[str, Any] = {}
     for key in sorted(intent):
@@ -807,8 +910,15 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
     for idx, row in enumerate(close_actions.to_dict(orient="records"), start=1):
         current_direction = _normalize_direction_text(row.get("direction"))
         close_direction = "short" if current_direction == "long" else "long" if current_direction == "short" else ""
+        business_action_id = _clean(row.get("action_id"))
+        delivery_trace_id = _clean(row.get("trace_id"))
         intent = {
-                "intent_id": _clean(row.get("action_id")),
+                "intent_id": _close_delivery_intent_id(
+                    business_action_id,
+                    delivery_trace_id,
+                ),
+                "business_action_id": business_action_id,
+                "delivery_trace_id": delivery_trace_id,
                 "target_date": _clean(row.get("target_date")),
                 "source": "stage904_c9_intraday_close",
                 "vt_symbol": _clean(row.get("vt_symbol")),
@@ -840,6 +950,12 @@ def _stage904_intents(stage904_actions: pd.DataFrame) -> list[dict[str, Any]]:
                 intent[key] = normalized if valid else value
             elif _clean(value):
                 intent[key] = _clean(value)
+        for key in STAGE904_CLOSE_DELIVERY_AUDIT_FIELDS:
+            value = row.get(key)
+            if value is not None and not (
+                isinstance(value, float) and math.isnan(value)
+            ):
+                intent[key] = value
         _copy_stage904_provenance(intent, row)
         rows.append(intent)
     retry_actions = stage904_actions[stage904_actions["monitor_action"].astype(str).eq("retry_open_dry_run")]
@@ -1101,6 +1217,19 @@ def _validated_stage904_trace(
     return trace
 
 
+def _validated_durable_trace(
+    intent: Mapping[str, Any],
+    *,
+    stage904_summary: Mapping[str, Any] | None = None,
+) -> LatencyTrace:
+    """Compatibility-neutral entry point for Stage904 and traced Stage901 intents."""
+
+    return _validated_stage904_trace(
+        intent,
+        stage904_summary=stage904_summary,
+    )
+
+
 def _stable_reason_codes(reasons: Sequence[str]) -> tuple[str, ...]:
     codes: set[str] = set()
     for reason in reasons:
@@ -1154,6 +1283,11 @@ def _validate_intent(
     source = _clean(intent.get("source"))
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
     intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
+    traced_initial_open_intent = (
+        source == "stage901_pending_order"
+        and offset_text == "open"
+        and bool(_clean(intent.get("trace_json")))
+    )
     force_skip_reason = _clean(intent.get("force_skip_reason"))
     manual_flag_valid, manual_flag = _canonical_binary_flag(
         intent.get("manual_intervention_required")
@@ -1223,7 +1357,7 @@ def _validate_intent(
             reasons.append("stage904_monitor_run_id_mismatch")
         if _clean(intent.get("trace_json")):
             try:
-                trace = _validated_stage904_trace(
+                trace = _validated_durable_trace(
                     intent,
                     stage904_summary=(
                         stage904_summary if require_stage904_trace else None
@@ -1250,6 +1384,29 @@ def _validate_intent(
             reasons.append("stage179_deadline_expired_open")
         elif deadline_status == "blocked":
             reasons.append("stage179_deadline_expired_close_critical")
+
+    if traced_initial_open_intent:
+        try:
+            trace = _validated_durable_trace(intent)
+            deadline_status = disposition_for_trace(
+                trace,
+                now=current_stamp,
+                intent_kind="open",
+            )
+            if "stage904_detected" not in trace.stamps:
+                raise TraceValidationError("stage904_detected_stamp_missing")
+            if "stage905_intent_ready" not in trace.stamps:
+                trace = trace.record_stamp(
+                    "stage905_intent_ready",
+                    current_stamp,
+                )
+            intent["trace_json"] = trace.to_json()
+        except TraceValidationError as exc:
+            reasons.append(f"stage901_pending_trace_invalid:{exc}")
+        if deadline_status == "expired":
+            reasons.append("stage179_deadline_expired_open")
+        elif deadline_status == "blocked":
+            reasons.append("stage179_deadline_clock_invalid_open")
 
     if force_skip_reason:
         reasons.append(force_skip_reason)
@@ -1345,11 +1502,26 @@ def _validate_intent(
     else:
         status = "blocked" if reasons else "dry_run_order_request_payload_ready"
     if not reasons and direction and offset and exchange:
+        physical_order_type = (
+            OrderType.FAK
+            if offset == Offset.OPEN
+            and (
+                (
+                    source == "stage901_pending_order"
+                    and _clean(intent.get("intent_role")) == INITIAL_OPEN_INTENT_ROLE
+                )
+                or (
+                    source == "stage904_c9_intraday_retry_open"
+                    and _clean(intent.get("intent_role")) == RETRY_INTENT_ROLE
+                )
+            )
+            else OrderType.LIMIT
+        )
         req = OrderRequest(
             symbol=symbol,
             exchange=exchange,
             direction=direction,
-            type=OrderType.LIMIT,
+            type=physical_order_type,
             volume=volume,
             price=price,
             offset=offset,
@@ -1370,6 +1542,11 @@ def _validate_intent(
             "exchange": req.exchange.value,
             "direction": req.direction.value,
             "type": req.type.value,
+            "physical_tif_policy_version": (
+                "stage179_open_fak_v1"
+                if req.type == OrderType.FAK
+                else "stage179_limit_gfd_v1"
+            ),
             "volume": req.volume,
             "price": req.price,
             "offset": req.offset.value,
@@ -1516,6 +1693,9 @@ def run_executor_dry_run(
     stage904_summary: Mapping[str, Any] | None = None,
     snapshots: Stage905SnapshotInputs | None = None,
     include_stage901_pending: bool = True,
+    pending_initial_open_provenance: (
+        Mapping[str, Mapping[str, Any]] | None
+    ) = None,
     execution_profile: (
         OfficialExecutionProfile | str | ExecutionStrategyMode
     ) = C9_15W_PROFILE,
@@ -1636,7 +1816,13 @@ def run_executor_dry_run(
     pending_intents = []
     if include_stage901_pending:
         pending_intents = _suppress_stage901_pending_after_stop_close(
-            _pending_order_intents(pending_orders, target_date),
+            _pending_order_intents(
+                pending_orders,
+                target_date,
+                pending_initial_open_provenance=(
+                    pending_initial_open_provenance
+                ),
+            ),
             ledger_rows=execution_ledger_rows,
             target_date=target_date,
         )

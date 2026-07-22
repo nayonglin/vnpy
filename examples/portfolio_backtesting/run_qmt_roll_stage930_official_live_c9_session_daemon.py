@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+from dataclasses import asdict, is_dataclass
 import fcntl
 import hashlib
 import json
@@ -17,6 +18,7 @@ import uuid
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -33,13 +35,25 @@ from qmt_roll_official_live_config import (
 )
 from qmt_roll_official_live_execution_ledger import ledger_order_api_counts, read_execution_ledger
 from qmt_roll_official_live_execution_service import revoke_readiness
-from qmt_roll_official_live_intent_spool import notify_executor, wakeup_socket_path
+from qmt_roll_official_live_authorization_lock import (
+    SubmitAuthorizationLockBusyError,
+    exclusive_submit_authorization_lock,
+    submit_authorization_lock_path,
+)
+from qmt_roll_official_live_intent_spool import (
+    authorization_snapshots_match,
+    notify_executor,
+    open_spool,
+    snapshot_authorizable_intents,
+    wakeup_socket_path,
+)
 from qmt_roll_official_live_submit_authorization import (
     publish_submit_authorization,
     revoke_submit_authorization,
     submit_authorization_path,
     validate_submit_authorization,
 )
+from qmt_roll_official_live_time import system_clock_domain_id
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_CONFIRM_TEXT,
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
@@ -86,7 +100,14 @@ OUTPUT_PREFIX = "qmt_roll_stage930_official_live_c9_session_daemon"
 STAGE179_CANONICAL_LAUNCHD_LABELS = {
     "local.qmt-roll.official-live.15w.c9-readonly-day-session",
     "local.qmt-roll.official-live.15w.c9-readonly-night-session",
+    "local.qmt-roll.official-live.15w.c9-production-live-day-session",
+    "local.qmt-roll.official-live.15w.c9-production-live-night-session",
 }
+INITIAL_OPEN_AUTHORIZATION_WINDOWS = (
+    ("day_open", 9, 0, 9, 5),
+    ("night_open", 21, 0, 21, 5),
+)
+SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 
 
 def _launchd_provenance(daemon_started_epoch_ns: int) -> dict[str, Any]:
@@ -146,7 +167,6 @@ TICK_STREAM_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snaps
 TICK_STREAM_JOURNAL_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_tick_stream_stage608_readonly_tick_snapshot_probe_v1.ndjson"
 TICK_STREAM_MANIFEST_PATH = OUTPUT_DIR / "qmt_roll_stage930_official_live_c9_tick_stream_manifest.json"
 STAGE941_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_c9_detector_heartbeat.json"
-STAGE941_SPOOL_PATH = OUTPUT_DIR / "qmt_roll_stage941_official_live_intent_spool.sqlite3"
 FAST_LANE_RECENT_RUN_LIMIT = 20
 TICK_STREAM_MAX_RESTARTS = 3
 TICK_STREAM_RESTART_BACKOFF_SECONDS = 2.0
@@ -1300,6 +1320,7 @@ def _start_detector(
     target_date: str,
     instance_id: str,
 ) -> subprocess.Popen[str]:
+    runtime = _stage179_runtime(args)
     _revoke_detector_heartbeat(
         instance_id=instance_id,
         reason="detector_child_starting",
@@ -1312,7 +1333,7 @@ def _start_detector(
         "--tick-stream-heartbeat-path",
         str(TICK_STREAM_HEARTBEAT_PATH),
         "--spool-path",
-        str(STAGE941_SPOOL_PATH),
+        str(runtime.spool_path),
         "--detector-heartbeat-path",
         str(STAGE941_HEARTBEAT_PATH),
         "--poll-seconds",
@@ -1327,6 +1348,8 @@ def _start_detector(
         str(os.getpid()),
         "--publish-compat-outputs",
     ]
+    if args.mode == "live-real":
+        cmd.append("--require-broker-fill-price")
     log_handle = paths["command_log"].open("a", encoding="utf-8")
     log_handle.write(
         f"\n===== stage941_detector started_at={datetime.now():%Y-%m-%d %H:%M:%S} =====\n"
@@ -1481,6 +1504,332 @@ def _detector_supervisor_public(supervisor: dict[str, Any] | None) -> dict[str, 
     }
 
 
+def _canonical_json_digest(payload: dict[str, Any]) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def _stage902_summary_path(target_date: str) -> Path:
+    date_key = target_date.replace("-", "") if target_date else "latest"
+    return OUTPUT_DIR / (
+        "qmt_roll_stage902_official_live_phase_d_readiness_gate_summary_"
+        f"{date_key}_stage902_official_live_phase_d_readiness_gate_v1.json"
+    )
+
+
+def _stage927_summary_path(target_date: str) -> Path:
+    date_key = target_date.replace("-", "") if target_date else "latest"
+    return OUTPUT_DIR / (
+        "qmt_roll_stage927_official_live_real_submit_arming_gate_summary_"
+        f"{date_key}_stage927_official_live_real_submit_arming_gate_v1.json"
+    )
+
+
+def _authorization_candidate_row(candidate: Any) -> dict[str, Any]:
+    return {
+        "intent_id": candidate.intent_id,
+        "payload_sha256": candidate.payload_sha256,
+        "intent_kind": candidate.intent_kind,
+        "source": candidate.source,
+        "intent_role": candidate.intent_role,
+        "trace_id": candidate.trace_id,
+        "spool_sequence": candidate.spool_sequence,
+        "state_revision": candidate.state_revision,
+        "state_generation": candidate.state_generation,
+        "position_epoch_id": candidate.position_epoch_id,
+        "root_position_id": candidate.root_position_id,
+        "position_cycle_id": candidate.position_cycle_id,
+        "deadline_epoch_ns": candidate.deadline_epoch_ns,
+    }
+
+
+def _authorization_snapshot_public(snapshot: Any) -> dict[str, Any]:
+    if is_dataclass(snapshot):
+        return asdict(snapshot)
+    candidate = getattr(snapshot, "candidate", None)
+    return {
+        "snapshot_digest": _clean(getattr(snapshot, "snapshot_digest", "")),
+        "cursor_digest": _clean(getattr(snapshot, "cursor_digest", "")),
+        "ready_close_count": _to_int(
+            getattr(snapshot, "ready_close_count", 0), 0
+        ),
+        "ready_open_count": _to_int(
+            getattr(snapshot, "ready_open_count", 0), 0
+        ),
+        "inflight_count": _to_int(getattr(snapshot, "inflight_count", 0), 0),
+        "candidate": (
+            dict(vars(candidate)) if candidate is not None else None
+        ),
+    }
+
+
+def _spool_authorization_snapshot(runtime: Any) -> Any:
+    if not Path(runtime.spool_path).exists():
+        raise RuntimeError("stage179_intent_spool_missing")
+    connection = open_spool(runtime.spool_path)
+    try:
+        return snapshot_authorizable_intents(
+            connection,
+            now_epoch_ns=time.time_ns(),
+            now_monotonic_ns=time.monotonic_ns(),
+            clock_domain_id=system_clock_domain_id(),
+        )
+    finally:
+        connection.close()
+
+
+def _active_submit_inflight_count(snapshot: Any) -> int:
+    """Count only leases that can still be inside the native submit path.
+
+    ``side_effect_unknown`` rows retain their original lease identity for
+    reconciliation, but no executor owns an active API call for them.  They
+    must continue to block every OPEN while still allowing an independently
+    broker-proven protective CLOSE to receive a fresh authorization.  The
+    spool candidate selector enforces that ordering; this helper prevents the
+    controller layer from accidentally turning the historical unknown into an
+    account-wide CLOSE blockade.
+
+    The ``inflight_count`` fallback keeps compatibility with older snapshots
+    and test doubles that predate the per-state counters.  Production spool
+    snapshots always expose the explicit counters.
+    """
+
+    if hasattr(snapshot, "leased_count") or hasattr(snapshot, "sending_count"):
+        return _to_int(getattr(snapshot, "leased_count", 0), 0) + _to_int(
+            getattr(snapshot, "sending_count", 0), 0
+        )
+    return _to_int(getattr(snapshot, "inflight_count", 0), 0)
+
+
+def _evidence_expiry_epoch_ns(
+    summary: dict[str, Any],
+    *,
+    issued_epoch_ns: int,
+    max_age_seconds: float,
+    label: str,
+) -> tuple[int, str]:
+    age_seconds = _age_seconds(summary.get("generated_at"))
+    if age_seconds is None:
+        return 0, f"{label}_generated_at_missing"
+    if age_seconds < -TICK_CLOCK_SKEW_SECONDS:
+        return 0, f"{label}_generated_at_from_future"
+    if age_seconds >= max_age_seconds:
+        return 0, f"{label}_stale"
+    remaining_seconds = max_age_seconds - max(0.0, age_seconds)
+    return issued_epoch_ns + int(remaining_seconds * 1_000_000_000), ""
+
+
+def _fast_lane_scope(candidate: Any) -> tuple[str, str]:
+    if (
+        candidate.intent_kind == "open"
+        and candidate.source == "stage901_pending_order"
+        and candidate.intent_role == "c9_initial_open"
+    ):
+        return "initial_open_only", "initial_open_submit_permitted"
+    if (
+        candidate.intent_kind == "close"
+        and candidate.source == "stage904_c9_intraday_close"
+        and candidate.intent_role
+        in {"c9_initial_stop_close", "c9_retry_failed_stop_close"}
+    ):
+        return "reduce_close_only", "reduce_close_submit_permitted"
+    if (
+        candidate.intent_kind == "open"
+        and candidate.source == "stage904_c9_intraday_retry_open"
+        and candidate.intent_role == "c9_retry_open_once"
+    ):
+        return "retry_open_only", "retry_open_submit_permitted"
+    return "", ""
+
+
+def _initial_open_authorization_window(
+    issued_epoch_ns: int,
+) -> tuple[bool, int, str]:
+    """Bind a Stage901 initial open to the actual exchange-open window.
+
+    The durable trace deadline limits processing latency after a tick, but it
+    cannot by itself distinguish an on-time opening tick from a daemon started
+    hours later.  This independent wall-clock gate makes late startup and
+    restart fail closed for new risk while leaving stop/retry handling intact.
+    """
+
+    if type(issued_epoch_ns) is not int or issued_epoch_ns <= 0:
+        return False, 0, "invalid_issued_epoch_ns"
+    current = datetime.fromtimestamp(
+        issued_epoch_ns / 1_000_000_000,
+        tz=SHANGHAI_TZ,
+    )
+    if current.weekday() >= 5:
+        return False, 0, "non_weekday"
+    for label, start_hour, start_minute, end_hour, end_minute in (
+        INITIAL_OPEN_AUTHORIZATION_WINDOWS
+    ):
+        start = current.replace(
+            hour=start_hour,
+            minute=start_minute,
+            second=0,
+            microsecond=0,
+        )
+        end = current.replace(
+            hour=end_hour,
+            minute=end_minute,
+            second=0,
+            microsecond=0,
+        )
+        if start <= current < end:
+            return True, int(end.timestamp() * 1_000_000_000), label
+    return False, 0, "outside_exchange_open_window"
+
+
+def _fast_lane_gate_evidence(
+    args: argparse.Namespace,
+    *,
+    target_date: str,
+    candidate: Any,
+    tick_stream: dict[str, Any],
+    service_status: dict[str, Any],
+    issued_epoch_ns: int,
+) -> tuple[dict[str, Any], list[str]]:
+    blockers: list[str] = []
+    profile = _execution_profile_for_args(args)
+    scope, permit_field = _fast_lane_scope(candidate)
+    initial_open_window_expiry_epoch_ns = 0
+    initial_open_window_label = ""
+    candidate_initial_open_window_expiry_epoch_ns = 0
+    candidate_initial_open_window_label = ""
+    if not scope:
+        blockers.append("persistent_fast_candidate_source_role_not_whitelisted")
+    elif scope == "initial_open_only":
+        (
+            initial_open_window_allowed,
+            initial_open_window_expiry_epoch_ns,
+            initial_open_window_label,
+        ) = _initial_open_authorization_window(issued_epoch_ns)
+        if not initial_open_window_allowed:
+            blockers.append(
+                "persistent_fast_initial_open_outside_exchange_open_window:"
+                f"{initial_open_window_label}"
+            )
+        (
+            candidate_window_allowed,
+            candidate_initial_open_window_expiry_epoch_ns,
+            candidate_initial_open_window_label,
+        ) = _initial_open_authorization_window(
+            int(getattr(candidate, "ingress_epoch_ns", 0) or 0)
+        )
+        if not candidate_window_allowed:
+            blockers.append(
+                "persistent_fast_initial_open_candidate_ingress_outside_window:"
+                f"{candidate_initial_open_window_label}"
+            )
+        elif (
+            candidate_initial_open_window_expiry_epoch_ns
+            != initial_open_window_expiry_epoch_ns
+        ):
+            blockers.append(
+                "persistent_fast_initial_open_candidate_ingress_window_mismatch"
+            )
+    stage902 = _read_json(_stage902_summary_path(target_date))
+    stage927 = _read_json(_stage927_summary_path(target_date))
+    readiness = service_status.get("readiness")
+    if service_status.get("submit_status") != "warm_executor_ready":
+        blockers.append("persistent_fast_warm_executor_not_ready")
+    if not isinstance(readiness, dict):
+        readiness = {}
+        blockers.append("persistent_fast_warm_readiness_missing")
+
+    identity_checks = (
+        (stage902.get("model_tag") == "stage902_official_live_phase_d_readiness_gate_v1", "stage902_model_mismatch"),
+        (stage902.get("target_date") == target_date, "stage902_target_date_mismatch"),
+        (stage902.get("execution_profile") == profile.profile_key, "stage902_profile_mismatch"),
+        (stage902.get("official_live_version") == profile.official_version, "stage902_version_mismatch"),
+        (_to_int(stage902.get("capital"), -1) == int(profile.capital), "stage902_capital_mismatch"),
+        (stage902.get("capital_label") == profile.capital_label, "stage902_capital_label_mismatch"),
+        (_to_int(stage902.get("order_api_called_count"), -1) == 0, "stage902_order_api_nonzero_or_missing"),
+        (stage927.get("model_tag") == "stage927_official_live_real_submit_arming_gate_v1", "stage927_model_mismatch"),
+        (stage927.get("target_date") == target_date, "stage927_target_date_mismatch"),
+        (stage927.get("execution_profile") == profile.profile_key, "stage927_profile_mismatch"),
+        (stage927.get("official_live_version") == profile.official_version, "stage927_version_mismatch"),
+        (_to_int(stage927.get("capital"), -1) == int(profile.capital), "stage927_capital_mismatch"),
+        (stage927.get("capital_label") == profile.capital_label, "stage927_capital_label_mismatch"),
+        (_to_int(stage927.get("order_api_called_count"), -1) == 0, "stage927_order_api_nonzero_or_missing"),
+        (_to_int(stage927.get("env_real_submit_enabled"), 0) == 1, "stage927_real_submit_env_not_enabled"),
+        (_to_int(stage927.get("confirm_live_real_ok"), 0) == 1, "stage927_real_submit_confirm_missing"),
+    )
+    blockers.extend(blocker for passed, blocker in identity_checks if not passed)
+    if permit_field and _to_int(stage927.get(permit_field), 0) != 1:
+        blockers.append(f"stage927_{permit_field}_not_ready")
+
+    if scope == "reduce_close_only":
+        if _to_int(stage902.get("allow_reduce_close"), 0) != 1:
+            blockers.append("stage902_reduce_close_not_allowed")
+        if _to_int(stage902.get("blocking_failure_count_for_reduce_close"), -1) != 0:
+            blockers.append("stage902_reduce_close_blocked")
+    elif scope in {"retry_open_only", "initial_open_only"}:
+        if _to_int(stage902.get("allow_new_open"), 0) != 1:
+            blockers.append("stage902_new_open_not_allowed")
+        if _to_int(stage902.get("blocking_failure_count"), -1) != 0:
+            blockers.append("stage902_new_open_blocked")
+        if _to_int(stage902.get("ready_for_phase_d_real"), 0) != 1:
+            blockers.append("stage902_not_ready_for_phase_d_real")
+        if _to_int(tick_stream.get("all_symbols_ready"), 0) != 1:
+            blockers.append("persistent_fast_retry_open_tick_stream_not_ready")
+
+    evidence_max_age = min(
+        60.0,
+        max(5.0, float(getattr(args, "max_snapshot_age_seconds", 60))),
+    )
+    stage902_expiry, blocker = _evidence_expiry_epoch_ns(
+        stage902,
+        issued_epoch_ns=issued_epoch_ns,
+        max_age_seconds=evidence_max_age,
+        label="stage902",
+    )
+    if blocker:
+        blockers.append(blocker)
+    stage927_expiry, blocker = _evidence_expiry_epoch_ns(
+        stage927,
+        issued_epoch_ns=issued_epoch_ns,
+        max_age_seconds=evidence_max_age,
+        label="stage927",
+    )
+    if blocker:
+        blockers.append(blocker)
+    readiness_expiry = _to_int(readiness.get("expires_epoch_ns"), 0)
+    if readiness_expiry <= issued_epoch_ns:
+        blockers.append("persistent_fast_warm_readiness_expired")
+
+    stage902_digest = _canonical_json_digest(stage902) if stage902 else ""
+    stage927_digest = _canonical_json_digest(stage927) if stage927 else ""
+    return {
+        "scope": scope,
+        "permit_field": permit_field,
+        "stage902": stage902,
+        "stage927": stage927,
+        "readiness": readiness,
+        "stage902_digest": stage902_digest,
+        "stage927_digest": stage927_digest,
+        "stage902_expiry_epoch_ns": stage902_expiry,
+        "stage927_expiry_epoch_ns": stage927_expiry,
+        "readiness_expiry_epoch_ns": readiness_expiry,
+        "initial_open_window_expiry_epoch_ns": (
+            initial_open_window_expiry_epoch_ns
+        ),
+        "initial_open_window_label": initial_open_window_label,
+        "candidate_initial_open_window_expiry_epoch_ns": (
+            candidate_initial_open_window_expiry_epoch_ns
+        ),
+        "candidate_initial_open_window_label": candidate_initial_open_window_label,
+    }, list(dict.fromkeys(blockers))
+
+
 def _persistent_detector_fast_lane_status(
     args: argparse.Namespace,
     target_date: str,
@@ -1489,31 +1838,33 @@ def _persistent_detector_fast_lane_status(
     heartbeat = _read_json(STAGE941_HEARTBEAT_PATH)
     supervisor = _supervise_detector(args, paths)
     public = _detector_supervisor_public(supervisor)
-    blockers: list[str] = []
+    runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+    detector_blockers: list[str] = []
+    submit_blockers: list[str] = []
     expected_instance = _clean(
         supervisor.get("instance_id") if isinstance(supervisor, dict) else ""
     )
     if public.get("process_alive") != 1:
-        blockers.append("persistent_detector_process_not_alive")
+        detector_blockers.append("persistent_detector_process_not_alive")
     if _clean(heartbeat.get("model_tag")) != "stage941_official_live_c9_detector_v1":
-        blockers.append("persistent_detector_heartbeat_model_mismatch")
+        detector_blockers.append("persistent_detector_heartbeat_model_mismatch")
     if _clean(heartbeat.get("detector_instance_id")) != expected_instance:
-        blockers.append("persistent_detector_heartbeat_instance_mismatch")
+        detector_blockers.append("persistent_detector_heartbeat_instance_mismatch")
     if heartbeat.get("owner_pid") != public.get("process_pid"):
-        blockers.append("persistent_detector_heartbeat_owner_mismatch")
+        detector_blockers.append("persistent_detector_heartbeat_owner_mismatch")
     if heartbeat.get("parent_pid") != os.getpid():
-        blockers.append("persistent_detector_heartbeat_parent_mismatch")
+        detector_blockers.append("persistent_detector_heartbeat_parent_mismatch")
     if heartbeat.get("ready") is not True or heartbeat.get("stopped") is not False:
-        blockers.append("persistent_detector_heartbeat_unready")
+        detector_blockers.append("persistent_detector_heartbeat_unready")
     if _clean(heartbeat.get("target_date")) != target_date:
-        blockers.append("persistent_detector_target_date_mismatch")
+        detector_blockers.append("persistent_detector_target_date_mismatch")
     if _clean(heartbeat.get("consumer_id")) != "stage941":
-        blockers.append("persistent_detector_heartbeat_consumer_mismatch")
-    if _clean(heartbeat.get("spool_path")) != str(STAGE941_SPOOL_PATH.resolve()):
-        blockers.append("persistent_detector_heartbeat_spool_mismatch")
+        detector_blockers.append("persistent_detector_heartbeat_consumer_mismatch")
+    if _clean(heartbeat.get("spool_path")) != str(Path(runtime.spool_path).resolve()):
+        detector_blockers.append("persistent_detector_heartbeat_spool_mismatch")
     generated_epoch_ns = heartbeat.get("generated_epoch_ns")
     if type(generated_epoch_ns) is not int or generated_epoch_ns <= 0:
-        blockers.append("persistent_detector_heartbeat_time_invalid")
+        detector_blockers.append("persistent_detector_heartbeat_time_invalid")
     else:
         heartbeat_age_seconds = (time.time_ns() - generated_epoch_ns) / 1_000_000_000
         max_heartbeat_age_seconds = max(
@@ -1522,9 +1873,9 @@ def _persistent_detector_fast_lane_status(
             * DETECTOR_HEARTBEAT_POLL_MULTIPLIER,
         )
         if heartbeat_age_seconds < -TICK_CLOCK_SKEW_SECONDS:
-            blockers.append("persistent_detector_heartbeat_from_future")
+            detector_blockers.append("persistent_detector_heartbeat_from_future")
         elif heartbeat_age_seconds > max_heartbeat_age_seconds:
-            blockers.append("persistent_detector_heartbeat_stale")
+            detector_blockers.append("persistent_detector_heartbeat_stale")
     send_order_api_count = heartbeat.get("send_order_api_called_count")
     cancel_order_api_count = heartbeat.get("cancel_order_api_called_count")
     order_api_counts_valid = bool(
@@ -1539,21 +1890,299 @@ def _persistent_detector_fast_lane_status(
         else 0
     )
     if not order_api_counts_valid:
-        blockers.append("persistent_detector_order_api_count_invalid")
+        detector_blockers.append("persistent_detector_order_api_count_invalid")
     elif order_api_count:
-        blockers.append("persistent_detector_order_api_nonzero")
+        detector_blockers.append("persistent_detector_order_api_nonzero")
+
+    tick_stream = _managed_tick_stream_status(
+        args,
+        paths,
+        _watched_symbols_for_args(args),
+    )
+    service_status = _status_stage931_service(args)
+    snapshot: Any | None = None
+    candidate: Any | None = None
+    authorization: dict[str, Any] = {"authorized": 0}
+    wake_notified = False
+    fast_lane_status = (
+        "persistent_detector_unready_fail_closed"
+        if detector_blockers
+        else "persistent_detector_ready_no_authorizable_intent"
+    )
+
+    if not detector_blockers:
+        try:
+            snapshot = _spool_authorization_snapshot(runtime)
+            candidate = snapshot.candidate
+        except Exception as exc:
+            submit_blockers.append(
+                "persistent_fast_spool_snapshot_failed:"
+                f"{type(exc).__name__}"
+            )
+            fast_lane_status = "persistent_detector_authorization_blocked_fail_closed"
+
+    live_fast_enabled = bool(
+        args.mode == "live-real"
+        and args.submit_mode == "live-real"
+        and getattr(args, "stage179_execution_mode", "legacy-once") == "warm"
+    )
+    if snapshot is not None and candidate is None:
+        if snapshot.inflight_count:
+            fast_lane_status = "persistent_detector_inflight_preserved"
+        else:
+            fast_lane_status = "persistent_detector_ready_no_authorizable_intent"
+    elif candidate is not None and not live_fast_enabled:
+        fast_lane_status = "persistent_detector_ready_no_submit"
+    elif candidate is not None:
+        scope, _permit_field = _fast_lane_scope(candidate)
+        if not scope:
+            fast_lane_status = "persistent_detector_candidate_deferred_to_slow_controller"
+        else:
+            authorization_lane = (
+                "session_initial_open"
+                if scope == "initial_open_only"
+                else "persistent_intraday_fast"
+            )
+            controller_status = (
+                "session_initial_open_prearmed_ready"
+                if scope == "initial_open_only"
+                else "persistent_intraday_fast_ready"
+            )
+            issued_epoch_ns = time.time_ns()
+            evidence0, evidence_blockers = _fast_lane_gate_evidence(
+                args,
+                target_date=target_date,
+                candidate=candidate,
+                tick_stream=tick_stream,
+                service_status=service_status,
+                issued_epoch_ns=issued_epoch_ns,
+            )
+            submit_blockers.extend(evidence_blockers)
+            if not submit_blockers:
+                lock_path = submit_authorization_lock_path(runtime.output_root)
+                try:
+                    with exclusive_submit_authorization_lock(
+                        lock_path,
+                        blocking=False,
+                    ):
+                        snapshot1 = _spool_authorization_snapshot(runtime)
+                        service_status1 = _status_stage931_service(args)
+                        tick_stream1 = _managed_tick_stream_status(
+                            args,
+                            paths,
+                            _watched_symbols_for_args(args),
+                        )
+                        evidence1, evidence_blockers1 = _fast_lane_gate_evidence(
+                            args,
+                            target_date=target_date,
+                            candidate=candidate,
+                            tick_stream=tick_stream1,
+                            service_status=service_status1,
+                            issued_epoch_ns=issued_epoch_ns,
+                        )
+                        if not authorization_snapshots_match(snapshot, snapshot1):
+                            submit_blockers.append(
+                                "persistent_fast_spool_snapshot_changed"
+                            )
+                        submit_blockers.extend(evidence_blockers1)
+                        if (
+                            evidence0.get("stage902_digest")
+                            != evidence1.get("stage902_digest")
+                        ):
+                            submit_blockers.append(
+                                "persistent_fast_stage902_evidence_changed"
+                            )
+                        if (
+                            evidence0.get("stage927_digest")
+                            != evidence1.get("stage927_digest")
+                        ):
+                            submit_blockers.append(
+                                "persistent_fast_stage927_evidence_changed"
+                            )
+                        readiness0 = evidence0.get("readiness", {})
+                        readiness1 = evidence1.get("readiness", {})
+                        for generation_field in (
+                            "service_generation",
+                            "connection_generation",
+                        ):
+                            if _clean(readiness0.get(generation_field)) != _clean(
+                                readiness1.get(generation_field)
+                            ):
+                                submit_blockers.append(
+                                    "persistent_fast_warm_"
+                                    f"{generation_field}_changed"
+                                )
+                        if not submit_blockers:
+                            ttl_ns = int(
+                                min(
+                                    3.0,
+                                    max(
+                                        0.5,
+                                        float(
+                                            getattr(
+                                                args,
+                                                "detector_poll_seconds",
+                                                0.05,
+                                            )
+                                        )
+                                        * 10.0,
+                                    ),
+                                )
+                                * 1_000_000_000
+                            )
+                            expires_epoch_ns = min(
+                                issued_epoch_ns + ttl_ns,
+                                int(candidate.deadline_epoch_ns),
+                                int(evidence1["stage902_expiry_epoch_ns"]),
+                                int(evidence1["stage927_expiry_epoch_ns"]),
+                                int(evidence1["readiness_expiry_epoch_ns"]),
+                            )
+                            if scope == "initial_open_only":
+                                expires_epoch_ns = min(
+                                    expires_epoch_ns,
+                                    int(
+                                        evidence1[
+                                            "initial_open_window_expiry_epoch_ns"
+                                        ]
+                                    ),
+                                    int(
+                                        evidence1[
+                                            "candidate_initial_open_window_expiry_epoch_ns"
+                                        ]
+                                    ),
+                                )
+                            if expires_epoch_ns <= issued_epoch_ns:
+                                submit_blockers.append(
+                                    "persistent_fast_authorization_expired_before_publish"
+                                )
+                        if not submit_blockers:
+                            readiness = evidence1["readiness"]
+                            tick_expiry = expires_epoch_ns
+                            payload = publish_submit_authorization(
+                                path=submit_authorization_path(runtime.output_root),
+                                target_date=target_date,
+                                execution_profile=_execution_profile_for_args(args).profile_key,
+                                runtime_profile=runtime.profile.value,
+                                order_scope=runtime.order_scope.value,
+                                service_generation=_clean(
+                                    readiness.get("service_generation")
+                                ),
+                                connection_generation=_clean(
+                                    readiness.get("connection_generation")
+                                ),
+                                cycle_id=uuid.uuid4().hex,
+                                intent_scope=scope,
+                                authorized_intents=[
+                                    _authorization_candidate_row(candidate)
+                                ],
+                                issued_epoch_ns=issued_epoch_ns,
+                                expires_epoch_ns=expires_epoch_ns,
+                                controller_evidence={
+                                    "controller_status": controller_status,
+                                    "target_date": target_date,
+                                    "stage902": evidence1["stage902"],
+                                    "expires_epoch_ns": evidence1[
+                                        "stage902_expiry_epoch_ns"
+                                    ],
+                                },
+                                stage927_evidence={
+                                    **evidence1["stage927"],
+                                    "expires_epoch_ns": evidence1[
+                                        "stage927_expiry_epoch_ns"
+                                    ],
+                                },
+                                broker_gate_evidence=readiness,
+                                tick_watermark_evidence={
+                                    **tick_stream1,
+                                    "expires_epoch_ns": tick_expiry,
+                                },
+                                authorization_lane=authorization_lane,
+                                spool_path=runtime.spool_path,
+                                spool_snapshot_digest=snapshot1.snapshot_digest,
+                                cursor_digest=snapshot1.cursor_digest,
+                                stage902_evidence_digest=evidence1[
+                                    "stage902_digest"
+                                ],
+                                stage927_evidence_digest=evidence1[
+                                    "stage927_digest"
+                                ],
+                            )
+                            exact = _authorization_candidate_row(candidate)
+                            validation_blockers = validate_submit_authorization(
+                                path=submit_authorization_path(runtime.output_root),
+                                target_date=target_date,
+                                execution_profile=_execution_profile_for_args(args).profile_key,
+                                runtime_profile=runtime.profile.value,
+                                order_scope=runtime.order_scope.value,
+                                service_generation=_clean(
+                                    readiness.get("service_generation")
+                                ),
+                                connection_generation=_clean(
+                                    readiness.get("connection_generation")
+                                ),
+                                now_epoch_ns=time.time_ns(),
+                                authorization_lane=authorization_lane,
+                                intent_scope=scope,
+                                spool_path=runtime.spool_path,
+                                spool_snapshot_digest=snapshot1.snapshot_digest,
+                                cursor_digest=snapshot1.cursor_digest,
+                                stage902_evidence_digest=evidence1[
+                                    "stage902_digest"
+                                ],
+                                stage927_evidence_digest=evidence1[
+                                    "stage927_digest"
+                                ],
+                                **exact,
+                            )
+                            if validation_blockers:
+                                revoke_submit_authorization(
+                                    submit_authorization_path(runtime.output_root),
+                                    reason="persistent_fast_authorization_self_validation_failed",
+                                    revoked_epoch_ns=time.time_ns(),
+                                )
+                                submit_blockers.extend(validation_blockers)
+                            else:
+                                authorization = {
+                                    "authorized": 1,
+                                    "authorization_lane": payload[
+                                        "authorization_lane"
+                                    ],
+                                    "intent_scope": payload["intent_scope"],
+                                    "intent_id": candidate.intent_id,
+                                    "record_digest": payload["record_digest"],
+                                    "expires_epoch_ns": payload[
+                                        "expires_epoch_ns"
+                                    ],
+                                }
+                except SubmitAuthorizationLockBusyError:
+                    fast_lane_status = (
+                        "persistent_detector_executor_inflight_preserved"
+                    )
+                    submit_blockers.append(
+                        "persistent_fast_authorization_lock_busy"
+                    )
+                except Exception as exc:
+                    submit_blockers.append(
+                        "persistent_fast_authorization_exception:"
+                        f"{type(exc).__name__}"
+                    )
+            if authorization.get("authorized"):
+                wake_notified = _wake_stage931_service(args)
+                fast_lane_status = "persistent_detector_submit_authorized"
+            elif fast_lane_status not in {
+                "persistent_detector_executor_inflight_preserved",
+            }:
+                fast_lane_status = (
+                    "persistent_detector_authorization_blocked_fail_closed"
+                )
+
+    stage931_summary = service_status.get("summary")
+    if not isinstance(stage931_summary, dict):
+        stage931_summary = {}
     return {
-        "fast_lane_status": (
-            "persistent_detector_ready_no_submit"
-            if not blockers
-            else "persistent_detector_unready_fail_closed"
-        ),
+        "fast_lane_status": fast_lane_status,
         "target_date": target_date,
-        "tick_stream": _managed_tick_stream_status(
-            args,
-            paths,
-            _watched_symbols_for_args(args),
-        ),
+        "tick_stream": tick_stream,
         "detector_supervisor": public,
         "detector_heartbeat": heartbeat,
         "stage904": {"summary": {"source": "persistent_detector_heartbeat"}},
@@ -1566,15 +2195,37 @@ def _persistent_detector_fast_lane_status(
             }
         },
         "stage931": {
-            "submit_status": "persistent_detector_submit_disabled_task8",
+            **service_status,
+            "submit_status": (
+                "persistent_detector_submit_authorized"
+                if authorization.get("authorized")
+                else service_status.get("submit_status", "")
+            ),
+            "submit_authorization": authorization,
+            "wake_socket_notified": int(wake_notified),
             "summary": {
-                "send_order_api_called_count": 0,
-                "cancel_order_api_called_count": 0,
-                "order_api_called_count": 0,
+                "send_order_api_called_count": _to_int(
+                    stage931_summary.get("send_order_api_called_count"), 0
+                ),
+                "cancel_order_api_called_count": _to_int(
+                    stage931_summary.get("cancel_order_api_called_count"), 0
+                ),
+                "order_api_called_count": _to_int(
+                    stage931_summary.get("order_api_called_count"), 0
+                ),
             },
         },
-        "reduce_close_ready_count": 0,
-        "blockers": blockers,
+        "authorization_snapshot": (
+            _authorization_snapshot_public(snapshot)
+            if snapshot is not None
+            else {}
+        ),
+        "reduce_close_ready_count": (
+            snapshot.ready_close_count if snapshot is not None else 0
+        ),
+        "blockers": list(dict.fromkeys(detector_blockers + submit_blockers)),
+        "detector_blockers": detector_blockers,
+        "submit_blockers": submit_blockers,
         "send_order_api_called_count": send_order_api_count,
         "cancel_order_api_called_count": cancel_order_api_count,
         "order_api_called_count": order_api_count,
@@ -2530,13 +3181,48 @@ def _wake_stage931_service(args: argparse.Namespace) -> bool:
 def _revoke_stage931_submit_authorization(
     args: argparse.Namespace,
     reason: str,
-) -> None:
+) -> dict[str, Any]:
     runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
-    revoke_submit_authorization(
-        submit_authorization_path(runtime.output_root),
-        reason=reason,
-        revoked_epoch_ns=time.time_ns(),
-    )
+    try:
+        with exclusive_submit_authorization_lock(
+            submit_authorization_lock_path(runtime.output_root),
+            blocking=False,
+        ):
+            try:
+                snapshot = _spool_authorization_snapshot(runtime)
+            except RuntimeError as exc:
+                if str(exc) != "stage179_intent_spool_missing":
+                    raise
+                snapshot = None
+            active_inflight_count = (
+                _active_submit_inflight_count(snapshot)
+                if snapshot is not None
+                else 0
+            )
+            if active_inflight_count:
+                return {
+                    "revoked": 0,
+                    "preserved": 1,
+                    "reason": "stage931_authorization_inflight_preserved",
+                    "inflight_count": active_inflight_count,
+                }
+            payload = revoke_submit_authorization(
+                submit_authorization_path(runtime.output_root),
+                reason=reason,
+                revoked_epoch_ns=time.time_ns(),
+            )
+            return {
+                "revoked": 1,
+                "preserved": 0,
+                "reason": reason,
+                "record_digest": payload.get("record_digest", ""),
+            }
+    except SubmitAuthorizationLockBusyError:
+        return {
+            "revoked": 0,
+            "preserved": 1,
+            "reason": "stage931_authorization_lock_busy_inflight_preserved",
+        }
 
 
 def _publish_stage931_submit_authorization(
@@ -2562,73 +3248,15 @@ def _publish_stage931_submit_authorization(
             "authorized": 0,
             "blocker": "stage931_warm_readiness_generation_missing",
         }
-    ready = _read_csv_maybe(_stage905_intents_path(target_date))
-    if ready.empty or "executor_status" not in ready.columns:
-        return {
-            "authorized": 0,
-            "blocker": "stage931_authorized_intents_missing",
-        }
-    ready = ready[
-        ready["executor_status"]
-        .fillna("")
-        .astype(str)
-        .eq("dry_run_order_request_payload_ready")
-    ].copy()
     expected_ready_count = _to_int(
         controller_summary.get("stage905_ready_count"),
         -1,
     )
-    if expected_ready_count <= 0 or len(ready) != expected_ready_count:
+    if expected_ready_count <= 0:
         return {
             "authorized": 0,
-            "blocker": (
-                "stage931_authorized_intent_count_mismatch:"
-                f"{len(ready)}!={expected_ready_count}"
-            ),
+            "blocker": "stage931_controller_has_no_ready_intent",
         }
-    authorized_intents: list[dict[str, str]] = []
-    seen_intent_ids: set[str] = set()
-    for _, row in ready.iterrows():
-        intent_id = _clean(row.get("intent_id"))
-        payload_sha256 = _clean(row.get("payload_sha256")).lower()
-        intent_kind = _clean(row.get("offset")).lower()
-        row_target_date = _clean(row.get("target_date"))
-        if not intent_id or intent_id in seen_intent_ids:
-            return {
-                "authorized": 0,
-                "blocker": "stage931_authorized_intent_identity_invalid",
-            }
-        if len(payload_sha256) != 64 or any(
-            character not in "0123456789abcdef"
-            for character in payload_sha256
-        ):
-            return {
-                "authorized": 0,
-                "blocker": "stage931_authorized_intent_payload_sha256_invalid",
-            }
-        if intent_kind not in {"open", "close"}:
-            return {
-                "authorized": 0,
-                "blocker": "stage931_authorized_intent_kind_invalid",
-            }
-        if row_target_date != target_date:
-            return {
-                "authorized": 0,
-                "blocker": "stage931_authorized_intent_target_date_mismatch",
-            }
-        if reduce_close_only and intent_kind != "close":
-            return {
-                "authorized": 0,
-                "blocker": "stage931_reduce_close_authorization_contains_open",
-            }
-        seen_intent_ids.add(intent_id)
-        authorized_intents.append(
-            {
-                "intent_id": intent_id,
-                "payload_sha256": payload_sha256,
-                "intent_kind": intent_kind,
-            }
-        )
     issued_epoch_ns = time.time_ns()
     ttl_seconds = min(
         60.0,
@@ -2638,128 +3266,255 @@ def _publish_stage931_submit_authorization(
         readiness.get("expires_epoch_ns"),
         0,
     )
-    controller_age_seconds = _age_seconds(
-        controller_summary.get("generated_at")
-    )
-    stage927_age_seconds = _age_seconds(
-        stage927_summary.get("generated_at")
-    )
-    controller_fresh_seconds = min(
-        60.0,
-        max(5.0, float(getattr(args, "max_snapshot_age_seconds", 60))),
-    )
-    evidence_expiries: list[tuple[str, int]] = []
-    for evidence_name, age_seconds in (
-        ("controller", controller_age_seconds),
-        ("stage927", stage927_age_seconds),
-    ):
-        if (
-            age_seconds is None
-            or age_seconds < -TICK_CLOCK_SKEW_SECONDS
-            or age_seconds >= controller_fresh_seconds
-        ):
-            return {
-                "authorized": 0,
-                "blocker": f"stage931_{evidence_name}_evidence_stale",
-            }
-        evidence_expiries.append(
-            (
-                evidence_name,
-                issued_epoch_ns
-                + int(
-                    (controller_fresh_seconds - max(0.0, age_seconds))
-                    * 1_000_000_000
+    controller_expires_epoch_ns, controller_expiry_blocker = (
+        _evidence_expiry_epoch_ns(
+            controller_summary,
+            issued_epoch_ns=issued_epoch_ns,
+            max_age_seconds=min(
+                60.0,
+                max(
+                    5.0,
+                    float(getattr(args, "max_snapshot_age_seconds", 60)),
                 ),
-            )
+            ),
+            label="stage931_controller_evidence",
         )
+    )
+    stage927_expires_epoch_ns, stage927_expiry_blocker = (
+        _evidence_expiry_epoch_ns(
+            stage927_summary,
+            issued_epoch_ns=issued_epoch_ns,
+            max_age_seconds=min(
+                60.0,
+                max(
+                    5.0,
+                    float(getattr(args, "max_snapshot_age_seconds", 60)),
+                ),
+            ),
+            label="stage931_stage927_evidence",
+        )
+    )
+    if controller_expiry_blocker or stage927_expiry_blocker:
+        return {
+            "authorized": 0,
+            "blocker": ";".join(
+                item
+                for item in (
+                    controller_expiry_blocker,
+                    stage927_expiry_blocker,
+                )
+                if item
+            ),
+        }
     tick_expires_epoch_ns = issued_epoch_ns + int(ttl_seconds * 1_000_000_000)
     if not reduce_close_only:
         tick_summary = tick_gate.get("summary")
-        tick_age_seconds = _age_seconds(
-            tick_summary.get("generated_at")
-            if isinstance(tick_summary, dict)
-            else None
-        )
-        if (
-            tick_age_seconds is None
-            or tick_age_seconds < -TICK_CLOCK_SKEW_SECONDS
-            or tick_age_seconds >= 3.0
-        ):
+        tick_epoch_ns = _tick_result_ingress_epoch_ns(tick_gate)
+        if not isinstance(tick_summary, dict) or tick_epoch_ns is None:
             return {
                 "authorized": 0,
                 "blocker": "stage931_tick_watermark_evidence_stale",
             }
-        tick_expires_epoch_ns = issued_epoch_ns + int(
-            (3.0 - max(0.0, tick_age_seconds)) * 1_000_000_000
+        tick_age_ns = max(0, issued_epoch_ns - tick_epoch_ns)
+        tick_ttl_ns = int(
+            max(0.1, float(getattr(args, "fast_tick_age_seconds", 3.0)))
+            * 1_000_000_000
         )
-        evidence_expiries.append(("tick", tick_expires_epoch_ns))
-    expires_epoch_ns = min(
-        issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
-        readiness_expires_epoch_ns,
-        *(expiry for _, expiry in evidence_expiries),
-    )
-    if expires_epoch_ns <= issued_epoch_ns:
+        tick_expires_epoch_ns = issued_epoch_ns + max(0, tick_ttl_ns - tick_age_ns)
+
+    try:
+        with exclusive_submit_authorization_lock(
+            submit_authorization_lock_path(runtime.output_root),
+            blocking=False,
+        ):
+            snapshot = _spool_authorization_snapshot(runtime)
+            active_inflight_count = _active_submit_inflight_count(snapshot)
+            if active_inflight_count:
+                return {
+                    "authorized": 0,
+                    "preserved": 1,
+                    "blocker": "stage931_authorization_inflight_preserved",
+                    "inflight_count": active_inflight_count,
+                }
+            candidate = snapshot.candidate
+            if candidate is None:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_spool_has_no_authorizable_intent",
+                }
+            if candidate.target_date != target_date:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_spool_candidate_target_date_mismatch",
+                }
+            intent_scope, permit_field = _fast_lane_scope(candidate)
+            if not intent_scope:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_candidate_source_role_not_whitelisted",
+                }
+            candidate_close_only = intent_scope == "reduce_close_only"
+            if reduce_close_only and not candidate_close_only:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_reduce_close_authorization_contains_open",
+                }
+            if _to_int(stage927_summary.get(permit_field), 0) != 1:
+                return {
+                    "authorized": 0,
+                    "blocker": f"stage931_{permit_field}_not_ready",
+                }
+            initial_open_window_expiry_epoch_ns = 0
+            if intent_scope == "initial_open_only":
+                allowed_now, now_window_expiry, _ = (
+                    _initial_open_authorization_window(issued_epoch_ns)
+                )
+                allowed_ingress, ingress_window_expiry, _ = (
+                    _initial_open_authorization_window(
+                        int(candidate.ingress_epoch_ns)
+                    )
+                )
+                if (
+                    not allowed_now
+                    or not allowed_ingress
+                    or now_window_expiry != ingress_window_expiry
+                ):
+                    return {
+                        "authorized": 0,
+                        "blocker": "stage931_initial_open_candidate_ingress_window_invalid",
+                    }
+                initial_open_window_expiry_epoch_ns = ingress_window_expiry
+            if not candidate_close_only and _to_int(tick_gate.get("all_symbols_ready"), 0) != 1:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_tick_gate_not_ready_for_open",
+                }
+            expires_epoch_ns = min(
+                issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
+                readiness_expires_epoch_ns,
+                controller_expires_epoch_ns,
+                stage927_expires_epoch_ns,
+                int(candidate.deadline_epoch_ns),
+                *(
+                    [tick_expires_epoch_ns]
+                    if not candidate_close_only
+                    else []
+                ),
+                *(
+                    [initial_open_window_expiry_epoch_ns]
+                    if intent_scope == "initial_open_only"
+                    else []
+                ),
+            )
+            if expires_epoch_ns <= issued_epoch_ns:
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_warm_readiness_expired_before_authorization",
+                }
+            stage902_summary = _read_json(_stage902_summary_path(target_date))
+            if not stage902_summary or stage902_summary.get("_read_error"):
+                return {
+                    "authorized": 0,
+                    "blocker": "stage931_stage902_evidence_missing",
+                }
+            stage902_digest = (
+                _canonical_json_digest(stage902_summary)
+                if stage902_summary
+                else ""
+            )
+            stage927_digest = _canonical_json_digest(stage927_summary)
+            authorization_lane = (
+                "session_initial_open"
+                if intent_scope == "initial_open_only"
+                else "persistent_intraday_fast"
+            )
+            payload = publish_submit_authorization(
+                path=submit_authorization_path(runtime.output_root),
+                target_date=target_date,
+                execution_profile=_execution_profile_for_args(args).profile_key,
+                runtime_profile=runtime.profile.value,
+                order_scope=runtime.order_scope.value,
+                service_generation=service_generation,
+                connection_generation=connection_generation,
+                cycle_id=uuid.uuid4().hex,
+                intent_scope=intent_scope,
+                authorized_intents=[_authorization_candidate_row(candidate)],
+                issued_epoch_ns=issued_epoch_ns,
+                expires_epoch_ns=expires_epoch_ns,
+                controller_evidence={
+                    **controller_summary,
+                    "controller_status": (
+                        "session_initial_open_prearmed_ready"
+                        if intent_scope == "initial_open_only"
+                        else "persistent_intraday_fast_ready"
+                    ),
+                    "expires_epoch_ns": controller_expires_epoch_ns,
+                },
+                stage927_evidence={
+                    **stage927_summary,
+                    "expires_epoch_ns": stage927_expires_epoch_ns,
+                },
+                broker_gate_evidence=readiness,
+                tick_watermark_evidence={
+                    **tick_gate,
+                    "expires_epoch_ns": tick_expires_epoch_ns,
+                },
+                authorization_lane=authorization_lane,
+                spool_path=runtime.spool_path,
+                spool_snapshot_digest=snapshot.snapshot_digest,
+                cursor_digest=snapshot.cursor_digest,
+                stage902_evidence_digest=stage902_digest,
+                stage927_evidence_digest=stage927_digest,
+            )
+            exact = _authorization_candidate_row(candidate)
+            validation_blockers = validate_submit_authorization(
+                path=submit_authorization_path(runtime.output_root),
+                target_date=target_date,
+                execution_profile=_execution_profile_for_args(args).profile_key,
+                runtime_profile=runtime.profile.value,
+                order_scope=runtime.order_scope.value,
+                service_generation=service_generation,
+                connection_generation=connection_generation,
+                now_epoch_ns=time.time_ns(),
+                authorization_lane=authorization_lane,
+                intent_scope=intent_scope,
+                spool_path=runtime.spool_path,
+                spool_snapshot_digest=snapshot.snapshot_digest,
+                cursor_digest=snapshot.cursor_digest,
+                stage902_evidence_digest=stage902_digest,
+                stage927_evidence_digest=stage927_digest,
+                **exact,
+            )
+            if validation_blockers:
+                revoke_submit_authorization(
+                    submit_authorization_path(runtime.output_root),
+                    reason="stage930_published_authorization_validation_failed",
+                    revoked_epoch_ns=time.time_ns(),
+                )
+                return {
+                    "authorized": 0,
+                    "blocker": ";".join(validation_blockers),
+                }
+            return {
+                "authorized": 1,
+                "authorization_path": str(
+                    submit_authorization_path(runtime.output_root)
+                ),
+                "cycle_id": payload["cycle_id"],
+                "record_digest": payload["record_digest"],
+                "expires_epoch_ns": payload["expires_epoch_ns"],
+                "intent_scope": payload["intent_scope"],
+                "authorized_intent_count": 1,
+                "intent_id": candidate.intent_id,
+                "spool_snapshot_digest": snapshot.snapshot_digest,
+                "cursor_digest": snapshot.cursor_digest,
+            }
+    except SubmitAuthorizationLockBusyError:
         return {
             "authorized": 0,
-            "blocker": "stage931_warm_readiness_expired_before_authorization",
+            "preserved": 1,
+            "blocker": "stage931_authorization_lock_busy_inflight_preserved",
         }
-    payload = publish_submit_authorization(
-        path=submit_authorization_path(runtime.output_root),
-        target_date=target_date,
-        execution_profile=_execution_profile_for_args(args).profile_key,
-        runtime_profile=runtime.profile.value,
-        order_scope=runtime.order_scope.value,
-        service_generation=service_generation,
-        connection_generation=connection_generation,
-        cycle_id=uuid.uuid4().hex,
-        intent_scope="reduce_close_only" if reduce_close_only else "all",
-        authorized_intents=authorized_intents,
-        issued_epoch_ns=issued_epoch_ns,
-        expires_epoch_ns=expires_epoch_ns,
-        controller_evidence={
-            **controller_summary,
-            "expires_epoch_ns": dict(evidence_expiries)["controller"],
-        },
-        stage927_evidence={
-            **stage927_summary,
-            "expires_epoch_ns": dict(evidence_expiries)["stage927"],
-        },
-        broker_gate_evidence=readiness,
-        tick_watermark_evidence={
-            **tick_gate,
-            "expires_epoch_ns": tick_expires_epoch_ns,
-        },
-    )
-    validation_blockers = validate_submit_authorization(
-        path=submit_authorization_path(runtime.output_root),
-        target_date=target_date,
-        execution_profile=_execution_profile_for_args(args).profile_key,
-        runtime_profile=runtime.profile.value,
-        order_scope=runtime.order_scope.value,
-        service_generation=service_generation,
-        connection_generation=connection_generation,
-        now_epoch_ns=time.time_ns(),
-    )
-    if validation_blockers:
-        revoke_submit_authorization(
-            submit_authorization_path(runtime.output_root),
-            reason="stage930_published_authorization_validation_failed",
-            revoked_epoch_ns=time.time_ns(),
-        )
-        return {
-            "authorized": 0,
-            "blocker": ";".join(validation_blockers),
-        }
-    return {
-        "authorized": 1,
-        "authorization_path": str(
-            submit_authorization_path(runtime.output_root)
-        ),
-        "cycle_id": payload["cycle_id"],
-        "expires_epoch_ns": payload["expires_epoch_ns"],
-        "intent_scope": payload["intent_scope"],
-        "authorized_intent_count": len(authorized_intents),
-    }
 
 
 def _stop_stage931_service(reason: str) -> None:
@@ -2768,11 +3523,15 @@ def _stop_stage931_service(reason: str) -> None:
     runtime = _STAGE931_SERVICE_RUNTIME
     if runtime is not None:
         try:
-            revoke_submit_authorization(
-                submit_authorization_path(runtime.output_root),
-                reason=reason,
-                revoked_epoch_ns=time.time_ns(),
-            )
+            with exclusive_submit_authorization_lock(
+                submit_authorization_lock_path(runtime.output_root),
+                blocking=True,
+            ):
+                revoke_submit_authorization(
+                    submit_authorization_path(runtime.output_root),
+                    reason=reason,
+                    revoked_epoch_ns=time.time_ns(),
+                )
         except Exception:
             pass
         readiness = _read_json(runtime.readiness_path)
@@ -3293,14 +4052,27 @@ def _stage931_submit_blockers(
     tick_result: dict[str, Any] | None = None,
 ) -> list[str]:
     blockers: list[str] = []
-    close_only_reduce_risk = _ready_intents_close_only(target_date)
+    close_only_reduce_risk = False
+    try:
+        runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
+        spool_snapshot = _spool_authorization_snapshot(runtime)
+        close_only_reduce_risk = bool(
+            spool_snapshot.candidate is not None
+            and spool_snapshot.candidate.target_date == target_date
+            and spool_snapshot.candidate.intent_kind == "close"
+        )
+    except Exception as exc:
+        blockers.append(
+            "stage931_spool_snapshot_unavailable:"
+            f"{type(exc).__name__}"
+        )
     if getattr(args, "stage179_execution_mode", "legacy-once") != "warm":
         blockers.append("live_real_requires_stage179_warm_executor")
     if args.submit_mode != "live-real":
         blockers.append(f"submit_mode_not_live_real:{args.submit_mode}")
     if args.mode != "live-real":
         blockers.append(f"controller_mode_not_live_real:{args.mode}")
-    if ready_count <= 0:
+    if ready_count <= 0 and not close_only_reduce_risk:
         blockers.append(f"ready_count={ready_count}")
     if _to_int(getattr(args, "ai_pool_preflight_allowed", 1), 1) != 1 and not close_only_reduce_risk:
         blockers.append("ai_pool_preflight_blocked_new_risk_but_reduce_close_remains_allowed")
@@ -3322,11 +4094,22 @@ def _stage931_submit_blockers(
         blockers.append(f"real_submit_permitted={stage927_summary.get('real_submit_permitted', 0)}")
     if _clean(controller_summary.get("controller_status")) != "phase_d_controller_live_real_ready_no_submit_step" and not close_only_reduce_risk:
         blockers.append(f"controller_status={controller_summary.get('controller_status', '')}")
-    if _clean(controller_summary.get("stage905_executor_status")) != "executor_dry_run_ready":
+    if (
+        _clean(controller_summary.get("stage905_executor_status"))
+        != "executor_dry_run_ready"
+        and not close_only_reduce_risk
+    ):
         blockers.append(f"stage905_executor_status={controller_summary.get('stage905_executor_status', '')}")
-    if _to_int(controller_summary.get("stage905_blocked_count"), 999) != 0:
+    if (
+        _to_int(controller_summary.get("stage905_blocked_count"), 999) != 0
+        and not close_only_reduce_risk
+    ):
         blockers.append(f"stage905_blocked_count={controller_summary.get('stage905_blocked_count', '')}")
-    if _to_int(controller_summary.get("stage905_ready_count"), -1) != ready_count:
+    if (
+        _to_int(controller_summary.get("stage905_ready_count"), -1)
+        != ready_count
+        and not close_only_reduce_risk
+    ):
         blockers.append(f"stage905_ready_count_mismatch={controller_summary.get('stage905_ready_count', '')}!={ready_count}")
     if _to_int(controller_summary.get("stage904_retry_open_dry_run_count"), 0) > 0 and _clean(controller_summary.get("stage904_monitor_status")) == "intraday_monitor_blocked":
         blockers.append("stage904_retry_present_but_monitor_blocked")
@@ -3571,7 +4354,6 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
     )
     if warm_execution:
         _start_stage931_service(args)
-        _revoke_stage931_submit_authorization(args, "stage930_cycle_refreshing")
     symbols = _watched_symbols_for_args(args)
     if _market_execution_session_active():
         tick_result = _run_tick_refresh(args, target_date, symbols, paths)
@@ -3621,13 +4403,14 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         stage931_result = _status_stage931_service(args)
         authorization: dict[str, Any]
         if submit_blockers:
-            _revoke_stage931_submit_authorization(
+            revocation = _revoke_stage931_submit_authorization(
                 args,
                 "stage930_cycle_submit_blocked",
             )
             authorization = {
                 "authorized": 0,
                 "blocker": ";".join(submit_blockers),
+                "revocation": revocation,
             }
         else:
             authorization = _publish_stage931_submit_authorization(
@@ -3649,10 +4432,6 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
                             "stage931_submit_authorization_not_published",
                         )
                     )
-                )
-                _revoke_stage931_submit_authorization(
-                    args,
-                    "stage930_cycle_authorization_publish_blocked",
                 )
         stage931_result["submit_authorization"] = authorization
         stage931_result["wake_socket_notified"] = int(

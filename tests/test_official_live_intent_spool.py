@@ -18,6 +18,8 @@ from qmt_roll_official_live_tick_types import DurableTickCursor
 from qmt_roll_official_live_time import utc_iso_from_epoch_ns
 from qmt_roll_official_live_trace import ClockStamp, LatencyTrace, TRACE_DEADLINE_NS
 import qmt_roll_official_live_intent_spool as spool
+import qmt_roll_official_live_execution_ledger as ledger
+import qmt_roll_official_live_execution_service as execution_service
 
 
 class _Clock:
@@ -58,6 +60,9 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         offset: str = "open",
         deadline_epoch_ns: int = TRACE_DEADLINE_NS + 100,
         executor_status: str = "dry_run_order_request_payload_ready",
+        ingress_sequence: int = 1,
+        business_action_id: str = "",
+        position_epoch_id: str = "",
     ) -> dict[str, object]:
         ingress_epoch_ns = deadline_epoch_ns - TRACE_DEADLINE_NS
         if ingress_epoch_ns < 0:
@@ -70,13 +75,13 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         trace = LatencyTrace.from_ingress_row(
             {
                 "feed_session_id": "feed-a",
-                "ingress_sequence": 1,
-                "symbol_sequence": 1,
+                "ingress_sequence": ingress_sequence,
+                "symbol_sequence": ingress_sequence,
                 "ingress_epoch_ns": ingress_epoch_ns,
                 "ingress_monotonic_ns": ingress_monotonic_ns,
                 "clock_domain_id": "boot-a",
                 "received_at_utc": utc_iso_from_epoch_ns(ingress_epoch_ns),
-                "trace_id": "stage179-tick/feed-a/1",
+                "trace_id": f"stage179-tick/feed-a/{ingress_sequence}",
                 "vt_symbol": "JM609.DCE",
             },
             clock=clock,
@@ -98,8 +103,16 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
                 utc_iso=utc_iso_from_epoch_ns(ingress_epoch_ns + 1),
             ),
         )
+        action_id = business_action_id or f"business-{label}"
+        epoch_id = position_epoch_id or f"epoch-{label}"
         business_payload = {
             "intent_id": label,
+            "action_id": action_id,
+            **(
+                {"business_action_id": action_id}
+                if offset == "close"
+                else {}
+            ),
             "trace_id": trace.trace_id,
             "target_date": "2026-07-16",
             "source": (
@@ -111,8 +124,8 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             "executor_status": executor_status,
             "deadline_epoch_ns": trace.deadline_epoch_ns,
             "deadline_monotonic_ns": trace.deadline_monotonic_ns,
-            "state_generation": f"epoch-{label}:1",
-            "position_epoch_id": f"epoch-{label}",
+            "state_generation": f"{epoch_id}:1",
+            "position_epoch_id": epoch_id,
             "vt_symbol": "JM609.DCE",
             "planned_volume": 1,
             "limit_price": 1245.5,
@@ -120,8 +133,8 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             "source_ingress_sequence": trace.ingress_sequence,
             "source_symbol_sequence": trace.symbol_sequence,
             "durable_cursor_feed_session_id": "feed-a",
-            "durable_cursor_ingress_sequence": 1,
-            "durable_cursor_journal_byte_offset": 100,
+            "durable_cursor_ingress_sequence": ingress_sequence,
+            "durable_cursor_journal_byte_offset": ingress_sequence * 100,
             "durable_cursor_journal_schema": "stage179_framed_v1",
         }
         spool_payload_json = json.dumps(
@@ -139,6 +152,38 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             ).hexdigest(),
         }
 
+    def authorization_intent(
+        self,
+        label: str,
+        *,
+        offset: str = "open",
+        omit_field: str = "",
+    ) -> dict[str, object]:
+        intent = self.intent(label, offset=offset)
+        business = json.loads(str(intent["spool_payload_json"]))
+        business.update(
+            {
+                "intent_role": (
+                    "c9_initial_stop_close"
+                    if offset == "close"
+                    else "c9_retry_open_once"
+                ),
+                "root_position_id": f"root-{label}",
+                "position_cycle_id": f"cycle-{label}",
+            }
+        )
+        if omit_field:
+            business.pop(omit_field, None)
+        encoded = json.dumps(
+            business,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        intent["spool_payload_json"] = encoded
+        intent["payload_sha256"] = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+        return intent
+
     def commit(
         self,
         intents: list[dict[str, object]],
@@ -147,6 +192,8 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         next_cursor: DurableTickCursor | None = None,
         connection: object | None = None,
         stamp_spool: bool = True,
+        now_epoch_ns: int = 102,
+        now_monotonic_ns: int = 102,
     ) -> object:
         result = spool.commit_detector_batch(
             self.connection if connection is None else connection,
@@ -154,8 +201,8 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             expected_cursor=expected,
             next_cursor=next_cursor or self.cursor(1),
             intents=intents,
-            now_epoch_ns=102,
-            now_monotonic_ns=102,
+            now_epoch_ns=now_epoch_ns,
+            now_monotonic_ns=now_monotonic_ns,
             clock_domain_id="boot-a",
         )
         if stamp_spool:
@@ -164,8 +211,8 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
                     self.connection if connection is None else connection,
                     intent_id=str(intent["intent_id"]),
                     stage="spool_committed",
-                    epoch_ns=102,
-                    monotonic_ns=102,
+                    epoch_ns=now_epoch_ns,
+                    monotonic_ns=now_monotonic_ns,
                     clock_domain_id="boot-a",
                 )
         return result
@@ -182,6 +229,329 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         self.assertEqual("1", meta["schema_version"])
         self.assertTrue(meta["spool_uuid"])
         self.assertEqual(1, self.connection.execute("PRAGMA user_version").fetchone()[0])
+
+    def test_authorizable_snapshot_selects_close_first_with_exact_v4_identity(self) -> None:
+        open_intent = self.authorization_intent("open-1")
+        close_intent = self.authorization_intent("close-1", offset="close")
+        self.commit(
+            [open_intent, close_intent]
+        )
+
+        snapshot = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+
+        self.assertIsNotNone(snapshot.candidate)
+        assert snapshot.candidate is not None
+        self.assertEqual("close-1", snapshot.candidate.intent_id)
+        self.assertEqual("c9_initial_stop_close", snapshot.candidate.intent_role)
+        self.assertEqual(close_intent["trace_id"], snapshot.candidate.trace_id)
+        self.assertEqual("epoch-close-1:1", snapshot.candidate.state_generation)
+        self.assertEqual("epoch-close-1", snapshot.candidate.position_epoch_id)
+        self.assertEqual("root-close-1", snapshot.candidate.root_position_id)
+        self.assertEqual("cycle-close-1", snapshot.candidate.position_cycle_id)
+        self.assertEqual(1, snapshot.outstanding_close_count)
+
+    def test_authorizable_snapshot_defers_while_any_intent_is_inflight(self) -> None:
+        self.commit([self.authorization_intent("close-1", offset="close")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        self.assertIsNotNone(lease)
+
+        snapshot = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+        )
+
+        self.assertIsNone(snapshot.candidate)
+        self.assertEqual(1, snapshot.inflight_count)
+
+    def test_second_connection_cannot_lease_while_first_connection_is_inflight(self) -> None:
+        self.commit(
+            [
+                self.authorization_intent("close-1", offset="close"),
+                self.authorization_intent("open-2"),
+            ]
+        )
+        first = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        self.assertIsNotNone(first)
+        second_connection = spool.open_spool(self.path)
+        self.addCleanup(second_connection.close)
+        second = spool.lease_next(
+            second_connection,
+            owner_id="executor-b",
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        self.assertIsNone(second)
+        self.assertEqual(1, spool.spool_counts(second_connection)["leased"])
+
+    def test_stale_open_authorization_cannot_cross_unknown_transition(self) -> None:
+        unknown = self.authorization_intent("close-unknown", offset="close")
+        ready_open = self.authorization_intent("open-stale")
+        ready_close = self.authorization_intent("close-protect", offset="close")
+        self.commit([unknown, ready_open, ready_close])
+        first = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+            authorized_intents={
+                str(unknown["intent_id"]): str(unknown["payload_sha256"])
+            },
+        )
+        self.assertIsNotNone(first)
+        assert first is not None
+        spool.transition_intent(
+            self.connection,
+            intent_id=first.intent.intent_id,
+            owner_id=first.intent.lease_owner,
+            lease_token=first.lease_token,
+            expected_state="leased",
+            new_state="sending",
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+        )
+        spool.transition_intent(
+            self.connection,
+            intent_id=first.intent.intent_id,
+            owner_id=first.intent.lease_owner,
+            lease_token=first.lease_token,
+            expected_state="sending",
+            new_state="side_effect_unknown",
+            now_epoch_ns=202,
+            now_monotonic_ns=202,
+            clock_domain_id="boot-a",
+        )
+        second_connection = spool.open_spool(self.path)
+        self.addCleanup(second_connection.close)
+        stale_open = spool.lease_next(
+            second_connection,
+            owner_id="executor-b",
+            now_epoch_ns=203,
+            now_monotonic_ns=203,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+            authorized_intents={
+                str(ready_open["intent_id"]): str(ready_open["payload_sha256"])
+            },
+        )
+        self.assertIsNone(stale_open)
+        protective = spool.lease_next(
+            second_connection,
+            owner_id="executor-b",
+            now_epoch_ns=204,
+            now_monotonic_ns=204,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+            authorized_intents={
+                str(ready_close["intent_id"]): str(ready_close["payload_sha256"])
+            },
+        )
+        self.assertIsNotNone(protective)
+        assert protective is not None
+        self.assertEqual("close-protect", protective.intent.intent_id)
+
+    def test_unknown_open_blocks_open_but_not_ready_protective_close(self) -> None:
+        self.commit([self.authorization_intent("open-unknown")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=3,
+        )
+        self.assertIsNotNone(lease)
+        assert lease is not None
+        spool.transition_intent(
+            self.connection,
+            intent_id=lease.intent.intent_id,
+            owner_id=lease.intent.lease_owner,
+            lease_token=lease.lease_token,
+            expected_state="leased",
+            new_state="sending",
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+        )
+        spool.transition_intent(
+            self.connection,
+            intent_id=lease.intent.intent_id,
+            owner_id=lease.intent.lease_owner,
+            lease_token=lease.lease_token,
+            expected_state="sending",
+            new_state="side_effect_unknown",
+            now_epoch_ns=202,
+            now_monotonic_ns=202,
+            clock_domain_id="boot-a",
+        )
+        open_only = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=203,
+            now_monotonic_ns=203,
+            clock_domain_id="boot-a",
+        )
+        self.assertIsNone(open_only.candidate)
+
+        self.commit(
+            [self.authorization_intent("protective-close", offset="close")],
+            expected=self.cursor(1),
+            next_cursor=self.cursor(2),
+        )
+        with_close = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=204,
+            now_monotonic_ns=204,
+            clock_domain_id="boot-a",
+        )
+        self.assertIsNotNone(with_close.candidate)
+        assert with_close.candidate is not None
+        self.assertEqual("protective-close", with_close.candidate.intent_id)
+        self.assertEqual("close", with_close.candidate.intent_kind)
+        self.assertEqual(1, with_close.side_effect_unknown_count)
+
+    def test_authorizable_snapshot_detects_revision_and_cursor_drift(self) -> None:
+        self.commit([self.authorization_intent("open-1")])
+        first = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+        row = self.connection.execute(
+            "SELECT payload_json FROM intents WHERE intent_id='open-1'"
+        ).fetchone()
+        payload = json.loads(row["payload_json"])
+        payload["intent_role"] = "c9_retry_open_once_revised"
+        encoded = json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        self.connection.execute(
+            "UPDATE intents SET payload_json=?, payload_sha256=?, "
+            "state_revision=state_revision+1 WHERE intent_id='open-1'",
+            (encoded, hashlib.sha256(encoded.encode("utf-8")).hexdigest()),
+        )
+        revised = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+        self.commit(
+            [],
+            expected=self.cursor(1),
+            next_cursor=self.cursor(2),
+        )
+        cursor_advanced = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+
+        self.assertNotEqual(first.snapshot_digest, revised.snapshot_digest)
+        self.assertNotEqual(
+            first.candidate.intent_role if first.candidate else "",
+            revised.candidate.intent_role if revised.candidate else "",
+        )
+        self.assertNotEqual(revised.cursor_digest, cursor_advanced.cursor_digest)
+        self.assertNotEqual(
+            revised.snapshot_digest,
+            cursor_advanced.snapshot_digest,
+        )
+        self.assertFalse(spool.authorization_snapshots_match(first, revised))
+
+    def test_authorizable_snapshot_missing_v4_identity_fails_closed(self) -> None:
+        self.commit(
+            [self.authorization_intent("open-1", omit_field="root_position_id")]
+        )
+
+        with self.assertRaisesRegex(
+            spool.SpoolValidationError,
+            "snapshot_candidate_root_position_id",
+        ):
+            spool.snapshot_authorizable_intents(
+                self.connection,
+                now_epoch_ns=200,
+                now_monotonic_ns=200,
+                clock_domain_id="boot-a",
+            )
+
+    def test_exact_no_side_effect_lease_can_return_ready_but_deadline_fails_closed(self) -> None:
+        self.commit([self.authorization_intent("open-1")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        assert lease is not None
+        ready = spool.transition_intent(
+            self.connection,
+            intent_id="open-1",
+            owner_id="executor-a",
+            lease_token=lease.lease_token,
+            expected_state="leased",
+            new_state="ready",
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+            ledger_disposition="no_side_effect_retryable",
+        )
+        self.assertEqual("ready", ready.state)
+        self.assertEqual("", ready.lease_token)
+
+        second = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=202,
+            now_monotonic_ns=202,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        assert second is not None
+        expired = spool.transition_intent(
+            self.connection,
+            intent_id="open-1",
+            owner_id="executor-a",
+            lease_token=second.lease_token,
+            expected_state="leased",
+            new_state="ready",
+            now_epoch_ns=TRACE_DEADLINE_NS + 100,
+            now_monotonic_ns=TRACE_DEADLINE_NS + 100,
+            clock_domain_id="boot-a",
+            ledger_disposition="no_side_effect_retryable",
+        )
+        self.assertEqual("expired", expired.state)
 
     def test_existing_schema_v1_rejects_index_contract_tamper(self) -> None:
         self.connection.execute("DROP INDEX intents_claim_idx")
@@ -645,6 +1015,136 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         self.assertEqual(1, counts["expired"])
         self.assertEqual(1, counts["blocked"])
 
+    def test_protective_close_safe_zero_native_expiry_rearms_one_fresh_delivery(
+        self,
+    ) -> None:
+        action_id = "logical-close-action-1"
+        epoch_id = "position-epoch-1"
+        first_cursor = self.cursor(1)
+        first = self.intent(
+            "close-delivery-1",
+            offset="close",
+            business_action_id=action_id,
+            position_epoch_id=epoch_id,
+        )
+        self.commit([first], next_cursor=first_cursor)
+        deadline = TRACE_DEADLINE_NS + 100
+        expired = spool.expire_due_intents(
+            self.connection,
+            now_epoch_ns=deadline,
+            now_monotonic_ns=deadline,
+            clock_domain_id="boot-a",
+        )
+        self.assertEqual(1, expired.blocked_close_count)
+
+        second = self.intent(
+            "close-delivery-2",
+            offset="close",
+            deadline_epoch_ns=2 * TRACE_DEADLINE_NS + 101,
+            ingress_sequence=2,
+            business_action_id=action_id,
+            position_epoch_id=epoch_id,
+        )
+        committed = self.commit(
+            [second],
+            expected=first_cursor,
+            next_cursor=self.cursor(2),
+            now_epoch_ns=TRACE_DEADLINE_NS + 102,
+            now_monotonic_ns=TRACE_DEADLINE_NS + 102,
+        )
+
+        self.assertEqual(1, committed.inserted_count)
+        rows = self.connection.execute(
+            "SELECT intent_id, state, attempt_count, last_error FROM intents "
+            "ORDER BY spool_sequence"
+        ).fetchall()
+        self.assertEqual(
+            [("close-delivery-1", "expired"), ("close-delivery-2", "ready")],
+            [(row["intent_id"], row["state"]) for row in rows],
+        )
+        self.assertEqual([0, 0], [row["attempt_count"] for row in rows])
+        self.assertTrue(
+            rows[0]["last_error"].startswith(
+                "close_delivery_rearmed_after_safe_zero_native_expiry:"
+            )
+        )
+        self.assertEqual(
+            "existing_delivery_active_or_terminal",
+            spool.inspect_close_delivery_candidate(
+                self.connection,
+                business_action_id=action_id,
+                candidate_intent_id="close-delivery-3",
+            ),
+        )
+
+    def test_concurrent_fresh_close_rearm_inserts_at_most_one_delivery(self) -> None:
+        action_id = "logical-close-action-race"
+        epoch_id = "position-epoch-race"
+        first = self.intent(
+            "close-delivery-old",
+            offset="close",
+            business_action_id=action_id,
+            position_epoch_id=epoch_id,
+        )
+        self.commit([first])
+        deadline = TRACE_DEADLINE_NS + 100
+        spool.expire_due_intents(
+            self.connection,
+            now_epoch_ns=deadline,
+            now_monotonic_ns=deadline,
+            clock_domain_id="boot-a",
+        )
+        candidates = (
+            self.intent(
+                "close-delivery-race-a",
+                offset="close",
+                deadline_epoch_ns=2 * TRACE_DEADLINE_NS + 101,
+                ingress_sequence=2,
+                business_action_id=action_id,
+                position_epoch_id=epoch_id,
+            ),
+            self.intent(
+                "close-delivery-race-b",
+                offset="close",
+                deadline_epoch_ns=2 * TRACE_DEADLINE_NS + 102,
+                ingress_sequence=3,
+                business_action_id=action_id,
+                position_epoch_id=epoch_id,
+            ),
+        )
+        barrier = threading.Barrier(2)
+
+        def commit_candidate(index: int) -> str:
+            connection = spool.open_spool(self.path)
+            try:
+                barrier.wait(timeout=5)
+                candidate = candidates[index]
+                spool.commit_detector_batch(
+                    connection,
+                    consumer_id=f"stage941-race-{index}",
+                    expected_cursor=None,
+                    next_cursor=self.cursor(index + 2),
+                    intents=[candidate],
+                    now_epoch_ns=TRACE_DEADLINE_NS + 110,
+                    now_monotonic_ns=TRACE_DEADLINE_NS + 110,
+                    clock_domain_id="boot-a",
+                )
+                return "inserted"
+            except spool.SpoolConflictError as exc:
+                return f"conflict:{exc}"
+            finally:
+                connection.close()
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes = list(pool.map(commit_candidate, (0, 1)))
+
+        self.assertEqual(1, outcomes.count("inserted"), outcomes)
+        self.assertEqual(1, sum(item.startswith("conflict:") for item in outcomes))
+        rows = self.connection.execute(
+            "SELECT state FROM intents ORDER BY spool_sequence"
+        ).fetchall()
+        self.assertEqual(["expired", "ready"], [row["state"] for row in rows])
+
     def test_expired_lease_requeues_only_with_explicit_no_side_effect(self) -> None:
         self.commit([self.intent("open-1")])
         first = spool.lease_next(
@@ -864,7 +1364,6 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             now_monotonic_ns=300,
             clock_domain_id="boot-a",
         )
-
         self.assertEqual("blocked", transitioned.state)
         self.assertEqual(1, spool.spool_counts(self.connection)["ready"])
 
@@ -892,7 +1391,6 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             now_monotonic_ns=int(intent["deadline_monotonic_ns"]),
             clock_domain_id="boot-a",
         )
-
         self.assertEqual("expired", transitioned.state)
 
     def test_clock_domain_change_fails_closed_before_leasing(self) -> None:
@@ -1024,6 +1522,126 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
             clock_domain_id="boot-a",
         )
         self.assertEqual("sending", transitioned.state)
+
+    def test_post_slot_no_native_result_without_exact_terminal_is_blocked(self) -> None:
+        self.commit([self.intent("close-post-slot", offset="close")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        assert lease is not None
+        adapter = execution_service.SQLiteIntentSpool(
+            self.connection,
+            ledger_path=Path(self.tempdir.name) / "ledger.ndjson",
+        )
+        adapter.mark_sending(
+            lease,
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+        )
+        adapter.mark_result(
+            lease,
+            execution_service.ExecutionResult.post_slot_no_native_retryable(
+                lease.intent.intent_id,
+                ledger_fingerprint="f" * 64,
+                api_slot_batch_id="slot-safe-1",
+                blockers=["kill_switch_active_before_send"],
+            ),
+            now_epoch_ns=202,
+            now_monotonic_ns=202,
+            clock_domain_id="boot-a",
+        )
+        row = self.connection.execute(
+            "SELECT state, ledger_disposition FROM intents WHERE intent_id=?",
+            (lease.intent.intent_id,),
+        ).fetchone()
+        self.assertEqual("blocked", row["state"])
+        self.assertEqual("post_slot_no_native_retryable", row["ledger_disposition"])
+
+    def test_post_slot_exact_durable_terminal_moves_sending_back_to_ready(self) -> None:
+        self.commit([self.intent("close-post-slot-exact", offset="close")])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="executor-a",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=5,
+        )
+        assert lease is not None
+        ledger_path = Path(self.tempdir.name) / "ledger-exact.ndjson"
+        adapter = execution_service.SQLiteIntentSpool(
+            self.connection, ledger_path=ledger_path
+        )
+        adapter.mark_sending(
+            lease,
+            now_epoch_ns=201,
+            now_monotonic_ns=201,
+            clock_domain_id="boot-a",
+        )
+        reservation = ledger.append_execution_ledger_event(
+            {
+                "event_type": "reserved",
+                "target_date": lease.intent.target_date,
+                "intent_id": lease.intent.intent_id,
+                "intent_payload_sha256": lease.intent.payload_sha256,
+                "intent_kind": lease.intent.intent_kind,
+                "intent_fingerprint": "f" * 64,
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+            },
+            path=ledger_path,
+        )
+        identity = {
+            "target_date": lease.intent.target_date,
+            "intent_id": lease.intent.intent_id,
+            "intent_payload_sha256": lease.intent.payload_sha256,
+            "intent_kind": lease.intent.intent_kind,
+            "intent_fingerprint": "f" * 64,
+            "reservation_record_checksum": reservation["record_checksum"],
+            "spool_lease_owner": lease.intent.lease_owner,
+            "spool_lease_token": lease.lease_token,
+        }
+        ledger.append_execution_ledger_event(
+            {
+                **identity,
+                "event_type": "api_slot_reserved",
+                "api_slot_type": "send_order",
+                "api_slot_batch_id": "slot-safe-exact",
+            },
+            path=ledger_path,
+        )
+        terminal_result = ledger.append_post_api_slot_no_native_safe_terminal(
+            identity=identity,
+            api_slot_batch_id="slot-safe-exact",
+            blockers=["deadline"],
+            blocked_phase="pre_send_order_deadline",
+            path=ledger_path,
+        )
+        terminal = terminal_result["ledger_event"]
+        adapter.mark_result(
+            lease,
+            execution_service.ExecutionResult.post_slot_no_native_retryable(
+                lease.intent.intent_id,
+                ledger_fingerprint="f" * 64,
+                api_slot_batch_id="slot-safe-exact",
+                blockers=["deadline"],
+                safe_terminal_record_checksum=terminal["record_checksum"],
+            ),
+            now_epoch_ns=202,
+            now_monotonic_ns=202,
+            clock_domain_id="boot-a",
+        )
+        row = self.connection.execute(
+            "SELECT state FROM intents WHERE intent_id=?",
+            (lease.intent.intent_id,),
+        ).fetchone()
+        self.assertEqual("ready", row["state"])
 
     def test_blocked_intent_requires_task11_ledger_reconciliation_api(self) -> None:
         self.commit(
@@ -1195,6 +1813,172 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         self.assertEqual("side_effect_unknown", recovered)
         self.assertEqual("reconciled", reconciled.state)
         self.assertEqual("", reconciled.lease_token)
+
+    def test_unknown_open_reconciles_from_broker_fill_then_cross_day_close_is_authorizable(
+        self,
+    ) -> None:
+        open_intent = self.authorization_intent("open-crash")
+        open_payload = json.loads(str(open_intent["spool_payload_json"]))
+        order_request = {
+            "symbol": "JM609",
+            "exchange": "DCE",
+            "direction": "short",
+            "offset": "open",
+            "type": "fak",
+            "price": 1246.0,
+            "volume": 1,
+            "vt_symbol": "JM609.DCE",
+        }
+        open_payload["order_request"] = order_request
+        open_encoded = json.dumps(
+            open_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        open_intent["spool_payload_json"] = open_encoded
+        open_intent["payload_sha256"] = hashlib.sha256(
+            open_encoded.encode("utf-8")
+        ).hexdigest()
+        self.commit([open_intent])
+        lease = spool.lease_next(
+            self.connection,
+            owner_id="service-old-day",
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+            lease_seconds=1,
+        )
+        self.assertIsNotNone(lease)
+        assert lease is not None
+        ledger_path = Path(self.tempdir.name) / "execution-ledger.jsonl"
+        reservation = ledger.reserve_execution_ledger_intent(
+            target_date=lease.intent.target_date,
+            row={**open_payload, "order_request_json": json.dumps(order_request)},
+            order_request=order_request,
+            close_retry_after_cancel_seconds=30,
+            base_event={
+                "intent_id": lease.intent.intent_id,
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+                "service_generation": "service-before-crash",
+                "connection_generation": "connection-before-crash",
+            },
+            path=ledger_path,
+        )
+        self.assertTrue(reservation["reserved"])
+        spool.transition_intent(
+            self.connection,
+            intent_id=lease.intent.intent_id,
+            owner_id=lease.intent.lease_owner,
+            lease_token=lease.lease_token,
+            expected_state="leased",
+            new_state="sending",
+            now_epoch_ns=300,
+            now_monotonic_ns=300,
+            clock_domain_id="boot-a",
+        )
+        ledger.append_execution_ledger_event(
+            {
+                "event_type": "send_order_called",
+                "target_date": lease.intent.target_date,
+                "intent_id": lease.intent.intent_id,
+                "intent_fingerprint": reservation["intent_fingerprint"],
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+                "vt_orderid": "CTP.1_2_3",
+            },
+            path=ledger_path,
+        )
+        adapter = execution_service.SQLiteIntentSpool(
+            self.connection,
+            ledger_path=ledger_path,
+        )
+        adapter.recover_expired(
+            now_epoch_ns=1_000_000_200,
+            now_monotonic_ns=1_000_000_200,
+            clock_domain_id="boot-a",
+        )
+        self.assertEqual(
+            1, spool.spool_counts(self.connection)["side_effect_unknown"]
+        )
+
+        # An unknown side effect, even from an older target date, remains a
+        # global fail-closed barrier and must never be resent without proof.
+        adapter.recover_expired(
+            now_epoch_ns=1_000_000_300,
+            now_monotonic_ns=1_000_000_300,
+            clock_domain_id="boot-a",
+        )
+        self.assertEqual(
+            1, spool.spool_counts(self.connection)["side_effect_unknown"]
+        )
+
+        fill = {
+            "event_type": "filled_or_part_filled",
+            "target_date": lease.intent.target_date,
+            "intent_id": lease.intent.intent_id,
+            "intent_fingerprint": reservation["intent_fingerprint"],
+            "spool_lease_owner": lease.intent.lease_owner,
+            "spool_lease_token": lease.lease_token,
+            "vt_orderid": "CTP.1_2_3",
+            "vt_tradeid": "CTP.DCE.T-1",
+            "trade_volume_delta": 1.0,
+            "volume": 1.0,
+            "price": 1246.0,
+            "fill_price_source": "event_trade_weighted_avg",
+        }
+        ledger.append_execution_ledger_event(fill, path=ledger_path)
+        ledger.append_execution_ledger_event(
+            {
+                **fill,
+                "event_type": "broker_order_query_terminal_observed",
+                "traded": 1.0,
+                "durable_priced_volume": 1.0,
+                "fill_price_reconciliation_pending": 0,
+            },
+            path=ledger_path,
+        )
+        recovered = adapter.recover_expired(
+            now_epoch_ns=1_000_000_400,
+            now_monotonic_ns=1_000_000_400,
+            clock_domain_id="boot-a",
+        )
+        self.assertIn("reconciled", recovered)
+        self.assertEqual(1, spool.spool_counts(self.connection)["reconciled"])
+        self.assertEqual(0, spool.spool_counts(self.connection)["side_effect_unknown"])
+
+        close_intent = self.authorization_intent("close-next-day", offset="close")
+        close_payload = json.loads(str(close_intent["spool_payload_json"]))
+        close_payload["target_date"] = "2026-07-17"
+        close_encoded = json.dumps(
+            close_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        close_intent.update(
+            target_date="2026-07-17",
+            spool_payload_json=close_encoded,
+            payload_sha256=hashlib.sha256(
+                close_encoded.encode("utf-8")
+            ).hexdigest(),
+        )
+        self.commit(
+            [close_intent],
+            expected=self.cursor(1),
+            next_cursor=self.cursor(2),
+        )
+        snapshot = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=1_000_000_500,
+            now_monotonic_ns=1_000_000_500,
+            clock_domain_id="boot-a",
+        )
+        self.assertIsNotNone(snapshot.candidate)
+        assert snapshot.candidate is not None
+        self.assertEqual("close-next-day", snapshot.candidate.intent_id)
+        self.assertEqual("close", snapshot.candidate.intent_kind)
 
     def test_two_connection_claim_race_has_exactly_one_winner(self) -> None:
         self.commit([self.intent("open-1")])

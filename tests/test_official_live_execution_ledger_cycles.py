@@ -358,7 +358,488 @@ def _seed_expired_attempt1_lease(path: Path) -> tuple[str, str, dict[str, object
     return fingerprint, old_token, close_row, close_request
 
 
+def _reserve_warm_open(path: Path, *, lease_token: str = "spool-token-1") -> dict[str, object]:
+    return ledger.reserve_execution_ledger_intent(
+        target_date=TARGET_DATE,
+        row={"source": "stage904_c9_intraday_retry_open"},
+        order_request=_order_request(offset="open"),
+        close_retry_after_cancel_seconds=30,
+        base_event={
+            "intent_id": "warm-open-1",
+            "intent_payload_sha256": "a" * 64,
+            "intent_kind": "open",
+            "spool_lease_owner": "service-1",
+            "spool_lease_token": lease_token,
+        },
+        path=path,
+    )
+
+
+def _warm_open_identity(reservation: dict[str, object]) -> dict[str, object]:
+    durable = dict(reservation["latest_ledger_event"])
+    return {
+        "target_date": TARGET_DATE,
+        "intent_id": "warm-open-1",
+        "intent_payload_sha256": "a" * 64,
+        "intent_kind": "open",
+        "intent_fingerprint": reservation["intent_fingerprint"],
+        "reservation_record_checksum": durable["record_checksum"],
+        "spool_lease_owner": "service-1",
+        "spool_lease_token": durable["spool_lease_token"],
+    }
+
+
+def _seed_close_post_slot_chain(
+    path: Path,
+    *,
+    append_terminal: bool = True,
+) -> tuple[
+    dict[str, object],
+    dict[str, object],
+    dict[str, object],
+    dict[str, object],
+]:
+    row = _cycle_row(
+        cycle_no=0,
+        intent_role="c9_initial_stop_close",
+        offset="close",
+    )
+    request = _order_request(offset="close", price=1245.5)
+    base = {
+        "intent_id": "fresh-close-delivery-1",
+        "intent_payload_sha256": "a" * 64,
+        "intent_kind": "close",
+        "spool_lease_owner": "service-1",
+        "spool_lease_token": "delivery-1-lease",
+    }
+    reservation = ledger.reserve_execution_ledger_intent(
+        target_date=TARGET_DATE,
+        row=row,
+        order_request=request,
+        close_retry_after_cancel_seconds=30,
+        base_event=base,
+        path=path,
+    )
+    durable = dict(reservation["latest_ledger_event"])
+    identity = {
+        **base,
+        "target_date": TARGET_DATE,
+        "intent_fingerprint": reservation["intent_fingerprint"],
+        "reservation_record_checksum": durable["record_checksum"],
+        "close_submit_attempt_no": reservation["close_submit_attempt_no"],
+        "close_attempt_lease_token": reservation["close_attempt_lease_token"],
+    }
+    slot = ledger.reserve_execution_api_slots(
+        target_date=TARGET_DATE,
+        slot_type="send_order",
+        daily_limit=12,
+        base_events=[
+            {
+                **identity,
+                "child_order_id": "fresh-close:1/1",
+                "child_order_index": 0,
+                "child_order_count": 1,
+                "child_order_offset": "close",
+            }
+        ],
+        path=path,
+    )
+    terminal: dict[str, object] = {}
+    if append_terminal:
+        terminal = ledger.append_post_api_slot_no_native_safe_terminal(
+            identity=identity,
+            api_slot_batch_id=str(slot["api_slot_batch_id"]),
+            blockers=["authorization_expired_after_slot"],
+            blocked_phase="post_api_slot_pre_native",
+            path=path,
+        )
+    return row, request, identity, {"slot": slot, "terminal": terminal}
+
+
 class OfficialLiveExecutionLedgerCycleTest(unittest.TestCase):
+    def test_post_slot_zero_native_delivery_reuses_broker_attempt_one(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.ndjson"
+            row, _request, _identity, chain = _seed_close_post_slot_chain(path)
+            second = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=_order_request(offset="close", price=1246.0),
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "fresh-close-delivery-2",
+                    "intent_payload_sha256": "b" * 64,
+                    "intent_kind": "close",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "delivery-2-lease",
+                },
+                path=path,
+            )
+
+        self.assertTrue(chain["slot"]["reserved"])
+        self.assertTrue(chain["terminal"]["appended"])
+        self.assertTrue(second["reserved"])
+        self.assertEqual(1, second["close_submit_attempt_no"])
+        self.assertEqual("", second["duplicate_blocker"])
+
+    def test_post_slot_terminal_wrong_batch_or_lease_fails_closed(self) -> None:
+        for mutation in ("batch", "lease"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "ledger.ndjson"
+                row, _request, identity, chain = _seed_close_post_slot_chain(
+                    path, append_terminal=False
+                )
+                forged = {
+                    **identity,
+                    "event_type": ledger.POST_API_SLOT_SAFE_TERMINAL_EVENT,
+                    "safe_terminal_version": 1,
+                    "blocked_phase": "post_api_slot_pre_native",
+                    "blockers": ["forged"],
+                    "api_slot_reserved": 1,
+                    "send_slot_reserved": 1,
+                    "api_slot_batch_id": chain["slot"]["api_slot_batch_id"],
+                    "send_order_call_count": 0,
+                    "cancel_order_call_count": 0,
+                    "broker_order_ids": [],
+                    "native_api_called": 0,
+                }
+                if mutation == "batch":
+                    forged["api_slot_batch_id"] = "wrong-batch"
+                else:
+                    forged["close_attempt_lease_token"] = "wrong-lease"
+                durable_forged = ledger.append_execution_ledger_event(
+                    forged, path=path
+                )
+                rows = ledger.read_execution_ledger(path)
+                retry = ledger.reserve_execution_ledger_intent(
+                    target_date=TARGET_DATE,
+                    row=row,
+                    order_request=_order_request(offset="close", price=1246.0),
+                    close_retry_after_cancel_seconds=30,
+                    base_event={
+                        "intent_id": f"fresh-close-forged-{mutation}",
+                        "intent_payload_sha256": "c" * 64,
+                        "intent_kind": "close",
+                        "spool_lease_owner": "service-1",
+                        "spool_lease_token": f"forged-{mutation}-lease",
+                    },
+                    path=path,
+                )
+
+                self.assertFalse(
+                    ledger.valid_post_api_slot_no_native_safe_terminal(
+                        rows, durable_forged
+                    )
+                )
+                self.assertFalse(retry["reserved"])
+                self.assertIn(
+                    "submit_attempt_not_explicit_known_zero",
+                    retry["duplicate_blocker"],
+                )
+
+    def test_native_evidence_after_post_slot_terminal_restores_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.ndjson"
+            row, _request, identity, chain = _seed_close_post_slot_chain(path)
+            ledger.append_execution_ledger_event(
+                {
+                    **identity,
+                    "event_type": "native_order_identity_persisted_before_insert",
+                    "vt_orderid": "CTP.1_2_3",
+                    "native_api_called": 0,
+                },
+                path=path,
+            )
+            rows = ledger.read_execution_ledger(path)
+            replay = ledger.append_post_api_slot_no_native_safe_terminal(
+                identity=identity,
+                api_slot_batch_id=str(chain["slot"]["api_slot_batch_id"]),
+                blockers=["authorization_expired_after_slot"],
+                blocked_phase="post_api_slot_pre_native",
+                path=path,
+            )
+            retry = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=_order_request(offset="close", price=1246.0),
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "fresh-close-after-native",
+                    "intent_payload_sha256": "d" * 64,
+                    "intent_kind": "close",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "after-native-lease",
+                },
+                path=path,
+            )
+
+        self.assertFalse(
+            ledger.valid_post_api_slot_no_native_safe_terminal(
+                rows, chain["terminal"]["ledger_event"]
+            )
+        )
+        self.assertFalse(retry["reserved"])
+        self.assertFalse(replay["idempotent_replay"])
+        self.assertEqual(
+            "post_slot_safe_terminal_prior_invalid_or_superseded",
+            replay["blocker"],
+        )
+        self.assertIn(
+            "submit_attempt_not_explicit_known_zero",
+            retry["duplicate_blocker"],
+        )
+
+    def test_post_slot_terminal_fresh_delivery_reservation_cas_has_one_winner(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.ndjson"
+            row, _request, _identity, _chain = _seed_close_post_slot_chain(path)
+            barrier = threading.Barrier(2)
+
+            def reserve(worker_id: int) -> dict[str, object]:
+                barrier.wait(timeout=5)
+                return ledger.reserve_execution_ledger_intent(
+                    target_date=TARGET_DATE,
+                    row=row,
+                    order_request=_order_request(
+                        offset="close", price=1246.0 + worker_id
+                    ),
+                    close_retry_after_cancel_seconds=30,
+                    base_event={
+                        "intent_id": f"fresh-close-racer-{worker_id}",
+                        "intent_payload_sha256": str(worker_id) * 64,
+                        "intent_kind": "close",
+                        "spool_lease_owner": f"service-{worker_id}",
+                        "spool_lease_token": f"racer-{worker_id}-lease",
+                    },
+                    path=path,
+                )
+
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                results = list(pool.map(reserve, (1, 2)))
+
+        winners = [result for result in results if result["reserved"]]
+        losers = [result for result in results if not result["reserved"]]
+        self.assertEqual(1, len(winners), results)
+        self.assertEqual(1, winners[0]["close_submit_attempt_no"])
+        self.assertEqual(1, len(losers), results)
+        self.assertTrue(
+            str(losers[0]["duplicate_blocker"]).startswith(
+                "ledger_close_attempt1_lease_active:"
+            ),
+            results,
+        )
+
+    def test_cancel_duty_crash_takeover_cas_is_bounded_and_recoverable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.ndjson"
+            common = dict(
+                target_date=TARGET_DATE,
+                duty_key="cancel-duty-physical-1",
+                lease_seconds=1,
+                event={"vt_orderid": "CTP.1_2_3", "cancel_duty_generation": 1},
+                path=path,
+            )
+            with mock.patch.object(ledger.time, "time_ns", return_value=1_000_000_000):
+                reserved = ledger.advance_cancel_duty_state(
+                    expected_states=("",),
+                    next_state="reserved",
+                    owner_id="worker-a",
+                    **common,
+                )
+            self.assertTrue(reserved["advanced"])
+            with mock.patch.object(ledger.time, "time_ns", return_value=3_000_000_000):
+                takeover = ledger.advance_cancel_duty_state(
+                    expected_states=("reserved",),
+                    next_state="reserved",
+                    owner_id="worker-b",
+                    allow_expired_takeover=True,
+                    **common,
+                )
+            self.assertTrue(takeover["advanced"])
+            called = ledger.advance_cancel_duty_state(
+                expected_states=("reserved",),
+                next_state="api_called",
+                owner_id="worker-b",
+                **common,
+            )
+            self.assertTrue(called["advanced"])
+            returned = ledger.advance_cancel_duty_state(
+                expected_states=("api_called",),
+                next_state="api_returned",
+                owner_id="worker-b",
+                event={**common["event"], "cancel_api_accepted": 1},
+                **{key: value for key, value in common.items() if key != "event"},
+            )
+            self.assertTrue(returned["advanced"])
+            reconciled = ledger.advance_cancel_duty_state(
+                expected_states=("api_returned",),
+                next_state="query_reconciled",
+                owner_id="worker-b",
+                **common,
+            )
+            self.assertTrue(reconciled["advanced"])
+            replay = ledger.advance_cancel_duty_state(
+                expected_states=("",),
+                next_state="reserved",
+                owner_id="worker-c",
+                **common,
+            )
+            self.assertTrue(replay["idempotent_replay"])
+
+    def test_cancel_duty_generation_cannot_downgrade_or_skip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.ndjson"
+            base = dict(
+                target_date=TARGET_DATE,
+                duty_key="cancel-duty-generation-monotonic",
+                lease_seconds=1,
+                owner_id="worker-a",
+                path=path,
+            )
+
+            generation_one = {"cancel_duty_generation": 1}
+            for expected_states, next_state in (
+                (("",), "reserved"),
+                (("reserved",), "api_called"),
+                (("api_called",), "api_returned"),
+            ):
+                result = ledger.advance_cancel_duty_state(
+                    expected_states=expected_states,
+                    next_state=next_state,
+                    event=generation_one,
+                    **base,
+                )
+                self.assertTrue(result["advanced"])
+
+            generation_two = ledger.advance_cancel_duty_state(
+                expected_states=("api_returned",),
+                next_state="reserved",
+                event={"cancel_duty_generation": 2},
+                **base,
+            )
+            self.assertTrue(generation_two["advanced"])
+
+            downgrade = ledger.advance_cancel_duty_state(
+                expected_states=("reserved",),
+                next_state="reserved",
+                event={"cancel_duty_generation": 1},
+                **base,
+            )
+            self.assertFalse(downgrade["advanced"])
+            self.assertIn(
+                "cancel_duty_generation_not_monotonic:prior=2;next=1",
+                downgrade["blocker"],
+            )
+
+            skip = ledger.advance_cancel_duty_state(
+                expected_states=("reserved",),
+                next_state="api_called",
+                event={"cancel_duty_generation": 4},
+                **base,
+            )
+            self.assertFalse(skip["advanced"])
+            self.assertIn(
+                "cancel_duty_generation_not_monotonic:prior=2;next=4",
+                skip["blocker"],
+            )
+
+            generation_two_called = ledger.advance_cancel_duty_state(
+                expected_states=("reserved",),
+                next_state="api_called",
+                event={"cancel_duty_generation": 2},
+                **base,
+            )
+            self.assertTrue(generation_two_called["advanced"])
+
+    def test_versioned_safe_terminal_and_api_slot_are_exact_cas_alternatives(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = Path(tempdir) / "ledger.ndjson"
+            reservation = _reserve_warm_open(path)
+            identity = _warm_open_identity(reservation)
+
+            terminal = ledger.append_pre_api_slot_no_side_effect_terminal(
+                **identity,
+                blockers=["authorization_expired"],
+                blocked_phase="pre_api_slot",
+                path=path,
+            )
+            slot = ledger.reserve_execution_api_slots(
+                target_date=TARGET_DATE,
+                slot_type="send_order",
+                daily_limit=12,
+                base_events=[identity],
+                path=path,
+            )
+            retried = _reserve_warm_open(path, lease_token="spool-token-2")
+
+        self.assertTrue(terminal["appended"])
+        self.assertFalse(slot["reserved"])
+        self.assertEqual(
+            "warm_api_slot_reservation_already_safe_terminal",
+            slot["blocker"],
+        )
+        self.assertTrue(retried["reserved"])
+
+    def test_api_slot_winner_prevents_false_no_side_effect_terminal(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = Path(tempdir) / "ledger.ndjson"
+            reservation = _reserve_warm_open(path)
+            identity = _warm_open_identity(reservation)
+            slot = ledger.reserve_execution_api_slots(
+                target_date=TARGET_DATE,
+                slot_type="send_order",
+                daily_limit=12,
+                base_events=[identity],
+                path=path,
+            )
+            terminal = ledger.append_pre_api_slot_no_side_effect_terminal(
+                **identity,
+                blockers=["late_blocker"],
+                blocked_phase="pre_api_slot",
+                path=path,
+            )
+
+        self.assertTrue(slot["reserved"])
+        self.assertFalse(terminal["appended"])
+        self.assertIn("side_effect_already_recorded", terminal["blocker"])
+
+    def test_open_full_history_side_effect_cannot_be_hidden_by_diagnostic_tail(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = Path(tempdir) / "ledger.ndjson"
+            reservation = _reserve_warm_open(path)
+            identity = _warm_open_identity(reservation)
+            slot = ledger.reserve_execution_api_slots(
+                target_date=TARGET_DATE,
+                slot_type="send_order",
+                daily_limit=12,
+                base_events=[identity],
+                path=path,
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    **identity,
+                    "event_type": "send_order_returned",
+                    "vt_orderid": "CTP.1",
+                },
+                path=path,
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    **identity,
+                    "event_type": "diagnostic_tail",
+                },
+                path=path,
+            )
+            duplicate = _reserve_warm_open(path, lease_token="spool-token-2")
+
+        self.assertTrue(slot["reserved"])
+        self.assertFalse(duplicate["reserved"])
+        self.assertTrue(
+            str(duplicate["duplicate_blocker"]).startswith(
+                "ledger_duplicate_open_intent:"
+            )
+        )
+
     def test_partial_v2_identity_is_rejected_instead_of_silent_v1_fallback(self) -> None:
         row = {
             "source": "official_live",
@@ -1944,6 +2425,175 @@ class OfficialLiveExecutionLedgerCycleTest(unittest.TestCase):
         self.assertFalse(second.safe_terminal_appended)
         self.assertEqual(1, len(recovery_rows))
 
+    def test_spool_recovery_rejects_late_fill_from_different_lease_same_fingerprint(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+            request = _order_request()
+            reserved = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "intent-open",
+                    "spool_lease_owner": "service-current",
+                    "spool_lease_token": "lease-current",
+                },
+                path=path,
+            )
+            fingerprint = reserved["intent_fingerprint"]
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "send_order_called",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": fingerprint,
+                    "spool_lease_owner": "service-current",
+                    "spool_lease_token": "lease-current",
+                },
+                path=path,
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "filled_or_part_filled",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": fingerprint,
+                    "spool_lease_owner": "service-old",
+                    "spool_lease_token": "lease-old",
+                    "vt_orderid": "CTP.old",
+                    "vt_tradeid": "CTP.old-trade",
+                    "trade_volume_delta": 2.0,
+                    "price": 1246.0,
+                },
+                path=path,
+            )
+            wrong_lease = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-current",
+                spool_lease_token="lease-current",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "filled_or_part_filled",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": fingerprint,
+                    "spool_lease_owner": "service-current",
+                    "spool_lease_token": "lease-current",
+                    "vt_orderid": "CTP.current",
+                    "vt_tradeid": "CTP.current-trade",
+                    "trade_volume_delta": 2.0,
+                    "price": 1246.0,
+                },
+                path=path,
+            )
+            exact_lease = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-current",
+                spool_lease_token="lease-current",
+                close_retry_after_cancel_seconds=30,
+                path=path,
+            )
+
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown", wrong_lease.disposition
+        )
+        self.assertEqual("reconciled", exact_lease.disposition)
+
+    def test_preinsert_protocol_distinguishes_before_and_after_native_identity(self) -> None:
+        row = _cycle_row(cycle_no=0, intent_role="c9_initial_open")
+        request = _order_request()
+        with tempfile.TemporaryDirectory() as directory:
+            before_path = Path(directory) / "before-native.jsonl"
+            before = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "open-before",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-before",
+                },
+                path=before_path,
+            )
+            ledger.append_execution_ledger_event(
+                {
+                    "event_type": "send_order_called",
+                    "target_date": TARGET_DATE,
+                    "intent_fingerprint": before["intent_fingerprint"],
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-before",
+                    "native_identity_protocol_version": "stage179_preinsert_v1",
+                    "native_api_called": 0,
+                },
+                path=before_path,
+            )
+            before_decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-before",
+                close_retry_after_cancel_seconds=30,
+                path=before_path,
+            )
+
+            after_path = Path(directory) / "after-native.jsonl"
+            after = ledger.reserve_execution_ledger_intent(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                close_retry_after_cancel_seconds=30,
+                base_event={
+                    "intent_id": "open-after",
+                    "spool_lease_owner": "service-1",
+                    "spool_lease_token": "lease-after",
+                },
+                path=after_path,
+            )
+            for event in (
+                {
+                    "event_type": "send_order_called",
+                    "native_identity_protocol_version": "stage179_preinsert_v1",
+                    "native_api_called": 0,
+                },
+                {
+                    "event_type": "native_order_identity_persisted_before_insert",
+                    "vt_orderid": "CTP.1_2_3",
+                    "native_api_called": 0,
+                },
+            ):
+                ledger.append_execution_ledger_event(
+                    {
+                        **event,
+                        "target_date": TARGET_DATE,
+                        "intent_fingerprint": after["intent_fingerprint"],
+                        "spool_lease_owner": "service-1",
+                        "spool_lease_token": "lease-after",
+                    },
+                    path=after_path,
+                )
+            after_decision = ledger.recover_expired_spool_lease(
+                target_date=TARGET_DATE,
+                row=row,
+                order_request=request,
+                spool_lease_owner="service-1",
+                spool_lease_token="lease-after",
+                close_retry_after_cancel_seconds=30,
+                path=after_path,
+            )
+
+        self.assertEqual("requeue_pre_send", before_decision.disposition)
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown", after_decision.disposition
+        )
+
     def test_spool_recovery_after_batch_api_slot_is_reconcile_only(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "ledger.jsonl"
@@ -2197,7 +2847,9 @@ class OfficialLiveExecutionLedgerCycleTest(unittest.TestCase):
                 path=path,
             )
 
-        self.assertEqual("reconciled", decision.disposition)
+        self.assertEqual(
+            "reconcile_only_side_effect_unknown", decision.disposition
+        )
         self.assertEqual("filled_or_part_filled", decision.evidence_event_type)
 
     def test_spool_recovery_corrupt_ledger_fails_closed(self) -> None:

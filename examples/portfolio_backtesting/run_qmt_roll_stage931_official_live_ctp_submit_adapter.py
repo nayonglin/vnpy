@@ -9,14 +9,16 @@ import os
 import signal
 import sys
 import tempfile
+import threading
 import time
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import date, datetime
 from pathlib import Path
-from threading import Event, Lock, local
+from threading import Event, Lock, Thread, local
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -27,6 +29,10 @@ from qmt_roll_official_execution_profile import (
     resolve_execution_profile,
 )
 from qmt_roll_official_live_execution_ledger import (
+    advance_cancel_duty_state,
+    append_post_api_slot_no_native_safe_terminal,
+    append_broker_callback_event_once,
+    append_pre_api_slot_no_side_effect_terminal,
     append_execution_ledger_event,
     duplicate_blocker,
     ledger_order_api_counts,
@@ -44,9 +50,14 @@ from qmt_roll_official_live_execution_service import (
     serve_executor,
     singleton_executor_lock,
 )
+from qmt_roll_official_live_authorization_lock import (
+    shared_submit_authorization_lock,
+    submit_authorization_lock_path,
+)
 from qmt_roll_official_live_intent_spool import open_spool
 from qmt_roll_official_live_submit_authorization import (
-    authorized_submit_intents,
+    authorized_submit_intent_records,
+    read_submit_authorization,
     submit_authorization_path,
     validate_submit_authorization,
 )
@@ -99,8 +110,24 @@ STAGE927_PREFIX = "qmt_roll_stage927_official_live_real_submit_arming_gate"
 ALLOWED_TICK_CLOCK_SKEW_SECONDS = 2.0
 MAX_EXACT_FLOAT_INTEGER = 2**53
 CTP_QUERY_INTERVAL_SECONDS = 1.1
+CTP_DIRECTION_BUY = "0"
+CTP_DIRECTION_SELL = "1"
+CTP_OFFSET_OPEN = "0"
+CTP_OFFSET_CLOSE = "1"
+CTP_OFFSET_CLOSE_TODAY = "3"
+CTP_OFFSET_CLOSE_YESTERDAY = "4"
+CTP_HEDGE_SPECULATION = "1"
+CTP_NUMERIC_SENTINEL_FLOOR = sys.float_info.max / 10.0
 CTP_ACTIVE_ORDER_STATUSES = {"1", "3", "a", "b", "c"}
 CTP_TERMINAL_ORDER_STATUSES = {"0", "2", "4", "5"}
+FAK_OPEN_EXCHANGES = {
+    Exchange.CFFEX,
+    Exchange.SHFE,
+    Exchange.INE,
+    Exchange.DCE,
+    Exchange.CZCE,
+    Exchange.GFEX,
+}
 _ORDER_QUERY_FORWARD_CONTEXT = local()
 
 CTP_ENV_KEYS = ("CTP_USERID", "CTP_PASSWORD", "CTP_BROKERID", "CTP_TD_ADDRESS", "CTP_MD_ADDRESS", "CTP_APPID", "CTP_AUTH_CODE")
@@ -178,6 +205,9 @@ LEDGER_METADATA_FIELDS = (
     "root_initial_stop_price",
     "root_entry_volume",
     "action_id",
+    "logical_close_root_id",
+    "prior_close_terminal_checksum",
+    "close_execution_attempt_no",
     "manual_intervention_required",
     "risk_alert_level",
     "migration_blocker",
@@ -188,6 +218,9 @@ LEDGER_METADATA_FIELDS = (
 
 STAGE904_ONLY_INTENT_FIELDS = (
     "action_id",
+    "logical_close_root_id",
+    "prior_close_terminal_checksum",
+    "close_execution_attempt_no",
     "monitor_run_id",
     "manual_intervention_required",
     "risk_alert_level",
@@ -206,20 +239,6 @@ STAGE904_ONLY_INTENT_FIELDS = (
     "stop_trigger_price",
     "trigger_price",
     "triggered_at",
-    "trace_json",
-    "trace_id",
-    "source_feed_session_id",
-    "source_ingress_sequence",
-    "source_symbol_sequence",
-    "ingress_epoch_ns",
-    "ingress_monotonic_ns",
-    "deadline_epoch_ns",
-    "deadline_monotonic_ns",
-    "durable_cursor_feed_session_id",
-    "durable_cursor_ingress_sequence",
-    "durable_cursor_journal_byte_offset",
-    "durable_cursor_journal_schema",
-    "state_generation",
 )
 
 
@@ -474,6 +493,277 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
     return row
 
 
+def _stage179_callback_key(kind: str, payload: Mapping[str, Any]) -> str:
+    encoded = json.dumps(
+        {key: payload[key] for key in sorted(payload)},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return f"stage179-{kind}-" + hashlib.sha256(encoded).hexdigest()
+
+
+def _stage179_warm_callback_base(
+    context: Mapping[str, Any],
+    callback: Mapping[str, Any],
+) -> dict[str, Any]:
+    row = dict(context.get("row", {}))
+    request = context.get("request")
+    direction = _normalize_direction_text(
+        callback.get("direction")
+        or row.get("direction")
+        or getattr(getattr(request, "direction", None), "value", "")
+    )
+    offset = _normalize_offset_text(
+        callback.get("offset")
+        or row.get("offset")
+        or getattr(getattr(request, "offset", None), "value", "")
+    )
+    return {
+        "target_date": str(context.get("target_date", "")),
+        "intent_id": str(context.get("intent_id", "")),
+        "intent_payload_sha256": str(
+            context.get("intent_payload_sha256", "")
+        ),
+        "intent_kind": str(context.get("intent_kind", offset)),
+        "intent_fingerprint": str(context.get("fingerprint", "")),
+        "parent_intent_fingerprint": str(context.get("fingerprint", "")),
+        "vt_symbol": str(callback.get("vt_symbol") or row.get("vt_symbol") or ""),
+        "direction": direction,
+        "offset": offset,
+        "source": str(row.get("source", "")),
+        "adapter": "Stage931Warm",
+        "service_generation": str(context.get("service_generation", "")),
+        "connection_generation": str(context.get("connection_generation", "")),
+        "spool_lease_owner": str(context.get("spool_lease_owner", "")),
+        "spool_lease_token": str(context.get("spool_lease_token", "")),
+        "child_order_id": str(context.get("child_order_id", "")),
+        "child_order_index": int(context.get("child_order_index", 0) or 0),
+        "child_order_count": int(context.get("child_order_count", 1) or 1),
+        "close_submit_attempt_no": int(
+            context.get("close_submit_attempt_no", 0) or 0
+        ),
+        "close_attempt_lease_token": str(
+            context.get("close_attempt_lease_token", "")
+        ),
+        **_intent_ledger_metadata(row),
+    }
+
+
+def _persist_stage179_warm_broker_callback(
+    *,
+    kind: str,
+    callback: Mapping[str, Any],
+    context: Mapping[str, Any] | None,
+    target_date: str,
+    ledger_path: Path,
+) -> list[dict[str, Any]]:
+    """Normalize durable broker evidence without inferring fills from position."""
+
+    vt_orderid = str(callback.get("vt_orderid", "") or "").strip()
+    vt_symbol = str(callback.get("vt_symbol", "") or "").strip()
+    if context is None:
+        raw_identity = {
+            "target_date": target_date,
+            "kind": kind,
+            "vt_orderid": vt_orderid,
+            "vt_tradeid": str(callback.get("vt_tradeid", "") or ""),
+            "tradeid": str(callback.get("tradeid", "") or ""),
+            "status": str(callback.get("status", "") or ""),
+            "traded": _to_float(callback.get("traded"), 0.0),
+            "volume": _to_float(callback.get("volume"), 0.0),
+            "price": _to_float(callback.get("price"), 0.0),
+            "vt_symbol": vt_symbol,
+            "exchange": str(callback.get("exchange", "") or ""),
+            "datetime": str(callback.get("datetime", "") or ""),
+            "broker_trade_at": str(
+                callback.get("broker_trade_at")
+                or callback.get("datetime")
+                or ""
+            ),
+        }
+        event = {
+            "event_type": f"broker_{kind}_callback_unbound",
+            **raw_identity,
+            "broker_callback_key": _stage179_callback_key(
+                f"{kind}-unbound", raw_identity
+            ),
+            "execution_inference_authority": "none_until_intent_bound",
+        }
+        return [append_broker_callback_event_once(event, ledger_path)]
+
+    base = _stage179_warm_callback_base(context, callback)
+    results: list[dict[str, Any]] = []
+    if kind == "trade":
+        vt_tradeid = str(callback.get("vt_tradeid", "") or "").strip()
+        tradeid = str(callback.get("tradeid", "") or "").strip()
+        exchange = str(callback.get("exchange", "") or "").strip() or (
+            vt_symbol.rpartition(".")[2] if "." in vt_symbol else ""
+        )
+        price = _to_float(callback.get("price"), 0.0)
+        volume = _to_float(callback.get("volume"), 0.0)
+        if not tradeid and vt_tradeid.startswith("CTP."):
+            tradeid = vt_tradeid[len("CTP.") :].split(".")[-1]
+        trade_identity = (
+            f"ctp:{exchange}:{tradeid}"
+            if exchange and tradeid
+            else vt_tradeid
+        )
+        identity = {
+            "target_date": base.get("target_date", target_date),
+            "intent_fingerprint": base.get("intent_fingerprint", ""),
+            "child_order_id": base.get("child_order_id", ""),
+            "vt_orderid": vt_orderid,
+            "trade_identity": trade_identity,
+        }
+        confirmed = bool(vt_orderid and trade_identity and price > 0 and volume > 0)
+        event = {
+            "event_type": (
+                "filled_or_part_filled"
+                if confirmed
+                else "broker_trade_callback_unidentified"
+            ),
+            **base,
+            "vt_orderid": vt_orderid,
+            "vt_tradeid": vt_tradeid,
+            "tradeid": tradeid,
+            "trade_fill_key": trade_identity,
+            "price": price,
+            "volume": volume,
+            "trade_volume_delta": volume if confirmed else 0.0,
+            "trade_event_volume_delta": volume if confirmed else 0.0,
+            "trade_event_priced_volume_delta": volume if confirmed else 0.0,
+            "trade_rows_delta": 1 if confirmed else 0,
+            "fill_price_source": "event_trade_weighted_avg",
+            "broker_callback_adapter": "stage931_warm_event_trade",
+            "broker_callback_key": _stage179_callback_key("trade", identity),
+            "broker_fill_confirmed": int(confirmed),
+        }
+        broker_trade_at = str(
+            callback.get("broker_trade_at")
+            or callback.get("datetime")
+            or ""
+        ).strip()
+        if broker_trade_at:
+            event["broker_trade_at"] = broker_trade_at
+            event["generated_at"] = broker_trade_at
+        results.append(append_broker_callback_event_once(event, ledger_path))
+        return results
+
+    if kind == "position":
+        identity = {
+            "target_date": base.get("target_date", target_date),
+            "connection_generation": base.get("connection_generation", ""),
+            "vt_symbol": vt_symbol,
+            "direction": str(callback.get("direction", "")),
+            "volume": _to_float(callback.get("volume"), 0.0),
+            "yd_volume": _to_float(callback.get("yd_volume"), 0.0),
+            "price": _to_float(callback.get("price"), 0.0),
+        }
+        event = {
+            "event_type": "broker_position_callback_observed",
+            **base,
+            **identity,
+            "broker_callback_key": _stage179_callback_key("position", identity),
+            "execution_inference_authority": "diagnostic_only_not_fill",
+        }
+        results.append(append_broker_callback_event_once(event, ledger_path))
+        return results
+
+    status = str(callback.get("status", "") or "").strip().lower()
+    traded = _to_float(callback.get("traded"), 0.0)
+    order_volume = _to_float(callback.get("volume"), 0.0)
+    order_identity = {
+        "target_date": base.get("target_date", target_date),
+        "intent_fingerprint": base.get("intent_fingerprint", ""),
+        "child_order_id": base.get("child_order_id", ""),
+        "vt_orderid": vt_orderid,
+        "status": status,
+        "traded": traded,
+        "volume": order_volume,
+    }
+    status_class = (
+        "local_api_accepted"
+        if status in {"submitting", "提交中"}
+        else "broker_rejected"
+        if status in REJECTED_ORDER_STATUSES
+        else "broker_cancelled"
+        if status in CANCELLED_ORDER_STATUSES
+        else "broker_all_traded"
+        if status in {"all traded", "alltraded", "全部成交", "已成交"}
+        else "broker_part_traded"
+        if status in {"part traded", "parttraded", "部分成交"}
+        else "broker_acknowledged"
+    )
+    event = {
+        "event_type": "broker_order_status_observed",
+        **base,
+        **order_identity,
+        "broker_order_status_class": status_class,
+        "broker_acknowledged": int(status_class != "local_api_accepted"),
+        "broker_callback_key": _stage179_callback_key("order", order_identity),
+    }
+    results.append(append_broker_callback_event_once(event, ledger_path))
+    if status_class in {"broker_rejected", "broker_cancelled"}:
+        request = context.get("request")
+        if isinstance(request, OrderRequest):
+            trade_total = _to_float(
+                context.get("trade_event_total_volume"), 0.0
+            )
+            priced_total = _to_float(
+                context.get("trade_event_priced_volume"), 0.0
+            )
+            unpriced_volume = max(0.0, traded - priced_total)
+            residual_volume = max(
+                0.0,
+                float(request.volume) - max(traded, trade_total),
+            )
+            terminal = {
+                "event_type": "rejected_or_inactive",
+                **base,
+                **order_identity,
+                "broker_order_status_class": status_class,
+                "volume": float(request.volume),
+                "broker_callback_key": _stage179_callback_key(
+                    "order-terminal-zero-audit", order_identity
+                ),
+                **_close_retry_terminal_audit_fields(
+                    req=request,
+                    context=dict(context),
+                    insert_audit=dict(context.get("insert_audit", {})),
+                    vt_orderid=vt_orderid,
+                    latest_order=dict(callback),
+                    order_traded_volume=traded,
+                    trade_event_total_volume=trade_total,
+                    trade_event_priced_volume=priced_total,
+                    unpriced_volume=unpriced_volume,
+                    residual_volume=residual_volume,
+                    trade_callback_count=int(
+                        context.get("trade_callback_count", 0) or 0
+                    ),
+                ),
+            }
+            results.append(
+                append_broker_callback_event_once(terminal, ledger_path)
+            )
+    if traded > 0:
+        unpriced = {
+            "event_type": "order_traded_volume_observed_without_trade_detail",
+            **base,
+            **order_identity,
+            "order_traded_volume": traded,
+            "unpriced_volume": traded,
+            "residual_volume": max(0.0, order_volume - traded),
+            "fill_price_reconciliation_pending": 1,
+            "broker_callback_key": _stage179_callback_key(
+                "order-unpriced-fill", order_identity
+            ),
+        }
+        results.append(append_broker_callback_event_once(unpriced, ledger_path))
+    return results
+
+
 TICK_INGRESS_MONOTONIC_ATTR = "_stage931_tick_ingress_monotonic"
 
 
@@ -573,10 +863,18 @@ class CtpExecutionSession:
         revoke_readiness: Callable[[str], None] | None = None,
         transport_probe: Callable[[], list[str]] | None = None,
         pre_api_slot_blockers: Callable[[Any], list[str]] | None = None,
+        pre_api_slot_safe_terminal: (
+            Callable[[Any, list[str], str], dict[str, Any]] | None
+        ) = None,
+        post_api_slot_safe_terminal: (
+            Callable[[Any, str, list[str], str], dict[str, Any]] | None
+        ) = None,
         pre_lease_blockers: Callable[[], list[str]] | None = None,
         pre_lease_authorized_intents: (
             Callable[[], Mapping[str, str] | None] | None
         ) = None,
+        lease_execution_guard: Callable[[], Any] | None = None,
+        post_lease_blockers: Callable[[Any], list[str]] | None = None,
         connection_generation_observer: Callable[[str], None] | None = None,
         epoch_ns: Callable[[], int] = time.time_ns,
         monotonic: Callable[[], float] = time.monotonic,
@@ -596,8 +894,12 @@ class CtpExecutionSession:
         self._reserve_api_slot = reserve_api_slot
         self._send_order = send_order
         self._pre_api_slot_blockers = pre_api_slot_blockers or (lambda _: [])
+        self._pre_api_slot_safe_terminal = pre_api_slot_safe_terminal
+        self._post_api_slot_safe_terminal = post_api_slot_safe_terminal
         self._pre_lease_blockers = pre_lease_blockers or (lambda: [])
         self._pre_lease_authorized_intents = pre_lease_authorized_intents
+        self._lease_execution_guard = lease_execution_guard
+        self._post_lease_blockers = post_lease_blockers or (lambda _: [])
         self._connection_generation_observer = (
             connection_generation_observer or (lambda _: None)
         )
@@ -761,6 +1063,30 @@ class CtpExecutionSession:
             for intent_id, payload_sha256 in result.items()
         }
 
+    @contextmanager
+    def lease_execution_guard(self) -> Iterator[None]:
+        guard = self._lease_execution_guard
+        if guard is None:
+            yield
+            return
+        with guard():
+            yield
+
+    def post_lease_blockers(self, lease: Any) -> list[str]:
+        try:
+            return list(
+                dict.fromkeys(
+                    str(item)
+                    for item in self._post_lease_blockers(lease)
+                    if str(item)
+                )
+            )
+        except BaseException as exc:
+            return [
+                "stage179_post_lease_authorization_exception:"
+                f"{type(exc).__name__}"
+            ]
+
     def execute_with_readiness(
         self,
         *,
@@ -770,6 +1096,110 @@ class CtpExecutionSession:
         api_slot_durable: Callable[[str], bool] | None = None,
     ) -> ExecutionResult:
         intent_id = str(lease.intent.intent_id)
+
+        post_lease_blockers = self.post_lease_blockers(lease)
+        if post_lease_blockers:
+            return ExecutionResult.blocked(intent_id, post_lease_blockers[0])
+
+        def terminalize_before_api_slot(
+            current_blockers: list[str],
+            *,
+            phase: str,
+            ledger_fingerprint: str,
+        ) -> ExecutionResult:
+            normalized = list(
+                dict.fromkeys(str(item) for item in current_blockers if str(item))
+            )
+            if not ledger_fingerprint or self._pre_api_slot_safe_terminal is None:
+                return ExecutionResult.blocked(
+                    intent_id,
+                    normalized[0] if normalized else "stage179_pre_api_slot_blocked",
+                )
+            try:
+                terminal = self._pre_api_slot_safe_terminal(
+                    lease,
+                    normalized,
+                    phase,
+                )
+            except BaseException as exc:
+                return ExecutionResult(
+                    intent_id=intent_id,
+                    disposition="blocked",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id="",
+                    blockers=(
+                        "stage179_pre_api_safe_terminal_exception:"
+                        f"{type(exc).__name__}",
+                    ),
+                    send_order_call_count=0,
+                    cancel_order_call_count=0,
+                )
+            if bool(terminal.get("appended")) or bool(
+                terminal.get("idempotent_replay")
+            ):
+                return ExecutionResult.no_side_effect_retryable(
+                    intent_id,
+                    ledger_fingerprint=ledger_fingerprint,
+                    blockers=normalized,
+                )
+            return ExecutionResult(
+                intent_id=intent_id,
+                disposition="blocked",
+                ledger_fingerprint=ledger_fingerprint,
+                api_slot_batch_id="",
+                blockers=(
+                    "stage179_pre_api_safe_terminal_failed:"
+                    f"{terminal.get('blocker') or 'unknown'}",
+                ),
+                send_order_call_count=0,
+                cancel_order_call_count=0,
+            )
+
+        def terminalize_after_api_slot(
+            current_blockers: list[str],
+            *,
+            phase: str,
+            ledger_fingerprint: str,
+            api_slot_batch_id: str,
+        ) -> ExecutionResult:
+            normalized = list(dict.fromkeys(str(item) for item in current_blockers if str(item)))
+            if self._post_api_slot_safe_terminal is None:
+                return ExecutionResult(
+                    intent_id=intent_id,
+                    disposition="side_effect_unknown",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                    blockers=tuple(normalized),
+                    send_order_call_count=0,
+                    cancel_order_call_count=0,
+                )
+            terminal = self._post_api_slot_safe_terminal(
+                lease, api_slot_batch_id, normalized, phase
+            )
+            if terminal.get("appended") or terminal.get("idempotent_replay"):
+                return ExecutionResult.post_slot_no_native_retryable(
+                    intent_id,
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                    blockers=normalized,
+                    safe_terminal_record_checksum=str(
+                        dict(terminal.get("ledger_event", {})).get(
+                            "record_checksum", ""
+                        )
+                    ),
+                )
+            return ExecutionResult(
+                intent_id=intent_id,
+                disposition="side_effect_unknown",
+                ledger_fingerprint=ledger_fingerprint,
+                api_slot_batch_id=api_slot_batch_id,
+                blockers=(
+                    f"stage179_post_slot_safe_terminal_failed:{terminal.get('blocker') or 'unknown'}",
+                ),
+                send_order_call_count=0,
+                cancel_order_call_count=0,
+            )
+
         blockers = self._readiness_blockers(readiness)
         if blockers:
             return ExecutionResult.blocked(intent_id, blockers[0])
@@ -790,7 +1220,11 @@ class CtpExecutionSession:
             blockers.append(deadline)
         blockers = list(dict.fromkeys(blockers))
         if blockers:
-            return ExecutionResult.blocked(intent_id, blockers[0])
+            return terminalize_before_api_slot(
+                blockers,
+                phase="post_fresh_bundle",
+                ledger_fingerprint=ledger_fingerprint,
+            )
 
         blockers = list(self._pre_api_slot_blockers(lease))
         deadline = self._deadline_blocker("pre_api_slot", hard_deadline_monotonic)
@@ -799,7 +1233,11 @@ class CtpExecutionSession:
         blockers.extend(self._readiness_blockers(readiness, check_expiry=False))
         blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
         if blockers:
-            return ExecutionResult.blocked(intent_id, blockers[0])
+            return terminalize_before_api_slot(
+                blockers,
+                phase="pre_api_slot",
+                ledger_fingerprint=ledger_fingerprint,
+            )
 
         api_slot_batch_id = ""
         send_called = 0
@@ -807,9 +1245,10 @@ class CtpExecutionSession:
             self.api_slot_call_count += 1
             api_slot_batch_id = str(self._reserve_api_slot(lease))
             if not api_slot_batch_id:
-                return ExecutionResult.blocked(
-                    intent_id,
-                    "stage179_api_slot_reservation_failed",
+                return terminalize_before_api_slot(
+                    ["stage179_api_slot_reservation_failed"],
+                    phase="api_slot_reservation_failed",
+                    ledger_fingerprint=ledger_fingerprint,
                 )
             if api_slot_durable is not None and not api_slot_durable(
                 api_slot_batch_id
@@ -828,25 +1267,19 @@ class CtpExecutionSession:
                 check_expiry=False,
             )
             if post_slot_blockers:
-                return ExecutionResult(
-                    intent_id=intent_id,
-                    disposition="side_effect_unknown",
+                return terminalize_after_api_slot(
+                    post_slot_blockers,
+                    phase="post_api_slot_readiness",
                     ledger_fingerprint=ledger_fingerprint,
                     api_slot_batch_id=api_slot_batch_id,
-                    blockers=tuple(post_slot_blockers),
-                    send_order_call_count=0,
-                    cancel_order_call_count=0,
                 )
             deadline = self._deadline_blocker("pre_send_order", hard_deadline_monotonic)
             if deadline:
-                return ExecutionResult(
-                    intent_id=intent_id,
-                    disposition="side_effect_unknown",
+                return terminalize_after_api_slot(
+                    [deadline],
+                    phase="pre_send_order_deadline",
                     ledger_fingerprint=ledger_fingerprint,
                     api_slot_batch_id=api_slot_batch_id,
-                    blockers=(deadline,),
-                    send_order_call_count=0,
-                    cancel_order_call_count=0,
                 )
             raw_send_result = self._send_order(lease)
             if isinstance(raw_send_result, BrokerSendBatchResult):
@@ -862,6 +1295,19 @@ class CtpExecutionSession:
                 int(getattr(exc, "send_order_call_count", 0) or 0),
             )
             self.send_order_call_count += send_called
+            if not api_slot_batch_id and send_called == 0:
+                return terminalize_before_api_slot(
+                    [f"stage179_execution_exception:{type(exc).__name__}"],
+                    phase="api_slot_reservation_exception",
+                    ledger_fingerprint=ledger_fingerprint,
+                )
+            if api_slot_batch_id and send_called == 0:
+                return terminalize_after_api_slot(
+                    [f"stage179_execution_exception:{type(exc).__name__}"],
+                    phase="child_blocked_before_native_insert",
+                    ledger_fingerprint=ledger_fingerprint,
+                    api_slot_batch_id=api_slot_batch_id,
+                )
             return ExecutionResult(
                 intent_id=intent_id,
                 disposition="side_effect_unknown" if api_slot_batch_id else "blocked",
@@ -1081,6 +1527,11 @@ def _raw_ctp_order_row(
         "front_id": front_id,
         "session_id": session_id,
         "order_identity": order_identity,
+        "vt_orderid": (
+            f"CTP.{front_id}_{session_id}_{order_ref}"
+            if front_id and session_id and order_ref
+            else ""
+        ),
         "raw_order_status": raw_status,
         "status_class": status_class,
         "active": int(status_class == "active"),
@@ -1090,6 +1541,61 @@ def _raw_ctp_order_row(
         "traded": traded,
         "order_query_reqid": reqid,
         "received_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    }, []
+
+
+def _raw_ctp_trade_row(
+    data: Any, *, reqid: int, row_index: int
+) -> tuple[dict[str, Any] | None, list[str]]:
+    """Strict reqQryTrade row keyed by exchange OrderSysID and TradeID."""
+
+    if data is None or data == {}:
+        return None, []
+    prefix = f"final_trade_query_row_invalid:index={row_index}"
+    if not isinstance(data, dict):
+        return None, [f"{prefix}:not_mapping"]
+    required = {
+        name: str(data.get(name, "") or "").strip()
+        for name in (
+            "BrokerID", "InvestorID", "InstrumentID", "ExchangeID",
+            "OrderSysID", "TradeID", "Direction", "OffsetFlag",
+            "TradeDate", "TradeTime",
+        )
+    }
+    missing = [name for name, value in required.items() if not value]
+    price = pd.to_numeric(data.get("Price"), errors="coerce")
+    volume = pd.to_numeric(data.get("Volume"), errors="coerce")
+    if pd.isna(price) or float(price) <= 0:
+        missing.append("Price")
+    if pd.isna(volume) or float(volume) <= 0:
+        missing.append("Volume")
+    if missing:
+        return None, [f"{prefix}:missing_or_invalid={','.join(missing)}"]
+    direction = "long" if required["Direction"] == "0" else "short" if required["Direction"] == "1" else ""
+    offset = "open" if required["OffsetFlag"][:1] == "0" else "close" if required["OffsetFlag"][:1] in {"1", "2", "3", "4", "5", "6"} else ""
+    if not direction or not offset:
+        return None, [f"{prefix}:direction_or_offset_invalid"]
+    trade_time_text = required["TradeTime"].replace(":", "")
+    try:
+        broker_trade_at = datetime.strptime(
+            required["TradeDate"] + trade_time_text, "%Y%m%d%H%M%S"
+        ).replace(tzinfo=ZoneInfo("Asia/Shanghai")).isoformat()
+    except ValueError:
+        return None, [f"{prefix}:broker_trade_time_invalid"]
+    return {
+        "broker_id": required["BrokerID"],
+        "investor_id": required["InvestorID"],
+        "symbol": required["InstrumentID"],
+        "exchange": required["ExchangeID"],
+        "order_sys_id": required["OrderSysID"],
+        "tradeid": required["TradeID"],
+        "vt_tradeid": f"CTP.{required['TradeID']}",
+        "direction": direction,
+        "offset": offset,
+        "price": float(price),
+        "volume": float(volume),
+        "broker_trade_at": broker_trade_at,
+        "trade_query_reqid": reqid,
     }, []
 
 
@@ -1389,6 +1895,7 @@ def _final_order_query_epoch(
         "success": False,
         "confirmed": False,
         "reqid": None,
+        "requested_at_monotonic": None,
         "request_ret": "",
         "blockers": [],
         "orders": [],
@@ -1442,6 +1949,7 @@ def _final_order_query_epoch(
     reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
     td_api.reqid = reqid
     result["reqid"] = reqid
+    result["requested_at_monotonic"] = requested_at
     rows.setdefault("order_query_callbacks", []).clear()
     epoch: dict[str, Any] = {
         "active_reqid": reqid,
@@ -1537,6 +2045,86 @@ def _final_order_query_epoch(
     return result
 
 
+def _final_trade_query_epoch(
+    td_api: Any,
+    rows: dict[str, Any],
+    *,
+    max_wait_seconds: float,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Obtain one complete reqid-bound trade snapshot."""
+
+    started = monotonic()
+    deadline = started + max(0.0, float(max_wait_seconds))
+    result: dict[str, Any] = {
+        "confirmed": False, "trades": [], "blockers": [], "reqid": None,
+    }
+    broker_id = str(getattr(td_api, "brokerid", "") or "").strip()
+    investor_id = str(getattr(td_api, "userid", "") or "").strip()
+    if not broker_id or not investor_id or not callable(getattr(td_api, "reqQryTrade", None)):
+        result["blockers"] = ["final_trade_query_prerequisite_missing"]
+        return result
+    last_query = _to_float(rows.get("_ctp_last_query_monotonic"), 0.0)
+    next_allowed = last_query + CTP_QUERY_INTERVAL_SECONDS if last_query else started
+    while monotonic() < next_allowed:
+        remaining = min(next_allowed, deadline) - monotonic()
+        if remaining <= 0:
+            result["blockers"] = ["final_trade_query_pacing_timeout"]
+            return result
+        sleeper(min(0.05, remaining))
+    reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
+    td_api.reqid = reqid
+    result["reqid"] = reqid
+    rows.setdefault("trade_query_callbacks", []).clear()
+    epoch = {
+        "active_reqid": reqid, "complete_reqid": None,
+        "pending_callbacks": [], "authoritative_trades": [],
+        "identity_blockers": [],
+    }
+    rows["_trade_query_epoch"] = epoch
+    rows["_ctp_last_query_monotonic"] = monotonic()
+    try:
+        request_ret = _to_int(
+            td_api.reqQryTrade(
+                {"BrokerID": broker_id, "InvestorID": investor_id}, reqid
+            ),
+            -1,
+        )
+    except Exception as exc:
+        result["blockers"] = [f"final_trade_query_exception:{exc!r}"]
+        epoch["active_reqid"] = None
+        return result
+    if request_ret != 0:
+        result["blockers"] = [f"final_trade_query_request_ret={request_ret}"]
+        epoch["active_reqid"] = None
+        return result
+    while monotonic() < deadline:
+        callbacks = list(rows.get("trade_query_callbacks", []))
+        callback_result = _callback_result(callbacks, reqid)
+        if callback_result["error_ids"]:
+            result["blockers"] = [
+                f"final_trade_query_error_ids={callback_result['error_ids']}"
+            ]
+            break
+        if callback_result["last_seen"] and _to_int(epoch.get("complete_reqid"), -1) == reqid:
+            blockers = list(epoch.get("identity_blockers", []))
+            trades = list(epoch.get("authoritative_trades", []))
+            for index, trade in enumerate(trades):
+                if trade.get("broker_id") != broker_id or trade.get("investor_id") != investor_id:
+                    blockers.append(f"final_trade_query_account_identity_mismatch:index={index}")
+            if blockers:
+                result["blockers"] = blockers
+            else:
+                result.update({"confirmed": True, "trades": trades})
+            break
+        sleeper(min(0.05, max(0.0, deadline - monotonic())))
+    else:
+        result["blockers"] = [f"final_trade_query_timeout:reqid={reqid}"]
+    epoch["active_reqid"] = None
+    return result
+
+
 def _final_position_query_epoch(
     td_api: Any,
     rows: dict[str, Any],
@@ -1558,6 +2146,7 @@ def _final_position_query_epoch(
         "success": False,
         "confirmed": False,
         "reqid": None,
+        "requested_at_monotonic": None,
         "request_ret": "",
         "blockers": [],
         "positions": [],
@@ -1609,6 +2198,7 @@ def _final_position_query_epoch(
     reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
     td_api.reqid = reqid
     result["reqid"] = reqid
+    result["requested_at_monotonic"] = requested_at
     rows.setdefault("position_query_callbacks", []).clear()
     # Clear before issuing the request: a timeout must fail closed and must not
     # leave the readiness-era snapshot available to the final gate.
@@ -1698,6 +2288,1035 @@ def _final_position_query_epoch(
     result["elapsed_seconds"] = max(0.0, monotonic() - started)
     epoch["active_reqid"] = None
     return result
+
+
+def _canonical_evidence_sha256(payload: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def _strict_ctp_account_number(value: Any) -> float | None:
+    parsed = pd.to_numeric(value, errors="coerce")
+    if pd.isna(parsed):
+        return None
+    number = float(parsed)
+    if (
+        not math.isfinite(number)
+        or abs(number) >= CTP_NUMERIC_SENTINEL_FLOOR
+    ):
+        return None
+    return number
+
+
+def _wait_for_ctp_query_pacing(
+    rows: dict[str, Any],
+    *,
+    started: float,
+    deadline: float,
+    blocker_namespace: str,
+    monotonic: Callable[[], float],
+    sleeper: Callable[[float], None],
+    query_interval_seconds: float,
+    poll_seconds: float,
+) -> str:
+    last_query_raw = pd.to_numeric(
+        rows.get("_ctp_last_query_monotonic"), errors="coerce"
+    )
+    next_allowed = (
+        started
+        if pd.isna(last_query_raw)
+        else float(last_query_raw)
+        + max(1.0, float(query_interval_seconds))
+    )
+    while monotonic() + 1e-9 < next_allowed:
+        remaining = min(next_allowed, deadline) - monotonic()
+        if remaining <= 0:
+            return f"{blocker_namespace}_pacing_timeout"
+        sleeper(min(max(0.001, float(poll_seconds)), remaining))
+    if monotonic() > deadline + 1e-9:
+        return f"{blocker_namespace}_pacing_timeout"
+    return ""
+
+
+def _final_open_account_funds_query_epoch(
+    td_api: Any,
+    rows: dict[str, Any],
+    *,
+    max_wait_seconds: float,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+    query_interval_seconds: float = CTP_QUERY_INTERVAL_SECONDS,
+    poll_seconds: float = 0.05,
+    hard_deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
+    """Return one fresh raw, reqid-bound TradingAccount funds row."""
+
+    started = monotonic()
+    deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
+    result: dict[str, Any] = {
+        "success": False,
+        "confirmed": False,
+        "reqid": None,
+        "requested_at_monotonic": None,
+        "request_ret": "",
+        "query_api_called_count": 0,
+        "blockers": [],
+        "callback_count": 0,
+        "ignored_callback_count": 0,
+        "broker_id": "",
+        "account_id": "",
+        "available": None,
+        "curr_margin": None,
+        "raw_evidence_sha256": "",
+        "elapsed_seconds": 0.0,
+    }
+    broker_id = str(getattr(td_api, "brokerid", "") or "").strip()
+    investor_id = str(getattr(td_api, "userid", "") or "").strip()
+    query = getattr(td_api, "reqQryTradingAccount", None)
+    if not broker_id or not investor_id:
+        result["blockers"] = [
+            "final_open_account_funds_request_identity_missing"
+        ]
+        return result
+    if not callable(query):
+        result["blockers"] = [
+            "final_open_account_funds_query_api_missing"
+        ]
+        return result
+    pacing_blocker = _wait_for_ctp_query_pacing(
+        rows,
+        started=started,
+        deadline=deadline,
+        blocker_namespace="final_open_account_funds_query",
+        monotonic=monotonic,
+        sleeper=sleeper,
+        query_interval_seconds=query_interval_seconds,
+        poll_seconds=poll_seconds,
+    )
+    if pacing_blocker:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [pacing_blocker]
+        return result
+
+    reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
+    td_api.reqid = reqid
+    result["reqid"] = reqid
+    requested_at = monotonic()
+    result["requested_at_monotonic"] = requested_at
+    epoch: dict[str, Any] = {
+        "active_reqid": reqid,
+        "complete_reqid": None,
+        "requested_at_monotonic": requested_at,
+        "raw_rows": [],
+        "expected_broker_id": broker_id,
+        "expected_account_id": investor_id,
+    }
+    rows["_final_account_funds_epoch"] = epoch
+    rows["_ctp_last_query_monotonic"] = requested_at
+    request = {"BrokerID": broker_id, "InvestorID": investor_id}
+    result["request"] = dict(request)
+    result["query_api_called_count"] = 1
+    try:
+        request_ret = _to_int(query(request, reqid), -1)
+        result["request_ret"] = request_ret
+    except Exception as exc:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [
+            f"final_open_account_funds_query_exception:{exc!r}"
+        ]
+        epoch["active_reqid"] = None
+        return result
+    if request_ret != 0:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [
+            f"final_open_account_funds_query_request_ret={request_ret}"
+        ]
+        epoch["active_reqid"] = None
+        return result
+
+    while True:
+        callbacks = list(rows.get("account_query_callbacks", []))
+        matching = [
+            row
+            for row in callbacks
+            if _to_int(row.get("reqid"), -1) == reqid
+        ]
+        result["callback_count"] = len(matching)
+        result["ignored_callback_count"] = sum(
+            int(bool(row.get("ignored_outside_active_epoch")))
+            for row in matching
+        )
+        callback_result = _callback_result(
+            matching, reqid, require_account_id=True
+        )
+        if callback_result["error_ids"]:
+            result["blockers"] = [
+                "final_open_account_funds_query_error_ids="
+                f"{callback_result['error_ids']}"
+            ]
+            break
+        if (
+            callback_result["last_seen"]
+            and _to_int(epoch.get("complete_reqid"), -1) == reqid
+        ):
+            raw_rows = list(epoch.get("raw_rows", []))
+            if len(raw_rows) != 1:
+                result["blockers"] = [
+                    "final_open_account_funds_row_count_invalid:"
+                    f"{len(raw_rows)}"
+                ]
+                break
+            raw = dict(raw_rows[0])
+            raw_broker_id = str(raw.get("BrokerID", "") or "").strip()
+            raw_account_id = str(raw.get("AccountID", "") or "").strip()
+            if raw_broker_id != broker_id:
+                result["blockers"].append(
+                    "final_open_account_funds_broker_identity_mismatch"
+                )
+            if raw_account_id != investor_id:
+                result["blockers"].append(
+                    "final_open_account_funds_account_identity_mismatch"
+                )
+            available = _strict_ctp_account_number(raw.get("Available"))
+            curr_margin = _strict_ctp_account_number(
+                raw.get("CurrMargin")
+            )
+            if available is None:
+                result["blockers"].append(
+                    "final_open_account_funds_available_invalid"
+                )
+            elif available <= 0:
+                result["blockers"].append(
+                    "final_open_account_funds_available_not_positive"
+                )
+            if curr_margin is None:
+                result["blockers"].append(
+                    "final_open_account_funds_curr_margin_invalid"
+                )
+            elif curr_margin < 0:
+                result["blockers"].append(
+                    "final_open_account_funds_curr_margin_negative"
+                )
+            result.update(
+                {
+                    "broker_id": raw_broker_id,
+                    "account_id": raw_account_id,
+                    "available": available,
+                    "curr_margin": curr_margin,
+                    "raw_evidence_sha256": _canonical_evidence_sha256(
+                        raw
+                    ),
+                }
+            )
+            result["blockers"] = list(
+                dict.fromkeys(result["blockers"])
+            )
+            if not result["blockers"]:
+                result.update({"success": True, "confirmed": True})
+            break
+        if monotonic() >= deadline:
+            result["blockers"] = [
+                "stage179_execution_deadline_exceeded:"
+                "final_open_account_funds_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else f"final_open_account_funds_query_timeout:reqid={reqid}"
+            ]
+            break
+        sleeper(
+            min(
+                max(0.001, float(poll_seconds)),
+                max(0.0, deadline - monotonic()),
+            )
+        )
+    result["elapsed_seconds"] = max(0.0, monotonic() - started)
+    epoch["active_reqid"] = None
+    return result
+
+
+def _physical_open_request_groups(
+    requests: list[OrderRequest],
+) -> tuple[list[dict[str, Any]], list[str]]:
+    groups: dict[tuple[str, str, str, str, str], dict[str, Any]] = {}
+    blockers: list[str] = []
+    for index, request in enumerate(requests):
+        if not isinstance(request, OrderRequest):
+            blockers.append(
+                "final_open_funds_physical_request_invalid:"
+                f"index={index};type={type(request).__name__}"
+            )
+            continue
+        if request.offset != Offset.OPEN:
+            continue
+        direction_code = (
+            CTP_DIRECTION_BUY
+            if request.direction == Direction.LONG
+            else CTP_DIRECTION_SELL
+            if request.direction == Direction.SHORT
+            else ""
+        )
+        symbol = str(request.symbol or "").strip()
+        exchange = str(request.exchange.value or "").strip()
+        volume = _strict_ctp_account_number(request.volume)
+        item_blockers: list[str] = []
+        if not symbol or request.exchange not in FAK_OPEN_EXCHANGES:
+            item_blockers.append(
+                "final_open_funds_physical_identity_invalid:"
+                f"index={index};symbol={symbol};exchange={exchange}"
+            )
+        if not direction_code:
+            item_blockers.append(
+                f"final_open_funds_direction_invalid:index={index}"
+            )
+        if (
+            volume is None
+            or volume <= 0
+            or not math.isclose(
+                volume, round(volume), rel_tol=0.0, abs_tol=1e-9
+            )
+        ):
+            item_blockers.append(
+                "final_open_funds_volume_invalid:"
+                f"index={index};volume={request.volume}"
+            )
+        if item_blockers:
+            blockers.extend(item_blockers)
+            continue
+        key = (
+            symbol,
+            exchange,
+            direction_code,
+            CTP_OFFSET_OPEN,
+            CTP_HEDGE_SPECULATION,
+        )
+        group = groups.setdefault(
+            key,
+            {
+                "symbol": symbol,
+                "exchange": exchange,
+                "direction": direction_code,
+                "offset_flag": CTP_OFFSET_OPEN,
+                "hedge_flag": CTP_HEDGE_SPECULATION,
+                "required_volume": 0,
+                "child_count": 0,
+            },
+        )
+        group["required_volume"] += int(round(float(volume)))
+        group["child_count"] += 1
+    return list(groups.values()), list(dict.fromkeys(blockers))
+
+
+def _physical_request_bundle(requests: list[OrderRequest]) -> list[dict[str, Any]]:
+    bundle: list[dict[str, Any]] = []
+    for request in requests:
+        if not isinstance(request, OrderRequest):
+            bundle.append({"invalid_type": type(request).__name__})
+            continue
+        bundle.append(
+            {
+                "symbol": request.symbol,
+                "exchange": request.exchange.value,
+                "direction": request.direction.value,
+                "offset": request.offset.value,
+                "type": request.type.value,
+                "volume": float(request.volume),
+                "price": float(request.price),
+                "reference": request.reference,
+            }
+        )
+    return bundle
+
+
+def _final_open_max_order_volume_query_epoch(
+    td_api: Any,
+    rows: dict[str, Any],
+    group: Mapping[str, Any],
+    *,
+    max_wait_seconds: float,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+    query_interval_seconds: float = CTP_QUERY_INTERVAL_SECONDS,
+    poll_seconds: float = 0.05,
+    hard_deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
+    """Query broker-authoritative OPEN capacity for one exact CTP tuple."""
+
+    started = monotonic()
+    deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
+    result: dict[str, Any] = {
+        "success": False,
+        "confirmed": False,
+        "reqid": None,
+        "requested_at_monotonic": None,
+        "request_ret": "",
+        "query_api_called_count": 0,
+        "blockers": [],
+        "callback_count": 0,
+        "ignored_callback_count": 0,
+        "max_volume": None,
+        "required_volume": _to_int(group.get("required_volume"), -1),
+        "raw_evidence_sha256": "",
+        "elapsed_seconds": 0.0,
+    }
+    broker_id = str(getattr(td_api, "brokerid", "") or "").strip()
+    investor_id = str(getattr(td_api, "userid", "") or "").strip()
+    query = getattr(td_api, "reqQryMaxOrderVolume", None)
+    if not broker_id or not investor_id:
+        result["blockers"] = [
+            "final_open_max_volume_request_identity_missing"
+        ]
+        return result
+    if not callable(query):
+        result["blockers"] = [
+            "final_open_max_volume_query_api_missing"
+        ]
+        return result
+    required_volume = _to_int(group.get("required_volume"), -1)
+    if required_volume <= 0:
+        result["blockers"] = [
+            "final_open_max_volume_required_volume_invalid"
+        ]
+        return result
+    expected = {
+        "BrokerID": broker_id,
+        "InvestorID": investor_id,
+        "InstrumentID": str(group.get("symbol", "") or ""),
+        "ExchangeID": str(group.get("exchange", "") or ""),
+        "Direction": str(group.get("direction", "") or ""),
+        "OffsetFlag": str(group.get("offset_flag", "") or ""),
+        "HedgeFlag": str(group.get("hedge_flag", "") or ""),
+        # The official vnpy_ctp wrapper maps this native field even though
+        # CtpTdApi does not configure investment-unit routing. Bind the
+        # intentionally empty value so a callback for another unit cannot
+        # authorize this request.
+        "InvestUnitID": "",
+    }
+    if any(
+        not value
+        for field_name, value in expected.items()
+        if field_name != "InvestUnitID"
+    ):
+        result["blockers"] = [
+            "final_open_max_volume_query_tuple_incomplete"
+        ]
+        return result
+    request = {**expected, "MaxVolume": 0}
+    result["request"] = dict(request)
+    pacing_blocker = _wait_for_ctp_query_pacing(
+        rows,
+        started=started,
+        deadline=deadline,
+        blocker_namespace="final_open_max_volume_query",
+        monotonic=monotonic,
+        sleeper=sleeper,
+        query_interval_seconds=query_interval_seconds,
+        poll_seconds=poll_seconds,
+    )
+    if pacing_blocker:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [pacing_blocker]
+        return result
+
+    reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
+    td_api.reqid = reqid
+    result["reqid"] = reqid
+    requested_at = monotonic()
+    result["requested_at_monotonic"] = requested_at
+    epoch: dict[str, Any] = {
+        "active_reqid": reqid,
+        "complete_reqid": None,
+        "requested_at_monotonic": requested_at,
+        "raw_rows": [],
+        "expected": dict(expected),
+    }
+    rows["_max_order_volume_query_epoch"] = epoch
+    rows["_ctp_last_query_monotonic"] = requested_at
+    result["query_api_called_count"] = 1
+    try:
+        request_ret = _to_int(query(request, reqid), -1)
+        result["request_ret"] = request_ret
+    except Exception as exc:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [
+            f"final_open_max_volume_query_exception:{exc!r}"
+        ]
+        epoch["active_reqid"] = None
+        return result
+    if request_ret != 0:
+        result["elapsed_seconds"] = max(0.0, monotonic() - started)
+        result["blockers"] = [
+            f"final_open_max_volume_query_request_ret={request_ret}"
+        ]
+        epoch["active_reqid"] = None
+        return result
+
+    while True:
+        callbacks = list(
+            rows.get("max_order_volume_query_callbacks", [])
+        )
+        matching = [
+            row
+            for row in callbacks
+            if _to_int(row.get("reqid"), -1) == reqid
+        ]
+        result["callback_count"] = len(matching)
+        result["ignored_callback_count"] = sum(
+            int(bool(row.get("ignored_outside_active_epoch")))
+            for row in matching
+        )
+        callback_result = _callback_result(matching, reqid)
+        if callback_result["error_ids"]:
+            result["blockers"] = [
+                "final_open_max_volume_query_error_ids="
+                f"{callback_result['error_ids']}"
+            ]
+            break
+        if (
+            callback_result["last_seen"]
+            and _to_int(epoch.get("complete_reqid"), -1) == reqid
+        ):
+            raw_rows = list(epoch.get("raw_rows", []))
+            if len(raw_rows) != 1:
+                result["blockers"] = [
+                    "final_open_max_volume_row_count_invalid:"
+                    f"{len(raw_rows)}"
+                ]
+                break
+            raw = dict(raw_rows[0])
+            for field_name, expected_value in expected.items():
+                if field_name not in raw:
+                    result["blockers"].append(
+                        "final_open_max_volume_identity_mismatch:"
+                        f"field={field_name};expected={expected_value};"
+                        "actual=<missing>"
+                    )
+                    continue
+                raw_value = raw[field_name]
+                actual = (
+                    "<null>" if raw_value is None else str(raw_value)
+                )
+                if actual != expected_value:
+                    result["blockers"].append(
+                        "final_open_max_volume_identity_mismatch:"
+                        f"field={field_name};expected={expected_value};"
+                        f"actual={actual}"
+                    )
+            raw_max_volume = pd.to_numeric(
+                raw.get("MaxVolume"), errors="coerce"
+            )
+            max_volume: int | None = None
+            if (
+                pd.isna(raw_max_volume)
+                or not math.isfinite(float(raw_max_volume))
+                or float(raw_max_volume) < 0
+                or float(raw_max_volume) >= CTP_NUMERIC_SENTINEL_FLOOR
+                or not math.isclose(
+                    float(raw_max_volume),
+                    round(float(raw_max_volume)),
+                    rel_tol=0.0,
+                    abs_tol=1e-9,
+                )
+            ):
+                result["blockers"].append(
+                    "final_open_max_volume_value_invalid"
+                )
+            else:
+                max_volume = int(round(float(raw_max_volume)))
+                if max_volume < required_volume:
+                    result["blockers"].append(
+                        "final_open_max_volume_insufficient:"
+                        f"max={max_volume};required={required_volume}"
+                    )
+            result.update(
+                {
+                    "max_volume": max_volume,
+                    "raw_evidence_sha256": _canonical_evidence_sha256(
+                        raw
+                    ),
+                }
+            )
+            result["blockers"] = list(
+                dict.fromkeys(result["blockers"])
+            )
+            if not result["blockers"]:
+                result.update({"success": True, "confirmed": True})
+            break
+        if monotonic() >= deadline:
+            result["blockers"] = [
+                "stage179_execution_deadline_exceeded:"
+                "final_open_max_volume_query"
+                if hard_deadline_monotonic is not None
+                and monotonic() >= float(hard_deadline_monotonic)
+                else f"final_open_max_volume_query_timeout:reqid={reqid}"
+            ]
+            break
+        sleeper(
+            min(
+                max(0.001, float(poll_seconds)),
+                max(0.0, deadline - monotonic()),
+            )
+        )
+    result["elapsed_seconds"] = max(0.0, monotonic() - started)
+    epoch["active_reqid"] = None
+    return result
+
+
+def _final_open_funds_margin_gate(
+    td_api: Any,
+    rows: dict[str, Any],
+    requests: list[OrderRequest],
+    *,
+    max_wait_seconds: float,
+    readiness_state: CtpReadinessState | None = None,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+    hard_deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
+    """Authorize OPEN only with fresh raw funds and broker max volume."""
+
+    started = monotonic()
+    deadline = started + max(0.0, float(max_wait_seconds))
+    if hard_deadline_monotonic is not None:
+        deadline = min(deadline, float(hard_deadline_monotonic))
+    bundle = _physical_request_bundle(requests)
+    groups, group_blockers = _physical_open_request_groups(requests)
+    open_child_count = sum(int(group["child_count"]) for group in groups)
+    result: dict[str, Any] = {
+        "success": False,
+        "confirmed": False,
+        "status": "blocked",
+        "bypassed_close_only": 0,
+        "query_api_called_count": 0,
+        "open_child_count": open_child_count,
+        "request_bundle": bundle,
+        "request_bundle_sha256": _canonical_evidence_sha256(bundle),
+        "account": {},
+        "max_volume_queries": [],
+        "blockers": list(group_blockers),
+        "event_watermark": _execution_event_watermark(rows),
+        "query_watermark": {},
+        "elapsed_seconds": 0.0,
+    }
+    has_raw_open = any(
+        isinstance(request, OrderRequest) and request.offset == Offset.OPEN
+        for request in requests
+    )
+    if not has_raw_open:
+        result.update(
+            {
+                "success": True,
+                "confirmed": True,
+                "status": "bypassed_close_only",
+                "bypassed_close_only": 1,
+                "blockers": [],
+                "elapsed_seconds": max(0.0, monotonic() - started),
+            }
+        )
+        return result
+    if result["blockers"] or not groups:
+        if not groups:
+            result["blockers"].append(
+                "final_open_funds_no_valid_open_group"
+            )
+        result["blockers"] = list(dict.fromkeys(result["blockers"]))
+        return result
+
+    account_result = _final_open_account_funds_query_epoch(
+        td_api,
+        rows,
+        max_wait_seconds=max(0.0, deadline - monotonic()),
+        monotonic=monotonic,
+        sleeper=sleeper,
+        hard_deadline_monotonic=hard_deadline_monotonic,
+    )
+    result["account"] = account_result
+    result["query_api_called_count"] += _to_int(
+        account_result.get("query_api_called_count"), 0
+    )
+    result["blockers"].extend(account_result.get("blockers", []))
+    if account_result.get("confirmed"):
+        for group in groups:
+            max_result = _final_open_max_order_volume_query_epoch(
+                td_api,
+                rows,
+                group,
+                max_wait_seconds=max(0.0, deadline - monotonic()),
+                monotonic=monotonic,
+                sleeper=sleeper,
+                hard_deadline_monotonic=hard_deadline_monotonic,
+            )
+            result["max_volume_queries"].append(max_result)
+            result["query_api_called_count"] += _to_int(
+                max_result.get("query_api_called_count"), 0
+            )
+            result["blockers"].extend(max_result.get("blockers", []))
+            if not max_result.get("confirmed"):
+                break
+    result["blockers"] = list(
+        dict.fromkeys(str(item) for item in result["blockers"] if str(item))
+    )
+    if (
+        not result["blockers"]
+        and account_result.get("confirmed")
+        and len(result["max_volume_queries"]) == len(groups)
+        and all(
+            item.get("confirmed")
+            for item in result["max_volume_queries"]
+        )
+    ):
+        result.update(
+            {"success": True, "confirmed": True, "status": "confirmed"}
+        )
+        if readiness_state is not None:
+            readiness_state.expected_account_reqid = _to_int(
+                account_result.get("reqid"), -1
+            )
+    result["event_watermark"] = _execution_event_watermark(rows)
+    account_reqid = _to_int(account_result.get("reqid"), -1)
+    max_reqids = [
+        _to_int(item.get("reqid"), -1)
+        for item in result["max_volume_queries"]
+    ]
+    account_callbacks = [
+        row
+        for row in rows.get("account_query_callbacks", [])
+        if _to_int(row.get("reqid"), -1) == account_reqid
+    ]
+    max_callbacks = [
+        row
+        for row in rows.get("max_order_volume_query_callbacks", [])
+        if _to_int(row.get("reqid"), -1) in set(max_reqids)
+    ]
+    last_owned_query = (
+        result["max_volume_queries"][-1]
+        if result["max_volume_queries"]
+        else account_result
+    )
+    result["query_watermark"] = {
+        "broker_id": str(getattr(td_api, "brokerid", "") or ""),
+        "investor_id": str(getattr(td_api, "userid", "") or ""),
+        # These are the exact values owned by the last query in this gate.
+        # Reading the mutable session values here could absorb a concurrent
+        # unrelated query into the baseline and authorize a stale bundle.
+        "td_reqid_after": _to_int(
+            last_owned_query.get("reqid"), -1
+        ),
+        "ctp_last_query_monotonic": last_owned_query.get(
+            "requested_at_monotonic"
+        ),
+        "account_reqid": account_reqid,
+        "max_volume_reqids": max_reqids,
+        "account_callback_count": len(account_callbacks),
+        "max_volume_callback_count": len(max_callbacks),
+        "account_callbacks_sha256": _canonical_evidence_sha256(
+            account_callbacks
+        ),
+        "max_volume_callbacks_sha256": _canonical_evidence_sha256(
+            max_callbacks
+        ),
+    }
+    result["evidence_sha256"] = _canonical_evidence_sha256(
+        {
+            "request_bundle_sha256": result["request_bundle_sha256"],
+            "account": account_result,
+            "max_volume_queries": result["max_volume_queries"],
+            "event_watermark": result["event_watermark"],
+            "query_watermark": result["query_watermark"],
+        }
+    )
+    result["elapsed_seconds"] = max(0.0, monotonic() - started)
+    return result
+
+
+def _open_funds_gate_consistency_blockers(
+    td_api: Any,
+    rows: dict[str, Any],
+    requests: list[OrderRequest],
+    gate: Mapping[str, Any],
+    *,
+    owned_native_insert_count: int = 0,
+    owned_event_watermark: Mapping[str, Any] | None = None,
+) -> list[str]:
+    """Zero-I/O proof that the exact priced OPEN bundle still owns its gate."""
+
+    has_open = any(
+        isinstance(request, OrderRequest) and request.offset == Offset.OPEN
+        for request in requests
+    )
+    if not has_open:
+        # A protective CLOSE must never be delayed or blocked by OPEN funds.
+        return []
+    blockers: list[str] = []
+    if not gate or gate.get("confirmed") is not True:
+        return ["final_open_funds_gate_missing_or_unconfirmed"]
+    if gate.get("status") != "confirmed":
+        blockers.append("final_open_funds_gate_status_invalid")
+    bundle_sha256 = _canonical_evidence_sha256(
+        _physical_request_bundle(requests)
+    )
+    if bundle_sha256 != str(gate.get("request_bundle_sha256", "")):
+        blockers.append("final_open_funds_request_bundle_changed")
+    watermark = dict(gate.get("query_watermark", {}))
+    broker_id = str(getattr(td_api, "brokerid", "") or "")
+    investor_id = str(getattr(td_api, "userid", "") or "")
+    if broker_id != str(watermark.get("broker_id", "")):
+        blockers.append("final_open_funds_broker_identity_changed")
+    if investor_id != str(watermark.get("investor_id", "")):
+        blockers.append("final_open_funds_investor_identity_changed")
+    expected_owned_count = _to_int(owned_native_insert_count, -1)
+    if expected_owned_count < 0:
+        blockers.append(
+            "final_open_funds_owned_native_insert_count_invalid"
+        )
+        expected_owned_count = 0
+    expected_td_reqid = (
+        _to_int(watermark.get("td_reqid_after"), -2)
+        + expected_owned_count
+    )
+    if _to_int(getattr(td_api, "reqid", -1), -1) != expected_td_reqid:
+        blockers.append("final_open_funds_td_reqid_watermark_changed")
+    expected_last_query = pd.to_numeric(
+        watermark.get("ctp_last_query_monotonic"), errors="coerce"
+    )
+    current_last_query = pd.to_numeric(
+        rows.get("_ctp_last_query_monotonic"), errors="coerce"
+    )
+    if (
+        pd.isna(expected_last_query)
+        or pd.isna(current_last_query)
+        or not math.isclose(
+            float(expected_last_query),
+            float(current_last_query),
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        )
+    ):
+        blockers.append("final_open_funds_query_watermark_changed")
+    blockers.extend(
+        _event_watermark_blockers(
+            dict(
+                owned_event_watermark
+                if owned_event_watermark is not None
+                else gate.get("event_watermark", {})
+            ),
+            _execution_event_watermark(rows),
+            phase="final_open_funds_consistency",
+        )
+    )
+    account_reqid = _to_int(watermark.get("account_reqid"), -1)
+    max_reqids = {
+        _to_int(value, -1)
+        for value in watermark.get("max_volume_reqids", [])
+    }
+    account_callbacks = [
+        row
+        for row in rows.get("account_query_callbacks", [])
+        if _to_int(row.get("reqid"), -1) == account_reqid
+    ]
+    max_callbacks = [
+        row
+        for row in rows.get("max_order_volume_query_callbacks", [])
+        if _to_int(row.get("reqid"), -1) in max_reqids
+    ]
+    if len(account_callbacks) != _to_int(
+        watermark.get("account_callback_count"), -1
+    ) or _canonical_evidence_sha256(account_callbacks) != str(
+        watermark.get("account_callbacks_sha256", "")
+    ):
+        blockers.append("final_open_funds_account_evidence_changed")
+    if len(max_callbacks) != _to_int(
+        watermark.get("max_volume_callback_count"), -1
+    ) or _canonical_evidence_sha256(max_callbacks) != str(
+        watermark.get("max_volume_callbacks_sha256", "")
+    ):
+        blockers.append("final_open_funds_max_volume_evidence_changed")
+    return list(dict.fromkeys(blockers))
+
+
+def _physical_batch_query_watermark(
+    td_api: Any,
+    rows: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Bind one physical batch to the current CTP connection/query epoch."""
+
+    return {
+        "broker_id": str(getattr(td_api, "brokerid", "") or ""),
+        "investor_id": str(getattr(td_api, "userid", "") or ""),
+        "td_reqid_before_batch": _to_int(
+            getattr(td_api, "reqid", -1), -1
+        ),
+        "ctp_last_query_monotonic": rows.get(
+            "_ctp_last_query_monotonic"
+        ),
+    }
+
+
+def _physical_batch_query_watermark_blockers(
+    td_api: Any,
+    rows: Mapping[str, Any],
+    watermark: Mapping[str, Any],
+    *,
+    owned_native_insert_count: int,
+) -> list[str]:
+    """Allow only the exact reqid increments owned by this physical batch."""
+
+    blockers: list[str] = []
+    if not watermark:
+        return ["physical_batch_query_watermark_missing"]
+    owned_count = _to_int(owned_native_insert_count, -1)
+    if owned_count < 0:
+        blockers.append("physical_batch_native_insert_count_invalid")
+        owned_count = 0
+    broker_id = str(getattr(td_api, "brokerid", "") or "")
+    investor_id = str(getattr(td_api, "userid", "") or "")
+    if broker_id != str(watermark.get("broker_id", "")):
+        blockers.append("physical_batch_broker_identity_changed")
+    if investor_id != str(watermark.get("investor_id", "")):
+        blockers.append("physical_batch_investor_identity_changed")
+    base_reqid = _to_int(
+        watermark.get("td_reqid_before_batch"), -2
+    )
+    expected_reqid = base_reqid + owned_count
+    actual_reqid = _to_int(getattr(td_api, "reqid", -1), -1)
+    if base_reqid < 0 or actual_reqid != expected_reqid:
+        blockers.append(
+            "physical_batch_td_reqid_not_exact_owned_sequence:"
+            f"base={base_reqid};owned={owned_count};"
+            f"expected={expected_reqid};actual={actual_reqid}"
+        )
+    expected_last_query = pd.to_numeric(
+        watermark.get("ctp_last_query_monotonic"), errors="coerce"
+    )
+    current_last_query = pd.to_numeric(
+        rows.get("_ctp_last_query_monotonic"), errors="coerce"
+    )
+    if (
+        pd.isna(expected_last_query)
+        or pd.isna(current_last_query)
+        or not math.isclose(
+            float(expected_last_query),
+            float(current_last_query),
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        )
+    ):
+        blockers.append("physical_batch_query_watermark_changed")
+    return list(dict.fromkeys(blockers))
+
+
+def _physical_offset_identity(value: Any) -> str:
+    text = str(getattr(value, "value", value) or "").strip().lower()
+    compact = "".join(
+        character
+        for character in text
+        if character.isalnum()
+    )
+    return {
+        "open": "open",
+        "close": "close",
+        "closetoday": "close_today",
+        "closeyesterday": "close_yesterday",
+    }.get(compact, compact)
+
+
+def _native_insert_request_blockers(
+    native_td_api: Any,
+    expected_td_api: Any,
+    native_request: Mapping[str, Any],
+    request: OrderRequest,
+) -> list[str]:
+    """Bind the native insert payload to the exact current physical child."""
+
+    if native_td_api is not expected_td_api:
+        return ["physical_batch_native_td_api_identity_mismatch"]
+    direction = {
+        Direction.LONG: CTP_DIRECTION_BUY,
+        Direction.SHORT: CTP_DIRECTION_SELL,
+    }.get(request.direction, "")
+    offset = {
+        Offset.OPEN: CTP_OFFSET_OPEN,
+        Offset.CLOSE: CTP_OFFSET_CLOSE,
+        Offset.CLOSETODAY: CTP_OFFSET_CLOSE_TODAY,
+        Offset.CLOSEYESTERDAY: CTP_OFFSET_CLOSE_YESTERDAY,
+    }.get(request.offset, "")
+    order_type = {
+        OrderType.LIMIT: ("2", "3", "1"),
+        OrderType.FAK: ("2", "1", "1"),
+        OrderType.FOK: ("2", "1", "3"),
+    }.get(request.type)
+    expected: dict[str, str] = {
+        "BrokerID": str(getattr(expected_td_api, "brokerid", "") or ""),
+        "InvestorID": str(getattr(expected_td_api, "userid", "") or ""),
+        "UserID": str(getattr(expected_td_api, "userid", "") or ""),
+        "InstrumentID": str(request.symbol or ""),
+        "ExchangeID": str(request.exchange.value or ""),
+        "Direction": direction,
+        "CombOffsetFlag": offset,
+        "CombHedgeFlag": CTP_HEDGE_SPECULATION,
+    }
+    if order_type is not None:
+        expected.update(
+            {
+                "OrderPriceType": order_type[0],
+                "TimeCondition": order_type[1],
+                "VolumeCondition": order_type[2],
+            }
+        )
+    blockers: list[str] = []
+    if not direction or not offset or order_type is None:
+        blockers.append("physical_batch_native_request_enum_invalid")
+    for field_name, expected_value in expected.items():
+        if field_name not in native_request:
+            blockers.append(
+                "physical_batch_native_request_field_missing:"
+                f"{field_name}"
+            )
+            continue
+        actual = native_request.get(field_name)
+        actual_text = "<null>" if actual is None else str(actual)
+        if actual_text != expected_value:
+            blockers.append(
+                "physical_batch_native_request_field_mismatch:"
+                f"{field_name};expected={expected_value};actual={actual_text}"
+            )
+    volume = _strict_ctp_account_number(
+        native_request.get("VolumeTotalOriginal")
+    )
+    if (
+        volume is None
+        or not math.isclose(
+            volume,
+            float(request.volume),
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        )
+    ):
+        blockers.append("physical_batch_native_request_volume_mismatch")
+    price = _strict_ctp_account_number(native_request.get("LimitPrice"))
+    if (
+        price is None
+        or not math.isclose(
+            price,
+            float(request.price),
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        )
+    ):
+        blockers.append("physical_batch_native_request_price_mismatch")
+    if not str(native_request.get("OrderRef", "") or "").strip():
+        blockers.append("physical_batch_native_request_order_ref_missing")
+    return list(dict.fromkeys(blockers))
 
 
 def _canonical_order_snapshot(
@@ -1839,6 +3458,7 @@ def _final_pre_send_snapshot_epoch(
         "canonical_positions": [],
         "event_watermark_before_q2": {},
         "event_watermark_after_q2": {},
+        "query_watermark": {},
         "q2_completed_monotonic": None,
         "elapsed_seconds": 0.0,
     }
@@ -1906,6 +3526,18 @@ def _final_pre_send_snapshot_epoch(
     result["q2_completed_monotonic"] = monotonic()
     result["event_watermark_after_q2"] = _execution_event_watermark(rows)
     result["order_q2"] = order_q2
+    # Bind the later physical batch to the exact final Q2 owned by this
+    # snapshot.  Never recapture td_api.reqid/last-query at bundle assembly:
+    # an unrelated query could race after Q2 and otherwise become the
+    # accepted baseline.
+    result["query_watermark"] = {
+        "broker_id": str(getattr(td_api, "brokerid", "") or ""),
+        "investor_id": str(getattr(td_api, "userid", "") or ""),
+        "td_reqid_before_batch": _to_int(order_q2.get("reqid"), -1),
+        "ctp_last_query_monotonic": order_q2.get(
+            "requested_at_monotonic"
+        ),
+    }
     if not order_q2.get("confirmed"):
         result["blockers"] = [
             f"final_snapshot_q2:{blocker}"
@@ -1975,11 +3607,21 @@ def _instrument_ctp_readiness_callbacks(
 ) -> Iterator[None]:
     original_settlement_rsp = td_api_class.onRspSettlementInfoConfirm
     original_account_rsp = td_api_class.onRspQryTradingAccount
+    max_order_volume_rsp_existed = hasattr(
+        td_api_class, "onRspQryMaxOrderVolume"
+    )
+    original_max_order_volume_rsp = getattr(
+        td_api_class, "onRspQryMaxOrderVolume", None
+    )
     original_position_rsp = td_api_class.onRspQryInvestorPosition
     order_rsp_existed = hasattr(td_api_class, "onRspQryOrder")
     original_order_rsp = getattr(td_api_class, "onRspQryOrder", None)
+    trade_rsp_existed = hasattr(td_api_class, "onRspQryTrade")
+    original_trade_rsp = getattr(td_api_class, "onRspQryTrade", None)
     order_insert_existed = hasattr(td_api_class, "reqOrderInsert")
     original_order_insert = getattr(td_api_class, "reqOrderInsert", None)
+    order_action_existed = hasattr(td_api_class, "reqOrderAction")
+    original_order_action = getattr(td_api_class, "reqOrderAction", None)
     front_disconnected_existed = hasattr(td_api_class, "onFrontDisconnected")
     original_front_disconnected = getattr(
         td_api_class,
@@ -2013,10 +3655,92 @@ def _instrument_ctp_readiness_callbacks(
     def instrumented_account_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
         row = _callback_row(data, error, reqid, last)
         row["account_id"] = str(data.get("AccountID", "") or "") if isinstance(data, dict) else ""
+        if isinstance(data, dict):
+            row.update(
+                {
+                    "broker_id": str(data.get("BrokerID", "") or ""),
+                    "available": data.get("Available"),
+                    "curr_margin": data.get("CurrMargin"),
+                    "raw_evidence_sha256": hashlib.sha256(
+                        json.dumps(
+                            data,
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                            default=str,
+                        ).encode("utf-8")
+                    ).hexdigest(),
+                }
+            )
         rows["account_query_callbacks"].append(row)
+        epoch = rows.get("_final_account_funds_epoch", {})
+        active_reqid = (
+            _to_int(epoch.get("active_reqid"), -1)
+            if isinstance(epoch, dict)
+            else -1
+        )
+        if active_reqid >= 0 and reqid == active_reqid:
+            if row["error_id"] == 0 and isinstance(data, dict) and data:
+                epoch.setdefault("raw_rows", []).append(dict(data))
+            if row["last"]:
+                epoch["complete_reqid"] = reqid
         if row["error_id"] or not isinstance(data, dict):
             return None
         return original_account_rsp(self, data, error, reqid, last)
+
+    def instrumented_max_order_volume_rsp(
+        self: Any,
+        data: dict,
+        error: dict,
+        reqid: int,
+        last: bool,
+    ) -> Any:
+        row = _callback_row(data, error, reqid, last)
+        if isinstance(data, dict):
+            for field_name in (
+                "BrokerID",
+                "InvestorID",
+                "InstrumentID",
+                "ExchangeID",
+                "Direction",
+                "OffsetFlag",
+                "HedgeFlag",
+                "InvestUnitID",
+                "MaxVolume",
+            ):
+                row[field_name] = data.get(field_name)
+            row["raw_evidence_sha256"] = hashlib.sha256(
+                json.dumps(
+                    data,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest()
+        epoch = rows.get("_max_order_volume_query_epoch", {})
+        active_reqid = (
+            _to_int(epoch.get("active_reqid"), -1)
+            if isinstance(epoch, dict)
+            else -1
+        )
+        if active_reqid >= 0 and reqid != active_reqid:
+            row["ignored_outside_active_epoch"] = True
+            rows.setdefault("max_order_volume_query_callbacks", []).append(row)
+            return None
+        rows.setdefault("max_order_volume_query_callbacks", []).append(row)
+        if row["error_id"]:
+            return None
+        if isinstance(epoch, dict) and active_reqid == reqid:
+            if isinstance(data, dict) and data:
+                epoch.setdefault("raw_rows", []).append(dict(data))
+            if row["last"]:
+                epoch["complete_reqid"] = reqid
+        if callable(original_max_order_volume_rsp):
+            return original_max_order_volume_rsp(
+                self, data, error, reqid, last
+            )
+        return None
 
     def instrumented_position_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
         row = _callback_row(data, error, reqid, last)
@@ -2188,15 +3912,86 @@ def _instrument_ctp_readiness_callbacks(
         epoch["pending_callbacks"] = []
         return result
 
+    def instrumented_trade_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        row = _callback_row(data, error, reqid, last)
+        rows.setdefault("trade_query_callbacks", []).append(row)
+        epoch = rows.get("_trade_query_epoch", {})
+        active_reqid = _to_int(epoch.get("active_reqid"), -1) if isinstance(epoch, dict) else -1
+        if active_reqid >= 0 and reqid != active_reqid:
+            row["ignored_outside_active_epoch"] = True
+            return None
+        if row["error_id"]:
+            return None
+        if not isinstance(epoch, dict) or active_reqid < 0:
+            return original_trade_rsp(self, data, error, reqid, last) if callable(original_trade_rsp) else None
+        pending = epoch.setdefault("pending_callbacks", [])
+        pending.append((data, error, reqid, last))
+        if not last:
+            return None
+        converted_rows: list[dict[str, Any]] = []
+        identity_blockers: list[str] = []
+        for index, (callback_data, _, callback_reqid, _) in enumerate(pending):
+            converted, converted_blockers = _raw_ctp_trade_row(
+                callback_data, reqid=callback_reqid, row_index=index
+            )
+            identity_blockers.extend(converted_blockers)
+            if converted is not None:
+                converted_rows.append(converted)
+        # CTP TradeID is not globally unique across exchanges.  Keep query
+        # duplicate detection aligned with the durable canonical identity
+        # ``ctp:<exchange>:<tradeid>`` so DCE/SHFE may legitimately reuse the
+        # same textual TradeID while a repeated identity within one exchange
+        # remains fail-closed.
+        identities = [
+            (
+                str(row.get("exchange", "") or "").strip().lower(),
+                str(row.get("tradeid", "") or "").strip(),
+            )
+            for row in converted_rows
+        ]
+        if len(identities) != len(set(identities)):
+            identity_blockers.append("final_trade_query_duplicate_trade_identity")
+        epoch["authoritative_trades"] = converted_rows
+        epoch["identity_blockers"] = identity_blockers
+        epoch["complete_reqid"] = reqid
+        epoch["pending_callbacks"] = []
+        return None
+
     def instrumented_order_insert(self: Any, data: dict, reqid: int) -> Any:
         audit: dict[str, Any] = {
             "reqid": reqid,
             "requested_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "request_ret": "",
             "exception": "",
+            "front_id": str(getattr(self, "frontid", "") or ""),
+            "session_id": str(getattr(self, "sessionid", "") or ""),
+            "order_ref": str(data.get("OrderRef", "") or ""),
         }
         try:
-            result = original_order_insert(self, data, reqid)
+            ingress_lock = rows.get("_execution_event_ingress_lock")
+            guard = (
+                ingress_lock
+                if hasattr(ingress_lock, "__enter__")
+                else nullcontext()
+            )
+            # Keep the final dynamic gate and the native boundary in one
+            # ingress critical section.  Without this shared RLock an
+            # external order/trade/position callback could arrive after the
+            # gate returned but before reqOrderInsert crossed the process
+            # boundary.  The lock is re-entrant because the gate itself takes
+            # the same lock while attributing the current batch watermark.
+            with guard:
+                before_native = rows.get("_before_native_order_insert")
+                if not callable(before_native):
+                    raise RuntimeError(
+                        "stage179_before_native_order_insert_hook_missing"
+                    )
+                # The hook must durably persist the exact native identity
+                # before reqOrderInsert can cross the process boundary.  Any
+                # append failure aborts here and therefore proves no native
+                # side effect.
+                before_native(self, dict(data), reqid)
+                result = original_order_insert(self, data, reqid)
             audit["request_ret"] = _to_int(result, -1)
             return result
         except Exception as exc:
@@ -2205,36 +4000,82 @@ def _instrument_ctp_readiness_callbacks(
         finally:
             rows.setdefault("order_insert_requests", []).append(audit)
 
+    def instrumented_order_action(self: Any, data: dict, reqid: int) -> Any:
+        audit: dict[str, Any] = {
+            "reqid": reqid, "request_ret": "", "exception": "",
+            "requested_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        try:
+            result = original_order_action(self, data, reqid)
+            audit["request_ret"] = _to_int(result, -1)
+            return result
+        except Exception as exc:
+            audit["exception"] = repr(exc)
+            raise
+        finally:
+            rows.setdefault("order_action_requests", []).append(audit)
+
     def instrumented_front_disconnected(self: Any, reason: int) -> Any:
-        rows["_stage179_transport_disconnect_count"] = (
-            _to_int(rows.get("_stage179_transport_disconnect_count"), 0) + 1
+        ingress_lock = rows.get("_execution_event_ingress_lock")
+        guard = (
+            ingress_lock
+            if hasattr(ingress_lock, "__enter__")
+            else nullcontext()
         )
-        if on_front_disconnected is not None:
-            on_front_disconnected(int(reason))
-        if callable(original_front_disconnected):
-            return original_front_disconnected(self, reason)
-        return None
+        # Serialize transport invalidation with the same final-native
+        # boundary.  A disconnect that wins the lock is visible to the gate;
+        # one that loses can only be observed after the native call returns.
+        with guard:
+            rows["_stage179_transport_disconnect_count"] = (
+                _to_int(
+                    rows.get("_stage179_transport_disconnect_count"), 0
+                )
+                + 1
+            )
+            if on_front_disconnected is not None:
+                on_front_disconnected(int(reason))
+            if callable(original_front_disconnected):
+                return original_front_disconnected(self, reason)
+            return None
 
     try:
         td_api_class.onRspSettlementInfoConfirm = instrumented_settlement_rsp
         td_api_class.onRspQryTradingAccount = instrumented_account_rsp
+        td_api_class.onRspQryMaxOrderVolume = (
+            instrumented_max_order_volume_rsp
+        )
         td_api_class.onRspQryInvestorPosition = instrumented_position_rsp
         td_api_class.onRspQryOrder = instrumented_order_rsp
+        td_api_class.onRspQryTrade = instrumented_trade_rsp
         if order_insert_existed and callable(original_order_insert):
             td_api_class.reqOrderInsert = instrumented_order_insert
+        if order_action_existed and callable(original_order_action):
+            td_api_class.reqOrderAction = instrumented_order_action
         if front_disconnected_existed:
             td_api_class.onFrontDisconnected = instrumented_front_disconnected
         yield
     finally:
         td_api_class.onRspSettlementInfoConfirm = original_settlement_rsp
         td_api_class.onRspQryTradingAccount = original_account_rsp
+        if max_order_volume_rsp_existed:
+            td_api_class.onRspQryMaxOrderVolume = (
+                original_max_order_volume_rsp
+            )
+        else:
+            delattr(td_api_class, "onRspQryMaxOrderVolume")
         td_api_class.onRspQryInvestorPosition = original_position_rsp
         if order_rsp_existed:
             td_api_class.onRspQryOrder = original_order_rsp
         else:
             delattr(td_api_class, "onRspQryOrder")
+        if trade_rsp_existed:
+            td_api_class.onRspQryTrade = original_trade_rsp
+        else:
+            delattr(td_api_class, "onRspQryTrade")
         if order_insert_existed:
             td_api_class.reqOrderInsert = original_order_insert
+        if order_action_existed:
+            td_api_class.reqOrderAction = original_order_action
         if front_disconnected_existed:
             td_api_class.onFrontDisconnected = original_front_disconnected
 
@@ -2497,7 +4338,7 @@ def _subscribe_and_wait_fresh_tick(
     vt_symbol: str,
     rows: dict[str, list[dict[str, Any]]],
     *,
-    wait_seconds: int,
+    wait_seconds: float,
     max_tick_age_seconds: int,
     not_before_received_monotonic: float | None = None,
 ) -> tuple[dict[str, Any] | None, float | None, str]:
@@ -2508,7 +4349,7 @@ def _subscribe_and_wait_fresh_tick(
         main_engine.subscribe(SubscribeRequest(symbol=symbol, exchange=exchange), "CTP")
     except Exception as exc:
         return None, None, f"final_reprice_subscribe_exception:{exc!r}"
-    deadline = time.monotonic() + max(0, wait_seconds)
+    deadline = time.monotonic() + max(0.0, float(wait_seconds))
     while True:
         tick_rows = rows.get("ticks", [])
         if not_before_received_monotonic is not None:
@@ -2529,7 +4370,7 @@ def _subscribe_and_wait_fresh_tick(
             return tick, age, "ctp_event_tick"
         if time.monotonic() >= deadline:
             break
-        time.sleep(0.1)
+        time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
     return None, None, "no_fresh_ctp_tick_after_subscribe"
 
 
@@ -2781,7 +4622,7 @@ def _strict_post_q2_final_reprice(
         main_engine,
         vt_symbol,
         rows,
-        wait_seconds=max(0, int(tick_wait_seconds)),
+        wait_seconds=max(0.0, float(tick_wait_seconds)),
         max_tick_age_seconds=max_tick_age_seconds,
         not_before_received_monotonic=cutoff_value,
     )
@@ -2926,9 +4767,9 @@ def _strict_post_q2_final_reprice(
             f"limit_down={lower};bid={bid};ask={ask};limit_up={upper}"
         )
         return result
-    protection_ticks = max(
-        1,
-        int(build_phase_d_config().hard_limits.max_slippage_ticks),
+    protection_ticks = min(
+        5,
+        max(1, int(build_phase_d_config().hard_limits.max_slippage_ticks)),
     )
     unit_values = {
         "limit_down": lower / live_pricetick,
@@ -3429,6 +5270,268 @@ def _event_watermark_blockers(
     return blockers
 
 
+def _physical_batch_event_identity_blockers(
+    batch: dict[str, Any],
+    kind: str,
+    row: Mapping[str, Any],
+) -> tuple[list[str], dict[str, Any] | None]:
+    """Prove an ingress event belongs to one already-persisted batch child."""
+
+    vt_orderid = str(row.get("vt_orderid", "") or "").strip()
+    child = dict(batch.get("owned_children", {})).get(vt_orderid)
+    if not vt_orderid or not isinstance(child, dict):
+        return [
+            "physical_batch_external_event_unbound:"
+            f"kind={kind};vt_orderid={vt_orderid or '<missing>'}"
+        ], None
+    request = child.get("request")
+    if not isinstance(request, OrderRequest):
+        return ["physical_batch_owned_child_request_missing"], child
+    blockers: list[str] = []
+    expected_fields = {
+        "gateway_name": "CTP",
+        "vt_symbol": request.vt_symbol,
+        "direction": str(request.direction.value),
+    }
+    for field_name, expected in expected_fields.items():
+        actual = str(row.get(field_name, "") or "")
+        if actual != expected:
+            blockers.append(
+                "physical_batch_event_identity_mismatch:"
+                f"kind={kind};field={field_name};"
+                f"expected={expected};actual={actual or '<missing>'}"
+            )
+    actual_offset = _physical_offset_identity(row.get("offset"))
+    expected_offset = _physical_offset_identity(request.offset)
+    if actual_offset != expected_offset:
+        blockers.append(
+            "physical_batch_event_identity_mismatch:"
+            f"kind={kind};field=offset;expected={expected_offset};"
+            f"actual={actual_offset or '<missing>'}"
+        )
+    if kind == "order":
+        reference = str(row.get("reference", "") or "")
+        if reference != str(request.reference or ""):
+            blockers.append(
+                "physical_batch_event_identity_mismatch:"
+                f"kind=order;field=reference;"
+                f"expected={request.reference};"
+                f"actual={reference or '<missing>'}"
+            )
+        volume = _strict_ctp_account_number(row.get("volume"))
+        price = _strict_ctp_account_number(row.get("price"))
+        traded = _strict_ctp_account_number(row.get("traded", 0.0))
+        if volume is None or not math.isclose(
+            volume,
+            float(request.volume),
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        ):
+            blockers.append("physical_batch_order_volume_mismatch")
+        if price is None or not math.isclose(
+            price,
+            float(request.price),
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        ):
+            blockers.append("physical_batch_order_price_mismatch")
+        if (
+            traded is None
+            or traded < 0
+            or traded > float(request.volume) + 1e-9
+        ):
+            blockers.append("physical_batch_order_traded_volume_invalid")
+    elif kind == "trade":
+        trade_identity = str(
+            row.get("vt_tradeid")
+            or row.get("tradeid")
+            or ""
+        ).strip()
+        trade_volume = _strict_ctp_account_number(row.get("volume"))
+        trade_price = _strict_ctp_account_number(row.get("price"))
+        if not trade_identity:
+            blockers.append("physical_batch_trade_identity_missing")
+        if trade_volume is None or trade_volume <= 0:
+            blockers.append("physical_batch_trade_volume_invalid")
+        if trade_price is None or trade_price <= 0:
+            blockers.append("physical_batch_trade_price_invalid")
+        if not blockers:
+            identities = child.setdefault("trade_identities", {})
+            prior = identities.get(trade_identity)
+            observed = {
+                "volume": float(trade_volume),
+                "price": float(trade_price),
+            }
+            if prior is not None and prior != observed:
+                blockers.append(
+                    "physical_batch_trade_identity_conflict:"
+                    f"{trade_identity}"
+                )
+            elif prior is None:
+                total = sum(
+                    float(item.get("volume", 0.0))
+                    for item in identities.values()
+                ) + float(trade_volume)
+                if total > float(request.volume) + 1e-9:
+                    blockers.append(
+                        "physical_batch_trade_volume_exceeds_child:"
+                        f"observed={total};child={request.volume}"
+                    )
+                else:
+                    identities[trade_identity] = observed
+    else:
+        blockers.append(f"physical_batch_event_kind_invalid:{kind}")
+    if _to_int(
+        row.get("_stage179_callback_persistence_confirmed"), 0
+    ) != 1:
+        blockers.append(
+            "physical_batch_event_callback_not_durably_persisted:"
+            f"kind={kind};vt_orderid={vt_orderid}"
+        )
+    return list(dict.fromkeys(blockers)), child
+
+
+def _advance_physical_batch_event_baseline(
+    state: dict[str, Any],
+    batch: dict[str, Any],
+    *,
+    ledger_path: Path,
+) -> list[str]:
+    """Attribute every event delta before advancing a physical-batch baseline."""
+
+    rows = state.get("rows", {})
+    ingress_lock = state.get("execution_event_ingress_lock")
+    guard = ingress_lock if hasattr(ingress_lock, "__enter__") else nullcontext()
+    with guard:
+        baseline = dict(batch.get("event_watermark", {}))
+        current = _execution_event_watermark(rows)
+        blockers: list[str] = []
+        order_start = _to_int(batch.get("order_row_index"), -1)
+        trade_start = _to_int(batch.get("trade_row_index"), -1)
+        if order_start < 0 or trade_start < 0:
+            return ["physical_batch_event_row_baseline_missing"]
+        new_rows = {
+            "order": list(rows.get("orders", []))[order_start:],
+            "trade": list(rows.get("trades", []))[trade_start:],
+        }
+        position_before = _to_int(
+            baseline.get("event_position_count"), -1
+        )
+        position_after = _to_int(
+            current.get("event_position_count"), -1
+        )
+        if position_before < 0 or position_after < position_before:
+            blockers.append(
+                "physical_batch_event_watermark_invalid:"
+                "kind=position;"
+                f"before={position_before};after={position_after}"
+            )
+        elif position_after != position_before:
+            # No broker query is allowed while the physical-batch CTP lock is
+            # held, and a native insert does not own a position callback.
+            # Therefore any position ingress in this interval is external
+            # execution evidence and must stop the remaining children.
+            blockers.append(
+                "physical_batch_external_position_event:"
+                f"before={position_before};after={position_after}"
+            )
+        for kind, row_key in (("order", "event_order_count"), ("trade", "event_trade_count")):
+            before = _to_int(baseline.get(row_key), -1)
+            after = _to_int(current.get(row_key), -1)
+            if before < 0 or after < before:
+                blockers.append(
+                    "physical_batch_event_watermark_invalid:"
+                    f"kind={kind};before={before};after={after}"
+                )
+                continue
+            delta = after - before
+            if delta != len(new_rows[kind]):
+                blockers.append(
+                    "physical_batch_event_ingress_row_count_mismatch:"
+                    f"kind={kind};delta={delta};rows={len(new_rows[kind])}"
+                )
+        if blockers:
+            return list(dict.fromkeys(blockers))
+        attributed: list[dict[str, Any]] = []
+        for kind in ("order", "trade"):
+            for row_offset, row in enumerate(new_rows[kind]):
+                identity_blockers, child = (
+                    _physical_batch_event_identity_blockers(
+                        batch, kind, row
+                    )
+                )
+                blockers.extend(identity_blockers)
+                if identity_blockers or child is None:
+                    continue
+                attribution = {
+                    "event_type": "physical_batch_event_attributed",
+                    "target_date": batch.get("target_date", ""),
+                    "intent_id": batch.get("intent_id", ""),
+                    "intent_fingerprint": batch.get("fingerprint", ""),
+                    "physical_batch_id": batch.get("batch_id", ""),
+                    "child_order_id": child.get("child_order_id", ""),
+                    "child_order_index": child.get("child_order_index", -1),
+                    "callback_kind": kind,
+                    "vt_orderid": str(row.get("vt_orderid", "") or ""),
+                    "vt_tradeid": str(row.get("vt_tradeid", "") or ""),
+                    "status": str(row.get("status", "") or ""),
+                    "traded": _to_float(row.get("traded"), 0.0),
+                    "volume": _to_float(row.get("volume"), 0.0),
+                    "price": _to_float(row.get("price"), 0.0),
+                    "ingress_row_offset": row_offset,
+                }
+                attribution["broker_callback_key"] = _stage179_callback_key(
+                    "physical-batch-attribution", attribution
+                )
+                try:
+                    result = append_broker_callback_event_once(
+                        attribution, ledger_path
+                    )
+                except BaseException as exc:
+                    blockers.append(
+                        "physical_batch_event_attribution_append_exception:"
+                        f"{type(exc).__name__}"
+                    )
+                    continue
+                blocker = str(result.get("blocker", "") or "")
+                if blocker:
+                    blockers.append(
+                        "physical_batch_event_attribution_append_failed:"
+                        + blocker
+                    )
+                    continue
+                attributed.append(attribution)
+        blockers = list(dict.fromkeys(blockers))
+        if blockers:
+            return blockers
+        if new_rows["order"] or new_rows["trade"]:
+            try:
+                append_execution_ledger_event(
+                    {
+                        "event_type": "physical_batch_event_baseline_advanced",
+                        "target_date": batch.get("target_date", ""),
+                        "intent_id": batch.get("intent_id", ""),
+                        "intent_fingerprint": batch.get("fingerprint", ""),
+                        "physical_batch_id": batch.get("batch_id", ""),
+                        "event_watermark_before": baseline,
+                        "event_watermark_after": current,
+                        "attributed_event_count": len(attributed),
+                        "reconciliation_required": 0,
+                    },
+                    path=ledger_path,
+                )
+            except BaseException as exc:
+                return [
+                    "physical_batch_event_rebaseline_append_exception:"
+                    f"{type(exc).__name__}"
+                ]
+        batch["event_watermark"] = current
+        batch["order_row_index"] = len(rows.get("orders", []))
+        batch["trade_row_index"] = len(rows.get("trades", []))
+        batch.setdefault("attributed_events", []).extend(attributed)
+        return []
+
+
 def _post_final_gate_pre_api_slot_blockers(
     rows: dict[str, Any],
     final_gate_watermark: dict[str, Any],
@@ -3588,9 +5691,26 @@ def _post_reprice_final_state_gate(
             q2_completed_monotonic=second_snapshot.get(
                 "q2_completed_monotonic"
             ),
-            tick_wait_seconds=0,
+            tick_wait_seconds=(
+                min(
+                    2.0,
+                    max(
+                        0.0,
+                        float(hard_deadline_monotonic) - time.monotonic(),
+                    ),
+                )
+                if hard_deadline_monotonic is not None
+                else 2.0
+            ),
         )
         blockers.extend(_final_reprice_blockers(final_reprice_result))
+        # The bounded post-Q2 tick wait must be followed by an immediate
+        # zero-I/O transport check.  Authorization, kill switch and the same
+        # watermark are revalidated again by pre_api_slot_blockers before the
+        # durable API reservation.
+        blockers.extend(
+            _final_ctp_transport_blockers(td_api, rows, readiness_state)
+        )
 
     final_watermark = _execution_event_watermark(rows)
     final_comparison_watermark = (
@@ -3620,6 +5740,9 @@ def _post_reprice_final_state_gate(
         "second_q2_after_event_watermark": second_q2_after_watermark,
         "after_second_snapshot_event_watermark": after_second_snapshot,
         "final_event_watermark": final_watermark,
+        "query_watermark": dict(
+            second_snapshot.get("query_watermark", {})
+        ),
         "position_event_watermark_changed": int(
             _to_int(baseline_watermark.get("event_position_count"), -1)
             != _to_int(final_watermark.get("event_position_count"), -1)
@@ -4000,8 +6123,33 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
         if _to_float(payload.get("price"), 0.0) <= 0:
             blockers.append(f"stage905_order_payload_price_invalid:{label}")
         try:
-            if _order_type_from_payload(payload.get("type")) != OrderType.LIMIT:
+            actual_type = _order_type_from_payload(payload.get("type"))
+            policy = _artifact_text(payload.get("physical_tif_policy_version"))
+            expected_type: OrderType | None = None
+            expected_policy = ""
+            if (
+                row_offset == "open"
+                and (
+                    (source == "stage901_pending_order" and role == "c9_initial_open")
+                    or (
+                        source == "stage904_c9_intraday_retry_open"
+                        and role == "c9_retry_open_once"
+                    )
+                )
+            ):
+                expected_type = OrderType.FAK
+                expected_policy = "stage179_open_fak_v1"
+            elif (
+                row_offset == "close"
+                and source == "stage904_c9_intraday_close"
+                and role in {"c9_initial_stop_close", "c9_retry_failed_stop_close"}
+            ):
+                expected_type = OrderType.LIMIT
+                expected_policy = "stage179_limit_gfd_v1"
+            if expected_type is None or actual_type != expected_type:
                 blockers.append(f"stage905_order_payload_type_invalid:{label}")
+            if not expected_policy or policy != expected_policy:
+                blockers.append(f"stage905_order_payload_tif_policy_invalid:{label}")
         except ValueError:
             blockers.append(f"stage905_order_payload_type_invalid:{label}")
         if _artifact_text(payload.get("gateway_name")) != "CTP":
@@ -4582,6 +6730,10 @@ def _final_offset_conversion(
             child_blockers.append(f"{prefix}:exchange={child.exchange.value}!={req.exchange.value}")
         if child.direction != req.direction:
             child_blockers.append(f"{prefix}:direction={child.direction.value}!={req.direction.value}")
+        if child.type != req.type:
+            child_blockers.append(
+                f"{prefix}:order_type={child.type.name}!={req.type.name}"
+            )
         if float(child.price) != float(req.price):
             child_blockers.append(f"{prefix}:price={child.price}!={req.price}")
         if float(child.volume) <= 0:
@@ -4606,6 +6758,34 @@ def _final_offset_conversion(
         "child_volumes": [float(child.volume) for child in children],
     }
     return result
+
+
+def _enforce_physical_order_time_in_force(
+    requests: list[OrderRequest],
+) -> list[str]:
+    blockers: list[str] = []
+    for request in requests:
+        if request.offset in {
+            Offset.CLOSE,
+            Offset.CLOSETODAY,
+            Offset.CLOSEYESTERDAY,
+        }:
+            if request.type != OrderType.LIMIT:
+                blockers.append(
+                    "stage179_close_physical_type_not_limit:"
+                    f"{request.offset.name}"
+                )
+            continue
+        if request.offset != Offset.OPEN:
+            continue
+        if request.exchange not in FAK_OPEN_EXCHANGES:
+            blockers.append(
+                f"stage179_open_fak_exchange_not_allowlisted:{request.exchange.value}"
+            )
+            continue
+        if request.type != OrderType.FAK:
+            blockers.append("stage179_open_physical_type_not_fak")
+    return blockers
 
 
 def _converted_child_cycle_blocker(
@@ -4766,8 +6946,197 @@ def _close_retry_terminal_audit_fields(
 
 def _latest_order(orders: list[dict[str, Any]], vt_orderid: str) -> dict[str, Any] | None:
     gateway, _, orderid = vt_orderid.partition(".")
-    matched = [row for row in orders if str(row.get("gateway_name", "")) == gateway and str(row.get("orderid", "")) == orderid]
+    matched = [
+        row
+        for row in orders
+        if str(row.get("vt_orderid", "")) == vt_orderid
+        or (
+            str(row.get("gateway_name", "")) == gateway
+            and str(row.get("orderid", "")) == orderid
+        )
+    ]
     return matched[-1] if matched else None
+
+
+def _match_reqid_bound_ctp_order(
+    orders: list[dict[str, Any]], vt_orderid: str
+) -> tuple[dict[str, Any] | None, str]:
+    """Bind vn.py CTP.<front>_<session>_<ref> to one raw query row."""
+
+    gateway, separator, local_orderid = str(vt_orderid).partition(".")
+    parts = local_orderid.split("_", 2)
+    if gateway != "CTP" or not separator or len(parts) != 3 or not all(parts):
+        return None, "stage179_recovery_vt_orderid_identity_invalid"
+    front_id, session_id, order_ref = parts
+    matches = [
+        row
+        for row in orders
+        if str(row.get("front_id", "")) == front_id
+        and str(row.get("session_id", "")) == session_id
+        and str(row.get("order_ref", "")) == order_ref
+    ]
+    if len(matches) != 1:
+        return None, (
+            "stage179_recovery_order_identity_absent"
+            if not matches
+            else "stage179_recovery_order_identity_ambiguous"
+        )
+    return matches[0], ""
+
+
+def _unique_trade_callback_totals(
+    trades: list[dict[str, Any]], vt_orderid: str
+) -> tuple[dict[str, Any], str]:
+    unique: dict[str, tuple[float, float]] = {}
+    for row in trades:
+        if str(row.get("vt_orderid", "")) != vt_orderid:
+            continue
+        vt_symbol = str(row.get("vt_symbol", "") or "")
+        exchange = str(row.get("exchange", "") or "") or (
+            vt_symbol.rpartition(".")[2] if "." in vt_symbol else ""
+        )
+        tradeid = str(row.get("tradeid", "") or "")
+        vt_tradeid = str(row.get("vt_tradeid", "") or "")
+        if not tradeid and vt_tradeid.startswith("CTP."):
+            tradeid = vt_tradeid[len("CTP.") :].split(".")[-1]
+        identity = f"ctp:{exchange}:{tradeid}" if exchange and tradeid else vt_tradeid
+        if not identity:
+            return {}, f"stage179_trade_identity_missing:{vt_orderid}"
+        payload = (
+            _to_float(row.get("price"), 0.0),
+            max(0.0, _to_float(row.get("volume"), 0.0)),
+        )
+        if identity in unique and unique[identity] != payload:
+            return {}, f"stage179_trade_identity_payload_mismatch:{identity}"
+        unique[identity] = payload
+    return {
+        "count": len(unique),
+        "total_volume": sum(item[1] for item in unique.values()),
+        "priced_volume": sum(item[1] for item in unique.values() if item[0] > 0),
+    }, ""
+
+
+def _exact_durable_priced_volume(
+    ledger_rows: list[dict[str, Any]],
+    *,
+    context: Mapping[str, Any],
+    vt_orderid: str,
+) -> tuple[float, str]:
+    """Sum fsynced fills only inside one exact spool lease/child identity."""
+
+    expected = {
+        "target_date": str(context.get("target_date", "") or ""),
+        "intent_fingerprint": str(
+            context.get("intent_fingerprint")
+            or context.get("fingerprint")
+            or ""
+        ),
+        "spool_lease_owner": str(context.get("spool_lease_owner", "") or ""),
+        "spool_lease_token": str(context.get("spool_lease_token", "") or ""),
+        "child_order_id": str(context.get("child_order_id", "") or ""),
+    }
+    missing = [key for key, value in expected.items() if not value]
+    if missing or not vt_orderid:
+        return 0.0, "stage179_durable_fill_identity_missing:" + ",".join(
+            [*missing, *( ["vt_orderid"] if not vt_orderid else [])]
+        )
+    unique: dict[str, tuple[float, float]] = {}
+    for row in ledger_rows:
+        if row.get("event_type") != "filled_or_part_filled":
+            continue
+        if str(row.get("vt_orderid", "") or "") != vt_orderid:
+            continue
+        if any(
+            str(row.get(key, "") or "") != value
+            for key, value in expected.items()
+        ):
+            continue
+        identity = str(
+            row.get("vt_tradeid")
+            or row.get("trade_fill_key")
+            or row.get("broker_callback_key")
+            or ""
+        )
+        if not identity:
+            return 0.0, "stage179_durable_fill_trade_identity_missing"
+        payload = (
+            _to_float(row.get("price"), 0.0),
+            max(0.0, _to_float(row.get("trade_volume_delta"), 0.0)),
+        )
+        if identity in unique and unique[identity] != payload:
+            return 0.0, (
+                "stage179_durable_fill_trade_identity_conflict:" + identity
+            )
+        unique[identity] = payload
+    return sum(volume for price, volume in unique.values() if price > 0), ""
+
+
+class _RecoverableReconciliationBlockers:
+    """Key transient reconciliation failures by physical order identity."""
+
+    def __init__(self, lock: threading.RLock | None = None) -> None:
+        self._values: dict[str, str] = {}
+        self._lock = lock or threading.RLock()
+
+    @staticmethod
+    def _key(value: Any) -> str:
+        text = str(value or "")
+        marker = text.rfind(":CTP.")
+        return text[marker + 1 :] if marker >= 0 else text
+
+    def append(self, value: Any) -> None:
+        text = str(value or "")
+        if text:
+            with self._lock:
+                self._values[self._key(text)] = text
+
+    def extend(self, values: Any) -> None:
+        for value in values:
+            self.append(value)
+
+    def resolve(self, vt_orderid: str) -> None:
+        with self._lock:
+            self._values.pop(str(vt_orderid), None)
+
+    def __iter__(self):
+        with self._lock:
+            return iter(tuple(self._values.values()))
+
+    def __bool__(self) -> bool:
+        with self._lock:
+            return bool(self._values)
+
+
+class _ThreadSafeIdentitySet:
+    def __init__(self, lock: threading.RLock) -> None:
+        self._values: set[str] = set()
+        self._lock = lock
+
+    def add(self, value: Any) -> None:
+        with self._lock:
+            self._values.add(str(value))
+
+    def discard(self, value: Any) -> None:
+        with self._lock:
+            self._values.discard(str(value))
+
+    def __iter__(self):
+        with self._lock:
+            return iter(tuple(self._values))
+
+    def __bool__(self) -> bool:
+        with self._lock:
+            return bool(self._values)
+
+
+def _resolve_reconciliation_order(state: dict[str, Any], vt_orderid: str) -> None:
+    lock = state.get("reconciliation_lock")
+    manager = lock if hasattr(lock, "__enter__") else nullcontext()
+    with manager:
+        state.get("reconciliation_pending_order_ids", set()).discard(vt_orderid)
+        blockers = state.get("reconciliation_blockers")
+        if isinstance(blockers, _RecoverableReconciliationBlockers):
+            blockers.resolve(vt_orderid)
 
 
 def _order_traded_volume(latest_order: dict[str, Any] | None, fallback: float) -> float:
@@ -5640,7 +8009,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "--command",
         choices=("once", "serve"),
         default="once",
-        help="Run one backward-compatible cold cycle or the Stage179 warm executor.",
+        help=(
+            "Run one backward-compatible dry-run cold cycle or the "
+            "Stage179 warm executor. Production live submission is serve-only."
+        ),
     )
     parser.add_argument("--target-date", default="")
     parser.add_argument(
@@ -5722,6 +8094,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--target-date is required when --command=once")
     if args.command == "serve" and not args.stage179_warm_executor:
         parser.error("--command=serve requires --stage179-warm-executor")
+    if args.command == "once" and args.mode == "live-real":
+        parser.error(
+            "--command=once does not permit --mode=live-real; "
+            "production submission requires --command=serve"
+        )
     if args.mode == "live-real" and not args.stage179_warm_executor:
         parser.error("--mode=live-real requires --stage179-warm-executor")
     return args
@@ -5742,6 +8119,12 @@ def _execution_profile_for_args(
 
 
 def run_once(args: argparse.Namespace) -> dict[str, Any]:
+    if getattr(args, "mode", "dry-run") == "live-real":
+        # Defense in depth for import-level callers that bypass parse_args.
+        # Production has one execution protocol surface: warm serve only.
+        raise RuntimeProfileError(
+            "stage931_once_live_real_disabled_use_command_serve"
+        )
     execution_profile = _execution_profile_for_args(args)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)
@@ -5802,6 +8185,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "logs": [],
         "settlement_callbacks": [],
         "account_query_callbacks": [],
+        "max_order_volume_query_callbacks": [],
         "position_query_callbacks": [],
         "order_query_callbacks": [],
         "order_insert_requests": [],
@@ -6575,6 +8959,71 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                     active_reserved_context = None
                     break
 
+                if ctp_td_api is None:
+                    open_funds_gate = {
+                        "success": False,
+                        "confirmed": False,
+                        "status": "blocked",
+                        "blockers": [
+                            "final_open_funds_ctp_state_missing"
+                        ],
+                        "query_api_called_count": 0,
+                    }
+                else:
+                    open_funds_gate = _final_open_funds_margin_gate(
+                        ctp_td_api,
+                        rows,
+                        final_requests,
+                        max_wait_seconds=max(
+                            0.0,
+                            float(args.final_order_query_wait_seconds),
+                        ),
+                        readiness_state=readiness_state,
+                    )
+                post_reprice_final_gate["open_funds_gate"] = dict(
+                    open_funds_gate
+                )
+                post_reprice_final_gate[
+                    "final_event_watermark_after_open_funds"
+                ] = dict(open_funds_gate.get("event_watermark", {}))
+                append_execution_ledger_event(
+                    {
+                        "event_type": "final_open_funds_margin_gate_before_send",
+                        **active_reserved_context,
+                        "open_funds_gate": open_funds_gate,
+                        "funds_query_api_called_count": _to_int(
+                            open_funds_gate.get("query_api_called_count"), 0
+                        ),
+                    }
+                )
+                open_funds_blockers = list(
+                    open_funds_gate.get("blockers", [])
+                )
+                if open_funds_blockers:
+                    blockers.extend(open_funds_blockers)
+                    adapter_status = "adapter_blocked_final_open_funds_gate"
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "final_pre_send_gate_blocked_after_reserve",
+                            **active_reserved_context,
+                            "final_blockers": open_funds_blockers,
+                            "open_funds_gate": open_funds_gate,
+                        }
+                    )
+                    submitted_rows.append(
+                        {
+                            "intent_id": row.get("intent_id", ""),
+                            "vt_symbol": row.get("vt_symbol", ""),
+                            "mode": "live-real",
+                            "submit_status": "final_open_funds_gate_blocked_before_send",
+                            "intent_fingerprint": fingerprint,
+                            "final_blockers": ";".join(open_funds_blockers),
+                            **reprice_result,
+                        }
+                    )
+                    active_reserved_context = None
+                    break
+
                 append_execution_ledger_event(
                     {
                         "event_type": "final_offset_conversion_before_send",
@@ -6590,9 +9039,20 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                     rows,
                     dict(
                         post_reprice_final_gate.get(
-                            "final_event_watermark", {}
+                            "final_event_watermark_after_open_funds",
+                            post_reprice_final_gate.get(
+                                "final_event_watermark", {}
+                            ),
                         )
                     ),
+                )
+                pre_api_slot_blockers.extend(
+                    _open_funds_gate_consistency_blockers(
+                        ctp_td_api,
+                        rows,
+                        final_requests,
+                        open_funds_gate,
+                    )
                 )
                 if ctp_td_api is None or readiness_state is None:
                     pre_api_slot_blockers.append(
@@ -6946,15 +9406,69 @@ def _stage179_spool_lease_row(lease: Any) -> tuple[dict[str, Any], dict[str, Any
     return row, dict(order_payload)
 
 
+def _append_stage179_warm_pre_send_safe_terminal(
+    *,
+    lease: Any,
+    context: dict[str, Any],
+    blockers: list[str],
+    ledger_path: Path,
+    blocked_phase: str = "pre_api_slot",
+) -> dict[str, Any]:
+    """Close one reserved ledger lease before any broker/API side effect.
+
+    This helper is only valid before ``reserve_execution_api_slots``.  The
+    explicit zero-side-effect fields make that boundary reviewable and bind a
+    close retry terminal to the exact attempt lease allocated by the ledger.
+    """
+
+    base_event: dict[str, Any] = {
+        "vt_symbol": lease.intent.vt_symbol,
+        "adapter": "Stage931Warm",
+        "service_generation": lease.intent.lease_owner,
+        "connection_generation": str(context.get("connection_generation", "")),
+    }
+    close_submit_attempt_no = int(
+        context.get("close_submit_attempt_no", 0) or 0
+    )
+    close_attempt_lease_token = str(
+        context.get("close_attempt_lease_token", "") or ""
+    )
+    if close_submit_attempt_no > 0:
+        base_event["close_submit_attempt_no"] = close_submit_attempt_no
+        base_event["close_attempt_lease_token"] = close_attempt_lease_token
+    return append_pre_api_slot_no_side_effect_terminal(
+        target_date=lease.intent.target_date,
+        intent_id=lease.intent.intent_id,
+        intent_payload_sha256=lease.intent.payload_sha256,
+        intent_kind=lease.intent.intent_kind,
+        intent_fingerprint=str(context.get("fingerprint", "")),
+        reservation_record_checksum=str(
+            context.get("reservation_record_checksum", "")
+        ),
+        spool_lease_owner=lease.intent.lease_owner,
+        spool_lease_token=lease.lease_token,
+        blockers=blockers,
+        blocked_phase=blocked_phase,
+        base_event=base_event,
+        path=ledger_path,
+    )
+
+
 def _prune_stage179_warm_rows(rows: dict[str, Any]) -> None:
     """Bound long-lived diagnostic buffers without weakening ingress counts."""
 
+    if _to_int(rows.get("_physical_batch_active"), 0) == 1:
+        # Row indices are causal evidence while a batch is in flight. Prune
+        # only after the batch lock is released and the final rebase is done.
+        return
     limits = {
         "ticks": 4096,
         "logs": 2048,
         "orders": 2048,
         "trades": 2048,
         "accounts": 128,
+        "account_query_callbacks": 256,
+        "max_order_volume_query_callbacks": 256,
         "position_events_unscoped": 2048,
         "order_insert_requests": 2048,
     }
@@ -6981,6 +9495,8 @@ def _build_stage179_warm_ctp_session(
 
     execution_profile = _execution_profile_for_args(args)
     service_generation = uuid.uuid4().hex
+    reconciliation_lock = threading.RLock()
+    execution_event_ingress_lock = threading.RLock()
     state: dict[str, Any] = {
         "main_engine": None,
         "event_engine": None,
@@ -6998,14 +9514,42 @@ def _build_stage179_warm_ctp_session(
             "logs": [],
             "settlement_callbacks": [],
             "account_query_callbacks": [],
+            "max_order_volume_query_callbacks": [],
             "position_query_callbacks": [],
             "order_query_callbacks": [],
+            "trade_query_callbacks": [],
             "order_insert_requests": [],
+            "order_action_requests": [],
             "position_events_unscoped": [],
+            # The native reqOrderInsert wrapper reads this exact object.  Keep
+            # the same RLock in state for callbacks/tests and in rows for the
+            # instrumentation layer so production cannot silently fall back
+            # to a nullcontext.
+            "_execution_event_ingress_lock": (
+                execution_event_ingress_lock
+            ),
         },
         "intent_contexts": {},
+        "order_contexts": {},
+        "callback_persistence_blockers": [],
+        "reconciliation_lock": reconciliation_lock,
+        "reconciliation_blockers": _RecoverableReconciliationBlockers(
+            reconciliation_lock
+        ),
+        "reconciliation_pending_order_ids": _ThreadSafeIdentitySet(
+            reconciliation_lock
+        ),
+        "execution_event_ingress_lock": execution_event_ingress_lock,
+        "authorization_pin": None,
+        # One re-entrant lock spans the entire physical batch.  The nested
+        # native-insert guard uses the same object so no query can interleave
+        # between SHFE/INE children.
+        "ctp_query_lock": threading.RLock(),
     }
     authorization_path = submit_authorization_path(runtime.output_root)
+    authorization_lock_path = submit_authorization_lock_path(
+        runtime.output_root
+    )
 
     def authorization_blockers(
         *,
@@ -7029,6 +9573,205 @@ def _build_stage179_warm_ctp_session(
             intent_kind=intent_kind,
             child_offset=child_offset,
         )
+
+    def admit_exact_authorized_intent() -> Mapping[str, str]:
+        """Pin one canonical ready-row authorization under the shared flock."""
+
+        state["authorization_pin"] = None
+        before = read_submit_authorization(authorization_path)
+        records = authorized_submit_intent_records(authorization_path)
+        after = read_submit_authorization(authorization_path)
+        before_digest = str(before.get("record_digest", "")).strip().lower()
+        after_digest = str(after.get("record_digest", "")).strip().lower()
+        if (
+            len(records) != 1
+            or len(before_digest) != 64
+            or before_digest != after_digest
+        ):
+            return {}
+        record = dict(records[0])
+        required_record_fields = (
+            "intent_id",
+            "payload_sha256",
+            "intent_kind",
+            "source",
+            "intent_role",
+            "trace_id",
+            "spool_sequence",
+            "state_revision",
+            "state_generation",
+            "position_epoch_id",
+            "root_position_id",
+            "position_cycle_id",
+            "deadline_epoch_ns",
+        )
+        if any(field_name not in record for field_name in required_record_fields):
+            return {}
+        lane = str(after.get("authorization_lane", "")).strip()
+        scope = str(after.get("intent_scope", "")).strip()
+        binding_digests = {
+            field_name: str(after.get(field_name, "")).strip().lower()
+            for field_name in (
+                "spool_snapshot_digest",
+                "cursor_digest",
+                "stage902_evidence_digest",
+                "stage927_evidence_digest",
+            )
+        }
+        if (
+            str(after.get("spool_path", "")).strip()
+            != str(paths.spool_path.expanduser().resolve(strict=False))
+            or any(
+                len(value) != 64
+                or any(character not in "0123456789abcdef" for character in value)
+                for value in binding_digests.values()
+            )
+        ):
+            return {}
+        blockers = validate_submit_authorization(
+            path=authorization_path,
+            target_date=str(after.get("target_date", "")),
+            execution_profile=execution_profile.profile_key,
+            runtime_profile=runtime.profile.value,
+            order_scope=runtime.order_scope.value,
+            service_generation=service_generation,
+            connection_generation=str(state.get("connection_generation", "")),
+            now_epoch_ns=time.time_ns(),
+            intent_id=str(record["intent_id"]),
+            payload_sha256=str(record["payload_sha256"]),
+            intent_kind=str(record["intent_kind"]),
+            child_offset=str(record["intent_kind"]),
+            authorization_lane=lane,
+            intent_scope=scope,
+            source=str(record["source"]),
+            intent_role=str(record["intent_role"]),
+            trace_id=str(record["trace_id"]),
+            spool_sequence=int(record["spool_sequence"]),
+            state_revision=int(record["state_revision"]),
+            state_generation=str(record["state_generation"]),
+            position_epoch_id=str(record["position_epoch_id"]),
+            root_position_id=str(record["root_position_id"]),
+            position_cycle_id=str(record["position_cycle_id"]),
+            deadline_epoch_ns=int(record["deadline_epoch_ns"]),
+            spool_path=paths.spool_path,
+            **binding_digests,
+        )
+        if blockers:
+            return {}
+        state["authorization_pin"] = {
+            "record_digest": after_digest,
+            "record": record,
+            "authorization_lane": lane,
+            "intent_scope": scope,
+            "target_date": str(after.get("target_date", "")),
+            "spool_path": str(after.get("spool_path", "")),
+            **binding_digests,
+        }
+        return {
+            str(record["intent_id"]): str(record["payload_sha256"])
+        }
+
+    def leased_authorization_blockers(
+        lease: Any,
+        *,
+        child_offset: str | None = None,
+    ) -> list[str]:
+        pin = state.get("authorization_pin")
+        if not isinstance(pin, dict):
+            return ["stage179_submit_authorization_pin_missing"]
+        record = pin.get("record")
+        if not isinstance(record, dict):
+            return ["stage179_submit_authorization_pin_record_missing"]
+        intent = lease.intent
+        blockers: list[str] = []
+        ready_revision = int(record.get("state_revision", -1))
+        leased_revision = int(getattr(intent, "state_revision", -1))
+        if leased_revision != ready_revision + 1:
+            blockers.append(
+                "stage179_submit_authorization_leased_state_revision_mismatch"
+            )
+        if str(getattr(intent, "state", "")) != "leased":
+            blockers.append(
+                "stage179_submit_authorization_leased_state_invalid"
+            )
+        if str(getattr(intent, "lease_owner", "")) != service_generation:
+            blockers.append(
+                "stage179_submit_authorization_lease_owner_mismatch"
+            )
+        payload = getattr(intent, "payload", {})
+        if not isinstance(payload, Mapping):
+            return blockers + [
+                "stage179_submit_authorization_lease_payload_invalid"
+            ]
+        blockers.extend(
+            validate_submit_authorization(
+                path=authorization_path,
+                target_date=str(getattr(intent, "target_date", "")),
+                execution_profile=execution_profile.profile_key,
+                runtime_profile=runtime.profile.value,
+                order_scope=runtime.order_scope.value,
+                service_generation=service_generation,
+                connection_generation=str(
+                    state.get("connection_generation", "")
+                ),
+                now_epoch_ns=time.time_ns(),
+                intent_id=str(getattr(intent, "intent_id", "")),
+                payload_sha256=str(
+                    getattr(intent, "payload_sha256", "")
+                ),
+                intent_kind=str(getattr(intent, "intent_kind", "")),
+                child_offset=(
+                    child_offset
+                    if child_offset is not None
+                    else str(getattr(intent, "intent_kind", ""))
+                ),
+                authorization_lane=str(pin.get("authorization_lane", "")),
+                intent_scope=str(pin.get("intent_scope", "")),
+                source=str(getattr(intent, "source", "")),
+                intent_role=str(payload.get("intent_role", "")),
+                trace_id=str(getattr(intent, "trace_id", "")),
+                spool_sequence=int(getattr(intent, "spool_sequence", -1)),
+                state_revision=leased_revision - 1,
+                state_generation=str(
+                    getattr(intent, "state_generation", "")
+                ),
+                position_epoch_id=str(
+                    getattr(intent, "position_epoch_id", "")
+                ),
+                root_position_id=str(payload.get("root_position_id", "")),
+                position_cycle_id=str(
+                    payload.get("position_cycle_id", "")
+                ),
+                deadline_epoch_ns=int(
+                    getattr(intent, "deadline_epoch_ns", -1)
+                ),
+                spool_path=paths.spool_path,
+                spool_snapshot_digest=str(
+                    pin.get("spool_snapshot_digest", "")
+                ),
+                cursor_digest=str(pin.get("cursor_digest", "")),
+                stage902_evidence_digest=str(
+                    pin.get("stage902_evidence_digest", "")
+                ),
+                stage927_evidence_digest=str(
+                    pin.get("stage927_evidence_digest", "")
+                ),
+                allow_expired_if_record_digest=str(
+                    pin.get("record_digest", "")
+                ),
+            )
+        )
+        return list(dict.fromkeys(str(item) for item in blockers if str(item)))
+
+    @contextmanager
+    def authorization_lease_guard() -> Iterator[None]:
+        state["authorization_pin"] = None
+        try:
+            with shared_submit_authorization_lock(authorization_lock_path):
+                yield
+        finally:
+            state["authorization_pin"] = None
+            state["intent_contexts"].clear()
 
     def connect_startup_bundle() -> dict[str, Any]:
         # This import is deliberately inside the post-gate adapter factory.
@@ -7058,9 +9801,11 @@ def _build_stage179_warm_ctp_session(
                 td_api=td_api,
             )
 
-            ingress_lock = Lock()
+            ingress_lock = state["execution_event_ingress_lock"]
+            callback_persistence_lock = Lock()
             ingress_counts = {"order": 0, "trade": 0, "position": 0}
             rows["_execution_event_ingress_counts"] = ingress_counts
+            rows["_execution_event_ingress_lock"] = ingress_lock
 
             original_tick = gateway.on_tick
             original_order = gateway.on_order
@@ -7077,15 +9822,26 @@ def _build_stage179_warm_ctp_session(
 
             def ingress_order(order: Any) -> Any:
                 if not int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0)):
-                    increment("order")
+                    with ingress_lock:
+                        increment("order")
+                        row = _object_to_row(order)
+                        rows["orders"].append(row)
+                        persist_callback("order", row)
                 return original_order(order)
 
             def ingress_trade(trade: Any) -> Any:
-                increment("trade")
+                with ingress_lock:
+                    increment("trade")
+                    row = _object_to_row(trade)
+                    rows["trades"].append(row)
+                    persist_callback("trade", row)
                 return original_trade(trade)
 
             def ingress_position(position: Any) -> Any:
                 increment("position")
+                row = _object_to_row(position)
+                rows["position_events_unscoped"].append(row)
+                persist_callback("position", row)
                 return original_position(position)
 
             gateway.on_tick = ingress_tick
@@ -7093,24 +9849,221 @@ def _build_stage179_warm_ctp_session(
             gateway.on_trade = ingress_trade
             gateway.on_position = ingress_position
 
-            event_engine.register(
-                EVENT_ORDER,
-                lambda event: rows["orders"].append(_object_to_row(event.data)),
-            )
-            event_engine.register(
-                EVENT_TRADE,
-                lambda event: rows["trades"].append(_object_to_row(event.data)),
-            )
+            def callback_context(row: Mapping[str, Any]) -> dict[str, Any] | None:
+                vt_orderid = str(row.get("vt_orderid", "") or "").strip()
+                context = state["order_contexts"].get(vt_orderid)
+                if context is not None:
+                    return context
+                reference = str(row.get("reference", "") or "").strip()
+                prefix = "Stage905PhaseD:"
+                referenced_intent_id = ""
+                if reference.startswith(prefix):
+                    intent_id = reference[len(prefix) :]
+                    referenced_intent_id = intent_id
+                    context = state["intent_contexts"].get(intent_id)
+                    if context is not None and vt_orderid:
+                        state["order_contexts"][vt_orderid] = context
+                    if context is not None:
+                        return context
+                if vt_orderid:
+                    # Reconstruct a prior-process correlation from the
+                    # durable send-return row.  This keeps reconnect/restart
+                    # callbacks bound without trusting volatile memory.
+                    for ledger_row in reversed(
+                        read_execution_ledger(paths.ledger_path)
+                    ):
+                        is_return_binding = bool(
+                            str(ledger_row.get("event_type", ""))
+                            in {
+                                "send_order_returned",
+                                "native_order_identity_persisted_before_insert",
+                            }
+                            and str(ledger_row.get("vt_orderid", "") or "")
+                            == vt_orderid
+                        )
+                        is_reference_binding = bool(
+                            referenced_intent_id
+                            and str(ledger_row.get("event_type", ""))
+                            == "send_order_called"
+                            and str(ledger_row.get("intent_id", ""))
+                            == referenced_intent_id
+                            and (
+                                not row.get("offset")
+                                or _normalize_offset_text(row.get("offset"))
+                                == _normalize_offset_text(ledger_row.get("offset"))
+                            )
+                        )
+                        if not (is_return_binding or is_reference_binding):
+                            continue
+                        try:
+                            request = _order_request_from_payload(
+                                {
+                                    "symbol": str(
+                                        ledger_row.get("symbol", "")
+                                        or str(ledger_row.get("vt_symbol", "")).split(".")[0]
+                                    ),
+                                    "exchange": str(
+                                        ledger_row.get("exchange", "")
+                                        or str(ledger_row.get("vt_symbol", "")).partition(".")[2]
+                                    ),
+                                    "direction": ledger_row.get("direction", ""),
+                                    "type": ledger_row.get("order_type", "limit"),
+                                    "volume": ledger_row.get("volume", 0),
+                                    "price": ledger_row.get("price", 0),
+                                    "offset": ledger_row.get("offset", ""),
+                                    "reference": ledger_row.get("reference", ""),
+                                }
+                            )
+                        except (KeyError, TypeError, ValueError):
+                            return None
+                        context = {
+                            "target_date": ledger_row.get("target_date", ""),
+                            "intent_id": ledger_row.get("intent_id", ""),
+                            "intent_payload_sha256": ledger_row.get(
+                                "intent_payload_sha256", ""
+                            ),
+                            "intent_kind": ledger_row.get("intent_kind", ""),
+                            "fingerprint": ledger_row.get(
+                                "intent_fingerprint", ""
+                            ),
+                            "row": dict(ledger_row),
+                            "request": request,
+                            "service_generation": ledger_row.get(
+                                "service_generation", ""
+                            ),
+                            "connection_generation": ledger_row.get(
+                                "connection_generation", ""
+                            ),
+                            "spool_lease_owner": ledger_row.get(
+                                "spool_lease_owner", ""
+                            ),
+                            "spool_lease_token": ledger_row.get(
+                                "spool_lease_token", ""
+                            ),
+                            "child_order_id": ledger_row.get(
+                                "child_order_id", ""
+                            ),
+                            "child_order_index": ledger_row.get(
+                                "child_order_index", 0
+                            ),
+                            "child_order_count": ledger_row.get(
+                                "child_order_count", 1
+                            ),
+                            "close_submit_attempt_no": ledger_row.get(
+                                "close_submit_attempt_no", 0
+                            ),
+                            "close_attempt_lease_token": ledger_row.get(
+                                "close_attempt_lease_token", ""
+                            ),
+                            "insert_audit": dict(ledger_row),
+                        }
+                        state["order_contexts"][vt_orderid] = context
+                        return context
+                return None
+
+            def persist_callback(kind: str, row: dict[str, Any]) -> bool:
+                with callback_persistence_lock:
+                    row["_stage179_callback_persistence_confirmed"] = 0
+                    context = callback_context(row)
+                    if context is not None:
+                        vt_orderid = str(row.get("vt_orderid", "") or "")
+                        totals, totals_blocker = _unique_trade_callback_totals(
+                            rows["trades"], vt_orderid
+                        )
+                        if totals_blocker:
+                            state["reconciliation_blockers"].append(totals_blocker)
+                            return False
+                        context["trade_callback_count"] = totals["count"]
+                        context["trade_event_total_volume"] = totals["total_volume"]
+                        context["trade_event_priced_volume"] = totals["priced_volume"]
+                    if kind == "position" and context is None:
+                        context = {
+                            "target_date": args.target_date,
+                            "row": {},
+                            "connection_generation": state.get(
+                                "connection_generation", ""
+                            ),
+                        }
+                    try:
+                        results = _persist_stage179_warm_broker_callback(
+                            kind=kind,
+                            callback=row,
+                            context=context,
+                            target_date=args.target_date,
+                            ledger_path=paths.ledger_path,
+                        )
+                    except BaseException as exc:
+                        blocker = (
+                            "stage179_broker_callback_persistence_exception:"
+                            f"{kind}:{type(exc).__name__}"
+                        )
+                        state["callback_persistence_blockers"].append(blocker)
+                        state["transport_generation_invalidated"] = True
+                        return False
+                    persistence_confirmed = True
+                    for result in results:
+                        blocker = str(result.get("blocker", "") or "")
+                        if blocker:
+                            state["callback_persistence_blockers"].append(blocker)
+                            state["transport_generation_invalidated"] = True
+                            persistence_confirmed = False
+                    if kind == "order" and context is not None:
+                        vt_orderid = str(row.get("vt_orderid", "") or "")
+                        for prior in read_execution_ledger(paths.ledger_path):
+                            if (
+                                prior.get("event_type")
+                                == "broker_trade_callback_unbound"
+                                and str(prior.get("vt_orderid", "") or "")
+                                == vt_orderid
+                            ):
+                                _persist_stage179_warm_broker_callback(
+                                    kind="trade",
+                                    callback=prior,
+                                    context=context,
+                                    target_date=args.target_date,
+                                    ledger_path=paths.ledger_path,
+                                )
+                    if kind == "order" and context is not None:
+                        status = row.get("status")
+                        order_traded = _to_float(row.get("traded"), 0.0)
+                        priced_traded = _to_float(
+                            context.get("trade_event_priced_volume"), 0.0
+                        )
+                        terminal = _status_is_terminal(status) or order_traded >= _to_float(
+                            row.get("volume"), float("inf")
+                        )
+                        if terminal and priced_traded + 1e-9 >= order_traded:
+                            _resolve_reconciliation_order(
+                                state, str(row.get("vt_orderid", "") or "")
+                            )
+                        elif terminal:
+                            state["reconciliation_pending_order_ids"].add(
+                                str(row.get("vt_orderid", "") or "")
+                            )
+                    row["_stage179_callback_persistence_confirmed"] = int(
+                        persistence_confirmed
+                    )
+                    return persistence_confirmed
+
+            def on_warm_order(event: Any) -> None:
+                row = _object_to_row(event.data)
+                persist_callback("order", row)
+
+            def on_warm_trade(event: Any) -> None:
+                row = _object_to_row(event.data)
+                persist_callback("trade", row)
+
+            event_engine.register(EVENT_ORDER, on_warm_order)
+            event_engine.register(EVENT_TRADE, on_warm_trade)
             event_engine.register(
                 EVENT_ACCOUNT,
                 lambda event: rows["accounts"].append(_object_to_row(event.data)),
             )
-            event_engine.register(
-                EVENT_POSITION,
-                lambda event: rows["position_events_unscoped"].append(
-                    _object_to_row(event.data)
-                ),
-            )
+            def on_warm_position(event: Any) -> None:
+                row = _object_to_row(event.data)
+                persist_callback("position", row)
+
+            event_engine.register(EVENT_POSITION, on_warm_position)
             event_engine.register(
                 EVENT_TICK,
                 lambda event: rows["ticks"].append(_tick_event_row(event.data)),
@@ -7118,6 +10071,123 @@ def _build_stage179_warm_ctp_session(
             event_engine.register(
                 EVENT_LOG,
                 lambda event: rows["logs"].append(_object_to_row(event.data)),
+            )
+
+            def persist_before_native_order_insert(
+                native_td_api: Any,
+                native_request: dict[str, Any],
+                reqid: int,
+            ) -> None:
+                native_gate = state.get("native_dynamic_gate")
+                if not callable(native_gate):
+                    raise RuntimeError("stage179_native_dynamic_gate_missing")
+                native_gate_blockers = list(
+                    native_gate(
+                        native_td_api,
+                        dict(native_request),
+                        int(reqid),
+                    )
+                )
+                if native_gate_blockers:
+                    raise BrokerSendBatchError(
+                        "stage179_native_dynamic_gate_blocked:"
+                        + ";".join(native_gate_blockers),
+                        send_order_call_count=int(
+                            state.get("native_prior_send_order_call_count", 0) or 0
+                        ),
+                    )
+                native_context = state.get("native_insert_context")
+                if not isinstance(native_context, dict):
+                    raise RuntimeError(
+                        "stage179_native_insert_context_missing"
+                    )
+                front_id = str(getattr(native_td_api, "frontid", "") or "")
+                session_id = str(
+                    getattr(native_td_api, "sessionid", "") or ""
+                )
+                order_ref = str(native_request.get("OrderRef", "") or "")
+                if not front_id or not session_id or not order_ref:
+                    raise RuntimeError(
+                        "stage179_native_order_identity_incomplete"
+                    )
+                vt_orderid = f"CTP.{front_id}_{session_id}_{order_ref}"
+                identity = {
+                    "target_date": native_context.get("target_date", ""),
+                    "intent_id": native_context.get("intent_id", ""),
+                    "intent_fingerprint": native_context.get(
+                        "intent_fingerprint", ""
+                    ),
+                    "spool_lease_owner": native_context.get(
+                        "spool_lease_owner", ""
+                    ),
+                    "spool_lease_token": native_context.get(
+                        "spool_lease_token", ""
+                    ),
+                    "child_order_id": native_context.get(
+                        "child_order_id", ""
+                    ),
+                    "connection_generation": native_context.get(
+                        "connection_generation", ""
+                    ),
+                    "front_id": front_id,
+                    "session_id": session_id,
+                    "order_ref": order_ref,
+                    "vt_orderid": vt_orderid,
+                    "req_order_insert_reqid": int(reqid),
+                }
+                result = append_broker_callback_event_once(
+                    {
+                        **native_context,
+                        **identity,
+                        "event_type": (
+                            "native_order_identity_persisted_before_insert"
+                        ),
+                        "broker_callback_key": _stage179_callback_key(
+                            "native-order-insert-identity", identity
+                        ),
+                        "native_api_called": 0,
+                    },
+                    paths.ledger_path,
+                )
+                blocker = str(result.get("blocker", "") or "")
+                if blocker:
+                    raise RuntimeError(
+                        "stage179_native_identity_durable_append_failed:"
+                        + blocker
+                    )
+                state["native_insert_identity"] = identity
+                child_context = state.get("native_child_context")
+                batch = state.get("active_physical_batch")
+                if not isinstance(child_context, dict) or not isinstance(
+                    batch, dict
+                ):
+                    raise RuntimeError(
+                        "stage179_physical_batch_native_context_missing"
+                    )
+                request = child_context.get("request")
+                if not isinstance(request, OrderRequest):
+                    raise RuntimeError(
+                        "stage179_physical_batch_child_request_missing"
+                    )
+                owned_child = {
+                    "child_order_id": child_context.get(
+                        "child_order_id", ""
+                    ),
+                    "child_order_index": child_context.get(
+                        "child_order_index", -1
+                    ),
+                    "native_reqid": int(reqid),
+                    "vt_orderid": vt_orderid,
+                    "request": request,
+                    "trade_identities": {},
+                }
+                batch.setdefault("owned_children", {})[
+                    vt_orderid
+                ] = owned_child
+                state["order_contexts"][vt_orderid] = child_context
+
+            rows["_before_native_order_insert"] = (
+                persist_before_native_order_insert
             )
             _connect_ctp_without_timer_queries(main_engine, gateway, event_engine)
             ready, flags, blockers, readiness_state = _wait_for_ctp_readiness(
@@ -7129,6 +10199,351 @@ def _build_stage179_warm_ctp_session(
             state["readiness_state"] = readiness_state
             if ready and not blockers:
                 state["transport_generation_invalidated"] = False
+                ledger_rows = read_execution_ledger(paths.ledger_path)
+                recovered: set[str] = set()
+                unresolved: list[tuple[str, dict[str, Any]]] = []
+                for ledger_row in reversed(ledger_rows):
+                    if (
+                        ledger_row.get("target_date") != args.target_date
+                        or ledger_row.get("event_type")
+                        not in {
+                            "send_order_returned",
+                            "native_order_identity_persisted_before_insert",
+                        }
+                    ):
+                        continue
+                    vt_orderid = str(ledger_row.get("vt_orderid", "") or "")
+                    if not vt_orderid or vt_orderid in recovered:
+                        continue
+                    recovered.add(vt_orderid)
+                    terminal = any(
+                        str(item.get("vt_orderid", "") or "") == vt_orderid
+                        and (
+                            item.get("event_type") == "rejected_or_inactive"
+                            or (
+                                item.get("event_type")
+                                == "broker_order_query_terminal_observed"
+                                and _to_int(
+                                    item.get("fill_price_reconciliation_pending"), 1
+                                ) == 0
+                            )
+                            or (
+                                item.get("event_type") == "broker_order_status_observed"
+                                and item.get("broker_order_status_class")
+                                in {"broker_rejected", "broker_cancelled", "broker_all_traded"}
+                            )
+                        )
+                        for item in ledger_rows
+                    )
+                    filled = sum(
+                        max(0.0, _to_float(item.get("trade_volume_delta"), 0.0))
+                        for item in ledger_rows
+                        if str(item.get("vt_orderid", "") or "") == vt_orderid
+                        and item.get("event_type") == "filled_or_part_filled"
+                    )
+                    if terminal or filled >= _to_float(ledger_row.get("volume"), float("inf")):
+                        continue
+                    unresolved.append((vt_orderid, ledger_row))
+                if unresolved:
+                    trade_query: dict[str, Any] = {
+                        "confirmed": False,
+                        "trades": [],
+                        "blockers": ["stage179_recovery_trade_query_skipped"],
+                    }
+                    position_query: dict[str, Any] = {
+                        "confirmed": False,
+                        "positions": [],
+                        "blockers": ["stage179_recovery_position_query_skipped"],
+                    }
+                    with state["ctp_query_lock"]:
+                        recovery_query = _final_order_query_epoch(
+                            td_api,
+                            rows,
+                            max_wait_seconds=max(
+                                0.0, float(args.final_order_query_wait_seconds)
+                            ),
+                        )
+                    if not recovery_query.get("confirmed"):
+                        blockers.extend(
+                            recovery_query.get("blockers", [])
+                            or ["stage179_recovery_order_query_incomplete"]
+                        )
+                    authoritative = list(recovery_query.get("orders", []))
+                    unresolved_ids = {item[0] for item in unresolved}
+                    if recovery_query.get("confirmed"):
+                        sysid_map = getattr(td_api, "sysid_orderid_map", None)
+                        if not isinstance(sysid_map, dict):
+                            blockers.append("stage179_recovery_sysid_orderid_map_missing")
+                        else:
+                            proposed: dict[str, str] = {}
+                            for order in authoritative:
+                                if str(order.get("vt_orderid", "")) not in unresolved_ids:
+                                    continue
+                                sysid = str(order.get("order_sys_id", "") or "")
+                                vt_orderid = str(order.get("vt_orderid", "") or "")
+                                local_orderid = vt_orderid.partition(".")[2]
+                                if not sysid or not local_orderid:
+                                    continue
+                                if sysid in proposed and proposed[sysid] != local_orderid:
+                                    blockers.append(
+                                        f"stage179_recovery_sysid_binding_ambiguous:{sysid}"
+                                    )
+                                    continue
+                                existing = str(sysid_map.get(sysid, "") or "")
+                                if existing and existing != local_orderid:
+                                    blockers.append(
+                                        f"stage179_recovery_sysid_binding_conflict:{sysid}"
+                                    )
+                                    continue
+                                proposed[sysid] = local_orderid
+                            if not blockers:
+                                sysid_map.update(proposed)
+                        with state["ctp_query_lock"]:
+                            trade_query = _final_trade_query_epoch(
+                                td_api,
+                                rows,
+                                max_wait_seconds=max(
+                                    0.0, float(args.final_order_query_wait_seconds)
+                                ),
+                            )
+                            position_query = _final_position_query_epoch(
+                                td_api,
+                                rows,
+                                max_wait_seconds=max(
+                                    0.0, float(args.final_order_query_wait_seconds)
+                                ),
+                            )
+                    if not trade_query.get("confirmed"):
+                        blockers.extend(
+                            trade_query.get("blockers", [])
+                            or ["stage179_recovery_trade_query_incomplete"]
+                        )
+                    if not position_query.get("confirmed"):
+                        blockers.extend(
+                            position_query.get("blockers", [])
+                            or ["stage179_recovery_position_query_incomplete"]
+                        )
+                    if (
+                        recovery_query.get("confirmed")
+                        and trade_query.get("confirmed")
+                        and position_query.get("confirmed")
+                    ):
+                        for trade_row in trade_query.get("trades", []):
+                            matching_orders = [
+                                order
+                                for order in authoritative
+                                if order.get("exchange") == trade_row.get("exchange")
+                                and order.get("order_sys_id") == trade_row.get("order_sys_id")
+                                and order.get("vt_orderid")
+                                and str(order.get("vt_orderid")) in unresolved_ids
+                            ]
+                            if not matching_orders:
+                                # Account-wide reqQryTrade also returns manual
+                                # and other-system activity.  It is diagnostic,
+                                # never a Stage931 recovery blocker.
+                                continue
+                            if len(matching_orders) != 1:
+                                blockers.append(
+                                    "stage179_recovery_trade_order_identity_"
+                                    + "ambiguous"
+                                )
+                                continue
+                            bound_order = matching_orders[0]
+                            vt_orderid = str(bound_order["vt_orderid"])
+                            context = callback_context(bound_order)
+                            if context is None:
+                                blockers.append(
+                                    f"stage179_recovery_trade_context_missing:{vt_orderid}"
+                                )
+                                continue
+                            _persist_stage179_warm_broker_callback(
+                                kind="trade",
+                                callback={
+                                    **trade_row,
+                                    "vt_orderid": vt_orderid,
+                                    "vt_symbol": bound_order.get("vt_symbol", ""),
+                                },
+                                context=context,
+                                target_date=args.target_date,
+                                ledger_path=paths.ledger_path,
+                            )
+                        ledger_rows = read_execution_ledger(paths.ledger_path)
+                    recovery_bundle_confirmed = bool(
+                        recovery_query.get("confirmed")
+                        and trade_query.get("confirmed")
+                        and position_query.get("confirmed")
+                        and not blockers
+                    )
+                    for vt_orderid, _send_row in unresolved:
+                        if not recovery_bundle_confirmed:
+                            state["reconciliation_pending_order_ids"].add(vt_orderid)
+                            continue
+                        current, identity_blocker = _match_reqid_bound_ctp_order(
+                            authoritative, vt_orderid
+                        )
+                        if current is None:
+                            if (
+                                identity_blocker
+                                == "stage179_recovery_order_identity_absent"
+                                and _send_row.get("event_type")
+                                == "native_order_identity_persisted_before_insert"
+                            ):
+                                # The durable identity was written before the
+                                # native call.  A complete same-generation
+                                # Order+Trade+Position bundle with no exact
+                                # identity proves the crash happened before
+                                # CTP accepted the request.  Close this lease
+                                # terminal; never make it sendable again.
+                                no_side_effect_identity = {
+                                    "target_date": args.target_date,
+                                    "intent_id": _send_row.get("intent_id", ""),
+                                    "intent_fingerprint": _send_row.get(
+                                        "intent_fingerprint", ""
+                                    ),
+                                    "spool_lease_owner": _send_row.get(
+                                        "spool_lease_owner", ""
+                                    ),
+                                    "spool_lease_token": _send_row.get(
+                                        "spool_lease_token", ""
+                                    ),
+                                    "vt_orderid": vt_orderid,
+                                    "order_identity": _send_row.get(
+                                        "broker_callback_key", ""
+                                    ),
+                                    "raw_order_status": (
+                                        "absent_from_complete_broker_query"
+                                    ),
+                                    "traded": 0.0,
+                                    "volume": _to_float(
+                                        _send_row.get("volume"), 0.0
+                                    ),
+                                    "durable_priced_volume": 0.0,
+                                    "connection_generation": state.get(
+                                        "connection_generation", ""
+                                    ),
+                                }
+                                append_broker_callback_event_once(
+                                    {
+                                        "event_type": (
+                                            "broker_order_query_terminal_observed"
+                                        ),
+                                        **no_side_effect_identity,
+                                        "broker_callback_key": (
+                                            _stage179_callback_key(
+                                                "order-query-terminal",
+                                                no_side_effect_identity,
+                                            )
+                                        ),
+                                        "fill_price_reconciliation_pending": 0,
+                                        "native_side_effect_absent_proven": 1,
+                                    },
+                                    paths.ledger_path,
+                                )
+                                _resolve_reconciliation_order(
+                                    state, vt_orderid
+                                )
+                                continue
+                            state["reconciliation_pending_order_ids"].add(vt_orderid)
+                            blockers.append(
+                                f"{identity_blocker}:{vt_orderid}"
+                            )
+                            continue
+                        if current.get("status_class") == "terminal":
+                            durable_priced, durable_fill_blocker = (
+                                _exact_durable_priced_volume(
+                                    ledger_rows,
+                                    context=_send_row,
+                                    vt_orderid=vt_orderid,
+                                )
+                            )
+                            if durable_fill_blocker:
+                                state["reconciliation_pending_order_ids"].add(
+                                    vt_orderid
+                                )
+                                blockers.append(durable_fill_blocker)
+                                continue
+                            queried_traded = _to_float(current.get("traded"), 0.0)
+                            query_terminal_identity = {
+                                **_intent_ledger_metadata(
+                                    dict(_send_row.get("row", {}))
+                                    if isinstance(_send_row.get("row"), dict)
+                                    else _send_row
+                                ),
+                                "target_date": args.target_date,
+                                "intent_id": _send_row.get("intent_id", ""),
+                                "intent_fingerprint": _send_row.get(
+                                    "intent_fingerprint", ""
+                                ),
+                                "spool_lease_owner": _send_row.get(
+                                    "spool_lease_owner", ""
+                                ),
+                                "spool_lease_token": _send_row.get(
+                                    "spool_lease_token", ""
+                                ),
+                                "child_order_id": _send_row.get(
+                                    "child_order_id", ""
+                                ),
+                                "child_order_index": _to_int(
+                                    _send_row.get("child_order_index"), 0
+                                ),
+                                "child_order_count": _to_int(
+                                    _send_row.get("child_order_count"), 1
+                                ),
+                                "vt_symbol": _send_row.get("vt_symbol", ""),
+                                "direction": _send_row.get("direction", ""),
+                                "offset": _send_row.get("offset", ""),
+                                "close_submit_attempt_no": _to_int(
+                                    _send_row.get("close_submit_attempt_no"), 0
+                                ),
+                                "vt_orderid": vt_orderid,
+                                "order_identity": current.get("order_identity", ""),
+                                "raw_order_status": current.get("raw_order_status", ""),
+                                "traded": _to_float(current.get("traded"), 0.0),
+                                "volume": _to_float(current.get("volume"), 0.0),
+                                "durable_priced_volume": durable_priced,
+                            }
+                            append_broker_callback_event_once(
+                                {
+                                    "event_type": "broker_order_query_terminal_observed",
+                                    **query_terminal_identity,
+                                    "broker_callback_key": _stage179_callback_key(
+                                        "order-query-terminal",
+                                        query_terminal_identity,
+                                    ),
+                                    "fill_price_reconciliation_pending": int(
+                                        queried_traded > durable_priced + 1e-9
+                                    ),
+                                },
+                                paths.ledger_path,
+                            )
+                            if queried_traded > durable_priced + 1e-9:
+                                state["reconciliation_pending_order_ids"].add(vt_orderid)
+                                blockers.append(
+                                    f"stage179_recovery_terminal_trade_detail_missing:{vt_orderid}"
+                                )
+                            else:
+                                _resolve_reconciliation_order(
+                                    state, vt_orderid
+                                )
+                            continue
+                        if current.get("status_class") != "active":
+                            state["reconciliation_pending_order_ids"].add(vt_orderid)
+                            blockers.append(
+                                f"stage179_recovery_order_status_unknown:{vt_orderid}"
+                            )
+                            continue
+                        current = {**current, "vt_orderid": vt_orderid}
+                        context = callback_context(current)
+                        if context is None:
+                            state["reconciliation_pending_order_ids"].add(vt_orderid)
+                            blockers.append(
+                                f"stage179_recovery_order_context_missing:{vt_orderid}"
+                            )
+                            continue
+                        context["recovering_outstanding_order"] = 1
+                        context["recovery_order"] = current
+                        schedule_residual_cancel(vt_orderid, context)
+                ready = bool(ready and not blockers)
             return {
                 "ready": bool(ready and not blockers),
                 "flags": flags,
@@ -7170,12 +10585,7 @@ def _build_stage179_warm_ctp_session(
             row, order_payload = _stage179_spool_lease_row(lease)
         except ValueError:
             return {"blockers": ["stage179_spool_order_request_missing"]}
-        cycle_authorization_blockers = authorization_blockers(
-            target_date=lease.intent.target_date,
-            intent_id=lease.intent.intent_id,
-            payload_sha256=lease.intent.payload_sha256,
-            intent_kind=lease.intent.intent_kind,
-        )
+        cycle_authorization_blockers = leased_authorization_blockers(lease)
         if cycle_authorization_blockers:
             return {"blockers": cycle_authorization_blockers}
         if main_engine is None or td_api is None or readiness_state is None:
@@ -7205,6 +10615,8 @@ def _build_stage179_warm_ctp_session(
             path=paths.ledger_path,
             base_event={
                 "intent_id": lease.intent.intent_id,
+                "intent_payload_sha256": lease.intent.payload_sha256,
+                "intent_kind": lease.intent.intent_kind,
                 "vt_symbol": lease.intent.vt_symbol,
                 "mode": "live-real",
                 "adapter": "Stage931Warm",
@@ -7289,47 +10701,162 @@ def _build_stage179_warm_ctp_session(
             )
             blockers.extend(final_gate.get("blockers", []))
         conversion: dict[str, Any] = {}
+        physical_requests: list[OrderRequest] = []
+        open_funds_gate: dict[str, Any] = {}
         if not blockers:
             conversion = _final_offset_conversion(main_engine, rows, req)
             blockers.extend(conversion.get("blockers", []))
-            requests = list(conversion.get("requests", []))
-            if not requests:
+            physical_requests = list(conversion.get("requests", []))
+            blockers.extend(
+                _enforce_physical_order_time_in_force(physical_requests)
+            )
+            if not physical_requests:
                 blockers.append("stage179_warm_executor_no_physical_order")
+        if not blockers:
+            has_open = any(
+                request.offset == Offset.OPEN
+                for request in physical_requests
+            )
+            if has_open:
+                remaining = max(
+                    0.0, hard_deadline_monotonic - time.monotonic()
+                )
+                acquired = state["ctp_query_lock"].acquire(
+                    timeout=remaining
+                )
+                if not acquired:
+                    open_funds_gate = {
+                        "success": False,
+                        "confirmed": False,
+                        "status": "blocked",
+                        "blockers": [
+                            "stage179_execution_deadline_exceeded:"
+                            "final_open_funds_query_lock"
+                        ],
+                        "query_api_called_count": 0,
+                    }
+                else:
+                    try:
+                        remaining = max(
+                            0.0,
+                            hard_deadline_monotonic - time.monotonic(),
+                        )
+                        open_funds_gate = _final_open_funds_margin_gate(
+                            td_api,
+                            rows,
+                            physical_requests,
+                            max_wait_seconds=min(
+                                remaining,
+                                max(
+                                    0.0,
+                                    float(
+                                        args.final_order_query_wait_seconds
+                                    ),
+                                ),
+                            ),
+                            readiness_state=readiness_state,
+                            hard_deadline_monotonic=(
+                                hard_deadline_monotonic
+                            ),
+                        )
+                    finally:
+                        state["ctp_query_lock"].release()
+            else:
+                open_funds_gate = _final_open_funds_margin_gate(
+                    td_api,
+                    rows,
+                    physical_requests,
+                    max_wait_seconds=0.0,
+                    readiness_state=readiness_state,
+                    hard_deadline_monotonic=hard_deadline_monotonic,
+                )
+            blockers.extend(open_funds_gate.get("blockers", []))
+            if open_funds_gate.get("confirmed"):
+                final_gate["open_funds_gate"] = dict(open_funds_gate)
+                final_gate["final_event_watermark_after_open_funds"] = dict(
+                    open_funds_gate.get("event_watermark", {})
+                )
+            blockers.extend(
+                _final_ctp_transport_blockers(
+                    td_api, rows, readiness_state
+                )
+            )
+        physical_batch_query_watermark = dict(
+            final_gate.get("query_watermark", {})
+        )
+        if any(
+            request.offset == Offset.OPEN
+            for request in physical_requests
+        ):
+            funds_query_watermark = dict(
+                open_funds_gate.get("query_watermark", {})
+            )
+            physical_batch_query_watermark = {
+                "broker_id": str(
+                    funds_query_watermark.get("broker_id", "") or ""
+                ),
+                "investor_id": str(
+                    funds_query_watermark.get("investor_id", "") or ""
+                ),
+                "td_reqid_before_batch": _to_int(
+                    funds_query_watermark.get("td_reqid_after"), -1
+                ),
+                "ctp_last_query_monotonic": (
+                    funds_query_watermark.get(
+                        "ctp_last_query_monotonic"
+                    )
+                ),
+            }
+        if not blockers:
+            blockers.extend(
+                _physical_batch_query_watermark_blockers(
+                    td_api,
+                    rows,
+                    physical_batch_query_watermark,
+                    owned_native_insert_count=0,
+                )
+            )
         blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
         state["intent_contexts"][lease.intent.intent_id] = {
+            "target_date": lease.intent.target_date,
+            "intent_id": lease.intent.intent_id,
             "row": row,
             "request": (
-                list(conversion.get("requests", []))[0] if not blockers else req
+                physical_requests[0] if not blockers else req
             ),
             "requests": (
-                list(conversion.get("requests", [])) if not blockers else []
+                physical_requests if not blockers else []
             ),
             "fingerprint": str(reserve.get("intent_fingerprint", "")),
+            "reservation_record_checksum": str(
+                dict(reserve.get("latest_ledger_event", {})).get(
+                    "record_checksum", ""
+                )
+            ),
+            "intent_payload_sha256": lease.intent.payload_sha256,
+            "intent_kind": lease.intent.intent_kind,
+            "service_generation": lease.intent.lease_owner,
+            "spool_lease_owner": lease.intent.lease_owner,
+            "spool_lease_token": lease.lease_token,
+            "connection_generation": str(state.get("connection_generation", "")),
             "close_submit_attempt_no": int(
                 reserve.get("close_submit_attempt_no", 0) or 0
             ),
             "close_attempt_lease_token": str(
                 reserve.get("close_attempt_lease_token", "") or ""
             ),
-            "final_watermark": dict(final_gate.get("final_event_watermark", {})),
+            "final_watermark": dict(
+                open_funds_gate.get(
+                    "event_watermark",
+                    final_gate.get("final_event_watermark", {}),
+                )
+            ),
+            "open_funds_gate": dict(open_funds_gate),
+            "physical_batch_query_watermark": dict(
+                physical_batch_query_watermark
+            ),
+            "hard_deadline_monotonic": float(hard_deadline_monotonic),
         }
-        if blockers:
-            append_execution_ledger_event(
-                {
-                    "event_type": "final_pre_send_gate_blocked_after_reserve",
-                    "target_date": lease.intent.target_date,
-                    "intent_id": lease.intent.intent_id,
-                    "intent_fingerprint": str(
-                        reserve.get("intent_fingerprint", "")
-                    ),
-                    "vt_symbol": lease.intent.vt_symbol,
-                    "adapter": "Stage931Warm",
-                    "final_blockers": blockers,
-                    "spool_lease_owner": lease.intent.lease_owner,
-                    "spool_lease_token": lease.lease_token,
-                },
-                path=paths.ledger_path,
-            )
         return {
             "blockers": blockers,
             "ledger_fingerprint": str(reserve.get("intent_fingerprint", "")),
@@ -7337,16 +10864,31 @@ def _build_stage179_warm_ctp_session(
 
     def pre_api_slot_blockers(lease: Any) -> list[str]:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
-        blockers = authorization_blockers(
-            target_date=lease.intent.target_date,
-            intent_id=lease.intent.intent_id,
-            payload_sha256=lease.intent.payload_sha256,
-            intent_kind=lease.intent.intent_kind,
-        )
+        blockers = leased_authorization_blockers(lease)
         blockers.extend(_post_final_gate_pre_api_slot_blockers(
             state["rows"],
             dict(context.get("final_watermark", {})),
         ))
+        blockers.extend(
+            _open_funds_gate_consistency_blockers(
+                state.get("td_api"),
+                state["rows"],
+                list(context.get("requests", [])),
+                dict(context.get("open_funds_gate", {})),
+            )
+        )
+        blockers.extend(
+            _physical_batch_query_watermark_blockers(
+                state.get("td_api"),
+                state["rows"],
+                dict(
+                    context.get(
+                        "physical_batch_query_watermark", {}
+                    )
+                ),
+                owned_native_insert_count=0,
+            )
+        )
         for blocker in _kill_switch_blockers():
             blockers.append(f"{blocker}_before_api_slot")
         if not any(
@@ -7380,20 +10922,55 @@ def _build_stage179_warm_ctp_session(
                         max_age_seconds=args.max_stage904_age_seconds,
                     )
                 )
-        if blockers:
-            append_execution_ledger_event(
-                {
-                    "event_type": "post_final_gate_pre_api_slot_blocked",
-                    "target_date": lease.intent.target_date,
-                    "intent_id": lease.intent.intent_id,
-                    "intent_fingerprint": context.get("fingerprint", ""),
-                    "vt_symbol": lease.intent.vt_symbol,
-                    "adapter": "Stage931Warm",
-                    "blockers": blockers,
-                },
-                path=paths.ledger_path,
-            )
         return blockers
+
+    def pre_api_slot_safe_terminal(
+        lease: Any,
+        blockers: list[str],
+        blocked_phase: str,
+    ) -> dict[str, Any]:
+        context = state["intent_contexts"].get(lease.intent.intent_id, {})
+        return _append_stage179_warm_pre_send_safe_terminal(
+            lease=lease,
+            context=context,
+            blockers=blockers,
+            ledger_path=paths.ledger_path,
+            blocked_phase=blocked_phase,
+        )
+
+    def post_api_slot_safe_terminal(
+        lease: Any,
+        api_slot_batch_id: str,
+        blockers: list[str],
+        blocked_phase: str,
+    ) -> dict[str, Any]:
+        context = state["intent_contexts"].get(lease.intent.intent_id, {})
+        identity = {
+            "target_date": lease.intent.target_date,
+            "intent_id": lease.intent.intent_id,
+            "intent_payload_sha256": lease.intent.payload_sha256,
+            "intent_kind": lease.intent.intent_kind,
+            "intent_fingerprint": context.get("fingerprint", ""),
+            "reservation_record_checksum": context.get(
+                "reservation_record_checksum", ""
+            ),
+            "spool_lease_owner": lease.intent.lease_owner,
+            "spool_lease_token": lease.lease_token,
+            "close_submit_attempt_no": int(
+                context.get("close_submit_attempt_no", 0) or 0
+            ),
+            "close_attempt_lease_token": str(
+                context.get("close_attempt_lease_token", "") or ""
+            ),
+            **_intent_ledger_metadata(dict(context.get("row", {}))),
+        }
+        return append_post_api_slot_no_native_safe_terminal(
+            identity=identity,
+            api_slot_batch_id=api_slot_batch_id,
+            blockers=blockers,
+            blocked_phase=blocked_phase,
+            path=paths.ledger_path,
+        )
 
     def reserve_api_slot(lease: Any) -> str:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
@@ -7403,8 +10980,14 @@ def _build_stage179_warm_ctp_session(
         base_events: list[dict[str, Any]] = []
         for index, request in enumerate(requests):
             base_event = {
+                "target_date": lease.intent.target_date,
                 "intent_id": lease.intent.intent_id,
+                "intent_payload_sha256": lease.intent.payload_sha256,
+                "intent_kind": lease.intent.intent_kind,
                 "intent_fingerprint": context.get("fingerprint", ""),
+                "reservation_record_checksum": context.get(
+                    "reservation_record_checksum", ""
+                ),
                 "parent_intent_fingerprint": context.get("fingerprint", ""),
                 "vt_symbol": lease.intent.vt_symbol,
                 "adapter": "Stage931Warm",
@@ -7455,21 +11038,943 @@ def _build_stage179_warm_ctp_session(
             return ""
         return str(result.get("api_slot_batch_id", ""))
 
-    def send_order(lease: Any) -> BrokerSendBatchResult:
+    def schedule_residual_cancel(
+        vt_orderid: str,
+        child_context: dict[str, Any],
+    ) -> None:
+        """Cancel a GFD residual once the bounded fill window closes.
+
+        EVENT_TRADE remains authoritative and is persisted before enqueue, so
+        trades racing with or arriving after this cancel are still ledgered.
+        """
+
+        if child_context.get("cancel_worker_started"):
+            return
+        child_context["cancel_worker_started"] = 1
+        cancel_worker_token = uuid.uuid4().hex
+        child_context["cancel_worker_token"] = cancel_worker_token
+        state["reconciliation_pending_order_ids"].add(vt_orderid)
+        scheduled_engine = state.get("main_engine")
+        scheduled_connection_generation = str(
+            state.get("connection_generation", "")
+        )
+
+        def worker_once() -> None:
+            def schedule_bounded_reconciliation_retry() -> bool:
+                retries = int(
+                    child_context.get("reconciliation_worker_retry_count", 0) or 0
+                )
+                if retries >= 1:
+                    if not child_context.get(
+                        "reconciliation_worker_retry_exhausted_recorded"
+                    ):
+                        state["transport_generation_invalidated"] = True
+                        state["reconciliation_blockers"].append(
+                            "stage179_cancel_reconciliation_retry_exhausted:"
+                            f"{vt_orderid}"
+                        )
+                        revoke_readiness(
+                            paths.readiness_path,
+                            service_generation=service_generation,
+                            reason=(
+                                "cancel_reconciliation_retry_exhausted:"
+                                f"{vt_orderid}"
+                            ),
+                        )
+                        append_execution_ledger_event(
+                            {
+                                "event_type": (
+                                    "cancel_reconciliation_retry_exhausted"
+                                ),
+                                "target_date": child_context.get(
+                                    "target_date", ""
+                                ),
+                                "intent_id": child_context.get(
+                                    "intent_id", ""
+                                ),
+                                "intent_fingerprint": child_context.get(
+                                    "fingerprint", ""
+                                ),
+                                "child_order_id": child_context.get(
+                                    "child_order_id", ""
+                                ),
+                                "vt_orderid": vt_orderid,
+                                "connection_generation": (
+                                    scheduled_connection_generation
+                                ),
+                                "reconciliation_worker_retry_count": retries,
+                                "reconciliation_required": 1,
+                            },
+                            path=paths.ledger_path,
+                        )
+                        child_context[
+                            "reconciliation_worker_retry_exhausted_recorded"
+                        ] = 1
+                    return False
+                child_context["reconciliation_worker_retry_count"] = retries + 1
+                child_context["cancel_worker_started"] = 0
+                schedule_residual_cancel(vt_orderid, child_context)
+                return True
+
+            deadline = time.monotonic() + max(
+                0.0,
+                0.0
+                if child_context.get("recovering_outstanding_order")
+                else float(getattr(args, "fill_wait_seconds", 0.0)),
+            )
+            while time.monotonic() < deadline:
+                latest = _latest_order(state["rows"]["orders"], vt_orderid)
+                if latest and _status_is_terminal(latest.get("status")):
+                    break
+                time.sleep(min(0.05, max(0.0, deadline - time.monotonic())))
+            request = child_context.get("request")
+            main_engine = state.get("main_engine")
+            if (
+                main_engine is not scheduled_engine
+                or (
+                    scheduled_connection_generation
+                    and str(state.get("connection_generation", ""))
+                    != scheduled_connection_generation
+                )
+            ):
+                return
+            if not isinstance(request, OrderRequest) or main_engine is None:
+                state["reconciliation_blockers"].append(
+                    "stage179_residual_cancel_context_missing"
+                )
+                return
+            latest = _latest_order(state["rows"]["orders"], vt_orderid) or child_context.get(
+                "recovery_order"
+            )
+            trade_totals, trade_totals_blocker = _unique_trade_callback_totals(
+                state["rows"]["trades"], vt_orderid
+            )
+            if trade_totals_blocker:
+                state["reconciliation_blockers"].append(trade_totals_blocker)
+                return
+            trade_volume = float(trade_totals["total_volume"])
+            effective_traded = max(
+                trade_volume,
+                _to_float((latest or {}).get("traded"), 0.0),
+            )
+            residual = max(0.0, float(request.volume) - effective_traded)
+            latest_terminal = bool(
+                latest and _status_is_terminal(latest.get("status"))
+            )
+            durable_callback_priced, durable_fill_blocker = (
+                _exact_durable_priced_volume(
+                    read_execution_ledger(paths.ledger_path),
+                    context=child_context,
+                    vt_orderid=vt_orderid,
+                )
+            )
+            if (
+                latest_terminal
+                and not durable_fill_blocker
+                and not state.get("callback_persistence_blockers")
+                and not state.get("transport_generation_invalidated")
+                and durable_callback_priced + 1e-9 >= effective_traded
+            ):
+                _resolve_reconciliation_order(state, vt_orderid)
+                return
+            if (
+                request.type == OrderType.FAK
+                or latest_terminal
+                or residual <= 1e-9
+            ):
+                append_execution_ledger_event(
+                    {
+                        "event_type": "fak_terminal_reconciliation_required",
+                        "target_date": child_context.get("target_date", ""),
+                        "intent_id": child_context.get("intent_id", ""),
+                        "intent_fingerprint": child_context.get("fingerprint", ""),
+                        "child_order_id": child_context.get("child_order_id", ""),
+                        "vt_symbol": request.vt_symbol,
+                        "vt_orderid": vt_orderid,
+                        "residual_volume": residual,
+                        "reconciliation_required": 1,
+                    },
+                    path=paths.ledger_path,
+                )
+                # FAK has no cancel duty, but callback loss must not leave an
+                # order permanently unknown.  Perform one bounded, serialized
+                # Order -> Trade -> Position query bundle in this exact
+                # connection generation and fold only the owned order/trades.
+                with state["ctp_query_lock"]:
+                    order_query = _final_order_query_epoch(
+                        state["td_api"],
+                        state["rows"],
+                        max_wait_seconds=max(
+                            0.0, float(args.final_order_query_wait_seconds)
+                        ),
+                    )
+                    trade_query = _final_trade_query_epoch(
+                        state["td_api"],
+                        state["rows"],
+                        max_wait_seconds=max(
+                            0.0, float(args.final_order_query_wait_seconds)
+                        ),
+                    )
+                    position_query = _final_position_query_epoch(
+                        state["td_api"],
+                        state["rows"],
+                        max_wait_seconds=max(
+                            0.0, float(args.final_order_query_wait_seconds)
+                        ),
+                    )
+                generation_still_current = bool(
+                    state.get("main_engine") is scheduled_engine
+                    and (
+                        not scheduled_connection_generation
+                        or str(state.get("connection_generation", ""))
+                        == scheduled_connection_generation
+                    )
+                    and not state.get("transport_generation_invalidated")
+                )
+                query_blockers = [
+                    *list(order_query.get("blockers", [])),
+                    *list(trade_query.get("blockers", [])),
+                    *list(position_query.get("blockers", [])),
+                ]
+                if not generation_still_current:
+                    query_blockers.append(
+                        "stage179_fak_reconciliation_generation_changed"
+                    )
+                if not (
+                    order_query.get("confirmed")
+                    and trade_query.get("confirmed")
+                    and position_query.get("confirmed")
+                    and generation_still_current
+                ):
+                    for blocker in (
+                        query_blockers
+                        or ["stage179_fak_reconciliation_query_bundle_incomplete"]
+                    ):
+                        state["reconciliation_blockers"].append(
+                            f"{blocker}:{vt_orderid}"
+                        )
+                    schedule_bounded_reconciliation_retry()
+                    return
+                queried_order, identity_blocker = _match_reqid_bound_ctp_order(
+                    list(order_query.get("orders", [])), vt_orderid
+                )
+                if queried_order is None:
+                    state["reconciliation_blockers"].append(
+                        f"stage179_fak_reconciliation_order_missing:{identity_blocker}:"
+                        f"{vt_orderid}"
+                    )
+                    return
+                for trade_row in trade_query.get("trades", []):
+                    if (
+                        trade_row.get("exchange")
+                        == queried_order.get("exchange")
+                        and trade_row.get("order_sys_id")
+                        == queried_order.get("order_sys_id")
+                    ):
+                        _persist_stage179_warm_broker_callback(
+                            kind="trade",
+                            callback={
+                                **trade_row,
+                                "vt_orderid": vt_orderid,
+                                "vt_symbol": queried_order.get("vt_symbol", ""),
+                            },
+                            context=child_context,
+                            target_date=str(
+                                child_context.get("target_date", "")
+                            ),
+                            ledger_path=paths.ledger_path,
+                        )
+                durable_priced, durable_fill_blocker = (
+                    _exact_durable_priced_volume(
+                        read_execution_ledger(paths.ledger_path),
+                        context=child_context,
+                        vt_orderid=vt_orderid,
+                    )
+                )
+                if durable_fill_blocker:
+                    state["reconciliation_blockers"].append(
+                        f"{durable_fill_blocker}:{vt_orderid}"
+                    )
+                    return
+                queried_traded = _to_float(queried_order.get("traded"), 0.0)
+                query_terminal_identity = {
+                    **_intent_ledger_metadata(
+                        dict(child_context.get("row", {}))
+                    ),
+                    "target_date": child_context.get("target_date", ""),
+                    "intent_id": child_context.get("intent_id", ""),
+                    "intent_fingerprint": child_context.get("fingerprint", ""),
+                    "spool_lease_owner": child_context.get(
+                        "spool_lease_owner", ""
+                    ),
+                    "spool_lease_token": child_context.get(
+                        "spool_lease_token", ""
+                    ),
+                    "vt_orderid": vt_orderid,
+                    "child_order_index": int(
+                        child_context.get("child_order_index", 0) or 0
+                    ),
+                    "child_order_count": int(
+                        child_context.get("child_order_count", 1) or 1
+                    ),
+                    "vt_symbol": request.vt_symbol,
+                    "direction": request.direction.value,
+                    "offset": request.offset.value,
+                    "close_submit_attempt_no": int(
+                        child_context.get("close_submit_attempt_no", 0) or 0
+                    ),
+                    "order_identity": queried_order.get("order_identity", ""),
+                    "raw_order_status": queried_order.get(
+                        "raw_order_status", ""
+                    ),
+                    "traded": queried_traded,
+                    "volume": _to_float(queried_order.get("volume"), 0.0),
+                    "durable_priced_volume": durable_priced,
+                    "connection_generation": scheduled_connection_generation,
+                }
+                fill_pending = bool(
+                    queried_traded > durable_priced + 1e-9
+                )
+                if queried_order.get("status_class") == "terminal":
+                    append_broker_callback_event_once(
+                        {
+                            "event_type": "broker_order_query_terminal_observed",
+                            **query_terminal_identity,
+                            "broker_callback_key": _stage179_callback_key(
+                                "order-query-terminal",
+                                query_terminal_identity,
+                            ),
+                            "fill_price_reconciliation_pending": int(
+                                fill_pending
+                            ),
+                        },
+                        paths.ledger_path,
+                    )
+                    if not fill_pending:
+                        _resolve_reconciliation_order(state, vt_orderid)
+                        return
+                state["reconciliation_blockers"].append(
+                    f"stage179_fak_terminal_or_priced_fill_unresolved:{vt_orderid}"
+                )
+                return
+            cancel_duty_identity = {
+                "target_date": child_context.get("target_date", ""),
+                "vt_orderid": vt_orderid,
+                "child_order_id": child_context.get("child_order_id", ""),
+                "intent_fingerprint": child_context.get("fingerprint", ""),
+                "spool_lease_owner": child_context.get("spool_lease_owner", ""),
+                "spool_lease_token": child_context.get("spool_lease_token", ""),
+                "close_submit_attempt_no": int(
+                    child_context.get("close_submit_attempt_no", 0) or 0
+                ),
+            }
+            cancel_duty_key = _stage179_callback_key(
+                "cancel-duty", cancel_duty_identity
+            )
+            cancel_duty_event_identity = {
+                **cancel_duty_identity,
+                "connection_generation": scheduled_connection_generation,
+                "cancel_duty_generation": 1,
+            }
+            cancel_duty_owner = (
+                f"{os.getpid()}:{scheduled_connection_generation}:"
+                f"{child_context.get('service_generation', '')}"
+            )
+            duty = advance_cancel_duty_state(
+                target_date=str(child_context.get("target_date", "")),
+                duty_key=cancel_duty_key,
+                expected_states=("",),
+                next_state="reserved",
+                owner_id=cancel_duty_owner,
+                lease_seconds=5,
+                event=cancel_duty_event_identity,
+                path=paths.ledger_path,
+            )
+            duty_row = dict(duty.get("ledger_event", {}))
+            duty_state = str(duty_row.get("cancel_duty_state", "") or "")
+            if not duty.get("advanced") and duty_state == "query_reconciled":
+                _resolve_reconciliation_order(state, vt_orderid)
+                return
+            if not duty.get("advanced") and duty_state == "reserved":
+                # A different process may take over only after its lease
+                # expires and a fresh same-generation query proves the order
+                # is still active.
+                with state["ctp_query_lock"]:
+                    takeover_query = _final_order_query_epoch(
+                        state["td_api"],
+                        state["rows"],
+                        max_wait_seconds=max(
+                            0.0, float(args.final_order_query_wait_seconds)
+                        ),
+                    )
+                takeover_order, _ = _match_reqid_bound_ctp_order(
+                    list(takeover_query.get("orders", [])), vt_orderid
+                )
+                if not (
+                    takeover_query.get("confirmed")
+                    and takeover_order is not None
+                    and takeover_order.get("status_class") == "active"
+                ):
+                    state["reconciliation_blockers"].append(
+                        f"stage179_cancel_duty_takeover_active_proof_missing:{vt_orderid}"
+                    )
+                    schedule_bounded_reconciliation_retry()
+                    return
+                duty = advance_cancel_duty_state(
+                    target_date=str(child_context.get("target_date", "")),
+                    duty_key=cancel_duty_key,
+                    expected_states=("reserved",),
+                    next_state="reserved",
+                    owner_id=cancel_duty_owner,
+                    lease_seconds=5,
+                    event={
+                        **cancel_duty_event_identity,
+                        "cancel_duty_generation": int(
+                            duty_row.get("cancel_duty_generation", 1) or 1
+                        ),
+                        "vt_orderid": vt_orderid,
+                        "cancel_duty_takeover_active_query_reqid": takeover_query.get(
+                            "reqid", ""
+                        ),
+                    },
+                    allow_expired_takeover=True,
+                    path=paths.ledger_path,
+                )
+                duty_row = dict(duty.get("ledger_event", {}))
+            elif not duty.get("advanced") and duty_state in {"api_called", "api_returned"}:
+                # Native cancel may already have happened.  Never call it
+                # again; proceed directly to the exact O/T/P fold below.
+                pass
+            elif not duty.get("advanced"):
+                state["reconciliation_blockers"].append(
+                    f"{duty.get('blocker') or 'stage179_cancel_duty_reserve_failed'}:{vt_orderid}"
+                )
+                schedule_bounded_reconciliation_retry()
+                return
+
+            cancel_duty_generation = int(
+                duty_row.get("cancel_duty_generation", 1) or 1
+            )
+
+            cancel_api_may_have_been_called = duty_state in {
+                "api_called", "api_returned"
+            }
+            if not cancel_api_may_have_been_called:
+                existing_slot = next(
+                    (
+                        row
+                        for row in reversed(read_execution_ledger(paths.ledger_path))
+                        if row.get("event_type") == "api_slot_reserved"
+                        and row.get("api_slot_type") == "cancel_order"
+                        and row.get("cancel_duty_key") == cancel_duty_key
+                        and int(row.get("cancel_duty_generation", 1) or 1)
+                        == cancel_duty_generation
+                    ),
+                    None,
+                )
+                cancel_slot = (
+                    {"reserved": True, "ledger_event": existing_slot}
+                    if existing_slot is not None
+                    else reserve_execution_api_slot(
+                        target_date=str(child_context.get("target_date", "")),
+                        slot_type="cancel_order",
+                        daily_limit=build_phase_d_config().hard_limits.max_cancel_count_per_day,
+                        path=paths.ledger_path,
+                        base_event={
+                            "intent_id": child_context.get("intent_id", ""),
+                            "intent_fingerprint": child_context.get("fingerprint", ""),
+                            "child_order_id": child_context.get("child_order_id", ""),
+                            "child_order_index": int(
+                                child_context.get("child_order_index", 0) or 0
+                            ),
+                            "child_order_count": int(
+                                child_context.get("child_order_count", 1) or 1
+                            ),
+                            "vt_orderid": vt_orderid,
+                            "cancel_duty_key": cancel_duty_key,
+                            "cancel_duty_generation": cancel_duty_generation,
+                        },
+                    )
+                )
+                if not cancel_slot.get("reserved"):
+                    state["reconciliation_blockers"].append(
+                        f"{cancel_slot.get('blocker') or 'stage179_residual_cancel_slot_blocked'}:{vt_orderid}"
+                    )
+                    return
+            child_context["cancel_requested_epoch_ns"] = time.time_ns()
+            cancel_event = {
+                "event_type": "cancel_order_called",
+                "target_date": child_context.get("target_date", ""),
+                "intent_id": child_context.get("intent_id", ""),
+                "intent_payload_sha256": child_context.get("intent_payload_sha256", ""),
+                "intent_kind": child_context.get("intent_kind", ""),
+                "intent_fingerprint": child_context.get("fingerprint", ""),
+                "parent_intent_fingerprint": child_context.get("fingerprint", ""),
+                "vt_symbol": request.vt_symbol,
+                "vt_orderid": vt_orderid,
+                "direction": request.direction.value,
+                "offset": request.offset.value,
+                "volume": float(request.volume),
+                "traded_volume_before_cancel": effective_traded,
+                "residual_volume_before_cancel": residual,
+                "adapter": "Stage931Warm",
+                "service_generation": child_context.get("service_generation", ""),
+                "connection_generation": child_context.get("connection_generation", ""),
+                "child_order_id": child_context.get("child_order_id", ""),
+                "child_order_index": child_context.get("child_order_index", 0),
+                "child_order_count": child_context.get("child_order_count", 1),
+            }
+            cancel_api_accepted = bool(
+                duty_state == "api_returned"
+                and _to_int(duty_row.get("cancel_api_accepted"), 0) == 1
+            )
+            if not cancel_api_may_have_been_called:
+                called = advance_cancel_duty_state(
+                    target_date=str(child_context.get("target_date", "")),
+                    duty_key=cancel_duty_key,
+                    expected_states=("reserved",),
+                    next_state="api_called",
+                    owner_id=cancel_duty_owner,
+                    lease_seconds=5,
+                    event=cancel_event,
+                    path=paths.ledger_path,
+                )
+                if not called.get("advanced"):
+                    state["reconciliation_blockers"].append(
+                        f"{called.get('blocker') or 'stage179_cancel_duty_api_called_cas_failed'}:{vt_orderid}"
+                    )
+                    schedule_bounded_reconciliation_retry()
+                    return
+                append_execution_ledger_event(cancel_event, path=paths.ledger_path)
+                _, _, orderid = vt_orderid.partition(".")
+                action_audits: list[dict[str, Any]] = []
+                try:
+                    with state["ctp_query_lock"]:
+                        action_start_index = len(
+                            state["rows"]["order_action_requests"]
+                        )
+                        main_engine.cancel_order(
+                            CancelRequest(
+                                orderid=orderid,
+                                symbol=request.symbol,
+                                exchange=request.exchange,
+                            ),
+                            "CTP",
+                        )
+                        action_audits = list(
+                            state["rows"]["order_action_requests"][
+                                action_start_index:
+                            ]
+                        )
+                except BaseException as exc:
+                    state["reconciliation_blockers"].append(
+                        f"stage179_residual_cancel_exception:{type(exc).__name__}:{vt_orderid}"
+                    )
+                    schedule_bounded_reconciliation_retry()
+                    return
+                action_audit = action_audits[0] if len(action_audits) == 1 else {}
+                action_ret = pd.to_numeric(
+                    action_audit.get("request_ret"), errors="coerce"
+                )
+                cancel_api_accepted = bool(
+                    len(action_audits) == 1
+                    and not action_audit.get("exception")
+                    and not pd.isna(action_ret)
+                    and int(action_ret) == 0
+                )
+                returned_event = {
+                    **cancel_event,
+                    "cancel_submit_attempt_no": cancel_duty_generation,
+                    "req_order_action_audit_row_count": len(action_audits),
+                    "req_order_action_reqid": action_audit.get("reqid", ""),
+                    "req_order_action_request_ret": (
+                        "" if pd.isna(action_ret) else int(action_ret)
+                    ),
+                    "req_order_action_exception": str(
+                        action_audit.get("exception", "") or ""
+                    ),
+                    "cancel_api_accepted": int(cancel_api_accepted),
+                }
+                advance_cancel_duty_state(
+                    target_date=str(child_context.get("target_date", "")),
+                    duty_key=cancel_duty_key,
+                    expected_states=("api_called",),
+                    next_state="api_returned",
+                    owner_id=cancel_duty_owner,
+                    lease_seconds=5,
+                    event=returned_event,
+                    path=paths.ledger_path,
+                )
+                append_execution_ledger_event(
+                    {**returned_event, "event_type": "cancel_order_api_returned"},
+                    path=paths.ledger_path,
+                )
+            if not cancel_api_accepted:
+                state["reconciliation_blockers"].append(
+                    f"stage179_cancel_api_not_accepted:{vt_orderid}"
+                )
+            cancel_deadline = time.monotonic() + max(
+                0.0,
+                float(getattr(args, "post_cancel_wait_seconds", 0.0))
+                if cancel_api_accepted
+                else 0.0,
+            )
+            while time.monotonic() < cancel_deadline:
+                latest = _latest_order(state["rows"]["orders"], vt_orderid)
+                if latest and _status_is_terminal(latest.get("status")):
+                    # Terminal ORDER is not priced-fill authority.  Continue
+                    # into the serialized O/T/P fold below; only exact fsynced
+                    # EVENT_TRADE volume may clear the pending order.
+                    break
+                time.sleep(
+                    min(0.05, max(0.0, cancel_deadline - time.monotonic()))
+                )
+            with state["ctp_query_lock"]:
+                order_query = _final_order_query_epoch(
+                    state["td_api"], state["rows"],
+                    max_wait_seconds=max(0.0, float(args.final_order_query_wait_seconds)),
+                )
+                trade_query = _final_trade_query_epoch(
+                    state["td_api"], state["rows"],
+                    max_wait_seconds=max(0.0, float(args.final_order_query_wait_seconds)),
+                )
+                position_query = _final_position_query_epoch(
+                    state["td_api"], state["rows"],
+                    max_wait_seconds=max(0.0, float(args.final_order_query_wait_seconds)),
+                )
+            if (
+                order_query.get("confirmed")
+                and trade_query.get("confirmed")
+                and position_query.get("confirmed")
+            ):
+                queried_order, _ = _match_reqid_bound_ctp_order(
+                    list(order_query.get("orders", [])), vt_orderid
+                )
+                if queried_order is not None:
+                    for trade_row in trade_query.get("trades", []):
+                        if (
+                            trade_row.get("exchange") == queried_order.get("exchange")
+                            and trade_row.get("order_sys_id") == queried_order.get("order_sys_id")
+                        ):
+                            _persist_stage179_warm_broker_callback(
+                                kind="trade",
+                                callback={
+                                    **trade_row,
+                                    "vt_orderid": vt_orderid,
+                                    "vt_symbol": queried_order.get("vt_symbol", ""),
+                                },
+                                context=child_context,
+                                target_date=str(child_context.get("target_date", "")),
+                                ledger_path=paths.ledger_path,
+                            )
+                    durable_priced, durable_fill_blocker = (
+                        _exact_durable_priced_volume(
+                            read_execution_ledger(paths.ledger_path),
+                            context=child_context,
+                            vt_orderid=vt_orderid,
+                        )
+                    )
+                    if durable_fill_blocker:
+                        state["reconciliation_blockers"].append(
+                            f"{durable_fill_blocker}:{vt_orderid}"
+                        )
+                        schedule_bounded_reconciliation_retry()
+                        return
+                    if (
+                        queried_order.get("status_class") == "terminal"
+                        and durable_priced + 1e-9
+                        >= _to_float(queried_order.get("traded"), 0.0)
+                    ):
+                        terminal_identity = {
+                            **_intent_ledger_metadata(
+                                dict(child_context.get("row", {}))
+                            ),
+                            "target_date": child_context.get("target_date", ""),
+                            "intent_id": child_context.get("intent_id", ""),
+                            "intent_fingerprint": child_context.get("fingerprint", ""),
+                            "spool_lease_owner": child_context.get("spool_lease_owner", ""),
+                            "spool_lease_token": child_context.get("spool_lease_token", ""),
+                            "child_order_id": child_context.get("child_order_id", ""),
+                            "child_order_index": int(
+                                child_context.get("child_order_index", 0) or 0
+                            ),
+                            "child_order_count": int(
+                                child_context.get("child_order_count", 1) or 1
+                            ),
+                            "vt_orderid": vt_orderid,
+                            "vt_symbol": request.vt_symbol,
+                            "direction": request.direction.value,
+                            "offset": request.offset.value,
+                            "close_submit_attempt_no": int(
+                                child_context.get("close_submit_attempt_no", 0) or 0
+                            ),
+                            "order_identity": queried_order.get("order_identity", ""),
+                            "raw_order_status": queried_order.get("raw_order_status", ""),
+                            "traded": _to_float(queried_order.get("traded"), 0.0),
+                            "volume": _to_float(queried_order.get("volume"), 0.0),
+                            "durable_priced_volume": durable_priced,
+                            "connection_generation": scheduled_connection_generation,
+                        }
+                        terminal_result = append_broker_callback_event_once(
+                            {
+                                "event_type": "broker_order_query_terminal_observed",
+                                **terminal_identity,
+                                "broker_callback_key": _stage179_callback_key(
+                                    "order-query-terminal", terminal_identity
+                                ),
+                                "fill_price_reconciliation_pending": 0,
+                            },
+                            paths.ledger_path,
+                        )
+                        if terminal_result.get("blocker"):
+                            state["reconciliation_blockers"].append(
+                                f"{terminal_result['blocker']}:{vt_orderid}"
+                            )
+                            return
+                        reconciled = advance_cancel_duty_state(
+                            target_date=str(child_context.get("target_date", "")),
+                            duty_key=cancel_duty_key,
+                            expected_states=("reserved", "api_called", "api_returned"),
+                            next_state="query_reconciled",
+                            owner_id=str(
+                                duty_row.get("cancel_duty_owner_id")
+                                or cancel_duty_owner
+                            ),
+                            lease_seconds=5,
+                            event={
+                                **cancel_duty_event_identity,
+                                "vt_orderid": vt_orderid,
+                                "query_order_reqid": order_query.get("reqid", ""),
+                                "query_trade_reqid": trade_query.get("reqid", ""),
+                                "query_position_reqid": position_query.get("reqid", ""),
+                                "durable_priced_volume": durable_priced,
+                            },
+                            path=paths.ledger_path,
+                        )
+                        if not (
+                            reconciled.get("advanced")
+                            or reconciled.get("idempotent_replay")
+                        ):
+                            state["reconciliation_blockers"].append(
+                                f"{reconciled.get('blocker') or 'stage179_cancel_duty_reconcile_cas_failed'}:{vt_orderid}"
+                            )
+                            schedule_bounded_reconciliation_retry()
+                            return
+                        _resolve_reconciliation_order(state, vt_orderid)
+                        return
+                    if (
+                        queried_order.get("status_class") == "active"
+                        and duty_state in {"api_called", "api_returned"}
+                        and cancel_duty_generation < 2
+                        and (
+                            duty_state == "api_called"
+                            or not cancel_api_accepted
+                        )
+                    ):
+                        retry_duty = advance_cancel_duty_state(
+                            target_date=str(child_context.get("target_date", "")),
+                            duty_key=cancel_duty_key,
+                            expected_states=(duty_state,),
+                            next_state="reserved",
+                            owner_id=cancel_duty_owner,
+                            lease_seconds=5,
+                            event={
+                                **cancel_duty_event_identity,
+                                "cancel_duty_generation": cancel_duty_generation + 1,
+                                "cancel_retry_reason": (
+                                    "api_called_outcome_unknown_order_still_active"
+                                    if duty_state == "api_called"
+                                    else "api_not_accepted_order_still_active"
+                                ),
+                                "cancel_retry_active_query_reqid": order_query.get(
+                                    "reqid", ""
+                                ),
+                            },
+                            allow_expired_takeover=True,
+                            path=paths.ledger_path,
+                        )
+                        if retry_duty.get("advanced"):
+                            child_context["cancel_worker_started"] = 0
+                            child_context["reconciliation_worker_retry_count"] = 0
+                            schedule_bounded_reconciliation_retry()
+                            return
+            append_execution_ledger_event(
+                {
+                    **cancel_event,
+                    "event_type": "cancel_terminal_reconciliation_required",
+                    "reconciliation_required": 1,
+                },
+                path=paths.ledger_path,
+            )
+            schedule_bounded_reconciliation_retry()
+
+        def worker() -> None:
+            try:
+                worker_once()
+            except BaseException as exc:
+                try:
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "cancel_duty_worker_crashed",
+                            "target_date": child_context.get("target_date", ""),
+                            "intent_id": child_context.get("intent_id", ""),
+                            "intent_fingerprint": child_context.get("fingerprint", ""),
+                            "child_order_id": child_context.get("child_order_id", ""),
+                            "vt_orderid": vt_orderid,
+                            "connection_generation": scheduled_connection_generation,
+                            "exception_type": type(exc).__name__,
+                            "reconciliation_required": 1,
+                        },
+                        path=paths.ledger_path,
+                    )
+                except BaseException:
+                    pass
+                state["transport_generation_invalidated"] = True
+                state["reconciliation_blockers"].append(
+                    f"stage179_cancel_duty_worker_crashed:{type(exc).__name__}:{vt_orderid}"
+                )
+                child_context["cancel_worker_started"] = 0
+                retries = int(
+                    child_context.get("reconciliation_worker_retry_count", 0) or 0
+                )
+                if retries < 1:
+                    child_context["reconciliation_worker_retry_count"] = retries + 1
+                    schedule_residual_cancel(vt_orderid, child_context)
+            finally:
+                if child_context.get("cancel_worker_token") == cancel_worker_token:
+                    child_context["cancel_worker_started"] = 0
+
+        Thread(
+            target=worker,
+            name=f"stage179-cancel-{vt_orderid}",
+            daemon=True,
+        ).start()
+
+    def _send_order_batch_locked(lease: Any) -> BrokerSendBatchResult:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
         requests = list(context.get("requests", []))
         main_engine = state.get("main_engine")
         if not requests or main_engine is None:
             raise RuntimeError("stage179_send_context_missing")
         order_ids: list[str] = []
-        for index, request in enumerate(requests):
-            child_authorization_blockers = authorization_blockers(
-                target_date=lease.intent.target_date,
-                intent_id=lease.intent.intent_id,
-                payload_sha256=lease.intent.payload_sha256,
-                intent_kind=lease.intent.intent_kind,
-                child_offset=request.offset.value,
+
+        def dynamic_child_blockers(
+            child_request: OrderRequest,
+            *,
+            native_td_api: Any | None = None,
+            native_request: Mapping[str, Any] | None = None,
+            native_reqid: int | None = None,
+        ) -> list[str]:
+            blockers = leased_authorization_blockers(
+                lease, child_offset=child_request.offset.value
             )
+            if "hard_deadline_monotonic" not in context:
+                # Direct unit harnesses predating the production fresh-bundle
+                # contract still exercise authorization revocation only.
+                return blockers
+            deadline = float(context.get("hard_deadline_monotonic", 0.0) or 0.0)
+            if deadline <= 0 or time.monotonic() >= deadline:
+                blockers.append("stage179_execution_deadline_exceeded:child_send")
+            blockers.extend(
+                f"{item}_before_child_send" for item in _kill_switch_blockers()
+            )
+            batch = state.get("active_physical_batch")
+            native_insert_count = 0
+            if isinstance(batch, dict):
+                native_insert_count = _to_int(
+                    batch.get("native_insert_count"), 0
+                )
+                blockers.extend(
+                    _advance_physical_batch_event_baseline(
+                        state,
+                        batch,
+                        ledger_path=paths.ledger_path,
+                    )
+                )
+            else:
+                blockers.extend(
+                    _post_final_gate_pre_api_slot_blockers(
+                        state["rows"],
+                        dict(context.get("final_watermark", {})),
+                    )
+                )
+            expected_owned_count = native_insert_count + int(
+                native_reqid is not None
+            )
+            if isinstance(batch, dict):
+                blockers.extend(
+                    _physical_batch_query_watermark_blockers(
+                        state.get("td_api"),
+                        state["rows"],
+                        dict(batch.get("query_watermark", {})),
+                        owned_native_insert_count=expected_owned_count,
+                    )
+                )
+            blockers.extend(
+                _open_funds_gate_consistency_blockers(
+                    state.get("td_api"),
+                    state["rows"],
+                    list(context.get("requests", [])),
+                    dict(context.get("open_funds_gate", {})),
+                    owned_native_insert_count=expected_owned_count,
+                    owned_event_watermark=(
+                        dict(batch.get("event_watermark", {}))
+                        if isinstance(batch, dict)
+                        else None
+                    ),
+                )
+            )
+            if native_reqid is not None:
+                if native_td_api is None or native_request is None:
+                    blockers.append(
+                        "physical_batch_native_gate_arguments_missing"
+                    )
+                else:
+                    if _to_int(
+                        getattr(native_td_api, "reqid", -1), -1
+                    ) != int(native_reqid):
+                        blockers.append(
+                            "physical_batch_native_reqid_argument_mismatch"
+                        )
+                    blockers.extend(
+                        _native_insert_request_blockers(
+                            native_td_api,
+                            state.get("td_api"),
+                            native_request,
+                            child_request,
+                        )
+                    )
+            if not any(
+                item.get("role") == "market_and_execution"
+                for item in _current_phase_d_sessions()
+            ):
+                blockers.append("live_real_not_in_execution_session_before_child_send")
+            blockers.extend(_continuous_submit_blockers())
+            blockers.extend(transport_probe())
+            blockers.extend(
+                _pre_reserved_child_intent_blockers(
+                    dict(context.get("row", {})), child_request
+                )
+            )
+            return list(dict.fromkeys(str(item) for item in blockers if str(item)))
+
+        for index, request in enumerate(requests):
+            child_context = {
+                **context,
+                "request": request,
+                "child_order_id": (
+                    f"{context.get('fingerprint', '')}:{index + 1}/{len(requests)}"
+                ),
+                "child_order_index": index,
+                "child_order_count": len(requests),
+                "child_order_offset": request.offset.value,
+                "child_order_volume": float(request.volume),
+            }
+            # The vn.py callback may race ahead of send_order's return.  Keep
+            # the currently entering child bound by the request reference;
+            # once vt_orderid is known the durable per-order map is authority.
+            state["intent_contexts"][lease.intent.intent_id] = child_context
+            child_authorization_blockers = dynamic_child_blockers(request)
             if child_authorization_blockers:
                 append_execution_ledger_event(
                     {
@@ -7491,8 +11996,116 @@ def _build_stage179_warm_ctp_session(
                     "stage179_submit_authorization_blocked_before_child_send",
                     send_order_call_count=len(order_ids),
                 )
+            send_base = {
+                "target_date": lease.intent.target_date,
+                "intent_id": lease.intent.intent_id,
+                "intent_payload_sha256": lease.intent.payload_sha256,
+                "intent_kind": lease.intent.intent_kind,
+                "intent_fingerprint": context.get("fingerprint", ""),
+                "parent_intent_fingerprint": context.get("fingerprint", ""),
+                "vt_symbol": lease.intent.vt_symbol,
+                "symbol": str(getattr(request, "symbol", "")),
+                "exchange": str(
+                    getattr(getattr(request, "exchange", ""), "value", getattr(request, "exchange", ""))
+                ),
+                "direction": str(
+                    getattr(getattr(request, "direction", ""), "value", getattr(request, "direction", ""))
+                ),
+                "offset": str(
+                    getattr(getattr(request, "offset", ""), "value", getattr(request, "offset", ""))
+                ),
+                "order_type": str(
+                    getattr(getattr(request, "type", ""), "value", getattr(request, "type", ""))
+                ),
+                "price": float(getattr(request, "price", 0.0)),
+                "volume": float(getattr(request, "volume", 0.0)),
+                "reference": str(getattr(request, "reference", "")),
+                "adapter": "Stage931Warm",
+                "service_generation": lease.intent.lease_owner,
+                "connection_generation": state.get("connection_generation", ""),
+                "spool_lease_owner": lease.intent.lease_owner,
+                "spool_lease_token": lease.lease_token,
+                "child_order_id": child_context["child_order_id"],
+                "child_order_index": index,
+                "child_order_count": len(requests),
+                "child_order_offset": request.offset.value,
+                "child_order_volume": float(request.volume),
+                **_intent_ledger_metadata(dict(context.get("row", {}))),
+            }
+            if int(context.get("close_submit_attempt_no", 0)) > 0:
+                send_base["close_submit_attempt_no"] = int(
+                    context["close_submit_attempt_no"]
+                )
+                send_base["close_attempt_lease_token"] = str(
+                    context.get("close_attempt_lease_token", "")
+                )
+            insert_start_index = len(state["rows"]["order_insert_requests"])
+            state.pop("native_insert_identity", None)
+            state["native_insert_context"] = dict(send_base)
+            state["native_child_context"] = child_context
             try:
-                vt_orderid = str(main_engine.send_order(request, "CTP") or "")
+                native_blockers = dynamic_child_blockers(request)
+                if native_blockers:
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "child_dynamic_gate_blocked_before_native_insert",
+                            **send_base,
+                            "blockers": native_blockers,
+                            "send_order_call_count": len(order_ids),
+                            "reconciliation_required": int(bool(order_ids)),
+                        },
+                        path=paths.ledger_path,
+                    )
+                    raise BrokerSendBatchError(
+                        "stage179_child_dynamic_gate_blocked_before_native_insert",
+                        send_order_call_count=len(order_ids),
+                    )
+                with state["ctp_query_lock"]:
+                    locked_blockers = dynamic_child_blockers(request)
+                    if locked_blockers:
+                        append_execution_ledger_event(
+                            {
+                                "event_type": "child_dynamic_gate_blocked_inside_native_lock",
+                                **send_base,
+                                "blockers": locked_blockers,
+                                "send_order_call_count": len(order_ids),
+                                "reconciliation_required": int(bool(order_ids)),
+                                "native_api_called": 0,
+                            },
+                            path=paths.ledger_path,
+                        )
+                        raise BrokerSendBatchError(
+                            "stage179_child_dynamic_gate_blocked_inside_native_lock",
+                            send_order_call_count=len(order_ids),
+                        )
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "send_order_called",
+                            **send_base,
+                            "send_order_called": 1,
+                            "native_identity_protocol_version": (
+                                "stage179_preinsert_v1"
+                            ),
+                            "native_api_called": 0,
+                        },
+                        path=paths.ledger_path,
+                    )
+                    state["native_prior_send_order_call_count"] = len(order_ids)
+                    state["native_dynamic_gate"] = (
+                        lambda native_td_api, native_request, native_reqid,
+                        req=request: dynamic_child_blockers(
+                            req,
+                            native_td_api=native_td_api,
+                            native_request=native_request,
+                            native_reqid=native_reqid,
+                        )
+                    )
+                    vt_orderid = str(main_engine.send_order(request, "CTP") or "")
+                    batch = state.get("active_physical_batch")
+                    if isinstance(batch, dict):
+                        batch["native_insert_count"] = index + 1
+            except BrokerSendBatchError:
+                raise
             except BaseException as exc:
                 audit_append_error = ""
                 try:
@@ -7526,51 +12139,264 @@ def _build_stage179_warm_ctp_session(
                     f"{type(exc).__name__}{audit_append_error}",
                     send_order_call_count=len(order_ids) + 1,
                 ) from exc
-            order_ids.append(vt_orderid)
+            finally:
+                state.pop("native_insert_context", None)
+                state.pop("native_child_context", None)
+                state.pop("native_dynamic_gate", None)
+                state.pop("native_prior_send_order_call_count", None)
+            post_native_call_count = len(order_ids) + 1
             try:
+                native_identity = state.pop("native_insert_identity", None)
+                expected_native_vt_orderid = (
+                    str(native_identity.get("vt_orderid", "") or "")
+                    if isinstance(native_identity, dict)
+                    else ""
+                )
+                if (
+                    not expected_native_vt_orderid
+                    or not vt_orderid
+                    or vt_orderid != expected_native_vt_orderid
+                ):
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "native_order_identity_return_mismatch",
+                            **send_base,
+                            "native_expected_vt_orderid": expected_native_vt_orderid,
+                            "send_order_returned_vt_orderid": vt_orderid,
+                            "reconciliation_required": 1,
+                        },
+                        path=paths.ledger_path,
+                    )
+                    raise BrokerSendBatchError(
+                        "stage179_native_order_identity_return_mismatch",
+                        send_order_call_count=post_native_call_count,
+                    )
+
+                # The exact native identity proves that reqOrderInsert already
+                # happened.  Account for that side effect before any audit
+                # folding, callback rebinding, or cancel-worker scheduling can
+                # fail; callers must never classify such failures as a
+                # no-native retry.
+                order_ids.append(vt_orderid)
+                state["order_contexts"][vt_orderid] = child_context
+                state["reconciliation_pending_order_ids"].add(vt_orderid)
+                insert_audit = _req_order_insert_audit_since(
+                    state["rows"], insert_start_index
+                )
+                child_context["insert_audit"] = insert_audit
+                returned_event = {
+                    "event_type": "send_order_returned",
+                    **send_base,
+                    "vt_orderid": vt_orderid,
+                    "send_order_called": 1,
+                    **insert_audit,
+                }
                 append_execution_ledger_event(
+                    returned_event, path=paths.ledger_path
+                )
+                # Rebind callbacks which arrived before send_order returned.
+                for callback_kind, row_key in (
+                    ("order", "orders"),
+                    ("trade", "trades"),
+                ):
+                    for callback_row in state["rows"][row_key]:
+                        if str(callback_row.get("vt_orderid", "")) != vt_orderid:
+                            continue
+                        _persist_stage179_warm_broker_callback(
+                            kind=callback_kind,
+                            callback=callback_row,
+                            context=child_context,
+                            target_date=lease.intent.target_date,
+                            ledger_path=paths.ledger_path,
+                        )
+                schedule_residual_cancel(vt_orderid, child_context)
+            except BrokerSendBatchError as exc:
+                if exc.send_order_call_count >= post_native_call_count:
+                    raise
+                raise BrokerSendBatchError(
+                    str(exc), send_order_call_count=post_native_call_count
+                ) from exc
+            except BaseException as exc:
+                audit_append_error = ""
+                try:
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "adapter_exception_after_native_return",
+                            **send_base,
+                            "vt_orderid": vt_orderid,
+                            "exception_type": type(exc).__name__,
+                            "send_order_call_count": post_native_call_count,
+                            "reconciliation_required": 1,
+                        },
+                        path=paths.ledger_path,
+                    )
+                except BaseException as audit_exc:
+                    audit_append_error = (
+                        f":audit_append_failed:{type(audit_exc).__name__}"
+                    )
+                raise BrokerSendBatchError(
+                    "stage179_post_native_processing_failed:"
+                    f"{type(exc).__name__}{audit_append_error}",
+                    send_order_call_count=post_native_call_count,
+                ) from exc
+        return BrokerSendBatchResult(
+            order_ids=tuple(order_ids),
+            send_order_call_count=len(order_ids),
+        )
+
+    def send_order(lease: Any) -> BrokerSendBatchResult:
+        """Hold one CTP lock and one causal baseline for the whole batch."""
+
+        if not callable(schedule_residual_cancel):
+            raise BrokerSendBatchError(
+                "stage179_physical_batch_cancel_scheduler_missing",
+                send_order_call_count=0,
+            )
+        context = state["intent_contexts"].get(
+            lease.intent.intent_id, {}
+        )
+        strict_batch = "hard_deadline_monotonic" in context
+        with state["ctp_query_lock"]:
+            if not strict_batch:
+                # Compatibility for isolated accounting/authorization
+                # harnesses. Production fresh_bundle always supplies the
+                # strict batch fields below.
+                return _send_order_batch_locked(lease)
+            if state.get("active_physical_batch") is not None:
+                raise BrokerSendBatchError(
+                    "stage179_physical_batch_reentry_forbidden",
+                    send_order_call_count=0,
+                )
+            batch = {
+                "batch_id": _canonical_evidence_sha256(
                     {
-                        "event_type": "send_order_returned",
-                        "target_date": lease.intent.target_date,
                         "intent_id": lease.intent.intent_id,
-                        "intent_fingerprint": context.get("fingerprint", ""),
-                        "vt_symbol": lease.intent.vt_symbol,
-                        "vt_orderid": vt_orderid,
-                        "send_order_called": 1,
-                        "adapter": "Stage931Warm",
-                        "service_generation": lease.intent.lease_owner,
+                        "fingerprint": context.get("fingerprint", ""),
+                        "lease_token": lease.lease_token,
                         "connection_generation": state.get(
                             "connection_generation", ""
                         ),
-                        "spool_lease_owner": lease.intent.lease_owner,
-                        "spool_lease_token": lease.lease_token,
-                        "child_order_id": (
-                            f"{context.get('fingerprint', '')}:{index + 1}/{len(requests)}"
+                    }
+                ),
+                "target_date": lease.intent.target_date,
+                "intent_id": lease.intent.intent_id,
+                "fingerprint": context.get("fingerprint", ""),
+                "query_watermark": dict(
+                    context.get("physical_batch_query_watermark", {})
+                ),
+                "event_watermark": dict(
+                    context.get("final_watermark", {})
+                ),
+                "order_row_index": len(state["rows"].get("orders", [])),
+                "trade_row_index": len(state["rows"].get("trades", [])),
+                "native_insert_count": 0,
+                "owned_children": {},
+                "attributed_events": [],
+            }
+            try:
+                append_execution_ledger_event(
+                    {
+                        "event_type": "physical_batch_lock_acquired",
+                        "target_date": batch["target_date"],
+                        "intent_id": batch["intent_id"],
+                        "intent_fingerprint": batch["fingerprint"],
+                        "physical_batch_id": batch["batch_id"],
+                        "physical_child_count": len(
+                            context.get("requests", [])
                         ),
-                        "child_order_index": index,
-                        "child_order_count": len(requests),
-                        "child_order_offset": request.offset.value,
-                        "child_order_volume": float(request.volume),
+                        "query_watermark": batch["query_watermark"],
+                        "event_watermark": batch["event_watermark"],
+                        "native_api_called": 0,
                     },
                     path=paths.ledger_path,
                 )
             except BaseException as exc:
                 raise BrokerSendBatchError(
-                    f"stage179_send_audit_append_failed:{type(exc).__name__}",
-                    send_order_call_count=len(order_ids),
+                    "stage179_physical_batch_begin_append_failed:"
+                    f"{type(exc).__name__}",
+                    send_order_call_count=0,
                 ) from exc
-            if not vt_orderid:
-                break
-        return BrokerSendBatchResult(
-            order_ids=tuple(order_ids),
-            send_order_call_count=len(order_ids),
-        )
+            state["active_physical_batch"] = batch
+            state["rows"]["_physical_batch_active"] = 1
+            try:
+                result = _send_order_batch_locked(lease)
+                post_batch_blockers = (
+                    _advance_physical_batch_event_baseline(
+                        state,
+                        batch,
+                        ledger_path=paths.ledger_path,
+                    )
+                )
+                if post_batch_blockers:
+                    try:
+                        append_execution_ledger_event(
+                            {
+                                "event_type": (
+                                    "physical_batch_blocked_after_native_child"
+                                ),
+                                "target_date": batch["target_date"],
+                                "intent_id": batch["intent_id"],
+                                "intent_fingerprint": batch["fingerprint"],
+                                "physical_batch_id": batch["batch_id"],
+                                "blockers": post_batch_blockers,
+                                "send_order_call_count": (
+                                    result.send_order_call_count
+                                ),
+                                "reconciliation_required": int(
+                                    result.send_order_call_count > 0
+                                ),
+                            },
+                            path=paths.ledger_path,
+                        )
+                    except BaseException as exc:
+                        post_batch_blockers.append(
+                            "physical_batch_conflict_append_exception:"
+                            f"{type(exc).__name__}"
+                        )
+                    raise BrokerSendBatchError(
+                        "stage179_physical_batch_event_conflict_after_send:"
+                        + ";".join(post_batch_blockers),
+                        send_order_call_count=(
+                            result.send_order_call_count
+                        ),
+                    )
+                try:
+                    append_execution_ledger_event(
+                        {
+                            "event_type": "physical_batch_completed",
+                            "target_date": batch["target_date"],
+                            "intent_id": batch["intent_id"],
+                            "intent_fingerprint": batch["fingerprint"],
+                            "physical_batch_id": batch["batch_id"],
+                            "send_order_call_count": (
+                                result.send_order_call_count
+                            ),
+                            "attributed_event_count": len(
+                                batch.get("attributed_events", [])
+                            ),
+                            "native_reqid_count": batch.get(
+                                "native_insert_count", 0
+                            ),
+                        },
+                        path=paths.ledger_path,
+                    )
+                except BaseException as exc:
+                    raise BrokerSendBatchError(
+                        "stage179_physical_batch_complete_append_failed:"
+                        f"{type(exc).__name__}",
+                        send_order_call_count=result.send_order_call_count,
+                    ) from exc
+                return result
+            finally:
+                state["rows"].pop("_physical_batch_active", None)
+                state.pop("active_physical_batch", None)
 
     def transport_probe() -> list[str]:
         _prune_stage179_warm_rows(state["rows"])
         blockers: list[str] = []
         if state.get("transport_generation_invalidated"):
             blockers.append("stage179_ctp_transport_generation_invalidated")
+        blockers.extend(state.get("callback_persistence_blockers", []))
         td_api = state.get("td_api")
         readiness_state = state.get("readiness_state")
         if td_api is None or readiness_state is None:
@@ -7583,6 +12409,17 @@ def _build_stage179_warm_ctp_session(
                     readiness_state,
                 )
             )
+        return list(dict.fromkeys(blockers))
+
+    def warm_pre_lease_blockers() -> list[str]:
+        blockers = authorization_blockers(target_date=args.target_date)
+        blockers.extend(
+            f"stage179_order_reconciliation_pending:{vt_orderid}"
+            for vt_orderid in sorted(
+                state.get("reconciliation_pending_order_ids", set())
+            )
+        )
+        blockers.extend(state.get("reconciliation_blockers", []))
         return list(dict.fromkeys(blockers))
 
     return CtpExecutionSession.for_callbacks(
@@ -7601,14 +12438,14 @@ def _build_stage179_warm_ctp_session(
             reason=reason,
         ),
         transport_probe=transport_probe,
-        pre_lease_blockers=lambda: authorization_blockers(
-            target_date=args.target_date,
-        ),
-        pre_lease_authorized_intents=lambda: authorized_submit_intents(
-            authorization_path
-        ),
+        pre_lease_blockers=warm_pre_lease_blockers,
+        pre_lease_authorized_intents=admit_exact_authorized_intent,
+        lease_execution_guard=authorization_lease_guard,
+        post_lease_blockers=leased_authorization_blockers,
         fresh_bundle=fresh_bundle,
         pre_api_slot_blockers=pre_api_slot_blockers,
+        pre_api_slot_safe_terminal=pre_api_slot_safe_terminal,
+        post_api_slot_safe_terminal=post_api_slot_safe_terminal,
         connection_generation_observer=lambda generation: state.__setitem__(
             "connection_generation", generation
         ),

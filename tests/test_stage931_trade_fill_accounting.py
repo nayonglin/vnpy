@@ -26,19 +26,319 @@ if str(PORTFOLIO_DIR) not in sys.path:
 
 import run_qmt_roll_stage931_official_live_ctp_submit_adapter as stage931
 import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930
+import qmt_roll_official_live_execution_ledger as execution_ledger
 
 
 class Stage931TradeFillAccountingTest(unittest.TestCase):
+    def test_physical_open_is_fak_but_protective_close_remains_limit(self) -> None:
+        open_request = stage931.OrderRequest(
+            symbol="rb2610", exchange=stage931.Exchange.SHFE,
+            direction=stage931.Direction.LONG, type=stage931.OrderType.FAK,
+            volume=1, price=3200, offset=stage931.Offset.OPEN,
+        )
+        close_request = stage931.OrderRequest(
+            symbol="rb2610", exchange=stage931.Exchange.SHFE,
+            direction=stage931.Direction.SHORT, type=stage931.OrderType.LIMIT,
+            volume=1, price=3190, offset=stage931.Offset.CLOSE,
+        )
+        blockers = stage931._enforce_physical_order_time_in_force(
+            [open_request, close_request]
+        )
+        self.assertEqual([], blockers)
+        self.assertEqual(stage931.OrderType.FAK, open_request.type)
+        self.assertEqual(stage931.OrderType.LIMIT, close_request.type)
+
+    def test_physical_close_fak_fails_closed_for_every_close_offset(self) -> None:
+        requests = [
+            stage931.OrderRequest(
+                symbol="rb2610",
+                exchange=stage931.Exchange.SHFE,
+                direction=stage931.Direction.SHORT,
+                type=stage931.OrderType.FAK,
+                volume=1,
+                price=3190,
+                offset=offset,
+            )
+            for offset in (
+                stage931.Offset.CLOSE,
+                stage931.Offset.CLOSETODAY,
+                stage931.Offset.CLOSEYESTERDAY,
+            )
+        ]
+
+        blockers = stage931._enforce_physical_order_time_in_force(requests)
+
+        self.assertEqual(
+            [
+                "stage179_close_physical_type_not_limit:CLOSE",
+                "stage179_close_physical_type_not_limit:CLOSETODAY",
+                "stage179_close_physical_type_not_limit:CLOSEYESTERDAY",
+            ],
+            blockers,
+        )
+
+    def test_duplicate_trade_callbacks_do_not_inflate_terminal_totals(self) -> None:
+        trade = {
+            "vt_orderid": "CTP.1", "vt_tradeid": "CTP.T1",
+            "tradeid": "T1", "vt_symbol": "rb2610.SHFE",
+            "price": 3201, "volume": 1,
+        }
+        totals, blocker = stage931._unique_trade_callback_totals(
+            [trade, dict(trade)], "CTP.1"
+        )
+        self.assertEqual("", blocker)
+        self.assertEqual(1, totals["count"])
+        self.assertEqual(1, totals["total_volume"])
+
+    @staticmethod
+    def _warm_callback_context(*, offset: stage931.Offset = stage931.Offset.OPEN) -> dict[str, object]:
+        request = stage931.OrderRequest(
+            symbol="rb2610",
+            exchange=stage931.Exchange.SHFE,
+            direction=stage931.Direction.LONG,
+            type=stage931.OrderType.LIMIT,
+            volume=2,
+            price=3200,
+            offset=offset,
+            reference="Stage905PhaseD:intent-warm",
+        )
+        return {
+            "target_date": "2026-07-21",
+            "intent_id": "intent-warm",
+            "intent_payload_sha256": "a" * 64,
+            "intent_kind": offset.value,
+            "fingerprint": "b" * 64,
+            "row": {
+                "source": "stage904_c9_intraday_retry_open",
+                "vt_symbol": request.vt_symbol,
+                "direction": "long",
+                "offset": offset.value,
+                "position_epoch_id": "epoch-1",
+                "position_cycle_id": "cycle-1",
+                "root_position_id": "root-1",
+                "intent_role": "retry_open",
+            },
+            "request": request,
+            "service_generation": "service-1",
+            "connection_generation": "connection-1",
+            "spool_lease_owner": "service-1",
+            "spool_lease_token": "lease-1",
+            "child_order_id": "child-1",
+            "child_order_index": 0,
+            "child_order_count": 1,
+        }
+
+    def test_warm_trade_callbacks_are_idempotent_and_aggregate_partial_fills(self) -> None:
+        context = self._warm_callback_context()
+        with TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ledger.jsonl"
+            partial = {
+                "vt_orderid": "CTP.1",
+                "vt_tradeid": "CTP.T1",
+                "vt_symbol": "rb2610.SHFE",
+                "price": 3201,
+                "volume": 1,
+            }
+            full = {**partial, "vt_tradeid": "CTP.T2", "price": 3203}
+            first = stage931._persist_stage179_warm_broker_callback(
+                kind="trade", callback=partial, context=context,
+                target_date="2026-07-21", ledger_path=path,
+            )
+            context["cancel_requested_epoch_ns"] = 123
+            replay = stage931._persist_stage179_warm_broker_callback(
+                kind="trade", callback=partial, context=context,
+                target_date="2026-07-21", ledger_path=path,
+            )
+            stage931._persist_stage179_warm_broker_callback(
+                kind="trade", callback=full, context=context,
+                target_date="2026-07-21", ledger_path=path,
+            )
+            rows = stage931.read_execution_ledger(path)
+            weighted = execution_ledger.weighted_open_fill(
+                rows, "2026-07-21", "rb2610.SHFE", "long"
+            )
+
+        self.assertTrue(first[0]["appended"])
+        self.assertTrue(replay[0]["idempotent_replay"])
+        self.assertEqual(weighted["volume"], 2)
+        self.assertEqual(weighted["price"], 3202)
+
+    def test_same_trade_identity_with_conflicting_payload_fails_closed(self) -> None:
+        context = self._warm_callback_context()
+        callback = {
+            "vt_orderid": "CTP.9", "vt_tradeid": "CTP.T9",
+            "vt_symbol": "rb2610.SHFE", "price": 3201, "volume": 1,
+        }
+        with TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ledger.jsonl"
+            stage931._persist_stage179_warm_broker_callback(
+                kind="trade", callback=callback, context=context,
+                target_date="2026-07-21", ledger_path=path,
+            )
+            conflict = stage931._persist_stage179_warm_broker_callback(
+                kind="trade", callback={**callback, "price": 3202}, context=context,
+                target_date="2026-07-21", ledger_path=path,
+            )
+
+        self.assertIn("broker_callback_key_payload_mismatch", conflict[0]["blocker"])
+
+    def test_realtime_and_query_trade_forms_share_one_canonical_fill(self) -> None:
+        context = self._warm_callback_context()
+        realtime = {
+            "vt_orderid": "CTP.1_2_3", "vt_tradeid": "CTP.T100",
+            "tradeid": "T100", "vt_symbol": "rb2610.SHFE",
+            "price": 3201, "volume": 1,
+            "broker_trade_at": "2026-07-21T21:01:02+08:00",
+        }
+        queried, blockers = stage931._raw_ctp_trade_row(
+            {
+                "BrokerID": "b", "InvestorID": "i",
+                "InstrumentID": "rb2610", "ExchangeID": "SHFE",
+                "OrderSysID": "SYS1", "TradeID": "T100",
+                "Direction": "0", "OffsetFlag": "0",
+                "Price": 3201, "Volume": 1,
+                "TradeDate": "20260721", "TradeTime": "21:01:02",
+            },
+            reqid=7, row_index=0,
+        )
+        self.assertEqual([], blockers)
+        assert queried is not None
+        queried.update({"vt_orderid": "CTP.1_2_3", "vt_symbol": "rb2610.SHFE"})
+        for first, second in ((realtime, queried), (queried, realtime)):
+            with self.subTest(first=first.get("trade_query_reqid", "realtime")):
+                with TemporaryDirectory() as temp_dir:
+                    path = Path(temp_dir) / "ledger.jsonl"
+                    stage931._persist_stage179_warm_broker_callback(
+                        kind="trade", callback=first, context=context,
+                        target_date="2026-07-21", ledger_path=path,
+                    )
+                    replay = stage931._persist_stage179_warm_broker_callback(
+                        kind="trade", callback=second, context=context,
+                        target_date="2026-07-21", ledger_path=path,
+                    )
+                    weighted = execution_ledger.weighted_open_fill(
+                        stage931.read_execution_ledger(path),
+                        "2026-07-21", "rb2610.SHFE", "long",
+                    )
+                self.assertTrue(replay[0]["idempotent_replay"])
+                self.assertEqual(1, weighted["volume"])
+
+    def test_position_key_is_scoped_by_connection_generation(self) -> None:
+        context1 = self._warm_callback_context()
+        context2 = {**context1, "connection_generation": "connection-2"}
+        callback = {
+            "vt_symbol": "rb2610.SHFE", "direction": "long",
+            "volume": 2, "yd_volume": 0, "price": 3200,
+        }
+        with TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ledger.jsonl"
+            first = stage931._persist_stage179_warm_broker_callback(
+                kind="position", callback=callback, context=context1,
+                target_date="2026-07-21", ledger_path=path,
+            )
+            second = stage931._persist_stage179_warm_broker_callback(
+                kind="position", callback=callback, context=context2,
+                target_date="2026-07-21", ledger_path=path,
+            )
+
+        self.assertTrue(first[0]["appended"])
+        self.assertTrue(second[0]["appended"])
+
+    def test_reqid_bound_ctp_order_identity_matches_uniquely(self) -> None:
+        row = {"front_id": "12", "session_id": "34", "order_ref": "56"}
+        matched, blocker = stage931._match_reqid_bound_ctp_order(
+            [row], "CTP.12_34_56"
+        )
+        self.assertIs(row, matched)
+        self.assertEqual("", blocker)
+
+        missing, blocker = stage931._match_reqid_bound_ctp_order(
+            [], "CTP.12_34_56"
+        )
+        self.assertIsNone(missing)
+        self.assertEqual("stage179_recovery_order_identity_absent", blocker)
+
+        ambiguous, blocker = stage931._match_reqid_bound_ctp_order(
+            [row, dict(row)], "CTP.12_34_56"
+        )
+        self.assertIsNone(ambiguous)
+        self.assertEqual("stage179_recovery_order_identity_ambiguous", blocker)
+
+    def test_order_and_position_callbacks_never_infer_priced_fill(self) -> None:
+        context = self._warm_callback_context()
+        with TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ledger.jsonl"
+            stage931._persist_stage179_warm_broker_callback(
+                kind="order",
+                callback={
+                    "vt_orderid": "CTP.2", "vt_symbol": "rb2610.SHFE",
+                    "status": "part traded", "traded": 1, "volume": 2,
+                },
+                context=context, target_date="2026-07-21", ledger_path=path,
+            )
+            stage931._persist_stage179_warm_broker_callback(
+                kind="position",
+                callback={
+                    "vt_symbol": "rb2610.SHFE", "direction": "long",
+                    "volume": 9, "yd_volume": 0, "price": 3199,
+                },
+                context=context, target_date="2026-07-21", ledger_path=path,
+            )
+            rows = stage931.read_execution_ledger(path)
+            weighted = execution_ledger.weighted_open_fill(
+                rows, "2026-07-21", "rb2610.SHFE", "long"
+            )
+
+        self.assertIsNone(weighted)
+        self.assertIn(
+            "order_traded_volume_observed_without_trade_detail",
+            {row.get("event_type") for row in rows},
+        )
+
+    def test_terminal_close_callback_only_unlocks_with_same_attempt_zero_fill_audit(self) -> None:
+        context = self._warm_callback_context(offset=stage931.Offset.CLOSETODAY)
+        context.update({
+            "close_submit_attempt_no": 1,
+            "close_attempt_lease_token": "attempt-1",
+            "insert_audit": {
+                "req_order_insert_audit_observed": 1,
+                "req_order_insert_accepted": 1,
+                "req_order_insert_request_ret": 0,
+            },
+            "trade_callback_count": 0,
+            "trade_event_total_volume": 0,
+            "trade_event_priced_volume": 0,
+        })
+        with TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ledger.jsonl"
+            stage931._persist_stage179_warm_broker_callback(
+                kind="order",
+                callback={
+                    "vt_orderid": "CTP.3", "vt_symbol": "rb2610.SHFE",
+                    "status": "cancelled", "traded": 0, "volume": 2,
+                },
+                context=context, target_date="2026-07-21", ledger_path=path,
+            )
+            terminal = next(
+                row for row in stage931.read_execution_ledger(path)
+                if row.get("event_type") == "rejected_or_inactive"
+            )
+
+        self.assertEqual(terminal["close_retry_known_zero"], 1)
+        self.assertEqual(terminal["close_retry_unlock_eligible"], 1)
+        self.assertEqual(terminal["close_attempt_lease_token"], "attempt-1")
+
     @staticmethod
     def _shfe_conversion_case(
         *,
         volume: float,
         yesterday_volume: float,
+        exchange: stage931.Exchange = stage931.Exchange.SHFE,
     ) -> tuple[object, dict[str, list[dict[str, object]]], stage931.OrderRequest]:
         contract = ContractData(
-            symbol="rb2610",
-            exchange=stage931.Exchange.SHFE,
-            name="rb2610",
+            symbol=("rb2610" if exchange == stage931.Exchange.SHFE else "sc2610"),
+            exchange=exchange,
+            name=("rb2610" if exchange == stage931.Exchange.SHFE else "sc2610"),
             product=Product.FUTURES,
             size=10,
             pricetick=1,
@@ -125,6 +425,34 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         self.assertNotIn(stage931.Offset.CLOSE, [child.offset for child in children])
         self.assertEqual(sum(float(child.volume) for child in children), request.volume)
 
+    def test_shfe_ine_split_children_inherit_one_final_price_exactly(self) -> None:
+        for exchange in (stage931.Exchange.SHFE, stage931.Exchange.INE):
+            with self.subTest(exchange=exchange.value):
+                engine, rows, request = self._shfe_conversion_case(
+                    volume=3,
+                    yesterday_volume=2,
+                    exchange=exchange,
+                )
+                request.price = 3201.5
+
+                result = stage931._final_offset_conversion(
+                    engine, rows, request
+                )
+
+                self.assertEqual([], result["blockers"])
+                self.assertEqual(2, len(result["requests"]))
+                self.assertEqual(
+                    [request.price, request.price],
+                    [child.price for child in result["requests"]],
+                )
+                self.assertEqual(
+                    {
+                        stage931.Offset.CLOSETODAY,
+                        stage931.Offset.CLOSEYESTERDAY,
+                    },
+                    {child.offset for child in result["requests"]},
+                )
+
     def test_shfe_child_must_inherit_parent_price_exactly(self) -> None:
         engine, rows, request = self._shfe_conversion_case(
             volume=1,
@@ -146,6 +474,30 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         self.assertEqual([], result["requests"])
         self.assertTrue(
             any(":price=" in blocker for blocker in result["blockers"]),
+            result["blockers"],
+        )
+
+    def test_shfe_child_must_inherit_parent_order_type_exactly(self) -> None:
+        engine, rows, request = self._shfe_conversion_case(
+            volume=1,
+            yesterday_volume=0,
+        )
+        converter = engine.get_converter("CTP")
+        original_convert = converter.convert_order_request
+
+        def wrong_type_convert(*args: object, **kwargs: object) -> list[object]:
+            children = list(original_convert(*args, **kwargs))
+            for child in children:
+                child.type = stage931.OrderType.FAK
+            return children
+
+        converter.convert_order_request = wrong_type_convert
+
+        result = stage931._final_offset_conversion(engine, rows, request)
+
+        self.assertEqual([], result["requests"])
+        self.assertTrue(
+            any(":order_type=FAK!=LIMIT" in blocker for blocker in result["blockers"]),
             result["blockers"],
         )
 
@@ -1212,6 +1564,83 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         )
         self.assertTrue(stage931._final_reprice_blockers(final))
 
+    def test_post_q2_bounded_wait_accepts_delayed_open_and_close_ticks(self) -> None:
+        engine = self._strict_reprice_engine()
+        cases = (
+            (
+                "stage901_pending_order",
+                "open",
+                "short",
+                1244.0,
+                1244.5,
+            ),
+            (
+                "stage904_c9_intraday_close",
+                "close",
+                "long",
+                1244.0,
+                1244.5,
+            ),
+        )
+        for source, offset, direction, bid, ask in cases:
+            with self.subTest(source=source):
+                cutoff = time.monotonic()
+                rows: dict[str, list[dict[str, object]]] = {"ticks": []}
+                req = SimpleNamespace(
+                    price=1245.5,
+                    direction=SimpleNamespace(value=direction),
+                    offset=SimpleNamespace(value=offset),
+                    vt_symbol="jm2609.DCE",
+                )
+                intent = {
+                    "source": source,
+                    "vt_symbol": "jm2609.DCE",
+                    "pricetick": 0.5,
+                }
+
+                def publish_tick() -> None:
+                    time.sleep(0.1)
+                    rows["ticks"].append(
+                        self._strict_reprice_tick(
+                            received_monotonic=time.monotonic(),
+                            bid=bid,
+                            ask=ask,
+                        )
+                    )
+
+                publisher = threading.Thread(target=publish_tick)
+                publisher.start()
+                result = stage931._post_snapshot_final_reprice(
+                    engine,
+                    rows,
+                    intent,
+                    req,
+                    max_tick_age_seconds=3,
+                    q2_completed_monotonic=cutoff,
+                    tick_wait_seconds=0.5,
+                )
+                publisher.join(timeout=1)
+
+                self.assertEqual("applied", result["final_reprice_status"])
+                self.assertEqual("ctp_event_tick", result["final_reprice_source"])
+
+    def test_post_q2_bounded_wait_without_tick_never_reprices(self) -> None:
+        req = self._retry_request()
+        result = stage931._post_snapshot_final_reprice(
+            self._strict_reprice_engine(),
+            {"ticks": []},
+            self._retry_intent(),
+            req,
+            max_tick_age_seconds=3,
+            q2_completed_monotonic=time.monotonic(),
+            tick_wait_seconds=0.1,
+        )
+
+        self.assertEqual(
+            "blocked_c9_no_fresh_post_q2_ctp_tick",
+            result["final_reprice_status"],
+        )
+
     def test_event_engine_backlog_cannot_redate_pre_q2_tick_for_retry_or_close(self) -> None:
         """The causal stamp belongs at gateway ingress, not consumer time."""
 
@@ -1681,7 +2110,8 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 "symbol": "JM609",
                 "exchange": "DCE",
                 "direction": stage931.Direction.SHORT.value,
-                "type": stage931.OrderType.LIMIT.value,
+                "type": stage931.OrderType.FAK.value,
+                "physical_tif_policy_version": "stage179_open_fak_v1",
                 "volume": 1,
                 "price": 1245.5,
                 "offset": stage931.Offset.OPEN.value,
@@ -1708,7 +2138,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             symbol="JM609",
             exchange=stage931.Exchange.DCE,
             direction=stage931.Direction.SHORT,
-            type=stage931.OrderType.LIMIT,
+            type=stage931.OrderType.FAK,
             volume=1,
             price=1245.5,
             offset=stage931.Offset.OPEN,
@@ -1760,7 +2190,8 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "symbol": "JM609",
             "exchange": "DCE",
             "direction": stage931.Direction.SHORT.value,
-            "type": stage931.OrderType.LIMIT.value,
+            "type": stage931.OrderType.FAK.value,
+            "physical_tif_policy_version": "stage179_open_fak_v1",
             "volume": 1,
             "price": 1245.5,
             "offset": stage931.Offset.OPEN.value,
@@ -1881,7 +2312,8 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "symbol": "JM609",
             "exchange": "DCE",
             "direction": stage931.Direction.SHORT.value,
-            "type": stage931.OrderType.LIMIT.value,
+            "type": stage931.OrderType.FAK.value,
+            "physical_tif_policy_version": "stage179_open_fak_v1",
             "volume": 1,
             "price": 1245.5,
             "offset": stage931.Offset.OPEN.value,
@@ -2001,6 +2433,7 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
             "exchange": "DCE",
             "direction": stage931.Direction.LONG.value,
             "type": stage931.OrderType.LIMIT.value,
+            "physical_tif_policy_version": "stage179_limit_gfd_v1",
             "volume": 1,
             "price": 1252.0,
             "offset": stage931.Offset.CLOSE.value,

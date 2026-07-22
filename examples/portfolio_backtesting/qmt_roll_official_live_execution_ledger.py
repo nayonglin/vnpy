@@ -4,6 +4,7 @@ import fcntl
 import hashlib
 import json
 import os
+import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -20,6 +21,9 @@ INTENT_FINGERPRINT_VERSION_V2 = 2
 CLOSE_RETRY_AUDIT_VERSION = 1
 CLOSE_RETRY_MAX_SUBMIT_ATTEMPTS = 2
 CLOSE_RETRY_ATTEMPT2_LEASE_SECONDS = 300
+PRE_API_SLOT_SAFE_TERMINAL_VERSION = 1
+PRE_API_SLOT_SAFE_TERMINAL_EVENT = "pre_api_slot_no_side_effect_safe_terminal"
+POST_API_SLOT_SAFE_TERMINAL_EVENT = "post_api_slot_no_native_safe_terminal"
 CLOSE_RETRY_KNOWN_ZERO_REASONS = {
     "req_order_insert_not_accepted",
     "terminal_cancelled_zero_fill",
@@ -35,6 +39,8 @@ INTENT_METADATA_TEXT_FIELDS = (
     "position_direction",
     "entry_risk_date",
     "open_trade_id",
+    "logical_close_root_id",
+    "prior_close_terminal_checksum",
 )
 INTENT_METADATA_NUMBER_FIELDS = (
     "position_cycle_no",
@@ -47,6 +53,7 @@ INTENT_METADATA_NUMBER_FIELDS = (
     "root_entry_price",
     "root_initial_stop_price",
     "root_entry_volume",
+    "close_execution_attempt_no",
 )
 OPEN_BLOCKING_EVENTS = {
     "reserved",
@@ -96,10 +103,12 @@ LEDGER_INTEGRITY_ERROR_EVENTS = {
 }
 API_SLOT_TYPES = {"send_order", "cancel_order"}
 CLOSE_ATTEMPT_LEASE_SAFE_TERMINAL_EVENTS = {
+    PRE_API_SLOT_SAFE_TERMINAL_EVENT,
     "final_pre_send_gate_blocked_after_reserve",
     "api_slot_reservation_blocked",
     "adapter_exception_after_reserve",
     "spool_crash_recovery_pre_send_safe_terminal",
+    POST_API_SLOT_SAFE_TERMINAL_EVENT,
 }
 EXECUTION_LEDGER_READER_CAPABILITIES = frozenset(
     {
@@ -109,6 +118,7 @@ EXECUTION_LEDGER_READER_CAPABILITIES = frozenset(
         "close_uuid_lease_v1",
         "batch_api_slot_cas_v1",
         "spool_crash_recovery_v1",
+        "pre_api_slot_safe_terminal_v1",
     }
 )
 RECOVERY_SIDE_EFFECT_EVENTS = {
@@ -125,10 +135,22 @@ RECOVERY_SIDE_EFFECT_EVENTS = {
     "fill_reconciliation_pending",
     "order_traded_volume_observed_without_trade_detail",
     "filled_or_part_filled",
+    "native_order_identity_persisted_before_insert",
+    "native_order_identity_return_mismatch",
 }
 RECOVERY_RECONCILED_EVENTS = {
     "close_volume_reconciled_without_trade_detail",
 }
+
+_WARM_RESERVATION_IDENTITY_FIELDS = (
+    "target_date",
+    "intent_id",
+    "intent_payload_sha256",
+    "intent_kind",
+    "intent_fingerprint",
+    "spool_lease_owner",
+    "spool_lease_token",
+)
 
 
 @dataclass(frozen=True)
@@ -392,6 +414,14 @@ def _v2_fingerprint_payload(payload: dict[str, Any]) -> dict[str, Any]:
     position_epoch_id = _clean(payload.get("position_epoch_id"))
     if position_epoch_id:
         fingerprint_payload["position_epoch_id"] = position_epoch_id
+    for key in (
+        "logical_close_root_id",
+        "prior_close_terminal_checksum",
+        "close_execution_attempt_no",
+    ):
+        value = payload.get(key)
+        if _clean(value):
+            fingerprint_payload[key] = value
     return fingerprint_payload
 
 
@@ -479,6 +509,243 @@ def append_execution_ledger_event(event: dict[str, Any], path: Path = LIVE_EXECU
         finally:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
     return durable_payload
+
+
+def append_broker_callback_event_once(
+    event: dict[str, Any],
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+) -> dict[str, Any]:
+    """Durably append one normalized broker callback exactly once.
+
+    The callback key is derived by the adapter from broker identities and
+    cumulative state, never from callback arrival order.  Duplicate delivery
+    after reconnect is therefore an idempotent replay; a key collision with a
+    different payload fails closed.
+    """
+
+    callback_key = _clean(event.get("broker_callback_key"))
+    if not callback_key:
+        raise ValueError("broker_callback_key is required")
+    if not _clean(event.get("event_type")):
+        raise ValueError("broker_callback_event_type is required")
+    if not _clean(event.get("target_date")):
+        raise ValueError("broker_callback_target_date is required")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path_was_missing = not path.exists()
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            rows = _parse_ledger_lines(handle.read().splitlines())
+            integrity_error = _ledger_integrity_blocker(rows)
+            if integrity_error:
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": integrity_error,
+                    "ledger_event": {},
+                }
+            existing = [
+                row
+                for row in rows
+                if _clean(row.get("broker_callback_key")) == callback_key
+            ]
+            if len(existing) > 1:
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": (
+                        "duplicate_broker_callback_key_in_ledger:"
+                        f"{callback_key};count={len(existing)}"
+                    ),
+                    "ledger_event": {},
+                }
+            if existing:
+                prior = existing[0]
+                comparable_prior = {
+                    key: value
+                    for key, value in prior.items()
+                    if key not in {"schema_version", "generated_at", "record_checksum"}
+                }
+                comparable_event = {
+                    key: value
+                    for key, value in event.items()
+                    if key not in {"schema_version", "generated_at", "record_checksum"}
+                }
+                if json.dumps(
+                    comparable_prior,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    default=str,
+                ) != json.dumps(
+                    comparable_event,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    default=str,
+                ):
+                    return {
+                        "appended": False,
+                        "idempotent_replay": False,
+                        "blocker": (
+                            "broker_callback_key_payload_mismatch:"
+                            f"{callback_key}"
+                        ),
+                        "ledger_event": {},
+                    }
+                return {
+                    "appended": False,
+                    "idempotent_replay": True,
+                    "blocker": "",
+                    "ledger_event": prior,
+                }
+
+            payload = {
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                **event,
+            }
+            durable_payload = _with_record_checksum(payload)
+            _durable_append_locked(
+                handle,
+                payload,
+                created_path=path if path_was_missing else None,
+            )
+            return {
+                "appended": True,
+                "idempotent_replay": False,
+                "blocker": "",
+                "ledger_event": durable_payload,
+            }
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def advance_cancel_duty_state(
+    *,
+    target_date: str,
+    duty_key: str,
+    expected_states: tuple[str, ...],
+    next_state: str,
+    owner_id: str,
+    lease_seconds: int,
+    event: dict[str, Any],
+    allow_expired_takeover: bool = False,
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+) -> dict[str, Any]:
+    """CAS one physical cancel duty through its crash-recovery states."""
+
+    allowed = {"reserved", "api_called", "api_returned", "query_reconciled"}
+    if next_state not in allowed:
+        raise ValueError(f"unsupported_cancel_duty_state:{next_state}")
+    if not duty_key or not target_date or not owner_id:
+        raise ValueError("cancel_duty_identity_missing")
+    now_ns = time.time_ns()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path_was_missing = not path.exists()
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            rows = _parse_ledger_lines(handle.read().splitlines())
+            integrity_error = _ledger_integrity_blocker(rows)
+            if integrity_error:
+                return {"advanced": False, "blocker": integrity_error, "ledger_event": {}}
+            prior = next(
+                (
+                    row
+                    for row in reversed(rows)
+                    if _clean(row.get("event_type")) == "cancel_duty_state_transition"
+                    and _clean(row.get("cancel_duty_key")) == duty_key
+                ),
+                None,
+            )
+            current = _clean((prior or {}).get("cancel_duty_state"))
+            if current == "query_reconciled":
+                return {"advanced": False, "idempotent_replay": True, "blocker": "", "ledger_event": prior}
+            if current not in set(expected_states):
+                return {
+                    "advanced": False,
+                    "blocker": f"cancel_duty_state_cas_mismatch:current={current or 'none'}",
+                    "ledger_event": prior or {},
+                }
+            prior_owner = _clean((prior or {}).get("cancel_duty_owner_id"))
+            expired = _strict_positive_int(
+                (prior or {}).get("cancel_duty_lease_expires_epoch_ns")
+            )
+            if (
+                prior_owner
+                and prior_owner != owner_id
+                and not (
+                    allow_expired_takeover
+                    and expired is not None
+                    and expired <= now_ns
+                )
+            ):
+                return {
+                    "advanced": False,
+                    "blocker": "cancel_duty_owner_lease_active",
+                    "ledger_event": prior or {},
+                }
+            prior_generation = int(
+                _to_float((prior or {}).get("cancel_duty_generation"), 0.0)
+            )
+            next_generation = int(
+                _to_float(event.get("cancel_duty_generation"), 0.0)
+            )
+            generation_valid = bool(
+                (not current and next_generation == 1)
+                or (
+                    current in {"api_called", "api_returned"}
+                    and next_state == "reserved"
+                    and next_generation == prior_generation + 1
+                    and next_generation <= 2
+                )
+                or (
+                    current
+                    and not (
+                        current in {"api_called", "api_returned"}
+                        and next_state == "reserved"
+                    )
+                    and next_generation == prior_generation
+                )
+            )
+            if not generation_valid:
+                return {
+                    "advanced": False,
+                    "blocker": (
+                        "cancel_duty_generation_not_monotonic:"
+                        f"prior={prior_generation};next={next_generation};"
+                        f"transition={current or 'none'}->{next_state}"
+                    ),
+                    "ledger_event": prior or {},
+                }
+            payload = {
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                **event,
+                "event_type": "cancel_duty_state_transition",
+                "target_date": target_date,
+                "cancel_duty_key": duty_key,
+                "cancel_duty_previous_state": current,
+                "cancel_duty_state": next_state,
+                "cancel_duty_owner_id": owner_id,
+                "cancel_duty_lease_expires_epoch_ns": (
+                    now_ns + max(1, int(lease_seconds)) * 1_000_000_000
+                ),
+                "cancel_duty_takeover": int(bool(prior_owner and prior_owner != owner_id)),
+            }
+            durable_payload = _with_record_checksum(payload)
+            _durable_append_locked(
+                handle,
+                payload,
+                created_path=path if path_was_missing else None,
+            )
+            return {"advanced": True, "blocker": "", "ledger_event": durable_payload}
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def append_reconciled_execution_fill_once(
@@ -582,6 +849,510 @@ def append_reconciled_execution_fill_once(
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+def _warm_reservation_identity_blocker(
+    rows: list[dict[str, Any]],
+    identity: dict[str, Any],
+) -> tuple[str, dict[str, Any] | None, int]:
+    """Resolve one exact warm reservation under the caller's ledger lock."""
+
+    reservation_checksum = _clean(identity.get("reservation_record_checksum"))
+    if len(reservation_checksum) != 64:
+        return "warm_reservation_record_checksum_missing_or_invalid", None, -1
+    for field_name in _WARM_RESERVATION_IDENTITY_FIELDS:
+        if not _clean(identity.get(field_name)):
+            return f"warm_reservation_identity_missing:{field_name}", None, -1
+    indexes = [
+        index
+        for index, event in enumerate(rows)
+        if _clean(event.get("record_checksum")) == reservation_checksum
+    ]
+    if len(indexes) != 1:
+        return (
+            "warm_reservation_record_checksum_not_unique_or_missing",
+            None,
+            -1,
+        )
+    reservation_index = indexes[0]
+    reservation = rows[reservation_index]
+    if _clean(reservation.get("event_type")) != "reserved":
+        return "warm_reservation_checksum_not_reserved_event", None, -1
+    for field_name in _WARM_RESERVATION_IDENTITY_FIELDS:
+        if _clean(reservation.get(field_name)) != _clean(identity.get(field_name)):
+            return f"warm_reservation_identity_mismatch:{field_name}", None, -1
+
+    fingerprint = _clean(identity.get("intent_fingerprint"))
+    latest_reservation = next(
+        (
+            event
+            for event in reversed(rows)
+            if _clean(event.get("event_type")) == "reserved"
+            and _clean(event.get("intent_fingerprint")) == fingerprint
+        ),
+        None,
+    )
+    if latest_reservation is not reservation:
+        return "warm_reservation_cas_stale_reservation", None, -1
+    return "", reservation, reservation_index
+
+
+def _event_matches_warm_identity(
+    event: dict[str, Any],
+    identity: dict[str, Any],
+) -> bool:
+    return all(
+        _clean(event.get(field_name)) == _clean(identity.get(field_name))
+        for field_name in _WARM_RESERVATION_IDENTITY_FIELDS
+    )
+
+
+def _warm_reservation_side_effect_after(
+    rows: list[dict[str, Any]],
+    *,
+    reservation_index: int,
+    identity: dict[str, Any],
+) -> dict[str, Any] | None:
+    for event in rows[reservation_index + 1 :]:
+        if not _event_matches_warm_identity(event, identity):
+            continue
+        event_type = _clean(event.get("event_type"))
+        if event_type in RECOVERY_SIDE_EFFECT_EVENTS or (
+            event_type == "adapter_exception_after_reserve"
+            and _to_float(event.get("send_slot_reserved"), 0.0) == 1.0
+        ):
+            return event
+    return None
+
+
+def _valid_pre_api_slot_safe_terminal(
+    event: dict[str, Any],
+    reservation: dict[str, Any],
+) -> bool:
+    if _clean(event.get("event_type")) != PRE_API_SLOT_SAFE_TERMINAL_EVENT:
+        return False
+    if (
+        _strict_positive_int(event.get("safe_terminal_version"))
+        != PRE_API_SLOT_SAFE_TERMINAL_VERSION
+        or _clean(event.get("reservation_record_checksum"))
+        != _clean(reservation.get("record_checksum"))
+    ):
+        return False
+    if not _event_matches_warm_identity(event, reservation):
+        return False
+    zero_fields = (
+        "api_slot_reserved",
+        "send_slot_reserved",
+        "send_order_call_count",
+        "cancel_order_call_count",
+    )
+    if any(_to_float(event.get(field_name), -1.0) != 0.0 for field_name in zero_fields):
+        return False
+    if _clean(event.get("api_slot_batch_id")):
+        return False
+    broker_order_ids = event.get("broker_order_ids")
+    return broker_order_ids == []
+
+
+def append_pre_api_slot_no_side_effect_terminal(
+    *,
+    target_date: str,
+    intent_id: str,
+    intent_payload_sha256: str,
+    intent_kind: str,
+    intent_fingerprint: str,
+    reservation_record_checksum: str,
+    spool_lease_owner: str,
+    spool_lease_token: str,
+    blockers: list[str],
+    blocked_phase: str,
+    base_event: dict[str, Any] | None = None,
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+) -> dict[str, Any]:
+    """Atomically prove and close one pre-API reservation with no side effect.
+
+    The append and the API-slot CAS use the same ledger flock.  Therefore a
+    successful return proves that no API slot or broker call won the race for
+    this exact reservation.
+    """
+
+    identity = {
+        "target_date": target_date,
+        "intent_id": intent_id,
+        "intent_payload_sha256": intent_payload_sha256,
+        "intent_kind": intent_kind,
+        "intent_fingerprint": intent_fingerprint,
+        "reservation_record_checksum": reservation_record_checksum,
+        "spool_lease_owner": spool_lease_owner,
+        "spool_lease_token": spool_lease_token,
+    }
+    normalized_blockers = [str(item) for item in blockers if str(item)]
+    if not normalized_blockers:
+        return {
+            "appended": False,
+            "idempotent_replay": False,
+            "blocker": "pre_api_slot_safe_terminal_blockers_missing",
+            "ledger_event": {},
+        }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path_was_missing = not path.exists()
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            rows = _parse_ledger_lines(handle.read().splitlines())
+            integrity_error = _ledger_integrity_blocker(rows)
+            if integrity_error:
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": integrity_error,
+                    "ledger_event": {},
+                }
+            blocker, reservation, reservation_index = (
+                _warm_reservation_identity_blocker(rows, identity)
+            )
+            if blocker or reservation is None:
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": blocker,
+                    "ledger_event": {},
+                }
+            side_effect = _warm_reservation_side_effect_after(
+                rows,
+                reservation_index=reservation_index,
+                identity=identity,
+            )
+            if side_effect is not None:
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": (
+                        "pre_api_slot_safe_terminal_side_effect_already_recorded:"
+                        f"{_clean(side_effect.get('event_type'))}"
+                    ),
+                    "ledger_event": {},
+                }
+            prior_terminals = [
+                event
+                for event in rows[reservation_index + 1 :]
+                if _clean(event.get("event_type"))
+                == PRE_API_SLOT_SAFE_TERMINAL_EVENT
+                and _clean(event.get("reservation_record_checksum"))
+                == reservation_record_checksum
+            ]
+            if prior_terminals:
+                prior = prior_terminals[-1]
+                if not _valid_pre_api_slot_safe_terminal(prior, reservation):
+                    return {
+                        "appended": False,
+                        "idempotent_replay": False,
+                        "blocker": "pre_api_slot_safe_terminal_prior_invalid",
+                        "ledger_event": {},
+                    }
+                return {
+                    "appended": False,
+                    "idempotent_replay": True,
+                    "blocker": "",
+                    "ledger_event": prior,
+                }
+
+            payload = {
+                **(base_event or {}),
+                **identity,
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "event_type": PRE_API_SLOT_SAFE_TERMINAL_EVENT,
+                "safe_terminal_version": PRE_API_SLOT_SAFE_TERMINAL_VERSION,
+                "safe_terminal_capability": "pre_api_slot_safe_terminal_v1",
+                "blocked_phase": _clean(blocked_phase) or "pre_api_slot",
+                "blockers": normalized_blockers,
+                "final_blockers": normalized_blockers,
+                "pre_send_blocked_confirmed": 1,
+                "api_slot_reserved": 0,
+                "send_slot_reserved": 0,
+                "api_slot_batch_id": "",
+                "send_order_call_count": 0,
+                "cancel_order_call_count": 0,
+                "broker_order_ids": [],
+            }
+            durable_payload = _with_record_checksum(payload)
+            _durable_append_locked(
+                handle,
+                payload,
+                created_path=path if path_was_missing else None,
+            )
+            return {
+                "appended": True,
+                "idempotent_replay": False,
+                "blocker": "",
+                "ledger_event": durable_payload,
+            }
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def append_post_api_slot_no_native_safe_terminal(
+    *,
+    identity: dict[str, Any],
+    api_slot_batch_id: str,
+    blockers: list[str],
+    blocked_phase: str,
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+) -> dict[str, Any]:
+    """Close a consumed send slot iff no native/send call won the ledger CAS."""
+
+    if not api_slot_batch_id or not blockers:
+        return {"appended": False, "blocker": "post_slot_safe_terminal_input_missing"}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path_was_missing = not path.exists()
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            handle.seek(0)
+            rows = _parse_ledger_lines(handle.read().splitlines())
+            integrity_error = _ledger_integrity_blocker(rows)
+            if integrity_error:
+                return {"appended": False, "blocker": integrity_error}
+            blocker, reservation, reservation_index = _warm_reservation_identity_blocker(
+                rows, identity
+            )
+            if blocker or reservation is None:
+                return {"appended": False, "blocker": blocker}
+            prior = next(
+                (
+                    row
+                    for row in rows[reservation_index + 1 :]
+                    if _clean(row.get("event_type")) == POST_API_SLOT_SAFE_TERMINAL_EVENT
+                    and _clean(row.get("api_slot_batch_id")) == api_slot_batch_id
+                    and _event_matches_warm_identity(row, identity)
+                ),
+                None,
+            )
+            if prior is not None:
+                if valid_post_api_slot_no_native_safe_terminal(rows, prior):
+                    return {
+                        "appended": False,
+                        "idempotent_replay": True,
+                        "blocker": "",
+                        "ledger_event": prior,
+                    }
+                return {
+                    "appended": False,
+                    "idempotent_replay": False,
+                    "blocker": (
+                        "post_slot_safe_terminal_prior_invalid_or_superseded"
+                    ),
+                    "ledger_event": prior,
+                }
+            batch_slot_rows = [
+                row
+                for row in rows[reservation_index + 1 :]
+                if _clean(row.get("event_type")) == "api_slot_reserved"
+                and _clean(row.get("api_slot_type")) == "send_order"
+                and _clean(row.get("api_slot_batch_id")) == api_slot_batch_id
+            ]
+            reservation_attempt = _strict_positive_int(
+                reservation.get("close_submit_attempt_no")
+            )
+            reservation_token = _clean(
+                reservation.get("close_attempt_lease_token")
+            )
+            close_lease_matches = bool(
+                (reservation_attempt is None and not reservation_token)
+                or (
+                    reservation_attempt is not None
+                    and reservation_token
+                    and _strict_positive_int(
+                        identity.get("close_submit_attempt_no")
+                    )
+                    == reservation_attempt
+                    and _clean(identity.get("close_attempt_lease_token"))
+                    == reservation_token
+                    and all(
+                        _strict_positive_int(
+                            row.get("close_submit_attempt_no")
+                        )
+                        == reservation_attempt
+                        and _clean(row.get("close_attempt_lease_token"))
+                        == reservation_token
+                        for row in batch_slot_rows
+                    )
+                )
+            )
+            if not batch_slot_rows:
+                return {"appended": False, "blocker": "post_slot_safe_terminal_slot_missing"}
+            if not all(
+                _event_matches_warm_identity(row, identity)
+                for row in batch_slot_rows
+            ) or not close_lease_matches:
+                return {
+                    "appended": False,
+                    "blocker": "post_slot_safe_terminal_batch_or_lease_mismatch",
+                }
+            forbidden = next(
+                (
+                    row
+                    for row in rows[reservation_index + 1 :]
+                    if _event_matches_warm_identity(row, identity)
+                    and (
+                        _clean(row.get("event_type"))
+                        in {
+                        "native_order_identity_persisted_before_insert",
+                        "send_order_returned",
+                        "submitted_to_ctp",
+                        }
+                        or (
+                            _clean(row.get("event_type")) == "send_order_called"
+                            and not (
+                                _clean(row.get("native_identity_protocol_version"))
+                                == "stage179_preinsert_v1"
+                                and _to_float(row.get("native_api_called"), 0.0)
+                                == 0.0
+                            )
+                        )
+                    )
+                ),
+                None,
+            )
+            if forbidden is not None:
+                return {
+                    "appended": False,
+                    "blocker": f"post_slot_safe_terminal_native_winner:{_clean(forbidden.get('event_type'))}",
+                }
+            payload = {
+                **identity,
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "event_type": POST_API_SLOT_SAFE_TERMINAL_EVENT,
+                "safe_terminal_version": 1,
+                "blocked_phase": blocked_phase,
+                "blockers": [str(item) for item in blockers if str(item)],
+                "api_slot_reserved": 1,
+                "send_slot_reserved": 1,
+                "api_slot_batch_id": api_slot_batch_id,
+                "send_order_call_count": 0,
+                "cancel_order_call_count": 0,
+                "broker_order_ids": [],
+                "native_api_called": 0,
+            }
+            durable = _with_record_checksum(payload)
+            _durable_append_locked(
+                handle,
+                payload,
+                created_path=path if path_was_missing else None,
+            )
+            return {"appended": True, "blocker": "", "ledger_event": durable}
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def valid_post_api_slot_no_native_safe_terminal(
+    rows: list[dict[str, Any]], event: dict[str, Any]
+) -> bool:
+    if (
+        _clean(event.get("event_type")) != POST_API_SLOT_SAFE_TERMINAL_EVENT
+        or _strict_positive_int(event.get("safe_terminal_version")) != 1
+        or _to_float(event.get("api_slot_reserved"), 0.0) != 1.0
+        or _to_float(event.get("send_slot_reserved"), 0.0) != 1.0
+        or _to_float(event.get("native_api_called"), -1.0) != 0.0
+        or _to_float(event.get("send_order_call_count"), -1.0) != 0.0
+        or _to_float(event.get("cancel_order_call_count"), -1.0) != 0.0
+        or event.get("broker_order_ids") != []
+        or not _clean(event.get("blocked_phase"))
+        or not isinstance(event.get("blockers"), list)
+        or not event.get("blockers")
+    ):
+        return False
+    batch_id = _clean(event.get("api_slot_batch_id"))
+    identity = {
+        key: event.get(key, "")
+        for key in (*_WARM_RESERVATION_IDENTITY_FIELDS, "reservation_record_checksum")
+    }
+    reservation_checksum = _clean(identity.get("reservation_record_checksum"))
+    reservation_indexes = [
+        index
+        for index, row in enumerate(rows)
+        if _clean(row.get("record_checksum")) == reservation_checksum
+    ]
+    if len(reservation_indexes) != 1 or not batch_id:
+        return False
+    reservation_index = reservation_indexes[0]
+    reservation = rows[reservation_index]
+    if (
+        _clean(reservation.get("event_type")) != "reserved"
+        or any(
+            _clean(reservation.get(field_name))
+            != _clean(identity.get(field_name))
+            for field_name in _WARM_RESERVATION_IDENTITY_FIELDS
+        )
+    ):
+        return False
+    event_index = next(
+        (
+            index
+            for index, row in enumerate(rows)
+            if _clean(row.get("record_checksum"))
+            == _clean(event.get("record_checksum"))
+        ),
+        -1,
+    )
+    if event_index <= reservation_index:
+        return False
+    batch_slots = [
+        row
+        for row in rows[reservation_index:event_index]
+        if _clean(row.get("event_type")) == "api_slot_reserved"
+        and _clean(row.get("api_slot_type")) == "send_order"
+        and _clean(row.get("api_slot_batch_id")) == batch_id
+    ]
+    if not batch_slots or not all(
+        _event_matches_warm_identity(row, identity) for row in batch_slots
+    ):
+        return False
+    reservation_attempt = _strict_positive_int(
+        reservation.get("close_submit_attempt_no")
+    )
+    reservation_token = _clean(reservation.get("close_attempt_lease_token"))
+    if reservation_attempt is None and not reservation_token:
+        pass
+    elif not (
+        reservation_attempt is not None
+        and reservation_token
+        and _strict_positive_int(event.get("close_submit_attempt_no"))
+        == reservation_attempt
+        and _clean(event.get("close_attempt_lease_token"))
+        == reservation_token
+        and all(
+            _strict_positive_int(row.get("close_submit_attempt_no"))
+            == reservation_attempt
+            and _clean(row.get("close_attempt_lease_token"))
+            == reservation_token
+            for row in batch_slots
+        )
+    ):
+        return False
+    return not any(
+        _event_matches_warm_identity(row, identity)
+        and (
+            _clean(row.get("event_type"))
+            in {
+            "native_order_identity_persisted_before_insert",
+            "send_order_returned",
+            "submitted_to_ctp",
+            }
+            or (
+                _clean(row.get("event_type")) == "send_order_called"
+                and not (
+                    _clean(row.get("native_identity_protocol_version"))
+                    == "stage179_preinsert_v1"
+                    and _to_float(row.get("native_api_called"), 0.0) == 0.0
+                )
+            )
+        )
+        for row in rows[reservation_index + 1 :]
+    )
+
+
 def reserve_execution_ledger_intent(
     *,
     target_date: str,
@@ -627,12 +1398,47 @@ def reserve_execution_ledger_intent(
                     fingerprint,
                     *_legacy_alias_fingerprints(fingerprint_payload),
                 }
+                logical_close_root_id = _clean(
+                    fingerprint_payload.get("logical_close_root_id")
+                )
+                effective_close_submit_event_ids = {
+                    id(item)
+                    for item in _effective_close_submit_attempt_events(rows)
+                }
                 prior_attempt_numbers = [
                     attempt_no
                     for item in rows
-                    if _clean(item.get("intent_fingerprint"))
-                    in accepted_fingerprints
-                    and _is_close_submit_attempt_event(item)
+                    if (
+                        (
+                            logical_close_root_id
+                            and _clean(
+                                _metadata_value(
+                                    item,
+                                    (
+                                        item.get("intent_payload")
+                                        if isinstance(item.get("intent_payload"), dict)
+                                        else {}
+                                    ),
+                                    "logical_close_root_id",
+                                )
+                            )
+                            == logical_close_root_id
+                        )
+                        or (
+                            not logical_close_root_id
+                            and _clean(item.get("intent_fingerprint"))
+                            in accepted_fingerprints
+                        )
+                    )
+                    and (
+                        id(item) in effective_close_submit_event_ids
+                        or (
+                            logical_close_root_id
+                            and _clean(item.get("event_type")) == "reserved"
+                            and _clean(item.get("intent_fingerprint"))
+                            not in accepted_fingerprints
+                        )
+                    )
                     and (
                         attempt_no := _strict_positive_int(
                             item.get("close_submit_attempt_no")
@@ -643,6 +1449,133 @@ def reserve_execution_ledger_intent(
                 close_submit_attempt_no = (
                     max(prior_attempt_numbers, default=0) + 1
                 )
+                requested_execution_attempt_no = _strict_positive_int(
+                    fingerprint_payload.get("close_execution_attempt_no")
+                )
+                prior_same_fingerprint = any(
+                    _clean(item.get("intent_fingerprint"))
+                    in accepted_fingerprints
+                    and id(item) in effective_close_submit_event_ids
+                    for item in rows
+                )
+                if (
+                    requested_execution_attempt_no is not None
+                    and not prior_same_fingerprint
+                    and requested_execution_attempt_no
+                    != close_submit_attempt_no
+                ):
+                    return {
+                        "reserved": False,
+                        "duplicate_blocker": (
+                            "logical_close_execution_attempt_mismatch:"
+                            f"requested={requested_execution_attempt_no};"
+                            f"next={close_submit_attempt_no}"
+                        ),
+                        "intent_fingerprint": fingerprint,
+                        "intent_payload": fingerprint_payload,
+                        "latest_ledger_event": latest or {},
+                    }
+                if (
+                    close_submit_attempt_no == 2
+                    and not prior_same_fingerprint
+                ):
+                    prior_terminal_checksum = _clean(
+                        fingerprint_payload.get("prior_close_terminal_checksum")
+                    )
+                    try:
+                        parsed_checksums = json.loads(prior_terminal_checksum)
+                    except json.JSONDecodeError:
+                        parsed_checksums = []
+                    checksums = (
+                        [str(item) for item in parsed_checksums]
+                        if isinstance(parsed_checksums, list)
+                        and parsed_checksums
+                        and all(isinstance(item, str) and item for item in parsed_checksums)
+                        else []
+                    )
+                    terminals = [
+                        item
+                        for checksum in checksums
+                        for item in rows
+                        if _clean(item.get("record_checksum")) == checksum
+                    ]
+                    requested_epoch = _clean(
+                        fingerprint_payload.get("position_epoch_id")
+                    )
+                    expected_children = max(
+                        [
+                            int(_to_float(item.get("child_order_count"), 1.0))
+                            for item in terminals
+                        ],
+                        default=0,
+                    )
+                    terminal_children = {
+                        _clean(item.get("child_order_id"))
+                        or _clean(item.get("vt_orderid"))
+                        for item in terminals
+                    }
+                    def valid_terminal(item: dict[str, Any]) -> bool:
+                        item_payload = (
+                            item.get("intent_payload")
+                            if isinstance(item.get("intent_payload"), dict)
+                            else {}
+                        )
+                        item_type = _clean(item.get("event_type"))
+                        authority = bool(
+                            item_type == "broker_order_query_terminal_observed"
+                            and _to_float(
+                                item.get("fill_price_reconciliation_pending"), 1.0
+                            )
+                            == 0.0
+                        ) or bool(
+                            item_type == "rejected_or_inactive"
+                            and _strict_positive_int(
+                                item.get("close_retry_audit_version")
+                            )
+                            is not None
+                            and _to_float(item.get("close_retry_known_zero"), 0.0)
+                            == 1.0
+                        )
+                        return bool(
+                            authority
+                            and _clean(
+                                _metadata_value(
+                                    item, item_payload, "logical_close_root_id"
+                                )
+                            )
+                            == logical_close_root_id
+                            and _clean(
+                                _metadata_value(
+                                    item, item_payload, "position_epoch_id"
+                                )
+                            )
+                            == requested_epoch
+                            and _strict_positive_int(item.get("close_submit_attempt_no"))
+                            == 1
+                        )
+                    if not (
+                        prior_terminal_checksum
+                        and len(terminals) == len(checksums)
+                        and expected_children == len(terminal_children) == len(terminals)
+                        and all(valid_terminal(item) for item in terminals)
+                    ):
+                        return {
+                            "reserved": False,
+                            "duplicate_blocker": (
+                                "logical_close_prior_terminal_proof_invalid"
+                            ),
+                            "intent_fingerprint": fingerprint,
+                            "intent_payload": fingerprint_payload,
+                            "latest_ledger_event": latest or {},
+                        }
+                if close_submit_attempt_no > CLOSE_RETRY_MAX_SUBMIT_ATTEMPTS:
+                    return {
+                        "reserved": False,
+                        "duplicate_blocker": "logical_close_execution_attempt_cap_reached",
+                        "intent_fingerprint": fingerprint,
+                        "intent_payload": fingerprint_payload,
+                        "latest_ledger_event": latest or {},
+                    }
                 close_attempt_lease_token = uuid.uuid4().hex
                 close_attempt_retry_cooldown_seconds = max(
                     1, int(close_retry_after_cancel_seconds)
@@ -813,6 +1746,21 @@ def reserve_execution_api_slots(
                     "api_slot_usage": 0,
                     "reserved_count": 0,
                 }
+            warm_cas_blocker = (
+                _warm_api_slot_cas_blocker(rows, base_events)
+                if slot_type == "send_order"
+                else ""
+            )
+            if warm_cas_blocker:
+                return {
+                    "reserved": False,
+                    "blocker": warm_cas_blocker,
+                    "api_slot_usage": _api_slot_usage(
+                        rows, target_date, slot_type
+                    ),
+                    "requested_count": len(base_events),
+                    "reserved_count": 0,
+                }
             lease_cas_blocker = (
                 _close_attempt_api_slot_cas_blocker(rows, base_events)
                 if slot_type == "send_order"
@@ -883,6 +1831,59 @@ def reserve_execution_api_slots(
             }
         finally:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def _warm_api_slot_cas_blocker(
+    rows: list[dict[str, Any]],
+    base_events: list[dict[str, Any]],
+) -> str:
+    """Bind a Stage931 warm send batch to its exact durable reservation."""
+
+    checksums = {
+        _clean(event.get("reservation_record_checksum")) for event in base_events
+    }
+    # Legacy/cold callers do not claim the versioned warm CAS capability.
+    if checksums == {""}:
+        return ""
+    if len(checksums) != 1 or "" in checksums:
+        return "warm_api_slot_reservation_checksum_missing_or_mismatch"
+    for field_name in _WARM_RESERVATION_IDENTITY_FIELDS:
+        values = {_clean(event.get(field_name)) for event in base_events}
+        if len(values) != 1 or "" in values:
+            return f"warm_api_slot_identity_missing_or_mismatch:{field_name}"
+    identity = dict(base_events[0])
+    blocker, reservation, reservation_index = _warm_reservation_identity_blocker(
+        rows,
+        identity,
+    )
+    if blocker or reservation is None:
+        return f"warm_api_slot_{blocker}"
+    side_effect = _warm_reservation_side_effect_after(
+        rows,
+        reservation_index=reservation_index,
+        identity=identity,
+    )
+    if side_effect is not None:
+        return (
+            "warm_api_slot_side_effect_already_recorded:"
+            f"{_clean(side_effect.get('event_type'))}"
+        )
+    terminal = next(
+        (
+            event
+            for event in reversed(rows[reservation_index + 1 :])
+            if _clean(event.get("event_type"))
+            == PRE_API_SLOT_SAFE_TERMINAL_EVENT
+            and _clean(event.get("reservation_record_checksum"))
+            == _clean(identity.get("reservation_record_checksum"))
+        ),
+        None,
+    )
+    if terminal is not None:
+        if not _valid_pre_api_slot_safe_terminal(terminal, reservation):
+            return "warm_api_slot_safe_terminal_invalid"
+        return "warm_api_slot_reservation_already_safe_terminal"
+    return ""
 
 
 def _recovery_event_matches_lease(
@@ -1051,9 +2052,36 @@ def recover_expired_spool_lease(
             reservation_index = exact_reservation_indexes[-1]
             reservation = matched[reservation_index]
             after_reservation = matched[reservation_index + 1 :]
-            safe_terminals = [
+            exact_lease_events = [
                 event
                 for event in after_reservation
+                if _recovery_event_matches_lease(
+                    event,
+                    spool_lease_owner=owner,
+                    spool_lease_token=token,
+                )
+            ]
+            known_order_ids = {
+                _clean(event.get("vt_orderid"))
+                for event in exact_lease_events
+                if _clean(event.get("event_type"))
+                in {
+                    "native_order_identity_persisted_before_insert",
+                    "send_order_returned",
+                    "submitted_to_ctp",
+                }
+                and _clean(event.get("vt_orderid"))
+            }
+            exact_order_events = [
+                event
+                for event in exact_lease_events
+                if not known_order_ids
+                or not _clean(event.get("vt_orderid"))
+                or _clean(event.get("vt_orderid")) in known_order_ids
+            ]
+            safe_terminals = [
+                event
+                for event in exact_lease_events
                 if _clean(event.get("event_type"))
                 == "spool_crash_recovery_pre_send_safe_terminal"
                 and _recovery_event_matches_lease(
@@ -1062,17 +2090,68 @@ def recover_expired_spool_lease(
                     spool_lease_token=token,
                 )
             ]
+            post_slot_safe = next(
+                (
+                    (index, event)
+                    for index, event in reversed(
+                        list(enumerate(exact_lease_events))
+                    )
+                    if _clean(event.get("event_type"))
+                    == POST_API_SLOT_SAFE_TERMINAL_EVENT
+                    and valid_post_api_slot_no_native_safe_terminal(rows, event)
+                    and _to_float(event.get("send_order_call_count"), -1.0)
+                    == 0.0
+                    and _to_float(event.get("native_api_called"), -1.0) == 0.0
+                    and _clean(event.get("api_slot_batch_id"))
+                ),
+                None,
+            )
+            if post_slot_safe is not None:
+                safe_index, safe_event = post_slot_safe
+                later_native = next(
+                    (
+                        event
+                        for event in exact_lease_events[safe_index + 1 :]
+                        if _clean(event.get("event_type"))
+                        in {
+                            "send_order_called",
+                            "native_order_identity_persisted_before_insert",
+                            "send_order_returned",
+                            "submitted_to_ctp",
+                        }
+                    ),
+                    None,
+                )
+                if later_native is None:
+                    return LedgerRecoveryDecision(
+                        disposition="requeue_pre_send",
+                        blocker="",
+                        intent_fingerprint=fingerprint,
+                        evidence_event_type=POST_API_SLOT_SAFE_TERMINAL_EVENT,
+                        safe_terminal_appended=False,
+                    )
             requested_volume = max(
                 0.0,
                 _to_float(fingerprint_payload.get("volume"), 0.0),
             )
-            filled_volume = _recovery_fill_volume(after_reservation)
+            filled_volume = _recovery_fill_volume(exact_order_events)
             explicit_reconciled = next(
                 (
                     event
-                    for event in reversed(after_reservation)
-                    if _clean(event.get("event_type"))
-                    in RECOVERY_RECONCILED_EVENTS
+                    for event in reversed(exact_order_events)
+                    if (
+                        _clean(event.get("event_type"))
+                        in RECOVERY_RECONCILED_EVENTS
+                    )
+                    or (
+                        _clean(event.get("event_type"))
+                        == "broker_order_query_terminal_observed"
+                        and _to_float(
+                            event.get("fill_price_reconciliation_pending"),
+                            1.0,
+                        )
+                        == 0.0
+                    )
                 ),
                 None,
             )
@@ -1081,7 +2160,7 @@ def recover_expired_spool_lease(
             ):
                 evidence = explicit_reconciled or next(
                     event
-                    for event in reversed(after_reservation)
+                    for event in reversed(exact_order_events)
                     if _clean(event.get("event_type"))
                     == "filled_or_part_filled"
                 )
@@ -1096,9 +2175,23 @@ def recover_expired_spool_lease(
             side_effect = next(
                 (
                     event
+                    # Any post-reservation broker/API evidence is enough to
+                    # forbid requeue, even when it lacks the retained lease
+                    # binding.  Such unbound evidence can only keep the row
+                    # reconciliation-only; it can never prove reconciled.
                     for event in reversed(after_reservation)
                     if _clean(event.get("event_type"))
                     in RECOVERY_SIDE_EFFECT_EVENTS
+                    and not (
+                        _clean(event.get("event_type"))
+                        == "send_order_called"
+                        and _clean(
+                            event.get("native_identity_protocol_version")
+                        )
+                        == "stage179_preinsert_v1"
+                        and _to_float(event.get("native_api_called"), 0.0)
+                        == 0.0
+                    )
                     or (
                         _clean(event.get("event_type"))
                         == "adapter_exception_after_reserve"
@@ -1537,6 +2630,48 @@ def _is_close_submit_attempt_event(row: dict[str, Any]) -> bool:
     )
 
 
+def _post_slot_terminalized_send_slot_indexes(
+    rows: list[dict[str, Any]],
+) -> set[int]:
+    """Return send-slot rows proven to have reached zero native side effects.
+
+    The strict terminal validator scans the complete tail after its exact
+    reservation.  A terminal therefore dominates only its own earlier batch
+    and only while no later native/send evidence exists for that lease.
+    """
+
+    terminalized: set[int] = set()
+    for terminal_index, terminal in enumerate(rows):
+        if not valid_post_api_slot_no_native_safe_terminal(rows, terminal):
+            continue
+        batch_id = _clean(terminal.get("api_slot_batch_id"))
+        for slot_index, slot in enumerate(rows[:terminal_index]):
+            if (
+                _clean(slot.get("event_type")) == "api_slot_reserved"
+                and _clean(slot.get("api_slot_type")) == "send_order"
+                and _clean(slot.get("api_slot_batch_id")) == batch_id
+                and _event_matches_warm_identity(slot, terminal)
+                and _strict_positive_int(slot.get("close_submit_attempt_no"))
+                == _strict_positive_int(terminal.get("close_submit_attempt_no"))
+                and _clean(slot.get("close_attempt_lease_token"))
+                == _clean(terminal.get("close_attempt_lease_token"))
+            ):
+                terminalized.add(slot_index)
+    return terminalized
+
+
+def _effective_close_submit_attempt_events(
+    rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    terminalized_slots = _post_slot_terminalized_send_slot_indexes(rows)
+    return [
+        row
+        for index, row in enumerate(rows)
+        if _is_close_submit_attempt_event(row)
+        and index not in terminalized_slots
+    ]
+
+
 def _close_attempt_lease_state(
     matched_events: list[dict[str, Any]],
     *,
@@ -1579,7 +2714,13 @@ def _close_attempt_lease_state(
     )
 
     after_reservation = matched_events[reservation_index + 1 :]
-    for item in after_reservation:
+    terminalized_slot_indexes = _post_slot_terminalized_send_slot_indexes(
+        matched_events
+    )
+    for item_index, item in enumerate(
+        after_reservation,
+        start=reservation_index + 1,
+    ):
         item_attempt_no = _strict_positive_int(
             item.get("close_submit_attempt_no")
         )
@@ -1594,7 +2735,10 @@ def _close_attempt_lease_state(
             continue
         event_type = _clean(item.get("event_type"))
         if (
-            _is_close_submit_attempt_event(item)
+            (
+                _is_close_submit_attempt_event(item)
+                and item_index not in terminalized_slot_indexes
+            )
             or event_type in CLOSE_PERMANENT_EVIDENCE_EVENTS
             or event_type in {"submitted_to_ctp", "adapter_exception_after_send"}
             or (
@@ -1604,6 +2748,7 @@ def _close_attempt_lease_state(
         ):
             return {"status": "side_effect", "event": item, "token": token}
 
+    immediate_safe_terminals: list[dict[str, Any]] = []
     safe_terminals: list[dict[str, Any]] = []
     for item in after_reservation:
         if (
@@ -1615,12 +2760,30 @@ def _close_attempt_lease_state(
         event_type = _clean(item.get("event_type"))
         if event_type not in CLOSE_ATTEMPT_LEASE_SAFE_TERMINAL_EVENTS:
             continue
+        if event_type == PRE_API_SLOT_SAFE_TERMINAL_EVENT:
+            if _valid_pre_api_slot_safe_terminal(item, reservation):
+                immediate_safe_terminals.append(item)
+            continue
+        if event_type == POST_API_SLOT_SAFE_TERMINAL_EVENT:
+            if valid_post_api_slot_no_native_safe_terminal(
+                matched_events, item
+            ):
+                immediate_safe_terminals.append(item)
+            continue
         if event_type == "adapter_exception_after_reserve" and (
             _to_float(item.get("pre_send_exception_confirmed"), 0.0) != 1.0
             or _to_float(item.get("send_slot_reserved"), 0.0) == 1.0
         ):
             continue
         safe_terminals.append(item)
+    if immediate_safe_terminals:
+        return {
+            "status": "safe_terminal_immediate",
+            "event": immediate_safe_terminals[-1],
+            "token": token,
+            "lease_seconds": effective_lease_seconds,
+            "retry_cooldown_seconds": effective_retry_cooldown_seconds,
+        }
     if safe_terminals:
         return {
             "status": "safe_terminal",
@@ -1728,7 +2891,7 @@ def _close_attempt_api_slot_cas_blocker(
         return f"close_attempt_api_slot_lease_{state}"
     if _clean(lease_state.get("token")) != token:
         return "close_attempt_api_slot_lease_cas_stale_token"
-    if state == "safe_terminal":
+    if state in {"safe_terminal", "safe_terminal_immediate"}:
         return "close_attempt_api_slot_lease_already_safe_terminal"
     if state == "side_effect":
         return "close_attempt_api_slot_lease_side_effect_already_recorded"
@@ -1789,9 +2952,7 @@ def _close_duplicate_blocker(
                 "ledger_duplicate_close_intent:send_order_side_effect_unknown_after_exception",
                 item,
             )
-    submit_events = [
-        item for item in matched_events if _is_close_submit_attempt_event(item)
-    ]
+    submit_events = _effective_close_submit_attempt_events(matched_events)
     known_zero_events = [
         item for item in matched_events if _close_retry_known_zero_event(item)
     ]
@@ -1852,10 +3013,10 @@ def _close_duplicate_blocker(
                 known_zero,
             )
         unresolved_submit_after_terminal = next(
-            (
-                item
-                for item in matched_events[known_zero_index + 1 :]
-                if _is_close_submit_attempt_event(item)
+            iter(
+                _effective_close_submit_attempt_events(
+                    matched_events[known_zero_index + 1 :]
+                )
             ),
             None,
         )
@@ -1891,6 +3052,8 @@ def _close_duplicate_blocker(
         if lease_status == "side_effect":
             return "ledger_close_attempt2_lease_side_effect_recorded", lease_event
         if lease_status == "expired":
+            return "", lease_event
+        if lease_status == "safe_terminal_immediate":
             return "", lease_event
 
         cooldown_event = lease_event if lease_status == "safe_terminal" else known_zero
@@ -1928,6 +3091,8 @@ def _close_duplicate_blocker(
             lease_event,
         )
     if lease_status == "expired":
+        return "", lease_event
+    if lease_status == "safe_terminal_immediate":
         return "", lease_event
     if lease_status == "safe_terminal":
         age = event_age_seconds(lease_event)
@@ -1982,6 +3147,103 @@ def duplicate_blocker(
             close_retry_attempt2_lease_seconds=close_retry_attempt2_lease_seconds,
         )
         return blocker, fingerprint, payload, evidence
+
+    # Open deduplication is a full-history reducer.  A diagnostic row written
+    # after an API slot or broker call must never hide the earlier permanent
+    # side-effect boundary.
+    side_effect = next(
+        (
+            item
+            for item in matched_events
+            if _clean(item.get("event_type")) in RECOVERY_SIDE_EFFECT_EVENTS
+            or (
+                _clean(item.get("event_type"))
+                == "adapter_exception_after_reserve"
+                and _to_float(item.get("send_slot_reserved"), 0.0) == 1.0
+            )
+        ),
+        None,
+    )
+    if side_effect is not None:
+        return (
+            "ledger_duplicate_open_intent:"
+            f"{_clean(side_effect.get('event_type'))}",
+            fingerprint,
+            payload,
+            side_effect,
+        )
+
+    reservation_indexes = [
+        index
+        for index, item in enumerate(matched_events)
+        if _clean(item.get("event_type")) == "reserved"
+    ]
+    if reservation_indexes:
+        reservation_index = reservation_indexes[-1]
+        reservation = matched_events[reservation_index]
+        after_reservation = matched_events[reservation_index + 1 :]
+        versioned_terminals = [
+            item
+            for item in after_reservation
+            if _clean(item.get("event_type"))
+            == PRE_API_SLOT_SAFE_TERMINAL_EVENT
+            and _clean(item.get("reservation_record_checksum"))
+            == _clean(reservation.get("record_checksum"))
+        ]
+        if versioned_terminals:
+            terminal = versioned_terminals[-1]
+            if not _valid_pre_api_slot_safe_terminal(terminal, reservation):
+                return (
+                    "ledger_open_safe_terminal_invalid",
+                    fingerprint,
+                    payload,
+                    terminal,
+                )
+            return "", fingerprint, payload, terminal
+
+        legacy_terminal = next(
+            (
+                item
+                for item in reversed(after_reservation)
+                if _clean(item.get("event_type"))
+                == "final_pre_send_gate_blocked_after_reserve"
+            ),
+            None,
+        )
+        if legacy_terminal is not None:
+            age = event_age_seconds(legacy_terminal)
+            throttle_seconds = max(30, close_retry_after_cancel_seconds)
+            if age is not None and age < throttle_seconds:
+                return (
+                    "ledger_open_retry_throttled_after_final_pre_send_gate:"
+                    f"{age}",
+                    fingerprint,
+                    payload,
+                    legacy_terminal,
+                )
+            return "", fingerprint, payload, legacy_terminal
+
+        legacy_released = next(
+            (
+                item
+                for item in reversed(after_reservation)
+                if _clean(item.get("event_type"))
+                in {
+                    "api_slot_reservation_blocked",
+                    "spool_crash_recovery_pre_send_safe_terminal",
+                }
+            ),
+            None,
+        )
+        if legacy_released is not None:
+            return "", fingerprint, payload, legacy_released
+        return (
+            "ledger_duplicate_open_intent:reserved",
+            fingerprint,
+            payload,
+            reservation,
+        )
+
     if event_type == "final_pre_send_gate_blocked_after_reserve":
         age = event_age_seconds(latest)
         throttle_seconds = max(30, close_retry_after_cancel_seconds)

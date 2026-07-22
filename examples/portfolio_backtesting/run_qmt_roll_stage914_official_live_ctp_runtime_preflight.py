@@ -4,6 +4,7 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 import re
 import shlex
 import stat
@@ -14,6 +15,9 @@ from typing import Any, Callable, Mapping
 
 import pandas as pd
 
+from build_qmt_roll_stage179_release_manifest import (
+    _production_runtime_identity,
+)
 from qmt_roll_official_execution_profile import (
     C9_15W_PROFILE,
     ExecutionStrategyMode,
@@ -72,6 +76,10 @@ _ACTIVATION_RECEIPT_FIELDS = {
     "capital_label",
     "policy_decision",
     "created_at_utc",
+    "python_sha256",
+    "vnpy_ctp_extension_sha256s",
+    "formal_framework_executable_sha256s",
+    "formal_framework_realpaths",
     "receipt_sha256",
 }
 
@@ -89,7 +97,7 @@ class Stage179PreAdapterGateResult:
     adapter_created: bool
 
 
-def _canonical_receipt_digest(payload: Mapping[str, Any]) -> str:
+def stage179_activation_receipt_digest(payload: Mapping[str, Any]) -> str:
     core = {key: value for key, value in payload.items() if key != "receipt_sha256"}
     encoded = json.dumps(
         core,
@@ -101,6 +109,19 @@ def _canonical_receipt_digest(payload: Mapping[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def serialize_stage179_activation_receipt(payload: Mapping[str, Any]) -> bytes:
+    return (
+        json.dumps(
+            dict(payload),
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
 def validate_stage179_activation_receipt(
     path: Path | str | None,
     *,
@@ -108,6 +129,7 @@ def validate_stage179_activation_receipt(
     official_version: str,
     capital: int | float,
     capital_label: str,
+    runtime_identity: Mapping[str, Any] | None = None,
 ) -> tuple[str, ...]:
     """Validate an operator-created receipt without ever creating or modifying it."""
 
@@ -115,11 +137,21 @@ def validate_stage179_activation_receipt(
         return ("stage179_activation_receipt_missing",)
     receipt_path = Path(path)
     try:
+        metadata = receipt_path.lstat()
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or stat.S_IMODE(metadata.st_mode) & 0o077
+        ):
+            return ("stage179_activation_receipt_invalid",)
         raw = receipt_path.read_bytes()
         payload = json.loads(raw.decode("utf-8"))
     except Exception:
         return ("stage179_activation_receipt_missing",)
     if not isinstance(payload, dict) or set(payload) != _ACTIVATION_RECEIPT_FIELDS:
+        return ("stage179_activation_receipt_invalid",)
+    if raw != serialize_stage179_activation_receipt(payload):
         return ("stage179_activation_receipt_invalid",)
     expected = {
         "schema_version": STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION,
@@ -138,11 +170,54 @@ def validate_stage179_activation_receipt(
         datetime.fromisoformat(created_at.replace("Z", "+00:00"))
     except ValueError:
         return ("stage179_activation_receipt_invalid",)
+    python_sha256 = payload.get("python_sha256")
+    extension_sha256s = payload.get("vnpy_ctp_extension_sha256s")
+    framework_sha256s = payload.get(
+        "formal_framework_executable_sha256s"
+    )
+    framework_realpaths = payload.get("formal_framework_realpaths")
+    if (
+        not isinstance(python_sha256, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", python_sha256)
+        or not isinstance(extension_sha256s, dict)
+        or set(extension_sha256s) != {"vnctpmd", "vnctptd"}
+        or not isinstance(framework_sha256s, dict)
+        or set(framework_sha256s)
+        != {"thostmduserapi_se", "thosttraderapi_se"}
+        or any(
+            not isinstance(value, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", value)
+            for value in (
+                *extension_sha256s.values(),
+                *framework_sha256s.values(),
+            )
+        )
+        or not isinstance(framework_realpaths, list)
+        or len(framework_realpaths) != 2
+        or len(set(framework_realpaths)) != 2
+        or any(
+            not isinstance(value, str) or not Path(value).is_absolute()
+            for value in framework_realpaths
+        )
+    ):
+        return ("stage179_activation_receipt_runtime_identity_invalid",)
+    if runtime_identity is not None and any(
+        payload.get(field_name) != runtime_identity.get(field_name)
+        for field_name in (
+            "python_sha256",
+            "vnpy_ctp_extension_sha256s",
+            "formal_framework_executable_sha256s",
+            "formal_framework_realpaths",
+        )
+    ):
+        return (
+            "stage179_activation_receipt_runtime_binary_identity_mismatch",
+        )
     digest = payload.get("receipt_sha256")
     if (
         not isinstance(digest, str)
         or not re.fullmatch(r"[0-9a-f]{64}", digest)
-        or digest != _canonical_receipt_digest(payload)
+        or digest != stage179_activation_receipt_digest(payload)
     ):
         return ("stage179_activation_receipt_digest_mismatch",)
     return ()
@@ -245,8 +320,27 @@ def evaluate_stage179_pre_adapter_gate(
     blockers_tuple = tuple(dict.fromkeys(blockers))
     adapter_created = False
     if not blockers_tuple and adapter_factory is not None:
-        adapter_factory()
-        adapter_created = True
+        try:
+            current_runtime_identity = _production_runtime_identity(repo)
+        except (ReleaseManifestError, OSError, ValueError):
+            blockers.append(
+                "stage179_activation_receipt_runtime_binary_identity_unavailable"
+            )
+        else:
+            blockers.extend(
+                validate_stage179_activation_receipt(
+                    activation_receipt_path,
+                    manifest_sha256=manifest_sha256,
+                    official_version=expected_official_version,
+                    capital=expected_capital,
+                    capital_label=expected_capital_label,
+                    runtime_identity=current_runtime_identity,
+                )
+            )
+        blockers_tuple = tuple(dict.fromkeys(blockers))
+        if not blockers_tuple:
+            adapter_factory()
+            adapter_created = True
     return Stage179PreAdapterGateResult(
         blockers=blockers_tuple,
         manifest_sha256=manifest_sha256,
