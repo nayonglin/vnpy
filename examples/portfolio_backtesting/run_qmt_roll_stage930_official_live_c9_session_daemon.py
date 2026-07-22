@@ -754,14 +754,16 @@ def _manifest_symbols() -> list[str]:
 def _watched_symbols(
     extra_symbols: list[str],
     *,
-    artifact_paths: tuple[Path, ...] = (
-        STAGE901_PENDING_ORDERS_PATH,
-        OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
-        OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
-    ),
+    artifact_paths: tuple[Path, ...] | None = None,
     retained_broker_symbols: set[str] | None = None,
     max_readonly_age_seconds: int = 300,
 ) -> list[str]:
+    if artifact_paths is None:
+        artifact_paths = (
+            STAGE901_PENDING_ORDERS_PATH,
+            OFFICIAL_LIVE_SIGNAL_PLAN_PATH,
+            OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
+        )
     symbols: list[str] = []
     for item in extra_symbols:
         text = _clean(item)

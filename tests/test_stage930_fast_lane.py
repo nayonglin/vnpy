@@ -2657,6 +2657,46 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(flat, ["JM609.DCE"])
         self.assertEqual(retained, set())
 
+    def test_watched_symbols_resolves_patched_artifact_paths_at_call_time(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            patched_paths = (
+                root / "pending.csv",
+                root / "signal.csv",
+                root / "positions.csv",
+            )
+            observed_paths: list[Path] = []
+
+            def read_frame(path: Path) -> pd.DataFrame:
+                observed_paths.append(path)
+                if path == patched_paths[0]:
+                    return pd.DataFrame([{"vt_symbol": "PATCHED2609.DCE"}])
+                if path in patched_paths:
+                    return pd.DataFrame()
+                return pd.DataFrame([{"vt_symbol": "SI2609.GFE"}])
+
+            with (
+                patch.object(stage930, "STAGE901_PENDING_ORDERS_PATH", patched_paths[0]),
+                patch.object(stage930, "OFFICIAL_LIVE_SIGNAL_PLAN_PATH", patched_paths[1]),
+                patch.object(
+                    stage930,
+                    "OFFICIAL_LIVE_CURRENT_POSITIONS_PATH",
+                    patched_paths[2],
+                ),
+                patch.object(stage930, "_read_csv_maybe", side_effect=read_frame),
+                patch.object(stage930, "_durable_non_done_symbols", return_value=[]),
+                patch.object(
+                    stage930,
+                    "_fresh_broker_position_symbols",
+                    return_value=(False, [], "fixture"),
+                ),
+            ):
+                symbols = stage930._watched_symbols([])
+
+        self.assertEqual(list(patched_paths), observed_paths)
+        self.assertEqual(["PATCHED2609.DCE"], symbols)
+        self.assertNotIn("SI2609.GFE", symbols)
+
     def test_latest_summary_report_and_heartbeat_use_atomic_writers(self) -> None:
         summary = {"daemon_status": "daemon_running", "target_date": "2026-07-13", "cycle_count": 1}
         paths = {"summary_json": Path("run.json"), "report_md": Path("run.md")}

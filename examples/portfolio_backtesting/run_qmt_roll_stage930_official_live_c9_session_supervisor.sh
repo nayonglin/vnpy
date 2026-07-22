@@ -22,10 +22,27 @@ termination_exit_code=0
 active_pid=""
 active_pgid=""
 active_exit_code=0
+active_child_reaped=0
 
 group_alive() {
   local pgid="$1"
   kill -0 -- "-${pgid}" 2>/dev/null
+}
+
+reap_active_child_if_exited() {
+  local pid="$1"
+  local process_state
+  if [[ "${active_child_reaped}" -eq 1 ]]; then
+    return 0
+  fi
+  process_state="$(ps -o stat= -p "${pid}" 2>/dev/null | tr -d '[:space:]')"
+  if [[ "${process_state}" == *Z* ]] || ! kill -0 "${pid}" 2>/dev/null; then
+    wait "${pid}"
+    active_exit_code=$?
+    active_child_reaped=1
+    return 0
+  fi
+  return 1
 }
 
 wait_for_group_exit() {
@@ -34,11 +51,16 @@ wait_for_group_exit() {
   local deadline
   deadline="$(${PYTHON_PATH} -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${timeout}")"
   while group_alive "${pgid}"; do
+    reap_active_child_if_exited "${active_pid}" || true
+    if ! group_alive "${pgid}"; then
+      return 0
+    fi
     if "${PYTHON_PATH}" -S -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then
       return 1
     fi
     sleep 0.05
   done
+  reap_active_child_if_exited "${active_pid}" || true
   return 0
 }
 
@@ -81,10 +103,14 @@ forward_signal() {
 
 wait_for_active_child() {
   local pid="$1"
+  if [[ "${active_child_reaped}" -eq 1 ]]; then
+    return 0
+  fi
   while true; do
     wait "${pid}"
     active_exit_code=$?
     if ! kill -0 "${pid}" 2>/dev/null; then
+      active_child_reaped=1
       break
     fi
   done
@@ -153,6 +179,7 @@ while true; do
   fi
   active_pid=$!
   active_pgid=""
+  active_child_reaped=0
   for ((attempt = 0; attempt < pgid_handshake_attempts; attempt++)); do
     candidate_pgid="$(ps -o pgid= -p "${active_pid}" 2>/dev/null | tr -d '[:space:]')"
     if [[ "${candidate_pgid}" == "${active_pid}" ]]; then
