@@ -1,0 +1,23 @@
+examples/portfolio_backtesting/qmt_roll_official_live_launchd_surface.py
+  s_57fbbdfeac5414::t_3db0eea53b8dd8 225-231
+tests/test_stage948_production_installer.py
+  s_57fbbdfeac5414::t_49f9363a7c3ab1 593-660
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5c98f0f59c4f322ff8787d180f388ad0b35e7253",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
