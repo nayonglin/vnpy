@@ -14,6 +14,9 @@ import subprocess
 from typing import Any, Mapping
 
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+)
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_CONFIRM_TEXT,
     PHASE_D_REAL_ENABLED_ENV,
@@ -652,6 +655,29 @@ def _resolve_target_date(environment: Mapping[str, str]) -> tuple[str, dict[str,
     return target_date, payload
 
 
+def _target_is_before_live_shadow_start(
+    *,
+    target_date: str,
+    resolver_payload: Mapping[str, Any],
+) -> bool:
+    waiting_status = (
+        "target_date_before_live_shadow_start_waiting_fail_closed"
+    )
+    if resolver_payload.get("resolver_status") != waiting_status:
+        return False
+    if (
+        resolver_payload.get("resolved_target_date") != target_date
+        or resolver_payload.get("official_live_shadow_analysis_start_date")
+        != OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+        or resolver_payload.get("target_before_shadow_start") != 1
+        or target_date >= OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+    ):
+        raise ProductionSessionLaunchError(
+            "production_launcher_live_shadow_cold_start_evidence_invalid"
+        )
+    return True
+
+
 def _validate_target_date_calendar_window(
     *,
     receipt: Mapping[str, Any],
@@ -1022,6 +1048,35 @@ def launch_session(args: argparse.Namespace) -> None:
     _validate_code_qualification(
         manifest=manifest,
     )
+    if _target_is_before_live_shadow_start(
+        target_date=target_date,
+        resolver_payload=resolver,
+    ):
+        # A deliberate cold start is an expected terminal condition.  Exit
+        # successfully before requiring a pre-start daily-data receipt so
+        # launchd KeepAlive(SuccessfulExit=false) does not retry in a loop.
+        print(
+            json.dumps(
+                {
+                    "model_tag": "stage945_production_session_launcher_v1",
+                    "generated_at": datetime.now().astimezone().isoformat(),
+                    "session": spec.session,
+                    "launcher_status": "skipped_before_live_shadow_start",
+                    "target_date": target_date,
+                    "official_live_shadow_analysis_start_date": (
+                        OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
+                    ),
+                    "stage930_exec_called_count": 0,
+                    "ctp_connection_attempted_count": 0,
+                    "send_order_api_called_count": 0,
+                    "cancel_order_api_called_count": 0,
+                    "order_api_called_count": 0,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return
     daily_receipt = _validate_daily_data_readiness(
         manifest=manifest,
         target_date=target_date,

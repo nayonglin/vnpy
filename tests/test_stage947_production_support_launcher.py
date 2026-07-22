@@ -133,6 +133,53 @@ class Stage947ProductionSupportLauncherTest(unittest.TestCase):
             )
         issue_failed.assert_not_called()
 
+    def test_precompute_does_not_issue_receipt_when_authoritative_target_is_stale(
+        self,
+    ) -> None:
+        spec = launcher.SUPPORT_JOB_SPECS["postclose-precompute"]
+        summary = {
+            "shadow_refresh_status": "shadow_refresh_completed",
+            "execution_profile": "c9-15w",
+            "refresh_attempted": 1,
+            "target_date": "2026-07-23",
+            "commands": [
+                {"name": "stage173_data_update", "exit_code": 0},
+                {"name": "official_live_shadow", "exit_code": 0},
+            ],
+        }
+        result = subprocess.CompletedProcess(
+            args=["precompute"],
+            returncode=0,
+            stdout=json.dumps(summary),
+            stderr="",
+        )
+        with (
+            patch.object(launcher.subprocess, "run", return_value=result),
+            patch.object(
+                launcher,
+                "_resolve_target_date",
+                return_value=("2026-07-22", {}),
+            ),
+            patch.object(
+                launcher,
+                "build_and_write_production_daily_data_receipt",
+            ) as issue,
+            self.assertRaisesRegex(
+                launcher.ProductionSupportLaunchError,
+                "precompute_target_date_mismatch",
+            ),
+        ):
+            launcher._run_precompute_and_issue_daily_receipt(
+                spec=spec,
+                command=["python", "stage909"],
+                environment={},
+                manifest={
+                    "source_commit": "a" * 40,
+                    "manifest_sha256": "b" * 64,
+                },
+            )
+        issue.assert_not_called()
+
     def test_private_email_and_datafeed_credentials_are_required(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

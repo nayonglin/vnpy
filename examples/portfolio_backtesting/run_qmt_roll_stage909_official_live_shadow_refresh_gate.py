@@ -28,6 +28,7 @@ from qmt_roll_official_pending_artifact import (
 )
 from run_qmt_roll_stage922_official_live_target_date_resolver import (
     _resolve_latest_completed,
+    _wall_clock_cutoff_date,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -132,6 +133,74 @@ def _run_command(name: str, cmd: list[str], log_path: Path) -> dict[str, Any]:
         "finished_at": finished.strftime("%Y-%m-%d %H:%M:%S"),
         "duration_seconds": round((finished - started).total_seconds(), 3),
     }
+
+
+def _resolve_postclose_refresh_candidate(
+    as_of: datetime,
+    data_ready_time: str,
+) -> tuple[str, dict[str, Any]]:
+    cutoff = _wall_clock_cutoff_date(as_of, data_ready_time)
+    target_date = cutoff.date().isoformat()
+    return target_date, {
+        "as_of": as_of.strftime("%Y-%m-%d %H:%M:%S"),
+        "data_ready_time": data_ready_time,
+        "wall_clock_cutoff_date": target_date,
+        "target_kind": "postclose_refresh_candidate_not_execution_authority",
+    }
+
+
+def _run_refresh_pipeline(
+    *,
+    specs: list[tuple[str, list[str]]],
+    log_path: Path,
+    target_date_mode: str,
+    refresh_candidate_date: str,
+    data_ready_time: str,
+    as_of_after_update: datetime | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    commands: list[dict[str, Any]] = []
+    if target_date_mode != "latest-completed":
+        for name, cmd in specs:
+            row = _run_command(name, cmd, log_path)
+            commands.append(row)
+            if row["exit_code"] != 0:
+                break
+        return commands, {}
+
+    stage173_name, stage173_command = specs[0]
+    stage173_row = _run_command(stage173_name, stage173_command, log_path)
+    commands.append(stage173_row)
+    if stage173_row["exit_code"] != 0:
+        return commands, {}
+
+    resolved_target, resolver_evidence = _resolve_latest_completed(
+        as_of_after_update or datetime.now(),
+        data_ready_time,
+    )
+    if (
+        resolved_target != refresh_candidate_date
+        or resolver_evidence.get("trading_calendar_source")
+        != "main_contract_mapping_trading_calendar"
+    ):
+        commands.append(
+            {
+                "name": "post_update_authoritative_target_verification",
+                "command": [],
+                "exit_code": 2,
+                "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "duration_seconds": 0.0,
+                "blocker": "post_update_target_not_authoritatively_ready",
+            }
+        )
+        return commands, resolver_evidence
+
+    for name, cmd in specs[1:]:
+        row = _run_command(name, cmd, log_path)
+        commands.append(row)
+        if row["exit_code"] != 0:
+            break
+    return commands, resolver_evidence
 
 
 def _command_specs(
@@ -247,7 +316,7 @@ def main() -> None:
     args = parser.parse_args()
     profile = resolve_execution_profile(args.execution_profile)
     if args.target_date_mode == "latest-completed":
-        target_date, target_date_evidence = _resolve_latest_completed(
+        target_date, target_date_evidence = _resolve_postclose_refresh_candidate(
             datetime.now(),
             args.target_date_data_ready_time,
         )
@@ -329,14 +398,17 @@ def main() -> None:
     blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
 
     commands: list[dict[str, Any]] = []
+    post_update_target_evidence: dict[str, Any] = {}
     refresh_attempted = False
     if args.mode == "run" and blocking.empty:
         refresh_attempted = True
-        for name, cmd in specs:
-            row = _run_command(name, cmd, paths["command_log"])
-            commands.append(row)
-            if row["exit_code"] != 0:
-                break
+        commands, post_update_target_evidence = _run_refresh_pipeline(
+            specs=specs,
+            log_path=paths["command_log"],
+            target_date_mode=args.target_date_mode,
+            refresh_candidate_date=target_date,
+            data_ready_time=args.target_date_data_ready_time,
+        )
 
     official_summary = _read_json(profile.summary_path)
     pending_target_error = ""
@@ -376,6 +448,9 @@ def main() -> None:
         "target_date": target_date,
         "target_date_mode": args.target_date_mode,
         "target_date_evidence": target_date_evidence,
+        "post_update_authoritative_target_evidence": (
+            post_update_target_evidence
+        ),
         "mode": args.mode,
         "execution_profile": profile.profile_key,
         "official_live_version": profile.official_version,

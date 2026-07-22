@@ -537,6 +537,96 @@ class Stage945ProductionLauncherTest(unittest.TestCase):
         ):
             launcher._resolve_target_date({})
 
+    def test_pre_shadow_start_exits_success_before_daily_receipt_or_stage930(self) -> None:
+        args = argparse.Namespace(
+            session="night",
+            release_manifest=str(launcher.PRODUCTION_RELEASE_MANIFEST),
+            activation_receipt=str(launcher.PRODUCTION_ACTIVATION_RECEIPT),
+            stage179_runtime_root=str(launcher.PRODUCTION_RUNTIME_ROOT),
+            output_root=str(launcher.PRODUCTION_OUTPUT_ROOT),
+            signal_input_root=str(launcher.PRODUCTION_SIGNAL_INPUT_ROOT),
+        )
+        manifest = {
+            "source_commit": "a" * 40,
+            "manifest_sha256": "b" * 64,
+        }
+        resolver = {
+            "resolver_status": (
+                "target_date_before_live_shadow_start_waiting_fail_closed"
+            ),
+            "resolved_target_date": "2026-07-22",
+            "official_live_shadow_analysis_start_date": "2026-07-23",
+            "target_before_shadow_start": 1,
+        }
+        output = io.StringIO()
+        with (
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(
+                os.environ,
+                {"XPC_SERVICE_NAME": launcher.PRODUCTION_LABELS["night"]},
+                clear=False,
+            ),
+            patch.object(launcher, "_assert_stable_deploy_root"),
+            patch.object(
+                launcher,
+                "_validate_current_owned_launchd_surface",
+                return_value=(True, "current_owned_launchd_surface_verified_exact"),
+            ),
+            patch.object(
+                launcher,
+                "_validate_activation_success_barrier",
+                return_value=(True, "activation_success_identity_verified"),
+            ),
+            patch.object(launcher, "_session_is_active", return_value=True),
+            patch.object(launcher, "_assert_canonical_paths"),
+            patch.object(
+                launcher,
+                "_validate_release_and_receipt",
+                return_value=manifest,
+            ),
+            patch.object(launcher, "_build_preflight_environment", return_value={}),
+            patch.object(
+                launcher,
+                "_resolve_target_date",
+                return_value=("2026-07-22", resolver),
+            ),
+            patch.object(launcher, "_validate_code_qualification"),
+            patch.object(launcher, "_validate_daily_data_readiness") as daily,
+            patch.object(launcher, "_build_production_environment") as environment,
+            patch.object(launcher.os, "execve") as execve,
+            redirect_stdout(output),
+        ):
+            launcher.launch_session(args)
+
+        payload = json.loads(output.getvalue())
+        self.assertEqual(
+            "skipped_before_live_shadow_start",
+            payload["launcher_status"],
+        )
+        self.assertEqual("2026-07-22", payload["target_date"])
+        self.assertEqual(0, payload["ctp_connection_attempted_count"])
+        self.assertEqual(0, payload["order_api_called_count"])
+        daily.assert_not_called()
+        environment.assert_not_called()
+        execve.assert_not_called()
+
+    def test_pre_shadow_start_requires_consistent_resolver_evidence(self) -> None:
+        with self.assertRaisesRegex(
+            launcher.ProductionSessionLaunchError,
+            "live_shadow_cold_start_evidence_invalid",
+        ):
+            launcher._target_is_before_live_shadow_start(
+                target_date="2026-07-23",
+                resolver_payload={
+                    "resolver_status": (
+                        "target_date_before_live_shadow_start_waiting_fail_closed"
+                    ),
+                    "resolved_target_date": "2026-07-23",
+                    "official_live_shadow_analysis_start_date": "2026-07-23",
+                    "target_before_shadow_start": 1,
+                },
+            )
+
     def test_forward_calendar_allows_post_holiday_open_but_blocks_holiday(self) -> None:
         receipt = {
             "target_cutoff_date": "2026-07-17",

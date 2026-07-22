@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -29,6 +30,108 @@ import run_qmt_roll_stage909_official_live_shadow_refresh_gate as stage909
 
 
 class Stage372ShadowPrecomputeTest(unittest.TestCase):
+    def test_stage909_latest_completed_refresh_advances_before_authoritative_verify(
+        self,
+    ) -> None:
+        candidate, evidence = stage909._resolve_postclose_refresh_candidate(
+            stage909.datetime.fromisoformat("2026-07-23T16:35:00"),
+            "16:30",
+        )
+        self.assertEqual("2026-07-23", candidate)
+        self.assertEqual(
+            "postclose_refresh_candidate_not_execution_authority",
+            evidence["target_kind"],
+        )
+        specs = stage909._command_specs(
+            candidate,
+            "2026-07-01",
+            candidate,
+            "2026-07-23",
+            stage909.resolve_execution_profile("c9-15w"),
+        )
+        rows = [
+            {"name": name, "exit_code": 0}
+            for name, _command in specs
+        ]
+        with (
+            patch.object(stage909, "_run_command", side_effect=rows) as run,
+            patch.object(
+                stage909,
+                "_resolve_latest_completed",
+                return_value=(
+                    "2026-07-23",
+                    {
+                        "trading_calendar_source": (
+                            "main_contract_mapping_trading_calendar"
+                        )
+                    },
+                ),
+            ),
+        ):
+            commands, post_update = stage909._run_refresh_pipeline(
+                specs=specs,
+                log_path=Path("unused.log"),
+                target_date_mode="latest-completed",
+                refresh_candidate_date=candidate,
+                data_ready_time="16:30",
+                as_of_after_update=stage909.datetime.fromisoformat(
+                    "2026-07-23T16:36:00"
+                ),
+            )
+
+        self.assertEqual(["stage173_data_update", "official_live_shadow"], [row["name"] for row in commands])
+        self.assertEqual(2, run.call_count)
+        stage173_command = run.call_args_list[0].args[1]
+        shadow_command = run.call_args_list[1].args[1]
+        self.assertEqual("2026-07-23", stage173_command[stage173_command.index("--end") + 1])
+        self.assertEqual("2026-07-23", shadow_command[shadow_command.index("--target-date") + 1])
+        self.assertEqual(
+            "main_contract_mapping_trading_calendar",
+            post_update["trading_calendar_source"],
+        )
+
+    def test_stage909_stale_post_update_mapping_stops_before_shadow(self) -> None:
+        specs = stage909._command_specs(
+            "2026-07-23",
+            "2026-07-01",
+            "2026-07-23",
+            "2026-07-23",
+            stage909.resolve_execution_profile("c9-15w"),
+        )
+        with (
+            patch.object(
+                stage909,
+                "_run_command",
+                return_value={"name": "stage173_data_update", "exit_code": 0},
+            ) as run,
+            patch.object(
+                stage909,
+                "_resolve_latest_completed",
+                return_value=(
+                    "2026-07-22",
+                    {
+                        "trading_calendar_source": (
+                            "main_contract_mapping_trading_calendar"
+                        )
+                    },
+                ),
+            ),
+        ):
+            commands, _post_update = stage909._run_refresh_pipeline(
+                specs=specs,
+                log_path=Path("unused.log"),
+                target_date_mode="latest-completed",
+                refresh_candidate_date="2026-07-23",
+                data_ready_time="16:30",
+            )
+
+        self.assertEqual(1, run.call_count)
+        self.assertEqual(
+            ["stage173_data_update", "post_update_authoritative_target_verification"],
+            [row["name"] for row in commands],
+        )
+        self.assertEqual(2, commands[-1]["exit_code"])
+
     def test_stage659_explicit_stage372_profile_ignores_c9_global_default(self) -> None:
         identity = stage659._configure_execution_profile("stage372-20w")
 
