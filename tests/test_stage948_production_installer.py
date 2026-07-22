@@ -590,6 +590,74 @@ class Stage948ProductionInstallerTest(unittest.TestCase):
         self.assertEqual("blocked", report["status"])
         self.assertIn("owned_domain_changed_d1_d2", report["blockers"])
 
+    def test_disabled_service_preferences_are_not_loaded_services(self) -> None:
+        uid = installer.os.getuid()
+        domain = f"gui/{uid}"
+        loaded_label = installer.CONFLICTING_JOB_LABELS[-4]
+        disabled_only_labels = installer.CONFLICTING_JOB_LABELS[2:4]
+
+        def runner(
+            command: list[str], **_kwargs: object
+        ) -> subprocess.CompletedProcess[str]:
+            target = command[2]
+            if target == domain:
+                disabled_rows = "\n".join(
+                    f'\t\t"{label}" => disabled'
+                    for label in disabled_only_labels
+                )
+                return subprocess.CompletedProcess(
+                    command,
+                    0,
+                    (
+                        f"{domain} = {{\n"
+                        "\tservices = {\n"
+                        f"\t\t0 0 {loaded_label}\n"
+                        "\t}\n"
+                        "\tdisabled services = {\n"
+                        f"{disabled_rows}\n"
+                        "\t}\n"
+                        "}\n"
+                    ),
+                    "",
+                )
+            label = target.split("/", 2)[-1]
+            if label == loaded_label:
+                return subprocess.CompletedProcess(
+                    command,
+                    0,
+                    f"{domain}/{label} = {{\n\tstate = exited\n}}\n",
+                    "",
+                )
+            return subprocess.CompletedProcess(
+                command,
+                113,
+                (
+                    "Bad request.\n"
+                    f'Could not find service "{label}" in domain '
+                    f"for user gui: {uid}\n"
+                ),
+                "",
+            )
+
+        report = installer.inspect_owned_launchd_surface(
+            launchd_install_dir=Path(self.tempdir.name) / "absent-launchagents",
+            allowed_production_labels=(),
+            known_conflicting_labels=(
+                loaded_label,
+                *disabled_only_labels,
+            ),
+            launchctl_runner=runner,
+            uid=uid,
+        )
+
+        self.assertEqual("verified", report["status"])
+        self.assertEqual([loaded_label], report["domain_owned_labels"])
+        self.assertEqual([loaded_label], report["loaded_owned_labels"])
+        self.assertNotIn(
+            "domain_owned_lexical_services_mismatch",
+            report["blockers"],
+        )
+
     def test_individual_loaded_but_missing_from_both_domains_is_blocked(self) -> None:
         uid = installer.os.getuid()
         domain = f"gui/{uid}"

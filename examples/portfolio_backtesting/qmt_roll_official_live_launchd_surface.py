@@ -222,7 +222,13 @@ def _parse_domain_snapshot(
             blockers.append(f"domain_owned_service_duplicate:{label}")
         structured.add(label)
         service_rows[label] = signature
-    lexical, lexical_blockers = _lexical_owned_tokens(output)
+    # `launchctl print gui/<uid>` can retain labels in top-level preference
+    # maps such as `disabled services` after the corresponding service has
+    # been unloaded.  Those entries are not registered services.  Keep the
+    # lexical/structured cross-check fail-closed, but scope it to the exact
+    # `services` block that the structured parser is validating.
+    services_text = "\n".join(lines[opening + 1 : closing])
+    lexical, lexical_blockers = _lexical_owned_tokens(services_text)
     blockers.extend(lexical_blockers)
     if lexical != structured:
         blockers.append("domain_owned_lexical_services_mismatch")
