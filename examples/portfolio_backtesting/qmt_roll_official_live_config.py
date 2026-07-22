@@ -31,7 +31,7 @@ OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_re
 OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_override_15w_account_aligned_high_risk"
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
-OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE: str = "2026-06-16"
+OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE: str = "2026-07-23"
 
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"

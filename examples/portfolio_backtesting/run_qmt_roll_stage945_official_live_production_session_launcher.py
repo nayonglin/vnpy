@@ -392,10 +392,14 @@ def _validate_activation_success_barrier(
                 "production_launcher_activation_identity_invalid"
             )
         expected_labels = list(PRODUCTION_ACTIVATION_LABELS)
+        observed_surface_labels = audit.get(
+            "launchd_surface_production_labels"
+        )
         if (
             audit.get("production_labels") != expected_labels
-            or audit.get("launchd_surface_production_labels")
-            != expected_labels
+            or not isinstance(observed_surface_labels, list)
+            or len(observed_surface_labels) != len(expected_labels)
+            or set(observed_surface_labels) != set(expected_labels)
             or audit.get("launchd_surface_production_loaded_count") != 7
             or audit.get("launchd_surface_conflict_loaded_count") != 0
             or audit.get("reboot_surface_production_plist_count") != 7

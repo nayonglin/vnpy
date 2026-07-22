@@ -41,6 +41,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
         )
         self.assertEqual(
+            module.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+            "2026-07-23",
+        )
+        self.assertEqual(
             "fail_closed",
             module.OFFICIAL_LIVE_EXECUTION_POLICY["real_submit_default"],
         )

@@ -146,6 +146,41 @@ class Stage945ProductionLauncherTest(unittest.TestCase):
             self.assertFalse(committed)
             self.assertIn("TimeoutExpired", observed)
 
+    def test_activation_barrier_accepts_sorted_surface_labels_without_losing_exactness(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            audit, release, commit, _digest = self._write_barrier_fixture(root)
+            payload = json.loads(audit.read_text(encoding="utf-8"))
+            payload["launchd_surface_production_labels"] = sorted(
+                launcher.PRODUCTION_ACTIVATION_LABELS
+            )
+            audit.write_text(json.dumps(payload), encoding="utf-8")
+            audit.chmod(0o600)
+            os.utime(audit, ns=(2_000_000_000, 2_000_000_000))
+
+            with patch.object(launcher, "_git_head", return_value=commit):
+                self.assertEqual(
+                    (True, "activation_success_identity_verified"),
+                    launcher._validate_activation_success_barrier(
+                        activation_audit=audit,
+                        release_manifest=release,
+                    ),
+                )
+
+            payload["launchd_surface_production_labels"][-1] = payload[
+                "launchd_surface_production_labels"
+            ][0]
+            audit.write_text(json.dumps(payload), encoding="utf-8")
+            audit.chmod(0o600)
+            os.utime(audit, ns=(2_000_000_000, 2_000_000_000))
+            with patch.object(launcher, "_git_head", return_value=commit):
+                committed, observed = launcher._validate_activation_success_barrier(
+                    activation_audit=audit,
+                    release_manifest=release,
+                )
+            self.assertFalse(committed)
+            self.assertIn("activation_label_surface_mismatch", observed)
+
     def test_missing_activation_barrier_exits_success_before_runtime_or_stage930(self) -> None:
         args = argparse.Namespace(
             session="day",
