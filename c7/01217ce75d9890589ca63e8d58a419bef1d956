@@ -1,0 +1,33 @@
+examples/portfolio_backtesting/qmt_roll_official_live_config.py
+  s_57fbbdfeac5414::t_4671e45d9459a3 34
+examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py
+  s_57fbbdfeac5414::t_b10d7547ddf46f 395-397,400-402
+research/lines/futures_trend_stage819_intraday_rules/LINE.md
+  s_57fbbdfeac5414::t_04a2f2482967a0 26
+research/lines/futures_trend_stage819_intraday_rules/stages/20260722_1714_stage197_tonight_next_session_signal_and_runtime_audit.md
+  s_57fbbdfeac5414::t_0df09de518c5bd 1-56
+research/registry.md
+  s_57fbbdfeac5414::t_f6a644d252fb32 12
+tests/test_official_live_config_import.py
+  s_57fbbdfeac5414::t_8e9e52ecd4e9f5 43-46
+tests/test_stage945_production_launcher.py
+  s_57fbbdfeac5414::t_4ebcb750872d30 149-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c701217ce75d9890589ca63e8d58a419bef1d956",
+  "prompts": {},
+  "sessions": {
+    "s_57fbbdfeac5414": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4bd4-278b-7e21-9d29-edaf7789e6c9",
+        "model": "unknown"
+      },
+      "human_author": "nyl@bytedance.com <nyl@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
