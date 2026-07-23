@@ -20,6 +20,218 @@ import run_qmt_roll_stage947_official_live_production_support_launcher as launch
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
+    def test_stage935_import_keeps_control_and_data_roots_separate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "PYTHONPATH": str(PORTFOLIO_DIR),
+                    "OFFICIAL_LIVE_OUTPUT_DIR": str(control),
+                }
+            )
+            script = """
+import json
+import sys
+
+blocked_roots = (
+    "run_qmt_alignment_backtest",
+    "main_contract_mapping",
+    "qmt_roll_official_live_config",
+    "build_qmt_roll_stage173_forward_main_contract_data_update",
+)
+before = set(sys.modules)
+
+import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+
+loaded = sorted(
+    name
+    for name in sys.modules
+    if name not in before
+    and any(name == root or name.startswith(root + ".") for root in blocked_roots)
+)
+print("CONTRACT=" + json.dumps({
+    "lock": str(stage935.LOCK_PATH),
+    "outputs": {key: str(path) for key, path in stage935._paths("fixture").items()},
+    "stage173": str(stage935.STAGE173_SUMMARY_PATH),
+    "stage182_combined": str(stage935.STAGE182_COMBINED_ELIGIBILITY_PATH),
+    "official_ai": str(stage935.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+    "forbidden_imports": loaded,
+}))
+"""
+            result = subprocess.run(
+                [sys.executable, "-c", script],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=60,
+                check=False,
+            )
+
+        self.assertEqual(0, result.returncode, result.stdout)
+        payload = json.loads(
+            next(
+                line
+                for line in result.stdout.splitlines()
+                if line.startswith("CONTRACT=")
+            ).removeprefix("CONTRACT=")
+        )
+        self.assertEqual(control.resolve(), Path(payload["lock"]).resolve().parent)
+        self.assertTrue(
+            all(
+                Path(path).resolve().parent == control.resolve()
+                for path in payload["outputs"].values()
+            )
+        )
+        self.assertEqual(
+            (PORTFOLIO_DIR / "backtest_outputs").resolve(),
+            Path(payload["stage173"]).resolve().parent,
+        )
+        self.assertEqual(
+            payload["stage182_combined"],
+            payload["official_ai"],
+        )
+        self.assertEqual([], payload["forbidden_imports"])
+
+    def test_stage935_reads_successful_stage173_from_data_root_when_control_is_empty(
+        self,
+    ) -> None:
+        import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            control.mkdir()
+            data = root / "data"
+            data.mkdir()
+            mapping = data / "mapping.csv"
+            mapping.write_text(
+                "date\n"
+                "2026-03-31\n"
+                "2026-04-30\n"
+                "2026-05-29\n"
+                "2026-06-30\n"
+                "2026-07-23\n",
+                encoding="utf-8",
+            )
+            stage173_summary = data / "stage173-summary.json"
+            stage173_summary.write_text(
+                json.dumps(
+                    {
+                        "max_saved_date": "2026-07-23",
+                        "failed_count": 0,
+                        "empty_count": 0,
+                        "mapping_update": {"combined_max_date": "2026-07-23"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stage182_summary = data / "stage182-summary.json"
+            stage182_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            live_eligibility = data / "stage182-live.csv"
+            live_rows = [
+                ("fu.SHFE", 1),
+                ("jm.DCE", 2),
+                ("rb.SHFE", 3),
+                ("i.DCE", 4),
+                ("m.DCE", 5),
+                ("ag.SHFE", 6),
+                ("cu.SHFE", 7),
+                ("TA.CZCE", 8),
+                ("MA.CZCE", 9),
+            ]
+            live_eligibility.write_text(
+                "eval_date,product_vt_symbol,score_rank\n"
+                + "".join(
+                    f"2026-06-30,{symbol},{rank}\n"
+                    for symbol, rank in live_rows
+                ),
+                encoding="utf-8",
+            )
+            combined = data / "stage182-combined.csv"
+            combined.write_text(
+                "eval_date,product_vt_symbol,strategy\n"
+                "2026-03-31,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
+                "2026-04-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
+                "2026-05-29,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
+                "2026-06-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n",
+                encoding="utf-8",
+            )
+            stage183_summary = data / "stage183-summary.json"
+            stage183_summary.write_text(
+                json.dumps(
+                    {
+                        "analysis_end": "2026-07-23",
+                        "source_prefix": stage935.DEFAULT_SOURCE_PREFIX,
+                        "artifact_dates": {},
+                        "safety": {},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                as_of="2026-07-23T18:20:00",
+                data_ready_time="16:30",
+                mode="run",
+                source_prefix=stage935.DEFAULT_SOURCE_PREFIX,
+                force=True,
+                skip_data_update=False,
+                data_update_timeout_seconds=1,
+                source_refresh_timeout_seconds=1,
+                inference_timeout_seconds=1,
+            )
+            success = {
+                "exit_code": 0,
+                "elapsed_seconds": 0.0,
+                "stdout_tail": "",
+                "stderr_tail": "",
+            }
+
+            with (
+                patch.multiple(
+                    stage935,
+                    ALL_FUTURES_MAPPING_PATH=mapping,
+                    STAGE173_SUMMARY_PATH=stage173_summary,
+                    STAGE182_SUMMARY_PATH=stage182_summary,
+                    STAGE182_LIVE_ELIGIBILITY_PATH=live_eligibility,
+                    STAGE182_COMBINED_ELIGIBILITY_PATH=combined,
+                    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
+                    STAGE183_SUMMARY_PATH=stage183_summary,
+                ),
+                patch.object(stage935, "_run_command", return_value=success),
+            ):
+                result = stage935._run(args)
+            stage173_summary_text = str(stage173_summary)
+            control_entries = list(control.iterdir())
+
+        self.assertEqual("monthly_ai_pool_updated", result["automation_status"])
+        self.assertNotIn(
+            "stage173_max_saved_date_not_resolved_target_date",
+            result.get("blockers", []),
+        )
+        self.assertEqual(
+            stage173_summary_text,
+            result["stage173_summary"]["path"],
+        )
+        self.assertEqual([], control_entries)
+
     def test_all_support_jobs_are_exact_pinned_commands(self) -> None:
         expected_scripts = {
             "day-close-readonly": "run_qmt_roll_stage907_official_live_readonly_refresh_gate.py",

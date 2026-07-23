@@ -13,15 +13,17 @@ from typing import Any, Iterator
 
 import pandas as pd
 
-from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
-from qmt_roll_official_live_config import (
+from qmt_roll_official_live_lightweight_context import (
+    ALL_FUTURES_MAPPING_PATH,
+    CONTROL_OUTPUT_DIR,
+    DATA_ASSET_DIR,
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
     OFFICIAL_LIVE_VERSION,
+    STAGE173_SUMMARY_PATH,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
-from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
 MODEL_TAG = "stage935_official_live_monthly_ai_pool_update_v1"
@@ -37,17 +39,20 @@ PROJECT_DIR = Path(__file__).resolve().parent
 STAGE173_PATH = PROJECT_DIR / "build_qmt_roll_stage173_forward_main_contract_data_update.py"
 STAGE182_PATH = PROJECT_DIR / "build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py"
 STAGE183_PATH = PROJECT_DIR / "build_qmt_roll_stage183_ai_product_pool_source_refresh.py"
-STAGE182_SUMMARY_PATH = OUTPUT_DIR / f"{STAGE182_OUTPUT_PREFIX}_summary_{STAGE182_MODEL_TAG}.json"
-STAGE182_LIVE_ELIGIBILITY_PATH = OUTPUT_DIR / f"{STAGE182_OUTPUT_PREFIX}_eligibility_{STAGE182_MODEL_TAG}.csv"
+STAGE182_SUMMARY_PATH = (
+    DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_summary_{STAGE182_MODEL_TAG}.json"
+)
+STAGE182_LIVE_ELIGIBILITY_PATH = (
+    DATA_ASSET_DIR
+    / f"{STAGE182_OUTPUT_PREFIX}_eligibility_{STAGE182_MODEL_TAG}.csv"
+)
 STAGE182_COMBINED_ELIGIBILITY_PATH = (
-    OUTPUT_DIR / f"{STAGE182_OUTPUT_PREFIX}_combined_stage78_eligibility_{STAGE182_MODEL_TAG}.csv"
+    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
 )
-STAGE183_SUMMARY_PATH = OUTPUT_DIR / f"{STAGE183_OUTPUT_PREFIX}_summary_{STAGE183_MODEL_TAG}.json"
-STAGE173_SUMMARY_PATH = (
-    OUTPUT_DIR
-    / "qmt_roll_stage173_forward_main_contract_data_update_summary_stage173_forward_main_contract_data_update_v1.json"
+STAGE183_SUMMARY_PATH = (
+    DATA_ASSET_DIR / f"{STAGE183_OUTPUT_PREFIX}_summary_{STAGE183_MODEL_TAG}.json"
 )
-LOCK_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}.lock"
+LOCK_PATH = CONTROL_OUTPUT_DIR / f"{OUTPUT_PREFIX}.lock"
 MISSING_CALENDAR_UPDATE_REASON = "trading_calendar_stale_before_wall_clock_cutoff"
 RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS = 4
 BLOCKING_STATUSES = {
@@ -60,10 +65,20 @@ BLOCKING_STATUSES = {
 
 def _paths(run_id: str) -> dict[str, Path]:
     return {
-        "summary_json": OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{run_id}_{MODEL_TAG}.json",
-        "report_txt": OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{run_id}_{MODEL_TAG}.txt",
-        "latest_summary_json": OUTPUT_DIR / f"{OUTPUT_PREFIX}_latest_summary.json",
-        "latest_report_txt": OUTPUT_DIR / f"{OUTPUT_PREFIX}_latest_report.txt",
+        "summary_json": (
+            CONTROL_OUTPUT_DIR
+            / f"{OUTPUT_PREFIX}_summary_{run_id}_{MODEL_TAG}.json"
+        ),
+        "report_txt": (
+            CONTROL_OUTPUT_DIR
+            / f"{OUTPUT_PREFIX}_report_{run_id}_{MODEL_TAG}.txt"
+        ),
+        "latest_summary_json": (
+            CONTROL_OUTPUT_DIR / f"{OUTPUT_PREFIX}_latest_summary.json"
+        ),
+        "latest_report_txt": (
+            CONTROL_OUTPUT_DIR / f"{OUTPUT_PREFIX}_latest_report.txt"
+        ),
     }
 
 
@@ -694,7 +709,7 @@ def main() -> None:
     parser.add_argument("--disable-lock", action="store_true")
     args = parser.parse_args()
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    CONTROL_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     paths = _paths(run_id)
     with _stage935_lock(enabled=not bool(args.disable_lock)) as lock_result:
