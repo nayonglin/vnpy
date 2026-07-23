@@ -1,6 +1,6 @@
 ---
 name: futures-live-automation-startup
-description: Start, install, restart, verify, or troubleshoot this repo's qualified C9/15w production-live launchd automation. Use for production activation, the seven canonical scheduled jobs, Stage945/947/948, cold-start readiness, activation or daily-receipt blockers, and Chinese requests such as “启动全部实盘定时任务” or “检查自动化”.
+description: Use when users ask to start, install, restart, verify, or troubleshoot the qualified C9/15w production-live launchd jobs, including cold-start, activation, daily-receipt, or scheduled-task readiness.
 ---
 
 # Futures Live Automation Startup

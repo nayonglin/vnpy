@@ -1,6 +1,6 @@
 ---
 name: futures-live-execution-sop
-description: Use for the futures trend official live execution profile and related CTP/SimNow/broker-test shadow or virtual trading SOP, monthly AI pool cadence, CTP read-only checks, Phase B pre-submit gates, risk-level interpretation, smoke-order tests, daily execution/reconciliation discipline, and whether a futures signal may be submitted. Trigger when the user asks about official live trading, current live candidate, virtual trading, shadow trading, SimNow, broker-test CTP, daily reports, AI pool timing, review/yellow-light risk status, order drafts, smoke orders, or next-session actionable orders. Do not use for unrelated stock/range strategies or alpha optimization.
+description: Use when users ask about official futures live trading, the current live profile, CTP/SimNow or broker-test gates, shadow signals, monthly AI-pool timing, daily reconciliation, risk review, smoke orders, or next-session actionable orders.
 ---
 
 # Futures Live Execution SOP
