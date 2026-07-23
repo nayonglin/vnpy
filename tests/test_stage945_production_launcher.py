@@ -64,6 +64,113 @@ class Stage945ProductionLauncherTest(unittest.TestCase):
         os.utime(audit_path, ns=(2_000_000_000, 2_000_000_000))
         return audit_path, release_path, commit, digest
 
+    def test_lightweight_context_reexports_canonical_identity_and_splits_roots(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            signal = root / "signal"
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "PYTHONPATH": str(PORTFOLIO_DIR),
+                    "OFFICIAL_LIVE_OUTPUT_DIR": str(control),
+                    "OFFICIAL_LIVE_SIGNAL_INPUT_DIR": str(signal),
+                }
+            )
+            script = """
+import json
+import sys
+
+blocked_roots = (
+    "pandas",
+    "numpy",
+    "tqsdk",
+    "plotly",
+    "vnpy",
+    "vnpy_portfoliostrategy",
+    "build_qmt_roll_stage173_forward_main_contract_data_update",
+    "main_contract_mapping",
+    "run_qmt_alignment_backtest",
+)
+before = set(sys.modules)
+
+import qmt_roll_official_live_lightweight_context as lightweight
+
+loaded = sorted(
+    name
+    for name in sys.modules
+    if name not in before
+    and any(name == root or name.startswith(root + ".") for root in blocked_roots)
+)
+
+import qmt_roll_official_live_config as full
+
+print("CONTRACT=" + json.dumps({
+    "loaded_after_lightweight_import": loaded,
+    "version": lightweight.OFFICIAL_LIVE_VERSION,
+    "alias": lightweight.OFFICIAL_LIVE_ALIAS,
+    "shadow_start": lightweight.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+    "control": str(lightweight.CONTROL_OUTPUT_DIR),
+    "signal": str(lightweight.SIGNAL_INPUT_DIR),
+    "data": str(lightweight.DATA_ASSET_DIR),
+    "lightweight_identity": [
+        lightweight.OFFICIAL_LIVE_VERSION,
+        lightweight.OFFICIAL_LIVE_ALIAS,
+        lightweight.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+    ],
+    "full_config_identity": [
+        full.OFFICIAL_LIVE_VERSION,
+        full.OFFICIAL_LIVE_ALIAS,
+        full.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+    ],
+    "lightweight_summary": str(lightweight.OFFICIAL_LIVE_SUMMARY_PATH),
+    "full_config_summary": str(full.OFFICIAL_LIVE_SUMMARY_PATH),
+}))
+"""
+            result = subprocess.run(
+                [sys.executable, "-c", script],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=60,
+                check=False,
+            )
+
+        self.assertEqual(0, result.returncode, result.stdout)
+        payload = json.loads(
+            next(
+                line
+                for line in result.stdout.splitlines()
+                if line.startswith("CONTRACT=")
+            ).removeprefix("CONTRACT=")
+        )
+        self.assertEqual([], payload["loaded_after_lightweight_import"])
+        self.assertEqual(
+            "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+            payload["version"],
+        )
+        self.assertEqual("Stage847-C9-15w", payload["alias"])
+        self.assertEqual("2026-07-23", payload["shadow_start"])
+        self.assertEqual(control.resolve(), Path(payload["control"]).resolve())
+        self.assertEqual(signal.resolve(), Path(payload["signal"]).resolve())
+        self.assertEqual(
+            (PORTFOLIO_DIR / "backtest_outputs").resolve(),
+            Path(payload["data"]).resolve(),
+        )
+        self.assertEqual(
+            payload["lightweight_identity"],
+            payload["full_config_identity"],
+        )
+        self.assertEqual(
+            payload["lightweight_summary"],
+            payload["full_config_summary"],
+        )
+
     def test_activation_barrier_requires_exact_success_commit_manifest_and_labels(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()

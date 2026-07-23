@@ -1,27 +1,28 @@
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
-import os
 from pathlib import Path
 from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
+from qmt_roll_official_live_lightweight_context import (
+    DATA_ASSET_DIR,
+    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
+    OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
+    OFFICIAL_LIVE_STAGE901_MODEL_TAG,
+    OFFICIAL_LIVE_STAGE901_PREFIX,
+    OFFICIAL_LIVE_SUMMARY_PATH,
+    OFFICIAL_LIVE_VERSION,
+    PROJECT_DIR,
+    SIGNAL_INPUT_DIR,
+)
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_LIVE_REAL_POLICY_DISABLED_VALUE,
 )
 
 
-PROJECT_DIR: Path = Path(__file__).resolve().parent
-OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
-SIGNAL_INPUT_DIR: Path = Path(
-    os.environ.get(
-        "OFFICIAL_LIVE_SIGNAL_INPUT_DIR",
-        os.environ.get("OFFICIAL_LIVE_OUTPUT_DIR", str(OUTPUT_DIR)),
-    )
-).expanduser().resolve(strict=False)
-
-OFFICIAL_LIVE_ALIAS: str = "Stage847-C9-15w"
-OFFICIAL_LIVE_VERSION: str = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
+OUTPUT_DIR: Path = DATA_ASSET_DIR
 OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928"
 OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry"
 OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE847_C9_PROFILE_NAME
@@ -31,7 +32,6 @@ OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_re
 OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_override_15w_account_aligned_high_risk"
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
-OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE: str = "2026-07-23"
 
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
@@ -146,18 +146,8 @@ OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
     },
 }
 
-OFFICIAL_LIVE_AI_ELIGIBILITY_PATH: Path = (
-    OUTPUT_DIR
-    / "qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_eligibility_"
-    "stage182_ai_product_pool_live_inference_v1.csv"
-)
-
-OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = "stage901_stage847_c9_2026_ytd_live_shadow_v1"
-OFFICIAL_LIVE_STAGE659_PREFIX: str = "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow"
-OFFICIAL_LIVE_SUMMARY_PATH: Path = (
-    SIGNAL_INPUT_DIR
-    / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_decision_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.json"
-)
+OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = OFFICIAL_LIVE_STAGE901_MODEL_TAG
+OFFICIAL_LIVE_STAGE659_PREFIX: str = OFFICIAL_LIVE_STAGE901_PREFIX
 OFFICIAL_LIVE_SIGNAL_PLAN_PATH: Path = (
     SIGNAL_INPUT_DIR
     / f"{OFFICIAL_LIVE_STAGE659_PREFIX}_signal_plan_{OFFICIAL_LIVE_STAGE659_MODEL_TAG}.csv"
