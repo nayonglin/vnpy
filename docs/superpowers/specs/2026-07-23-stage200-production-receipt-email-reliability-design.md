@@ -63,7 +63,7 @@ Stage935 则已经发送“AI池月更需处理”邮件后以非零状态退出
 3. 保持 Stage945 -> Stage930、Stage947 -> Stage907/909/929/935/946 的入口关系和现有 `os.execve` 所有权移交。
 4. 保持 Stage901 `allow_nan=False`；不得用非标准 JSON、历史权益回填或恢复旧 shadow 起点规避首日问题。
 5. 所有异常继续 fail-closed；失败邮件不构成交易授权，也不得改变任何 gate 结果。
-6. 测试、qualification 和部署验证不得连接 CTP，不得调用报单或撤单 API。
+6. 单元、集成、并发和性能 smoke 不得连接 CTP；最终 production qualification 只允许沿用正式 runner 的两次 CTP 只读账户/持仓采集，且 send/cancel/order API 必须精确为 `0/0/0`。任何阶段均不得调用报单或撤单 API。
 7. production release 变化后，旧 qualification、activation 和 daily receipt 不得继承；必须重新生成并绑定新 commit/tree/manifest。
 
 ## 5. 组件设计
@@ -242,6 +242,7 @@ Stage907/Stage929 在 `execve` 成功后的内部异常、Stage930 生命周期�
 - 运行全量离线测试、并发重复启动测试、100 轮 fork/lease/CAS 压力测试。
 - 运行静态编译、shell、plist、tracked-file、release manifest 和 secret scan。
 - Stage922 进行一次干净子进程冷启动 smoke，记录依赖集合和实际耗时，但只把依赖集合设为硬门槛。
+- 代码与独立 review 通过后，最终 production qualification 才运行两次正式 CTP 只读采集；必须使用 `ctp_live.local.env` 与正式 framework，且 send/cancel/order API 精确为 `0/0/0`。
 - 独立 agent 全面 review 代码、数据路径、并发幂等、秘密保护、退出码和 fail-closed 语义；合入门槛为 `P0=0`、`P1=0`，P2 必须逐条说明是否影响生产正确性。
 
 ## 8. 发布与验收
@@ -253,7 +254,7 @@ Stage907/Stage929 在 `execve` 成功后的内部异常、Stage930 生命周期�
 5. 通过 Stage948 原子更新 stable production root 和 7 个 LaunchAgent，不手工复制 plist。
 6. 由 canonical support launcher 生成新的 Stage901 cohort 与 daily receipt；在 receipt 有效前 production session 必须继续 fail-closed。
 7. 只读核验 stable HEAD、manifest、qualification、activation、7/7 plist、daily receipt、最新 launcher 状态和 `send/cancel/order API=0`。
-8. 不进行真实报单、撤单或 1 手 smoke；若后续需要 CTP 通路验证，必须另按实盘 SOP 获得明确执行授权。
+8. 除 production qualification 内建的两次正式 CTP 只读采集外，不进行其他 CTP 通路操作；不进行真实报单、撤单或 1 手 smoke。
 
 ## 9. 成功标准
 
@@ -271,5 +272,5 @@ Stage907/Stage929 在 `execve` 成功后的内部异常、Stage930 生命周期�
 - 不将 shadow 起点改回 2026-07-22 或更早，不回填、不追历史理论仓位。
 - 不增加 supervisor/watchdog LaunchAgent，不改变现有 `execve` 生命周期。
 - 不通过延长 Stage922 timeout 掩盖重型依赖。
-- 不发送真实测试邮件，不连接 CTP，不调用报单/撤单 API。
+- 不发送真实测试邮件；离线测试不连接 CTP；除正式 production qualification 的两次只读采集外不做其他 CTP 操作；任何阶段均不调用报单/撤单 API。
 - 不把“SMTP 接受邮件”表述为“用户邮箱必然收到”；生产验收分别记录程序发送结果与外部投递可见性。
