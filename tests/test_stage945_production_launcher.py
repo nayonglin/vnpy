@@ -171,6 +171,254 @@ print("CONTRACT=" + json.dumps({
             payload["full_config_summary"],
         )
 
+    def test_stage922_import_is_stdlib_lightweight_and_roots_are_split(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            signal = root / "signal"
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "PYTHONPATH": str(PORTFOLIO_DIR),
+                    "OFFICIAL_LIVE_OUTPUT_DIR": str(control),
+                    "OFFICIAL_LIVE_SIGNAL_INPUT_DIR": str(signal),
+                }
+            )
+            script = """
+import json
+import sys
+
+import run_qmt_roll_stage922_official_live_target_date_resolver as resolver
+
+blocked_roots = (
+    "pandas",
+    "numpy",
+    "tqsdk",
+    "plotly",
+    "vnpy",
+    "vnpy_portfoliostrategy",
+    "build_qmt_roll_stage173_forward_main_contract_data_update",
+    "main_contract_mapping",
+    "qmt_roll_official_live_config",
+    "run_qmt_alignment_backtest",
+)
+loaded = sorted(
+    name
+    for name in sys.modules
+    if any(name == root or name.startswith(root + ".") for root in blocked_roots)
+)
+print("CONTRACT=" + json.dumps({
+    "loaded": loaded,
+    "control": str(resolver.CONTROL_OUTPUT_DIR),
+    "data": str(resolver.DATA_ASSET_DIR),
+    "signal": str(resolver.SIGNAL_INPUT_DIR),
+    "outputs": {key: str(path) for key, path in resolver._paths("fixture").items()},
+}))
+"""
+            result = subprocess.run(
+                [sys.executable, "-S", "-c", script],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=60,
+                check=False,
+            )
+
+        self.assertEqual(0, result.returncode, result.stdout)
+        payload = json.loads(
+            next(
+                line
+                for line in result.stdout.splitlines()
+                if line.startswith("CONTRACT=")
+            ).removeprefix("CONTRACT=")
+        )
+        self.assertEqual([], payload["loaded"])
+        self.assertEqual(control.resolve(), Path(payload["control"]).resolve())
+        self.assertEqual(signal.resolve(), Path(payload["signal"]).resolve())
+        self.assertEqual(
+            (PORTFOLIO_DIR / "backtest_outputs").resolve(),
+            Path(payload["data"]).resolve(),
+        )
+        self.assertTrue(
+            all(
+                Path(path).resolve().parent == control.resolve()
+                for path in payload["outputs"].values()
+            )
+        )
+
+    def test_stage922_fixture_semantics_cover_ready_refresh_holiday_and_cold_start(
+        self,
+    ) -> None:
+        import run_qmt_roll_stage922_official_live_target_date_resolver as resolver
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n"
+                "2026-03-31\n"
+                "2026-04-30\n"
+                "2026-05-29\n"
+                "2026-06-30\n"
+                "2026-07-17\n"
+                "2026-07-21\n"
+                "2026-07-23\n",
+                encoding="utf-8",
+            )
+            stage173_status = root / "stage173-status.csv"
+            stage173_status.write_text(
+                "contract_vt_symbol,max_date\n"
+                "JM609.DCE,2026-07-23\n"
+                "SM609.CZCE,2026-07-23\n"
+                "RB2610.SHFE,2026-07-22\n",
+                encoding="utf-8",
+            )
+            stage173_summary = root / "stage173-summary.json"
+            stage173_summary.write_text(
+                json.dumps(
+                    {
+                        "max_saved_date": "2026-07-23",
+                        "mapping_update": {"combined_max_date": "2026-07-23"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            official = root / "official-summary.json"
+            official.write_text(
+                json.dumps(
+                    {
+                        "analysis_start": "2026-07-23",
+                        "analysis_end": "2026-07-23",
+                        "latest_available_data_date": "2026-07-23",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            ready = resolver.build_target_date_resolution(
+                as_of=datetime.fromisoformat("2026-07-23T17:00:00"),
+                data_ready_time="16:30",
+                official_summary_path=official,
+                stage173_summary_path=stage173_summary,
+                stage173_status_path=stage173_status,
+                mapping_path=mapping,
+            )
+            self.assertEqual("2026-07-23", ready["resolved_target_date"])
+            self.assertEqual(0, ready["requires_data_update"])
+            self.assertEqual(0, ready["requires_shadow_refresh"])
+            self.assertEqual(
+                "target_date_resolved_local_shadow_ready_fail_closed",
+                ready["resolver_status"],
+            )
+            self.assertEqual(
+                2,
+                ready["stage173_target_contract_coverage"][
+                    "target_date_contract_count"
+                ],
+            )
+            self.assertEqual(
+                3,
+                ready["stage173_target_contract_coverage"]["contract_count"],
+            )
+            self.assertEqual(0, ready["order_api_called_count"])
+
+            holiday = resolver.build_target_date_resolution(
+                as_of=datetime.fromisoformat("2026-07-20T21:00:00"),
+                data_ready_time="16:30",
+                official_summary_path=official,
+                stage173_summary_path=stage173_summary,
+                stage173_status_path=stage173_status,
+                mapping_path=mapping,
+            )
+            self.assertEqual("2026-07-17", holiday["resolved_target_date"])
+            self.assertEqual(1, holiday["target_before_shadow_start"])
+            self.assertEqual(
+                "target_date_before_live_shadow_start_waiting_fail_closed",
+                holiday["resolver_status"],
+            )
+            self.assertEqual(
+                "main_contract_mapping_trading_calendar",
+                holiday["resolver_evidence"]["trading_calendar_source"],
+            )
+
+            before_ready = resolver.build_target_date_resolution(
+                as_of=datetime.fromisoformat("2026-07-23T16:00:00"),
+                data_ready_time="16:30",
+                official_summary_path=official,
+                stage173_summary_path=stage173_summary,
+                stage173_status_path=stage173_status,
+                mapping_path=mapping,
+            )
+            self.assertEqual("2026-07-21", before_ready["resolved_target_date"])
+
+            stage173_summary.write_text(
+                json.dumps(
+                    {
+                        "max_saved_date": "2026-07-21",
+                        "mapping_update": {"combined_max_date": "2026-07-21"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            official.write_text(
+                json.dumps(
+                    {
+                        "analysis_start": "2026-07-23",
+                        "analysis_end": "2026-07-21",
+                        "latest_available_data_date": "2026-07-21",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stale = resolver.build_target_date_resolution(
+                as_of=datetime.fromisoformat("2026-07-23T17:00:00"),
+                data_ready_time="16:30",
+                official_summary_path=official,
+                stage173_summary_path=stage173_summary,
+                stage173_status_path=stage173_status,
+                mapping_path=mapping,
+            )
+            self.assertEqual(1, stale["requires_data_update"])
+            self.assertEqual(1, stale["requires_shadow_refresh"])
+            self.assertEqual(
+                "target_date_resolved_requires_refresh_fail_closed",
+                stale["resolver_status"],
+            )
+
+            empty_mapping = root / "empty-mapping.csv"
+            empty_mapping.write_text("date\n", encoding="utf-8")
+            fallback = resolver.build_target_date_resolution(
+                as_of=datetime.fromisoformat("2026-07-23T17:00:00"),
+                data_ready_time="16:30",
+                official_summary_path=official,
+                stage173_summary_path=stage173_summary,
+                stage173_status_path=stage173_status,
+                mapping_path=empty_mapping,
+            )
+            self.assertEqual(
+                "weekday_fallback",
+                fallback["resolver_evidence"]["trading_calendar_source"],
+            )
+
+    def test_target_date_resolver_timeout_is_typed_fail_closed(self) -> None:
+        with (
+            patch.object(
+                launcher.subprocess,
+                "run",
+                side_effect=subprocess.TimeoutExpired(["stage922"], 60),
+            ),
+            self.assertRaisesRegex(
+                launcher.ProductionSessionLaunchError,
+                "^production_launcher_target_date_resolver_timeout$",
+            ),
+        ):
+            launcher._resolve_target_date({})
+
     def test_activation_barrier_requires_exact_success_commit_manifest_and_labels(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()

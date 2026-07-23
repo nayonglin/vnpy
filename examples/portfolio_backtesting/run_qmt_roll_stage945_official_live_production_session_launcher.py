@@ -159,7 +159,9 @@ SESSION_SPECS = {
 
 
 class ProductionSessionLaunchError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, boundary: str = "pre-exec") -> None:
+        super().__init__(message)
+        self.boundary = boundary
 
 
 def _assert_stable_deploy_root() -> None:
@@ -613,21 +615,27 @@ def _assert_canonical_paths(
 
 
 def _resolve_target_date(environment: Mapping[str, str]) -> tuple[str, dict[str, Any]]:
-    result = subprocess.run(
-        [
-            str(PYTHON_PATH),
-            str(STAGE922_SCRIPT),
-            "--data-ready-time",
-            "16:30",
-        ],
-        cwd=REPO_ROOT,
-        env=dict(environment),
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        timeout=60,
-        check=False,
-    )
+    try:
+        result = subprocess.run(
+            [
+                str(PYTHON_PATH),
+                str(STAGE922_SCRIPT),
+                "--data-ready-time",
+                "16:30",
+            ],
+            cwd=REPO_ROOT,
+            env=dict(environment),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=60,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ProductionSessionLaunchError(
+            "production_launcher_target_date_resolver_timeout",
+            boundary="target-date-resolver",
+        ) from exc
     if result.returncode != 0:
         raise ProductionSessionLaunchError(
             "production_launcher_target_date_resolver_failed"
