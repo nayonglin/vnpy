@@ -1293,15 +1293,13 @@ print("CONTRACT=" + json.dumps({
     def test_low_disk_blocks_before_exec(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)
-            usage = os.statvfs(path)
-            observed_free = usage.f_bavail * usage.f_frsize
             with self.assertRaisesRegex(
                 launcher.ProductionSessionLaunchError,
                 "free_disk_below_minimum",
             ):
                 launcher._assert_minimum_free_space(
                     (path,),
-                    minimum_free_bytes=observed_free + 1,
+                    minimum_free_bytes=sys.maxsize,
                 )
 
 
