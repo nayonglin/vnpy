@@ -306,6 +306,6 @@ def send_official_live_email_notification(
             result["sent_to_count"] = len(config.recipients) + len(config.cc)
     except Exception as exc:
         result["email_status"] = "send_failed"
-        result["error"] = repr(exc)
+        result["error_type"] = type(exc).__name__
     _write_audit(result)
     return result
