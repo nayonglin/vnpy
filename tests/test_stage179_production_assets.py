@@ -39,6 +39,7 @@ from qmt_roll_official_pending_artifact import (  # noqa: E402
     artifact_hashes_for_profile,
     validate_pending_artifact_cohort,
 )
+import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as stage650  # noqa: E402
 import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as stage901  # noqa: E402
 
 
@@ -673,6 +674,116 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
         )
 
         self.assertEqual("", status.stdout)
+
+    def test_stage650_sharpe_returns_zero_for_degenerate_equity_series(self) -> None:
+        cases = {
+            "empty": pd.Series(dtype=float),
+            "single": pd.Series(
+                [150_000.0],
+                index=pd.to_datetime(["2026-07-23"]),
+                dtype=float,
+            ),
+            "constant": pd.Series(
+                [150_000.0, 150_000.0],
+                index=pd.to_datetime(["2026-07-23", "2026-07-24"]),
+                dtype=float,
+            ),
+        }
+
+        for label, equity in cases.items():
+            with self.subTest(label=label):
+                self.assertEqual(0.0, stage650._sharpe(equity))
+
+    def test_stage650_sharpe_preserves_multi_day_result(self) -> None:
+        equity = pd.Series(
+            [100.0, 110.0, 105.0, 120.0],
+            index=pd.date_range("2026-07-20", periods=4),
+            dtype=float,
+        )
+
+        self.assertAlmostEqual(
+            8.999777412294232,
+            stage650._sharpe(equity),
+            places=12,
+        )
+
+    def test_stage901_publishes_single_day_metrics_as_strict_json(self) -> None:
+        profile = replace(
+            C9_15W_PROFILE,
+            summary_path=self.signal_root / C9_15W_PROFILE.summary_path.name,
+            signal_plan_path=self.signal_root / C9_15W_PROFILE.signal_plan_path.name,
+            current_positions_path=(
+                self.signal_root / C9_15W_PROFILE.current_positions_path.name
+            ),
+            pending_orders_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_path.name
+            ),
+            pending_orders_audit_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_audit_path.name
+            ),
+        )
+        metrics = stage650._metrics(
+            frame=pd.DataFrame(
+                [
+                    {
+                        "date": "2026-07-23",
+                        "account_equity": 150_000.0,
+                        "broker10_total_margin_exact": 0.0,
+                        "total_net_pnl": 0.0,
+                        "total_slippage": 0.0,
+                        "trade_count": 0,
+                    }
+                ]
+            ),
+            spec=stage650.CapitalVariant(
+                variant=C9_15W_PROFILE.profile_key,
+                label="C9/15w first-day fixture",
+                account_capital=C9_15W_PROFILE.capital,
+                c3_capital=C9_15W_PROFILE.capital,
+                risk_multiplier=1.0,
+                product_cap_ratio=0.25,
+                max_concurrent_positions=4,
+                note="stage200 first-day fixture",
+            ),
+            cost_multiplier=1.0,
+        )
+        decision = {
+            "analysis_end": "2026-07-23",
+            "generated_at": "2026-07-23 16:35:00",
+            "execution_profile": profile.profile_key,
+            "official_live_version": profile.official_version,
+            "capital": profile.capital,
+            "capital_label": profile.capital_label,
+            "current_variant": metrics,
+        }
+
+        published, pending, audit = stage901._publish_execution_artifact_cohort(
+            decision=decision,
+            signal_plan=pd.DataFrame(
+                columns=["vt_symbol", "direction", "offset", "volume"]
+            ),
+            current_positions=pd.DataFrame(
+                columns=["vt_symbol", "direction", "end_pos"]
+            ),
+            pending_orders=pd.DataFrame(
+                columns=["vt_symbol", "direction", "offset", "volume"]
+            ),
+            profile=profile,
+        )
+
+        persisted = json.loads(profile.summary_path.read_text(encoding="utf-8"))
+        persisted_audit = json.loads(
+            profile.pending_orders_audit_path.read_text(encoding="utf-8")
+        )
+        self.assertEqual(0.0, published["current_variant"]["sharpe"])
+        self.assertEqual(0.0, persisted["current_variant"]["sharpe"])
+        self.assertTrue(pending.empty)
+        self.assertEqual(audit, persisted_audit)
+        self.assertEqual(published["cohort_id"], persisted_audit["cohort_id"])
+
+    def test_stage901_strict_json_rejects_unknown_native_nan(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Out of range float values"):
+            stage901._json_bytes({"unexpected_metric": float("nan")})
 
     def test_stage901_publishes_private_cohort_with_audit_seal_last(self) -> None:
         profile = replace(

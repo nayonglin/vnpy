@@ -113,7 +113,7 @@ def _ulcer_pct(equity: pd.Series) -> float:
 def _sharpe(equity: pd.Series) -> float:
     returns = equity.astype(float).pct_change().replace([np.inf, -np.inf], np.nan).fillna(0.0)
     std = float(returns.std(ddof=1))
-    if std <= 0:
+    if not math.isfinite(std) or std <= 0:
         return 0.0
     return float(returns.mean() / std * math.sqrt(252.0))
 
