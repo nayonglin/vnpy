@@ -14,6 +14,7 @@ This skill is an execution-discipline guide, not an alpha-research guide.
 - Current line: `futures_trend_stage819_intraday_rules`.
 - Current strategy: C9/Stage847 15w, based on Stage819 with C9 entry-day `0.5R` stop/retry-once, C2 intraday stop, and broker10 cap.
 - Current capital: `150000` only for live/virtual execution.
+- Current production cold-start boundary: `2026-07-23`; do not backfill or chase theoretical positions before it.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
 - Account state source for virtual/live execution: CTP broker/SimNow snapshot, not historical shadow holdings.
 - Python: use `.py311/bin/python`.
@@ -24,14 +25,30 @@ Before running anything, read:
 1. `work-type.txt`
 2. `research/registry.md`
 3. `examples/portfolio_backtesting/qmt_roll_official_live_config.py`
-4. The current official line from the registry/config, currently `research/lines/futures_trend_drawdown30_preserve_return/LINE.md`
+4. The current official line from the registry/config, currently `research/lines/futures_trend_stage819_intraday_rules/LINE.md`
 5. `research/lines/futures_trend/LINE.md` only when comparing against a historical baseline.
-6. `research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md` when AI pool timing matters.
+6. `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md` when AI pool timing matters.
 
 State at the start and end:
 
 - Overfitting judgment: yes/no and why.
 - Continued-value judgment: yes/no and why.
+
+## Production Authority
+
+When answering what is active in real production, use this priority:
+
+1. Stable code root: `/Users/bytedance/Desktop/person/vnpy_production_live`.
+2. Private state root: `~/Library/Application Support/qmt-roll-stage179/production-live/`, especially:
+   - `release-manifest.json`
+   - `qualification-bundle/qualification.json`
+   - `activation/latest.json`
+   - `runtime/state/activation_receipt.json`
+   - `data-readiness/latest.json`
+3. Stable-root `qmt_roll_official_live_config.py`.
+4. Registry and release-branch records for explanation only.
+
+Never let an arbitrary development checkout override a stable HEAD, manifest, activation receipt, or daily-data receipt. A runtime or framework upgrade requires a new qualified release; do not silently upgrade production from upstream or the development environment.
 
 ## CTP Environment and Runtime Guard
 
@@ -62,27 +79,32 @@ This guard applies before any CTP/SimNow/broker-test read-only probe, dry-run ga
    - Prior successful production order flow used the formal `vnpy_ctp/api/libs` runtime.
    - A wrapper that prioritized `.py311/lib` loaded the CP runtime first and reproduced `4040 decode err`; restoring formal runtime priority allowed raw MD ticks and Stage655 TD-only account/position queries to succeed.
 
-## Daily Shadow Workflow
+## Canonical Production Daily Workflow
 
-Use this after a completed trading day, normally after market data for that day is available.
+The unattended production route is owned by Stage945/947 and launchd. Do not reproduce it by manually chaining historical scripts.
 
-1. Identify the latest completed trading day. Do not assume calendar today is a complete trading day.
-2. Update main-contract mapping and daily bars:
-   - `examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py`
-3. Use the current month AI pool for daily signals. Do not retrain or rerank the AI pool every day.
-4. Run the canonical current-profile latest-AI-pool shadow runner:
-   - `examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py --target-date YYYY-MM-DD`
-   - The file name is historical; it now resolves the live profile from `qmt_roll_official_live_config.py`.
-5. Read the generated daily report and signal plan.
+1. Stage947 `postclose-precompute` runs at 16:35.
+2. Stage947 validates the stable root, release manifest, activation receipt, qualification evidence, credentials, and exact launchd owner.
+3. Stage909 resolves `latest-completed`, updates the data/mapping chain, runs the C9/15w Stage901 shadow through its historical Stage659-named wrapper, and returns an exact target date.
+4. Stage947 independently resolves the authoritative target date, requires it to match Stage909, and signs `data-readiness/latest.json` over code, database, signal inputs, and AI-pool identity.
+5. Stage945 day/night session launchers validate the exact 7-label surface, committed activation, code qualification, cold-start boundary, and same-target daily receipt before executing Stage930.
 6. Interpret risk level:
    - `base` or normal status: signal may proceed to broker-state gates.
    - `review`: shadow records continue, but SimNow/live execution may only close, reduce risk, or reconcile; do not open new positions.
    - missing/unknown risk state: fail closed.
-7. Write a Chinese stage record under `research/lines/futures_trend_drawdown30_preserve_return/stages/`.
+7. Read Stage901 `pending_orders` as the primary theoretical list, but bind execution to the signed production target, current broker/ledger state, Stage904 live-stop alignment, and Stage927/931 gates.
+8. Write a Chinese stage record under `research/lines/futures_trend_stage819_intraday_rules/stages/`.
 
-## Daily 7x24 Dry-Run Gate
+For the deliberate `2026-07-23` cold start:
 
-Use this after the daily shadow report when the goal is to decide whether the next SimNow session has an actionable official-live order. This workflow is still dry-run; it must not call `send_order`.
+- A target before the start date must exit Stage945 as `skipped_before_live_shadow_start` before Stage930 or CTP connection.
+- Do not backfill, reconcile into, or chase any pre-start shadow holding.
+- Missing daily receipt before the first 16:35 post-close cohort is an expected fail-closed state, not proof that the strategy or launchd installation is broken.
+- After the first eligible 16:35 cohort, a missing or invalid receipt is a real blocker and must not be bypassed.
+
+## Legacy SimNow 7x24 Diagnostic
+
+Stage260 and Stage251 are legacy SimNow/broker-test diagnostics only. They are not the production C9/15w control path and must not be used to install, start, or authorize production.
 
 1. Update data to the latest completed trading day:
    - `examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py --mapping-start YYYY-MM-01 --bar-start YYYY-MM-DD --end YYYY-MM-DD`
@@ -102,16 +124,16 @@ Use this after the daily shadow report when the goal is to decide whether the ne
    - `review` allows close/reduce/reconcile only; it blocks new opens.
    - Broker/SimNow positions override historical shadow positions.
    - A close signal requires a matching SimNow position in the opposite direction.
-7. Record a Chinese stage file under `research/lines/futures_trend_drawdown30_preserve_return/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
+7. Record a Chinese stage file under `research/lines/futures_trend_stage819_intraday_rules/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
 
 ## Monthly AI Pool Cadence
 
-The AI pool is monthly, not daily. The current official live profile consumes the Stage182 monthly AI pool file unless a later official-live config replaces it.
+The AI pool is monthly, not daily. Follow `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`.
 
-- Run monthly live inference only after the previous month last trading day has complete data.
-- Daily reports should use the current month pool.
-- If the month changed but the pool was not refreshed, say so and either refresh it or mark the daily report as stale-input risk.
-- Do not modify the AI ranking logic during daily operations.
+- Production runs Stage947 `monthly-ai-pool` -> Stage935 at 18:20 on weekdays; Stage935 itself decides whether a completed-month refresh is due.
+- If Stage935 updates the pool, Stage947 must rerun the qualified Stage909 precompute and issue a new daily receipt bound to the changed pool.
+- If the pool is already current, Stage947 must validate the existing receipt.
+- Do not pass `--allow-incomplete-month`, change ranking logic, or call broker order APIs.
 
 ## SimNow Gate Workflow
 
@@ -129,7 +151,7 @@ Use this before any virtual order can be submitted.
    - fresh account snapshot,
    - position snapshot state is `confirmed_flat` or a concrete non-empty position snapshot.
 4. If the snapshot is stale, missing, ambiguous, or login fails, stop.
-5. Run the Phase B fresh pre-submit gate:
+5. For a legacy SimNow-only flow, run the Phase B fresh pre-submit gate:
    - `examples/portfolio_backtesting/run_qmt_roll_stage251_phaseb_fresh_pre_submit_gate.py`
 6. Confirm total real submit/send-order calls are still zero unless the user explicitly asked for a test-environment virtual order and the broker-test/SimNow adapter is being used.
 
@@ -251,7 +273,7 @@ Default posture: dry-run first.
 - If risk is `review`, only close/reduce/reconcile orders can proceed.
 - For first virtual execution after a connectivity change, use a 1-lot smoke test before normal strategy sizing.
 - For broker-test smoke orders, prefer `CTP_SMOKE_ORDER_ENABLED=1`; legacy `SIMNOW_SMOKE_ORDER_ENABLED=1` is accepted only for old SimNow runs.
-- Real-money execution is out of scope for this skill unless the user explicitly asks for a separate live-trading gate review.
+- Real-money execution may only enter through the Stage948-activated Stage945 -> Stage930 -> Stage927/931 route. Never turn a manual shadow or SimNow diagnostic into an ad-hoc production submit.
 
 ## Reconciliation
 
@@ -291,3 +313,4 @@ Stop and ask or fail closed when:
 - SimNow is flat but the proposed action is close-only,
 - AI pool is stale and the user is asking for an executable order.
 - smoke-order submit-cancel is requested without explicit test-environment confirmation, a fresh read-only snapshot, and the required confirmation text.
+- the stable HEAD, manifest, qualification, activation receipt, daily-data receipt, or exact seven-label launchd surface disagree.

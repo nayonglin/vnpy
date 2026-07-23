@@ -1,11 +1,11 @@
 ---
 name: futures-live-automation-startup
-description: Start, install, restart, verify, or troubleshoot this repo's C9/15w official futures live automations, including launchd day/night Stage930 session daemons, Stage929 timed reports, Stage935 monthly AI pool update, Stage934 health checks, and the standard Chinese workflow for “启动自动化” or “检查自动化”.
+description: Start, install, restart, verify, or troubleshoot this repo's qualified C9/15w production-live launchd automation. Use for production activation, the seven canonical scheduled jobs, Stage945/947/948, cold-start readiness, activation or daily-receipt blockers, and Chinese requests such as “启动全部实盘定时任务” or “检查自动化”.
 ---
 
 # Futures Live Automation Startup
 
-Use this skill when the user asks to start, restart, install, or check the official live automation for this repo. This skill is an execution SOP, not an alpha research guide.
+Use this skill for the C9/15w production control plane. It is an execution SOP, not an alpha-research guide.
 
 ## Required First Reads
 
@@ -13,149 +13,170 @@ Use this skill when the user asks to start, restart, install, or check the offic
 2. Read `research/registry.md`.
 3. Read `skills/futures-live-execution-sop/SKILL.md`.
 4. Read `examples/portfolio_backtesting/qmt_roll_official_live_config.py`.
-5. For monthly AI pool questions, read `research/lines/futures_trend/SOP_stage78_monthly_ai_pool.md`.
+5. Read `research/lines/futures_trend_stage819_intraday_rules/LINE.md`.
+6. For monthly AI-pool questions, read `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`.
 
 Start and end with:
 
 - Overfitting judgment: yes/no and why.
 - Continued-value judgment: yes/no and why.
 
-## Current Live Profile
+## Current Production Contract
 
-- Current profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Current line: `futures_trend_stage819_intraday_rules`.
-- Current capital: `150000`.
-- Python: `.py311/bin/python`.
-- Current automation qualification state: C9/15w production-readonly; real submit remains fail closed until the release manifest, installed runtime, CTP read-only chain, and activation receipt all pass.
-- Do not fall back to old Stage372/20w, Stage653, Stage78-1, old 30w, or research candidates unless the user explicitly asks for a comparison.
+- Profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
+- Execution profile: `c9-15w`.
+- Capital: `150000`.
+- Stable root: `/Users/bytedance/Desktop/person/vnpy_production_live`.
+- Private state root: `~/Library/Application Support/qmt-roll-stage179/production-live`.
+- Python: stable-root `.py311/bin/python`.
+- Cold-start boundary: `2026-07-23`; never backfill or chase pre-start theoretical positions.
 
-## Standard Automation Set
+Use stable HEAD plus these private artifacts as production authority:
 
-The safe C9/15w qualification set is:
+- `release-manifest.json`
+- `qualification-bundle/qualification.json`
+- `activation/latest.json`
+- `runtime/state/activation_receipt.json`
+- `data-readiness/latest.json`
 
-- `local.qmt-roll.official-live.15w.c9-readonly-day-session`
-  - Starts Stage930 at 08:55.
-  - Runs Stage930 with `--execution-profile c9-15w --mode dry-run --submit-mode disabled --runtime-profile production-readonly --stage179-execution-mode warm`.
-- `local.qmt-roll.official-live.15w.c9-readonly-night-session`
-  - Starts Stage930 at 20:55.
-  - Uses the same C9/15w production-readonly and no-submit contract as the day job.
-- `local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute`
-  - Runs Stage909 at 16:35 for the latest completed session.
-  - Precomputes the C9/15w shadow artifacts without calling broker order APIs.
-- `local.qmt-roll.official-live.15w.postclose`
-  - Runs Stage929 post-close report at 16:35.
-  - Stage929 runs Stage935 AI-pool preflight before generating the report.
-  - The post-close report is a signal/reporting job. It should not hard-require a live CTP read-only refresh, because 16:35 can fall inside clearing or an unavailable front window.
-- `local.qmt-roll.official-live.15w.day-close-readonly`
-  - Runs Stage907 production-live read-only refresh at 15:05.
-  - This is a best-effort account/position/contract snapshot after the day session, before the 16:35 signal email.
-  - Do not move the only run to 15:01 without adding snapshot-preservation logic; a too-early failed refresh can overwrite a previously usable Stage174 latest snapshot.
-  - It must never submit orders; it only runs `run_qmt_roll_stage907_official_live_readonly_refresh_gate.py --mode refresh`.
-- `local.qmt-roll.official-live.15w.evening-report`
-  - Runs Stage929 evening report at 21:05.
-  - Stage929 runs Stage935 AI-pool preflight before generating the report.
-- `local.qmt-roll.official-live.15w.monthly-ai-pool`
-  - Runs Stage935 at 18:20.
-  - This is a standalone backup/health check. It is not the only protection before reports or trading.
-  - Stage935 checks whether Stage182 monthly AI pool is stale versus the latest complete month. It only refreshes Stage183/Stage182 when stale or forced.
+An arbitrary development checkout, release branch, or historical stage record cannot override them.
 
-Stage930 day/night read-only session daemons also run Stage935 AI-pool preflight at startup. If the pool is stale and Stage935 cannot update it, Stage930 must fail closed instead of generating new open-order intents from an old pool.
+## Exact Seven-Job Surface
 
-The deleted `local.qmt-roll.official-live.15w.c9-day-session` and `local.qmt-roll.official-live.15w.c9-night-session` jobs are legacy armed entrypoints. Keep them disabled and uninstalled; never recreate or bootstrap them from an old checkout.
+Only these production labels may be installed and loaded:
 
-## Install Or Reload LaunchAgents
+| Label suffix | Schedule | Owner and purpose |
+| --- | --- | --- |
+| `c9-production-live-day-session` | weekdays 08:55 and 13:25 | Stage945 `--session day` -> Stage930 |
+| `c9-production-live-night-session` | weekdays 20:55 | Stage945 `--session night` -> Stage930 |
+| `c9-production-live-day-close-readonly` | weekdays 15:12 | Stage947 -> Stage907 production read-only refresh |
+| `c9-production-live-postclose-precompute` | weekdays 16:35 | Stage947 -> Stage909 C9 shadow + signed daily receipt |
+| `c9-production-live-postclose-report` | weekdays 16:55 | Stage947 -> Stage929 report |
+| `c9-production-live-monthly-ai-pool` | weekdays 18:20 | Stage947 -> Stage935 monthly check/update |
+| `c9-production-live-health` | weekdays 09:03, 13:33, 21:03 | Stage947 -> Stage946 health |
 
-Install the three `c9-readonly-*` plists from `examples/portfolio_backtesting/launchd/` into `~/Library/LaunchAgents/`. Do not install an armed real-submit plist during qualification.
+The full prefix is `local.qmt-roll.official-live.15w.`.
 
-Use `launchctl bootout gui/$(id -u)/<label>` before bootstrap when reloading an existing label. Ignore bootout "not found" errors.
+Stage945 validates the exact owned launchd surface, committed activation, release identity, qualification, daily receipt, and cold-start boundary before Stage930. Stage947 applies the same stable-release authority to support jobs.
 
-Bootstrap and enable each label with:
+Treat `c9-readonly-*`, unprefixed legacy 15w jobs, Stage372 jobs, old C9 armed jobs, and Stage179 no-submit jobs as conflicting historical labels. They must be absent from disk and the launchd domain.
+
+## Idempotent Start Decision
+
+For “start all production tasks,” inspect before mutating:
+
+1. Validate stable HEAD, manifest, qualification, activation audit, runtime receipt, installed plist fingerprints, and the exact owned launchd surface.
+2. If the exact seven production jobs are already present on disk, in the launchd domain, loaded, and reboot-persistent with zero conflicts, return `already_active`; do not run Stage948 again and do not kickstart a session.
+3. Only use Stage948 activation when jobs are absent or drifted and the prepared qualified generation is valid. Report the reason before mutation.
+4. A stale or missing daily-data receipt is a trading-readiness blocker, not an installation defect. Do not reinstall launchd to repair it.
+
+## Prepare and Activate
+
+Do not copy individual plists or call `launchctl bootstrap` by hand. Stage948 owns stable-worktree preparation, atomic plist publication, conflict removal, bootout/bootstrap, verification, rollback journal, and activation audit.
+
+Before preparation require:
+
+- an exact clean source commit;
+- all production-critical paths present;
+- final qualification evidence with every P0/P1 count zero;
+- two formal production CTP read-only captures;
+- no secret printed or committed.
+
+Prepare from the intended qualified commit:
 
 ```bash
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/<label>.plist
-launchctl enable gui/$(id -u)/<label>
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python \
+  /Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/install_qmt_roll_stage948_official_live_production.py \
+  --source-commit <40-char-commit> \
+  --confirm-prepare I_UNDERSTAND_THIS_PREPARES_C9_15W_PRODUCTION_ASSETS
 ```
 
-Do not hand-edit installed plists. Edit repo plists first, copy them to `~/Library/LaunchAgents/`, then reload.
+After inspecting the prepared stable HEAD, manifest, qualification bundle, staged plist fingerprints, rollback journal, and zero launchctl/CTP/order counts, activate:
+
+```bash
+/Users/bytedance/Desktop/person/vnpy_production_live/.py311/bin/python \
+  /Users/bytedance/Desktop/person/vnpy_production_live/examples/portfolio_backtesting/install_qmt_roll_stage948_official_live_production.py \
+  --activate-prepared \
+  --confirm-activate I_UNDERSTAND_THIS_LOADS_C9_15W_PRODUCTION_LAUNCHD_JOBS
+```
+
+Activation is valid only when Stage948 reports `production_launchd_activated_no_ctp_connection`. Never replace the source commit merely to apply documentation or Skill changes; production code changes need a separately qualified release.
 
 ## Verification
 
-Run:
+Require all of the following:
+
+1. Stable HEAD equals the manifest and activation source commit.
+2. Qualification evidence is bound to that manifest and has no P0/P1 failure.
+3. Activation audit status is successful and the runtime activation receipt validates.
+4. Production labels equal exactly seven on disk, in the launchd domain, loaded, and reboot-persistent.
+5. Conflicting owned labels equal zero.
+6. Stage948 activation has CTP/send/cancel/order counts `0/0/0/0`.
+7. Installed plist arguments and fingerprints equal the stable repo definitions.
+8. Stage945/947 stdout and stderr logs contain no unresolved launch or security blocker.
+9. Stage946 health either passes or explains a real fail-closed condition.
+
+Useful read-only checks:
 
 ```bash
-.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage934_official_live_automation_health_check.py
+git -C /Users/bytedance/Desktop/person/vnpy_production_live rev-parse HEAD
+launchctl list | rg 'qmt-roll\.(official-live|stage179)'
 ```
 
-Require Stage934 to show:
+Read the private JSON artifacts directly for exact counts and identities. Do not infer activation from `launchctl list` alone.
 
-- day and night C9/15w read-only Stage930 launchd labels loaded;
-- day-close Stage907 read-only launchd label loaded;
-- monthly AI pool launchd label loaded;
-- installed arguments match repo arguments;
-- Stage930 process present during a trading session, or scheduled-ready outside session;
-- latest Stage930 and Stage935 summaries have `order_api_called_count=0`; any non-zero value fails read-only qualification.
-- latest Stage930 summary includes `ai_pool_preflight.automation_status` equal to `monthly_ai_pool_already_current` or `monthly_ai_pool_updated`.
+## Cold-Start and Daily Receipt
 
-Also check:
-
-```bash
-launchctl list | rg 'qmt-roll.official-live.15w'
-```
+- A pre-start target must exit Stage945 with `skipped_before_live_shadow_start`, Stage930/CTP/order counts zero, and successful process exit.
+- Before the first eligible 16:35 cohort, Stage946 may report `production_support_daily_data_receipt_invalid`; this is expected fail-closed during a deliberate cold start, not a reason to reinstall or force a session.
+- Stage947 `postclose-precompute` must generate the first same-target receipt after the cold-start date.
+- After that eligible 16:35 run, a missing, stale, or identity-mismatched receipt is a real blocker. Do not bypass it, kickstart around it, or use an old shadow artifact.
 
 ## Monthly AI Pool
 
-Manual check:
+Stage947 owns production month-end handling:
 
-```bash
-.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py --mode check --email-policy never
-```
+- `monthly_ai_pool_already_current`: validate the existing receipt.
+- `monthly_ai_pool_updated`: rerun the qualified Stage909 precompute and sign a new receipt bound to the updated pool.
+- any other state: fail closed.
 
-Normal automated run:
+Do not pass `--allow-incomplete-month`, change ranking logic during startup, or run direct Stage182/183 as a substitute for Stage947.
 
-```bash
-.py311/bin/python examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py --mode run --email-policy changes
-```
+## Restart and Kickstart Discipline
 
-Rules:
-
-- The AI pool is monthly, not daily.
-- Do not pass `--allow-incomplete-month` to Stage182 for formal live use.
-- Do not change AI ranking logic during startup work.
-- Use `--force` only after verifying the expected complete-month eval date.
-- Stage935 must not call broker order APIs.
-- Stage929 report generation and Stage930 session startup must not continue if Stage935 reports `monthly_ai_pool_update_needed`, `monthly_ai_pool_update_blocked`, or `monthly_ai_pool_exception`.
-
-## Kickstart Rules
-
-Only kickstart a read-only session daemon when the user asks for immediate start or when fixing a missed read-only observation during an active or imminent trading session:
-
-```bash
-launchctl kickstart -k gui/$(id -u)/local.qmt-roll.official-live.15w.c9-readonly-night-session
-```
-
-Do not kickstart either deleted armed label. Do not bypass the release manifest, activation receipt, Stage927/931, kill switch, read-only account/position gate, or continuous-auction submit guards. Starting the read-only launchd job is allowed; forcing an order is not.
+- Use Stage948 atomic activation for an install, upgrade, or full control-plane reload.
+- Do not manually bootstrap individual production plists.
+- Do not use `launchctl kickstart -k` to force a trading session or order.
+- A one-off kickstart is only a diagnosed remediation after release, activation, receipt, exact surface, market window, and broker gates are already valid. Record why it was necessary.
+- Never kickstart a legacy or conflicting label.
 
 ## Fail Closed
 
-Stop and report blockers if any of these happen:
+Stop and report when:
 
-- wrong live profile or old capital path is being used;
-- `ctp_live.local.env` or CTP runtime guard is ambiguous for live account checks;
-- Stage934 reports launchd not loaded or installed arguments do not match repo;
-- Stage935 cannot resolve the expected monthly eval date;
-- Stage182 current or refreshed pool fails safety validation;
-- Stage930 is absent during an execution session;
-- Stage927/931 blocks real submit;
-- broker/account/position state is stale, missing, divergent, or unknown.
+- stable HEAD, manifest, qualification, activation, receipt, or plist identities disagree;
+- the owned launchd surface is not exact;
+- an old capital/profile/label appears in the active route;
+- production env or CTP runtime selection is ambiguous;
+- the first eligible postclose receipt fails to materialize;
+- Stage945/947 refuses the canonical owner or path;
+- broker/account/position state is stale, missing, divergent, or unknown;
+- any order API count is non-zero during prepare, activation, or read-only verification.
+
+Do not “repair” a blocker by deleting receipts, copying plists, changing the cold-start date, backfilling positions, or bypassing Stage927/931.
 
 ## Reporting Back
 
 Report in Chinese:
 
-- which labels were installed/reloaded;
-- Stage934 health status and blockers/warnings;
-- latest Stage935 status, expected eval date, current Stage182 eval date, and Top9 products when available;
-- whether any order/cancel API was called;
+- stable source commit and profile;
+- activation status;
+- exact seven labels: disk/domain/loaded/reboot counts and conflict count;
+- qualification P0/P1/P2;
+- daily receipt target and validity;
+- latest Stage945/947/946 status and blockers;
+- whether any CTP/send/cancel/order API was called;
+- whether the next session is eligible, fail-closed, or pre-start skipped;
 - overfitting and continued-value judgments.
 
-If code, plists, or skill files changed, record a stage file under `research/lines/futures_trend_stage819_intraday_rules/stages/`.
+If code, plists, or Skill files changed, record a stage file under `research/lines/futures_trend_stage819_intraday_rules/stages/`.

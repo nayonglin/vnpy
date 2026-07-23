@@ -57,6 +57,9 @@
 2. 该 skill 只约束执行纪律与SOP，不用于优化策略alpha；若同时涉及新策略版本或A/B实验，仍需遵循 `skills/version-ab-experiment/SKILL.md`。
 3. 从 2026-07-20 起，虚拟盘和实盘前流程默认只认 C9 15万口径：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，canonical execution profile 为 `c9-15w`。Stage372 20万、Stage653 20万原版、Stage78-1 50万和旧30万入口只作为历史/研究对照，不得作为当前实盘默认执行路径；旧 `c9-15w-historical` 仅用于读取历史证据，不得写入新委托、授权、清单或启动参数。
 4. CTP 实盘/虚拟盘连接前必须先确认 env 与 runtime：实盘生产前置使用 `ctp_live.local.env`，不要误用默认读取 `ctp_broker_test.local.env` 的 broker-test shell；macOS 生产前置必须让 `vnpy_ctp/api/libs` 的正式 framework 优先于 `.py311/lib` 的 `v6.7.7_MacOS_CP` 评测 framework。若出现 `4040 CTP:API Front shake hand err: decode err`、`Decrypt handshake data failed`、只读 gate 长时间 `front_connected=false` 或 vn.py native segfault，先按 `skills/futures-live-execution-sop/SKILL.md` 的 CTP runtime guard 排查，不得跳过只读账户/持仓 gate 直接报单。
+5. 判断“当前实盘是什么/是否生效/定时任务是否正常”时，事实源优先级固定为：`/Users/bytedance/Desktop/person/vnpy_production_live` 的 stable HEAD，其次是 `~/Library/Application Support/qmt-roll-stage179/production-live/` 下的 `release-manifest.json`、`qualification-bundle/qualification.json`、`activation/latest.json`、`runtime/state/activation_receipt.json` 和 `data-readiness/latest.json`。普通开发 checkout、未合入分支或历史 stage 记录不得覆盖这些生产事实。
+6. 当前 production cold start 为 `2026-07-23`。早于该日期的 target 必须由 Stage945 以 `skipped_before_live_shadow_start` 成功退出，不回填、不追单历史理论仓位；首个生产 cohort 必须由 Stage947 `postclose-precompute` 生成并签发同日 daily receipt，缺失或不匹配时 Stage945/946 保持 fail-closed。
+7. production launchd 只允许 Stage948 原子安装/激活的 7 个 `c9-production-live-*` 标签。会话入口为 Stage945 -> Stage930，支持任务入口为 Stage947 -> Stage907/909/929/935/946；不得从旧 checkout 手工复制、bootstrap 或 kickstart `c9-readonly-*`、Stage372 或旧 C9 armed 标签。
 
 ## 每次开始与结束都要反思
 
