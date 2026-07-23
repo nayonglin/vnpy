@@ -405,6 +405,23 @@ print("CONTRACT=" + json.dumps({
                 fallback["resolver_evidence"]["trading_calendar_source"],
             )
 
+    def test_stage922_malformed_status_schema_preserves_zero_coverage(self) -> None:
+        import run_qmt_roll_stage922_official_live_target_date_resolver as resolver
+
+        rows = [
+            {"contract_vt_symbol": "JM609.DCE", "unexpected": "2026-07-23"},
+            {"contract_vt_symbol": "SM609.CZCE", "unexpected": "2026-07-23"},
+        ]
+
+        self.assertEqual(
+            {
+                "contract_count": 0,
+                "target_date_contract_count": 0,
+                "coverage_ratio": 0.0,
+            },
+            resolver._status_contract_coverage(rows, "2026-07-23"),
+        )
+
     def test_target_date_resolver_timeout_is_typed_fail_closed(self) -> None:
         with (
             patch.object(

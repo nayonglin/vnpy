@@ -731,11 +731,16 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_stage930_fast_lane.py",
             "tests/test_stage934_readonly_health_check.py",
             "tests/test_official_live_failure_notify.py",
+            "tests/test_official_live_config_import.py",
         }
 
         self.assertTrue(required.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
         self.assertIn(
             "tests/test_official_live_failure_notify.py",
+            builder.PRODUCTION_REQUIRED_TEST_SUITES,
+        )
+        self.assertIn(
+            "tests/test_official_live_config_import.py",
             builder.PRODUCTION_REQUIRED_TEST_SUITES,
         )
 

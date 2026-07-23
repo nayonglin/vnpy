@@ -101,6 +101,12 @@ def _status_contract_coverage(
     rows: list[dict[str, str]],
     target_date: str,
 ) -> dict[str, int | float]:
+    if not target_date or not rows or "max_date" not in rows[0]:
+        return {
+            "contract_count": 0,
+            "target_date_contract_count": 0,
+            "coverage_ratio": 0.0,
+        }
     contract_count = len(rows)
     target_count = sum(
         _date_text(row.get("max_date")) == target_date for row in rows
