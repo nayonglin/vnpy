@@ -712,7 +712,11 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py",
             "examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
             "examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+            "examples/portfolio_backtesting/analyze_qmt_roll_stage650_stage526_200k_capital_reality_check.py",
             "examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+            "examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py",
+            "examples/portfolio_backtesting/qmt_roll_official_live_email_notify.py",
+            "examples/portfolio_backtesting/qmt_roll_official_live_failure_notify.py",
             "examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-day-session.plist",
             "examples/portfolio_backtesting/launchd/local.qmt-roll.official-live.15w.c9-readonly-night-session.plist",
@@ -726,9 +730,14 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_stage608_continuous_tick_stream.py",
             "tests/test_stage930_fast_lane.py",
             "tests/test_stage934_readonly_health_check.py",
+            "tests/test_official_live_failure_notify.py",
         }
 
         self.assertTrue(required.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
+        self.assertIn(
+            "tests/test_official_live_failure_notify.py",
+            builder.PRODUCTION_REQUIRED_TEST_SUITES,
+        )
 
     def validate(self, path: Path | None = None, *, profile: str = "offline") -> dict[str, object]:
         return load_and_validate_release_manifest(
