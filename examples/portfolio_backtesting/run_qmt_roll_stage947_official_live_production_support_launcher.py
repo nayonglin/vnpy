@@ -14,6 +14,10 @@ from typing import Any, Mapping
 from qmt_roll_official_live_daily_data_receipt import (
     build_and_write_production_daily_data_receipt,
 )
+from qmt_roll_official_live_failure_notify import (
+    normalize_official_live_failure_blocker,
+    notify_official_live_failure,
+)
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
     PHASE_D_READONLY_REFRESH_ENV,
@@ -33,6 +37,7 @@ from run_qmt_roll_stage945_official_live_production_session_launcher import (
     PRODUCTION_SIGNAL_INPUT_ROOT,
     PYTHON_PATH,
     REPO_ROOT,
+    ProductionSessionLaunchError,
     _assert_canonical_paths,
     _assert_stable_deploy_root,
     _resolve_target_date,
@@ -54,6 +59,13 @@ _EMAIL_REQUIRED_JOBS = {
 _DATAFEED_REQUIRED_JOBS = {
     "postclose-precompute",
     "monthly-ai-pool",
+}
+_STAGE935_OWNED_EMAIL_STATUSES = {
+    "sent",
+    "dry_run_written",
+    "send_failed",
+    "disabled",
+    "blocked_missing_config",
 }
 
 
@@ -150,7 +162,36 @@ SUPPORT_JOB_SPECS = {
 
 
 class ProductionSupportLaunchError(RuntimeError):
-    pass
+    def __init__(
+        self,
+        message: str,
+        *,
+        boundary: str = "pre-exec",
+        downstream_email_attempted: bool = False,
+    ) -> None:
+        super().__init__(message)
+        self.boundary = boundary
+        self.downstream_email_attempted = downstream_email_attempted
+
+
+def _canonical_support_owner(job: str) -> bool:
+    spec = SUPPORT_JOB_SPECS[job]
+    return (
+        os.getppid() == 1
+        and os.environ.get("XPC_SERVICE_NAME", "").strip() == spec.label
+    )
+
+
+def _resolve_support_target_date(
+    environment: Mapping[str, str],
+) -> tuple[str, dict[str, Any]]:
+    try:
+        return _resolve_target_date(environment)
+    except (ProductionSessionLaunchError, subprocess.TimeoutExpired) as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_target_date_resolver_failed",
+            boundary="target-date-resolver",
+        ) from exc
 
 
 def build_support_command(spec: SupportJobSpec) -> list[str]:
@@ -306,7 +347,7 @@ def _run_precompute_and_issue_daily_receipt(
             "production_support_precompute_not_qualified"
         )
     target_date = str(summary.get("target_date", ""))
-    resolved_target, _resolver = _resolve_target_date(environment)
+    resolved_target, _resolver = _resolve_support_target_date(environment)
     if target_date != resolved_target:
         raise ProductionSupportLaunchError(
             "production_support_precompute_target_date_mismatch"
@@ -354,28 +395,52 @@ def _run_monthly_ai_pool_and_refresh_receipt(
     )
     if result.stdout:
         print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    summary: dict[str, Any] = {}
+    decode_error: ProductionSupportLaunchError | None = None
+    try:
+        summary = _decode_final_json(result.stdout)
+    except ProductionSupportLaunchError as exc:
+        decode_error = exc
     if result.returncode != 0:
-        raise ProductionSupportLaunchError(
-            "production_support_monthly_ai_pool_process_failed"
+        email_result = summary.get("email_result")
+        email_status = (
+            str(email_result.get("email_status", ""))
+            if isinstance(email_result, dict)
+            else ""
         )
-    summary = _decode_final_json(result.stdout)
+        raise ProductionSupportLaunchError(
+            "production_support_monthly_ai_pool_process_failed",
+            boundary="monthly-stage935",
+            downstream_email_attempted=(
+                email_status in _STAGE935_OWNED_EMAIL_STATUSES
+            ),
+        ) from decode_error
+    if decode_error is not None:
+        raise decode_error
     status = str(summary.get("automation_status", ""))
     if status == "monthly_ai_pool_updated":
         precompute_spec = SUPPORT_JOB_SPECS["postclose-precompute"]
         precompute_environment = dict(environment)
         precompute_environment.update(dict(precompute_spec.gate_environment))
-        _run_precompute_and_issue_daily_receipt(
-            spec=precompute_spec,
-            command=build_support_command(precompute_spec),
-            environment=precompute_environment,
-            manifest=manifest,
-        )
+        try:
+            _run_precompute_and_issue_daily_receipt(
+                spec=precompute_spec,
+                command=build_support_command(precompute_spec),
+                environment=precompute_environment,
+                manifest=manifest,
+            )
+        except Exception as exc:
+            raise ProductionSupportLaunchError(
+                "production_support_monthly_receipt_refresh_failed",
+                boundary="monthly-receipt-refresh",
+                downstream_email_attempted=False,
+            ) from exc
         return
     if status != "monthly_ai_pool_already_current":
         raise ProductionSupportLaunchError(
             "production_support_monthly_ai_pool_not_qualified"
         )
-    target_date, resolver = _resolve_target_date(environment)
+    target_date, resolver = _resolve_support_target_date(environment)
     try:
         _validate_daily_data_readiness(
             manifest=manifest,
@@ -384,7 +449,8 @@ def _run_monthly_ai_pool_and_refresh_receipt(
         )
     except Exception as exc:
         raise ProductionSupportLaunchError(
-            "production_support_monthly_existing_receipt_invalid"
+            "production_support_monthly_existing_receipt_invalid",
+            boundary="daily-data-receipt",
         ) from exc
 
 
@@ -432,7 +498,7 @@ def launch_support_job(args: argparse.Namespace) -> None:
             manifest=manifest,
         )
         return
-    target_date, resolver = _resolve_target_date(environment)
+    target_date, resolver = _resolve_support_target_date(environment)
     try:
         _validate_daily_data_readiness(
             manifest=manifest,
@@ -441,9 +507,43 @@ def launch_support_job(args: argparse.Namespace) -> None:
         )
     except Exception as exc:
         raise ProductionSupportLaunchError(
-            "production_support_daily_data_receipt_invalid"
+            "production_support_daily_data_receipt_invalid",
+            boundary="daily-data-receipt",
         ) from exc
     os.execve(str(PYTHON_PATH), command, environment)
+
+
+def _print_blocked(job: str, blocker: str) -> None:
+    print(
+        json.dumps(
+            {
+                "model_tag": "stage947_production_support_launcher_v1",
+                "generated_at": datetime.now().astimezone().isoformat(),
+                "job": job,
+                "launcher_status": "blocked_fail_closed",
+                "blocker": blocker,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+def _notify_support_failure(
+    *,
+    job: str,
+    boundary: str,
+    blocker: str,
+) -> None:
+    notify_official_live_failure(
+        job=job,
+        boundary=boundary,
+        blocker=blocker,
+        schedule_date=datetime.now().astimezone().date().isoformat(),
+    )
 
 
 def main() -> None:
@@ -457,22 +557,31 @@ def main() -> None:
     try:
         launch_support_job(args)
     except ProductionSupportLaunchError as exc:
-        print(
-            json.dumps(
-                {
-                    "model_tag": "stage947_production_support_launcher_v1",
-                    "generated_at": datetime.now().astimezone().isoformat(),
-                    "job": args.job,
-                    "launcher_status": "blocked_fail_closed",
-                    "blocker": str(exc),
-                    "send_order_api_called_count": 0,
-                    "cancel_order_api_called_count": 0,
-                    "order_api_called_count": 0,
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
+        blocker = normalize_official_live_failure_blocker(
+            str(exc),
+            fallback="production_support_failure",
         )
+        if (
+            args.job != "health"
+            and _canonical_support_owner(args.job)
+            and not exc.downstream_email_attempted
+        ):
+            _notify_support_failure(
+                job=args.job,
+                boundary=exc.boundary,
+                blocker=blocker,
+            )
+        _print_blocked(args.job, blocker)
+        raise SystemExit(2)
+    except Exception:
+        blocker = "production_support_unexpected_failure"
+        if args.job != "health" and _canonical_support_owner(args.job):
+            _notify_support_failure(
+                job=args.job,
+                boundary="unexpected",
+                blocker=blocker,
+            )
+        _print_blocked(args.job, blocker)
         raise SystemExit(2)
 
 

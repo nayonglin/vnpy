@@ -419,6 +419,167 @@ print("CONTRACT=" + json.dumps({
         ):
             launcher._resolve_target_date({})
 
+    def test_typed_failure_notifies_once_and_keeps_exit_two(self) -> None:
+        output = io.StringIO()
+        error = launcher.ProductionSessionLaunchError(
+            "production_launcher_daily_data_receipt_invalid",
+            boundary="daily-data-receipt",
+        )
+        with (
+            patch.object(sys, "argv", ["stage945", "--session", "night"]),
+            patch.object(launcher, "launch_session", side_effect=error),
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(
+                os.environ,
+                {"XPC_SERVICE_NAME": launcher.PRODUCTION_LABELS["night"]},
+                clear=False,
+            ),
+            redirect_stdout(output),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            launcher.main()
+
+        self.assertEqual(2, raised.exception.code)
+        payload = json.loads(output.getvalue())
+        self.assertEqual("blocked_fail_closed", payload["launcher_status"])
+        self.assertEqual(0, payload["send_order_api_called_count"])
+        self.assertEqual(0, payload["cancel_order_api_called_count"])
+        self.assertEqual(0, payload["order_api_called_count"])
+        notify.assert_called_once()
+        self.assertEqual(
+            "daily-data-receipt",
+            notify.call_args.kwargs["boundary"],
+        )
+
+    def test_unexpected_failure_uses_stable_code_without_raw_exception(
+        self,
+    ) -> None:
+        output = io.StringIO()
+        with (
+            patch.object(sys, "argv", ["stage945", "--session", "day"]),
+            patch.object(
+                launcher,
+                "launch_session",
+                side_effect=RuntimeError("CTP_PASSWORD_SENTINEL"),
+            ),
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(
+                os.environ,
+                {"XPC_SERVICE_NAME": launcher.PRODUCTION_LABELS["day"]},
+                clear=False,
+            ),
+            redirect_stdout(output),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            launcher.main()
+
+        self.assertEqual(2, raised.exception.code)
+        serialized = output.getvalue() + repr(notify.call_args)
+        self.assertIn("production_launcher_unexpected_failure", serialized)
+        self.assertNotIn("CTP_PASSWORD_SENTINEL", serialized)
+
+    def test_noncanonical_owner_never_notifies(self) -> None:
+        output = io.StringIO()
+        error = launcher.ProductionSessionLaunchError(
+            "production_launcher_daily_data_receipt_invalid",
+            boundary="daily-data-receipt",
+        )
+        with (
+            patch.object(sys, "argv", ["stage945", "--session", "day"]),
+            patch.object(launcher, "launch_session", side_effect=error),
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+            patch.object(launcher.os, "getppid", return_value=123),
+            patch.dict(os.environ, {"XPC_SERVICE_NAME": ""}, clear=False),
+            redirect_stdout(output),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            launcher.main()
+
+        self.assertEqual(2, raised.exception.code)
+        notify.assert_not_called()
+
+    def test_inactive_cold_start_and_nontrading_skips_never_notify(self) -> None:
+        cases = (
+            ("day", "inactive_session"),
+            ("night", "cold_start"),
+            ("day", "non_trading_day"),
+        )
+        for session, expected_skip in cases:
+            with self.subTest(session=session, expected_skip=expected_skip):
+                with (
+                    patch.object(
+                        sys,
+                        "argv",
+                        ["stage945", "--session", session],
+                    ),
+                    patch.object(launcher, "launch_session", return_value=None),
+                    patch.object(
+                        launcher,
+                        "notify_official_live_failure",
+                        create=True,
+                    ) as notify,
+                ):
+                    launcher.main()
+                notify.assert_not_called()
+
+    def test_successful_exec_handoff_does_not_notify(self) -> None:
+        def handoff(_args: argparse.Namespace) -> None:
+            launcher.os.execve("/python", ["/python", "stage930"], {})
+
+        with (
+            patch.object(sys, "argv", ["stage945", "--session", "day"]),
+            patch.object(launcher, "launch_session", side_effect=handoff),
+            patch.object(launcher.os, "execve") as execve,
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+        ):
+            launcher.main()
+
+        execve.assert_called_once_with("/python", ["/python", "stage930"], {})
+        notify.assert_not_called()
+
+    def test_night_schedule_date_before_0300_uses_previous_calendar_date(
+        self,
+    ) -> None:
+        self.assertEqual(
+            "2026-07-23",
+            launcher._session_notification_schedule_date(
+                "night",
+                datetime.fromisoformat("2026-07-24T01:00:00+08:00"),
+            ),
+        )
+        self.assertEqual(
+            "2026-07-24",
+            launcher._session_notification_schedule_date(
+                "night",
+                datetime.fromisoformat("2026-07-24T20:55:00+08:00"),
+            ),
+        )
+        self.assertEqual(
+            "2026-07-24",
+            launcher._session_notification_schedule_date(
+                "day",
+                datetime.fromisoformat("2026-07-24T09:00:00+08:00"),
+            ),
+        )
+
     def test_activation_barrier_requires_exact_success_commit_manifest_and_labels(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()

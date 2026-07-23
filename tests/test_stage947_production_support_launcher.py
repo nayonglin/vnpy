@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import redirect_stdout
+import io
 import json
 import os
 from pathlib import Path
@@ -17,9 +19,42 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage947_official_live_production_support_launcher as launcher  # noqa: E402
+import run_qmt_roll_stage945_official_live_production_session_launcher as session_launcher  # noqa: E402
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
+    def _invoke_main_failure(
+        self,
+        *,
+        job: str,
+        error: BaseException,
+        ppid: int = 1,
+        label: str | None = None,
+    ) -> tuple[object, dict[str, object], int | str | None]:
+        output = io.StringIO()
+        service_label = label
+        if service_label is None:
+            service_label = launcher.SUPPORT_JOB_SPECS[job].label
+        with (
+            patch.object(sys, "argv", ["stage947", "--job", job]),
+            patch.object(launcher, "launch_support_job", side_effect=error),
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+            patch.object(launcher.os, "getppid", return_value=ppid),
+            patch.dict(
+                os.environ,
+                {"XPC_SERVICE_NAME": service_label},
+                clear=False,
+            ),
+            redirect_stdout(output),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            launcher.main()
+        return notify, json.loads(output.getvalue()), raised.exception.code
+
     def test_stage935_import_keeps_control_and_data_roots_separate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
@@ -231,6 +266,266 @@ print("CONTRACT=" + json.dumps({
             result["stage173_summary"]["path"],
         )
         self.assertEqual([], control_entries)
+
+    def test_receipt_or_precompute_failure_notifies_once_before_exec(self) -> None:
+        cases = (
+            (
+                "postclose-report",
+                "production_support_daily_data_receipt_invalid",
+                "daily-data-receipt",
+            ),
+            (
+                "postclose-precompute",
+                "production_support_precompute_process_failed",
+                "precompute",
+            ),
+        )
+        for job, blocker, boundary in cases:
+            with self.subTest(job=job):
+                error = launcher.ProductionSupportLaunchError(
+                    blocker,
+                    boundary=boundary,
+                )
+                notify, payload, exit_code = self._invoke_main_failure(
+                    job=job,
+                    error=error,
+                )
+
+                self.assertEqual(2, exit_code)
+                self.assertEqual("blocked_fail_closed", payload["launcher_status"])
+                self.assertEqual(0, payload["send_order_api_called_count"])
+                self.assertEqual(0, payload["cancel_order_api_called_count"])
+                self.assertEqual(0, payload["order_api_called_count"])
+                notify.assert_called_once()
+
+    def test_resolver_failure_is_adapted_and_notified_without_traceback(
+        self,
+    ) -> None:
+        with (
+            patch.object(
+                launcher,
+                "_resolve_target_date",
+                side_effect=session_launcher.ProductionSessionLaunchError(
+                    "production_launcher_target_date_resolver_timeout",
+                    boundary="target-date-resolver",
+                ),
+            ),
+            self.assertRaises(launcher.ProductionSupportLaunchError) as raised,
+        ):
+            launcher._resolve_support_target_date({})
+
+        error = raised.exception
+        self.assertEqual(
+            "production_support_target_date_resolver_failed",
+            str(error),
+        )
+        self.assertEqual("target-date-resolver", error.boundary)
+        notify, payload, exit_code = self._invoke_main_failure(
+            job="postclose-report",
+            error=error,
+        )
+        self.assertEqual(2, exit_code)
+        self.assertEqual(
+            "production_support_target_date_resolver_failed",
+            payload["blocker"],
+        )
+        self.assertNotIn("Traceback", json.dumps(payload))
+        notify.assert_called_once()
+
+    def test_monthly_five_owned_email_statuses_do_not_duplicate_fallback(
+        self,
+    ) -> None:
+        statuses = {
+            "sent",
+            "dry_run_written",
+            "send_failed",
+            "disabled",
+            "blocked_missing_config",
+        }
+        for status in statuses:
+            with self.subTest(status=status):
+                result = subprocess.CompletedProcess(
+                    args=["stage935"],
+                    returncode=2,
+                    stdout=json.dumps(
+                        {
+                            "automation_status": "monthly_ai_pool_update_blocked",
+                            "email_result": {"email_status": status},
+                        }
+                    ),
+                    stderr="",
+                )
+                with (
+                    patch.object(launcher.subprocess, "run", return_value=result),
+                    self.assertRaises(
+                        launcher.ProductionSupportLaunchError
+                    ) as raised,
+                ):
+                    launcher._run_monthly_ai_pool_and_refresh_receipt(
+                        command=["python", "stage935"],
+                        environment={},
+                        manifest={"source_commit": "a" * 40},
+                    )
+
+                error = raised.exception
+                self.assertTrue(error.downstream_email_attempted)
+                self.assertEqual("monthly-stage935", error.boundary)
+                notify, _payload, exit_code = self._invoke_main_failure(
+                    job="monthly-ai-pool",
+                    error=error,
+                )
+                self.assertEqual(2, exit_code)
+                notify.assert_not_called()
+
+    def test_monthly_skipped_or_missing_email_result_uses_fallback(self) -> None:
+        outputs = (
+            json.dumps(
+                {
+                    "automation_status": "monthly_ai_pool_update_blocked",
+                    "email_result": {"email_status": "skipped_by_policy"},
+                }
+            ),
+            json.dumps(
+                {"automation_status": "monthly_ai_pool_update_blocked"}
+            ),
+            "not-json",
+        )
+        for stdout in outputs:
+            with self.subTest(stdout=stdout):
+                result = subprocess.CompletedProcess(
+                    args=["stage935"],
+                    returncode=2,
+                    stdout=stdout,
+                    stderr="",
+                )
+                with (
+                    patch.object(launcher.subprocess, "run", return_value=result),
+                    self.assertRaises(
+                        launcher.ProductionSupportLaunchError
+                    ) as raised,
+                ):
+                    launcher._run_monthly_ai_pool_and_refresh_receipt(
+                        command=["python", "stage935"],
+                        environment={},
+                        manifest={"source_commit": "a" * 40},
+                    )
+
+                error = raised.exception
+                self.assertFalse(error.downstream_email_attempted)
+                notify, _payload, exit_code = self._invoke_main_failure(
+                    job="monthly-ai-pool",
+                    error=error,
+                )
+                self.assertEqual(2, exit_code)
+                notify.assert_called_once()
+
+    def test_monthly_post_update_receipt_failure_uses_new_fallback_boundary(
+        self,
+    ) -> None:
+        monthly = subprocess.CompletedProcess(
+            args=["stage935"],
+            returncode=0,
+            stdout=json.dumps(
+                {
+                    "automation_status": "monthly_ai_pool_updated",
+                    "email_result": {"email_status": "sent"},
+                }
+            ),
+            stderr="",
+        )
+        with (
+            patch.object(launcher.subprocess, "run", return_value=monthly),
+            patch.object(
+                launcher,
+                "build_support_command",
+                return_value=["python", "stage909"],
+            ),
+            patch.object(
+                launcher,
+                "_run_precompute_and_issue_daily_receipt",
+                side_effect=launcher.ProductionSupportLaunchError(
+                    "production_support_precompute_process_failed"
+                ),
+            ),
+            self.assertRaises(launcher.ProductionSupportLaunchError) as raised,
+        ):
+            launcher._run_monthly_ai_pool_and_refresh_receipt(
+                command=["python", "stage935"],
+                environment={},
+                manifest={"source_commit": "a" * 40},
+            )
+
+        error = raised.exception
+        self.assertEqual("monthly-receipt-refresh", error.boundary)
+        self.assertFalse(error.downstream_email_attempted)
+        notify, _payload, exit_code = self._invoke_main_failure(
+            job="monthly-ai-pool",
+            error=error,
+        )
+        self.assertEqual(2, exit_code)
+        notify.assert_called_once()
+
+    def test_health_and_noncanonical_owner_never_notify(self) -> None:
+        health_error = launcher.ProductionSupportLaunchError(
+            "production_support_health_failed",
+            boundary="pre-exec",
+        )
+        health_notify, _payload, health_exit = self._invoke_main_failure(
+            job="health",
+            error=health_error,
+        )
+        self.assertEqual(2, health_exit)
+        health_notify.assert_not_called()
+
+        manual_error = launcher.ProductionSupportLaunchError(
+            "production_support_daily_data_receipt_invalid",
+            boundary="daily-data-receipt",
+        )
+        manual_notify, _payload, manual_exit = self._invoke_main_failure(
+            job="postclose-report",
+            error=manual_error,
+            ppid=123,
+            label="",
+        )
+        self.assertEqual(2, manual_exit)
+        manual_notify.assert_not_called()
+
+    def test_successful_report_handoff_keeps_execve_and_no_fallback(self) -> None:
+        def handoff(_args: argparse.Namespace) -> None:
+            launcher.os.execve("/python", ["/python", "stage929"], {"SAFE": "1"})
+
+        with (
+            patch.object(
+                sys,
+                "argv",
+                ["stage947", "--job", "postclose-report"],
+            ),
+            patch.object(launcher, "launch_support_job", side_effect=handoff),
+            patch.object(launcher.os, "execve") as execve,
+            patch.object(
+                launcher,
+                "notify_official_live_failure",
+                create=True,
+            ) as notify,
+        ):
+            launcher.main()
+
+        execve.assert_called_once_with(
+            "/python",
+            ["/python", "stage929"],
+            {"SAFE": "1"},
+        )
+        notify.assert_not_called()
+
+    def test_unexpected_support_failure_does_not_leak_secret(self) -> None:
+        notify, payload, exit_code = self._invoke_main_failure(
+            job="postclose-report",
+            error=RuntimeError("SMTP_PASSWORD_SENTINEL"),
+        )
+        self.assertEqual(2, exit_code)
+        serialized = json.dumps(payload) + repr(notify.call_args)
+        self.assertIn("production_support_unexpected_failure", serialized)
+        self.assertNotIn("SMTP_PASSWORD_SENTINEL", serialized)
 
     def test_all_support_jobs_are_exact_pinned_commands(self) -> None:
         expected_scripts = {

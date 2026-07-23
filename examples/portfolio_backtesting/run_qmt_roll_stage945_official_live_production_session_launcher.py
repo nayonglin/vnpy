@@ -37,6 +37,10 @@ from build_qmt_roll_stage179_release_manifest import (
 from qmt_roll_official_live_daily_data_receipt import (
     load_and_validate_production_daily_data_receipt,
 )
+from qmt_roll_official_live_failure_notify import (
+    normalize_official_live_failure_blocker,
+    notify_official_live_failure,
+)
 from qmt_roll_official_live_production_assets import (
     ProductionAssetError,
     validate_production_venv_link,
@@ -162,6 +166,25 @@ class ProductionSessionLaunchError(RuntimeError):
     def __init__(self, message: str, *, boundary: str = "pre-exec") -> None:
         super().__init__(message)
         self.boundary = boundary
+
+
+def _session_notification_schedule_date(
+    session: str,
+    now: datetime | None = None,
+) -> str:
+    current = (now or datetime.now().astimezone()).astimezone()
+    day = current.date()
+    if session == "night" and current.hour < 3:
+        day -= timedelta(days=1)
+    return day.isoformat()
+
+
+def _canonical_session_owner(session: str) -> bool:
+    spec = SESSION_SPECS[session]
+    return (
+        os.getppid() == 1
+        and os.environ.get("XPC_SERVICE_NAME", "").strip() == spec.label
+    )
 
 
 def _assert_stable_deploy_root() -> None:
@@ -1139,6 +1162,25 @@ def launch_session(args: argparse.Namespace) -> None:
     os.execve(str(PYTHON_PATH), command, environment)
 
 
+def _print_blocked(session: str, blocker: str) -> None:
+    print(
+        json.dumps(
+            {
+                "model_tag": "stage945_production_session_launcher_v1",
+                "generated_at": datetime.now().astimezone().isoformat(),
+                "session": session,
+                "launcher_status": "blocked_fail_closed",
+                "blocker": blocker,
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
@@ -1172,22 +1214,29 @@ def main() -> None:
     try:
         launch_session(args)
     except ProductionSessionLaunchError as exc:
-        print(
-            json.dumps(
-                {
-                    "model_tag": "stage945_production_session_launcher_v1",
-                    "generated_at": datetime.now().astimezone().isoformat(),
-                    "session": args.session,
-                    "launcher_status": "blocked_fail_closed",
-                    "blocker": str(exc),
-                    "send_order_api_called_count": 0,
-                    "cancel_order_api_called_count": 0,
-                    "order_api_called_count": 0,
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
+        blocker = normalize_official_live_failure_blocker(
+            str(exc),
+            fallback="production_launcher_failure",
         )
+        if _canonical_session_owner(args.session):
+            notify_official_live_failure(
+                job=f"{args.session}-session",
+                boundary=exc.boundary,
+                blocker=blocker,
+                schedule_date=_session_notification_schedule_date(args.session),
+            )
+        _print_blocked(args.session, blocker)
+        raise SystemExit(2)
+    except Exception:
+        blocker = "production_launcher_unexpected_failure"
+        if _canonical_session_owner(args.session):
+            notify_official_live_failure(
+                job=f"{args.session}-session",
+                boundary="unexpected",
+                blocker=blocker,
+                schedule_date=_session_notification_schedule_date(args.session),
+            )
+        _print_blocked(args.session, blocker)
         raise SystemExit(2)
 
 
