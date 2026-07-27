@@ -106,3 +106,24 @@
 - 运行前：是。
 - 运行后：是。
 - 原因：当前故障会使守护进程退出、邮件循环和真实适配器无法启动；修复直接恢复生产可用性。下一步价值只在独立复核、正式资格与运行态验收，不在继续扩展规则。
+
+## 2026-07-27 15:00 安装复验补充
+
+- 用户释放磁盘后，production-live 可用空间恢复到约 13 GiB，Stage948 prepare/activate、正式 CTP 只读资格和 7 个 launchd label 均通过。
+- 首次拉起时 Stage931 warm executor 已 `ready`，CTP 行情/交易连接、授权、登录、结算确认和合约查询成功，send/cancel/order API 为 `0/0/0`。
+- 运行态发现 Stage608 因 `legacy_heartbeat_not_cleanly_stopped` 阻断行情流。旧 heartbeat 与 startup attempt 已原字节归档到 production runtime recovery audit；当时 spool `intents=0`、`detector_cursors=0`，未删除任何交易意图或 journal。
+- 进一步定位到 Stage930 首次启动会先写缺少 Stage179 journal 契约的 supervisor tombstone，导致 Stage608 将其识别为不干净旧心跳。
+- 新增修复：
+  - 只有 heartbeat、startup/lifecycle guard 与 journal base/segment/dirty/lock/manifest 证据全部不存在时，才允许写不可报单的 non-authoritative Stage179 bootstrap。
+  - heartbeat 已存在但为 `{}`、不可读，或存在任一 orphan journal/lifecycle guard 证据时，均在写入前 fail-closed 并保留原字节。
+  - 已有 committed clean/running authority 时继续保留 feed、segment 和 committed lineage；running authority 交给 Stage608 转为 `fault_stopped` 后恢复，clean authority 保持 strictly stopped。
+- 独立专项审查首轮发现“heartbeat 丢失但非空 journal 仍存在时可能被误判为 gap-free bootstrap”的 P1；已修复并补齐 missing heartbeat + journal、`{}` heartbeat、lifecycle guard、committed clean/running 五类回归。
+- 最新验证：
+  - Stage608 与 Stage930 主回归 `232 tests` 全部通过。
+  - Stage930、detector、persistent authorization、Stage948 安装器扩大回归 `136 tests` 全部通过。
+  - 新增 7 项 bootstrap/recovery 聚焦测试全部通过。
+  - `py_compile`、`git diff --check` 通过。
+- 独立最终复审：`P0=0、P1=0、P2=0、P3=0`，结论 `GO`；审查侧最新完整相关测试 `237 passed / 120 subtests passed`。
+- 当前边界：该补充修复仍需形成 exact commit、完成独立最终 GO、重新 production qualification、重签 manifest/activation receipt 并重新激活；在运行态 tick stream 与健康检查通过前仍不得宣称实盘恢复。
+- 过拟合反思：否；本次只修执行持久化和首次启动契约，不改 alpha、价格、手数、AI 池或风险阈值。
+- 继续价值反思：是；该缺陷会让实时报价链 fail-closed，修复和重新资格是恢复自动止损/重进场的必要条件。

@@ -839,7 +839,71 @@ def _publish_tick_stream_manifest(symbols: list[str]) -> None:
 def _revoke_tick_stream_heartbeat(reason: str) -> None:
     """Invalidate any previous child heartbeat before downstream reducers run."""
 
+    heartbeat_entry_exists = os.path.lexists(str(TICK_STREAM_HEARTBEAT_PATH))
     previous = _read_json(TICK_STREAM_HEARTBEAT_PATH)
+    if isinstance(previous, dict) and previous.get("_read_error"):
+        raise RuntimeError("tick_stream_heartbeat_unreadable_before_revoke")
+    if not previous:
+        if heartbeat_entry_exists:
+            raise RuntimeError("tick_stream_bootstrap_blocked_empty_heartbeat")
+        lifecycle_guard_path = TICK_STREAM_HEARTBEAT_PATH.with_name(
+            f"{TICK_STREAM_HEARTBEAT_PATH.name}.startup_attempt.json"
+        )
+        if os.path.lexists(str(lifecycle_guard_path)):
+            raise RuntimeError(
+                "tick_stream_bootstrap_blocked_lifecycle_guard_evidence"
+            )
+        journal_parent = TICK_STREAM_JOURNAL_PATH.parent
+        journal_stem = TICK_STREAM_JOURNAL_PATH.stem
+        journal_name = TICK_STREAM_JOURNAL_PATH.name
+        orphan_journal_evidence = (
+            [
+                path
+                for path in journal_parent.iterdir()
+                if (
+                    path.name == journal_name
+                    or path.name.startswith(f"{journal_stem}.")
+                    or path.name.startswith(f".{journal_stem}.")
+                )
+            ]
+            if journal_parent.is_dir()
+            else []
+        )
+        if orphan_journal_evidence:
+            raise RuntimeError(
+                "tick_stream_bootstrap_blocked_orphan_journal_evidence"
+            )
+        # Stage608 treats any heartbeat without a journal contract as a legacy
+        # authority.  Publishing a bare supervisor tombstone on first startup
+        # would therefore make the child reject its own clean bootstrap as an
+        # unclean legacy shutdown.  Seed a non-authoritative Stage179 contract
+        # so the visible state remains fail-closed and recovery-safe.
+        previous = {
+            "model_tag": "stage608_readonly_tick_snapshot_probe_v1",
+            "mode": "continuous_tick_stream",
+            "feed_session_id": f"stage930-supervisor-bootstrap-{uuid.uuid4().hex}",
+            "journal_schema": "stage179_framed_v1",
+            "journal_format": "stage179_framed_ndjson_v1",
+            "journal_schema_version": 1,
+            "journal_authority_committed": False,
+            "journal_session_state": "clean_stopped",
+            "clean_shutdown": True,
+            "writer_alive": False,
+            "accepting": False,
+            "gap_latched": False,
+            "writer_fault": "",
+            "dropped_tick_count": 0,
+            "queue_depth": 0,
+            "last_ingress_sequence": 0,
+            "durable_ingress_sequence": 0,
+            "durable_journal_byte_offset": 0,
+            "real_order_enabled": False,
+            "send_order_api_attempted_count": 0,
+            "cancel_order_api_attempted_count": 0,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0,
+        }
     # A supervisor revocation is not a committed tick snapshot.  Reusing the
     # child's old generation/hash would let Stage904 accept H1 from the child
     # and H2 from this alternate writer as one stable publication.

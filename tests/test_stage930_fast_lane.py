@@ -2876,6 +2876,220 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(result["refresh_status"], "tick_stream_not_ready_fail_closed")
         self.assertEqual(result["tick_stream_supervisor"]["process_alive"], 0)
 
+    def test_supervisor_revoke_bootstraps_stage179_contract_without_prior_heartbeat(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.ndjson"
+            with (
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_HEARTBEAT_PATH",
+                    heartbeat_path,
+                ),
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_JOURNAL_PATH",
+                    journal_path,
+                ),
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+            payload = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+            recovery = stage608._recover_previous_journal(
+                previous_heartbeat=payload,
+                journal_path=journal_path,
+            )
+
+        self.assertEqual(payload["status"], "tick_stream_supervisor_revoked")
+        self.assertEqual(payload["journal_schema"], "stage179_framed_v1")
+        self.assertFalse(payload["journal_authority_committed"])
+        self.assertEqual(payload["journal_session_state"], "clean_stopped")
+        self.assertTrue(payload["clean_shutdown"])
+        self.assertFalse(payload["stream_ready"])
+        self.assertFalse(payload["transport_ready"])
+        self.assertTrue(payload["stopped"])
+        self.assertIsNone(recovery.previous_durable_cursor)
+        self.assertEqual(recovery.disclosed_gaps, ())
+
+    def test_supervisor_revoke_rejects_orphan_journal_without_heartbeat(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.ndjson"
+            orphan_bytes = b'{"orphaned":"tick evidence"}\n'
+            journal_path.write_bytes(orphan_bytes)
+            with (
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_HEARTBEAT_PATH",
+                    heartbeat_path,
+                ),
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_JOURNAL_PATH",
+                    journal_path,
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "tick_stream_bootstrap_blocked_orphan_journal_evidence",
+                ),
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+
+            self.assertFalse(heartbeat_path.exists())
+            self.assertEqual(journal_path.read_bytes(), orphan_bytes)
+
+    def test_supervisor_revoke_rejects_existing_empty_heartbeat(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.ndjson"
+            heartbeat_path.write_text("{}\n", encoding="utf-8")
+            with (
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_HEARTBEAT_PATH",
+                    heartbeat_path,
+                ),
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_JOURNAL_PATH",
+                    journal_path,
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "tick_stream_bootstrap_blocked_empty_heartbeat",
+                ),
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+
+            self.assertEqual(heartbeat_path.read_text(encoding="utf-8"), "{}\n")
+
+    def test_supervisor_revoke_rejects_orphan_lifecycle_guard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.ndjson"
+            lifecycle_guard_path = root / "heartbeat.json.startup_attempt.json"
+            lifecycle_guard_bytes = b'{"lifecycle_guard_active":true}\n'
+            lifecycle_guard_path.write_bytes(lifecycle_guard_bytes)
+            with (
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_HEARTBEAT_PATH",
+                    heartbeat_path,
+                ),
+                patch.object(
+                    stage930,
+                    "TICK_STREAM_JOURNAL_PATH",
+                    journal_path,
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "tick_stream_bootstrap_blocked_lifecycle_guard_evidence",
+                ),
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+
+            self.assertFalse(heartbeat_path.exists())
+            self.assertEqual(
+                lifecycle_guard_path.read_bytes(),
+                lifecycle_guard_bytes,
+            )
+
+    def test_supervisor_revoke_preserves_committed_running_authority_lineage(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.feed-a.ndjson"
+            journal_path.write_bytes(b"durable-journal-evidence\n")
+            running = {
+                "feed_session_id": "feed-a",
+                "heartbeat_revision_uuid": "feed-a-running-revision",
+                "journal_segment_path": str(journal_path.resolve()),
+                "journal_authority_committed": True,
+                "journal_session_state": "running",
+                "stopped": False,
+                "clean_shutdown": False,
+                "stream_ready": True,
+                "transport_ready": True,
+                "writer_alive": True,
+                "accepting": True,
+            }
+            heartbeat_path.write_text(
+                json.dumps(running),
+                encoding="utf-8",
+            )
+            with patch.object(
+                stage930,
+                "TICK_STREAM_HEARTBEAT_PATH",
+                heartbeat_path,
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+            revoked_by_supervisor = json.loads(
+                heartbeat_path.read_text(encoding="utf-8")
+            )
+            recovered_authority, evidence = (
+                stage608._revoke_unclean_previous_authority_before_recovery(
+                    heartbeat_path,
+                    previous_heartbeat=revoked_by_supervisor,
+                )
+            )
+
+        self.assertTrue(revoked_by_supervisor["journal_authority_committed"])
+        self.assertEqual(revoked_by_supervisor["feed_session_id"], "feed-a")
+        self.assertEqual(
+            revoked_by_supervisor["journal_segment_path"],
+            str(journal_path.resolve()),
+        )
+        self.assertEqual(recovered_authority["journal_session_state"], "fault_stopped")
+        self.assertEqual(
+            recovered_authority["terminal_reason"],
+            "orphan_authority_before_recovery",
+        )
+        self.assertTrue(evidence["prior_authority_revoked_before_recovery"])
+
+    def test_supervisor_revoke_preserves_committed_clean_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            heartbeat_path = root / "heartbeat.json"
+            journal_path = root / "journal.feed-clean.ndjson"
+            clean = {
+                "feed_session_id": "feed-clean",
+                "heartbeat_revision_uuid": "feed-clean-terminal-revision",
+                "journal_segment_path": str(journal_path.resolve()),
+                "journal_authority_committed": True,
+                "journal_session_state": "clean_stopped",
+                "stopped": True,
+                "clean_shutdown": True,
+                "stream_ready": False,
+                "transport_ready": False,
+                "writer_alive": False,
+                "accepting": False,
+            }
+            heartbeat_path.write_text(json.dumps(clean), encoding="utf-8")
+            with patch.object(
+                stage930,
+                "TICK_STREAM_HEARTBEAT_PATH",
+                heartbeat_path,
+            ):
+                stage930._revoke_tick_stream_heartbeat("tick_stream_child_starting")
+            revoked = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+
+        self.assertTrue(revoked["journal_authority_committed"])
+        self.assertEqual(revoked["feed_session_id"], "feed-clean")
+        self.assertEqual(
+            revoked["journal_segment_path"],
+            str(journal_path.resolve()),
+        )
+        self.assertTrue(stage608._authority_is_strictly_stopped(revoked))
+
     def test_supervisor_revoke_between_h1_h2_invalidates_snapshot_commit(self) -> None:
         """A supervisor write must never look like the child's old commit."""
 
