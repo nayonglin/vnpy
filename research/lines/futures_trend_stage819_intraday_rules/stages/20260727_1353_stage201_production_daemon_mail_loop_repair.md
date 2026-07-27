@@ -142,3 +142,15 @@
 - 当前边界：需形成新 exact commit，并重新执行 production qualification、manifest/receipt 签发、Stage948 激活、day-close-readonly 与健康检查读回。
 - 过拟合反思：否；只统一运行时产物路径，不改 alpha 或交易规则。
 - 继续价值反思：是；否则真实只读快照会被误报失败并持续发送错误邮件。
+
+## 2026-07-27 15:24 stable worktree 测试隔离
+
+- output-root 修复后的首次 trusted qualification 在 `tests/test_stage930_fast_lane.py` 阻断，失败用例为 SIGTERM 后必须杀死 Stage931 grandchild、不得产生模拟 send-order side effect。
+- 同一 exact commit 在研究 worktree 通过、stable worktree 失败；stable 的 `backtest_outputs` 是指向主仓共享输出的软链。
+- 在 stable 原用例显式设置临时 `OFFICIAL_LIVE_OUTPUT_DIR` 后立即通过，证明失败来自测试继承共享运行态，而不是生产 process-group 清理逻辑回归。
+- 修复：该进程级测试的 subprocess env 显式把 `OFFICIAL_LIVE_OUTPUT_DIR` 与 `OFFICIAL_LIVE_SIGNAL_INPUT_DIR` 指向本次 `TemporaryDirectory`；不改生产代码、超时或安全断言。
+- 验证：单用例通过；Stage930 全套 `84 passed / 6 subtests passed`；`git diff --check` 通过。
+- 独立复审：`P0=0、P1=0、P2=0、P3=0`，结论 `GO`；确认未绕过 SIGTERM exit=143、杀子孙进程或 ledger 零副作用断言。
+- 当前边界：trusted qualification 的失败保持有效，不复用、不绕过；测试隔离补丁形成新 commit 后必须从头重新资格。
+- 过拟合反思：否；修的是测试环境隔离，不改变任何策略或执行条件。
+- 继续价值反思：是；只有 hermetic 测试才能让 stable exact qualification 可重复且不受共享运行态污染。

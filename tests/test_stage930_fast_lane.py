@@ -1905,6 +1905,13 @@ class Stage930FastLaneTest(unittest.TestCase):
             env = os.environ.copy()
             env["QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR"] = "1"
             env["QMT_BACKTEST_DISABLE_STARTUP_CWD_GUARD"] = "1"
+            # The production stable worktree intentionally links
+            # backtest_outputs to the shared repository.  This process-group
+            # cleanup test must not inherit that live/shared runtime surface.
+            env["OFFICIAL_LIVE_OUTPUT_DIR"] = str(root / "official-live-output")
+            env["OFFICIAL_LIVE_SIGNAL_INPUT_DIR"] = str(
+                root / "official-live-output"
+            )
             owner = subprocess.Popen(
                 [sys.executable, "-c", harness],
                 cwd=PORTFOLIO_DIR.parents[1],
