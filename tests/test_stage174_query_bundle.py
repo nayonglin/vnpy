@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 import os
+import subprocess
 import sys
 import tempfile
 import threading
@@ -49,6 +51,39 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             OFFSET_CTP2VT={"0": "open", "1": "close"},
             STATUS_CTP2VT={"0": "all_traded"},
         )
+
+    def test_output_paths_follow_official_live_output_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            environment = dict(os.environ)
+            environment["OFFICIAL_LIVE_OUTPUT_DIR"] = tmp
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import json, run_ctp_stage174_readonly_probe as m;"
+                        "print(json.dumps({"
+                        "'output':str(m.OUTPUT_DIR),"
+                        "'summary':str(m.SUMMARY_PATH),"
+                        "'positions':str(m.POSITION_PATH),"
+                        "'manifest':str(m.QUERY_BUNDLE_MANIFEST_PATH)"
+                        "},sort_keys=True))"
+                    ),
+                ],
+                cwd=PORTFOLIO_DIR,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            payload = json.loads(result.stdout)
+            expected = Path(tmp).resolve()
+
+        self.assertEqual(Path(payload["output"]), expected)
+        for key in ("summary", "positions", "manifest"):
+            self.assertEqual(Path(payload[key]).parent, expected)
 
     def raw_order(self, **overrides: object) -> dict:
         row = {

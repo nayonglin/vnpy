@@ -34,7 +34,12 @@ from vnpy.trader.event import (
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 REPO_ROOT: Path = PROJECT_DIR.parent.parent
-OUTPUT_DIR: Path = PROJECT_DIR / "backtest_outputs"
+OUTPUT_DIR: Path = Path(
+    os.environ.get(
+        "OFFICIAL_LIVE_OUTPUT_DIR",
+        str(PROJECT_DIR / "backtest_outputs"),
+    )
+).expanduser().resolve(strict=False)
 
 MODEL_TAG: str = "stage174_ctp_vnpy_readonly_probe_v1"
 OUTPUT_PREFIX: str = "qmt_roll_stage174_ctp_vnpy_readonly_probe"

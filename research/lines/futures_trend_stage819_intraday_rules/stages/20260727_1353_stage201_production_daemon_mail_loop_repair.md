@@ -127,3 +127,18 @@
 - 当前边界：该补充修复仍需形成 exact commit、完成独立最终 GO、重新 production qualification、重签 manifest/activation receipt 并重新激活；在运行态 tick stream 与健康检查通过前仍不得宣称实盘恢复。
 - 过拟合反思：否；本次只修执行持久化和首次启动契约，不改 alpha、价格、手数、AI 池或风险阈值。
 - 继续价值反思：是；该缺陷会让实时报价链 fail-closed，修复和重新资格是恢复自动止损/重进场的必要条件。
+
+## 2026-07-27 15:16 Stage174/Stage907 产物路径修复
+
+- 新 commit 首次 production 健康检查通过后，人工触发 day-close-readonly 发现 Stage174 已完整完成 CTP 登录、结算确认、账户/持仓/委托/成交查询且 order API 为 `0`，但 Stage907 仍判定 `readonly_refresh_blocked` 并发送失败邮件。
+- 根因：launchd/Stage907 通过 `OFFICIAL_LIVE_OUTPUT_DIR` 读 production state，Stage174 却固定写仓库 `backtest_outputs`；生产者和消费者读取了不同目录。
+- 修复：Stage174 的 `OUTPUT_DIR` 改为与 Stage907、phase_d config 一致的 `OFFICIAL_LIVE_OUTPUT_DIR -> expanduser -> resolve(strict=False)`；未设置环境变量时继续精确回退仓库 `backtest_outputs`。
+- 路径安全边界：production launcher 继续校验 canonical output root、拒绝 symlink，并使用净化环境；qualification pytest runner 会剥离 `CTP_`/`OFFICIAL_LIVE_` 环境，不会误写 production state。
+- 验证：
+  - Stage174 + Stage907 聚焦回归 `20 tests` 通过。
+  - Stage174、Stage907、Stage947、launchd lifecycle 扩大回归 `50 tests` 通过。
+  - 独立复审 `P0=0、P1=0、P2=0、P3=0`，结论 `GO`；审查侧 Stage174 + Stage907 `27 passed`。
+  - `py_compile`、`git diff --check` 通过。
+- 当前边界：需形成新 exact commit，并重新执行 production qualification、manifest/receipt 签发、Stage948 激活、day-close-readonly 与健康检查读回。
+- 过拟合反思：否；只统一运行时产物路径，不改 alpha 或交易规则。
+- 继续价值反思：是；否则真实只读快照会被误报失败并持续发送错误邮件。
