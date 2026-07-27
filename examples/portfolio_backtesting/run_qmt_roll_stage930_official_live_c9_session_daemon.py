@@ -3083,9 +3083,18 @@ def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] |
                 _clean(args.confirm_stage179_activation),
             ]
         )
+    service_env = os.environ.copy()
+    service_env["PYTHONPATH"] = (
+        f"{PROJECT_DIR}{os.pathsep}{service_env.get('PYTHONPATH', '')}"
+    ).rstrip(os.pathsep)
+    if args.submit_mode == "live-real":
+        service_env[PHASE_D_REAL_ADAPTER_ENV] = "1"
+    else:
+        service_env.pop(PHASE_D_REAL_ENABLED_ENV, None)
     _STAGE931_SERVICE_RUNTIME = runtime
     _STAGE931_SERVICE_PROCESS = _managed_popen(
         [str(PYTHON_PATH), str(STAGE931_SCRIPT), *stage_args],
+        env=service_env,
         text=True,
     )
     return _STAGE931_SERVICE_PROCESS
@@ -3738,9 +3747,28 @@ def _cycle_email_key(cycle: dict[str, Any]) -> str:
     if order_api > 0:
         return f"order_api_{cycle.get('cycle_at', '')}_{order_api}"
     if cycle.get("cycle_exception"):
-        return f"cycle_exception_{cycle.get('cycle_at', '')}"
+        exception_text = _clean(cycle.get("cycle_exception"))
+        exception_digest = hashlib.sha256(
+            exception_text.encode("utf-8")
+        ).hexdigest()
+        return f"cycle_exception_{exception_digest}"
     if adapter_status == "adapter_exception":
-        return f"adapter_exception_{cycle.get('cycle_at', '')}"
+        adapter_detail = json.dumps(
+            {
+                "adapter_status": adapter_status,
+                "blockers": submit.get("blockers", []),
+                "error": submit.get("error", ""),
+                "exception": submit.get("exception", ""),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        )
+        adapter_digest = hashlib.sha256(
+            adapter_detail.encode("utf-8")
+        ).hexdigest()
+        return f"adapter_exception_{adapter_digest}"
     if ready > 0:
         return "ready_intents_first_seen"
     if (

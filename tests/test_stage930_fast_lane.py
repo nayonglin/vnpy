@@ -789,6 +789,81 @@ class Stage930FastLaneTest(unittest.TestCase):
             stage930._STAGE931_SERVICE_PROCESS = None
             stage930._STAGE931_SERVICE_RUNTIME = None
 
+    def test_live_warm_stage931_service_sets_adapter_flag_without_forging_submit_flag(
+        self,
+    ) -> None:
+        args = self.args()
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "offline"
+        args.stage179_runtime_root = ""
+        args.release_manifest = ""
+        args.activation_receipt = ""
+        args.confirm_stage179_activation = ""
+        process = _TickStreamProcess(pid=777778, exit_code=None)
+        stage930._STAGE931_SERVICE_PROCESS = None
+        stage930._STAGE931_SERVICE_RUNTIME = None
+        try:
+            with (
+                patch.dict(
+                    os.environ,
+                    {
+                        stage930.PHASE_D_REAL_ADAPTER_ENV: "",
+                        stage930.PHASE_D_REAL_ENABLED_ENV: "",
+                    },
+                    clear=False,
+                ),
+                patch.object(
+                    stage930,
+                    "_managed_popen",
+                    return_value=process,
+                ) as popen,
+            ):
+                stage930._start_stage931_service(args)
+
+            service_env = popen.call_args.kwargs["env"]
+            self.assertEqual(
+                "1",
+                service_env[stage930.PHASE_D_REAL_ADAPTER_ENV],
+            )
+            self.assertEqual(
+                "",
+                service_env[stage930.PHASE_D_REAL_ENABLED_ENV],
+            )
+        finally:
+            stage930._STAGE931_SERVICE_PROCESS = None
+            stage930._STAGE931_SERVICE_RUNTIME = None
+
+    def test_cycle_exception_email_key_is_stable_by_failure_content(self) -> None:
+        first = stage930._cycle_email_key(
+            {
+                "cycle_at": "2026-07-27 10:06:16",
+                "cycle_exception": (
+                    "SpoolValidationError("
+                    "'spool_snapshot_stage941_cursor_count_invalid:0')"
+                ),
+            }
+        )
+        repeated = stage930._cycle_email_key(
+            {
+                "cycle_at": "2026-07-27 10:07:16",
+                "cycle_exception": (
+                    "SpoolValidationError("
+                    "'spool_snapshot_stage941_cursor_count_invalid:0')"
+                ),
+            }
+        )
+        different = stage930._cycle_email_key(
+            {
+                "cycle_at": "2026-07-27 10:08:16",
+                "cycle_exception": "RuntimeError('different_failure')",
+            }
+        )
+
+        self.assertEqual(first, repeated)
+        self.assertNotEqual(first, different)
+        self.assertTrue(first.startswith("cycle_exception_"))
+
     def test_warm_no_submit_cycle_never_wakes_or_spawns_legacy_stage931(self) -> None:
         args = self.args()
         args.stage179_execution_mode = "warm"

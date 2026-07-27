@@ -2616,6 +2616,8 @@ def _validate_snapshot_schema_locked(
 
 def _snapshot_cursor_material_locked(
     connection: sqlite3.Connection,
+    *,
+    allow_uninitialized: bool = False,
 ) -> list[dict[str, Any]]:
     rows = connection.execute(
         "SELECT * FROM detector_cursors ORDER BY consumer_id"
@@ -2672,6 +2674,12 @@ def _snapshot_cursor_material_locked(
                 ),
             }
         )
+    if (
+        stage941_count == 0
+        and allow_uninitialized
+        and not rows
+    ):
+        return material
     if stage941_count != 1:
         raise SpoolValidationError(
             f"spool_snapshot_stage941_cursor_count_invalid:{stage941_count}"
@@ -2715,10 +2723,13 @@ def snapshot_authorizable_intents(
     try:
         connection.execute(f"SAVEPOINT {savepoint}")
         metadata = _validate_snapshot_schema_locked(connection)
-        cursor_material = _snapshot_cursor_material_locked(connection)
         rows = connection.execute(
             "SELECT * FROM intents ORDER BY spool_sequence"
         ).fetchall()
+        cursor_material = _snapshot_cursor_material_locked(
+            connection,
+            allow_uninitialized=not rows,
+        )
         intents: list[tuple[SpoolIntent, sqlite3.Row]] = []
         intent_material: list[dict[str, Any]] = []
         for row in rows:

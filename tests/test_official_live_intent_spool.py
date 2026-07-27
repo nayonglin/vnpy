@@ -230,6 +230,42 @@ class OfficialLiveIntentSpoolTest(unittest.TestCase):
         self.assertTrue(meta["spool_uuid"])
         self.assertEqual(1, self.connection.execute("PRAGMA user_version").fetchone()[0])
 
+    def test_fresh_empty_spool_has_non_authorizable_snapshot(self) -> None:
+        snapshot = spool.snapshot_authorizable_intents(
+            self.connection,
+            now_epoch_ns=200,
+            now_monotonic_ns=200,
+            clock_domain_id="boot-a",
+        )
+
+        self.assertIsNone(snapshot.candidate)
+        self.assertEqual(0, snapshot.total_intent_count)
+        self.assertEqual(0, snapshot.ready_open_count)
+        self.assertEqual(0, snapshot.ready_close_count)
+        self.assertEqual(
+            hashlib.sha256(b"[]").hexdigest(),
+            snapshot.cursor_digest,
+        )
+
+    def test_spool_with_intent_but_without_stage941_cursor_fails_closed(
+        self,
+    ) -> None:
+        self.commit([self.authorization_intent("open-1")])
+        self.connection.execute(
+            "DELETE FROM detector_cursors WHERE consumer_id='stage941'"
+        )
+
+        with self.assertRaisesRegex(
+            spool.SpoolValidationError,
+            "spool_snapshot_stage941_cursor_count_invalid:0",
+        ):
+            spool.snapshot_authorizable_intents(
+                self.connection,
+                now_epoch_ns=200,
+                now_monotonic_ns=200,
+                clock_domain_id="boot-a",
+            )
+
     def test_authorizable_snapshot_selects_close_first_with_exact_v4_identity(self) -> None:
         open_intent = self.authorization_intent("open-1")
         close_intent = self.authorization_intent("close-1", offset="close")
