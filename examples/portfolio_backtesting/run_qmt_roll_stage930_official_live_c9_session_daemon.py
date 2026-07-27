@@ -162,6 +162,9 @@ LATEST_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_h
 LATEST_EVENT_LOG_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon_events.ndjson"
 LOCK_PATH = OUTPUT_DIR / "qmt_roll_official_live_c9_session_daemon.lock"
 EMAIL_THROTTLE_PATH = OUTPUT_DIR / "qmt_roll_stage930_official_live_email_throttle.json"
+EMAIL_FAILURE_RETRY_SECONDS = 300
+EMAIL_THROTTLE_MAX_ENTRIES = 512
+EMAIL_THROTTLE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 EMAIL_CONTENT_VERSION = "stage930_plain_text_v2"
 TICK_STREAM_HEARTBEAT_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_tick_stream_heartbeat_stage608_readonly_tick_snapshot_probe_v1.json"
 TICK_STREAM_JOURNAL_PATH = OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_tick_stream_stage608_readonly_tick_snapshot_probe_v1.ndjson"
@@ -3087,6 +3090,14 @@ def _start_stage931_service(args: argparse.Namespace) -> subprocess.Popen[Any] |
     service_env["PYTHONPATH"] = (
         f"{PROJECT_DIR}{os.pathsep}{service_env.get('PYTHONPATH', '')}"
     ).rstrip(os.pathsep)
+    if runtime.framework_path:
+        framework_entries = [str(path) for path in runtime.framework_path]
+        inherited_framework = service_env.get("DYLD_FRAMEWORK_PATH", "").strip()
+        if inherited_framework:
+            framework_entries.append(inherited_framework)
+        # dyld reads this before the Python entrypoint starts.  Setting it
+        # inside Stage931 is too late to choose the production CTP frameworks.
+        service_env["DYLD_FRAMEWORK_PATH"] = os.pathsep.join(framework_entries)
     if args.submit_mode == "live-real":
         service_env[PHASE_D_REAL_ADAPTER_ENV] = "1"
     else:
@@ -3783,23 +3794,129 @@ def _cycle_email_key(cycle: dict[str, Any]) -> str:
     return ""
 
 
-def _email_throttle_allows(key: str, cycle: dict[str, Any], min_seconds: int = 1800) -> tuple[bool, str]:
+def _email_throttle_timestamp(value: Any) -> datetime | None:
+    text = _clean(value)
+    if not text:
+        return None
+    try:
+        return datetime.strptime(text, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return None
+
+
+def _prune_email_throttle_state(
+    state: dict[str, Any],
+    *,
+    now: datetime,
+    max_entries: int = EMAIL_THROTTLE_MAX_ENTRIES,
+) -> dict[str, dict[str, Any]]:
+    retained: list[tuple[datetime, str, dict[str, Any]]] = []
+    for digest, raw in state.items():
+        if not isinstance(raw, dict):
+            continue
+        activity_candidates = [
+            timestamp
+            for timestamp in (
+                _email_throttle_timestamp(raw.get("last_sent_at")),
+                _email_throttle_timestamp(raw.get("last_attempt_at")),
+            )
+            if timestamp is not None
+        ]
+        if not activity_candidates:
+            continue
+        activity_at = max(activity_candidates)
+        if (now - activity_at).total_seconds() > EMAIL_THROTTLE_MAX_AGE_SECONDS:
+            continue
+        retained.append((activity_at, str(digest), dict(raw)))
+    retained.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    return {
+        digest: raw
+        for _activity_at, digest, raw in retained[:max_entries]
+    }
+
+
+def _email_throttle_reserve(
+    key: str,
+    cycle: dict[str, Any],
+    min_seconds: int = 1800,
+    retry_seconds: int = EMAIL_FAILURE_RETRY_SECONDS,
+) -> tuple[bool, str, Any | None]:
     if _to_int(cycle.get("order_api_called_count"), 0) > 0:
-        return True, "order_api_never_throttled"
+        return True, "order_api_never_throttled", None
     digest = hashlib.sha256(f"{EMAIL_CONTENT_VERSION}:{key}".encode("utf-8")).hexdigest()
-    state = _read_json(EMAIL_THROTTLE_PATH)
-    last_text = (state.get(digest) or {}).get("last_sent_at") if isinstance(state.get(digest), dict) else ""
-    last_dt = None
-    if last_text:
-        try:
-            last_dt = datetime.strptime(str(last_text), "%Y-%m-%d %H:%M:%S")
-        except ValueError:
-            last_dt = None
-    if last_dt is not None and (datetime.now() - last_dt).total_seconds() < min_seconds:
-        return False, f"email_throttled:{digest}"
-    state[digest] = {"last_sent_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "key": key}
-    EMAIL_THROTTLE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-    return True, digest
+    EMAIL_THROTTLE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = EMAIL_THROTTLE_PATH.with_name(f"{EMAIL_THROTTLE_PATH.name}.lock")
+    lock_handle = lock_path.open("a+", encoding="utf-8")
+    try:
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+        now = datetime.now()
+        state = _prune_email_throttle_state(_read_json(EMAIL_THROTTLE_PATH), now=now)
+        entry = state.get(digest, {})
+        last_sent_at = _email_throttle_timestamp(entry.get("last_sent_at"))
+        if (
+            last_sent_at is not None
+            and (now - last_sent_at).total_seconds() < min_seconds
+        ):
+            lock_handle.close()
+            return False, f"email_throttled:{digest}", None
+        last_attempt_at = _email_throttle_timestamp(entry.get("last_attempt_at"))
+        if (
+            last_attempt_at is not None
+            and (now - last_attempt_at).total_seconds() < retry_seconds
+        ):
+            lock_handle.close()
+            return False, f"email_retry_throttled:{digest}", None
+        if digest not in state:
+            state = _prune_email_throttle_state(
+                state,
+                now=now,
+                max_entries=EMAIL_THROTTLE_MAX_ENTRIES - 1,
+            )
+        state[digest] = {
+            **entry,
+            "last_attempt_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "key": key,
+        }
+        _atomic_write_json(EMAIL_THROTTLE_PATH, state)
+        return True, digest, lock_handle
+    except BaseException:
+        lock_handle.close()
+        raise
+
+
+def _email_delivery_succeeded(result: dict[str, Any]) -> bool:
+    return _clean(result.get("email_status")) in {"sent", "dry_run_written"}
+
+
+def _email_throttle_complete(
+    *,
+    digest: str,
+    key: str,
+    reservation: Any | None,
+    result: dict[str, Any],
+) -> None:
+    if reservation is None:
+        return
+    try:
+        now = datetime.now()
+        state = _prune_email_throttle_state(_read_json(EMAIL_THROTTLE_PATH), now=now)
+        entry = state.get(digest, {})
+        entry.update(
+            {
+                "key": key,
+                "last_attempt_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+                "last_status": _clean(result.get("email_status")) or "unknown",
+            }
+        )
+        if _email_delivery_succeeded(result):
+            entry["last_sent_at"] = now.strftime("%Y-%m-%d %H:%M:%S")
+        state[digest] = entry
+        _atomic_write_json(
+            EMAIL_THROTTLE_PATH,
+            _prune_email_throttle_state(state, now=now),
+        )
+    finally:
+        reservation.close()
 
 
 def _fmt_number(value: Any, default: str = "-") -> str:
@@ -4036,41 +4153,54 @@ def _send_cycle_email_if_needed(
     key = _cycle_email_key(cycle)
     if not key or key in sent_keys:
         return None
-    throttle_allowed, throttle_key = _email_throttle_allows(key, cycle)
+    throttle_allowed, throttle_key, reservation = _email_throttle_reserve(key, cycle)
     if not throttle_allowed:
         return {"email_status": "skipped_throttled", "reason": throttle_key, "throttle_path": str(EMAIL_THROTTLE_PATH.resolve())}
-    sent_keys.add(key)
-    content = _build_cycle_email_content(summary, cycle)
-    severity = str(content["severity"])
-    subject = str(content["subject"])
-    body = str(content["body"])
-    attachments: list[Path] = [paths["report_md"], paths["summary_json"]]
-    submit = _cycle_submit_summary(cycle)
-    stage931_outputs = submit.get("outputs", {}) if isinstance(submit.get("outputs"), dict) else {}
-    stage931_attachment_keys = ["report_md", "summary_json", "submitted_csv"]
-    if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP"):
-        stage931_attachment_keys.extend(["orders_csv", "trades_csv"])
-    for key_name in stage931_attachment_keys:
-        value = stage931_outputs.get(key_name)
-        if value:
-            attachments.append(Path(value))
-    return send_official_live_email_notification(
-        subject=subject,
-        body=body,
-        event_type="stage930_session_key_event",
-        severity=severity,
-        attachments=attachments,
-        metadata={
-            "target_date": summary["target_date"],
-            "mode": summary["mode"],
-            "submit_mode": summary["submit_mode"],
-            "cycle_at": cycle.get("cycle_at", ""),
-            "status_label": content["status_label"],
-            "stage905_ready_count": content["ready"],
-            "order_api_called_count": content["order_api"],
-            "stage931_adapter_status": content["stage931_adapter_status"],
-        },
-    )
+    result: dict[str, Any] = {"email_status": "send_failed_exception"}
+    try:
+        content = _build_cycle_email_content(summary, cycle)
+        severity = str(content["severity"])
+        subject = str(content["subject"])
+        body = str(content["body"])
+        attachments: list[Path] = [paths["report_md"], paths["summary_json"]]
+        submit = _cycle_submit_summary(cycle)
+        stage931_outputs = (
+            submit.get("outputs", {}) if isinstance(submit.get("outputs"), dict) else {}
+        )
+        stage931_attachment_keys = ["report_md", "summary_json", "submitted_csv"]
+        if _env_enabled("OFFICIAL_LIVE_EMAIL_ATTACH_RAW_CTP"):
+            stage931_attachment_keys.extend(["orders_csv", "trades_csv"])
+        for key_name in stage931_attachment_keys:
+            value = stage931_outputs.get(key_name)
+            if value:
+                attachments.append(Path(value))
+        result = send_official_live_email_notification(
+            subject=subject,
+            body=body,
+            event_type="stage930_session_key_event",
+            severity=severity,
+            attachments=attachments,
+            metadata={
+                "target_date": summary["target_date"],
+                "mode": summary["mode"],
+                "submit_mode": summary["submit_mode"],
+                "cycle_at": cycle.get("cycle_at", ""),
+                "status_label": content["status_label"],
+                "stage905_ready_count": content["ready"],
+                "order_api_called_count": content["order_api"],
+                "stage931_adapter_status": content["stage931_adapter_status"],
+            },
+        )
+    finally:
+        _email_throttle_complete(
+            digest=throttle_key,
+            key=key,
+            reservation=reservation,
+            result=result,
+        )
+    if _email_delivery_succeeded(result):
+        sent_keys.add(key)
+    return result
 
 
 def _stage931_submit_blockers(

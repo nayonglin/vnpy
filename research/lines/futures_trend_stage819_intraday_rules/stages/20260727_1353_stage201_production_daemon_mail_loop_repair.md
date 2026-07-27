@@ -38,13 +38,18 @@
 - `run_qmt_roll_stage930_official_live_c9_session_daemon.py`
   - cycle exception 邮件改为按异常文本 SHA-256 指纹去重；同一异常跨轮次共用 key。
   - adapter exception 按稳定的 status/blockers/error/exception 结构指纹去重。
+  - 邮件发送成功后才写 `last_sent_at` 并加入进程内 `sent_keys`；发送失败只写 `last_attempt_at`，按 5 分钟节流重试，避免“失败即永久已发送”和逐轮轰炸。
+  - throttle 状态由文件锁串行化并通过原子替换写入；只保留 7 天内最新 512 条，避免崩溃损坏和无界增长。
   - warm Stage931 live-real 子进程显式获得 `OFFICIAL_LIVE_PHASE_D_REAL_ADAPTER_IMPLEMENTED=1`。
+  - 在启动 Stage931 子进程之前按 `runtime.framework_path` 注入 `DYLD_FRAMEWORK_PATH`，保证 production-live 正式 CTP framework 在 `.py311/lib` 评测 framework 之前被 dyld 选择。
   - 不伪造 `OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED`；该开关仍只能从 production launchd 继承。
 - 测试
   - 新增 fresh empty spool 不可报单快照测试。
   - 新增“已有 intent 但无 cursor”继续 fail-closed 测试。
   - 新增异常邮件跨时间稳定指纹测试。
+  - 新增邮件失败后有限重试、成功后才持久去重、状态锁/原子写/条数上限测试。
   - 新增 Stage931 adapter flag 注入且不伪造 submit flag 测试。
+  - 新增 Stage931 exec 环境 framework 顺序测试和 macOS 真实子进程 CTP 动态库加载路径测试。
 - 新增策略参数：无。
 - 修改策略参数：无。
 - 删除策略参数：无。
@@ -64,12 +69,13 @@
 
 - `py_compile`：4 个变更 Python 文件通过。
 - `git diff --check`：通过。
-- 聚焦回归：
+- 首轮聚焦回归：
   - `test_official_live_intent_spool`
   - `test_stage930_fast_lane`
   - `test_stage930_persistent_authorization`
   - 共 `131 tests`，全部通过。
-- 扩大回归：Stage179 executor/fault/runtime/authorization/race、Stage927、Stage931 四组、Stage945/946/947/948 均退出 `0`。
+- 最终修复后上述聚焦回归共 `135 tests`，全部通过。
+- 最终修复后扩大回归：Stage179 executor/fault/runtime/authorization/race、Stage927、Stage931 四组、Stage945/946/947/948 共 `313 tests`，全部通过。
 - 使用 production spool 的临时副本验证：
   - `candidate=None`
   - `total_intent_count=0`
@@ -78,6 +84,10 @@
   - snapshot/cursor digest 均为 64 位
 - 使用当日真实异常摘要验证：修改 `cycle_at` 后异常 key 保持一致。
 - production `ctp_live.local.env` 仅检查键名和完整性：文件存在、解析 20 个键、必需 CTP 键缺失 `0`；未打印任何值。
+- 独立审查发现并阻断一个 P1：仅在 Stage931 Python 进程启动后写 `DYLD_FRAMEWORK_PATH` 会误载 `.py311/lib` 的评测 framework。
+- P1 修复后的聚焦验证：`57 tests` 全部通过；真实 macOS 子进程加载的两个 `thost` framework 均位于正式 `vnpy_ctp/api/libs` 路径。
+- 独立审查的两个 P2（失败邮件被误记为已发送、throttle 非原子且无界）已一并修复；新增 2 个聚焦测试通过。
+- 独立复审发现 reserve 新 key 时会在发送完成前短暂持久化 513 条的 P3；已调整为新增前先裁到 511 条，保证任一持久时点均不超过 512 条。
 
 ## 当前边界
 
@@ -96,4 +106,3 @@
 - 运行前：是。
 - 运行后：是。
 - 原因：当前故障会使守护进程退出、邮件循环和真实适配器无法启动；修复直接恢复生产可用性。下一步价值只在独立复核、正式资格与运行态验收，不在继续扩展规则。
-

@@ -834,6 +834,138 @@ class Stage930FastLaneTest(unittest.TestCase):
             stage930._STAGE931_SERVICE_PROCESS = None
             stage930._STAGE931_SERVICE_RUNTIME = None
 
+    def test_production_live_warm_stage931_exec_env_prefers_formal_ctp_frameworks(
+        self,
+    ) -> None:
+        args = self.args()
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "production-live"
+        args.stage179_runtime_root = ""
+        args.release_manifest = ""
+        args.activation_receipt = ""
+        args.confirm_stage179_activation = ""
+        process = _TickStreamProcess(pid=777779, exit_code=None)
+        runtime = stage930._stage179_runtime(args)
+        inherited_framework = "/tmp/inherited-framework"
+        stage930._STAGE931_SERVICE_PROCESS = None
+        stage930._STAGE931_SERVICE_RUNTIME = None
+        try:
+            with (
+                patch.dict(
+                    os.environ,
+                    {
+                        "DYLD_FRAMEWORK_PATH": inherited_framework,
+                        stage930.PHASE_D_REAL_ENABLED_ENV: "1",
+                    },
+                    clear=False,
+                ),
+                patch.object(
+                    stage930,
+                    "_managed_popen",
+                    return_value=process,
+                ) as popen,
+            ):
+                stage930._start_stage931_service(args)
+
+            service_env = popen.call_args.kwargs["env"]
+            self.assertEqual(
+                os.pathsep.join(
+                    [
+                        *[str(path) for path in runtime.framework_path],
+                        inherited_framework,
+                    ]
+                ),
+                service_env["DYLD_FRAMEWORK_PATH"],
+            )
+            self.assertEqual(
+                "1",
+                service_env[stage930.PHASE_D_REAL_ADAPTER_ENV],
+            )
+            self.assertEqual(
+                "1",
+                service_env[stage930.PHASE_D_REAL_ENABLED_ENV],
+            )
+        finally:
+            stage930._STAGE931_SERVICE_PROCESS = None
+            stage930._STAGE931_SERVICE_RUNTIME = None
+
+    @unittest.skipUnless(
+        sys.platform == "darwin",
+        "dyld framework resolution is a macOS production invariant",
+    )
+    def test_production_live_warm_stage931_exec_env_loads_formal_ctp_frameworks(
+        self,
+    ) -> None:
+        args = self.args()
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "production-live"
+        args.stage179_runtime_root = ""
+        args.release_manifest = ""
+        args.activation_receipt = ""
+        args.confirm_stage179_activation = ""
+        process = _TickStreamProcess(pid=777780, exit_code=None)
+        runtime = stage930._stage179_runtime(args)
+        stage930._STAGE931_SERVICE_PROCESS = None
+        stage930._STAGE931_SERVICE_RUNTIME = None
+        try:
+            with (
+                patch.dict(
+                    os.environ,
+                    {
+                        "DYLD_FRAMEWORK_PATH": str(runtime.framework_path[1]),
+                        stage930.PHASE_D_REAL_ENABLED_ENV: "1",
+                    },
+                    clear=False,
+                ),
+                patch.object(
+                    stage930,
+                    "_managed_popen",
+                    return_value=process,
+                ) as popen,
+            ):
+                stage930._start_stage931_service(args)
+
+            service_env = popen.call_args.kwargs["env"]
+            probe = subprocess.run(
+                [
+                    str(stage930.PYTHON_PATH),
+                    "-c",
+                    (
+                        "import ctypes,json;"
+                        "from vnpy_ctp import CtpGateway;"
+                        "loader=ctypes.CDLL(None);"
+                        "loader._dyld_image_count.restype=ctypes.c_uint32;"
+                        "loader._dyld_get_image_name.argtypes=[ctypes.c_uint32];"
+                        "loader._dyld_get_image_name.restype=ctypes.c_char_p;"
+                        "print(json.dumps(["
+                        "(name.decode() if name else '') "
+                        "for index in range(loader._dyld_image_count()) "
+                        "if (name:=loader._dyld_get_image_name(index)) "
+                        "and b'thost' in name]))"
+                    ),
+                ],
+                cwd=stage930.REPO_ROOT,
+                env=service_env,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            loaded_frameworks = json.loads(probe.stdout)
+            formal_framework_root = runtime.framework_path[0]
+            self.assertEqual(2, len(loaded_frameworks))
+            self.assertTrue(
+                all(
+                    Path(path).is_relative_to(formal_framework_root)
+                    for path in loaded_frameworks
+                ),
+                loaded_frameworks,
+            )
+        finally:
+            stage930._STAGE931_SERVICE_PROCESS = None
+            stage930._STAGE931_SERVICE_RUNTIME = None
+
     def test_cycle_exception_email_key_is_stable_by_failure_content(self) -> None:
         first = stage930._cycle_email_key(
             {
@@ -863,6 +995,138 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(first, repeated)
         self.assertNotEqual(first, different)
         self.assertTrue(first.startswith("cycle_exception_"))
+
+    def test_failed_cycle_email_retries_after_bounded_delay_and_only_success_is_sent(
+        self,
+    ) -> None:
+        cycle = {
+            "cycle_at": "2026-07-27 10:06:16",
+            "cycle_exception": "RuntimeError('mail-loop-test')",
+            "order_api_called_count": 0,
+        }
+        summary = {
+            "target_date": "2026-07-25",
+            "mode": "live-real",
+            "submit_mode": "live-real",
+        }
+        content = {
+            "severity": "critical",
+            "subject": "test",
+            "body": "test",
+            "status_label": "异常",
+            "ready": 0,
+            "order_api": 0,
+            "stage931_adapter_status": "adapter_exception",
+        }
+        sent_keys: set[str] = set()
+        with tempfile.TemporaryDirectory() as directory:
+            throttle_path = Path(directory) / "email-throttle.json"
+            paths = {
+                "report_md": Path(directory) / "report.md",
+                "summary_json": Path(directory) / "summary.json",
+            }
+            with (
+                patch.object(stage930, "EMAIL_THROTTLE_PATH", throttle_path),
+                patch.object(
+                    stage930,
+                    "_build_cycle_email_content",
+                    return_value=content,
+                ),
+                patch.object(
+                    stage930,
+                    "send_official_live_email_notification",
+                    side_effect=[
+                        {"email_status": "send_failed"},
+                        {"email_status": "sent"},
+                    ],
+                ) as sender,
+            ):
+                failed = stage930._send_cycle_email_if_needed(
+                    paths=paths,
+                    summary=summary,
+                    cycle=cycle,
+                    sent_keys=sent_keys,
+                )
+                throttled = stage930._send_cycle_email_if_needed(
+                    paths=paths,
+                    summary=summary,
+                    cycle=cycle,
+                    sent_keys=sent_keys,
+                )
+                state = json.loads(throttle_path.read_text(encoding="utf-8"))
+                entry = next(iter(state.values()))
+                entry["last_attempt_at"] = "2000-01-01 00:00:00"
+                throttle_path.write_text(
+                    json.dumps(state),
+                    encoding="utf-8",
+                )
+                sent = stage930._send_cycle_email_if_needed(
+                    paths=paths,
+                    summary=summary,
+                    cycle=cycle,
+                    sent_keys=sent_keys,
+                )
+
+            self.assertEqual("send_failed", failed["email_status"])
+            self.assertEqual("skipped_throttled", throttled["email_status"])
+            self.assertIn("email_retry_throttled:", throttled["reason"])
+            self.assertEqual("sent", sent["email_status"])
+            self.assertEqual(2, sender.call_count)
+            self.assertEqual({stage930._cycle_email_key(cycle)}, sent_keys)
+            final_state = json.loads(throttle_path.read_text(encoding="utf-8"))
+            final_entry = next(iter(final_state.values()))
+            self.assertEqual("sent", final_entry["last_status"])
+            self.assertIn("last_sent_at", final_entry)
+
+    def test_email_throttle_state_is_atomic_locked_and_bounded(self) -> None:
+        cycle = {"order_api_called_count": 0}
+        now_text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with tempfile.TemporaryDirectory() as directory:
+            throttle_path = Path(directory) / "email-throttle.json"
+            throttle_path.write_text(
+                json.dumps(
+                    {
+                        f"{index:064x}": {
+                            "key": f"old-{index}",
+                            "last_attempt_at": now_text,
+                        }
+                        for index in range(stage930.EMAIL_THROTTLE_MAX_ENTRIES + 100)
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with patch.object(stage930, "EMAIL_THROTTLE_PATH", throttle_path):
+                allowed, digest, reservation = stage930._email_throttle_reserve(
+                    "new-key",
+                    cycle,
+                )
+                self.assertTrue(allowed)
+                self.assertIsNotNone(reservation)
+                reserved_state = json.loads(
+                    throttle_path.read_text(encoding="utf-8")
+                )
+                self.assertLessEqual(
+                    len(reserved_state),
+                    stage930.EMAIL_THROTTLE_MAX_ENTRIES,
+                )
+                stage930._email_throttle_complete(
+                    digest=digest,
+                    key="new-key",
+                    reservation=reservation,
+                    result={"email_status": "sent"},
+                )
+
+            state = json.loads(throttle_path.read_text(encoding="utf-8"))
+            self.assertLessEqual(
+                len(state),
+                stage930.EMAIL_THROTTLE_MAX_ENTRIES,
+            )
+            self.assertTrue(
+                throttle_path.with_name(f"{throttle_path.name}.lock").exists()
+            )
+            self.assertFalse(
+                list(throttle_path.parent.glob(f".{throttle_path.name}.*.tmp"))
+            )
 
     def test_warm_no_submit_cycle_never_wakes_or_spawns_legacy_stage931(self) -> None:
         args = self.args()
