@@ -530,6 +530,8 @@ def build_complete_closed_lot_lineage(
     trades: pd.DataFrame,
     entry_risk: pd.DataFrame,
     entry_candidates: pd.DataFrame,
+    *,
+    priceticks: dict[str, float] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     data = closed_lots.copy()
     trade_data = trades.copy()
@@ -642,16 +644,42 @@ def build_complete_closed_lot_lineage(
             root_order_id = str(open_row.get("order_id", "")).split(".stage847_c9.", 1)[0]
             root_open_id = open_trade_id_by_order.get(root_order_id, "")
             risk_source = source_by_open.get(root_open_id, {})
-        stop_distance = _safe_float(risk_source.get("stop_distance"))
+        planned_stop_distance = _safe_float(risk_source.get("stop_distance"))
         size = _safe_float(risk_source.get("size"))
         if not np.isfinite(size) or size <= 0:
             matching_lots = data[data["open_trade_id"].astype(str).eq(open_id)]
             size = _safe_float(matching_lots["size"].iloc[0]) if not matching_lots.empty else np.nan
-        risk_per_contract = _safe_float(risk_source.get("risk_per_contract"))
-        if (not np.isfinite(risk_per_contract) or risk_per_contract <= 0) and np.isfinite(stop_distance) and np.isfinite(size):
-            risk_per_contract = stop_distance * size
-        entry_price = _safe_float(open_row.get("price"))
+        planned_risk_per_contract = _safe_float(risk_source.get("risk_per_contract"))
+        if (
+            (not np.isfinite(planned_risk_per_contract) or planned_risk_per_contract <= 0)
+            and np.isfinite(planned_stop_distance)
+            and np.isfinite(size)
+        ):
+            planned_risk_per_contract = planned_stop_distance * size
+        actual_entry_price = _safe_float(open_row.get("price"))
+        planned_entry_price = _safe_float(
+            risk_source.get("planned_entry_price"),
+            _safe_float(risk_source.get("entry_price")),
+        )
         stop_price = _safe_float(risk_source.get("stop_price"))
+        price_tick = _safe_float((priceticks or {}).get(str(open_row.get("vt_symbol", ""))))
+        actual_stop_distance = (
+            abs(actual_entry_price - stop_price)
+            if actual_entry_price > 0 and np.isfinite(stop_price)
+            else np.nan
+        )
+        min_risk = max(price_tick * size, 1.0) if price_tick > 0 and size > 0 else 1.0
+        actual_risk_recomputed = int(
+            np.isfinite(actual_stop_distance)
+            and actual_stop_distance >= 0
+            and np.isfinite(size)
+            and size > 0
+        )
+        risk_per_contract = (
+            max(actual_stop_distance * size, min_risk)
+            if actual_risk_recomputed
+            else planned_risk_per_contract
+        )
         source_selected_volume = _safe_float(
             risk_source.get("selected_volume"),
             _safe_float(risk_source.get("volume")),
@@ -693,11 +721,22 @@ def build_complete_closed_lot_lineage(
                 "contracts_by_risk": _safe_float(risk_source.get("contracts_by_risk")),
                 "contracts_by_margin": _safe_float(risk_source.get("contracts_by_margin")),
                 "stop_price": stop_price,
-                "stop_distance": stop_distance,
+                "planned_entry_price": planned_entry_price,
+                "actual_entry_price": actual_entry_price,
+                "planned_stop_distance": planned_stop_distance,
+                "actual_stop_distance": actual_stop_distance,
+                "stop_distance": planned_stop_distance,
+                "planned_risk_per_contract": planned_risk_per_contract,
                 "risk_per_contract": risk_per_contract,
+                "actual_risk_recomputed": actual_risk_recomputed,
+                "planned_entry_risk_distance_pct": (
+                    planned_stop_distance / planned_entry_price
+                    if planned_entry_price > 0 and np.isfinite(planned_stop_distance)
+                    else np.nan
+                ),
                 "entry_risk_distance_pct": (
-                    abs(entry_price - stop_price) / entry_price
-                    if entry_price > 0 and np.isfinite(stop_price)
+                    actual_stop_distance / actual_entry_price
+                    if actual_entry_price > 0 and np.isfinite(actual_stop_distance)
                     else np.nan
                 ),
             }
@@ -718,7 +757,8 @@ def build_complete_closed_lot_lineage(
         risk_per_contract = _safe_float(lineage_row.get("risk_per_contract"))
         volume = _safe_float(row.get("volume"))
         risk_amount = risk_per_contract * volume if risk_per_contract > 0 and volume > 0 else np.nan
-        stop_distance = _safe_float(lineage_row.get("stop_distance"))
+        planned_stop_distance = _safe_float(lineage_row.get("planned_stop_distance"))
+        actual_stop_distance = _safe_float(lineage_row.get("actual_stop_distance"))
         realized_pnl = _safe_float(row.get("realized_pnl"), 0.0)
         size = _safe_float(lineage_row.get("size"), _safe_float(row.get("size")))
         enriched_rows.append(
@@ -743,9 +783,16 @@ def build_complete_closed_lot_lineage(
                 "lineage_source_id": lineage_row["source_id"],
                 "source_selected_volume": lineage_row["source_selected_volume"],
                 "stop_price": lineage_row["stop_price"],
-                "stop_distance": stop_distance,
+                "planned_entry_price": lineage_row["planned_entry_price"],
+                "actual_entry_price": lineage_row["actual_entry_price"],
+                "planned_stop_distance": planned_stop_distance,
+                "actual_stop_distance": actual_stop_distance,
+                "stop_distance": planned_stop_distance,
+                "planned_entry_risk_distance_pct": lineage_row["planned_entry_risk_distance_pct"],
                 "entry_risk_distance_pct": lineage_row["entry_risk_distance_pct"],
+                "planned_risk_per_contract": lineage_row["planned_risk_per_contract"],
                 "risk_per_contract": risk_per_contract,
+                "actual_risk_recomputed": lineage_row["actual_risk_recomputed"],
                 "risk_amount": risk_amount,
                 "r_multiple": realized_pnl / risk_amount if risk_amount > 0 else np.nan,
             }
@@ -760,6 +807,10 @@ def build_complete_closed_lot_lineage(
         "rollover_reopen_count": int(lineage["attempt_kind"].eq("rollover_reopen").sum()),
         "unclassified_open_count": int(lineage["attempt_kind"].eq("unclassified").sum()),
         "orphan_open_count": int(lineage["parent_event_id"].astype(str).eq("").sum()),
+        "actual_risk_recomputed_open_count": int(lineage["actual_risk_recomputed"].eq(1).sum()),
+        "actual_risk_missing_open_ids": lineage.loc[
+            lineage["actual_risk_recomputed"].ne(1), "open_trade_id"
+        ].astype(str).tolist(),
         "risk_source_audit": risk_audit,
         "candidate_source_audit": candidate_audit,
     }
@@ -791,11 +842,28 @@ def aggregate_entry_events(closed_lots: pd.DataFrame) -> tuple[pd.DataFrame, dic
         data["attempt_kind"] = "flat_entry"
     data["entry_date"] = pd.to_datetime(data["entry_date"], errors="coerce").dt.normalize()
     data["exit_date"] = pd.to_datetime(data["exit_date"], errors="coerce").dt.normalize()
-    for column in ["entry_price", "volume", "risk_amount", "realized_pnl", "stop_distance"]:
+    for column in [
+        "entry_price",
+        "volume",
+        "risk_amount",
+        "realized_pnl",
+        "stop_distance",
+        "actual_stop_distance",
+    ]:
+        if column not in data.columns:
+            data[column] = np.nan
         data[column] = pd.to_numeric(data[column], errors="coerce")
     data = data.dropna(subset=["open_trade_id", "parent_event_id", "entry_date", "entry_price", "risk_amount", "realized_pnl"])
 
-    consistency_columns = ["vt_symbol", "product", "direction", "entry_date", "entry_price", "stop_distance"]
+    consistency_columns = [
+        "vt_symbol",
+        "product",
+        "direction",
+        "entry_date",
+        "entry_price",
+        "stop_distance",
+        "actual_stop_distance",
+    ]
     inconsistent_groups: list[str] = []
     rows: list[dict[str, Any]] = []
     for parent_event_id, group in data.groupby("parent_event_id", sort=False):
@@ -823,6 +891,8 @@ def aggregate_entry_events(closed_lots: pd.DataFrame) -> tuple[pd.DataFrame, dic
                 "realized_pnl": realized_pnl,
                 "r_multiple": realized_pnl / risk_amount if risk_amount > 0 else np.nan,
                 "stop_distance": float(initial["stop_distance"].iloc[0]),
+                "planned_stop_distance": float(initial["stop_distance"].iloc[0]),
+                "actual_stop_distance": float(initial["actual_stop_distance"].iloc[0]),
                 "closed_lot_count": int(len(group)),
                 "attempt_count": int(group["open_trade_id"].astype(str).nunique()),
                 "retry_attempt_count": int(group.loc[group["attempt_kind"].eq("stop_retry"), "open_trade_id"].nunique()),
@@ -1524,6 +1594,7 @@ def main() -> None:
         trades,
         entry_risk,
         entry_candidates,
+        priceticks=metadata.get("priceticks", {}),
     )
     assert_no_ai_features(closed)
     events, aggregation_audit = aggregate_entry_events(closed)

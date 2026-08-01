@@ -92,6 +92,10 @@ def test_partition_event_outputs_never_exports_future_outcomes() -> None:
             "realized_pnl": [10.0, 1e9, -1e9],
             "r_multiple": [1.0, 1e8, -1e8],
             "initial_pnl": [10.0, 1e9, -1e9],
+            "exit_date": pd.to_datetime(["2022-02-01", "2023-02-01", "2025-02-01"]),
+            "attempt_count": [1, 2, 3],
+            "retry_attempt_count": [0, 1, 2],
+            "exit_reason_count": [1, 2, 3],
         }
     )
 
@@ -106,6 +110,8 @@ def test_partition_event_outputs_never_exports_future_outcomes() -> None:
 
     mutated = frame.copy()
     mutated.loc[mutated["sample_segment"] != "discovery", ["realized_pnl", "r_multiple", "initial_pnl"]] *= -999.0
+    mutated.loc[mutated["sample_segment"] != "discovery", "exit_date"] += pd.Timedelta(days=999)
+    mutated.loc[mutated["sample_segment"] != "discovery", ["attempt_count", "retry_attempt_count", "exit_reason_count"]] += 999
     _, changed_seal = s008.partition_event_outputs(mutated)
     assert changed_seal["feature_only_sha256"] == future_seal["feature_only_sha256"]
 
@@ -324,3 +330,61 @@ def test_volume_mismatch_requires_exact_causal_forced_margin_deleverage_event() 
         bad.loc[0, column] = value
         with pytest.raises(RuntimeError, match="unexplained source volume mismatch"):
             s008.audit_source_volume_mismatches(lineage, bad)
+
+
+def test_forced_margin_event_cannot_explain_two_volume_mismatches() -> None:
+    lineage = pd.DataFrame(
+        [
+            {
+                "open_trade_id": trade_id,
+                "vt_symbol": "SM101.CZCE",
+                "direction": "long",
+                "source_datetime": "2020-11-25 00:00:00+08:00",
+                "volume": 4.0,
+                "source_selected_volume": 23.0,
+                "attempt_kind": "flat_entry",
+            }
+            for trade_id in ["T1", "T2"]
+        ]
+    )
+    events = pd.DataFrame(
+        [
+            {
+                "date": "2020-11-25",
+                "vt_symbol": "SM101.CZCE",
+                "position_direction": "long",
+                "reason": "forced_margin_deleverage",
+                "volume": 19.0,
+            }
+        ]
+    )
+
+    with pytest.raises(RuntimeError, match="unexplained source volume mismatch"):
+        s008.audit_source_volume_mismatches(lineage, events)
+
+
+def test_volume_mismatch_rejects_duplicate_exact_forced_margin_events() -> None:
+    lineage = pd.DataFrame(
+        [
+            {
+                "open_trade_id": "T1",
+                "vt_symbol": "SM101.CZCE",
+                "direction": "long",
+                "source_datetime": "2020-11-25 00:00:00+08:00",
+                "volume": 4.0,
+                "source_selected_volume": 23.0,
+                "attempt_kind": "flat_entry",
+            }
+        ]
+    )
+    duplicate_event = {
+        "date": "2020-11-25",
+        "vt_symbol": "SM101.CZCE",
+        "position_direction": "long",
+        "reason": "forced_margin_deleverage",
+        "volume": 19.0,
+    }
+    events = pd.DataFrame([duplicate_event, duplicate_event])
+
+    with pytest.raises(RuntimeError, match="unexplained source volume mismatch"):
+        s008.audit_source_volume_mismatches(lineage, events)

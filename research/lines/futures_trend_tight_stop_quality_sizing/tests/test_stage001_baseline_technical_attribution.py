@@ -199,7 +199,7 @@ class Stage001AttributionTests(unittest.TestCase):
         module = load_module()
         trades = pd.DataFrame(
             [
-                {"trade_id": "BACKTESTING.75", "order_id": "BACKTESTING.61", "datetime": "2020-07-24 00:00:00+08:00", "vt_symbol": "ru2009.SHFE", "direction": "Long", "offset": "Open", "volume": 3},
+                {"trade_id": "BACKTESTING.75", "order_id": "BACKTESTING.61", "datetime": "2020-07-24 00:00:00+08:00", "vt_symbol": "ru2009.SHFE", "direction": "Long", "offset": "Open", "price": 10610.0, "volume": 3},
                 {"trade_id": "BACKTESTING.81", "order_id": "BACKTESTING.67", "datetime": "2020-08-06 00:00:00+08:00", "vt_symbol": "ru2009.SHFE", "direction": "Short", "offset": "Close", "volume": 3, "exit_reason": "forced_margin_deleverage"},
             ]
         )
@@ -224,9 +224,100 @@ class Stage001AttributionTests(unittest.TestCase):
         self.assertEqual(row["layer_kind"], "base")
         self.assertEqual(float(row["selected_volume"]), 3.0)
         self.assertEqual(float(row["stop_distance"]), 85.0)
-        self.assertEqual(float(row["risk_amount"]), 2550.0)
-        self.assertAlmostEqual(float(row["r_multiple"]), 9300.0 / 2550.0)
+        self.assertEqual(float(row["planned_stop_distance"]), 85.0)
+        self.assertEqual(float(row["actual_stop_distance"]), 80.0)
+        self.assertEqual(float(row["risk_amount"]), 2400.0)
+        self.assertAlmostEqual(float(row["r_multiple"]), 9300.0 / 2400.0)
+        self.assertEqual(int(row["actual_risk_recomputed"]), 1)
         self.assertEqual(audit["risk_source_audit"]["unmatched_source_ids"], ["32"])
+
+    def test_actual_fill_risk_does_not_replace_signal_time_planned_stop_feature(self) -> None:
+        module = load_module()
+        trades = pd.DataFrame(
+            [
+                {
+                    "trade_id": "T1",
+                    "order_id": "O1",
+                    "datetime": "2025-01-03 00:00:00+08:00",
+                    "vt_symbol": "rb2505.SHFE",
+                    "direction": "Long",
+                    "offset": "Open",
+                    "price": 100.0,
+                    "volume": 2,
+                },
+                {
+                    "trade_id": "C1",
+                    "order_id": "C-O1",
+                    "datetime": "2025-01-10 00:00:00+08:00",
+                    "vt_symbol": "rb2505.SHFE",
+                    "direction": "Short",
+                    "offset": "Close",
+                    "price": 110.0,
+                    "volume": 2,
+                },
+            ]
+        )
+        risks = pd.DataFrame(
+            [
+                {
+                    "entry_index": 1,
+                    "datetime": "2025-01-02 00:00:00+08:00",
+                    "contract_vt_symbol": "rb2505.SHFE",
+                    "product_vt_symbol": "rb.SHFE",
+                    "direction": "long",
+                    "volume": 2,
+                    "selected_volume": 2,
+                    "entry_context": "flat_entry",
+                    "planned_entry_price": 105.0,
+                    "stop_price": 90.0,
+                    "stop_distance": 15.0,
+                    "size": 10,
+                    "risk_per_contract": 150.0,
+                }
+            ]
+        )
+        lots = pd.DataFrame(
+            [
+                {
+                    "open_trade_id": "T1",
+                    "close_trade_id": "C1",
+                    "vt_symbol": "rb2505.SHFE",
+                    "product": "rb.SHFE",
+                    "direction": "long",
+                    "entry_date": "2025-01-03",
+                    "exit_date": "2025-01-10",
+                    "entry_price": 100.0,
+                    "volume": 2.0,
+                    "size": 10,
+                    "realized_pnl": 200.0,
+                    "risk_amount": 300.0,
+                    "risk_per_contract": 150.0,
+                    "r_multiple": 2.0 / 3.0,
+                    "stop_distance": 15.0,
+                    "entry_context": "flat_entry",
+                }
+            ]
+        )
+
+        enriched, lineage, audit = module.build_complete_closed_lot_lineage(
+            lots,
+            trades,
+            risks,
+            pd.DataFrame(),
+            priceticks={"rb2505.SHFE": 1.0},
+        )
+        row = enriched.iloc[0]
+        lineage_row = lineage.iloc[0]
+
+        self.assertEqual(float(row["planned_stop_distance"]), 15.0)
+        self.assertEqual(float(row["stop_distance"]), 15.0)
+        self.assertEqual(float(row["actual_stop_distance"]), 10.0)
+        self.assertEqual(float(row["risk_per_contract"]), 100.0)
+        self.assertEqual(float(row["risk_amount"]), 200.0)
+        self.assertEqual(float(row["r_multiple"]), 1.0)
+        self.assertEqual(float(lineage_row["actual_entry_price"]), 100.0)
+        self.assertEqual(int(lineage_row["actual_risk_recomputed"]), 1)
+        self.assertEqual(audit["actual_risk_recomputed_open_count"], 1)
 
     def test_feature_cutoff_is_strictly_before_entry(self) -> None:
         module = load_module()

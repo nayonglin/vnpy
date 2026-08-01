@@ -94,12 +94,20 @@ BIN_FEATURES = (
     "directional_efficiency20",
     "atr14_to_prior60_median",
 )
-FUTURE_OUTCOME_COLUMNS = (
-    "realized_pnl",
-    "r_multiple",
-    "initial_pnl",
-    "retry_pnl",
-    "rollover_pnl",
+FUTURE_FEATURE_SEAL_COLUMNS = (
+    "open_trade_id",
+    "vt_symbol",
+    "product",
+    "direction",
+    "entry_date",
+    "feature_date",
+    "feature_bar_count",
+    "planned_stop_distance",
+    "stop_atr14",
+    *NEW_FEATURE_COLUMNS,
+    "entry_year",
+    "sample_segment",
+    "feature_future_violation",
 )
 FRAME_HASH_CONTRACT = {
     "format": "csv_utf8",
@@ -204,17 +212,25 @@ def partition_event_outputs(events: pd.DataFrame) -> tuple[pd.DataFrame, dict[st
     if "sample_segment" not in events.columns:
         raise ValueError("events missing sample_segment")
     discovery = events.loc[events["sample_segment"].astype(str).eq("discovery")].copy()
-    future_features = events.loc[~events["sample_segment"].astype(str).eq("discovery")].drop(
-        columns=[column for column in FUTURE_OUTCOME_COLUMNS if column in events.columns]
-    )
+    seal_columns = [column for column in FUTURE_FEATURE_SEAL_COLUMNS if column in events.columns]
+    future_features = events.loc[
+        ~events["sample_segment"].astype(str).eq("discovery"), seal_columns
+    ].copy()
     seal = {
         "row_count": int(len(future_features)),
         "feature_only_sha256": _frame_sha256(future_features),
         "feature_hash_contract": FRAME_HASH_CONTRACT,
         "segments": future_features["sample_segment"].value_counts().sort_index().to_dict(),
         "outcome_columns_removed": True,
+        "feature_allowlist_enforced": True,
+        "feature_columns": seal_columns,
         "future_row_data_exported": False,
-        "purpose": "Stage009 规则预声明前不读取验证期和留出期的特征-收益关系。",
+        "purpose": (
+            "Stage009 规则预声明前不联表后段特征与收益；完整基准结果已单独持久化，"
+            "因此该 seal 不是未见 OOS 证明。"
+        ),
+        "true_oos_claim": False,
+        "full_period_baseline_outcomes_persisted": True,
     }
     return discovery, seal
 
@@ -676,9 +692,13 @@ def audit_source_volume_mismatches(lineage: pd.DataFrame, trade_events: pd.DataF
     forced["event_direction"] = forced["position_direction"].astype(str).str.lower()
     forced["event_volume"] = pd.to_numeric(forced["volume"], errors="coerce")
     forced = forced.loc[forced["reason"].astype(str).eq("forced_margin_deleverage")].copy()
+    forced.reset_index(drop=False, inplace=True)
+    forced.rename(columns={"index": "forced_event_source_index"}, inplace=True)
+    forced["forced_event_id"] = np.arange(len(forced), dtype=int)
 
     evidence_rows: list[dict[str, Any]] = []
     explained_flags: list[bool] = []
+    used_forced_event_ids: set[int] = set()
     for row in mismatch.to_dict("records"):
         source_date = pd.to_datetime(row.get("source_datetime"), errors="coerce", utc=True)
         if pd.notna(source_date):
@@ -687,10 +707,20 @@ def audit_source_volume_mismatches(lineage: pd.DataFrame, trade_events: pd.DataF
             forced["event_date"].eq(source_date)
             & forced["vt_symbol"].astype(str).eq(str(row.get("vt_symbol", "")))
             & forced["event_direction"].eq(str(row.get("direction", "")).lower())
+            & ~forced["forced_event_id"].isin(used_forced_event_ids)
         ]
-        forced_volume = float(matching["event_volume"].sum()) if not matching.empty else 0.0
         difference = _safe_float(row.get("volume_difference"))
-        exact = bool(difference > 0 and len(matching) > 0 and abs(forced_volume - difference) <= 1e-8)
+        exact_rows = matching.loc[(matching["event_volume"] - difference).abs().le(1e-8)].copy()
+        exact = bool(difference > 0 and len(exact_rows) == 1)
+        selected_event_id: int | None = None
+        forced_volume = 0.0
+        forced_event_source_index: int | None = None
+        if exact:
+            selected = exact_rows.sort_values(["forced_event_id"]).iloc[0]
+            selected_event_id = int(selected["forced_event_id"])
+            used_forced_event_ids.add(selected_event_id)
+            forced_volume = float(selected["event_volume"])
+            forced_event_source_index = int(selected["forced_event_source_index"])
         explained_flags.append(exact)
         evidence_rows.append(
             {
@@ -701,7 +731,10 @@ def audit_source_volume_mismatches(lineage: pd.DataFrame, trade_events: pd.DataF
                 "planned_volume": _safe_float(row.get("planned_volume")),
                 "actual_volume": _safe_float(row.get("actual_volume")),
                 "planned_minus_actual_volume": difference,
-                "forced_event_row_count": int(len(matching)),
+                "eligible_unused_forced_event_count": int(len(matching)),
+                "exact_unused_forced_event_count": int(len(exact_rows)),
+                "forced_event_id": selected_event_id,
+                "forced_event_source_index": forced_event_source_index,
                 "forced_event_volume": forced_volume,
                 "exact_causal_match": exact,
             }
@@ -714,6 +747,7 @@ def audit_source_volume_mismatches(lineage: pd.DataFrame, trade_events: pd.DataF
         "explained_mismatch_count": int(mismatch["explained"].sum()) if not mismatch.empty else 0,
         "unexplained_mismatch_count": int(len(unexplained)),
         "exact_causal_event_count": int(sum(explained_flags)),
+        "consumed_forced_event_count": int(len(used_forced_event_ids)),
         "max_planned_minus_actual_volume": float(mismatch["volume_difference"].max()) if not mismatch.empty else 0.0,
         "mismatch_open_trade_ids": mismatch["open_trade_id"].astype(str).tolist(),
         "unexplained_open_trade_ids": unexplained["open_trade_id"].astype(str).tolist(),
@@ -986,7 +1020,15 @@ def main() -> None:
         attribution_trades,
         raw_frames.get("entry_risk", pd.DataFrame()),
         raw_frames.get("entry_candidates", pd.DataFrame()),
+        priceticks=metadata.get("priceticks", {}),
     )
+    risk_bearing = open_lineage[open_lineage["attempt_kind"].astype(str).isin(["flat_entry", "stop_retry"])]
+    missing_actual_risk = risk_bearing[risk_bearing["actual_risk_recomputed"].ne(1)]
+    if not missing_actual_risk.empty:
+        raise RuntimeError(
+            "risk-bearing opens missing actual fill risk: "
+            + repr(missing_actual_risk["open_trade_id"].astype(str).tolist())
+        )
     risk_source_audit = lineage_audit["risk_source_audit"]
     candidate_source_audit = lineage_audit["candidate_source_audit"]
     if int(risk_source_audit.get("unmatched_root_open_count", 1)) != 0:
@@ -1073,12 +1115,20 @@ def main() -> None:
         "database_unchanged": True,
         "future_feature_seal": future_seal,
         "baseline_summary": summary_row,
-        "decision": "stage008_pending_independent_review",
+        "decision": "stage008_baseline_verified_historical_path_no_true_oos_claim",
         "stage009_allowed": False,
+        "stage009_historical_locked_evaluation_allowed": True,
+        "true_oos_available": False,
         "overfit_before": "中高但受控：沿用昨晚机制方向，旧结果清零；特征、切分和阈值生成方式在重跑前冻结。",
-        "overfit_after": "待独立 agent 复核；当前仅展示 discovery 特征收益分箱，未读取 validation/holdout 特征收益关系。",
+        "overfit_after": (
+            "高：独立复核确认基准数字可信，但全期基准结果已持久化；后段只能作为"
+            "分钟新特征预声明后的历史锁定评估，不能称为真正 OOS。"
+        ),
         "continue_before": "有价值：先确认主策略真实路径、亏损阶段和紧止损趋势位置是否存在稳定统计结构。",
-        "continue_after": "待独立 agent 审核证据完整性后决定是否预声明唯一 Stage009 候选。",
+        "continue_after": (
+            "有价值：允许继续分钟新特征的历史锁定评估，但降低证据等级；最终晋级仍需"
+            "2026-06-30 后 forward 数据。"
+        ),
         "external_research": EXTERNAL_RESEARCH,
     }
 
@@ -1116,7 +1166,10 @@ def main() -> None:
                 f"- 正式版本：`{OFFICIAL_LIVE_VERSION}`",
                 f"- 决策：`{decision['decision']}`",
                 "- 本轮未改变策略，未读取 Stage001-004 旧输出，未新增 AI 特征。",
-                "- validation/holdout 的逐行特征与结果均不落盘；仅保存移除结果列后的不可逆特征 hash。",
+                (
+                    "- 后段新特征逐行数据不落盘，仅保存白名单特征 hash；完整基准 daily/trades/closed-lots "
+                    "结果已持久化，因此后段只属于历史锁定评估，不构成真正未见 OOS。"
+                ),
                 "",
                 "## 主策略基线",
                 "",
