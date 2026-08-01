@@ -173,6 +173,93 @@ def _query_complete(query: Any) -> bool:
     )
 
 
+def _validate_v2_connection_generation(
+    *,
+    readonly_summary: dict[str, Any],
+    summary_bundle: dict[str, Any],
+    manifest_account: dict[str, Any],
+    summary_account: dict[str, Any],
+    trading_day: str,
+    generation_uuid: str,
+) -> tuple[bool, str, str, str]:
+    """Prove every v2 readonly component belongs to one CTP connection epoch."""
+
+    if (
+        manifest_account.get("trading_account_response_match") is not True
+        or summary_account.get("trading_account_response_match") is not True
+    ):
+        return (
+            False,
+            "broker_query_bundle_trading_account_binding_mismatch",
+            trading_day,
+            generation_uuid,
+        )
+
+    snapshot_generation = _clean(
+        summary_bundle.get("snapshot_connection_generation")
+    )
+    snapshot_generations = summary_bundle.get(
+        "snapshot_connection_generations"
+    )
+    required_snapshot_components = (
+        "settlement",
+        "account",
+        "contracts",
+        "orders",
+        "trades",
+        "positions",
+    )
+    if (
+        not snapshot_generation
+        or not isinstance(snapshot_generations, dict)
+        or summary_bundle.get("full_snapshot_current_generation") is not True
+        or any(
+            _clean(snapshot_generations.get(name)) != snapshot_generation
+            for name in required_snapshot_components
+        )
+    ):
+        return (
+            False,
+            "broker_query_bundle_snapshot_connection_generation_mismatch",
+            trading_day,
+            generation_uuid,
+        )
+
+    lifecycle = readonly_summary.get("connection_lifecycle")
+    if not isinstance(lifecycle, dict):
+        return (
+            False,
+            "broker_query_bundle_connection_lifecycle_missing",
+            trading_day,
+            generation_uuid,
+        )
+    lifecycle_snapshots = lifecycle.get("snapshot_connection_generations")
+    query_generations = lifecycle.get("query_connection_generations")
+    if (
+        _clean(lifecycle.get("current_connection_generation"))
+        != snapshot_generation
+        or _clean(lifecycle.get("readiness_generation"))
+        != snapshot_generation
+        or not isinstance(lifecycle_snapshots, dict)
+        or any(
+            _clean(lifecycle_snapshots.get(name)) != snapshot_generation
+            for name in required_snapshot_components
+        )
+        or not isinstance(query_generations, dict)
+        or any(
+            _clean(query_generations.get(name)) != snapshot_generation
+            for name in ("orders", "trades", "positions")
+        )
+    ):
+        return (
+            False,
+            "broker_query_bundle_connection_lifecycle_mismatch",
+            trading_day,
+            generation_uuid,
+        )
+    return True, "", trading_day, generation_uuid
+
+
 def validate_readonly_query_bundle(
     *,
     readonly_summary: dict[str, Any],
@@ -191,10 +278,14 @@ def validate_readonly_query_bundle(
     summary_bundle = readonly_summary.get("broker_query_bundle")
     if not isinstance(summary_bundle, dict):
         return False, "broker_query_bundle_summary_missing", "", ""
-    if _to_int(bundle_manifest.get("schema_version"), 0) != 1:
+    manifest_schema = _to_int(bundle_manifest.get("schema_version"), 0)
+    summary_schema = _to_int(summary_bundle.get("schema_version"), 0)
+    if manifest_schema not in {1, 2}:
         return False, "broker_query_bundle_manifest_schema_invalid", "", ""
-    if _to_int(summary_bundle.get("schema_version"), 0) != 1:
+    if summary_schema not in {1, 2}:
         return False, "broker_query_bundle_summary_schema_invalid", "", ""
+    if manifest_schema != summary_schema:
+        return False, "broker_query_bundle_schema_mismatch", "", ""
 
     generation_uuid = _clean(bundle_manifest.get("generation_uuid"))
     summary_generation = _clean(summary_bundle.get("generation_uuid"))
@@ -261,6 +352,27 @@ def validate_readonly_query_bundle(
         or summary_account.get("response_account_match") is not True
     ):
         return False, "broker_query_bundle_account_binding_mismatch", trading_day, generation_uuid
+    if manifest_schema == 2:
+        (
+            connection_generation_ok,
+            connection_generation_reason,
+            _,
+            _,
+        ) = _validate_v2_connection_generation(
+            readonly_summary=readonly_summary,
+            summary_bundle=summary_bundle,
+            manifest_account=manifest_account,
+            summary_account=summary_account,
+            trading_day=trading_day,
+            generation_uuid=generation_uuid,
+        )
+        if not connection_generation_ok:
+            return (
+                False,
+                connection_generation_reason,
+                trading_day,
+                generation_uuid,
+            )
 
     manifest_queries = bundle_manifest.get("queries")
     summary_queries = summary_bundle.get("queries")
@@ -277,7 +389,12 @@ def validate_readonly_query_bundle(
         "error_rows",
         "complete",
     )
-    for name in ("orders", "trades", "positions"):
+    query_names = (
+        ("orders", "trades", "positions", "account", "contracts")
+        if manifest_schema == 2
+        else ("orders", "trades", "positions")
+    )
+    for name in query_names:
         manifest_query = manifest_queries.get(name)
         summary_query = summary_queries.get(name)
         if not _query_complete(manifest_query) or not _query_complete(summary_query):
@@ -307,7 +424,7 @@ def validate_readonly_query_bundle(
             )
     query_reqids = [
         _to_int(manifest_queries[name].get("reqid"), 0)
-        for name in ("orders", "trades", "positions")
+        for name in query_names
     ]
     if not all(query_reqids) or len(set(query_reqids)) != len(query_reqids):
         return (
@@ -321,16 +438,20 @@ def validate_readonly_query_bundle(
             _parse_time(manifest_queries[name].get("request_sent_at")),
             _parse_time(manifest_queries[name].get("completed_at")),
         )
-        for name in ("orders", "trades", "positions")
+        for name in query_names
     }
     if any(
         next_request is None
         or prior_completed is None
         or (next_request - prior_completed).total_seconds()
         < -MAX_CLOCK_SKEW_SECONDS
+        for prior_name, next_name in zip(
+            query_names,
+            query_names[1:],
+            strict=False,
+        )
         for prior_completed, next_request in (
-            (query_times["orders"][1], query_times["trades"][0]),
-            (query_times["trades"][1], query_times["positions"][0]),
+            (query_times[prior_name][1], query_times[next_name][0]),
         )
     ):
         return (

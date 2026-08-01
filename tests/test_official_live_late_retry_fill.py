@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from pathlib import Path
+from copy import deepcopy
 import json
 import os
 import sys
@@ -167,6 +168,82 @@ class LateRetryFillReconciliationTest(unittest.TestCase):
             },
         }
 
+    def summary_v2(self) -> dict:
+        summary = deepcopy(self.summary())
+        bundle = summary["broker_query_bundle"]
+        bundle["schema_version"] = 2
+        bundle["account"]["trading_account_response_match"] = True
+        query = {
+            "request_sent": True,
+            "request_return_code": 0,
+            "callback_count": 1,
+            "data_callback_count": 1,
+            "last_seen": True,
+            "error_rows": 0,
+            "complete": True,
+        }
+        bundle["queries"]["account"] = {
+            **query,
+            "reqid": 104,
+            "request_sent_at": self.iso(
+                self.evidence_at + timedelta(seconds=7)
+            ),
+            "completed_at": self.iso(
+                self.evidence_at + timedelta(seconds=8)
+            ),
+        }
+        bundle["queries"]["contracts"] = {
+            **query,
+            "reqid": 105,
+            "request_sent_at": self.iso(
+                self.evidence_at + timedelta(seconds=9)
+            ),
+            "completed_at": self.iso(
+                self.evidence_at + timedelta(seconds=10)
+            ),
+        }
+        connection_generation = "ctp-connection-v2"
+        components = (
+            "settlement",
+            "account",
+            "contracts",
+            "orders",
+            "trades",
+            "positions",
+        )
+        snapshot_generations = {
+            name: connection_generation for name in components
+        }
+        bundle.update(
+            {
+                "snapshot_connection_generation": connection_generation,
+                "snapshot_connection_generations": snapshot_generations,
+                "full_snapshot_current_generation": True,
+            }
+        )
+        summary["connection_lifecycle"] = {
+            "current_connection_generation": connection_generation,
+            "readiness_generation": connection_generation,
+            "snapshot_connection_generations": snapshot_generations,
+            "query_connection_generations": {
+                name: connection_generation
+                for name in ("orders", "trades", "positions")
+            },
+        }
+        return summary
+
+    def manifest_v2(self, summary: dict | None = None) -> dict:
+        effective_summary = summary or self.summary_v2()
+        manifest = self.manifest(effective_summary)
+        manifest["schema_version"] = 2
+        manifest["queries"] = {
+            name: dict(value)
+            for name, value in effective_summary["broker_query_bundle"][
+                "queries"
+            ].items()
+        }
+        return manifest
+
     def evidence(self) -> dict:
         return {
             "artifacts": {
@@ -282,6 +359,28 @@ class LateRetryFillReconciliationTest(unittest.TestCase):
         self.assertEqual(1, event["broker_reconciled_late_retry_fill"])
         self.assertEqual(self.iso(self.send_at), event["generated_at"])
         self.assertEqual(self.iso(self.fill_at), event["broker_trade_at"])
+
+    def test_stage174_v2_connection_generation_bundle_is_accepted(self) -> None:
+        summary = self.summary_v2()
+        result = self.decide(
+            summary=summary,
+            manifest=self.manifest_v2(summary),
+        )
+
+        self.assertEqual("reconciled", result["status"])
+
+    def test_stage174_v2_mixed_connection_generation_is_blocked(self) -> None:
+        summary = self.summary_v2()
+        summary["connection_lifecycle"]["query_connection_generations"][
+            "trades"
+        ] = "stale-connection"
+        result = self.decide(
+            summary=summary,
+            manifest=self.manifest_v2(summary),
+        )
+
+        self.assertEqual("blocked", result["status"])
+        self.assertIn("connection_lifecycle_mismatch", result["reason"])
 
     def test_manual_reopen_order_id_is_not_adopted(self) -> None:
         result = self.decide(base=self.base(orderids=["CTP.manual-reopen"]))
