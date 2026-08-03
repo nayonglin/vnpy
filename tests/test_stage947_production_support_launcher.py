@@ -333,6 +333,29 @@ print("CONTRACT=" + json.dumps({
         self.assertNotIn("Traceback", json.dumps(payload))
         notify.assert_called_once()
 
+    def test_outer_failure_notification_uses_installed_release_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest_path = Path(directory) / "release-manifest.json"
+            manifest_path.write_text(
+                json.dumps({"source_commit": "d" * 40}),
+                encoding="utf-8",
+            )
+            with patch.object(
+                launcher,
+                "PRODUCTION_RELEASE_MANIFEST",
+                manifest_path,
+            ):
+                notify, _payload, exit_code = self._invoke_main_failure(
+                    job="postclose-report",
+                    error=launcher.ProductionSupportLaunchError(
+                        "production_support_postclose_pipeline_receipt_missing",
+                        boundary="postclose-pipeline-watchdog",
+                    ),
+                )
+
+        self.assertEqual(2, exit_code)
+        self.assertEqual("d" * 40, notify.call_args.kwargs["release_commit"])
+
     def test_monthly_five_owned_email_statuses_do_not_duplicate_fallback(
         self,
     ) -> None:

@@ -92,6 +92,70 @@ class OfficialLivePostclosePipelineTest(unittest.TestCase):
         retried["retry_of"] = "d" * 32
         self.assertFalse(pipeline.postclose_pipeline_retry_eligible(retried))
 
+    def test_retry_identity_cannot_change_at_finalization(self) -> None:
+        payload = pipeline.new_postclose_pipeline_receipt(
+            pipeline_run_id="a" * 32,
+            schedule_date="2026-08-03",
+            target_date="2026-08-03",
+            source_commit="b" * 40,
+            manifest_sha256="c" * 64,
+            generated_at_utc="2026-08-03T10:20:00Z",
+            retry_of="d" * 32,
+        )
+        for stage, status in (
+            ("resolve-target", "succeeded"),
+            ("refresh-market-data", "succeeded"),
+            ("check-monthly-ai-pool", "succeeded"),
+            ("refresh-monthly-ai-pool", "failed"),
+        ):
+            payload = pipeline.record_postclose_pipeline_stage(
+                payload,
+                stage=stage,
+                status=status,
+                started_at_utc="2026-08-03T10:20:00Z",
+                finished_at_utc="2026-08-03T10:20:01Z",
+                blocker=(
+                    "production_support_monthly_ai_pool_process_failed"
+                    if status == "failed"
+                    else ""
+                ),
+            )
+
+        with self.assertRaisesRegex(
+            pipeline.PostclosePipelineError,
+            "postclose_pipeline_retry_identity_mismatch",
+        ):
+            pipeline.finish_postclose_pipeline_receipt(
+                payload,
+                status="failed",
+                root_blocker="production_support_monthly_ai_pool_process_failed",
+                email_disposition={"notification_status": "sent"},
+                retry_of="e" * 32,
+                finished_at_utc="2026-08-03T10:20:02Z",
+            )
+
+    def test_success_requires_daily_receipt_and_report_digests(self) -> None:
+        payload = self._new()
+        for stage in pipeline.POSTCLOSE_PIPELINE_STAGES:
+            payload = pipeline.record_postclose_pipeline_stage(
+                payload,
+                stage=stage,
+                status="succeeded",
+                started_at_utc="2026-08-03T08:35:00Z",
+                finished_at_utc="2026-08-03T08:35:01Z",
+            )
+        with self.assertRaisesRegex(
+            pipeline.PostclosePipelineError,
+            "postclose_pipeline_success_evidence_incomplete",
+        ):
+            pipeline.finish_postclose_pipeline_receipt(
+                payload,
+                status="succeeded",
+                root_blocker="",
+                email_disposition={"notification_status": "report_email_sent"},
+                finished_at_utc="2026-08-03T08:35:02Z",
+            )
+
     def test_atomic_private_round_trip_rejects_identity_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory) / "state"

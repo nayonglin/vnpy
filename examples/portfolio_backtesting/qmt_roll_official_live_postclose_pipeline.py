@@ -254,11 +254,18 @@ def finish_postclose_pipeline_receipt(
         for row in rows[POSTCLOSE_PIPELINE_STAGES.index(root_stage) + 1 :]:
             if row["status"] == "pending":
                 row["status"] = "skipped_upstream_failed"
+    if retry_of != str(current.get("retry_of", "")):
+        raise PostclosePipelineError("postclose_pipeline_retry_identity_mismatch")
     if retry_of and not _RUN_ID_RE.fullmatch(retry_of):
         raise PostclosePipelineError("postclose_pipeline_payload_invalid")
     for digest in (daily_data_receipt_sha256, report_summary_sha256):
         if digest and not _SHA256_RE.fullmatch(digest):
             raise PostclosePipelineError("postclose_pipeline_payload_invalid")
+    if status == "succeeded" and (
+        not _SHA256_RE.fullmatch(daily_data_receipt_sha256)
+        or not _SHA256_RE.fullmatch(report_summary_sha256)
+    ):
+        raise PostclosePipelineError("postclose_pipeline_success_evidence_incomplete")
     result = {
         **current,
         "status": status,

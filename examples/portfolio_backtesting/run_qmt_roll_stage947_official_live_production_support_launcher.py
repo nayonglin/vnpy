@@ -761,7 +761,7 @@ def _run_postclose_pipeline(
             record(
                 "resolve-target",
                 "succeeded",
-                outputs={"target_date": target_date},
+                outputs={"initial_target_date": target_date},
             )
             current_stage = "refresh-market-data"
             market = _run_market_data_worker(
@@ -1261,6 +1261,18 @@ def _notify_support_failure(
     )
 
 
+def _release_commit_for_failure_notification() -> str:
+    try:
+        payload = json.loads(
+            PRODUCTION_RELEASE_MANIFEST.read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError, TypeError):
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    return str(payload.get("source_commit", "")).strip().lower()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
@@ -1285,6 +1297,7 @@ def main() -> None:
                 job=args.job,
                 boundary=exc.boundary,
                 blocker=blocker,
+                release_commit=_release_commit_for_failure_notification(),
             )
         _print_blocked(args.job, blocker)
         raise SystemExit(2)
@@ -1295,6 +1308,7 @@ def main() -> None:
                 job=args.job,
                 boundary="unexpected",
                 blocker=blocker,
+                release_commit=_release_commit_for_failure_notification(),
             )
         _print_blocked(args.job, blocker)
         raise SystemExit(2)
