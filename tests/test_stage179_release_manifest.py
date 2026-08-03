@@ -744,6 +744,20 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             builder.PRODUCTION_REQUIRED_TEST_SUITES,
         )
 
+    def test_postclose_pipeline_is_pinned_in_production_release_surface(self) -> None:
+        self.assertIn(
+            "examples/portfolio_backtesting/qmt_roll_official_live_postclose_pipeline.py",
+            builder.DEFAULT_CRITICAL_FILES,
+        )
+        self.assertIn(
+            "tests/test_official_live_postclose_pipeline.py",
+            builder.DEFAULT_CRITICAL_FILES,
+        )
+        self.assertIn(
+            "tests/test_official_live_postclose_pipeline.py",
+            builder.PRODUCTION_REQUIRED_TEST_SUITES,
+        )
+
     def validate(self, path: Path | None = None, *, profile: str = "offline") -> dict[str, object]:
         return load_and_validate_release_manifest(
             path or self.manifest_path,

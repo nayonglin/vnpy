@@ -135,6 +135,9 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
         report = payloads[
             "local.qmt-roll.official-live.15w.c9-production-live-postclose-report.plist"
         ]
+        monthly_retry = payloads[
+            "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool.plist"
+        ]
         precompute_minutes = {
             item["Hour"] * 60 + item["Minute"]
             for item in precompute["StartCalendarInterval"]
@@ -143,8 +146,13 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             item["Hour"] * 60 + item["Minute"]
             for item in report["StartCalendarInterval"]
         }
+        monthly_retry_minutes = {
+            item["Hour"] * 60 + item["Minute"]
+            for item in monthly_retry["StartCalendarInterval"]
+        }
         self.assertEqual({16 * 60 + 35}, precompute_minutes)
         self.assertEqual({16 * 60 + 55}, report_minutes)
+        self.assertEqual({18 * 60 + 20}, monthly_retry_minutes)
 
         health = payloads[
             "local.qmt-roll.official-live.15w.c9-production-live-health.plist"
