@@ -873,13 +873,17 @@ def _run_postclose_pipeline(
                 ),
             )
             report_summary_sha256 = str(report.get("_summary_sha256", ""))
-            record(
-                current_stage,
-                "succeeded",
+            now = _utc_now()
+            report_stage_receipt = record_postclose_pipeline_stage(
+                receipt,
+                stage=current_stage,
+                status="succeeded",
+                started_at_utc=now,
+                finished_at_utc=now,
                 outputs={"summary_sha256": report_summary_sha256},
             )
-            receipt = finish_postclose_pipeline_receipt(
-                receipt,
+            succeeded_receipt = finish_postclose_pipeline_receipt(
+                report_stage_receipt,
                 status="succeeded",
                 root_blocker="",
                 email_disposition={"notification_status": "report_email_sent"},
@@ -890,8 +894,9 @@ def _run_postclose_pipeline(
             )
             write_postclose_pipeline_receipt(
                 PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
-                receipt,
+                succeeded_receipt,
             )
+            receipt = succeeded_receipt
             return receipt
         except Exception as exc:
             blocker = normalize_official_live_failure_blocker(

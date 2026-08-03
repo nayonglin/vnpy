@@ -18,7 +18,7 @@
 - 新增脚本：无。
 - 修改脚本：
   - `build_qmt_roll_stage179_release_manifest.py`：把 `tests/test_stage935_ai_pool_path_consistency.py` 同时纳入 `PRODUCTION_REQUIRED_TEST_SUITES` 和 `DEFAULT_CRITICAL_FILES`。
-  - `run_qmt_roll_stage947_official_live_production_support_launcher.py`：先持久化 receipt candidate 再更新内存状态；resolver 前先落 provisional canonical receipt，resolver 失败可形成唯一 failed root receipt。
+  - `run_qmt_roll_stage947_official_live_production_support_launcher.py`：先持久化 receipt candidate 再更新内存状态；resolver 前先落 provisional canonical receipt，resolver 失败可形成唯一 failed root receipt；最后阶段成功与 terminal succeeded receipt 合并为一次事务写，最终写失败时仍能收口为 failed。
   - `qmt_roll_official_live_failure_notify.py`：拒绝把含 secret marker 的 `root_stage` 写入状态、邮件正文和 metadata。
   - 三份对应测试文件；另移除设计文档 EOF 多余空行。
 - 删除脚本：无。
@@ -36,9 +36,9 @@
 
 ## 结果
 
-- TDD RED：Stage935 专项测试未绑定 release surface；第二次 receipt 写失败后 latest 残留 `running`；resolver 失败后 watchdog 形成第二通知身份；secret sentinel 可进入 `root_stage`。
-- TDD GREEN：四个定向用例全部通过。
-- 相关完整回归：`109 passed, 56 subtests passed`。
+- TDD RED：Stage935 专项测试未绑定 release surface；第二次或最终 terminal receipt 写失败后 latest 残留 `running`；resolver 失败后 watchdog 形成第二通知身份；secret sentinel 可进入 `root_stage`。
+- TDD GREEN：五个定向用例全部通过。
+- 相关完整回归：`110 passed, 56 subtests passed`。
 - 期末权益：未新增、未修改、未删除；未运行回测。
 - 总收益：未新增、未修改、未删除；未运行回测。
 - 最大回撤：未新增、未修改、未删除；未运行回测。
@@ -54,7 +54,7 @@
 - summary：待新 HEAD 独立复审后生成私有 review artifact。
 - orders：无。
 - daily：无。
-- quality：`109 passed, 56 subtests passed`；`git diff --check` 待提交前复核。
+- quality：`110 passed, 56 subtests passed`；`git diff --check` 待提交前复核。
 
 ## 结论
 

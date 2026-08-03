@@ -1375,6 +1375,97 @@ print("CONTRACT=" + json.dumps({
         self.assertEqual("failed", receipt["stages"][0]["status"])
         self.assertEqual(1, notify.call_count)
 
+    def test_postclose_pipeline_transient_final_write_failure_finishes_failed(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "pipeline"
+            state.mkdir(mode=0o700)
+            receipt_path = state / "latest.json"
+            real_write = postclose_pipeline.write_postclose_pipeline_receipt
+
+            def fail_success_receipt(
+                path: Path,
+                payload: dict[str, object],
+            ) -> None:
+                if payload.get("status") == "succeeded":
+                    raise OSError("transient final receipt write failure")
+                real_write(path, payload)
+
+            with (
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT",
+                    receipt_path,
+                ),
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_LOCK",
+                    state / "pipeline.lock",
+                ),
+                patch.object(
+                    launcher,
+                    "_resolve_support_target_date",
+                    return_value=("2026-08-03", {}),
+                ),
+                patch.object(
+                    launcher,
+                    "_run_market_data_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_run_monthly_ai_pool_worker",
+                    return_value={
+                        "automation_status": "monthly_ai_pool_already_current",
+                        "resolved_target_date": "2026-08-03",
+                    },
+                ),
+                patch.object(
+                    launcher,
+                    "_run_precompute_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_issue_daily_data_receipt",
+                    return_value={
+                        "receipt_sha256": "d" * 64,
+                        "target_cutoff_date": "2026-08-03",
+                    },
+                ),
+                patch.object(
+                    launcher,
+                    "_run_postclose_report_worker",
+                    return_value={"_summary_sha256": "e" * 64},
+                ),
+                patch.object(
+                    launcher,
+                    "write_postclose_pipeline_receipt",
+                    side_effect=fail_success_receipt,
+                ),
+                patch.object(
+                    launcher,
+                    "_notify_support_failure",
+                    return_value={"notification_status": "sent"},
+                ) as notify,
+                self.assertRaises(launcher.ProductionSupportLaunchError),
+            ):
+                launcher._run_postclose_pipeline(
+                    environment={},
+                    manifest={
+                        "source_commit": "a" * 40,
+                        "manifest_sha256": "b" * 64,
+                    },
+                )
+
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+        self.assertEqual("failed", receipt["status"])
+        self.assertEqual("generate-postclose-report", receipt["root_stage"])
+        self.assertEqual("failed", receipt["stages"][-1]["status"])
+        self.assertEqual(1, notify.call_count)
+
     def test_pre_receipt_resolver_failure_has_one_canonical_root_notification(
         self,
     ) -> None:
