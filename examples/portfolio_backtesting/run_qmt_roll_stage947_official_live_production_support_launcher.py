@@ -668,7 +668,6 @@ def _run_postclose_pipeline(
     manifest: Mapping[str, Any],
     retry_of: str = "",
 ) -> dict[str, Any]:
-    target_date, _resolver = _resolve_support_target_date(environment)
     schedule_date = datetime.now().astimezone().date().isoformat()
     source_commit = str(manifest.get("source_commit", ""))
     manifest_sha256 = str(manifest.get("manifest_sha256", ""))
@@ -717,13 +716,16 @@ def _run_postclose_pipeline(
                     "production_support_postclose_retry_archive_invalid",
                     boundary="postclose-pipeline-retry",
                 ) from exc
+        pipeline_run_id = uuid.uuid4().hex
+        generated_at_utc = _utc_now()
+        target_date = schedule_date
         receipt = new_postclose_pipeline_receipt(
-            pipeline_run_id=uuid.uuid4().hex,
+            pipeline_run_id=pipeline_run_id,
             schedule_date=schedule_date,
             target_date=target_date,
             source_commit=source_commit,
             manifest_sha256=manifest_sha256,
-            generated_at_utc=_utc_now(),
+            generated_at_utc=generated_at_utc,
             retry_of=retry_of,
         )
         write_postclose_pipeline_receipt(
@@ -743,7 +745,7 @@ def _run_postclose_pipeline(
         ) -> None:
             nonlocal receipt
             now = _utc_now()
-            receipt = record_postclose_pipeline_stage(
+            next_receipt = record_postclose_pipeline_stage(
                 receipt,
                 stage=stage,
                 status=status,
@@ -754,10 +756,26 @@ def _run_postclose_pipeline(
             )
             write_postclose_pipeline_receipt(
                 PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
-                receipt,
+                next_receipt,
             )
+            receipt = next_receipt
 
         try:
+            target_date, _resolver = _resolve_support_target_date(environment)
+            resolved_receipt = new_postclose_pipeline_receipt(
+                pipeline_run_id=pipeline_run_id,
+                schedule_date=schedule_date,
+                target_date=target_date,
+                source_commit=source_commit,
+                manifest_sha256=manifest_sha256,
+                generated_at_utc=generated_at_utc,
+                retry_of=retry_of,
+            )
+            write_postclose_pipeline_receipt(
+                PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                resolved_receipt,
+            )
+            receipt = resolved_receipt
             record(
                 "resolve-target",
                 "succeeded",

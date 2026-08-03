@@ -441,6 +441,7 @@ class OfficialLiveFailureNotifyTest(unittest.TestCase):
                 sender=sender,
                 blocker="CTP_PASSWORD_SENTINEL:AUTH_CODE_SENTINEL",
                 release_commit="AUTH_CODE_SENTINEL",
+                root_stage="SMTP_PASSWORD_SENTINEL",
             )
             state = json.loads((root / "state.json").read_text(encoding="utf-8"))
 

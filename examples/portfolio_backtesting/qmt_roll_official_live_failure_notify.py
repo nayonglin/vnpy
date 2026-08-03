@@ -128,6 +128,12 @@ def _safe_pipeline_run_id(value: str) -> str:
     return candidate if _RUN_ID_RE.fullmatch(candidate) else ""
 
 
+def _safe_root_stage(value: str) -> str:
+    candidate = _safe_token(value, fallback="")
+    lowered = candidate.lower()
+    return "" if any(marker in lowered for marker in _SECRET_MARKERS) else candidate
+
+
 def _failure_fingerprint(
     release_commit: str,
     schedule_date: str,
@@ -364,7 +370,7 @@ def _notify_official_live_failure(
         safe_schedule_date = _safe_schedule_date(schedule_date)
         safe_commit = _safe_commit(release_commit)
         safe_pipeline_run_id = _safe_pipeline_run_id(pipeline_run_id)
-        safe_root_stage = _safe_token(root_stage, fallback="")
+        safe_root_stage = _safe_root_stage(root_stage)
         fingerprint = _failure_fingerprint(
             safe_commit,
             safe_schedule_date,

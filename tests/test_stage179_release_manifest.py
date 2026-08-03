@@ -758,6 +758,13 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             builder.PRODUCTION_REQUIRED_TEST_SUITES,
         )
 
+    def test_stage935_path_consistency_is_pinned_in_production_release_surface(
+        self,
+    ) -> None:
+        suite = "tests/test_stage935_ai_pool_path_consistency.py"
+        self.assertIn(suite, builder.DEFAULT_CRITICAL_FILES)
+        self.assertIn(suite, builder.PRODUCTION_REQUIRED_TEST_SUITES)
+
     def validate(self, path: Path | None = None, *, profile: str = "offline") -> dict[str, object]:
         return load_and_validate_release_manifest(
             path or self.manifest_path,
