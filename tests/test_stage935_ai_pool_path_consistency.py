@@ -708,6 +708,46 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         self.assertEqual(old_hash, receipt["pre_publication_combined_sha256"])
         self.assertEqual(old_hash, receipt["restored_combined_sha256"])
 
+    def test_stage935_backup_cleanup_failure_does_not_report_false_block(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            candidate_paths = self._stage182_bundle_paths(root / "candidate")
+            canonical_paths = self._stage182_bundle_paths(root / "canonical")
+            self._write_stage182_bundle(candidate_paths, "candidate")
+            self._write_stage182_bundle(canonical_paths, "old")
+            canonical_combined = canonical_paths["combined_eligibility"]
+            candidate_combined = candidate_paths["combined_eligibility"]
+            real_fsync_directory = stage935._fsync_directory
+
+            def fail_only_after_backup_unlink(path: Path) -> None:
+                backup_exists = any(
+                    canonical_combined.parent.glob(
+                        f".{canonical_combined.name}.backup.*"
+                    )
+                )
+                combined_is_candidate = (
+                    canonical_combined.read_bytes() == candidate_combined.read_bytes()
+                )
+                if combined_is_candidate and not backup_exists:
+                    raise OSError("injected backup cleanup directory fsync failure")
+                real_fsync_directory(path)
+
+            with patch.object(
+                stage935,
+                "_fsync_directory",
+                side_effect=fail_only_after_backup_unlink,
+            ):
+                receipt = stage935._publish_stage182_candidate(
+                    candidate_paths=candidate_paths,
+                    canonical_paths=canonical_paths,
+                    candidate_validation={"validation_status": "valid", "blockers": []},
+                    post_validate=lambda: {"validation_status": "valid", "blockers": []},
+                )
+
+        self.assertEqual("published", receipt["publication_status"])
+        self.assertEqual("not_needed", receipt["rollback_status"])
+        self.assertIn("backup_cleanup_warning", receipt)
+
     def test_stage935_candidate_validation_rejects_truncated_combined_top9(self) -> None:
         strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
         products = [
@@ -788,6 +828,55 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             "stage182_combined_current_top9_mismatch",
             validation["blockers"],
         )
+
+    def test_stage935_combined_audit_rejects_malformed_historical_top9(self) -> None:
+        strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+        products = [
+            "jm.DCE",
+            "si.GFEX",
+            "SA.CZCE",
+            "au.SHFE",
+            "lc.GFEX",
+            "cu.SHFE",
+            "SM.CZCE",
+            "lh.DCE",
+            "fu.SHFE",
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            combined = root / "combined.csv"
+            header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            rows: list[str] = []
+            for date in eval_dates:
+                for rank, product in enumerate(products, start=1):
+                    if date == "2026-04-30":
+                        product = "jm.DCE"
+                        rank = 1
+                    rows.append(
+                        f"{strategy},stage182_live,{date},{product},1,{rank},9\n"
+                    )
+            combined.write_text(header + "".join(rows), encoding="utf-8")
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                audit = stage935._combined_eval_date_audit(
+                    "2026-07-31",
+                    combined_path=combined,
+                )
+
+        self.assertEqual([], audit["invalid_row_count_eval_dates"])
+        self.assertIn(
+            "2026-04-30",
+            audit["invalid_unique_product_eval_dates"],
+        )
+        self.assertIn("2026-04-30", audit["invalid_rank_eval_dates"])
 
 
 if __name__ == "__main__":

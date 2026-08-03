@@ -488,9 +488,17 @@ def _publish_stage182_candidate(
             return receipt
 
         receipt["publication_status"] = "published"
-        backup_path.unlink()
-        _fsync_directory(canonical_combined.parent)
-        receipt["combined_backup_path"] = ""
+        try:
+            backup_path.unlink()
+            _fsync_directory(canonical_combined.parent)
+            receipt["combined_backup_path"] = ""
+        except Exception as exc:
+            # Activation is already durable, hash-verified, and post-validated.
+            # Backup cleanup failure must not falsely report a blocked activation.
+            receipt["backup_cleanup_warning"] = repr(exc)
+            receipt["combined_backup_path"] = (
+                str(backup_path) if backup_path.exists() else ""
+            )
         return receipt
     except Exception as exc:
         receipt["publication_status"] = "blocked_publication_exception"
@@ -673,6 +681,10 @@ def _combined_eval_date_audit(
         ),
         "missing_recent_eval_dates": [],
         "invalid_row_count_eval_dates": [],
+        "invalid_unique_product_eval_dates": [],
+        "invalid_rank_eval_dates": [],
+        "invalid_top_n_eval_dates": [],
+        "missing_fixed_fu_eval_dates": [],
         "row_counts_by_required_eval_date": {},
     }
     if combined.empty or "eval_date" not in combined.columns:
@@ -695,6 +707,30 @@ def _combined_eval_date_audit(
     result["invalid_row_count_eval_dates"] = [
         date for date in required_dates if int(row_counts.get(date, 0)) != 9
     ]
+    for date in required_dates:
+        rows = combined[combined["eval_date"].eq(date)].copy()
+        if (
+            "product_vt_symbol" not in rows.columns
+            or rows["product_vt_symbol"].astype(str).nunique() != 9
+        ):
+            result["invalid_unique_product_eval_dates"].append(date)
+        if (
+            "product_vt_symbol" not in rows.columns
+            or "fu.SHFE" not in set(rows["product_vt_symbol"].astype(str))
+        ):
+            result["missing_fixed_fu_eval_dates"].append(date)
+        if "score_rank" not in rows.columns:
+            result["invalid_rank_eval_dates"].append(date)
+        else:
+            ranks = pd.to_numeric(rows["score_rank"], errors="coerce")
+            if sorted(ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
+                result["invalid_rank_eval_dates"].append(date)
+        if "top_n" not in rows.columns:
+            result["invalid_top_n_eval_dates"].append(date)
+        else:
+            top_n = pd.to_numeric(rows["top_n"], errors="coerce")
+            if len(rows) != 9 or not top_n.eq(9).all():
+                result["invalid_top_n_eval_dates"].append(date)
     return result
 
 
@@ -890,6 +926,16 @@ def _validate_stage182_outputs(
         blockers.append("stage182_combined_missing_recent_eval_dates")
     if combined_eval_date_audit.get("invalid_row_count_eval_dates"):
         blockers.append("stage182_combined_required_eval_date_rows_not_9")
+    if any(
+        combined_eval_date_audit.get(key)
+        for key in (
+            "invalid_unique_product_eval_dates",
+            "invalid_rank_eval_dates",
+            "invalid_top_n_eval_dates",
+            "missing_fixed_fu_eval_dates",
+        )
+    ):
+        blockers.append("stage182_combined_required_eval_date_shape_invalid")
 
     return {
         "validation_status": "valid" if not blockers else "invalid",
