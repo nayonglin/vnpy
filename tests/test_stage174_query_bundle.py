@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -50,6 +51,21 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             DIRECTION_CTP2VT={"1": "short", "0": "long"},
             OFFSET_CTP2VT={"0": "open", "1": "close"},
             STATUS_CTP2VT={"0": "all_traded"},
+        )
+
+    def test_run_probe_never_reads_native_trading_day_after_close(self) -> None:
+        source = inspect.getsource(stage174._run_probe)
+        post_close_source = source.split("main_engine.close()", 1)[1]
+
+        self.assertNotIn("getTradingDay", post_close_source)
+
+    def test_frozen_broker_trading_day_never_falls_back_to_native(self) -> None:
+        self.assertEqual("", stage174._frozen_broker_trading_day({}))
+        self.assertEqual(
+            "20260719",
+            stage174._frozen_broker_trading_day(
+                {"broker_trading_day": " 20260719 "}
+            ),
         )
 
     def test_output_paths_follow_official_live_output_dir(self) -> None:
@@ -665,6 +681,8 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
                 self.userid = "00001234"
                 self.contract_query_count = 0
                 self.position_query_count = 0
+                self.native_closed = False
+                self.post_close_trading_day_calls = 0
 
             def _later(self, delay: float, callback: object) -> None:
                 timer = threading.Timer(delay, callback)
@@ -774,6 +792,9 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
                 return 0
 
             def getTradingDay(self) -> str:
+                if self.native_closed:
+                    self.post_close_trading_day_calls += 1
+                    raise AssertionError("native_trading_day_read_after_close")
                 return "20260719"
 
             def send_order(self, *args: object, **kwargs: object) -> str:
@@ -795,12 +816,15 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             def cancel_order(self, *args: object, **kwargs: object) -> None:
                 return None
 
+        fake_td_api_holder: dict[str, FakeTdApi] = {}
+
         class FakeMainEngine:
             def __init__(self, event_engine: object) -> None:
                 self.gateway: FakeGateway | None = None
 
             def add_gateway(self, gateway_class: type) -> None:
                 self.gateway = gateway_class()
+                fake_td_api_holder["td_api"] = self.gateway.td_api
 
             def connect(self, setting: dict, gateway_name: str) -> None:
                 assert self.gateway is not None
@@ -813,6 +837,7 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             def close(self) -> None:
                 assert self.gateway is not None
                 self.gateway.td_api.onFrontDisconnected(0)
+                self.gateway.td_api.native_closed = True
 
         env = {
             "CTP_USERID": "00001234",
@@ -850,6 +875,10 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
                 query_flow_gap_seconds=0.001,
             )
 
+        self.assertEqual(
+            0,
+            fake_td_api_holder["td_api"].post_close_trading_day_calls,
+        )
         for timer in timers:
             timer.join(timeout=0.5)
         lifecycle = result["connection_lifecycle"]

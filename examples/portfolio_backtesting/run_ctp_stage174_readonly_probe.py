@@ -673,6 +673,11 @@ def _clean_ctp_text(value: Any) -> str:
     return str(value).strip()
 
 
+def _frozen_broker_trading_day(summary: dict[str, Any]) -> str:
+    """Return only the trading day frozen before native shutdown."""
+    return _clean_ctp_text(summary.get("broker_trading_day"))
+
+
 def _account_fingerprint(broker_id: Any, account_id: Any) -> str:
     broker = _clean_ctp_text(broker_id)
     account = _clean_ctp_text(account_id)
@@ -1998,10 +2003,7 @@ def _run_probe(
             summary["log_analysis"] = _analyze_logs(final_rows["logs"])
         expected_broker_id = os.getenv("CTP_BROKERID", "")
         expected_account_id = os.getenv("CTP_USERID", "")
-        broker_trading_day = _clean_ctp_text(
-            summary.get("broker_trading_day")
-            or getattr(td_api, "getTradingDay", lambda: "")()
-        )
+        broker_trading_day = _frozen_broker_trading_day(summary)
         normalized_orders, normalized_trades, join_status = _normalize_query_bundle_rows(
             final_rows["raw_queried_orders"],
             final_rows["raw_queried_trades"],
