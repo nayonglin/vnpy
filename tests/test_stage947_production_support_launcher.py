@@ -195,10 +195,14 @@ print("CONTRACT=" + json.dumps({
                 ("TA.CZCE", 8),
                 ("MA.CZCE", 9),
             ]
+            strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+            eligibility_header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
             live_eligibility.write_text(
-                "eval_date,product_vt_symbol,score_rank\n"
+                eligibility_header
                 + "".join(
-                    f"2026-06-30,{symbol},{rank}\n"
+                    f"{strategy},stage182_live,2026-06-30,{symbol},{10-rank},{rank},9\n"
                     for symbol, rank in live_rows
                 ),
                 encoding="utf-8",
@@ -206,12 +210,10 @@ print("CONTRACT=" + json.dumps({
             report = data / "stage182-report.md"
             report.write_text("old report\n", encoding="utf-8")
             combined = data / "stage182-combined.csv"
-            combined_text = (
-                "eval_date,product_vt_symbol,strategy\n"
-                "2026-03-31,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
-                "2026-04-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
-                "2026-05-29,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
-                "2026-06-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
+            combined_text = eligibility_header + "".join(
+                f"{strategy},stage182_live,{date},{symbol},{10-rank},{rank},9\n"
+                for date in ("2026-03-31", "2026-04-30", "2026-05-29", "2026-06-30")
+                for symbol, rank in live_rows
             )
             combined.write_text(combined_text, encoding="utf-8")
 
@@ -264,9 +266,9 @@ print("CONTRACT=" + json.dumps({
             )
             candidate_live = control / live_eligibility.name
             candidate_live.write_text(
-                "eval_date,product_vt_symbol,score_rank\n"
+                eligibility_header
                 + "".join(
-                    f"2026-06-30,{symbol},{rank}\n"
+                    f"{strategy},stage182_live,2026-06-30,{symbol},{10-rank},{rank},9\n"
                     for symbol, rank in live_rows
                 ),
                 encoding="utf-8",

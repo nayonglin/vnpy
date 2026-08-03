@@ -645,6 +645,7 @@ def _combined_eval_date_audit(
             RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS,
         ),
         "missing_recent_eval_dates": [],
+        "invalid_row_count_eval_dates": [],
         "row_counts_by_required_eval_date": {},
     }
     if combined.empty or "eval_date" not in combined.columns:
@@ -663,6 +664,9 @@ def _combined_eval_date_audit(
     }
     result["missing_recent_eval_dates"] = [
         date for date in required_dates if int(row_counts.get(date, 0)) <= 0
+    ]
+    result["invalid_row_count_eval_dates"] = [
+        date for date in required_dates if int(row_counts.get(date, 0)) != 9
     ]
     return result
 
@@ -692,6 +696,16 @@ def _validate_stage182_outputs(
     eval_date = _date_text(summary.get("eval_date", ""))
     source_max_date = _date_text(summary.get("source_max_date", ""))
     top_products: list[str] = []
+    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    required_eligibility_columns = {
+        "strategy",
+        "score_type",
+        "eval_date",
+        "product_vt_symbol",
+        "score",
+        "score_rank",
+        "top_n",
+    }
 
     if not summary:
         blockers.append("stage182_summary_missing")
@@ -743,8 +757,18 @@ def _validate_stage182_outputs(
         blockers.append("stage182_live_eligibility_missing_or_empty")
     if combined.empty:
         blockers.append("stage182_combined_eligibility_missing_or_empty")
+    live_missing_columns = sorted(required_eligibility_columns - set(live_eligibility.columns))
+    if live_missing_columns:
+        blockers.append("stage182_live_eligibility_required_columns_missing")
+    combined_missing_columns = sorted(required_eligibility_columns - set(combined.columns))
+    if combined_missing_columns:
+        blockers.append("stage182_combined_eligibility_required_columns_missing")
+
+    live_identity: list[tuple[str, int]] = []
     if eval_date and not live_eligibility.empty and "eval_date" in live_eligibility.columns:
         rows = live_eligibility[live_eligibility["eval_date"].astype(str).eq(eval_date)].copy()
+        if "strategy" in rows.columns:
+            rows = rows[rows["strategy"].astype(str).eq(strategy)].copy()
         if len(rows) != 9:
             blockers.append("stage182_live_eligibility_eval_rows_not_9")
         if "product_vt_symbol" in rows.columns:
@@ -753,10 +777,54 @@ def _validate_stage182_outputs(
             ].astype(str).tolist()
             if len(set(top_products)) != len(top_products):
                 blockers.append("stage182_live_eligibility_duplicate_products")
+        if "score_rank" in rows.columns and "product_vt_symbol" in rows.columns:
+            ranks = pd.to_numeric(rows["score_rank"], errors="coerce")
+            if sorted(ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
+                blockers.append("stage182_live_eligibility_ranks_not_1_to_9")
+            live_identity = sorted(
+                zip(
+                    rows["product_vt_symbol"].astype(str),
+                    ranks.fillna(999).astype(int),
+                    strict=False,
+                )
+            )
+        if "top_n" in rows.columns:
+            top_n = pd.to_numeric(rows["top_n"], errors="coerce")
+            if len(rows) and not top_n.eq(9).all():
+                blockers.append("stage182_live_eligibility_top_n_not_9")
+
+    combined_identity: list[tuple[str, int]] = []
     if eval_date and not combined.empty and "eval_date" in combined.columns:
         combined_rows = combined[combined["eval_date"].astype(str).eq(eval_date)].copy()
+        if "strategy" in combined_rows.columns:
+            combined_rows = combined_rows[
+                combined_rows["strategy"].astype(str).eq(strategy)
+            ].copy()
         if combined_rows.empty:
             blockers.append("stage182_combined_missing_eval_date_rows")
+        if len(combined_rows) != 9:
+            blockers.append("stage182_combined_eval_rows_not_9")
+        if "product_vt_symbol" in combined_rows.columns:
+            combined_products = combined_rows["product_vt_symbol"].astype(str).tolist()
+            if len(set(combined_products)) != len(combined_products):
+                blockers.append("stage182_combined_duplicate_products")
+        if "score_rank" in combined_rows.columns and "product_vt_symbol" in combined_rows.columns:
+            combined_ranks = pd.to_numeric(combined_rows["score_rank"], errors="coerce")
+            if sorted(combined_ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
+                blockers.append("stage182_combined_ranks_not_1_to_9")
+            combined_identity = sorted(
+                zip(
+                    combined_rows["product_vt_symbol"].astype(str),
+                    combined_ranks.fillna(999).astype(int),
+                    strict=False,
+                )
+            )
+        if "top_n" in combined_rows.columns:
+            combined_top_n = pd.to_numeric(combined_rows["top_n"], errors="coerce")
+            if len(combined_rows) and not combined_top_n.eq(9).all():
+                blockers.append("stage182_combined_top_n_not_9")
+    if live_identity and combined_identity != live_identity:
+        blockers.append("stage182_combined_current_top9_mismatch")
     if top_products and "fu.SHFE" not in top_products:
         blockers.append("stage182_top9_missing_fixed_fu_satellite")
     combined_eval_date_audit = _combined_eval_date_audit(
@@ -765,6 +833,8 @@ def _validate_stage182_outputs(
     )
     if combined_eval_date_audit.get("missing_recent_eval_dates"):
         blockers.append("stage182_combined_missing_recent_eval_dates")
+    if combined_eval_date_audit.get("invalid_row_count_eval_dates"):
+        blockers.append("stage182_combined_required_eval_date_rows_not_9")
 
     return {
         "validation_status": "valid" if not blockers else "invalid",
@@ -778,6 +848,8 @@ def _validate_stage182_outputs(
         "combined_eligibility_path": str(combined_eligibility_path),
         "official_live_ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
         "combined_eval_date_audit": combined_eval_date_audit,
+        "live_missing_columns": live_missing_columns,
+        "combined_missing_columns": combined_missing_columns,
     }
 
 

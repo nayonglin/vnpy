@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -442,6 +443,87 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         self.assertEqual(old_hash, restored_hash)
         self.assertEqual(old_hash, receipt["pre_publication_combined_sha256"])
         self.assertEqual(old_hash, receipt["restored_combined_sha256"])
+
+    def test_stage935_candidate_validation_rejects_truncated_combined_top9(self) -> None:
+        strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+        products = [
+            "jm.DCE",
+            "si.GFEX",
+            "SA.CZCE",
+            "au.SHFE",
+            "lc.GFEX",
+            "cu.SHFE",
+            "SM.CZCE",
+            "lh.DCE",
+            "fu.SHFE",
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            paths = self._stage182_bundle_paths(root / "candidate")
+            paths["live_pool"].parent.mkdir(parents=True, exist_ok=True)
+            paths["live_pool"].write_text(
+                "product_vt_symbol\n" + "".join(f"{product}\n" for product in products),
+                encoding="utf-8",
+            )
+            header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            live_rows = "".join(
+                f"{strategy},stage182_live,2026-07-31,{product},{10-rank},{rank},9\n"
+                for rank, product in enumerate(products, start=1)
+            )
+            paths["live_eligibility"].write_text(
+                header + live_rows,
+                encoding="utf-8",
+            )
+            truncated_combined_rows = "".join(
+                f"{strategy},stage182_live,{date},jm.DCE,1,1,9\n"
+                for date in eval_dates
+            )
+            paths["combined_eligibility"].write_text(
+                header + truncated_combined_rows,
+                encoding="utf-8",
+            )
+            paths["report"].write_text("candidate report\n", encoding="utf-8")
+            paths["summary"].write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-07-31",
+                        "source_max_date": "2026-08-03",
+                        "outputs": {name: str(path) for name, path in paths.items()},
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                validation = stage935._validate_stage182_outputs(
+                    expected_eval_date="2026-07-31",
+                    paths=paths,
+                    require_official_path=False,
+                    require_declared_outputs=True,
+                )
+
+        self.assertEqual("invalid", validation["validation_status"])
+        self.assertIn(
+            "stage182_combined_required_eval_date_rows_not_9",
+            validation["blockers"],
+        )
+        self.assertIn(
+            "stage182_combined_current_top9_mismatch",
+            validation["blockers"],
+        )
 
 
 if __name__ == "__main__":
