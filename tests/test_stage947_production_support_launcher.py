@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import redirect_stdout
+import hashlib
 import io
 import json
 import os
@@ -234,6 +235,19 @@ print("CONTRACT=" + json.dumps({
                 encoding="utf-8",
             )
             stage183_summary = data / "stage183-summary.json"
+            stage183_sources = {
+                "daily": stage183_daily,
+                "position_changes": stage183_position,
+                "entry_candidate_snapshots": stage183_candidate,
+            }
+            stage183_identities = {
+                name: {
+                    "size": path.stat().st_size,
+                    "mtime_ns": path.stat().st_mtime_ns,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                }
+                for name, path in stage183_sources.items()
+            }
             stage183_summary.write_text(
                 json.dumps(
                     {
@@ -245,6 +259,7 @@ print("CONTRACT=" + json.dumps({
                             "position_changes_max_date": "2026-07-23",
                             "entry_candidate_snapshots_max_date": "2026-07-21",
                         },
+                        "artifact_identities": stage183_identities,
                         "outputs": {
                             "daily": str(stage183_daily),
                             "position_changes": str(stage183_position),
@@ -294,6 +309,13 @@ print("CONTRACT=" + json.dumps({
                             "position_changes": str(stage183_position),
                             "entry_candidate_snapshots": str(stage183_candidate),
                         },
+                        "source_identities": {
+                            name: stage183_identities[name]
+                            for name in (
+                                "position_changes",
+                                "entry_candidate_snapshots",
+                            )
+                        },
                         "outputs": candidate_outputs,
                         "safety": {
                             "overwrites_official_stage78_eligibility": False,
@@ -326,6 +348,7 @@ print("CONTRACT=" + json.dumps({
                 patch.multiple(
                     stage935,
                     CONTROL_OUTPUT_DIR=control,
+                    DATA_ASSET_DIR=data,
                     ALL_FUTURES_MAPPING_PATH=mapping,
                     STAGE173_SUMMARY_PATH=stage173_summary,
                     STAGE182_SUMMARY_PATH=stage182_summary,

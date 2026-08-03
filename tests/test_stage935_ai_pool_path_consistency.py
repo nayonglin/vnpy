@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import inspect
+import hashlib
 import json
+from argparse import Namespace
 from pathlib import Path
 import sys
 import tempfile
@@ -60,6 +62,19 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             f"{candidate_date},rb.SHFE,rejected\n",
             encoding="utf-8",
         )
+        artifact_paths = {
+            "daily": daily,
+            "position_changes": position,
+            "entry_candidate_snapshots": candidate,
+        }
+        artifact_identities = {
+            name: {
+                "size": path.stat().st_size,
+                "mtime_ns": path.stat().st_mtime_ns,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+            for name, path in artifact_paths.items()
+        }
         return {
             "analysis_end": "2026-08-03",
             "source_prefix": self.SOURCE_PREFIX,
@@ -69,6 +84,7 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 "position_changes_max_date": position_date,
                 "entry_candidate_snapshots_max_date": candidate_date,
             },
+            "artifact_identities": artifact_identities,
             "outputs": {
                 "daily": str(daily),
                 "position_changes": str(position),
@@ -154,7 +170,44 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             dates["entry_candidate_snapshots_max_date"],
         )
 
+    def test_stage183_records_source_file_content_identities(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            control_root = Path(directory).resolve() / "control"
+            summary = self._stage183_summary(control_root)
+            paths = {
+                name: Path(path)
+                for name, path in summary["outputs"].items()
+            }
+            collect_identities = getattr(stage183, "_collect_artifact_identities", None)
+            self.assertTrue(
+                callable(collect_identities),
+                "Stage183 must bind source evidence to file bytes",
+            )
+            identities = collect_identities(paths)
+            for name, identity in identities.items():
+                source = paths[name]
+                self.assertEqual(source.stat().st_size, identity["size"])
+                self.assertEqual(source.stat().st_mtime_ns, identity["mtime_ns"])
+                self.assertEqual(
+                    hashlib.sha256(source.read_bytes()).hexdigest(),
+                    identity["sha256"],
+                )
+
     def test_stage182_source_dir_does_not_fall_back_to_stale_data_root(self) -> None:
+        original_position_changes = stage182.suitability.POSITION_CHANGES_PATH
+        original_entry_snapshots = stage182.suitability.ENTRY_SNAPSHOTS_PATH
+        self.addCleanup(
+            setattr,
+            stage182.suitability,
+            "POSITION_CHANGES_PATH",
+            original_position_changes,
+        )
+        self.addCleanup(
+            setattr,
+            stage182.suitability,
+            "ENTRY_SNAPSHOTS_PATH",
+            original_entry_snapshots,
+        )
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
             stale_data_root = root / "data"
@@ -186,6 +239,42 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             control_root,
             stage182.suitability.POSITION_CHANGES_PATH.resolve().parent,
         )
+
+    def test_stage182_rejects_source_bytes_changed_during_inference(self) -> None:
+        original_position_changes = stage182.suitability.POSITION_CHANGES_PATH
+        original_entry_snapshots = stage182.suitability.ENTRY_SNAPSHOTS_PATH
+        self.addCleanup(
+            setattr,
+            stage182.suitability,
+            "POSITION_CHANGES_PATH",
+            original_position_changes,
+        )
+        self.addCleanup(
+            setattr,
+            stage182.suitability,
+            "ENTRY_SNAPSHOTS_PATH",
+            original_entry_snapshots,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            source_root = Path(directory).resolve() / "control"
+            self._write_stage182_sources(source_root, "2026-08-03")
+            source_paths = stage182._configure_source_paths(
+                self.SOURCE_PREFIX,
+                source_dir=source_root,
+            )
+            before = stage182._collect_source_identities(source_paths)
+            position_path = Path(source_paths["position_changes"])
+            position_path.write_text(
+                position_path.read_text(encoding="utf-8")
+                + "2026-08-03,jm2609.DCE,0,1,1\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "source files changed"):
+                stage182._assert_source_identities_unchanged(
+                    source_paths,
+                    before,
+                )
 
     def test_stage182_output_dir_is_candidate_only(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -269,6 +358,31 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             result["artifact_dates"]["entry_candidate_snapshots_max_date"],
         )
 
+    def test_stage935_rejects_stage183_source_content_replaced_after_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            control_root = Path(directory).resolve() / "control"
+            summary = self._stage183_summary(control_root)
+            position_path = Path(summary["outputs"]["position_changes"])
+            position_path.write_text(
+                "date,vt_symbol,end_pos\n"
+                "2026-08-03,rb2610.SHFE,0\n"
+                "2026-08-03,jm2609.DCE,1\n",
+                encoding="utf-8",
+            )
+
+            result = stage935._validate_stage183_source(
+                summary,
+                expected_root=control_root,
+                resolved_target_date="2026-08-03",
+                source_prefix=self.SOURCE_PREFIX,
+            )
+
+        self.assertEqual("invalid", result["validation_status"])
+        self.assertIn(
+            "stage183_position_changes_identity_mismatch",
+            result["blockers"],
+        )
+
     def test_stage935_stage182_command_uses_control_root_for_source_and_output(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             control_root = Path(directory).resolve() / "control"
@@ -295,6 +409,156 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 str(control_root),
             ],
             command[2:],
+        )
+
+    def test_stage935_rejects_nonisolated_candidate_output_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            shared_root = Path(directory).resolve() / "shared"
+            shared_root.mkdir()
+            summary = {
+                "expected_eval_date": "2026-07-31",
+                "resolved_target_date": "2026-08-03",
+                "resolver_evidence": {},
+                "update_reasons": [],
+                "commands": {},
+                "blockers": [],
+            }
+            args = Namespace(
+                source_prefix=self.SOURCE_PREFIX,
+                skip_data_update=True,
+                data_update_timeout_seconds=1,
+                source_refresh_timeout_seconds=1,
+                inference_timeout_seconds=1,
+                as_of="2026-08-03 21:00:00",
+                data_ready_time="16:30",
+            )
+            with (
+                patch.object(stage935, "CONTROL_OUTPUT_DIR", shared_root),
+                patch.object(stage935, "DATA_ASSET_DIR", shared_root),
+                patch.object(stage935, "_run_command") as run_command,
+            ):
+                result = stage935._execute_update(summary, args)
+
+        self.assertEqual(
+            "monthly_ai_pool_update_blocked",
+            result["automation_status"],
+        )
+        self.assertIn(
+            "stage935_control_output_dir_not_isolated",
+            result["blockers"],
+        )
+        run_command.assert_not_called()
+
+    def test_stage935_rejects_stage182_source_identity_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            source_root = root / "control"
+            source_summary = self._stage183_summary(source_root)
+            expected_paths = {
+                name: str(path)
+                for name, path in source_summary["outputs"].items()
+            }
+            expected_identities = source_summary["artifact_identities"]
+            paths = self._stage182_bundle_paths(root / "candidate")
+            self._write_stage182_bundle(paths, "candidate")
+            paths["summary"].write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-07-31",
+                        "source_max_date": "2026-08-03",
+                        "source_paths": expected_paths,
+                        "source_identities": {
+                            **expected_identities,
+                            "position_changes": {
+                                **expected_identities["position_changes"],
+                                "sha256": "0" * 64,
+                            },
+                        },
+                        "outputs": {
+                            name: str(path) for name, path in paths.items()
+                        },
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            validation = stage935._validate_stage182_outputs(
+                expected_eval_date="2026-07-31",
+                paths=paths,
+                require_official_path=False,
+                require_declared_outputs=True,
+                expected_source_paths=expected_paths,
+                expected_source_identities=expected_identities,
+            )
+
+        self.assertEqual("invalid", validation["validation_status"])
+        self.assertIn(
+            "stage182_source_identity_not_stage183_validated_source",
+            validation["blockers"],
+        )
+
+    def test_stage935_rejects_source_changed_after_stage182_inference(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            source_root = root / "control"
+            source_summary = self._stage183_summary(source_root)
+            expected_paths = {
+                name: str(path)
+                for name, path in source_summary["outputs"].items()
+            }
+            expected_identities = source_summary["artifact_identities"]
+            paths = self._stage182_bundle_paths(root / "candidate")
+            self._write_stage182_bundle(paths, "candidate")
+            paths["summary"].write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-07-31",
+                        "source_max_date": "2026-08-03",
+                        "source_paths": expected_paths,
+                        "source_identities": {
+                            name: expected_identities[name]
+                            for name in (
+                                "position_changes",
+                                "entry_candidate_snapshots",
+                            )
+                        },
+                        "outputs": {
+                            name: str(path) for name, path in paths.items()
+                        },
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            position_path = Path(expected_paths["position_changes"])
+            position_path.write_text(
+                position_path.read_text(encoding="utf-8")
+                + "2026-08-03,jm2609.DCE,1\n",
+                encoding="utf-8",
+            )
+
+            validation = stage935._validate_stage182_outputs(
+                expected_eval_date="2026-07-31",
+                paths=paths,
+                require_official_path=False,
+                require_declared_outputs=True,
+                expected_source_paths=expected_paths,
+                expected_source_identities=expected_identities,
+            )
+
+        self.assertEqual("invalid", validation["validation_status"])
+        self.assertIn(
+            "stage182_source_changed_after_stage183_validation",
+            validation["blockers"],
         )
 
     def test_stage935_invalid_candidate_does_not_publish_formal_combined(self) -> None:

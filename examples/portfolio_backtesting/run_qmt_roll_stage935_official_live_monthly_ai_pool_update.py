@@ -174,6 +174,22 @@ def _max_source_csv_date(path: Path) -> str:
     return ""
 
 
+def _source_file_identity(path: Path) -> dict[str, int | str]:
+    before = path.stat()
+    sha256 = _sha256_file(path)
+    after = path.stat()
+    if (
+        before.st_size != after.st_size
+        or before.st_mtime_ns != after.st_mtime_ns
+    ):
+        raise RuntimeError(f"source file changed while hashing: {path}")
+    return {
+        "size": int(after.st_size),
+        "mtime_ns": int(after.st_mtime_ns),
+        "sha256": sha256,
+    }
+
+
 def _validate_stage183_source(
     summary: dict[str, Any],
     *,
@@ -196,6 +212,7 @@ def _validate_stage183_source(
 
     outputs = summary.get("outputs") or {}
     source_paths: dict[str, str] = {}
+    source_identities: dict[str, dict[str, int | str]] = {}
     artifact_dates: dict[str, str] = {}
     date_keys = {
         "daily": "daily_max_date",
@@ -203,6 +220,7 @@ def _validate_stage183_source(
         "entry_candidate_snapshots": "entry_candidate_snapshots_max_date",
     }
     declared_dates = summary.get("artifact_dates") or {}
+    declared_identities = summary.get("artifact_identities") or {}
     for name, date_key in date_keys.items():
         raw_path = str(outputs.get(name, "") or "")
         if not raw_path:
@@ -215,6 +233,14 @@ def _validate_stage183_source(
         if not path.is_file() or path.stat().st_size <= 0:
             blockers.append(f"stage183_{name}_missing_or_empty")
             continue
+        try:
+            actual_identity = _source_file_identity(path)
+        except Exception:
+            blockers.append(f"stage183_{name}_identity_unstable")
+            continue
+        source_identities[name] = actual_identity
+        if declared_identities.get(name) != actual_identity:
+            blockers.append(f"stage183_{name}_identity_mismatch")
         actual_date = _max_source_csv_date(path)
         artifact_dates[date_key] = actual_date
         if not actual_date:
@@ -247,6 +273,7 @@ def _validate_stage183_source(
         "source_prefix": source_prefix,
         "resolved_target_date": resolved_target_date,
         "source_paths": source_paths,
+        "source_identities": source_identities,
         "artifact_dates": artifact_dates,
     }
 
@@ -685,6 +712,7 @@ def _validate_stage182_outputs(
     require_official_path: bool = True,
     require_declared_outputs: bool = False,
     expected_source_paths: dict[str, str] | None = None,
+    expected_source_identities: dict[str, dict[str, int | str]] | None = None,
 ) -> dict[str, Any]:
     selected_paths = paths or _canonical_stage182_paths()
     summary_path = selected_paths["summary"]
@@ -750,6 +778,33 @@ def _validate_stage182_outputs(
                 != Path(declared_source).expanduser().resolve(strict=False)
             ):
                 blockers.append(f"stage182_{name}_not_stage183_validated_source")
+
+    if expected_source_identities is not None:
+        identity_names = ("position_changes", "entry_candidate_snapshots")
+        expected_identities = {
+            name: expected_source_identities.get(name)
+            for name in identity_names
+        }
+        declared_identities = summary.get("source_identities") or {}
+        declared_subset = {
+            name: declared_identities.get(name)
+            for name in identity_names
+        }
+        if declared_subset != expected_identities or any(
+            identity is None for identity in expected_identities.values()
+        ):
+            blockers.append("stage182_source_identity_not_stage183_validated_source")
+        if expected_source_paths:
+            try:
+                current_identities = {
+                    name: _source_file_identity(Path(expected_source_paths[name]))
+                    for name in identity_names
+                }
+            except Exception:
+                blockers.append("stage182_source_identity_recheck_failed")
+            else:
+                if current_identities != expected_identities:
+                    blockers.append("stage182_source_changed_after_stage183_validation")
 
     live_eligibility = _read_csv(live_eligibility_path)
     combined = _read_csv(combined_eligibility_path)
@@ -922,6 +977,8 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
     source_prefix = str(args.source_prefix)
     if not expected_eval_date or not resolved_target_date:
         return _mark_blocked(summary, "expected_or_resolved_date_missing")
+    if CONTROL_OUTPUT_DIR.expanduser().resolve(strict=False) == DATA_ASSET_DIR.expanduser().resolve(strict=False):
+        return _mark_blocked(summary, "stage935_control_output_dir_not_isolated")
 
     data_start = _month_start(expected_eval_date)
     if MISSING_CALENDAR_UPDATE_REASON in set(summary.get("update_reasons") or []):
@@ -998,6 +1055,7 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
         "source_prefix": stage183_summary.get("source_prefix", ""),
         "artifact_root": stage183_summary.get("artifact_root", ""),
         "artifact_dates": stage183_summary.get("artifact_dates", {}),
+        "artifact_identities": stage183_summary.get("artifact_identities", {}),
         "outputs": stage183_summary.get("outputs", {}),
         "safety": stage183_summary.get("safety", {}),
     }
@@ -1025,6 +1083,7 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
         require_official_path=False,
         require_declared_outputs=True,
         expected_source_paths=stage183_validation.get("source_paths") or {},
+        expected_source_identities=stage183_validation.get("source_identities") or {},
     )
     summary["stage182_candidate_validation"] = candidate_validation
     if candidate_validation.get("validation_status") != "valid":
@@ -1042,6 +1101,8 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
             expected_eval_date=expected_eval_date,
             paths=canonical_paths,
             require_official_path=True,
+            expected_source_paths=stage183_validation.get("source_paths") or {},
+            expected_source_identities=stage183_validation.get("source_identities") or {},
         ),
     )
     summary["stage182_publication_receipt"] = publication_receipt

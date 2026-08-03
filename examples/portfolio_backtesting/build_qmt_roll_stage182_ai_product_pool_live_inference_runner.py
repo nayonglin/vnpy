@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
@@ -275,6 +276,41 @@ def _configure_source_paths(
     }
 
 
+def _source_file_identity(path: Path) -> dict[str, int | str]:
+    source = path.expanduser().resolve(strict=True)
+    before = source.stat()
+    digest = hashlib.sha256()
+    with source.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    after = source.stat()
+    if before.st_size != after.st_size or before.st_mtime_ns != after.st_mtime_ns:
+        raise RuntimeError(f"source file changed while hashing: {source}")
+    return {
+        "size": int(after.st_size),
+        "mtime_ns": int(after.st_mtime_ns),
+        "sha256": digest.hexdigest(),
+    }
+
+
+def _collect_source_identities(
+    source_paths: dict[str, str],
+) -> dict[str, dict[str, int | str]]:
+    return {
+        name: _source_file_identity(Path(source_paths[name]))
+        for name in ("position_changes", "entry_candidate_snapshots")
+    }
+
+
+def _assert_source_identities_unchanged(
+    source_paths: dict[str, str],
+    expected: dict[str, dict[str, int | str]],
+) -> None:
+    actual = _collect_source_identities(source_paths)
+    if actual != expected:
+        raise RuntimeError("Stage182 source files changed during inference")
+
+
 def build_report(summary: dict[str, Any], live_pool: pd.DataFrame, live_eligibility: pd.DataFrame) -> str:
     live_columns = [
         "ai_rank",
@@ -360,6 +396,7 @@ def main() -> None:
         str(args.source_prefix),
         source_dir=args.source_dir,
     )
+    source_identities = _collect_source_identities(source_paths)
 
     daily = build_product_daily()
     source_max_date = pd.Timestamp(daily["date"].max()).normalize()
@@ -388,6 +425,8 @@ def main() -> None:
     live_eligibility = _build_live_eligibility(live_pool, eval_date)
     combined, official_eligibility_path, combined_audit = _build_combined_eligibility(live_eligibility)
 
+    _assert_source_identities_unchanged(source_paths, source_identities)
+
     live_pool.to_csv(output_paths["live_pool"], index=False, encoding="utf-8-sig")
     live_eligibility.to_csv(output_paths["live_eligibility"], index=False, encoding="utf-8-sig")
     combined.to_csv(output_paths["combined_eligibility"], index=False, encoding="utf-8-sig")
@@ -405,6 +444,7 @@ def main() -> None:
         "feature_count": int(len(feature_columns)),
         "live_rows": int(len(live_pool)),
         "source_paths": source_paths,
+        "source_identities": source_identities,
         "official_eligibility_path": str(official_eligibility_path),
         "combined_eligibility_audit": combined_audit,
         "outputs": {key: str(path) for key, path in output_paths.items()},

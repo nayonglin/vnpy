@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
@@ -65,6 +66,31 @@ def _collect_artifact_dates(artifact_paths: dict[str, Path]) -> dict[str, str]:
     }
 
 
+def _file_identity(path: Path) -> dict[str, int | str]:
+    before = path.stat()
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    after = path.stat()
+    if before.st_size != after.st_size or before.st_mtime_ns != after.st_mtime_ns:
+        raise RuntimeError(f"artifact changed while hashing: {path}")
+    return {
+        "size": int(after.st_size),
+        "mtime_ns": int(after.st_mtime_ns),
+        "sha256": digest.hexdigest(),
+    }
+
+
+def _collect_artifact_identities(
+    artifact_paths: dict[str, Path],
+) -> dict[str, dict[str, int | str]]:
+    return {
+        name: _file_identity(artifact_paths[name])
+        for name in ("daily", "position_changes", "entry_candidate_snapshots")
+    }
+
+
 def _build_report(summary: dict[str, Any]) -> str:
     outputs = summary["outputs"]
     return "\n".join(
@@ -124,6 +150,7 @@ def main() -> None:
         "report": str(REPORT_PATH),
     }
     artifact_dates = _collect_artifact_dates(artifact_paths)
+    artifact_identities = _collect_artifact_identities(artifact_paths)
     summary_row = build_summary_row(
         statistics,
         analysis_start=analysis_start,
@@ -143,6 +170,7 @@ def main() -> None:
         "artifact_root": str(BACKTEST_ARTIFACT_ROOT.expanduser().resolve(strict=False)),
         "statistics": summary_row,
         "artifact_dates": artifact_dates,
+        "artifact_identities": artifact_identities,
         "outputs": outputs,
         "safety": {
             "overwrites_official_stage78_eligibility": False,
