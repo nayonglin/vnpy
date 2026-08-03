@@ -56,6 +56,17 @@ PRESERVED_COMBINED_SCORE_TYPE_PREFIXES: tuple[str, ...] = (
 )
 
 
+def _build_output_paths(output_dir: Path) -> dict[str, Path]:
+    root = output_dir.expanduser().resolve(strict=False)
+    return {
+        "live_pool": root / LIVE_POOL_PATH.name,
+        "live_eligibility": root / LIVE_ELIGIBILITY_PATH.name,
+        "combined_eligibility": root / COMBINED_ELIGIBILITY_PATH.name,
+        "summary": root / SUMMARY_PATH.name,
+        "report": root / REPORT_PATH.name,
+    }
+
+
 def _safe_float(value: object, default: float = 0.0) -> float:
     try:
         result = float(value)
@@ -243,9 +254,13 @@ def _to_markdown_table(df: pd.DataFrame, columns: list[str]) -> str:
     return "\n".join([header, separator, *rows])
 
 
-def _configure_source_paths(source_prefix: str) -> dict[str, str]:
-    position_changes = OUTPUT_DIR / f"{source_prefix}_position_changes_2020_2026_04.csv"
-    entry_snapshots = OUTPUT_DIR / f"{source_prefix}_entry_candidate_snapshots_2020_2026_04.csv"
+def _configure_source_paths(
+    source_prefix: str,
+    source_dir: Path = OUTPUT_DIR,
+) -> dict[str, str]:
+    root = source_dir.expanduser().resolve(strict=False)
+    position_changes = root / f"{source_prefix}_position_changes_2020_2026_04.csv"
+    entry_snapshots = root / f"{source_prefix}_entry_candidate_snapshots_2020_2026_04.csv"
     if not position_changes.exists():
         raise FileNotFoundError(f"missing source position changes: {position_changes}")
     if not entry_snapshots.exists():
@@ -254,6 +269,7 @@ def _configure_source_paths(source_prefix: str) -> dict[str, str]:
     suitability.ENTRY_SNAPSHOTS_PATH = entry_snapshots
     return {
         "source_prefix": source_prefix,
+        "source_dir": str(root),
         "position_changes": str(position_changes),
         "entry_snapshots": str(entry_snapshots),
     }
@@ -320,14 +336,30 @@ def main() -> None:
         help="Artifact prefix for AI source position_changes and entry_candidate_snapshots.",
     )
     parser.add_argument(
+        "--source-dir",
+        type=Path,
+        default=OUTPUT_DIR,
+        help="Directory containing Stage183 source artifacts.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=OUTPUT_DIR,
+        help="Directory for Stage182 candidate outputs.",
+    )
+    parser.add_argument(
         "--allow-incomplete-month",
         action="store_true",
         help="Allow scoring on the latest available date even if its calendar month is incomplete.",
     )
     args = parser.parse_args()
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    source_paths = _configure_source_paths(str(args.source_prefix))
+    output_paths = _build_output_paths(args.output_dir)
+    output_paths["summary"].parent.mkdir(parents=True, exist_ok=True)
+    source_paths = _configure_source_paths(
+        str(args.source_prefix),
+        source_dir=args.source_dir,
+    )
 
     daily = build_product_daily()
     source_max_date = pd.Timestamp(daily["date"].max()).normalize()
@@ -356,9 +388,9 @@ def main() -> None:
     live_eligibility = _build_live_eligibility(live_pool, eval_date)
     combined, official_eligibility_path, combined_audit = _build_combined_eligibility(live_eligibility)
 
-    live_pool.to_csv(LIVE_POOL_PATH, index=False, encoding="utf-8-sig")
-    live_eligibility.to_csv(LIVE_ELIGIBILITY_PATH, index=False, encoding="utf-8-sig")
-    combined.to_csv(COMBINED_ELIGIBILITY_PATH, index=False, encoding="utf-8-sig")
+    live_pool.to_csv(output_paths["live_pool"], index=False, encoding="utf-8-sig")
+    live_eligibility.to_csv(output_paths["live_eligibility"], index=False, encoding="utf-8-sig")
+    combined.to_csv(output_paths["combined_eligibility"], index=False, encoding="utf-8-sig")
 
     summary: dict[str, Any] = {
         "model_tag": MODEL_TAG,
@@ -375,24 +407,24 @@ def main() -> None:
         "source_paths": source_paths,
         "official_eligibility_path": str(official_eligibility_path),
         "combined_eligibility_audit": combined_audit,
-        "outputs": {
-            "live_pool": str(LIVE_POOL_PATH),
-            "live_eligibility": str(LIVE_ELIGIBILITY_PATH),
-            "combined_eligibility": str(COMBINED_ELIGIBILITY_PATH),
-            "summary": str(SUMMARY_PATH),
-            "report": str(REPORT_PATH),
-        },
+        "outputs": {key: str(path) for key, path in output_paths.items()},
         "safety": {
             "overwrites_official_stage78_eligibility": False,
             "uses_future_label_for_eval_date": False,
             "real_order_enabled": False,
         },
     }
-    SUMMARY_PATH.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-    REPORT_PATH.write_text(build_report(summary, live_pool, live_eligibility), encoding="utf-8")
+    output_paths["summary"].write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    output_paths["report"].write_text(
+        build_report(summary, live_pool, live_eligibility),
+        encoding="utf-8",
+    )
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    print(f"report: {REPORT_PATH}")
+    print(f"report: {output_paths['report']}")
 
 
 if __name__ == "__main__":

@@ -116,6 +116,34 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             stage182.suitability.POSITION_CHANGES_PATH.resolve().parent,
         )
 
+    def test_stage182_output_dir_is_candidate_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            candidate_root = Path(directory).resolve() / "candidate"
+            build_output_paths = getattr(stage182, "_build_output_paths", None)
+            self.assertTrue(
+                callable(build_output_paths),
+                "Stage182 must expose candidate output path construction",
+            )
+            paths = build_output_paths(candidate_root)
+
+        self.assertEqual(
+            {
+                "live_pool",
+                "live_eligibility",
+                "combined_eligibility",
+                "summary",
+                "report",
+            },
+            set(paths),
+        )
+        self.assertTrue(
+            all(path.resolve().parent == candidate_root for path in paths.values())
+        )
+        self.assertNotEqual(
+            stage182.COMBINED_ELIGIBILITY_PATH.resolve(),
+            paths["combined_eligibility"].resolve(),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
