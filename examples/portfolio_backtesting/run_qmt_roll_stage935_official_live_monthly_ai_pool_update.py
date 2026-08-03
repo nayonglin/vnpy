@@ -349,6 +349,28 @@ def _atomic_copy_file(source: Path, target: Path) -> None:
         raise
 
 
+def _restore_combined_backup(
+    *,
+    backup_path: Path,
+    canonical_combined: Path,
+    expected_sha256: str,
+    receipt: dict[str, Any],
+) -> bool:
+    try:
+        _atomic_copy_file(backup_path, canonical_combined)
+        restored_sha256 = _sha256_file(canonical_combined)
+        receipt["restored_combined_sha256"] = restored_sha256
+        if restored_sha256 != expected_sha256:
+            receipt["rollback_status"] = "hash_mismatch"
+            return False
+        receipt["rollback_status"] = "restored"
+        return True
+    except Exception as exc:
+        receipt["rollback_status"] = "failed"
+        receipt["rollback_exception"] = repr(exc)
+        return False
+
+
 def _publish_stage182_candidate(
     *,
     candidate_paths: dict[str, Path],
@@ -387,6 +409,8 @@ def _publish_stage182_candidate(
     if not canonical_combined.is_file() or canonical_combined.stat().st_size <= 0:
         receipt["publication_status"] = "blocked_canonical_combined_missing_or_empty"
         return receipt
+    pre_publication_combined_sha256 = _sha256_file(canonical_combined)
+    receipt["pre_publication_combined_sha256"] = pre_publication_combined_sha256
 
     receipt["candidate_sha256"] = {
         name: _sha256_file(path) for name, path in candidate_paths.items()
@@ -398,7 +422,6 @@ def _publish_stage182_candidate(
     os.close(backup_descriptor)
     backup_path = Path(backup_name)
     backup_path.unlink()
-    activation_started = False
     try:
         for name in ("summary", "report", "live_pool", "live_eligibility"):
             _atomic_copy_file(candidate_paths[name], canonical_paths[name])
@@ -406,11 +429,11 @@ def _publish_stage182_candidate(
 
         _atomic_copy_file(canonical_combined, backup_path)
         receipt["combined_backup_path"] = str(backup_path)
+        receipt["activation_attempted"] = 1
         _atomic_copy_file(
             candidate_paths["combined_eligibility"],
             canonical_combined,
         )
-        activation_started = True
         receipt["published_files"].append("combined_eligibility")
 
         try:
@@ -429,9 +452,12 @@ def _publish_stage182_candidate(
         receipt["hashes_match"] = int(hashes_match)
         if post_validation.get("validation_status") != "valid" or not hashes_match:
             receipt["publication_status"] = "blocked_post_validation_failed"
-            _atomic_copy_file(backup_path, canonical_combined)
-            receipt["rollback_status"] = "restored"
-            receipt["restored_combined_sha256"] = _sha256_file(canonical_combined)
+            _restore_combined_backup(
+                backup_path=backup_path,
+                canonical_combined=canonical_combined,
+                expected_sha256=pre_publication_combined_sha256,
+                receipt=receipt,
+            )
             return receipt
 
         receipt["publication_status"] = "published"
@@ -442,14 +468,13 @@ def _publish_stage182_candidate(
     except Exception as exc:
         receipt["publication_status"] = "blocked_publication_exception"
         receipt["publication_exception"] = repr(exc)
-        if activation_started and backup_path.exists():
-            try:
-                _atomic_copy_file(backup_path, canonical_combined)
-                receipt["rollback_status"] = "restored"
-                receipt["restored_combined_sha256"] = _sha256_file(canonical_combined)
-            except Exception as rollback_exc:
-                receipt["rollback_status"] = "failed"
-                receipt["rollback_exception"] = repr(rollback_exc)
+        if backup_path.exists():
+            _restore_combined_backup(
+                backup_path=backup_path,
+                canonical_combined=canonical_combined,
+                expected_sha256=pre_publication_combined_sha256,
+                receipt=receipt,
+            )
         return receipt
 
 

@@ -396,6 +396,53 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         self.assertEqual("restored", receipt["rollback_status"])
         self.assertEqual(old_combined, final_combined)
 
+    def test_stage935_publish_rolls_back_when_combined_copy_raises_after_replace(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            candidate_paths = self._stage182_bundle_paths(root / "candidate")
+            canonical_paths = self._stage182_bundle_paths(root / "canonical")
+            self._write_stage182_bundle(candidate_paths, "candidate")
+            self._write_stage182_bundle(canonical_paths, "old")
+            old_combined = canonical_paths["combined_eligibility"].read_bytes()
+            old_hash = stage935._sha256_file(
+                canonical_paths["combined_eligibility"]
+            )
+
+            real_atomic_copy = stage935._atomic_copy_file
+
+            def raise_after_combined_replace(source: Path, target: Path) -> None:
+                real_atomic_copy(source, target)
+                if (
+                    source.resolve()
+                    == candidate_paths["combined_eligibility"].resolve()
+                    and target.resolve()
+                    == canonical_paths["combined_eligibility"].resolve()
+                ):
+                    raise OSError("injected directory fsync failure after replace")
+
+            with patch.object(
+                stage935,
+                "_atomic_copy_file",
+                side_effect=raise_after_combined_replace,
+            ):
+                receipt = stage935._publish_stage182_candidate(
+                    candidate_paths=candidate_paths,
+                    canonical_paths=canonical_paths,
+                    candidate_validation={"validation_status": "valid", "blockers": []},
+                    post_validate=lambda: {"validation_status": "valid", "blockers": []},
+                )
+            final_combined = canonical_paths["combined_eligibility"].read_bytes()
+            restored_hash = stage935._sha256_file(
+                canonical_paths["combined_eligibility"]
+            )
+
+        self.assertEqual("blocked_publication_exception", receipt["publication_status"])
+        self.assertEqual("restored", receipt["rollback_status"])
+        self.assertEqual(old_combined, final_combined)
+        self.assertEqual(old_hash, restored_hash)
+        self.assertEqual(old_hash, receipt["pre_publication_combined_sha256"])
+        self.assertEqual(old_hash, receipt["restored_combined_sha256"])
+
 
 if __name__ == "__main__":
     unittest.main()
