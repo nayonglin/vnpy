@@ -56,6 +56,39 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             paths["entry_candidate_snapshots"].resolve().parent,
         )
 
+    def test_stage183_sparse_candidate_date_is_not_daily_cutoff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            control_root = Path(directory).resolve() / "control"
+            control_root.mkdir()
+            paths = stage183._build_artifact_paths(self.SOURCE_PREFIX, control_root)
+            paths["daily"].write_text(
+                "date,balance\n2026-08-03,200000\n",
+                encoding="utf-8",
+            )
+            paths["position_changes"].write_text(
+                "date,vt_symbol,end_pos\n2026-08-03,rb2610.SHFE,0\n",
+                encoding="utf-8",
+            )
+            paths["entry_candidate_snapshots"].write_text(
+                "date,product_vt_symbol,candidate_status\n"
+                "2026-07-31,rb.SHFE,rejected\n",
+                encoding="utf-8",
+            )
+
+            collect_dates = getattr(stage183, "_collect_artifact_dates", None)
+            self.assertTrue(
+                callable(collect_dates),
+                "Stage183 must expose artifact-date collection for source validation",
+            )
+            dates = collect_dates(paths)
+
+        self.assertEqual("2026-08-03", dates["daily_max_date"])
+        self.assertEqual("2026-08-03", dates["position_changes_max_date"])
+        self.assertEqual(
+            "2026-07-31",
+            dates["entry_candidate_snapshots_max_date"],
+        )
+
     def test_stage182_source_dir_does_not_fall_back_to_stale_data_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()

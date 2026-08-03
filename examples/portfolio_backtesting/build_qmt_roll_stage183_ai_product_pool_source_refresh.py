@@ -9,6 +9,7 @@ from typing import Any
 import pandas as pd
 
 from run_qmt_roll_backtest import build_summary_row, run_backtest
+from run_qmt_alignment_backtest import OUTPUT_DIR as BACKTEST_ARTIFACT_ROOT
 from run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest import (
     BASE_RISK_RATIO,
     CORR20_06_08_FLOOR35_OVERRIDES,
@@ -27,6 +28,17 @@ SUMMARY_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary_{MODEL_TAG}.json"
 REPORT_PATH: Path = OUTPUT_DIR / f"{OUTPUT_PREFIX}_report_{MODEL_TAG}.md"
 
 
+def _build_artifact_paths(source_prefix: str, artifact_root: Path) -> dict[str, Path]:
+    root = artifact_root.expanduser().resolve(strict=False)
+    return {
+        "daily": root / f"{source_prefix}_daily.csv",
+        "trades": root / f"{source_prefix}_trades_2020_2026_04.csv",
+        "position_changes": root / f"{source_prefix}_position_changes_2020_2026_04.csv",
+        "entry_candidate_snapshots": root / f"{source_prefix}_entry_candidate_snapshots_2020_2026_04.csv",
+        "statistics": root / f"{source_prefix}_statistics.json",
+    }
+
+
 def _max_csv_date(path: Path, date_columns: tuple[str, ...]) -> str:
     if not path.exists():
         return ""
@@ -37,6 +49,20 @@ def _max_csv_date(path: Path, date_columns: tuple[str, ...]) -> str:
             if not values.empty:
                 return pd.Timestamp(values.max()).date().isoformat()
     return ""
+
+
+def _collect_artifact_dates(artifact_paths: dict[str, Path]) -> dict[str, str]:
+    return {
+        "daily_max_date": _max_csv_date(artifact_paths["daily"], ("date", "datetime")),
+        "position_changes_max_date": _max_csv_date(
+            artifact_paths["position_changes"],
+            ("date", "datetime"),
+        ),
+        "entry_candidate_snapshots_max_date": _max_csv_date(
+            artifact_paths["entry_candidate_snapshots"],
+            ("datetime", "date"),
+        ),
+    }
 
 
 def _build_report(summary: dict[str, Any]) -> str:
@@ -91,21 +117,13 @@ def main() -> None:
         chart_title="Stage183 AI Source Floor35 Refresh",
     )
 
+    artifact_paths = _build_artifact_paths(source_prefix, BACKTEST_ARTIFACT_ROOT)
     outputs = {
-        "daily": str(OUTPUT_DIR / f"{source_prefix}_daily.csv"),
-        "trades": str(OUTPUT_DIR / f"{source_prefix}_trades_2020_2026_04.csv"),
-        "position_changes": str(OUTPUT_DIR / f"{source_prefix}_position_changes_2020_2026_04.csv"),
-        "entry_candidate_snapshots": str(OUTPUT_DIR / f"{source_prefix}_entry_candidate_snapshots_2020_2026_04.csv"),
-        "statistics": str(OUTPUT_DIR / f"{source_prefix}_statistics.json"),
+        **{key: str(path) for key, path in artifact_paths.items()},
         "summary": str(SUMMARY_PATH),
         "report": str(REPORT_PATH),
     }
-    position_path = Path(outputs["position_changes"])
-    candidate_path = Path(outputs["entry_candidate_snapshots"])
-    artifact_dates = {
-        "position_changes_max_date": _max_csv_date(position_path, ("date", "datetime")),
-        "entry_candidate_snapshots_max_date": _max_csv_date(candidate_path, ("datetime", "date")),
-    }
+    artifact_dates = _collect_artifact_dates(artifact_paths)
     summary_row = build_summary_row(
         statistics,
         analysis_start=analysis_start,
@@ -122,6 +140,7 @@ def main() -> None:
         "analysis_start": analysis_start.date().isoformat(),
         "analysis_end": analysis_end.date().isoformat(),
         "source_prefix": source_prefix,
+        "artifact_root": str(BACKTEST_ARTIFACT_ROOT.expanduser().resolve(strict=False)),
         "statistics": summary_row,
         "artifact_dates": artifact_dates,
         "outputs": outputs,
