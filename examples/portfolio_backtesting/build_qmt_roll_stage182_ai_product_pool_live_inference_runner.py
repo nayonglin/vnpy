@@ -271,7 +271,7 @@ def _configure_source_paths(
         "source_prefix": source_prefix,
         "source_dir": str(root),
         "position_changes": str(position_changes),
-        "entry_snapshots": str(entry_snapshots),
+        "entry_candidate_snapshots": str(entry_snapshots),
     }
 
 

@@ -175,6 +175,12 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             control_root,
             Path(source_paths["position_changes"]).resolve().parent,
         )
+        self.assertIn(
+            "entry_candidate_snapshots",
+            source_paths,
+            "Stage182 and Stage183 must use one canonical entry snapshot key",
+        )
+        self.assertNotIn("entry_snapshots", source_paths)
         self.assertEqual(
             control_root,
             stage182.suitability.POSITION_CHANGES_PATH.resolve().parent,
