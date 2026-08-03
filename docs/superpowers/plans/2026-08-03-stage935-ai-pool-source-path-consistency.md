@@ -10,7 +10,8 @@
 
 ## Global Constraints
 
-- 使用 `/Users/bytedance/Desktop/person/vnpy_stage174_postclose_orchestration/.py311/bin/python`。
+- 使用 `/Users/bytedance/Desktop/person/vnpy/.py311/bin/python`，但所有命令的工作目录保持为隔离 worktree `/Users/bytedance/Desktop/person/vnpy_stage174_postclose_orchestration`。
+- 所有 Python 命令均设置 `PYTHONPATH=/Users/bytedance/Desktop/person/vnpy_stage174_postclose_orchestration`，以加载 worktree 的 `sitecustomize.py` 和隔离 `.vntrader`；不得使用 `QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR` 绕过 runtime guard。
 - 不连接 CTP，不导入交易网关，不调用报单、撤单或成交 API。
 - 不修改 AI 模型、训练窗口、特征、Top8 加固定 `fu.SHFE` 的 Top9 规则。
 - 不修改 Stage847-C9-15w 的入场、止损、一次重试、止盈或仓位逻辑。
@@ -49,7 +50,7 @@ assert stage183._max_csv_date(paths["position_changes"], ("date",)) == "2026-08-
 Run:
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_artifact_paths_use_real_runtime_root -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_artifact_paths_use_real_runtime_root -v
 ```
 
 Expected: FAIL，原因是 `_build_artifact_paths` 尚不存在。
@@ -72,7 +73,7 @@ assert stage182.suitability.POSITION_CHANGES_PATH.resolve().parent == control_ro
 Run:
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_source_dir_does_not_fall_back_to_stale_data_root -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_source_dir_does_not_fall_back_to_stale_data_root -v
 ```
 
 Expected: FAIL，原因是 `_configure_source_paths` 不接受 `source_dir`。
@@ -120,7 +121,7 @@ def _build_artifact_paths(source_prefix: str, artifact_root: Path) -> dict[str, 
 - [ ] **Step 2: 运行 Task 1 的 Stage183 测试并确认 GREEN**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_artifact_paths_use_real_runtime_root -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_artifact_paths_use_real_runtime_root -v
 ```
 
 Expected: PASS。
@@ -132,7 +133,7 @@ Expected: PASS。
 - [ ] **Step 4: 运行 Stage183 聚焦测试**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_sparse_candidate_date_is_not_daily_cutoff -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage183_sparse_candidate_date_is_not_daily_cutoff -v
 ```
 
 Expected: PASS。
@@ -163,7 +164,7 @@ git commit -m "fix: report Stage183 runtime artifact paths"
 - [ ] **Step 2: 运行 source-dir 测试**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_source_dir_does_not_fall_back_to_stale_data_root -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_source_dir_does_not_fall_back_to_stale_data_root -v
 ```
 
 Expected: PASS。
@@ -175,7 +176,7 @@ Expected: PASS。
 - [ ] **Step 4: 运行 output-dir 测试并确认 RED**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_output_dir_is_candidate_only -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage182_output_dir_is_candidate_only -v
 ```
 
 Expected: FAIL，原因是 `_build_output_paths` 尚不存在。
@@ -201,7 +202,7 @@ def _build_output_paths(output_dir: Path) -> dict[str, Path]:
 - [ ] **Step 6: 运行 Stage182 聚焦测试**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage182 -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage182 -v
 ```
 
 Expected: 全部 PASS。
@@ -233,7 +234,7 @@ git commit -m "fix: isolate Stage182 source and candidate outputs"
 - [ ] **Step 2: 运行源门禁测试并确认 RED**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage935_rejects_cross_root_stage183_sources tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage935_accepts_sparse_candidate_with_complete_daily_sources -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage935_rejects_cross_root_stage183_sources tests.test_stage935_ai_pool_path_consistency.Stage935AiPoolPathConsistencyTest.test_stage935_accepts_sparse_candidate_with_complete_daily_sources -v
 ```
 
 Expected: FAIL，原因是 `_validate_stage183_source` 尚不存在。
@@ -250,8 +251,8 @@ Stage935 在 Stage183 成功后、Stage182 启动前读取摘要并验证：sour
 - [ ] **Step 4: 运行源门禁测试并确认 GREEN**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage935_rejects_cross_root -v
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage935_accepts_sparse -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage935_rejects_cross_root -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k stage935_accepts_sparse -v
 ```
 
 Expected: 全部 PASS。
@@ -271,8 +272,8 @@ Expected: 全部 PASS。
 - [ ] **Step 8: 运行候选发布测试并确认 GREEN**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k publish -v
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k rollback -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k publish -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -k rollback -v
 ```
 
 Expected: 全部 PASS。
@@ -303,7 +304,7 @@ git commit -m "fix: validate and publish Stage935 AI pool candidates"
 - [ ] **Step 1: 运行聚焦测试**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage935_ai_pool_path_consistency -v
 ```
 
 Expected: 0 failures，0 errors。
@@ -311,7 +312,7 @@ Expected: 0 failures，0 errors。
 - [ ] **Step 2: 运行 Stage947 与 post-close 回归**
 
 ```bash
-.py311/bin/python -m unittest tests.test_stage947_production_support_launcher tests.test_official_live_postclose_pipeline -v
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m unittest tests.test_stage947_production_support_launcher tests.test_official_live_postclose_pipeline -v
 ```
 
 Expected: 0 failures，0 errors。
