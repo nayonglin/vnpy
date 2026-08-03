@@ -760,6 +760,39 @@ def _run_postclose_pipeline(
             )
             receipt = next_receipt
 
+        def persist_failed_terminal(failed_receipt: Mapping[str, Any]) -> None:
+            last_error: BaseException | None = None
+            expected_digest = str(failed_receipt.get("receipt_sha256", ""))
+            for _attempt in range(2):
+                try:
+                    write_postclose_pipeline_receipt(
+                        PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                        failed_receipt,
+                    )
+                except (OSError, ValueError, PostclosePipelineError) as exc:
+                    last_error = exc
+                try:
+                    persisted = load_and_validate_postclose_pipeline_receipt(
+                        PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                        source_commit=source_commit,
+                        manifest_sha256=manifest_sha256,
+                        schedule_date=schedule_date,
+                    )
+                except (
+                    OSError,
+                    ValueError,
+                    PostclosePipelineError,
+                ) as exc:
+                    last_error = exc
+                    continue
+                if str(persisted.get("receipt_sha256", "")) == expected_digest:
+                    return
+            raise ProductionSupportLaunchError(
+                "production_support_postclose_failed_receipt_persist_failed",
+                boundary=f"postclose-pipeline:{current_stage}",
+                downstream_email_attempted=True,
+            ) from last_error
+
         try:
             target_date, _resolver = _resolve_support_target_date(environment)
             resolved_receipt = new_postclose_pipeline_receipt(
@@ -932,10 +965,7 @@ def _run_postclose_pipeline(
                 retry_of=retry_of,
                 finished_at_utc=_utc_now(),
             )
-            write_postclose_pipeline_receipt(
-                PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
-                receipt,
-            )
+            persist_failed_terminal(receipt)
             raise ProductionSupportLaunchError(
                 blocker,
                 boundary=f"postclose-pipeline:{current_stage}",
