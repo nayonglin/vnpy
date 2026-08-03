@@ -460,8 +460,9 @@ def _build_base_summary(args: argparse.Namespace) -> dict[str, Any]:
         "commands": {},
         "blockers": [],
         "warnings": list(current_validation.get("warnings") or []),
-        "order_api_called_count": 0,
+        "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,
+        "order_api_called_count": 0,
         "real_order_enabled": False,
         "judgement": {
             "overfit_before": "否。Stage935 只按完整月份刷新 AI 池文件，不改排序模型、策略参数或信号规则。",
@@ -633,8 +634,9 @@ def _build_report(summary: dict[str, Any]) -> str:
         f"Top9 品种：{', '.join(map(str, top_products)) or '未读取'}",
         f"阻断：{';'.join(summary.get('blockers') or []) or '无'}",
         f"警告：{';'.join(summary.get('warnings') or []) or '无'}",
-        f"下单 API 次数：{summary.get('order_api_called_count', 0)}",
+        f"send order API 次数：{summary.get('send_order_api_called_count', 0)}",
         f"撤单 API 次数：{summary.get('cancel_order_api_called_count', 0)}",
+        f"总 order API 次数：{summary.get('order_api_called_count', 0)}",
         "",
         "命令结果：",
         *(command_lines if command_lines else ["无"]),
@@ -653,6 +655,8 @@ def _should_send_email(summary: dict[str, Any], policy: str) -> bool:
         return False
     if policy == "always":
         return True
+    if policy == "updates":
+        return str(summary.get("automation_status")) == "monthly_ai_pool_updated"
     return str(summary.get("automation_status")) in {
         "monthly_ai_pool_updated",
         "monthly_ai_pool_update_blocked",
@@ -689,7 +693,9 @@ def _send_email_if_needed(summary: dict[str, Any], report: str, paths: dict[str,
             "automation_status": status,
             "expected_eval_date": summary.get("expected_eval_date", ""),
             "current_eval_date": summary.get("current_eval_date", ""),
-            "order_api_called_count": summary.get("order_api_called_count", 0),
+            "send_order_api_called_count": summary.get("send_order_api_called_count"),
+            "cancel_order_api_called_count": summary.get("cancel_order_api_called_count"),
+            "order_api_called_count": summary.get("order_api_called_count"),
         },
     )
 
@@ -702,7 +708,11 @@ def main() -> None:
     parser.add_argument("--source-prefix", default=DEFAULT_SOURCE_PREFIX)
     parser.add_argument("--skip-data-update", action="store_true")
     parser.add_argument("--force", action="store_true")
-    parser.add_argument("--email-policy", choices=["changes", "always", "never"], default="changes")
+    parser.add_argument(
+        "--email-policy",
+        choices=["changes", "updates", "always", "never"],
+        default="changes",
+    )
     parser.add_argument("--data-update-timeout-seconds", type=int, default=3600)
     parser.add_argument("--source-refresh-timeout-seconds", type=int, default=7200)
     parser.add_argument("--inference-timeout-seconds", type=int, default=3600)
@@ -725,8 +735,9 @@ def main() -> None:
                 "blockers": ["stage935_lock_busy"],
                 "warnings": [],
                 "lock": lock_result,
-                "order_api_called_count": 0,
+                "send_order_api_called_count": 0,
                 "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
                 "real_order_enabled": False,
             }
         else:
@@ -746,8 +757,9 @@ def main() -> None:
                     "warnings": [],
                     "lock": lock_result,
                     "error": repr(exc),
-                    "order_api_called_count": 0,
+                    "send_order_api_called_count": 0,
                     "cancel_order_api_called_count": 0,
+                    "order_api_called_count": 0,
                     "real_order_enabled": False,
                 }
 

@@ -28,6 +28,7 @@ from qmt_roll_official_live_postclose_pipeline import (
     open_postclose_pipeline_lock,
     postclose_pipeline_retry_eligible,
     record_postclose_pipeline_stage,
+    retarget_postclose_pipeline_receipt,
     write_postclose_pipeline_receipt,
 )
 from qmt_roll_official_live_phase_d_config import (
@@ -92,6 +93,11 @@ _STAGE935_OWNED_EMAIL_STATUSES = {
     "send_failed",
     "disabled",
     "blocked_missing_config",
+}
+_TERMINAL_FAILURE_NOTIFICATION_STATUSES = {
+    "sent",
+    "dry_run_written",
+    "suppressed_terminal",
 }
 
 
@@ -176,7 +182,7 @@ SUPPORT_JOB_SPECS = {
             "monthly-ai-pool"
         ),
         script_name="run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py",
-        arguments=("--mode", "run", "--email-policy", "changes"),
+        arguments=("--mode", "run", "--email-policy", "updates"),
     ),
     "health": SupportJobSpec(
         job="health",
@@ -338,10 +344,22 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def _build_stage173_market_data_command(target_date: str) -> list[str]:
-    if len(target_date) != 10:
+def _build_stage173_market_data_command(
+    target_date: str,
+    *,
+    refresh_cutoff_date: str = "",
+) -> list[str]:
+    cutoff = refresh_cutoff_date or target_date
+    try:
+        datetime.strptime(target_date, "%Y-%m-%d")
+        datetime.strptime(cutoff, "%Y-%m-%d")
+    except ValueError as exc:
         raise ProductionSupportLaunchError(
             "production_support_target_date_invalid"
+        ) from exc
+    if cutoff < target_date:
+        raise ProductionSupportLaunchError(
+            "production_support_market_data_cutoff_before_target"
         )
     return [
         str(PYTHON_PATH),
@@ -351,7 +369,7 @@ def _build_stage173_market_data_command(target_date: str) -> list[str]:
         "--bar-start",
         target_date,
         "--end",
-        target_date,
+        cutoff,
     ]
 
 
@@ -372,9 +390,13 @@ def _pipeline_child_environment(
 def _run_market_data_worker(
     *,
     target_date: str,
+    refresh_cutoff_date: str,
     environment: Mapping[str, str],
 ) -> dict[str, Any]:
-    command = _build_stage173_market_data_command(target_date)
+    command = _build_stage173_market_data_command(
+        target_date,
+        refresh_cutoff_date=refresh_cutoff_date,
+    )
     result = subprocess.run(
         command,
         cwd=REPO_ROOT,
@@ -392,13 +414,15 @@ def _run_market_data_worker(
             boundary="postclose-market-data",
         )
     resolved_target, resolver = _resolve_support_target_date(environment)
-    if resolved_target != target_date:
+    if not target_date <= resolved_target <= refresh_cutoff_date:
         raise ProductionSupportLaunchError(
             "production_support_market_data_target_mismatch",
             boundary="postclose-market-data",
         )
     return {
+        "initial_target_date": target_date,
         "target_date": resolved_target,
+        "refresh_cutoff_date": refresh_cutoff_date,
         "resolver": resolver,
         "command_exit_code": result.returncode,
     }
@@ -456,20 +480,18 @@ def _run_monthly_ai_pool_worker(
         "cancel_order_api_called_count",
         "order_api_called_count",
     ):
-        if summary.get(key, 0) != 0:
+        if summary.get(key) != 0:
             raise ProductionSupportLaunchError(
-                "production_support_monthly_ai_pool_order_api_nonzero",
+                "production_support_monthly_ai_pool_order_api_evidence_invalid",
                 boundary="monthly-stage935",
             )
     return summary
 
 
-def _run_precompute_and_issue_daily_receipt(
+def _run_precompute_worker(
     *,
-    spec: SupportJobSpec,
     command: list[str],
     environment: Mapping[str, str],
-    manifest: Mapping[str, Any],
 ) -> dict[str, Any]:
     result = subprocess.run(
         command,
@@ -508,6 +530,14 @@ def _run_precompute_and_issue_daily_receipt(
         raise ProductionSupportLaunchError(
             "production_support_precompute_target_date_mismatch"
         )
+    return summary
+
+
+def _issue_daily_data_receipt(
+    *,
+    target_date: str,
+    manifest: Mapping[str, Any],
+) -> dict[str, Any]:
     return build_and_write_production_daily_data_receipt(
         output_path=PRODUCTION_DAILY_DATA_RECEIPT,
         declared_data_link=PRODUCTION_DATA_LINK,
@@ -522,6 +552,24 @@ def _run_precompute_and_issue_daily_receipt(
             "+00:00",
             "Z",
         ),
+    )
+
+
+def _run_precompute_and_issue_daily_receipt(
+    *,
+    spec: SupportJobSpec,
+    command: list[str],
+    environment: Mapping[str, str],
+    manifest: Mapping[str, Any],
+) -> dict[str, Any]:
+    del spec
+    summary = _run_precompute_worker(
+        command=command,
+        environment=environment,
+    )
+    return _issue_daily_data_receipt(
+        target_date=str(summary["target_date"]),
+        manifest=manifest,
     )
 
 
@@ -549,14 +597,26 @@ def _run_postclose_report_worker(
             boundary="postclose-report",
         )
     summary = _decode_final_json(result.stdout)
-    email = summary.get("email_notification")
+    wrapper = summary.get("wrapper")
+    stage903 = summary.get("stage903_summary")
+    email = (
+        wrapper.get("email_notification")
+        if isinstance(wrapper, dict)
+        else None
+    )
     if (
-        summary.get("model_tag") != "stage929_official_live_15w_timed_cycle_v1"
-        or summary.get("target_date") != target_date
+        not isinstance(wrapper, dict)
+        or not isinstance(stage903, dict)
+        or wrapper.get("model_tag")
+        != "stage929_official_live_15w_timed_cycle_v1"
+        or wrapper.get("target_date") != target_date
+        or wrapper.get("wrapper_exit_code") != 0
+        or wrapper.get("order_api_called_count") != 0
+        or stage903.get("target_date") != target_date
         or not isinstance(email, dict)
         or email.get("email_status") not in {"sent", "dry_run_written"}
         or any(
-            summary.get(key, 0) != 0
+            stage903.get(key) != 0
             for key in (
                 "send_order_api_called_count",
                 "cancel_order_api_called_count",
@@ -621,6 +681,42 @@ def _run_postclose_pipeline(
             boundary="postclose-pipeline-lock",
         ) from exc
     with lock:
+        if retry_of:
+            try:
+                prior = load_and_validate_postclose_pipeline_receipt(
+                    PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                    source_commit=source_commit,
+                    manifest_sha256=manifest_sha256,
+                    schedule_date=schedule_date,
+                )
+                if (
+                    prior.get("pipeline_run_id") != retry_of
+                    or not postclose_pipeline_retry_eligible(prior)
+                ):
+                    raise PostclosePipelineError(
+                        "postclose_pipeline_retry_source_invalid"
+                    )
+                archive_path = PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT.with_name(
+                    f"{retry_of}.json"
+                )
+                if archive_path.exists():
+                    archived = load_and_validate_postclose_pipeline_receipt(
+                        archive_path,
+                        source_commit=source_commit,
+                        manifest_sha256=manifest_sha256,
+                        schedule_date=schedule_date,
+                    )
+                    if archived.get("pipeline_run_id") != retry_of:
+                        raise PostclosePipelineError(
+                            "postclose_pipeline_retry_archive_invalid"
+                        )
+                else:
+                    write_postclose_pipeline_receipt(archive_path, prior)
+            except (OSError, ValueError, PostclosePipelineError) as exc:
+                raise ProductionSupportLaunchError(
+                    "production_support_postclose_retry_archive_invalid",
+                    boundary="postclose-pipeline-retry",
+                ) from exc
         receipt = new_postclose_pipeline_receipt(
             pipeline_run_id=uuid.uuid4().hex,
             schedule_date=schedule_date,
@@ -628,6 +724,7 @@ def _run_postclose_pipeline(
             source_commit=source_commit,
             manifest_sha256=manifest_sha256,
             generated_at_utc=_utc_now(),
+            retry_of=retry_of,
         )
         write_postclose_pipeline_receipt(
             PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
@@ -669,7 +766,19 @@ def _run_postclose_pipeline(
             current_stage = "refresh-market-data"
             market = _run_market_data_worker(
                 target_date=target_date,
+                refresh_cutoff_date=schedule_date,
                 environment=environment,
+            )
+            refreshed_target = str(market.get("target_date", ""))
+            if not target_date <= refreshed_target <= schedule_date:
+                raise ProductionSupportLaunchError(
+                    "production_support_market_data_target_mismatch",
+                    boundary="postclose-market-data",
+                )
+            target_date = refreshed_target
+            receipt = retarget_postclose_pipeline_receipt(
+                receipt,
+                target_date=target_date,
             )
             record(current_stage, "succeeded", outputs=market)
 
@@ -684,6 +793,11 @@ def _run_postclose_pipeline(
                     spec=monthly_spec,
                 ),
             )
+            if str(monthly.get("resolved_target_date", "")) != target_date:
+                raise ProductionSupportLaunchError(
+                    "production_support_monthly_ai_pool_target_date_mismatch",
+                    boundary="monthly-stage935",
+                )
             monthly_status = str(monthly["automation_status"])
             record(
                 current_stage,
@@ -697,22 +811,33 @@ def _run_postclose_pipeline(
 
             current_stage = "refresh-shadow"
             precompute_spec = SUPPORT_JOB_SPECS["postclose-precompute"]
-            daily_receipt = _run_precompute_and_issue_daily_receipt(
-                spec=precompute_spec,
+            shadow = _run_precompute_worker(
                 command=build_support_command(precompute_spec),
                 environment=_pipeline_child_environment(
                     environment,
                     spec=precompute_spec,
                 ),
-                manifest=manifest,
             )
-            daily_receipt_sha256 = str(daily_receipt.get("receipt_sha256", ""))
+            if str(shadow.get("target_date", "")) != target_date:
+                raise ProductionSupportLaunchError(
+                    "production_support_precompute_target_date_mismatch"
+                )
             record(
                 current_stage,
                 "succeeded",
-                outputs={"receipt_sha256": daily_receipt_sha256},
+                outputs={"target_date": target_date},
             )
             current_stage = "issue-daily-data-receipt"
+            daily_receipt = _issue_daily_data_receipt(
+                target_date=target_date,
+                manifest=manifest,
+            )
+            if str(daily_receipt.get("target_cutoff_date", "")) != target_date:
+                raise ProductionSupportLaunchError(
+                    "production_support_daily_receipt_target_date_mismatch",
+                    boundary="daily-data-receipt",
+                )
+            daily_receipt_sha256 = str(daily_receipt.get("receipt_sha256", ""))
             record(
                 current_stage,
                 "succeeded",
@@ -772,6 +897,7 @@ def _run_postclose_pipeline(
                 blocker=blocker,
                 pipeline_run_id=str(receipt.get("pipeline_run_id", "")),
                 root_stage=current_stage,
+                release_commit=source_commit,
             )
             receipt = finish_postclose_pipeline_receipt(
                 receipt,
@@ -912,11 +1038,32 @@ def _inspect_postclose_pipeline_watchdog(
             "production_support_postclose_pipeline_status_invalid",
             boundary="postclose-pipeline-watchdog",
         )
+    email_disposition: dict[str, Any] = {}
+    if status == "failed":
+        existing_email = receipt.get("email_disposition")
+        existing_status = (
+            str(existing_email.get("notification_status", ""))
+            if isinstance(existing_email, dict)
+            else ""
+        )
+        if existing_status in _TERMINAL_FAILURE_NOTIFICATION_STATUSES:
+            email_disposition = dict(existing_email)
+        else:
+            root_stage = str(receipt.get("root_stage", ""))
+            email_disposition = _notify_support_failure(
+                job="postclose-pipeline",
+                boundary=f"postclose-pipeline:{root_stage}",
+                blocker=str(receipt.get("root_blocker", "")),
+                pipeline_run_id=str(receipt.get("pipeline_run_id", "")),
+                root_stage=root_stage,
+                release_commit=str(manifest.get("source_commit", "")),
+            )
     return {
         "model_tag": "stage947_postclose_pipeline_watchdog_v1",
         "watchdog_status": dispositions[status],
         "pipeline_run_id": str(receipt.get("pipeline_run_id", "")),
         "root_blocker": str(receipt.get("root_blocker", "")),
+        "email_disposition": email_disposition,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,
         "order_api_called_count": 0,
@@ -950,15 +1097,47 @@ def _run_postclose_pipeline_retry(
     if status == "running":
         return {
             "retry_status": "deferred_pipeline_running",
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
             "order_api_called_count": 0,
         }
     if status == "succeeded":
-        return {"retry_status": "already_satisfied", "order_api_called_count": 0}
-    if not postclose_pipeline_retry_eligible(receipt):
         return {
-            "retry_status": "ineligible_root_failure",
+            "retry_status": "already_satisfied",
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
             "order_api_called_count": 0,
         }
+    if not postclose_pipeline_retry_eligible(receipt):
+        existing_email = receipt.get("email_disposition")
+        existing_status = (
+            str(existing_email.get("notification_status", ""))
+            if isinstance(existing_email, dict)
+            else ""
+        )
+        email_disposition = (
+            dict(existing_email)
+            if isinstance(existing_email, dict)
+            else {}
+        )
+        if existing_status not in _TERMINAL_FAILURE_NOTIFICATION_STATUSES:
+            root_stage = str(receipt.get("root_stage", ""))
+            email_disposition = _notify_support_failure(
+                job="postclose-pipeline",
+                boundary=f"postclose-pipeline:{root_stage}",
+                blocker=str(receipt.get("root_blocker", "")),
+                pipeline_run_id=str(receipt.get("pipeline_run_id", "")),
+                root_stage=root_stage,
+                release_commit=str(manifest.get("source_commit", "")),
+            )
+        return {
+            "retry_status": "ineligible_root_failure",
+            "email_disposition": email_disposition,
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0,
+        }
+    _validate_support_credentials(SUPPORT_JOB_SPECS["monthly-ai-pool"])
     try:
         return _run_postclose_pipeline(
             environment=environment,
@@ -969,6 +1148,8 @@ def _run_postclose_pipeline_retry(
         if str(exc) == "postclose_pipeline_lock_busy":
             return {
                 "retry_status": "deferred_pipeline_running",
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
                 "order_api_called_count": 0,
             }
         raise
@@ -1001,8 +1182,8 @@ def launch_support_job(args: argparse.Namespace) -> None:
             "production_support_release_or_qualification_invalid"
         ) from exc
     environment = _build_support_environment(os.environ, spec=spec)
-    _validate_support_credentials(spec)
     if spec.job == "postclose-precompute":
+        _validate_support_credentials(spec)
         _run_postclose_pipeline(
             environment=environment,
             manifest=manifest,
@@ -1024,6 +1205,7 @@ def launch_support_job(args: argparse.Namespace) -> None:
         )
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return
+    _validate_support_credentials(spec)
     command = build_support_command(spec)
     target_date, resolver = _resolve_support_target_date(environment)
     try:
@@ -1066,6 +1248,7 @@ def _notify_support_failure(
     blocker: str,
     pipeline_run_id: str = "",
     root_stage: str = "",
+    release_commit: str = "",
 ) -> dict[str, Any]:
     return notify_official_live_failure(
         job=job,
@@ -1074,6 +1257,7 @@ def _notify_support_failure(
         schedule_date=datetime.now().astimezone().date().isoformat(),
         pipeline_run_id=pipeline_run_id,
         root_stage=root_stage,
+        release_commit=release_commit,
     )
 
 

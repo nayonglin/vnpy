@@ -92,6 +92,10 @@ def _validate_payload(payload: Mapping[str, Any]) -> dict[str, Any]:
         or not _COMMIT_RE.fullmatch(str(payload.get("source_commit", "")))
         or not _SHA256_RE.fullmatch(str(payload.get("manifest_sha256", "")))
         or payload.get("status") not in {"running", *_TERMINAL_STATUSES}
+        or (
+            str(payload.get("retry_of", ""))
+            and not _RUN_ID_RE.fullmatch(str(payload.get("retry_of", "")))
+        )
     ):
         raise PostclosePipelineError("postclose_pipeline_payload_invalid")
     stages = payload.get("stages")
@@ -120,6 +124,7 @@ def new_postclose_pipeline_receipt(
     source_commit: str,
     manifest_sha256: str,
     generated_at_utc: str,
+    retry_of: str = "",
 ) -> dict[str, Any]:
     payload = {
         "schema_version": POSTCLOSE_PIPELINE_SCHEMA_VERSION,
@@ -135,7 +140,7 @@ def new_postclose_pipeline_receipt(
         "current_stage": "",
         "root_stage": "",
         "root_blocker": "",
-        "retry_of": "",
+        "retry_of": retry_of,
         "daily_data_receipt_sha256": "",
         "report_summary_sha256": "",
         "email_disposition": {},
@@ -198,6 +203,26 @@ def record_postclose_pipeline_stage(
         result["root_stage"] = stage
         result["root_blocker"] = blocker
     return _validate_payload(_with_digest(result))
+
+
+def retarget_postclose_pipeline_receipt(
+    payload: Mapping[str, Any],
+    *,
+    target_date: str,
+) -> dict[str, Any]:
+    current = _validate_payload(payload)
+    rows = current["stages"]
+    if (
+        current["status"] != "running"
+        or rows[0]["status"] != "succeeded"
+        or rows[1]["status"] != "pending"
+        or not _DATE_RE.fullmatch(target_date)
+        or not str(current["target_date"]) <= target_date <= str(current["schedule_date"])
+    ):
+        raise PostclosePipelineError("postclose_pipeline_target_rebind_invalid")
+    return _validate_payload(
+        _with_digest({**current, "target_date": target_date})
+    )
 
 
 def finish_postclose_pipeline_receipt(

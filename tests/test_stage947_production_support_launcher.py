@@ -825,6 +825,124 @@ print("CONTRACT=" + json.dumps({
         )
         self.assertNotIn("submit", " ".join(command).lower())
 
+    def test_market_data_refresh_can_advance_stale_target_to_schedule_cutoff(self) -> None:
+        process = subprocess.CompletedProcess(
+            args=["stage173"],
+            returncode=0,
+            stdout="{}\n",
+            stderr="",
+        )
+        with (
+            patch.object(launcher.subprocess, "run", return_value=process) as run,
+            patch.object(
+                launcher,
+                "_resolve_support_target_date",
+                return_value=("2026-08-03", {"calendar": "refreshed"}),
+            ),
+        ):
+            result = launcher._run_market_data_worker(
+                target_date="2026-08-02",
+                refresh_cutoff_date="2026-08-03",
+                environment={},
+            )
+
+        self.assertEqual("2026-08-03", result["target_date"])
+        command = run.call_args.args[0]
+        self.assertEqual("2026-08-02", command[command.index("--bar-start") + 1])
+        self.assertEqual("2026-08-03", command[command.index("--end") + 1])
+
+    def test_pipeline_monthly_email_policy_sends_update_success_only(self) -> None:
+        import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+
+        spec = launcher.SUPPORT_JOB_SPECS["monthly-ai-pool"]
+        self.assertEqual(
+            ("--mode", "run", "--email-policy", "updates"),
+            spec.arguments,
+        )
+        self.assertTrue(
+            stage935._should_send_email(
+                {"automation_status": "monthly_ai_pool_updated"},
+                "updates",
+            )
+        )
+        for status in (
+            "monthly_ai_pool_already_current",
+            "monthly_ai_pool_update_blocked",
+            "monthly_ai_pool_exception",
+            "monthly_ai_pool_locked",
+        ):
+            with self.subTest(status=status):
+                self.assertFalse(
+                    stage935._should_send_email(
+                        {"automation_status": status},
+                        "updates",
+                    )
+                )
+
+    def test_monthly_worker_rejects_missing_zero_api_evidence(self) -> None:
+        for missing in (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        ):
+            payload = {
+                "automation_status": "monthly_ai_pool_already_current",
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            }
+            payload.pop(missing)
+            process = subprocess.CompletedProcess(
+                args=["stage935"],
+                returncode=0,
+                stdout=json.dumps(payload),
+                stderr="",
+            )
+            with (
+                self.subTest(missing=missing),
+                patch.object(launcher.subprocess, "run", return_value=process),
+                self.assertRaisesRegex(
+                    launcher.ProductionSupportLaunchError,
+                    "monthly_ai_pool_order_api_evidence_invalid",
+                ),
+            ):
+                launcher._run_monthly_ai_pool_worker(
+                    command=["python", "stage935"],
+                    environment={},
+                )
+
+    def test_postclose_report_worker_validates_real_stage929_envelope(self) -> None:
+        payload = {
+            "wrapper": {
+                "model_tag": "stage929_official_live_15w_timed_cycle_v1",
+                "target_date": "2026-08-03",
+                "wrapper_exit_code": 0,
+                "order_api_called_count": 0,
+                "email_notification": {"email_status": "sent"},
+            },
+            "stage903_summary": {
+                "target_date": "2026-08-03",
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            },
+        }
+        result = subprocess.CompletedProcess(
+            args=["stage929"],
+            returncode=0,
+            stdout=json.dumps(payload),
+            stderr="",
+        )
+        with patch.object(launcher.subprocess, "run", return_value=result):
+            summary = launcher._run_postclose_report_worker(
+                target_date="2026-08-03",
+                command=["python", "stage929"],
+                environment={},
+            )
+
+        self.assertEqual(payload["wrapper"], summary["wrapper"])
+        self.assertRegex(summary["_summary_sha256"], r"^[0-9a-f]{64}$")
+
     def test_postclose_pipeline_orders_monthly_before_final_shadow(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -838,14 +956,25 @@ print("CONTRACT=" + json.dumps({
 
             def monthly(**_kwargs):
                 calls.append("monthly")
-                return {"automation_status": "monthly_ai_pool_updated"}
+                return {
+                    "automation_status": "monthly_ai_pool_updated",
+                    "resolved_target_date": "2026-08-03",
+                }
 
             def shadow(**_kwargs):
                 calls.append("shadow")
-                return {"receipt_sha256": "d" * 64}
+                return {"target_date": "2026-08-03"}
 
-            def report(**_kwargs):
+            def issue(**_kwargs):
+                calls.append("receipt")
+                return {
+                    "receipt_sha256": "d" * 64,
+                    "target_cutoff_date": "2026-08-03",
+                }
+
+            def report(**kwargs):
                 calls.append("report")
+                self.assertEqual("2026-08-03", kwargs["target_date"])
                 return {"_summary_sha256": "e" * 64}
 
             with (
@@ -862,15 +991,16 @@ print("CONTRACT=" + json.dumps({
                 patch.object(
                     launcher,
                     "_resolve_support_target_date",
-                    return_value=("2026-08-03", {"calendar": "signed"}),
+                    return_value=("2026-08-02", {"calendar": "stale"}),
                 ),
                 patch.object(launcher, "_run_market_data_worker", side_effect=market),
                 patch.object(launcher, "_run_monthly_ai_pool_worker", side_effect=monthly),
                 patch.object(
                     launcher,
-                    "_run_precompute_and_issue_daily_receipt",
+                    "_run_precompute_worker",
                     side_effect=shadow,
                 ),
+                patch.object(launcher, "_issue_daily_data_receipt", side_effect=issue),
                 patch.object(
                     launcher,
                     "_run_postclose_report_worker",
@@ -885,8 +1015,12 @@ print("CONTRACT=" + json.dumps({
                     },
                 )
 
-        self.assertEqual(["market", "monthly", "shadow", "report"], calls)
+        self.assertEqual(
+            ["market", "monthly", "shadow", "receipt", "report"],
+            calls,
+        )
         self.assertEqual("succeeded", result["status"])
+        self.assertEqual("2026-08-03", result["target_date"])
         self.assertEqual("d" * 64, result["daily_data_receipt_sha256"])
         self.assertEqual("e" * 64, result["report_summary_sha256"])
         self.assertEqual(0, result["order_api_called_count"])
@@ -931,7 +1065,7 @@ print("CONTRACT=" + json.dumps({
                 ) as notify,
                 patch.object(
                     launcher,
-                    "_run_precompute_and_issue_daily_receipt",
+                    "_run_precompute_worker",
                 ) as shadow,
                 patch.object(launcher, "_run_postclose_report_worker") as report,
                 self.assertRaisesRegex(
@@ -967,6 +1101,73 @@ print("CONTRACT=" + json.dumps({
         shadow.assert_not_called()
         report.assert_not_called()
 
+    def test_postclose_pipeline_attributes_receipt_issue_failure_exactly(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "pipeline"
+            state.mkdir(mode=0o700)
+            receipt_path = state / "latest.json"
+            with (
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT",
+                    receipt_path,
+                ),
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_LOCK",
+                    state / "pipeline.lock",
+                ),
+                patch.object(
+                    launcher,
+                    "_resolve_support_target_date",
+                    return_value=("2026-08-03", {}),
+                ),
+                patch.object(
+                    launcher,
+                    "_run_market_data_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_run_monthly_ai_pool_worker",
+                    return_value={
+                        "automation_status": "monthly_ai_pool_already_current",
+                        "resolved_target_date": "2026-08-03",
+                    },
+                ),
+                patch.object(
+                    launcher,
+                    "_run_precompute_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_issue_daily_data_receipt",
+                    side_effect=launcher.ProductionSupportLaunchError(
+                        "production_support_daily_receipt_write_failed"
+                    ),
+                ),
+                patch.object(
+                    launcher,
+                    "_notify_support_failure",
+                    return_value={"notification_status": "sent"},
+                ),
+                self.assertRaises(launcher.ProductionSupportLaunchError),
+            ):
+                launcher._run_postclose_pipeline(
+                    environment={},
+                    manifest={
+                        "source_commit": "a" * 40,
+                        "manifest_sha256": "b" * 64,
+                    },
+                )
+
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+        self.assertEqual("issue-daily-data-receipt", receipt["root_stage"])
+        self.assertEqual("succeeded", receipt["stages"][4]["status"])
+        self.assertEqual("failed", receipt["stages"][5]["status"])
+
     def test_postclose_watchdog_never_spawns_workers_for_terminal_states(self) -> None:
         manifest = {"source_commit": "a" * 40, "manifest_sha256": "b" * 64}
         for status, expected in (
@@ -982,7 +1183,17 @@ print("CONTRACT=" + json.dumps({
                         return_value={
                             "status": status,
                             "pipeline_run_id": "c" * 32,
+                            "root_stage": (
+                                "refresh-monthly-ai-pool"
+                                if status == "failed"
+                                else ""
+                            ),
                             "root_blocker": "root" if status == "failed" else "",
+                            "email_disposition": (
+                                {"notification_status": "sent"}
+                                if status == "failed"
+                                else {}
+                            ),
                             "order_api_called_count": 0,
                         },
                     ),
@@ -995,6 +1206,39 @@ print("CONTRACT=" + json.dumps({
                 self.assertEqual(expected, result["watchdog_status"])
                 self.assertEqual(0, result["order_api_called_count"])
                 run.assert_not_called()
+
+    def test_postclose_watchdog_supplements_incomplete_root_email_delivery(self) -> None:
+        manifest = {"source_commit": "a" * 40, "manifest_sha256": "b" * 64}
+        receipt = {
+            "status": "failed",
+            "pipeline_run_id": "c" * 32,
+            "root_stage": "refresh-shadow",
+            "root_blocker": "production_support_precompute_process_failed",
+            "email_disposition": {"notification_status": "send_failed"},
+            "order_api_called_count": 0,
+        }
+        with (
+            patch.object(
+                launcher,
+                "load_and_validate_postclose_pipeline_receipt",
+                return_value=receipt,
+            ),
+            patch.object(
+                launcher,
+                "_notify_support_failure",
+                return_value={"notification_status": "suppressed_cooldown"},
+            ) as notify,
+        ):
+            result = launcher._inspect_postclose_pipeline_watchdog(
+                manifest=manifest,
+                schedule_date="2026-08-03",
+            )
+
+        self.assertEqual(
+            "suppressed_cooldown",
+            result["email_disposition"]["notification_status"],
+        )
+        self.assertEqual("a" * 40, notify.call_args.kwargs["release_commit"])
 
     def test_monthly_retry_runs_only_for_first_ai_pool_root_failure(self) -> None:
         payload = postclose_pipeline.new_postclose_pipeline_receipt(
@@ -1041,6 +1285,7 @@ print("CONTRACT=" + json.dumps({
                 "_run_postclose_pipeline",
                 return_value={"status": "succeeded", "order_api_called_count": 0},
             ) as run,
+            patch.object(launcher, "_validate_support_credentials") as credentials,
         ):
             result = launcher._run_postclose_pipeline_retry(
                 environment={},
@@ -1052,11 +1297,113 @@ print("CONTRACT=" + json.dumps({
             )
 
         self.assertEqual("succeeded", result["status"])
+        credentials.assert_called_once_with(
+            launcher.SUPPORT_JOB_SPECS["monthly-ai-pool"]
+        )
         run.assert_called_once_with(
             environment={},
             manifest={"source_commit": "b" * 40, "manifest_sha256": "c" * 64},
             retry_of="a" * 32,
         )
+
+    def test_retry_archives_original_receipt_and_binds_retry_identity(self) -> None:
+        manifest = {"source_commit": "b" * 40, "manifest_sha256": "c" * 64}
+        original = postclose_pipeline.new_postclose_pipeline_receipt(
+            pipeline_run_id="a" * 32,
+            schedule_date="2026-08-03",
+            target_date="2026-08-03",
+            source_commit=manifest["source_commit"],
+            manifest_sha256=manifest["manifest_sha256"],
+            generated_at_utc="2026-08-03T08:35:00Z",
+        )
+        for stage, status in (
+            ("resolve-target", "succeeded"),
+            ("refresh-market-data", "succeeded"),
+            ("check-monthly-ai-pool", "succeeded"),
+            ("refresh-monthly-ai-pool", "failed"),
+        ):
+            original = postclose_pipeline.record_postclose_pipeline_stage(
+                original,
+                stage=stage,
+                status=status,
+                blocker=(
+                    "production_support_monthly_ai_pool_process_failed"
+                    if status == "failed"
+                    else ""
+                ),
+                started_at_utc="2026-08-03T08:35:00Z",
+                finished_at_utc="2026-08-03T08:35:01Z",
+            )
+        original = postclose_pipeline.finish_postclose_pipeline_receipt(
+            original,
+            status="failed",
+            root_blocker="production_support_monthly_ai_pool_process_failed",
+            email_disposition={"notification_status": "sent"},
+            finished_at_utc="2026-08-03T08:35:02Z",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "pipeline"
+            state.mkdir(mode=0o700)
+            latest = state / "latest.json"
+            postclose_pipeline.write_postclose_pipeline_receipt(latest, original)
+            with (
+                patch.object(launcher, "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT", latest),
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_LOCK",
+                    state / "pipeline.lock",
+                ),
+                patch.object(
+                    launcher,
+                    "_resolve_support_target_date",
+                    return_value=("2026-08-03", {}),
+                ),
+                patch.object(
+                    launcher,
+                    "_run_market_data_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_run_monthly_ai_pool_worker",
+                    return_value={
+                        "automation_status": "monthly_ai_pool_updated",
+                        "resolved_target_date": "2026-08-03",
+                    },
+                ),
+                patch.object(
+                    launcher,
+                    "_run_precompute_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_issue_daily_data_receipt",
+                    return_value={
+                        "receipt_sha256": "d" * 64,
+                        "target_cutoff_date": "2026-08-03",
+                    },
+                ),
+                patch.object(
+                    launcher,
+                    "_run_postclose_report_worker",
+                    return_value={"_summary_sha256": "e" * 64},
+                ),
+            ):
+                retried = launcher._run_postclose_pipeline(
+                    environment={},
+                    manifest=manifest,
+                    retry_of="a" * 32,
+                )
+
+            archived = json.loads(
+                (state / f"{'a' * 32}.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual("a" * 32, archived["pipeline_run_id"])
+        self.assertEqual("failed", archived["status"])
+        self.assertEqual("a" * 32, retried["retry_of"])
+        self.assertEqual("succeeded", retried["status"])
 
     def test_launchd_postclose_precompute_routes_to_pipeline(self) -> None:
         args = argparse.Namespace(job="postclose-precompute")
@@ -1088,6 +1435,48 @@ print("CONTRACT=" + json.dumps({
         pipeline_run.assert_called_once()
         legacy.assert_not_called()
 
+    def test_watchdog_and_noop_retry_do_not_require_worker_credentials(self) -> None:
+        args = argparse.Namespace(job="postclose-report")
+        spec = launcher.SUPPORT_JOB_SPECS[args.job]
+        manifest = {"source_commit": "a" * 40, "manifest_sha256": "b" * 64}
+        with (
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(os.environ, {"XPC_SERVICE_NAME": spec.label}, clear=False),
+            patch.object(launcher, "_assert_stable_deploy_root"),
+            patch.object(launcher, "_assert_canonical_paths"),
+            patch.object(
+                launcher,
+                "_validate_release_and_receipt",
+                return_value=manifest,
+            ),
+            patch.object(launcher, "_validate_code_qualification"),
+            patch.object(launcher, "_build_support_environment", return_value={}),
+            patch.object(launcher, "_validate_support_credentials") as credentials,
+            patch.object(
+                launcher,
+                "_inspect_postclose_pipeline_watchdog",
+                return_value={"watchdog_status": "already_satisfied"},
+            ),
+        ):
+            launcher.launch_support_job(args)
+        credentials.assert_not_called()
+
+        with (
+            patch.object(
+                launcher,
+                "load_and_validate_postclose_pipeline_receipt",
+                return_value={"status": "succeeded"},
+            ),
+            patch.object(launcher, "_validate_support_credentials") as credentials,
+        ):
+            result = launcher._run_postclose_pipeline_retry(
+                environment={},
+                manifest=manifest,
+                schedule_date="2026-08-03",
+            )
+        self.assertEqual("already_satisfied", result["retry_status"])
+        credentials.assert_not_called()
+
     def test_support_failure_returns_pipeline_notification_disposition(self) -> None:
         with patch.object(
             launcher,
@@ -1100,6 +1489,7 @@ print("CONTRACT=" + json.dumps({
                 blocker="production_support_monthly_ai_pool_process_failed",
                 pipeline_run_id="a" * 32,
                 root_stage="refresh-monthly-ai-pool",
+                release_commit="b" * 40,
             )
 
         self.assertEqual("sent", result["notification_status"])
@@ -1108,6 +1498,7 @@ print("CONTRACT=" + json.dumps({
             "refresh-monthly-ai-pool",
             notify.call_args.kwargs["root_stage"],
         )
+        self.assertEqual("b" * 40, notify.call_args.kwargs["release_commit"])
 
     def test_manual_support_launch_is_blocked_before_validation(self) -> None:
         args = argparse.Namespace(job="health")
