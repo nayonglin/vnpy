@@ -20,6 +20,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
 
 import run_qmt_roll_stage947_official_live_production_support_launcher as launcher  # noqa: E402
 import run_qmt_roll_stage945_official_live_production_session_launcher as session_launcher  # noqa: E402
+import qmt_roll_official_live_postclose_pipeline as postclose_pipeline  # noqa: E402
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
@@ -802,6 +803,311 @@ print("CONTRACT=" + json.dumps({
         self.assertEqual(1, run.call_count)
         validate.assert_called_once()
         issue.assert_not_called()
+
+    def test_stage173_market_data_command_is_exact_and_no_submit(self) -> None:
+        command = launcher._build_stage173_market_data_command("2026-08-03")
+
+        self.assertEqual(str(launcher.PYTHON_PATH), command[0])
+        self.assertEqual(
+            "build_qmt_roll_stage173_forward_main_contract_data_update.py",
+            Path(command[1]).name,
+        )
+        self.assertEqual(
+            [
+                "--mapping-start",
+                "2026-08-01",
+                "--bar-start",
+                "2026-08-03",
+                "--end",
+                "2026-08-03",
+            ],
+            command[2:],
+        )
+        self.assertNotIn("submit", " ".join(command).lower())
+
+    def test_postclose_pipeline_orders_monthly_before_final_shadow(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = root / "pipeline"
+            state.mkdir(mode=0o700)
+            calls: list[str] = []
+
+            def market(**_kwargs):
+                calls.append("market")
+                return {"target_date": "2026-08-03"}
+
+            def monthly(**_kwargs):
+                calls.append("monthly")
+                return {"automation_status": "monthly_ai_pool_updated"}
+
+            def shadow(**_kwargs):
+                calls.append("shadow")
+                return {"receipt_sha256": "d" * 64}
+
+            def report(**_kwargs):
+                calls.append("report")
+                return {"_summary_sha256": "e" * 64}
+
+            with (
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT",
+                    state / "latest.json",
+                ),
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_LOCK",
+                    state / "pipeline.lock",
+                ),
+                patch.object(
+                    launcher,
+                    "_resolve_support_target_date",
+                    return_value=("2026-08-03", {"calendar": "signed"}),
+                ),
+                patch.object(launcher, "_run_market_data_worker", side_effect=market),
+                patch.object(launcher, "_run_monthly_ai_pool_worker", side_effect=monthly),
+                patch.object(
+                    launcher,
+                    "_run_precompute_and_issue_daily_receipt",
+                    side_effect=shadow,
+                ),
+                patch.object(
+                    launcher,
+                    "_run_postclose_report_worker",
+                    side_effect=report,
+                ),
+            ):
+                result = launcher._run_postclose_pipeline(
+                    environment={},
+                    manifest={
+                        "source_commit": "a" * 40,
+                        "manifest_sha256": "b" * 64,
+                    },
+                )
+
+        self.assertEqual(["market", "monthly", "shadow", "report"], calls)
+        self.assertEqual("succeeded", result["status"])
+        self.assertEqual("d" * 64, result["daily_data_receipt_sha256"])
+        self.assertEqual("e" * 64, result["report_summary_sha256"])
+        self.assertEqual(0, result["order_api_called_count"])
+
+    def test_postclose_pipeline_records_monthly_root_failure_once(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "pipeline"
+            state.mkdir(mode=0o700)
+            with (
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT",
+                    state / "latest.json",
+                ),
+                patch.object(
+                    launcher,
+                    "PRODUCTION_POSTCLOSE_PIPELINE_LOCK",
+                    state / "pipeline.lock",
+                ),
+                patch.object(
+                    launcher,
+                    "_resolve_support_target_date",
+                    return_value=("2026-08-03", {}),
+                ),
+                patch.object(
+                    launcher,
+                    "_run_market_data_worker",
+                    return_value={"target_date": "2026-08-03"},
+                ),
+                patch.object(
+                    launcher,
+                    "_run_monthly_ai_pool_worker",
+                    side_effect=launcher.ProductionSupportLaunchError(
+                        "production_support_monthly_ai_pool_process_failed",
+                        boundary="monthly-stage935",
+                    ),
+                ),
+                patch.object(
+                    launcher,
+                    "_notify_support_failure",
+                    return_value={"notification_status": "sent"},
+                ) as notify,
+                patch.object(
+                    launcher,
+                    "_run_precompute_and_issue_daily_receipt",
+                ) as shadow,
+                patch.object(launcher, "_run_postclose_report_worker") as report,
+                self.assertRaisesRegex(
+                    launcher.ProductionSupportLaunchError,
+                    "monthly_ai_pool_process_failed",
+                ) as raised,
+            ):
+                launcher._run_postclose_pipeline(
+                    environment={},
+                    manifest={
+                        "source_commit": "a" * 40,
+                        "manifest_sha256": "b" * 64,
+                    },
+                )
+
+            payload = json.loads((state / "latest.json").read_text())
+
+        self.assertTrue(raised.exception.downstream_email_attempted)
+        self.assertEqual(1, notify.call_count)
+        self.assertEqual("postclose-pipeline", notify.call_args.kwargs["job"])
+        self.assertEqual("failed", payload["status"])
+        self.assertEqual("refresh-monthly-ai-pool", payload["root_stage"])
+        self.assertEqual(
+            "production_support_monthly_ai_pool_process_failed",
+            payload["root_blocker"],
+        )
+        self.assertTrue(
+            all(
+                row["status"] == "skipped_upstream_failed"
+                for row in payload["stages"][4:]
+            )
+        )
+        shadow.assert_not_called()
+        report.assert_not_called()
+
+    def test_postclose_watchdog_never_spawns_workers_for_terminal_states(self) -> None:
+        manifest = {"source_commit": "a" * 40, "manifest_sha256": "b" * 64}
+        for status, expected in (
+            ("running", "deferred_pipeline_running"),
+            ("succeeded", "already_satisfied"),
+            ("failed", "root_failure_already_recorded"),
+        ):
+            with self.subTest(status=status):
+                with (
+                    patch.object(
+                        launcher,
+                        "load_and_validate_postclose_pipeline_receipt",
+                        return_value={
+                            "status": status,
+                            "pipeline_run_id": "c" * 32,
+                            "root_blocker": "root" if status == "failed" else "",
+                            "order_api_called_count": 0,
+                        },
+                    ),
+                    patch.object(launcher.subprocess, "run") as run,
+                ):
+                    result = launcher._inspect_postclose_pipeline_watchdog(
+                        manifest=manifest,
+                        schedule_date="2026-08-03",
+                    )
+                self.assertEqual(expected, result["watchdog_status"])
+                self.assertEqual(0, result["order_api_called_count"])
+                run.assert_not_called()
+
+    def test_monthly_retry_runs_only_for_first_ai_pool_root_failure(self) -> None:
+        payload = postclose_pipeline.new_postclose_pipeline_receipt(
+            pipeline_run_id="a" * 32,
+            schedule_date="2026-08-03",
+            target_date="2026-08-03",
+            source_commit="b" * 40,
+            manifest_sha256="c" * 64,
+            generated_at_utc="2026-08-03T08:35:00Z",
+        )
+        for stage, status in (
+            ("resolve-target", "succeeded"),
+            ("refresh-market-data", "succeeded"),
+            ("check-monthly-ai-pool", "succeeded"),
+            ("refresh-monthly-ai-pool", "failed"),
+        ):
+            payload = postclose_pipeline.record_postclose_pipeline_stage(
+                payload,
+                stage=stage,
+                status=status,
+                started_at_utc="2026-08-03T08:35:00Z",
+                finished_at_utc="2026-08-03T08:35:01Z",
+                blocker=(
+                    "production_support_monthly_ai_pool_process_failed"
+                    if status == "failed"
+                    else ""
+                ),
+            )
+        payload = postclose_pipeline.finish_postclose_pipeline_receipt(
+            payload,
+            status="failed",
+            root_blocker="production_support_monthly_ai_pool_process_failed",
+            email_disposition={"notification_status": "sent"},
+            finished_at_utc="2026-08-03T08:35:02Z",
+        )
+        with (
+            patch.object(
+                launcher,
+                "load_and_validate_postclose_pipeline_receipt",
+                return_value=payload,
+            ),
+            patch.object(
+                launcher,
+                "_run_postclose_pipeline",
+                return_value={"status": "succeeded", "order_api_called_count": 0},
+            ) as run,
+        ):
+            result = launcher._run_postclose_pipeline_retry(
+                environment={},
+                manifest={
+                    "source_commit": "b" * 40,
+                    "manifest_sha256": "c" * 64,
+                },
+                schedule_date="2026-08-03",
+            )
+
+        self.assertEqual("succeeded", result["status"])
+        run.assert_called_once_with(
+            environment={},
+            manifest={"source_commit": "b" * 40, "manifest_sha256": "c" * 64},
+            retry_of="a" * 32,
+        )
+
+    def test_launchd_postclose_precompute_routes_to_pipeline(self) -> None:
+        args = argparse.Namespace(job="postclose-precompute")
+        spec = launcher.SUPPORT_JOB_SPECS[args.job]
+        with (
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(os.environ, {"XPC_SERVICE_NAME": spec.label}, clear=False),
+            patch.object(launcher, "_assert_stable_deploy_root"),
+            patch.object(launcher, "_assert_canonical_paths"),
+            patch.object(
+                launcher,
+                "_validate_release_and_receipt",
+                return_value={
+                    "source_commit": "a" * 40,
+                    "manifest_sha256": "b" * 64,
+                },
+            ),
+            patch.object(launcher, "_validate_code_qualification"),
+            patch.object(launcher, "_build_support_environment", return_value={}),
+            patch.object(launcher, "_validate_support_credentials"),
+            patch.object(launcher, "_run_postclose_pipeline") as pipeline_run,
+            patch.object(
+                launcher,
+                "_run_precompute_and_issue_daily_receipt",
+            ) as legacy,
+        ):
+            launcher.launch_support_job(args)
+
+        pipeline_run.assert_called_once()
+        legacy.assert_not_called()
+
+    def test_support_failure_returns_pipeline_notification_disposition(self) -> None:
+        with patch.object(
+            launcher,
+            "notify_official_live_failure",
+            return_value={"notification_status": "sent", "fingerprint": "f" * 64},
+        ) as notify:
+            result = launcher._notify_support_failure(
+                job="postclose-pipeline",
+                boundary="postclose-pipeline:refresh-monthly-ai-pool",
+                blocker="production_support_monthly_ai_pool_process_failed",
+                pipeline_run_id="a" * 32,
+                root_stage="refresh-monthly-ai-pool",
+            )
+
+        self.assertEqual("sent", result["notification_status"])
+        self.assertEqual("a" * 32, notify.call_args.kwargs["pipeline_run_id"])
+        self.assertEqual(
+            "refresh-monthly-ai-pool",
+            notify.call_args.kwargs["root_stage"],
+        )
 
     def test_manual_support_launch_is_blocked_before_validation(self) -> None:
         args = argparse.Namespace(job="health")

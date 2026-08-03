@@ -32,6 +32,7 @@ _BLOCKER_RE = re.compile(
 )
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _COMMIT_RE = re.compile(r"[0-9a-f]{40}")
+_RUN_ID_RE = re.compile(r"[0-9a-f]{32}")
 _SECRET_MARKERS = (
     "password",
     "auth_code",
@@ -47,6 +48,7 @@ _ALLOWED_JOBS = {
     "postclose-precompute",
     "postclose-report",
     "monthly-ai-pool",
+    "postclose-pipeline",
 }
 _ALLOWED_BOUNDARIES = {
     "pre-exec",
@@ -56,6 +58,15 @@ _ALLOWED_BOUNDARIES = {
     "monthly-stage935",
     "monthly-receipt-refresh",
     "unexpected",
+    "postclose-pipeline:resolve-target",
+    "postclose-pipeline:refresh-market-data",
+    "postclose-pipeline:check-monthly-ai-pool",
+    "postclose-pipeline:refresh-monthly-ai-pool",
+    "postclose-pipeline:refresh-shadow",
+    "postclose-pipeline:issue-daily-data-receipt",
+    "postclose-pipeline:generate-postclose-report",
+    "postclose-pipeline-watchdog",
+    "postclose-pipeline-retry",
 }
 _TERMINAL_STATUSES = {"sent", "dry_run_written"}
 _MAILER_STATUSES = {
@@ -110,6 +121,11 @@ def _safe_schedule_date(value: str) -> str:
 def _safe_commit(value: str) -> str:
     candidate = str(value or "").strip().lower()
     return candidate if _COMMIT_RE.fullmatch(candidate) else ""
+
+
+def _safe_pipeline_run_id(value: str) -> str:
+    candidate = str(value or "").strip().lower()
+    return candidate if _RUN_ID_RE.fullmatch(candidate) else ""
 
 
 def _failure_fingerprint(
@@ -296,6 +312,8 @@ def _entry(
     blocker: str,
     status: str,
     now_text: str,
+    pipeline_run_id: str = "",
+    root_stage: str = "",
     error_type: str = "",
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
@@ -308,6 +326,10 @@ def _entry(
         "status": status,
         "updated_at": now_text,
     }
+    if pipeline_run_id:
+        payload["pipeline_run_id"] = pipeline_run_id
+    if root_stage:
+        payload["root_stage"] = root_stage
     if error_type:
         payload["error_type"] = _safe_token(error_type, fallback="Exception")
     return payload
@@ -320,6 +342,8 @@ def _notify_official_live_failure(
     blocker: str,
     schedule_date: str,
     release_commit: str,
+    pipeline_run_id: str = "",
+    root_stage: str = "",
     state_path: Path,
     lock_path: Path,
     now: datetime,
@@ -339,6 +363,8 @@ def _notify_official_live_failure(
         )
         safe_schedule_date = _safe_schedule_date(schedule_date)
         safe_commit = _safe_commit(release_commit)
+        safe_pipeline_run_id = _safe_pipeline_run_id(pipeline_run_id)
+        safe_root_stage = _safe_token(root_stage, fallback="")
         fingerprint = _failure_fingerprint(
             safe_commit,
             safe_schedule_date,
@@ -389,6 +415,8 @@ def _notify_official_live_failure(
                 blocker=safe_blocker,
                 status="reserved",
                 now_text=now_text,
+                pipeline_run_id=safe_pipeline_run_id,
+                root_stage=safe_root_stage,
             )
             state = {
                 "schema_version": 1,
@@ -408,6 +436,8 @@ def _notify_official_live_failure(
                     f"阻断码：{safe_blocker}",
                     f"调度日期：{safe_schedule_date}",
                     f"版本：{safe_commit[:12] or 'unknown'}",
+                    f"Pipeline：{safe_pipeline_run_id or 'unknown'}",
+                    f"根因阶段：{safe_root_stage or 'unknown'}",
                     "send/cancel/order API：0/0/0",
                     "正常信号邮件未生成，不能据此判断为无交易信号。",
                 ]
@@ -426,6 +456,8 @@ def _notify_official_live_failure(
                         "blocker": safe_blocker,
                         "schedule_date": safe_schedule_date,
                         "release_commit": safe_commit[:12] or "unknown",
+                        "pipeline_run_id": safe_pipeline_run_id,
+                        "root_stage": safe_root_stage,
                         "send_order_api_called_count": 0,
                         "cancel_order_api_called_count": 0,
                         "order_api_called_count": 0,
@@ -448,6 +480,8 @@ def _notify_official_live_failure(
                 blocker=safe_blocker,
                 status=notification_status,
                 now_text=now_text,
+                pipeline_run_id=safe_pipeline_run_id,
+                root_stage=safe_root_stage,
                 error_type=error_type,
             )
             state = {
@@ -476,6 +510,8 @@ def notify_official_live_failure(
     blocker: str,
     schedule_date: str,
     release_commit: str = "",
+    pipeline_run_id: str = "",
+    root_stage: str = "",
 ) -> dict[str, Any]:
     return _notify_official_live_failure(
         job=job,
@@ -483,6 +519,8 @@ def notify_official_live_failure(
         blocker=blocker,
         schedule_date=schedule_date,
         release_commit=release_commit,
+        pipeline_run_id=pipeline_run_id,
+        root_stage=root_stage,
         state_path=FAILURE_NOTIFICATION_STATE_PATH,
         lock_path=FAILURE_NOTIFICATION_LOCK_PATH,
         now=datetime.now(timezone.utc),

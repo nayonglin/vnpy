@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import pwd
 import stat
 import subprocess
 from typing import Any, Mapping
+import uuid
 
 from qmt_roll_official_live_daily_data_receipt import (
     build_and_write_production_daily_data_receipt,
@@ -17,6 +19,16 @@ from qmt_roll_official_live_daily_data_receipt import (
 from qmt_roll_official_live_failure_notify import (
     normalize_official_live_failure_blocker,
     notify_official_live_failure,
+)
+from qmt_roll_official_live_postclose_pipeline import (
+    PostclosePipelineError,
+    finish_postclose_pipeline_receipt,
+    load_and_validate_postclose_pipeline_receipt,
+    new_postclose_pipeline_receipt,
+    open_postclose_pipeline_lock,
+    postclose_pipeline_retry_eligible,
+    record_postclose_pipeline_stage,
+    write_postclose_pipeline_receipt,
 )
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
@@ -35,6 +47,7 @@ from run_qmt_roll_stage945_official_live_production_session_launcher import (
     PRODUCTION_RELEASE_MANIFEST,
     PRODUCTION_RUNTIME_ROOT,
     PRODUCTION_SIGNAL_INPUT_ROOT,
+    PRODUCTION_STATE_ROOT,
     PYTHON_PATH,
     REPO_ROOT,
     ProductionSessionLaunchError,
@@ -51,8 +64,21 @@ PROJECT_DIR = Path(__file__).resolve().parent
 _CANONICAL_SYSTEM_PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 PRODUCTION_EMAIL_CONFIG_PATH = PROJECT_DIR / "official_live_email.local.env"
 PRODUCTION_VT_SETTING_PATH = REPO_ROOT / ".vntrader/vt_setting.json"
+PRODUCTION_POSTCLOSE_PIPELINE_ROOT = (
+    PRODUCTION_STATE_ROOT / "postclose-pipeline"
+)
+PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT = (
+    PRODUCTION_POSTCLOSE_PIPELINE_ROOT / "latest.json"
+)
+PRODUCTION_POSTCLOSE_PIPELINE_LOCK = (
+    PRODUCTION_POSTCLOSE_PIPELINE_ROOT / "pipeline.lock"
+)
+STAGE173_SCRIPT = (
+    PROJECT_DIR / "build_qmt_roll_stage173_forward_main_contract_data_update.py"
+)
 _EMAIL_REQUIRED_JOBS = {
     "day-close-readonly",
+    "postclose-precompute",
     "postclose-report",
     "monthly-ai-pool",
 }
@@ -308,13 +334,143 @@ def _decode_final_json(stdout: str) -> dict[str, Any]:
     )
 
 
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _build_stage173_market_data_command(target_date: str) -> list[str]:
+    if len(target_date) != 10:
+        raise ProductionSupportLaunchError(
+            "production_support_target_date_invalid"
+        )
+    return [
+        str(PYTHON_PATH),
+        str(STAGE173_SCRIPT),
+        "--mapping-start",
+        target_date[:7] + "-01",
+        "--bar-start",
+        target_date,
+        "--end",
+        target_date,
+    ]
+
+
+def _pipeline_child_environment(
+    environment: Mapping[str, str],
+    *,
+    spec: SupportJobSpec,
+) -> dict[str, str]:
+    child = dict(environment)
+    child.update(dict(spec.gate_environment))
+    if spec.job in _EMAIL_REQUIRED_JOBS:
+        child["OFFICIAL_LIVE_EMAIL_ENV_FILE"] = str(
+            PRODUCTION_EMAIL_CONFIG_PATH
+        )
+    return child
+
+
+def _run_market_data_worker(
+    *,
+    target_date: str,
+    environment: Mapping[str, str],
+) -> dict[str, Any]:
+    command = _build_stage173_market_data_command(target_date)
+    result = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        env=dict(environment),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    if result.returncode != 0:
+        raise ProductionSupportLaunchError(
+            "production_support_market_data_process_failed",
+            boundary="postclose-market-data",
+        )
+    resolved_target, resolver = _resolve_support_target_date(environment)
+    if resolved_target != target_date:
+        raise ProductionSupportLaunchError(
+            "production_support_market_data_target_mismatch",
+            boundary="postclose-market-data",
+        )
+    return {
+        "target_date": resolved_target,
+        "resolver": resolver,
+        "command_exit_code": result.returncode,
+    }
+
+
+def _run_monthly_ai_pool_worker(
+    *,
+    command: list[str],
+    environment: Mapping[str, str],
+) -> dict[str, Any]:
+    result = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        env=dict(environment),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    summary: dict[str, Any] = {}
+    decode_error: ProductionSupportLaunchError | None = None
+    try:
+        summary = _decode_final_json(result.stdout)
+    except ProductionSupportLaunchError as exc:
+        decode_error = exc
+    if result.returncode != 0:
+        email_result = summary.get("email_result")
+        email_status = (
+            str(email_result.get("email_status", ""))
+            if isinstance(email_result, dict)
+            else ""
+        )
+        raise ProductionSupportLaunchError(
+            "production_support_monthly_ai_pool_process_failed",
+            boundary="monthly-stage935",
+            downstream_email_attempted=(
+                email_status in _STAGE935_OWNED_EMAIL_STATUSES
+            ),
+        ) from decode_error
+    if decode_error is not None:
+        raise decode_error
+    status = str(summary.get("automation_status", ""))
+    if status not in {
+        "monthly_ai_pool_updated",
+        "monthly_ai_pool_already_current",
+    }:
+        raise ProductionSupportLaunchError(
+            "production_support_monthly_ai_pool_not_qualified",
+            boundary="monthly-stage935",
+        )
+    for key in (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    ):
+        if summary.get(key, 0) != 0:
+            raise ProductionSupportLaunchError(
+                "production_support_monthly_ai_pool_order_api_nonzero",
+                boundary="monthly-stage935",
+            )
+    return summary
+
+
 def _run_precompute_and_issue_daily_receipt(
     *,
     spec: SupportJobSpec,
     command: list[str],
     environment: Mapping[str, str],
     manifest: Mapping[str, Any],
-) -> None:
+) -> dict[str, Any]:
     result = subprocess.run(
         command,
         cwd=REPO_ROOT,
@@ -352,7 +508,7 @@ def _run_precompute_and_issue_daily_receipt(
         raise ProductionSupportLaunchError(
             "production_support_precompute_target_date_mismatch"
         )
-    build_and_write_production_daily_data_receipt(
+    return build_and_write_production_daily_data_receipt(
         output_path=PRODUCTION_DAILY_DATA_RECEIPT,
         declared_data_link=PRODUCTION_DATA_LINK,
         expected_data_root=PRODUCTION_DATA_ROOT,
@@ -367,6 +523,275 @@ def _run_precompute_and_issue_daily_receipt(
             "Z",
         ),
     )
+
+
+def _run_postclose_report_worker(
+    *,
+    target_date: str,
+    command: list[str],
+    environment: Mapping[str, str],
+) -> dict[str, Any]:
+    effective_command = [*command, "--target-date", target_date]
+    result = subprocess.run(
+        effective_command,
+        cwd=REPO_ROOT,
+        env=dict(environment),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    if result.returncode != 0:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_report_process_failed",
+            boundary="postclose-report",
+        )
+    summary = _decode_final_json(result.stdout)
+    email = summary.get("email_notification")
+    if (
+        summary.get("model_tag") != "stage929_official_live_15w_timed_cycle_v1"
+        or summary.get("target_date") != target_date
+        or not isinstance(email, dict)
+        or email.get("email_status") not in {"sent", "dry_run_written"}
+        or any(
+            summary.get(key, 0) != 0
+            for key in (
+                "send_order_api_called_count",
+                "cancel_order_api_called_count",
+                "order_api_called_count",
+            )
+        )
+    ):
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_report_not_qualified",
+            boundary="postclose-report",
+            downstream_email_attempted=(
+                isinstance(email, dict)
+                and str(email.get("email_status", ""))
+                in _STAGE935_OWNED_EMAIL_STATUSES
+            ),
+        )
+    canonical = json.dumps(
+        summary,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return {
+        **summary,
+        "_summary_sha256": hashlib.sha256(canonical).hexdigest(),
+    }
+
+
+def _ensure_postclose_pipeline_root() -> None:
+    root = PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT.parent
+    if not root.exists():
+        root.mkdir(mode=0o700)
+    metadata = root.lstat()
+    if (
+        not stat.S_ISDIR(metadata.st_mode)
+        or metadata.st_uid != os.getuid()
+        or stat.S_IMODE(metadata.st_mode) & 0o077
+    ):
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_root_invalid",
+            boundary="postclose-pipeline",
+        )
+
+
+def _run_postclose_pipeline(
+    *,
+    environment: Mapping[str, str],
+    manifest: Mapping[str, Any],
+    retry_of: str = "",
+) -> dict[str, Any]:
+    target_date, _resolver = _resolve_support_target_date(environment)
+    schedule_date = datetime.now().astimezone().date().isoformat()
+    source_commit = str(manifest.get("source_commit", ""))
+    manifest_sha256 = str(manifest.get("manifest_sha256", ""))
+    _ensure_postclose_pipeline_root()
+    try:
+        lock = open_postclose_pipeline_lock(PRODUCTION_POSTCLOSE_PIPELINE_LOCK)
+    except PostclosePipelineError as exc:
+        raise ProductionSupportLaunchError(
+            str(exc),
+            boundary="postclose-pipeline-lock",
+        ) from exc
+    with lock:
+        receipt = new_postclose_pipeline_receipt(
+            pipeline_run_id=uuid.uuid4().hex,
+            schedule_date=schedule_date,
+            target_date=target_date,
+            source_commit=source_commit,
+            manifest_sha256=manifest_sha256,
+            generated_at_utc=_utc_now(),
+        )
+        write_postclose_pipeline_receipt(
+            PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+            receipt,
+        )
+        current_stage = "resolve-target"
+        daily_receipt_sha256 = ""
+        report_summary_sha256 = ""
+
+        def record(
+            stage: str,
+            status: str,
+            *,
+            blocker: str = "",
+            outputs: Mapping[str, Any] | None = None,
+        ) -> None:
+            nonlocal receipt
+            now = _utc_now()
+            receipt = record_postclose_pipeline_stage(
+                receipt,
+                stage=stage,
+                status=status,
+                started_at_utc=now,
+                finished_at_utc=now,
+                blocker=blocker,
+                outputs=outputs,
+            )
+            write_postclose_pipeline_receipt(
+                PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                receipt,
+            )
+
+        try:
+            record(
+                "resolve-target",
+                "succeeded",
+                outputs={"target_date": target_date},
+            )
+            current_stage = "refresh-market-data"
+            market = _run_market_data_worker(
+                target_date=target_date,
+                environment=environment,
+            )
+            record(current_stage, "succeeded", outputs=market)
+
+            current_stage = "check-monthly-ai-pool"
+            record(current_stage, "succeeded")
+            current_stage = "refresh-monthly-ai-pool"
+            monthly_spec = SUPPORT_JOB_SPECS["monthly-ai-pool"]
+            monthly = _run_monthly_ai_pool_worker(
+                command=build_support_command(monthly_spec),
+                environment=_pipeline_child_environment(
+                    environment,
+                    spec=monthly_spec,
+                ),
+            )
+            monthly_status = str(monthly["automation_status"])
+            record(
+                current_stage,
+                (
+                    "succeeded"
+                    if monthly_status == "monthly_ai_pool_updated"
+                    else "skipped_not_required"
+                ),
+                outputs={"automation_status": monthly_status},
+            )
+
+            current_stage = "refresh-shadow"
+            precompute_spec = SUPPORT_JOB_SPECS["postclose-precompute"]
+            daily_receipt = _run_precompute_and_issue_daily_receipt(
+                spec=precompute_spec,
+                command=build_support_command(precompute_spec),
+                environment=_pipeline_child_environment(
+                    environment,
+                    spec=precompute_spec,
+                ),
+                manifest=manifest,
+            )
+            daily_receipt_sha256 = str(daily_receipt.get("receipt_sha256", ""))
+            record(
+                current_stage,
+                "succeeded",
+                outputs={"receipt_sha256": daily_receipt_sha256},
+            )
+            current_stage = "issue-daily-data-receipt"
+            record(
+                current_stage,
+                "succeeded",
+                outputs={"receipt_sha256": daily_receipt_sha256},
+            )
+
+            current_stage = "generate-postclose-report"
+            report_spec = SUPPORT_JOB_SPECS["postclose-report"]
+            report = _run_postclose_report_worker(
+                target_date=target_date,
+                command=build_support_command(report_spec),
+                environment=_pipeline_child_environment(
+                    environment,
+                    spec=report_spec,
+                ),
+            )
+            report_summary_sha256 = str(report.get("_summary_sha256", ""))
+            record(
+                current_stage,
+                "succeeded",
+                outputs={"summary_sha256": report_summary_sha256},
+            )
+            receipt = finish_postclose_pipeline_receipt(
+                receipt,
+                status="succeeded",
+                root_blocker="",
+                email_disposition={"notification_status": "report_email_sent"},
+                daily_data_receipt_sha256=daily_receipt_sha256,
+                report_summary_sha256=report_summary_sha256,
+                retry_of=retry_of,
+                finished_at_utc=_utc_now(),
+            )
+            write_postclose_pipeline_receipt(
+                PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                receipt,
+            )
+            return receipt
+        except Exception as exc:
+            blocker = normalize_official_live_failure_blocker(
+                str(exc),
+                fallback="production_support_unexpected_failure",
+            )
+            try:
+                receipt = record_postclose_pipeline_stage(
+                    receipt,
+                    stage=current_stage,
+                    status="failed",
+                    started_at_utc=_utc_now(),
+                    finished_at_utc=_utc_now(),
+                    blocker=blocker,
+                )
+            except PostclosePipelineError:
+                pass
+            notification = _notify_support_failure(
+                job="postclose-pipeline",
+                boundary=f"postclose-pipeline:{current_stage}",
+                blocker=blocker,
+                pipeline_run_id=str(receipt.get("pipeline_run_id", "")),
+                root_stage=current_stage,
+            )
+            receipt = finish_postclose_pipeline_receipt(
+                receipt,
+                status="failed",
+                root_blocker=blocker,
+                email_disposition=notification,
+                daily_data_receipt_sha256=daily_receipt_sha256,
+                report_summary_sha256=report_summary_sha256,
+                retry_of=retry_of,
+                finished_at_utc=_utc_now(),
+            )
+            write_postclose_pipeline_receipt(
+                PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+                receipt,
+            )
+            raise ProductionSupportLaunchError(
+                blocker,
+                boundary=f"postclose-pipeline:{current_stage}",
+                downstream_email_attempted=True,
+            ) from exc
 
 
 def _run_monthly_ai_pool_and_refresh_receipt(
@@ -454,6 +879,101 @@ def _run_monthly_ai_pool_and_refresh_receipt(
         ) from exc
 
 
+def _inspect_postclose_pipeline_watchdog(
+    *,
+    manifest: Mapping[str, Any],
+    schedule_date: str,
+) -> dict[str, Any]:
+    try:
+        receipt = load_and_validate_postclose_pipeline_receipt(
+            PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+            source_commit=str(manifest.get("source_commit", "")),
+            manifest_sha256=str(manifest.get("manifest_sha256", "")),
+            schedule_date=schedule_date,
+        )
+    except FileNotFoundError as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_receipt_missing",
+            boundary="postclose-pipeline-watchdog",
+        ) from exc
+    except (PostclosePipelineError, OSError, ValueError) as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_receipt_invalid",
+            boundary="postclose-pipeline-watchdog",
+        ) from exc
+    status = str(receipt.get("status", ""))
+    dispositions = {
+        "running": "deferred_pipeline_running",
+        "succeeded": "already_satisfied",
+        "failed": "root_failure_already_recorded",
+    }
+    if status not in dispositions:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_status_invalid",
+            boundary="postclose-pipeline-watchdog",
+        )
+    return {
+        "model_tag": "stage947_postclose_pipeline_watchdog_v1",
+        "watchdog_status": dispositions[status],
+        "pipeline_run_id": str(receipt.get("pipeline_run_id", "")),
+        "root_blocker": str(receipt.get("root_blocker", "")),
+        "send_order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+        "order_api_called_count": 0,
+    }
+
+
+def _run_postclose_pipeline_retry(
+    *,
+    environment: Mapping[str, str],
+    manifest: Mapping[str, Any],
+    schedule_date: str,
+) -> dict[str, Any]:
+    try:
+        receipt = load_and_validate_postclose_pipeline_receipt(
+            PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT,
+            source_commit=str(manifest.get("source_commit", "")),
+            manifest_sha256=str(manifest.get("manifest_sha256", "")),
+            schedule_date=schedule_date,
+        )
+    except FileNotFoundError as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_receipt_missing",
+            boundary="postclose-pipeline-retry",
+        ) from exc
+    except (PostclosePipelineError, OSError, ValueError) as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_postclose_pipeline_receipt_invalid",
+            boundary="postclose-pipeline-retry",
+        ) from exc
+    status = str(receipt.get("status", ""))
+    if status == "running":
+        return {
+            "retry_status": "deferred_pipeline_running",
+            "order_api_called_count": 0,
+        }
+    if status == "succeeded":
+        return {"retry_status": "already_satisfied", "order_api_called_count": 0}
+    if not postclose_pipeline_retry_eligible(receipt):
+        return {
+            "retry_status": "ineligible_root_failure",
+            "order_api_called_count": 0,
+        }
+    try:
+        return _run_postclose_pipeline(
+            environment=environment,
+            manifest=manifest,
+            retry_of=str(receipt["pipeline_run_id"]),
+        )
+    except ProductionSupportLaunchError as exc:
+        if str(exc) == "postclose_pipeline_lock_busy":
+            return {
+                "retry_status": "deferred_pipeline_running",
+                "order_api_called_count": 0,
+            }
+        raise
+
+
 def launch_support_job(args: argparse.Namespace) -> None:
     spec = SUPPORT_JOB_SPECS[args.job]
     label = str(os.environ.get("XPC_SERVICE_NAME", "")).strip()
@@ -482,22 +1002,29 @@ def launch_support_job(args: argparse.Namespace) -> None:
         ) from exc
     environment = _build_support_environment(os.environ, spec=spec)
     _validate_support_credentials(spec)
-    command = build_support_command(spec)
+    if spec.job == "postclose-precompute":
+        _run_postclose_pipeline(
+            environment=environment,
+            manifest=manifest,
+        )
+        return
+    schedule_date = datetime.now().astimezone().date().isoformat()
+    if spec.job == "postclose-report":
+        payload = _inspect_postclose_pipeline_watchdog(
+            manifest=manifest,
+            schedule_date=schedule_date,
+        )
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return
     if spec.job == "monthly-ai-pool":
-        _run_monthly_ai_pool_and_refresh_receipt(
-            command=command,
+        payload = _run_postclose_pipeline_retry(
             environment=environment,
             manifest=manifest,
+            schedule_date=schedule_date,
         )
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
         return
-    if spec.writes_daily_data:
-        _run_precompute_and_issue_daily_receipt(
-            spec=spec,
-            command=command,
-            environment=environment,
-            manifest=manifest,
-        )
-        return
+    command = build_support_command(spec)
     target_date, resolver = _resolve_support_target_date(environment)
     try:
         _validate_daily_data_readiness(
@@ -537,12 +1064,16 @@ def _notify_support_failure(
     job: str,
     boundary: str,
     blocker: str,
-) -> None:
-    notify_official_live_failure(
+    pipeline_run_id: str = "",
+    root_stage: str = "",
+) -> dict[str, Any]:
+    return notify_official_live_failure(
         job=job,
         boundary=boundary,
         blocker=blocker,
         schedule_date=datetime.now().astimezone().date().isoformat(),
+        pipeline_run_id=pipeline_run_id,
+        root_stage=root_stage,
     )
 
 

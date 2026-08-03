@@ -74,6 +74,8 @@ class OfficialLiveFailureNotifyTest(unittest.TestCase):
         blocker: str = "production_support_target_date_resolver_failed",
         schedule_date: str = "2026-07-23",
         release_commit: str = "a" * 40,
+        pipeline_run_id: str = "",
+        root_stage: str = "",
     ) -> dict[str, object]:
         return failure_notify._notify_official_live_failure(
             job=job,
@@ -81,11 +83,49 @@ class OfficialLiveFailureNotifyTest(unittest.TestCase):
             blocker=blocker,
             schedule_date=schedule_date,
             release_commit=release_commit,
+            pipeline_run_id=pipeline_run_id,
+            root_stage=root_stage,
             state_path=root / "state.json",
             lock_path=root / "state.lock",
             now=now,
             email_sender=sender,
         )
+
+    def test_pipeline_context_is_sanitized_metadata_not_dedupe_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._private_root(directory)
+            calls: list[dict[str, object]] = []
+
+            def sender(**kwargs: object) -> dict[str, str]:
+                calls.append(kwargs)
+                return {"email_status": "sent"}
+
+            first = self._invoke(
+                root=root,
+                sender=sender,
+                job="postclose-pipeline",
+                boundary="postclose-pipeline:refresh-monthly-ai-pool",
+                blocker="production_support_monthly_ai_pool_process_failed",
+                pipeline_run_id="b" * 32,
+                root_stage="refresh-monthly-ai-pool",
+            )
+            second = self._invoke(
+                root=root,
+                sender=sender,
+                now=BASE_NOW + timedelta(hours=1),
+                job="postclose-pipeline",
+                boundary="postclose-pipeline:refresh-monthly-ai-pool",
+                blocker="production_support_monthly_ai_pool_process_failed",
+                pipeline_run_id="c" * 32,
+                root_stage="refresh-monthly-ai-pool",
+            )
+
+        self.assertEqual("sent", first["notification_status"])
+        self.assertEqual("suppressed_terminal", second["notification_status"])
+        self.assertEqual(1, len(calls))
+        metadata = calls[0]["metadata"]
+        self.assertEqual("b" * 32, metadata["pipeline_run_id"])
+        self.assertEqual("refresh-monthly-ai-pool", metadata["root_stage"])
 
     def test_sent_and_dry_run_are_terminal_for_same_fingerprint(self) -> None:
         for terminal in ("sent", "dry_run_written"):
