@@ -133,7 +133,7 @@ print("CONTRACT=" + json.dumps({
         )
         self.assertEqual([], payload["forbidden_imports"])
 
-    def test_stage935_reads_successful_stage173_from_data_root_when_control_is_empty(
+    def test_stage935_reads_stage173_from_data_and_ai_candidates_from_control(
         self,
     ) -> None:
         import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
@@ -181,6 +181,8 @@ print("CONTRACT=" + json.dumps({
                 ),
                 encoding="utf-8",
             )
+            live_pool = data / "stage182-live-pool.csv"
+            live_pool.write_text("product_vt_symbol\nold.SHFE\n", encoding="utf-8")
             live_eligibility = data / "stage182-live.csv"
             live_rows = [
                 ("fu.SHFE", 1),
@@ -201,13 +203,32 @@ print("CONTRACT=" + json.dumps({
                 ),
                 encoding="utf-8",
             )
+            report = data / "stage182-report.md"
+            report.write_text("old report\n", encoding="utf-8")
             combined = data / "stage182-combined.csv"
-            combined.write_text(
+            combined_text = (
                 "eval_date,product_vt_symbol,strategy\n"
                 "2026-03-31,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
                 "2026-04-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
                 "2026-05-29,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
-                "2026-06-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n",
+                "2026-06-30,jm.DCE,ai_top8_plus_fu_satellite_post_signal_entry_filter\n"
+            )
+            combined.write_text(combined_text, encoding="utf-8")
+
+            stage183_daily = control / "stage183-daily.csv"
+            stage183_daily.write_text(
+                "date,balance\n2026-07-23,200000\n",
+                encoding="utf-8",
+            )
+            stage183_position = control / "stage183-position.csv"
+            stage183_position.write_text(
+                "date,vt_symbol,end_pos\n2026-07-23,rb2610.SHFE,0\n",
+                encoding="utf-8",
+            )
+            stage183_candidate = control / "stage183-candidate.csv"
+            stage183_candidate.write_text(
+                "date,product_vt_symbol,candidate_status\n"
+                "2026-07-21,rb.SHFE,rejected\n",
                 encoding="utf-8",
             )
             stage183_summary = data / "stage183-summary.json"
@@ -216,8 +237,67 @@ print("CONTRACT=" + json.dumps({
                     {
                         "analysis_end": "2026-07-23",
                         "source_prefix": stage935.DEFAULT_SOURCE_PREFIX,
-                        "artifact_dates": {},
-                        "safety": {},
+                        "artifact_root": str(control),
+                        "artifact_dates": {
+                            "daily_max_date": "2026-07-23",
+                            "position_changes_max_date": "2026-07-23",
+                            "entry_candidate_snapshots_max_date": "2026-07-21",
+                        },
+                        "outputs": {
+                            "daily": str(stage183_daily),
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            candidate_live_pool = control / live_pool.name
+            candidate_live_pool.write_text(
+                "product_vt_symbol\nfu.SHFE\n",
+                encoding="utf-8",
+            )
+            candidate_live = control / live_eligibility.name
+            candidate_live.write_text(
+                "eval_date,product_vt_symbol,score_rank\n"
+                + "".join(
+                    f"2026-06-30,{symbol},{rank}\n"
+                    for symbol, rank in live_rows
+                ),
+                encoding="utf-8",
+            )
+            candidate_combined = control / combined.name
+            candidate_combined.write_text(combined_text, encoding="utf-8")
+            candidate_report = control / report.name
+            candidate_report.write_text("candidate report\n", encoding="utf-8")
+            candidate_summary = control / stage182_summary.name
+            candidate_outputs = {
+                "live_pool": str(candidate_live_pool),
+                "live_eligibility": str(candidate_live),
+                "combined_eligibility": str(candidate_combined),
+                "summary": str(candidate_summary),
+                "report": str(candidate_report),
+            }
+            candidate_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "source_paths": {
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "outputs": candidate_outputs,
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
                     }
                 ),
                 encoding="utf-8",
@@ -243,19 +323,22 @@ print("CONTRACT=" + json.dumps({
             with (
                 patch.multiple(
                     stage935,
+                    CONTROL_OUTPUT_DIR=control,
                     ALL_FUTURES_MAPPING_PATH=mapping,
                     STAGE173_SUMMARY_PATH=stage173_summary,
                     STAGE182_SUMMARY_PATH=stage182_summary,
+                    STAGE182_LIVE_POOL_PATH=live_pool,
                     STAGE182_LIVE_ELIGIBILITY_PATH=live_eligibility,
                     STAGE182_COMBINED_ELIGIBILITY_PATH=combined,
+                    STAGE182_REPORT_PATH=report,
                     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
                     STAGE183_SUMMARY_PATH=stage183_summary,
                 ),
-                patch.object(stage935, "_run_command", return_value=success),
+                patch.object(stage935, "_run_command", return_value=success) as run_command,
             ):
                 result = stage935._run(args)
             stage173_summary_text = str(stage173_summary)
-            control_entries = list(control.iterdir())
+            commands = [call.args[0] for call in run_command.call_args_list]
 
         self.assertEqual("monthly_ai_pool_updated", result["automation_status"])
         self.assertNotIn(
@@ -266,7 +349,23 @@ print("CONTRACT=" + json.dumps({
             stage173_summary_text,
             result["stage173_summary"]["path"],
         )
-        self.assertEqual([], control_entries)
+        self.assertEqual(
+            "published",
+            result["stage182_publication_receipt"]["publication_status"],
+        )
+        stage182_command = next(
+            command for command in commands if str(stage935.STAGE182_PATH) in command
+        )
+        self.assertIn("--source-dir", stage182_command)
+        self.assertIn("--output-dir", stage182_command)
+        self.assertEqual(
+            str(control),
+            stage182_command[stage182_command.index("--source-dir") + 1],
+        )
+        self.assertEqual(
+            str(control),
+            stage182_command[stage182_command.index("--output-dir") + 1],
+        )
 
     def test_receipt_or_precompute_failure_notifies_once_before_exec(self) -> None:
         cases = (

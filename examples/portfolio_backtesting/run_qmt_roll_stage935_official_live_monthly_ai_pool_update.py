@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 import subprocess
+import tempfile
 import time
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 
 import pandas as pd
 
@@ -42,12 +44,18 @@ STAGE183_PATH = PROJECT_DIR / "build_qmt_roll_stage183_ai_product_pool_source_re
 STAGE182_SUMMARY_PATH = (
     DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_summary_{STAGE182_MODEL_TAG}.json"
 )
+STAGE182_LIVE_POOL_PATH = (
+    DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_latest_pool_{STAGE182_MODEL_TAG}.csv"
+)
 STAGE182_LIVE_ELIGIBILITY_PATH = (
     DATA_ASSET_DIR
     / f"{STAGE182_OUTPUT_PREFIX}_eligibility_{STAGE182_MODEL_TAG}.csv"
 )
 STAGE182_COMBINED_ELIGIBILITY_PATH = (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+)
+STAGE182_REPORT_PATH = (
+    DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_report_{STAGE182_MODEL_TAG}.md"
 )
 STAGE183_SUMMARY_PATH = (
     DATA_ASSET_DIR / f"{STAGE183_OUTPUT_PREFIX}_summary_{STAGE183_MODEL_TAG}.json"
@@ -79,6 +87,27 @@ def _paths(run_id: str) -> dict[str, Path]:
         "latest_report_txt": (
             CONTROL_OUTPUT_DIR / f"{OUTPUT_PREFIX}_latest_report.txt"
         ),
+    }
+
+
+def _stage182_paths(root: Path) -> dict[str, Path]:
+    resolved = root.expanduser().resolve(strict=False)
+    return {
+        "live_pool": resolved / STAGE182_LIVE_POOL_PATH.name,
+        "live_eligibility": resolved / STAGE182_LIVE_ELIGIBILITY_PATH.name,
+        "combined_eligibility": resolved / STAGE182_COMBINED_ELIGIBILITY_PATH.name,
+        "summary": resolved / STAGE182_SUMMARY_PATH.name,
+        "report": resolved / STAGE182_REPORT_PATH.name,
+    }
+
+
+def _canonical_stage182_paths() -> dict[str, Path]:
+    return {
+        "live_pool": STAGE182_LIVE_POOL_PATH,
+        "live_eligibility": STAGE182_LIVE_ELIGIBILITY_PATH,
+        "combined_eligibility": STAGE182_COMBINED_ELIGIBILITY_PATH,
+        "summary": STAGE182_SUMMARY_PATH,
+        "report": STAGE182_REPORT_PATH,
     }
 
 
@@ -120,6 +149,108 @@ def _timestamp(value: str) -> pd.Timestamp | None:
     return pd.Timestamp(parsed).normalize()
 
 
+def _path_is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve(strict=False).relative_to(root.resolve(strict=False))
+    except ValueError:
+        return False
+    return True
+
+
+def _max_source_csv_date(path: Path) -> str:
+    try:
+        frame = pd.read_csv(
+            path,
+            usecols=lambda column: column in {"date", "datetime"},
+        )
+    except Exception:
+        return ""
+    for column in ("date", "datetime"):
+        if column not in frame.columns:
+            continue
+        values = pd.to_datetime(frame[column], errors="coerce").dropna()
+        if not values.empty:
+            return pd.Timestamp(values.max()).date().isoformat()
+    return ""
+
+
+def _validate_stage183_source(
+    summary: dict[str, Any],
+    *,
+    expected_root: Path,
+    resolved_target_date: str,
+    source_prefix: str,
+) -> dict[str, Any]:
+    blockers: list[str] = []
+    expected = expected_root.expanduser().resolve(strict=False)
+    target = _timestamp(resolved_target_date)
+    if str(summary.get("source_prefix", "")) != source_prefix:
+        blockers.append("stage183_source_prefix_mismatch")
+    if _date_text(summary.get("analysis_end", "")) != resolved_target_date:
+        blockers.append("stage183_analysis_end_not_resolved_target_date")
+
+    declared_root_text = str(summary.get("artifact_root", "") or "")
+    declared_root = Path(declared_root_text).expanduser().resolve(strict=False) if declared_root_text else None
+    if declared_root is None or declared_root != expected:
+        blockers.append("stage183_artifact_root_not_control_root")
+
+    outputs = summary.get("outputs") or {}
+    source_paths: dict[str, str] = {}
+    artifact_dates: dict[str, str] = {}
+    date_keys = {
+        "daily": "daily_max_date",
+        "position_changes": "position_changes_max_date",
+        "entry_candidate_snapshots": "entry_candidate_snapshots_max_date",
+    }
+    declared_dates = summary.get("artifact_dates") or {}
+    for name, date_key in date_keys.items():
+        raw_path = str(outputs.get(name, "") or "")
+        if not raw_path:
+            blockers.append(f"stage183_{name}_path_missing")
+            continue
+        path = Path(raw_path).expanduser().resolve(strict=False)
+        source_paths[name] = str(path)
+        if not _path_is_within(path, expected):
+            blockers.append("stage183_source_path_outside_control_root")
+        if not path.is_file() or path.stat().st_size <= 0:
+            blockers.append(f"stage183_{name}_missing_or_empty")
+            continue
+        actual_date = _max_source_csv_date(path)
+        artifact_dates[date_key] = actual_date
+        if not actual_date:
+            blockers.append(f"stage183_{name}_max_date_missing")
+        if _date_text(declared_dates.get(date_key, "")) != actual_date:
+            blockers.append(f"stage183_{name}_summary_date_mismatch")
+
+    for name in ("daily", "position_changes"):
+        date_key = date_keys[name]
+        if artifact_dates.get(date_key, "") != resolved_target_date:
+            blockers.append(f"stage183_{name}_max_date_not_resolved_target_date")
+
+    candidate_date = _timestamp(
+        artifact_dates.get("entry_candidate_snapshots_max_date", "")
+    )
+    if candidate_date is not None and target is not None and candidate_date > target:
+        blockers.append("stage183_entry_candidate_snapshots_after_resolved_target_date")
+
+    safety = summary.get("safety") or {}
+    if safety.get("overwrites_official_stage78_eligibility") not in {False, 0}:
+        blockers.append("stage183_safety_overwrites_official_enabled")
+    if safety.get("real_order_enabled") not in {False, 0}:
+        blockers.append("stage183_safety_real_order_enabled")
+
+    unique_blockers = list(dict.fromkeys(blockers))
+    return {
+        "validation_status": "valid" if not unique_blockers else "invalid",
+        "blockers": unique_blockers,
+        "expected_root": str(expected),
+        "source_prefix": source_prefix,
+        "resolved_target_date": resolved_target_date,
+        "source_paths": source_paths,
+        "artifact_dates": artifact_dates,
+    }
+
+
 def _tail(text: str, limit: int = 4000) -> str:
     value = str(text or "")
     if len(value) <= limit:
@@ -153,6 +284,173 @@ def _run_command(cmd: list[str], timeout: int) -> dict[str, Any]:
             "stdout_tail": "",
             "stderr_tail": repr(exc),
         }
+
+
+def _build_stage182_command(
+    *,
+    source_prefix: str,
+    source_dir: Path,
+    output_dir: Path,
+) -> list[str]:
+    return [
+        str(PYTHON_PATH),
+        str(STAGE182_PATH),
+        "--source-prefix",
+        source_prefix,
+        "--source-dir",
+        str(source_dir.expanduser().resolve(strict=False)),
+        "--output-dir",
+        str(output_dir.expanduser().resolve(strict=False)),
+    ]
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(str(path), os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _atomic_copy_file(source: Path, target: Path) -> None:
+    source_path = source.expanduser().resolve(strict=True)
+    target_path = target.expanduser().resolve(strict=False)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{target_path.name}.tmp.",
+        dir=str(target_path.parent),
+    )
+    temporary_path = Path(temporary_name)
+    try:
+        with source_path.open("rb") as source_handle, os.fdopen(descriptor, "wb") as target_handle:
+            descriptor = -1
+            for chunk in iter(lambda: source_handle.read(1024 * 1024), b""):
+                target_handle.write(chunk)
+            target_handle.flush()
+            os.fsync(target_handle.fileno())
+        os.chmod(temporary_path, source_path.stat().st_mode & 0o777)
+        os.replace(temporary_path, target_path)
+        _fsync_directory(target_path.parent)
+    except Exception:
+        if descriptor >= 0:
+            os.close(descriptor)
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def _publish_stage182_candidate(
+    *,
+    candidate_paths: dict[str, Path],
+    canonical_paths: dict[str, Path],
+    candidate_validation: dict[str, Any],
+    post_validate: Callable[[], dict[str, Any]],
+) -> dict[str, Any]:
+    required = {
+        "live_pool",
+        "live_eligibility",
+        "combined_eligibility",
+        "summary",
+        "report",
+    }
+    receipt: dict[str, Any] = {
+        "publication_status": "blocked_candidate_invalid",
+        "rollback_status": "not_needed",
+        "published_files": [],
+        "candidate_validation": candidate_validation,
+        "candidate_sha256": {},
+        "canonical_sha256": {},
+    }
+    if candidate_validation.get("validation_status") != "valid":
+        return receipt
+    if set(candidate_paths) != required or set(canonical_paths) != required:
+        receipt["publication_status"] = "blocked_bundle_paths_invalid"
+        return receipt
+    for name in sorted(required):
+        path = candidate_paths[name]
+        if not path.is_file() or path.stat().st_size <= 0:
+            receipt["publication_status"] = "blocked_candidate_file_missing_or_empty"
+            receipt["blocked_file"] = name
+            return receipt
+
+    canonical_combined = canonical_paths["combined_eligibility"]
+    if not canonical_combined.is_file() or canonical_combined.stat().st_size <= 0:
+        receipt["publication_status"] = "blocked_canonical_combined_missing_or_empty"
+        return receipt
+
+    receipt["candidate_sha256"] = {
+        name: _sha256_file(path) for name, path in candidate_paths.items()
+    }
+    backup_descriptor, backup_name = tempfile.mkstemp(
+        prefix=f".{canonical_combined.name}.backup.",
+        dir=str(canonical_combined.parent),
+    )
+    os.close(backup_descriptor)
+    backup_path = Path(backup_name)
+    backup_path.unlink()
+    activation_started = False
+    try:
+        for name in ("summary", "report", "live_pool", "live_eligibility"):
+            _atomic_copy_file(candidate_paths[name], canonical_paths[name])
+            receipt["published_files"].append(name)
+
+        _atomic_copy_file(canonical_combined, backup_path)
+        receipt["combined_backup_path"] = str(backup_path)
+        _atomic_copy_file(
+            candidate_paths["combined_eligibility"],
+            canonical_combined,
+        )
+        activation_started = True
+        receipt["published_files"].append("combined_eligibility")
+
+        try:
+            post_validation = post_validate()
+        except Exception as exc:
+            post_validation = {
+                "validation_status": "invalid",
+                "blockers": ["stage182_post_publish_validation_exception"],
+                "exception": repr(exc),
+            }
+        receipt["post_validation"] = post_validation
+        receipt["canonical_sha256"] = {
+            name: _sha256_file(path) for name, path in canonical_paths.items()
+        }
+        hashes_match = receipt["candidate_sha256"] == receipt["canonical_sha256"]
+        receipt["hashes_match"] = int(hashes_match)
+        if post_validation.get("validation_status") != "valid" or not hashes_match:
+            receipt["publication_status"] = "blocked_post_validation_failed"
+            _atomic_copy_file(backup_path, canonical_combined)
+            receipt["rollback_status"] = "restored"
+            receipt["restored_combined_sha256"] = _sha256_file(canonical_combined)
+            return receipt
+
+        receipt["publication_status"] = "published"
+        backup_path.unlink()
+        _fsync_directory(canonical_combined.parent)
+        receipt["combined_backup_path"] = ""
+        return receipt
+    except Exception as exc:
+        receipt["publication_status"] = "blocked_publication_exception"
+        receipt["publication_exception"] = repr(exc)
+        if activation_started and backup_path.exists():
+            try:
+                _atomic_copy_file(backup_path, canonical_combined)
+                receipt["rollback_status"] = "restored"
+                receipt["restored_combined_sha256"] = _sha256_file(canonical_combined)
+            except Exception as rollback_exc:
+                receipt["rollback_status"] = "failed"
+                receipt["rollback_exception"] = repr(rollback_exc)
+        return receipt
 
 
 def _parse_as_of(value: str) -> datetime:
@@ -306,12 +604,15 @@ def _recent_monthly_eval_dates(expected_eval_date: str, lookback_months: int) ->
     return [pd.Timestamp(value).date().isoformat() for value in month_ends.tolist()]
 
 
-def _combined_eval_date_audit(expected_eval_date: str) -> dict[str, Any]:
-    combined = _read_csv(STAGE182_COMBINED_ELIGIBILITY_PATH)
+def _combined_eval_date_audit(
+    expected_eval_date: str,
+    combined_path: Path = STAGE182_COMBINED_ELIGIBILITY_PATH,
+) -> dict[str, Any]:
+    combined = _read_csv(combined_path)
     strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
     result: dict[str, Any] = {
-        "path": str(STAGE182_COMBINED_ELIGIBILITY_PATH),
-        "exists": bool(STAGE182_COMBINED_ELIGIBILITY_PATH.exists()),
+        "path": str(combined_path),
+        "exists": bool(combined_path.exists()),
         "shadow_analysis_start_date": OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
         "recent_eval_date_lookback_months": RECENT_COMBINED_EVAL_DATE_LOOKBACK_MONTHS,
         "required_recent_eval_dates": _recent_monthly_eval_dates(
@@ -348,8 +649,19 @@ def _month_start(value: str) -> str:
     return pd.Timestamp(year=parsed.year, month=parsed.month, day=1).date().isoformat()
 
 
-def _validate_stage182_outputs(expected_eval_date: str = "") -> dict[str, Any]:
-    summary = _read_json(STAGE182_SUMMARY_PATH)
+def _validate_stage182_outputs(
+    expected_eval_date: str = "",
+    *,
+    paths: dict[str, Path] | None = None,
+    require_official_path: bool = True,
+    require_declared_outputs: bool = False,
+    expected_source_paths: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    selected_paths = paths or _canonical_stage182_paths()
+    summary_path = selected_paths["summary"]
+    live_eligibility_path = selected_paths["live_eligibility"]
+    combined_eligibility_path = selected_paths["combined_eligibility"]
+    summary = _read_json(summary_path)
     blockers: list[str] = []
     warnings: list[str] = []
     eval_date = _date_text(summary.get("eval_date", ""))
@@ -377,30 +689,55 @@ def _validate_stage182_outputs(expected_eval_date: str = "") -> dict[str, Any]:
         blockers.append("stage182_safety_future_label_enabled")
     if safety.get("real_order_enabled") not in {False, 0}:
         blockers.append("stage182_safety_real_order_enabled")
-    if STAGE182_COMBINED_ELIGIBILITY_PATH.resolve() != OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve():
+    if require_official_path and combined_eligibility_path.resolve() != OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve():
         blockers.append("official_live_ai_eligibility_path_not_stage182_combined")
 
-    live_eligibility = _read_csv(STAGE182_LIVE_ELIGIBILITY_PATH)
-    combined = _read_csv(STAGE182_COMBINED_ELIGIBILITY_PATH)
+    if require_declared_outputs:
+        declared_outputs = summary.get("outputs") or {}
+        for name, path in selected_paths.items():
+            declared = str(declared_outputs.get(name, "") or "")
+            if not declared or Path(declared).expanduser().resolve(strict=False) != path.resolve(strict=False):
+                blockers.append(f"stage182_declared_{name}_path_mismatch")
+
+    if expected_source_paths:
+        declared_sources = summary.get("source_paths") or {}
+        for name in ("position_changes", "entry_candidate_snapshots"):
+            expected_source = str(expected_source_paths.get(name, "") or "")
+            declared_source = str(declared_sources.get(name, "") or "")
+            if (
+                not expected_source
+                or not declared_source
+                or Path(expected_source).expanduser().resolve(strict=False)
+                != Path(declared_source).expanduser().resolve(strict=False)
+            ):
+                blockers.append(f"stage182_{name}_not_stage183_validated_source")
+
+    live_eligibility = _read_csv(live_eligibility_path)
+    combined = _read_csv(combined_eligibility_path)
     if live_eligibility.empty:
         blockers.append("stage182_live_eligibility_missing_or_empty")
     if combined.empty:
         blockers.append("stage182_combined_eligibility_missing_or_empty")
     if eval_date and not live_eligibility.empty and "eval_date" in live_eligibility.columns:
         rows = live_eligibility[live_eligibility["eval_date"].astype(str).eq(eval_date)].copy()
-        if len(rows) < 9:
-            blockers.append("stage182_live_eligibility_eval_rows_less_than_9")
+        if len(rows) != 9:
+            blockers.append("stage182_live_eligibility_eval_rows_not_9")
         if "product_vt_symbol" in rows.columns:
             top_products = rows.sort_values(["score_rank", "product_vt_symbol"], kind="stable")[
                 "product_vt_symbol"
             ].astype(str).tolist()
+            if len(set(top_products)) != len(top_products):
+                blockers.append("stage182_live_eligibility_duplicate_products")
     if eval_date and not combined.empty and "eval_date" in combined.columns:
         combined_rows = combined[combined["eval_date"].astype(str).eq(eval_date)].copy()
         if combined_rows.empty:
             blockers.append("stage182_combined_missing_eval_date_rows")
     if top_products and "fu.SHFE" not in top_products:
-        warnings.append("stage182_top9_missing_fixed_fu_satellite")
-    combined_eval_date_audit = _combined_eval_date_audit(expected_eval_date)
+        blockers.append("stage182_top9_missing_fixed_fu_satellite")
+    combined_eval_date_audit = _combined_eval_date_audit(
+        expected_eval_date,
+        combined_path=combined_eligibility_path,
+    )
     if combined_eval_date_audit.get("missing_recent_eval_dates"):
         blockers.append("stage182_combined_missing_recent_eval_dates")
 
@@ -411,9 +748,9 @@ def _validate_stage182_outputs(expected_eval_date: str = "") -> dict[str, Any]:
         "eval_date": eval_date,
         "source_max_date": source_max_date,
         "top_products": top_products,
-        "summary_path": str(STAGE182_SUMMARY_PATH),
-        "live_eligibility_path": str(STAGE182_LIVE_ELIGIBILITY_PATH),
-        "combined_eligibility_path": str(STAGE182_COMBINED_ELIGIBILITY_PATH),
+        "summary_path": str(summary_path),
+        "live_eligibility_path": str(live_eligibility_path),
+        "combined_eligibility_path": str(combined_eligibility_path),
         "official_live_ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
         "combined_eval_date_audit": combined_eval_date_audit,
     }
@@ -551,33 +888,76 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
     if stage183_result.get("exit_code") != 0:
         return _mark_blocked(summary, "stage183_source_refresh_failed")
 
-    stage182_cmd = [
-        str(PYTHON_PATH),
-        str(STAGE182_PATH),
-        "--source-prefix",
-        source_prefix,
-    ]
+    stage183_summary = _read_json(STAGE183_SUMMARY_PATH)
+    stage183_validation = _validate_stage183_source(
+        stage183_summary,
+        expected_root=CONTROL_OUTPUT_DIR,
+        resolved_target_date=resolved_target_date,
+        source_prefix=source_prefix,
+    )
+    summary["stage183_summary"] = {
+        "path": str(STAGE183_SUMMARY_PATH),
+        "analysis_end": stage183_summary.get("analysis_end", ""),
+        "source_prefix": stage183_summary.get("source_prefix", ""),
+        "artifact_root": stage183_summary.get("artifact_root", ""),
+        "artifact_dates": stage183_summary.get("artifact_dates", {}),
+        "outputs": stage183_summary.get("outputs", {}),
+        "safety": stage183_summary.get("safety", {}),
+    }
+    summary["stage183_source_validation"] = stage183_validation
+    if stage183_validation.get("validation_status") != "valid":
+        summary["blockers"] = list(summary.get("blockers") or []) + list(
+            stage183_validation.get("blockers") or []
+        )
+        return _mark_blocked(summary, "stage183_source_validation_failed")
+
+    stage182_cmd = _build_stage182_command(
+        source_prefix=source_prefix,
+        source_dir=CONTROL_OUTPUT_DIR,
+        output_dir=CONTROL_OUTPUT_DIR,
+    )
     stage182_result = _run_command(stage182_cmd, timeout=int(args.inference_timeout_seconds))
     summary["commands"]["stage182_live_inference"] = stage182_result
     if stage182_result.get("exit_code") != 0:
         return _mark_blocked(summary, "stage182_live_inference_failed")
 
-    post_validation = _validate_stage182_outputs(expected_eval_date=expected_eval_date)
+    candidate_paths = _stage182_paths(CONTROL_OUTPUT_DIR)
+    candidate_validation = _validate_stage182_outputs(
+        expected_eval_date=expected_eval_date,
+        paths=candidate_paths,
+        require_official_path=False,
+        require_declared_outputs=True,
+        expected_source_paths=stage183_validation.get("source_paths") or {},
+    )
+    summary["stage182_candidate_validation"] = candidate_validation
+    if candidate_validation.get("validation_status") != "valid":
+        summary["blockers"] = list(summary.get("blockers") or []) + list(
+            candidate_validation.get("blockers") or []
+        )
+        return _mark_blocked(summary, "stage182_candidate_validation_failed")
+
+    canonical_paths = _canonical_stage182_paths()
+    publication_receipt = _publish_stage182_candidate(
+        candidate_paths=candidate_paths,
+        canonical_paths=canonical_paths,
+        candidate_validation=candidate_validation,
+        post_validate=lambda: _validate_stage182_outputs(
+            expected_eval_date=expected_eval_date,
+            paths=canonical_paths,
+            require_official_path=True,
+        ),
+    )
+    summary["stage182_publication_receipt"] = publication_receipt
+    post_validation = publication_receipt.get("post_validation") or {}
     summary["post_stage182_validation"] = post_validation
-    stage183_summary = _read_json(STAGE183_SUMMARY_PATH)
-    summary["stage183_summary"] = {
-        "path": str(STAGE183_SUMMARY_PATH),
-        "analysis_end": stage183_summary.get("analysis_end", ""),
-        "source_prefix": stage183_summary.get("source_prefix", ""),
-        "artifact_dates": stage183_summary.get("artifact_dates", {}),
-        "safety": stage183_summary.get("safety", {}),
-    }
-    if post_validation.get("validation_status") != "valid":
-        summary["blockers"] = list(summary.get("blockers") or []) + list(post_validation.get("blockers") or [])
-        return _mark_blocked(summary, "post_stage182_validation_failed")
+    if publication_receipt.get("publication_status") != "published":
+        summary["blockers"] = list(summary.get("blockers") or []) + list(
+            post_validation.get("blockers") or []
+        )
+        return _mark_blocked(summary, "stage182_candidate_publication_failed")
 
     summary["automation_status"] = "monthly_ai_pool_updated"
-    summary["action"] = "stage183_source_refresh_and_stage182_live_inference_completed"
+    summary["action"] = "stage183_source_refresh_stage182_inference_and_atomic_publication_completed"
     summary["current_eval_date"] = post_validation.get("eval_date", "")
     summary["top_products"] = post_validation.get("top_products", [])
     return summary
