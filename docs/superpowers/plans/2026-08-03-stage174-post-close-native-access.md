@@ -20,7 +20,7 @@
 
 ---
 
-### Task 1: Add a RED Regression for the Native Lifetime Boundary
+### Task 1: Prove the Native Lifetime Bug RED, Then Apply the Minimal GREEN Fix
 
 **Files:**
 - Modify: `tests/test_stage174_query_bundle.py`
@@ -93,9 +93,7 @@ Expected: FAIL because current post-close code still contains `getTradingDay`.
 
 Record the exact failing assertion and command for the Stage209 research record. Do not commit the failing-only state.
 
----
-
-### Task 2: Remove the Post-Close Native Fallback and Prove Fail-Closed Behavior
+#### Phase B: Remove the Post-Close Native Fallback and Prove Fail-Closed Behavior
 
 **Files:**
 - Modify: `examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py:1995-2005`
@@ -177,7 +175,7 @@ Expected: every `getTradingDay` occurrence precedes `main_engine.close()`.
 
 ---
 
-### Task 3: Run the Required Regression Matrix and Record Stage209
+### Task 2: Run the Required Regression Matrix and Record Stage209
 
 **Files:**
 - Test: `tests/test_stage174_query_bundle.py`
@@ -257,7 +255,7 @@ Expected: commit succeeds and the worktree is clean.
 
 ---
 
-### Task 4: Freeze an Exact Reviewed Candidate and Build Formal Qualification
+### Task 3: Freeze an Exact Reviewed Candidate and Build Formal Qualification
 
 **Files/state:**
 - Review: `a3c3853605c941041f14355c9c3fb0685b2dbaf7..HEAD`
@@ -351,7 +349,7 @@ Only after validating the new bundle, move the previous canonical `qualification
 
 ---
 
-### Task 5: Build the Release and Activate Only Through Stage948
+### Task 4: Build the Release and Activate Only Through Stage948
 
 **Files/state:**
 - Private release: `~/Library/Application Support/qmt-roll-stage179/production-live/release-manifest.json`
