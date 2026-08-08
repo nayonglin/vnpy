@@ -47,6 +47,7 @@ CURVES_PATH = _stage208.CURVES_PATH
 MINUTE_PATH = _stage208.MINUTE_PATH
 MINUTE_CACHE_ROOT = _stage208.MINUTE_CACHE_ROOT
 BLIND_MAPPING_SEED = 21420260808
+CALIBRATION_CASE_COUNT = 12
 REVIEWER_MANIFEST_COLUMNS = [
     "case_id",
     "chart_file",
@@ -772,6 +773,30 @@ def build_blind_mapping(
     return mapping
 
 
+def build_calibration_cases(
+    reviewer_manifest: pd.DataFrame,
+    seed: int = BLIND_MAPPING_SEED,
+) -> pd.DataFrame:
+    """Select the frozen reviewer-only calibration cases without identity data."""
+    if "case_id" not in reviewer_manifest.columns:
+        raise ValueError("reviewer manifest missing case_id")
+    case_ids = reviewer_manifest["case_id"].astype(str)
+    if not case_ids.map(lambda value: bool(re.fullmatch(r"CASE-\d{3}", value))).all():
+        raise ValueError("calibration case IDs must be canonical")
+    if case_ids.duplicated().any():
+        raise ValueError("calibration case IDs must be unique")
+    if len(case_ids) < CALIBRATION_CASE_COUNT:
+        raise ValueError(
+            f"calibration requires at least {CALIBRATION_CASE_COUNT} reviewer cases"
+        )
+    candidates = sorted(case_ids.tolist())
+    random.Random(seed).shuffle(candidates)
+    return pd.DataFrame(
+        {"case_id": candidates[:CALIBRATION_CASE_COUNT]},
+        columns=["case_id"],
+    )
+
+
 def normalize_preentry_bars(bars15: pd.DataFrame) -> pd.DataFrame:
     """Scale every OHLC field to the first displayed close equal to 100."""
     required_columns = ["open", "high", "low", "close"]
@@ -1049,6 +1074,8 @@ def prepare(
         )
     reviewer_manifest = pd.DataFrame(reviewer_rows, columns=REVIEWER_MANIFEST_COLUMNS)
     _write_csv(reviewer_manifest, output_dir / "reviewer_manifest.csv")
+    calibration_cases = build_calibration_cases(reviewer_manifest)
+    _write_csv(calibration_cases, output_dir / "calibration_cases.csv")
 
     expected_chart_files = set(reviewer_manifest["chart_file"].astype(str))
     actual_chart_files = {path.name for path in chart_dir.glob("*.png")}

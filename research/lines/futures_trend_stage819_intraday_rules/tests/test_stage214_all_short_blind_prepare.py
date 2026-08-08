@@ -1196,6 +1196,51 @@ def test_prepare_distinguishes_64_chartable_from_61_result_analyzable(
     assert decision["status"] == "ready"
     assert decision["chartable_event_count"] == 64
     assert decision["result_analyzable_event_count"] == 61
+    calibration = pd.read_csv(tmp_path / "prepared" / "calibration_cases.csv")
+    reviewer_manifest = pd.read_csv(tmp_path / "prepared" / "reviewer_manifest.csv")
+    assert calibration.columns.tolist() == ["case_id"]
+    assert len(calibration) == 12
+    assert calibration["case_id"].is_unique
+    assert set(calibration["case_id"]).issubset(set(reviewer_manifest["case_id"]))
+
+
+def test_build_calibration_cases_is_seeded_and_manifest_order_invariant() -> None:
+    """Calibration selection must be reproducible and independent of manifest row order."""
+    manifest = pd.DataFrame(
+        {
+            "case_id": [f"CASE-{index:03d}" for index in range(1, 65)],
+            "chart_file": [f"CASE-{index:03d}.png" for index in range(1, 65)],
+        }
+    )
+
+    first = stage214.build_calibration_cases(manifest)
+    shuffled = stage214.build_calibration_cases(
+        manifest.sample(frac=1.0, random_state=17).reset_index(drop=True)
+    )
+
+    pd.testing.assert_frame_equal(first, shuffled)
+    assert first.columns.tolist() == ["case_id"]
+    assert len(first) == 12
+    assert first["case_id"].is_unique
+    assert set(first["case_id"]).issubset(set(manifest["case_id"]))
+
+
+@pytest.mark.parametrize(
+    "case_ids,match",
+    [
+        (["CASE-001"] * 64, "unique"),
+        ([f"CASE-{index:03d}" for index in range(1, 12)], "at least 12"),
+        ([*[f"CASE-{index:03d}" for index in range(1, 64)], "case-064"], "canonical"),
+    ],
+)
+def test_build_calibration_cases_rejects_unsafe_manifests(
+    case_ids: list[str],
+    match: str,
+) -> None:
+    manifest = pd.DataFrame({"case_id": case_ids})
+
+    with pytest.raises(ValueError, match=match):
+        stage214.build_calibration_cases(manifest)
 
 
 def test_prepare_blocks_any_extra_chart_directory_entry_before_ready(
