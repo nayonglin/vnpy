@@ -1,0 +1,500 @@
+{
+  "base_contingency_table": [
+    [
+      14,
+      32
+    ],
+    [
+      3,
+      12
+    ]
+  ],
+  "most_adverse": {
+    "allocation": {
+      "signal_negative_outcome_ge_2r": 3,
+      "signal_negative_outcome_lt_2r": 0,
+      "signal_positive_outcome_ge_2r": 0,
+      "signal_positive_outcome_lt_2r": 0
+    },
+    "conditional_odds_ratio": 0.8768482352751703,
+    "contingency_table": [
+      [
+        14,
+        32
+      ],
+      [
+        6,
+        12
+      ]
+    ],
+    "direction_positive": false,
+    "risk_difference": -0.028985507246376774,
+    "sample_odds_ratio": 0.875
+  },
+  "most_favorable": {
+    "allocation": {
+      "signal_negative_outcome_ge_2r": 0,
+      "signal_negative_outcome_lt_2r": 0,
+      "signal_positive_outcome_ge_2r": 3,
+      "signal_positive_outcome_lt_2r": 0
+    },
+    "conditional_odds_ratio": 2.1020447649954352,
+    "contingency_table": [
+      [
+        17,
+        32
+      ],
+      [
+        3,
+        12
+      ]
+    ],
+    "direction_positive": true,
+    "risk_difference": 0.14693877551020407,
+    "sample_odds_ratio": 2.125
+  },
+  "scenarios": [
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 3,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 2.1630808741364467,
+      "contingency_table": [
+        [
+          14,
+          32
+        ],
+        [
+          3,
+          15
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.13768115942028988,
+      "sample_odds_ratio": 2.1875
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 2,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 1.5215035311930036,
+      "contingency_table": [
+        [
+          14,
+          32
+        ],
+        [
+          4,
+          14
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.08212560386473433,
+      "sample_odds_ratio": 1.53125
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 2,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 1.1352388226754873,
+      "contingency_table": [
+        [
+          14,
+          32
+        ],
+        [
+          5,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.02657004830917875,
+      "sample_odds_ratio": 1.1375
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 3,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 0.8768482352751703,
+      "contingency_table": [
+        [
+          14,
+          32
+        ],
+        [
+          6,
+          12
+        ]
+      ],
+      "direction_positive": false,
+      "risk_difference": -0.028985507246376774,
+      "sample_odds_ratio": 0.875
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 2,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.9603890675449633,
+      "contingency_table": [
+        [
+          14,
+          33
+        ],
+        [
+          3,
+          14
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.12140175219023777,
+      "sample_odds_ratio": 1.97979797979798
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.3721140325212267,
+      "contingency_table": [
+        [
+          14,
+          33
+        ],
+        [
+          4,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.06257822277847308,
+      "sample_odds_ratio": 1.378787878787879
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 2,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.017895699515057,
+      "contingency_table": [
+        [
+          14,
+          33
+        ],
+        [
+          5,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.0037546933667083615,
+      "sample_odds_ratio": 1.018181818181818
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 2
+      },
+      "conditional_odds_ratio": 1.7693550185100688,
+      "contingency_table": [
+        [
+          14,
+          34
+        ],
+        [
+          3,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.10416666666666669,
+      "sample_odds_ratio": 1.7843137254901962
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 2
+      },
+      "conditional_odds_ratio": 1.2313174175739146,
+      "contingency_table": [
+        [
+          14,
+          34
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.041666666666666685,
+      "sample_odds_ratio": 1.2352941176470589
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 3
+      },
+      "conditional_odds_ratio": 1.5889917919454468,
+      "contingency_table": [
+        [
+          14,
+          35
+        ],
+        [
+          3,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.08571428571428569,
+      "sample_odds_ratio": 1.6
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 2,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 2.163080874136438,
+      "contingency_table": [
+        [
+          15,
+          32
+        ],
+        [
+          3,
+          14
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.14267834793491865,
+      "sample_odds_ratio": 2.1875
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 1.5138504328200673,
+      "contingency_table": [
+        [
+          15,
+          32
+        ],
+        [
+          4,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.08385481852315396,
+      "sample_odds_ratio": 1.5234375
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 2,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 1.12295305756491,
+      "contingency_table": [
+        [
+          15,
+          32
+        ],
+        [
+          5,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.025031289111389243,
+      "sample_odds_ratio": 1.125
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.9505148961421979,
+      "contingency_table": [
+        [
+          15,
+          33
+        ],
+        [
+          3,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.125,
+      "sample_odds_ratio": 1.9696969696969697
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.357253313289921,
+      "contingency_table": [
+        [
+          15,
+          33
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.0625,
+      "sample_odds_ratio": 1.3636363636363635
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 1,
+        "signal_positive_outcome_lt_2r": 2
+      },
+      "conditional_odds_ratio": 1.7501663901677644,
+      "contingency_table": [
+        [
+          15,
+          34
+        ],
+        [
+          3,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.10612244897959183,
+      "sample_odds_ratio": 1.7647058823529411
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 1,
+        "signal_positive_outcome_ge_2r": 2,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 2.1427368319972975,
+      "contingency_table": [
+        [
+          16,
+          32
+        ],
+        [
+          3,
+          13
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.14583333333333331,
+      "sample_odds_ratio": 2.1666666666666665
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 2,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 1.4908889065438267,
+      "contingency_table": [
+        [
+          16,
+          32
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.08333333333333331,
+      "sample_odds_ratio": 1.5
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 2,
+        "signal_positive_outcome_lt_2r": 1
+      },
+      "conditional_odds_ratio": 1.920890221063679,
+      "contingency_table": [
+        [
+          16,
+          33
+        ],
+        [
+          3,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.12653061224489792,
+      "sample_odds_ratio": 1.9393939393939394
+    },
+    {
+      "allocation": {
+        "signal_negative_outcome_ge_2r": 0,
+        "signal_negative_outcome_lt_2r": 0,
+        "signal_positive_outcome_ge_2r": 3,
+        "signal_positive_outcome_lt_2r": 0
+      },
+      "conditional_odds_ratio": 2.1020447649954352,
+      "contingency_table": [
+        [
+          17,
+          32
+        ],
+        [
+          3,
+          12
+        ]
+      ],
+      "direction_positive": true,
+      "risk_difference": 0.14693877551020407,
+      "sample_odds_ratio": 2.125
+    }
+  ],
+  "unresolved_case_count": 3,
+  "worst_case_direction_preserved": false
+}

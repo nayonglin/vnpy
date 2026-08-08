@@ -1,0 +1,27 @@
+{
+  "analyzable_case_count": 61,
+  "conditional_odds_ratio": 1.73504378244269,
+  "conditional_odds_ratio_ci95_lower": 0.38022115281922886,
+  "conditional_odds_ratio_ci95_upper": 11.064660077787991,
+  "contingency_table": [
+    [
+      14,
+      32
+    ],
+    [
+      3,
+      12
+    ]
+  ],
+  "fisher_exact_two_sided_pvalue": 0.5235745694845952,
+  "risk_difference": 0.10434782608695653,
+  "sample_odds_ratio": 1.75,
+  "signal_negative_case_count": 15,
+  "signal_negative_ge_2r_probability": 0.2,
+  "signal_negative_median_aggregate_r": -0.5,
+  "signal_negative_profit_probability": 0.2,
+  "signal_positive_case_count": 46,
+  "signal_positive_ge_2r_probability": 0.30434782608695654,
+  "signal_positive_median_aggregate_r": -0.1396420343788765,
+  "signal_positive_profit_probability": 0.4782608695652174
+}

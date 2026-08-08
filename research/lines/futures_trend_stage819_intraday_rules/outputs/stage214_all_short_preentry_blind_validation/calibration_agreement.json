@@ -1,0 +1,14 @@
+{
+  "case_count": 12,
+  "matching_case_count": 11,
+  "raw_agreement": 0.9166666666666666,
+  "cohen_kappa": 0.8,
+  "disagreement_case_ids": [
+    "CASE-019"
+  ],
+  "reviewer_a_calibration_sha256": "024c785650f6ac133c4293a154c91f263ae44e828b5597955ce39965d9aa4566",
+  "reviewer_b_calibration_sha256": "d7944c17308ec8c6da2b6535091795c1b5b09bea6c1262a792153db9ae222e26",
+  "frozen_manual_sha256": "4f4125063070a8c26736766caf2de040a1f3a518764a4f8499d7aa7e02728338",
+  "frozen_at_utc": "2026-08-08T14:24:05Z",
+  "outcome_accessed": false
+}

@@ -1,0 +1,10 @@
+case_id,label,reason,confidence,timestamp
+CASE-003,trend_same_direction,全窗价格重心由约100至101区域下移到约97至98区域且主要高低点逐级降低,medium,2026-08-08T14:37:25Z
+CASE-025,trend_same_direction,全窗从约100持续下移至约94至95且反弹高点与低点总体逐级降低,high,2026-08-08T14:37:25Z
+CASE-028,trend_same_direction,价格平台由约99至100逐级下移到约98再到约96且末段继续形成更低低点,high,2026-08-08T14:37:25Z
+CASE-037,trend_same_direction,全窗价格重心从约100逐段降至约97和约95区域且后段反弹未收复主要跌幅,medium,2026-08-08T14:37:25Z
+CASE-040,trend_same_direction,价格重心从约100显著下移并在中段反弹后再形成约95至96的更低平台,medium,2026-08-08T14:37:25Z
+CASE-053,trend_same_direction,全窗价格重心由约100至101区域下移到约97至98区域且主要高低点逐级降低,medium,2026-08-08T14:37:25Z
+CASE-061,trend_same_direction,价格由约100下移并在未越过前高的反弹后加速跌至约95的低位平台,high,2026-08-08T14:37:25Z
+CASE-062,trend_same_direction,全窗由约100逐步下移且中段反弹高点低于初段后末段再创约95的新低,high,2026-08-08T14:37:25Z
+CASE-063,trend_same_direction,全窗呈清晰的更低平台和更低低点结构并由约100持续下移至约96.5,high,2026-08-08T14:37:25Z

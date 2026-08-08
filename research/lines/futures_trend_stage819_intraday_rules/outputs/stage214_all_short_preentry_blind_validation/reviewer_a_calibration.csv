@@ -1,0 +1,13 @@
+case_id,label,reason,confidence,timestamp
+CASE-018,trend_same_direction,左侧约100附近横盘后中段向下破位且右侧持续形成更低高点和更低低点并收于约95,high,2026-08-08T14:19:18Z
+CASE-063,trend_same_direction,左侧约100附近震荡后价格分台阶降至约98.5再降至约97且右端继续创新低,high,2026-08-08T14:19:18Z
+CASE-010,mixed_or_opposite,左侧先升至约101后反复下探至约98而右侧又快速反弹至约100并再次回落,medium,2026-08-08T14:19:18Z
+CASE-029,trend_same_direction,左侧自约100下跌后虽反弹接近100但右半段再度连续下移并在约93附近收尾,high,2026-08-08T14:19:18Z
+CASE-015,trend_same_direction,从左到右各轮反弹高点与回落低点总体依次下移且末端跌至约96.4,high,2026-08-08T14:19:18Z
+CASE-047,mixed_or_opposite,价格先急跌至约98后回到100附近又冲高至约101.3随后回落至约99.3形成多次反转,high,2026-08-08T14:19:18Z
+CASE-064,trend_same_direction,左侧短暂冲高后价格重心沿约100至99逐步下移并在右端进一步跌至约97,high,2026-08-08T14:19:18Z
+CASE-019,mixed_or_opposite,左半段从约100持续跌至约94且中部触及约92后右半段转为逐步抬高至约96以上,high,2026-08-08T14:19:18Z
+CASE-013,trend_same_direction,左侧从约100回落后中段再显著下破至约92且右侧反弹仍明显低于初段,high,2026-08-08T14:19:18Z
+CASE-040,trend_same_direction,价格由左侧约100分段下移至约96后虽反弹至约99但右侧再次降至约96并维持低位,medium,2026-08-08T14:19:18Z
+CASE-056,mixed_or_opposite,左侧冲高后逐步跌至约96.5但中后段急拉近101随后回落并在右侧重新反弹至约99.5,high,2026-08-08T14:19:18Z
+CASE-035,trend_same_direction,左侧上探约102.5后价格重心连续下移并分段跌破98和95最终收在约92,high,2026-08-08T14:19:18Z

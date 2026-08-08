@@ -1,0 +1,83 @@
+{
+  "all_gates_passed": false,
+  "decision": "reject_signal",
+  "gates": [
+    {
+      "evidence": "raw matching cases divided by all independently reviewed cases",
+      "name": "raw_agreement_at_least_0_80",
+      "passed": true,
+      "threshold": ">= 0.80",
+      "value": 0.859375
+    },
+    {
+      "evidence": "four-label case-aligned Cohen's kappa",
+      "name": "cohen_kappa_at_least_0_60",
+      "passed": true,
+      "threshold": ">= 0.60",
+      "value": 0.6953992596509784
+    },
+    {
+      "evidence": "P(aggregate_r>=2|same-direction) minus P(aggregate_r>=2|other)",
+      "name": "ge_2r_probability_lift_at_least_0_15",
+      "passed": false,
+      "threshold": ">= 0.15",
+      "value": 0.10434782608695653
+    },
+    {
+      "evidence": "conditional_odds_ratio=1.73504378244269",
+      "name": "sample_odds_ratio_above_2",
+      "passed": false,
+      "threshold": "> 2",
+      "value": 1.75
+    },
+    {
+      "evidence": "two-sided Fisher exact test on the frozen 2x2 table",
+      "name": "two_sided_fisher_p_below_0_05",
+      "passed": false,
+      "threshold": "< 0.05",
+      "value": 0.5235745694845952
+    },
+    {
+      "evidence": "upper=11.064660077787991",
+      "name": "conditional_odds_ratio_ci95_lower_above_1",
+      "passed": false,
+      "threshold": "> 1",
+      "value": 0.38022115281922886
+    },
+    {
+      "evidence": "other_median=-0.5",
+      "name": "same_direction_median_r_above_other",
+      "passed": true,
+      "threshold": "> -0.5",
+      "value": -0.1396420343788765
+    },
+    {
+      "evidence": "other_probability=0.2",
+      "name": "same_direction_profit_probability_above_other",
+      "passed": true,
+      "threshold": "> 0.2",
+      "value": 0.4782608695652174
+    },
+    {
+      "evidence": "omitted_year_count=7;minimum_odds_ratio=1.1351531703738016",
+      "name": "every_year_leave_one_out_odds_ratio_above_1",
+      "passed": true,
+      "threshold": "> 1 for every omitted year",
+      "value": 1.1351531703738016
+    },
+    {
+      "evidence": "selected_rows=1;excluded_product=fu",
+      "name": "highest_frequency_product_leave_one_out_direction_positive",
+      "passed": true,
+      "threshold": "> 1 after one deterministic highest-frequency product removal",
+      "value": 1.4309978903320624
+    },
+    {
+      "evidence": "most_adverse={'allocation': {'signal_positive_outcome_ge_2r': 0, 'signal_positive_outcome_lt_2r': 0, 'signal_negative_outcome_ge_2r': 3, 'signal_negative_outcome_lt_2r': 0}, 'contingency_table': [[14, 32], [6, 12]], 'risk_difference': -0.028985507246376774, 'sample_odds_ratio': 0.875, 'conditional_odds_ratio': 0.8768482352751703, 'direction_positive': False}",
+      "name": "worst_case_gap_direction_preserved",
+      "passed": false,
+      "threshold": "is true",
+      "value": false
+    }
+  ]
+}

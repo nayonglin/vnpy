@@ -1,0 +1,21 @@
+{
+  "status": "frozen_before_outcome_reveal",
+  "frozen_at_utc": "2026-08-08T14:38:45Z",
+  "chart_bundle_sha256": "96164ffdfd4f73e71ff89b52dfd138d3775d81a97434667bca00d26d661e70c4",
+  "manual_sha256": "4f4125063070a8c26736766caf2de040a1f3a518764a4f8499d7aa7e02728338",
+  "reviewer_a_labels_sha256": "84d22d061fa16929fd70f88c3cbe2bcc10123d72d6479b9a93eba830bf987fdc",
+  "reviewer_b_labels_sha256": "cc04260a5ce36cda910c079c03786d5626237dedaa0237f38603e7b63bf139ba",
+  "adjudication_labels_sha256": "47ebb2a3236a01408a3c8963b0cd1182281c54aa0131789f0afe11a02f486b70",
+  "case_count": 64,
+  "matching_case_count": 55,
+  "raw_agreement": 0.859375,
+  "cohen_kappa": 0.6953992596509784,
+  "disagreement_count": 9,
+  "final_label_counts": {
+    "trend_same_direction": 48,
+    "mixed_or_opposite": 14,
+    "range_or_compression": 2,
+    "insufficient": 0
+  },
+  "outcome_accessed_before_freeze": false
+}

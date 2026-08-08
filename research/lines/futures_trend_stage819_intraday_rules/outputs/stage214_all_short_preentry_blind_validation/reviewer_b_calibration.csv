@@ -1,0 +1,13 @@
+case_id,label,reason,confidence,timestamp
+CASE-018,trend_same_direction,从左到右价格重心持续下移且末段明显低于初段并形成连续更低高点和更低低点,high,2026-08-08T14:19:37Z
+CASE-063,trend_same_direction,从左到右价格由上方平台逐级下移至更低平台且末段继续刷新低位,high,2026-08-08T14:19:37Z
+CASE-010,mixed_or_opposite,从左到右先上行后下探再明显反弹并再次回落呈现多次方向反转,high,2026-08-08T14:19:37Z
+CASE-029,trend_same_direction,从左到右虽有一轮回升但后段再次大幅下行且末段显著低于初段,high,2026-08-08T14:19:37Z
+CASE-015,trend_same_direction,从左到右反弹高点和回落低点总体逐级降低且末段处于全窗低位,high,2026-08-08T14:19:37Z
+CASE-047,mixed_or_opposite,从左到右出现两次急跌急升并在中后段冲至更高高点后回落方向反复,high,2026-08-08T14:19:37Z
+CASE-064,trend_same_direction,从左到右早段冲高后价格重心缓慢下移并在末段加速跌至显著低位,high,2026-08-08T14:19:37Z
+CASE-019,trend_same_direction,从左到右前中段大幅下移而后段虽持续回升但末段仍明显低于初段,medium,2026-08-08T14:19:37Z
+CASE-013,trend_same_direction,从左到右价格重心阶梯式下移且后半段高点和低点均显著低于前半段,high,2026-08-08T14:19:37Z
+CASE-040,trend_same_direction,从左到右价格经多次跳落形成更低平台且后段高低点均低于初段,high,2026-08-08T14:19:37Z
+CASE-056,mixed_or_opposite,从左到右先持续下行后突然大幅反弹并在末段继续回升形成明显反向结构,high,2026-08-08T14:19:37Z
+CASE-035,trend_same_direction,从左到右早段冲高后连续阶梯式下移且末段显著低于初段,high,2026-08-08T14:19:37Z
