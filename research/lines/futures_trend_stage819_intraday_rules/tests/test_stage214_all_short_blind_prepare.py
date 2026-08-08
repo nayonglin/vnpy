@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -774,3 +775,235 @@ def test_prepare_writes_only_consistent_reviewer_artifacts_for_64_complete_cases
     reviewer_manifest = pd.read_csv(output_dir / "reviewer_manifest.csv")
     assert reviewer_manifest.columns.tolist() == stage214.REVIEWER_MANIFEST_COLUMNS
     assert len(list((output_dir / "blind_charts").glob("*.png"))) == 64
+
+
+@pytest.mark.parametrize(
+    "target_days",
+    [
+        list(pd.bdate_range("2021-01-04", periods=4)),
+        list(pd.bdate_range("2021-01-04", periods=6)),
+        [
+            pd.Timestamp("2021-01-04"),
+            pd.Timestamp("2021-01-05"),
+            pd.Timestamp("2021-01-06"),
+            pd.Timestamp("2021-01-07"),
+            pd.Timestamp("2021-01-07"),
+        ],
+        [
+            pd.Timestamp("2021-01-05"),
+            pd.Timestamp("2021-01-04"),
+            pd.Timestamp("2021-01-06"),
+            pd.Timestamp("2021-01-07"),
+            pd.Timestamp("2021-01-08"),
+        ],
+    ],
+)
+def test_render_blind_chart_rejects_noncanonical_target_day_sets(
+    tmp_path: Path,
+    target_days: list[pd.Timestamp],
+) -> None:
+    """A short, extended, duplicate, or unordered D-5..D-1 window is not blind-safe."""
+    all_days = pd.bdate_range("2021-01-04", periods=6)
+    bars = pd.DataFrame(
+        {
+            "bar_15m": pd.to_datetime([f"{day.date()} 09:00" for day in all_days]),
+            "trading_day": all_days,
+            "open": [100.0] * 6,
+            "high": [101.0] * 6,
+            "low": [99.0] * 6,
+            "close": [100.5] * 6,
+        }
+    )
+
+    with pytest.raises(ValueError, match="target_days"):
+        stage214.render_blind_chart("CASE-001", bars, target_days, tmp_path / "CASE-001.png")
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("pnl", "123.4"),
+        ("R", "2.0"),
+        ("exit", "2021-01-11"),
+        ("rank", "1"),
+        ("absolute_price", "4200"),
+    ],
+)
+def test_audit_blind_artifacts_rejects_unapproved_png_text_chunks(
+    tmp_path: Path,
+    key: str,
+    value: str,
+) -> None:
+    """Every non-allowlisted PNG text chunk is a potential identity or outcome leak."""
+    chart_dir = tmp_path / "blind_charts"
+    chart_dir.mkdir()
+    info = PngInfo()
+    info.add_text(key, value)
+    Image.new("RGB", (4, 4), "white").save(chart_dir / "CASE-001.png", pnginfo=info)
+    reviewer_manifest = pd.DataFrame(
+        [{"case_id": "CASE-001", "chart_file": "CASE-001.png", "available_day_count": 5, "bar_count": 5}]
+    )
+    sealed_mapping = pd.DataFrame(
+        [{"case_id": "CASE-001", "open_trade_id": "event-001", "vt_symbol": "rb2105.SHFE", "entry_date": "2021-01-11"}]
+    )
+
+    audit = stage214.audit_blind_artifacts(chart_dir, reviewer_manifest, sealed_mapping)
+
+    assert audit["ok"] is False
+    assert audit["violations"]
+
+
+@pytest.mark.parametrize("extra_kind", ["txt", "hidden", "extra_png", "directory", "symlink"])
+def test_audit_blind_artifacts_rejects_every_unlisted_chart_directory_entry(
+    tmp_path: Path,
+    extra_kind: str,
+) -> None:
+    """Only manifest-addressed ordinary CASE PNG files may live in blind_charts."""
+    chart_dir = tmp_path / "blind_charts"
+    chart_dir.mkdir()
+    Image.new("RGB", (4, 4), "white").save(chart_dir / "CASE-001.png")
+    if extra_kind == "txt":
+        (chart_dir / "notes.txt").write_text("not a chart", encoding="utf-8")
+    elif extra_kind == "hidden":
+        (chart_dir / ".hidden").write_text("not a chart", encoding="utf-8")
+    elif extra_kind == "extra_png":
+        Image.new("RGB", (4, 4), "white").save(chart_dir / "CASE-002.png")
+    elif extra_kind == "directory":
+        (chart_dir / "nested").mkdir()
+    else:
+        (chart_dir / "CASE-002.png").symlink_to(chart_dir / "CASE-001.png")
+    reviewer_manifest = pd.DataFrame(
+        [{"case_id": "CASE-001", "chart_file": "CASE-001.png", "available_day_count": 5, "bar_count": 5}]
+    )
+    sealed_mapping = pd.DataFrame(
+        [{"case_id": "CASE-001", "open_trade_id": "event-001", "vt_symbol": "rb2105.SHFE", "entry_date": "2021-01-11"}]
+    )
+
+    audit = stage214.audit_blind_artifacts(chart_dir, reviewer_manifest, sealed_mapping)
+
+    assert audit["ok"] is False
+    assert audit["violations"]
+
+
+def _patch_prepare_fixture(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    *,
+    event_count: int = 64,
+    complete_count: int = 64,
+) -> None:
+    input_path = tmp_path / "input.csv"
+    pd.DataFrame({"placeholder": [1]}).to_csv(input_path, index=False)
+    calendar = pd.bdate_range("2021-01-04", periods=6)
+    events = pd.DataFrame(
+        {
+            "open_trade_id": [f"event-{index:03d}" for index in range(event_count)],
+            "vt_symbol": ["rb2105.SHFE"] * event_count,
+            "entry_date": [calendar[-1]] * event_count,
+        }
+    )
+    bars15 = pd.DataFrame(
+        {
+            "vt_symbol": ["rb2105.SHFE"] * 5,
+            "trading_day": list(calendar[:-1]),
+            "bar_15m": pd.to_datetime([f"{day.date()} 09:00" for day in calendar[:-1]]),
+            "open": [100.0, 101.0, 102.0, 103.0, 104.0],
+            "high": [101.0, 102.0, 103.0, 104.0, 105.0],
+            "low": [99.0, 100.0, 101.0, 102.0, 103.0],
+            "close": [100.5, 101.5, 102.5, 103.5, 104.5],
+        }
+    )
+    gap_audit = pd.DataFrame(
+        {
+            "open_trade_id": events["open_trade_id"],
+            "coverage_state": ["complete"] * complete_count + ["missing"] * (event_count - complete_count),
+        }
+    )
+    monkeypatch.setattr(stage214, "CLOSED_LOTS_PATH", input_path)
+    monkeypatch.setattr(stage214, "CURVES_PATH", input_path)
+    monkeypatch.setattr(stage214, "MINUTE_PATH", input_path)
+    monkeypatch.setattr(stage214, "build_short_events", lambda _: events.copy())
+    monkeypatch.setattr(stage214, "resolve_risk_zero_events", lambda frame, _: (frame, pd.DataFrame()))
+    monkeypatch.setattr(stage214, "build_trading_calendar", lambda _: calendar)
+    monkeypatch.setattr(stage214, "discover_contract_cache_paths", lambda *_: [])
+    monkeypatch.setattr(
+        stage214,
+        "merge_minute_sources",
+        lambda *_: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
+    )
+    monkeypatch.setattr(stage214, "build_data_gap_audit", lambda *_: gap_audit.copy())
+    monkeypatch.setattr(stage214, "build_preentry_15m", lambda *_: bars15.copy())
+
+
+@pytest.mark.parametrize(
+    ("event_count", "complete_count", "reason"),
+    [(63, 63, "event_count_not_64"), (64, 59, "analyzable_event_count_below_60")],
+)
+def test_prepare_writes_blocked_decision_before_count_gate_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    event_count: int,
+    complete_count: int,
+    reason: str,
+) -> None:
+    """Count gates must never leave a ready decision behind when prepare raises."""
+    _patch_prepare_fixture(
+        monkeypatch, tmp_path, event_count=event_count, complete_count=complete_count
+    )
+    output_dir = tmp_path / "prepared"
+
+    with pytest.raises(RuntimeError):
+        stage214.prepare(output_dir, database=object())
+
+    decision = json.loads((output_dir / "prepare_decision.json").read_text(encoding="utf-8"))
+    assert decision["status"] == "blocked"
+    assert reason in decision["blocking_reasons"]
+
+
+def test_prepare_blocks_any_extra_chart_directory_entry_before_ready(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An old or non-chart file in blind_charts must fail prepare rather than be ignored."""
+    _patch_prepare_fixture(monkeypatch, tmp_path)
+    original_render = stage214.render_blind_chart
+
+    def render_with_extra_file(*args, **kwargs):
+        metadata = original_render(*args, **kwargs)
+        Path(args[3]).parent.joinpath("stale.txt").write_text("stale", encoding="utf-8")
+        return metadata
+
+    monkeypatch.setattr(stage214, "render_blind_chart", render_with_extra_file)
+    output_dir = tmp_path / "prepared"
+
+    with pytest.raises(RuntimeError):
+        stage214.prepare(output_dir, database=object())
+
+    decision = json.loads((output_dir / "prepare_decision.json").read_text(encoding="utf-8"))
+    assert decision["status"] == "blocked"
+    assert "blind_artifact_audit_failed" in decision["blocking_reasons"]
+
+
+def test_prepare_marks_chart_manifest_mismatch_blocked_before_raising(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A reviewer manifest pointing at a non-existent chart must never be marked ready."""
+    _patch_prepare_fixture(monkeypatch, tmp_path)
+    original_render = stage214.render_blind_chart
+
+    def render_with_wrong_manifest_file(*args, **kwargs):
+        metadata = original_render(*args, **kwargs)
+        if metadata["case_id"] == "CASE-001":
+            metadata["chart_file"] = "CASE-999.png"
+        return metadata
+
+    monkeypatch.setattr(stage214, "render_blind_chart", render_with_wrong_manifest_file)
+    output_dir = tmp_path / "prepared"
+
+    with pytest.raises(RuntimeError):
+        stage214.prepare(output_dir, database=object())
+
+    decision = json.loads((output_dir / "prepare_decision.json").read_text(encoding="utf-8"))
+    assert decision["status"] == "blocked"
+    assert "chart_set_mismatch" in decision["blocking_reasons"]

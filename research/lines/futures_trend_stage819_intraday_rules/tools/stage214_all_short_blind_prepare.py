@@ -50,6 +50,7 @@ REVIEWER_MANIFEST_COLUMNS = [
     "available_day_count",
     "bar_count",
 ]
+_ALLOWED_PNG_TEXT = {"Software": "stage214_blind_chart"}
 _OUTCOME_TOKEN = re.compile(
     r"\b(?:winner|loser|outcome|aggregate[_ ]?r|realized[_ ]?pnl|"
     r"risk[_ ]?amount|return|profit|loss|r_multiple|\d+(?:\.\d+)?r)\b",
@@ -583,7 +584,14 @@ def render_blind_chart(
     if time_column not in bars15.columns:
         raise ValueError("bars15 missing bar_15m or bar_datetime")
 
-    normalized_target_days = pd.DatetimeIndex(target_days).normalize().unique()
+    normalized_target_days = pd.DatetimeIndex(target_days).normalize()
+    if (
+        len(normalized_target_days) != 5
+        or normalized_target_days.hasnans
+        or not normalized_target_days.is_unique
+        or not normalized_target_days.is_monotonic_increasing
+    ):
+        raise ValueError("target_days must contain exactly five unique increasing days")
     frame = bars15.copy()
     frame["trading_day"] = pd.to_datetime(frame["trading_day"], errors="coerce").dt.normalize()
     frame[time_column] = pd.to_datetime(frame[time_column], errors="coerce")
@@ -679,6 +687,17 @@ def audit_blind_artifacts(
         violations.append("reviewer_manifest_columns_not_exact")
     sensitive_values = _sensitive_values(sealed_mapping)
 
+    expected_chart_files = set(reviewer_manifest.get("chart_file", pd.Series(dtype=str)).astype(str))
+    if len(expected_chart_files) != len(reviewer_manifest):
+        violations.append("reviewer_manifest_duplicate_chart_file")
+    if "case_id" in reviewer_manifest.columns and "chart_file" in reviewer_manifest.columns:
+        for row in reviewer_manifest.itertuples(index=False):
+            expected_name = f"{row.case_id}.png"
+            if str(row.chart_file) != expected_name:
+                violations.append(
+                    f"reviewer_manifest_case_filename_mismatch:{row.case_id}:{row.chart_file}"
+                )
+
     for column in reviewer_manifest.columns:
         for row_number, value in enumerate(reviewer_manifest[column].fillna(""), start=1):
             leaks = _find_leak_tokens(f"{column}={value}", sensitive_values)
@@ -687,21 +706,41 @@ def audit_blind_artifacts(
                     f"reviewer_manifest_row_{row_number}_{column}_leak:{'|'.join(leaks)}"
                 )
 
-    for chart_path in sorted(chart_dir.glob("*.png")):
+    if not chart_dir.is_dir():
+        violations.append("blind_chart_directory_missing")
+        return {"ok": False, "violations": violations}
+    chart_entries = sorted(chart_dir.iterdir(), key=lambda path: path.name)
+    actual_chart_files: set[str] = set()
+    for chart_path in chart_entries:
+        if chart_path.is_symlink():
+            violations.append(f"blind_chart_symlink_forbidden:{chart_path.name}")
+            continue
+        if not chart_path.is_file():
+            violations.append(f"blind_chart_nonfile_forbidden:{chart_path.name}")
+            continue
+        if chart_path.name not in expected_chart_files:
+            violations.append(f"blind_chart_unlisted_entry:{chart_path.name}")
+            continue
         if not re.fullmatch(r"CASE-\d{3}\.png", chart_path.name):
             violations.append(f"unsafe_chart_filename:{chart_path.name}")
+            continue
+        actual_chart_files.add(chart_path.name)
         filename_leaks = _find_leak_tokens(chart_path.name, sensitive_values)
         if filename_leaks:
             violations.append(
                 f"chart_filename_leak:{chart_path.name}:{'|'.join(filename_leaks)}"
             )
-        with Image.open(chart_path) as image:
-            for key, value in image.text.items():
-                text_leaks = _find_leak_tokens(f"{key}={value}", sensitive_values)
-                if text_leaks:
-                    violations.append(
-                        f"png_text_leak:{chart_path.name}:{'|'.join(text_leaks)}"
-                    )
+        try:
+            with Image.open(chart_path) as image:
+                for key, value in image.text.items():
+                    if _ALLOWED_PNG_TEXT.get(key) != value:
+                        violations.append(
+                            f"png_text_not_allowlisted:{chart_path.name}:{key}"
+                        )
+        except OSError as error:
+            violations.append(f"blind_chart_not_readable:{chart_path.name}:{error}")
+    if actual_chart_files != expected_chart_files:
+        violations.append("blind_chart_manifest_set_mismatch")
     return {"ok": not violations, "violations": violations}
 
 
@@ -777,26 +816,30 @@ def prepare(
     expected_chart_files = set(reviewer_manifest["chart_file"].astype(str))
     actual_chart_files = {path.name for path in chart_dir.glob("*.png")}
     audit = audit_blind_artifacts(chart_dir, reviewer_manifest, sealed_mapping)
+    blocking_reasons: list[str] = []
+    if len(events) != EXPECTED_SHORT_EVENT_COUNT:
+        blocking_reasons.append("event_count_not_64")
+    if len(reviewer_manifest) < 60:
+        blocking_reasons.append("analyzable_event_count_below_60")
+    if actual_chart_files != expected_chart_files:
+        blocking_reasons.append("chart_set_mismatch")
+    if not audit["ok"]:
+        blocking_reasons.append("blind_artifact_audit_failed")
     decision = {
-        "status": "ready" if audit["ok"] else "blocked",
+        "status": "blocked" if blocking_reasons else "ready",
         "event_count": int(len(events)),
         "analyzable_event_count": int(len(reviewer_manifest)),
         "chart_count": int(len(actual_chart_files)),
         "chart_set_matches_reviewer_manifest": actual_chart_files == expected_chart_files,
         "blind_artifact_audit": audit,
+        "blocking_reasons": blocking_reasons,
     }
     (output_dir / "prepare_decision.json").write_text(
         json.dumps(decision, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    if len(events) != EXPECTED_SHORT_EVENT_COUNT:
-        raise RuntimeError(f"expected {EXPECTED_SHORT_EVENT_COUNT} events, got {len(events)}")
-    if len(reviewer_manifest) < 60:
-        raise RuntimeError(f"analyzable event count below 60: {len(reviewer_manifest)}")
-    if actual_chart_files != expected_chart_files:
-        raise RuntimeError("blind chart set does not match reviewer manifest")
-    if not audit["ok"]:
-        raise RuntimeError(f"blind artifact audit failed: {audit['violations']}")
+    if blocking_reasons:
+        raise RuntimeError(f"prepare blocked: {blocking_reasons}")
     return decision
 
 
