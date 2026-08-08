@@ -8,6 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+from PIL import Image
+from PIL.PngImagePlugin import PngInfo
 
 
 MODULE_PATH = (
@@ -560,3 +562,215 @@ def test_source_hashes_detect_content_changes_but_normalize_database_row_order(
     assert reordered_file_hash != first_file_hash
     assert reordered_database_hash == first_database_hash
     assert changed_database_hash != first_database_hash
+
+
+def test_blind_mapping_is_seeded_and_independent_of_input_order() -> None:
+    """An input-order-dependent or unseeded case assignment breaks blind replication."""
+    events = pd.DataFrame(
+        {
+            "open_trade_id": [f"BACKTESTING.{index:03d}" for index in range(64)],
+            "vt_symbol": ["rb2105.SHFE"] * 64,
+            "entry_date": ["2021-01-11"] * 64,
+        }
+    )
+
+    first = stage214.build_blind_mapping(events, seed=21420260808)
+    shuffled = stage214.build_blind_mapping(
+        events.sample(frac=1.0, random_state=7), seed=21420260808
+    )
+    changed_seed = stage214.build_blind_mapping(events, seed=1)
+
+    first_by_event = first.set_index("open_trade_id")["case_id"].to_dict()
+    assert first_by_event == shuffled.set_index("open_trade_id")["case_id"].to_dict()
+    assert sorted(first["case_id"].tolist()) == [f"CASE-{index:03d}" for index in range(1, 65)]
+    assert first_by_event != changed_seed.set_index("open_trade_id")["case_id"].to_dict()
+
+
+def test_normalize_preentry_bars_scales_all_ohlc_from_first_close() -> None:
+    """Scaling only close or choosing another anchor would expose absolute-price clues."""
+    bars = pd.DataFrame(
+        {
+            "open": [5.0, 4.0],
+            "high": [6.0, 5.0],
+            "low": [3.0, 2.0],
+            "close": [4.0, 3.0],
+        }
+    )
+
+    normalized = stage214.normalize_preentry_bars(bars)
+
+    assert normalized.loc[0, ["open", "high", "low", "close"]].tolist() == [125.0, 150.0, 75.0, 100.0]
+    assert normalized.loc[1, ["open", "high", "low", "close"]].tolist() == [100.0, 125.0, 50.0, 75.0]
+    assert normalized["high"].ge(normalized[["open", "close", "low"]].max(axis=1)).all()
+    assert normalized["low"].le(normalized[["open", "close", "high"]].min(axis=1)).all()
+
+
+def test_render_blind_chart_excludes_entry_day_and_returns_reviewer_safe_counts(
+    tmp_path: Path,
+) -> None:
+    """Including D0 or returning an identity field would defeat the pre-entry blind."""
+    target_days = list(pd.bdate_range("2021-01-04", periods=5))
+    entry_day = pd.Timestamp("2021-01-11")
+    bars = pd.DataFrame(
+        {
+            "bar_15m": pd.to_datetime(
+                [f"{day.date()} 09:00" for day in [*target_days, entry_day]]
+            ),
+            "trading_day": [*target_days, entry_day],
+            "open": [100.0, 101.0, 102.0, 103.0, 104.0, 999.0],
+            "high": [101.0, 102.0, 103.0, 104.0, 105.0, 1000.0],
+            "low": [99.0, 100.0, 101.0, 102.0, 103.0, 998.0],
+            "close": [100.5, 101.5, 102.5, 103.5, 104.5, 999.5],
+            "volume": [10.0] * 6,
+        }
+    )
+    output_path = tmp_path / "CASE-001.png"
+
+    metadata = stage214.render_blind_chart("CASE-001", bars, target_days, output_path)
+
+    assert output_path.is_file() and output_path.stat().st_size > 0
+    assert metadata == {
+        "case_id": "CASE-001",
+        "chart_file": "CASE-001.png",
+        "available_day_count": 5,
+        "bar_count": 5,
+    }
+
+
+@pytest.mark.parametrize(
+    ("leak_kind", "chart_name", "manifest", "png_text"),
+    [
+        (
+            "contract filename",
+            "CASE-001_rb2105.SHFE.png",
+            pd.DataFrame(
+                [{"case_id": "CASE-001", "chart_file": "CASE-001_rb2105.SHFE.png", "available_day_count": 5, "bar_count": 5}]
+            ),
+            {},
+        ),
+        (
+            "winner manifest column",
+            "CASE-001.png",
+            pd.DataFrame(
+                [{"case_id": "CASE-001", "chart_file": "CASE-001.png", "available_day_count": 5, "bar_count": 5, "winner": True}]
+            ),
+            {},
+        ),
+        (
+            "outcome PNG metadata",
+            "CASE-001.png",
+            pd.DataFrame(
+                [{"case_id": "CASE-001", "chart_file": "CASE-001.png", "available_day_count": 5, "bar_count": 5}]
+            ),
+            {"aggregate_r": "2.5"},
+        ),
+    ],
+)
+def test_audit_blind_artifacts_rejects_identity_or_outcome_leaks(
+    tmp_path: Path,
+    leak_kind: str,
+    chart_name: str,
+    manifest: pd.DataFrame,
+    png_text: dict[str, str],
+) -> None:
+    """A contract, outcome field, or PNG text chunk must fail the reviewer boundary."""
+    chart_dir = tmp_path / "blind_charts"
+    chart_dir.mkdir()
+    info = PngInfo()
+    for key, value in png_text.items():
+        info.add_text(key, value)
+    Image.new("RGB", (4, 4), "white").save(chart_dir / chart_name, pnginfo=info)
+    sealed_mapping = pd.DataFrame(
+        [{"case_id": "CASE-001", "open_trade_id": "BACKTESTING.123", "vt_symbol": "rb2105.SHFE", "entry_date": "2021-01-11", "aggregate_r": 2.5}]
+    )
+
+    audit = stage214.audit_blind_artifacts(chart_dir, manifest, sealed_mapping)
+
+    assert audit["ok"] is False, leak_kind
+    assert audit["violations"]
+
+
+def test_audit_blind_artifacts_accepts_only_the_sealed_reviewer_surface(
+    tmp_path: Path,
+) -> None:
+    """A safe case filename and four-column manifest must pass the leakage gate."""
+    chart_dir = tmp_path / "blind_charts"
+    chart_dir.mkdir()
+    Image.new("RGB", (4, 4), "white").save(chart_dir / "CASE-001.png")
+    reviewer_manifest = pd.DataFrame(
+        [{"case_id": "CASE-001", "chart_file": "CASE-001.png", "available_day_count": 5, "bar_count": 5}]
+    )
+    sealed_mapping = pd.DataFrame(
+        [{"case_id": "CASE-001", "open_trade_id": "BACKTESTING.123", "vt_symbol": "rb2105.SHFE", "entry_date": "2021-01-11", "aggregate_r": 2.5}]
+    )
+
+    audit = stage214.audit_blind_artifacts(chart_dir, reviewer_manifest, sealed_mapping)
+
+    assert audit == {"ok": True, "violations": []}
+
+
+def test_prepare_writes_only_consistent_reviewer_artifacts_for_64_complete_cases(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Missing a required artifact or mismatching its chart set must block blind handoff."""
+    input_path = tmp_path / "input.csv"
+    pd.DataFrame({"placeholder": [1]}).to_csv(input_path, index=False)
+    calendar = pd.bdate_range("2021-01-04", periods=6)
+    events = pd.DataFrame(
+        {
+            "open_trade_id": [f"event-{index:03d}" for index in range(64)],
+            "vt_symbol": ["rb2105.SHFE"] * 64,
+            "entry_date": [calendar[-1]] * 64,
+            "aggregate_r": [float(index) for index in range(64)],
+        }
+    )
+    bars15 = pd.DataFrame(
+        {
+            "vt_symbol": ["rb2105.SHFE"] * 5,
+            "trading_day": list(calendar[:-1]),
+            "bar_15m": pd.to_datetime([f"{day.date()} 09:00" for day in calendar[:-1]]),
+            "open": [100.0, 101.0, 102.0, 103.0, 104.0],
+            "high": [101.0, 102.0, 103.0, 104.0, 105.0],
+            "low": [99.0, 100.0, 101.0, 102.0, 103.0],
+            "close": [100.5, 101.5, 102.5, 103.5, 104.5],
+        }
+    )
+    gap_audit = pd.DataFrame(
+        {"open_trade_id": events["open_trade_id"], "coverage_state": ["complete"] * 64}
+    )
+    monkeypatch.setattr(stage214, "CLOSED_LOTS_PATH", input_path)
+    monkeypatch.setattr(stage214, "CURVES_PATH", input_path)
+    monkeypatch.setattr(stage214, "MINUTE_PATH", input_path)
+    monkeypatch.setattr(stage214, "build_short_events", lambda _: events.copy())
+    monkeypatch.setattr(stage214, "resolve_risk_zero_events", lambda frame, _: (frame, pd.DataFrame()))
+    monkeypatch.setattr(stage214, "build_trading_calendar", lambda _: calendar)
+    monkeypatch.setattr(stage214, "discover_contract_cache_paths", lambda *_: [])
+    monkeypatch.setattr(
+        stage214,
+        "merge_minute_sources",
+        lambda *_: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
+    )
+    monkeypatch.setattr(stage214, "build_data_gap_audit", lambda *_: gap_audit.copy())
+    monkeypatch.setattr(stage214, "build_preentry_15m", lambda *_: bars15.copy())
+
+    decision = stage214.prepare(tmp_path / "prepared", database=object())
+
+    output_dir = tmp_path / "prepared"
+    assert decision["status"] == "ready"
+    assert decision["event_count"] == 64
+    assert decision["analyzable_event_count"] == 64
+    assert decision["chart_count"] == 64
+    assert decision["chart_set_matches_reviewer_manifest"] is True
+    assert {path.name for path in output_dir.iterdir()} >= {
+        "short_event_manifest.csv",
+        "minute_source_manifest.csv",
+        "data_gap_audit.csv",
+        "blind_mapping.csv",
+        "reviewer_manifest.csv",
+        "blind_charts",
+        "prepare_decision.json",
+    }
+    reviewer_manifest = pd.read_csv(output_dir / "reviewer_manifest.csv")
+    assert reviewer_manifest.columns.tolist() == stage214.REVIEWER_MANIFEST_COLUMNS
+    assert len(list((output_dir / "blind_charts").glob("*.png"))) == 64
