@@ -2,7 +2,12 @@
   "chart_directory": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_stage819_intraday_rules/outputs/stage214_all_short_preentry_blind_validation/blind_charts",
   "chart_count": 64,
   "bundle_algorithm": "sha256(sorted chart_file + NUL + file_sha256 + LF)",
-  "bundle_sha256": "50a86ba06a06e3951c0783067a7bb50a89ac1ec24fa745729b08c9fe597f50cc",
-  "supersedes_bundle_sha256": "dc3dd1c2314536ad8c167a9129e6c023c0eabdfc2318ecff1f31686d42aec058",
-  "all_file_hashes_valid": true
+  "bundle_sha256": "96164ffdfd4f73e71ff89b52dfd138d3775d81a97434667bca00d26d661e70c4",
+  "generation": "fix_round2_completed_1459_day_dominance",
+  "content_relation_to_fix1": "changed_after_authoritative_completed_1459_source_replacement",
+  "fix1_bundle_sha256": "50a86ba06a06e3951c0783067a7bb50a89ac1ec24fa745729b08c9fe597f50cc",
+  "supersedes_historical_invalid_bundle_sha256": "dc3dd1c2314536ad8c167a9129e6c023c0eabdfc2318ecff1f31686d42aec058",
+  "source_dominance_audit": "authorized_day_dominance_audit.csv",
+  "all_file_hashes_valid": true,
+  "supersedes_bundle_sha256": "50a86ba06a06e3951c0783067a7bb50a89ac1ec24fa745729b08c9fe597f50cc"
 }

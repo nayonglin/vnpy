@@ -252,6 +252,57 @@ def test_merge_authorized_completed_cache_supersedes_degenerate_stage861(
     assert "authorized_tqsdk_completed" in set(sources["source"])
 
 
+def test_merge_authorized_completed_day_rejects_lower_priority_tail_rows(
+    tmp_path: Path,
+) -> None:
+    """A qualified authorized day must not be patched with any lower-priority row."""
+    calendar = pd.bdate_range("2021-01-04", periods=8)
+    trading_day = calendar[1]
+    events = pd.DataFrame(
+        [{"open_trade_id": "short-a", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[6]}]
+    )
+    stage861_path = tmp_path / "stage861.csv"
+    authorized_path = (
+        tmp_path
+        / "authorized_tqsdk_raw"
+        / "SHFE"
+        / "rb2105_20210105_minute_backtest.csv"
+    )
+    authorized_path.parent.mkdir(parents=True)
+    authorized = _quality_day("rb2105.SHFE", trading_day, include_night=False)
+    authorized.drop(columns=["trading_day", "minute_source_kind", "minute_source_path"]).to_csv(
+        authorized_path, index=False
+    )
+    stale_tail = authorized.tail(1).copy()
+    stale_tail["bar_datetime"] = trading_day + pd.Timedelta(hours=10)
+    stale_tail[["open", "high", "low", "close"]] = 999.0
+    stale_tail["volume"] = 0.0
+    stale_tail.drop(columns=["trading_day", "minute_source_kind", "minute_source_path"]).to_csv(
+        stage861_path, index=False
+    )
+
+    class EmptyDatabase:
+        def load_bar_data(self, *args):
+            return []
+
+    minutes, _ = stage214.merge_minute_sources(
+        events,
+        calendar,
+        stage861_path,
+        [],
+        EmptyDatabase(),
+        authorized_cache_paths=[authorized_path],
+    )
+
+    selected_day = minutes[
+        minutes["vt_symbol"].eq("rb2105.SHFE")
+        & minutes["trading_day"].eq(trading_day)
+    ]
+    assert len(selected_day) == 60
+    assert selected_day["minute_source_kind"].eq("authorized_tqsdk_completed").all()
+    assert pd.Timestamp("2021-01-05 10:00") not in set(selected_day["bar_datetime"])
+
+
 def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -> None:
     """A mutable file hash, false complete coverage, or inferred zero risk is a bug."""
     calendar = pd.bdate_range("2021-01-04", periods=8)
@@ -365,7 +416,8 @@ def _quality_day(
     timestamps: list[pd.Timestamp] = []
     if include_night:
         timestamps.extend(pd.date_range(day - pd.Timedelta(days=1) + pd.Timedelta(hours=21), periods=60, freq="min"))
-    timestamps.extend(pd.date_range(day + pd.Timedelta(hours=9), periods=60, freq="min"))
+    timestamps.extend(pd.date_range(day + pd.Timedelta(hours=9), periods=59, freq="min"))
+    timestamps.append(day + pd.Timedelta(hours=14, minutes=59))
     if one_row:
         timestamps = timestamps[:1]
     sequence = np.arange(len(timestamps), dtype=float)
@@ -397,6 +449,27 @@ def _quality_day(
             "minute_source_path": ["/fixture/completed.csv"] * len(timestamps),
         }
     )
+
+
+def test_authorized_completed_day_requires_1459_session_close() -> None:
+    """Stopping at 14:58 must fail while a completed 14:59 day passes."""
+    trading_day = pd.Timestamp("2021-01-05")
+    completed = _quality_day("rb2105.SHFE", trading_day, include_night=False)
+    completed["minute_source_kind"] = "authorized_tqsdk_completed"
+    truncated = completed.copy()
+    truncated.loc[
+        truncated["bar_datetime"].eq(pd.Timestamp("2021-01-05 14:59")),
+        "bar_datetime",
+    ] = pd.Timestamp("2021-01-05 14:58")
+
+    completed_quality = stage214.build_minute_day_quality(completed).iloc[0]
+    truncated_quality = stage214.build_minute_day_quality(truncated).iloc[0]
+
+    assert bool(completed_quality["quality_passed"])
+    assert bool(completed_quality["has_session_end_1459"])
+    assert not bool(truncated_quality["quality_passed"])
+    assert not bool(truncated_quality["has_session_end_1459"])
+    assert "missing_session_end_1459" in truncated_quality["failure_reasons"]
 
 
 def test_gap_audit_rejects_one_row_missing_night_and_degenerate_days() -> None:
@@ -440,11 +513,6 @@ def test_gap_audit_accepts_completed_query_that_proves_holiday_night_absent() ->
     ]
     frames[-1]["minute_source_kind"] = "authorized_tqsdk_completed"
     frames[-1]["minute_source_path"] = "/controller/authorized_tqsdk_raw/FG999.csv"
-    stale_tail = frames[-1].tail(1).copy()
-    stale_tail["bar_datetime"] = pd.Timestamp(target_days[-1]) + pd.Timedelta(hours=10)
-    stale_tail["minute_source_kind"] = "vnpy_database"
-    stale_tail["minute_source_path"] = "vnpy_database://FG999.CZCE"
-    frames.append(stale_tail)
     minutes = pd.concat(frames, ignore_index=True)
     events = pd.DataFrame(
         [{"open_trade_id": "holiday", "vt_symbol": "FG999.CZCE", "entry_date": calendar[-1], "risk_status": "resolved"}]

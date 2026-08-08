@@ -1,0 +1,15 @@
+{
+  "archive_status": "superseded_partial_mixed_not_historical_bundle_snapshot",
+  "archive_directory": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_stage819_intraday_rules/outputs/stage214_all_short_preentry_blind_validation/superseded_blind_charts_partial_mixed_fix1",
+  "chart_count": 64,
+  "expected_historical_bundle_sha256": "dc3dd1c2314536ad8c167a9129e6c023c0eabdfc2318ecff1f31686d42aec058",
+  "actual_observed_bundle_sha256": "c866d84636d8ee8a897b6ac6cd31debcc88db46339c28be64301d3a46d2dd540",
+  "mismatched_cases": [
+    "CASE-039.png",
+    "CASE-056.png"
+  ],
+  "missing_cases": [],
+  "extra_cases": [],
+  "reviewer_eligible": false,
+  "reason": "Two charts had already been overwritten before the archive was moved, so this directory is a partial mixed forensic archive and not a faithful copy of the historical dc3dd1 bundle."
+}

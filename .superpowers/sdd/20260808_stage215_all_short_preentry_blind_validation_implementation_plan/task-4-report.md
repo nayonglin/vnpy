@@ -315,3 +315,145 @@ blind_audit={'ok': True, 'violations': []}
 
 - 过拟合：**否**。修复只收紧数据完成态、session 和 nullable 语义，且对全部冻结样本统一执行；没有读取 Stage213 或盲标结果，没有按盈亏选择补数。
 - 继续价值：**Task4 修复已完成，盲标可解除数据阻塞**。下一步有价值的是按密封边界交付新 reviewer surface；继续改窗口、质量阈值或合约集合没有必要。
+
+# Fix round2/5：14:59 完成态与日级来源支配修复（取代 Fix1 bundle）
+
+## STATUS
+
+`READY_AFTER_FIX2`
+
+Fix1 的 74 份授权 raw 中有 30 份止于 14:58；逐时间戳优先级随后从 Stage861、local cache 或 DB 补入 14:59，导致授权源自身不完整仍被最终日质量掩盖。Fix2 已把回放终点推进到最后目标日之后的下一官方交易日 09:02，使目标日 14:59 在 `iloc[-2]` 语义下被后续真实分钟显式 flush；合格授权日改为整日支配，低优先级来源不能再补任何时间戳。
+
+## TDD RED / GREEN
+
+RED 原始日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-red.log`
+
+RED 稳定复现两项缺陷：
+
+1. 合格授权日仍混入一根 Stage861 低优先级尾行，实际 `61` 行而不是纯授权 `60` 行。
+2. 质量输出没有 `has_session_end_1459`，14:58 截止日未被明确拒绝。
+
+GREEN 原始日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-green.log`
+
+结果：新增两项回归 `2/2 passed`。
+
+生产修复：
+
+- `build_minute_day_quality()` 新增 `has_session_end_1459`；纯 `authorized_tqsdk_completed` 日缺 14:59 时追加 `missing_session_end_1459` 并 fail closed。
+- `merge_minute_sources()` 先在授权源自身上运行日级质量；合格的 `(vt_symbol, trading_day)` 整日只保留授权源，再做时间戳去重。
+- `authoritative_completed_source` 从“授权行占比至少 80%”收紧为“整日全部来自授权完成态”，删除 Fix1 对低优先级尾行的容忍。
+- 旧 holiday-night 测试改为纯授权源；holiday-night 例外仍保留，但不再允许 DB 尾行混入。
+
+## 74 份统一重抓与 DB 导入
+
+重抓日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-redownload.log`
+
+DB 导入日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-db-import.log`
+
+结果：
+
+- 实际目标去重为 `17` 个 exact-contract 合约批次，拆分为原冻结的 `74/74` 个 exact contract/date raw。
+- `17/17` 合约批次成功，失败 `0`；`74/74` raw 均含真实完成态 14:59。
+- 完成态分钟总数从 Fix1 的 `22,500` 增至 `22,530`，正好补齐原 30 个目标日各一根 14:59。
+- 查询起点仍从首目标日前一官方交易日 20:55 开始；查询终点使用最后目标日的下一官方交易日 09:02，不使用自然日 `+1`。
+- 每份 `authorized_tqsdk_source_audit.csv` 记录下一官方交易日、查询起止、`iloc[-2]` flush 语义、行数、首末时间、14:59、日/夜盘、SHA256 和完成时间。
+- 74 份已重新写入 vn.py 分钟 DB；`authorized_tqsdk_db_import_audit.csv` 为 `74/74 saved`、合计 `22,530` 行。
+- 认证值未打印、未写日志、未写报告。
+
+## 日级支配、305 日质量与图片重生
+
+prepare 日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-prepare.log`
+
+支配审计日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-dominance-audit.log`
+
+该完整日志保留了两个审计工具自身的早期失败：第一次把绝对输出路径错误地相对化到 `Path('.')`；第二次误要求全部 18 个相交 case 的图 hash 都变化。两者均发生在证明脚本层，未改变生产数据。最终口径按审查要求校正为 `16` 个 hash 改变、`2` 个确定性重生且像素相同，末行断言全部通过。
+
+结果：
+
+- minute day quality：`305/305 passed`，且 `305/305` 均含 14:59。
+- Fix1 的 30 个 14:58 截止日：`30/30` 现在整日仅来自 `authorized_tqsdk_completed`。
+- 30 日最终低优先级行数：`0`；14:59 来源全部为授权完成态。
+- 30 日与 `18` 个 case 的五日窗口相交；其中审查指出的 `16/16` case 图 hash 已改变。
+- `CASE-004`、`CASE-038` 也由新来源完整重生，但归一化后的像素确定性相同；单独记录在 `fix2_deterministic_unchanged_case_audit.csv`。
+- frozen events `64/64`，chartable `64/64`，result-analyzable `61/64`，R 仍为 `61 resolved / 3 unresolved`。
+- 新图 `64`，绝对目录：
+
+`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_stage819_intraday_rules/outputs/stage214_all_short_preentry_blind_validation/blind_charts`
+
+- 新 bundle SHA256：
+
+`96164ffdfd4f73e71ff89b52dfd138d3775d81a97434667bca00d26d661e70c4`
+
+- Fix2 bundle 明确 supersedes Fix1 `50a86ba0...`；历史无效 `dc3dd1...` 继续仅作法证标识。
+- PNG 未提交 Git。
+
+## superseded partial/mixed archive 修正
+
+旧目录已从误导性的 `superseded_blind_charts_dc3dd1c23145` 重命名为：
+
+`/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_stage819_intraday_rules/outputs/stage214_all_short_preentry_blind_validation/superseded_blind_charts_partial_mixed_fix1`
+
+该目录不是历史 `dc3dd1...` 的忠实快照：
+
+- expected historical bundle：`dc3dd1c2314536ad8c167a9129e6c023c0eabdfc2318ecff1f31686d42aec058`
+- actual observed partial/mixed bundle：`c866d84636d8ee8a897b6ac6cd31debcc88db46339c28be64301d3a46d2dd540`
+- mismatched cases：`CASE-039.png`、`CASE-056.png`
+
+完整记录在 `superseded_partial_mixed_chart_archive_audit.json`；该 archive 明确 `reviewer_eligible=false`。
+
+## 验证
+
+组合回归日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-regression.log`
+
+结果：
+
+```text
+Stage208 + Stage214 prepare + Stage214 stats: 84 passed in 23.14s
+```
+
+最终验证日志：
+
+`/Users/bytedance/Desktop/person/vnpy/.superpowers/sdd/20260808_stage215_all_short_preentry_blind_validation_implementation_plan/scratch/task-4-fix2-final-verify.log`
+
+```text
+py_compile: passed
+prepare status: ready
+quality days: 305/305
+authorized exact dates: 74/74
+authorized rows: 22,530
+old truncated days dominant: 30/30
+lower-priority tail rows: 0
+changed review cases: 16/16
+charts: 64/64
+bundle: 96164ffdfd4f73e71ff89b52dfd138d3775d81a97434667bca00d26d661e70c4
+blind audit: ok=true, violations=[]
+git diff --check: passed
+```
+
+## Concerns
+
+1. `minute_source_manifest.csv` 仍约 4.7MB，是逐来源尝试的完整审计证据，不影响正确性。
+2. 三笔无冻结风险基准的 R 继续 unresolved；outcome 保持 nullable，禁止由盈亏反推。
+3. reviewer 只能接收 Fix2 的 `blind_charts/` 和 `reviewer_manifest.csv`；controller raw、mapping、outcome、质量审计及 partial/mixed archive 均不得分发。
+4. 支配门只对授权源自身通过完整质量后启用；不合格授权日不会获得日级权威身份。
+5. 本轮没有运行策略回测、没有调整交易规则或参数；84 项是数据准备与统计兼容回归，不产生收益结论。
+6. 无关 Stage217/218 脚本和 stage 文件保持未跟踪，未暂存、未提交。
+
+## 反思
+
+- 过拟合：**否**。Fix2 对全部冻结事件统一要求真实完成态 14:59 和整日单一权威来源，没有读取 Stage213/盲标结果，也没有按收益或图形选择日期。
+- 继续价值：**Fix2 已闭合审查阻塞，继续价值仅在密封交付和独立 review**。继续改变 session 门、窗口或样本集合没有价值；下一步应由 Task4 review 验证新 bundle 和 30 日支配证据。

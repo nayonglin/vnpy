@@ -301,7 +301,7 @@ def merge_minute_sources(
     *,
     authorized_cache_paths: list[Path] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Merge exact-contract minute sources with Stage861 as the authoritative duplicate."""
+    """Merge exact-contract minutes with qualified completed days dominant as a whole."""
     from vnpy.trader.constant import Exchange, Interval
 
     target_days = _target_days_by_symbol(events, calendar)
@@ -397,8 +397,34 @@ def merge_minute_sources(
         minutes = pd.DataFrame(columns=columns)
         minutes.attrs["source_manifest"] = sources
         return minutes, sources
+    combined = pd.concat(selected, ignore_index=True)
+    authorized = combined[
+        combined["minute_source_kind"].eq("authorized_tqsdk_completed")
+    ].copy()
+    if not authorized.empty:
+        authorized_quality = build_minute_day_quality(authorized)
+        dominant_days = {
+            (str(row.vt_symbol), pd.Timestamp(row.trading_day).normalize())
+            for row in authorized_quality.itertuples(index=False)
+            if bool(row.quality_passed)
+        }
+        if dominant_days:
+            on_dominant_day = pd.Series(
+                [
+                    (str(vt_symbol), pd.Timestamp(trading_day).normalize())
+                    in dominant_days
+                    for vt_symbol, trading_day in zip(
+                        combined["vt_symbol"], combined["trading_day"]
+                    )
+                ],
+                index=combined.index,
+            )
+            combined = combined[
+                ~on_dominant_day
+                | combined["minute_source_kind"].eq("authorized_tqsdk_completed")
+            ].copy()
     minutes = (
-        pd.concat(selected, ignore_index=True)
+        combined
         .sort_values(["vt_symbol", "bar_datetime", "source_priority"], ascending=[True, True, False])
         .drop_duplicates(["vt_symbol", "bar_datetime"], keep="first")
         .sort_values(["vt_symbol", "bar_datetime"])
@@ -454,6 +480,7 @@ def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
         "has_night_session",
         "min_datetime",
         "max_datetime",
+        "has_session_end_1459",
         "reference_bar_count",
         "expected_night_session",
         "authoritative_completed_source",
@@ -490,11 +517,13 @@ def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
         minute_of_day = times.dt.hour * 60 + times.dt.minute
         has_day = bool(minute_of_day.between(8 * 60, 18 * 60 - 1).any())
         has_night = bool(((minute_of_day >= 18 * 60) | (minute_of_day < 8 * 60)).any())
+        has_session_end_1459 = bool(minute_of_day.eq(14 * 60 + 59).any())
         source_kind = ordered.get(
             "minute_source_kind", pd.Series("", index=ordered.index, dtype="object")
         ).astype(str)
         authoritative_completed = bool(
-            source_kind.eq("authorized_tqsdk_completed").mean() >= 0.80
+            not source_kind.empty
+            and source_kind.eq("authorized_tqsdk_completed").all()
         )
         offsets = (times - pd.Timestamp(trading_day)).dt.total_seconds() / 60.0
         row_count = int(len(ordered))
@@ -517,6 +546,7 @@ def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
                 "has_night_session": has_night,
                 "min_datetime": times.min(),
                 "max_datetime": times.max(),
+                "has_session_end_1459": has_session_end_1459,
                 "min_offset_minutes": float(offsets.min()),
                 "max_offset_minutes": float(offsets.max()),
                 "valid_ohlc": valid_ohlc,
@@ -556,6 +586,8 @@ def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
                 reasons.append("insufficient_bar_count")
             if not row.has_day_session:
                 reasons.append("missing_day_session")
+            if row.authoritative_completed_source and not row.has_session_end_1459:
+                reasons.append("missing_session_end_1459")
             if expected_night and not row.has_night_session and not authoritative_no_night:
                 reasons.append("missing_night_session")
             if np.isfinite(reference_count):
@@ -580,6 +612,7 @@ def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
                     "has_night_session": bool(row.has_night_session),
                     "min_datetime": pd.Timestamp(row.min_datetime).isoformat(),
                     "max_datetime": pd.Timestamp(row.max_datetime).isoformat(),
+                    "has_session_end_1459": bool(row.has_session_end_1459),
                     "reference_bar_count": reference_count,
                     "expected_night_session": expected_night,
                     "authoritative_completed_source": bool(row.authoritative_completed_source),
