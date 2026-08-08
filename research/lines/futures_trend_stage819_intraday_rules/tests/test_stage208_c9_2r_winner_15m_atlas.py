@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -98,3 +99,130 @@ def test_resample_15m_uses_ohlcv_and_does_not_fill_empty_buckets() -> None:
     assert result.iloc[1][
         ["open", "high", "low", "close", "volume", "open_oi", "close_oi"]
     ].tolist() == [104, 106, 100, 101, 7, 12, 14]
+
+
+def test_load_target_minutes_filters_symbols_and_window(tmp_path: Path) -> None:
+    source = tmp_path / "minutes.csv"
+    pd.DataFrame(
+        {
+            "vt_symbol": ["rb.SHFE", "rb.SHFE", "jm.DCE"],
+            "bar_datetime": [
+                "2021-01-08 21:01",
+                "2021-02-01 09:01",
+                "2021-01-08 21:01",
+            ],
+            "open": [100, 110, 200],
+            "high": [101, 111, 201],
+            "low": [99, 109, 199],
+            "close": [100, 110, 200],
+            "volume": [1, 1, 1],
+            "open_oi": [10, 10, 20],
+            "close_oi": [10, 10, 20],
+        }
+    ).to_csv(source, index=False)
+    winners = pd.DataFrame(
+        [{"vt_symbol": "rb.SHFE", "entry_date": pd.Timestamp("2021-01-11")}]
+    )
+    calendar = pd.DatetimeIndex(
+        pd.to_datetime(["2021-01-08", "2021-01-11", "2021-01-12"])
+    )
+
+    result = stage208.load_target_minutes(source, winners, calendar, chunksize=2)
+
+    assert result["vt_symbol"].unique().tolist() == ["rb.SHFE"]
+    assert result["bar_datetime"].dt.strftime("%Y-%m-%d %H:%M").tolist() == [
+        "2021-01-08 21:01"
+    ]
+
+
+def test_write_placeholder_creates_nonempty_png(tmp_path: Path) -> None:
+    output = tmp_path / "missing.png"
+    event = pd.Series(
+        {
+            "winner_rank": 71,
+            "vt_symbol": "jm2609.DCE",
+            "direction": "long",
+            "entry_date": pd.Timestamp("2026-06-03"),
+            "aggregate_r": 4.6667,
+        }
+    )
+
+    stage208.write_placeholder(event, output, "no local minute bars")
+
+    assert output.exists()
+    assert output.stat().st_size > 1000
+
+
+def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
+    tmp_path: Path,
+) -> None:
+    calendar = pd.bdate_range("2021-01-01", periods=15)
+    winners = pd.DataFrame(
+        [
+            {
+                "winner_rank": 1,
+                "open_trade_id": "A",
+                "vt_symbol": "rb.SHFE",
+                "direction": "long",
+                "entry_date": calendar[7],
+                "exit_date": calendar[9],
+                "entry_price": 100.0,
+                "realized_pnl": 300.0,
+                "risk_amount": 100.0,
+                "lot_count": 1,
+                "aggregate_r": 3.0,
+            },
+            {
+                "winner_rank": 2,
+                "open_trade_id": "B",
+                "vt_symbol": "jm.DCE",
+                "direction": "short",
+                "entry_date": calendar[7],
+                "exit_date": calendar[10],
+                "entry_price": 200.0,
+                "realized_pnl": 200.0,
+                "risk_amount": 100.0,
+                "lot_count": 1,
+                "aggregate_r": 2.0,
+            },
+        ]
+    )
+    minutes = pd.DataFrame(
+        {
+            "vt_symbol": ["rb.SHFE", "rb.SHFE", "jm.DCE", "jm.DCE"],
+            "bar_datetime": pd.to_datetime(
+                [
+                    f"{calendar[7].date()} 09:01",
+                    f"{calendar[7].date()} 09:16",
+                    f"{calendar[7].date()} 09:01",
+                    f"{calendar[7].date()} 09:16",
+                ]
+            ),
+            "trading_day": [calendar[7]] * 4,
+            "open": [100, 101, 200, 199],
+            "high": [102, 103, 201, 200],
+            "low": [99, 100, 198, 197],
+            "close": [101, 102, 199, 198],
+            "volume": [10, 12, 20, 22],
+            "open_oi": [1000, 1001, 2000, 2001],
+            "close_oi": [1001, 1002, 2001, 2002],
+        }
+    )
+    output_dir = tmp_path / "atlas"
+
+    stage208.write_outputs(
+        winners,
+        minutes,
+        calendar,
+        output_dir,
+        event_count=2,
+        input_hashes={"fixture": "abc"},
+    )
+
+    assert len(pd.read_csv(output_dir / "winner_manifest.csv")) == 2
+    assert len(list(output_dir.glob("winner_*.png"))) == 2
+    assert len(list(output_dir.glob("atlas_page*.png"))) == 1
+    decision = json.loads((output_dir / "decision.json").read_text())
+    assert decision["send_order_api_called_count"] == 0
+    assert decision["cancel_order_api_called_count"] == 0
+    assert decision["ctp_connected"] is False

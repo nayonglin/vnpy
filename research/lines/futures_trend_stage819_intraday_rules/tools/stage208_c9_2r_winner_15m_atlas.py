@@ -2,6 +2,19 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+import math
+import re
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import numpy as np
 import pandas as pd
 
@@ -9,6 +22,33 @@ import pandas as pd
 EXPECTED_EVENT_COUNT = 309
 EXPECTED_WINNER_COUNT = 71
 WINNER_R_THRESHOLD = 2.0
+REPO_ROOT = Path(__file__).resolve().parents[4]
+LINE_ROOT = REPO_ROOT / "research/lines/futures_trend_stage819_intraday_rules"
+OUTPUT_DIR = LINE_ROOT / "outputs/stage208_c9_2r_winner_15m_atlas"
+CLOSED_LOTS_PATH = REPO_ROOT / (
+    "research/lines/futures_trend_rebuilt_c9_15w_optimization/outputs/"
+    "stage006_current_quality_feature_binder/"
+    "rebuilt_c9_stage006_current_quality_feature_binder_closed_lots_"
+    "stage006_current_quality_feature_binder_v1.csv"
+)
+CURVES_PATH = REPO_ROOT / (
+    "research/lines/futures_trend_rebuilt_c9_15w_optimization/outputs/"
+    "stage006_current_quality_feature_binder/"
+    "rebuilt_c9_stage006_current_quality_feature_binder_curves_"
+    "stage006_current_quality_feature_binder_v1.csv"
+)
+TRADES_PATH = REPO_ROOT / (
+    "research/lines/futures_trend_rebuilt_c9_15w_optimization/outputs/"
+    "stage006_current_quality_feature_binder/"
+    "rebuilt_c9_stage006_current_quality_feature_binder_trades_"
+    "stage006_current_quality_feature_binder_v1.csv"
+)
+MINUTE_PATH = REPO_ROOT / (
+    "examples/portfolio_backtesting/backtest_outputs/"
+    "qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_"
+    "stage861_stage860_full_visual_atlas_v1.csv"
+)
+OFFICIAL_VERSION = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
 
 
 def build_winner_events(
@@ -148,3 +188,455 @@ def resample_15m(bars: pd.DataFrame) -> pd.DataFrame:
         .reset_index(drop=True)
     )
     return result
+
+
+MINUTE_COLUMNS = [
+    "vt_symbol",
+    "bar_datetime",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "open_oi",
+    "close_oi",
+]
+
+
+def load_target_minutes(
+    path: Path,
+    winners: pd.DataFrame,
+    calendar: pd.DatetimeIndex,
+    *,
+    chunksize: int = 250_000,
+) -> pd.DataFrame:
+    """Load only symbols and official trading-day windows needed by winners."""
+    target_days: dict[str, set[pd.Timestamp]] = {}
+    for event in winners.itertuples(index=False):
+        symbol = str(event.vt_symbol)
+        window = select_window_days(pd.Timestamp(event.entry_date), calendar)
+        target_days.setdefault(symbol, set()).update(window)
+
+    selected: list[pd.DataFrame] = []
+    target_symbols = set(target_days)
+    for chunk in pd.read_csv(path, usecols=MINUTE_COLUMNS, chunksize=chunksize):
+        chunk = chunk[chunk["vt_symbol"].astype(str).isin(target_symbols)].copy()
+        if chunk.empty:
+            continue
+        chunk["bar_datetime"] = pd.to_datetime(
+            chunk["bar_datetime"], errors="coerce"
+        )
+        for column in [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "open_oi",
+            "close_oi",
+        ]:
+            chunk[column] = pd.to_numeric(chunk[column], errors="coerce")
+        chunk = assign_trading_day(chunk, calendar)
+        keep = pd.Series(False, index=chunk.index)
+        for symbol, days in target_days.items():
+            keep |= chunk["vt_symbol"].eq(symbol) & chunk["trading_day"].isin(days)
+        if keep.any():
+            selected.append(chunk.loc[keep])
+
+    if not selected:
+        return pd.DataFrame(columns=[*MINUTE_COLUMNS, "trading_day"])
+    return (
+        pd.concat(selected, ignore_index=True)
+        .drop_duplicates(["vt_symbol", "bar_datetime"], keep="last")
+        .sort_values(["vt_symbol", "bar_datetime"])
+        .reset_index(drop=True)
+    )
+
+
+def write_placeholder(event: pd.Series, output_path: Path, reason: str) -> None:
+    """Render a non-silent placeholder when local minute coverage is absent."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    figure, axis = plt.subplots(figsize=(18, 9), dpi=150)
+    axis.set_axis_off()
+    identity = (
+        f"Rank {int(event['winner_rank']):02d} | {event['vt_symbol']} | "
+        f"{event['direction']} | entry {pd.Timestamp(event['entry_date']).date()} | "
+        f"R {float(event['aggregate_r']):.4f}"
+    )
+    axis.text(
+        0.5,
+        0.58,
+        identity,
+        ha="center",
+        va="center",
+        fontsize=24,
+        fontweight="bold",
+        transform=axis.transAxes,
+    )
+    axis.text(
+        0.5,
+        0.45,
+        "15-minute chart unavailable",
+        ha="center",
+        va="center",
+        fontsize=20,
+        color="#b91c1c",
+        transform=axis.transAxes,
+    )
+    axis.text(
+        0.5,
+        0.36,
+        reason,
+        ha="center",
+        va="center",
+        fontsize=16,
+        color="#475569",
+        transform=axis.transAxes,
+    )
+    figure.savefig(output_path, bbox_inches="tight", facecolor="white")
+    plt.close(figure)
+
+
+def _safe_name(value: object) -> str:
+    return re.sub(r"[^A-Za-z0-9_-]+", "_", str(value)).strip("_")
+
+
+def _chart_filename(event: pd.Series) -> str:
+    return (
+        f"winner_{int(event['winner_rank']):04d}_"
+        f"{_safe_name(event['vt_symbol'])}_{_safe_name(event['open_trade_id'])}.png"
+    )
+
+
+def plot_winner(
+    event: pd.Series,
+    bars15: pd.DataFrame,
+    window_days: list[pd.Timestamp],
+    output_path: Path,
+    *,
+    raw_1m_bars: int,
+) -> dict[str, object]:
+    """Render one compressed-session candlestick chart and return coverage facts."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    frame = bars15.sort_values(["trading_day", "bar_15m"]).reset_index(drop=True)
+    actual_days = pd.DatetimeIndex(frame["trading_day"].dropna().unique()).normalize()
+    expected_days = pd.DatetimeIndex(window_days).normalize()
+
+    if frame.empty:
+        write_placeholder(
+            event,
+            output_path,
+            "No local minute bars in the requested 11-trading-day window.",
+        )
+        return {
+            "winner_rank": int(event["winner_rank"]),
+            "open_trade_id": str(event["open_trade_id"]),
+            "vt_symbol": str(event["vt_symbol"]),
+            "entry_date": pd.Timestamp(event["entry_date"]).date().isoformat(),
+            "raw_1m_bars": int(raw_1m_bars),
+            "aggregated_15m_bars": 0,
+            "actual_trading_days": 0,
+            "expected_trading_days": len(expected_days),
+            "coverage_state": "missing",
+            "chart_path": output_path.name,
+        }
+
+    figure, (price_axis, volume_axis) = plt.subplots(
+        2,
+        1,
+        figsize=(18, 9),
+        dpi=150,
+        sharex=True,
+        gridspec_kw={"height_ratios": [4, 1], "hspace": 0.04},
+    )
+    x_values = np.arange(len(frame), dtype=float)
+    upward = frame["close"].ge(frame["open"])
+    colors = np.where(upward, "#d62728", "#159447")
+    price_span = float(frame["high"].max() - frame["low"].min())
+    minimum_body = max(price_span * 0.0008, abs(float(frame["close"].mean())) * 1e-6)
+
+    for x_value, row, color in zip(x_values, frame.itertuples(), colors):
+        price_axis.vlines(x_value, row.low, row.high, color=color, linewidth=0.7)
+        lower = min(row.open, row.close)
+        height = max(abs(row.close - row.open), minimum_body)
+        price_axis.add_patch(
+            Rectangle(
+                (x_value - 0.34, lower),
+                0.68,
+                height,
+                facecolor=color,
+                edgecolor=color,
+                linewidth=0.6,
+            )
+        )
+    volume_axis.bar(x_values, frame["volume"], width=0.72, color=colors, alpha=0.72)
+
+    entry_day = pd.Timestamp(event["entry_date"]).normalize()
+    day_positions: list[tuple[pd.Timestamp, int, int]] = []
+    for trading_day, day_frame in frame.groupby("trading_day", sort=True):
+        start = int(day_frame.index.min())
+        end = int(day_frame.index.max())
+        normalized_day = pd.Timestamp(trading_day).normalize()
+        day_positions.append((normalized_day, start, end))
+        price_axis.axvline(start - 0.5, color="#cbd5e1", linewidth=0.6)
+        if normalized_day == entry_day:
+            price_axis.axvspan(
+                start - 0.5,
+                end + 0.5,
+                color="#f59e0b",
+                alpha=0.13,
+                label="Entry trading day",
+            )
+    price_axis.axvline(len(frame) - 0.5, color="#cbd5e1", linewidth=0.6)
+    price_axis.axhline(
+        float(event["entry_price"]),
+        color="#2563eb",
+        linestyle="--",
+        linewidth=1.0,
+        label=f"Entry price {float(event['entry_price']):g}",
+    )
+
+    entry_datetime = pd.to_datetime(event.get("entry_datetime", pd.NaT), errors="coerce")
+    if pd.notna(entry_datetime) and entry_datetime.time() != datetime.min.time():
+        entry_bucket = pd.Timestamp(entry_datetime).floor("15min")
+        matches = frame.index[frame["bar_15m"].eq(entry_bucket)]
+        if len(matches):
+            price_axis.scatter(
+                float(matches[0]),
+                float(event["entry_price"]),
+                s=48,
+                marker="o",
+                color="#2563eb",
+                edgecolor="white",
+                linewidth=0.8,
+                zorder=5,
+                label="Exact entry bucket",
+            )
+
+    exit_date = pd.Timestamp(event["exit_date"]).date().isoformat()
+    title = (
+        f"Rank {int(event['winner_rank']):02d} | {event['vt_symbol']} | "
+        f"{str(event['direction']).upper()} | Entry {entry_day.date()} | "
+        f"Exit {exit_date} | Price {float(event['entry_price']):g} | "
+        f"R {float(event['aggregate_r']):.4f} | PnL {float(event['realized_pnl']):,.2f}"
+    )
+    price_axis.set_title(title, fontsize=15, pad=12, fontweight="bold")
+    price_axis.set_ylabel("Price")
+    volume_axis.set_ylabel("Volume")
+    volume_axis.set_xlabel("Official trading day (night session assigned forward)")
+    price_axis.grid(axis="y", color="#e2e8f0", linewidth=0.6)
+    volume_axis.grid(axis="y", color="#e2e8f0", linewidth=0.5)
+    price_axis.legend(loc="upper left", fontsize=9, framealpha=0.9)
+    tick_positions = [(start + end) / 2 for _, start, end in day_positions]
+    tick_labels = [day.strftime("%Y-%m-%d") for day, _, _ in day_positions]
+    volume_axis.set_xticks(tick_positions, tick_labels, rotation=35, ha="right")
+    volume_axis.set_xlim(-1, len(frame))
+    figure.subplots_adjust(left=0.06, right=0.99, top=0.91, bottom=0.13)
+    figure.savefig(output_path, facecolor="white")
+    plt.close(figure)
+
+    state = "complete" if len(actual_days) == len(expected_days) else "partial"
+    return {
+        "winner_rank": int(event["winner_rank"]),
+        "open_trade_id": str(event["open_trade_id"]),
+        "vt_symbol": str(event["vt_symbol"]),
+        "entry_date": entry_day.date().isoformat(),
+        "raw_1m_bars": int(raw_1m_bars),
+        "aggregated_15m_bars": int(len(frame)),
+        "actual_trading_days": int(len(actual_days)),
+        "expected_trading_days": int(len(expected_days)),
+        "coverage_state": state,
+        "chart_path": output_path.name,
+    }
+
+
+def _write_atlas_pages(chart_paths: list[Path], output_dir: Path) -> list[Path]:
+    atlas_paths: list[Path] = []
+    for page_number, start in enumerate(range(0, len(chart_paths), 4), start=1):
+        page_paths = chart_paths[start : start + 4]
+        figure, axes = plt.subplots(2, 2, figsize=(24, 13.5), dpi=100)
+        for axis, chart_path in zip(axes.flat, page_paths):
+            axis.imshow(plt.imread(chart_path))
+            axis.set_axis_off()
+        for axis in axes.flat[len(page_paths) :]:
+            axis.set_axis_off()
+        figure.suptitle(
+            f"Stage847-C9-15w >=2R Winner Atlas | Page {page_number:03d}",
+            fontsize=17,
+            fontweight="bold",
+        )
+        figure.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.01, wspace=0.01, hspace=0.04)
+        atlas_path = output_dir / f"atlas_page{page_number:03d}.png"
+        figure.savefig(atlas_path, facecolor="white")
+        plt.close(figure)
+        atlas_paths.append(atlas_path)
+    return atlas_paths
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file_handle:
+        for chunk in iter(lambda: file_handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def write_outputs(
+    winners: pd.DataFrame,
+    minutes: pd.DataFrame,
+    calendar: pd.DatetimeIndex,
+    output_dir: Path,
+    *,
+    event_count: int,
+    input_hashes: dict[str, str],
+) -> dict[str, object]:
+    """Write manifests, charts, atlas pages, hashes, decision and report."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for pattern in ["winner_*.png", "atlas_page*.png"]:
+        for stale_path in output_dir.glob(pattern):
+            stale_path.unlink()
+
+    manifest = winners.copy().sort_values("winner_rank").reset_index(drop=True)
+    manifest.to_csv(output_dir / "winner_manifest.csv", index=False, encoding="utf-8-sig")
+    bars15 = resample_15m(minutes) if not minutes.empty else pd.DataFrame()
+    coverage_rows: list[dict[str, object]] = []
+    chart_paths: list[Path] = []
+    for _, event in manifest.iterrows():
+        window_days = select_window_days(event["entry_date"], calendar)
+        symbol = str(event["vt_symbol"])
+        raw_event = minutes[
+            minutes["vt_symbol"].eq(symbol)
+            & minutes["trading_day"].isin(window_days)
+        ]
+        if bars15.empty:
+            event_bars15 = pd.DataFrame()
+        else:
+            event_bars15 = bars15[
+                bars15["vt_symbol"].eq(symbol)
+                & bars15["trading_day"].isin(window_days)
+            ]
+        chart_path = output_dir / _chart_filename(event)
+        coverage_rows.append(
+            plot_winner(
+                event,
+                event_bars15,
+                window_days,
+                chart_path,
+                raw_1m_bars=len(raw_event),
+            )
+        )
+        chart_paths.append(chart_path)
+
+    coverage = pd.DataFrame(coverage_rows).sort_values("winner_rank")
+    coverage.to_csv(output_dir / "coverage_summary.csv", index=False, encoding="utf-8-sig")
+    atlas_paths = _write_atlas_pages(chart_paths, output_dir)
+    all_pngs = chart_paths + atlas_paths
+    pd.DataFrame(
+        [{"path": path.name, "sha256": _sha256(path)} for path in all_pngs]
+    ).to_csv(output_dir / "png_sha256.csv", index=False, encoding="utf-8-sig")
+
+    state_counts = coverage["coverage_state"].value_counts().to_dict()
+    completed_at = datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="seconds")
+    decision: dict[str, object] = {
+        "official_version": OFFICIAL_VERSION,
+        "requested_start_month": "2020-01",
+        "winner_definition": "aggregate realized_pnl / aggregate risk_amount >= 2.0",
+        "sort_order": "aggregate_r desc, realized_pnl desc, entry_date asc, open_trade_id asc",
+        "timeframe": "15min",
+        "window": "5 official trading days before + entry day + 5 after",
+        "completed_at_asia_shanghai": completed_at,
+        "input_sha256": input_hashes,
+        "event_count": int(event_count),
+        "winner_count": int(len(manifest)),
+        "coverage_complete_count": int(state_counts.get("complete", 0)),
+        "coverage_partial_count": int(state_counts.get("partial", 0)),
+        "coverage_missing_count": int(state_counts.get("missing", 0)),
+        "single_chart_count": int(len(chart_paths)),
+        "atlas_page_count": int(len(atlas_paths)),
+        "send_order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+        "ctp_connected": False,
+        "pre_run_overfit_assessment": "否；只解释冻结回测样本，不调参、不改策略。",
+        "post_run_overfit_assessment": "否；图谱是事后法证输出，未反向生成规则。",
+        "continue_value_assessment": "有；可用于识别赢家形态与数据覆盖问题，但不能单独证明可交易规律。",
+    }
+    (output_dir / "decision.json").write_text(
+        json.dumps(decision, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    report = f"""# Stage208 C9/15万 >=2R 大赢家15分钟K线图谱
+
+- 正式版本：`{OFFICIAL_VERSION}`
+- 样本起点：`2020-01`
+- 聚合事件：{event_count}
+- >=2R赢家：{len(manifest)}
+- 排序：聚合R降序，其次已实现收益降序、开仓日升序、open_trade_id升序
+- 窗口：开仓日前5个正式交易日 + 开仓日 + 后5个正式交易日
+- 完整覆盖：{state_counts.get('complete', 0)}
+- 部分覆盖：{state_counts.get('partial', 0)}
+- 缺失占位：{state_counts.get('missing', 0)}
+- 单图：{len(chart_paths)}
+- Atlas页：{len(atlas_paths)}
+- 下单/撤单API：0 / 0；CTP未连接
+
+## 判断
+
+本图谱是冻结回测结果的事后法证，不是新回测，也没有修改正式策略。它适合观察赢家路径和本地分钟数据覆盖，但不能把赢家共有形态直接当成未来规则，否则会产生幸存者偏差与过拟合。
+"""
+    (output_dir / "report.md").write_text(report, encoding="utf-8")
+    return decision
+
+
+def _attach_entry_datetimes(winners: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
+    frame = trades[
+        trades["requested_start_month"].astype(str).eq("2020-01")
+    ].copy()
+    frame["trade_id"] = frame["trade_id"].astype(str)
+    frame["entry_datetime"] = pd.to_datetime(frame["datetime"], errors="coerce")
+    lookup = (
+        frame.sort_values("entry_datetime")
+        .drop_duplicates("trade_id", keep="first")
+        .set_index("trade_id")["entry_datetime"]
+    )
+    result = winners.copy()
+    result["entry_datetime"] = result["open_trade_id"].astype(str).map(lookup)
+    trustworthy = result["entry_datetime"].notna() & result["entry_datetime"].dt.time.ne(
+        datetime.min.time()
+    )
+    result.loc[~trustworthy, "entry_datetime"] = pd.NaT
+    return result
+
+
+def run(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
+    """Run the frozen, read-only Stage208 atlas build."""
+    input_paths = {
+        "closed_lots": CLOSED_LOTS_PATH,
+        "curves": CURVES_PATH,
+        "trades": TRADES_PATH,
+        "minute_bars": MINUTE_PATH,
+    }
+    missing_inputs = [str(path) for path in input_paths.values() if not path.exists()]
+    if missing_inputs:
+        raise FileNotFoundError(f"missing frozen inputs: {missing_inputs}")
+
+    closed_lots = pd.read_csv(CLOSED_LOTS_PATH, low_memory=False)
+    curves = pd.read_csv(CURVES_PATH, low_memory=False)
+    trades = pd.read_csv(TRADES_PATH, low_memory=False)
+    winners = build_winner_events(closed_lots)
+    winners = _attach_entry_datetimes(winners, trades)
+    calendar = build_trading_calendar(curves)
+    minutes = load_target_minutes(MINUTE_PATH, winners, calendar)
+    input_hashes = {name: _sha256(path) for name, path in input_paths.items()}
+    return write_outputs(
+        winners,
+        minutes,
+        calendar,
+        output_dir,
+        event_count=EXPECTED_EVENT_COUNT,
+        input_hashes=input_hashes,
+    )
+
+
+if __name__ == "__main__":
+    result = run()
+    print(json.dumps(result, ensure_ascii=False, indent=2))
