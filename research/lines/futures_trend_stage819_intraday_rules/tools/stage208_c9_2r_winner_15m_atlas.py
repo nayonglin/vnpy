@@ -757,7 +757,7 @@ def _write_atlas_pages(chart_paths: list[Path], output_dir: Path) -> list[Path]:
     atlas_paths: list[Path] = []
     for page_number, start in enumerate(range(0, len(chart_paths), 4), start=1):
         page_paths = chart_paths[start : start + 4]
-        figure, axes = plt.subplots(2, 2, figsize=(24, 13.5), dpi=100)
+        figure, axes = plt.subplots(2, 2, figsize=(24, 16), dpi=100)
         for axis, chart_path in zip(axes.flat, page_paths):
             axis.imshow(plt.imread(chart_path))
             axis.set_axis_off()
@@ -793,6 +793,7 @@ def write_outputs(
     event_count: int,
     input_hashes: dict[str, str],
     cache_file_count: int = 0,
+    daily_context: dict[str, pd.DataFrame] | None = None,
 ) -> dict[str, object]:
     """Write manifests, charts, atlas pages, hashes, decision and report."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -802,6 +803,13 @@ def write_outputs(
 
     manifest = winners.copy().sort_values("winner_rank").reset_index(drop=True)
     manifest.to_csv(output_dir / "winner_manifest.csv", index=False, encoding="utf-8-sig")
+    daily_context = daily_context or {}
+    daily_source_manifest = build_daily_source_manifest(daily_context)
+    daily_source_manifest.to_csv(
+        output_dir / "daily_source_manifest.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
     bars15 = resample_15m(minutes) if not minutes.empty else pd.DataFrame()
     coverage_rows: list[dict[str, object]] = []
     chart_paths: list[Path] = []
@@ -819,6 +827,10 @@ def write_outputs(
                 bars15["vt_symbol"].eq(symbol)
                 & bars15["trading_day"].isin(window_days)
             ]
+        daily_window, daily_facts = select_daily_window(
+            event,
+            daily_context.get(symbol, pd.DataFrame()),
+        )
         chart_path = output_dir / _chart_filename(event)
         coverage_row = plot_winner(
             event,
@@ -826,7 +838,9 @@ def write_outputs(
             window_days,
             chart_path,
             raw_1m_bars=len(raw_event),
+            daily_bars=daily_window,
         )
+        coverage_row.update(daily_facts)
         if "minute_source_kind" in raw_event.columns:
             coverage_row["minute_source_kinds"] = "|".join(
                 sorted(raw_event["minute_source_kind"].dropna().astype(str).unique())
@@ -849,14 +863,18 @@ def write_outputs(
     ).to_csv(output_dir / "png_sha256.csv", index=False, encoding="utf-8-sig")
 
     state_counts = coverage["coverage_state"].value_counts().to_dict()
+    daily_state_counts = coverage["daily_coverage_state"].value_counts().to_dict()
     completed_at = datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="seconds")
     decision: dict[str, object] = {
         "official_version": OFFICIAL_VERSION,
         "requested_start_month": "2020-01",
         "winner_definition": "aggregate realized_pnl / aggregate risk_amount >= 2.0",
         "sort_order": "aggregate_r desc, realized_pnl desc, entry_date asc, open_trade_id asc",
-        "timeframe": "15min",
+        "timeframe": "15min + daily",
+        "layout": "15m_kline+daily_kline+daily_volume",
         "window": "5 official trading days before + entry day + 5 after",
+        "daily_window": "60 exact-contract daily bars before entry + holding period + 5 after final exit",
+        "daily_source": DAILY_SOURCE,
         "completed_at_asia_shanghai": completed_at,
         "input_sha256": input_hashes,
         "local_contract_cache_file_count": int(cache_file_count),
@@ -865,6 +883,10 @@ def write_outputs(
         "coverage_complete_count": int(state_counts.get("complete", 0)),
         "coverage_partial_count": int(state_counts.get("partial", 0)),
         "coverage_missing_count": int(state_counts.get("missing", 0)),
+        "daily_complete_count": int(daily_state_counts.get("complete", 0)),
+        "daily_partial_count": int(daily_state_counts.get("partial", 0)),
+        "daily_missing_count": int(daily_state_counts.get("missing", 0)),
+        "daily_contract_count": int(len(daily_source_manifest)),
         "single_chart_count": int(len(chart_paths)),
         "atlas_page_count": int(len(atlas_paths)),
         "send_order_api_called_count": 0,
@@ -878,7 +900,7 @@ def write_outputs(
         json.dumps(decision, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    report = f"""# Stage208 C9/15万 >=2R 大赢家15分钟K线图谱
+    report = f"""# Stage210 C9/15万 >=2R 大赢家三层K线图谱
 
 - 正式版本：`{OFFICIAL_VERSION}`
 - 样本起点：`2020-01`
@@ -886,9 +908,13 @@ def write_outputs(
 - >=2R赢家：{len(manifest)}
 - 排序：聚合R降序，其次已实现收益降序、开仓日升序、open_trade_id升序
 - 窗口：开仓日前5个正式交易日 + 开仓日 + 后5个正式交易日
+- 布局：15分钟K线（无分钟成交量）+ 日K + 日成交量
+- 日线窗口：开仓前60根精确合约日K + 完整持仓期 + 最终平仓后5根日K
+- 日线来源：`{DAILY_SOURCE}`
 - 完整覆盖：{state_counts.get('complete', 0)}
 - 部分覆盖：{state_counts.get('partial', 0)}
 - 缺失占位：{state_counts.get('missing', 0)}
+- 日线完整/部分/缺失：{daily_state_counts.get('complete', 0)} / {daily_state_counts.get('partial', 0)} / {daily_state_counts.get('missing', 0)}
 - 本地逐合约分钟缓存文件：{cache_file_count}
 - 单图：{len(chart_paths)}
 - Atlas页：{len(atlas_paths)}
@@ -947,6 +973,7 @@ def run(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
         calendar,
         fallback_paths=cache_paths,
     )
+    daily_context = load_daily_context(winners)
     input_hashes = {name: _sha256(path) for name, path in input_paths.items()}
     cache_hash_rows = [
         {"path": str(path.relative_to(REPO_ROOT)), "sha256": _sha256(path)}
@@ -956,6 +983,12 @@ def run(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
     for row in cache_hash_rows:
         cache_bundle.update(f"{row['path']}\0{row['sha256']}\n".encode())
     input_hashes["local_contract_cache_bundle"] = cache_bundle.hexdigest()
+    daily_bundle = hashlib.sha256()
+    for row in build_daily_source_manifest(daily_context).itertuples(index=False):
+        daily_bundle.update(
+            f"{row.vt_symbol}\0{row.canonical_sha256}\n".encode("utf-8")
+        )
+    input_hashes["daily_context_bundle"] = daily_bundle.hexdigest()
     decision = write_outputs(
         winners,
         minutes,
@@ -964,6 +997,7 @@ def run(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
         event_count=EXPECTED_EVENT_COUNT,
         input_hashes=input_hashes,
         cache_file_count=len(cache_paths),
+        daily_context=daily_context,
     )
     pd.DataFrame(cache_hash_rows).to_csv(
         output_dir / "minute_cache_sha256.csv",

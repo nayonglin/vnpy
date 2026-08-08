@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
 import pandas as pd
 
 
@@ -198,6 +199,8 @@ def test_create_winner_figure_has_three_axes_and_only_daily_volume_bars() -> Non
     daily = _daily_fixture()
     event = _chart_event(daily)
     daily_window, _ = stage208.select_daily_window(event, daily)
+    daily_window.loc[0, "close"] = daily_window.loc[0, "open"] + 1.0
+    daily_window.loc[1, "close"] = daily_window.loc[1, "open"] - 1.0
     bars15 = _bars15_fixture(event)
 
     figure = stage208.create_winner_figure(
@@ -215,6 +218,12 @@ def test_create_winner_figure_has_three_axes_and_only_daily_volume_bars() -> Non
     assert len(figure.axes[0].containers) == 0
     assert len(figure.axes[1].containers) == 0
     assert len(figure.axes[2].containers) == 1
+    volume_colors = [
+        patch.get_facecolor()
+        for patch in figure.axes[2].containers[0].patches[:2]
+    ]
+    assert np.allclose(volume_colors[0], stage208.matplotlib.colors.to_rgba("#d62728", 0.72))
+    assert np.allclose(volume_colors[1], stage208.matplotlib.colors.to_rgba("#159447", 0.72))
     stage208.plt.close(figure)
 
 
@@ -442,7 +451,7 @@ def test_write_placeholder_creates_nonempty_png(tmp_path: Path) -> None:
 def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
     tmp_path: Path,
 ) -> None:
-    calendar = pd.bdate_range("2021-01-01", periods=15)
+    calendar = pd.bdate_range("2021-01-01", periods=80)
     winners = pd.DataFrame(
         [
             {
@@ -450,8 +459,8 @@ def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
                 "open_trade_id": "A",
                 "vt_symbol": "rb.SHFE",
                 "direction": "long",
-                "entry_date": calendar[7],
-                "exit_date": calendar[9],
+                "entry_date": calendar[60],
+                "exit_date": calendar[62],
                 "entry_price": 100.0,
                 "realized_pnl": 300.0,
                 "risk_amount": 100.0,
@@ -463,8 +472,8 @@ def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
                 "open_trade_id": "B",
                 "vt_symbol": "jm.DCE",
                 "direction": "short",
-                "entry_date": calendar[7],
-                "exit_date": calendar[10],
+                "entry_date": calendar[60],
+                "exit_date": calendar[63],
                 "entry_price": 200.0,
                 "realized_pnl": 200.0,
                 "risk_amount": 100.0,
@@ -478,13 +487,13 @@ def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
             "vt_symbol": ["rb.SHFE", "rb.SHFE", "jm.DCE", "jm.DCE"],
             "bar_datetime": pd.to_datetime(
                 [
-                    f"{calendar[7].date()} 09:01",
-                    f"{calendar[7].date()} 09:16",
-                    f"{calendar[7].date()} 09:01",
-                    f"{calendar[7].date()} 09:16",
+                    f"{calendar[60].date()} 09:01",
+                    f"{calendar[60].date()} 09:16",
+                    f"{calendar[60].date()} 09:01",
+                    f"{calendar[60].date()} 09:16",
                 ]
             ),
-            "trading_day": [calendar[7]] * 4,
+            "trading_day": [calendar[60]] * 4,
             "open": [100, 101, 200, 199],
             "high": [102, 103, 201, 200],
             "low": [99, 100, 198, 197],
@@ -494,6 +503,11 @@ def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
             "close_oi": [1001, 1002, 2001, 2002],
         }
     )
+    daily_context = {}
+    for symbol in ["rb.SHFE", "jm.DCE"]:
+        daily = _daily_fixture()
+        daily["vt_symbol"] = symbol
+        daily_context[symbol] = daily
     output_dir = tmp_path / "atlas"
 
     stage208.write_outputs(
@@ -503,12 +517,27 @@ def test_write_outputs_creates_manifest_charts_atlas_and_safe_decision(
         output_dir,
         event_count=2,
         input_hashes={"fixture": "abc"},
+        daily_context=daily_context,
     )
 
     assert len(pd.read_csv(output_dir / "winner_manifest.csv")) == 2
+    assert len(pd.read_csv(output_dir / "daily_source_manifest.csv")) == 2
+    coverage = pd.read_csv(output_dir / "coverage_summary.csv")
+    assert coverage["daily_coverage_state"].tolist() == ["complete", "complete"]
+    assert coverage["daily_before_count"].tolist() == [60, 60]
+    assert coverage["daily_after_count"].tolist() == [5, 5]
     assert len(list(output_dir.glob("winner_*.png"))) == 2
     assert len(list(output_dir.glob("atlas_page*.png"))) == 1
+    chart_pixels = stage208.plt.imread(sorted(output_dir.glob("winner_*.png"))[0])
+    atlas_pixels = stage208.plt.imread(output_dir / "atlas_page001.png")
+    assert chart_pixels.shape[:2] == (1800, 2700)
+    assert atlas_pixels.shape[:2] == (1600, 2400)
     decision = json.loads((output_dir / "decision.json").read_text())
+    assert decision["layout"] == "15m_kline+daily_kline+daily_volume"
+    assert decision["daily_complete_count"] == 2
+    assert decision["daily_partial_count"] == 0
+    assert decision["daily_missing_count"] == 0
+    assert decision["daily_contract_count"] == 2
     assert decision["send_order_api_called_count"] == 0
     assert decision["cancel_order_api_called_count"] == 0
     assert decision["ctp_connected"] is False
