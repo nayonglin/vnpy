@@ -50,6 +50,155 @@ MINUTE_PATH = REPO_ROOT / (
 )
 MINUTE_CACHE_ROOT = REPO_ROOT / "examples/portfolio_backtesting/downloaded_futures"
 OFFICIAL_VERSION = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
+DAILY_SOURCE = "vnpy_local_database_exact_contract_daily"
+
+
+def daily_bars_to_frame(vt_symbol: str, bars: list[object]) -> pd.DataFrame:
+    """Convert vn.py daily bars into a timezone-naive exact-contract frame."""
+    rows: list[dict[str, object]] = []
+    for bar in bars:
+        trade_date = pd.Timestamp(bar.datetime)
+        if trade_date.tzinfo is not None:
+            trade_date = trade_date.tz_convert("Asia/Shanghai").tz_localize(None)
+        rows.append(
+            {
+                "vt_symbol": vt_symbol,
+                "trade_date": trade_date.normalize(),
+                "open": float(bar.open_price),
+                "high": float(bar.high_price),
+                "low": float(bar.low_price),
+                "close": float(bar.close_price),
+                "volume": float(bar.volume),
+            }
+        )
+    return pd.DataFrame(
+        rows,
+        columns=["vt_symbol", "trade_date", "open", "high", "low", "close", "volume"],
+    )
+
+
+def select_daily_window(
+    event: pd.Series,
+    daily_bars: pd.DataFrame,
+    before: int = 60,
+    after: int = 5,
+) -> tuple[pd.DataFrame, dict[str, object]]:
+    """Select exact-contract daily context around the full holding period."""
+    frame = daily_bars.copy()
+    if frame.empty:
+        return frame, {
+            "daily_bar_count": 0,
+            "daily_before_count": 0,
+            "daily_holding_count": 0,
+            "daily_after_count": 0,
+            "daily_coverage_state": "missing",
+            "daily_source": DAILY_SOURCE,
+        }
+
+    frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="coerce").dt.normalize()
+    frame = frame.dropna(subset=["trade_date"]).sort_values("trade_date").reset_index(drop=True)
+    entry_day = pd.Timestamp(event["entry_date"]).normalize()
+    exit_day = pd.Timestamp(event["exit_date"]).normalize()
+    before_frame = frame[frame["trade_date"].lt(entry_day)].tail(before)
+    holding_frame = frame[
+        frame["trade_date"].ge(entry_day) & frame["trade_date"].le(exit_day)
+    ]
+    after_frame = frame[frame["trade_date"].gt(exit_day)].head(after)
+    window = pd.concat([before_frame, holding_frame, after_frame], ignore_index=True)
+    has_entry = bool(frame["trade_date"].eq(entry_day).any())
+    has_exit = bool(frame["trade_date"].eq(exit_day).any())
+    state = (
+        "complete"
+        if len(before_frame) == before
+        and len(after_frame) == after
+        and has_entry
+        and has_exit
+        else "partial"
+    )
+    return window, {
+        "daily_bar_count": int(len(window)),
+        "daily_before_count": int(len(before_frame)),
+        "daily_holding_count": int(len(holding_frame)),
+        "daily_after_count": int(len(after_frame)),
+        "daily_coverage_state": state,
+        "daily_source": DAILY_SOURCE,
+    }
+
+
+def load_daily_context(
+    winners: pd.DataFrame,
+    database: object | None = None,
+) -> dict[str, pd.DataFrame]:
+    """Load exact monthly-contract daily bars from the local vn.py database."""
+    from vnpy.trader.constant import Exchange, Interval
+
+    if database is None:
+        from vnpy.trader.database import get_database
+
+        database = get_database()
+
+    context: dict[str, pd.DataFrame] = {}
+    for vt_symbol in sorted(winners["vt_symbol"].dropna().astype(str).unique()):
+        if vt_symbol.count(".") != 1:
+            raise ValueError(f"invalid exact vt_symbol: {vt_symbol}")
+        symbol, exchange_code = vt_symbol.split(".", 1)
+        bars = database.load_bar_data(
+            symbol,
+            Exchange(exchange_code),
+            Interval.DAILY,
+            datetime(2010, 1, 1),
+            datetime(2026, 7, 15),
+        )
+        context[vt_symbol] = daily_bars_to_frame(vt_symbol, list(bars))
+    return context
+
+
+def build_daily_source_manifest(
+    daily_context: dict[str, pd.DataFrame],
+) -> pd.DataFrame:
+    """Describe and hash the canonical exact-contract daily-bar inputs."""
+    rows: list[dict[str, object]] = []
+    for vt_symbol in sorted(daily_context):
+        frame = daily_context[vt_symbol].copy().sort_values("trade_date")
+        if frame.empty:
+            minimum = ""
+            maximum = ""
+        else:
+            dates = pd.to_datetime(frame["trade_date"], errors="coerce")
+            minimum = dates.min().date().isoformat()
+            maximum = dates.max().date().isoformat()
+        canonical = frame[
+            ["vt_symbol", "trade_date", "open", "high", "low", "close", "volume"]
+        ].copy()
+        canonical["trade_date"] = pd.to_datetime(
+            canonical["trade_date"], errors="coerce"
+        ).dt.strftime("%Y-%m-%d")
+        payload = canonical.to_csv(
+            index=False,
+            lineterminator="\n",
+            float_format="%.10g",
+        ).encode("utf-8")
+        rows.append(
+            {
+                "vt_symbol": vt_symbol,
+                "row_count": int(len(frame)),
+                "min_trade_date": minimum,
+                "max_trade_date": maximum,
+                "canonical_sha256": hashlib.sha256(payload).hexdigest(),
+                "source": DAILY_SOURCE,
+            }
+        )
+    return pd.DataFrame(
+        rows,
+        columns=[
+            "vt_symbol",
+            "row_count",
+            "min_trade_date",
+            "max_trade_date",
+            "canonical_sha256",
+            "source",
+        ],
+    )
 
 
 def build_winner_events(

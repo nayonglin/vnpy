@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pandas as pd
 
@@ -16,6 +17,145 @@ SPEC = importlib.util.spec_from_file_location("stage208", MODULE_PATH)
 assert SPEC and SPEC.loader
 stage208 = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(stage208)
+
+
+def test_daily_bars_to_frame_normalizes_timezone_and_ohlcv() -> None:
+    bars = [
+        SimpleNamespace(
+            datetime=pd.Timestamp("2021-01-04 00:00", tz="Asia/Shanghai").to_pydatetime(),
+            open_price=100.0,
+            high_price=105.0,
+            low_price=98.0,
+            close_price=103.0,
+            volume=1234.0,
+        ),
+        SimpleNamespace(
+            datetime=pd.Timestamp("2021-01-05 00:00", tz="Asia/Shanghai").to_pydatetime(),
+            open_price=103.0,
+            high_price=106.0,
+            low_price=101.0,
+            close_price=102.0,
+            volume=987.0,
+        ),
+    ]
+
+    result = stage208.daily_bars_to_frame("rb2105.SHFE", bars)
+
+    assert result["vt_symbol"].tolist() == ["rb2105.SHFE", "rb2105.SHFE"]
+    assert result["trade_date"].tolist() == [
+        pd.Timestamp("2021-01-04"),
+        pd.Timestamp("2021-01-05"),
+    ]
+    assert result.iloc[0][["open", "high", "low", "close", "volume"]].tolist() == [
+        100.0,
+        105.0,
+        98.0,
+        103.0,
+        1234.0,
+    ]
+
+
+def _daily_fixture(periods: int = 80) -> pd.DataFrame:
+    dates = pd.bdate_range("2021-01-01", periods=periods)
+    values = pd.Series(range(periods), dtype=float)
+    return pd.DataFrame(
+        {
+            "vt_symbol": "rb2105.SHFE",
+            "trade_date": dates,
+            "open": 100.0 + values,
+            "high": 102.0 + values,
+            "low": 99.0 + values,
+            "close": 101.0 + values,
+            "volume": 1000.0 + values,
+        }
+    )
+
+
+def test_select_daily_window_returns_60_before_holding_and_5_after() -> None:
+    daily = _daily_fixture()
+    event = pd.Series(
+        {
+            "entry_date": daily.iloc[60]["trade_date"],
+            "exit_date": daily.iloc[64]["trade_date"],
+        }
+    )
+
+    window, facts = stage208.select_daily_window(event, daily)
+
+    assert len(window) == 70
+    assert window.iloc[0]["trade_date"] == daily.iloc[0]["trade_date"]
+    assert window.iloc[-1]["trade_date"] == daily.iloc[69]["trade_date"]
+    assert facts == {
+        "daily_bar_count": 70,
+        "daily_before_count": 60,
+        "daily_holding_count": 5,
+        "daily_after_count": 5,
+        "daily_coverage_state": "complete",
+        "daily_source": "vnpy_local_database_exact_contract_daily",
+    }
+
+
+def test_select_daily_window_marks_short_history_partial() -> None:
+    daily = _daily_fixture(periods=20)
+    event = pd.Series(
+        {
+            "entry_date": daily.iloc[10]["trade_date"],
+            "exit_date": daily.iloc[12]["trade_date"],
+        }
+    )
+
+    window, facts = stage208.select_daily_window(event, daily)
+
+    assert len(window) == 18
+    assert facts["daily_before_count"] == 10
+    assert facts["daily_holding_count"] == 3
+    assert facts["daily_after_count"] == 5
+    assert facts["daily_coverage_state"] == "partial"
+
+
+def test_load_daily_context_queries_each_exact_contract_once_and_builds_manifest() -> None:
+    class FakeDatabase:
+        def __init__(self) -> None:
+            self.calls: list[tuple[object, ...]] = []
+
+        def load_bar_data(self, symbol, exchange, interval, start, end):
+            self.calls.append((symbol, exchange, interval, start, end))
+            base = pd.Timestamp("2021-01-04", tz="Asia/Shanghai")
+            return [
+                SimpleNamespace(
+                    datetime=(base + pd.Timedelta(days=offset)).to_pydatetime(),
+                    open_price=100.0 + offset,
+                    high_price=102.0 + offset,
+                    low_price=99.0 + offset,
+                    close_price=101.0 + offset,
+                    volume=1000.0 + offset,
+                )
+                for offset in range(2)
+            ]
+
+    winners = pd.DataFrame(
+        {
+            "vt_symbol": ["rb2105.SHFE", "jm2205.DCE", "rb2105.SHFE"],
+        }
+    )
+    database = FakeDatabase()
+
+    context = stage208.load_daily_context(winners, database=database)
+    manifest = stage208.build_daily_source_manifest(context)
+
+    assert sorted(context) == ["jm2205.DCE", "rb2105.SHFE"]
+    assert [(call[0], call[1].value) for call in database.calls] == [
+        ("jm2205", "DCE"),
+        ("rb2105", "SHFE"),
+    ]
+    assert manifest["vt_symbol"].tolist() == ["jm2205.DCE", "rb2105.SHFE"]
+    assert manifest["row_count"].tolist() == [2, 2]
+    assert manifest["min_trade_date"].tolist() == ["2021-01-04", "2021-01-04"]
+    assert manifest["max_trade_date"].tolist() == ["2021-01-05", "2021-01-05"]
+    assert manifest["source"].unique().tolist() == [
+        "vnpy_local_database_exact_contract_daily"
+    ]
+    assert manifest["canonical_sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
 
 
 def test_build_winner_events_aggregates_filters_and_sorts() -> None:
