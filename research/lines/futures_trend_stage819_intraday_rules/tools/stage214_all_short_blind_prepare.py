@@ -24,6 +24,9 @@ EXPECTED_SHORT_EVENT_COUNT = 64
 EXPECTED_ZERO_RISK_OPEN_TRADE_IDS = frozenset(
     {"BACKTESTING.166", "BACKTESTING.265", "BACKTESTING.589"}
 )
+MIN_QUALITY_DAY_BARS = 30
+MIN_REFERENCE_BAR_RATIO = 0.80
+SESSION_BOUNDARY_TOLERANCE_MINUTES = 15
 
 _STAGE208_PATH = Path(__file__).with_name("stage208_c9_2r_winner_15m_atlas.py")
 _STAGE208_SPEC = importlib.util.spec_from_file_location("stage208", _STAGE208_PATH)
@@ -109,8 +112,12 @@ def build_short_events(
                 "expected zero-risk open_trade_ids "
                 f"{sorted(EXPECTED_ZERO_RISK_OPEN_TRADE_IDS)}, got {sorted(zero_risk_ids)}"
             )
-    events["outcome_ge_2r"] = events["aggregate_r"].ge(2.0)
-    events["outcome_profitable"] = events["realized_pnl"].gt(0.0)
+    resolved_r = pd.to_numeric(events["aggregate_r"], errors="coerce")
+    valid_r = pd.Series(np.isfinite(resolved_r), index=events.index)
+    events["outcome_ge_2r"] = pd.Series(pd.NA, index=events.index, dtype="boolean")
+    events["outcome_profitable"] = pd.Series(pd.NA, index=events.index, dtype="boolean")
+    events.loc[valid_r, "outcome_ge_2r"] = resolved_r.loc[valid_r].ge(2.0)
+    events.loc[valid_r, "outcome_profitable"] = events.loc[valid_r, "realized_pnl"].gt(0.0)
     events["entry_year"] = events["entry_date"].dt.year.astype("Int64")
     return events.sort_values(["entry_date", "open_trade_id"]).reset_index(drop=True)
 
@@ -291,6 +298,8 @@ def merge_minute_sources(
     stage861_path: Path,
     cache_paths: list[Path],
     database: object,
+    *,
+    authorized_cache_paths: list[Path] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Merge exact-contract minute sources with Stage861 as the authoritative duplicate."""
     from vnpy.trader.constant import Exchange, Interval
@@ -300,7 +309,11 @@ def merge_minute_sources(
     selected: list[pd.DataFrame] = []
     manifest: list[dict[str, object]] = []
 
-    file_sources = [(Path(stage861_path), "stage861", 3)] + [
+    authorized_cache_paths = authorized_cache_paths or []
+    file_sources = [
+        (Path(path), "authorized_tqsdk_completed", 4)
+        for path in authorized_cache_paths
+    ] + [(Path(stage861_path), "stage861", 3)] + [
         (Path(path), "local_cache", 2) for path in cache_paths
     ]
     for path, source, priority in file_sources:
@@ -430,10 +443,158 @@ def resolve_risk_zero_events(
     return resolved, risk_audit.reset_index(drop=True)
 
 
+def build_minute_day_quality(minutes: pd.DataFrame) -> pd.DataFrame:
+    """Validate completed exact-contract minute sessions before coverage credit."""
+    columns = [
+        "vt_symbol",
+        "trading_day",
+        "row_count",
+        "unique_timestamp_count",
+        "has_day_session",
+        "has_night_session",
+        "min_datetime",
+        "max_datetime",
+        "reference_bar_count",
+        "expected_night_session",
+        "authoritative_completed_source",
+        "quality_passed",
+        "failure_reasons",
+    ]
+    if minutes.empty:
+        return pd.DataFrame(columns=columns)
+    frame = minutes.copy()
+    frame["bar_datetime"] = pd.to_datetime(frame["bar_datetime"], errors="coerce")
+    frame["trading_day"] = pd.to_datetime(frame["trading_day"], errors="coerce").dt.normalize()
+    frame = frame.dropna(subset=["vt_symbol", "bar_datetime", "trading_day"])
+    if frame.empty:
+        return pd.DataFrame(columns=columns)
+    for column in ["open", "high", "low", "close", "volume"]:
+        if column not in frame.columns:
+            frame[column] = np.nan
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+
+    metrics: list[dict[str, object]] = []
+    for (vt_symbol, trading_day), group in frame.groupby(
+        ["vt_symbol", "trading_day"], sort=True
+    ):
+        ordered = group.sort_values("bar_datetime")
+        ohlc = ordered[["open", "high", "low", "close"]]
+        valid_ohlc = bool(
+            ohlc.notna().all().all()
+            and ordered["high"].ge(ohlc[["open", "close", "low"]].max(axis=1)).all()
+            and ordered["low"].le(ohlc[["open", "close", "high"]].min(axis=1)).all()
+        )
+        flat_rows = ohlc.nunique(axis=1, dropna=False).eq(1)
+        zero_volume = ordered["volume"].fillna(0.0).eq(0.0)
+        times = ordered["bar_datetime"]
+        minute_of_day = times.dt.hour * 60 + times.dt.minute
+        has_day = bool(minute_of_day.between(8 * 60, 18 * 60 - 1).any())
+        has_night = bool(((minute_of_day >= 18 * 60) | (minute_of_day < 8 * 60)).any())
+        source_kind = ordered.get(
+            "minute_source_kind", pd.Series("", index=ordered.index, dtype="object")
+        ).astype(str)
+        authoritative_completed = bool(
+            source_kind.eq("authorized_tqsdk_completed").mean() >= 0.80
+        )
+        offsets = (times - pd.Timestamp(trading_day)).dt.total_seconds() / 60.0
+        row_count = int(len(ordered))
+        unique_count = int(times.nunique())
+        all_flat_zero = bool(flat_rows.all() and zero_volume.all())
+        basic_trusted = bool(
+            row_count >= MIN_QUALITY_DAY_BARS
+            and unique_count == row_count
+            and valid_ohlc
+            and not all_flat_zero
+            and has_day
+        )
+        metrics.append(
+            {
+                "vt_symbol": str(vt_symbol),
+                "trading_day": pd.Timestamp(trading_day),
+                "row_count": row_count,
+                "unique_timestamp_count": unique_count,
+                "has_day_session": has_day,
+                "has_night_session": has_night,
+                "min_datetime": times.min(),
+                "max_datetime": times.max(),
+                "min_offset_minutes": float(offsets.min()),
+                "max_offset_minutes": float(offsets.max()),
+                "valid_ohlc": valid_ohlc,
+                "all_flat_zero": all_flat_zero,
+                "basic_trusted": basic_trusted,
+                "authoritative_completed_source": authoritative_completed,
+            }
+        )
+    quality = pd.DataFrame(metrics)
+    output_rows: list[dict[str, object]] = []
+    for vt_symbol, symbol_days in quality.groupby("vt_symbol", sort=False):
+        trusted = symbol_days[symbol_days["basic_trusted"]].copy()
+        expected_night = bool(trusted["has_night_session"].mean() >= 0.5) if not trusted.empty else False
+        reference = trusted[
+            trusted["has_day_session"]
+            & trusted["has_night_session"].eq(expected_night)
+        ]
+        if reference.empty:
+            reference = trusted
+        reference_count = float(reference["row_count"].median()) if not reference.empty else np.nan
+        reference_start = float(reference["min_offset_minutes"].median()) if not reference.empty else np.nan
+        reference_end = float(reference["max_offset_minutes"].median()) if not reference.empty else np.nan
+        for row in symbol_days.itertuples(index=False):
+            reasons: list[str] = []
+            authoritative_no_night = bool(
+                row.authoritative_completed_source
+                and row.basic_trusted
+                and not row.has_night_session
+            )
+            if row.unique_timestamp_count != row.row_count:
+                reasons.append("duplicate_timestamps")
+            if not row.valid_ohlc:
+                reasons.append("invalid_ohlc")
+            if row.all_flat_zero:
+                reasons.append("all_ohlc_flat_and_zero_volume")
+            if row.row_count < MIN_QUALITY_DAY_BARS:
+                reasons.append("insufficient_bar_count")
+            if not row.has_day_session:
+                reasons.append("missing_day_session")
+            if expected_night and not row.has_night_session and not authoritative_no_night:
+                reasons.append("missing_night_session")
+            if np.isfinite(reference_count):
+                minimum_count = int(np.ceil(reference_count * MIN_REFERENCE_BAR_RATIO))
+                if row.row_count < minimum_count and not authoritative_no_night:
+                    reasons.append("insufficient_relative_bar_count")
+            if (
+                np.isfinite(reference_start)
+                and row.min_offset_minutes > reference_start + SESSION_BOUNDARY_TOLERANCE_MINUTES
+                and not authoritative_no_night
+            ):
+                reasons.append("session_start_too_late")
+            if np.isfinite(reference_end) and row.max_offset_minutes < reference_end - SESSION_BOUNDARY_TOLERANCE_MINUTES:
+                reasons.append("session_end_too_early")
+            output_rows.append(
+                {
+                    "vt_symbol": str(vt_symbol),
+                    "trading_day": pd.Timestamp(row.trading_day),
+                    "row_count": int(row.row_count),
+                    "unique_timestamp_count": int(row.unique_timestamp_count),
+                    "has_day_session": bool(row.has_day_session),
+                    "has_night_session": bool(row.has_night_session),
+                    "min_datetime": pd.Timestamp(row.min_datetime).isoformat(),
+                    "max_datetime": pd.Timestamp(row.max_datetime).isoformat(),
+                    "reference_bar_count": reference_count,
+                    "expected_night_session": expected_night,
+                    "authoritative_completed_source": bool(row.authoritative_completed_source),
+                    "quality_passed": not reasons,
+                    "failure_reasons": "|".join(reasons),
+                }
+            )
+    return pd.DataFrame(output_rows, columns=columns)
+
+
 def build_data_gap_audit(
     events: pd.DataFrame,
     minutes: pd.DataFrame,
     calendar: pd.DatetimeIndex,
+    day_quality: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Audit each frozen event's five pre-entry trading days and risk provenance."""
     source_manifest = minutes.attrs.get("source_manifest")
@@ -443,6 +604,13 @@ def build_data_gap_audit(
     minute_frame["trading_day"] = pd.to_datetime(
         minute_frame["trading_day"], errors="coerce"
     ).dt.normalize()
+    if day_quality is None:
+        day_quality = build_minute_day_quality(minute_frame)
+    quality_frame = day_quality.copy()
+    if not quality_frame.empty:
+        quality_frame["trading_day"] = pd.to_datetime(
+            quality_frame["trading_day"], errors="coerce"
+        ).dt.normalize()
     rows: list[dict[str, object]] = []
     for event in events.itertuples(index=False):
         event_data = event._asdict()
@@ -452,13 +620,31 @@ def build_data_gap_audit(
             minute_frame["vt_symbol"].astype(str).eq(vt_symbol)
             & minute_frame["trading_day"].isin(target_days)
         ]
-        actual_days = sorted(
+        observed_days = sorted(
             pd.DatetimeIndex(event_minutes["trading_day"].dropna().unique()).normalize()
         )
-        missing_days = [day for day in target_days if day not in actual_days]
-        if len(actual_days) == len(target_days):
+        event_quality = quality_frame[
+            quality_frame["vt_symbol"].astype(str).eq(vt_symbol)
+            & quality_frame["trading_day"].isin(target_days)
+        ]
+        passed_days = sorted(
+            pd.DatetimeIndex(
+                event_quality.loc[event_quality["quality_passed"].astype(bool), "trading_day"].unique()
+            ).normalize()
+        )
+        missing_days = [day for day in target_days if day not in passed_days]
+        failure_details: list[str] = []
+        for day in missing_days:
+            day_rows = event_quality[event_quality["trading_day"].eq(day)]
+            reason = (
+                str(day_rows.iloc[0]["failure_reasons"])
+                if not day_rows.empty and str(day_rows.iloc[0]["failure_reasons"])
+                else "no_minute_rows"
+            )
+            failure_details.append(f"{day.date().isoformat()}:{reason}")
+        if len(passed_days) == len(target_days):
             coverage_state = "complete"
-        elif actual_days:
+        elif observed_days:
             coverage_state = "partial"
         else:
             coverage_state = "missing"
@@ -488,8 +674,10 @@ def build_data_gap_audit(
                 "vt_symbol": vt_symbol,
                 "entry_date": pd.Timestamp(event_data["entry_date"]).date().isoformat(),
                 "target_days": "|".join(day.date().isoformat() for day in target_days),
-                "actual_days": "|".join(day.date().isoformat() for day in actual_days),
+                "actual_days": "|".join(day.date().isoformat() for day in passed_days),
+                "observed_days": "|".join(day.date().isoformat() for day in observed_days),
                 "missing_days": "|".join(day.date().isoformat() for day in missing_days),
+                "failure_reasons": ";".join(failure_details),
                 "coverage_state": coverage_state,
                 "attempted_sources": "|".join(attempted_sources),
                 "risk_status": risk_status,
@@ -503,7 +691,9 @@ def build_data_gap_audit(
             "entry_date",
             "target_days",
             "actual_days",
+            "observed_days",
             "missing_days",
+            "failure_reasons",
             "coverage_state",
             "attempted_sources",
             "risk_status",
@@ -775,30 +965,44 @@ def prepare(
     events, _ = resolve_risk_zero_events(events, closed_lots)
     calendar = build_trading_calendar(curves)
     cache_paths = discover_contract_cache_paths(MINUTE_CACHE_ROOT, events)
+    authorized_cache_paths = sorted(
+        (output_dir / "authorized_tqsdk_raw").rglob("*.csv")
+    )
     minutes, source_manifest = merge_minute_sources(
         events,
         calendar,
         MINUTE_PATH,
         cache_paths,
         database,
+        authorized_cache_paths=authorized_cache_paths,
     )
-    gap_audit = build_data_gap_audit(events, minutes, calendar)
+    day_quality = build_minute_day_quality(minutes)
+    gap_audit = build_data_gap_audit(events, minutes, calendar, day_quality)
     bars15 = build_preentry_15m(minutes, events, calendar)
     sealed_mapping = build_blind_mapping(events)
 
     _write_csv(events, output_dir / "short_event_manifest.csv")
     _write_csv(source_manifest, output_dir / "minute_source_manifest.csv")
+    _write_csv(day_quality, output_dir / "minute_day_quality.csv")
     _write_csv(gap_audit, output_dir / "data_gap_audit.csv")
     _write_csv(sealed_mapping, output_dir / "blind_mapping.csv")
 
-    analyzable_ids = set(
+    chartable_ids = set(
         gap_audit.loc[gap_audit["coverage_state"].eq("complete"), "open_trade_id"].astype(str)
+    )
+    aggregate_r = pd.to_numeric(events.get("aggregate_r"), errors="coerce")
+    result_analyzable_ids = set(
+        events.loc[
+            events["open_trade_id"].astype(str).isin(chartable_ids)
+            & pd.Series(np.isfinite(aggregate_r), index=events.index),
+            "open_trade_id",
+        ].astype(str)
     )
     chart_dir = output_dir / "blind_charts"
     chart_dir.mkdir(exist_ok=True)
     reviewer_rows: list[dict[str, object]] = []
     for event in sealed_mapping.itertuples(index=False):
-        if str(event.open_trade_id) not in analyzable_ids:
+        if str(event.open_trade_id) not in chartable_ids:
             continue
         target_days = select_preentry_days(pd.Timestamp(event.entry_date), calendar)
         event_bars = bars15[bars15["vt_symbol"].astype(str).eq(str(event.vt_symbol))]
@@ -819,8 +1023,10 @@ def prepare(
     blocking_reasons: list[str] = []
     if len(events) != EXPECTED_SHORT_EVENT_COUNT:
         blocking_reasons.append("event_count_not_64")
-    if len(reviewer_manifest) < 60:
-        blocking_reasons.append("analyzable_event_count_below_60")
+    if len(chartable_ids) != EXPECTED_SHORT_EVENT_COUNT:
+        blocking_reasons.append("chartable_event_count_not_64")
+    if len(result_analyzable_ids) < 60:
+        blocking_reasons.append("result_analyzable_event_count_below_60")
     if actual_chart_files != expected_chart_files:
         blocking_reasons.append("chart_set_mismatch")
     if not audit["ok"]:
@@ -828,7 +1034,8 @@ def prepare(
     decision = {
         "status": "blocked" if blocking_reasons else "ready",
         "event_count": int(len(events)),
-        "analyzable_event_count": int(len(reviewer_manifest)),
+        "chartable_event_count": int(len(chartable_ids)),
+        "result_analyzable_event_count": int(len(result_analyzable_ids)),
         "chart_count": int(len(actual_chart_files)),
         "chart_set_matches_reviewer_manifest": actual_chart_files == expected_chart_files,
         "blind_artifact_audit": audit,

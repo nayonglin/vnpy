@@ -1,7 +1,8 @@
 {
   "status": "ready",
   "event_count": 64,
-  "analyzable_event_count": 64,
+  "chartable_event_count": 64,
+  "result_analyzable_event_count": 61,
   "chart_count": 64,
   "chart_set_matches_reviewer_manifest": true,
   "blind_artifact_audit": {

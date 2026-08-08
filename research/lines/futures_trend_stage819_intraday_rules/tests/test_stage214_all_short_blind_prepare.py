@@ -99,8 +99,12 @@ def test_build_short_events_keeps_all_short_events_and_zero_risk() -> None:
     assert events["risk_amount"].tolist() == [200.0, 0.0]
     assert events.loc[0, "aggregate_r"] == 1.0
     assert np.isnan(events.loc[1, "aggregate_r"])
-    assert events["outcome_ge_2r"].tolist() == [False, False]
-    assert events["outcome_profitable"].tolist() == [True, True]
+    assert str(events["outcome_ge_2r"].dtype) == "boolean"
+    assert str(events["outcome_profitable"].dtype) == "boolean"
+    assert events.loc[0, "outcome_ge_2r"] == False
+    assert events.loc[0, "outcome_profitable"] == True
+    assert events.loc[1, "outcome_ge_2r"] is pd.NA
+    assert events.loc[1, "outcome_profitable"] is pd.NA
     assert events["entry_year"].tolist() == [2021, 2021]
 
 
@@ -207,6 +211,47 @@ def test_merge_minute_sources_prefers_stage861_and_unions_exact_contract_rows(
     ]
 
 
+def test_merge_authorized_completed_cache_supersedes_degenerate_stage861(
+    tmp_path: Path,
+) -> None:
+    """A reviewed completed-row repair must replace the known rolling Stage861 duplicate."""
+    calendar = pd.bdate_range("2021-01-04", periods=8)
+    events = pd.DataFrame(
+        [{"open_trade_id": "short-a", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[6]}]
+    )
+    columns = ["vt_symbol", "bar_datetime", "open", "high", "low", "close", "volume", "open_oi", "close_oi"]
+    stage861_path = tmp_path / "stage861.csv"
+    authorized_path = tmp_path / "authorized_tqsdk_raw" / "SHFE" / "rb2105_20210105_minute_backtest.csv"
+    authorized_path.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [["rb2105.SHFE", "2021-01-05 09:01", 100, 100, 100, 100, 0, 1000, 1000]],
+        columns=columns,
+    ).to_csv(stage861_path, index=False)
+    pd.DataFrame(
+        [["rb2105.SHFE", "2021-01-05 09:01", 100, 102, 99, 101, 12, 1000, 1001]],
+        columns=columns,
+    ).to_csv(authorized_path, index=False)
+
+    class EmptyDatabase:
+        def load_bar_data(self, *args):
+            return []
+
+    minutes, sources = stage214.merge_minute_sources(
+        events,
+        calendar,
+        stage861_path,
+        [],
+        EmptyDatabase(),
+        authorized_cache_paths=[authorized_path],
+    )
+
+    assert minutes.loc[0, "close"] == 101.0
+    assert minutes.loc[0, "volume"] == 12.0
+    assert minutes.loc[0, "minute_source_kind"] == "authorized_tqsdk_completed"
+    assert minutes.loc[0, "source_priority"] == 4
+    assert "authorized_tqsdk_completed" in set(sources["source"])
+
+
 def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -> None:
     """A mutable file hash, false complete coverage, or inferred zero risk is a bug."""
     calendar = pd.bdate_range("2021-01-04", periods=8)
@@ -247,18 +292,21 @@ def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -
     assert risk_audit["risk_status"].tolist() == ["unresolved", "unresolved"]
 
     target_days = list(calendar[1:6])
-    minutes = pd.DataFrame(
-        {
-            "vt_symbol": ["rb2105.SHFE"] * 5 + ["jm2205.DCE"] * 4,
-            "bar_datetime": pd.to_datetime(
-                [f"{day.date()} 09:01" for day in target_days]
-                + [f"{day.date()} 09:01" for day in target_days[:4]]
-            ),
-            "trading_day": target_days + target_days[:4],
-            "minute_source_kind": ["stage861"] * 9,
-            "minute_source_path": ["/frozen/stage861.csv"] * 9,
-        }
+    minutes = pd.concat(
+        [
+            *[
+                _quality_day("rb2105.SHFE", day, include_night=False)
+                for day in target_days
+            ],
+            *[
+                _quality_day("jm2205.DCE", day, include_night=False)
+                for day in target_days[:4]
+            ],
+        ],
+        ignore_index=True,
     )
+    minutes["minute_source_kind"] = "stage861"
+    minutes["minute_source_path"] = "/frozen/stage861.csv"
     gap_audit = stage214.build_data_gap_audit(resolved, minutes, calendar)
 
     assert gap_audit["coverage_state"].tolist() == ["complete", "partial", "missing"]
@@ -302,6 +350,110 @@ def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -
     assert sources.loc[0, "path"] == str(source_path)
     assert sources.loc[0, "row_count"] == 1
     assert sources["sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
+
+
+def _quality_day(
+    vt_symbol: str,
+    trading_day: pd.Timestamp,
+    *,
+    include_night: bool,
+    degenerate: bool = False,
+    one_row: bool = False,
+) -> pd.DataFrame:
+    """Build a hand-checked minute session without using production helpers."""
+    day = pd.Timestamp(trading_day).normalize()
+    timestamps: list[pd.Timestamp] = []
+    if include_night:
+        timestamps.extend(pd.date_range(day - pd.Timedelta(days=1) + pd.Timedelta(hours=21), periods=60, freq="min"))
+    timestamps.extend(pd.date_range(day + pd.Timedelta(hours=9), periods=60, freq="min"))
+    if one_row:
+        timestamps = timestamps[:1]
+    sequence = np.arange(len(timestamps), dtype=float)
+    if degenerate:
+        open_price = np.full(len(timestamps), 100.0)
+        close_price = open_price.copy()
+        high_price = open_price.copy()
+        low_price = open_price.copy()
+        volume = np.zeros(len(timestamps))
+    else:
+        open_price = 100.0 + sequence * 0.01
+        close_price = open_price + 0.05
+        high_price = close_price + 0.02
+        low_price = open_price - 0.02
+        volume = np.ones(len(timestamps))
+    return pd.DataFrame(
+        {
+            "vt_symbol": vt_symbol,
+            "bar_datetime": timestamps,
+            "trading_day": [day] * len(timestamps),
+            "open": open_price,
+            "high": high_price,
+            "low": low_price,
+            "close": close_price,
+            "volume": volume,
+            "open_oi": np.full(len(timestamps), 1000.0),
+            "close_oi": np.full(len(timestamps), 1001.0),
+            "minute_source_kind": ["fixture"] * len(timestamps),
+            "minute_source_path": ["/fixture/completed.csv"] * len(timestamps),
+        }
+    )
+
+
+def test_gap_audit_rejects_one_row_missing_night_and_degenerate_days() -> None:
+    """Presence-only coverage must not accept sparse, session-truncated, or rolling rows."""
+    calendar = pd.bdate_range("2021-01-04", periods=6)
+    target_days = list(calendar[:-1])
+    events = pd.DataFrame(
+        [
+            {"open_trade_id": "one-row", "vt_symbol": "one2105.SHFE", "entry_date": calendar[-1], "risk_status": "resolved"},
+            {"open_trade_id": "missing-night", "vt_symbol": "night2105.SHFE", "entry_date": calendar[-1], "risk_status": "resolved"},
+            {"open_trade_id": "degenerate", "vt_symbol": "flat2105.SHFE", "entry_date": calendar[-1], "risk_status": "resolved"},
+            {"open_trade_id": "qualified", "vt_symbol": "day2105.SHFE", "entry_date": calendar[-1], "risk_status": "resolved"},
+        ]
+    )
+    minute_frames: list[pd.DataFrame] = []
+    for day in target_days:
+        minute_frames.append(_quality_day("day2105.SHFE", day, include_night=False))
+        minute_frames.append(_quality_day("one2105.SHFE", day, include_night=False, one_row=day == target_days[-1]))
+        minute_frames.append(_quality_day("night2105.SHFE", day, include_night=day != target_days[-1]))
+        minute_frames.append(_quality_day("flat2105.SHFE", day, include_night=False, degenerate=day == target_days[-1]))
+    minutes = pd.concat(minute_frames, ignore_index=True)
+
+    audit = stage214.build_data_gap_audit(events, minutes, calendar).set_index("open_trade_id")
+
+    assert audit.loc["qualified", "coverage_state"] == "complete"
+    assert audit.loc["one-row", "coverage_state"] == "partial"
+    assert "insufficient_bar_count" in audit.loc["one-row", "failure_reasons"]
+    assert audit.loc["missing-night", "coverage_state"] == "partial"
+    assert "missing_night_session" in audit.loc["missing-night", "failure_reasons"]
+    assert audit.loc["degenerate", "coverage_state"] == "partial"
+    assert "all_ohlc_flat_and_zero_volume" in audit.loc["degenerate", "failure_reasons"]
+
+
+def test_gap_audit_accepts_completed_query_that_proves_holiday_night_absent() -> None:
+    """A fully completed authorized query may prove a one-day night-session exception."""
+    calendar = pd.bdate_range("2021-01-04", periods=6)
+    target_days = list(calendar[:-1])
+    frames = [
+        _quality_day("FG999.CZCE", day, include_night=day != target_days[-1])
+        for day in target_days
+    ]
+    frames[-1]["minute_source_kind"] = "authorized_tqsdk_completed"
+    frames[-1]["minute_source_path"] = "/controller/authorized_tqsdk_raw/FG999.csv"
+    stale_tail = frames[-1].tail(1).copy()
+    stale_tail["bar_datetime"] = pd.Timestamp(target_days[-1]) + pd.Timedelta(hours=10)
+    stale_tail["minute_source_kind"] = "vnpy_database"
+    stale_tail["minute_source_path"] = "vnpy_database://FG999.CZCE"
+    frames.append(stale_tail)
+    minutes = pd.concat(frames, ignore_index=True)
+    events = pd.DataFrame(
+        [{"open_trade_id": "holiday", "vt_symbol": "FG999.CZCE", "entry_date": calendar[-1], "risk_status": "resolved"}]
+    )
+
+    audit = stage214.build_data_gap_audit(events, minutes, calendar)
+
+    assert audit.loc[0, "coverage_state"] == "complete"
+    assert audit.loc[0, "failure_reasons"] == ""
 
 
 def test_enforced_short_events_lock_the_three_predeclared_zero_risk_ids() -> None:
@@ -750,7 +902,7 @@ def test_prepare_writes_only_consistent_reviewer_artifacts_for_64_complete_cases
     monkeypatch.setattr(
         stage214,
         "merge_minute_sources",
-        lambda *_: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
+        lambda *_, **__: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
     )
     monkeypatch.setattr(stage214, "build_data_gap_audit", lambda *_: gap_audit.copy())
     monkeypatch.setattr(stage214, "build_preentry_15m", lambda *_: bars15.copy())
@@ -760,7 +912,8 @@ def test_prepare_writes_only_consistent_reviewer_artifacts_for_64_complete_cases
     output_dir = tmp_path / "prepared"
     assert decision["status"] == "ready"
     assert decision["event_count"] == 64
-    assert decision["analyzable_event_count"] == 64
+    assert decision["chartable_event_count"] == 64
+    assert decision["result_analyzable_event_count"] == 64
     assert decision["chart_count"] == 64
     assert decision["chart_set_matches_reviewer_manifest"] is True
     assert {path.name for path in output_dir.iterdir()} >= {
@@ -891,6 +1044,7 @@ def _patch_prepare_fixture(
     *,
     event_count: int = 64,
     complete_count: int = 64,
+    unresolved_count: int = 0,
 ) -> None:
     input_path = tmp_path / "input.csv"
     pd.DataFrame({"placeholder": [1]}).to_csv(input_path, index=False)
@@ -900,6 +1054,8 @@ def _patch_prepare_fixture(
             "open_trade_id": [f"event-{index:03d}" for index in range(event_count)],
             "vt_symbol": ["rb2105.SHFE"] * event_count,
             "entry_date": [calendar[-1]] * event_count,
+            "aggregate_r": [np.nan] * unresolved_count + [1.0] * (event_count - unresolved_count),
+            "risk_status": ["unresolved"] * unresolved_count + ["resolved"] * (event_count - unresolved_count),
         }
     )
     bars15 = pd.DataFrame(
@@ -929,7 +1085,7 @@ def _patch_prepare_fixture(
     monkeypatch.setattr(
         stage214,
         "merge_minute_sources",
-        lambda *_: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
+        lambda *_, **__: (pd.DataFrame(), pd.DataFrame({"source": ["fixture"]})),
     )
     monkeypatch.setattr(stage214, "build_data_gap_audit", lambda *_: gap_audit.copy())
     monkeypatch.setattr(stage214, "build_preentry_15m", lambda *_: bars15.copy())
@@ -937,7 +1093,7 @@ def _patch_prepare_fixture(
 
 @pytest.mark.parametrize(
     ("event_count", "complete_count", "reason"),
-    [(63, 63, "event_count_not_64"), (64, 59, "analyzable_event_count_below_60")],
+    [(63, 63, "event_count_not_64"), (64, 59, "result_analyzable_event_count_below_60")],
 )
 def test_prepare_writes_blocked_decision_before_count_gate_failure(
     tmp_path: Path,
@@ -958,6 +1114,20 @@ def test_prepare_writes_blocked_decision_before_count_gate_failure(
     decision = json.loads((output_dir / "prepare_decision.json").read_text(encoding="utf-8"))
     assert decision["status"] == "blocked"
     assert reason in decision["blocking_reasons"]
+
+
+def test_prepare_distinguishes_64_chartable_from_61_result_analyzable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Unresolved R stays chartable but is excluded from the result-analysis count."""
+    _patch_prepare_fixture(monkeypatch, tmp_path, unresolved_count=3)
+
+    decision = stage214.prepare(tmp_path / "prepared", database=object())
+
+    assert decision["status"] == "ready"
+    assert decision["chartable_event_count"] == 64
+    assert decision["result_analyzable_event_count"] == 61
 
 
 def test_prepare_blocks_any_extra_chart_directory_entry_before_ready(
