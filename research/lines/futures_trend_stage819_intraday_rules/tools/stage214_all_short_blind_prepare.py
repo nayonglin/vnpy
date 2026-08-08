@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
-from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +12,9 @@ import pandas as pd
 
 EXPECTED_EVENT_COUNT = 309
 EXPECTED_SHORT_EVENT_COUNT = 64
+EXPECTED_ZERO_RISK_OPEN_TRADE_IDS = frozenset(
+    {"BACKTESTING.166", "BACKTESTING.265", "BACKTESTING.589"}
+)
 
 _STAGE208_PATH = Path(__file__).with_name("stage208_c9_2r_winner_15m_atlas.py")
 _STAGE208_SPEC = importlib.util.spec_from_file_location("stage208", _STAGE208_PATH)
@@ -66,6 +68,15 @@ def build_short_events(
     events["aggregate_r"] = events["realized_pnl"] / events["risk_amount"].replace(
         0.0, np.nan
     )
+    if enforce_expected_counts:
+        zero_risk_ids = frozenset(
+            events.loc[events["risk_amount"].eq(0.0), "open_trade_id"].astype(str)
+        )
+        if zero_risk_ids != EXPECTED_ZERO_RISK_OPEN_TRADE_IDS:
+            raise RuntimeError(
+                "expected zero-risk open_trade_ids "
+                f"{sorted(EXPECTED_ZERO_RISK_OPEN_TRADE_IDS)}, got {sorted(zero_risk_ids)}"
+            )
     events["outcome_ge_2r"] = events["aggregate_r"].ge(2.0)
     events["outcome_profitable"] = events["realized_pnl"].gt(0.0)
     events["entry_year"] = events["entry_date"].dt.year.astype("Int64")
@@ -111,6 +122,10 @@ _MANIFEST_COLUMNS = [
     "min_datetime",
     "max_datetime",
     "sha256",
+    "result_status",
+    "query_start",
+    "query_end",
+    "query_descriptor",
 ]
 
 
@@ -167,12 +182,18 @@ def _stable_frame_sha256(frame: pd.DataFrame) -> str:
 def _manifest_rows(
     frame: pd.DataFrame,
     *,
+    target_symbols: list[str],
     source: str,
     path: str,
     sha256: str,
+    result_status: str,
+    query_start: pd.Timestamp | None = None,
+    query_end: pd.Timestamp | None = None,
+    query_descriptor: str = "",
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    for vt_symbol, symbol_rows in frame.groupby("vt_symbol", sort=True):
+    for vt_symbol in sorted(target_symbols):
+        symbol_rows = frame[frame["vt_symbol"].eq(vt_symbol)]
         datetimes = pd.to_datetime(symbol_rows["bar_datetime"], errors="coerce")
         rows.append(
             {
@@ -180,12 +201,34 @@ def _manifest_rows(
                 "source": source,
                 "path": path,
                 "row_count": int(len(symbol_rows)),
-                "min_datetime": datetimes.min().isoformat(),
-                "max_datetime": datetimes.max().isoformat(),
+                "min_datetime": datetimes.min().isoformat() if not datetimes.empty else "",
+                "max_datetime": datetimes.max().isoformat() if not datetimes.empty else "",
                 "sha256": sha256,
+                "result_status": result_status if symbol_rows.empty else "selected",
+                "query_start": "" if query_start is None else query_start.isoformat(),
+                "query_end": "" if query_end is None else query_end.isoformat(),
+                "query_descriptor": query_descriptor,
             }
         )
     return rows
+
+
+def _database_query_window(
+    entry_day: pd.Timestamp,
+    calendar: pd.DatetimeIndex,
+) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Build [previous-official-night, entry-day-00:00) for one frozen event."""
+    preentry_days = select_preentry_days(entry_day, calendar)
+    normalized_calendar = pd.DatetimeIndex(calendar).normalize().sort_values().unique()
+    first_position = int(np.flatnonzero(normalized_calendar == preentry_days[0])[0])
+    if first_position == 0:
+        raise RuntimeError(
+            "no previous official trading day for pre-entry night window: "
+            f"{preentry_days[0].date()}"
+        )
+    query_start = normalized_calendar[first_position - 1] + pd.Timedelta(hours=20)
+    query_end = pd.Timestamp(entry_day).normalize()
+    return query_start, query_end
 
 
 def _database_bars_to_frame(vt_symbol: str, bars: list[object]) -> pd.DataFrame:
@@ -221,6 +264,7 @@ def merge_minute_sources(
     from vnpy.trader.constant import Exchange, Interval
 
     target_days = _target_days_by_symbol(events, calendar)
+    target_symbols = sorted(target_days)
     selected: list[pd.DataFrame] = []
     manifest: list[dict[str, object]] = []
 
@@ -228,61 +272,73 @@ def merge_minute_sources(
         (Path(path), "local_cache", 2) for path in cache_paths
     ]
     for path, source, priority in file_sources:
-        if not path.exists():
-            continue
-        raw = pd.read_csv(path, usecols=lambda column: column in _MINUTE_COLUMNS)
+        exists = path.exists()
+        raw = (
+            pd.read_csv(path, usecols=lambda column: column in _MINUTE_COLUMNS)
+            if exists
+            else pd.DataFrame(columns=_MINUTE_COLUMNS)
+        )
         frame = _canonicalize_minutes(raw, calendar, target_days)
+        manifest.extend(
+            _manifest_rows(
+                frame,
+                target_symbols=target_symbols,
+                source=source,
+                path=str(path),
+                sha256=hashlib.sha256(path.read_bytes()).hexdigest() if exists else "",
+                result_status=(
+                    "attempted_no_target_rows" if exists else "source_unavailable"
+                ),
+            )
+        )
         if frame.empty:
             continue
         frame["minute_source_kind"] = source
         frame["minute_source_path"] = str(path)
         frame["source_priority"] = priority
         selected.append(frame)
-        manifest.extend(
-            _manifest_rows(
-                frame,
-                source=source,
-                path=str(path),
-                sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-            )
-        )
 
-    database_events = events.drop_duplicates(["vt_symbol", "entry_date"])
-    for event in database_events.itertuples(index=False):
+    for event in events.itertuples(index=False):
         vt_symbol = str(event.vt_symbol)
         if vt_symbol.count(".") != 1:
             raise ValueError(f"invalid exact vt_symbol: {vt_symbol}")
         symbol, exchange_code = vt_symbol.split(".", 1)
-        days = select_preentry_days(pd.Timestamp(event.entry_date), calendar)
-        start = (pd.Timestamp(days[0]) - pd.Timedelta(days=1)).replace(
-            hour=20, minute=0, second=0, microsecond=0
-        )
-        end = pd.Timestamp(event.entry_date).normalize()
+        start, end = _database_query_window(pd.Timestamp(event.entry_date), calendar)
         bars = database.load_bar_data(
             symbol,
             Exchange(exchange_code),
             Interval.MINUTE,
-            datetime.fromtimestamp(start.timestamp()),
-            datetime.fromtimestamp(end.timestamp()),
+            start.to_pydatetime(),
+            end.to_pydatetime(),
         )
+        raw_frame = _database_bars_to_frame(vt_symbol, list(bars))
         frame = _canonicalize_minutes(
-            _database_bars_to_frame(vt_symbol, list(bars)), calendar, target_days
+            raw_frame, calendar, target_days
+        )
+        source_path = f"vnpy_database://{vt_symbol}"
+        descriptor = (
+            "exact_contract_minute:"
+            f"symbol={symbol};exchange={exchange_code};interval=1m"
+        )
+        manifest.extend(
+            _manifest_rows(
+                frame,
+                target_symbols=[vt_symbol],
+                source="vnpy_database",
+                path=source_path,
+                sha256=_stable_frame_sha256(raw_frame),
+                result_status="attempted_no_target_rows",
+                query_start=start,
+                query_end=end,
+                query_descriptor=descriptor,
+            )
         )
         if frame.empty:
             continue
-        source_path = f"vnpy_database://{vt_symbol}"
         frame["minute_source_kind"] = "vnpy_database"
         frame["minute_source_path"] = source_path
         frame["source_priority"] = 1
         selected.append(frame)
-        manifest.extend(
-            _manifest_rows(
-                frame,
-                source="vnpy_database",
-                path=source_path,
-                sha256=_stable_frame_sha256(frame[_MINUTE_COLUMNS]),
-            )
-        )
 
     columns = [
         *_MINUTE_COLUMNS,
@@ -291,8 +347,11 @@ def merge_minute_sources(
         "minute_source_path",
         "source_priority",
     ]
+    sources = pd.DataFrame(manifest, columns=_MANIFEST_COLUMNS)
     if not selected:
-        return pd.DataFrame(columns=columns), pd.DataFrame(columns=_MANIFEST_COLUMNS)
+        minutes = pd.DataFrame(columns=columns)
+        minutes.attrs["source_manifest"] = sources
+        return minutes, sources
     minutes = (
         pd.concat(selected, ignore_index=True)
         .sort_values(["vt_symbol", "bar_datetime", "source_priority"], ascending=[True, True, False])
@@ -300,8 +359,9 @@ def merge_minute_sources(
         .sort_values(["vt_symbol", "bar_datetime"])
         .reset_index(drop=True)
     )
-    sources = pd.DataFrame(manifest, columns=_MANIFEST_COLUMNS)
-    return minutes[columns], sources
+    minutes = minutes[columns]
+    minutes.attrs["source_manifest"] = sources
+    return minutes, sources
 
 
 def resolve_risk_zero_events(
@@ -344,6 +404,7 @@ def build_data_gap_audit(
     calendar: pd.DatetimeIndex,
 ) -> pd.DataFrame:
     """Audit each frozen event's five pre-entry trading days and risk provenance."""
+    source_manifest = minutes.attrs.get("source_manifest")
     minute_frame = minutes.copy()
     if "trading_day" not in minute_frame.columns:
         minute_frame["trading_day"] = pd.NaT
@@ -370,11 +431,18 @@ def build_data_gap_audit(
         else:
             coverage_state = "missing"
         source_column = "minute_source_kind"
-        attempted_sources = []
-        if source_column in event_minutes.columns:
-            attempted_sources = sorted(
-                event_minutes[source_column].dropna().astype(str).unique().tolist()
-            )
+        attempted_sources: list[str] = []
+        if isinstance(source_manifest, pd.DataFrame):
+            attempted_sources = source_manifest.loc[
+                source_manifest["vt_symbol"].astype(str).eq(vt_symbol), "source"
+            ].dropna().astype(str).unique().tolist()
+        if not attempted_sources and source_column in event_minutes.columns:
+            attempted_sources = event_minutes[source_column].dropna().astype(str).unique().tolist()
+        source_order = {"stage861": 0, "local_cache": 1, "vnpy_database": 2}
+        attempted_sources = sorted(
+            attempted_sources,
+            key=lambda source: (source_order.get(source, len(source_order)), source),
+        )
         risk_status = event_data.get("risk_status")
         if risk_status is None:
             risk_status = (
@@ -409,3 +477,20 @@ def build_data_gap_audit(
             "risk_status",
         ],
     )
+
+
+def build_preentry_15m(
+    minutes: pd.DataFrame,
+    events: pd.DataFrame,
+    calendar: pd.DatetimeIndex,
+) -> pd.DataFrame:
+    """Produce sparse Stage208-compatible 15-minute bars for the frozen pre-entry days."""
+    target_days = _target_days_by_symbol(events, calendar)
+    frame = minutes.copy()
+    frame["trading_day"] = pd.to_datetime(
+        frame["trading_day"], errors="coerce"
+    ).dt.normalize()
+    keep = pd.Series(False, index=frame.index)
+    for vt_symbol, days in target_days.items():
+        keep |= frame["vt_symbol"].astype(str).eq(vt_symbol) & frame["trading_day"].isin(days)
+    return resample_15m(frame.loc[keep].copy())

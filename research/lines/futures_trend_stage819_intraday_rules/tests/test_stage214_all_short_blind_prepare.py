@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 
 MODULE_PATH = (
@@ -283,7 +286,7 @@ def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -
         events.iloc[:1], calendar, source_path, [], EmptyDatabase()
     )
 
-    assert sources.columns.tolist() == [
+    assert sources.columns.tolist()[:7] == [
         "vt_symbol",
         "source",
         "path",
@@ -296,3 +299,264 @@ def test_source_manifest_gap_coverage_and_zero_risk_resolution(tmp_path: Path) -
     assert sources.loc[0, "path"] == str(source_path)
     assert sources.loc[0, "row_count"] == 1
     assert sources["sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
+
+
+def test_enforced_short_events_lock_the_three_predeclared_zero_risk_ids() -> None:
+    """Changing any frozen zero-risk identity must reject the 309/64 production input."""
+    zero_ids = {"BACKTESTING.166", "BACKTESTING.265", "BACKTESTING.589"}
+    rows = []
+    for index in range(64):
+        open_trade_id = (
+            sorted(zero_ids)[index]
+            if index < len(zero_ids)
+            else f"short-{index:03d}"
+        )
+        rows.append(
+            {
+                "requested_start_month": "2020-01",
+                "open_trade_id": open_trade_id,
+                "lot_id": index,
+                "vt_symbol": "rb2105.SHFE",
+                "direction": "short",
+                "entry_date": "2021-01-11",
+                "exit_date": "2021-01-12",
+                "entry_price": 4200.0,
+                "realized_pnl": 10.0,
+                "risk_amount": 0.0 if open_trade_id in zero_ids else 5.0,
+            }
+        )
+    for index in range(245):
+        rows.append(
+            {
+                "requested_start_month": "2020-01",
+                "open_trade_id": f"long-{index:03d}",
+                "lot_id": 1000 + index,
+                "vt_symbol": "rb2105.SHFE",
+                "direction": "long",
+                "entry_date": "2021-01-11",
+                "exit_date": "2021-01-12",
+                "entry_price": 4200.0,
+                "realized_pnl": 10.0,
+                "risk_amount": 5.0,
+            }
+        )
+    closed_lots = pd.DataFrame(rows)
+
+    events = stage214.build_short_events(closed_lots)
+
+    assert stage214.EXPECTED_ZERO_RISK_OPEN_TRADE_IDS == frozenset(zero_ids)
+    assert set(events.loc[events["risk_amount"].eq(0.0), "open_trade_id"]) == zero_ids
+
+    invalid = closed_lots.copy()
+    invalid.loc[invalid["open_trade_id"].eq("BACKTESTING.589"), "open_trade_id"] = (
+        "BACKTESTING.invalid"
+    )
+    with pytest.raises(RuntimeError, match="zero-risk"):
+        stage214.build_short_events(invalid)
+
+
+def test_merge_starts_monday_window_at_previous_official_night_session(
+    tmp_path: Path,
+) -> None:
+    """Using the prior natural day loses Friday night before a Monday D-5 window."""
+    calendar = pd.DatetimeIndex(
+        pd.to_datetime(
+            [
+                "2020-12-28",
+                "2020-12-29",
+                "2020-12-30",
+                "2020-12-31",
+                "2021-01-04",
+                "2021-01-05",
+                "2021-01-06",
+                "2021-01-07",
+                "2021-01-08",
+                "2021-01-11",
+            ]
+        )
+    )
+    events = pd.DataFrame(
+        [{"open_trade_id": "short-a", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[-1]}]
+    )
+
+    class EmptyDatabase:
+        def __init__(self) -> None:
+            self.calls: list[tuple[object, ...]] = []
+
+        def load_bar_data(self, *args):
+            self.calls.append(args)
+            return []
+
+    database = EmptyDatabase()
+    stage214.merge_minute_sources(
+        events, calendar, tmp_path / "missing-stage861.csv", [], database
+    )
+
+    assert database.calls[0][3] == datetime(2020, 12, 31, 20, 0)
+    assert database.calls[0][4] == datetime(2021, 1, 11, 0, 0)
+
+
+def test_empty_source_attempts_are_manifested_and_audited(tmp_path: Path) -> None:
+    """A source with no target rows must remain visible and reproducible in the audit."""
+    calendar = pd.bdate_range("2021-01-04", periods=8)
+    events = pd.DataFrame(
+        [{"open_trade_id": "missing", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[6]}]
+    )
+    stage861_path = tmp_path / "stage861.csv"
+    cache_path = tmp_path / "SHFE" / "rb2105_minute_backtest.csv"
+    cache_path.parent.mkdir()
+    source_rows = pd.DataFrame(
+        {
+            "vt_symbol": ["jm2205.DCE"],
+            "bar_datetime": ["2021-01-04 21:01"],
+            "open": [100.0],
+            "high": [101.0],
+            "low": [99.0],
+            "close": [100.5],
+            "volume": [10.0],
+            "open_oi": [1000.0],
+            "close_oi": [1001.0],
+        }
+    )
+    source_rows.to_csv(stage861_path, index=False)
+    source_rows.to_csv(cache_path, index=False)
+
+    class EmptyDatabase:
+        def load_bar_data(self, *args):
+            return []
+
+    minutes, sources = stage214.merge_minute_sources(
+        events, calendar, stage861_path, [cache_path], EmptyDatabase()
+    )
+    audit = stage214.build_data_gap_audit(events, minutes, calendar)
+
+    assert minutes.empty
+    assert sources["source"].tolist() == ["stage861", "local_cache", "vnpy_database"]
+    assert sources["row_count"].tolist() == [0, 0, 0]
+    assert sources["result_status"].tolist() == [
+        "attempted_no_target_rows",
+        "attempted_no_target_rows",
+        "attempted_no_target_rows",
+    ]
+    assert sources.loc[0, "sha256"] == hashlib.sha256(stage861_path.read_bytes()).hexdigest()
+    assert sources.loc[1, "sha256"] == hashlib.sha256(cache_path.read_bytes()).hexdigest()
+    assert sources.loc[2, "query_start"] == "2021-01-04T20:00:00"
+    assert sources.loc[2, "query_end"] == "2021-01-12T00:00:00"
+    assert audit.loc[0, "attempted_sources"] == "stage861|local_cache|vnpy_database"
+
+
+def test_preentry_15m_output_uses_stage208_without_filling_empty_buckets() -> None:
+    """The blind plotting input must remain sparse and bounded to D-5 through D-1."""
+    calendar = pd.bdate_range("2021-01-04", periods=8)
+    minutes = pd.DataFrame(
+        {
+            "vt_symbol": ["rb2105.SHFE"] * 3,
+            "bar_datetime": pd.to_datetime(
+                ["2021-01-05 09:01", "2021-01-05 09:14", "2021-01-06 09:01"]
+            ),
+            "trading_day": [calendar[1], calendar[1], calendar[2]],
+            "open": [100.0, 102.0, 104.0],
+            "high": [103.0, 105.0, 106.0],
+            "low": [99.0, 101.0, 103.0],
+            "close": [102.0, 104.0, 105.0],
+            "volume": [1.0, 2.0, 3.0],
+            "open_oi": [10.0, 11.0, 12.0],
+            "close_oi": [11.0, 12.0, 13.0],
+        }
+    )
+    events = pd.DataFrame(
+        [{"open_trade_id": "short-a", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[6]}]
+    )
+
+    bars_15m = stage214.build_preentry_15m(minutes, events, calendar)
+
+    assert len(bars_15m) == 2
+    assert bars_15m["bar_15m"].dt.strftime("%Y-%m-%d %H:%M").tolist() == [
+        "2021-01-05 09:00",
+        "2021-01-06 09:00",
+    ]
+    assert bars_15m.iloc[0][["open", "high", "low", "close", "volume"]].tolist() == [
+        100.0,
+        105.0,
+        99.0,
+        104.0,
+        3.0,
+    ]
+
+
+def test_source_hashes_detect_content_changes_but_normalize_database_row_order(
+    tmp_path: Path,
+) -> None:
+    """File bytes are immutable evidence; database rows are order-independent evidence."""
+    calendar = pd.bdate_range("2021-01-04", periods=8)
+    events = pd.DataFrame(
+        [{"open_trade_id": "short-a", "vt_symbol": "rb2105.SHFE", "entry_date": calendar[6]}]
+    )
+    stage861_path = tmp_path / "stage861.csv"
+    source = pd.DataFrame(
+        {
+            "vt_symbol": ["rb2105.SHFE"],
+            "bar_datetime": ["2021-01-04 21:01"],
+            "open": [100.0],
+            "high": [101.0],
+            "low": [99.0],
+            "close": [100.5],
+            "volume": [10.0],
+            "open_oi": [1000.0],
+            "close_oi": [1001.0],
+        }
+    )
+    source.to_csv(stage861_path, index=False)
+
+    def bar(timestamp: str, close: float):
+        return type(
+            "Bar",
+            (),
+            {
+                "datetime": pd.Timestamp(timestamp),
+                "open_price": close - 0.5,
+                "high_price": close + 0.5,
+                "low_price": close - 1.0,
+                "close_price": close,
+                "volume": 12.0,
+                "open_interest": 1004.0,
+            },
+        )()
+
+    class Database:
+        def __init__(self, bars):
+            self.bars = bars
+
+        def load_bar_data(self, *args):
+            return self.bars
+
+    first_bars = [bar("2021-01-05 09:01", 103.5), bar("2021-01-06 09:01", 104.5)]
+    _, first_sources = stage214.merge_minute_sources(
+        events, calendar, stage861_path, [], Database(first_bars)
+    )
+    first_file_hash = first_sources.loc[first_sources["source"].eq("stage861"), "sha256"].iloc[0]
+    first_database_hash = first_sources.loc[
+        first_sources["source"].eq("vnpy_database"), "sha256"
+    ].iloc[0]
+
+    source.loc[0, "close"] = 101.5
+    source.to_csv(stage861_path, index=False)
+    _, reordered_sources = stage214.merge_minute_sources(
+        events, calendar, stage861_path, [], Database(list(reversed(first_bars)))
+    )
+    reordered_file_hash = reordered_sources.loc[
+        reordered_sources["source"].eq("stage861"), "sha256"
+    ].iloc[0]
+    reordered_database_hash = reordered_sources.loc[
+        reordered_sources["source"].eq("vnpy_database"), "sha256"
+    ].iloc[0]
+    _, changed_sources = stage214.merge_minute_sources(
+        events, calendar, stage861_path, [], Database([bar("2021-01-05 09:01", 103.6), first_bars[1]])
+    )
+    changed_database_hash = changed_sources.loc[
+        changed_sources["source"].eq("vnpy_database"), "sha256"
+    ].iloc[0]
+
+    assert reordered_file_hash != first_file_hash
+    assert reordered_database_hash == first_database_hash
+    assert changed_database_hash != first_database_hash
