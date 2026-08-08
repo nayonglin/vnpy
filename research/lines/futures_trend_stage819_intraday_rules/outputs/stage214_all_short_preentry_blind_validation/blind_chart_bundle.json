@@ -1,0 +1,7 @@
+{
+  "chart_directory": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_stage819_intraday_rules/outputs/stage214_all_short_preentry_blind_validation/blind_charts",
+  "chart_count": 64,
+  "bundle_algorithm": "sha256(sorted chart_file + NUL + file_sha256 + LF)",
+  "bundle_sha256": "dc3dd1c2314536ad8c167a9129e6c023c0eabdfc2318ecff1f31686d42aec058",
+  "all_file_hashes_valid": true
+}

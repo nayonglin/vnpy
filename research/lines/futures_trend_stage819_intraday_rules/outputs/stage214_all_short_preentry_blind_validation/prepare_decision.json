@@ -1,0 +1,12 @@
+{
+  "status": "ready",
+  "event_count": 64,
+  "analyzable_event_count": 64,
+  "chart_count": 64,
+  "chart_set_matches_reviewer_manifest": true,
+  "blind_artifact_audit": {
+    "ok": true,
+    "violations": []
+  },
+  "blocking_reasons": []
+}
