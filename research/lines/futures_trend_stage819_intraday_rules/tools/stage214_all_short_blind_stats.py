@@ -28,6 +28,16 @@ LINE_ROOT = REPO_ROOT / "research/lines/futures_trend_stage819_intraday_rules"
 OUTPUT_DIR = LINE_ROOT / "outputs/stage214_all_short_preentry_blind_validation"
 
 
+def _normalized_text(values: pd.Series, column: str) -> pd.Series:
+    if values.isna().any():
+        raise ValueError(f"{column} must be non-empty")
+    raw = values.astype(str)
+    normalized = raw.str.strip()
+    if not raw.eq(normalized).all():
+        raise ValueError(f"{column} must be normalized without surrounding whitespace")
+    return normalized
+
+
 def _expected_case_ids(expected_cases: Iterable[object] | pd.DataFrame) -> set[str]:
     if isinstance(expected_cases, pd.DataFrame):
         if "case_id" not in expected_cases.columns:
@@ -37,9 +47,7 @@ def _expected_case_ids(expected_cases: Iterable[object] | pd.DataFrame) -> set[s
         values = expected_cases
     else:
         values = pd.Series(list(expected_cases), dtype="object")
-    if values.isna().any():
-        raise ValueError("expected case set contains missing case_id")
-    case_ids = values.astype(str).str.strip()
+    case_ids = _normalized_text(values, "expected case_id")
     if case_ids.eq("").any() or case_ids.duplicated().any():
         raise ValueError("expected case set contains empty or duplicate case_id")
     return set(case_ids)
@@ -54,9 +62,7 @@ def validate_reviewer_labels(
     if missing_columns:
         raise ValueError(f"labels missing columns: {missing_columns}")
 
-    if labels["case_id"].isna().any():
-        raise ValueError("case_id must be non-empty")
-    case_ids = labels["case_id"].astype(str).str.strip()
+    case_ids = _normalized_text(labels["case_id"], "case_id")
     if case_ids.eq("").any():
         raise ValueError("empty case_id")
     if case_ids.duplicated().any():
@@ -70,18 +76,19 @@ def validate_reviewer_labels(
             f"extra={sorted(actual_ids - expected_ids)}"
         )
 
-    label_values = labels["label"].astype(str).str.strip()
+    label_values = _normalized_text(labels["label"], "label")
     invalid_labels = sorted(set(label_values) - LABELS)
     if invalid_labels:
         raise ValueError(f"invalid label: {invalid_labels}")
-    reasons = labels["reason"].fillna("").astype(str).str.strip()
+    reasons = _normalized_text(labels["reason"], "reason")
     if reasons.eq("").any():
         raise ValueError("reason must be non-empty")
-    confidence = labels["confidence"].astype(str).str.strip()
+    confidence = _normalized_text(labels["confidence"], "confidence")
     invalid_confidence = sorted(set(confidence) - CONFIDENCE_LEVELS)
     if invalid_confidence:
         raise ValueError(f"invalid confidence: {invalid_confidence}")
-    timestamps = pd.to_datetime(labels["timestamp"], errors="coerce", utc=True)
+    timestamp_values = _normalized_text(labels["timestamp"], "timestamp")
+    timestamps = pd.to_datetime(timestamp_values, errors="coerce", utc=True)
     if timestamps.isna().any():
         raise ValueError("timestamp must be non-empty and parseable")
 
@@ -280,8 +287,13 @@ def compute_leave_one_out(
         else f"frequency={maximum_frequency};unique_highest_frequency"
     )
 
+    groups = (
+        [selected_highest]
+        if group_column == "product"
+        else sorted(counts.index.tolist(), key=lambda value: str(value))
+    )
     rows: list[dict[str, object]] = []
-    for group in sorted(counts.index.tolist(), key=lambda value: str(value)):
+    for group in groups:
         remaining = frame[frame[group_column].ne(group)].copy()
         metrics = _compute_primary_statistics(remaining, require_both_groups=False)
         rows.append(
@@ -317,39 +329,48 @@ def compute_gap_bounds(
     """Assign every unresolved case to each frozen signal/outcome cell in turn."""
     base_table = compute_primary_statistics(joined)["contingency_table"]
     unresolved_count = int(len(unresolved))
-    assignments = [
-        ("signal_positive__outcome_ge_2r", 0, 0),
-        ("signal_positive__outcome_lt_2r", 0, 1),
-        ("signal_negative__outcome_ge_2r", 1, 0),
-        ("signal_negative__outcome_lt_2r", 1, 1),
-    ]
     scenarios: list[dict[str, object]] = []
-    for assignment, row_index, column_index in assignments:
-        table = [list(base_table[0]), list(base_table[1])]
-        table[row_index][column_index] += unresolved_count
-        effects = _table_effects(table)
-        scenarios.append(
-            {
-                "assignment": assignment,
-                **effects,
-                "direction_positive": bool(
-                    effects["risk_difference"] > 0
-                    and effects["conditional_odds_ratio"] > 1
-                ),
-            }
-        )
+    for positive_ge_2r in range(unresolved_count + 1):
+        for positive_lt_2r in range(unresolved_count - positive_ge_2r + 1):
+            remaining_after_positive = (
+                unresolved_count - positive_ge_2r - positive_lt_2r
+            )
+            for negative_ge_2r in range(remaining_after_positive + 1):
+                negative_lt_2r = remaining_after_positive - negative_ge_2r
+                allocation = {
+                    "signal_positive_outcome_ge_2r": positive_ge_2r,
+                    "signal_positive_outcome_lt_2r": positive_lt_2r,
+                    "signal_negative_outcome_ge_2r": negative_ge_2r,
+                    "signal_negative_outcome_lt_2r": negative_lt_2r,
+                }
+                table = [list(base_table[0]), list(base_table[1])]
+                table[0][0] += positive_ge_2r
+                table[0][1] += positive_lt_2r
+                table[1][0] += negative_ge_2r
+                table[1][1] += negative_lt_2r
+                effects = _table_effects(table)
+                scenarios.append(
+                    {
+                        "allocation": allocation,
+                        **effects,
+                        "direction_positive": bool(
+                            effects["risk_difference"] > 0
+                            and effects["sample_odds_ratio"] > 1
+                        ),
+                    }
+                )
     most_favorable = max(
         scenarios,
         key=lambda scenario: (
             float(scenario["risk_difference"]),
-            float(scenario["conditional_odds_ratio"]),
+            float(scenario["sample_odds_ratio"]),
         ),
     )
     most_adverse = min(
         scenarios,
         key=lambda scenario: (
             float(scenario["risk_difference"]),
-            float(scenario["conditional_odds_ratio"]),
+            float(scenario["sample_odds_ratio"]),
         ),
     )
     return {
@@ -358,7 +379,9 @@ def compute_gap_bounds(
         "scenarios": scenarios,
         "most_favorable": most_favorable,
         "most_adverse": most_adverse,
-        "worst_case_direction_preserved": bool(most_adverse["direction_positive"]),
+        "worst_case_direction_preserved": bool(
+            unresolved_count == 0 or most_adverse["direction_positive"]
+        ),
     }
 
 
@@ -425,11 +448,11 @@ def evaluate_decision(
             "P(aggregate_r>=2|same-direction) minus P(aggregate_r>=2|other)",
         ),
         _gate(
-            "conditional_odds_ratio_above_2",
-            float(metrics["conditional_odds_ratio"]),
+            "sample_odds_ratio_above_2",
+            float(metrics["sample_odds_ratio"]),
             "> 2",
-            float(metrics["conditional_odds_ratio"]) > 2.0,
-            f"sample_odds_ratio={metrics['sample_odds_ratio']}",
+            float(metrics["sample_odds_ratio"]) > 2.0,
+            f"conditional_odds_ratio={metrics['conditional_odds_ratio']}",
         ),
         _gate(
             "two_sided_fisher_p_below_0_05",
@@ -492,14 +515,14 @@ def evaluate_decision(
 
     if not all(gate["passed"] for gate in reliability_gates):
         decision = "visual_definition_not_reproducible"
-    elif not gap_gate["passed"]:
-        decision = "insufficient_data"
     elif not all(gate["passed"] for gate in primary_effect_gates):
         decision = "reject_signal"
+    elif not gap_gate["passed"]:
+        decision = "insufficient_data"
     elif not all(gate["passed"] for gate in stability_gates):
-        decision = "attribution_only"
+        decision = "phase_specific_attribution"
     else:
-        decision = "eligible_for_numeric_rule_translation"
+        decision = "qualified_for_numeric_translation"
     return {
         "decision": decision,
         "all_gates_passed": bool(all(gate["passed"] for gate in gates)),
@@ -556,11 +579,14 @@ def reveal(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
 
     if "case_id" not in mapping.columns or mapping["case_id"].astype(str).duplicated().any():
         raise ValueError("blind mapping requires unique case_id")
-    missing_mapping = set(adjudicated["case_id"].astype(str)) - set(
-        mapping["case_id"].astype(str)
-    )
-    if missing_mapping:
-        raise ValueError(f"adjudicated cases missing from blind mapping: {sorted(missing_mapping)}")
+    mapping_case_ids = set(_normalized_text(mapping["case_id"], "mapping case_id"))
+    adjudicated_case_ids = set(adjudicated["case_id"].astype(str))
+    if mapping_case_ids != adjudicated_case_ids:
+        raise ValueError(
+            "mapping case set mismatch: "
+            f"missing={sorted(adjudicated_case_ids - mapping_case_ids)}, "
+            f"extra={sorted(mapping_case_ids - adjudicated_case_ids)}"
+        )
     joined_all = mapping.merge(
         adjudicated,
         on="case_id",

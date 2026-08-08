@@ -56,6 +56,18 @@ def test_validate_reviewer_labels_accepts_all_four_frozen_labels() -> None:
         (lambda frame: pd.concat([frame, frame.iloc[[0]]], ignore_index=True), "duplicate"),
         (lambda frame: frame.iloc[:-1], "case set"),
         (lambda frame: frame.assign(case_id=[None, *frame["case_id"].iloc[1:]]), "case_id"),
+        (
+            lambda frame: frame.assign(
+                case_id=[f"{frame.loc[0, 'case_id']} ", *frame["case_id"].iloc[1:]]
+            ),
+            "normalized",
+        ),
+        (
+            lambda frame: frame.assign(
+                label=[f" {frame.loc[0, 'label']}", *frame["label"].iloc[1:]]
+            ),
+            "normalized",
+        ),
         (lambda frame: frame.assign(label=["bad", *frame["label"].iloc[1:]]), "label"),
         (lambda frame: frame.assign(reason=[" ", *frame["reason"].iloc[1:]]), "reason"),
         (
@@ -231,12 +243,10 @@ def test_compute_leave_one_out_removes_only_each_group_and_selects_tie_by_name()
     assert year_result["excluded_group"].tolist() == [2021, 2022]
     assert year_result["excluded_count"].tolist() == [4, 4]
     assert year_result["remaining_case_count"].tolist() == [4, 4]
-    assert product_result["excluded_group"].tolist() == ["A", "B"]
-    assert product_result["excluded_count"].tolist() == [4, 4]
-    assert product_result["selected_highest_frequency"].tolist() == [True, False]
-    selected = product_result.loc[product_result["selected_highest_frequency"]].iloc[0]
-    assert selected["excluded_group"] == "A"
-    assert selected["selection_evidence"] == "frequency=4;tie_break=ascending_group_name"
+    assert product_result["excluded_group"].tolist() == ["A"]
+    assert product_result["excluded_count"].tolist() == [4]
+    assert product_result["selected_highest_frequency"].tolist() == [True]
+    assert product_result.iloc[0]["selection_evidence"] == "frequency=4;tie_break=ascending_group_name"
 
 
 def test_compute_leave_one_out_records_degenerate_omission_as_failed_direction() -> None:
@@ -256,12 +266,12 @@ def test_compute_leave_one_out_records_degenerate_omission_as_failed_direction()
 
     result = stats.compute_leave_one_out(joined, "product")
 
-    assert result["excluded_group"].tolist() == ["A", "B"]
+    assert result["excluded_group"].tolist() == ["A"]
     assert result["conditional_odds_ratio"].isna().all()
-    assert result["remaining_case_count"].tolist() == [2, 2]
+    assert result["remaining_case_count"].tolist() == [2]
 
 
-def test_compute_gap_bounds_enumerates_four_cells_and_flags_direction_flip() -> None:
+def test_compute_gap_bounds_enumerates_all_aggregate_allocations_including_mixed_worst() -> None:
     joined = pd.DataFrame(
         {
             "case_id": [f"CASE-{index:03d}" for index in range(1, 7)],
@@ -269,20 +279,47 @@ def test_compute_gap_bounds_enumerates_four_cells_and_flags_direction_flip() -> 
             "aggregate_r": [3.0, 3.0, -1.0, 3.0, -1.0, -1.0],
         }
     )
-    unresolved = pd.DataFrame({"case_id": [f"GAP-{index}" for index in range(5)]})
+    unresolved = pd.DataFrame({"case_id": ["GAP-1", "GAP-2"]})
 
     result = stats.compute_gap_bounds(joined, unresolved)
 
-    assert result["unresolved_case_count"] == 5
-    assert [scenario["assignment"] for scenario in result["scenarios"]] == [
-        "signal_positive__outcome_ge_2r",
-        "signal_positive__outcome_lt_2r",
-        "signal_negative__outcome_ge_2r",
-        "signal_negative__outcome_lt_2r",
-    ]
-    assert result["most_adverse"]["assignment"] == "signal_negative__outcome_ge_2r"
-    assert result["most_adverse"]["risk_difference"] < 0
+    assert result["unresolved_case_count"] == 2
+    assert len(result["scenarios"]) == 10
+    assert {
+        tuple(scenario["allocation"].values()) for scenario in result["scenarios"]
+    } == {
+        (a, b, c, 2 - a - b - c)
+        for a in range(3)
+        for b in range(3 - a)
+        for c in range(3 - a - b)
+    }
+    assert result["most_adverse"]["allocation"] == {
+        "signal_positive_outcome_ge_2r": 0,
+        "signal_positive_outcome_lt_2r": 1,
+        "signal_negative_outcome_ge_2r": 1,
+        "signal_negative_outcome_lt_2r": 0,
+    }
+    assert result["most_adverse"]["contingency_table"] == [[2, 2], [2, 2]]
+    assert result["most_adverse"]["risk_difference"] == 0.0
     assert result["worst_case_direction_preserved"] is False
+
+
+def test_compute_gap_bounds_zero_gap_vacuously_passes_with_base_as_both_bounds() -> None:
+    joined = pd.DataFrame(
+        {
+            "case_id": [f"CASE-{index:03d}" for index in range(1, 7)],
+            "label": ["trend_same_direction"] * 3 + ["range_or_compression"] * 3,
+            "aggregate_r": [3.0, -1.0, -1.0, 3.0, 3.0, -1.0],
+        }
+    )
+
+    result = stats.compute_gap_bounds(joined, pd.DataFrame(columns=["case_id"]))
+
+    assert result["unresolved_case_count"] == 0
+    assert len(result["scenarios"]) == 1
+    assert result["most_favorable"]["contingency_table"] == [[1, 2], [2, 1]]
+    assert result["most_adverse"]["contingency_table"] == [[1, 2], [2, 1]]
+    assert result["worst_case_direction_preserved"] is True
 
 
 def _passing_metrics() -> dict[str, object]:
@@ -309,9 +346,9 @@ def _passing_loo() -> tuple[pd.DataFrame, pd.DataFrame]:
     )
     product = pd.DataFrame(
         {
-            "excluded_group": ["A", "B"],
-            "conditional_odds_ratio": [1.3, 0.8],
-            "selected_highest_frequency": [True, False],
+            "excluded_group": ["A"],
+            "conditional_odds_ratio": [1.3],
+            "selected_highest_frequency": [True],
         }
     )
     return year, product
@@ -325,45 +362,79 @@ def test_evaluate_decision_enforces_all_gates_and_stage214_precedence() -> None:
 
     passing = stats.evaluate_decision(metrics, agreement, year, product, gap)
 
-    assert passing["decision"] == "eligible_for_numeric_rule_translation"
+    assert passing["decision"] == "qualified_for_numeric_translation"
     assert len(passing["gates"]) == 11
     assert all(set(gate) == {"name", "value", "threshold", "passed", "evidence"} for gate in passing["gates"])
     assert all(gate["passed"] for gate in passing["gates"])
 
+    flipped_gap = {"worst_case_direction_preserved": False, "most_adverse": {"risk_difference": -0.01}}
     p_failed = dict(metrics, fisher_exact_two_sided_pvalue=0.05)
-    assert stats.evaluate_decision(p_failed, agreement, year, product, gap)["decision"] == "reject_signal"
+    assert stats.evaluate_decision(p_failed, agreement, year, product, flipped_gap)["decision"] == "reject_signal"
 
     unreliable = dict(agreement, cohen_kappa=0.59)
     assert stats.evaluate_decision(metrics, unreliable, year, product, gap)["decision"] == "visual_definition_not_reproducible"
 
     unstable_year = year.copy()
     unstable_year.loc[1, "conditional_odds_ratio"] = 1.0
-    assert stats.evaluate_decision(metrics, agreement, unstable_year, product, gap)["decision"] == "attribution_only"
+    assert stats.evaluate_decision(metrics, agreement, unstable_year, product, gap)["decision"] == "phase_specific_attribution"
 
-    flipped_gap = {"worst_case_direction_preserved": False, "most_adverse": {"risk_difference": -0.01}}
     assert stats.evaluate_decision(metrics, agreement, year, product, flipped_gap)["decision"] == "insufficient_data"
 
 
-def test_reveal_reads_frozen_named_inputs_and_writes_machine_outputs(tmp_path: Path) -> None:
+def test_sample_odds_ratio_above_two_gate_does_not_use_conditional_estimate() -> None:
+    joined = pd.DataFrame(
+        {
+            "case_id": [f"CASE-{index:03d}" for index in range(1, 18)],
+            "label": ["trend_same_direction"] * 8 + ["range_or_compression"] * 9,
+            "aggregate_r": [3.0] * 5 + [-1.0] * 3 + [3.0] * 4 + [-1.0] * 5,
+        }
+    )
+    observed = stats.compute_primary_statistics(joined)
+    assert observed["sample_odds_ratio"] == pytest.approx(25 / 12)
+    assert observed["conditional_odds_ratio"] == pytest.approx(1.9935, abs=0.0001)
+    metrics = dict(
+        _passing_metrics(),
+        sample_odds_ratio=observed["sample_odds_ratio"],
+        conditional_odds_ratio=observed["conditional_odds_ratio"],
+    )
+    agreement = {"raw_agreement": 0.85, "cohen_kappa": 0.65}
+    year, product = _passing_loo()
+    gap = {"worst_case_direction_preserved": True, "most_adverse": {"risk_difference": 0.01}}
+
+    decision = stats.evaluate_decision(metrics, agreement, year, product, gap)
+
+    odds_gate = next(gate for gate in decision["gates"] if gate["name"] == "sample_odds_ratio_above_2")
+    assert odds_gate["value"] == pytest.approx(25 / 12)
+    assert odds_gate["passed"] is True
+    assert decision["decision"] == "qualified_for_numeric_translation"
+
+
+def _write_reveal_inputs(output_dir: Path) -> pd.DataFrame:
     labels = ["trend_same_direction"] * 20 + ["range_or_compression"] * 44
     aggregate_r = [3.0] * 12 + [-1.0] * 8 + [3.0] * 5 + [-1.0] * 39
     reviewer_labels = _labels(labels)
-    reviewer_labels.to_csv(tmp_path / "reviewer_a_labels.csv", index=False)
-    reviewer_labels.to_csv(tmp_path / "reviewer_b_labels.csv", index=False)
+    reviewer_labels.to_csv(output_dir / "reviewer_a_labels.csv", index=False)
+    reviewer_labels.to_csv(output_dir / "reviewer_b_labels.csv", index=False)
     pd.DataFrame(columns=stats.LABEL_COLUMNS).to_csv(
-        tmp_path / "adjudication_labels.csv", index=False
+        output_dir / "adjudication_labels.csv", index=False
     )
     pd.DataFrame({"case_id": reviewer_labels["case_id"]}).to_csv(
-        tmp_path / "reviewer_manifest.csv", index=False
+        output_dir / "reviewer_manifest.csv", index=False
     )
-    pd.DataFrame(
+    mapping = pd.DataFrame(
         {
             "case_id": reviewer_labels["case_id"],
             "aggregate_r": aggregate_r,
             "entry_year": [2021 if index % 2 else 2022 for index in range(64)],
             "vt_symbol": ["A2401.TEST" if index % 4 < 2 else "B2401.TEST" for index in range(64)],
         }
-    ).to_csv(tmp_path / "blind_mapping.csv", index=False)
+    )
+    mapping.to_csv(output_dir / "blind_mapping.csv", index=False)
+    return mapping
+
+
+def test_reveal_reads_frozen_named_inputs_and_writes_machine_outputs(tmp_path: Path) -> None:
+    _write_reveal_inputs(tmp_path)
 
     result = stats.reveal(tmp_path)
 
@@ -381,3 +452,49 @@ def test_reveal_reads_frozen_named_inputs_and_writes_machine_outputs(tmp_path: P
         assert (tmp_path / filename).is_file()
     decision = json.loads((tmp_path / "decision.json").read_text(encoding="utf-8"))
     assert all("evidence" in gate for gate in decision["gates"])
+
+
+@pytest.mark.parametrize("mutation", ["extra", "missing", "duplicate"])
+def test_reveal_rejects_mapping_case_set_or_uniqueness_mismatch(
+    tmp_path: Path,
+    mutation: str,
+) -> None:
+    mapping = _write_reveal_inputs(tmp_path)
+    if mutation == "extra":
+        mapping = pd.concat(
+            [
+                mapping,
+                pd.DataFrame(
+                    [
+                        {
+                            "case_id": "CASE-999",
+                            "aggregate_r": 3.0,
+                            "entry_year": 2022,
+                            "vt_symbol": "A2401.TEST",
+                        }
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
+    elif mutation == "missing":
+        mapping = mapping.iloc[:-1].copy()
+    else:
+        mapping = pd.concat([mapping, mapping.iloc[[0]]], ignore_index=True)
+    mapping.to_csv(tmp_path / "blind_mapping.csv", index=False)
+
+    with pytest.raises(ValueError, match="mapping.*case set|unique case_id"):
+        stats.reveal(tmp_path)
+
+
+def test_reveal_rejects_manifest_and_adjudicated_case_set_mismatch(tmp_path: Path) -> None:
+    _write_reveal_inputs(tmp_path)
+    manifest = pd.read_csv(tmp_path / "reviewer_manifest.csv")
+    manifest = pd.concat(
+        [manifest, pd.DataFrame([{"case_id": "CASE-999"}])],
+        ignore_index=True,
+    )
+    manifest.to_csv(tmp_path / "reviewer_manifest.csv", index=False)
+
+    with pytest.raises(ValueError, match="case set"):
+        stats.reveal(tmp_path)
