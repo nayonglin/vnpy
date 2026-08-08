@@ -202,15 +202,19 @@ def _compute_primary_statistics(
     missing = sorted(required - set(joined.columns))
     if missing:
         raise ValueError(f"joined data missing columns: {missing}")
-    case_ids = joined["case_id"].astype(str).str.strip()
+    case_ids = _normalized_text(joined["case_id"], "case_id")
     if case_ids.eq("").any() or case_ids.duplicated().any():
         raise ValueError("joined case_id must be non-empty and unique")
-    labels = joined["label"].astype(str).str.strip()
+    labels = _normalized_text(joined["label"], "final_label")
+    if labels.eq("").any():
+        raise ValueError("final_label must be non-empty")
     invalid_labels = sorted(set(labels) - LABELS)
     if invalid_labels:
         raise ValueError(f"invalid label: {invalid_labels}")
 
     frame = joined.copy()
+    frame["case_id"] = case_ids
+    frame["label"] = labels
     frame["aggregate_r"] = pd.to_numeric(frame["aggregate_r"], errors="coerce")
     frame = frame[
         frame["label"].ne("insufficient")

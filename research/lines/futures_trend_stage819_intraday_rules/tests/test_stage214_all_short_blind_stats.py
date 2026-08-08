@@ -213,6 +213,38 @@ def test_compute_primary_statistics_matches_hand_checked_table_and_exact_interva
     assert result["signal_negative_profit_probability"] == pytest.approx(5 / 44)
 
 
+@pytest.mark.parametrize(
+    ("mutation", "match"),
+    [
+        ({"case_id": ["CASE-001 ", "CASE-002"]}, "case_id.*normalized"),
+        (
+            {"label": [" trend_same_direction", "range_or_compression"]},
+            "final_label.*normalized",
+        ),
+        ({"case_id": [None, "CASE-002"]}, "case_id.*non-empty"),
+        (
+            {"label": [None, "range_or_compression"]},
+            "final_label.*non-empty",
+        ),
+        ({"case_id": ["CASE-001", "CASE-001"]}, "case_id.*unique"),
+    ],
+)
+def test_compute_primary_statistics_rejects_noncanonical_case_and_final_label(
+    mutation: dict[str, list[object]],
+    match: str,
+) -> None:
+    joined = pd.DataFrame(
+        {
+            "case_id": ["CASE-001", "CASE-002"],
+            "label": ["trend_same_direction", "range_or_compression"],
+            "aggregate_r": [3.0, -1.0],
+        }
+    ).assign(**mutation)
+
+    with pytest.raises(ValueError, match=match):
+        stats.compute_primary_statistics(joined)
+
+
 def _loo_fixture() -> pd.DataFrame:
     return pd.DataFrame(
         {
