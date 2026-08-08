@@ -158,6 +158,84 @@ def test_load_daily_context_queries_each_exact_contract_once_and_builds_manifest
     assert manifest["canonical_sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
 
 
+def _chart_event(daily: pd.DataFrame) -> pd.Series:
+    return pd.Series(
+        {
+            "winner_rank": 1,
+            "open_trade_id": "A",
+            "vt_symbol": "rb2105.SHFE",
+            "direction": "long",
+            "entry_date": daily.iloc[60]["trade_date"],
+            "exit_date": daily.iloc[64]["trade_date"],
+            "entry_price": float(daily.iloc[60]["open"]),
+            "realized_pnl": 300.0,
+            "risk_amount": 100.0,
+            "aggregate_r": 3.0,
+            "entry_datetime": pd.Timestamp(daily.iloc[60]["trade_date"]) + pd.Timedelta(hours=9),
+        }
+    )
+
+
+def _bars15_fixture(event: pd.Series) -> pd.DataFrame:
+    entry_day = pd.Timestamp(event["entry_date"])
+    return pd.DataFrame(
+        {
+            "vt_symbol": [event["vt_symbol"]] * 2,
+            "trading_day": [entry_day] * 2,
+            "bar_15m": [entry_day + pd.Timedelta(hours=9), entry_day + pd.Timedelta(hours=9, minutes=15)],
+            "open": [160.0, 161.0],
+            "high": [162.0, 163.0],
+            "low": [159.0, 160.0],
+            "close": [161.0, 162.0],
+            "volume": [10.0, 12.0],
+            "open_oi": [1000.0, 1001.0],
+            "close_oi": [1001.0, 1002.0],
+        }
+    )
+
+
+def test_create_winner_figure_has_three_axes_and_only_daily_volume_bars() -> None:
+    daily = _daily_fixture()
+    event = _chart_event(daily)
+    daily_window, _ = stage208.select_daily_window(event, daily)
+    bars15 = _bars15_fixture(event)
+
+    figure = stage208.create_winner_figure(
+        event,
+        bars15,
+        [pd.Timestamp(event["entry_date"])],
+        daily_window,
+    )
+
+    assert [axis.get_ylabel() for axis in figure.axes] == [
+        "15m Price",
+        "Daily Price",
+        "Daily Volume",
+    ]
+    assert len(figure.axes[0].containers) == 0
+    assert len(figure.axes[1].containers) == 0
+    assert len(figure.axes[2].containers) == 1
+    stage208.plt.close(figure)
+
+
+def test_create_winner_figure_keeps_daily_chart_when_minutes_are_missing() -> None:
+    daily = _daily_fixture()
+    event = _chart_event(daily)
+    daily_window, _ = stage208.select_daily_window(event, daily)
+
+    figure = stage208.create_winner_figure(
+        event,
+        pd.DataFrame(),
+        [pd.Timestamp(event["entry_date"])],
+        daily_window,
+    )
+
+    assert any("unavailable" in text.get_text() for text in figure.axes[0].texts)
+    assert len(figure.axes[1].patches) >= len(daily_window)
+    assert len(figure.axes[2].containers) == 1
+    stage208.plt.close(figure)
+
+
 def test_build_winner_events_aggregates_filters_and_sorts() -> None:
     frame = pd.DataFrame(
         [

@@ -508,58 +508,21 @@ def _chart_filename(event: pd.Series) -> str:
     )
 
 
-def plot_winner(
-    event: pd.Series,
-    bars15: pd.DataFrame,
-    window_days: list[pd.Timestamp],
-    output_path: Path,
-    *,
-    raw_1m_bars: int,
-) -> dict[str, object]:
-    """Render one compressed-session candlestick chart and return coverage facts."""
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    frame = bars15.sort_values(["trading_day", "bar_15m"]).reset_index(drop=True)
-    actual_days = pd.DatetimeIndex(frame["trading_day"].dropna().unique()).normalize()
-    expected_days = pd.DatetimeIndex(window_days).normalize()
-
-    if frame.empty:
-        write_placeholder(
-            event,
-            output_path,
-            "No local minute bars in the requested 11-trading-day window.",
-        )
-        return {
-            "winner_rank": int(event["winner_rank"]),
-            "open_trade_id": str(event["open_trade_id"]),
-            "vt_symbol": str(event["vt_symbol"]),
-            "entry_date": pd.Timestamp(event["entry_date"]).date().isoformat(),
-            "raw_1m_bars": int(raw_1m_bars),
-            "aggregated_15m_bars": 0,
-            "actual_trading_days": 0,
-            "expected_trading_days": len(expected_days),
-            "coverage_state": "missing",
-            "chart_path": output_path.name,
-        }
-
-    figure, (price_axis, volume_axis) = plt.subplots(
-        2,
-        1,
-        figsize=(18, 9),
-        dpi=150,
-        sharex=True,
-        gridspec_kw={"height_ratios": [4, 1], "hspace": 0.04},
-    )
-    x_values = np.arange(len(frame), dtype=float)
+def _draw_candles(axis: object, frame: pd.DataFrame, x_values: np.ndarray) -> np.ndarray:
+    """Draw red-up/green-down candles and return their colors."""
     upward = frame["close"].ge(frame["open"])
     colors = np.where(upward, "#d62728", "#159447")
     price_span = float(frame["high"].max() - frame["low"].min())
-    minimum_body = max(price_span * 0.0008, abs(float(frame["close"].mean())) * 1e-6)
-
+    minimum_body = max(
+        price_span * 0.0008,
+        abs(float(frame["close"].mean())) * 1e-6,
+        1e-9,
+    )
     for x_value, row, color in zip(x_values, frame.itertuples(), colors):
-        price_axis.vlines(x_value, row.low, row.high, color=color, linewidth=0.7)
+        axis.vlines(x_value, row.low, row.high, color=color, linewidth=0.7)
         lower = min(row.open, row.close)
         height = max(abs(row.close - row.open), minimum_body)
-        price_axis.add_patch(
+        axis.add_patch(
             Rectangle(
                 (x_value - 0.34, lower),
                 0.68,
@@ -569,26 +532,80 @@ def plot_winner(
                 linewidth=0.6,
             )
         )
-    volume_axis.bar(x_values, frame["volume"], width=0.72, color=colors, alpha=0.72)
+    return colors
+
+
+def create_winner_figure(
+    event: pd.Series,
+    bars15: pd.DataFrame,
+    window_days: list[pd.Timestamp],
+    daily_bars: pd.DataFrame,
+) -> object:
+    """Create a 15m-price, daily-price and daily-volume three-layer figure."""
+    figure = plt.figure(figsize=(18, 12), dpi=150)
+    grid = figure.add_gridspec(3, 1, height_ratios=[5, 2.6, 1], hspace=0.12)
+    price15_axis = figure.add_subplot(grid[0])
+    daily_price_axis = figure.add_subplot(grid[1])
+    daily_volume_axis = figure.add_subplot(grid[2], sharex=daily_price_axis)
 
     entry_day = pd.Timestamp(event["entry_date"]).normalize()
+    exit_day = pd.Timestamp(event["exit_date"]).normalize()
+    frame15 = bars15.copy()
     day_positions: list[tuple[pd.Timestamp, int, int]] = []
-    for trading_day, day_frame in frame.groupby("trading_day", sort=True):
-        start = int(day_frame.index.min())
-        end = int(day_frame.index.max())
-        normalized_day = pd.Timestamp(trading_day).normalize()
-        day_positions.append((normalized_day, start, end))
-        price_axis.axvline(start - 0.5, color="#cbd5e1", linewidth=0.6)
-        if normalized_day == entry_day:
-            price_axis.axvspan(
-                start - 0.5,
-                end + 0.5,
-                color="#f59e0b",
-                alpha=0.13,
-                label="Entry trading day",
-            )
-    price_axis.axvline(len(frame) - 0.5, color="#cbd5e1", linewidth=0.6)
-    price_axis.axhline(
+    if frame15.empty:
+        price15_axis.text(
+            0.5,
+            0.5,
+            "15-minute chart unavailable: no local bars in requested window",
+            ha="center",
+            va="center",
+            color="#b91c1c",
+            fontsize=15,
+            transform=price15_axis.transAxes,
+        )
+    else:
+        frame15 = frame15.sort_values(["trading_day", "bar_15m"]).reset_index(drop=True)
+        x15 = np.arange(len(frame15), dtype=float)
+        _draw_candles(price15_axis, frame15, x15)
+        for trading_day, day_frame in frame15.groupby("trading_day", sort=True):
+            start = int(day_frame.index.min())
+            end = int(day_frame.index.max())
+            normalized_day = pd.Timestamp(trading_day).normalize()
+            day_positions.append((normalized_day, start, end))
+            price15_axis.axvline(start - 0.5, color="#cbd5e1", linewidth=0.6)
+            if normalized_day == entry_day:
+                price15_axis.axvspan(
+                    start - 0.5,
+                    end + 0.5,
+                    color="#f59e0b",
+                    alpha=0.13,
+                    label="Entry trading day",
+                )
+        price15_axis.axvline(len(frame15) - 0.5, color="#cbd5e1", linewidth=0.6)
+        tick_positions = [(start + end) / 2 for _, start, end in day_positions]
+        tick_labels = [day.strftime("%Y-%m-%d") for day, _, _ in day_positions]
+        price15_axis.set_xticks(tick_positions, tick_labels, rotation=25, ha="right")
+        price15_axis.set_xlim(-1, len(frame15))
+
+        entry_datetime = pd.to_datetime(
+            event.get("entry_datetime", pd.NaT), errors="coerce"
+        )
+        if pd.notna(entry_datetime) and entry_datetime.time() != datetime.min.time():
+            entry_bucket = pd.Timestamp(entry_datetime).floor("15min")
+            matches = frame15.index[frame15["bar_15m"].eq(entry_bucket)]
+            if len(matches):
+                price15_axis.scatter(
+                    float(matches[0]),
+                    float(event["entry_price"]),
+                    s=48,
+                    marker="o",
+                    color="#2563eb",
+                    edgecolor="white",
+                    linewidth=0.8,
+                    zorder=5,
+                    label="Exact entry bucket",
+                )
+    price15_axis.axhline(
         float(event["entry_price"]),
         color="#2563eb",
         linestyle="--",
@@ -596,46 +613,132 @@ def plot_winner(
         label=f"Entry price {float(event['entry_price']):g}",
     )
 
-    entry_datetime = pd.to_datetime(event.get("entry_datetime", pd.NaT), errors="coerce")
-    if pd.notna(entry_datetime) and entry_datetime.time() != datetime.min.time():
-        entry_bucket = pd.Timestamp(entry_datetime).floor("15min")
-        matches = frame.index[frame["bar_15m"].eq(entry_bucket)]
-        if len(matches):
-            price_axis.scatter(
-                float(matches[0]),
-                float(event["entry_price"]),
-                s=48,
-                marker="o",
-                color="#2563eb",
-                edgecolor="white",
-                linewidth=0.8,
-                zorder=5,
-                label="Exact entry bucket",
-            )
+    daily = daily_bars.copy()
+    if daily.empty:
+        daily_price_axis.text(
+            0.5,
+            0.5,
+            "Daily chart unavailable: no exact-contract daily bars",
+            ha="center",
+            va="center",
+            color="#b91c1c",
+            fontsize=12,
+            transform=daily_price_axis.transAxes,
+        )
+        daily_volume_axis.text(
+            0.5,
+            0.5,
+            "Daily volume unavailable",
+            ha="center",
+            va="center",
+            color="#64748b",
+            fontsize=11,
+            transform=daily_volume_axis.transAxes,
+        )
+    else:
+        daily = daily.sort_values("trade_date").reset_index(drop=True)
+        x_daily = np.arange(len(daily), dtype=float)
+        daily_colors = _draw_candles(daily_price_axis, daily, x_daily)
+        daily_volume_axis.bar(
+            x_daily,
+            daily["volume"],
+            width=0.72,
+            color=daily_colors,
+            alpha=0.72,
+        )
+        for day, color, label in [
+            (entry_day, "#f59e0b", "Entry day"),
+            (exit_day, "#7c3aed", "Final exit day"),
+        ]:
+            matches = daily.index[daily["trade_date"].eq(day)]
+            if len(matches):
+                position = float(matches[0])
+                daily_price_axis.axvspan(
+                    position - 0.5,
+                    position + 0.5,
+                    color=color,
+                    alpha=0.16,
+                    label=label,
+                )
+                daily_volume_axis.axvspan(
+                    position - 0.5,
+                    position + 0.5,
+                    color=color,
+                    alpha=0.16,
+                )
+        daily_price_axis.axhline(
+            float(event["entry_price"]),
+            color="#2563eb",
+            linestyle="--",
+            linewidth=1.0,
+            label=f"Entry price {float(event['entry_price']):g}",
+        )
+        tick_count = min(12, len(daily))
+        tick_positions = np.unique(
+            np.linspace(0, len(daily) - 1, tick_count, dtype=int)
+        )
+        tick_labels = [
+            pd.Timestamp(daily.iloc[position]["trade_date"]).strftime("%Y-%m-%d")
+            for position in tick_positions
+        ]
+        daily_volume_axis.set_xticks(
+            tick_positions,
+            tick_labels,
+            rotation=30,
+            ha="right",
+        )
+        daily_volume_axis.set_xlim(-1, len(daily))
+        daily_price_axis.legend(loc="upper left", fontsize=8, framealpha=0.9, ncols=3)
 
-    exit_date = pd.Timestamp(event["exit_date"]).date().isoformat()
     title = (
         f"Rank {int(event['winner_rank']):02d} | {event['vt_symbol']} | "
         f"{str(event['direction']).upper()} | Entry {entry_day.date()} | "
-        f"Exit {exit_date} | Price {float(event['entry_price']):g} | "
+        f"Exit {exit_day.date()} | Price {float(event['entry_price']):g} | "
         f"R {float(event['aggregate_r']):.4f} | PnL {float(event['realized_pnl']):,.2f}"
     )
-    price_axis.set_title(title, fontsize=15, pad=12, fontweight="bold")
-    price_axis.set_ylabel("Price")
-    volume_axis.set_ylabel("Volume")
-    volume_axis.set_xlabel("Official trading day (night session assigned forward)")
-    price_axis.grid(axis="y", color="#e2e8f0", linewidth=0.6)
-    volume_axis.grid(axis="y", color="#e2e8f0", linewidth=0.5)
-    price_axis.legend(loc="upper left", fontsize=9, framealpha=0.9)
-    tick_positions = [(start + end) / 2 for _, start, end in day_positions]
-    tick_labels = [day.strftime("%Y-%m-%d") for day, _, _ in day_positions]
-    volume_axis.set_xticks(tick_positions, tick_labels, rotation=35, ha="right")
-    volume_axis.set_xlim(-1, len(frame))
-    figure.subplots_adjust(left=0.06, right=0.99, top=0.91, bottom=0.13)
+    price15_axis.set_title(title, fontsize=15, pad=12, fontweight="bold")
+    price15_axis.set_ylabel("15m Price")
+    daily_price_axis.set_ylabel("Daily Price")
+    daily_volume_axis.set_ylabel("Daily Volume")
+    daily_volume_axis.set_xlabel("Exact-contract daily bars")
+    for axis in [price15_axis, daily_price_axis, daily_volume_axis]:
+        axis.grid(axis="y", color="#e2e8f0", linewidth=0.55)
+    handles, labels = price15_axis.get_legend_handles_labels()
+    if handles:
+        price15_axis.legend(loc="upper left", fontsize=8, framealpha=0.9)
+    daily_price_axis.tick_params(labelbottom=False)
+    figure.subplots_adjust(left=0.065, right=0.99, top=0.94, bottom=0.08)
+    return figure
+
+
+def plot_winner(
+    event: pd.Series,
+    bars15: pd.DataFrame,
+    window_days: list[pd.Timestamp],
+    output_path: Path,
+    *,
+    raw_1m_bars: int,
+    daily_bars: pd.DataFrame | None = None,
+) -> dict[str, object]:
+    """Render one three-layer winner chart and return minute coverage facts."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    frame = bars15.sort_values(["trading_day", "bar_15m"]).reset_index(drop=True)
+    actual_days = pd.DatetimeIndex(frame["trading_day"].dropna().unique()).normalize()
+    expected_days = pd.DatetimeIndex(window_days).normalize()
+    figure = create_winner_figure(
+        event,
+        frame,
+        window_days,
+        daily_bars if daily_bars is not None else pd.DataFrame(),
+    )
     figure.savefig(output_path, facecolor="white")
     plt.close(figure)
 
-    state = "complete" if len(actual_days) == len(expected_days) else "partial"
+    if frame.empty:
+        state = "missing"
+    else:
+        state = "complete" if len(actual_days) == len(expected_days) else "partial"
+    entry_day = pd.Timestamp(event["entry_date"]).normalize()
     return {
         "winner_rank": int(event["winner_rank"]),
         "open_trade_id": str(event["open_trade_id"]),
