@@ -1,0 +1,30 @@
+{
+  "official_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+  "requested_start_month": "2020-01",
+  "winner_definition": "aggregate realized_pnl / aggregate risk_amount >= 2.0",
+  "sort_order": "aggregate_r desc, realized_pnl desc, entry_date asc, open_trade_id asc",
+  "timeframe": "15min",
+  "window": "5 official trading days before + entry day + 5 after",
+  "completed_at_asia_shanghai": "2026-08-08T18:00:15+08:00",
+  "input_sha256": {
+    "closed_lots": "9489b34637171f6f833d40f573f84ff73cc4ce39f2c41628463a3bf6e5183df4",
+    "curves": "b22201f615ae408e7e49c02a6cd59b26268d2e00e24e0a61713deed52f789d02",
+    "trades": "d1b6954b89195a4440b016256780e2fe63a4d055cd15aa516c8f934857d08051",
+    "minute_bars": "8e861633b08a82819a668c30c6799e2098d2beaa6863698351145018ea586784",
+    "local_contract_cache_bundle": "fa8526d49f871f2638896ecd0bbc6a775ee8bf135c1cac98ec91a383aea24f07"
+  },
+  "local_contract_cache_file_count": 321,
+  "event_count": 309,
+  "winner_count": 71,
+  "coverage_complete_count": 52,
+  "coverage_partial_count": 19,
+  "coverage_missing_count": 0,
+  "single_chart_count": 71,
+  "atlas_page_count": 18,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false,
+  "pre_run_overfit_assessment": "否；只解释冻结回测样本，不调参、不改策略。",
+  "post_run_overfit_assessment": "否；图谱是事后法证输出，未反向生成规则。",
+  "continue_value_assessment": "有；可用于识别赢家形态与数据覆盖问题，但不能单独证明可交易规律。"
+}

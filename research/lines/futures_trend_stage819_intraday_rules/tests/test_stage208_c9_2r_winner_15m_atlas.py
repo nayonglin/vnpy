@@ -135,6 +135,74 @@ def test_load_target_minutes_filters_symbols_and_window(tmp_path: Path) -> None:
     ]
 
 
+def test_load_target_minutes_supplements_cache_but_keeps_primary_duplicates(
+    tmp_path: Path,
+) -> None:
+    primary = tmp_path / "primary.csv"
+    fallback = tmp_path / "rb2105_minute_backtest.csv"
+    columns = {
+        "vt_symbol": ["rb2105.SHFE"],
+        "bar_datetime": ["2021-01-08 21:01"],
+        "open": [100.0],
+        "high": [101.0],
+        "low": [99.0],
+        "close": [100.5],
+        "volume": [10.0],
+        "open_oi": [1000.0],
+        "close_oi": [1001.0],
+    }
+    pd.DataFrame(columns).to_csv(primary, index=False)
+    fallback_frame = pd.DataFrame(columns)
+    fallback_frame.loc[0, "open"] = 999.0
+    fallback_frame.loc[1] = {
+        "vt_symbol": "rb2105.SHFE",
+        "bar_datetime": "2021-01-11 09:01",
+        "open": 102.0,
+        "high": 103.0,
+        "low": 101.0,
+        "close": 102.5,
+        "volume": 12.0,
+        "open_oi": 1002.0,
+        "close_oi": 1003.0,
+    }
+    fallback_frame.to_csv(fallback, index=False)
+    winners = pd.DataFrame(
+        [{"vt_symbol": "rb2105.SHFE", "entry_date": pd.Timestamp("2021-01-11")}]
+    )
+    calendar = pd.DatetimeIndex(
+        pd.to_datetime(["2021-01-08", "2021-01-11", "2021-01-12"])
+    )
+
+    result = stage208.load_target_minutes(
+        primary,
+        winners,
+        calendar,
+        fallback_paths=[fallback],
+        chunksize=2,
+    )
+
+    assert len(result) == 2
+    duplicate = result[result["bar_datetime"].eq(pd.Timestamp("2021-01-08 21:01"))]
+    assert duplicate["open"].tolist() == [100.0]
+    assert set(result["minute_source_kind"]) == {"primary", "local_contract_cache"}
+
+
+def test_discover_contract_cache_paths_requires_exact_contract_and_exchange(
+    tmp_path: Path,
+) -> None:
+    exact = tmp_path / "batch" / "SHFE" / "rb2105_minute_backtest.csv"
+    wrong_contract = tmp_path / "batch" / "SHFE" / "rb21050_minute_backtest.csv"
+    wrong_exchange = tmp_path / "batch" / "DCE" / "rb2105_minute_backtest.csv"
+    for path in [exact, wrong_contract, wrong_exchange]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+    winners = pd.DataFrame([{"vt_symbol": "rb2105.SHFE"}])
+
+    result = stage208.discover_contract_cache_paths(tmp_path, winners)
+
+    assert result == [exact]
+
+
 def test_write_placeholder_creates_nonempty_png(tmp_path: Path) -> None:
     output = tmp_path / "missing.png"
     event = pd.Series(

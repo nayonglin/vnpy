@@ -48,6 +48,7 @@ MINUTE_PATH = REPO_ROOT / (
     "qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_"
     "stage861_stage860_full_visual_atlas_v1.csv"
 )
+MINUTE_CACHE_ROOT = REPO_ROOT / "examples/portfolio_backtesting/downloaded_futures"
 OFFICIAL_VERSION = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
 
 
@@ -203,11 +204,31 @@ MINUTE_COLUMNS = [
 ]
 
 
+def discover_contract_cache_paths(
+    cache_root: Path,
+    winners: pd.DataFrame,
+) -> list[Path]:
+    """Find exact per-contract minute caches without prefix or exchange leakage."""
+    targets = {
+        (str(symbol).split(".", 1)[0].lower(), str(symbol).split(".", 1)[1].upper())
+        for symbol in winners["vt_symbol"].astype(str)
+        if "." in str(symbol)
+    }
+    matches: list[Path] = []
+    for path in cache_root.rglob("*minute_backtest.csv"):
+        contract = path.name.split("_", 1)[0].lower()
+        exchange = path.parent.name.upper()
+        if (contract, exchange) in targets:
+            matches.append(path)
+    return sorted(matches)
+
+
 def load_target_minutes(
     path: Path,
     winners: pd.DataFrame,
     calendar: pd.DatetimeIndex,
     *,
+    fallback_paths: list[Path] | None = None,
     chunksize: int = 250_000,
 ) -> pd.DataFrame:
     """Load only symbols and official trading-day windows needed by winners."""
@@ -219,36 +240,66 @@ def load_target_minutes(
 
     selected: list[pd.DataFrame] = []
     target_symbols = set(target_days)
-    for chunk in pd.read_csv(path, usecols=MINUTE_COLUMNS, chunksize=chunksize):
-        chunk = chunk[chunk["vt_symbol"].astype(str).isin(target_symbols)].copy()
-        if chunk.empty:
-            continue
-        chunk["bar_datetime"] = pd.to_datetime(
-            chunk["bar_datetime"], errors="coerce"
-        )
-        for column in [
-            "open",
-            "high",
-            "low",
-            "close",
-            "volume",
-            "open_oi",
-            "close_oi",
-        ]:
-            chunk[column] = pd.to_numeric(chunk[column], errors="coerce")
-        chunk = assign_trading_day(chunk, calendar)
-        keep = pd.Series(False, index=chunk.index)
-        for symbol, days in target_days.items():
-            keep |= chunk["vt_symbol"].eq(symbol) & chunk["trading_day"].isin(days)
-        if keep.any():
-            selected.append(chunk.loc[keep])
+    source_specs = [(path, "primary", 1)] + [
+        (fallback_path, "local_contract_cache", 0)
+        for fallback_path in (fallback_paths or [])
+    ]
+    for source_path, source_kind, source_priority in source_specs:
+        for chunk in pd.read_csv(
+            source_path,
+            usecols=lambda column: column in MINUTE_COLUMNS,
+            chunksize=chunksize,
+        ):
+            if not {"vt_symbol", "bar_datetime"}.issubset(chunk.columns):
+                continue
+            chunk = chunk[
+                chunk["vt_symbol"].astype(str).isin(target_symbols)
+            ].copy()
+            if chunk.empty:
+                continue
+            chunk["bar_datetime"] = pd.to_datetime(
+                chunk["bar_datetime"], errors="coerce"
+            )
+            for column in [
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "open_oi",
+                "close_oi",
+            ]:
+                if column not in chunk.columns:
+                    chunk[column] = np.nan
+                chunk[column] = pd.to_numeric(chunk[column], errors="coerce")
+            chunk = assign_trading_day(chunk, calendar)
+            keep = pd.Series(False, index=chunk.index)
+            for symbol, days in target_days.items():
+                keep |= chunk["vt_symbol"].eq(symbol) & chunk["trading_day"].isin(
+                    days
+                )
+            if keep.any():
+                chosen = chunk.loc[keep].copy()
+                chosen["minute_source_kind"] = source_kind
+                chosen["minute_source_path"] = str(source_path)
+                chosen["_source_priority"] = source_priority
+                selected.append(chosen)
 
     if not selected:
-        return pd.DataFrame(columns=[*MINUTE_COLUMNS, "trading_day"])
+        return pd.DataFrame(
+            columns=[
+                *MINUTE_COLUMNS,
+                "trading_day",
+                "minute_source_kind",
+                "minute_source_path",
+            ]
+        )
     return (
         pd.concat(selected, ignore_index=True)
+        .sort_values(["vt_symbol", "bar_datetime", "_source_priority"])
         .drop_duplicates(["vt_symbol", "bar_datetime"], keep="last")
         .sort_values(["vt_symbol", "bar_datetime"])
+        .drop(columns="_source_priority")
         .reset_index(drop=True)
     )
 
@@ -489,6 +540,7 @@ def write_outputs(
     *,
     event_count: int,
     input_hashes: dict[str, str],
+    cache_file_count: int = 0,
 ) -> dict[str, object]:
     """Write manifests, charts, atlas pages, hashes, decision and report."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -516,15 +568,24 @@ def write_outputs(
                 & bars15["trading_day"].isin(window_days)
             ]
         chart_path = output_dir / _chart_filename(event)
-        coverage_rows.append(
-            plot_winner(
-                event,
-                event_bars15,
-                window_days,
-                chart_path,
-                raw_1m_bars=len(raw_event),
-            )
+        coverage_row = plot_winner(
+            event,
+            event_bars15,
+            window_days,
+            chart_path,
+            raw_1m_bars=len(raw_event),
         )
+        if "minute_source_kind" in raw_event.columns:
+            coverage_row["minute_source_kinds"] = "|".join(
+                sorted(raw_event["minute_source_kind"].dropna().astype(str).unique())
+            )
+            coverage_row["minute_source_file_count"] = int(
+                raw_event["minute_source_path"].dropna().nunique()
+            )
+        else:
+            coverage_row["minute_source_kinds"] = ""
+            coverage_row["minute_source_file_count"] = 0
+        coverage_rows.append(coverage_row)
         chart_paths.append(chart_path)
 
     coverage = pd.DataFrame(coverage_rows).sort_values("winner_rank")
@@ -546,6 +607,7 @@ def write_outputs(
         "window": "5 official trading days before + entry day + 5 after",
         "completed_at_asia_shanghai": completed_at,
         "input_sha256": input_hashes,
+        "local_contract_cache_file_count": int(cache_file_count),
         "event_count": int(event_count),
         "winner_count": int(len(manifest)),
         "coverage_complete_count": int(state_counts.get("complete", 0)),
@@ -575,6 +637,7 @@ def write_outputs(
 - 完整覆盖：{state_counts.get('complete', 0)}
 - 部分覆盖：{state_counts.get('partial', 0)}
 - 缺失占位：{state_counts.get('missing', 0)}
+- 本地逐合约分钟缓存文件：{cache_file_count}
 - 单图：{len(chart_paths)}
 - Atlas页：{len(atlas_paths)}
 - 下单/撤单API：0 / 0；CTP未连接
@@ -625,16 +688,37 @@ def run(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
     winners = build_winner_events(closed_lots)
     winners = _attach_entry_datetimes(winners, trades)
     calendar = build_trading_calendar(curves)
-    minutes = load_target_minutes(MINUTE_PATH, winners, calendar)
+    cache_paths = discover_contract_cache_paths(MINUTE_CACHE_ROOT, winners)
+    minutes = load_target_minutes(
+        MINUTE_PATH,
+        winners,
+        calendar,
+        fallback_paths=cache_paths,
+    )
     input_hashes = {name: _sha256(path) for name, path in input_paths.items()}
-    return write_outputs(
+    cache_hash_rows = [
+        {"path": str(path.relative_to(REPO_ROOT)), "sha256": _sha256(path)}
+        for path in cache_paths
+    ]
+    cache_bundle = hashlib.sha256()
+    for row in cache_hash_rows:
+        cache_bundle.update(f"{row['path']}\0{row['sha256']}\n".encode())
+    input_hashes["local_contract_cache_bundle"] = cache_bundle.hexdigest()
+    decision = write_outputs(
         winners,
         minutes,
         calendar,
         output_dir,
         event_count=EXPECTED_EVENT_COUNT,
         input_hashes=input_hashes,
+        cache_file_count=len(cache_paths),
     )
+    pd.DataFrame(cache_hash_rows).to_csv(
+        output_dir / "minute_cache_sha256.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+    return decision
 
 
 if __name__ == "__main__":
