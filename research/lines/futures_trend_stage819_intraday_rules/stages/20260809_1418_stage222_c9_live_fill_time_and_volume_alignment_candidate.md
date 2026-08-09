@@ -55,6 +55,10 @@
   - 首轮精确提交独立审查发现 `P0=5`：跨事件最早成交时间、旧账本纯日期回退、既有 state cutoff 迁移、损坏账本、WAL 失败后 store 污染；均已先复现红灯后修复，首轮候选已作废。
   - Stage904/905/931 与 execution-ledger 原生产回归及新增资格套件用例：`232/232 passed`。
   - 首次完整资格编排在进入 CTP 前被生产资产测试阻断：隔离 worktree 缺 `.vntrader/database.db`；补齐隔离运行资产后，剩余唯一失败是 Stage947 测试硬编码 2026-08-03 的过期夹具。生产跨日阻断未放宽，修复后 Stage947 `38 passed + 25 subtests passed`。
+  - 最终冻结提交：`9c0df9d86d4851cd78843334f274b7c28d73f899`；独立审查 `P0=0/P1=0/P2=1`。唯一 P2 是 Stage947 当日夹具理论上可能跨午夜，不改变生产 retry 合同，也不影响本次候选逻辑。
+  - 最终资格编排的精确测试全部通过，但第一次正式 CTP 只读抓取返回 `readonly_logs_without_ctp_progress`，因此构建器按预期 fail-closed，未生成 qualification bundle。
+  - 使用线上旧提交 `368042e0f145cad80bdee5d0fc8f0c22074650ac`、同一生产 env 和同一 30 秒只读口径复核，结果同样为 `readonly_logs_without_ctp_progress`；候选与线上均无 TD/MD 登录回调、无账户/委托/成交/持仓查询回调。
+  - 生产 env 与线上副本的 SHA-256 一致；主前置和 5 组备用 TD/MD 地址共 12 个 TCP 连接均超时。判断为当前周日窗口的生产 CTP 前置不可达，不是候选代码回归。
   - 资格包要求的完整测试、两次正式 CTP 只读抓取、独立审查、发布清单和激活回执必须在候选提交冻结后生成；此文件不伪造尚未生成的发布证据。
   - 订单 API：`send_order=0`、`cancel_order=0`；本阶段只执行本地测试和只读检查。
 
@@ -68,9 +72,9 @@
 
 ## 结论
 
-- 本阶段结论：生产候选的最小修复方向成立。线上原有 durable state、账本锁、校验和和 fail-closed 结构全部保留；未把开发分支旧实现整体覆盖到线上。
-- 是否进入下一步：是；先冻结候选提交，再完成独立审查和正式资格包。只有 `P0=0/P1=0` 且双次 CTP 只读验证通过才允许 Stage948 安装。
-- 下一步：构建资格包，生成 manifest/receipt，确认线上 7 个任务静默后通过 Stage948 prepare/activate，不手工 bootstrap/kickstart。
+- 本阶段结论：生产候选的最小修复方向成立。线上原有 durable state、账本锁、校验和和 fail-closed 结构全部保留；未把开发分支旧实现整体覆盖到线上。候选已通过测试和独立审查，但当前没有通过 CTP 连接资格。
+- 是否进入下一步：有条件进入；必须等生产 CTP 前置可连接后，在冻结提交上重新生成两次新鲜只读抓取。只有双次验证通过才允许 Stage948 安装。
+- 下一步：在可连接交易窗口重新运行同一 qualification builder；成功后生成 manifest/receipt，确认线上 7 个任务静默，再通过 Stage948 prepare/activate，不手工 bootstrap/kickstart。当前线上继续保持 `368042e0f145cad80bdee5d0fc8f0c22074650ac`，没有切换到候选。
 
 ## 过拟合反思
 
