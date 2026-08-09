@@ -2495,7 +2495,31 @@ def weighted_open_fill(
     if total_volume <= 0:
         return None
     latest = fills[-1]
-    return {
+    earliest_trade_at: tuple[int, str] | None = None
+    for row in fills:
+        value = next(
+            (
+                row.get(key)
+                for key in ("first_trade_at", "broker_trade_at", "trade_at")
+                if _clean(row.get(key))
+            ),
+            None,
+        )
+        if value is None:
+            continue
+        try:
+            timestamp = pd.Timestamp(value)
+        except (TypeError, ValueError):
+            continue
+        if pd.isna(timestamp):
+            continue
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.tz_localize("Asia/Shanghai")
+        timestamp = timestamp.tz_convert("UTC").tz_localize(None)
+        candidate = (int(timestamp.value), _clean(value))
+        if earliest_trade_at is None or candidate[0] < earliest_trade_at[0]:
+            earliest_trade_at = candidate
+    result = {
         **latest,
         "vt_symbol": vt_symbol,
         "direction": direction.lower(),
@@ -2505,6 +2529,9 @@ def weighted_open_fill(
         "trade_count": len(fills),
         "date": target_date,
     }
+    if earliest_trade_at is not None:
+        result["first_trade_at"] = earliest_trade_at[1]
+    return result
 
 
 def latest_position_cycle_open_fill(

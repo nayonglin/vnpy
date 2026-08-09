@@ -1810,10 +1810,55 @@ def _ledger_fill_observed_at(row: dict[str, Any] | None) -> str:
     if not row:
         return ""
     return _clean(
-        row.get("broker_trade_at")
+        row.get("first_trade_at")
+        or row.get("broker_trade_at")
         or row.get("trade_at")
         or row.get("generated_at")
     )
+
+
+def _entry_fill_time(
+    *,
+    broker_open_trade: dict[str, Any] | None,
+    ledger_open_trade: dict[str, Any] | None,
+    open_trade: dict[str, Any] | None,
+    broker_epoch_complete: bool,
+) -> str:
+    """Choose the earliest authoritative boundary for post-entry tick replay."""
+
+    broker = broker_open_trade or {}
+    ledger = ledger_open_trade or {}
+    shadow = open_trade or {}
+    ledger_actual_at = _clean(
+        ledger.get("first_trade_at")
+        or ledger.get("broker_trade_at")
+        or ledger.get("trade_at")
+    )
+    return _clean(
+        (broker.get("position_epoch_entry_at") if broker_epoch_complete else "")
+        or ledger_actual_at
+        or broker.get("datetime")
+        or shadow.get("datetime")
+        # generated_at is an observation/append time, not the broker fill time.
+        # It remains a compatibility fallback for historical ledger rows.
+        or ledger.get("generated_at")
+        or broker.get("snapshot_at")
+    )
+
+
+def _execution_ledger_integrity_blocker(rows: list[dict[str, Any]]) -> str:
+    for row in rows:
+        event_type = _clean(row.get("event_type"))
+        if event_type in {
+            "ledger_decode_error",
+            "ledger_non_object_error",
+            "ledger_checksum_error",
+        }:
+            return (
+                "execution_ledger_integrity_error:"
+                f"{event_type}:line={_clean(row.get('ledger_line_number'))}"
+            )
+    return ""
 
 
 def _age_seconds(value: Any) -> float | None:
@@ -3138,13 +3183,11 @@ def _action_for_position(
     ledger_open_trade_date = _date_only(ledger_open_trade.get("date") if ledger_open_trade else "")
     ledger_open_source = _ledger_source(ledger_open_trade) if ledger_open_trade else ""
     ledger_open_intent_id = _clean(ledger_open_trade.get("intent_id")) if ledger_open_trade else ""
-    entry_filled_at = _clean(
-        ((broker_open_trade or {}).get("position_epoch_entry_at") if broker_epoch_complete else "")
-        or (ledger_open_trade or {}).get("generated_at")
-        or (broker_open_trade or {}).get("datetime")
-        or (broker_open_trade or {}).get("snapshot_at")
-        or (open_trade or {}).get("datetime")
-        or (open_trade or {}).get("date")
+    entry_filled_at = _entry_fill_time(
+        broker_open_trade=broker_open_trade,
+        ledger_open_trade=ledger_open_trade,
+        open_trade=open_trade,
+        broker_epoch_complete=broker_epoch_complete,
     )
     stop_close_latest_at = _clean(stop_close_fills[-1].get("generated_at")) if stop_close_fills else ""
     ledger_open_at = _clean(ledger_open_trade.get("generated_at")) if ledger_open_trade else ""
@@ -3510,6 +3553,11 @@ def _apply_state_to_position_action(
     root_position_id = _clean(base.get("root_position_id"))
     if not target_date or not vt_symbol or direction not in {"long", "short"} or not root_position_id:
         return _blocked_state_row(base, "state_identity_missing")
+    ledger_integrity_blocker = _execution_ledger_integrity_blocker(
+        execution_ledger_rows
+    )
+    if ledger_integrity_blocker:
+        return _blocked_state_row(base, ledger_integrity_blocker)
 
     states = store.setdefault("states", {})
     state = states.get(root_position_id)
@@ -3613,6 +3661,27 @@ def _apply_state_to_position_action(
                     "position_epoch_mismatch_with_nonterminal_state_fail_closed:"
                     f"stored={stored_epoch_id};incoming={incoming_epoch_id}",
                 )
+    if state is not None and incoming_cycle_no == ATTEMPT_INITIAL:
+        stored_cutoff = _clean(state.get("entry_filled_at"))
+        incoming_cutoff = _clean(base.get("entry_filled_at"))
+        stored_cutoff_ns = _comparable_timestamp_ns(stored_cutoff)
+        incoming_cutoff_ns = _comparable_timestamp_ns(incoming_cutoff)
+        if (
+            stored_cutoff_ns is None
+            or incoming_cutoff_ns is None
+            or stored_cutoff_ns != incoming_cutoff_ns
+        ):
+            row = _blocked_state_row(
+                base,
+                "entry_fill_cutoff_changed_for_existing_epoch_fail_closed:"
+                f"stored={stored_cutoff};incoming={incoming_cutoff}",
+            )
+            row["manual_intervention_required"] = 1
+            row["risk_alert_level"] = "P1"
+            row["migration_blocker"] = (
+                "entry_fill_cutoff_changed_for_existing_epoch"
+            )
+            return row
     if state is None:
         if incoming_cycle_no == ATTEMPT_RETRY:
             return _blocked_state_row(base, "state_missing_for_existing_retry_cycle_fail_closed")
@@ -3778,8 +3847,8 @@ def _apply_state_to_position_action(
         state=state,
         context=provenance_context,
     )
-    states[root_position_id] = state
     _append_state_journal(journal_path, previous_revision=previous_revision, state=state)
+    states[root_position_id] = state
 
     pending = get_pending_action(state)
     phase = _clean(state.get("phase"))
@@ -4682,6 +4751,19 @@ def _advance_flat_states(
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     states = store.setdefault("states", {})
+    ledger_integrity_blocker = _execution_ledger_integrity_blocker(
+        execution_ledger_rows
+    )
+    if ledger_integrity_blocker:
+        return [
+            _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="block",
+                monitor_reason=ledger_integrity_blocker,
+            )
+            for state in states.values()
+        ]
     broker_order_frame = (
         broker_orders if isinstance(broker_orders, pd.DataFrame) else pd.DataFrame()
     )
@@ -5037,8 +5119,8 @@ def _advance_flat_states(
                         monitor_reason="retry_waiting_for_post_flat_reclaim",
                     )
                 )
-        states[root_position_id] = state
         _append_state_journal(journal_path, previous_revision=previous_revision, state=state)
+        states[root_position_id] = state
     return rows
 
 

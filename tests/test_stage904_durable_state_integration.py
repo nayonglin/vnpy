@@ -136,6 +136,34 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         }
         return summary, frame
 
+    def test_entry_epoch_prefers_actual_fill_over_delayed_ledger_append(self) -> None:
+        actual_fill_at = self.iso(self.entry_at)
+        generated_at = self.iso(self.entry_at + timedelta(seconds=8))
+
+        selected = stage904._entry_fill_time(
+            broker_open_trade={},
+            ledger_open_trade={
+                "first_trade_at": actual_fill_at,
+                "generated_at": generated_at,
+            },
+            open_trade={},
+            broker_epoch_complete=False,
+        )
+
+        self.assertEqual(actual_fill_at, selected)
+
+    def test_legacy_entry_epoch_prefers_ledger_append_time_over_date_only_shadow(self) -> None:
+        generated_at = self.iso(self.entry_at + timedelta(seconds=8))
+
+        selected = stage904._entry_fill_time(
+            broker_open_trade={},
+            ledger_open_trade={"generated_at": generated_at},
+            open_trade={"date": self.target_date},
+            broker_epoch_complete=False,
+        )
+
+        self.assertEqual(generated_at, selected)
+
     def test_durable_batch_callable_never_reads_compat_tick_csv(self) -> None:
         class FakeClock:
             def epoch_ns(self) -> int:
@@ -968,6 +996,48 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         row = self.apply(store, self.ticks([(1, 1239.0), (2, 1252.0), (3, 1255.0)]))
         self.assertEqual(row["monitor_action"], "watch_progress_hit_no_initial_stop")
         self.assertEqual(row["state_phase"], "initial_progress_latched")
+
+    def test_same_epoch_cutoff_change_fails_closed_instead_of_reusing_old_state(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+        first = self.apply(store, self.ticks([]))
+        root = first["root_position_id"]
+        stored = store["states"][root]
+        changed = {
+            **self.base(),
+            "position_epoch_id": stored["position_epoch_id"],
+            "entry_filled_at": self.iso(self.entry_at - timedelta(seconds=5)),
+        }
+
+        blocked = self.apply(store, self.ticks([]), base=changed)
+
+        self.assertEqual("block", blocked["monitor_action"])
+        self.assertIn("entry_fill_cutoff_changed_for_existing_epoch", blocked["monitor_reason"])
+
+    def test_ledger_integrity_error_blocks_before_state_mutation(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+
+        blocked = self.apply(
+            store,
+            self.ticks([(1, 1252.0)]),
+            ledger=[{"event_type": "ledger_decode_error", "ledger_line_number": 7}],
+        )
+
+        self.assertEqual("block", blocked["monitor_action"])
+        self.assertIn("execution_ledger_integrity_error", blocked["monitor_reason"])
+        self.assertEqual({}, store["states"])
+
+    def test_journal_append_failure_does_not_mutate_snapshot_store(self) -> None:
+        store = stage904._new_state_store(self.target_date)
+
+        with patch.object(
+            stage904,
+            "_append_state_journal",
+            side_effect=OSError("simulated journal failure"),
+        ):
+            with self.assertRaisesRegex(OSError, "simulated journal failure"):
+                self.apply(store, self.ticks([(1, 1252.0)]))
+
+        self.assertEqual({}, store["states"])
 
     def test_stop_action_latches_with_v2_identity_and_survives_recovery(self) -> None:
         store = stage904._new_state_store(self.target_date)

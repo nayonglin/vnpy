@@ -1739,10 +1739,11 @@ print("CONTRACT=" + json.dumps({
 
     def test_retry_archives_original_receipt_and_binds_retry_identity(self) -> None:
         manifest = {"source_commit": "b" * 40, "manifest_sha256": "c" * 64}
+        schedule_date = launcher.datetime.now().astimezone().date().isoformat()
         original = postclose_pipeline.new_postclose_pipeline_receipt(
             pipeline_run_id="a" * 32,
-            schedule_date="2026-08-03",
-            target_date="2026-08-03",
+            schedule_date=schedule_date,
+            target_date=schedule_date,
             source_commit=manifest["source_commit"],
             manifest_sha256=manifest["manifest_sha256"],
             generated_at_utc="2026-08-03T08:35:00Z",
@@ -1787,32 +1788,32 @@ print("CONTRACT=" + json.dumps({
                 patch.object(
                     launcher,
                     "_resolve_support_target_date",
-                    return_value=("2026-08-03", {}),
+                    return_value=(schedule_date, {}),
                 ),
                 patch.object(
                     launcher,
                     "_run_market_data_worker",
-                    return_value={"target_date": "2026-08-03"},
+                    return_value={"target_date": schedule_date},
                 ),
                 patch.object(
                     launcher,
                     "_run_monthly_ai_pool_worker",
                     return_value={
                         "automation_status": "monthly_ai_pool_updated",
-                        "resolved_target_date": "2026-08-03",
+                        "resolved_target_date": schedule_date,
                     },
                 ),
                 patch.object(
                     launcher,
                     "_run_precompute_worker",
-                    return_value={"target_date": "2026-08-03"},
+                    return_value={"target_date": schedule_date},
                 ),
                 patch.object(
                     launcher,
                     "_issue_daily_data_receipt",
                     return_value={
                         "receipt_sha256": "d" * 64,
-                        "target_cutoff_date": "2026-08-03",
+                        "target_cutoff_date": schedule_date,
                     },
                 ),
                 patch.object(

@@ -94,7 +94,9 @@ class PhaseDHardLimits:
     max_order_count_per_day: int = 12
     max_cancel_count_per_day: int = 20
     max_reject_count_per_day: int = 2
-    max_single_order_volume: int = 20
+    # 0 disables the local lot cap.  Exchange/contract limits and the existing
+    # Stage902/Stage931 readiness, position and order-count gates still apply.
+    max_single_order_volume: int = 0
     max_open_order_count: int = 0
     max_slippage_ticks: int = 5
     max_controller_cycle_seconds: int = 30

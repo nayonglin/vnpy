@@ -903,6 +903,51 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         self.assertIn("invalid_exchange", checked["executor_reason"])
         self.assertEqual({}, stage905.json.loads(checked["order_request_json"]))
 
+    def test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks(self) -> None:
+        intent = {
+            "intent_id": "pending-open-volume",
+            "target_date": "2026-08-10",
+            "source": "stage901_pending_order",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "planned_volume": 21,
+            "limit_price": 1245.5,
+        }
+        common = {
+            "contracts": pd.DataFrame(
+                [{
+                    "vt_symbol": "JM609.DCE",
+                    "pricetick": 0.5,
+                    "min_volume": 1,
+                    "max_volume": 100,
+                    "gateway_name": "CTP",
+                }]
+            ),
+            "positions": pd.DataFrame(),
+            "orders": pd.DataFrame(),
+            "stage902_summary": {
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            "stage904_summary": {},
+            "stage260_summary": {"executable_count": 1},
+            "mode": "dry-run",
+        }
+
+        ready = stage905._validate_intent(intent, **common)
+        contract_blocked = stage905._validate_intent(
+            {**intent, "planned_volume": 101},
+            **common,
+        )
+
+        self.assertEqual("dry_run_order_request_payload_ready", ready["executor_status"])
+        self.assertNotIn("volume_above_phase_d_limit", ready["executor_reason"])
+        self.assertEqual("blocked", contract_blocked["executor_status"])
+        self.assertIn("volume_above_contract_max", contract_blocked["executor_reason"])
+
     def test_pending_initial_open_gets_complete_v2_identity(self) -> None:
         rows = stage905._pending_order_intents(
             pd.DataFrame(

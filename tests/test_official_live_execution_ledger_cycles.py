@@ -2246,6 +2246,46 @@ class OfficialLiveExecutionLedgerCycleTest(unittest.TestCase):
         self.assertEqual(retry_fill["price"], 1246.0)
         self.assertEqual(retry_fill["intent_role"], "stop_retry_reentry")
 
+    def test_weighted_open_fill_uses_earliest_time_across_partial_fill_events(self) -> None:
+        fingerprint, payload = _intent_and_fingerprint(
+            cycle_no=0,
+            intent_role="initial_entry",
+        )
+        rows = [
+            _reservation(fingerprint, payload),
+            {
+                **_fill(
+                    fingerprint,
+                    price=1245.0,
+                    volume=1,
+                    vt_tradeid="CTP.partial-1",
+                ),
+                "broker_trade_at": "2026-08-10T21:00:03+08:00",
+            },
+            {
+                **_fill(
+                    fingerprint,
+                    price=1246.0,
+                    volume=1,
+                    vt_tradeid="CTP.partial-2",
+                ),
+                "first_trade_at": "2026-08-10T21:00:07+08:00",
+            },
+        ]
+
+        weighted = ledger.weighted_open_fill(
+            rows,
+            TARGET_DATE,
+            VT_SYMBOL,
+            "short",
+            root_position_id=ROOT_POSITION_ID,
+            position_cycle_id=f"{ROOT_POSITION_ID}:cycle:0",
+        )
+
+        self.assertIsNotNone(weighted)
+        assert weighted is not None
+        self.assertEqual("2026-08-10T21:00:03+08:00", weighted["first_trade_at"])
+
     def test_latest_cycle_prefers_cycle_number_over_late_event_order(self) -> None:
         original_fingerprint, original_payload = _intent_and_fingerprint(cycle_no=0, intent_role="initial_entry")
         retry_fingerprint, retry_payload = _intent_and_fingerprint(cycle_no=1, intent_role="stop_retry_reentry")

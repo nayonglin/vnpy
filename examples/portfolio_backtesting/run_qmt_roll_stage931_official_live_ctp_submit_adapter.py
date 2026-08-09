@@ -5106,6 +5106,30 @@ def _trade_row_identity(row: dict[str, Any], absolute_index: int) -> str:
     return f"runtime_row:{absolute_index}"
 
 
+def _first_trade_at(rows: list[dict[str, Any]]) -> str:
+    """Return the earliest broker trade time without substituting receipt time."""
+
+    earliest: tuple[float, str] | None = None
+    for row in rows:
+        value = next(
+            (
+                row.get(key)
+                for key in ("broker_trade_at", "datetime", "trade_at")
+                if str(row.get(key, "") or "").strip()
+            ),
+            None,
+        )
+        parsed = _parse_dt(value)
+        if parsed is None:
+            continue
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+        candidate = (parsed.timestamp(), str(value).strip())
+        if earliest is None or candidate[0] < earliest[0]:
+            earliest = candidate
+    return earliest[1] if earliest is not None else ""
+
+
 def _trade_delta_details(rows: list[dict[str, Any]], start_trade_count: int, vt_orderid: str) -> dict[str, Any]:
     unique_rows: list[tuple[str, dict[str, Any]]] = []
     seen: set[str] = set()
@@ -5146,6 +5170,7 @@ def _trade_delta_details(rows: list[dict[str, Any]], start_trade_count: int, vt_
         "rows": [row for _, row in unique_rows],
         "priced_identities": [identity for identity, _ in priced_rows],
         "priced_rows": [row for _, row in priced_rows],
+        "first_trade_at": _first_trade_at([row for _, row in priced_rows]),
     }
 
 
@@ -7532,6 +7557,7 @@ def _submit_pre_reserved_child(
                             "initial",
                         ),
                         "trade_identities": sorted(initial_priced_trade_identities),
+                        "first_trade_at": initial_trade_details["first_trade_at"],
                         "residual_volume": residual_volume,
                     }
                 )
@@ -7678,6 +7704,9 @@ def _submit_pre_reserved_child(
                                 "trade_identities": [
                                     identity for identity, _ in late_priced_pairs
                                 ],
+                                "first_trade_at": _first_trade_at(
+                                    [trade_row for _, trade_row in late_priced_pairs]
+                                ),
                                 "residual_volume": max(0.0, float(req.volume) - post_effective),
                                 "late_fill_after_cancel": 1,
                             }
@@ -7906,6 +7935,9 @@ def _submit_pre_reserved_child(
                             "final_reconciliation",
                         ),
                         "trade_identities": final_unledgered_identities,
+                        "first_trade_at": _first_trade_at(
+                            [trade_row for _, trade_row in final_unledgered_pairs]
+                        ),
                         "residual_volume": residual_volume,
                         "late_fill_at_final_reconciliation": 1,
                     }

@@ -920,6 +920,24 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
         self.assertEqual(details["vwap"], 1245.5)
         self.assertEqual(details["identities"], ["vt:CTP.t1", "vt:CTP.t2"])
 
+    def test_trade_delta_preserves_earliest_actual_fill_time(self) -> None:
+        later = datetime(2026, 8, 10, 21, 0, 8)
+        earlier = later - timedelta(seconds=3)
+        rows = [
+            {
+                "vt_orderid": "CTP.1", "vt_tradeid": "CTP.t2",
+                "volume": 1, "price": 1245.0, "datetime": later.isoformat(),
+            },
+            {
+                "vt_orderid": "CTP.1", "vt_tradeid": "CTP.t1",
+                "volume": 1, "price": 1244.5, "datetime": earlier.isoformat(),
+            },
+        ]
+
+        details = stage931._trade_delta_details(rows, 0, "CTP.1")
+
+        self.assertEqual(earlier.isoformat(), details["first_trade_at"])
+
     def test_mixed_priced_and_unpriced_trade_callbacks_remain_pending_and_idempotent(self) -> None:
         rows = [
             {"vt_orderid": "CTP.1", "vt_tradeid": "CTP.t1", "volume": 1, "price": 100.0},
