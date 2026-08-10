@@ -671,6 +671,25 @@ def _trade_delta_vwap(rows: list[dict[str, Any]], start_trade_count: int, vt_ord
     return total_volume, total_notional / total_volume, "event_trade_weighted_avg"
 
 
+def _trade_delta_first_fill_at(rows: list[dict[str, Any]], start_trade_count: int, vt_orderid: str) -> str:
+    candidates: list[tuple[float, str]] = []
+    for row in rows[start_trade_count:]:
+        if vt_orderid and str(row.get("vt_orderid", "")) != vt_orderid:
+            continue
+        value = ""
+        parsed: pd.Timestamp | None = None
+        for key in ("datetime", "trade_datetime", "received_at"):
+            candidate = str(row.get(key, "")).strip()
+            timestamp = pd.to_datetime(candidate, errors="coerce")
+            if candidate and not pd.isna(timestamp):
+                value = candidate
+                parsed = pd.Timestamp(timestamp)
+                break
+        if parsed is not None:
+            candidates.append((parsed.timestamp(), value))
+    return min(candidates, key=lambda item: item[0])[1] if candidates else ""
+
+
 def _final_pre_send_blockers(
     rows: dict[str, list[dict[str, Any]]],
     req: OrderRequest,
@@ -1266,6 +1285,7 @@ def main() -> None:
                 latest = _wait_order_completion(rows, vt_orderid, float(req.volume), deadline)
                 traded_after_send = len(rows["trades"]) > start_trade_count
                 trade_event_volume, trade_event_vwap, fill_price_source = _trade_delta_vwap(rows["trades"], start_trade_count, vt_orderid)
+                first_trade_at = _trade_delta_first_fill_at(rows["trades"], start_trade_count, vt_orderid)
                 traded_volume_after_send = trade_event_volume
                 latest_order_traded = _order_traded_volume(latest, traded_volume_after_send)
                 effective_traded_volume = max(traded_volume_after_send, latest_order_traded)
@@ -1288,6 +1308,7 @@ def main() -> None:
                             "fill_price_source": fill_price_source,
                             "adapter": "Stage931",
                             "trade_rows_delta": len(rows["trades"]) - start_trade_count,
+                            "first_trade_at": first_trade_at,
                             "trade_volume_delta": effective_traded_volume,
                             "residual_volume": residual_volume,
                         }

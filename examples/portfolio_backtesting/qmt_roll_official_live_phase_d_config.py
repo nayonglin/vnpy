@@ -70,7 +70,9 @@ class PhaseDHardLimits:
     max_order_count_per_day: int = 12
     max_cancel_count_per_day: int = 20
     max_reject_count_per_day: int = 2
-    max_single_order_volume: int = 20
+    # 0 means no local single-order lot cap. Exchange contract limits and all
+    # other Phase D gates remain enforced by Stage905.
+    max_single_order_volume: int = 0
     max_open_order_count: int = 0
     max_slippage_ticks: int = 5
     max_controller_cycle_seconds: int = 30

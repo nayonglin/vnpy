@@ -9,7 +9,11 @@ from typing import Any
 import pandas as pd
 from pandas.errors import EmptyDataError
 
-from qmt_roll_official_live_execution_ledger import read_execution_ledger, weighted_open_fill
+from qmt_roll_official_live_execution_ledger import (
+    append_execution_ledger_event,
+    read_execution_ledger,
+    weighted_open_fill,
+)
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
@@ -422,10 +426,10 @@ def _fresh_extreme_price(frame: pd.DataFrame, direction: str, kind: str) -> tupl
         keys = ("last_price", "last", "price", "close_price", "ask_price_1")
         method = "max"
     elif kind == "progress" and direction == "long":
-        keys = ("last_price", "last", "price", "close_price", "ask_price_1")
+        keys = ("last_price", "last", "price", "close_price")
         method = "max"
     else:
-        keys = ("last_price", "last", "price", "close_price", "bid_price_1")
+        keys = ("last_price", "last", "price", "close_price")
         method = "min"
     values: list[tuple[str, float]] = []
     for key in keys:
@@ -446,12 +450,108 @@ def _fresh_extreme_price(frame: pd.DataFrame, direction: str, kind: str) -> tupl
     return value, f"{method}_{source}_fresh_batch"
 
 
+def _tick_row_extreme(row: dict[str, Any], direction: str, kind: str) -> float:
+    if kind == "adverse" and direction == "long":
+        keys, method = ("last_price", "last", "price", "close_price", "bid_price_1"), min
+    elif kind == "adverse" and direction == "short":
+        keys, method = ("last_price", "last", "price", "close_price", "ask_price_1"), max
+    elif kind == "progress" and direction == "long":
+        keys, method = ("last_price", "last", "price", "close_price"), max
+    else:
+        keys, method = ("last_price", "last", "price", "close_price"), min
+    values = [_to_float(row.get(key), 0.0) for key in keys]
+    positive_values = [value for value in values if value > 0]
+    return float(method(positive_values)) if positive_values else 0.0
+
+
+def _first_threshold_event(
+    frame: pd.DataFrame,
+    direction: str,
+    stop_price: float,
+    progress_price: float,
+) -> tuple[str, str]:
+    if frame.empty or direction not in {"long", "short"} or stop_price <= 0 or progress_price <= 0:
+        return "", ""
+    ordered = frame.sort_values("_dt", kind="stable")
+    for tick_dt, same_time_rows in ordered.groupby("_dt", sort=False):
+        adverse_hit = False
+        progress_hit = False
+        for row in same_time_rows.to_dict(orient="records"):
+            adverse_price = _tick_row_extreme(row, direction, "adverse")
+            progress_price_seen = _tick_row_extreme(row, direction, "progress")
+            if direction == "long":
+                adverse_hit = adverse_hit or (adverse_price > 0 and adverse_price <= stop_price)
+                progress_hit = progress_hit or (progress_price_seen > 0 and progress_price_seen >= progress_price)
+            else:
+                adverse_hit = adverse_hit or (adverse_price > 0 and adverse_price >= stop_price)
+                progress_hit = progress_hit or (progress_price_seen > 0 and progress_price_seen <= progress_price)
+        # 同一时间戳同时覆盖两条阈值时，不臆测盘中先后，按不利事件处理。
+        if adverse_hit:
+            return "adverse", _clean(tick_dt)
+        if progress_hit:
+            return "progress", _clean(tick_dt)
+    return "", ""
+
+
 def _broker_position_price(row: dict[str, Any]) -> tuple[float, str]:
     for key in ("price", "avg_price", "open_price", "cost_price"):
         price = _to_float(row.get(key), 0.0)
         if price > 0:
             return price, key
     return 0.0, "broker_fill_price_missing"
+
+
+def _first_clean_value(row: dict[str, Any] | None, *keys: str) -> str:
+    if not row:
+        return ""
+    for key in keys:
+        value = _clean(row.get(key))
+        if value:
+            return value
+    return ""
+
+
+def _entry_epoch_and_fill_at(
+    open_trade: dict[str, Any] | None,
+    ledger_open_trade: dict[str, Any] | None,
+    broker_open_trade: dict[str, Any] | None,
+) -> tuple[str, str]:
+    shadow_token = _first_clean_value(open_trade, "trade_id", "vt_tradeid", "tradeid", "datetime")
+    ledger_token = _first_clean_value(
+        ledger_open_trade, "intent_id", "intent_fingerprint", "vt_orderid", "generated_at"
+    )
+    broker_token = _first_clean_value(
+        broker_open_trade, "vt_tradeid", "tradeid", "trade_id", "vt_orderid", "orderid", "datetime"
+    )
+    if shadow_token:
+        entry_epoch = f"shadow:{shadow_token}"
+    elif ledger_token:
+        entry_epoch = f"ledger:{ledger_token}"
+    elif broker_token:
+        entry_epoch = f"broker:{broker_token}"
+    else:
+        entry_epoch = ""
+    fill_at = (
+        _first_clean_value(ledger_open_trade, "first_trade_at", "trade_datetime", "datetime")
+        or _first_clean_value(broker_open_trade, "datetime", "trade_datetime", "received_at")
+        or _first_clean_value(open_trade, "datetime", "trade_datetime", "generated_at")
+        or _first_clean_value(ledger_open_trade, "generated_at")
+    )
+    return entry_epoch, fill_at
+
+
+def _ticks_at_or_after_entry(frame: pd.DataFrame, entry_fill_at: str) -> pd.DataFrame:
+    if frame.empty or not entry_fill_at:
+        return frame
+    entry_dt = pd.to_datetime(entry_fill_at, errors="coerce")
+    if pd.isna(entry_dt):
+        return frame.iloc[0:0].copy()
+    tick_tz = frame["_dt"].dt.tz
+    if tick_tz is not None and entry_dt.tzinfo is None:
+        entry_dt = entry_dt.tz_localize(tick_tz)
+    elif tick_tz is None and entry_dt.tzinfo is not None:
+        entry_dt = entry_dt.tz_localize(None)
+    return frame[frame["_dt"].ge(entry_dt)].copy()
 
 
 def _broker_position_volume(row: dict[str, Any]) -> float:
@@ -560,6 +660,24 @@ def _stage904_stop_close_fills(
         if intent_id.startswith("STAGE905-C9MON") or _ledger_source(row) == "stage904_c9_intraday_close":
             matched.append(row)
     return matched
+
+
+def _stage904_initial_progress_confirmed(
+    rows: list[dict[str, Any]],
+    target_date: str,
+    vt_symbol: str,
+    direction: str,
+    entry_epoch: str,
+) -> bool:
+    normalized_direction = _normalize_direction(direction)
+    return any(
+        _clean(row.get("event_type")) == "c9_initial_progress_confirmed"
+        and _clean(row.get("target_date")) == target_date
+        and _ledger_vt_symbol(row) == vt_symbol
+        and _ledger_direction(row) == normalized_direction
+        and _clean(row.get("entry_epoch")) == entry_epoch
+        for row in rows
+    )
 
 
 def _stage904_retry_open_attempted(
@@ -790,6 +908,7 @@ def _action_for_position(
     target_date: str,
     max_tick_age_seconds: int,
     require_broker_fill_price: bool,
+    initial_progress_confirmed: bool | None = None,
 ) -> dict[str, Any]:
     vt_symbol = _clean(position.get("vt_symbol"))
     direction = _normalize_direction(position.get("direction"))
@@ -809,8 +928,6 @@ def _action_for_position(
     fresh_ticks = _fresh_tick_frame(ticks, vt_symbol, max_tick_age_seconds)
     tick_age = _tick_age(tick)
     live_price, live_price_source = _tick_price(tick)
-    adverse_extreme_price, adverse_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "adverse")
-    progress_extreme_price, progress_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "progress")
     stop_close_fills = _stage904_stop_close_fills(execution_ledger_rows, target_date, vt_symbol, direction)
 
     if not vt_symbol:
@@ -839,6 +956,14 @@ def _action_for_position(
     ledger_open_trade_date = _date_only(ledger_open_trade.get("date") if ledger_open_trade else "")
     ledger_open_source = _ledger_source(ledger_open_trade) if ledger_open_trade else ""
     ledger_open_intent_id = _clean(ledger_open_trade.get("intent_id")) if ledger_open_trade else ""
+    entry_epoch, entry_fill_at = _entry_epoch_and_fill_at(open_trade, ledger_open_trade, broker_open_trade)
+    fresh_ticks = _ticks_at_or_after_entry(fresh_ticks, entry_fill_at)
+    adverse_extreme_price, adverse_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "adverse")
+    progress_extreme_price, progress_extreme_source = _fresh_extreme_price(fresh_ticks, direction, "progress")
+    if initial_progress_confirmed is None:
+        initial_progress_confirmed = _stage904_initial_progress_confirmed(
+            execution_ledger_rows, target_date, vt_symbol, direction, entry_epoch
+        )
     stop_close_latest_at = _clean(stop_close_fills[-1].get("generated_at")) if stop_close_fills else ""
     ledger_open_at = _clean(ledger_open_trade.get("generated_at")) if ledger_open_trade else ""
     forced_close_after_stop_reentry = bool(
@@ -874,6 +999,8 @@ def _action_for_position(
             reasons.append("fresh_tick_missing")
         if tick_age is None or tick_age > max_tick_age_seconds:
             reasons.append("fresh_tick_missing_or_stale")
+        elif fresh_ticks.empty:
+            reasons.append("fresh_tick_missing_stale_or_before_entry")
         if live_price <= 0:
             reasons.append("live_price_missing")
     risk_price = abs(fill_price - initial_stop_price) if fill_price > 0 and initial_stop_price > 0 else 0.0
@@ -896,16 +1023,26 @@ def _action_for_position(
             adverse_hit = adverse_extreme_price > 0 and adverse_extreme_price >= stop_price
             progress_hit = progress_extreme_price > 0 and progress_extreme_price <= progress_price
 
+    first_threshold_event, first_threshold_event_at = _first_threshold_event(
+        fresh_ticks, direction, stop_price, progress_price
+    )
+    progress_confirmed_before = bool(initial_progress_confirmed and not stop_close_fills)
+    progress_newly_confirmed = False
+
     if not reasons:
         if forced_close_after_stop_reentry:
             action = "close_dry_run"
             reasons.append("stage901_pending_open_after_stage904_stop_close_forced_close")
-        elif adverse_hit:
+        elif progress_confirmed_before:
+            action = "watch_progress_hit_no_initial_stop"
+            reasons.append("stage847_progress_previously_confirmed_no_initial_stop")
+        elif first_threshold_event == "adverse":
             action = "close_dry_run"
             reasons.append("stage847_initial_05r_stop_triggered")
-        elif progress_hit:
+        elif first_threshold_event == "progress":
             action = "watch_progress_hit_no_initial_stop"
             reasons.append("stage847_progress_hit_before_adverse")
+            progress_newly_confirmed = True
         else:
             action = "watch"
             reasons.append("no_stage847_intraday_action")
@@ -923,6 +1060,8 @@ def _action_for_position(
         "ledger_open_trade_volume": _to_float(ledger_open_trade.get("volume") if ledger_open_trade else 0.0, 0.0),
         "ledger_open_source": ledger_open_source,
         "ledger_open_intent_id": ledger_open_intent_id,
+        "entry_epoch": entry_epoch,
+        "entry_fill_at": entry_fill_at,
         "broker_open_trade_date": broker_open_trade_date,
         "broker_open_trade_count": int(_to_float(broker_open_trade.get("trade_count") if broker_open_trade else 0, 0.0)),
         "broker_open_trade_volume": _to_float(broker_open_trade.get("volume") if broker_open_trade else 0.0, 0.0),
@@ -955,12 +1094,50 @@ def _action_for_position(
         "mark_price_fallback": mark_price,
         "adverse_hit": int(adverse_hit),
         "progress_hit": int(progress_hit),
+        "first_threshold_event": first_threshold_event,
+        "first_threshold_event_at": first_threshold_event_at,
+        "initial_progress_confirmed_before": int(progress_confirmed_before),
+        "initial_progress_confirmed_now": int(progress_confirmed_before or progress_newly_confirmed),
+        "initial_progress_newly_confirmed": int(progress_newly_confirmed),
         "forced_close_after_stop_reentry": int(forced_close_after_stop_reentry),
         "monitor_action": action,
         "monitor_reason": ";".join(dict.fromkeys(reasons)),
         "order_api_called": 0,
         "checked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
+
+
+def _persist_new_initial_progress_events(
+    position_actions: pd.DataFrame,
+    execution_ledger_rows: list[dict[str, Any]],
+) -> pd.DataFrame:
+    if position_actions.empty:
+        return position_actions
+    persisted = position_actions.copy()
+    for index, row in persisted.iterrows():
+        if int(_to_float(row.get("initial_progress_newly_confirmed"), 0.0)) != 1:
+            continue
+        try:
+            event = append_execution_ledger_event(
+                {
+                    "event_type": "c9_initial_progress_confirmed",
+                    "target_date": _clean(row.get("target_date")),
+                    "vt_symbol": _clean(row.get("vt_symbol")),
+                    "direction": _normalize_direction(row.get("direction")),
+                    "entry_epoch": _clean(row.get("entry_epoch")),
+                    "source": "stage904_c9_intraday_monitor",
+                    "first_threshold_event_at": _clean(row.get("first_threshold_event_at")),
+                    "stage847_progress_price": _to_float(row.get("stage847_progress_price"), 0.0),
+                }
+            )
+            execution_ledger_rows.append(event)
+        except Exception as exc:
+            persisted.at[index, "monitor_action"] = "block"
+            prior_reason = _clean(persisted.at[index, "monitor_reason"])
+            persisted.at[index, "monitor_reason"] = (
+                f"{prior_reason};initial_progress_persistence_failed:{type(exc).__name__}"
+            )
+    return persisted
 
 
 def _to_markdown(df: pd.DataFrame, columns: list[str], max_rows: int = 80) -> str:
@@ -1001,6 +1178,10 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
                     "live_price",
                     "adverse_extreme_price",
                     "progress_extreme_price",
+                    "first_threshold_event",
+                    "first_threshold_event_at",
+                    "initial_progress_confirmed_before",
+                    "initial_progress_confirmed_now",
                     "fresh_tick_batch_count",
                     "tick_age_seconds",
                     "retry_open_attempted",
@@ -1012,6 +1193,8 @@ def _build_report(summary: dict[str, Any], actions: pd.DataFrame) -> str:
             "## 说明",
             "",
             "- 本阶段只计算 C9 入场日 `0.5R` 止损/重试状态，不连接 CTP，不下单。",
+            "- 首次先触达 `+0.5R` 后会写入 execution ledger，并在后续轮询/重启中继续禁用初始止损。",
+            "- fresh tick 按时间戳判断第一个阈值事件；同一时间戳无法证明先后时按不利事件处理。",
             "- 没有 fresh tick 时必须 fail-closed，不能用历史收盘价触发实盘动作。",
             "- 止损后重试只允许一次，且必须先看到真实初始开仓成交、真实止损平仓成交、broker 对应方向空仓和 fresh tick 重回原开仓价。",
             "",
@@ -1033,7 +1216,7 @@ def main() -> None:
     positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
     broker_positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
     broker_trades = _read_csv_maybe(READONLY_TRADES_PATH)
-    execution_ledger_rows = read_execution_ledger()
+    execution_ledger_rows = read_execution_ledger(strict=True)
     trades = _read_csv_maybe(STAGE901_TRADES_PATH)
     entry_risk = _read_csv_maybe(STAGE901_ENTRY_RISK_PATH)
     ticks = _read_csv_maybe(READONLY_TICKS_PATH)
@@ -1057,6 +1240,7 @@ def main() -> None:
             for row in monitor_positions.to_dict(orient="records")
         ]
     )
+    position_actions = _persist_new_initial_progress_events(position_actions, execution_ledger_rows)
     retry_actions = _retry_actions(
         broker_positions=broker_positions,
         broker_trades=broker_trades,

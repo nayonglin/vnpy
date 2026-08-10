@@ -3,6 +3,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -136,11 +137,28 @@ def intent_fingerprint(target_date: str, row: dict[str, Any], order_request: dic
     return digest, payload
 
 
-def read_execution_ledger(path: Path = LIVE_EXECUTION_LEDGER_PATH) -> list[dict[str, Any]]:
-    return _parse_ledger_lines(path.read_text(encoding="utf-8").splitlines()) if path.exists() else []
+class ExecutionLedgerIntegrityError(RuntimeError):
+    pass
 
 
-def _parse_ledger_lines(lines: list[str]) -> list[dict[str, Any]]:
+def read_execution_ledger(
+    path: Path = LIVE_EXECUTION_LEDGER_PATH,
+    *,
+    strict: bool = True,
+) -> list[dict[str, Any]]:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_SH)
+            try:
+                lines = handle.read().splitlines()
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except FileNotFoundError:
+        return []
+    return _parse_ledger_lines(lines, strict=strict)
+
+
+def _parse_ledger_lines(lines: list[str], *, strict: bool = False) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for line in lines:
         text = line.strip()
@@ -148,7 +166,9 @@ def _parse_ledger_lines(lines: list[str]) -> list[dict[str, Any]]:
             continue
         try:
             rows.append(json.loads(text))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as exc:
+            if strict:
+                raise ExecutionLedgerIntegrityError("execution ledger contains invalid JSON") from exc
             rows.append({"event_type": "ledger_decode_error", "raw_line": text[:500]})
     return rows
 
@@ -164,6 +184,7 @@ def append_execution_ledger_event(event: dict[str, Any], path: Path = LIVE_EXECU
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str) + "\n")
         handle.flush()
+        os.fsync(handle.fileno())
         fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
     return payload
 
@@ -181,7 +202,7 @@ def reserve_execution_ledger_intent(
     with path.open("a+", encoding="utf-8") as handle:
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         handle.seek(0)
-        rows = _parse_ledger_lines(handle.read().splitlines())
+        rows = _parse_ledger_lines(handle.read().splitlines(), strict=True)
         duplicate, fingerprint, fingerprint_payload, latest = duplicate_blocker(
             rows=rows,
             target_date=target_date,
@@ -210,6 +231,7 @@ def reserve_execution_ledger_intent(
         handle.seek(0, 2)
         handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str) + "\n")
         handle.flush()
+        os.fsync(handle.fileno())
         fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
         return {
             "reserved": True,

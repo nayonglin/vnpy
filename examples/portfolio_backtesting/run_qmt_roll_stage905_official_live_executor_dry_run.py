@@ -600,7 +600,7 @@ def _validate_intent(
         reasons.append("contract_not_found")
     if volume <= 0:
         reasons.append("invalid_volume")
-    if volume > config.hard_limits.max_single_order_volume:
+    if config.hard_limits.max_single_order_volume > 0 and volume > config.hard_limits.max_single_order_volume:
         reasons.append(f"volume_above_phase_d_limit:{volume}>{config.hard_limits.max_single_order_volume}")
     if not float(volume).is_integer():
         reasons.append("volume_not_integer_lots")
