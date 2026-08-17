@@ -50,6 +50,7 @@ OUTPUT_DIR = (
 HTML_PATH = OUTPUT_DIR / "index.html"
 CLOSED_LOTS_PATH = OUTPUT_DIR / "closed_lots.csv"
 WINNERS_PATH = OUTPUT_DIR / "big_winners.csv"
+SELECTED_EPISODES_PATH = OUTPUT_DIR / "selected_profit_loss_episodes.csv"
 MINUTE_15M_PATH = OUTPUT_DIR / "winner_bars_15m.csv"
 STRATEGY_DAILY_PATH = OUTPUT_DIR / "strategy_daily.csv"
 MANIFEST_PATH = OUTPUT_DIR / "chart_manifest.csv"
@@ -135,14 +136,14 @@ def _run_current_c9(end: pd.Timestamp) -> tuple[pd.DataFrame, pd.DataFrame, dict
         raise RuntimeError("Current C9/15w replay produced no closed lots.")
     closed["official_live_version"] = OFFICIAL_LIVE_VERSION
     closed["account_capital"] = OFFICIAL_LIVE_CAPITAL
-    winners = _winner_episodes(closed)
-    if winners.empty:
-        raise RuntimeError("Current C9/15w replay produced no big winners.")
+    selected = _selected_tail_episodes(closed)
+    if selected.empty:
+        raise RuntimeError("Current C9/15w replay produced no profit/loss tail episodes.")
     return combined, closed, frames, spec
 
 
-def _winner_episodes(closed: pd.DataFrame) -> pd.DataFrame:
-    """Select big winners, then collapse partial exits into one entry episode."""
+def _trade_episodes(closed: pd.DataFrame) -> pd.DataFrame:
+    """Collapse every entry and its partial exits into one complete episode."""
     rows: list[dict[str, Any]] = []
     for open_trade_id, group in closed.groupby("open_trade_id", sort=False):
         group = group.sort_values(["exit_date", "lot_id"]).reset_index(drop=True)
@@ -166,24 +167,60 @@ def _winner_episodes(closed: pd.DataFrame) -> pd.DataFrame:
                 "lot_count": int(len(group)),
             }
         )
-    episodes = pd.DataFrame(rows)
+    return pd.DataFrame(rows)
+
+
+def _selected_tail_episodes(closed: pd.DataFrame) -> pd.DataFrame:
+    """Select symmetric profit/loss R tails from complete entry episodes."""
+    episodes = _trade_episodes(closed)
     positive = episodes[episodes["realized_pnl"].gt(0.0)]
-    r_threshold = float(positive.loc[positive["r_multiple"].gt(0.0), "r_multiple"].quantile(0.80))
-    pnl_threshold = float(positive["realized_pnl"].quantile(0.80))
+    negative = episodes[episodes["realized_pnl"].lt(0.0)]
+    profit_r_threshold = float(positive.loc[positive["r_multiple"].gt(0.0), "r_multiple"].quantile(0.80))
+    profit_pnl_threshold = float(positive["realized_pnl"].quantile(0.80))
+    loss_r_threshold = float(negative.loc[negative["r_multiple"].lt(0.0), "r_multiple"].quantile(0.20))
+    loss_pnl_threshold = float(negative["realized_pnl"].quantile(0.20))
+    profit_selected = episodes["realized_pnl"].gt(0.0) & (
+        episodes["r_multiple"].ge(profit_r_threshold)
+        | (episodes["r_multiple"].isna() & episodes["realized_pnl"].ge(profit_pnl_threshold))
+    )
+    loss_selected = episodes["realized_pnl"].lt(0.0) & (
+        episodes["r_multiple"].le(loss_r_threshold)
+        | (episodes["r_multiple"].isna() & episodes["realized_pnl"].le(loss_pnl_threshold))
+    )
+    episodes["result_type"] = np.where(
+        profit_selected,
+        "profit",
+        np.where(loss_selected, "loss", "not_selected"),
+    )
     episodes["selection_basis"] = np.where(
-        episodes["r_multiple"].ge(r_threshold),
+        episodes["r_multiple"].ge(profit_r_threshold) & profit_selected,
         "episode R前20%",
         np.where(
-            episodes["r_multiple"].isna() & episodes["realized_pnl"].ge(pnl_threshold),
+            episodes["r_multiple"].isna() & profit_selected,
             "episode盈利额前20%（R缺失）",
-            "未入选",
+            np.where(
+                episodes["r_multiple"].le(loss_r_threshold) & loss_selected,
+                "episode亏损R最差20%",
+                np.where(
+                    episodes["r_multiple"].isna() & loss_selected,
+                    "episode亏损额最差20%（R缺失）",
+                    "未入选",
+                ),
+            ),
         ),
     )
-    episodes["big_winner_threshold_r"] = r_threshold
-    episodes["pnl_winner_threshold"] = pnl_threshold
-    result = episodes[episodes["selection_basis"].ne("未入选")].copy()
-    result = result.sort_values(["realized_pnl", "r_multiple"], ascending=False).reset_index(drop=True)
-    result["winner_rank"] = np.arange(1, len(result) + 1)
+    episodes["profit_r_threshold"] = profit_r_threshold
+    episodes["profit_pnl_threshold"] = profit_pnl_threshold
+    episodes["loss_r_threshold"] = loss_r_threshold
+    episodes["loss_pnl_threshold"] = loss_pnl_threshold
+    result = episodes[episodes["result_type"].ne("not_selected")].copy()
+    result["r_magnitude"] = result["r_multiple"].abs()
+    result = result.sort_values(
+        ["result_type", "r_magnitude", "realized_pnl"],
+        ascending=[False, False, False],
+        na_position="last",
+    ).reset_index(drop=True)
+    result["result_rank"] = result.groupby("result_type", sort=False).cumcount() + 1
     return result
 
 
@@ -627,7 +664,8 @@ def _records(
 
         record = {
             "meta": {
-                "winner_rank": int(row.winner_rank),
+                "result_rank": int(row.result_rank),
+                "result_type": str(row.result_type),
                 "lot_id": str(row.lot_id),
                 "lot_count": int(row.lot_count),
                 "open_trade_id": str(row.open_trade_id),
@@ -646,7 +684,8 @@ def _records(
                 "holding_calendar_days": int(row.holding_calendar_days),
                 "exit_reason": str(row.exit_reason),
                 "signal": str(row.signal),
-                "big_winner_threshold_r": float(row.big_winner_threshold_r),
+                "profit_r_threshold": float(row.profit_r_threshold),
+                "loss_r_threshold": float(row.loss_r_threshold),
                 "entry_x": entry_x,
                 "exit_x": exit_x,
                 "daily_start": daily["date"].iloc[0].date().isoformat(),
@@ -717,7 +756,7 @@ def _html(records: list[dict[str, Any]], summary: dict[str, Any]) -> str:
     records_json = json.dumps(_json_safe(records), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     summary_json = json.dumps(_json_safe(summary), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     plotly_js = get_plotlyjs()
-    title = "C9/15万历史大赢家：周K × 日K × 15分钟K 逐笔复盘"
+    title = "C9/15万历史盈亏尾部：周K × 日K × 15分钟K 逐笔复盘"
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><script>{plotly_js}</script>
@@ -725,7 +764,7 @@ def _html(records: list[dict[str, Any]], summary: dict[str, Any]) -> str:
 :root{{--bg:#f4f6f8;--panel:#fff;--line:#d9dee7;--text:#17202a;--muted:#667085;--blue:#2563eb;--purple:#9333ea}}
 *{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
 .page{{max-width:1760px;margin:0 auto;padding:16px}} h1{{font-size:24px;margin:0 0 10px}}
-.note{{font-size:13px;color:var(--muted);margin-bottom:12px}} .toolbar{{display:grid;grid-template-columns:190px 190px minmax(320px,1fr) auto auto;gap:8px;margin-bottom:10px}}
+.note{{font-size:13px;color:var(--muted);margin-bottom:12px}} .toolbar{{display:grid;grid-template-columns:160px 180px 150px 170px minmax(300px,1fr) auto auto;gap:8px;margin-bottom:10px}}
 select,button{{height:38px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 10px;font-size:13px}} button{{cursor:pointer}}
 .metrics{{display:grid;grid-template-columns:repeat(8,minmax(120px,1fr));gap:8px;margin-bottom:10px}} .metric{{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 10px}}
 .metric .k{{font-size:11px;color:var(--muted)}} .metric .v{{font-size:16px;font-weight:700;margin-top:3px}}
@@ -734,25 +773,26 @@ select,button{{height:38px;border:1px solid var(--line);border-radius:7px;backgr
 @media(max-width:1000px){{.toolbar{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}#chart{{height:1050px}}}}
 </style></head><body><div class="page"><h1>{html.escape(title)}</h1>
 <div class="note">每周、每日和每个15分钟柱共用交易日坐标，并分别叠加 MA5/10/20/40；周K和日K使用图窗外历史预热，历史不足完整周期时均线留空，不用短样本冒充。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
-<div class="toolbar"><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
+<div class="toolbar"><select id="result"><option value="profit">盈利交易</option><option value="loss">亏损交易</option></select><select id="sort"><option value="extreme">R绝对值从大到小</option><option value="near">R绝对值从小到大</option></select><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
 <div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
-<div class="footer">数据：当前正式 {html.escape(OFFICIAL_LIVE_ALIAS)}（{html.escape(OFFICIAL_LIVE_VERSION)}）；大赢家=R倍数前20%，并补入R缺失但盈利额前20%的交易；部分平仓按一次开仓聚合到最终平仓。本图用于复盘，不是交易规则。</div>
+<div class="footer">数据：当前正式 {html.escape(OFFICIAL_LIVE_ALIAS)}（{html.escape(OFFICIAL_LIVE_VERSION)}）；盈利侧=正R前20%，亏损侧=负R最差20%，两侧均可补入R缺失时的同方向盈亏额尾部；部分平仓按一次开仓聚合到最终平仓。本图用于对照复盘，不是交易规则。</div>
 </div><script>
 const records={records_json}; const summary={summary_json}; let filtered=[]; let active=0;
-const yearEl=document.getElementById('year'), productEl=document.getElementById('product'), tradeEl=document.getElementById('trade');
+const resultEl=document.getElementById('result'), sortEl=document.getElementById('sort'), yearEl=document.getElementById('year'), productEl=document.getElementById('product'), tradeEl=document.getElementById('trade');
 const fmt=(v,d=2)=>Number(v).toLocaleString('zh-CN',{{minimumFractionDigits:d,maximumFractionDigits:d}});
 const uniq=a=>[...new Set(a)].sort();
 function options(el,values,label){{el.innerHTML=`<option value="">全部${{label}}</option>`+values.map(v=>`<option value="${{v}}">${{v}}</option>`).join('')}}
 options(yearEl,uniq(records.map(r=>r.meta.entry_date.slice(0,4))),'年份'); options(productEl,uniq(records.map(r=>r.meta.product)),'品种');
-function apply(){{const y=yearEl.value,p=productEl.value;filtered=records.filter(r=>(!y||r.meta.entry_date.startsWith(y))&&(!p||r.meta.product===p));active=0;refreshSelect();render()}}
+function apply(){{const result=resultEl.value,y=yearEl.value,p=productEl.value,extreme=sortEl.value==='extreme';filtered=records.filter(r=>r.meta.result_type===result&&(!y||r.meta.entry_date.startsWith(y))&&(!p||r.meta.product===p));filtered.sort((a,b)=>{{const ar=a.meta.r_multiple===null?null:Math.abs(Number(a.meta.r_multiple)),br=b.meta.r_multiple===null?null:Math.abs(Number(b.meta.r_multiple));if(ar===null&&br===null)return Math.abs(b.meta.realized_pnl)-Math.abs(a.meta.realized_pnl);if(ar===null)return 1;if(br===null)return -1;return extreme?br-ar:ar-br}});active=0;refreshSelect();render()}}
 function rfmt(v){{return v===null?'N/A':fmt(v)}}
-function refreshSelect(){{tradeEl.innerHTML=filtered.map((r,i)=>`<option value="${{i}}">#${{r.meta.winner_rank}} ${{r.meta.vt_symbol}} ${{r.meta.direction}} R=${{rfmt(r.meta.r_multiple)}} ${{r.meta.entry_date}}→${{r.meta.exit_date}}</option>`).join('');tradeEl.value=String(active)}}
+function refreshSelect(){{tradeEl.innerHTML=filtered.map((r,i)=>`<option value="${{i}}">#${{i+1}} ${{r.meta.vt_symbol}} ${{r.meta.direction}} R=${{rfmt(r.meta.r_multiple)}} ${{r.meta.entry_date}}→${{r.meta.exit_date}}</option>`).join('');tradeEl.value=String(active)}}
 function colors(o,c){{return o.map((v,i)=>c[i]>=v?'#d92d20':'#039855')}}
 function render(){{if(!filtered.length){{Plotly.purge('chart');document.getElementById('metrics').innerHTML='<div class="warn">没有符合筛选条件的交易</div>';return}}
  const r=filtered[active],m=r.meta,d=r.daily,w=r.weekly,q=r.intraday; tradeEl.value=String(active);
  const missing=m.missing_15m_dates.length?`<span class="warn">${{m.missing_15m_dates.length}}日缺15m</span>`:'完整';
  const source=m.context_fallback_dates.length?`${{m.context_fallback_dates.length}}日主力代理`:'全程精确合约';
- const metric=[['排名',`#${{m.winner_rank}}`],['合约',m.vt_symbol],['方向',m.direction],['净利润',fmt(m.realized_pnl,0)],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['行情来源',source],['15m覆盖',missing]];
+ const resultLabel=m.result_type==='profit'?'盈利':'亏损';
+ const metric=[['R排序',`#${{active+1}}`],['结果',resultLabel],['合约',m.vt_symbol],['方向',m.direction],['净利润',fmt(m.realized_pnl,0)],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['15m覆盖',missing]];
  document.getElementById('metrics').innerHTML=metric.map(([k,v])=>`<div class="metric"><div class="k">${{k}}</div><div class="v">${{v}}</div></div>`).join('');
  const traces=[
   {{type:'candlestick',x:w.x,open:w.open,high:w.high,low:w.low,close:w.close,name:'周K',yaxis:'y',showlegend:false,increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
@@ -777,7 +817,7 @@ function render(){{if(!filtered.length){{Plotly.purge('chart');document.getEleme
  ];
  const tickStep=Math.max(1,Math.ceil(d.date.length/18)),tickvals=d.x.filter((_,i)=>i%tickStep===0),ticktext=d.date.filter((_,i)=>i%tickStep===0);
  const switches=m.source_switch_x.map(x=>({{type:'line',xref:'x',yref:'paper',x0:x,x1:x,y0:0,y1:1,line:{{color:'#98a2b3',width:1,dash:'dash'}}}}));
- const layout={{title:{{text:`#${{m.winner_rank}} ${{m.vt_symbol}} ${{m.direction}}｜${{m.entry_date}} → ${{m.exit_date}}｜R=${{rfmt(m.r_multiple)}}｜PnL=${{fmt(m.realized_pnl,0)}}｜${{m.selection_basis}}`,x:.01}},
+ const layout={{title:{{text:`${{resultLabel}} #${{active+1}} ${{m.vt_symbol}} ${{m.direction}}｜${{m.entry_date}} → ${{m.exit_date}}｜R=${{rfmt(m.r_multiple)}}｜PnL=${{fmt(m.realized_pnl,0)}}｜${{m.selection_basis}}｜${{source}}`,x:.01}},
   margin:{{l:72,r:28,t:54,b:76}},paper_bgcolor:'#fff',plot_bgcolor:'#fff',hovermode:'x unified',showlegend:true,legend:{{orientation:'h',y:1.04,x:1,xanchor:'right'}},
   xaxis:{{range:[0,d.x.length],tickvals,ticktext,tickangle:-35,showgrid:false,rangeslider:{{visible:false}},title:'交易日（周/日/15分钟垂直对齐，可框选缩放）'}},
   yaxis:{{domain:[.83,1],title:'周K',showgrid:true,gridcolor:'#eef1f4'}},yaxis2:{{domain:[.75,.81],title:'周量',showgrid:true,gridcolor:'#f2f4f7'}},
@@ -787,7 +827,7 @@ function render(){{if(!filtered.length){{Plotly.purge('chart');document.getEleme
   annotations:[{{xref:'x',yref:'paper',x:m.entry_x,y:1,text:'开仓',showarrow:false,font:{{color:'#2563eb'}}}},{{xref:'x',yref:'paper',x:m.exit_x,y:1,text:'平仓',showarrow:false,font:{{color:'#9333ea'}}}}]}};
  Plotly.react('chart',traces,layout,{{responsive:true,displaylogo:false,scrollZoom:true}})
 }}
-yearEl.onchange=apply;productEl.onchange=apply;tradeEl.onchange=()=>{{active=Number(tradeEl.value);render()}};
+resultEl.onchange=apply;sortEl.onchange=apply;yearEl.onchange=apply;productEl.onchange=apply;tradeEl.onchange=()=>{{active=Number(tradeEl.value);render()}};
 document.getElementById('prev').onclick=()=>{{if(filtered.length){{active=(active-1+filtered.length)%filtered.length;render()}}}};
 document.getElementById('next').onclick=()=>{{if(filtered.length){{active=(active+1)%filtered.length;render()}}}};
 apply();
@@ -804,21 +844,22 @@ def main() -> None:
 
     started = time.time()
     combined, closed, frames, spec = _run_current_c9(end)
-    winners = _winner_episodes(closed)
+    selected = _selected_tail_episodes(closed)
     closed.to_csv(CLOSED_LOTS_PATH, index=False, encoding="utf-8-sig")
-    winners.to_csv(WINNERS_PATH, index=False, encoding="utf-8-sig")
+    selected[selected["result_type"].eq("profit")].to_csv(WINNERS_PATH, index=False, encoding="utf-8-sig")
+    selected.to_csv(SELECTED_EPISODES_PATH, index=False, encoding="utf-8-sig")
     combined.to_csv(STRATEGY_DAILY_PATH, index=False, encoding="utf-8-sig")
 
     mapping = _main_mapping()
     bar_cache: dict[str, pd.DataFrame] = {}
     daily_by_episode: dict[str, pd.DataFrame] = {}
     intraday_dates_by_episode: dict[str, list[pd.Timestamp]] = {}
-    for row in winners.itertuples(index=False):
+    for row in selected.itertuples(index=False):
         daily, intraday_dates = _context_daily(row, mapping, bar_cache)
         daily_by_episode[str(row.open_trade_id)] = daily
         intraday_dates_by_episode[str(row.open_trade_id)] = intraday_dates
     source_ranges: dict[str, list[pd.Timestamp]] = {}
-    for row in winners.itertuples(index=False):
+    for row in selected.itertuples(index=False):
         daily = daily_by_episode[str(row.open_trade_id)].set_index("date")
         for trading_day in intraday_dates_by_episode[str(row.open_trade_id)]:
             source = str(daily.loc[trading_day, "source_vt_symbol"])
@@ -835,6 +876,35 @@ def main() -> None:
             ignore_index=True,
             sort=False,
         )
+        supplemental_frames: list[pd.DataFrame] = []
+        for vt_symbol, all_dates in sorted(source_ranges.items()):
+            required = {pd.Timestamp(value).normalize() for value in all_dates}
+            available = set(
+                pd.to_datetime(
+                    bars_15m.loc[bars_15m["vt_symbol"].eq(vt_symbol), "trading_day"],
+                    errors="coerce",
+                ).dropna().dt.normalize()
+            )
+            missing = sorted(required.difference(available))
+            if not missing:
+                continue
+            frame, fetch_status = _fetch_15m(vt_symbol, min(missing), max(missing))
+            frame = _assign_trading_day(frame, _product_calendar(mapping, vt_symbol))
+            supplemental_frames.append(frame)
+            fetch_rows.append(fetch_status)
+            print(
+                f"15m supplement {vt_symbol}: {len(frame)} rows for {len(missing)} missing days "
+                f"in {fetch_status.elapsed_seconds:.3f}s",
+                flush=True,
+            )
+        if supplemental_frames:
+            bars_15m = (
+                pd.concat([bars_15m, *supplemental_frames], ignore_index=True, sort=False)
+                .drop_duplicates(["vt_symbol", "bar_datetime"], keep="last")
+                .sort_values(["vt_symbol", "bar_datetime"])
+                .reset_index(drop=True)
+            )
+            bars_15m.to_csv(MINUTE_15M_PATH, index=False, encoding="utf-8-sig")
     else:
         minute_frames: list[pd.DataFrame] = []
         for vt_symbol, all_dates in sorted(source_ranges.items()):
@@ -848,7 +918,14 @@ def main() -> None:
             print(f"15m {vt_symbol}: {len(frame)} rows in {fetch_status.elapsed_seconds:.3f}s", flush=True)
         bars_15m = pd.concat(minute_frames, ignore_index=True, sort=False)
         bars_15m.to_csv(MINUTE_15M_PATH, index=False, encoding="utf-8-sig")
-    records, manifest = _records(winners, daily_by_episode, intraday_dates_by_episode, bars_15m)
+    records, manifest = _records(selected, daily_by_episode, intraday_dates_by_episode, bars_15m)
+    missing_intraday_days = int(manifest["intraday_missing_days"].sum())
+    if missing_intraday_days:
+        missing_rows = manifest.loc[
+            manifest["intraday_missing_days"].gt(0),
+            ["result_type", "result_rank", "open_trade_id", "vt_symbol", "intraday_missing_days"],
+        ].to_dict("records")
+        raise RuntimeError(f"Selected profit/loss episodes have incomplete 15m coverage: {missing_rows}")
     manifest.to_csv(MANIFEST_PATH, index=False, encoding="utf-8-sig")
 
     equity_column = "account_equity" if "account_equity" in combined.columns else "equity"
@@ -866,15 +943,19 @@ def main() -> None:
         "effective_data_end": pd.to_datetime(combined["date"], errors="coerce").max().date().isoformat(),
         "closed_lots": int(len(closed)),
         "winner_lots": int(closed["winner"].sum()),
-        "big_winner_lots": int(len(winners)),
-        "big_winner_episodes": int(len(winners)),
-        "episode_closed_lots": int(pd.to_numeric(winners["lot_count"], errors="coerce").sum()),
-        "big_winner_threshold_r": float(winners["big_winner_threshold_r"].iloc[0]),
-        "unique_contracts": int(winners["vt_symbol"].nunique()),
+        "big_winner_lots": int(selected["result_type"].eq("profit").sum()),
+        "big_winner_episodes": int(selected["result_type"].eq("profit").sum()),
+        "big_loser_episodes": int(selected["result_type"].eq("loss").sum()),
+        "selected_episode_closed_lots": int(pd.to_numeric(selected["lot_count"], errors="coerce").sum()),
+        "episode_closed_lots": int(pd.to_numeric(selected.loc[selected["result_type"].eq("profit"), "lot_count"], errors="coerce").sum()),
+        "big_winner_threshold_r": float(selected["profit_r_threshold"].iloc[0]),
+        "big_loser_threshold_r": float(selected["loss_r_threshold"].iloc[0]),
+        "unique_contracts": int(selected["vt_symbol"].nunique()),
         "bars_15m": int(len(bars_15m)),
         "intraday_missing_days": int(manifest["intraday_missing_days"].sum()),
         "context_fallback_days": int(manifest["context_fallback_days"].sum()),
-        "winner_selection": "Entry episodes selected by top-20% R, plus top-20% realized PnL when R is unavailable.",
+        "winner_selection": "Profit episodes selected by top-20% R, plus top-20% realized profit when R is unavailable.",
+        "loser_selection": "Loss episodes selected by bottom-20% R, plus bottom-20% realized loss when R is unavailable.",
         "end_equity": float(pd.to_numeric(combined[equity_column], errors="coerce").dropna().iloc[-1])
         if equity_column in combined.columns and combined[equity_column].notna().any()
         else None,
@@ -886,6 +967,7 @@ def main() -> None:
             "html": str(HTML_PATH),
             "closed_lots": str(CLOSED_LOTS_PATH),
             "big_winners": str(WINNERS_PATH),
+            "selected_episodes": str(SELECTED_EPISODES_PATH),
             "bars_15m": str(MINUTE_15M_PATH),
             "strategy_daily": str(STRATEGY_DAILY_PATH),
             "manifest": str(MANIFEST_PATH),
@@ -897,12 +979,13 @@ def main() -> None:
         "html": _sha256(HTML_PATH),
         "closed_lots": _sha256(CLOSED_LOTS_PATH),
         "big_winners": _sha256(WINNERS_PATH),
+        "selected_episodes": _sha256(SELECTED_EPISODES_PATH),
         "bars_15m": _sha256(MINUTE_15M_PATH),
         "strategy_daily": _sha256(STRATEGY_DAILY_PATH),
         "manifest": _sha256(MANIFEST_PATH),
     }
     SUMMARY_PATH.write_text(json.dumps(_json_safe(summary), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({key: summary[key] for key in ["closed_lots", "winner_lots", "big_winner_lots", "big_winner_threshold_r", "bars_15m", "intraday_missing_days", "elapsed_seconds"]}, ensure_ascii=False, indent=2))
+    print(json.dumps({key: summary[key] for key in ["closed_lots", "winner_lots", "big_winner_episodes", "big_loser_episodes", "big_winner_threshold_r", "big_loser_threshold_r", "bars_15m", "intraday_missing_days", "elapsed_seconds"]}, ensure_ascii=False, indent=2))
     print(HTML_PATH)
 
 
