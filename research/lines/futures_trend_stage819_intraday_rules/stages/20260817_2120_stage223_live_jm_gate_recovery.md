@@ -32,6 +32,7 @@
 - 修改参数：无。
 - 删除参数：无。
 - 价格逻辑：不改 Stage931 二次询价；真实 API 调用前仍重新取候选合约最新买卖盘，受既有滑点 tick、涨跌停、最小变动价位和新鲜度限制。
+- 激活后补充修复：Stage902 对带时区 ISO 只读快照执行 naive-aware datetime 相减，触发 `TypeError`；现与 Stage260 一致按输入时区生成当前时间后计算 age，future/invalid 继续 fail-closed。
 
 ## 回测/归因参数
 
@@ -60,6 +61,7 @@
   - Stage260/submit-authorization/930/persistent-authorization 回归：`127/127 passed`，耗时 `17.483s`。
   - Stage260/submit-authorization/930/931/945/948 联合回归：`276/276 passed`，耗时 `38.189s`。
   - 最终扩展联合回归（含授权 guard 与 executor serve）：`331/331 passed`，耗时 `35.685s`；`py_compile` 与 `git diff --check` 通过。
+  - 首次 Stage948 激活成功后，Stage260 为 `3 executable / 0 blocked`，但 Stage902 复现 `TypeError: can't subtract offset-naive and offset-aware datetimes`，因此零报单退出；新增回归旧代码 `1 ERROR`，修复后相关模块 `118/118 passed`。
   - 订单 API：实现和测试阶段 `send_order=0`、`cancel_order=0`；未连接真实 CTP、未生成 jm 委托。
 
 ## 输出文件
@@ -70,11 +72,11 @@
 - summary：待 Stage948 qualification/activation 后生成。
 - orders：当前无 jm 委托。
 - daily：不适用。
-- quality：`331/331 passed`；第三次独立审查、生产 qualification、激活和券商对账仍待完成。
+- quality：Stage902 补充修复后相关模块 `118/118 passed`；新候选仍需独立审查、完整 qualification、Stage948 再激活和券商对账。
 
 ## 结论
 
-- 本阶段结论：两个原始代码级根因及两轮独立审查发现的授权链 P1 均已由 TDD 复现并修复，相关执行、授权、最终询价、launcher 和 installer 回归通过；源码候选尚未等同于生产已激活。
+- 本阶段结论：两个原始代码级根因、两轮授权链 P1 及首次激活暴露的 Stage902 ISO 时区缺陷均已由 TDD 复现并修复；Stage902 补充候选尚未重新完成 qualification/激活。
 - 是否进入下一步：是；先审查候选，再按 Stage948 做资格和原子激活。
 - 下一步：只读核对 7 个 launchd job、daemon/warm executor、账户持仓、活跃委托和成交；若现有生产进程仍存活，未取得明确重启权限前不得并行启动新执行器。
 
