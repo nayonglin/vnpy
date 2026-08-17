@@ -835,7 +835,7 @@ apply();
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build C9/15w historical big-winner weekly/daily/15m HTML atlas.")
+    parser = argparse.ArgumentParser(description="Build C9/15w historical profit/loss-tail weekly/daily/15m HTML atlas.")
     parser.add_argument("--end", default=_latest_completed_date().date().isoformat())
     parser.add_argument("--reuse-market", action="store_true", help="Reuse the already materialized 15m market file.")
     args = parser.parse_args()
@@ -952,6 +952,7 @@ def main() -> None:
         "big_loser_threshold_r": float(selected["loss_r_threshold"].iloc[0]),
         "unique_contracts": int(selected["vt_symbol"].nunique()),
         "bars_15m": int(len(bars_15m)),
+        "chart_bars_15m": int(manifest["bars_15m"].sum()),
         "intraday_missing_days": int(manifest["intraday_missing_days"].sum()),
         "context_fallback_days": int(manifest["context_fallback_days"].sum()),
         "winner_selection": "Profit episodes selected by top-20% R, plus top-20% realized profit when R is unavailable.",
