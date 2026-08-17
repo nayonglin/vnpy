@@ -423,6 +423,38 @@ def _semantic_freshness(data_root: Path) -> dict[str, str]:
     forward_calendar = summary.get("forward_trading_calendar")
     if not isinstance(forward_calendar, dict):
         forward_calendar = {}
+    trading_dates = forward_calendar.get("trading_dates")
+    if (
+        not isinstance(trading_dates, list)
+        or not trading_dates
+        or any(
+            not isinstance(value, str) or not _DATE_RE.fullmatch(value)
+            for value in trading_dates
+        )
+        or trading_dates != sorted(set(trading_dates))
+    ):
+        raise ProductionAssetError("production_asset_forward_calendar_invalid")
+    calendar_sha256 = hashlib.sha256(
+        _canonical_json_bytes(trading_dates)
+    ).hexdigest()
+    completed_target_date = str(
+        forward_calendar.get("completed_target_date", "")
+    )[:10]
+    declared_next_session = str(
+        forward_calendar.get("next_trading_session_date", "")
+    )[:10]
+    following_dates = [
+        value for value in trading_dates if value > completed_target_date
+    ]
+    if (
+        completed_target_date not in trading_dates
+        or not following_dates
+        or declared_next_session != following_dates[0]
+        or forward_calendar.get("trading_date_count") != len(trading_dates)
+        or str(forward_calendar.get("trading_dates_sha256", ""))
+        != calendar_sha256
+    ):
+        raise ProductionAssetError("production_asset_forward_calendar_invalid")
     return {
         "mapping_max_date": mapping_max,
         "stage173_status_max_date": status_max,
@@ -433,15 +465,9 @@ def _semantic_freshness(data_root: Path) -> dict[str, str]:
             mapping_update.get("combined_max_date", "")
         )[:10],
         "forward_calendar_source": str(forward_calendar.get("source", "")),
-        "forward_calendar_completed_target_date": str(
-            forward_calendar.get("completed_target_date", "")
-        )[:10],
-        "next_trading_session_date": str(
-            forward_calendar.get("next_trading_session_date", "")
-        )[:10],
-        "forward_calendar_dates_sha256": str(
-            forward_calendar.get("trading_dates_sha256", "")
-        ),
+        "forward_calendar_completed_target_date": completed_target_date,
+        "next_trading_session_date": declared_next_session,
+        "forward_calendar_dates_sha256": calendar_sha256,
     }
 
 

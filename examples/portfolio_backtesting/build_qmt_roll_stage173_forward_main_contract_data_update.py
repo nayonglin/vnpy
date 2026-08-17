@@ -191,6 +191,7 @@ def _fetch_mapping_rows(product_symbols: list[str], mapping_start: date, end: da
         "completed_target_date": end.isoformat(),
         "next_trading_session_date": next_dates[0],
         "trading_date_count": len(trading_dates),
+        "trading_dates": trading_dates,
         "trading_dates_sha256": hashlib.sha256(
             json.dumps(
                 trading_dates,

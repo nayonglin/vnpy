@@ -42,7 +42,14 @@
 - 总滑点：不适用（未回测）。
 - 总交易次数：0（本阶段未调用订单 API）。
 - 胜率：不适用（未回测）。
-- 其他关键指标：TDD 两个真实正向用例均先以预期 freshness mismatch 失败再修复；22 项 production asset 测试通过；32 个正式生产测试套件 `848 passed + 692 subtests passed`；真实生产只读构建探针通过，target=`2026-08-17`、mapping/database max=`2026-08-18`、next session=`2026-08-18`。
+- 其他关键指标：TDD 两个真实正向用例均先以预期 freshness mismatch 失败再修复；P1 伪 next 用例先出现“未抛异常”的预期红灯再闭环；24 项 production asset 测试通过；32 个正式生产测试套件 `850 passed + 692 subtests passed`；第一轮修复后的真实生产只读构建探针曾通过 target=`2026-08-17`、mapping/database max=`2026-08-18`、next session=`2026-08-18`，最终 calendar-proof 版本需由新 Stage173 重新发布可重算交易日列表后再核验。
+
+## 独立复审闭环
+
+- 第一轮独立复审：`P0=0/P1=1/P2=0, NOT READY`。P1 指出 `next_trading_session_date` 仍是 Stage173 summary 自报字段，原 validator 只检查日期格式、`> target` 与一个无法重算的 hash 外形；通过伪造 next=`2026-07-31` 可让 mapping/database 一并越过真实下一交易日。
+- TDD 红灯：新增“交易日列表包含 `2026-07-22`，但 summary 自报 next=`2026-07-31`”用例；原实现未抛异常，按预期失败。
+- 修复：Stage173 将完整有序 `trading_dates` 写入已经被 production asset SHA/size/mtime 绑定的 summary；inventory validator 重新计算 `trading_dates_sha256`、校验日期列表严格排序去重、count、completed target 存在，并以首个 `> completed_target` 的日期验证 declared next。
+- 防回归：新增 Stage173 worker 边界测试，确认 worker 实际发布有序日期列表、count、可重算 digest 与精确 next；长假 exact next 仍允许，跳过中间交易日的伪 next、越过 exact next、列表/hash/count 不一致均 fail-closed。
 
 ## 输出文件
 

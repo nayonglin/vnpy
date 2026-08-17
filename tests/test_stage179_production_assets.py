@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import hashlib
 from dataclasses import replace
+from datetime import date
 import os
 from pathlib import Path
 from unittest.mock import patch
@@ -41,6 +42,30 @@ from qmt_roll_official_pending_artifact import (  # noqa: E402
 )
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as stage650  # noqa: E402
 import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as stage901  # noqa: E402
+import build_qmt_roll_stage173_forward_main_contract_data_update as stage173  # noqa: E402
+
+
+def _forward_calendar_fixture(
+    *,
+    target_date: str,
+    next_session_date: str,
+) -> dict[str, object]:
+    trading_dates = [target_date, next_session_date]
+    return {
+        "source": "tqsdk.TqContCalendar",
+        "completed_target_date": target_date,
+        "next_trading_session_date": next_session_date,
+        "trading_date_count": len(trading_dates),
+        "trading_dates": trading_dates,
+        "trading_dates_sha256": hashlib.sha256(
+            json.dumps(
+                trading_dates,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+    }
 
 
 class Stage179ProductionAssetsTest(unittest.TestCase):
@@ -62,12 +87,10 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 {
                     "max_saved_date": "2026-07-21",
                     "mapping_update": {"combined_max_date": "2026-07-21"},
-                    "forward_trading_calendar": {
-                        "source": "tqsdk.TqContCalendar",
-                        "completed_target_date": "2026-07-21",
-                        "next_trading_session_date": "2026-07-22",
-                        "trading_dates_sha256": "f" * 64,
-                    },
+                    "forward_trading_calendar": _forward_calendar_fixture(
+                        target_date="2026-07-21",
+                        next_session_date="2026-07-22",
+                    ),
                 }
             ),
             PRODUCTION_REQUIRED_DATA_ASSETS[3]: (
@@ -211,12 +234,10 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 {
                     "max_saved_date": target_date,
                     "mapping_update": {"combined_max_date": target_date},
-                    "forward_trading_calendar": {
-                        "source": "tqsdk.TqContCalendar",
-                        "completed_target_date": target_date,
-                        "next_trading_session_date": next_session_date,
-                        "trading_dates_sha256": "f" * 64,
-                    },
+                    "forward_trading_calendar": _forward_calendar_fixture(
+                        target_date=target_date,
+                        next_session_date=next_session_date,
+                    ),
                 }
             ),
             encoding="utf-8",
@@ -256,6 +277,59 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 expected_data_root=self.data_root,
             )),
         )
+
+    def test_stage173_persists_recomputable_ordered_forward_calendar(self) -> None:
+        trading_dates = ["2026-07-21", "2026-07-22", "2026-07-31"]
+
+        class FakeAuth:
+            def __init__(self, username: str, password: str) -> None:
+                self._base_headers = {"authorization": f"{username}:{password}"}
+
+            def login(self) -> None:
+                return None
+
+        class FakeCalendar:
+            def __init__(self, **_: object) -> None:
+                self.df = pd.DataFrame(
+                    {
+                        "date": pd.to_datetime(trading_dates),
+                        "KQ.m@DCE.jm": ["DCE.jm2609"] * len(trading_dates),
+                    }
+                )
+
+        with (
+            patch.object(stage173, "TqAuth", FakeAuth),
+            patch.object(stage173, "TqContCalendar", FakeCalendar),
+            patch.dict(
+                stage173.SETTINGS,
+                {
+                    "datafeed.username": "fixture-user",
+                    "datafeed.password": "fixture-password",
+                },
+            ),
+        ):
+            rows = stage173._fetch_mapping_rows(
+                ["jm.DCE"],
+                date(2026, 7, 21),
+                date(2026, 7, 21),
+            )
+
+        calendar = rows.attrs["forward_calendar"]
+        self.assertEqual(trading_dates, calendar["trading_dates"])
+        self.assertEqual(len(trading_dates), calendar["trading_date_count"])
+        self.assertEqual("2026-07-22", calendar["next_trading_session_date"])
+        self.assertEqual(
+            hashlib.sha256(
+                json.dumps(
+                    trading_dates,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+            ).hexdigest(),
+            calendar["trading_dates_sha256"],
+        )
+        self.assertEqual(["2026-07-21"], sorted(set(rows["date"])))
 
     def test_asset_byte_change_is_rejected(self) -> None:
         payload = self.inventory()
@@ -349,12 +423,10 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 {
                     "max_saved_date": "2026-07-21",
                     "mapping_update": {"combined_max_date": "2026-07-22"},
-                    "forward_trading_calendar": {
-                        "source": "tqsdk.TqContCalendar",
-                        "completed_target_date": "2026-07-21",
-                        "next_trading_session_date": "2026-07-22",
-                        "trading_dates_sha256": "f" * 64,
-                    },
+                    "forward_trading_calendar": _forward_calendar_fixture(
+                        target_date="2026-07-21",
+                        next_session_date="2026-07-22",
+                    ),
                 }
             ),
             encoding="utf-8",
@@ -386,12 +458,10 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 {
                     "max_saved_date": "2026-07-21",
                     "mapping_update": {"combined_max_date": "2026-07-23"},
-                    "forward_trading_calendar": {
-                        "source": "tqsdk.TqContCalendar",
-                        "completed_target_date": "2026-07-21",
-                        "next_trading_session_date": "2026-07-22",
-                        "trading_dates_sha256": "f" * 64,
-                    },
+                    "forward_trading_calendar": _forward_calendar_fixture(
+                        target_date="2026-07-21",
+                        next_session_date="2026-07-22",
+                    ),
                 }
             ),
             encoding="utf-8",
@@ -401,6 +471,48 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
         with self.assertRaisesRegex(
             ProductionAssetError,
             "target_freshness_mismatch",
+        ):
+            self.inventory()
+
+    def test_inventory_rejects_self_declared_next_that_skips_calendar_date(self) -> None:
+        trading_dates = ["2026-07-21", "2026-07-22", "2026-07-31"]
+        calendar_sha256 = hashlib.sha256(
+            json.dumps(
+                trading_dates,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        mapping = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[0]
+        mapping.write_text(
+            "date,vt_symbol\n2026-07-31,jm.DCE\n",
+            encoding="utf-8",
+        )
+        mapping.chmod(0o600)
+        summary = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[2]
+        summary.write_text(
+            json.dumps(
+                {
+                    "max_saved_date": "2026-07-21",
+                    "mapping_update": {"combined_max_date": "2026-07-31"},
+                    "forward_trading_calendar": {
+                        "source": "tqsdk.TqContCalendar",
+                        "completed_target_date": "2026-07-21",
+                        "next_trading_session_date": "2026-07-31",
+                        "trading_date_count": len(trading_dates),
+                        "trading_dates": trading_dates,
+                        "trading_dates_sha256": calendar_sha256,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        summary.chmod(0o600)
+
+        with self.assertRaisesRegex(
+            ProductionAssetError,
+            "forward_calendar_invalid",
         ):
             self.inventory()
 
