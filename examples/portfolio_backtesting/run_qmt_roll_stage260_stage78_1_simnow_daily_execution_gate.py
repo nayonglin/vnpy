@@ -80,12 +80,29 @@ def _read_csv_maybe(path: str | Path | None) -> pd.DataFrame:
 
 
 def _parse_generated_at(value: str) -> datetime | None:
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        pass
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
         try:
             return datetime.strptime(value, fmt)
         except ValueError:
             continue
     return None
+
+
+def _snapshot_age_seconds(
+    observed_now: datetime,
+    generated_at: datetime,
+) -> float:
+    if generated_at.tzinfo is not None and observed_now.tzinfo is None:
+        observed_now = observed_now.replace(tzinfo=generated_at.tzinfo)
+    elif generated_at.tzinfo is None and observed_now.tzinfo is not None:
+        generated_at = generated_at.replace(tzinfo=observed_now.tzinfo)
+    elif generated_at.tzinfo is not None and observed_now.tzinfo is not None:
+        observed_now = observed_now.astimezone(generated_at.tzinfo)
+    return round((observed_now - generated_at).total_seconds(), 3)
 
 
 def _clean_scalar(value: Any) -> str:
@@ -538,9 +555,9 @@ def run_daily_execution_gate(
     generated_dt = _parse_generated_at(generated_at)
     snapshot_age_seconds = None
     if generated_dt:
-        snapshot_age_seconds = round(
-            (observed_now - generated_dt).total_seconds(),
-            3,
+        snapshot_age_seconds = _snapshot_age_seconds(
+            observed_now,
+            generated_dt,
         )
     broker_snapshot = readonly_summary.get("broker_snapshot", {})
     if not isinstance(broker_snapshot, Mapping):

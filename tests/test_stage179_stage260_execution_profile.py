@@ -175,6 +175,46 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
         )
         self.assertTrue(result.decisions.iloc[0]["decision_id"])
 
+    def test_iso_timezone_snapshot_timestamp_is_fresh(self) -> None:
+        signal_plan = pd.DataFrame(
+            [
+                {
+                    "shadow_session_id": "stage372-20260817",
+                    "trade_id": "trade-iso-time",
+                    "vt_symbol": "JM609.DCE",
+                    "direction": "long",
+                    "offset": "open",
+                    "volume": 1,
+                    "theoretical_price": 1000.0,
+                    "exit_reason": "stage372_daily_open",
+                }
+            ]
+        )
+
+        result = run_daily_execution_gate(
+            self.profile,
+            artifact_snapshot=self._snapshot(signal_plan=signal_plan),
+            readonly_summary={
+                "status": "readonly_snapshots_received",
+                "generated_at": "2026-08-17T21:06:18.283886+08:00",
+                "broker_snapshot": {
+                    "position_snapshot_state": "confirmed_flat",
+                },
+            },
+            positions=pd.DataFrame(),
+            orders=pd.DataFrame(),
+            max_snapshot_age_seconds=300,
+            now=datetime(2026, 8, 17, 21, 6, 20),
+            write_outputs=False,
+        )
+
+        self.assertEqual(
+            result.summary["readonly_gate"]["snapshot_age_seconds"],
+            1.716,
+        )
+        self.assertTrue(result.summary["readonly_gate"]["passed"])
+        self.assertEqual(result.summary["executable_count"], 1)
+
     def test_stage372_decision_id_is_stable_across_replay(self) -> None:
         first = self._run()
         second = self._run()
