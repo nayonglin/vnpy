@@ -1606,6 +1606,7 @@ def _authorization_candidate_row(candidate: Any) -> dict[str, Any]:
         "intent_id": candidate.intent_id,
         "payload_sha256": candidate.payload_sha256,
         "intent_kind": candidate.intent_kind,
+        "vt_symbol": candidate.vt_symbol,
         "source": candidate.source,
         "intent_role": candidate.intent_role,
         "trace_id": candidate.trace_id,
@@ -1773,6 +1774,7 @@ def _fast_lane_gate_evidence(
     initial_open_window_label = ""
     candidate_initial_open_window_expiry_epoch_ns = 0
     candidate_initial_open_window_label = ""
+    candidate_tick_ingress_epoch_ns = 0
     if not scope:
         blockers.append("persistent_fast_candidate_source_role_not_whitelisted")
     elif scope == "initial_open_only":
@@ -1848,7 +1850,14 @@ def _fast_lane_gate_evidence(
             blockers.append("stage902_new_open_blocked")
         if _to_int(stage902.get("ready_for_phase_d_real"), 0) != 1:
             blockers.append("stage902_not_ready_for_phase_d_real")
-        if _to_int(tick_stream.get("all_symbols_ready"), 0) != 1:
+        candidate_tick_ingress_epoch_ns = (
+            _tick_result_ingress_epoch_ns(
+                tick_stream,
+                candidate_symbol=_clean(candidate.vt_symbol),
+            )
+            or 0
+        )
+        if candidate_tick_ingress_epoch_ns <= 0:
             blockers.append("persistent_fast_retry_open_tick_stream_not_ready")
 
     evidence_max_age = min(
@@ -1896,6 +1905,7 @@ def _fast_lane_gate_evidence(
             candidate_initial_open_window_expiry_epoch_ns
         ),
         "candidate_initial_open_window_label": candidate_initial_open_window_label,
+        "candidate_tick_ingress_epoch_ns": candidate_tick_ingress_epoch_ns,
     }, list(dict.fromkeys(blockers))
 
 
@@ -2127,6 +2137,22 @@ def _persistent_detector_fast_lane_status(
                         if not submit_blockers:
                             readiness = evidence1["readiness"]
                             tick_expiry = expires_epoch_ns
+                            tick_authorization_evidence = {
+                                **tick_stream1,
+                                "expires_epoch_ns": tick_expiry,
+                            }
+                            if scope != "reduce_close_only":
+                                tick_authorization_evidence.update(
+                                    {
+                                        "candidate_symbol": _clean(
+                                            candidate.vt_symbol
+                                        ),
+                                        "candidate_symbol_ready": 1,
+                                        "candidate_ingress_epoch_ns": evidence1[
+                                            "candidate_tick_ingress_epoch_ns"
+                                        ],
+                                    }
+                                )
                             payload = publish_submit_authorization(
                                 path=submit_authorization_path(runtime.output_root),
                                 target_date=target_date,
@@ -2161,10 +2187,9 @@ def _persistent_detector_fast_lane_status(
                                     ],
                                 },
                                 broker_gate_evidence=readiness,
-                                tick_watermark_evidence={
-                                    **tick_stream1,
-                                    "expires_epoch_ns": tick_expiry,
-                                },
+                                tick_watermark_evidence=(
+                                    tick_authorization_evidence
+                                ),
                                 authorization_lane=authorization_lane,
                                 spool_path=runtime.spool_path,
                                 spool_snapshot_digest=snapshot1.snapshot_digest,

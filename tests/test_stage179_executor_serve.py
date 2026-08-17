@@ -1205,6 +1205,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                     "intent_id": "intent-1",
                     "payload_sha256": "a" * 64,
                     "intent_kind": "close",
+                    "vt_symbol": "JM609.DCE",
                     "source": "stage904_c9_intraday_close",
                     "intent_role": "c9_initial_stop_close",
                     "trace_id": "trace-1",

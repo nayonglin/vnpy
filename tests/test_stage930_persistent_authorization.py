@@ -260,7 +260,17 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
                         "stream_ready": 1,
                         "all_symbols_ready": 1,
                         "heartbeat_pid_matches_process": 1,
-                        "summary": {"generated_epoch_ns": time.time_ns()},
+                        "symbol_tick_freshness": {
+                            "blocked_new_risk_symbols": [],
+                        },
+                        "summary": {
+                            "generated_epoch_ns": time.time_ns(),
+                            "symbol_tick_watermarks": {
+                                "JM609.DCE": {
+                                    "ingress_epoch_ns": time.time_ns(),
+                                },
+                            },
+                        },
                     }
                     readiness = {
                         "status": "ready",
