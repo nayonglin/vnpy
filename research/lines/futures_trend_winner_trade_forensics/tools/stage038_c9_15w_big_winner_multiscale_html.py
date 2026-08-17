@@ -69,6 +69,9 @@ INTRADAY_PRE = 5
 INTRADAY_POST = 5
 CHINA_TZ = ZoneInfo("Asia/Shanghai")
 MA_PERIODS = (5, 10, 20, 40)
+# Include a small whole-week cushion because the earliest available source
+# week can be partial even when the product calendar contains that period.
+WEEKLY_MA_WARMUP_WEEKS = max(MA_PERIODS) + 5
 
 
 @dataclass(frozen=True)
@@ -271,15 +274,34 @@ def _context_daily(
     exit_date = pd.Timestamp(row.exit_date).normalize()
     entry_index = _date_index(calendar, entry_date, exact=True)
     exit_index = _date_index(calendar, exit_date, exact=True)
-    start = max(0, entry_index - DAILY_PRE)
-    end = min(len(calendar), exit_index + DAILY_POST + 1)
-    first_period = calendar.loc[start, "date"].to_period("W-FRI")
-    last_period = calendar.loc[end - 1, "date"].to_period("W-FRI")
-    while start > 0 and calendar.loc[start - 1, "date"].to_period("W-FRI") == first_period:
-        start -= 1
-    while end < len(calendar) and calendar.loc[end, "date"].to_period("W-FRI") == last_period:
-        end += 1
-    wanted = calendar.iloc[start:end].copy()
+    display_start = max(0, entry_index - DAILY_PRE)
+    display_end = min(len(calendar), exit_index + DAILY_POST + 1)
+    first_period = calendar.loc[display_start, "date"].to_period("W-FRI")
+    last_period = calendar.loc[display_end - 1, "date"].to_period("W-FRI")
+    while display_start > 0 and calendar.loc[display_start - 1, "date"].to_period("W-FRI") == first_period:
+        display_start -= 1
+    while display_end < len(calendar) and calendar.loc[display_end, "date"].to_period("W-FRI") == last_period:
+        display_end += 1
+    display_dates = set(calendar.iloc[display_start:display_end]["date"])
+
+    # Keep the requested chart window unchanged, but load enough earlier daily
+    # bars to seed a genuine 40-week moving average on the first visible week.
+    warmup_start = display_start
+    if display_start > 0:
+        prior_periods = (
+            calendar.iloc[:display_start]["date"]
+            .dt.to_period("W-FRI")
+            .drop_duplicates()
+            .tail(WEEKLY_MA_WARMUP_WEEKS)
+        )
+        if len(prior_periods):
+            first_warmup_period = prior_periods.iloc[0]
+            warmup_start = int(
+                calendar.index[
+                    calendar["date"].dt.to_period("W-FRI").eq(first_warmup_period)
+                ][0]
+            )
+    wanted = calendar.iloc[warmup_start:display_end].copy()
     def bars(source: str) -> pd.DataFrame:
         if source not in bar_cache:
             bar_cache[source] = _contract_daily(source)
@@ -307,6 +329,7 @@ def _context_daily(
         bar = matched.iloc[0].to_dict()
         bar["source_vt_symbol"] = source
         bar["context_fallback"] = int(source != str(row.vt_symbol))
+        bar["display"] = int(item.date in display_dates)
         output.append(bar)
     daily = pd.DataFrame(output).sort_values("date").reset_index(drop=True)
     _date_index(daily, entry_date, exact=True)
@@ -503,9 +526,7 @@ def _add_moving_averages(frame: pd.DataFrame) -> pd.DataFrame:
     result = frame.copy()
     close = pd.to_numeric(result["close"], errors="coerce")
     for period in MA_PERIODS:
-        # Use available bars at the left viewport boundary instead of hiding
-        # the longer averages.  The HTML explicitly labels these as partial.
-        result[f"ma{period}"] = close.rolling(period, min_periods=1).mean()
+        result[f"ma{period}"] = close.rolling(period, min_periods=period).mean()
     return result
 
 
@@ -521,22 +542,14 @@ def _records(
     for row in winners.itertuples(index=False):
         vt_symbol = str(row.vt_symbol)
         episode_id = str(row.open_trade_id)
-        daily = daily_by_episode[episode_id].copy().reset_index(drop=True)
+        daily_full = daily_by_episode[episode_id].copy().reset_index(drop=True)
+        daily = daily_full[daily_full["display"].eq(1)].copy().reset_index(drop=True)
         entry_date = pd.Timestamp(row.entry_date).normalize()
         exit_date = pd.Timestamp(row.exit_date).normalize()
         entry_index = _date_index(daily, entry_date, exact=True)
         exit_index = _date_index(daily, exit_date, exact=True)
         day_positions = {date: index for index, date in enumerate(daily["date"])}
         daily["x"] = np.arange(len(daily), dtype=float) + 0.5
-        weekly = _add_moving_averages(_weekly_from_daily(daily))
-        weekly["x"] = [
-            float(np.mean([day_positions[value] + 0.5 for value in daily.loc[daily["date"].between(start, end), "date"]]))
-            for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
-        ]
-        weekly["width"] = [
-            int(daily["date"].between(start, end).sum()) * 0.78
-            for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
-        ]
         intraday_dates = intraday_dates_by_episode[episode_id]
         minute_parts: list[pd.DataFrame] = []
         for trading_day in intraday_dates:
@@ -554,11 +567,11 @@ def _records(
         # and rollover-day OHLC disagreements between unrelated feeds.
         aggregated_days: list[str] = []
         for trading_day, group in minute.groupby("trading_day", sort=False):
-            target = daily.index[daily["date"].eq(trading_day)]
+            target = daily_full.index[daily_full["date"].eq(trading_day)]
             if len(target) != 1:
                 continue
             index = int(target[0])
-            daily.loc[index, ["open", "high", "low", "close", "volume"]] = [
+            daily_full.loc[index, ["open", "high", "low", "close", "volume"]] = [
                 group["open"].iloc[0],
                 group["high"].max(),
                 group["low"].min(),
@@ -566,8 +579,17 @@ def _records(
                 group["volume"].sum(),
             ]
             aggregated_days.append(pd.Timestamp(trading_day).date().isoformat())
-        daily = _add_moving_averages(daily)
-        weekly = _add_moving_averages(_weekly_from_daily(daily))
+        daily_full = _add_moving_averages(daily_full)
+        weekly_full = _add_moving_averages(_weekly_from_daily(daily_full))
+        display_start_date = daily.loc[0, "date"]
+        display_end_date = daily.loc[len(daily) - 1, "date"]
+        daily = daily_full[daily_full["display"].eq(1)].copy().reset_index(drop=True)
+        weekly = weekly_full[
+            weekly_full["date_start"].ge(display_start_date)
+            & weekly_full["date_end"].le(display_end_date)
+        ].copy().reset_index(drop=True)
+        day_positions = {date: index for index, date in enumerate(daily["date"])}
+        daily["x"] = np.arange(len(daily), dtype=float) + 0.5
         weekly["x"] = [
             float(np.mean([day_positions[value] + 0.5 for value in daily.loc[daily["date"].between(start, end), "date"]]))
             for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
@@ -711,7 +733,7 @@ select,button{{height:38px;border:1px solid var(--line);border-radius:7px;backgr
 .footer{{font-size:12px;color:var(--muted);padding:10px 2px}} .warn{{color:#b42318;font-weight:600}}
 @media(max-width:1000px){{.toolbar{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}#chart{{height:1050px}}}}
 </style></head><body><div class="page"><h1>{html.escape(title)}</h1>
-<div class="note">每周、每日和每个15分钟柱共用交易日坐标，并分别叠加 MA5/10/20/40；窗口左端不足对应周期时按已有柱计算。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
+<div class="note">每周、每日和每个15分钟柱共用交易日坐标，并分别叠加 MA5/10/20/40；周K和日K使用图窗外历史预热，历史不足完整周期时均线留空，不用短样本冒充。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
 <div class="toolbar"><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
 <div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
 <div class="footer">数据：当前正式 {html.escape(OFFICIAL_LIVE_ALIAS)}（{html.escape(OFFICIAL_LIVE_VERSION)}）；大赢家=R倍数前20%，并补入R缺失但盈利额前20%的交易；部分平仓按一次开仓聚合到最终平仓。本图用于复盘，不是交易规则。</div>
