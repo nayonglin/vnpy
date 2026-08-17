@@ -4277,13 +4277,15 @@ def _stage931_submit_blockers(
 ) -> list[str]:
     blockers: list[str] = []
     close_only_reduce_risk = False
+    candidate: Any | None = None
     try:
         runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
         spool_snapshot = _spool_authorization_snapshot(runtime)
+        candidate = spool_snapshot.candidate
         close_only_reduce_risk = bool(
-            spool_snapshot.candidate is not None
-            and spool_snapshot.candidate.target_date == target_date
-            and spool_snapshot.candidate.intent_kind == "close"
+            candidate is not None
+            and candidate.target_date == target_date
+            and candidate.intent_kind == "close"
         )
     except Exception as exc:
         blockers.append(
@@ -4300,20 +4302,43 @@ def _stage931_submit_blockers(
         blockers.append(f"ready_count={ready_count}")
     if _to_int(getattr(args, "ai_pool_preflight_allowed", 1), 1) != 1 and not close_only_reduce_risk:
         blockers.append("ai_pool_preflight_blocked_new_risk_but_reduce_close_remains_allowed")
-    if (
-        tick_result is not None
-        and _to_int(tick_result.get("all_symbols_ready"), 0) != 1
-        and not close_only_reduce_risk
-    ):
-        blocked_symbols = (
-            (tick_result.get("symbol_tick_freshness") or {}).get("blocked_new_risk_symbols")
-            if isinstance(tick_result.get("symbol_tick_freshness"), dict)
+    if tick_result is not None and not close_only_reduce_risk:
+        freshness = tick_result.get("symbol_tick_freshness")
+        blocked_values = (
+            freshness.get("blocked_new_risk_symbols")
+            if isinstance(freshness, dict)
             else []
         )
-        blockers.append(
-            "tick_stream_symbols_not_fresh_for_new_risk:"
-            + ",".join(map(str, blocked_symbols or []))
+        blocked_symbols = sorted(
+            {
+                _clean(item)
+                for item in (blocked_values or [])
+                if _clean(item)
+            }
         )
+        transport_ready = _to_int(
+            tick_result.get(
+                "transport_ready",
+                tick_result.get("all_symbols_ready", 0),
+            ),
+            0,
+        ) == 1
+        candidate_symbol = _clean(
+            getattr(candidate, "vt_symbol", "")
+        )
+        if not transport_ready:
+            blockers.append(
+                "tick_stream_transport_not_ready_for_new_risk"
+            )
+        elif not candidate_symbol:
+            blockers.append(
+                "tick_stream_candidate_symbol_missing_for_new_risk"
+            )
+        elif candidate_symbol in blocked_symbols:
+            blockers.append(
+                "tick_stream_candidate_not_fresh_for_new_risk:"
+                + candidate_symbol
+            )
     if _to_int(stage927_summary.get("real_submit_permitted"), 0) != 1 and not close_only_reduce_risk:
         blockers.append(f"real_submit_permitted={stage927_summary.get('real_submit_permitted', 0)}")
     if _clean(controller_summary.get("controller_status")) != "phase_d_controller_live_real_ready_no_submit_step" and not close_only_reduce_risk:

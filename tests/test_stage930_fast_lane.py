@@ -171,6 +171,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         source: str = "stage901_pending_order",
         intent_role: str = "c9_initial_open",
         target_date: str = "2026-07-16",
+        vt_symbol: str = "JM609.DCE",
     ) -> SimpleNamespace:
         return SimpleNamespace(
             intent_id=intent_id,
@@ -180,7 +181,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             trace_id=f"trace-{intent_id}",
             target_date=target_date,
             source=source,
-            vt_symbol="JM609.DCE",
+            vt_symbol=vt_symbol,
             state_generation="epoch-1:0",
             position_epoch_id="epoch-1",
             root_position_id="root-1",
@@ -2145,6 +2146,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         stage927 = {"real_submit_permitted": 1}
         tick_result = {
             "all_symbols_ready": 0,
+            "transport_ready": 1,
             "symbol_tick_freshness": {"blocked_new_risk_symbols": ["JM609.DCE"]},
         }
 
@@ -2175,10 +2177,131 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
 
         self.assertTrue(
-            any(item.startswith("tick_stream_symbols_not_fresh_for_new_risk") for item in open_blockers)
+            any(item.startswith("tick_stream_candidate_not_fresh_for_new_risk") for item in open_blockers)
         )
         self.assertFalse(
-            any(item.startswith("tick_stream_symbols_not_fresh_for_new_risk") for item in close_blockers)
+            any(item.startswith("tick_stream_candidate_not_fresh_for_new_risk") for item in close_blockers)
+        )
+
+    def test_unrelated_stale_symbols_do_not_block_fresh_open_candidate(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 1,
+            "symbol_tick_freshness": {
+                "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+            },
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="jm2609.DCE")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertFalse(
+            any(item.startswith("tick_stream_") for item in blockers),
+            blockers,
+        )
+
+    def test_stale_open_candidate_remains_blocked(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 1,
+            "symbol_tick_freshness": {
+                "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+            },
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="si2609.GFEX")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertIn(
+            "tick_stream_candidate_not_fresh_for_new_risk:si2609.GFEX",
+            blockers,
+        )
+
+    def test_unready_transport_blocks_open_candidate(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 0,
+            "symbol_tick_freshness": {"blocked_new_risk_symbols": []},
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="jm2609.DCE")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertIn(
+            "tick_stream_transport_not_ready_for_new_risk",
+            blockers,
         )
 
     def test_run_cycle_rechecks_symbol_freshness_immediately_before_stage931(self) -> None:
@@ -2194,6 +2317,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         pre_submit_tick = {
             "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
             "all_symbols_ready": 0,
+            "transport_ready": 1,
             "symbol_tick_freshness": {"blocked_new_risk_symbols": ["JM609.DCE"]},
         }
         controller = {
@@ -2218,6 +2342,11 @@ class Stage930FastLaneTest(unittest.TestCase):
                 return_value={"summary": {"real_submit_permitted": 1, "order_api_called_count": 0}},
             ),
             patch.object(stage930, "_managed_tick_stream_status", return_value=pre_submit_tick) as gate,
+            patch.object(
+                stage930,
+                "_spool_authorization_snapshot",
+                return_value=self.spool_snapshot(self.spool_candidate()),
+            ),
             patch.object(stage930, "_ready_intents_close_only", return_value=False),
             patch.object(stage930, "_ready_reduce_close_count", return_value=0),
             patch.object(stage930, "_run_stage931") as submit,
@@ -2233,7 +2362,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertIs(cycle["pre_submit_tick_gate"], pre_submit_tick)
         self.assertTrue(
             any(
-                item.startswith("tick_stream_symbols_not_fresh_for_new_risk")
+                item.startswith("tick_stream_candidate_not_fresh_for_new_risk")
                 for item in cycle["stage931_submit_blockers"]
             )
         )
