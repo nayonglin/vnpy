@@ -41,6 +41,27 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         self.assertLess(stage902._age_seconds(future), 0)
         self.assertIsNone(stage902._age_seconds("not-a-timestamp"))
 
+    def test_stage902_readonly_age_gate_enforces_both_ttl_boundaries(self) -> None:
+        import run_qmt_roll_stage902_official_live_phase_d_readiness_gate as stage902
+
+        cases = (
+            (0.0, True),
+            (1.0, True),
+            (300.0, True),
+            (-0.001, False),
+            (300.001, False),
+            (None, False),
+        )
+        for age_seconds, expected in cases:
+            with self.subTest(age_seconds=age_seconds):
+                self.assertEqual(
+                    expected,
+                    stage902._readonly_snapshot_age_ready(
+                        age_seconds,
+                        max_snapshot_age_seconds=300,
+                    ),
+                )
+
     def test_live_config_import_does_not_build_historical_candidate_paths(self) -> None:
         import run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest as fu_candidate
 

@@ -100,6 +100,17 @@ def _age_seconds(value: Any) -> float | None:
     return round((current_dt - generated_dt).total_seconds(), 3)
 
 
+def _readonly_snapshot_age_ready(
+    age_seconds: float | None,
+    *,
+    max_snapshot_age_seconds: float,
+) -> bool:
+    return bool(
+        age_seconds is not None
+        and 0 <= age_seconds <= max_snapshot_age_seconds
+    )
+
+
 def _target_age_days(target_date: str) -> int | None:
     try:
         return (date.today() - datetime.strptime(target_date, "%Y-%m-%d").date()).days
@@ -358,8 +369,10 @@ def main() -> None:
     readonly_ready = (
         readonly_summary.get("status") == "readonly_snapshots_received"
         and position_state in {"confirmed_flat", "positions_received"}
-        and readonly_age is not None
-        and readonly_age <= args.max_snapshot_age_seconds
+        and _readonly_snapshot_age_ready(
+            readonly_age,
+            max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        )
     )
 
     stage260_executable_count = _to_int(stage260_summary.get("executable_count"), 0)
