@@ -876,6 +876,9 @@ class CtpExecutionSession:
         lease_execution_guard: Callable[[], Any] | None = None,
         post_lease_blockers: Callable[[Any], list[str]] | None = None,
         connection_generation_observer: Callable[[str], None] | None = None,
+        order_api_count_snapshot: (
+            Callable[[], Mapping[str, Any]] | None
+        ) = None,
         epoch_ns: Callable[[], int] = time.time_ns,
         monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
@@ -903,6 +906,7 @@ class CtpExecutionSession:
         self._connection_generation_observer = (
             connection_generation_observer or (lambda _: None)
         )
+        self._order_api_count_snapshot = order_api_count_snapshot
         self._epoch_ns = epoch_ns
         self._monotonic = monotonic
         self._connected = False
@@ -911,6 +915,7 @@ class CtpExecutionSession:
         self._lifecycle_lock = Lock()
         self.api_slot_call_count = 0
         self.send_order_call_count = 0
+        self.cancel_order_call_count = 0
 
     @classmethod
     def for_callbacks(cls, **kwargs: Any) -> CtpExecutionSession:
@@ -968,6 +973,40 @@ class CtpExecutionSession:
             issued = int(now_epoch_ns)
             ttl_ns = int(self.readiness_ttl_seconds * 1_000_000_000)
             profile = getattr(getattr(self.runtime, "profile", ""), "value", "")
+            if self._order_api_count_snapshot is None:
+                order_api_evidence: Mapping[str, Any] = {
+                    "send_order_api_called_count": self.send_order_call_count,
+                    "cancel_order_api_called_count": self.cancel_order_call_count,
+                    "order_api_called_count": (
+                        self.send_order_call_count
+                        + self.cancel_order_call_count
+                    ),
+                    "order_api_evidence_complete": 1,
+                }
+            else:
+                try:
+                    order_api_evidence = self._order_api_count_snapshot()
+                except BaseException:
+                    order_api_evidence = {}
+            send_count = order_api_evidence.get(
+                "send_order_api_called_count"
+            )
+            cancel_count = order_api_evidence.get(
+                "cancel_order_api_called_count"
+            )
+            total_count = order_api_evidence.get("order_api_called_count")
+            evidence_complete = int(
+                type(send_count) is int
+                and send_count >= 0
+                and type(cancel_count) is int
+                and cancel_count >= 0
+                and type(total_count) is int
+                and total_count == send_count + cancel_count
+                and order_api_evidence.get(
+                    "order_api_evidence_complete"
+                )
+                == 1
+            )
             return TdReadinessLease(
                 service_generation=self.service_generation,
                 connection_generation=self._connection_generation,
@@ -979,6 +1018,17 @@ class CtpExecutionSession:
                 last_complete_startup_bundle_epoch_ns=(
                     self._last_complete_startup_bundle_epoch_ns
                 ),
+                service_kind="warm_live_executor",
+                send_order_api_called_count=(
+                    send_count if type(send_count) is int else 0
+                ),
+                cancel_order_api_called_count=(
+                    cancel_count if type(cancel_count) is int else 0
+                ),
+                order_api_called_count=(
+                    total_count if type(total_count) is int else 0
+                ),
+                order_api_evidence_complete=evidence_complete,
             )
 
     def transport_blockers(self) -> list[str]:
@@ -1031,6 +1081,24 @@ class CtpExecutionSession:
         profile = getattr(getattr(self.runtime, "profile", ""), "value", "")
         if readiness.runtime_profile != str(profile):
             blockers.append("stage179_readiness_runtime_profile_mismatch")
+        if readiness.service_kind != "warm_live_executor":
+            blockers.append("stage179_readiness_service_kind_invalid")
+        send_count = readiness.send_order_api_called_count
+        cancel_count = readiness.cancel_order_api_called_count
+        total_count = readiness.order_api_called_count
+        if readiness.order_api_evidence_complete != 1:
+            blockers.append(
+                "stage179_readiness_order_api_evidence_incomplete"
+            )
+        if not (
+            type(send_count) is int
+            and send_count >= 0
+            and type(cancel_count) is int
+            and cancel_count >= 0
+            and type(total_count) is int
+            and total_count == send_count + cancel_count
+        ):
+            blockers.append("stage179_readiness_order_api_counts_invalid")
         blockers.extend(self.transport_blockers())
         return list(dict.fromkeys(blockers))
 
@@ -3598,6 +3666,59 @@ def _connect_ctp_without_timer_queries(
     event_engine.unregister(EVENT_TIMER, ctp_gateway.process_timer_event)
 
 
+def _native_order_api_count_snapshot(
+    rows: Mapping[str, Any],
+) -> dict[str, int]:
+    ingress_lock = rows.get("_execution_event_ingress_lock")
+    guard = (
+        ingress_lock
+        if hasattr(ingress_lock, "__enter__")
+        else nullcontext()
+    )
+    with guard:
+        counts = rows.get("_native_order_api_call_counts")
+        if not isinstance(counts, Mapping):
+            return {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+                "order_api_evidence_complete": 0,
+            }
+        send_count = counts.get("send_order_api_called_count")
+        cancel_count = counts.get("cancel_order_api_called_count")
+        complete = int(
+            type(send_count) is int
+            and send_count >= 0
+            and type(cancel_count) is int
+            and cancel_count >= 0
+        )
+        if not complete:
+            return {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+                "order_api_evidence_complete": 0,
+            }
+        return {
+            "send_order_api_called_count": send_count,
+            "cancel_order_api_called_count": cancel_count,
+            "order_api_called_count": send_count + cancel_count,
+            "order_api_evidence_complete": 1,
+        }
+
+
+def _increment_native_order_api_call_count(
+    rows: dict[str, Any], field: str
+) -> None:
+    counts = rows.get("_native_order_api_call_counts")
+    if not isinstance(counts, dict):
+        raise RuntimeError("stage179_native_order_api_counts_missing")
+    value = counts.get(field)
+    if type(value) is not int or value < 0:
+        raise RuntimeError("stage179_native_order_api_counts_invalid")
+    counts[field] = value + 1
+
+
 @contextmanager
 def _instrument_ctp_readiness_callbacks(
     td_api_class: Any,
@@ -3605,6 +3726,13 @@ def _instrument_ctp_readiness_callbacks(
     *,
     on_front_disconnected: Callable[[int], None] | None = None,
 ) -> Iterator[None]:
+    rows.setdefault(
+        "_native_order_api_call_counts",
+        {
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+        },
+    )
     original_settlement_rsp = td_api_class.onRspSettlementInfoConfirm
     original_account_rsp = td_api_class.onRspQryTradingAccount
     max_order_volume_rsp_existed = hasattr(
@@ -3991,6 +4119,9 @@ def _instrument_ctp_readiness_callbacks(
                 # append failure aborts here and therefore proves no native
                 # side effect.
                 before_native(self, dict(data), reqid)
+                _increment_native_order_api_call_count(
+                    rows, "send_order_api_called_count"
+                )
                 result = original_order_insert(self, data, reqid)
             audit["request_ret"] = _to_int(result, -1)
             return result
@@ -4006,7 +4137,17 @@ def _instrument_ctp_readiness_callbacks(
             "requested_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
         try:
-            result = original_order_action(self, data, reqid)
+            ingress_lock = rows.get("_execution_event_ingress_lock")
+            guard = (
+                ingress_lock
+                if hasattr(ingress_lock, "__enter__")
+                else nullcontext()
+            )
+            with guard:
+                _increment_native_order_api_call_count(
+                    rows, "cancel_order_api_called_count"
+                )
+                result = original_order_action(self, data, reqid)
             audit["request_ret"] = _to_int(result, -1)
             return result
         except Exception as exc:
@@ -9560,6 +9701,10 @@ def _build_stage179_warm_ctp_session(
             "_execution_event_ingress_lock": (
                 execution_event_ingress_lock
             ),
+            "_native_order_api_call_counts": {
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+            },
         },
         "intent_contexts": {},
         "order_contexts": {},
@@ -12483,6 +12628,9 @@ def _build_stage179_warm_ctp_session(
         post_api_slot_safe_terminal=post_api_slot_safe_terminal,
         connection_generation_observer=lambda generation: state.__setitem__(
             "connection_generation", generation
+        ),
+        order_api_count_snapshot=lambda: _native_order_api_count_snapshot(
+            state["rows"]
         ),
         reserve_api_slot=reserve_api_slot,
         send_order=send_order,

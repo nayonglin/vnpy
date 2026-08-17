@@ -288,6 +288,7 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         self.assertIn("deadline_expired_close_critical", by_offset.loc["close", "executor_reason"])
         self.assertEqual(0, result.summary["send_order_api_called_count"])
         self.assertEqual(0, result.summary["cancel_order_api_called_count"])
+        self.assertEqual(0, result.summary["order_api_called_count"])
 
     def test_in_memory_stage904_result_does_not_read_stage904_files(self) -> None:
         action = self._traced_action(

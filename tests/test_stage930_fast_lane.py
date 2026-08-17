@@ -730,6 +730,36 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(0, evidence["send_order_api_called_count"])
         self.assertEqual(0, forged["complete"])
 
+    def test_live_warm_counters_are_bound_to_readiness(self) -> None:
+        evidence = stage930._live_warm_order_evidence(
+            {
+                "service_kind": "warm_live_executor",
+                "service_generation": "service-1",
+                "send_order_api_called_count": 2,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 2,
+                "order_api_evidence_complete": 1,
+            }
+        )
+        forged = stage930._live_warm_order_evidence(
+            {
+                "service_kind": "warm_live_executor",
+                "service_generation": "service-1",
+                "send_order_api_called_count": 2,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+                "order_api_evidence_complete": 1,
+            }
+        )
+
+        self.assertEqual(1, evidence["complete"])
+        self.assertEqual(2, evidence["order_api_called_count"])
+        self.assertEqual(0, forged["complete"])
+        self.assertIn(
+            "order_api_called_count_inconsistent",
+            forged["missing_fields"],
+        )
+
     def test_readonly_qualification_cycle_keeps_latest_complete_snapshot(self) -> None:
         ready = {
             "cycle_started_epoch_ns": 30,
@@ -1578,6 +1608,182 @@ class Stage930FastLaneTest(unittest.TestCase):
         legacy.assert_not_called()
         self.assertEqual(1, cycle["stage931"]["wake_socket_notified"])
         self.assertEqual(1, cycle["stage931"]["submit_authorization"]["authorized"])
+
+    def test_warm_cycle_does_not_sum_repeated_stage931_cumulative_counts(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
+        args.stage179_runtime_root = ""
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "summary": {
+                "target_date": "2026-07-16",
+                "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                "stage905_executor_status": "executor_dry_run_ready",
+                "stage905_blocked_count": 0,
+                "stage905_ready_count": 1,
+                "stage904_retry_open_dry_run_count": 0,
+                "order_api_called_count": 0,
+            },
+            "fast_lane_send_order_api_called_count": 1,
+            "fast_lane_cancel_order_api_called_count": 1,
+            "fast_lane_order_api_called_count": 2,
+            "fast_lane_order_api_service_generation": "service-1",
+            "fast_lane_order_api_evidence_complete": 1,
+        }
+        stage927_result = {
+            "summary": {
+                **self.stage927_authority(initial_open_submit_permitted=1),
+                "order_api_called_count": 0,
+            },
+            "fast_lane_send_order_api_called_count": 1,
+            "fast_lane_cancel_order_api_called_count": 1,
+            "fast_lane_order_api_called_count": 2,
+            "fast_lane_order_api_service_generation": "service-1",
+            "fast_lane_order_api_evidence_complete": 1,
+        }
+        warm_status = {
+            "submit_status": "warm_executor_ready",
+            "exit_code": 0,
+            "summary": {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+                "order_api_evidence_complete": 1,
+            },
+        }
+        tick_gate = {
+            "refresh_status": "tick_stream_ready",
+            "all_symbols_ready": 1,
+            "symbol_tick_freshness": {"blocked_new_risk_symbols": []},
+        }
+        with (
+            patch.object(stage930, "_start_stage931_service"),
+            patch.object(stage930, "_revoke_stage931_submit_authorization"),
+            patch.object(stage930, "_market_execution_session_active", return_value=True),
+            patch.object(stage930, "_watched_symbols_for_args", return_value=["SI609.GFEX"]),
+            patch.object(stage930, "_run_tick_refresh", return_value=tick_gate),
+            patch.object(stage930, "_run_stage903", return_value=controller),
+            patch.object(stage930, "_run_stage927", return_value=stage927_result),
+            patch.object(stage930, "_managed_tick_stream_status", return_value=tick_gate),
+            patch.object(
+                stage930,
+                "_spool_authorization_snapshot",
+                return_value=self.spool_snapshot(self.spool_candidate(vt_symbol="SI609.GFEX")),
+            ),
+            patch.object(stage930, "_ready_intents_close_only", return_value=False),
+            patch.object(stage930, "_ready_reduce_close_count", return_value=0),
+            patch.object(stage930, "_status_stage931_service", return_value=warm_status),
+            patch.object(
+                stage930,
+                "_publish_stage931_submit_authorization",
+                return_value={"authorized": 1},
+            ),
+            patch.object(stage930, "_wake_stage931_service", return_value=True),
+        ):
+            cycle = stage930.run_cycle(
+                args,
+                "2026-07-16",
+                {"command_log": Path("unused")},
+            )
+
+        self.assertEqual(1, cycle["send_order_api_called_count"])
+        self.assertEqual(1, cycle["cancel_order_api_called_count"])
+        self.assertEqual(2, cycle["order_api_called_count"])
+
+    def test_daemon_warm_cycle_aggregation_uses_cumulative_max(self) -> None:
+        cycles = [
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+            },
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+            },
+        ]
+
+        self.assertEqual(
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+            },
+            stage930._aggregate_daemon_order_api_counts(
+                cycles,
+                stage179_execution_mode="warm",
+            ),
+        )
+
+    def test_daemon_warm_aggregation_sums_distinct_service_generations(self) -> None:
+        cycles = [
+            {
+                "send_order_api_called_count": 5,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 5,
+                "order_api_service_generation": "service-a",
+            },
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-b",
+            },
+        ]
+
+        self.assertEqual(
+            {
+                "send_order_api_called_count": 6,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 7,
+                "order_api_service_generation": "multiple:2",
+                "order_api_generation_counts": {
+                    "service-a": {
+                        "send_order_api_called_count": 5,
+                        "cancel_order_api_called_count": 0,
+                        "order_api_called_count": 5,
+                    },
+                    "service-b": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    },
+                },
+            },
+            stage930._aggregate_daemon_order_api_counts(
+                cycles,
+                stage179_execution_mode="warm",
+            ),
+        )
 
     def test_published_live_authorization_is_self_validating(self) -> None:
         args = self.args()

@@ -1909,6 +1909,7 @@ def run_executor_dry_run(
         "input_blockers": list(stage904_batch_blockers),
         "send_order_api_called_count": send_count,
         "cancel_order_api_called_count": cancel_count,
+        "order_api_called_count": send_count + cancel_count,
         "stage902_overall_status": stage902_summary.get("overall_status", ""),
         "stage260_executable_count": stage260_summary.get("executable_count", 0),
         "execution_ledger_rows": int(len(execution_ledger_rows)),

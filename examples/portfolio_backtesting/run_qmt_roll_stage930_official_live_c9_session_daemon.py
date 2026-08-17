@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+from collections.abc import Mapping
 from dataclasses import asdict, is_dataclass
 import fcntl
 import hashlib
@@ -2405,6 +2406,12 @@ def _persistent_detector_fast_lane_status(
         "send_order_api_called_count": send_order_api_count,
         "cancel_order_api_called_count": cancel_order_api_count,
         "order_api_called_count": order_api_count,
+        "order_api_service_generation": _clean(
+            stage931_summary.get("order_api_service_generation")
+        ),
+        "order_api_generation_counts": stage931_summary.get(
+            "order_api_generation_counts", {}
+        ),
         "order_api_evidence_complete": int(order_api_counts_valid),
         "order_api_evidence_missing_fields": (
             []
@@ -2792,18 +2799,47 @@ def _run_idle_fast_lane(
     send_order_api_called_count = 0
     cancel_order_api_called_count = 0
     order_api_called_count = 0
+    order_api_service_generation = ""
+    order_api_generation_counts: dict[str, Any] = {}
     order_api_evidence_missing_fields: list[str] = []
     while monotonic() < deadline:
         if _market_execution_session_active():
             result = _safe_run_fast_intraday_lane(args, target_date, paths)
             run_count += 1
-            send_order_api_called_count += _to_int(
-                result.get("send_order_api_called_count"), 0
+            combined_counts = _aggregate_order_api_count_rows(
+                [
+                    {
+                        "send_order_api_called_count": send_order_api_called_count,
+                        "cancel_order_api_called_count": cancel_order_api_called_count,
+                        "order_api_called_count": order_api_called_count,
+                        "order_api_service_generation": (
+                            order_api_service_generation
+                        ),
+                        "order_api_generation_counts": (
+                            order_api_generation_counts
+                        ),
+                    },
+                    _order_api_count_observation(result),
+                ],
+                stage179_execution_mode=getattr(
+                    args, "stage179_execution_mode", "legacy-once"
+                ),
             )
-            cancel_order_api_called_count += _to_int(
-                result.get("cancel_order_api_called_count"), 0
+            send_order_api_called_count = combined_counts[
+                "send_order_api_called_count"
+            ]
+            cancel_order_api_called_count = combined_counts[
+                "cancel_order_api_called_count"
+            ]
+            order_api_called_count = combined_counts[
+                "order_api_called_count"
+            ]
+            order_api_service_generation = combined_counts.get(
+                "order_api_service_generation", ""
             )
-            order_api_called_count += _to_int(result.get("order_api_called_count"), 0)
+            order_api_generation_counts = combined_counts.get(
+                "order_api_generation_counts", {}
+            )
             if result.get("order_api_evidence_complete") != 1:
                 details = result.get("order_api_evidence_missing_fields")
                 order_api_evidence_missing_fields.extend(
@@ -2826,6 +2862,8 @@ def _run_idle_fast_lane(
         "send_order_api_called_count": send_order_api_called_count,
         "cancel_order_api_called_count": cancel_order_api_called_count,
         "order_api_called_count": order_api_called_count,
+        "order_api_service_generation": order_api_service_generation,
+        "order_api_generation_counts": order_api_generation_counts,
         "order_api_evidence_complete": int(
             not order_api_evidence_missing_fields
         ),
@@ -2854,6 +2892,8 @@ def _run_command_with_fast_lane(
     fast_lane_send_order_api_called_count = 0
     fast_lane_cancel_order_api_called_count = 0
     fast_lane_order_api_called_count = 0
+    fast_lane_order_api_service_generation = ""
+    fast_lane_order_api_generation_counts: dict[str, Any] = {}
     fast_lane_order_api_evidence_missing_fields: list[str] = []
     timed_out = False
     proc: subprocess.Popen[Any] | None = None
@@ -2884,14 +2924,51 @@ def _run_command_with_fast_lane(
                         submit_reduce_close=submit_reduce_close,
                     )
                     fast_lane_run_count += 1
-                    fast_lane_send_order_api_called_count += _to_int(
-                        fast_result.get("send_order_api_called_count"), 0
+                    combined_counts = _aggregate_order_api_count_rows(
+                        [
+                            {
+                                "send_order_api_called_count": (
+                                    fast_lane_send_order_api_called_count
+                                ),
+                                "cancel_order_api_called_count": (
+                                    fast_lane_cancel_order_api_called_count
+                                ),
+                                "order_api_called_count": (
+                                    fast_lane_order_api_called_count
+                                ),
+                                "order_api_service_generation": (
+                                    fast_lane_order_api_service_generation
+                                ),
+                                "order_api_generation_counts": (
+                                    fast_lane_order_api_generation_counts
+                                ),
+                            },
+                            _order_api_count_observation(fast_result),
+                        ],
+                        stage179_execution_mode=getattr(
+                            args,
+                            "stage179_execution_mode",
+                            "legacy-once",
+                        ),
                     )
-                    fast_lane_cancel_order_api_called_count += _to_int(
-                        fast_result.get("cancel_order_api_called_count"), 0
+                    fast_lane_send_order_api_called_count = combined_counts[
+                        "send_order_api_called_count"
+                    ]
+                    fast_lane_cancel_order_api_called_count = combined_counts[
+                        "cancel_order_api_called_count"
+                    ]
+                    fast_lane_order_api_called_count = combined_counts[
+                        "order_api_called_count"
+                    ]
+                    fast_lane_order_api_service_generation = (
+                        combined_counts.get(
+                            "order_api_service_generation", ""
+                        )
                     )
-                    fast_lane_order_api_called_count += _to_int(
-                        fast_result.get("order_api_called_count"), 0
+                    fast_lane_order_api_generation_counts = (
+                        combined_counts.get(
+                            "order_api_generation_counts", {}
+                        )
                     )
                     if fast_result.get("order_api_evidence_complete") != 1:
                         details = fast_result.get(
@@ -2944,6 +3021,12 @@ def _run_command_with_fast_lane(
         "fast_lane_send_order_api_called_count": fast_lane_send_order_api_called_count,
         "fast_lane_cancel_order_api_called_count": fast_lane_cancel_order_api_called_count,
         "fast_lane_order_api_called_count": fast_lane_order_api_called_count,
+        "fast_lane_order_api_service_generation": (
+            fast_lane_order_api_service_generation
+        ),
+        "fast_lane_order_api_generation_counts": (
+            fast_lane_order_api_generation_counts
+        ),
         "fast_lane_order_api_evidence_complete": int(
             not fast_lane_order_api_evidence_missing_fields
         ),
@@ -3394,6 +3477,165 @@ def _no_submit_prewarm_order_evidence(readiness: dict[str, Any]) -> dict[str, An
     }
 
 
+def _live_warm_order_evidence(readiness: dict[str, Any]) -> dict[str, Any]:
+    required_fields = (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    missing = [
+        field
+        for field in required_fields
+        if type(readiness.get(field)) is not int or readiness.get(field) < 0
+    ]
+    if readiness.get("service_kind") != "warm_live_executor":
+        missing.append("service_kind")
+    if readiness.get("order_api_evidence_complete") != 1:
+        missing.append("order_api_evidence_complete")
+    service_generation = _clean(readiness.get("service_generation"))
+    if not service_generation:
+        missing.append("service_generation")
+    send = readiness.get("send_order_api_called_count")
+    cancel = readiness.get("cancel_order_api_called_count")
+    total = readiness.get("order_api_called_count")
+    if all(type(value) is int and value >= 0 for value in (send, cancel, total)):
+        if total != send + cancel:
+            missing.append("order_api_called_count_inconsistent")
+    return {
+        "complete": int(not missing),
+        "missing_fields": missing,
+        "send_order_api_called_count": send,
+        "cancel_order_api_called_count": cancel,
+        "order_api_called_count": total,
+        "order_api_service_generation": service_generation,
+    }
+
+
+def _aggregate_order_api_count_rows(
+    rows: list[dict[str, Any]],
+    *,
+    stage179_execution_mode: str,
+) -> dict[str, Any]:
+    if stage179_execution_mode != "warm":
+        return {
+            field: sum(_to_int(row.get(field), 0) for row in rows)
+            for field in (
+                "send_order_api_called_count",
+                "cancel_order_api_called_count",
+                "order_api_called_count",
+            )
+        }
+
+    generation_counts: dict[str, dict[str, int]] = {}
+    missing_generation_index = 0
+    fields = (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    for row in rows:
+        embedded = row.get("order_api_generation_counts")
+        observations: list[tuple[str, Mapping[str, Any]]] = []
+        if isinstance(embedded, Mapping):
+            observations.extend(
+                (str(generation), counts)
+                for generation, counts in embedded.items()
+                if isinstance(counts, Mapping)
+            )
+        else:
+            counts = {field: _to_int(row.get(field), 0) for field in fields}
+            generation = _clean(row.get("order_api_service_generation"))
+            if not generation and any(counts.values()):
+                missing_generation_index += 1
+                generation = (
+                    f"__missing_service_generation__:{missing_generation_index}"
+                )
+            if generation:
+                observations.append((generation, counts))
+        for generation, counts in observations:
+            current = generation_counts.setdefault(
+                generation,
+                {field: 0 for field in fields},
+            )
+            for field in fields:
+                current[field] = max(
+                    current[field],
+                    _to_int(counts.get(field), 0),
+                )
+
+    result: dict[str, Any] = {}
+    for field in (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    ):
+        result[field] = sum(
+            counts[field] for counts in generation_counts.values()
+        )
+    generations = sorted(generation_counts)
+    result["order_api_service_generation"] = (
+        generations[0]
+        if len(generations) == 1
+        else f"multiple:{len(generations)}"
+        if generations
+        else ""
+    )
+    result["order_api_generation_counts"] = generation_counts
+    return result
+
+
+def _aggregate_daemon_order_api_counts(
+    cycles: list[dict[str, Any]],
+    *,
+    stage179_execution_mode: str,
+) -> dict[str, Any]:
+    result = _aggregate_order_api_count_rows(
+        cycles,
+        stage179_execution_mode=stage179_execution_mode,
+    )
+    if stage179_execution_mode != "warm":
+        return result
+    return {
+        "send_order_api_called_count": result[
+            "send_order_api_called_count"
+        ],
+        "cancel_order_api_called_count": result[
+            "cancel_order_api_called_count"
+        ],
+        "order_api_called_count": result["order_api_called_count"],
+        "order_api_service_generation": result[
+            "order_api_service_generation"
+        ],
+        "order_api_generation_counts": result[
+            "order_api_generation_counts"
+        ],
+    }
+
+
+def _order_api_count_observation(
+    row: Mapping[str, Any], *, prefix: str = ""
+) -> dict[str, Any]:
+    observation: dict[str, Any] = {
+        field: _to_int(row.get(f"{prefix}{field}"), 0)
+        for field in (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        )
+    }
+    generation = _clean(
+        row.get(f"{prefix}order_api_service_generation")
+    )
+    generation_counts = row.get(
+        f"{prefix}order_api_generation_counts"
+    )
+    if generation:
+        observation["order_api_service_generation"] = generation
+    if isinstance(generation_counts, Mapping):
+        observation["order_api_generation_counts"] = generation_counts
+    return observation
+
+
 def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
     process = _STAGE931_SERVICE_PROCESS
     runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
@@ -3413,9 +3655,17 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("stage931_warm_readiness_expired")
     if _clean(readiness.get("runtime_profile")) != runtime.profile.value:
         blockers.append("stage931_warm_readiness_profile_mismatch")
-    no_submit_evidence = _no_submit_prewarm_order_evidence(readiness)
-    if args.submit_mode != "live-real" and not no_submit_evidence["complete"]:
-        blockers.append("stage931_no_submit_order_evidence_incomplete")
+    order_evidence = (
+        _live_warm_order_evidence(readiness)
+        if args.submit_mode == "live-real"
+        else _no_submit_prewarm_order_evidence(readiness)
+    )
+    if not order_evidence["complete"]:
+        blockers.append(
+            "stage931_live_order_evidence_incomplete"
+            if args.submit_mode == "live-real"
+            else "stage931_no_submit_order_evidence_incomplete"
+        )
     return {
         "submit_status": (
             (
@@ -3433,19 +3683,39 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         "readiness": readiness,
         "blockers": blockers,
         "summary": {
-            "order_api_called_count": no_submit_evidence[
+            "order_api_called_count": order_evidence[
                 "order_api_called_count"
             ],
-            "send_order_api_called_count": no_submit_evidence[
+            "send_order_api_called_count": order_evidence[
                 "send_order_api_called_count"
             ],
-            "cancel_order_api_called_count": no_submit_evidence[
+            "cancel_order_api_called_count": order_evidence[
                 "cancel_order_api_called_count"
             ],
-            "order_api_evidence_complete": no_submit_evidence["complete"],
-            "order_api_evidence_missing_fields": no_submit_evidence[
+            "order_api_evidence_complete": order_evidence["complete"],
+            "order_api_evidence_missing_fields": order_evidence[
                 "missing_fields"
             ],
+            "order_api_service_generation": order_evidence.get(
+                "order_api_service_generation", ""
+            ),
+            "order_api_generation_counts": (
+                {
+                    order_evidence["order_api_service_generation"]: {
+                        "send_order_api_called_count": order_evidence[
+                            "send_order_api_called_count"
+                        ],
+                        "cancel_order_api_called_count": order_evidence[
+                            "cancel_order_api_called_count"
+                        ],
+                        "order_api_called_count": order_evidence[
+                            "order_api_called_count"
+                        ],
+                    }
+                }
+                if order_evidence.get("order_api_service_generation")
+                else {}
+            ),
         },
     }
 
@@ -4944,31 +5214,29 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
             "order_api_called_count": 0,
         },
     }
-    order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("order_api_called_count"), 0)
+    cycle_order_api_counts = _aggregate_order_api_count_rows(
+        [
+            _order_api_count_observation(stage903_result.get("summary", {})),
+            _order_api_count_observation(stage903_result, prefix="fast_lane_"),
+            _order_api_count_observation(stage927_result.get("summary", {})),
+            _order_api_count_observation(stage927_result, prefix="fast_lane_"),
+            _order_api_count_observation(stage931_result.get("summary", {})),
+            _order_api_count_observation(stage931_result, prefix="fast_lane_"),
+            _order_api_count_observation(
+                post_submit_reduce_close.get("summary", {})
+            ),
+        ],
+        stage179_execution_mode=getattr(
+            args, "stage179_execution_mode", "legacy-once"
+        ),
     )
-    send_order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("send_order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("send_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("send_order_api_called_count"), 0)
-    )
-    cancel_order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("cancel_order_api_called_count"), 0)
-    )
+    send_order_api_called = cycle_order_api_counts[
+        "send_order_api_called_count"
+    ]
+    cancel_order_api_called = cycle_order_api_counts[
+        "cancel_order_api_called_count"
+    ]
+    order_api_called = cycle_order_api_counts["order_api_called_count"]
     cycle_finished_epoch_ns = time.time_ns()
     open_minute_tick_ingress_epoch_ns = _tick_result_ingress_epoch_ns(
         tick_result
@@ -4982,6 +5250,21 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         stage931_result=stage931_result,
         post_submit_reduce_close=post_submit_reduce_close,
     )
+    if getattr(args, "stage179_execution_mode", "legacy-once") == "warm":
+        generation_counts = cycle_order_api_counts.get(
+            "order_api_generation_counts", {}
+        )
+        if any(
+            str(generation).startswith("__missing_service_generation__:")
+            for generation in generation_counts
+        ):
+            order_api_evidence_missing_fields.append(
+                "warm_order_api_service_generation_missing"
+            )
+        if order_api_called != send_order_api_called + cancel_order_api_called:
+            order_api_evidence_missing_fields.append(
+                "warm_order_api_called_count_inconsistent"
+            )
     return {
         "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "cycle_started_epoch_ns": cycle_started_epoch_ns,
@@ -5010,6 +5293,12 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "send_order_api_called_count": send_order_api_called,
         "cancel_order_api_called_count": cancel_order_api_called,
         "order_api_called_count": order_api_called,
+        "order_api_service_generation": cycle_order_api_counts.get(
+            "order_api_service_generation", ""
+        ),
+        "order_api_generation_counts": cycle_order_api_counts.get(
+            "order_api_generation_counts", {}
+        ),
         "order_api_evidence_complete": int(
             not order_api_evidence_missing_fields
         ),
@@ -5331,15 +5620,19 @@ def main() -> None:
             status = "daemon_cycle_exception_fail_closed"
         cycles.append(cycle)
         _append_event(paths["events_ndjson"], {"event_type": "stage930_cycle", **cycle})
-        total_send_order_api = sum(
-            _to_int(item.get("send_order_api_called_count"), 0)
-            for item in cycles
+        daemon_order_api_counts = _aggregate_daemon_order_api_counts(
+            cycles,
+            stage179_execution_mode=args.stage179_execution_mode,
         )
-        total_cancel_order_api = sum(
-            _to_int(item.get("cancel_order_api_called_count"), 0)
-            for item in cycles
-        )
-        total_order_api = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
+        total_send_order_api = daemon_order_api_counts[
+            "send_order_api_called_count"
+        ]
+        total_cancel_order_api = daemon_order_api_counts[
+            "cancel_order_api_called_count"
+        ]
+        total_order_api = daemon_order_api_counts[
+            "order_api_called_count"
+        ]
         order_api_evidence_missing_fields = [
             f"cycle[{index}]:{field}"
             for index, item in enumerate(cycles)
@@ -5356,6 +5649,10 @@ def main() -> None:
         ) and not order_api_evidence_missing_fields:
             order_api_evidence_missing_fields.append(
                 "cycle_order_api_evidence_incomplete_without_detail"
+            )
+        if total_order_api != total_send_order_api + total_cancel_order_api:
+            order_api_evidence_missing_fields.append(
+                "daemon_order_api_called_count_inconsistent"
             )
         session_timing = _session_timing_evidence(cycles)
         summary = {
@@ -5465,15 +5762,23 @@ def main() -> None:
                 pass
         if _to_int(idle_fast_lane.get("run_count"), 0) > 0:
             cycle["between_cycle_fast_lane"] = idle_fast_lane
-            cycle["send_order_api_called_count"] = _to_int(
-                cycle.get("send_order_api_called_count"), 0
-            ) + _to_int(idle_fast_lane.get("send_order_api_called_count"), 0)
-            cycle["cancel_order_api_called_count"] = _to_int(
-                cycle.get("cancel_order_api_called_count"), 0
-            ) + _to_int(idle_fast_lane.get("cancel_order_api_called_count"), 0)
-            cycle["order_api_called_count"] = _to_int(cycle.get("order_api_called_count"), 0) + _to_int(
-                idle_fast_lane.get("order_api_called_count"), 0
+            combined_counts = _aggregate_order_api_count_rows(
+                [cycle, idle_fast_lane],
+                stage179_execution_mode=args.stage179_execution_mode,
             )
+            cycle.update(combined_counts)
+            if cycle["order_api_called_count"] != (
+                cycle["send_order_api_called_count"]
+                + cycle["cancel_order_api_called_count"]
+            ):
+                cycle["order_api_evidence_complete"] = 0
+                missing = cycle.get("order_api_evidence_missing_fields")
+                if not isinstance(missing, list):
+                    missing = []
+                cycle["order_api_evidence_missing_fields"] = [
+                    *missing,
+                    "between_cycle_order_api_called_count_inconsistent",
+                ]
             idle_fast_lane_exceptions = [
                 str(item.get("fast_lane_status"))
                 for item in idle_fast_lane.get("recent_runs", [])
@@ -5497,15 +5802,12 @@ def main() -> None:
                 ]
             summary["latest_cycle"] = cycle
             summary["generated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            summary["send_order_api_called_count"] = sum(
-                _to_int(item.get("send_order_api_called_count"), 0)
-                for item in cycles
+            summary.update(
+                _aggregate_daemon_order_api_counts(
+                    cycles,
+                    stage179_execution_mode=args.stage179_execution_mode,
+                )
             )
-            summary["cancel_order_api_called_count"] = sum(
-                _to_int(item.get("cancel_order_api_called_count"), 0)
-                for item in cycles
-            )
-            summary["order_api_called_count"] = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
             summary["order_api_evidence_missing_fields"] = [
                 f"cycle[{index}]:{field}"
                 for index, item in enumerate(cycles)
@@ -5517,6 +5819,13 @@ def main() -> None:
                     else ["order_api_evidence_missing_fields_invalid"]
                 )
             ]
+            if summary["order_api_called_count"] != (
+                summary["send_order_api_called_count"]
+                + summary["cancel_order_api_called_count"]
+            ):
+                summary["order_api_evidence_missing_fields"].append(
+                    "daemon_order_api_called_count_inconsistent"
+                )
             summary["order_api_evidence_complete"] = int(
                 not summary["order_api_evidence_missing_fields"]
                 and all(

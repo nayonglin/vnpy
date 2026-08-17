@@ -909,6 +909,39 @@ class Stage931CtpReadinessTests(unittest.TestCase):
         self.assertEqual("22", rows["order_insert_requests"][0]["session_id"])
         self.assertEqual("33", rows["order_insert_requests"][0]["order_ref"])
 
+    def test_native_order_api_counts_include_send_and_cancel(self) -> None:
+        class FakeCallbackApi(_InstrumentableCallbackApi):
+            def reqOrderInsert(self, _data: dict, _reqid: int) -> int:
+                return 0
+
+            def reqOrderAction(self, _data: dict, _reqid: int) -> int:
+                return 0
+
+        rows = _base_rows()
+        rows["_execution_event_ingress_lock"] = threading.RLock()
+        rows["_native_order_api_call_counts"] = {
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+        }
+        rows["_before_native_order_insert"] = lambda *_args: None
+
+        with stage931._instrument_ctp_readiness_callbacks(
+            FakeCallbackApi, rows
+        ):
+            api = FakeCallbackApi()
+            self.assertEqual(0, api.reqOrderInsert({"OrderRef": "33"}, 44))
+            self.assertEqual(0, api.reqOrderAction({"OrderRef": "33"}, 45))
+
+        self.assertEqual(
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_evidence_complete": 1,
+            },
+            stage931._native_order_api_count_snapshot(rows),
+        )
+
     def test_native_order_insert_holds_ingress_lock_through_native_boundary(
         self,
     ) -> None:
