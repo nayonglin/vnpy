@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+from datetime import datetime, timedelta
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,29 @@ if str(PORTFOLIO_DIR) not in sys.path:
 
 
 class OfficialLiveConfigImportTest(unittest.TestCase):
+    def test_stage902_age_accepts_timezone_aware_iso_timestamp(self) -> None:
+        import run_qmt_roll_stage902_official_live_phase_d_readiness_gate as stage902
+
+        generated_at = (
+            datetime.now().astimezone() - timedelta(seconds=1)
+        ).isoformat()
+
+        age_seconds = stage902._age_seconds(generated_at)
+
+        self.assertIsNotNone(age_seconds)
+        self.assertGreaterEqual(age_seconds, 0.5)
+        self.assertLess(age_seconds, 3.0)
+
+    def test_stage902_age_keeps_future_and_invalid_values_fail_closed(self) -> None:
+        import run_qmt_roll_stage902_official_live_phase_d_readiness_gate as stage902
+
+        future = (
+            datetime.now().astimezone() + timedelta(seconds=1)
+        ).isoformat()
+
+        self.assertLess(stage902._age_seconds(future), 0)
+        self.assertIsNone(stage902._age_seconds("not-a-timestamp"))
+
     def test_live_config_import_does_not_build_historical_candidate_paths(self) -> None:
         import run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest as fu_candidate
 

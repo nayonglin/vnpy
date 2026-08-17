@@ -92,7 +92,12 @@ def _age_seconds(value: Any) -> float | None:
     generated_dt = _parse_generated_at(value)
     if generated_dt is None:
         return None
-    return round((datetime.now() - generated_dt).total_seconds(), 3)
+    current_dt = (
+        datetime.now(tz=generated_dt.tzinfo)
+        if generated_dt.tzinfo is not None
+        else datetime.now()
+    )
+    return round((current_dt - generated_dt).total_seconds(), 3)
 
 
 def _target_age_days(target_date: str) -> int | None:
