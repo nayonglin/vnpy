@@ -59,12 +59,14 @@ _SEMANTIC_FIELDS = {
     "next_trading_session_date",
     "forward_calendar_dates_sha256",
 }
-_TARGET_DATE_SEMANTIC_FIELDS = {
-    "mapping_max_date",
+_COMPLETED_TARGET_DATE_SEMANTIC_FIELDS = {
     "stage173_status_max_date",
     "stage173_summary_max_saved_date",
-    "stage173_summary_mapping_max_date",
     "forward_calendar_completed_target_date",
+}
+_MAPPING_MAX_DATE_SEMANTIC_FIELDS = {
+    "mapping_max_date",
+    "stage173_summary_mapping_max_date",
 }
 
 
@@ -443,6 +445,37 @@ def _semantic_freshness(data_root: Path) -> dict[str, str]:
     }
 
 
+def _validate_semantic_freshness(
+    semantic: Mapping[str, str],
+    *,
+    target_cutoff_date: str,
+) -> None:
+    if any(
+        semantic.get(field_name) != target_cutoff_date
+        for field_name in _COMPLETED_TARGET_DATE_SEMANTIC_FIELDS
+    ):
+        raise ProductionAssetError("production_asset_target_freshness_mismatch")
+    next_session_date = str(semantic.get("next_trading_session_date", ""))
+    if (
+        semantic.get("forward_calendar_source") != "tqsdk.TqContCalendar"
+        or not _DATE_RE.fullmatch(next_session_date)
+        or next_session_date <= target_cutoff_date
+        or not _SHA256_RE.fullmatch(
+            str(semantic.get("forward_calendar_dates_sha256", ""))
+        )
+    ):
+        raise ProductionAssetError("production_asset_forward_calendar_invalid")
+    mapping_dates = {
+        str(semantic.get(field_name, ""))
+        for field_name in _MAPPING_MAX_DATE_SEMANTIC_FIELDS
+    }
+    if len(mapping_dates) != 1 or mapping_dates.pop() not in {
+        target_cutoff_date,
+        next_session_date,
+    }:
+        raise ProductionAssetError("production_asset_target_freshness_mismatch")
+
+
 def build_production_asset_inventory(
     *,
     declared_data_link: Path | str,
@@ -466,25 +499,10 @@ def build_production_asset_inventory(
     if not required.issubset(observed):
         raise ProductionAssetError("production_asset_required_files_missing")
     semantic = _semantic_freshness(data_root)
-    if any(
-        semantic.get(field_name) != target_cutoff_date
-        for field_name in _TARGET_DATE_SEMANTIC_FIELDS
-    ):
-        raise ProductionAssetError("production_asset_target_freshness_mismatch")
-    if (
-        semantic.get("forward_calendar_source") != "tqsdk.TqContCalendar"
-        or not _DATE_RE.fullmatch(
-            str(semantic.get("next_trading_session_date", ""))
-        )
-        or str(semantic.get("next_trading_session_date", ""))
-        <= target_cutoff_date
-        or not _SHA256_RE.fullmatch(
-            str(semantic.get("forward_calendar_dates_sha256", ""))
-        )
-    ):
-        raise ProductionAssetError(
-            "production_asset_forward_calendar_invalid"
-        )
+    _validate_semantic_freshness(
+        semantic,
+        target_cutoff_date=target_cutoff_date,
+    )
     core: dict[str, Any] = {
         "schema_version": PRODUCTION_ASSET_INVENTORY_SCHEMA_VERSION,
         "artifact_kind": PRODUCTION_ASSET_INVENTORY_KIND,
@@ -586,26 +604,12 @@ def validate_production_asset_inventory(
     if not isinstance(semantic, dict) or set(semantic) != _SEMANTIC_FIELDS:
         raise ProductionAssetError("production_asset_semantic_freshness_invalid")
     current_semantic = _semantic_freshness(data_root)
-    if semantic != current_semantic or any(
-        current_semantic.get(field_name) != target_cutoff_date
-        for field_name in _TARGET_DATE_SEMANTIC_FIELDS
-    ):
+    if semantic != current_semantic:
         raise ProductionAssetError("production_asset_target_freshness_mismatch")
-    if (
-        current_semantic.get("forward_calendar_source")
-        != "tqsdk.TqContCalendar"
-        or not _DATE_RE.fullmatch(
-            str(current_semantic.get("next_trading_session_date", ""))
-        )
-        or str(current_semantic.get("next_trading_session_date", ""))
-        <= target_cutoff_date
-        or not _SHA256_RE.fullmatch(
-            str(current_semantic.get("forward_calendar_dates_sha256", ""))
-        )
-    ):
-        raise ProductionAssetError(
-            "production_asset_forward_calendar_invalid"
-        )
+    _validate_semantic_freshness(
+        current_semantic,
+        target_cutoff_date=target_cutoff_date,
+    )
     next_session = datetime.strptime(
         str(current_semantic["next_trading_session_date"]),
         "%Y-%m-%d",

@@ -459,7 +459,13 @@ def build_production_daily_data_receipt(
         generated_at_utc=generated,
     )
     database_asset = _database_asset_row(production_database_path)
-    if database_asset["max_bar_date"] != target_cutoff_date:
+    next_session_date = str(
+        inventory["semantic_freshness"]["next_trading_session_date"]
+    )
+    if database_asset["max_bar_date"] not in {
+        target_cutoff_date,
+        next_session_date,
+    }:
         raise ProductionAssetError(
             "production_daily_database_target_freshness_mismatch"
         )
@@ -553,11 +559,15 @@ def validate_production_daily_data_receipt_payload(
         manifest_created_at_utc=observed_at,
     )
     database_asset = payload.get("database_asset")
+    next_session_date = str(
+        inventory["semantic_freshness"]["next_trading_session_date"]
+    )
     if (
         not isinstance(database_asset, dict)
         or set(database_asset) != _DATABASE_ASSET_FIELDS
         or database_asset != _database_asset_row(production_database_path)
-        or database_asset.get("max_bar_date") != target_cutoff_date
+        or database_asset.get("max_bar_date")
+        not in {target_cutoff_date, next_session_date}
     ):
         raise ProductionAssetError(
             "production_daily_database_receipt_mismatch"

@@ -334,6 +334,76 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
         ):
             self.inventory()
 
+    def test_inventory_accepts_mapping_precomputed_for_exact_next_session(self) -> None:
+        mapping = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[0]
+        mapping.write_text(
+            "date,vt_symbol\n"
+            "2026-07-21,jm.DCE\n"
+            "2026-07-22,jm.DCE\n",
+            encoding="utf-8",
+        )
+        mapping.chmod(0o600)
+        summary = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[2]
+        summary.write_text(
+            json.dumps(
+                {
+                    "max_saved_date": "2026-07-21",
+                    "mapping_update": {"combined_max_date": "2026-07-22"},
+                    "forward_trading_calendar": {
+                        "source": "tqsdk.TqContCalendar",
+                        "completed_target_date": "2026-07-21",
+                        "next_trading_session_date": "2026-07-22",
+                        "trading_dates_sha256": "f" * 64,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        summary.chmod(0o600)
+
+        payload = self.inventory()
+        loaded = self.validate(payload)
+
+        self.assertEqual(
+            "2026-07-22",
+            loaded["semantic_freshness"]["mapping_max_date"],
+        )
+        self.assertEqual(
+            "2026-07-22",
+            loaded["semantic_freshness"]["stage173_summary_mapping_max_date"],
+        )
+
+    def test_inventory_rejects_mapping_beyond_exact_next_session(self) -> None:
+        mapping = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[0]
+        mapping.write_text(
+            "date,vt_symbol\n2026-07-23,jm.DCE\n",
+            encoding="utf-8",
+        )
+        mapping.chmod(0o600)
+        summary = self.data_root / PRODUCTION_REQUIRED_DATA_ASSETS[2]
+        summary.write_text(
+            json.dumps(
+                {
+                    "max_saved_date": "2026-07-21",
+                    "mapping_update": {"combined_max_date": "2026-07-23"},
+                    "forward_trading_calendar": {
+                        "source": "tqsdk.TqContCalendar",
+                        "completed_target_date": "2026-07-21",
+                        "next_trading_session_date": "2026-07-22",
+                        "trading_dates_sha256": "f" * 64,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        summary.chmod(0o600)
+
+        with self.assertRaisesRegex(
+            ProductionAssetError,
+            "target_freshness_mismatch",
+        ):
+            self.inventory()
+
     def test_inventory_freshness_follows_next_trading_session_not_36h(self) -> None:
         cases = (
             (
@@ -422,6 +492,75 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             serialize_production_daily_data_receipt(payload),
             self.receipt_path.read_bytes(),
         )
+
+    def test_daily_receipt_accepts_database_row_for_exact_next_session(self) -> None:
+        connection = sqlite3.connect(self.database)
+        try:
+            connection.execute(
+                "INSERT INTO dbbardata(datetime) VALUES (?)",
+                ("2026-07-22 00:00:00",),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+        self.database.chmod(0o600)
+
+        payload = build_and_write_production_daily_data_receipt(
+            output_path=self.receipt_path,
+            declared_data_link=self.data_link,
+            expected_data_root=self.data_root,
+            source_commit=self.commit,
+            manifest_sha256=self.manifest_sha256,
+            target_cutoff_date="2026-07-21",
+            production_database_path=self.database,
+            signal_input_root=self.signal_root,
+            official_ai_eligibility_path=self.ai_path,
+            generated_at_utc="2026-07-21T08:40:00Z",
+        )
+        loaded = load_and_validate_production_daily_data_receipt(
+            self.receipt_path,
+            declared_data_link=self.data_link,
+            expected_data_root=self.data_root,
+            source_commit=self.commit,
+            manifest_sha256=self.manifest_sha256,
+            target_cutoff_date="2026-07-21",
+            production_database_path=self.database,
+            signal_input_root=self.signal_root,
+            official_ai_eligibility_path=self.ai_path,
+            validation_at_utc="2026-07-21T09:00:00Z",
+        )
+
+        self.assertEqual(payload, loaded)
+        self.assertEqual("2026-07-22", loaded["database_asset"]["max_bar_date"])
+
+    def test_daily_receipt_rejects_database_row_beyond_next_session(self) -> None:
+        connection = sqlite3.connect(self.database)
+        try:
+            connection.execute(
+                "INSERT INTO dbbardata(datetime) VALUES (?)",
+                ("2026-07-23 00:00:00",),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+        self.database.chmod(0o600)
+
+        with self.assertRaisesRegex(
+            ProductionAssetError,
+            "database_target_freshness_mismatch",
+        ):
+            build_and_write_production_daily_data_receipt(
+                output_path=self.receipt_path,
+                declared_data_link=self.data_link,
+                expected_data_root=self.data_root,
+                source_commit=self.commit,
+                manifest_sha256=self.manifest_sha256,
+                target_cutoff_date="2026-07-21",
+                production_database_path=self.database,
+                signal_input_root=self.signal_root,
+                official_ai_eligibility_path=self.ai_path,
+                generated_at_utc="2026-07-21T08:40:00Z",
+            )
 
     def test_data_update_and_receipt_tamper_invalidate_old_daily_receipt(self) -> None:
         payload = build_and_write_production_daily_data_receipt(
