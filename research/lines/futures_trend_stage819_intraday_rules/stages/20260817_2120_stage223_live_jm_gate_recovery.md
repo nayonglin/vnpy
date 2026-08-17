@@ -23,6 +23,7 @@
   - `run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py`：兼容 ISO-8601 时间并统一 aware/naive datetime 后计算快照年龄。
   - `run_qmt_roll_stage930_official_live_c9_session_daemon.py`：新开仓行情阻断改为检查 transport 和 durable spool 当前候选 `vt_symbol`；非候选 AP/SI 缺 tick 不再阻断 jm。
   - `qmt_roll_official_live_submit_authorization.py`：授权凭证允许记录并验证唯一候选合约行情水位，同时保留全局行情未全部就绪的原始状态。
+  - `run_qmt_roll_stage931_official_live_ctp_submit_adapter.py`：授权接纳和 leased intent 复验新增 `vt_symbol` 精确身份绑定。
   - `tests/test_stage179_stage260_execution_profile.py`：新增生产 ISO 时间、未来时间、超 TTL 和非法时间回归。
   - `tests/test_stage179_submit_authorization.py`：新增候选行情证据完整/不完整回归。
   - `tests/test_stage930_fast_lane.py`：新增候选 jm、候选 SI、transport 未就绪、精确水位选择和端到端 warm authorization 回归。
@@ -55,8 +56,10 @@
   - 候选行情闸门新用例旧代码：`3/3 FAIL`，分别复现无关品种误伤、候选自身阻断消息和 transport 阻断。
   - 最小实现后：Stage930/持久授权 `91/91 passed`。
   - 首轮独立审查发现 `P1`：最终提交闸门虽已候选化，但 warm authorization 仍使用全品种行情总闸门；已用端到端失败测试复现并修复。
+  - 二次独立审查发现 `P1`：授权意图与候选行情证据未交叉绑定 `vt_symbol`，错误品种证据可通过内部校验；已升级授权 schema v5，并新增错误品种和禁止精确通道回退全局就绪的负测。
   - Stage260/submit-authorization/930/persistent-authorization 回归：`127/127 passed`，耗时 `17.483s`。
   - Stage260/submit-authorization/930/931/945/948 联合回归：`276/276 passed`，耗时 `38.189s`。
+  - 最终扩展联合回归（含授权 guard 与 executor serve）：`331/331 passed`，耗时 `35.685s`；`py_compile` 与 `git diff --check` 通过。
   - 订单 API：实现和测试阶段 `send_order=0`、`cancel_order=0`；未连接真实 CTP、未生成 jm 委托。
 
 ## 输出文件
@@ -67,11 +70,11 @@
 - summary：待 Stage948 qualification/activation 后生成。
 - orders：当前无 jm 委托。
 - daily：不适用。
-- quality：`276/276 passed`；二次独立审查、生产 qualification、激活和券商对账仍待完成。
+- quality：`331/331 passed`；第三次独立审查、生产 qualification、激活和券商对账仍待完成。
 
 ## 结论
 
-- 本阶段结论：两个原始代码级根因和首轮独立审查发现的一项授权链 P1 均已由 TDD 复现并修复，相关执行、授权、最终询价、launcher 和 installer 回归通过；源码候选尚未等同于生产已激活。
+- 本阶段结论：两个原始代码级根因及两轮独立审查发现的授权链 P1 均已由 TDD 复现并修复，相关执行、授权、最终询价、launcher 和 installer 回归通过；源码候选尚未等同于生产已激活。
 - 是否进入下一步：是；先审查候选，再按 Stage948 做资格和原子激活。
 - 下一步：只读核对 7 个 launchd job、daemon/warm executor、账户持仓、活跃委托和成交；若现有生产进程仍存活，未取得明确重启权限前不得并行启动新执行器。
 
