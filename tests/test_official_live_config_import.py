@@ -62,6 +62,47 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
                     ),
                 )
 
+    def test_stage906_age_accepts_legacy_naive_and_timezone_aware_timestamps(self) -> None:
+        import run_qmt_roll_stage906_official_live_reconciliation_worker as stage906
+
+        generated_values = (
+            (datetime.now() - timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"),
+            (datetime.now() - timedelta(seconds=1)).isoformat(),
+            (datetime.now().astimezone() - timedelta(seconds=1)).isoformat(),
+        )
+        for generated_at in generated_values:
+            with self.subTest(generated_at=generated_at):
+                age_seconds = stage906._age_seconds(generated_at)
+                self.assertIsNotNone(age_seconds)
+                self.assertGreaterEqual(age_seconds, 0.5)
+                self.assertLess(age_seconds, 3.0)
+
+    def test_stage906_snapshot_age_gate_rejects_future_invalid_and_stale(self) -> None:
+        import run_qmt_roll_stage906_official_live_reconciliation_worker as stage906
+
+        cases = (
+            (0.0, True),
+            (300.0, True),
+            (-0.001, False),
+            (300.001, False),
+            (None, False),
+        )
+        for age_seconds, expected in cases:
+            with self.subTest(age_seconds=age_seconds):
+                self.assertEqual(
+                    expected,
+                    stage906._snapshot_age_ready(
+                        age_seconds,
+                        max_snapshot_age_seconds=300,
+                    ),
+                )
+
+        future = (
+            datetime.now().astimezone() + timedelta(seconds=1)
+        ).isoformat()
+        self.assertLess(stage906._age_seconds(future), 0)
+        self.assertIsNone(stage906._age_seconds("not-a-timestamp"))
+
     def test_live_config_import_does_not_build_historical_candidate_paths(self) -> None:
         import run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest as fu_candidate
 
@@ -90,8 +131,14 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "2026-07-23",
         )
         self.assertEqual(
-            "fail_closed",
+            "explicit_live_real_enabled",
             module.OFFICIAL_LIVE_EXECUTION_POLICY["real_submit_default"],
+        )
+        self.assertEqual(
+            "explicit_live_real_enabled",
+            module.build_official_live_manifest()["execution_policy"][
+                "real_submit_default"
+            ],
         )
         with self.assertRaises(AssertionError):
             dict(module.OFFICIAL_LIVE_STRATEGY_OVERRIDES)

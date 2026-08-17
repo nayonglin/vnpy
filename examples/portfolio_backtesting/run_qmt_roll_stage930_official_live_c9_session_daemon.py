@@ -75,6 +75,10 @@ from qmt_roll_official_live_runtime_profile import (
     OrderScope,
     resolve_runtime_profile,
 )
+from run_qmt_roll_stage927_official_live_real_submit_arming_gate import (
+    SCOPE_CAPABILITY_SCHEMA_VERSION as STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION,
+    verify_scope_evidence_digest,
+)
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
 
@@ -1321,6 +1325,12 @@ def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
                 getattr(args, "confirm_stage179_activation", "")
             ):
                 blockers.append("production_live_activation_confirmation_missing")
+            if not _clean(
+                getattr(args, "production_qualification_evidence", "")
+            ):
+                blockers.append("production_live_qualification_evidence_missing")
+            if not _clean(getattr(args, "stage179_runtime_root", "")):
+                blockers.append("production_live_stage179_runtime_root_missing")
     elif (controller_mode, submit_mode) != ("dry-run", "disabled"):
         blockers.append("controller_submit_mode_mismatch")
 
@@ -1585,6 +1595,70 @@ def _canonical_json_digest(payload: dict[str, Any]) -> str:
     ).hexdigest()
 
 
+_STAGE927_SCOPE_PERMIT_FIELDS = {
+    "reduce_close": "reduce_close_submit_permitted",
+    "retry_open": "retry_open_submit_permitted",
+    "initial_open": "initial_open_submit_permitted",
+}
+_STAGE927_LANE_TO_SCOPE = {
+    "reduce_close_only": "reduce_close",
+    "retry_open_only": "retry_open",
+    "initial_open_only": "initial_open",
+}
+
+
+def _stage927_scope_authority_blockers(
+    summary: dict[str, Any],
+    *,
+    scope: str = "",
+    permit_field: str = "",
+) -> list[str]:
+    """Verify the whole digest-bound Stage927 v2 authority before use."""
+
+    blockers: list[str] = []
+    schema_version = summary.get("scope_capability_schema_version")
+    scope_inputs = summary.get("scope_evidence_inputs")
+    capabilities = summary.get("scope_capabilities")
+    if schema_version != STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION:
+        blockers.append("stage927_scope_schema_mismatch")
+    if not isinstance(scope_inputs, dict):
+        scope_inputs = {}
+        blockers.append("stage927_scope_evidence_inputs_missing")
+    elif scope_inputs.get("schema_version") != STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION:
+        blockers.append("stage927_scope_input_schema_mismatch")
+    if not isinstance(capabilities, dict):
+        capabilities = {}
+        blockers.append("stage927_scope_capabilities_missing")
+    if not verify_scope_evidence_digest(
+        scope_evidence_inputs=scope_inputs,
+        scope_capabilities=capabilities,
+        scope_evidence_digest=_clean(summary.get("scope_evidence_digest")),
+    ):
+        blockers.append("stage927_scope_evidence_digest_invalid")
+
+    for capability_name, field in _STAGE927_SCOPE_PERMIT_FIELDS.items():
+        capability = capabilities.get(capability_name)
+        if not isinstance(capability, dict):
+            blockers.append(f"stage927_{capability_name}_capability_missing")
+            continue
+        if capability.get("permit_field") != field:
+            blockers.append(f"stage927_{capability_name}_permit_field_mismatch")
+        permitted = capability.get("permitted")
+        if type(permitted) is not int or permitted not in {0, 1}:
+            blockers.append(f"stage927_{capability_name}_permit_invalid")
+            continue
+        if summary.get(field) != permitted:
+            blockers.append(f"stage927_{capability_name}_top_level_permit_mismatch")
+
+    capability_name = _STAGE927_LANE_TO_SCOPE.get(scope, "")
+    expected_field = _STAGE927_SCOPE_PERMIT_FIELDS.get(capability_name, "")
+    if scope and (not capability_name or permit_field != expected_field):
+        blockers.append("stage927_scope_permit_mapping_mismatch")
+    elif permit_field and summary.get(permit_field) != 1:
+        blockers.append(f"stage927_{permit_field}_not_ready")
+    return list(dict.fromkeys(blockers))
+
+
 def _stage902_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / (
@@ -1835,8 +1909,13 @@ def _fast_lane_gate_evidence(
         (_to_int(stage927.get("confirm_live_real_ok"), 0) == 1, "stage927_real_submit_confirm_missing"),
     )
     blockers.extend(blocker for passed, blocker in identity_checks if not passed)
-    if permit_field and _to_int(stage927.get(permit_field), 0) != 1:
-        blockers.append(f"stage927_{permit_field}_not_ready")
+    blockers.extend(
+        _stage927_scope_authority_blockers(
+            stage927,
+            scope=scope,
+            permit_field=permit_field,
+        )
+    )
 
     if scope == "reduce_close_only":
         if _to_int(stage902.get("allow_reduce_close"), 0) != 1:
@@ -1913,6 +1992,8 @@ def _persistent_detector_fast_lane_status(
     args: argparse.Namespace,
     target_date: str,
     paths: dict[str, Path],
+    *,
+    submit_enabled: bool = True,
 ) -> dict[str, Any]:
     heartbeat = _read_json(STAGE941_HEARTBEAT_PATH)
     supervisor = _supervise_detector(args, paths)
@@ -2001,7 +2082,8 @@ def _persistent_detector_fast_lane_status(
             fast_lane_status = "persistent_detector_authorization_blocked_fail_closed"
 
     live_fast_enabled = bool(
-        args.mode == "live-real"
+        submit_enabled
+        and args.mode == "live-real"
         and args.submit_mode == "live-real"
         and getattr(args, "stage179_execution_mode", "legacy-once") == "warm"
     )
@@ -2547,6 +2629,7 @@ def _run_fast_intraday_lane(
             args,
             target_date,
             paths,
+            submit_enabled=submit_reduce_close,
         )
     symbols = _watched_symbols_for_args(args)
     stream = _managed_tick_stream_status(args, paths, symbols)
@@ -3001,7 +3084,36 @@ def _run_stage935_preflight(args: argparse.Namespace, paths: dict[str, Path]) ->
 
 
 def _run_stage927(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
-    cmd = [str(PYTHON_PATH), str(STAGE927_SCRIPT), "--target-date", target_date, "--confirm-live-real", args.confirm_live_real]
+    invocation_started_epoch_ns = time.time_ns()
+    revocation = _revoke_stage931_submit_authorization(
+        args,
+        "stage927_authority_revalidation",
+    )
+    if revocation.get("preserved") == 1 or revocation.get("revoked") != 1:
+        return {
+            "exit_code": 2,
+            "timed_out": 0,
+            "summary": {},
+            "summary_blocker": "stage927_prior_authorization_not_revoked",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        }
+    cmd = [
+        str(PYTHON_PATH),
+        str(STAGE927_SCRIPT),
+        "--target-date",
+        target_date,
+        "--confirm-live-real",
+        args.confirm_live_real,
+        "--release-manifest",
+        args.release_manifest,
+        "--activation-receipt",
+        args.activation_receipt,
+        "--production-qualification-evidence",
+        args.production_qualification_evidence,
+        "--stage179-runtime-root",
+        args.stage179_runtime_root,
+    ]
     if args.tick_refresh_mode == "stream":
         result = _run_command_with_fast_lane(
             cmd,
@@ -3011,12 +3123,66 @@ def _run_stage927(args: argparse.Namespace, target_date: str, paths: dict[str, P
             args=args,
             target_date=target_date,
             paths=paths,
-            submit_reduce_close=True,
+            submit_reduce_close=False,
         )
     else:
         result = _run_command(cmd, timeout_seconds=120, log_path=paths["command_log"], label=f"stage927_arming_{target_date}")
-    path = OUTPUT_DIR / f"qmt_roll_stage927_official_live_real_submit_arming_gate_summary_{target_date.replace('-', '')}_stage927_official_live_real_submit_arming_gate_v1.json"
-    return {**result, "summary": _read_json(path)}
+    path = _stage927_summary_path(target_date)
+    if _to_int(result.get("exit_code"), -1) != 0 or _to_int(
+        result.get("timed_out"), 0
+    ) != 0:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": "stage927_invocation_failed",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        }
+    try:
+        summary_mtime_ns = path.stat().st_mtime_ns
+    except OSError:
+        summary_mtime_ns = 0
+    if summary_mtime_ns < invocation_started_epoch_ns:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": "stage927_summary_not_written_by_current_invocation",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+            "summary_mtime_ns": summary_mtime_ns,
+        }
+    summary = _read_json(path)
+    summary_blockers: list[str] = []
+    if summary.get("model_tag") != "stage927_official_live_real_submit_arming_gate_v1":
+        summary_blockers.append("stage927_summary_model_mismatch")
+    if summary.get("target_date") != target_date:
+        summary_blockers.append("stage927_summary_target_date_mismatch")
+    _, freshness_blocker = _evidence_expiry_epoch_ns(
+        summary,
+        issued_epoch_ns=time.time_ns(),
+        max_age_seconds=60.0,
+        label="stage927_current_invocation",
+    )
+    if freshness_blocker:
+        summary_blockers.append(freshness_blocker)
+    summary_blockers.extend(_stage927_scope_authority_blockers(summary))
+    if summary_blockers:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": ";".join(dict.fromkeys(summary_blockers)),
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+            "summary_mtime_ns": summary_mtime_ns,
+        }
+    return {
+        **result,
+        "summary": summary,
+        "summary_blocker": "",
+        "authorization_revocation": revocation,
+        "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        "summary_mtime_ns": summary_mtime_ns,
+    }
 
 
 def _run_stage931(
@@ -3454,10 +3620,15 @@ def _publish_stage931_submit_authorization(
                     "authorized": 0,
                     "blocker": "stage931_reduce_close_authorization_contains_open",
                 }
-            if _to_int(stage927_summary.get(permit_field), 0) != 1:
+            stage927_authority_blockers = _stage927_scope_authority_blockers(
+                stage927_summary,
+                scope=intent_scope,
+                permit_field=permit_field,
+            )
+            if stage927_authority_blockers:
                 return {
                     "authorized": 0,
-                    "blocker": f"stage931_{permit_field}_not_ready",
+                    "blocker": ";".join(stage927_authority_blockers),
                 }
             tick_expires_epoch_ns = issued_epoch_ns + int(
                 ttl_seconds * 1_000_000_000
@@ -4925,6 +5096,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--release-manifest", default="")
     parser.add_argument("--activation-receipt", default="")
+    parser.add_argument("--production-qualification-evidence", default="")
     parser.add_argument("--stage179-runtime-root", default="")
     parser.add_argument("--confirm-stage179-activation", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])

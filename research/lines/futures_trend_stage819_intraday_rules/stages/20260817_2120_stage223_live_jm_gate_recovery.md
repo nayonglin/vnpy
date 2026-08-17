@@ -98,3 +98,28 @@
 - 是否更新本线 `LINE.md`：否；先等待正式资格和激活证据。
 - 是否更新 `research/registry.md`：否。
 - 是否追加根目录 `memory.md/back_log.md`：否；候选尚未正式激活和完成券商对账。
+
+## 2026-08-17 22:36 补充：Stage902 动态生产授权接线
+
+- `bf6f7223e` 候选的正式 qualification 已完成：生产要求测试 `826/826 passed`；两次正式 CTP 只读 capture 的账户/持仓/委托/成交查询均完整，`send_order=0`、`cancel_order=0`、`order_api=0`。
+- Stage948 prepare/activate 已成功加载精确 7 个生产 label，冲突 label `0`、回滚 `0`、激活阶段订单 API `0`；随后 post-close 正式 job 重建了绑定新 commit/manifest 的 `2026-08-17` 数据凭据。
+- 新夜盘首轮运行中，Stage902 的 ISO 时区异常已消失，Stage930 连续两轮无 cycle error，Stage260 为 `3 executable / 0 blocked`，jm tick 新鲜；但 Stage902 仍被静态 `execution_policy.real_submit_default=fail_closed` 阻断，说明原先的显式生产 env 与确认文本未接入该静态策略检查。
+- 独立审查要求保留静态 policy 与运行时 env/确认文本两把独立钥匙；因此正式 C9/15w profile 的静态 policy 改为 `explicit_live_real_enabled`，Stage902 原有 env、精确确认、session daemon、adapter、risk、readonly 等独立门禁均不删除。
+- Stage906 被复现出与 Stage902 相同的 aware/naive `TypeError`，并且未来时间负 age 会误过 TTL；现统一按输入时区计算 age，实际 gate 改为 `0 <= age <= TTL`，覆盖 legacy/naive/aware/future/invalid/边界。
+- Stage927 不再依赖 production output 中自由漂移的 Stage912/913/916/921/926 JSON；Stage945→Stage930→Stage927 显式传递 release manifest、qualification、activation receipt，Stage927 复用正式 validator 验证 source-commit/tree/manifest/receipt 绑定。Stage903、Stage906、Stage923/924、实时 controller heartbeat、broker/tick/order 证据仍逐轮必需；Stage932 继续只作 warning，未运行真实 submit-cancel。
+- 曾启动旧 Stage912 runner，但独立审查指出它会扰动 production output 后已立即中止；kill switch 恢复为不存在，所有子进程归零，未连接 CTP、未调用订单 API。后续不再用漂移 JSON 补门禁。
+- 当前仍未报单；夜盘已受控停止，等待完整联合测试、独立复审、重新 qualification 与 Stage948 激活。
+- 过拟合判断：否；只修生产授权状态机的不可达分支，不改变 alpha、AI 池、合约、方向、手数、0.5R 或重试规则。
+- 继续价值判断：是；若不闭环该接线和 Stage927 证据，即使真实候选与行情均有效也会被永久 fail-closed。
+
+## 2026-08-17 23:18 补充：Stage927 v2 消费边界与本轮重验
+
+- 独立复审发现两个 P1：Stage930 只读取 Stage927 顶层 permit，未验证 schema v2、`scope_evidence_digest` 与三类 capability；Stage927 本轮失败或超时时还可能读取同目标旧 summary，重验期间 persistent fast lane 也可能继续用旧授权。
+- Stage930 现对 reduce-close、retry-open、initial-open 三条 lane 统一要求 schema v2、内部 schema v2、完整 capability、digest 正确、capability 的 `permit_field` 精确、三个顶层 permit 与 digest 内 `permitted` 全部一致；旧 schema、极简 permit、任一篡改均 fail-closed。
+- 每次 Stage927 重验前先撤销 Stage931 提交授权；若锁内存在 in-flight 而不能撤销，则不启动 Stage927 并直接阻断。本轮 Stage927 的 exit code、timeout、summary 文件 mtime、model、target、freshness、schema 与 digest 均需通过，失败时内存 summary 置空，不再复用旧文件。
+- Stage927 重验期间 fast lane 保持行情与持久 detector 监控，但 legacy 和 persistent 两条路径均禁止发布或唤醒提交授权。
+- production-live 的 qualification evidence 与 Stage179 runtime root 改为 Stage930 启动前必填；缺参时不启动 warm Stage931，不连接 CTP。
+- TDD 红灯：新增 5 个定向测试初始为 `3 FAIL + 2 ERROR`；实现后定向测试通过。Stage930 单文件 `97/97 passed`，四模块联合 `146/146 passed`。扩展 338 项首次仅 3 个旧测试 fixture 因仍使用 schema v1 被正确拒绝；fixture 升级为真实 v2 digest-bound evidence 后 `338/338 passed`，耗时 `45.895s`。
+- 订单 API：本轮仅代码与单元测试，`send_order=0`、`cancel_order=0`、`order_api=0`；电脑重启后只读核对 7 个生产 job 均无 PID，Stage930/931/CTP 无残留进程。
+- 过拟合判断：否；这是证据完整性、TOCTOU 和启动顺序修复，不改变任何策略参数或行情阈值。
+- 继续价值判断：是；两个 P1 位于真实授权消费边界，必须在 qualification/Stage948 激活前闭环。

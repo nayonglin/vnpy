@@ -23,6 +23,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930
+import run_qmt_roll_stage927_official_live_real_submit_arming_gate as stage927
 import run_qmt_roll_stage929_official_live_15w_timed_cycle as stage929
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
 import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
@@ -71,6 +72,241 @@ class _LongLivedController:
 
 
 class Stage930FastLaneTest(unittest.TestCase):
+    @staticmethod
+    def stage927_authority(**permits: int) -> dict[str, object]:
+        permit_values = {
+            "reduce_close_submit_permitted": 0,
+            "retry_open_submit_permitted": 0,
+            "initial_open_submit_permitted": 0,
+            **permits,
+        }
+        scope_inputs = {"schema_version": stage927.SCOPE_CAPABILITY_SCHEMA_VERSION}
+        scope_capabilities = {
+            "reduce_close": {
+                "permit_field": "reduce_close_submit_permitted",
+                "permitted": permit_values["reduce_close_submit_permitted"],
+            },
+            "retry_open": {
+                "permit_field": "retry_open_submit_permitted",
+                "permitted": permit_values["retry_open_submit_permitted"],
+            },
+            "initial_open": {
+                "permit_field": "initial_open_submit_permitted",
+                "permitted": permit_values["initial_open_submit_permitted"],
+            },
+        }
+        digest = stage930._canonical_json_digest(
+            {
+                "scope_evidence_inputs": scope_inputs,
+                "scope_capabilities": scope_capabilities,
+            }
+        )
+        return {
+            "scope_capability_schema_version": stage927.SCOPE_CAPABILITY_SCHEMA_VERSION,
+            "scope_evidence_inputs": scope_inputs,
+            "scope_capabilities": scope_capabilities,
+            "scope_evidence_digest": digest,
+            **permit_values,
+        }
+
+    def test_stage927_receives_exact_signed_production_authority_paths(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with (
+            patch.object(stage930, "_run_command", return_value={"exit_code": 0}) as run,
+            patch.object(stage930, "_read_json", return_value={}),
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ),
+        ):
+            stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        command = run.call_args.args[0]
+        self.assertEqual(
+            "/private/release.json",
+            command[command.index("--release-manifest") + 1],
+        )
+        self.assertEqual(
+            "/private/receipt.json",
+            command[command.index("--activation-receipt") + 1],
+        )
+        self.assertEqual(
+            "/private/qualification.json",
+            command[command.index("--production-qualification-evidence") + 1],
+        )
+        self.assertEqual(
+            "/private/runtime",
+            command[command.index("--stage179-runtime-root") + 1],
+        )
+
+    def test_stage927_revalidation_disables_fast_lane_submit(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="stream",
+        )
+        with (
+            patch.object(
+                stage930,
+                "_run_command_with_fast_lane",
+                return_value={"exit_code": 2, "timed_out": 0},
+            ) as run,
+            patch.object(stage930, "_read_json", return_value={}),
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ) as revoke,
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        self.assertFalse(run.call_args.kwargs["submit_reduce_close"])
+        revoke.assert_called_once_with(args, "stage927_authority_revalidation")
+        self.assertEqual({}, result["summary"])
+        self.assertEqual("stage927_invocation_failed", result["summary_blocker"])
+
+    def test_persistent_fast_lane_honors_submit_disabled_during_revalidation(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        with patch.object(
+            stage930,
+            "_persistent_detector_fast_lane_status",
+            return_value={"order_api_called_count": 0},
+        ) as persistent:
+            stage930._run_fast_intraday_lane(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/unused.log")},
+                submit_reduce_close=False,
+            )
+
+        self.assertFalse(persistent.call_args.kwargs["submit_enabled"])
+
+    def test_stage927_failed_invocation_never_reuses_old_summary(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        old_summary = {
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            **self.stage927_authority(reduce_close_submit_permitted=1),
+        }
+        with (
+            patch.object(
+                stage930,
+                "_run_command",
+                return_value={"exit_code": 1, "timed_out": 0},
+            ),
+            patch.object(stage930, "_read_json", return_value=old_summary) as read,
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ),
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        read.assert_not_called()
+        self.assertEqual({}, result["summary"])
+        self.assertEqual("stage927_invocation_failed", result["summary_blocker"])
+
+    def test_stage927_accepts_only_summary_written_by_current_invocation(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            summary_path = Path(directory) / "stage927.json"
+            summary = {
+                "model_tag": "stage927_official_live_real_submit_arming_gate_v1",
+                "target_date": "2026-08-17",
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                **self.stage927_authority(reduce_close_submit_permitted=1),
+            }
+
+            def run_current(*_args: object, **_kwargs: object) -> dict[str, int]:
+                summary_path.write_text(json.dumps(summary), encoding="utf-8")
+                return {"exit_code": 0, "timed_out": 0}
+
+            with (
+                patch.object(stage930, "_run_command", side_effect=run_current),
+                patch.object(stage930, "_stage927_summary_path", return_value=summary_path),
+                patch.object(
+                    stage930,
+                    "_revoke_stage931_submit_authorization",
+                    return_value={"revoked": 1, "preserved": 0},
+                ),
+            ):
+                result = stage930._run_stage927(
+                    args,
+                    "2026-08-17",
+                    {"command_log": Path(directory) / "command.log"},
+                )
+
+        self.assertEqual("", result["summary_blocker"], result)
+        self.assertEqual(1, result["summary"]["reduce_close_submit_permitted"])
+
+    def test_stage927_revalidation_blocks_when_old_authorization_is_inflight(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with (
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 0, "preserved": 1},
+            ),
+            patch.object(stage930, "_run_command") as run,
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        run.assert_not_called()
+        self.assertEqual({}, result["summary"])
+        self.assertEqual(
+            "stage927_prior_authorization_not_revoked",
+            result["summary_blocker"],
+        )
+
     def test_unknown_open_source_role_has_no_authorization_scope(self) -> None:
         self.assertEqual(
             ("", ""),
@@ -284,7 +520,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": generated_at,
                             "real_submit_permitted": 1,
-                            "reduce_close_submit_permitted": 1,
+                            **self.stage927_authority(
+                                reduce_close_submit_permitted=1
+                            ),
                         },
                         tick_gate={"all_symbols_ready": 0},
                         service_status={
@@ -304,6 +542,40 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(1, result["authorized"], result)
         self.assertEqual("reduce_close_only", result["intent_scope"])
+
+    def test_stage927_minimal_legacy_permit_is_rejected(self) -> None:
+        blockers = stage930._stage927_scope_authority_blockers(
+            {
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "reduce_close_submit_permitted": 1,
+            },
+            scope="reduce_close_only",
+            permit_field="reduce_close_submit_permitted",
+        )
+
+        self.assertIn("stage927_scope_schema_mismatch", blockers)
+        self.assertIn("stage927_scope_evidence_digest_invalid", blockers)
+
+    def test_stage927_digest_or_top_level_permit_tamper_is_rejected(self) -> None:
+        authority = self.stage927_authority(retry_open_submit_permitted=1)
+        authority["retry_open_submit_permitted"] = 0
+        blockers = stage930._stage927_scope_authority_blockers(
+            authority,
+            scope="retry_open_only",
+            permit_field="retry_open_submit_permitted",
+        )
+
+        self.assertIn("stage927_retry_open_top_level_permit_mismatch", blockers)
+        self.assertIn("stage927_retry_open_submit_permitted_not_ready", blockers)
+
+        authority = self.stage927_authority(retry_open_submit_permitted=1)
+        authority["scope_capabilities"]["retry_open"]["permitted"] = 0
+        blockers = stage930._stage927_scope_authority_blockers(
+            authority,
+            scope="retry_open_only",
+            permit_field="retry_open_submit_permitted",
+        )
+        self.assertIn("stage927_scope_evidence_digest_invalid", blockers)
 
     def test_parser_defaults_to_legacy_detector_mode(self) -> None:
         args = stage930._build_parser().parse_args([])
@@ -1378,7 +1650,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
-                            "retry_open_submit_permitted": 1,
+                            **self.stage927_authority(
+                                retry_open_submit_permitted=1
+                            ),
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -1457,7 +1731,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
-                            "initial_open_submit_permitted": 1,
+                            **self.stage927_authority(
+                                initial_open_submit_permitted=1
+                            ),
                         },
                         tick_gate={
                             "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
@@ -1565,7 +1841,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
-                            "retry_open_submit_permitted": 1,
+                            **self.stage927_authority(
+                                retry_open_submit_permitted=1
+                            ),
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -1718,6 +1996,8 @@ class Stage930FastLaneTest(unittest.TestCase):
             "production_live_activation_confirmation_missing",
             blockers,
         )
+        self.assertIn("production_live_qualification_evidence_missing", blockers)
+        self.assertIn("production_live_stage179_runtime_root_missing", blockers)
 
     def test_persistent_no_submit_offline_prewarm_is_reachable(self) -> None:
         args = self.args()
