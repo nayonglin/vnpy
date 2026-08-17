@@ -5,7 +5,7 @@
 - 记录时间：2026-08-17 21:25 CST
 - 工作区/分支：`/Users/bytedance/Desktop/person/vnpy_production_live` / detached HEAD
 - 生产基线提交：`9c0df9d86d4851cd78843334f274b7c28d73f899`
-- 当前候选提交：`2080797da311d230451ae652003789d5a866fd1d`
+- 当前候选提交：`5354e85e834c713d80f700fea24e64413eb47287`
 - 阶段性质：生产执行闸门兼容修复，不修改 alpha
 - 是否重要突破：否；修复两项已复现的生产阻断
 - 是否触发A/B：否；不属于新策略、仓位或参数优化
@@ -22,8 +22,10 @@
 - 修改脚本：
   - `run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py`：兼容 ISO-8601 时间并统一 aware/naive datetime 后计算快照年龄。
   - `run_qmt_roll_stage930_official_live_c9_session_daemon.py`：新开仓行情阻断改为检查 transport 和 durable spool 当前候选 `vt_symbol`；非候选 AP/SI 缺 tick 不再阻断 jm。
-  - `tests/test_stage179_stage260_execution_profile.py`：新增生产 ISO 时间回归。
-  - `tests/test_stage930_fast_lane.py`：新增候选 jm、候选 SI、transport 未就绪三类回归。
+  - `qmt_roll_official_live_submit_authorization.py`：授权凭证允许记录并验证唯一候选合约行情水位，同时保留全局行情未全部就绪的原始状态。
+  - `tests/test_stage179_stage260_execution_profile.py`：新增生产 ISO 时间、未来时间、超 TTL 和非法时间回归。
+  - `tests/test_stage179_submit_authorization.py`：新增候选行情证据完整/不完整回归。
+  - `tests/test_stage930_fast_lane.py`：新增候选 jm、候选 SI、transport 未就绪、精确水位选择和端到端 warm authorization 回归。
 - 删除脚本：无。
 - 新增参数：无。
 - 修改参数：无。
@@ -52,7 +54,9 @@
   - ISO 最小实现后：Stage260 `11/11 passed`。
   - 候选行情闸门新用例旧代码：`3/3 FAIL`，分别复现无关品种误伤、候选自身阻断消息和 transport 阻断。
   - 最小实现后：Stage930/持久授权 `91/91 passed`。
-  - Stage260/930/931/945/948 联合回归：`251/251 passed`，耗时 `35.762s`。
+  - 首轮独立审查发现 `P1`：最终提交闸门虽已候选化，但 warm authorization 仍使用全品种行情总闸门；已用端到端失败测试复现并修复。
+  - Stage260/submit-authorization/930/persistent-authorization 回归：`127/127 passed`，耗时 `17.483s`。
+  - Stage260/submit-authorization/930/931/945/948 联合回归：`276/276 passed`，耗时 `38.189s`。
   - 订单 API：实现和测试阶段 `send_order=0`、`cancel_order=0`；未连接真实 CTP、未生成 jm 委托。
 
 ## 输出文件
@@ -63,11 +67,11 @@
 - summary：待 Stage948 qualification/activation 后生成。
 - orders：当前无 jm 委托。
 - daily：不适用。
-- quality：`251/251 passed`；生产激活和券商对账仍待完成。
+- quality：`276/276 passed`；二次独立审查、生产 qualification、激活和券商对账仍待完成。
 
 ## 结论
 
-- 本阶段结论：两个代码级根因均已由 TDD 复现并修复，相关执行、最终询价、launcher 和 installer 回归通过；源码候选尚未等同于生产已激活。
+- 本阶段结论：两个原始代码级根因和首轮独立审查发现的一项授权链 P1 均已由 TDD 复现并修复，相关执行、授权、最终询价、launcher 和 installer 回归通过；源码候选尚未等同于生产已激活。
 - 是否进入下一步：是；先审查候选，再按 Stage948 做资格和原子激活。
 - 下一步：只读核对 7 个 launchd job、daemon/warm executor、账户持仓、活跃委托和成交；若现有生产进程仍存活，未取得明确重启权限前不得并行启动新执行器。
 
