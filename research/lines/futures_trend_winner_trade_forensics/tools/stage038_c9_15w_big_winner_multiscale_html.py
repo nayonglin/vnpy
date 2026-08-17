@@ -68,6 +68,7 @@ DAILY_POST = 30
 INTRADAY_PRE = 5
 INTRADAY_POST = 5
 CHINA_TZ = ZoneInfo("Asia/Shanghai")
+MA_PERIODS = (5, 10, 20, 40)
 
 
 @dataclass(frozen=True)
@@ -498,6 +499,16 @@ def _weekly_from_daily(daily: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def _add_moving_averages(frame: pd.DataFrame) -> pd.DataFrame:
+    result = frame.copy()
+    close = pd.to_numeric(result["close"], errors="coerce")
+    for period in MA_PERIODS:
+        # Use available bars at the left viewport boundary instead of hiding
+        # the longer averages.  The HTML explicitly labels these as partial.
+        result[f"ma{period}"] = close.rolling(period, min_periods=1).mean()
+    return result
+
+
 def _records(
     winners: pd.DataFrame,
     daily_by_episode: dict[str, pd.DataFrame],
@@ -517,7 +528,7 @@ def _records(
         exit_index = _date_index(daily, exit_date, exact=True)
         day_positions = {date: index for index, date in enumerate(daily["date"])}
         daily["x"] = np.arange(len(daily), dtype=float) + 0.5
-        weekly = _weekly_from_daily(daily)
+        weekly = _add_moving_averages(_weekly_from_daily(daily))
         weekly["x"] = [
             float(np.mean([day_positions[value] + 0.5 for value in daily.loc[daily["date"].between(start, end), "date"]]))
             for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
@@ -555,7 +566,8 @@ def _records(
                 group["volume"].sum(),
             ]
             aggregated_days.append(pd.Timestamp(trading_day).date().isoformat())
-        weekly = _weekly_from_daily(daily)
+        daily = _add_moving_averages(daily)
+        weekly = _add_moving_averages(_weekly_from_daily(daily))
         weekly["x"] = [
             float(np.mean([day_positions[value] + 0.5 for value in daily.loc[daily["date"].between(start, end), "date"]]))
             for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
@@ -572,6 +584,7 @@ def _records(
             count = len(index_list)
             minute.loc[index_list, "x"] = day_positions[trading_day] + (np.arange(count) + 0.5) / count
         minute = minute.dropna(subset=["x"]).reset_index(drop=True)
+        minute = _add_moving_averages(minute)
         covered_dates = set(pd.to_datetime(minute["trading_day"]).dt.normalize())
         missing_dates = [value.date().isoformat() for value in intraday_dates if value not in covered_dates]
         entry_x = float(day_positions[entry_date] + 0.5)
@@ -636,6 +649,7 @@ def _records(
                 "close": series(daily, "close"),
                 "volume": series(daily, "volume"),
                 "source": daily["source_vt_symbol"].tolist(),
+                **{f"ma{period}": series(daily, f"ma{period}") for period in MA_PERIODS},
             },
             "weekly": {
                 "x": series(weekly, "x"),
@@ -646,6 +660,7 @@ def _records(
                 "close": series(weekly, "close"),
                 "volume": series(weekly, "volume"),
                 "width": series(weekly, "width"),
+                **{f"ma{period}": series(weekly, f"ma{period}") for period in MA_PERIODS},
             },
             "intraday": {
                 "x": series(minute, "x"),
@@ -657,6 +672,7 @@ def _records(
                 "close": series(minute, "close"),
                 "volume": series(minute, "volume"),
                 "source": minute["vt_symbol"].tolist(),
+                **{f"ma{period}": series(minute, f"ma{period}") for period in MA_PERIODS},
             },
         }
         records.append(record)
@@ -695,7 +711,7 @@ select,button{{height:38px;border:1px solid var(--line);border-radius:7px;backgr
 .footer{{font-size:12px;color:var(--muted);padding:10px 2px}} .warn{{color:#b42318;font-weight:600}}
 @media(max-width:1000px){{.toolbar{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}#chart{{height:1050px}}}}
 </style></head><body><div class="page"><h1>{html.escape(title)}</h1>
-<div class="note">每周、每日和每个15分钟柱共用交易日坐标；蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
+<div class="note">每周、每日和每个15分钟柱共用交易日坐标，并分别叠加 MA5/10/20/40；窗口左端不足对应周期时按已有柱计算。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
 <div class="toolbar"><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
 <div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
 <div class="footer">数据：当前正式 {html.escape(OFFICIAL_LIVE_ALIAS)}（{html.escape(OFFICIAL_LIVE_VERSION)}）；大赢家=R倍数前20%，并补入R缺失但盈利额前20%的交易；部分平仓按一次开仓聚合到最终平仓。本图用于复盘，不是交易规则。</div>
@@ -717,12 +733,24 @@ function render(){{if(!filtered.length){{Plotly.purge('chart');document.getEleme
  const metric=[['排名',`#${{m.winner_rank}}`],['合约',m.vt_symbol],['方向',m.direction],['净利润',fmt(m.realized_pnl,0)],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['行情来源',source],['15m覆盖',missing]];
  document.getElementById('metrics').innerHTML=metric.map(([k,v])=>`<div class="metric"><div class="k">${{k}}</div><div class="v">${{v}}</div></div>`).join('');
  const traces=[
-  {{type:'candlestick',x:w.x,open:w.open,high:w.high,low:w.low,close:w.close,name:'周K',yaxis:'y',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'bar',x:w.x,y:w.volume,width:w.width,marker:{{color:colors(w.open,w.close),opacity:.55}},name:'周成交量',yaxis:'y2',hovertext:w.label,hovertemplate:'%{{hovertext}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
-  {{type:'candlestick',x:d.x,open:d.open,high:d.high,low:d.low,close:d.close,name:'日K',yaxis:'y3',customdata:d.source,hovertemplate:'%{{customdata}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'bar',x:d.x,y:d.volume,width:.72,marker:{{color:colors(d.open,d.close),opacity:.55}},name:'日成交量',yaxis:'y4',customdata:d.date,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
-  {{type:'candlestick',x:q.x,open:q.open,high:q.high,low:q.low,close:q.close,name:'15分钟K',yaxis:'y5',customdata:q.datetime.map((v,i)=>[v,q.source[i]]),hovertemplate:'%{{customdata[0]}} %{{customdata[1]}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'bar',x:q.x,y:q.volume,marker:{{color:colors(q.open,q.close),opacity:.6}},name:'15分钟成交量',yaxis:'y6',customdata:q.datetime,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:w.x,open:w.open,high:w.high,low:w.low,close:w.close,name:'周K',yaxis:'y',showlegend:false,increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma5,yaxis:'y',name:'周MA5',showlegend:false,line:{{color:'#f59e0b',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma10,yaxis:'y',name:'周MA10',showlegend:false,line:{{color:'#2563eb',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma20,yaxis:'y',name:'周MA20',showlegend:false,line:{{color:'#9333ea',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma40,yaxis:'y',name:'周MA40',showlegend:false,line:{{color:'#111827',width:1.5}}}},
+  {{type:'bar',x:w.x,y:w.volume,width:w.width,marker:{{color:colors(w.open,w.close),opacity:.55}},name:'周成交量',yaxis:'y2',showlegend:false,hovertext:w.label,hovertemplate:'%{{hovertext}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:d.x,open:d.open,high:d.high,low:d.low,close:d.close,name:'日K',yaxis:'y3',showlegend:false,customdata:d.source,hovertemplate:'%{{customdata}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma5,yaxis:'y3',name:'MA5',legendgroup:'ma',line:{{color:'#f59e0b',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma10,yaxis:'y3',name:'MA10',legendgroup:'ma',line:{{color:'#2563eb',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma20,yaxis:'y3',name:'MA20',legendgroup:'ma',line:{{color:'#9333ea',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma40,yaxis:'y3',name:'MA40',legendgroup:'ma',line:{{color:'#111827',width:1.5}}}},
+  {{type:'bar',x:d.x,y:d.volume,width:.72,marker:{{color:colors(d.open,d.close),opacity:.55}},name:'日成交量',yaxis:'y4',showlegend:false,customdata:d.date,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:q.x,open:q.open,high:q.high,low:q.low,close:q.close,name:'15分钟K',yaxis:'y5',showlegend:false,customdata:q.datetime.map((v,i)=>[v,q.source[i]]),hovertemplate:'%{{customdata[0]}} %{{customdata[1]}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma5,yaxis:'y5',name:'15m MA5',showlegend:false,line:{{color:'#f59e0b',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma10,yaxis:'y5',name:'15m MA10',showlegend:false,line:{{color:'#2563eb',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma20,yaxis:'y5',name:'15m MA20',showlegend:false,line:{{color:'#9333ea',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma40,yaxis:'y5',name:'15m MA40',showlegend:false,line:{{color:'#111827',width:1.3}}}},
+  {{type:'bar',x:q.x,y:q.volume,marker:{{color:colors(q.open,q.close),opacity:.6}},name:'15分钟成交量',yaxis:'y6',showlegend:false,customdata:q.datetime,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
   {{type:'scatter',mode:'markers',x:[m.entry_x,m.exit_x],y:[m.entry_marker_price,m.exit_marker_price],yaxis:'y3',name:'同源成交价格（日）',marker:{{symbol:['triangle-up','triangle-down'],size:12,color:['#2563eb','#9333ea']}}}}
  ];
  const tickStep=Math.max(1,Math.ceil(d.date.length/18)),tickvals=d.x.filter((_,i)=>i%tickStep===0),ticktext=d.date.filter((_,i)=>i%tickStep===0);
