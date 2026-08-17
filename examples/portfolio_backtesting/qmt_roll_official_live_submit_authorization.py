@@ -1086,12 +1086,25 @@ def validate_submit_authorization(
                 blockers.append(
                     "stage179_submit_authorization_broker_readiness_expired"
                 )
-    if (
-        isinstance(tick, dict)
-        and not reduce_close_only
-        and _artifact_int(tick.get("all_symbols_ready"), minimum=0) != 1
-    ):
-        blockers.append("stage179_submit_authorization_tick_gate_not_ready")
+    if isinstance(tick, dict) and not reduce_close_only:
+        all_symbols_ready = (
+            _artifact_int(tick.get("all_symbols_ready"), minimum=0) == 1
+        )
+        candidate_symbol_ready = (
+            bool(str(tick.get("candidate_symbol", "")).strip())
+            and _artifact_int(
+                tick.get("candidate_symbol_ready"),
+                minimum=0,
+            )
+            == 1
+            and _artifact_int(
+                tick.get("candidate_ingress_epoch_ns"),
+                minimum=1,
+            )
+            is not None
+        )
+        if not all_symbols_ready and not candidate_symbol_ready:
+            blockers.append("stage179_submit_authorization_tick_gate_not_ready")
     return list(dict.fromkeys(blockers))
 
 

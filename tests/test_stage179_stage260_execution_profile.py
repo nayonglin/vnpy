@@ -175,7 +175,12 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
         )
         self.assertTrue(result.decisions.iloc[0]["decision_id"])
 
-    def test_iso_timezone_snapshot_timestamp_is_fresh(self) -> None:
+    def _run_with_readonly_timestamp(
+        self,
+        generated_at: str,
+        *,
+        now: datetime,
+    ):
         signal_plan = pd.DataFrame(
             [
                 {
@@ -196,7 +201,7 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             artifact_snapshot=self._snapshot(signal_plan=signal_plan),
             readonly_summary={
                 "status": "readonly_snapshots_received",
-                "generated_at": "2026-08-17T21:06:18.283886+08:00",
+                "generated_at": generated_at,
                 "broker_snapshot": {
                     "position_snapshot_state": "confirmed_flat",
                 },
@@ -204,8 +209,15 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
             positions=pd.DataFrame(),
             orders=pd.DataFrame(),
             max_snapshot_age_seconds=300,
-            now=datetime(2026, 8, 17, 21, 6, 20),
+            now=now,
             write_outputs=False,
+        )
+        return result
+
+    def test_iso_timezone_snapshot_timestamp_is_fresh(self) -> None:
+        result = self._run_with_readonly_timestamp(
+            "2026-08-17T21:06:18.283886+08:00",
+            now=datetime(2026, 8, 17, 21, 6, 20),
         )
 
         self.assertEqual(
@@ -214,6 +226,44 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
         )
         self.assertTrue(result.summary["readonly_gate"]["passed"])
         self.assertEqual(result.summary["executable_count"], 1)
+
+    def test_future_iso_timezone_snapshot_fails_closed(self) -> None:
+        result = self._run_with_readonly_timestamp(
+            "2026-08-17T21:06:21+08:00",
+            now=datetime(2026, 8, 17, 21, 6, 20),
+        )
+
+        self.assertEqual(
+            -1.0,
+            result.summary["readonly_gate"]["snapshot_age_seconds"],
+        )
+        self.assertFalse(result.summary["readonly_gate"]["passed"])
+        self.assertEqual(0, result.summary["executable_count"])
+
+    def test_over_ttl_iso_timezone_snapshot_fails_closed(self) -> None:
+        result = self._run_with_readonly_timestamp(
+            "2026-08-17T21:00:00+08:00",
+            now=datetime(2026, 8, 17, 21, 6, 20),
+        )
+
+        self.assertEqual(
+            380.0,
+            result.summary["readonly_gate"]["snapshot_age_seconds"],
+        )
+        self.assertFalse(result.summary["readonly_gate"]["passed"])
+        self.assertEqual(0, result.summary["executable_count"])
+
+    def test_invalid_iso_timezone_snapshot_fails_closed(self) -> None:
+        result = self._run_with_readonly_timestamp(
+            "not-a-timestamp",
+            now=datetime(2026, 8, 17, 21, 6, 20),
+        )
+
+        self.assertIsNone(
+            result.summary["readonly_gate"]["snapshot_age_seconds"],
+        )
+        self.assertFalse(result.summary["readonly_gate"]["passed"])
+        self.assertEqual(0, result.summary["executable_count"])
 
     def test_stage372_decision_id_is_stable_across_replay(self) -> None:
         first = self._run()

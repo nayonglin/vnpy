@@ -3392,22 +3392,6 @@ def _publish_stage931_submit_authorization(
                 if item
             ),
         }
-    tick_expires_epoch_ns = issued_epoch_ns + int(ttl_seconds * 1_000_000_000)
-    if not reduce_close_only:
-        tick_summary = tick_gate.get("summary")
-        tick_epoch_ns = _tick_result_ingress_epoch_ns(tick_gate)
-        if not isinstance(tick_summary, dict) or tick_epoch_ns is None:
-            return {
-                "authorized": 0,
-                "blocker": "stage931_tick_watermark_evidence_stale",
-            }
-        tick_age_ns = max(0, issued_epoch_ns - tick_epoch_ns)
-        tick_ttl_ns = int(
-            max(0.1, float(getattr(args, "fast_tick_age_seconds", 3.0)))
-            * 1_000_000_000
-        )
-        tick_expires_epoch_ns = issued_epoch_ns + max(0, tick_ttl_ns - tick_age_ns)
-
     try:
         with exclusive_submit_authorization_lock(
             submit_authorization_lock_path(runtime.output_root),
@@ -3450,6 +3434,33 @@ def _publish_stage931_submit_authorization(
                     "authorized": 0,
                     "blocker": f"stage931_{permit_field}_not_ready",
                 }
+            tick_expires_epoch_ns = issued_epoch_ns + int(
+                ttl_seconds * 1_000_000_000
+            )
+            if not candidate_close_only:
+                tick_epoch_ns = _tick_result_ingress_epoch_ns(
+                    tick_gate,
+                    candidate_symbol=_clean(candidate.vt_symbol),
+                )
+                if tick_epoch_ns is None:
+                    return {
+                        "authorized": 0,
+                        "blocker": "stage931_tick_watermark_evidence_stale",
+                    }
+                tick_age_ns = max(0, issued_epoch_ns - tick_epoch_ns)
+                tick_ttl_ns = int(
+                    max(
+                        0.1,
+                        float(
+                            getattr(args, "fast_tick_age_seconds", 3.0)
+                        ),
+                    )
+                    * 1_000_000_000
+                )
+                tick_expires_epoch_ns = issued_epoch_ns + max(
+                    0,
+                    tick_ttl_ns - tick_age_ns,
+                )
             initial_open_window_expiry_epoch_ns = 0
             if intent_scope == "initial_open_only":
                 allowed_now, now_window_expiry, _ = (
@@ -3470,11 +3481,6 @@ def _publish_stage931_submit_authorization(
                         "blocker": "stage931_initial_open_candidate_ingress_window_invalid",
                     }
                 initial_open_window_expiry_epoch_ns = ingress_window_expiry
-            if not candidate_close_only and _to_int(tick_gate.get("all_symbols_ready"), 0) != 1:
-                return {
-                    "authorized": 0,
-                    "blocker": "stage931_tick_gate_not_ready_for_open",
-                }
             expires_epoch_ns = min(
                 issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
                 readiness_expires_epoch_ns,
@@ -3514,6 +3520,18 @@ def _publish_stage931_submit_authorization(
                 if intent_scope == "initial_open_only"
                 else "persistent_intraday_fast"
             )
+            tick_authorization_evidence = {
+                **tick_gate,
+                "expires_epoch_ns": tick_expires_epoch_ns,
+            }
+            if not candidate_close_only:
+                tick_authorization_evidence.update(
+                    {
+                        "candidate_symbol": _clean(candidate.vt_symbol),
+                        "candidate_symbol_ready": 1,
+                        "candidate_ingress_epoch_ns": tick_epoch_ns,
+                    }
+                )
             payload = publish_submit_authorization(
                 path=submit_authorization_path(runtime.output_root),
                 target_date=target_date,
@@ -3541,10 +3559,7 @@ def _publish_stage931_submit_authorization(
                     "expires_epoch_ns": stage927_expires_epoch_ns,
                 },
                 broker_gate_evidence=readiness,
-                tick_watermark_evidence={
-                    **tick_gate,
-                    "expires_epoch_ns": tick_expires_epoch_ns,
-                },
+                tick_watermark_evidence=tick_authorization_evidence,
                 authorization_lane=authorization_lane,
                 spool_path=runtime.spool_path,
                 spool_snapshot_digest=snapshot.snapshot_digest,
@@ -4365,12 +4380,13 @@ def _stage931_submit_blockers(
     return blockers
 
 
-def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
+def _tick_result_ingress_epoch_ns(
+    tick_result: dict[str, Any],
+    *,
+    candidate_symbol: str = "",
+) -> int | None:
     if (
-        tick_result.get("refresh_status") != "tick_stream_ready"
-        or tick_result.get("transport_ready") != 1
-        or tick_result.get("stream_ready") != 1
-        or tick_result.get("all_symbols_ready") != 1
+        tick_result.get("transport_ready") != 1
         or tick_result.get("heartbeat_pid_matches_process") != 1
     ):
         return None
@@ -4381,6 +4397,34 @@ def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
     if not isinstance(latest_ticks, dict):
         latest_ticks = summary.get("latest_ticks")
     if not isinstance(latest_ticks, dict):
+        return None
+    normalized_candidate = _clean(candidate_symbol)
+    if normalized_candidate:
+        freshness = tick_result.get("symbol_tick_freshness")
+        if not isinstance(freshness, dict):
+            return None
+        blocked_symbols = freshness.get("blocked_new_risk_symbols")
+        if not isinstance(blocked_symbols, list):
+            return None
+        if normalized_candidate in {
+            _clean(symbol) for symbol in blocked_symbols
+        }:
+            return None
+        candidate_row = latest_ticks.get(normalized_candidate)
+        if not isinstance(candidate_row, dict):
+            return None
+        candidate_ingress_epoch_ns = candidate_row.get("ingress_epoch_ns")
+        if (
+            type(candidate_ingress_epoch_ns) is int
+            and candidate_ingress_epoch_ns > 0
+        ):
+            return candidate_ingress_epoch_ns
+        return None
+    if (
+        tick_result.get("refresh_status") != "tick_stream_ready"
+        or tick_result.get("stream_ready") != 1
+        or tick_result.get("all_symbols_ready") != 1
+    ):
         return None
     values = [
         row.get("ingress_epoch_ns")

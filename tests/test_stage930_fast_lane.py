@@ -188,6 +188,7 @@ class Stage930FastLaneTest(unittest.TestCase):
             position_cycle_id="cycle-1",
             spool_sequence=1,
             state_revision=0,
+            ingress_epoch_ns=time.time_ns(),
             deadline_epoch_ns=time.time_ns() + 20_000_000_000,
             deadline_monotonic_ns=time.monotonic_ns() + 20_000_000_000,
             clock_domain_id="test-clock",
@@ -387,6 +388,48 @@ class Stage930FastLaneTest(unittest.TestCase):
                     }
                 },
             }
+        )
+
+        self.assertIsNone(result)
+
+    def test_candidate_tick_ingress_uses_exact_symbol_not_global_max(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
+                "transport_ready": 1,
+                "stream_ready": 0,
+                "all_symbols_ready": 0,
+                "heartbeat_pid_matches_process": 1,
+                "symbol_tick_freshness": {
+                    "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+                },
+                "summary": {
+                    "symbol_tick_watermarks": {
+                        "AP610.CZCE": {"ingress_epoch_ns": 900},
+                        "jm2609.DCE": {"ingress_epoch_ns": 500},
+                    },
+                },
+            },
+            candidate_symbol="jm2609.DCE",
+        )
+
+        self.assertEqual(500, result)
+
+    def test_candidate_tick_ingress_rejects_blocked_exact_symbol(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "transport_ready": 1,
+                "heartbeat_pid_matches_process": 1,
+                "symbol_tick_freshness": {
+                    "blocked_new_risk_symbols": ["jm2609.DCE"],
+                },
+                "summary": {
+                    "symbol_tick_watermarks": {
+                        "jm2609.DCE": {"ingress_epoch_ns": 500},
+                    },
+                },
+            },
+            candidate_symbol="jm2609.DCE",
         )
 
         self.assertIsNone(result)
@@ -1369,6 +1412,94 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(1, result["authorized"])
         self.assertEqual([], blockers)
+
+    def test_warm_authorization_binds_tick_to_fresh_open_candidate(self) -> None:
+        args = self.args()
+        args.runtime_profile = "simnow"
+        args.poll_seconds = 30
+        now_ns = time.time_ns()
+        window_expiry_ns = now_ns + 10_000_000_000
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            runtime = stage930._stage179_runtime(args)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            try:
+                with (
+                    patch.object(
+                        stage930,
+                        "_spool_authorization_snapshot",
+                        return_value=self.spool_snapshot(
+                            self.spool_candidate(vt_symbol="jm2609.DCE")
+                        ),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_initial_open_authorization_window",
+                        return_value=(True, window_expiry_ns, "night_open"),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_read_json",
+                        return_value={"model_tag": "stage902-test-evidence"},
+                    ),
+                ):
+                    result = stage930._publish_stage931_submit_authorization(
+                        args,
+                        target_date="2026-07-16",
+                        controller_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "target_date": "2026-07-16",
+                            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                            "stage905_executor_status": "executor_dry_run_ready",
+                            "stage905_blocked_count": 0,
+                            "stage905_ready_count": 1,
+                        },
+                        stage927_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "real_submit_permitted": 1,
+                            "initial_open_submit_permitted": 1,
+                        },
+                        tick_gate={
+                            "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
+                            "transport_ready": 1,
+                            "stream_ready": 0,
+                            "all_symbols_ready": 0,
+                            "heartbeat_pid_matches_process": 1,
+                            "symbol_tick_freshness": {
+                                "blocked_new_risk_symbols": [
+                                    "AP610.CZCE",
+                                    "si2609.GFEX",
+                                ],
+                            },
+                            "summary": {
+                                "symbol_tick_watermarks": {
+                                    "AP610.CZCE": {
+                                        "ingress_epoch_ns": now_ns - 60_000_000_000,
+                                    },
+                                    "jm2609.DCE": {
+                                        "ingress_epoch_ns": now_ns,
+                                    },
+                                },
+                            },
+                        },
+                        service_status={
+                            "submit_status": "warm_executor_ready",
+                            "readiness": {
+                                "status": "ready",
+                                "service_generation": "service-1",
+                                "connection_generation": "connection-1",
+                                "runtime_profile": "simnow",
+                                "order_scope": "test",
+                                "expires_epoch_ns": now_ns + 3_000_000_000,
+                            },
+                        },
+                        reduce_close_only=False,
+                    )
+            finally:
+                stage930._STAGE931_SERVICE_RUNTIME = None
+
+        self.assertEqual(1, result["authorized"], result)
+        self.assertEqual("initial_open_only", result["intent_scope"])
 
     def test_stage930_authorization_excludes_intent_committed_after_publish(self) -> None:
         args = self.args()

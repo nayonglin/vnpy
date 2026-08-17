@@ -214,6 +214,19 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         values.update(overrides)
         return self.publish(**values)
 
+    def initial_open_validate_values(self) -> dict[str, object]:
+        return {
+            "execution_profile": "c9-15w",
+            "authorization_lane": "session_initial_open",
+            "intent_scope": "initial_open_only",
+            **self.initial_open_row(),
+            "spool_path": Path(self.tmp.name) / "stage179-spool.sqlite3",
+            "spool_snapshot_digest": "1" * 64,
+            "cursor_digest": "2" * 64,
+            "stage902_evidence_digest": "3" * 64,
+            "stage927_evidence_digest": "4" * 64,
+        }
+
     def test_authorization_is_target_profile_and_connection_bound(self) -> None:
         payload = self.publish()
 
@@ -622,7 +635,6 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
             "stage179_submit_authorization_expired",
             self.validate(**expected, now_epoch_ns=4_000_000_000),
         )
-
         pinned = self.validate(
             **expected,
             now_epoch_ns=4_000_000_000,
@@ -646,6 +658,43 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         self.assertIn(
             "stage179_submit_authorization_intent_deadline_expired",
             deadline_blockers,
+        )
+
+    def test_initial_open_accepts_exact_candidate_tick_evidence(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 0,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "candidate_ingress_epoch_ns": 2_000_000_000,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertNotIn(
+            "stage179_submit_authorization_tick_gate_not_ready",
+            blockers,
+        )
+
+    def test_initial_open_rejects_incomplete_candidate_tick_evidence(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 0,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertIn(
+            "stage179_submit_authorization_tick_gate_not_ready",
+            blockers,
         )
 
     def test_v4_digest_covers_new_lane_spool_and_exact_record_fields(self) -> None:
