@@ -3430,6 +3430,49 @@ def _fail_closed_uncommitted_feed_cycle(
     )
 
 
+def _fail_closed_invalid_signal_snapshot_cycle(
+    *,
+    store: dict[str, Any],
+    ticks: pd.DataFrame,
+    snapshot_error: str,
+) -> tuple[list[dict[str, Any]], int]:
+    """Preserve only already-latched protective closes during signal failure.
+
+    An invalid Stage901 cohort cannot authorize a new monitored position or a
+    retry open.  It also must not erase a close intent that the durable state
+    machine had already latched from a previously valid cohort and tick.
+    Stage905/927/931 still revalidate broker position and execution evidence
+    before any such close can reach the order API.
+    """
+
+    rows: list[dict[str, Any]] = []
+    states = store.get("states", {})
+    for state in states.values():
+        pending = get_pending_action(state)
+        if isinstance(pending, Mapping) and _clean(pending.get("action")) == "close":
+            row = _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="close_dry_run",
+                monitor_reason=(
+                    "existing_protective_close_preserved_during_"
+                    f"signal_snapshot_failure:{snapshot_error}"
+                ),
+            )
+            row["position_source"] = "durable_state_signal_snapshot_fail_closed"
+            rows.append(row)
+            continue
+        rows.append(
+            _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="block",
+                monitor_reason=snapshot_error,
+            )
+        )
+    return rows, len(states)
+
+
 def _position_epoch_from_base(base: dict[str, Any]) -> str:
     propagated_epoch_id = _clean(base.get("position_epoch_id"))
     if propagated_epoch_id:
@@ -5343,13 +5386,17 @@ def run_intraday_monitor(
             )
             for row in candidate_positions.to_dict(orient="records")
         ]
-        if signal_snapshot_error:
-            action_rows.extend(
-                _blocked_state_row(row, signal_snapshot_error)
-                for row in base_rows
-            )
-        elif state_store is None:
+        if state_store is None:
             action_rows.extend(_blocked_state_row(row, state_store_error) for row in base_rows)
+        elif signal_snapshot_error:
+            # Invalid Stage901 evidence blocks all new state/retry work, but a
+            # close already latched in the durable state remains executable.
+            # The state is intentionally not mutated or checkpointed here.
+            action_rows, state_count = _fail_closed_invalid_signal_snapshot_cycle(
+                store=state_store,
+                ticks=ticks,
+                snapshot_error=signal_snapshot_error,
+            )
         elif tick_snapshot_commit_error:
             # Do not call either reducer and do not checkpoint the state store.
             # A normal Stage608 two-file publication race must block only this
@@ -5422,7 +5469,12 @@ def run_intraday_monitor(
     blocked_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["block", "retry_block"]).sum()) if not actions.empty else 0
     order_api_called = int(actions.get("order_api_called", pd.Series(dtype=float)).sum()) if not actions.empty else 0
     monitor_status = "intraday_monitor_ready"
-    if blocked_count or state_store_error or tick_snapshot_commit_error:
+    if (
+        blocked_count
+        or signal_snapshot_error
+        or state_store_error
+        or tick_snapshot_commit_error
+    ):
         monitor_status = "intraday_monitor_blocked"
     elif retry_open_dry_run_count:
         monitor_status = "intraday_monitor_retry_open_dry_run"
@@ -5474,6 +5526,7 @@ def run_intraday_monitor(
         "monitor_position_rows": int(len(monitor_positions)),
         "retry_candidate_rows": int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["retry_watch", "retry_open_dry_run", "retry_block"]).sum()) if not actions.empty else 0,
         "durable_state_count": state_count,
+        "signal_snapshot_error": signal_snapshot_error,
         "durable_state_error": state_store_error,
         "durable_state_path": str(paths["state_json"].resolve()),
         "durable_state_journal_path": str(paths["state_journal"].resolve()),

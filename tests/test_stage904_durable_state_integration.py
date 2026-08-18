@@ -869,6 +869,113 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         self.assertEqual("initial_stop_latched", state["phase"])
         return store, state, action
 
+    def run_with_invalid_signal_snapshot(
+        self,
+        *,
+        store: dict | None = None,
+    ) -> tuple[stage904.Stage904RunResult, dict]:
+        heartbeat = self.v1_heartbeat(
+            sequence=1,
+            first_buffered=1,
+            evicted_through=0,
+        )
+        readonly_summary, broker_positions = self.readonly_position(2.0)
+        ticks = self.ticks([(1, 1252.0)])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch.object(stage904, "OUTPUT_DIR", root):
+                paths = stage904._paths(self.target_date)
+                if store is not None:
+                    stage904._save_state_store(paths["state_json"], store)
+
+                def fake_json(path: Path) -> dict:
+                    if path == stage904.OFFICIAL_LIVE_SUMMARY_PATH:
+                        return {"analysis_end": self.target_date}
+                    if path == stage904.READONLY_SUMMARY_PATH:
+                        return readonly_summary
+                    if path == stage904.TICK_STREAM_HEARTBEAT_PATH:
+                        return heartbeat
+                    return {}
+
+                with (
+                    patch.object(
+                        stage904,
+                        "_load_monitor_signal_snapshot",
+                        side_effect=ValueError(
+                            "pending_artifact_entry_risk_sha256_mismatch"
+                        ),
+                    ),
+                    patch.object(stage904, "_read_json", side_effect=fake_json),
+                    patch.object(
+                        stage904,
+                        "_read_csv_maybe",
+                        side_effect=lambda path, **_: (
+                            broker_positions
+                            if path == stage904.READONLY_POSITIONS_PATH
+                            else pd.DataFrame()
+                        ),
+                    ),
+                    patch.object(stage904, "read_execution_ledger", return_value=[]),
+                    patch.object(
+                        stage904,
+                        "_read_committed_tick_snapshot",
+                        return_value=(ticks, heartbeat, ""),
+                    ),
+                    patch.object(
+                        stage904,
+                        "_monitor_positions",
+                        return_value=pd.DataFrame(),
+                    ),
+                ):
+                    result = stage904.run_intraday_monitor(
+                        target_date=self.target_date,
+                        write_compat_outputs=False,
+                    )
+                    recovered = stage904._load_state_store(
+                        result.paths["state_json"],
+                        self.target_date,
+                        journal_path=result.paths["state_journal"],
+                    )
+                    return result, recovered
+
+    def test_invalid_signal_snapshot_preserves_existing_protective_close(self) -> None:
+        store, stopped_state, stopped_action = self.initial_stop_store()
+        before = stage904._canonical_json(store["states"])
+
+        result, recovered = self.run_with_invalid_signal_snapshot(store=store)
+
+        self.assertEqual("intraday_monitor_blocked", result.summary["monitor_status"])
+        self.assertIn(
+            "pending_artifact_entry_risk_sha256_mismatch",
+            result.summary["signal_snapshot_error"],
+        )
+        self.assertEqual(1, result.summary["close_dry_run_count"])
+        self.assertEqual(0, result.summary["retry_open_dry_run_count"])
+        self.assertEqual(0, result.summary["order_api_called_count"])
+        self.assertEqual(1, len(result.actions))
+        action = result.actions.iloc[0].to_dict()
+        self.assertEqual("close_dry_run", action["monitor_action"])
+        self.assertEqual(stopped_action["action_id"], action["action_id"])
+        self.assertEqual(INITIAL_STOP_ACTION_ROLE, action["intent_role"])
+        self.assertEqual(before, stage904._canonical_json(recovered["states"]))
+        self.assertEqual(
+            "initial_stop_latched",
+            recovered["states"][stopped_state["root_position_id"]]["phase"],
+        )
+
+    def test_invalid_signal_snapshot_without_state_is_explicitly_blocked(self) -> None:
+        result, _ = self.run_with_invalid_signal_snapshot()
+
+        self.assertEqual("intraday_monitor_blocked", result.summary["monitor_status"])
+        self.assertIn(
+            "pending_artifact_entry_risk_sha256_mismatch",
+            result.summary["signal_snapshot_error"],
+        )
+        self.assertEqual(0, result.summary["action_count"])
+        self.assertEqual(0, result.summary["retry_open_dry_run_count"])
+        self.assertEqual(0, result.summary["order_api_called_count"])
+
     def run_late_close_advance(
         self,
         *,

@@ -23,6 +23,8 @@
 - pending artifact schema 从 v1 升为 v2；validated snapshot 原子读取并物化 `entry_risk`，缺失、篡改、错路径或 audit 代际变化均 fail-closed。
 - production daily receipt 将 `entry_risk` 纳入 `signal_bundle.assets` 与 bundle SHA；旧 receipt 不能在 entry_risk 变化后复用。
 - Stage904 不再旁路读取独立 current_positions/entry_risk 文件，而是只消费同一份 validated Stage901 snapshot；请求 target date 与 cohort 不一致时拒绝。
+- 独立复审在候选 `fb43834ae9d07005d5a37cb75bf55303ab2b7fb5` 发现 1 个 P1：Stage901 snapshot 失效时，Stage904 会清空候选并跳过 durable state，使已经锁存的保护性 close intent 消失，同时摘要误报 `intraday_monitor_ready`。
+- P1 修复遵循 close-only fail-closed：snapshot 失效时禁止创建新状态、禁止推进 retry open，但从未修改的 durable state 重放已经锁存的初始/重试止损 close intent；没有 durable state 时仍明确 blocked。摘要新增 `signal_snapshot_error`，任何 snapshot 错误都令 monitor 状态为 blocked。
 - Stage905 原有语义保持：与 Stage901 计划同向且手数已存在的手动仓位标记 `skipped_existing_broker_position`，不会重复开仓；后续 Stage901 正常 close 仍按真实 broker 持仓生成平仓请求。
 
 ## 参数变化
@@ -36,6 +38,8 @@
 
 - RED：Stage901 测试先因 profile 无 `entry_risk_path` 失败；daily receipt 测试先因 `pending_artifact_entry_risk_sha256_invalid` 失败；Stage904 测试先因无 validated snapshot loader 失败；target-date mismatch 测试先因 helper 不接受 expected target 失败。
 - GREEN：相关 5 个模块共 `155 tests` 通过。
+- 独立复审 P1 的 TDD：两条 callable 测试先复现 `monitor_status=intraday_monitor_ready`；修复后验证已有 close 保持原 `action_id/intent_role`、状态文件不变、无 retry，空状态也明确 blocked，订单 API 均为 0。
+- P1 修复定向回归：Stage904 durable state、冻结状态机、Stage905 cycle intents 共 `133 passed, 51 subtests passed`。
 - 生产资格规定的 31 个离线 pytest suite：`834 passed, 689 subtests passed, 0 failed`，耗时 `162.06s`。
 - `py_compile`：5 个修改的生产 Python 文件通过。
 - `git diff --check`：通过。
@@ -59,8 +63,8 @@
 
 ## 当前状态与 TODO
 
-- 当前 production day/night job 均保持停用；尚未把本次新 commit 安装到实盘。
-- TODO：冻结 clean HEAD；独立审查 P0/P1/P2；重新运行两次正式只读 CTP qualification；生成新 manifest/qualification/activation receipt；只通过 Stage948 prepare/activate 安装；启动后核验 7 labels、Stage608/941、Stage904 阈值、JM/SI 监管和 API 计数。
+- 当前 production day/night job 均保持停用；带 P1 的 `fb43834` 未安装到实盘。
+- TODO：提交 P1 修复后的新 clean HEAD；对新 HEAD 做同一独立复审；重新运行两次正式只读 CTP qualification；生成新 manifest/qualification/activation receipt；只通过 Stage948 prepare/activate 安装；启动后核验 7 labels、Stage608/941、Stage904 阈值、JM/SI 监管和 API 计数。
 
 ## 反思
 
