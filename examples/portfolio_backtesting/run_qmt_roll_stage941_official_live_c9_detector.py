@@ -749,7 +749,12 @@ def _refresh_close_delivery_provenance(
             "close_delivery_missing_symbol_tick_count": missing_count,
         }
     )
-    if missing_count:
+    if _clean(refreshed_summary.get("signal_snapshot_error")):
+        # A fresh close delivery tick can authorize only the already-latched
+        # protective close; it cannot repair or supersede an invalid Stage901
+        # cohort for any open-side decision.
+        refreshed_summary["monitor_status"] = "intraday_monitor_blocked"
+    elif missing_count:
         refreshed_summary["monitor_status"] = "intraday_monitor_blocked"
     elif refreshed_count:
         refreshed_summary["monitor_status"] = "intraday_monitor_close_dry_run"
@@ -1207,7 +1212,9 @@ def run_detector_once(
             config.target_date,
             mode="dry-run",
             stage904_actions=stage904_result,
-            include_stage901_pending=True,
+            include_stage901_pending=not bool(
+                _clean(stage904_result.summary.get("signal_snapshot_error"))
+            ),
             pending_initial_open_provenance=_pending_initial_open_provenance(
                 batch,
                 clock=clock,

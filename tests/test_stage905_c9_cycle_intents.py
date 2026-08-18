@@ -1211,6 +1211,108 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
             finally:
                 connection.close()
 
+    def test_invalid_signal_snapshot_keeps_close_and_drops_pending_initial_open(self) -> None:
+        close_action = self._traced_action(
+            monitor_action="close_dry_run",
+            action_id="latched-close-action",
+        )
+        provenance = {
+            key: close_action[key]
+            for key in stage905.STAGE904_PROVENANCE_FIELDS
+            if key in close_action and key != "state_generation"
+        }
+        provenance["vt_symbol"] = "JM609.DCE"
+        clock = _FakeClock(
+            epoch_ns=int(close_action["ingress_epoch_ns"]) + 1_000_000_000,
+            monotonic_ns=(
+                int(close_action["ingress_monotonic_ns"]) + 1_000_000_000
+            ),
+        )
+        generated_at = datetime.fromtimestamp(
+            clock.epoch_ns() / 1_000_000_000
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        summary = self._stage904_summary(
+            generated_at,
+            action_count=1,
+            close_count=1,
+            retry_count=0,
+        )
+        summary["signal_snapshot_error"] = (
+            "signal_artifact_snapshot_invalid:"
+            "pending_artifact_entry_risk_sha256_mismatch"
+        )
+
+        result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame([close_action]),
+            stage904_summary=summary,
+            snapshots=self._snapshots(
+                pending_orders=pd.DataFrame(
+                    [
+                        {
+                            "vt_symbol": "JM609.DCE",
+                            "direction": "short",
+                            "offset": "open",
+                            "volume": 2,
+                            "price": 1245.5,
+                            "stop_price": 1258.0,
+                        }
+                    ]
+                ),
+                stage260_executable=1,
+            ),
+            pending_initial_open_provenance={"JM609.DCE": provenance},
+            clock=clock,
+            write_compat_outputs=False,
+        )
+
+        self.assertEqual(1, len(result.intents))
+        intent = result.intents.iloc[0]
+        self.assertEqual("stage904_c9_intraday_close", intent["source"])
+        self.assertEqual("close", intent["offset"])
+        self.assertEqual("dry_run_order_request_payload_ready", intent["executor_status"])
+        self.assertEqual(0, result.summary["send_order_api_called_count"])
+        self.assertEqual(0, result.summary["cancel_order_api_called_count"])
+
+    def test_invalid_signal_snapshot_blocks_injected_retry_open(self) -> None:
+        retry_action = self._traced_action(
+            monitor_action="retry_open_dry_run",
+            action_id="invalid-cohort-retry",
+        )
+        clock = _FakeClock(
+            epoch_ns=int(retry_action["ingress_epoch_ns"]) + 1_000_000_000,
+            monotonic_ns=(
+                int(retry_action["ingress_monotonic_ns"]) + 1_000_000_000
+            ),
+        )
+        generated_at = datetime.fromtimestamp(
+            clock.epoch_ns() / 1_000_000_000
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        summary = self._stage904_summary(generated_at)
+        summary["signal_snapshot_error"] = (
+            "signal_artifact_snapshot_invalid:"
+            "pending_artifact_entry_risk_sha256_mismatch"
+        )
+
+        result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame([retry_action]),
+            stage904_summary=summary,
+            snapshots=self._snapshots(positions=pd.DataFrame()),
+            include_stage901_pending=False,
+            clock=clock,
+            write_compat_outputs=False,
+        )
+
+        self.assertEqual(1, len(result.intents))
+        intent = result.intents.iloc[0]
+        self.assertEqual("blocked", intent["executor_status"])
+        self.assertIn(
+            "stage904_signal_snapshot_invalid_for_open",
+            intent["executor_reason"],
+        )
+        self.assertEqual(0, result.summary["send_order_api_called_count"])
+
     def test_traced_pending_open_deadline_expiry_fails_closed(self) -> None:
         action = self._traced_action(
             monitor_action="retry_open_dry_run",
