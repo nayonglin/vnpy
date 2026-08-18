@@ -16,6 +16,15 @@ from typing import Any, Mapping
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_execution_profile import (
+    C9_15W_PROFILE,
+    OfficialExecutionProfile,
+)
+from qmt_roll_official_pending_artifact import (
+    MaterializedArtifactSnapshot,
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
+)
 from qmt_roll_official_live_c9_intraday_state import (
     ATTEMPT_INITIAL,
     ATTEMPT_RETRY,
@@ -56,7 +65,6 @@ from qmt_roll_official_live_late_retry_fill import (
 )
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SUMMARY_PATH,
     OFFICIAL_LIVE_VERSION,
 )
@@ -68,7 +76,6 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_POSITIONS_PATH,
     READONLY_TRADES_PATH,
     READONLY_TICKS_PATH,
-    STAGE901_ENTRY_RISK_PATH,
     STAGE901_TRADES_PATH,
     build_phase_d_config,
 )
@@ -161,6 +168,28 @@ class Stage904RunResult:
     actions: pd.DataFrame
     summary: dict[str, Any]
     paths: Mapping[str, Path]
+
+
+def _load_monitor_signal_snapshot(
+    profile: OfficialExecutionProfile = C9_15W_PROFILE,
+    *,
+    expected_target_date: str = "",
+) -> MaterializedArtifactSnapshot:
+    """Load one audit-sealed Stage901 generation for risk supervision."""
+
+    materialized = materialize_validated_artifact_snapshot(
+        profile,
+        load_validated_artifact_snapshot(profile),
+    )
+    observed_target_date = _clean(
+        materialized.official_summary.get("analysis_end")
+    )
+    if expected_target_date and observed_target_date != expected_target_date:
+        raise ValueError(
+            "signal_artifact_target_date_mismatch:"
+            f"{observed_target_date}!={expected_target_date}"
+        )
+    return materialized
 
 
 TRIGGER_ACTION_FIELDS = (
@@ -5190,7 +5219,19 @@ def run_intraday_monitor(
     allow_partial_durable_batch: bool = False,
 ) -> Stage904RunResult:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    signal_snapshot_error = ""
+    try:
+        signal_snapshot = _load_monitor_signal_snapshot(
+            expected_target_date=target_date,
+        )
+        official_summary = signal_snapshot.official_summary
+        positions = signal_snapshot.current_positions
+        entry_risk = signal_snapshot.entry_risk
+    except Exception as exc:
+        official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+        positions = pd.DataFrame()
+        entry_risk = pd.DataFrame()
+        signal_snapshot_error = f"signal_artifact_snapshot_invalid:{exc}"
     target_date = target_date or str(official_summary.get("analysis_end", ""))
     run_now = _local_datetime_from_clock(clock)
     monitor_run_id = (
@@ -5217,7 +5258,6 @@ def run_intraday_monitor(
                 indent=2,
             ),
         )
-    positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
     broker_positions = _read_csv_maybe(
         READONLY_POSITIONS_PATH, preserve_identity=True
     )
@@ -5229,7 +5269,6 @@ def run_intraday_monitor(
     )
     execution_ledger_rows = read_execution_ledger()
     trades = _read_csv_maybe(STAGE901_TRADES_PATH)
-    entry_risk = _read_csv_maybe(STAGE901_ENTRY_RISK_PATH)
     if durable_batch is None:
         (
             ticks,
@@ -5304,7 +5343,12 @@ def run_intraday_monitor(
             )
             for row in candidate_positions.to_dict(orient="records")
         ]
-        if state_store is None:
+        if signal_snapshot_error:
+            action_rows.extend(
+                _blocked_state_row(row, signal_snapshot_error)
+                for row in base_rows
+            )
+        elif state_store is None:
             action_rows.extend(_blocked_state_row(row, state_store_error) for row in base_rows)
         elif tick_snapshot_commit_error:
             # Do not call either reducer and do not checkpoint the state store.

@@ -904,6 +904,117 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         self.assertIn("invalid_exchange", checked["executor_reason"])
         self.assertEqual({}, stage905.json.loads(checked["order_request_json"]))
 
+    def test_manual_position_matching_stage901_open_is_not_duplicated(self) -> None:
+        checked = stage905._validate_intent(
+            {
+                "intent_id": "planned-si-open",
+                "target_date": "2026-08-18",
+                "source": "stage901_pending_order",
+                "intent_role": "c9_initial_open",
+                "vt_symbol": "SI2609.GFEX",
+                "direction": "long",
+                "offset": "open",
+                "planned_volume": 6,
+                "limit_price": 8590.0,
+            },
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "pricetick": 5.0,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "direction": "long",
+                        "volume": 6,
+                        "frozen": 0,
+                    }
+                ]
+            ),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={},
+            stage260_summary={"executable_count": 1},
+            mode="dry-run",
+        )
+
+        self.assertEqual(
+            "skipped_existing_broker_position",
+            checked["executor_status"],
+        )
+        self.assertIn(
+            "stage901_open_already_present_in_broker_position:6.0",
+            checked["executor_reason"],
+        )
+        self.assertEqual({}, stage905.json.loads(checked["order_request_json"]))
+
+    def test_stage901_normal_close_can_exit_matching_manual_position(self) -> None:
+        checked = stage905._validate_intent(
+            {
+                "intent_id": "planned-si-close",
+                "target_date": "2026-08-19",
+                "source": "stage901_pending_order",
+                "vt_symbol": "SI2609.GFEX",
+                "direction": "short",
+                "offset": "close",
+                "planned_volume": 6,
+                "limit_price": 8500.0,
+            },
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "pricetick": 5.0,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "direction": "long",
+                        "volume": 6,
+                        "frozen": 0,
+                    }
+                ]
+            ),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={},
+            stage260_summary={"executable_count": 1},
+            mode="dry-run",
+        )
+
+        self.assertEqual(
+            "dry_run_order_request_payload_ready",
+            checked["executor_status"],
+        )
+        request = stage905.json.loads(checked["order_request_json"])
+        self.assertEqual("SI2609", request["symbol"])
+        self.assertEqual("空", request["direction"])
+        self.assertEqual("平", request["offset"])
+        self.assertEqual(6, request["volume"])
+
     def test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks(self) -> None:
         intent = {
             "intent_id": "pending-open-volume",

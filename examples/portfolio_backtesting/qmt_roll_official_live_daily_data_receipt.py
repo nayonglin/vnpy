@@ -23,7 +23,7 @@ from qmt_roll_official_live_production_assets import (
 )
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_pending_artifact import (
-    ARTIFACT_HASH_KEYS,
+    artifact_hash_keys_for_profile,
     validate_pending_artifact_cohort,
 )
 
@@ -296,6 +296,7 @@ def _signal_bundle_row(
         pending_orders_audit_path=(
             root / C9_15W_PROFILE.pending_orders_audit_path.name
         ),
+        entry_risk_path=root / C9_15W_PROFILE.entry_risk_path.name,
     )
     audit_before_raw, audit_row = _strict_signal_file(
         root=root,
@@ -307,6 +308,7 @@ def _signal_bundle_row(
         ("signal_plan", profile.signal_plan_path),
         ("current_positions", profile.current_positions_path),
         ("pending_orders", profile.pending_orders_path),
+        ("entry_risk", profile.entry_risk_path),
     )
     raw_by_name: dict[str, bytes] = {}
     asset_rows: list[dict[str, Any]] = []
@@ -343,7 +345,7 @@ def _signal_bundle_row(
     )
     hashes = {
         name: hashlib.sha256(raw_by_name[name]).hexdigest()
-        for name in ARTIFACT_HASH_KEYS
+        for name in artifact_hash_keys_for_profile(profile)
     }
     try:
         validate_pending_artifact_cohort(

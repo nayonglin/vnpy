@@ -22,6 +22,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import qmt_roll_official_execution_profile as execution_profiles
 from qmt_roll_official_execution_profile import STAGE372_20W_PROFILE
 from qmt_roll_official_pending_artifact import (
+    PENDING_ARTIFACT_SCHEMA_VERSION,
     load_validated_artifact_snapshot,
     materialize_validated_artifact_snapshot,
 )
@@ -99,7 +100,7 @@ class Stage260ExecutionProfileTest(unittest.TestCase):
         current_bytes = current_positions.to_csv(index=False).encode("utf-8-sig")
         pending_bytes = pending_orders.to_csv(index=False).encode("utf-8-sig")
         audit = {
-            "schema_version": 1,
+            "schema_version": PENDING_ARTIFACT_SCHEMA_VERSION,
             "status": "ready",
             "cohort_id": self._COHORT_ID,
             "target_date": "2026-07-18",

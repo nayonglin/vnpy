@@ -36,13 +36,16 @@ from qmt_roll_official_live_daily_data_receipt import (  # noqa: E402
     serialize_production_daily_data_receipt,
 )
 from qmt_roll_official_execution_profile import C9_15W_PROFILE  # noqa: E402
+import qmt_roll_official_execution_profile as execution_profiles  # noqa: E402
 from qmt_roll_official_pending_artifact import (  # noqa: E402
+    PENDING_ARTIFACT_SCHEMA_VERSION,
     artifact_hashes_for_profile,
     validate_pending_artifact_cohort,
 )
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as stage650  # noqa: E402
 import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as stage901  # noqa: E402
 import build_qmt_roll_stage173_forward_main_contract_data_update as stage173  # noqa: E402
+import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904  # noqa: E402
 
 
 def _forward_calendar_fixture(
@@ -146,6 +149,7 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 self.signal_root / C9_15W_PROFILE.current_positions_path.name
             ),
             "pending_orders": self.signal_root / C9_15W_PROFILE.pending_orders_path.name,
+            "entry_risk": self.signal_root / C9_15W_PROFILE.entry_risk_path.name,
         }
         decision = {
             "analysis_end": "2026-07-21",
@@ -182,6 +186,11 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             "cohort_id,target_date,execution_profile,official_live_version,capital,capital_label\n",
             encoding="utf-8",
         )
+        profile_paths["entry_risk"].write_text(
+            "date,contract_vt_symbol,direction,entry_price,stop_price\n"
+            "2026-07-21,jm.DCE,long,1000,990\n",
+            encoding="utf-8",
+        )
         for path in profile_paths.values():
             path.chmod(0o600)
         hashes = {
@@ -189,7 +198,7 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             for key, path in profile_paths.items()
         }
         audit = {
-            "schema_version": 1,
+            "schema_version": PENDING_ARTIFACT_SCHEMA_VERSION,
             "status": "ready",
             "cohort_id": "c" * 64,
             "target_date": "2026-07-21",
@@ -201,6 +210,7 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             "signal_plan_sha256": hashes["signal_plan"],
             "current_positions_sha256": hashes["current_positions"],
             "pending_orders_sha256": hashes["pending_orders"],
+            "entry_risk_sha256": hashes["entry_risk"],
             "pending_order_count": 0,
             "order_api_called_count": 0,
         }
@@ -600,10 +610,76 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
         self.assertEqual(payload, loaded)
         self.assertEqual(0o600, self.receipt_path.stat().st_mode & 0o777)
         self.assertEqual("2026-07-21", loaded["database_asset"]["max_bar_date"])
+        self.assertIn(
+            "entry_risk",
+            {
+                row["artifact_name"]
+                for row in loaded["signal_bundle"]["assets"]
+            },
+        )
         self.assertEqual(
             serialize_production_daily_data_receipt(payload),
             self.receipt_path.read_bytes(),
         )
+
+    def test_stage904_loads_entry_risk_only_from_validated_signal_cohort(self) -> None:
+        profile = replace(
+            C9_15W_PROFILE,
+            summary_path=self.signal_root / C9_15W_PROFILE.summary_path.name,
+            signal_plan_path=self.signal_root / C9_15W_PROFILE.signal_plan_path.name,
+            current_positions_path=(
+                self.signal_root / C9_15W_PROFILE.current_positions_path.name
+            ),
+            pending_orders_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_path.name
+            ),
+            pending_orders_audit_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_audit_path.name
+            ),
+            entry_risk_path=self.signal_root / C9_15W_PROFILE.entry_risk_path.name,
+        )
+        with patch.dict(
+            execution_profiles._PROFILES,
+            {profile.profile_key: profile},
+        ):
+            materialized = stage904._load_monitor_signal_snapshot(profile)
+            self.assertEqual("2026-07-21", materialized.official_summary["analysis_end"])
+            self.assertEqual(990, int(materialized.entry_risk.iloc[0]["stop_price"]))
+
+            profile.entry_risk_path.write_text(
+                "date,contract_vt_symbol,direction,entry_price,stop_price\n"
+                "2026-07-21,jm.DCE,long,1000,995\n",
+                encoding="utf-8",
+            )
+            profile.entry_risk_path.chmod(0o600)
+            with self.assertRaisesRegex(ValueError, "entry_risk_sha256_mismatch"):
+                stage904._load_monitor_signal_snapshot(profile)
+
+    def test_stage904_rejects_signal_cohort_for_different_target_date(self) -> None:
+        profile = replace(
+            C9_15W_PROFILE,
+            summary_path=self.signal_root / C9_15W_PROFILE.summary_path.name,
+            signal_plan_path=self.signal_root / C9_15W_PROFILE.signal_plan_path.name,
+            current_positions_path=(
+                self.signal_root / C9_15W_PROFILE.current_positions_path.name
+            ),
+            pending_orders_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_path.name
+            ),
+            pending_orders_audit_path=(
+                self.signal_root / C9_15W_PROFILE.pending_orders_audit_path.name
+            ),
+            entry_risk_path=self.signal_root / C9_15W_PROFILE.entry_risk_path.name,
+        )
+        with patch.dict(
+            execution_profiles._PROFILES,
+            {profile.profile_key: profile},
+        ):
+            with self.assertRaisesRegex(ValueError, "target_date_mismatch"):
+                stage904._load_monitor_signal_snapshot(
+                    profile,
+                    expected_target_date="2026-07-22",
+                )
 
     def test_daily_receipt_accepts_database_row_for_exact_next_session(self) -> None:
         connection = sqlite3.connect(self.database)
@@ -797,6 +873,44 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                 validation_at_utc="2026-07-21T09:00:00Z",
             )
 
+    def test_entry_risk_change_invalidates_old_daily_receipt(self) -> None:
+        build_and_write_production_daily_data_receipt(
+            output_path=self.receipt_path,
+            declared_data_link=self.data_link,
+            expected_data_root=self.data_root,
+            source_commit=self.commit,
+            manifest_sha256=self.manifest_sha256,
+            target_cutoff_date="2026-07-21",
+            production_database_path=self.database,
+            signal_input_root=self.signal_root,
+            official_ai_eligibility_path=self.ai_path,
+            generated_at_utc="2026-07-21T08:40:00Z",
+        )
+        entry_risk = self.signal_root / C9_15W_PROFILE.entry_risk_path.name
+        entry_risk.write_text(
+            "date,contract_vt_symbol,direction,entry_price,stop_price\n"
+            "2026-07-21,jm.DCE,long,1000,995\n",
+            encoding="utf-8",
+        )
+        entry_risk.chmod(0o600)
+
+        with self.assertRaisesRegex(
+            ProductionAssetError,
+            "(?:pending_cohort_invalid|signal_bundle_mismatch)",
+        ):
+            load_and_validate_production_daily_data_receipt(
+                self.receipt_path,
+                declared_data_link=self.data_link,
+                expected_data_root=self.data_root,
+                source_commit=self.commit,
+                manifest_sha256=self.manifest_sha256,
+                target_cutoff_date="2026-07-21",
+                production_database_path=self.database,
+                signal_input_root=self.signal_root,
+                official_ai_eligibility_path=self.ai_path,
+                validation_at_utc="2026-07-21T09:00:00Z",
+            )
+
     def test_controlled_venv_link_rejects_group_writable_python_then_passes_hardened(self) -> None:
         root = Path(self.tempdir.name).resolve()
         venv_root = root / "main-venv"
@@ -972,6 +1086,7 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             pending_orders_audit_path=(
                 self.signal_root / C9_15W_PROFILE.pending_orders_audit_path.name
             ),
+            entry_risk_path=self.signal_root / C9_15W_PROFILE.entry_risk_path.name,
         )
         metrics = stage650._metrics(
             frame=pd.DataFrame(
@@ -1019,6 +1134,15 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             pending_orders=pd.DataFrame(
                 columns=["vt_symbol", "direction", "offset", "volume"]
             ),
+            entry_risk=pd.DataFrame(
+                columns=[
+                    "date",
+                    "contract_vt_symbol",
+                    "direction",
+                    "entry_price",
+                    "stop_price",
+                ]
+            ),
             profile=profile,
         )
 
@@ -1050,6 +1174,7 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
             pending_orders_audit_path=(
                 self.signal_root / C9_15W_PROFILE.pending_orders_audit_path.name
             ),
+            entry_risk_path=self.signal_root / C9_15W_PROFILE.entry_risk_path.name,
         )
         decision = {
             "analysis_end": "2026-07-21",
@@ -1080,6 +1205,17 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                     columns=["vt_symbol", "direction", "end_pos"]
                 ),
                 pending_orders=pending,
+                entry_risk=pd.DataFrame(
+                    [
+                        {
+                            "date": "2026-07-21",
+                            "contract_vt_symbol": "jm.DCE",
+                            "direction": "short",
+                            "entry_price": 1000.0,
+                            "stop_price": 1010.0,
+                        }
+                    ]
+                ),
                 profile=profile,
             )
         )
@@ -1094,9 +1230,14 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                     profile.signal_plan_path,
                     profile.current_positions_path,
                     profile.pending_orders_path,
+                    profile.entry_risk_path,
                     profile.pending_orders_audit_path,
                 )
             )
+        )
+        self.assertEqual(
+            audit["entry_risk_sha256"],
+            hashlib.sha256(profile.entry_risk_path.read_bytes()).hexdigest(),
         )
         validate_pending_artifact_cohort(
             profile,
@@ -1128,6 +1269,17 @@ class Stage179ProductionAssetsTest(unittest.TestCase):
                         columns=["vt_symbol", "direction", "end_pos"]
                     ),
                     pending_orders=pending,
+                    entry_risk=pd.DataFrame(
+                        [
+                            {
+                                "date": "2026-07-21",
+                                "contract_vt_symbol": "jm.DCE",
+                                "direction": "short",
+                                "entry_price": 1000.0,
+                                "stop_price": 1010.0,
+                            }
+                        ]
+                    ),
                     profile=profile,
                 )
         self.assertEqual(old_audit, profile.pending_orders_audit_path.read_bytes())

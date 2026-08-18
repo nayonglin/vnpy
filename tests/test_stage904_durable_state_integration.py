@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 import copy
 import json
 import os
@@ -230,6 +231,15 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
 
             with (
                 patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(
+                    stage904,
+                    "_load_monitor_signal_snapshot",
+                    return_value=SimpleNamespace(
+                        official_summary={"analysis_end": self.target_date},
+                        current_positions=pd.DataFrame(),
+                        entry_risk=pd.DataFrame(),
+                    ),
+                ),
                 patch.object(stage904, "_read_json", side_effect=fake_json),
                 patch.object(stage904, "_read_csv_maybe", return_value=pd.DataFrame()),
                 patch.object(stage904, "read_execution_ledger", return_value=[]),
@@ -509,6 +519,15 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
 
             with (
                 patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(
+                    stage904,
+                    "_load_monitor_signal_snapshot",
+                    return_value=SimpleNamespace(
+                        official_summary={"analysis_end": self.target_date},
+                        current_positions=pd.DataFrame(),
+                        entry_risk=pd.DataFrame(),
+                    ),
+                ),
                 patch.object(stage904, "_read_json", side_effect=fake_json),
                 patch.object(
                     stage904,
@@ -2058,6 +2077,82 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         self.assertEqual("block", base["monitor_action"])
         self.assertEqual(0, base["broker_epoch_reconstruction_complete"])
         self.assertIn("trades_count_or_hash_mismatch", base["monitor_reason"])
+
+    def test_manual_jm_and_si_fills_use_strategy_risk_for_exact_05r_thresholds(self) -> None:
+        generation = "11111111-2222-4333-8444-555555555555"
+        summary, manifest, evidence = self.complete_query_bundle(
+            trade_count=1,
+            generation=generation,
+        )
+        cases = (
+            ("JM2609.DCE", 1367.5, 1354.5, 2.0, 1361.0, 1374.0),
+            ("SI2609.GFEX", 8590.0, 8615.0, 6.0, 8577.5, 8602.5),
+        )
+        for index, (
+            vt_symbol,
+            fill_price,
+            strategy_stop,
+            volume,
+            expected_stop,
+            expected_progress,
+        ) in enumerate(cases, start=1):
+            with self.subTest(vt_symbol=vt_symbol):
+                broker_trades = pd.DataFrame(
+                    [
+                        {
+                            "query_generation_uuid": generation,
+                            "vt_symbol": vt_symbol,
+                            "vt_orderid": f"CTP.1_2_{index}",
+                            "order_mapping_complete": 1,
+                            "broker_trade_identity": (
+                                f"ctp:9999:test:LIVE:SYS-{index}:T-{index}"
+                            ),
+                            "stable_trade_identity_complete": 1,
+                            "direction": "long",
+                            "offset": "open",
+                            "price": fill_price,
+                            "volume": volume,
+                            "datetime": self.iso(self.entry_at),
+                        }
+                    ]
+                )
+                ticks = self.ticks([(1, fill_price)])
+                ticks["vt_symbol"] = vt_symbol
+                action = stage904._action_for_position(
+                    {
+                        "vt_symbol": vt_symbol,
+                        "direction": "long",
+                        "volume": volume,
+                        "position_source": "broker",
+                    },
+                    trades=pd.DataFrame(),
+                    broker_trades=broker_trades,
+                    execution_ledger_rows=[],
+                    entry_risk=pd.DataFrame(
+                        [
+                            {
+                                "date": self.target_date,
+                                "contract_vt_symbol": vt_symbol,
+                                "direction": "long",
+                                "stop_price": strategy_stop,
+                            }
+                        ]
+                    ),
+                    ticks=ticks,
+                    target_date=self.target_date,
+                    max_tick_age_seconds=30,
+                    require_broker_fill_price=True,
+                    readonly_summary=summary,
+                    readonly_bundle_manifest=manifest,
+                    readonly_bundle_evidence=evidence,
+                )
+
+                self.assertEqual(1, action["broker_epoch_reconstruction_complete"])
+                self.assertEqual(fill_price, action["fill_price"])
+                self.assertEqual("readonly_broker_current_epoch_fifo_weighted_avg", action["fill_price_source"])
+                self.assertEqual(expected_stop, action["stage847_stop_price"])
+                self.assertEqual(expected_progress, action["stage847_progress_price"])
+                self.assertEqual(1, action["entry_day_active"])
 
     def test_live_real_shadow_candidate_uses_exact_partial_ledger_fill_volume(self) -> None:
         root = stage904.generate_root_position_id(
