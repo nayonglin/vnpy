@@ -19,10 +19,13 @@
 
 ## 当前状态
 
-- 2026-08-19：用户确认采用“完整不可变快照 + Skill + 确定性发布器”方案。
-- 现有 Stage179 schema v2 发布清单能绑定关键代码文件，但当前正式 AI eligibility 仍来自 ignored `backtest_outputs/`，没有形成可随 clone 获取的物料快照。
-- 当前仓库没有 `.gitattributes`，本机虽安装 Git LFS，但远端 LFS 上传/下载能力尚未完成发布前验证。
+- 2026-08-19 Stage001：已实现“完整不可变快照 + Skill + 确定性发布器 + AI 资产登记协议”。
+- 最终候选为 `m0003_20260819T213850+0800_709f7dce1c9f`，包含 `148` 个文件；manifest SHA256 为 `6770cf12782173940f5cbfd14c7ec6033b5842232a2910f19a882c598b1b32a5`，tree fingerprint 为 `731099259b3b2adb1d5aa60a1757aedfaff0efffe84a1de930c19ad40d5da8a2`。
+- 候选工作树必需测试为 `872 passed, 694 subtests`；新 clone 后物料校验通过，resolver/config/Stage179 聚焦测试为 `45 passed, 39 subtests`。
+- `CURRENT.json` 仍指向 `m0001` 的 `bootstrap_non_deployable` 激活；`m0003` 保持 `candidate`，尚未执行正式 Stage179 资格、激活、push 或部署。
+- 当前 AI 资产体积可由普通 Git 管理；仓库没有已证明可用的远端 LFS 链路，未来大于 `10 MiB` 或模型/二进制资产会 fail-closed。
 - 设计文档：`docs/superpowers/specs/2026-08-19-official-strategy-material-freeze-design.md`。
+- 最新阶段：`stages/20260819_2141_stage001_material_release_toolchain.md`。
 
 ## 反过拟合判断
 
@@ -34,7 +37,7 @@
 
 ## 下一步
 
-1. 用户审阅并批准设计文档。
-2. 按设计编写实施计划，先完成发布器与门禁测试，再创建 repo-local Skill。
-3. 在干净的正式候选 worktree 中固化当前正式版本 `m0001`，完成 clone/校验演练后再激活。
-4. 把 Stage935 月更和后续实验的决策性 AI 产物接入统一登记协议。
+1. 在用户明确授权后，按正式实盘 SOP 对 `m0003` 做 Stage179 只读资格捕获。
+2. 资格通过后创建独立 activation commit，将 `CURRENT.json` 切换到 `m0003`。
+3. 用户确认远端后再 push，并从远端新 clone 做完整物料/LFS 校验。
+4. 后续 Stage935 月更和实验生成器持续通过统一登记协议发布决策/复现资产。
