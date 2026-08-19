@@ -128,9 +128,17 @@ print("CONTRACT=" + json.dumps({
             (PORTFOLIO_DIR / "backtest_outputs").resolve(),
             Path(payload["stage173"]).resolve().parent,
         )
-        self.assertEqual(
+        self.assertNotEqual(
             payload["stage182_combined"],
             payload["official_ai"],
+        )
+        self.assertIn(
+            "backtest_outputs",
+            Path(payload["stage182_combined"]).parts,
+        )
+        self.assertIn(
+            "official_strategy_materials",
+            Path(payload["official_ai"]).parts,
         )
         self.assertEqual([], payload["forbidden_imports"])
 
@@ -173,6 +181,7 @@ print("CONTRACT=" + json.dumps({
                     {
                         "eval_date": "2026-06-30",
                         "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
                         "safety": {
                             "overwrites_official_stage78_eligibility": False,
                             "uses_future_label_for_eval_date": False,
@@ -305,6 +314,7 @@ print("CONTRACT=" + json.dumps({
                     {
                         "eval_date": "2026-06-30",
                         "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
                         "source_paths": {
                             "position_changes": str(stage183_position),
                             "entry_candidate_snapshots": str(stage183_candidate),
