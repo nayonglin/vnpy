@@ -692,13 +692,15 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
     now_utc = datetime.now(timezone.utc)
     now_cst = now_utc.astimezone().replace(microsecond=0)
     source_commit = _git(repo, "rev-parse", "HEAD").strip()
+    stage179_manifest_path = Path(args.stage179_manifest).resolve(strict=True) if args.stage179_manifest else None
     provenance = {
         "generator": publication["generator"],
         "data_cutoff": publication["data_cutoff"],
         "eval_date": publication["eval_date"],
         "training_label_cutoff": publication["training_label_cutoff"],
         "publication_request_sha256": publication["request_sha256"],
-        "stage179_manifest_path": args.stage179_manifest or "not_provided",
+        "stage179_manifest_path": str(stage179_manifest_path) if stage179_manifest_path else "not_provided",
+        "stage179_manifest_sha256": sha256_file(stage179_manifest_path) if stage179_manifest_path else "not_provided",
     }
     request = ReleaseRequest(
         repo_root=repo,
