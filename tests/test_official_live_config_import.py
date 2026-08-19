@@ -140,6 +140,16 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
                 "real_submit_default"
             ],
         )
+        manifest = module.build_official_live_manifest()
+        self.assertNotIn("backtest_outputs", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
+        self.assertIn("official_strategy_materials", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
+        self.assertEqual(
+            "ai/stage182/combined_eligibility.csv",
+            manifest["ai_eligibility_logical_path"],
+        )
+        self.assertTrue(manifest["material_release_id"].startswith("m0001_"))
+        self.assertEqual(40, len(manifest["material_release_commit"]))
+        self.assertEqual(64, len(manifest["material_manifest_sha256"]))
         with self.assertRaises(AssertionError):
             dict(module.OFFICIAL_LIVE_STRATEGY_OVERRIDES)
 

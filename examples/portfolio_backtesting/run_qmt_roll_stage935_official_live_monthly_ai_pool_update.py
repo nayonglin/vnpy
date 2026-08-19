@@ -53,7 +53,8 @@ STAGE182_LIVE_ELIGIBILITY_PATH = (
     / f"{STAGE182_OUTPUT_PREFIX}_eligibility_{STAGE182_MODEL_TAG}.csv"
 )
 STAGE182_COMBINED_ELIGIBILITY_PATH = (
-    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+    DATA_ASSET_DIR
+    / f"{STAGE182_OUTPUT_PREFIX}_combined_stage78_eligibility_{STAGE182_MODEL_TAG}.csv"
 )
 STAGE182_REPORT_PATH = (
     DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_report_{STAGE182_MODEL_TAG}.md"
@@ -880,8 +881,8 @@ def _validate_stage182_outputs(
         blockers.append("stage182_safety_future_label_enabled")
     if safety.get("real_order_enabled") not in {False, 0}:
         blockers.append("stage182_safety_real_order_enabled")
-    if require_official_path and combined_eligibility_path.resolve() != OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve():
-        blockers.append("official_live_ai_eligibility_path_not_stage182_combined")
+    if require_official_path and combined_eligibility_path.resolve() != STAGE182_COMBINED_ELIGIBILITY_PATH.resolve():
+        blockers.append("stage182_combined_not_canonical_publication_path")
 
     if require_declared_outputs:
         declared_outputs = summary.get("outputs") or {}

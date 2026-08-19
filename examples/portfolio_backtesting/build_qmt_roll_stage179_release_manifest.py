@@ -86,6 +86,7 @@ PRODUCTION_REQUIRED_TEST_SUITES = (
     "tests/test_stage935_ai_pool_path_consistency.py",
     "tests/test_official_strategy_material_release.py",
     "tests/test_ai_artifact_registry.py",
+    "tests/test_official_strategy_material_resolver.py",
     "tests/test_stage945_production_launcher.py",
     "tests/test_stage946_production_health_check.py",
     "tests/test_stage947_production_support_launcher.py",
@@ -425,6 +426,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_strategy_material_discovery.py",
     "examples/portfolio_backtesting/build_qmt_roll_official_strategy_material_release.py",
     "examples/portfolio_backtesting/qmt_roll_ai_artifact_registry.py",
+    "examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py",
     "examples/portfolio_backtesting/run_qmt_roll_stage946_official_live_production_health_check.py",
@@ -485,6 +487,7 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_strategy_material_discovery.py",
     "tests/test_official_strategy_material_release.py",
     "tests/test_ai_artifact_registry.py",
+    "tests/test_official_strategy_material_resolver.py",
     "tests/test_stage945_production_launcher.py",
     "tests/test_stage946_production_health_check.py",
     "tests/test_stage947_production_support_launcher.py",
@@ -2391,6 +2394,7 @@ def build_release_manifest_file(
     created_at_utc: str | None = None,
     strategy_semantics_qualification: dict[str, str] | None = None,
     production_qualification_evidence: Path | str | None = None,
+    material_release_id: str | None = None,
 ) -> dict[str, object]:
     if official_version is None or capital is None or capital_label is None:
         # CLI convenience only. Tests and release automation should pass the
@@ -2416,7 +2420,7 @@ def build_release_manifest_file(
         capital_label=capital_label,
     )
     repo = Path(repo_root).expanduser().resolve(strict=True)
-    normalized_critical_files = tuple(critical_files)
+    requested_critical_files = tuple(critical_files)
     dirty = _git(repo, "status", "--porcelain", "--untracked-files=all")
     if dirty:
         raise ReleaseManifestError("release_builder_requires_clean_tree")
@@ -2437,6 +2441,33 @@ def build_release_manifest_file(
     production_requested = (
         ExecutionRuntimeProfile.PRODUCTION_LIVE.value
         in normalized_runtime_profiles
+    )
+    material_root = repo / "official_strategy_materials"
+    material_files: tuple[str, ...] = ()
+    if material_release_id is not None or (material_root / "CURRENT.json").is_file():
+        from qmt_roll_official_strategy_material_resolver import (
+            ActiveMaterialError,
+            active_release_critical_files,
+            material_release_critical_files,
+        )
+
+        try:
+            if material_release_id is not None:
+                material_files = material_release_critical_files(
+                    material_root,
+                    material_release_id,
+                )
+            else:
+                material_files = active_release_critical_files(
+                    repo_root=repo,
+                    require_deployable=production_requested,
+                )
+        except ActiveMaterialError as exc:
+            raise ReleaseManifestError(
+                f"release_builder_material_release_invalid:{exc}"
+            ) from exc
+    normalized_critical_files = tuple(
+        dict.fromkeys((*requested_critical_files, *material_files))
     )
     if production_requested:
         if profile.profile_key != ExecutionStrategyMode.C9_15W.value:
@@ -2543,6 +2574,7 @@ def main() -> None:
         default=ExecutionStrategyMode.C9_15W.value,
     )
     parser.add_argument("--critical-file", action="append", default=[])
+    parser.add_argument("--material-release-id")
     parser.add_argument("--allow-production-live", action="store_true")
     parser.add_argument(
         "--production-qualification-evidence",
@@ -2597,6 +2629,7 @@ def main() -> None:
             if args.allow_production_live
             else None
         ),
+        material_release_id=args.material_release_id,
     )
     print(payload["manifest_sha256"])
 

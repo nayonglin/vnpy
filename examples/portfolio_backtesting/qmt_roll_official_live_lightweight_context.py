@@ -3,8 +3,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from qmt_roll_official_strategy_material_resolver import (
+    load_active_material_release,
+    resolve_active_material,
+)
+
 
 PROJECT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = PROJECT_DIR.parents[1]
 DATA_ASSET_DIR = PROJECT_DIR / "backtest_outputs"
 CONTROL_OUTPUT_DIR = Path(
     os.environ.get("OFFICIAL_LIVE_OUTPUT_DIR", str(DATA_ASSET_DIR))
@@ -21,6 +27,21 @@ OFFICIAL_LIVE_VERSION = (
     "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
 )
 OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE = "2026-07-23"
+OFFICIAL_LIVE_AI_LOGICAL_PATH = "ai/stage182/combined_eligibility.csv"
+OFFICIAL_LIVE_MATERIAL_CURRENT_PATH = (
+    REPO_ROOT / "official_strategy_materials/CURRENT.json"
+)
+OFFICIAL_LIVE_MATERIAL_RELEASE = load_active_material_release(
+    OFFICIAL_LIVE_MATERIAL_CURRENT_PATH,
+    repo_root=REPO_ROOT,
+)
+if OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version != OFFICIAL_LIVE_VERSION:
+    raise RuntimeError("official_live_material_strategy_version_mismatch")
+OFFICIAL_LIVE_MATERIAL_RELEASE_ID = OFFICIAL_LIVE_MATERIAL_RELEASE.release_id
+OFFICIAL_LIVE_MATERIAL_RELEASE_COMMIT = OFFICIAL_LIVE_MATERIAL_RELEASE.release_commit
+OFFICIAL_LIVE_MATERIAL_MANIFEST_SHA256 = str(
+    OFFICIAL_LIVE_MATERIAL_RELEASE.manifest["manifest_sha256"]
+)
 
 OFFICIAL_LIVE_STAGE901_PREFIX = (
     "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow"
@@ -34,9 +55,10 @@ OFFICIAL_LIVE_SUMMARY_PATH = (
     f"{OFFICIAL_LIVE_STAGE901_MODEL_TAG}.json"
 )
 OFFICIAL_LIVE_AI_ELIGIBILITY_PATH = (
-    DATA_ASSET_DIR
-    / "qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_"
-    "eligibility_stage182_ai_product_pool_live_inference_v1.csv"
+    resolve_active_material(
+        OFFICIAL_LIVE_MATERIAL_RELEASE,
+        logical_path=OFFICIAL_LIVE_AI_LOGICAL_PATH,
+    )
 )
 
 STAGE173_PREFIX = "qmt_roll_stage173_forward_main_contract_data_update"
