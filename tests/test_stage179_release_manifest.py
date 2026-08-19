@@ -777,6 +777,9 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_strategy_material_discovery.py",
             "tests/test_official_strategy_material_release.py",
             "tests/test_ai_artifact_registry.py",
+            "skills/freeze-official-strategy-materials/SKILL.md",
+            "skills/freeze-official-strategy-materials/references/material-contract.md",
+            "skills/freeze-official-strategy-materials/agents/openai.yaml",
         }
         self.assertTrue(required_files.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
         self.assertTrue(
