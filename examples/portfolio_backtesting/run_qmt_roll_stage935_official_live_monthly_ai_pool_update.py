@@ -15,6 +15,7 @@ from typing import Any, Callable, Iterator
 
 import pandas as pd
 
+from qmt_roll_ai_artifact_registry import AiArtifact, write_publication_request
 from qmt_roll_official_live_lightweight_context import (
     ALL_FUTURES_MAPPING_PATH,
     CONTROL_OUTPUT_DIR,
@@ -52,7 +53,8 @@ STAGE182_LIVE_ELIGIBILITY_PATH = (
     / f"{STAGE182_OUTPUT_PREFIX}_eligibility_{STAGE182_MODEL_TAG}.csv"
 )
 STAGE182_COMBINED_ELIGIBILITY_PATH = (
-    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+    DATA_ASSET_DIR
+    / f"{STAGE182_OUTPUT_PREFIX}_combined_stage78_eligibility_{STAGE182_MODEL_TAG}.csv"
 )
 STAGE182_REPORT_PATH = (
     DATA_ASSET_DIR / f"{STAGE182_OUTPUT_PREFIX}_report_{STAGE182_MODEL_TAG}.md"
@@ -109,6 +111,93 @@ def _canonical_stage182_paths() -> dict[str, Path]:
         "summary": STAGE182_SUMMARY_PATH,
         "report": STAGE182_REPORT_PATH,
     }
+
+
+def _current_source_commit() -> str:
+    process = subprocess.run(
+        ["git", "-C", str(PROJECT_ROOT), "rev-parse", "HEAD"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    commit = process.stdout.strip()
+    if process.returncode != 0 or len(commit) != 40:
+        raise RuntimeError("stage935_source_commit_unresolved")
+    return commit
+
+
+def _write_material_publication_request(
+    *,
+    artifacts: dict[str, Path],
+    eval_date: str,
+    source_max_date: str,
+    training_label_cutoff: str,
+    source_commit: str | None = None,
+) -> Path:
+    required = {
+        "live_pool",
+        "live_eligibility",
+        "combined_eligibility",
+        "summary",
+        "report",
+    }
+    if set(artifacts) != required:
+        raise RuntimeError("stage935_material_artifact_set_invalid")
+    if not eval_date or not source_max_date or not training_label_cutoff:
+        raise RuntimeError("stage935_material_provenance_incomplete")
+    request_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    destination = (
+        CONTROL_OUTPUT_DIR
+        / "material-publication-requests"
+        / f"{OUTPUT_PREFIX}_{eval_date}_{request_id}.json"
+    )
+    declarations = (
+        AiArtifact(
+            artifacts["live_pool"],
+            "latest_pool.csv",
+            "decision_asset",
+            True,
+            "stage182_v1",
+        ),
+        AiArtifact(
+            artifacts["live_eligibility"],
+            "live_eligibility.csv",
+            "decision_asset",
+            True,
+            "stage182_v1",
+        ),
+        AiArtifact(
+            artifacts["combined_eligibility"],
+            "combined_eligibility.csv",
+            "decision_asset",
+            True,
+            "stage182_v1",
+        ),
+        AiArtifact(
+            artifacts["summary"],
+            "summary.json",
+            "qualification_evidence",
+            True,
+            "stage182_v1",
+        ),
+        AiArtifact(
+            artifacts["report"],
+            "report.md",
+            "qualification_evidence",
+            True,
+            "stage182_v1",
+        ),
+    )
+    return write_publication_request(
+        destination=destination,
+        official_version=OFFICIAL_LIVE_VERSION,
+        generator=str(STAGE182_PATH.relative_to(PROJECT_ROOT)),
+        data_cutoff=source_max_date,
+        eval_date=eval_date,
+        training_label_cutoff=training_label_cutoff,
+        artifacts=declarations,
+        source_commit=source_commit or _current_source_commit(),
+    )
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -792,8 +881,8 @@ def _validate_stage182_outputs(
         blockers.append("stage182_safety_future_label_enabled")
     if safety.get("real_order_enabled") not in {False, 0}:
         blockers.append("stage182_safety_real_order_enabled")
-    if require_official_path and combined_eligibility_path.resolve() != OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve():
-        blockers.append("official_live_ai_eligibility_path_not_stage182_combined")
+    if require_official_path and combined_eligibility_path.resolve() != STAGE182_COMBINED_ELIGIBILITY_PATH.resolve():
+        blockers.append("stage182_combined_not_canonical_publication_path")
 
     if require_declared_outputs:
         declared_outputs = summary.get("outputs") or {}
@@ -1160,8 +1249,25 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
         )
         return _mark_blocked(summary, "stage182_candidate_publication_failed")
 
+    published_summary = _read_json(canonical_paths["summary"])
+    request_path = _write_material_publication_request(
+        artifacts=canonical_paths,
+        eval_date=str(post_validation.get("eval_date") or published_summary.get("eval_date") or ""),
+        source_max_date=str(
+            post_validation.get("source_max_date")
+            or published_summary.get("source_max_date")
+            or ""
+        ),
+        training_label_cutoff=str(published_summary.get("training_label_cutoff") or ""),
+    )
+
     summary["automation_status"] = "monthly_ai_pool_updated"
-    summary["action"] = "stage183_source_refresh_stage182_inference_and_atomic_publication_completed"
+    summary["material_publication_status"] = "publication_required"
+    summary["material_publication_request_path"] = str(request_path)
+    summary["action"] = (
+        "stage183_source_refresh_stage182_inference_atomic_publication_"
+        "and_material_request_completed"
+    )
     summary["current_eval_date"] = post_validation.get("eval_date", "")
     summary["top_products"] = post_validation.get("top_products", [])
     return summary
@@ -1216,6 +1322,8 @@ def _build_report(summary: dict[str, Any]) -> str:
         f"缺失月度截面：{', '.join(map(str, combined_audit.get('missing_recent_eval_dates') or [])) or '无'}",
         f"更新原因：{';'.join(summary.get('update_reasons') or []) or '无'}",
         f"Top9 品种：{', '.join(map(str, top_products)) or '未读取'}",
+        f"正式物料发布状态：{summary.get('material_publication_status', '未生成')}",
+        f"正式物料发布请求：{summary.get('material_publication_request_path', '') or '无'}",
         f"阻断：{';'.join(summary.get('blockers') or []) or '无'}",
         f"警告：{';'.join(summary.get('warnings') or []) or '无'}",
         f"send order API 次数：{summary.get('send_order_api_called_count', 0)}",

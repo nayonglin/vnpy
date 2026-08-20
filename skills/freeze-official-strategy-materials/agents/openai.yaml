@@ -1,0 +1,7 @@
+interface:
+  display_name: "保存正式策略物料"
+  short_description: "固化正式策略物料并直推远端 master"
+  default_prompt: "使用 $freeze-official-strategy-materials 固化当前正式策略涉及的全部决策物料，并仅将产物目录直接快进推送到远端 master。"
+
+policy:
+  allow_implicit_invocation: true

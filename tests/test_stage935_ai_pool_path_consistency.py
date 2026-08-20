@@ -18,6 +18,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
 
 import build_qmt_roll_stage182_ai_product_pool_live_inference_runner as stage182  # noqa: E402
 import build_qmt_roll_stage183_ai_product_pool_source_refresh as stage183  # noqa: E402
+from qmt_roll_ai_artifact_registry import load_publication_request  # noqa: E402
 import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935  # noqa: E402
 
 
@@ -113,6 +114,33 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         for name, path in paths.items():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(f"{name}:{marker}\n", encoding="utf-8")
+
+    def test_stage935_success_writes_material_request_without_git_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            artifacts = self._stage182_bundle_paths(root / "canonical")
+            self._write_stage182_bundle(artifacts, "candidate")
+            with (
+                patch.object(stage935, "CONTROL_OUTPUT_DIR", root / "control"),
+                patch.object(
+                    stage935,
+                    "_current_source_commit",
+                    side_effect=AssertionError("explicit commit means no Git lookup"),
+                ),
+            ):
+                request_path = stage935._write_material_publication_request(
+                    artifacts=artifacts,
+                    eval_date="2026-07-31",
+                    source_max_date="2026-08-03",
+                    training_label_cutoff="2026-05-07",
+                    source_commit="d6080c914ae9884eaa984618f37f18022ef5e058",
+                )
+            payload = load_publication_request(request_path)
+
+        self.assertEqual("official_candidate", payload["promotion_scope"])
+        self.assertEqual(5, len(payload["ai_artifacts"]))
+        self.assertEqual(0, payload["order_api_called_count"])
+
     def test_stage183_artifact_paths_use_real_runtime_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             control_root = Path(directory).resolve() / "control"

@@ -765,6 +765,32 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         self.assertIn(suite, builder.DEFAULT_CRITICAL_FILES)
         self.assertIn(suite, builder.PRODUCTION_REQUIRED_TEST_SUITES)
 
+    def test_strategy_material_toolchain_is_pinned_in_production_release_surface(
+        self,
+    ) -> None:
+        required_files = {
+            "examples/portfolio_backtesting/qmt_roll_strategy_material_manifest.py",
+            "examples/portfolio_backtesting/qmt_roll_strategy_material_discovery.py",
+            "examples/portfolio_backtesting/build_qmt_roll_official_strategy_material_release.py",
+            "examples/portfolio_backtesting/qmt_roll_ai_artifact_registry.py",
+            "tests/test_strategy_material_manifest.py",
+            "tests/test_strategy_material_discovery.py",
+            "tests/test_official_strategy_material_release.py",
+            "tests/test_ai_artifact_registry.py",
+            "examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
+            "tests/test_official_strategy_material_resolver.py",
+            "skills/freeze-official-strategy-materials/SKILL.md",
+            "skills/freeze-official-strategy-materials/references/material-contract.md",
+            "skills/freeze-official-strategy-materials/agents/openai.yaml",
+        }
+        self.assertTrue(required_files.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
+        self.assertTrue(
+            {
+                "tests/test_official_strategy_material_release.py",
+                "tests/test_ai_artifact_registry.py",
+            }.issubset(set(builder.PRODUCTION_REQUIRED_TEST_SUITES))
+        )
+
     def validate(self, path: Path | None = None, *, profile: str = "offline") -> dict[str, object]:
         return load_and_validate_release_manifest(
             path or self.manifest_path,
