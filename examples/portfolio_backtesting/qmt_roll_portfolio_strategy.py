@@ -158,6 +158,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     exit_on_alignment_break: bool = True
     enable_ma_trend_stop: bool = True
     rollover_reopen_enabled: bool = True
+    enable_rollover_shape_same_volume_reopen: bool = False
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -438,6 +439,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "exit_on_alignment_break",
         "enable_ma_trend_stop",
         "rollover_reopen_enabled",
+        "enable_rollover_shape_same_volume_reopen",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -774,6 +776,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.entry_candidate_snapshots: list[dict[str, Any]] = []
         self.trade_event_diagnostics: list[dict[str, Any]] = []
         self.rollover_reopen_guard_diagnostics: list[dict[str, Any]] = []
+        self.rollover_shape_same_volume_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
@@ -1640,6 +1643,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         old_direction: str = state.direction
         old_risk_mode: str = state.risk_mode
+        previous_volume: int = state.active_volume()
+        released_risk_snapshot: dict[str, Any] = {}
+        if self.enable_rollover_shape_same_volume_reopen:
+            released_risk_snapshot = self._rollover_released_risk_snapshot(
+                state=state,
+                old_contract=old_contract,
+                old_bar=old_bar,
+                risk_snapshot_includes_old_contract=old_contract in bars,
+            )
         self._record_trade_event(
             bar=old_bar,
             contract_vt_symbol=old_contract,
@@ -1652,6 +1664,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         self._close_all_layers(state, float(old_bar.close_price))
         self.set_target(old_contract, 0)
+        if self.enable_rollover_shape_same_volume_reopen:
+            self._apply_rollover_released_risk_snapshot(released_risk_snapshot)
 
         if not self.rollover_reopen_enabled:
             return
@@ -1659,13 +1673,35 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return
 
         target_am: ArrayManager = self.ams[target_contract]
-        if not target_am.inited:
-            return
-
-        history: pd.DataFrame = self._build_history_df(target_am)
-        signal_data: dict[str, Any] = self._generate_signal(target_am, history)
-        if not self._rollover_reopen_allowed(old_direction, history, signal_data):
-            return
+        shape_snapshot: dict[str, Any] | None = None
+        if self.enable_rollover_shape_same_volume_reopen:
+            history = self._build_observed_array_manager_history(target_am)
+            shape_snapshot = self._rollover_shape_continuation_snapshot(old_direction, history)
+            if not int(shape_snapshot["allowed"]):
+                self._record_rollover_shape_same_volume_diagnostic(
+                    state=state,
+                    old_contract=old_contract,
+                    target_contract=target_contract,
+                    old_direction=old_direction,
+                    old_risk_mode=old_risk_mode,
+                    bar=new_bar,
+                    target_am_inited=bool(target_am.inited),
+                    previous_volume=previous_volume,
+                    selected_volume=0,
+                    final_volume=0,
+                    status="skipped",
+                    reason=str(shape_snapshot["reason"]),
+                    shape_snapshot=shape_snapshot,
+                )
+                return
+            signal_data = self._rollover_shape_signal_data(old_direction, old_risk_mode, shape_snapshot)
+        else:
+            if not target_am.inited:
+                return
+            history = self._build_history_df(target_am)
+            signal_data = self._generate_signal(target_am, history)
+            if not self._rollover_reopen_allowed(old_direction, history, signal_data):
+                return
 
         guard_fields = self._rollover_reopen_drawdown_guard_fields()
         if int(guard_fields["rollover_reopen_drawdown_guard_enabled"]) and not int(
@@ -1680,6 +1716,22 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 bar=new_bar,
                 guard_fields=guard_fields,
             )
+            if self.enable_rollover_shape_same_volume_reopen:
+                self._record_rollover_shape_same_volume_diagnostic(
+                    state=state,
+                    old_contract=old_contract,
+                    target_contract=target_contract,
+                    old_direction=old_direction,
+                    old_risk_mode=old_risk_mode,
+                    bar=new_bar,
+                    target_am_inited=bool(target_am.inited),
+                    previous_volume=previous_volume,
+                    selected_volume=0,
+                    final_volume=0,
+                    status="skipped",
+                    reason="rollover_reopen_portfolio_drawdown_guard",
+                    shape_snapshot=shape_snapshot or {},
+                )
             return
 
         sizing: dict[str, Any] = self._calculate_entry_sizing(
@@ -1692,8 +1744,40 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             entry_context="rollover_reopen",
         )
         sizing.update(guard_fields)
-        volume: int = int(sizing["selected_volume"])
+        sizing.update(released_risk_snapshot)
+        selected_volume: int = int(sizing["selected_volume"])
+        if self.enable_rollover_shape_same_volume_reopen:
+            volume, volume_reason = self._exact_rollover_reopen_volume(
+                previous_volume=previous_volume,
+                sizing_snapshot=sizing,
+            )
+            sizing.update(
+                {
+                    "rollover_previous_volume": previous_volume,
+                    "rollover_selected_volume_before_exact_gate": selected_volume,
+                    "rollover_exact_volume": volume,
+                    "rollover_exact_volume_reason": volume_reason,
+                }
+            )
+        else:
+            volume = selected_volume
         if volume <= 0:
+            if self.enable_rollover_shape_same_volume_reopen:
+                self._record_rollover_shape_same_volume_diagnostic(
+                    state=state,
+                    old_contract=old_contract,
+                    target_contract=target_contract,
+                    old_direction=old_direction,
+                    old_risk_mode=old_risk_mode,
+                    bar=new_bar,
+                    target_am_inited=bool(target_am.inited),
+                    previous_volume=previous_volume,
+                    selected_volume=selected_volume,
+                    final_volume=0,
+                    status="skipped",
+                    reason=volume_reason,
+                    shape_snapshot=shape_snapshot or {},
+                )
             return
 
         self._open_position(
@@ -1709,7 +1793,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         state.risk_mode = old_risk_mode
         state.rollover_opened_today = self._bar_date(new_bar)
+        if self.enable_rollover_shape_same_volume_reopen:
+            self._reserve_intrabar_entry(
+                state.product_vt_symbol,
+                sizing,
+                volume,
+                count_active_position=False,
+            )
         self._apply_state_target(state)
+        if self.enable_rollover_shape_same_volume_reopen:
+            self._record_rollover_shape_same_volume_diagnostic(
+                state=state,
+                old_contract=old_contract,
+                target_contract=target_contract,
+                old_direction=old_direction,
+                old_risk_mode=old_risk_mode,
+                bar=new_bar,
+                target_am_inited=bool(target_am.inited),
+                previous_volume=previous_volume,
+                selected_volume=selected_volume,
+                final_volume=volume,
+                status="targeted",
+                reason=volume_reason,
+                shape_snapshot=shape_snapshot or {},
+            )
 
     def _close_position_when_target_unavailable(
         self,
@@ -2493,6 +2600,121 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     guard_fields.get("rollover_reopen_drawdown_guard_max_pct") or 0.0
                 ),
             }
+        )
+
+    def _record_rollover_shape_same_volume_diagnostic(
+        self,
+        *,
+        state: ProductState,
+        old_contract: str,
+        target_contract: str,
+        old_direction: str,
+        old_risk_mode: str,
+        bar: BarData,
+        target_am_inited: bool,
+        previous_volume: int,
+        selected_volume: int,
+        final_volume: int,
+        status: str,
+        reason: str,
+        shape_snapshot: dict[str, Any],
+    ) -> None:
+        self.rollover_shape_same_volume_diagnostics.append(
+            {
+                "diagnostic_index": len(self.rollover_shape_same_volume_diagnostics) + 1,
+                "datetime": bar.datetime,
+                "date": bar.datetime.date(),
+                "product_vt_symbol": state.product_vt_symbol,
+                "old_contract_vt_symbol": old_contract,
+                "target_contract_vt_symbol": target_contract,
+                "direction": old_direction,
+                "risk_mode": old_risk_mode,
+                "target_am_inited": int(target_am_inited),
+                "observed_bar_count": int(shape_snapshot.get("observed_bar_count") or 0),
+                "required_bar_count": int(shape_snapshot.get("required_bar_count") or 0),
+                "bullish_alignment": int(shape_snapshot.get("bullish_alignment") or 0),
+                "bearish_alignment": int(shape_snapshot.get("bearish_alignment") or 0),
+                "macd_hist": float(shape_snapshot.get("macd_hist", float("nan"))),
+                "previous_volume": int(previous_volume),
+                "selected_volume_before_exact_gate": int(selected_volume),
+                "final_volume": int(final_volume),
+                "status": status,
+                "reason": reason,
+            }
+        )
+
+    def _rollover_released_risk_snapshot(
+        self,
+        *,
+        state: ProductState,
+        old_contract: str,
+        old_bar: BarData,
+        risk_snapshot_includes_old_contract: bool,
+    ) -> dict[str, Any]:
+        cluster = self._risk_cluster_for_symbol(state.product_vt_symbol or old_contract)
+        if not risk_snapshot_includes_old_contract:
+            return {
+                "rollover_old_contract_in_risk_snapshot": 0,
+                "rollover_released_margin": 0.0,
+                "rollover_released_cluster": cluster,
+                "rollover_released_cluster_margin": 0.0,
+                "rollover_released_cluster_unrealized_pnl": 0.0,
+            }
+
+        previous_volume = max(0, int(state.active_volume()))
+        size = max(0, int(self.get_size(old_contract)))
+        close_price = max(0.0, float(old_bar.close_price))
+        margin_ratio = max(0.0, float(self._margin_ratio_for_symbol(old_contract)))
+        released_margin = close_price * size * previous_volume * margin_ratio
+        released_unrealized_pnl = 0.0
+        for layer in state.layers:
+            layer_volume = max(0, int(layer.volume))
+            if layer.direction == "short":
+                released_unrealized_pnl += (float(layer.entry_price) - close_price) * size * layer_volume
+            else:
+                released_unrealized_pnl += (close_price - float(layer.entry_price)) * size * layer_volume
+        return {
+            "rollover_old_contract_in_risk_snapshot": 1,
+            "rollover_released_margin": float(max(0.0, released_margin)),
+            "rollover_released_cluster": cluster,
+            "rollover_released_cluster_margin": float(max(0.0, released_margin)) if cluster else 0.0,
+            "rollover_released_cluster_unrealized_pnl": float(released_unrealized_pnl) if cluster else 0.0,
+        }
+
+    def _apply_rollover_released_risk_snapshot(self, snapshot: dict[str, Any]) -> None:
+        released_margin = max(0.0, float(snapshot.get("rollover_released_margin") or 0.0))
+        self.total_margin_in_use = max(0.0, float(self.total_margin_in_use or 0.0) - released_margin)
+
+        cluster = str(snapshot.get("rollover_released_cluster") or "")
+        if cluster:
+            released_cluster_margin = max(
+                0.0,
+                float(snapshot.get("rollover_released_cluster_margin") or 0.0),
+            )
+            remaining_cluster_margin = max(
+                0.0,
+                float(self.cluster_margin_usage.get(cluster, 0.0) or 0.0) - released_cluster_margin,
+            )
+            if remaining_cluster_margin > 0.0:
+                self.cluster_margin_usage[cluster] = remaining_cluster_margin
+            else:
+                self.cluster_margin_usage.pop(cluster, None)
+
+            released_cluster_pnl = float(
+                snapshot.get("rollover_released_cluster_unrealized_pnl") or 0.0
+            )
+            remaining_cluster_pnl = float(
+                self.cluster_unrealized_pnl.get(cluster, 0.0) or 0.0
+            ) - released_cluster_pnl
+            if abs(remaining_cluster_pnl) > 1e-9:
+                self.cluster_unrealized_pnl[cluster] = remaining_cluster_pnl
+            else:
+                self.cluster_unrealized_pnl.pop(cluster, None)
+
+        self.risk_cluster_margin_in_use = max(self.cluster_margin_usage.values(), default=0.0)
+        self.risk_cluster_unrealized_loss_in_use = max(
+            (max(0.0, -float(value)) for value in self.cluster_unrealized_pnl.values()),
+            default=0.0,
         )
 
     def _same_direction_correlation_gate_snapshot(
@@ -7338,6 +7560,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             }
         )
 
+    def _build_observed_array_manager_history(self, am: ArrayManager) -> pd.DataFrame:
+        history = self._build_history_df(am)
+        observed_count = min(max(0, int(getattr(am, "count", 0) or 0)), len(history))
+        if observed_count <= 0:
+            return history.iloc[0:0].copy()
+        return history.tail(observed_count).reset_index(drop=True)
+
     def _entry_stop_price(self, direction: str, bar: BarData, history: pd.DataFrame, use_day_extreme: bool) -> float:
         basic_long = float(bar.close_price) * (1 - self.stop_loss_pct)
         basic_short = float(bar.close_price) * (1 + self.stop_loss_pct)
@@ -7850,6 +8079,98 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return False
 
         return self._passes_entry_filters(synthetic_signal, history)
+
+    def _rollover_shape_continuation_snapshot(
+        self,
+        old_direction: str,
+        history: pd.DataFrame,
+    ) -> dict[str, Any]:
+        close = pd.to_numeric(history.get("close", pd.Series(dtype="float64")), errors="coerce")
+        close = close.replace([np.inf, -np.inf], np.nan).dropna().astype("float64")
+        required_bar_count = max(self.ma_short, self.ma_mid, self.ma_long, self.ma_extra_long)
+        snapshot: dict[str, Any] = {
+            "observed_bar_count": int(len(close)),
+            "required_bar_count": int(required_bar_count),
+            "bullish_alignment": 0,
+            "bearish_alignment": 0,
+            "ma_short_value": float("nan"),
+            "ma_mid_value": float("nan"),
+            "ma_long_value": float("nan"),
+            "ma_extra_long_value": float("nan"),
+            "macd_hist": float("nan"),
+            "allowed": 0,
+            "reason": "insufficient_indicator_history",
+        }
+        if len(close) < required_bar_count:
+            return snapshot
+
+        ma_short = float(close.tail(self.ma_short).mean())
+        ma_mid = float(close.tail(self.ma_mid).mean())
+        ma_long = float(close.tail(self.ma_long).mean())
+        ma_extra_long = float(close.tail(self.ma_extra_long).mean())
+        _dif, _dea, hist = self._calculate_macd(close)
+        macd_hist = float(hist.iloc[-1]) if not hist.empty else float("nan")
+        if not all(np.isfinite(value) for value in [ma_short, ma_mid, ma_long, ma_extra_long, macd_hist]):
+            snapshot["reason"] = "non_finite_indicator"
+            return snapshot
+
+        bullish_alignment = ma_short > ma_mid > ma_long > ma_extra_long
+        bearish_alignment = ma_short < ma_mid < ma_long < ma_extra_long
+        snapshot.update(
+            {
+                "bullish_alignment": int(bullish_alignment),
+                "bearish_alignment": int(bearish_alignment),
+                "ma_short_value": ma_short,
+                "ma_mid_value": ma_mid,
+                "ma_long_value": ma_long,
+                "ma_extra_long_value": ma_extra_long,
+                "macd_hist": macd_hist,
+            }
+        )
+        if old_direction == "long":
+            allowed = bool(self.long_entry_enabled and bullish_alignment and macd_hist > 0)
+        elif old_direction == "short":
+            allowed = bool(self.short_entry_enabled and bearish_alignment and macd_hist < 0)
+        else:
+            snapshot["reason"] = "unsupported_direction"
+            return snapshot
+
+        snapshot["allowed"] = int(allowed)
+        snapshot["reason"] = "shape_and_macd_aligned" if allowed else "shape_or_macd_not_aligned"
+        return snapshot
+
+    @staticmethod
+    def _rollover_shape_signal_data(
+        old_direction: str,
+        old_risk_mode: str,
+        shape_snapshot: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "signal": f"{old_direction}_rollover",
+            "bullish_alignment": bool(shape_snapshot.get("bullish_alignment")),
+            "bearish_alignment": bool(shape_snapshot.get("bearish_alignment")),
+            "ma_mid_value": float(shape_snapshot.get("ma_mid_value", float("nan"))),
+            "ma_long_value": float(shape_snapshot.get("ma_long_value", float("nan"))),
+            "ma_mid_prev_value": float("nan"),
+            "ma_long_prev_value": float("nan"),
+            "risk_mode": old_risk_mode,
+            "breakout": False,
+            "rsi_value": float("nan"),
+        }
+
+    @staticmethod
+    def _exact_rollover_reopen_volume(
+        *,
+        previous_volume: int,
+        sizing_snapshot: dict[str, Any],
+    ) -> tuple[int, str]:
+        previous_volume = max(0, int(previous_volume))
+        allowed_volume = max(0, int(sizing_snapshot.get("selected_volume") or 0))
+        if previous_volume <= 0:
+            return 0, "previous_volume_not_positive"
+        if allowed_volume < previous_volume:
+            return 0, "previous_volume_not_fully_allowed"
+        return previous_volume, "previous_volume_fully_allowed"
 
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
         close = pd.Series(am.close_array)

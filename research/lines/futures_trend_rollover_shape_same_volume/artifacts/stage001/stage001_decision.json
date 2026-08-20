@@ -1,0 +1,74 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage001",
+  "generated_at": "2026-08-20T23:13:15+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "A": "stage001_A_official_live_c9_15w",
+  "C": "stage001_C_official_live_c9_15w_rollover_shape_same_volume",
+  "candidate_rule": {
+    "history": "new contract only, point-in-time, minimum MA40 observations",
+    "long": "MA5>MA10>MA20>MA40 and MACD histogram>0",
+    "short": "MA5<MA10<MA20<MA40 and MACD histogram<0",
+    "volume": "exact previous live volume or skip"
+  },
+  "event_summary": [
+    {
+      "profile": "stage001_A_official_live_c9_15w",
+      "rollover_close_count": 23,
+      "candidate_diagnostic_count": 0,
+      "short_history_candidate_count": 0,
+      "targeted_count": 0,
+      "opened_count": 0,
+      "unfilled_target_count": 0,
+      "skipped_count": 0,
+      "exact_volume_pass": 0
+    },
+    {
+      "profile": "stage001_C_official_live_c9_15w_rollover_shape_same_volume",
+      "rollover_close_count": 23,
+      "candidate_diagnostic_count": 23,
+      "short_history_candidate_count": 5,
+      "targeted_count": 13,
+      "opened_count": 13,
+      "unfilled_target_count": 0,
+      "skipped_count": 10,
+      "exact_volume_pass": 1
+    }
+  ],
+  "comparison": {
+    "base": "stage001_A_official_live_c9_15w",
+    "candidate": "stage001_C_official_live_c9_15w_rollover_shape_same_volume",
+    "A_end_equity": 13071214.100000009,
+    "C_end_equity": 13518540.800000008,
+    "delta_end_equity": 447326.69999999925,
+    "A_total_return_pct": 8614.14273333334,
+    "C_total_return_pct": 8912.360533333338,
+    "delta_total_return_pct": 298.21779999999853,
+    "A_max_dd_pct": -56.206935956180295,
+    "C_max_dd_pct": -57.26735695404594,
+    "delta_max_dd_pct": -1.0604209978656414,
+    "A_sharpe": 1.362230340211364,
+    "C_sharpe": 1.3625282590173915,
+    "delta_sharpe": 0.0002979188060274751,
+    "A_total_slippage": 1525590.0,
+    "C_total_slippage": 1576750.0,
+    "delta_total_slippage": 51160.0,
+    "A_total_trade_count": 808.0,
+    "C_total_trade_count": 809.0,
+    "delta_total_trade_count": 1.0,
+    "A_nonzero_daily_win_rate_pct": 52.58408531583265,
+    "C_nonzero_daily_win_rate_pct": 52.7169505271695,
+    "delta_nonzero_daily_win_rate_pct": 0.13286521133684914,
+    "rollover_close_count": 23,
+    "candidate_diagnostic_count": 23,
+    "short_history_candidate_count": 5,
+    "targeted_count": 13,
+    "opened_count": 13,
+    "unfilled_target_count": 0,
+    "skipped_count": 10,
+    "exact_volume_pass": 1
+  }
+}

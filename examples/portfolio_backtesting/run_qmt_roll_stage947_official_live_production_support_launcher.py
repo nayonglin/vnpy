@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
@@ -77,6 +77,7 @@ PRODUCTION_POSTCLOSE_PIPELINE_LOCK = (
 STAGE173_SCRIPT = (
     PROJECT_DIR / "build_qmt_roll_stage173_forward_main_contract_data_update.py"
 )
+ROLLOVER_INDICATOR_LOOKBACK_CALENDAR_DAYS = 120
 _EMAIL_REQUIRED_JOBS = {
     "day-close-readonly",
     "postclose-precompute",
@@ -351,7 +352,7 @@ def _build_stage173_market_data_command(
 ) -> list[str]:
     cutoff = refresh_cutoff_date or target_date
     try:
-        datetime.strptime(target_date, "%Y-%m-%d")
+        target_day = datetime.strptime(target_date, "%Y-%m-%d")
         datetime.strptime(cutoff, "%Y-%m-%d")
     except ValueError as exc:
         raise ProductionSupportLaunchError(
@@ -361,13 +362,16 @@ def _build_stage173_market_data_command(
         raise ProductionSupportLaunchError(
             "production_support_market_data_cutoff_before_target"
         )
+    bar_start = (
+        target_day - timedelta(days=ROLLOVER_INDICATOR_LOOKBACK_CALENDAR_DAYS)
+    ).strftime("%Y-%m-%d")
     return [
         str(PYTHON_PATH),
         str(STAGE173_SCRIPT),
         "--mapping-start",
         target_date[:7] + "-01",
         "--bar-start",
-        target_date,
+        bar_start,
         "--end",
         cutoff,
     ]

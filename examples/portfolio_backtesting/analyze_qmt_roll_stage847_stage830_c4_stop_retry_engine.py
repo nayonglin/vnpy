@@ -577,6 +577,9 @@ def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.
             "intraday_events": intraday_events,
             "c2_events": c2_events,
             "stop_retry_events": stop_retry_events,
+            "rollover_shape_same_volume": pd.DataFrame(
+                getattr(strategy, "rollover_shape_same_volume_diagnostics", []) if strategy else []
+            ),
             "pending_orders": _active_limit_orders_frame(engine),
         }
         for frame in frames.values():

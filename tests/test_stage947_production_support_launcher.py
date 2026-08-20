@@ -974,7 +974,7 @@ print("CONTRACT=" + json.dumps({
                 "--mapping-start",
                 "2026-08-01",
                 "--bar-start",
-                "2026-08-03",
+                "2026-04-05",
                 "--end",
                 "2026-08-03",
             ],
@@ -1005,7 +1005,7 @@ print("CONTRACT=" + json.dumps({
 
         self.assertEqual("2026-08-03", result["target_date"])
         command = run.call_args.args[0]
-        self.assertEqual("2026-08-02", command[command.index("--bar-start") + 1])
+        self.assertEqual("2026-04-04", command[command.index("--bar-start") + 1])
         self.assertEqual("2026-08-03", command[command.index("--end") + 1])
 
     def test_pipeline_monthly_email_policy_sends_update_success_only(self) -> None:

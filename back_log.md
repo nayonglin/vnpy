@@ -50495,3 +50495,27 @@ test 分桶：
 
 
 2026-07-10 18:10 CST：`futures_trend_marginal_covariance_risk_budget` Stage001 完成日期对齐边际协方差风险预算 A/C 真引擎，决策 `stage001_stop_no_parameter_rescue`。新增脚本 `research/lines/futures_trend_marginal_covariance_risk_budget/tools/stage001_dated_marginal_covariance_budget_engine.py`；新增参数 `63个日期对齐收益/Ledoit-Wolf/解析边际缩放/同日批量感知/至少1手`，修改参数无，删除参数无。A 期末权益 `5,996,631.00`、总收益 `3897.7540%`、最大回撤 `-55.3701%`、Sharpe `1.3967`、总滑点 `759,970.00`、总交易 `641`、非零日胜率 `52.8302%`、逐笔胜率 `45.8716%`；C 期末权益 `3,259,562.40`、总收益 `2073.0416%`、最大回撤 `-56.0209%`、Sharpe `1.2653`、总滑点 `419,580.00`、总交易 `634`、非零日胜率 `52.6519%`、逐笔胜率 `44.5483%`。新增结果：收益保留 `0.5319`，全周期/2022/主压力窗回撤变化 `-0.6508/-4.2488/4.1617`pp，broker10 峰值变化 `5.8149`pp，semantics_ok `True`，performance_ok `False`；修改/删除回测结果无。运行前过拟合判断：低到中等，一次冻结且不按 2022 品种/方向/日期调参；运行后过拟合判断：待独立 review，不允许救窗口/阈值/floor。运行前继续价值判断：有；运行后继续价值判断：待独立 review。report `/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_marginal_covariance_risk_budget/outputs/stage001_dated_marginal_covariance_budget_engine/marginal_cov_budget_stage001_dated_marginal_covariance_budget_engine_report_stage001_dated_marginal_covariance_budget_engine_v1.md`，summary `/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_marginal_covariance_risk_budget/outputs/stage001_dated_marginal_covariance_budget_engine/marginal_cov_budget_stage001_dated_marginal_covariance_budget_engine_ac_summary_stage001_dated_marginal_covariance_budget_engine_v1.csv`。
+# 2026-08-20 23:13 Stage001 / C9 15万主力换月形态确认原手数重开 A/C
+
+## 版本改动
+
+- 是否重要突破：否；建立独立研究分支和默认关闭开关，普通正式 AM41 开仓不变。
+- 新增规则：换月平旧仓后，新主力仅在原方向 MA5/10/20/40 排布与 MACD 柱同向时续接；只允许旧仓实际剩余手数完整重开，否则不开仓。
+- 新增数据合同：Stage947 固定回看 120 个自然日预热映射合约 K 线；只取换月日及以前数据。
+- 新增风险合同：只释放本轮风险快照中确实计入的旧合约风险；旧 Bar 仅来自引擎回退时释放 `0`，不得误减其他持仓保证金/集群风险。
+- 正式配置/CTP/下单：未修改正式配置，未连接 CTP，订单/撤单 API `0/0`。
+
+## 新增结果
+
+- 区间：`2018-01-01` 至 `2026-05-29`，当前正式 C9/15万 Stage901 回放口径。
+- A：期末权益 `13,071,214.10`，总收益 `8614.1427%`，最大回撤 `-56.2069%`，Sharpe `1.3622`，总滑点 `1,525,590`，总交易 `808`，非零日胜率 `52.5841%`。
+- C：期末权益 `13,518,540.80`，总收益 `8912.3605%`，最大回撤 `-57.2674%`，Sharpe `1.3625`，总滑点 `1,576,750`，总交易 `809`，非零日胜率 `52.7170%`。
+- C 换月 `23` 次：原手数完整重开目标 `13` 次且全部匹配实际开仓成交，不开仓 `10`，未成交目标 `0`，静默缩手 `0`；`5` 次未初始化目标合约均只有 `1` 根真实 K 线，未出现真实短历史成功续接样本。
+- 相比 A：期末权益 `+447,326.70`、总收益 `+298.2178pp`，但最大回撤恶化 `1.0604pp`、滑点增加 `51,160`，Sharpe 仅 `+0.0003`，不能据收益抬升晋级。
+- 独立复审修复风险快照边界后于 `23:13` 重跑，完整 A/C 与事件统计未变化；聚焦回归 `62 passed, 39 subtests passed`。
+
+## 结论与反思
+
+- 决策：`stage001_implementation_kept_research_only_not_promoted`。
+- 过拟合：当前规则本身不是按结果拟合，但事件样本小且目标短历史成功样本为 `0`；不得继续扫描 MA/MACD/日期/品种/手数比例。
+- 继续价值：有，限于固定规则 forward shadow；完整区间收益抬升但回撤和成本恶化，且不能替代真实短历史事件验证，不合入正式配置、不激活实盘。
