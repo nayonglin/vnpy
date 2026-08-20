@@ -813,6 +813,7 @@ def build_stage930_command(
     target_date: str,
     release_manifest: Path = PRODUCTION_RELEASE_MANIFEST,
     activation_receipt: Path = PRODUCTION_ACTIVATION_RECEIPT,
+    production_qualification_evidence: Path = PRODUCTION_QUALIFICATION_EVIDENCE,
     runtime_root: Path = PRODUCTION_RUNTIME_ROOT,
 ) -> list[str]:
     if not _DATE_RE.fullmatch(target_date):
@@ -836,6 +837,8 @@ def build_stage930_command(
         str(release_manifest),
         "--activation-receipt",
         str(activation_receipt),
+        "--production-qualification-evidence",
+        str(production_qualification_evidence),
         "--confirm-live-real",
         PHASE_D_CONFIRM_TEXT,
         "--confirm-stage179-activation",
@@ -942,11 +945,12 @@ def _validate_release_and_receipt(
 def _validate_code_qualification(
     *,
     manifest: Mapping[str, Any],
+    qualification_evidence: Path = PRODUCTION_QUALIFICATION_EVIDENCE,
 ) -> dict[str, Any]:
-    _strict_regular_file(PRODUCTION_QUALIFICATION_EVIDENCE, max_public_mode=0o077)
+    _strict_regular_file(qualification_evidence, max_public_mode=0o077)
     try:
         evidence = load_and_validate_production_qualification_evidence(
-            PRODUCTION_QUALIFICATION_EVIDENCE,
+            qualification_evidence,
             repo_root=REPO_ROOT,
             source_commit=str(manifest.get("source_commit", "")),
             execution_profile=C9_15W_PROFILE.profile_key,

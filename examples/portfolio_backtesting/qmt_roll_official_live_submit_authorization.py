@@ -10,7 +10,7 @@ import tempfile
 from typing import Any
 
 
-SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 4
+SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 5
 SUBMIT_AUTHORIZATION_FILENAME = "stage179_submit_authorization.json"
 _AUTHORIZATION_LANES = {
     "slow_controller",
@@ -26,6 +26,7 @@ _INTENT_SCOPES = {
 _INTENT_KINDS = {"open", "close"}
 _SHA256_HEX = frozenset("0123456789abcdef")
 _EXACT_TEXT_FIELDS = (
+    "vt_symbol",
     "source",
     "intent_role",
     "trace_id",
@@ -296,7 +297,7 @@ def publish_submit_authorization(
     stage902_evidence_digest: str = "",
     stage927_evidence_digest: str = "",
 ) -> dict[str, Any]:
-    """Publish one canonical v4 admission record.
+    """Publish one canonical v5 admission record.
 
     ``slow_controller`` keeps the legacy controller evidence contract.
     ``persistent_intraday_fast`` and ``session_initial_open`` are intentionally
@@ -597,6 +598,7 @@ def validate_submit_authorization(
     child_offset: str | None = None,
     authorization_lane: str | None = None,
     intent_scope: str | None = None,
+    vt_symbol: str | None = None,
     source: str | None = None,
     intent_role: str | None = None,
     trace_id: str | None = None,
@@ -868,6 +870,7 @@ def validate_submit_authorization(
                     "stage179_submit_authorization_intent_kind_mismatch"
                 )
             exact_expectations: dict[str, Any] = {
+                "vt_symbol": vt_symbol,
                 "source": source,
                 "intent_role": intent_role,
                 "trace_id": trace_id,
@@ -1086,12 +1089,43 @@ def validate_submit_authorization(
                 blockers.append(
                     "stage179_submit_authorization_broker_readiness_expired"
                 )
-    if (
-        isinstance(tick, dict)
-        and not reduce_close_only
-        and _artifact_int(tick.get("all_symbols_ready"), minimum=0) != 1
-    ):
-        blockers.append("stage179_submit_authorization_tick_gate_not_ready")
+    if isinstance(tick, dict) and not reduce_close_only:
+        all_symbols_ready = (
+            _artifact_int(tick.get("all_symbols_ready"), minimum=0) == 1
+        )
+        tick_candidate_symbol = str(
+            tick.get("candidate_symbol", "")
+        ).strip()
+        candidate_symbol_ready = (
+            bool(tick_candidate_symbol)
+            and _artifact_int(
+                tick.get("candidate_symbol_ready"),
+                minimum=0,
+            )
+            == 1
+            and _artifact_int(
+                tick.get("candidate_ingress_epoch_ns"),
+                minimum=1,
+            )
+            is not None
+        )
+        if exact_lane:
+            authorized_candidate_symbol = (
+                str(authorized_rows[0].get("vt_symbol", "")).strip()
+                if len(authorized_rows) == 1
+                else ""
+            )
+            if not candidate_symbol_ready:
+                blockers.append(
+                    "stage179_submit_authorization_tick_gate_not_ready"
+                )
+            elif tick_candidate_symbol != authorized_candidate_symbol:
+                blockers.append(
+                    "stage179_submit_authorization_"
+                    "tick_candidate_symbol_mismatch"
+                )
+        elif not all_symbols_ready:
+            blockers.append("stage179_submit_authorization_tick_gate_not_ready")
     return list(dict.fromkeys(blockers))
 
 

@@ -244,6 +244,35 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
         self.assertLess(events.index("spool_begin"), events.index("spool_commit"))
         self.assertTrue(monitor.call_args.kwargs["allow_partial_durable_batch"])
 
+    def test_invalid_signal_snapshot_disables_stage901_pending_in_detector(self) -> None:
+        stage904_result = self.stage904_result([])
+        stage904_result.summary.update(
+            {
+                "monitor_status": "intraday_monitor_blocked",
+                "signal_snapshot_error": (
+                    "signal_artifact_snapshot_invalid:"
+                    "pending_artifact_entry_risk_sha256_mismatch"
+                ),
+            }
+        )
+        with (
+            patch.object(detector, "_read_durable_batch", return_value=self.batch()),
+            patch.object(
+                detector,
+                "run_intraday_monitor",
+                return_value=stage904_result,
+            ),
+            patch.object(
+                detector,
+                "run_executor_dry_run",
+                return_value=self.stage905_result([]),
+            ) as stage905_run,
+        ):
+            result = detector.run_detector_once(self.config, clock=_Clock())
+
+        self.assertEqual("detector_cycle_committed", result.status)
+        self.assertFalse(stage905_run.call_args.kwargs["include_stage901_pending"])
+
     def test_pending_provenance_uses_latest_exact_symbol_and_batch_cursor(self) -> None:
         open_epoch_ns = 1_784_206_800_000_000_000
         cursor = self.cursor(3, 300)
@@ -427,6 +456,66 @@ class OfficialLiveC9DetectorTest(unittest.TestCase):
         self.assertEqual("intraday_monitor_blocked", refreshed.summary["monitor_status"])
         self.assertEqual(1, refreshed.summary["blocked_count"])
         self.assertEqual([], detector.stage905._stage904_intents(refreshed.actions))
+
+    def test_close_delivery_refresh_preserves_invalid_signal_blocked_status(self) -> None:
+        tick = self.tick_record()
+        trace = LatencyTrace.from_ingress_row(tick, clock=_Clock(100, 100))
+        stage904_result = SimpleNamespace(
+            target_date="2026-07-16",
+            monitor_run_id="stage904-close",
+            actions=pd.DataFrame(
+                [
+                    {
+                        "target_date": "2026-07-16",
+                        "monitor_run_id": "stage904-close",
+                        "monitor_action": "close_dry_run",
+                        "vt_symbol": "JM609.DCE",
+                        "direction": "long",
+                        "volume": 1,
+                        "action_id": "business-close-action",
+                        "position_epoch_id": "position-epoch-1",
+                        "intent_role": "c9_initial_stop_close",
+                        "trace_json": trace.to_json(),
+                        "trace_id": trace.trace_id,
+                        "order_api_called": 0,
+                    }
+                ]
+            ),
+            summary={
+                "target_date": "2026-07-16",
+                "monitor_run_id": "stage904-close",
+                "monitor_status": "intraday_monitor_blocked",
+                "signal_snapshot_error": (
+                    "signal_artifact_snapshot_invalid:"
+                    "pending_artifact_entry_risk_sha256_mismatch"
+                ),
+                "action_count": 1,
+                "close_dry_run_count": 1,
+                "retry_open_dry_run_count": 0,
+                "retry_watch_count": 0,
+                "blocked_count": 0,
+                "order_api_called_count": 0,
+            },
+            paths={},
+        )
+        cursor = self.cursor(1, 100)
+        batch = DurableTickBatch(
+            records=(tick,),
+            next_cursor=cursor,
+            durable_through=cursor,
+            caught_up=True,
+            gap=None,
+        )
+
+        refreshed = detector._refresh_close_delivery_provenance(
+            stage904_result,
+            batch,
+            clock=_Clock(101, 101),
+        )
+
+        self.assertEqual(1, refreshed.summary["close_delivery_fresh_authorization_count"])
+        self.assertEqual("intraday_monitor_blocked", refreshed.summary["monitor_status"])
+        self.assertTrue(refreshed.summary["signal_snapshot_error"])
 
     def test_pending_initial_open_is_not_materialized_at_2059_but_is_at_2100(self) -> None:
         before = self.tick_record(

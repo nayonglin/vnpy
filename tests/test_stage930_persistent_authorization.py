@@ -138,6 +138,22 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
 
     @staticmethod
     def stage927(now: str) -> dict[str, object]:
+        scope_inputs = {
+            "schema_version": stage930.STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION,
+        }
+        scope_capabilities = {
+            name: {
+                "permit_field": permit_field,
+                "permitted": 1,
+            }
+            for name, permit_field in stage930._STAGE927_SCOPE_PERMIT_FIELDS.items()
+        }
+        scope_evidence_digest = stage930._canonical_json_digest(
+            {
+                "scope_evidence_inputs": scope_inputs,
+                "scope_capabilities": scope_capabilities,
+            }
+        )
         return {
             "model_tag": "stage927_official_live_real_submit_arming_gate_v1",
             "generated_at": now,
@@ -149,6 +165,12 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
             "order_api_called_count": 0,
             "env_real_submit_enabled": 1,
             "confirm_live_real_ok": 1,
+            "scope_capability_schema_version": (
+                stage930.STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION
+            ),
+            "scope_evidence_inputs": scope_inputs,
+            "scope_capabilities": scope_capabilities,
+            "scope_evidence_digest": scope_evidence_digest,
             "reduce_close_submit_permitted": 1,
             "retry_open_submit_permitted": 1,
             "initial_open_submit_permitted": 1,
@@ -260,7 +282,17 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
                         "stream_ready": 1,
                         "all_symbols_ready": 1,
                         "heartbeat_pid_matches_process": 1,
-                        "summary": {"generated_epoch_ns": time.time_ns()},
+                        "symbol_tick_freshness": {
+                            "blocked_new_risk_symbols": [],
+                        },
+                        "summary": {
+                            "generated_epoch_ns": time.time_ns(),
+                            "symbol_tick_watermarks": {
+                                "JM609.DCE": {
+                                    "ingress_epoch_ns": time.time_ns(),
+                                },
+                            },
+                        },
                     }
                     readiness = {
                         "status": "ready",

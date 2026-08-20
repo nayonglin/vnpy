@@ -978,6 +978,13 @@ print("CONTRACT=" + json.dumps({
                 self.assertIn("--target-date 2026-07-21", joined)
                 self.assertIn("--release-manifest", joined)
                 self.assertIn("--activation-receipt", joined)
+                self.assertIn("--production-qualification-evidence", joined)
+                self.assertEqual(
+                    str(launcher.PRODUCTION_QUALIFICATION_EVIDENCE),
+                    command[
+                        command.index("--production-qualification-evidence") + 1
+                    ],
+                )
                 self.assertNotIn("--readonly-observe-reconnect-once", joined)
                 self.assertIn("I_UNDERSTAND_THIS_ENABLES_FULL_AUTO_CTP_LIVE_TRADING", joined)
                 self.assertIn("I_UNDERSTAND_THIS_ACTIVATES_STAGE179_WARM_CTP_EXECUTION", joined)

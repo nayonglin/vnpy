@@ -18,7 +18,7 @@ from qmt_roll_official_live_lightweight_context import (
     SIGNAL_INPUT_DIR,
 )
 from qmt_roll_official_live_phase_d_config import (
-    PHASE_D_LIVE_REAL_POLICY_DISABLED_VALUE,
+    PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
 )
 
 
@@ -181,7 +181,7 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
         "changes only the deployment capital profile to match the funded live account."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
-    "real_submit_default": PHASE_D_LIVE_REAL_POLICY_DISABLED_VALUE,
+    "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
 }
 
 

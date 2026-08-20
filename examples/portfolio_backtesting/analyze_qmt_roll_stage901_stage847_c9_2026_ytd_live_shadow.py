@@ -581,11 +581,12 @@ def _publish_execution_artifact_cohort(
     signal_plan: pd.DataFrame,
     current_positions: pd.DataFrame,
     pending_orders: pd.DataFrame,
+    entry_risk: pd.DataFrame,
     profile=C9_15W_PROFILE,
 ) -> tuple[dict[str, Any], pd.DataFrame, dict[str, Any]]:
     """Publish the executable Stage901 inputs with the audit seal last.
 
-    Readers snapshot the audit before and after reading the other four files.
+    Readers snapshot the audit before and after reading the other five files.
     Replacing the audit last means an interrupted publication can only yield a
     hash mismatch and fail closed; it cannot bless a mixed generation.
     """
@@ -595,8 +596,11 @@ def _publish_execution_artifact_cohort(
         "signal_plan": profile.signal_plan_path,
         "current_positions": profile.current_positions_path,
         "pending_orders": profile.pending_orders_path,
+        "entry_risk": profile.entry_risk_path,
         "audit": profile.pending_orders_audit_path,
     }
+    if paths["entry_risk"] is None:
+        raise ValueError("stage901_entry_risk_path_missing")
     parents = {path.parent.resolve(strict=True) for path in paths.values()}
     if len(parents) != 1:
         raise ValueError("stage901_artifact_cohort_parent_mismatch")
@@ -622,6 +626,7 @@ def _publish_execution_artifact_cohort(
         "signal_plan": _csv_bytes(signal_plan),
         "current_positions": _csv_bytes(current_positions),
         "pending_orders": _csv_bytes(seed_pending),
+        "entry_risk": _csv_bytes(entry_risk),
     }
     cohort_seed = {
         "target_date": target_date,
@@ -653,6 +658,7 @@ def _publish_execution_artifact_cohort(
         "signal_plan": _csv_bytes(signal_plan),
         "current_positions": _csv_bytes(current_positions),
         "pending_orders": _csv_bytes(published_pending),
+        "entry_risk": _csv_bytes(entry_risk),
     }
     audit = {
         "schema_version": PENDING_ARTIFACT_SCHEMA_VERSION,
@@ -666,7 +672,7 @@ def _publish_execution_artifact_cohort(
         },
         "pending_order_count": int(len(published_pending)),
         "order_api_called_count": 0,
-        "publish_protocol": "four_artifacts_then_audit_generation_seal",
+        "publish_protocol": "five_artifacts_then_audit_generation_seal",
     }
     payloads = {**artifact_payloads, "audit": _json_bytes(audit)}
     temporary_paths: dict[str, Path] = {}
@@ -682,6 +688,7 @@ def _publish_execution_artifact_cohort(
             "signal_plan",
             "current_positions",
             "pending_orders",
+            "entry_risk",
         ):
             os.replace(temporary_paths.pop(name), paths[name])
         parent_fd = os.open(parent, os.O_RDONLY)
@@ -1077,6 +1084,7 @@ def main() -> None:
         signal_plan=signal_plan,
         current_positions=current_positions,
         pending_orders=pending_orders,
+        entry_risk=entry_risk,
     )
     _write_report(summary, cost, monthly, current_positions, signal_plan, pending_orders, decision)
     print(json.dumps(_json_safe(decision), ensure_ascii=False, indent=2))

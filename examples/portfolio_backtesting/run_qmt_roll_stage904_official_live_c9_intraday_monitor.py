@@ -16,6 +16,15 @@ from typing import Any, Mapping
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+from qmt_roll_official_execution_profile import (
+    C9_15W_PROFILE,
+    OfficialExecutionProfile,
+)
+from qmt_roll_official_pending_artifact import (
+    MaterializedArtifactSnapshot,
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
+)
 from qmt_roll_official_live_c9_intraday_state import (
     ATTEMPT_INITIAL,
     ATTEMPT_RETRY,
@@ -56,7 +65,6 @@ from qmt_roll_official_live_late_retry_fill import (
 )
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
-    OFFICIAL_LIVE_CURRENT_POSITIONS_PATH,
     OFFICIAL_LIVE_SUMMARY_PATH,
     OFFICIAL_LIVE_VERSION,
 )
@@ -68,7 +76,6 @@ from qmt_roll_official_live_phase_d_config import (
     READONLY_POSITIONS_PATH,
     READONLY_TRADES_PATH,
     READONLY_TICKS_PATH,
-    STAGE901_ENTRY_RISK_PATH,
     STAGE901_TRADES_PATH,
     build_phase_d_config,
 )
@@ -161,6 +168,28 @@ class Stage904RunResult:
     actions: pd.DataFrame
     summary: dict[str, Any]
     paths: Mapping[str, Path]
+
+
+def _load_monitor_signal_snapshot(
+    profile: OfficialExecutionProfile = C9_15W_PROFILE,
+    *,
+    expected_target_date: str = "",
+) -> MaterializedArtifactSnapshot:
+    """Load one audit-sealed Stage901 generation for risk supervision."""
+
+    materialized = materialize_validated_artifact_snapshot(
+        profile,
+        load_validated_artifact_snapshot(profile),
+    )
+    observed_target_date = _clean(
+        materialized.official_summary.get("analysis_end")
+    )
+    if expected_target_date and observed_target_date != expected_target_date:
+        raise ValueError(
+            "signal_artifact_target_date_mismatch:"
+            f"{observed_target_date}!={expected_target_date}"
+        )
+    return materialized
 
 
 TRIGGER_ACTION_FIELDS = (
@@ -3401,6 +3430,49 @@ def _fail_closed_uncommitted_feed_cycle(
     )
 
 
+def _fail_closed_invalid_signal_snapshot_cycle(
+    *,
+    store: dict[str, Any],
+    ticks: pd.DataFrame,
+    snapshot_error: str,
+) -> tuple[list[dict[str, Any]], int]:
+    """Preserve only already-latched protective closes during signal failure.
+
+    An invalid Stage901 cohort cannot authorize a new monitored position or a
+    retry open.  It also must not erase a close intent that the durable state
+    machine had already latched from a previously valid cohort and tick.
+    Stage905/927/931 still revalidate broker position and execution evidence
+    before any such close can reach the order API.
+    """
+
+    rows: list[dict[str, Any]] = []
+    states = store.get("states", {})
+    for state in states.values():
+        pending = get_pending_action(state)
+        if isinstance(pending, Mapping) and _clean(pending.get("action")) == "close":
+            row = _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="close_dry_run",
+                monitor_reason=(
+                    "existing_protective_close_preserved_during_"
+                    f"signal_snapshot_failure:{snapshot_error}"
+                ),
+            )
+            row["position_source"] = "durable_state_signal_snapshot_fail_closed"
+            rows.append(row)
+            continue
+        rows.append(
+            _state_only_action_row(
+                state,
+                ticks=ticks,
+                monitor_action="block",
+                monitor_reason=snapshot_error,
+            )
+        )
+    return rows, len(states)
+
+
 def _position_epoch_from_base(base: dict[str, Any]) -> str:
     propagated_epoch_id = _clean(base.get("position_epoch_id"))
     if propagated_epoch_id:
@@ -5190,7 +5262,19 @@ def run_intraday_monitor(
     allow_partial_durable_batch: bool = False,
 ) -> Stage904RunResult:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+    signal_snapshot_error = ""
+    try:
+        signal_snapshot = _load_monitor_signal_snapshot(
+            expected_target_date=target_date,
+        )
+        official_summary = signal_snapshot.official_summary
+        positions = signal_snapshot.current_positions
+        entry_risk = signal_snapshot.entry_risk
+    except Exception as exc:
+        official_summary = _read_json(OFFICIAL_LIVE_SUMMARY_PATH)
+        positions = pd.DataFrame()
+        entry_risk = pd.DataFrame()
+        signal_snapshot_error = f"signal_artifact_snapshot_invalid:{exc}"
     target_date = target_date or str(official_summary.get("analysis_end", ""))
     run_now = _local_datetime_from_clock(clock)
     monitor_run_id = (
@@ -5217,7 +5301,6 @@ def run_intraday_monitor(
                 indent=2,
             ),
         )
-    positions = _read_csv_maybe(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH)
     broker_positions = _read_csv_maybe(
         READONLY_POSITIONS_PATH, preserve_identity=True
     )
@@ -5229,7 +5312,6 @@ def run_intraday_monitor(
     )
     execution_ledger_rows = read_execution_ledger()
     trades = _read_csv_maybe(STAGE901_TRADES_PATH)
-    entry_risk = _read_csv_maybe(STAGE901_ENTRY_RISK_PATH)
     if durable_batch is None:
         (
             ticks,
@@ -5306,6 +5388,15 @@ def run_intraday_monitor(
         ]
         if state_store is None:
             action_rows.extend(_blocked_state_row(row, state_store_error) for row in base_rows)
+        elif signal_snapshot_error:
+            # Invalid Stage901 evidence blocks all new state/retry work, but a
+            # close already latched in the durable state remains executable.
+            # The state is intentionally not mutated or checkpointed here.
+            action_rows, state_count = _fail_closed_invalid_signal_snapshot_cycle(
+                store=state_store,
+                ticks=ticks,
+                snapshot_error=signal_snapshot_error,
+            )
         elif tick_snapshot_commit_error:
             # Do not call either reducer and do not checkpoint the state store.
             # A normal Stage608 two-file publication race must block only this
@@ -5378,7 +5469,12 @@ def run_intraday_monitor(
     blocked_count = int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["block", "retry_block"]).sum()) if not actions.empty else 0
     order_api_called = int(actions.get("order_api_called", pd.Series(dtype=float)).sum()) if not actions.empty else 0
     monitor_status = "intraday_monitor_ready"
-    if blocked_count or state_store_error or tick_snapshot_commit_error:
+    if (
+        blocked_count
+        or signal_snapshot_error
+        or state_store_error
+        or tick_snapshot_commit_error
+    ):
         monitor_status = "intraday_monitor_blocked"
     elif retry_open_dry_run_count:
         monitor_status = "intraday_monitor_retry_open_dry_run"
@@ -5430,6 +5526,7 @@ def run_intraday_monitor(
         "monitor_position_rows": int(len(monitor_positions)),
         "retry_candidate_rows": int(actions.get("monitor_action", pd.Series(dtype=str)).astype(str).isin(["retry_watch", "retry_open_dry_run", "retry_block"]).sum()) if not actions.empty else 0,
         "durable_state_count": state_count,
+        "signal_snapshot_error": signal_snapshot_error,
         "durable_state_error": state_store_error,
         "durable_state_path": str(paths["state_json"].resolve()),
         "durable_state_journal_path": str(paths["state_journal"].resolve()),

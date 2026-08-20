@@ -18,7 +18,7 @@ from qmt_roll_official_execution_profile import (
 )
 
 
-PENDING_ARTIFACT_SCHEMA_VERSION = 1
+PENDING_ARTIFACT_SCHEMA_VERSION = 2
 ARTIFACT_HASH_KEYS = (
     "official_summary",
     "signal_plan",
@@ -61,6 +61,7 @@ class ValidatedArtifactSnapshot:
     _signal_plan_bytes: bytes
     _current_positions_bytes: bytes
     _pending_orders_bytes: bytes
+    _entry_risk_bytes: bytes | None
     _audit_bytes: bytes
     _seal: object
 
@@ -71,6 +72,7 @@ class MaterializedArtifactSnapshot:
     signal_plan: pd.DataFrame
     current_positions: pd.DataFrame
     pending_orders: pd.DataFrame
+    entry_risk: pd.DataFrame
     audit: dict[str, Any]
     artifact_hashes: dict[str, str]
 
@@ -87,12 +89,23 @@ def sha256_path(path: Path | str) -> str:
 def artifact_hashes_for_profile(
     profile: OfficialExecutionProfile,
 ) -> dict[str, str]:
-    return {
+    hashes = {
         "official_summary": sha256_path(profile.summary_path),
         "signal_plan": sha256_path(profile.signal_plan_path),
         "current_positions": sha256_path(profile.current_positions_path),
         "pending_orders": sha256_path(profile.pending_orders_path),
     }
+    if profile.entry_risk_path is not None:
+        hashes["entry_risk"] = sha256_path(profile.entry_risk_path)
+    return hashes
+
+
+def artifact_hash_keys_for_profile(
+    profile: OfficialExecutionProfile,
+) -> tuple[str, ...]:
+    return ARTIFACT_HASH_KEYS + (
+        ("entry_risk",) if profile.entry_risk_path is not None else ()
+    )
 
 
 def _parse_json_bytes(payload: bytes, *, label: str) -> dict[str, Any]:
@@ -137,7 +150,11 @@ def validate_pending_artifact_cohort(
 ) -> dict[str, Any]:
     if not isinstance(audit, Mapping):
         raise ValueError("pending_artifact_audit_missing")
-    if not _REQUIRED_AUDIT_FIELDS.issubset(audit):
+    required_fields = set(_REQUIRED_AUDIT_FIELDS)
+    required_fields.update(
+        f"{key}_sha256" for key in artifact_hash_keys_for_profile(profile)
+    )
+    if not required_fields.issubset(audit):
         raise ValueError("pending_artifact_audit_fields_missing")
     if audit.get("schema_version") != PENDING_ARTIFACT_SCHEMA_VERSION:
         raise ValueError("pending_artifact_schema_mismatch")
@@ -164,7 +181,7 @@ def validate_pending_artifact_cohort(
         raise ValueError("pending_artifact_order_count_mismatch")
     if not isinstance(artifact_hashes, Mapping):
         raise ValueError("pending_artifact_hashes_missing")
-    for key in ARTIFACT_HASH_KEYS:
+    for key in artifact_hash_keys_for_profile(profile):
         observed = artifact_hashes.get(key)
         expected = audit.get(f"{key}_sha256")
         if not _valid_sha256(observed) or not _valid_sha256(expected):
@@ -201,6 +218,7 @@ def _materialize_snapshot_bytes(
     signal_plan_bytes: bytes,
     current_positions_bytes: bytes,
     pending_orders_bytes: bytes,
+    entry_risk_bytes: bytes | None,
     audit_bytes: bytes,
 ) -> MaterializedArtifactSnapshot:
     official_summary = _parse_json_bytes(
@@ -216,6 +234,14 @@ def _materialize_snapshot_bytes(
         pending_orders_bytes,
         label="pending_orders",
     )
+    if profile.entry_risk_path is None:
+        if entry_risk_bytes is not None:
+            raise ValueError("pending_artifact_entry_risk_unexpected")
+        entry_risk = pd.DataFrame()
+    else:
+        if not isinstance(entry_risk_bytes, bytes):
+            raise ValueError("pending_artifact_entry_risk_missing")
+        entry_risk = _parse_csv_bytes(entry_risk_bytes, label="entry_risk")
     audit = _parse_json_bytes(audit_bytes, label="audit")
     artifact_hashes = {
         "official_summary": hashlib.sha256(
@@ -227,6 +253,10 @@ def _materialize_snapshot_bytes(
         ).hexdigest(),
         "pending_orders": hashlib.sha256(pending_orders_bytes).hexdigest(),
     }
+    if entry_risk_bytes is not None:
+        artifact_hashes["entry_risk"] = hashlib.sha256(
+            entry_risk_bytes
+        ).hexdigest()
     target_date = _clean(official_summary.get("analysis_end"))
     if not target_date:
         raise ValueError("official_summary_analysis_end_missing")
@@ -242,6 +272,7 @@ def _materialize_snapshot_bytes(
         signal_plan=signal_plan,
         current_positions=current_positions,
         pending_orders=pending_orders,
+        entry_risk=entry_risk,
         audit=audit,
         artifact_hashes=artifact_hashes,
     )
@@ -257,6 +288,11 @@ def _profile_artifact_paths(
             profile.signal_plan_path,
             profile.current_positions_path,
             profile.pending_orders_path,
+            *(
+                (profile.entry_risk_path,)
+                if profile.entry_risk_path is not None
+                else ()
+            ),
             profile.pending_orders_audit_path,
         )
     )
@@ -269,6 +305,7 @@ def _build_validated_artifact_snapshot(
     signal_plan_bytes: bytes,
     current_positions_bytes: bytes,
     pending_orders_bytes: bytes,
+    entry_risk_bytes: bytes | None,
     audit_bytes: bytes,
 ) -> ValidatedArtifactSnapshot:
     payloads = (
@@ -276,9 +313,14 @@ def _build_validated_artifact_snapshot(
         signal_plan_bytes,
         current_positions_bytes,
         pending_orders_bytes,
+        entry_risk_bytes,
         audit_bytes,
     )
-    if any(not isinstance(payload, bytes) for payload in payloads):
+    if any(
+        not isinstance(payload, bytes)
+        for payload in payloads
+        if payload is not None
+    ):
         raise ValueError("pending_artifact_snapshot_bytes_required")
     _materialize_snapshot_bytes(
         profile,
@@ -286,6 +328,7 @@ def _build_validated_artifact_snapshot(
         signal_plan_bytes=signal_plan_bytes,
         current_positions_bytes=current_positions_bytes,
         pending_orders_bytes=pending_orders_bytes,
+        entry_risk_bytes=entry_risk_bytes,
         audit_bytes=audit_bytes,
     )
     snapshot = object.__new__(ValidatedArtifactSnapshot)
@@ -315,6 +358,11 @@ def _build_validated_artifact_snapshot(
         "_pending_orders_bytes",
         bytes(pending_orders_bytes),
     )
+    object.__setattr__(
+        snapshot,
+        "_entry_risk_bytes",
+        bytes(entry_risk_bytes) if entry_risk_bytes is not None else None,
+    )
     object.__setattr__(snapshot, "_audit_bytes", bytes(audit_bytes))
     object.__setattr__(snapshot, "_seal", _SNAPSHOT_SEAL)
     return snapshot
@@ -330,6 +378,11 @@ def load_validated_artifact_snapshot(
         signal_plan_bytes = profile.signal_plan_path.read_bytes()
         current_positions_bytes = profile.current_positions_path.read_bytes()
         pending_orders_bytes = profile.pending_orders_path.read_bytes()
+        entry_risk_bytes = (
+            profile.entry_risk_path.read_bytes()
+            if profile.entry_risk_path is not None
+            else None
+        )
         audit_after = profile.pending_orders_audit_path.read_bytes()
     except OSError as exc:
         raise ValueError("pending_artifact_snapshot_read_failed") from exc
@@ -341,6 +394,7 @@ def load_validated_artifact_snapshot(
         signal_plan_bytes=signal_plan_bytes,
         current_positions_bytes=current_positions_bytes,
         pending_orders_bytes=pending_orders_bytes,
+        entry_risk_bytes=entry_risk_bytes,
         audit_bytes=audit_after,
     )
 
@@ -365,5 +419,6 @@ def materialize_validated_artifact_snapshot(
         signal_plan_bytes=snapshot._signal_plan_bytes,
         current_positions_bytes=snapshot._current_positions_bytes,
         pending_orders_bytes=snapshot._pending_orders_bytes,
+        entry_risk_bytes=snapshot._entry_risk_bytes,
         audit_bytes=snapshot._audit_bytes,
     )

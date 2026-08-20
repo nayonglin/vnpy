@@ -107,7 +107,19 @@ def _age_seconds(value: Any) -> float | None:
     generated_at = _parse_generated_at(value)
     if generated_at is None:
         return None
-    return round((datetime.now() - generated_at).total_seconds(), 3)
+    now = datetime.now(tz=generated_at.tzinfo) if generated_at.tzinfo else datetime.now()
+    return round((now - generated_at).total_seconds(), 3)
+
+
+def _snapshot_age_ready(
+    age_seconds: float | None,
+    *,
+    max_snapshot_age_seconds: float,
+) -> bool:
+    return bool(
+        age_seconds is not None
+        and 0 <= age_seconds <= max_snapshot_age_seconds
+    )
 
 
 def _normalize_direction(value: Any) -> str:
@@ -619,8 +631,10 @@ def main() -> None:
     broker_ready = (
         readonly_summary.get("status") == "readonly_snapshots_received"
         and position_state in {"confirmed_flat", "positions_received"}
-        and readonly_age is not None
-        and readonly_age <= args.max_snapshot_age_seconds
+        and _snapshot_age_ready(
+            readonly_age,
+            max_snapshot_age_seconds=args.max_snapshot_age_seconds,
+        )
     )
     shadow_positions = _normalize_positions(shadow_positions_raw, source="shadow", shadow=True)
     broker_positions = _normalize_positions(broker_positions_raw, source="broker", shadow=False)

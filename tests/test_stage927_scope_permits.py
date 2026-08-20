@@ -4,6 +4,7 @@ import copy
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -19,6 +20,56 @@ import run_qmt_roll_stage927_official_live_real_submit_arming_gate as stage927  
 class Stage927ScopePermitTest(unittest.TestCase):
     target_date = "2026-07-18"
 
+    def test_signed_production_authority_is_fail_closed_and_commit_bound(self) -> None:
+        manifest = {
+            "source_commit": "a" * 40,
+            "tree_fingerprint": "b" * 64,
+            "manifest_sha256": "c" * 64,
+        }
+        qualification = {"evidence_sha256": "d" * 64}
+        with (
+            patch.object(
+                stage927,
+                "_validate_release_and_receipt",
+                return_value=manifest,
+            ),
+            patch.object(
+                stage927,
+                "_validate_code_qualification",
+                return_value=qualification,
+            ),
+        ):
+            authority, _ = stage927._load_production_authority(
+                release_manifest=Path("release.json"),
+                activation_receipt=Path("receipt.json"),
+                qualification_evidence=Path("qualification.json"),
+                runtime_root=Path("runtime"),
+            )
+
+        self.assertEqual("production_authority_validated", authority["authority_status"])
+        self.assertEqual("a" * 40, authority["source_commit"])
+        self.assertEqual("b" * 64, authority["tree_fingerprint"])
+        self.assertEqual("c" * 64, authority["manifest_sha256"])
+        self.assertEqual("d" * 64, authority["qualification_evidence_sha256"])
+        self.assertEqual(0, authority["order_api_called_count"])
+
+        with patch.object(
+            stage927,
+            "_validate_release_and_receipt",
+            side_effect=stage927.ProductionSessionLaunchError("invalid"),
+        ):
+            blocked, _ = stage927._load_production_authority(
+                release_manifest=Path("release.json"),
+                activation_receipt=Path("receipt.json"),
+                qualification_evidence=Path("qualification.json"),
+                runtime_root=Path("runtime"),
+            )
+        self.assertEqual(
+            "production_authority_blocked_fail_closed",
+            blocked["authority_status"],
+        )
+        self.assertIsNone(blocked["order_api_called_count"])
+
     def payloads(self) -> dict[str, dict[str, object]]:
         common = {
             "official_live_version": stage927.OFFICIAL_LIVE_VERSION,
@@ -30,14 +81,10 @@ class Stage927ScopePermitTest(unittest.TestCase):
             for name in (
                 "stage903",
                 "stage906",
-                "stage910",
-                "stage912",
-                "stage913",
-                "stage916",
-                "stage921",
+                "controller_heartbeat",
+                "production_authority",
                 "stage923",
                 "stage924",
-                "stage926",
             )
         }
         for name in ("stage903", "stage906", "stage923", "stage924"):
@@ -295,7 +342,7 @@ class Stage927ScopePermitTest(unittest.TestCase):
     def test_wrong_current_identity_blocks_both(self) -> None:
         cases = {
             "old_evidence_version": (
-                "stage912",
+                "production_authority",
                 "official_live_version",
                 "official_live_stage847_c9_30w_stage819_05r_stop_retry_once",
             ),
@@ -316,9 +363,9 @@ class Stage927ScopePermitTest(unittest.TestCase):
             with self.subTest(value=value):
                 payloads = self.payloads()
                 if value is None:
-                    payloads["stage910"].pop("order_api_called_count")
+                    payloads["controller_heartbeat"].pop("order_api_called_count")
                 else:
-                    payloads["stage910"]["order_api_called_count"] = value
+                    payloads["controller_heartbeat"]["order_api_called_count"] = value
                 _, capabilities, _ = self.evaluate(payloads=payloads)
                 self.assert_permits(capabilities, reduce_close=0, retry_open=0)
 
@@ -374,11 +421,11 @@ class Stage927ScopePermitTest(unittest.TestCase):
         )
 
         payloads = self.payloads()
-        payloads["stage910"]["generated_at"] = "2026-07-18 21:00:01"
+        payloads["controller_heartbeat"]["heartbeat_at"] = "2026-07-18 21:00:01"
         changed_inputs, _, changed_digest = self.evaluate(payloads=payloads)
         self.assertNotEqual(
-            inputs["source_evidence"]["stage910"]["payload_sha256"],  # type: ignore[index]
-            changed_inputs["source_evidence"]["stage910"]["payload_sha256"],  # type: ignore[index]
+            inputs["source_evidence"]["controller_heartbeat"]["payload_sha256"],  # type: ignore[index]
+            changed_inputs["source_evidence"]["controller_heartbeat"]["payload_sha256"],  # type: ignore[index]
         )
         self.assertNotEqual(digest, changed_digest)
 

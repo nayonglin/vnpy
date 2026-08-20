@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+from collections.abc import Mapping
 from dataclasses import asdict, is_dataclass
 import fcntl
 import hashlib
@@ -74,6 +75,10 @@ from qmt_roll_official_live_runtime_profile import (
     ExecutionRuntimeProfile,
     OrderScope,
     resolve_runtime_profile,
+)
+from run_qmt_roll_stage927_official_live_real_submit_arming_gate import (
+    SCOPE_CAPABILITY_SCHEMA_VERSION as STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION,
+    verify_scope_evidence_digest,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -1321,6 +1326,12 @@ def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
                 getattr(args, "confirm_stage179_activation", "")
             ):
                 blockers.append("production_live_activation_confirmation_missing")
+            if not _clean(
+                getattr(args, "production_qualification_evidence", "")
+            ):
+                blockers.append("production_live_qualification_evidence_missing")
+            if not _clean(getattr(args, "stage179_runtime_root", "")):
+                blockers.append("production_live_stage179_runtime_root_missing")
     elif (controller_mode, submit_mode) != ("dry-run", "disabled"):
         blockers.append("controller_submit_mode_mismatch")
 
@@ -1585,6 +1596,70 @@ def _canonical_json_digest(payload: dict[str, Any]) -> str:
     ).hexdigest()
 
 
+_STAGE927_SCOPE_PERMIT_FIELDS = {
+    "reduce_close": "reduce_close_submit_permitted",
+    "retry_open": "retry_open_submit_permitted",
+    "initial_open": "initial_open_submit_permitted",
+}
+_STAGE927_LANE_TO_SCOPE = {
+    "reduce_close_only": "reduce_close",
+    "retry_open_only": "retry_open",
+    "initial_open_only": "initial_open",
+}
+
+
+def _stage927_scope_authority_blockers(
+    summary: dict[str, Any],
+    *,
+    scope: str = "",
+    permit_field: str = "",
+) -> list[str]:
+    """Verify the whole digest-bound Stage927 v2 authority before use."""
+
+    blockers: list[str] = []
+    schema_version = summary.get("scope_capability_schema_version")
+    scope_inputs = summary.get("scope_evidence_inputs")
+    capabilities = summary.get("scope_capabilities")
+    if schema_version != STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION:
+        blockers.append("stage927_scope_schema_mismatch")
+    if not isinstance(scope_inputs, dict):
+        scope_inputs = {}
+        blockers.append("stage927_scope_evidence_inputs_missing")
+    elif scope_inputs.get("schema_version") != STAGE927_SCOPE_CAPABILITY_SCHEMA_VERSION:
+        blockers.append("stage927_scope_input_schema_mismatch")
+    if not isinstance(capabilities, dict):
+        capabilities = {}
+        blockers.append("stage927_scope_capabilities_missing")
+    if not verify_scope_evidence_digest(
+        scope_evidence_inputs=scope_inputs,
+        scope_capabilities=capabilities,
+        scope_evidence_digest=_clean(summary.get("scope_evidence_digest")),
+    ):
+        blockers.append("stage927_scope_evidence_digest_invalid")
+
+    for capability_name, field in _STAGE927_SCOPE_PERMIT_FIELDS.items():
+        capability = capabilities.get(capability_name)
+        if not isinstance(capability, dict):
+            blockers.append(f"stage927_{capability_name}_capability_missing")
+            continue
+        if capability.get("permit_field") != field:
+            blockers.append(f"stage927_{capability_name}_permit_field_mismatch")
+        permitted = capability.get("permitted")
+        if type(permitted) is not int or permitted not in {0, 1}:
+            blockers.append(f"stage927_{capability_name}_permit_invalid")
+            continue
+        if summary.get(field) != permitted:
+            blockers.append(f"stage927_{capability_name}_top_level_permit_mismatch")
+
+    capability_name = _STAGE927_LANE_TO_SCOPE.get(scope, "")
+    expected_field = _STAGE927_SCOPE_PERMIT_FIELDS.get(capability_name, "")
+    if scope and (not capability_name or permit_field != expected_field):
+        blockers.append("stage927_scope_permit_mapping_mismatch")
+    elif permit_field and summary.get(permit_field) != 1:
+        blockers.append(f"stage927_{permit_field}_not_ready")
+    return list(dict.fromkeys(blockers))
+
+
 def _stage902_summary_path(target_date: str) -> Path:
     date_key = target_date.replace("-", "") if target_date else "latest"
     return OUTPUT_DIR / (
@@ -1606,6 +1681,7 @@ def _authorization_candidate_row(candidate: Any) -> dict[str, Any]:
         "intent_id": candidate.intent_id,
         "payload_sha256": candidate.payload_sha256,
         "intent_kind": candidate.intent_kind,
+        "vt_symbol": candidate.vt_symbol,
         "source": candidate.source,
         "intent_role": candidate.intent_role,
         "trace_id": candidate.trace_id,
@@ -1773,6 +1849,7 @@ def _fast_lane_gate_evidence(
     initial_open_window_label = ""
     candidate_initial_open_window_expiry_epoch_ns = 0
     candidate_initial_open_window_label = ""
+    candidate_tick_ingress_epoch_ns = 0
     if not scope:
         blockers.append("persistent_fast_candidate_source_role_not_whitelisted")
     elif scope == "initial_open_only":
@@ -1833,8 +1910,13 @@ def _fast_lane_gate_evidence(
         (_to_int(stage927.get("confirm_live_real_ok"), 0) == 1, "stage927_real_submit_confirm_missing"),
     )
     blockers.extend(blocker for passed, blocker in identity_checks if not passed)
-    if permit_field and _to_int(stage927.get(permit_field), 0) != 1:
-        blockers.append(f"stage927_{permit_field}_not_ready")
+    blockers.extend(
+        _stage927_scope_authority_blockers(
+            stage927,
+            scope=scope,
+            permit_field=permit_field,
+        )
+    )
 
     if scope == "reduce_close_only":
         if _to_int(stage902.get("allow_reduce_close"), 0) != 1:
@@ -1848,7 +1930,14 @@ def _fast_lane_gate_evidence(
             blockers.append("stage902_new_open_blocked")
         if _to_int(stage902.get("ready_for_phase_d_real"), 0) != 1:
             blockers.append("stage902_not_ready_for_phase_d_real")
-        if _to_int(tick_stream.get("all_symbols_ready"), 0) != 1:
+        candidate_tick_ingress_epoch_ns = (
+            _tick_result_ingress_epoch_ns(
+                tick_stream,
+                candidate_symbol=_clean(candidate.vt_symbol),
+            )
+            or 0
+        )
+        if candidate_tick_ingress_epoch_ns <= 0:
             blockers.append("persistent_fast_retry_open_tick_stream_not_ready")
 
     evidence_max_age = min(
@@ -1896,6 +1985,7 @@ def _fast_lane_gate_evidence(
             candidate_initial_open_window_expiry_epoch_ns
         ),
         "candidate_initial_open_window_label": candidate_initial_open_window_label,
+        "candidate_tick_ingress_epoch_ns": candidate_tick_ingress_epoch_ns,
     }, list(dict.fromkeys(blockers))
 
 
@@ -1903,6 +1993,8 @@ def _persistent_detector_fast_lane_status(
     args: argparse.Namespace,
     target_date: str,
     paths: dict[str, Path],
+    *,
+    submit_enabled: bool = True,
 ) -> dict[str, Any]:
     heartbeat = _read_json(STAGE941_HEARTBEAT_PATH)
     supervisor = _supervise_detector(args, paths)
@@ -1991,7 +2083,8 @@ def _persistent_detector_fast_lane_status(
             fast_lane_status = "persistent_detector_authorization_blocked_fail_closed"
 
     live_fast_enabled = bool(
-        args.mode == "live-real"
+        submit_enabled
+        and args.mode == "live-real"
         and args.submit_mode == "live-real"
         and getattr(args, "stage179_execution_mode", "legacy-once") == "warm"
     )
@@ -2127,6 +2220,22 @@ def _persistent_detector_fast_lane_status(
                         if not submit_blockers:
                             readiness = evidence1["readiness"]
                             tick_expiry = expires_epoch_ns
+                            tick_authorization_evidence = {
+                                **tick_stream1,
+                                "expires_epoch_ns": tick_expiry,
+                            }
+                            if scope != "reduce_close_only":
+                                tick_authorization_evidence.update(
+                                    {
+                                        "candidate_symbol": _clean(
+                                            candidate.vt_symbol
+                                        ),
+                                        "candidate_symbol_ready": 1,
+                                        "candidate_ingress_epoch_ns": evidence1[
+                                            "candidate_tick_ingress_epoch_ns"
+                                        ],
+                                    }
+                                )
                             payload = publish_submit_authorization(
                                 path=submit_authorization_path(runtime.output_root),
                                 target_date=target_date,
@@ -2161,10 +2270,9 @@ def _persistent_detector_fast_lane_status(
                                     ],
                                 },
                                 broker_gate_evidence=readiness,
-                                tick_watermark_evidence={
-                                    **tick_stream1,
-                                    "expires_epoch_ns": tick_expiry,
-                                },
+                                tick_watermark_evidence=(
+                                    tick_authorization_evidence
+                                ),
                                 authorization_lane=authorization_lane,
                                 spool_path=runtime.spool_path,
                                 spool_snapshot_digest=snapshot1.snapshot_digest,
@@ -2298,6 +2406,12 @@ def _persistent_detector_fast_lane_status(
         "send_order_api_called_count": send_order_api_count,
         "cancel_order_api_called_count": cancel_order_api_count,
         "order_api_called_count": order_api_count,
+        "order_api_service_generation": _clean(
+            stage931_summary.get("order_api_service_generation")
+        ),
+        "order_api_generation_counts": stage931_summary.get(
+            "order_api_generation_counts", {}
+        ),
         "order_api_evidence_complete": int(order_api_counts_valid),
         "order_api_evidence_missing_fields": (
             []
@@ -2522,6 +2636,7 @@ def _run_fast_intraday_lane(
             args,
             target_date,
             paths,
+            submit_enabled=submit_reduce_close,
         )
     symbols = _watched_symbols_for_args(args)
     stream = _managed_tick_stream_status(args, paths, symbols)
@@ -2684,18 +2799,47 @@ def _run_idle_fast_lane(
     send_order_api_called_count = 0
     cancel_order_api_called_count = 0
     order_api_called_count = 0
+    order_api_service_generation = ""
+    order_api_generation_counts: dict[str, Any] = {}
     order_api_evidence_missing_fields: list[str] = []
     while monotonic() < deadline:
         if _market_execution_session_active():
             result = _safe_run_fast_intraday_lane(args, target_date, paths)
             run_count += 1
-            send_order_api_called_count += _to_int(
-                result.get("send_order_api_called_count"), 0
+            combined_counts = _aggregate_order_api_count_rows(
+                [
+                    {
+                        "send_order_api_called_count": send_order_api_called_count,
+                        "cancel_order_api_called_count": cancel_order_api_called_count,
+                        "order_api_called_count": order_api_called_count,
+                        "order_api_service_generation": (
+                            order_api_service_generation
+                        ),
+                        "order_api_generation_counts": (
+                            order_api_generation_counts
+                        ),
+                    },
+                    _order_api_count_observation(result),
+                ],
+                stage179_execution_mode=getattr(
+                    args, "stage179_execution_mode", "legacy-once"
+                ),
             )
-            cancel_order_api_called_count += _to_int(
-                result.get("cancel_order_api_called_count"), 0
+            send_order_api_called_count = combined_counts[
+                "send_order_api_called_count"
+            ]
+            cancel_order_api_called_count = combined_counts[
+                "cancel_order_api_called_count"
+            ]
+            order_api_called_count = combined_counts[
+                "order_api_called_count"
+            ]
+            order_api_service_generation = combined_counts.get(
+                "order_api_service_generation", ""
             )
-            order_api_called_count += _to_int(result.get("order_api_called_count"), 0)
+            order_api_generation_counts = combined_counts.get(
+                "order_api_generation_counts", {}
+            )
             if result.get("order_api_evidence_complete") != 1:
                 details = result.get("order_api_evidence_missing_fields")
                 order_api_evidence_missing_fields.extend(
@@ -2718,6 +2862,8 @@ def _run_idle_fast_lane(
         "send_order_api_called_count": send_order_api_called_count,
         "cancel_order_api_called_count": cancel_order_api_called_count,
         "order_api_called_count": order_api_called_count,
+        "order_api_service_generation": order_api_service_generation,
+        "order_api_generation_counts": order_api_generation_counts,
         "order_api_evidence_complete": int(
             not order_api_evidence_missing_fields
         ),
@@ -2746,6 +2892,8 @@ def _run_command_with_fast_lane(
     fast_lane_send_order_api_called_count = 0
     fast_lane_cancel_order_api_called_count = 0
     fast_lane_order_api_called_count = 0
+    fast_lane_order_api_service_generation = ""
+    fast_lane_order_api_generation_counts: dict[str, Any] = {}
     fast_lane_order_api_evidence_missing_fields: list[str] = []
     timed_out = False
     proc: subprocess.Popen[Any] | None = None
@@ -2776,14 +2924,51 @@ def _run_command_with_fast_lane(
                         submit_reduce_close=submit_reduce_close,
                     )
                     fast_lane_run_count += 1
-                    fast_lane_send_order_api_called_count += _to_int(
-                        fast_result.get("send_order_api_called_count"), 0
+                    combined_counts = _aggregate_order_api_count_rows(
+                        [
+                            {
+                                "send_order_api_called_count": (
+                                    fast_lane_send_order_api_called_count
+                                ),
+                                "cancel_order_api_called_count": (
+                                    fast_lane_cancel_order_api_called_count
+                                ),
+                                "order_api_called_count": (
+                                    fast_lane_order_api_called_count
+                                ),
+                                "order_api_service_generation": (
+                                    fast_lane_order_api_service_generation
+                                ),
+                                "order_api_generation_counts": (
+                                    fast_lane_order_api_generation_counts
+                                ),
+                            },
+                            _order_api_count_observation(fast_result),
+                        ],
+                        stage179_execution_mode=getattr(
+                            args,
+                            "stage179_execution_mode",
+                            "legacy-once",
+                        ),
                     )
-                    fast_lane_cancel_order_api_called_count += _to_int(
-                        fast_result.get("cancel_order_api_called_count"), 0
+                    fast_lane_send_order_api_called_count = combined_counts[
+                        "send_order_api_called_count"
+                    ]
+                    fast_lane_cancel_order_api_called_count = combined_counts[
+                        "cancel_order_api_called_count"
+                    ]
+                    fast_lane_order_api_called_count = combined_counts[
+                        "order_api_called_count"
+                    ]
+                    fast_lane_order_api_service_generation = (
+                        combined_counts.get(
+                            "order_api_service_generation", ""
+                        )
                     )
-                    fast_lane_order_api_called_count += _to_int(
-                        fast_result.get("order_api_called_count"), 0
+                    fast_lane_order_api_generation_counts = (
+                        combined_counts.get(
+                            "order_api_generation_counts", {}
+                        )
                     )
                     if fast_result.get("order_api_evidence_complete") != 1:
                         details = fast_result.get(
@@ -2836,6 +3021,12 @@ def _run_command_with_fast_lane(
         "fast_lane_send_order_api_called_count": fast_lane_send_order_api_called_count,
         "fast_lane_cancel_order_api_called_count": fast_lane_cancel_order_api_called_count,
         "fast_lane_order_api_called_count": fast_lane_order_api_called_count,
+        "fast_lane_order_api_service_generation": (
+            fast_lane_order_api_service_generation
+        ),
+        "fast_lane_order_api_generation_counts": (
+            fast_lane_order_api_generation_counts
+        ),
         "fast_lane_order_api_evidence_complete": int(
             not fast_lane_order_api_evidence_missing_fields
         ),
@@ -2976,7 +3167,36 @@ def _run_stage935_preflight(args: argparse.Namespace, paths: dict[str, Path]) ->
 
 
 def _run_stage927(args: argparse.Namespace, target_date: str, paths: dict[str, Path]) -> dict[str, Any]:
-    cmd = [str(PYTHON_PATH), str(STAGE927_SCRIPT), "--target-date", target_date, "--confirm-live-real", args.confirm_live_real]
+    invocation_started_epoch_ns = time.time_ns()
+    revocation = _revoke_stage931_submit_authorization(
+        args,
+        "stage927_authority_revalidation",
+    )
+    if revocation.get("preserved") == 1 or revocation.get("revoked") != 1:
+        return {
+            "exit_code": 2,
+            "timed_out": 0,
+            "summary": {},
+            "summary_blocker": "stage927_prior_authorization_not_revoked",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        }
+    cmd = [
+        str(PYTHON_PATH),
+        str(STAGE927_SCRIPT),
+        "--target-date",
+        target_date,
+        "--confirm-live-real",
+        args.confirm_live_real,
+        "--release-manifest",
+        args.release_manifest,
+        "--activation-receipt",
+        args.activation_receipt,
+        "--production-qualification-evidence",
+        args.production_qualification_evidence,
+        "--stage179-runtime-root",
+        args.stage179_runtime_root,
+    ]
     if args.tick_refresh_mode == "stream":
         result = _run_command_with_fast_lane(
             cmd,
@@ -2986,12 +3206,66 @@ def _run_stage927(args: argparse.Namespace, target_date: str, paths: dict[str, P
             args=args,
             target_date=target_date,
             paths=paths,
-            submit_reduce_close=True,
+            submit_reduce_close=False,
         )
     else:
         result = _run_command(cmd, timeout_seconds=120, log_path=paths["command_log"], label=f"stage927_arming_{target_date}")
-    path = OUTPUT_DIR / f"qmt_roll_stage927_official_live_real_submit_arming_gate_summary_{target_date.replace('-', '')}_stage927_official_live_real_submit_arming_gate_v1.json"
-    return {**result, "summary": _read_json(path)}
+    path = _stage927_summary_path(target_date)
+    if _to_int(result.get("exit_code"), -1) != 0 or _to_int(
+        result.get("timed_out"), 0
+    ) != 0:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": "stage927_invocation_failed",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        }
+    try:
+        summary_mtime_ns = path.stat().st_mtime_ns
+    except OSError:
+        summary_mtime_ns = 0
+    if summary_mtime_ns < invocation_started_epoch_ns:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": "stage927_summary_not_written_by_current_invocation",
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+            "summary_mtime_ns": summary_mtime_ns,
+        }
+    summary = _read_json(path)
+    summary_blockers: list[str] = []
+    if summary.get("model_tag") != "stage927_official_live_real_submit_arming_gate_v1":
+        summary_blockers.append("stage927_summary_model_mismatch")
+    if summary.get("target_date") != target_date:
+        summary_blockers.append("stage927_summary_target_date_mismatch")
+    _, freshness_blocker = _evidence_expiry_epoch_ns(
+        summary,
+        issued_epoch_ns=time.time_ns(),
+        max_age_seconds=60.0,
+        label="stage927_current_invocation",
+    )
+    if freshness_blocker:
+        summary_blockers.append(freshness_blocker)
+    summary_blockers.extend(_stage927_scope_authority_blockers(summary))
+    if summary_blockers:
+        return {
+            **result,
+            "summary": {},
+            "summary_blocker": ";".join(dict.fromkeys(summary_blockers)),
+            "authorization_revocation": revocation,
+            "invocation_started_epoch_ns": invocation_started_epoch_ns,
+            "summary_mtime_ns": summary_mtime_ns,
+        }
+    return {
+        **result,
+        "summary": summary,
+        "summary_blocker": "",
+        "authorization_revocation": revocation,
+        "invocation_started_epoch_ns": invocation_started_epoch_ns,
+        "summary_mtime_ns": summary_mtime_ns,
+    }
 
 
 def _run_stage931(
@@ -3203,6 +3477,165 @@ def _no_submit_prewarm_order_evidence(readiness: dict[str, Any]) -> dict[str, An
     }
 
 
+def _live_warm_order_evidence(readiness: dict[str, Any]) -> dict[str, Any]:
+    required_fields = (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    missing = [
+        field
+        for field in required_fields
+        if type(readiness.get(field)) is not int or readiness.get(field) < 0
+    ]
+    if readiness.get("service_kind") != "warm_live_executor":
+        missing.append("service_kind")
+    if readiness.get("order_api_evidence_complete") != 1:
+        missing.append("order_api_evidence_complete")
+    service_generation = _clean(readiness.get("service_generation"))
+    if not service_generation:
+        missing.append("service_generation")
+    send = readiness.get("send_order_api_called_count")
+    cancel = readiness.get("cancel_order_api_called_count")
+    total = readiness.get("order_api_called_count")
+    if all(type(value) is int and value >= 0 for value in (send, cancel, total)):
+        if total != send + cancel:
+            missing.append("order_api_called_count_inconsistent")
+    return {
+        "complete": int(not missing),
+        "missing_fields": missing,
+        "send_order_api_called_count": send,
+        "cancel_order_api_called_count": cancel,
+        "order_api_called_count": total,
+        "order_api_service_generation": service_generation,
+    }
+
+
+def _aggregate_order_api_count_rows(
+    rows: list[dict[str, Any]],
+    *,
+    stage179_execution_mode: str,
+) -> dict[str, Any]:
+    if stage179_execution_mode != "warm":
+        return {
+            field: sum(_to_int(row.get(field), 0) for row in rows)
+            for field in (
+                "send_order_api_called_count",
+                "cancel_order_api_called_count",
+                "order_api_called_count",
+            )
+        }
+
+    generation_counts: dict[str, dict[str, int]] = {}
+    missing_generation_index = 0
+    fields = (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    )
+    for row in rows:
+        embedded = row.get("order_api_generation_counts")
+        observations: list[tuple[str, Mapping[str, Any]]] = []
+        if isinstance(embedded, Mapping):
+            observations.extend(
+                (str(generation), counts)
+                for generation, counts in embedded.items()
+                if isinstance(counts, Mapping)
+            )
+        else:
+            counts = {field: _to_int(row.get(field), 0) for field in fields}
+            generation = _clean(row.get("order_api_service_generation"))
+            if not generation and any(counts.values()):
+                missing_generation_index += 1
+                generation = (
+                    f"__missing_service_generation__:{missing_generation_index}"
+                )
+            if generation:
+                observations.append((generation, counts))
+        for generation, counts in observations:
+            current = generation_counts.setdefault(
+                generation,
+                {field: 0 for field in fields},
+            )
+            for field in fields:
+                current[field] = max(
+                    current[field],
+                    _to_int(counts.get(field), 0),
+                )
+
+    result: dict[str, Any] = {}
+    for field in (
+        "send_order_api_called_count",
+        "cancel_order_api_called_count",
+        "order_api_called_count",
+    ):
+        result[field] = sum(
+            counts[field] for counts in generation_counts.values()
+        )
+    generations = sorted(generation_counts)
+    result["order_api_service_generation"] = (
+        generations[0]
+        if len(generations) == 1
+        else f"multiple:{len(generations)}"
+        if generations
+        else ""
+    )
+    result["order_api_generation_counts"] = generation_counts
+    return result
+
+
+def _aggregate_daemon_order_api_counts(
+    cycles: list[dict[str, Any]],
+    *,
+    stage179_execution_mode: str,
+) -> dict[str, Any]:
+    result = _aggregate_order_api_count_rows(
+        cycles,
+        stage179_execution_mode=stage179_execution_mode,
+    )
+    if stage179_execution_mode != "warm":
+        return result
+    return {
+        "send_order_api_called_count": result[
+            "send_order_api_called_count"
+        ],
+        "cancel_order_api_called_count": result[
+            "cancel_order_api_called_count"
+        ],
+        "order_api_called_count": result["order_api_called_count"],
+        "order_api_service_generation": result[
+            "order_api_service_generation"
+        ],
+        "order_api_generation_counts": result[
+            "order_api_generation_counts"
+        ],
+    }
+
+
+def _order_api_count_observation(
+    row: Mapping[str, Any], *, prefix: str = ""
+) -> dict[str, Any]:
+    observation: dict[str, Any] = {
+        field: _to_int(row.get(f"{prefix}{field}"), 0)
+        for field in (
+            "send_order_api_called_count",
+            "cancel_order_api_called_count",
+            "order_api_called_count",
+        )
+    }
+    generation = _clean(
+        row.get(f"{prefix}order_api_service_generation")
+    )
+    generation_counts = row.get(
+        f"{prefix}order_api_generation_counts"
+    )
+    if generation:
+        observation["order_api_service_generation"] = generation
+    if isinstance(generation_counts, Mapping):
+        observation["order_api_generation_counts"] = generation_counts
+    return observation
+
+
 def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
     process = _STAGE931_SERVICE_PROCESS
     runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
@@ -3222,9 +3655,17 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("stage931_warm_readiness_expired")
     if _clean(readiness.get("runtime_profile")) != runtime.profile.value:
         blockers.append("stage931_warm_readiness_profile_mismatch")
-    no_submit_evidence = _no_submit_prewarm_order_evidence(readiness)
-    if args.submit_mode != "live-real" and not no_submit_evidence["complete"]:
-        blockers.append("stage931_no_submit_order_evidence_incomplete")
+    order_evidence = (
+        _live_warm_order_evidence(readiness)
+        if args.submit_mode == "live-real"
+        else _no_submit_prewarm_order_evidence(readiness)
+    )
+    if not order_evidence["complete"]:
+        blockers.append(
+            "stage931_live_order_evidence_incomplete"
+            if args.submit_mode == "live-real"
+            else "stage931_no_submit_order_evidence_incomplete"
+        )
     return {
         "submit_status": (
             (
@@ -3242,19 +3683,39 @@ def _status_stage931_service(args: argparse.Namespace) -> dict[str, Any]:
         "readiness": readiness,
         "blockers": blockers,
         "summary": {
-            "order_api_called_count": no_submit_evidence[
+            "order_api_called_count": order_evidence[
                 "order_api_called_count"
             ],
-            "send_order_api_called_count": no_submit_evidence[
+            "send_order_api_called_count": order_evidence[
                 "send_order_api_called_count"
             ],
-            "cancel_order_api_called_count": no_submit_evidence[
+            "cancel_order_api_called_count": order_evidence[
                 "cancel_order_api_called_count"
             ],
-            "order_api_evidence_complete": no_submit_evidence["complete"],
-            "order_api_evidence_missing_fields": no_submit_evidence[
+            "order_api_evidence_complete": order_evidence["complete"],
+            "order_api_evidence_missing_fields": order_evidence[
                 "missing_fields"
             ],
+            "order_api_service_generation": order_evidence.get(
+                "order_api_service_generation", ""
+            ),
+            "order_api_generation_counts": (
+                {
+                    order_evidence["order_api_service_generation"]: {
+                        "send_order_api_called_count": order_evidence[
+                            "send_order_api_called_count"
+                        ],
+                        "cancel_order_api_called_count": order_evidence[
+                            "cancel_order_api_called_count"
+                        ],
+                        "order_api_called_count": order_evidence[
+                            "order_api_called_count"
+                        ],
+                    }
+                }
+                if order_evidence.get("order_api_service_generation")
+                else {}
+            ),
         },
     }
 
@@ -3392,22 +3853,6 @@ def _publish_stage931_submit_authorization(
                 if item
             ),
         }
-    tick_expires_epoch_ns = issued_epoch_ns + int(ttl_seconds * 1_000_000_000)
-    if not reduce_close_only:
-        tick_summary = tick_gate.get("summary")
-        tick_epoch_ns = _tick_result_ingress_epoch_ns(tick_gate)
-        if not isinstance(tick_summary, dict) or tick_epoch_ns is None:
-            return {
-                "authorized": 0,
-                "blocker": "stage931_tick_watermark_evidence_stale",
-            }
-        tick_age_ns = max(0, issued_epoch_ns - tick_epoch_ns)
-        tick_ttl_ns = int(
-            max(0.1, float(getattr(args, "fast_tick_age_seconds", 3.0)))
-            * 1_000_000_000
-        )
-        tick_expires_epoch_ns = issued_epoch_ns + max(0, tick_ttl_ns - tick_age_ns)
-
     try:
         with exclusive_submit_authorization_lock(
             submit_authorization_lock_path(runtime.output_root),
@@ -3445,11 +3890,43 @@ def _publish_stage931_submit_authorization(
                     "authorized": 0,
                     "blocker": "stage931_reduce_close_authorization_contains_open",
                 }
-            if _to_int(stage927_summary.get(permit_field), 0) != 1:
+            stage927_authority_blockers = _stage927_scope_authority_blockers(
+                stage927_summary,
+                scope=intent_scope,
+                permit_field=permit_field,
+            )
+            if stage927_authority_blockers:
                 return {
                     "authorized": 0,
-                    "blocker": f"stage931_{permit_field}_not_ready",
+                    "blocker": ";".join(stage927_authority_blockers),
                 }
+            tick_expires_epoch_ns = issued_epoch_ns + int(
+                ttl_seconds * 1_000_000_000
+            )
+            if not candidate_close_only:
+                tick_epoch_ns = _tick_result_ingress_epoch_ns(
+                    tick_gate,
+                    candidate_symbol=_clean(candidate.vt_symbol),
+                )
+                if tick_epoch_ns is None:
+                    return {
+                        "authorized": 0,
+                        "blocker": "stage931_tick_watermark_evidence_stale",
+                    }
+                tick_age_ns = max(0, issued_epoch_ns - tick_epoch_ns)
+                tick_ttl_ns = int(
+                    max(
+                        0.1,
+                        float(
+                            getattr(args, "fast_tick_age_seconds", 3.0)
+                        ),
+                    )
+                    * 1_000_000_000
+                )
+                tick_expires_epoch_ns = issued_epoch_ns + max(
+                    0,
+                    tick_ttl_ns - tick_age_ns,
+                )
             initial_open_window_expiry_epoch_ns = 0
             if intent_scope == "initial_open_only":
                 allowed_now, now_window_expiry, _ = (
@@ -3470,11 +3947,6 @@ def _publish_stage931_submit_authorization(
                         "blocker": "stage931_initial_open_candidate_ingress_window_invalid",
                     }
                 initial_open_window_expiry_epoch_ns = ingress_window_expiry
-            if not candidate_close_only and _to_int(tick_gate.get("all_symbols_ready"), 0) != 1:
-                return {
-                    "authorized": 0,
-                    "blocker": "stage931_tick_gate_not_ready_for_open",
-                }
             expires_epoch_ns = min(
                 issued_epoch_ns + int(ttl_seconds * 1_000_000_000),
                 readiness_expires_epoch_ns,
@@ -3514,6 +3986,18 @@ def _publish_stage931_submit_authorization(
                 if intent_scope == "initial_open_only"
                 else "persistent_intraday_fast"
             )
+            tick_authorization_evidence = {
+                **tick_gate,
+                "expires_epoch_ns": tick_expires_epoch_ns,
+            }
+            if not candidate_close_only:
+                tick_authorization_evidence.update(
+                    {
+                        "candidate_symbol": _clean(candidate.vt_symbol),
+                        "candidate_symbol_ready": 1,
+                        "candidate_ingress_epoch_ns": tick_epoch_ns,
+                    }
+                )
             payload = publish_submit_authorization(
                 path=submit_authorization_path(runtime.output_root),
                 target_date=target_date,
@@ -3541,10 +4025,7 @@ def _publish_stage931_submit_authorization(
                     "expires_epoch_ns": stage927_expires_epoch_ns,
                 },
                 broker_gate_evidence=readiness,
-                tick_watermark_evidence={
-                    **tick_gate,
-                    "expires_epoch_ns": tick_expires_epoch_ns,
-                },
+                tick_watermark_evidence=tick_authorization_evidence,
                 authorization_lane=authorization_lane,
                 spool_path=runtime.spool_path,
                 spool_snapshot_digest=snapshot.snapshot_digest,
@@ -4277,13 +4758,15 @@ def _stage931_submit_blockers(
 ) -> list[str]:
     blockers: list[str] = []
     close_only_reduce_risk = False
+    candidate: Any | None = None
     try:
         runtime = _STAGE931_SERVICE_RUNTIME or _stage179_runtime(args)
         spool_snapshot = _spool_authorization_snapshot(runtime)
+        candidate = spool_snapshot.candidate
         close_only_reduce_risk = bool(
-            spool_snapshot.candidate is not None
-            and spool_snapshot.candidate.target_date == target_date
-            and spool_snapshot.candidate.intent_kind == "close"
+            candidate is not None
+            and candidate.target_date == target_date
+            and candidate.intent_kind == "close"
         )
     except Exception as exc:
         blockers.append(
@@ -4300,20 +4783,43 @@ def _stage931_submit_blockers(
         blockers.append(f"ready_count={ready_count}")
     if _to_int(getattr(args, "ai_pool_preflight_allowed", 1), 1) != 1 and not close_only_reduce_risk:
         blockers.append("ai_pool_preflight_blocked_new_risk_but_reduce_close_remains_allowed")
-    if (
-        tick_result is not None
-        and _to_int(tick_result.get("all_symbols_ready"), 0) != 1
-        and not close_only_reduce_risk
-    ):
-        blocked_symbols = (
-            (tick_result.get("symbol_tick_freshness") or {}).get("blocked_new_risk_symbols")
-            if isinstance(tick_result.get("symbol_tick_freshness"), dict)
+    if tick_result is not None and not close_only_reduce_risk:
+        freshness = tick_result.get("symbol_tick_freshness")
+        blocked_values = (
+            freshness.get("blocked_new_risk_symbols")
+            if isinstance(freshness, dict)
             else []
         )
-        blockers.append(
-            "tick_stream_symbols_not_fresh_for_new_risk:"
-            + ",".join(map(str, blocked_symbols or []))
+        blocked_symbols = sorted(
+            {
+                _clean(item)
+                for item in (blocked_values or [])
+                if _clean(item)
+            }
         )
+        transport_ready = _to_int(
+            tick_result.get(
+                "transport_ready",
+                tick_result.get("all_symbols_ready", 0),
+            ),
+            0,
+        ) == 1
+        candidate_symbol = _clean(
+            getattr(candidate, "vt_symbol", "")
+        )
+        if not transport_ready:
+            blockers.append(
+                "tick_stream_transport_not_ready_for_new_risk"
+            )
+        elif not candidate_symbol:
+            blockers.append(
+                "tick_stream_candidate_symbol_missing_for_new_risk"
+            )
+        elif candidate_symbol in blocked_symbols:
+            blockers.append(
+                "tick_stream_candidate_not_fresh_for_new_risk:"
+                + candidate_symbol
+            )
     if _to_int(stage927_summary.get("real_submit_permitted"), 0) != 1 and not close_only_reduce_risk:
         blockers.append(f"real_submit_permitted={stage927_summary.get('real_submit_permitted', 0)}")
     if _clean(controller_summary.get("controller_status")) != "phase_d_controller_live_real_ready_no_submit_step" and not close_only_reduce_risk:
@@ -4340,12 +4846,13 @@ def _stage931_submit_blockers(
     return blockers
 
 
-def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
+def _tick_result_ingress_epoch_ns(
+    tick_result: dict[str, Any],
+    *,
+    candidate_symbol: str = "",
+) -> int | None:
     if (
-        tick_result.get("refresh_status") != "tick_stream_ready"
-        or tick_result.get("transport_ready") != 1
-        or tick_result.get("stream_ready") != 1
-        or tick_result.get("all_symbols_ready") != 1
+        tick_result.get("transport_ready") != 1
         or tick_result.get("heartbeat_pid_matches_process") != 1
     ):
         return None
@@ -4356,6 +4863,34 @@ def _tick_result_ingress_epoch_ns(tick_result: dict[str, Any]) -> int | None:
     if not isinstance(latest_ticks, dict):
         latest_ticks = summary.get("latest_ticks")
     if not isinstance(latest_ticks, dict):
+        return None
+    normalized_candidate = _clean(candidate_symbol)
+    if normalized_candidate:
+        freshness = tick_result.get("symbol_tick_freshness")
+        if not isinstance(freshness, dict):
+            return None
+        blocked_symbols = freshness.get("blocked_new_risk_symbols")
+        if not isinstance(blocked_symbols, list):
+            return None
+        if normalized_candidate in {
+            _clean(symbol) for symbol in blocked_symbols
+        }:
+            return None
+        candidate_row = latest_ticks.get(normalized_candidate)
+        if not isinstance(candidate_row, dict):
+            return None
+        candidate_ingress_epoch_ns = candidate_row.get("ingress_epoch_ns")
+        if (
+            type(candidate_ingress_epoch_ns) is int
+            and candidate_ingress_epoch_ns > 0
+        ):
+            return candidate_ingress_epoch_ns
+        return None
+    if (
+        tick_result.get("refresh_status") != "tick_stream_ready"
+        or tick_result.get("stream_ready") != 1
+        or tick_result.get("all_symbols_ready") != 1
+    ):
         return None
     values = [
         row.get("ingress_epoch_ns")
@@ -4679,31 +5214,29 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
             "order_api_called_count": 0,
         },
     }
-    order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("order_api_called_count"), 0)
+    cycle_order_api_counts = _aggregate_order_api_count_rows(
+        [
+            _order_api_count_observation(stage903_result.get("summary", {})),
+            _order_api_count_observation(stage903_result, prefix="fast_lane_"),
+            _order_api_count_observation(stage927_result.get("summary", {})),
+            _order_api_count_observation(stage927_result, prefix="fast_lane_"),
+            _order_api_count_observation(stage931_result.get("summary", {})),
+            _order_api_count_observation(stage931_result, prefix="fast_lane_"),
+            _order_api_count_observation(
+                post_submit_reduce_close.get("summary", {})
+            ),
+        ],
+        stage179_execution_mode=getattr(
+            args, "stage179_execution_mode", "legacy-once"
+        ),
     )
-    send_order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("send_order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("send_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_send_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("send_order_api_called_count"), 0)
-    )
-    cancel_order_api_called = (
-        _to_int(stage903_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
-        + _to_int(stage903_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(stage927_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("summary", {}).get("cancel_order_api_called_count"), 0)
-        + _to_int(stage931_result.get("fast_lane_cancel_order_api_called_count"), 0)
-        + _to_int(post_submit_reduce_close.get("summary", {}).get("cancel_order_api_called_count"), 0)
-    )
+    send_order_api_called = cycle_order_api_counts[
+        "send_order_api_called_count"
+    ]
+    cancel_order_api_called = cycle_order_api_counts[
+        "cancel_order_api_called_count"
+    ]
+    order_api_called = cycle_order_api_counts["order_api_called_count"]
     cycle_finished_epoch_ns = time.time_ns()
     open_minute_tick_ingress_epoch_ns = _tick_result_ingress_epoch_ns(
         tick_result
@@ -4717,6 +5250,21 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         stage931_result=stage931_result,
         post_submit_reduce_close=post_submit_reduce_close,
     )
+    if getattr(args, "stage179_execution_mode", "legacy-once") == "warm":
+        generation_counts = cycle_order_api_counts.get(
+            "order_api_generation_counts", {}
+        )
+        if any(
+            str(generation).startswith("__missing_service_generation__:")
+            for generation in generation_counts
+        ):
+            order_api_evidence_missing_fields.append(
+                "warm_order_api_service_generation_missing"
+            )
+        if order_api_called != send_order_api_called + cancel_order_api_called:
+            order_api_evidence_missing_fields.append(
+                "warm_order_api_called_count_inconsistent"
+            )
     return {
         "cycle_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "cycle_started_epoch_ns": cycle_started_epoch_ns,
@@ -4745,6 +5293,12 @@ def run_cycle(args: argparse.Namespace, target_date: str, paths: dict[str, Path]
         "send_order_api_called_count": send_order_api_called,
         "cancel_order_api_called_count": cancel_order_api_called,
         "order_api_called_count": order_api_called,
+        "order_api_service_generation": cycle_order_api_counts.get(
+            "order_api_service_generation", ""
+        ),
+        "order_api_generation_counts": cycle_order_api_counts.get(
+            "order_api_generation_counts", {}
+        ),
         "order_api_evidence_complete": int(
             not order_api_evidence_missing_fields
         ),
@@ -4831,6 +5385,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--release-manifest", default="")
     parser.add_argument("--activation-receipt", default="")
+    parser.add_argument("--production-qualification-evidence", default="")
     parser.add_argument("--stage179-runtime-root", default="")
     parser.add_argument("--confirm-stage179-activation", default="")
     parser.add_argument("--vt-symbol", action="append", default=[])
@@ -5065,15 +5620,19 @@ def main() -> None:
             status = "daemon_cycle_exception_fail_closed"
         cycles.append(cycle)
         _append_event(paths["events_ndjson"], {"event_type": "stage930_cycle", **cycle})
-        total_send_order_api = sum(
-            _to_int(item.get("send_order_api_called_count"), 0)
-            for item in cycles
+        daemon_order_api_counts = _aggregate_daemon_order_api_counts(
+            cycles,
+            stage179_execution_mode=args.stage179_execution_mode,
         )
-        total_cancel_order_api = sum(
-            _to_int(item.get("cancel_order_api_called_count"), 0)
-            for item in cycles
-        )
-        total_order_api = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
+        total_send_order_api = daemon_order_api_counts[
+            "send_order_api_called_count"
+        ]
+        total_cancel_order_api = daemon_order_api_counts[
+            "cancel_order_api_called_count"
+        ]
+        total_order_api = daemon_order_api_counts[
+            "order_api_called_count"
+        ]
         order_api_evidence_missing_fields = [
             f"cycle[{index}]:{field}"
             for index, item in enumerate(cycles)
@@ -5090,6 +5649,10 @@ def main() -> None:
         ) and not order_api_evidence_missing_fields:
             order_api_evidence_missing_fields.append(
                 "cycle_order_api_evidence_incomplete_without_detail"
+            )
+        if total_order_api != total_send_order_api + total_cancel_order_api:
+            order_api_evidence_missing_fields.append(
+                "daemon_order_api_called_count_inconsistent"
             )
         session_timing = _session_timing_evidence(cycles)
         summary = {
@@ -5199,15 +5762,23 @@ def main() -> None:
                 pass
         if _to_int(idle_fast_lane.get("run_count"), 0) > 0:
             cycle["between_cycle_fast_lane"] = idle_fast_lane
-            cycle["send_order_api_called_count"] = _to_int(
-                cycle.get("send_order_api_called_count"), 0
-            ) + _to_int(idle_fast_lane.get("send_order_api_called_count"), 0)
-            cycle["cancel_order_api_called_count"] = _to_int(
-                cycle.get("cancel_order_api_called_count"), 0
-            ) + _to_int(idle_fast_lane.get("cancel_order_api_called_count"), 0)
-            cycle["order_api_called_count"] = _to_int(cycle.get("order_api_called_count"), 0) + _to_int(
-                idle_fast_lane.get("order_api_called_count"), 0
+            combined_counts = _aggregate_order_api_count_rows(
+                [cycle, idle_fast_lane],
+                stage179_execution_mode=args.stage179_execution_mode,
             )
+            cycle.update(combined_counts)
+            if cycle["order_api_called_count"] != (
+                cycle["send_order_api_called_count"]
+                + cycle["cancel_order_api_called_count"]
+            ):
+                cycle["order_api_evidence_complete"] = 0
+                missing = cycle.get("order_api_evidence_missing_fields")
+                if not isinstance(missing, list):
+                    missing = []
+                cycle["order_api_evidence_missing_fields"] = [
+                    *missing,
+                    "between_cycle_order_api_called_count_inconsistent",
+                ]
             idle_fast_lane_exceptions = [
                 str(item.get("fast_lane_status"))
                 for item in idle_fast_lane.get("recent_runs", [])
@@ -5231,15 +5802,12 @@ def main() -> None:
                 ]
             summary["latest_cycle"] = cycle
             summary["generated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            summary["send_order_api_called_count"] = sum(
-                _to_int(item.get("send_order_api_called_count"), 0)
-                for item in cycles
+            summary.update(
+                _aggregate_daemon_order_api_counts(
+                    cycles,
+                    stage179_execution_mode=args.stage179_execution_mode,
+                )
             )
-            summary["cancel_order_api_called_count"] = sum(
-                _to_int(item.get("cancel_order_api_called_count"), 0)
-                for item in cycles
-            )
-            summary["order_api_called_count"] = sum(_to_int(item.get("order_api_called_count"), 0) for item in cycles)
             summary["order_api_evidence_missing_fields"] = [
                 f"cycle[{index}]:{field}"
                 for index, item in enumerate(cycles)
@@ -5251,6 +5819,13 @@ def main() -> None:
                     else ["order_api_evidence_missing_fields_invalid"]
                 )
             ]
+            if summary["order_api_called_count"] != (
+                summary["send_order_api_called_count"]
+                + summary["cancel_order_api_called_count"]
+            ):
+                summary["order_api_evidence_missing_fields"].append(
+                    "daemon_order_api_called_count_inconsistent"
+                )
             summary["order_api_evidence_complete"] = int(
                 not summary["order_api_evidence_missing_fields"]
                 and all(

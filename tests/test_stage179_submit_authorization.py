@@ -103,6 +103,7 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
             "intent_id": "fast-close" if close else "fast-retry-open",
             "payload_sha256": "c" * 64 if close else "d" * 64,
             "intent_kind": "close" if close else "open",
+            "vt_symbol": "jm2609.DCE",
             "source": (
                 "stage904_c9_intraday_close"
                 if close
@@ -151,6 +152,13 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
                 permit_field: 1,
                 "expires_epoch_ns": 31_000_000_000,
             },
+            "tick_watermark_evidence": {
+                "all_symbols_ready": 1,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "candidate_ingress_epoch_ns": 2_000_000_000,
+                "expires_epoch_ns": 31_000_000_000,
+            },
         }
         values.update(overrides)
         return self.publish(**values)
@@ -178,6 +186,7 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
             "intent_id": "stage901-initial-open",
             "payload_sha256": "9" * 64,
             "intent_kind": "open",
+            "vt_symbol": "jm2609.DCE",
             "source": "stage901_pending_order",
             "intent_role": "c9_initial_open",
             "trace_id": "trace-initial-open-1",
@@ -210,9 +219,29 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
                 "initial_open_submit_permitted": 1,
                 "expires_epoch_ns": 31_000_000_000,
             },
+            "tick_watermark_evidence": {
+                "all_symbols_ready": 1,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "candidate_ingress_epoch_ns": 2_000_000_000,
+                "expires_epoch_ns": 31_000_000_000,
+            },
         }
         values.update(overrides)
         return self.publish(**values)
+
+    def initial_open_validate_values(self) -> dict[str, object]:
+        return {
+            "execution_profile": "c9-15w",
+            "authorization_lane": "session_initial_open",
+            "intent_scope": "initial_open_only",
+            **self.initial_open_row(),
+            "spool_path": Path(self.tmp.name) / "stage179-spool.sqlite3",
+            "spool_snapshot_digest": "1" * 64,
+            "cursor_digest": "2" * 64,
+            "stage902_evidence_digest": "3" * 64,
+            "stage927_evidence_digest": "4" * 64,
+        }
 
     def test_authorization_is_target_profile_and_connection_bound(self) -> None:
         payload = self.publish()
@@ -410,7 +439,7 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
             encoding="utf-8",
         )
 
-        self.assertEqual(4, SUBMIT_AUTHORIZATION_SCHEMA_VERSION)
+        self.assertEqual(5, SUBMIT_AUTHORIZATION_SCHEMA_VERSION)
         self.assertEqual({}, authorized_submit_intents(self.path))
         self.assertEqual([], authorized_submit_intent_records(self.path))
         blockers = self.validate()
@@ -622,7 +651,6 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
             "stage179_submit_authorization_expired",
             self.validate(**expected, now_epoch_ns=4_000_000_000),
         )
-
         pinned = self.validate(
             **expected,
             now_epoch_ns=4_000_000_000,
@@ -646,6 +674,78 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
         self.assertIn(
             "stage179_submit_authorization_intent_deadline_expired",
             deadline_blockers,
+        )
+
+    def test_initial_open_accepts_exact_candidate_tick_evidence(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 0,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "candidate_ingress_epoch_ns": 2_000_000_000,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertNotIn(
+            "stage179_submit_authorization_tick_gate_not_ready",
+            blockers,
+        )
+
+    def test_initial_open_rejects_incomplete_candidate_tick_evidence(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 0,
+                "candidate_symbol": "jm2609.DCE",
+                "candidate_symbol_ready": 1,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertIn(
+            "stage179_submit_authorization_tick_gate_not_ready",
+            blockers,
+        )
+
+    def test_initial_open_rejects_tick_evidence_for_wrong_symbol(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 0,
+                "candidate_symbol": "AP610.CZCE",
+                "candidate_symbol_ready": 1,
+                "candidate_ingress_epoch_ns": 2_000_000_000,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertIn(
+            "stage179_submit_authorization_tick_candidate_symbol_mismatch",
+            blockers,
+        )
+
+    def test_initial_open_does_not_fallback_to_global_tick_readiness(self) -> None:
+        expected = self.initial_open_validate_values()
+        self.publish_initial_open(
+            tick_watermark_evidence={
+                "all_symbols_ready": 1,
+                "expires_epoch_ns": 31_000_000_000,
+            },
+        )
+
+        blockers = self.validate(**expected)
+
+        self.assertIn(
+            "stage179_submit_authorization_tick_gate_not_ready",
+            blockers,
         )
 
     def test_v4_digest_covers_new_lane_spool_and_exact_record_fields(self) -> None:

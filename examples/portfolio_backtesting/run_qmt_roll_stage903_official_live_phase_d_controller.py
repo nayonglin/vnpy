@@ -1850,6 +1850,15 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
         "stage905_blocked_count": stage905_result.get("summary", {}).get("blocked_count", 0),
         "send_order_api_attempted_count": order_api_evidence["send_order_api_attempted_count"],
         "cancel_order_api_attempted_count": order_api_evidence["cancel_order_api_attempted_count"],
+        "native_mutation_api_attempted_count": order_api_evidence[
+            "native_mutation_api_attempted_count"
+        ],
+        "native_mutation_api_called_count": order_api_evidence[
+            "native_mutation_api_called_count"
+        ],
+        "order_api_attempted_count": order_api_evidence[
+            "order_api_attempted_count"
+        ],
         "send_order_api_called_count": order_api_evidence["send_order_api_called_count"],
         "cancel_order_api_called_count": order_api_evidence["cancel_order_api_called_count"],
         "order_api_evidence_complete": order_api_evidence["order_api_evidence_complete"],

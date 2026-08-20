@@ -20,9 +20,16 @@ from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_VERSION,
 )
 from qmt_roll_official_live_phase_d_config import (
+    CONTROLLER_HEARTBEAT_PATH,
     KILL_SWITCH_PATH,
     PHASE_D_CONFIRM_TEXT,
     PHASE_D_REAL_ENABLED_ENV,
+    build_phase_d_config,
+)
+from run_qmt_roll_stage945_official_live_production_session_launcher import (
+    ProductionSessionLaunchError,
+    _validate_code_qualification,
+    _validate_release_and_receipt,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
 
@@ -30,7 +37,7 @@ from run_qmt_alignment_backtest import OUTPUT_DIR
 MODEL_TAG = "stage927_official_live_real_submit_arming_gate_v1"
 OUTPUT_PREFIX = "qmt_roll_stage927_official_live_real_submit_arming_gate"
 CURRENT_C9_FAMILY_VERSION = "stage819_c9_intraday_stop_retry"
-SCOPE_CAPABILITY_SCHEMA_VERSION = 1
+SCOPE_CAPABILITY_SCHEMA_VERSION = 2
 _SHA256_HEX_LENGTH = 64
 
 _SCOPE_COMMON_REQUIRED_CHECKS = (
@@ -106,6 +113,67 @@ def _read_json(path: Path | None) -> dict[str, Any]:
         return {"_read_error": repr(exc)}
 
 
+def _age_seconds(value: Any) -> float | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        generated_at = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    now = datetime.now(tz=generated_at.tzinfo) if generated_at.tzinfo else datetime.now()
+    return round((now - generated_at).total_seconds(), 3)
+
+
+def _load_production_authority(
+    *,
+    release_manifest: Path,
+    activation_receipt: Path,
+    qualification_evidence: Path,
+    runtime_root: Path,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    raw_payloads = {
+        "release_manifest": _read_json(release_manifest),
+        "activation_receipt": _read_json(activation_receipt),
+        "production_qualification": _read_json(qualification_evidence),
+    }
+    try:
+        manifest = _validate_release_and_receipt(
+            release_manifest=release_manifest,
+            activation_receipt=activation_receipt,
+            runtime_root=runtime_root,
+        )
+        qualification = _validate_code_qualification(
+            manifest=manifest,
+            qualification_evidence=qualification_evidence,
+        )
+    except (ProductionSessionLaunchError, OSError, ValueError) as exc:
+        return (
+            {
+                "authority_status": "production_authority_blocked_fail_closed",
+                "blocker": f"{type(exc).__name__}:{exc}",
+                "order_api_called_count": None,
+            },
+            raw_payloads,
+        )
+    return (
+        {
+            "authority_status": "production_authority_validated",
+            "official_live_version": OFFICIAL_LIVE_VERSION,
+            "official_live_alias": OFFICIAL_LIVE_ALIAS,
+            "execution_profile": C9_15W_PROFILE.profile_key,
+            "capital": OFFICIAL_LIVE_CAPITAL,
+            "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
+            "source_commit": manifest.get("source_commit"),
+            "tree_fingerprint": manifest.get("tree_fingerprint"),
+            "manifest_sha256": manifest.get("manifest_sha256"),
+            "qualification_evidence_sha256": qualification.get("evidence_sha256"),
+            "order_api_called_count": 0,
+        },
+        raw_payloads,
+    )
+
+
 def _to_int(value: Any, default: int = -1) -> int:
     number = pd.to_numeric(value, errors="coerce")
     if pd.isna(number):
@@ -162,14 +230,10 @@ def _strict_source_order_api_zero(
     required_sources = [
         "stage903",
         "stage906",
-        "stage910",
-        "stage912",
-        "stage913",
-        "stage916",
-        "stage921",
+        "controller_heartbeat",
+        "production_authority",
         "stage923",
         "stage924",
-        "stage926",
     ]
     if not account_recovery_not_required:
         required_sources.append("stage925")
@@ -189,14 +253,9 @@ def _scope_identity_observed(
     identity_sources = [
         "stage903",
         "stage906",
-        "stage910",
-        "stage912",
-        "stage913",
-        "stage916",
-        "stage921",
+        "production_authority",
         "stage923",
         "stage924",
-        "stage926",
     ]
     if not account_recovery_not_required:
         identity_sources.append("stage925")
@@ -702,7 +761,7 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
             "## Notes",
             "",
             "- Stage927 is a read-only arming gate. It does not connect CTP, refresh data, submit, or cancel orders.",
-            "- Stage912 may pass while fail-closed. Stage927 requires completion, reconciliation, incident, recovery, scheduler, heartbeat, and static-boundary evidence before live arming.",
+            "- Static and one-time engineering evidence comes from the source-commit-bound production qualification and activation chain; dynamic controller, reconciliation, incident, recovery, heartbeat, broker, tick, and order evidence remains mandatory per cycle.",
             "- Even with all evidence green, live submit still requires the real-submit env switch and the exact confirmation text.",
             "- Scope capability is not an order authorization. Stage902, the exact durable spool candidate, broker generation/account/position, and the final tick/price boundary must all be revalidated downstream.",
             "- Reduce-close capability may ignore only current ready-intent absence and a transient shadow reconciliation mismatch; it still requires a complete production-live broker account/position query bundle.",
@@ -716,6 +775,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live Phase D real-submit arming gate.")
     parser.add_argument("--target-date", required=True)
     parser.add_argument("--confirm-live-real", default="")
+    parser.add_argument("--release-manifest", default="")
+    parser.add_argument("--activation-receipt", default="")
+    parser.add_argument("--production-qualification-evidence", default="")
+    parser.add_argument("--stage179-runtime-root", default="")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -723,11 +786,7 @@ def main() -> None:
 
     source_paths: dict[str, Path | None] = {
         "stage903": _latest("qmt_roll_stage903_official_live_phase_d_controller_summary_*_stage903_official_live_phase_d_controller_v1.json"),
-        "stage910": _latest("qmt_roll_stage910_official_live_phase_d_health_check_summary_*_stage910_official_live_phase_d_health_check_v1.json"),
-        "stage912": _latest("qmt_roll_stage912_official_live_phase_d_acceptance_suite_summary_*_stage912_official_live_phase_d_acceptance_suite_v1.json"),
-        "stage913": _latest("qmt_roll_stage913_official_live_phase_d_completion_audit_summary_*_stage913_official_live_phase_d_completion_audit_v1.json"),
-        "stage916": _latest("qmt_roll_stage916_official_live_order_boundary_static_audit_summary_*_stage916_official_live_order_boundary_static_audit_v1.json"),
-        "stage921": _latest("qmt_roll_stage921_official_live_scheduler_audit_summary_*_stage921_official_live_scheduler_audit_v1.json"),
+        "controller_heartbeat": CONTROLLER_HEARTBEAT_PATH,
         "stage906": _target_summary(
             "qmt_roll_stage906_official_live_reconciliation_worker",
             args.target_date,
@@ -748,23 +807,39 @@ def main() -> None:
             args.target_date,
             "stage925_official_live_account_recovery_ack_suite_v1",
         ),
-        "stage926": _latest("qmt_roll_stage926_official_live_aligned_idle_integration_summary_*_stage926_official_live_aligned_idle_integration_v1.json"),
         "stage932": _latest("qmt_roll_stage932_official_live_ctp_smoke_order_summary_*_stage932_official_live_ctp_smoke_order_v1.json"),
         "kill_switch": KILL_SWITCH_PATH if KILL_SWITCH_PATH.exists() else None,
+        "release_manifest": Path(args.release_manifest) if args.release_manifest else None,
+        "activation_receipt": Path(args.activation_receipt) if args.activation_receipt else None,
+        "production_qualification": (
+            Path(args.production_qualification_evidence)
+            if args.production_qualification_evidence
+            else None
+        ),
     }
     payloads = {name: _read_json(path) for name, path in source_paths.items()}
 
+    authority, authority_payloads = _load_production_authority(
+        release_manifest=Path(args.release_manifest or "__missing_release_manifest__"),
+        activation_receipt=Path(args.activation_receipt or "__missing_activation_receipt__"),
+        qualification_evidence=Path(
+            args.production_qualification_evidence
+            or "__missing_production_qualification__"
+        ),
+        runtime_root=Path(args.stage179_runtime_root or "__missing_runtime_root__"),
+    )
+    payloads.update(authority_payloads)
+    payloads["production_authority"] = authority
+    source_paths["production_authority"] = source_paths.get(
+        "production_qualification"
+    )
+
     stage903 = payloads["stage903"]
     stage906 = payloads["stage906"]
-    stage910 = payloads["stage910"]
-    stage912 = payloads["stage912"]
-    stage913 = payloads["stage913"]
-    stage916 = payloads["stage916"]
-    stage921 = payloads["stage921"]
+    controller_heartbeat = payloads["controller_heartbeat"]
     stage923 = payloads["stage923"]
     stage924 = payloads["stage924"]
     stage925 = payloads["stage925"]
-    stage926 = payloads["stage926"]
     stage932 = payloads["stage932"]
     kill_switch = payloads["kill_switch"]
     account_recovery_not_required = stage924.get("recovery_status") == "account_recovery_not_required_aligned"
@@ -779,6 +854,31 @@ def main() -> None:
         and _to_int(stage932.get("send_order_api_called_count"), -1) == 1
         and _to_int(stage932.get("cancel_order_api_called_count"), -1) == 1
         and _to_float(stage932.get("trade_volume"), -1.0) == 0.0
+    )
+    production_authority_valid = (
+        authority.get("authority_status") == "production_authority_validated"
+        and _strict_zero(authority.get("order_api_called_count"))
+    )
+    controller_heartbeat_age = _age_seconds(
+        controller_heartbeat.get("heartbeat_at")
+    )
+    max_heartbeat_age = float(
+        build_phase_d_config().hard_limits.max_heartbeat_age_seconds
+    )
+    stage903_path = source_paths.get("stage903")
+    controller_heartbeat_valid = (
+        bool(controller_heartbeat)
+        and controller_heartbeat.get("target_date") == args.target_date
+        and controller_heartbeat.get("mode") == "live-real"
+        and controller_heartbeat.get("controller_status")
+        == stage903.get("controller_status")
+        and controller_heartbeat.get("kill_switch_active") is False
+        and _strict_zero(controller_heartbeat.get("order_api_called_count"))
+        and controller_heartbeat_age is not None
+        and 0 <= controller_heartbeat_age <= max_heartbeat_age
+        and stage903_path is not None
+        and controller_heartbeat.get("summary_path")
+        == str(stage903_path.resolve())
     )
 
     rows: list[dict[str, Any]] = []
@@ -795,30 +895,22 @@ def main() -> None:
     _check(
         rows,
         check="acceptance_suite_passed_fail_closed",
-        category="acceptance",
-        passed=stage912.get("suite_status") == "phase_d_acceptance_passed_fail_closed"
-        and _to_int(stage912.get("order_api_called_count"), -1) == 0,
+        category="signed_production_authority",
+        passed=production_authority_valid,
         severity="block",
-        observed=f"status={stage912.get('suite_status', '')};order_api={stage912.get('order_api_called_count', '')}",
-        required="phase_d_acceptance_passed_fail_closed + order_api=0",
-        blocker="stage912_acceptance_not_passed",
+        observed=authority,
+        required="source-commit-bound production qualification + activation receipt + order_api=0",
+        blocker="production_qualification_authority_not_validated",
     )
     _check(
         rows,
         check="completion_audit_proven",
-        category="completion",
-        passed=stage913.get("completion_status") == "phase_d_completion_proven"
-        and _to_int(stage913.get("order_api_called_count"), -1) == 0,
+        category="signed_production_authority",
+        passed=production_authority_valid,
         severity="block",
-        observed=(
-            f"status={stage913.get('completion_status', '')};"
-            f"passed={stage913.get('passed_count', '')};"
-            f"partial={stage913.get('partial_count', '')};"
-            f"incomplete={stage913.get('incomplete_count', '')};"
-            f"order_api={stage913.get('order_api_called_count', '')}"
-        ),
-        required="phase_d_completion_proven + no partial/incomplete requirements + order_api=0",
-        blocker="phase_d_completion_not_proven",
+        observed=authority,
+        required="validated immutable manifest/qualification/activation chain",
+        blocker="production_completion_authority_not_validated",
     )
     _check(
         rows,
@@ -878,48 +970,36 @@ def main() -> None:
         rows,
         check="health_alive",
         category="health",
-        passed=stage910.get("health_status") in {"controller_alive_fail_closed", "controller_alive_ready"}
-        and _to_int(stage910.get("order_api_called_count"), -1) == 0,
+        passed=controller_heartbeat_valid,
         severity="block",
         observed=(
-            f"health={stage910.get('health_status', '')};"
-            f"controller={stage910.get('controller_status', '')};"
-            f"age={stage910.get('heartbeat_age_seconds', '')};"
-            f"order_api={stage910.get('order_api_called_count', '')}"
+            f"controller={controller_heartbeat.get('controller_status', '')};"
+            f"mode={controller_heartbeat.get('mode', '')};"
+            f"age={controller_heartbeat_age};"
+            f"order_api={controller_heartbeat.get('order_api_called_count', '')}"
         ),
-        required="controller alive health status + order_api=0",
-        blocker="health_not_alive",
+        required="fresh same-target live-real controller heartbeat + exact summary path + order_api=0",
+        blocker="controller_heartbeat_not_current_or_bound",
     )
     _check(
         rows,
         check="static_order_boundary_passed",
-        category="order_boundary",
-        passed=stage916.get("static_audit_status") == "phase_d_order_boundary_static_audit_passed"
-        and _to_int(stage916.get("disallowed_reference_count"), -1) == 0
-        and _to_int(stage916.get("order_api_called_count"), -1) == 0,
+        category="signed_production_authority",
+        passed=production_authority_valid,
         severity="block",
-        observed=(
-            f"status={stage916.get('static_audit_status', '')};"
-            f"disallowed={stage916.get('disallowed_reference_count', '')};"
-            f"order_api={stage916.get('order_api_called_count', '')}"
-        ),
-        required="static audit passed + disallowed=0 + order_api=0",
-        blocker="static_order_boundary_not_passed",
+        observed=authority,
+        required="qualified source tree includes required static order-boundary tests",
+        blocker="production_static_authority_not_validated",
     )
     _check(
         rows,
         check="scheduler_dynamic_target_ready",
-        category="scheduler",
-        passed=stage921.get("scheduler_status") == "scheduler_template_dynamic_target_ready_fail_closed"
-        and _to_int(stage921.get("order_api_called_count"), -1) == 0,
+        category="signed_production_authority",
+        passed=production_authority_valid,
         severity="block",
-        observed=(
-            f"status={stage921.get('scheduler_status', '')};"
-            f"target_mode={stage921.get('target_date_mode', '')};"
-            f"order_api={stage921.get('order_api_called_count', '')}"
-        ),
-        required="dynamic latest-completed scheduler template ready + order_api=0",
-        blocker="scheduler_not_dynamic_ready",
+        observed=authority,
+        required="Stage948-qualified production scheduler and launchd tests",
+        blocker="production_scheduler_authority_not_validated",
     )
     _check(
         rows,
@@ -988,18 +1068,12 @@ def main() -> None:
     _check(
         rows,
         check="aligned_idle_integration_passed",
-        category="integration",
-        passed=stage926.get("idle_integration_status") == "aligned_idle_no_action_passed_fail_closed"
-        and _to_int(stage926.get("real_snapshot_restored"), -1) == 1
-        and _to_int(stage926.get("order_api_called_count"), -1) == 0,
+        category="signed_production_authority",
+        passed=production_authority_valid,
         severity="block",
-        observed=(
-            f"status={stage926.get('idle_integration_status', '')};"
-            f"restored={stage926.get('real_snapshot_restored', '')};"
-            f"order_api={stage926.get('order_api_called_count', '')}"
-        ),
-        required="aligned idle integration proof passed + restored=1 + order_api=0",
-        blocker="aligned_idle_integration_not_passed",
+        observed=authority,
+        required="qualified aligned-idle regression bound to current source commit",
+        blocker="production_integration_authority_not_validated",
     )
     _check(
         rows,
@@ -1068,15 +1142,11 @@ def main() -> None:
     order_api_called = max(
         _to_int(stage903.get("order_api_called_count"), 0),
         _to_int(stage906.get("order_api_called_count"), 0),
-        _to_int(stage910.get("order_api_called_count"), 0),
-        _to_int(stage912.get("order_api_called_count"), 0),
-        _to_int(stage913.get("order_api_called_count"), 0),
-        _to_int(stage916.get("order_api_called_count"), 0),
-        _to_int(stage921.get("order_api_called_count"), 0),
+        _to_int(controller_heartbeat.get("order_api_called_count"), 0),
+        _to_int(authority.get("order_api_called_count"), 0),
         _to_int(stage923.get("order_api_called_count"), 0),
         _to_int(stage924.get("order_api_called_count"), 0),
         _to_int(stage925.get("order_api_called_count"), 0),
-        _to_int(stage926.get("order_api_called_count"), 0),
     )
     scope_evidence_inputs, scope_capabilities, scope_evidence_digest = (
         _build_scope_capabilities(

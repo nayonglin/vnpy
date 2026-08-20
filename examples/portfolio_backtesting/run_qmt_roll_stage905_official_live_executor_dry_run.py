@@ -1410,6 +1410,10 @@ def _validate_intent(
 
     if force_skip_reason:
         reasons.append(force_skip_reason)
+    if offset_text == "open" and _clean(
+        stage904_summary.get("signal_snapshot_error")
+    ):
+        reasons.append("stage904_signal_snapshot_invalid_for_open")
     if offset_text == "open" and manual_migration_blocked:
         reasons.append("stage904_manual_migration_blocker")
     stage902_blocking_for_intent = stage902_reduce_close_blocking if offset_text == "close" else stage902_blocking
@@ -1817,7 +1821,10 @@ def run_executor_dry_run(
         stage260_decisions = stage260_decisions.copy(deep=True)
 
     pending_intents = []
-    if include_stage901_pending:
+    signal_snapshot_error = _clean(
+        stage904_summary_data.get("signal_snapshot_error")
+    )
+    if include_stage901_pending and not signal_snapshot_error:
         pending_intents = _suppress_stage901_pending_after_stop_close(
             _pending_order_intents(
                 pending_orders,
@@ -1909,6 +1916,7 @@ def run_executor_dry_run(
         "input_blockers": list(stage904_batch_blockers),
         "send_order_api_called_count": send_count,
         "cancel_order_api_called_count": cancel_count,
+        "order_api_called_count": send_count + cancel_count,
         "stage902_overall_status": stage902_summary.get("overall_status", ""),
         "stage260_executable_count": stage260_summary.get("executable_count", 0),
         "execution_ledger_rows": int(len(execution_ledger_rows)),

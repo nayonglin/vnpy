@@ -59,6 +59,11 @@ class TdReadinessLease:
     issued_epoch_ns: int
     expires_epoch_ns: int
     last_complete_startup_bundle_epoch_ns: int
+    service_kind: str = ""
+    send_order_api_called_count: int = 0
+    cancel_order_api_called_count: int = 0
+    order_api_called_count: int = 0
+    order_api_evidence_complete: int = 0
 
 
 @dataclass(frozen=True, slots=True)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 import copy
 import json
 import os
@@ -230,6 +231,15 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
 
             with (
                 patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(
+                    stage904,
+                    "_load_monitor_signal_snapshot",
+                    return_value=SimpleNamespace(
+                        official_summary={"analysis_end": self.target_date},
+                        current_positions=pd.DataFrame(),
+                        entry_risk=pd.DataFrame(),
+                    ),
+                ),
                 patch.object(stage904, "_read_json", side_effect=fake_json),
                 patch.object(stage904, "_read_csv_maybe", return_value=pd.DataFrame()),
                 patch.object(stage904, "read_execution_ledger", return_value=[]),
@@ -509,6 +519,15 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
 
             with (
                 patch.object(stage904, "OUTPUT_DIR", root),
+                patch.object(
+                    stage904,
+                    "_load_monitor_signal_snapshot",
+                    return_value=SimpleNamespace(
+                        official_summary={"analysis_end": self.target_date},
+                        current_positions=pd.DataFrame(),
+                        entry_risk=pd.DataFrame(),
+                    ),
+                ),
                 patch.object(stage904, "_read_json", side_effect=fake_json),
                 patch.object(
                     stage904,
@@ -849,6 +868,113 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         state = store["states"][action["root_position_id"]]
         self.assertEqual("initial_stop_latched", state["phase"])
         return store, state, action
+
+    def run_with_invalid_signal_snapshot(
+        self,
+        *,
+        store: dict | None = None,
+    ) -> tuple[stage904.Stage904RunResult, dict]:
+        heartbeat = self.v1_heartbeat(
+            sequence=1,
+            first_buffered=1,
+            evicted_through=0,
+        )
+        readonly_summary, broker_positions = self.readonly_position(2.0)
+        ticks = self.ticks([(1, 1252.0)])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch.object(stage904, "OUTPUT_DIR", root):
+                paths = stage904._paths(self.target_date)
+                if store is not None:
+                    stage904._save_state_store(paths["state_json"], store)
+
+                def fake_json(path: Path) -> dict:
+                    if path == stage904.OFFICIAL_LIVE_SUMMARY_PATH:
+                        return {"analysis_end": self.target_date}
+                    if path == stage904.READONLY_SUMMARY_PATH:
+                        return readonly_summary
+                    if path == stage904.TICK_STREAM_HEARTBEAT_PATH:
+                        return heartbeat
+                    return {}
+
+                with (
+                    patch.object(
+                        stage904,
+                        "_load_monitor_signal_snapshot",
+                        side_effect=ValueError(
+                            "pending_artifact_entry_risk_sha256_mismatch"
+                        ),
+                    ),
+                    patch.object(stage904, "_read_json", side_effect=fake_json),
+                    patch.object(
+                        stage904,
+                        "_read_csv_maybe",
+                        side_effect=lambda path, **_: (
+                            broker_positions
+                            if path == stage904.READONLY_POSITIONS_PATH
+                            else pd.DataFrame()
+                        ),
+                    ),
+                    patch.object(stage904, "read_execution_ledger", return_value=[]),
+                    patch.object(
+                        stage904,
+                        "_read_committed_tick_snapshot",
+                        return_value=(ticks, heartbeat, ""),
+                    ),
+                    patch.object(
+                        stage904,
+                        "_monitor_positions",
+                        return_value=pd.DataFrame(),
+                    ),
+                ):
+                    result = stage904.run_intraday_monitor(
+                        target_date=self.target_date,
+                        write_compat_outputs=False,
+                    )
+                    recovered = stage904._load_state_store(
+                        result.paths["state_json"],
+                        self.target_date,
+                        journal_path=result.paths["state_journal"],
+                    )
+                    return result, recovered
+
+    def test_invalid_signal_snapshot_preserves_existing_protective_close(self) -> None:
+        store, stopped_state, stopped_action = self.initial_stop_store()
+        before = stage904._canonical_json(store["states"])
+
+        result, recovered = self.run_with_invalid_signal_snapshot(store=store)
+
+        self.assertEqual("intraday_monitor_blocked", result.summary["monitor_status"])
+        self.assertIn(
+            "pending_artifact_entry_risk_sha256_mismatch",
+            result.summary["signal_snapshot_error"],
+        )
+        self.assertEqual(1, result.summary["close_dry_run_count"])
+        self.assertEqual(0, result.summary["retry_open_dry_run_count"])
+        self.assertEqual(0, result.summary["order_api_called_count"])
+        self.assertEqual(1, len(result.actions))
+        action = result.actions.iloc[0].to_dict()
+        self.assertEqual("close_dry_run", action["monitor_action"])
+        self.assertEqual(stopped_action["action_id"], action["action_id"])
+        self.assertEqual(INITIAL_STOP_ACTION_ROLE, action["intent_role"])
+        self.assertEqual(before, stage904._canonical_json(recovered["states"]))
+        self.assertEqual(
+            "initial_stop_latched",
+            recovered["states"][stopped_state["root_position_id"]]["phase"],
+        )
+
+    def test_invalid_signal_snapshot_without_state_is_explicitly_blocked(self) -> None:
+        result, _ = self.run_with_invalid_signal_snapshot()
+
+        self.assertEqual("intraday_monitor_blocked", result.summary["monitor_status"])
+        self.assertIn(
+            "pending_artifact_entry_risk_sha256_mismatch",
+            result.summary["signal_snapshot_error"],
+        )
+        self.assertEqual(0, result.summary["action_count"])
+        self.assertEqual(0, result.summary["retry_open_dry_run_count"])
+        self.assertEqual(0, result.summary["order_api_called_count"])
 
     def run_late_close_advance(
         self,
@@ -2058,6 +2184,82 @@ class Stage904DurableStateIntegrationTest(unittest.TestCase):
         self.assertEqual("block", base["monitor_action"])
         self.assertEqual(0, base["broker_epoch_reconstruction_complete"])
         self.assertIn("trades_count_or_hash_mismatch", base["monitor_reason"])
+
+    def test_manual_jm_and_si_fills_use_strategy_risk_for_exact_05r_thresholds(self) -> None:
+        generation = "11111111-2222-4333-8444-555555555555"
+        summary, manifest, evidence = self.complete_query_bundle(
+            trade_count=1,
+            generation=generation,
+        )
+        cases = (
+            ("JM2609.DCE", 1367.5, 1354.5, 2.0, 1361.0, 1374.0),
+            ("SI2609.GFEX", 8590.0, 8615.0, 6.0, 8577.5, 8602.5),
+        )
+        for index, (
+            vt_symbol,
+            fill_price,
+            strategy_stop,
+            volume,
+            expected_stop,
+            expected_progress,
+        ) in enumerate(cases, start=1):
+            with self.subTest(vt_symbol=vt_symbol):
+                broker_trades = pd.DataFrame(
+                    [
+                        {
+                            "query_generation_uuid": generation,
+                            "vt_symbol": vt_symbol,
+                            "vt_orderid": f"CTP.1_2_{index}",
+                            "order_mapping_complete": 1,
+                            "broker_trade_identity": (
+                                f"ctp:9999:test:LIVE:SYS-{index}:T-{index}"
+                            ),
+                            "stable_trade_identity_complete": 1,
+                            "direction": "long",
+                            "offset": "open",
+                            "price": fill_price,
+                            "volume": volume,
+                            "datetime": self.iso(self.entry_at),
+                        }
+                    ]
+                )
+                ticks = self.ticks([(1, fill_price)])
+                ticks["vt_symbol"] = vt_symbol
+                action = stage904._action_for_position(
+                    {
+                        "vt_symbol": vt_symbol,
+                        "direction": "long",
+                        "volume": volume,
+                        "position_source": "broker",
+                    },
+                    trades=pd.DataFrame(),
+                    broker_trades=broker_trades,
+                    execution_ledger_rows=[],
+                    entry_risk=pd.DataFrame(
+                        [
+                            {
+                                "date": self.target_date,
+                                "contract_vt_symbol": vt_symbol,
+                                "direction": "long",
+                                "stop_price": strategy_stop,
+                            }
+                        ]
+                    ),
+                    ticks=ticks,
+                    target_date=self.target_date,
+                    max_tick_age_seconds=30,
+                    require_broker_fill_price=True,
+                    readonly_summary=summary,
+                    readonly_bundle_manifest=manifest,
+                    readonly_bundle_evidence=evidence,
+                )
+
+                self.assertEqual(1, action["broker_epoch_reconstruction_complete"])
+                self.assertEqual(fill_price, action["fill_price"])
+                self.assertEqual("readonly_broker_current_epoch_fifo_weighted_avg", action["fill_price_source"])
+                self.assertEqual(expected_stop, action["stage847_stop_price"])
+                self.assertEqual(expected_progress, action["stage847_progress_price"])
+                self.assertEqual(1, action["entry_day_active"])
 
     def test_live_real_shadow_candidate_uses_exact_partial_ledger_fill_volume(self) -> None:
         root = stage904.generate_root_position_id(

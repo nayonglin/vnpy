@@ -23,6 +23,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930
+import run_qmt_roll_stage927_official_live_real_submit_arming_gate as stage927
 import run_qmt_roll_stage929_official_live_15w_timed_cycle as stage929
 import run_qmt_roll_stage904_official_live_c9_intraday_monitor as stage904
 import run_ctp_stage608_readonly_tick_snapshot_probe as stage608
@@ -71,6 +72,241 @@ class _LongLivedController:
 
 
 class Stage930FastLaneTest(unittest.TestCase):
+    @staticmethod
+    def stage927_authority(**permits: int) -> dict[str, object]:
+        permit_values = {
+            "reduce_close_submit_permitted": 0,
+            "retry_open_submit_permitted": 0,
+            "initial_open_submit_permitted": 0,
+            **permits,
+        }
+        scope_inputs = {"schema_version": stage927.SCOPE_CAPABILITY_SCHEMA_VERSION}
+        scope_capabilities = {
+            "reduce_close": {
+                "permit_field": "reduce_close_submit_permitted",
+                "permitted": permit_values["reduce_close_submit_permitted"],
+            },
+            "retry_open": {
+                "permit_field": "retry_open_submit_permitted",
+                "permitted": permit_values["retry_open_submit_permitted"],
+            },
+            "initial_open": {
+                "permit_field": "initial_open_submit_permitted",
+                "permitted": permit_values["initial_open_submit_permitted"],
+            },
+        }
+        digest = stage930._canonical_json_digest(
+            {
+                "scope_evidence_inputs": scope_inputs,
+                "scope_capabilities": scope_capabilities,
+            }
+        )
+        return {
+            "scope_capability_schema_version": stage927.SCOPE_CAPABILITY_SCHEMA_VERSION,
+            "scope_evidence_inputs": scope_inputs,
+            "scope_capabilities": scope_capabilities,
+            "scope_evidence_digest": digest,
+            **permit_values,
+        }
+
+    def test_stage927_receives_exact_signed_production_authority_paths(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with (
+            patch.object(stage930, "_run_command", return_value={"exit_code": 0}) as run,
+            patch.object(stage930, "_read_json", return_value={}),
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ),
+        ):
+            stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        command = run.call_args.args[0]
+        self.assertEqual(
+            "/private/release.json",
+            command[command.index("--release-manifest") + 1],
+        )
+        self.assertEqual(
+            "/private/receipt.json",
+            command[command.index("--activation-receipt") + 1],
+        )
+        self.assertEqual(
+            "/private/qualification.json",
+            command[command.index("--production-qualification-evidence") + 1],
+        )
+        self.assertEqual(
+            "/private/runtime",
+            command[command.index("--stage179-runtime-root") + 1],
+        )
+
+    def test_stage927_revalidation_disables_fast_lane_submit(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="stream",
+        )
+        with (
+            patch.object(
+                stage930,
+                "_run_command_with_fast_lane",
+                return_value={"exit_code": 2, "timed_out": 0},
+            ) as run,
+            patch.object(stage930, "_read_json", return_value={}),
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ) as revoke,
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        self.assertFalse(run.call_args.kwargs["submit_reduce_close"])
+        revoke.assert_called_once_with(args, "stage927_authority_revalidation")
+        self.assertEqual({}, result["summary"])
+        self.assertEqual("stage927_invocation_failed", result["summary_blocker"])
+
+    def test_persistent_fast_lane_honors_submit_disabled_during_revalidation(self) -> None:
+        args = self.args()
+        args.detector_mode = "persistent"
+        with patch.object(
+            stage930,
+            "_persistent_detector_fast_lane_status",
+            return_value={"order_api_called_count": 0},
+        ) as persistent:
+            stage930._run_fast_intraday_lane(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/unused.log")},
+                submit_reduce_close=False,
+            )
+
+        self.assertFalse(persistent.call_args.kwargs["submit_enabled"])
+
+    def test_stage927_failed_invocation_never_reuses_old_summary(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        old_summary = {
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            **self.stage927_authority(reduce_close_submit_permitted=1),
+        }
+        with (
+            patch.object(
+                stage930,
+                "_run_command",
+                return_value={"exit_code": 1, "timed_out": 0},
+            ),
+            patch.object(stage930, "_read_json", return_value=old_summary) as read,
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 1, "preserved": 0},
+            ),
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        read.assert_not_called()
+        self.assertEqual({}, result["summary"])
+        self.assertEqual("stage927_invocation_failed", result["summary_blocker"])
+
+    def test_stage927_accepts_only_summary_written_by_current_invocation(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            summary_path = Path(directory) / "stage927.json"
+            summary = {
+                "model_tag": "stage927_official_live_real_submit_arming_gate_v1",
+                "target_date": "2026-08-17",
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                **self.stage927_authority(reduce_close_submit_permitted=1),
+            }
+
+            def run_current(*_args: object, **_kwargs: object) -> dict[str, int]:
+                summary_path.write_text(json.dumps(summary), encoding="utf-8")
+                return {"exit_code": 0, "timed_out": 0}
+
+            with (
+                patch.object(stage930, "_run_command", side_effect=run_current),
+                patch.object(stage930, "_stage927_summary_path", return_value=summary_path),
+                patch.object(
+                    stage930,
+                    "_revoke_stage931_submit_authorization",
+                    return_value={"revoked": 1, "preserved": 0},
+                ),
+            ):
+                result = stage930._run_stage927(
+                    args,
+                    "2026-08-17",
+                    {"command_log": Path(directory) / "command.log"},
+                )
+
+        self.assertEqual("", result["summary_blocker"], result)
+        self.assertEqual(1, result["summary"]["reduce_close_submit_permitted"])
+
+    def test_stage927_revalidation_blocks_when_old_authorization_is_inflight(self) -> None:
+        args = SimpleNamespace(
+            confirm_live_real="exact-confirm",
+            release_manifest="/private/release.json",
+            activation_receipt="/private/receipt.json",
+            production_qualification_evidence="/private/qualification.json",
+            stage179_runtime_root="/private/runtime",
+            tick_refresh_mode="skip",
+        )
+        with (
+            patch.object(
+                stage930,
+                "_revoke_stage931_submit_authorization",
+                return_value={"revoked": 0, "preserved": 1},
+            ),
+            patch.object(stage930, "_run_command") as run,
+        ):
+            result = stage930._run_stage927(
+                args,
+                "2026-08-17",
+                {"command_log": Path("/tmp/stage927-command.log")},
+            )
+
+        run.assert_not_called()
+        self.assertEqual({}, result["summary"])
+        self.assertEqual(
+            "stage927_prior_authorization_not_revoked",
+            result["summary_blocker"],
+        )
+
     def test_unknown_open_source_role_has_no_authorization_scope(self) -> None:
         self.assertEqual(
             ("", ""),
@@ -171,6 +407,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         source: str = "stage901_pending_order",
         intent_role: str = "c9_initial_open",
         target_date: str = "2026-07-16",
+        vt_symbol: str = "JM609.DCE",
     ) -> SimpleNamespace:
         return SimpleNamespace(
             intent_id=intent_id,
@@ -180,13 +417,14 @@ class Stage930FastLaneTest(unittest.TestCase):
             trace_id=f"trace-{intent_id}",
             target_date=target_date,
             source=source,
-            vt_symbol="JM609.DCE",
+            vt_symbol=vt_symbol,
             state_generation="epoch-1:0",
             position_epoch_id="epoch-1",
             root_position_id="root-1",
             position_cycle_id="cycle-1",
             spool_sequence=1,
             state_revision=0,
+            ingress_epoch_ns=time.time_ns(),
             deadline_epoch_ns=time.time_ns() + 20_000_000_000,
             deadline_monotonic_ns=time.monotonic_ns() + 20_000_000_000,
             clock_domain_id="test-clock",
@@ -282,7 +520,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": generated_at,
                             "real_submit_permitted": 1,
-                            "reduce_close_submit_permitted": 1,
+                            **self.stage927_authority(
+                                reduce_close_submit_permitted=1
+                            ),
                         },
                         tick_gate={"all_symbols_ready": 0},
                         service_status={
@@ -302,6 +542,40 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(1, result["authorized"], result)
         self.assertEqual("reduce_close_only", result["intent_scope"])
+
+    def test_stage927_minimal_legacy_permit_is_rejected(self) -> None:
+        blockers = stage930._stage927_scope_authority_blockers(
+            {
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "reduce_close_submit_permitted": 1,
+            },
+            scope="reduce_close_only",
+            permit_field="reduce_close_submit_permitted",
+        )
+
+        self.assertIn("stage927_scope_schema_mismatch", blockers)
+        self.assertIn("stage927_scope_evidence_digest_invalid", blockers)
+
+    def test_stage927_digest_or_top_level_permit_tamper_is_rejected(self) -> None:
+        authority = self.stage927_authority(retry_open_submit_permitted=1)
+        authority["retry_open_submit_permitted"] = 0
+        blockers = stage930._stage927_scope_authority_blockers(
+            authority,
+            scope="retry_open_only",
+            permit_field="retry_open_submit_permitted",
+        )
+
+        self.assertIn("stage927_retry_open_top_level_permit_mismatch", blockers)
+        self.assertIn("stage927_retry_open_submit_permitted_not_ready", blockers)
+
+        authority = self.stage927_authority(retry_open_submit_permitted=1)
+        authority["scope_capabilities"]["retry_open"]["permitted"] = 0
+        blockers = stage930._stage927_scope_authority_blockers(
+            authority,
+            scope="retry_open_only",
+            permit_field="retry_open_submit_permitted",
+        )
+        self.assertIn("stage927_scope_evidence_digest_invalid", blockers)
 
     def test_parser_defaults_to_legacy_detector_mode(self) -> None:
         args = stage930._build_parser().parse_args([])
@@ -390,6 +664,48 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertIsNone(result)
 
+    def test_candidate_tick_ingress_uses_exact_symbol_not_global_max(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
+                "transport_ready": 1,
+                "stream_ready": 0,
+                "all_symbols_ready": 0,
+                "heartbeat_pid_matches_process": 1,
+                "symbol_tick_freshness": {
+                    "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+                },
+                "summary": {
+                    "symbol_tick_watermarks": {
+                        "AP610.CZCE": {"ingress_epoch_ns": 900},
+                        "jm2609.DCE": {"ingress_epoch_ns": 500},
+                    },
+                },
+            },
+            candidate_symbol="jm2609.DCE",
+        )
+
+        self.assertEqual(500, result)
+
+    def test_candidate_tick_ingress_rejects_blocked_exact_symbol(self) -> None:
+        result = stage930._tick_result_ingress_epoch_ns(
+            {
+                "transport_ready": 1,
+                "heartbeat_pid_matches_process": 1,
+                "symbol_tick_freshness": {
+                    "blocked_new_risk_symbols": ["jm2609.DCE"],
+                },
+                "summary": {
+                    "symbol_tick_watermarks": {
+                        "jm2609.DCE": {"ingress_epoch_ns": 500},
+                    },
+                },
+            },
+            candidate_symbol="jm2609.DCE",
+        )
+
+        self.assertIsNone(result)
+
     def test_no_submit_prewarm_counters_are_bound_to_readiness(self) -> None:
         evidence = stage930._no_submit_prewarm_order_evidence(
             {
@@ -413,6 +729,36 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(1, evidence["complete"])
         self.assertEqual(0, evidence["send_order_api_called_count"])
         self.assertEqual(0, forged["complete"])
+
+    def test_live_warm_counters_are_bound_to_readiness(self) -> None:
+        evidence = stage930._live_warm_order_evidence(
+            {
+                "service_kind": "warm_live_executor",
+                "service_generation": "service-1",
+                "send_order_api_called_count": 2,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 2,
+                "order_api_evidence_complete": 1,
+            }
+        )
+        forged = stage930._live_warm_order_evidence(
+            {
+                "service_kind": "warm_live_executor",
+                "service_generation": "service-1",
+                "send_order_api_called_count": 2,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+                "order_api_evidence_complete": 1,
+            }
+        )
+
+        self.assertEqual(1, evidence["complete"])
+        self.assertEqual(2, evidence["order_api_called_count"])
+        self.assertEqual(0, forged["complete"])
+        self.assertIn(
+            "order_api_called_count_inconsistent",
+            forged["missing_fields"],
+        )
 
     def test_readonly_qualification_cycle_keeps_latest_complete_snapshot(self) -> None:
         ready = {
@@ -1263,6 +1609,182 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertEqual(1, cycle["stage931"]["wake_socket_notified"])
         self.assertEqual(1, cycle["stage931"]["submit_authorization"]["authorized"])
 
+    def test_warm_cycle_does_not_sum_repeated_stage931_cumulative_counts(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.stage179_execution_mode = "warm"
+        args.runtime_profile = "simnow"
+        args.stage179_runtime_root = ""
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "summary": {
+                "target_date": "2026-07-16",
+                "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                "stage905_executor_status": "executor_dry_run_ready",
+                "stage905_blocked_count": 0,
+                "stage905_ready_count": 1,
+                "stage904_retry_open_dry_run_count": 0,
+                "order_api_called_count": 0,
+            },
+            "fast_lane_send_order_api_called_count": 1,
+            "fast_lane_cancel_order_api_called_count": 1,
+            "fast_lane_order_api_called_count": 2,
+            "fast_lane_order_api_service_generation": "service-1",
+            "fast_lane_order_api_evidence_complete": 1,
+        }
+        stage927_result = {
+            "summary": {
+                **self.stage927_authority(initial_open_submit_permitted=1),
+                "order_api_called_count": 0,
+            },
+            "fast_lane_send_order_api_called_count": 1,
+            "fast_lane_cancel_order_api_called_count": 1,
+            "fast_lane_order_api_called_count": 2,
+            "fast_lane_order_api_service_generation": "service-1",
+            "fast_lane_order_api_evidence_complete": 1,
+        }
+        warm_status = {
+            "submit_status": "warm_executor_ready",
+            "exit_code": 0,
+            "summary": {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+                "order_api_evidence_complete": 1,
+            },
+        }
+        tick_gate = {
+            "refresh_status": "tick_stream_ready",
+            "all_symbols_ready": 1,
+            "symbol_tick_freshness": {"blocked_new_risk_symbols": []},
+        }
+        with (
+            patch.object(stage930, "_start_stage931_service"),
+            patch.object(stage930, "_revoke_stage931_submit_authorization"),
+            patch.object(stage930, "_market_execution_session_active", return_value=True),
+            patch.object(stage930, "_watched_symbols_for_args", return_value=["SI609.GFEX"]),
+            patch.object(stage930, "_run_tick_refresh", return_value=tick_gate),
+            patch.object(stage930, "_run_stage903", return_value=controller),
+            patch.object(stage930, "_run_stage927", return_value=stage927_result),
+            patch.object(stage930, "_managed_tick_stream_status", return_value=tick_gate),
+            patch.object(
+                stage930,
+                "_spool_authorization_snapshot",
+                return_value=self.spool_snapshot(self.spool_candidate(vt_symbol="SI609.GFEX")),
+            ),
+            patch.object(stage930, "_ready_intents_close_only", return_value=False),
+            patch.object(stage930, "_ready_reduce_close_count", return_value=0),
+            patch.object(stage930, "_status_stage931_service", return_value=warm_status),
+            patch.object(
+                stage930,
+                "_publish_stage931_submit_authorization",
+                return_value={"authorized": 1},
+            ),
+            patch.object(stage930, "_wake_stage931_service", return_value=True),
+        ):
+            cycle = stage930.run_cycle(
+                args,
+                "2026-07-16",
+                {"command_log": Path("unused")},
+            )
+
+        self.assertEqual(1, cycle["send_order_api_called_count"])
+        self.assertEqual(1, cycle["cancel_order_api_called_count"])
+        self.assertEqual(2, cycle["order_api_called_count"])
+
+    def test_daemon_warm_cycle_aggregation_uses_cumulative_max(self) -> None:
+        cycles = [
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+            },
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+            },
+        ]
+
+        self.assertEqual(
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-1",
+                "order_api_generation_counts": {
+                    "service-1": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    }
+                },
+            },
+            stage930._aggregate_daemon_order_api_counts(
+                cycles,
+                stage179_execution_mode="warm",
+            ),
+        )
+
+    def test_daemon_warm_aggregation_sums_distinct_service_generations(self) -> None:
+        cycles = [
+            {
+                "send_order_api_called_count": 5,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 5,
+                "order_api_service_generation": "service-a",
+            },
+            {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 2,
+                "order_api_service_generation": "service-b",
+            },
+        ]
+
+        self.assertEqual(
+            {
+                "send_order_api_called_count": 6,
+                "cancel_order_api_called_count": 1,
+                "order_api_called_count": 7,
+                "order_api_service_generation": "multiple:2",
+                "order_api_generation_counts": {
+                    "service-a": {
+                        "send_order_api_called_count": 5,
+                        "cancel_order_api_called_count": 0,
+                        "order_api_called_count": 5,
+                    },
+                    "service-b": {
+                        "send_order_api_called_count": 1,
+                        "cancel_order_api_called_count": 1,
+                        "order_api_called_count": 2,
+                    },
+                },
+            },
+            stage930._aggregate_daemon_order_api_counts(
+                cycles,
+                stage179_execution_mode="warm",
+            ),
+        )
+
     def test_published_live_authorization_is_self_validating(self) -> None:
         args = self.args()
         args.runtime_profile = "simnow"
@@ -1334,7 +1856,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
-                            "retry_open_submit_permitted": 1,
+                            **self.stage927_authority(
+                                retry_open_submit_permitted=1
+                            ),
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -1368,6 +1892,96 @@ class Stage930FastLaneTest(unittest.TestCase):
 
         self.assertEqual(1, result["authorized"])
         self.assertEqual([], blockers)
+
+    def test_warm_authorization_binds_tick_to_fresh_open_candidate(self) -> None:
+        args = self.args()
+        args.runtime_profile = "simnow"
+        args.poll_seconds = 30
+        now_ns = time.time_ns()
+        window_expiry_ns = now_ns + 10_000_000_000
+        with tempfile.TemporaryDirectory() as directory:
+            args.stage179_runtime_root = directory
+            runtime = stage930._stage179_runtime(args)
+            stage930._STAGE931_SERVICE_RUNTIME = runtime
+            try:
+                with (
+                    patch.object(
+                        stage930,
+                        "_spool_authorization_snapshot",
+                        return_value=self.spool_snapshot(
+                            self.spool_candidate(vt_symbol="jm2609.DCE")
+                        ),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_initial_open_authorization_window",
+                        return_value=(True, window_expiry_ns, "night_open"),
+                    ),
+                    patch.object(
+                        stage930,
+                        "_read_json",
+                        return_value={"model_tag": "stage902-test-evidence"},
+                    ),
+                ):
+                    result = stage930._publish_stage931_submit_authorization(
+                        args,
+                        target_date="2026-07-16",
+                        controller_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "target_date": "2026-07-16",
+                            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+                            "stage905_executor_status": "executor_dry_run_ready",
+                            "stage905_blocked_count": 0,
+                            "stage905_ready_count": 1,
+                        },
+                        stage927_summary={
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "real_submit_permitted": 1,
+                            **self.stage927_authority(
+                                initial_open_submit_permitted=1
+                            ),
+                        },
+                        tick_gate={
+                            "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
+                            "transport_ready": 1,
+                            "stream_ready": 0,
+                            "all_symbols_ready": 0,
+                            "heartbeat_pid_matches_process": 1,
+                            "symbol_tick_freshness": {
+                                "blocked_new_risk_symbols": [
+                                    "AP610.CZCE",
+                                    "si2609.GFEX",
+                                ],
+                            },
+                            "summary": {
+                                "symbol_tick_watermarks": {
+                                    "AP610.CZCE": {
+                                        "ingress_epoch_ns": now_ns - 60_000_000_000,
+                                    },
+                                    "jm2609.DCE": {
+                                        "ingress_epoch_ns": now_ns,
+                                    },
+                                },
+                            },
+                        },
+                        service_status={
+                            "submit_status": "warm_executor_ready",
+                            "readiness": {
+                                "status": "ready",
+                                "service_generation": "service-1",
+                                "connection_generation": "connection-1",
+                                "runtime_profile": "simnow",
+                                "order_scope": "test",
+                                "expires_epoch_ns": now_ns + 3_000_000_000,
+                            },
+                        },
+                        reduce_close_only=False,
+                    )
+            finally:
+                stage930._STAGE931_SERVICE_RUNTIME = None
+
+        self.assertEqual(1, result["authorized"], result)
+        self.assertEqual("initial_open_only", result["intent_scope"])
 
     def test_stage930_authorization_excludes_intent_committed_after_publish(self) -> None:
         args = self.args()
@@ -1433,7 +2047,9 @@ class Stage930FastLaneTest(unittest.TestCase):
                         stage927_summary={
                             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "real_submit_permitted": 1,
-                            "retry_open_submit_permitted": 1,
+                            **self.stage927_authority(
+                                retry_open_submit_permitted=1
+                            ),
                         },
                         tick_gate={
                             "all_symbols_ready": 1,
@@ -1586,6 +2202,8 @@ class Stage930FastLaneTest(unittest.TestCase):
             "production_live_activation_confirmation_missing",
             blockers,
         )
+        self.assertIn("production_live_qualification_evidence_missing", blockers)
+        self.assertIn("production_live_stage179_runtime_root_missing", blockers)
 
     def test_persistent_no_submit_offline_prewarm_is_reachable(self) -> None:
         args = self.args()
@@ -2145,6 +2763,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         stage927 = {"real_submit_permitted": 1}
         tick_result = {
             "all_symbols_ready": 0,
+            "transport_ready": 1,
             "symbol_tick_freshness": {"blocked_new_risk_symbols": ["JM609.DCE"]},
         }
 
@@ -2175,10 +2794,131 @@ class Stage930FastLaneTest(unittest.TestCase):
             )
 
         self.assertTrue(
-            any(item.startswith("tick_stream_symbols_not_fresh_for_new_risk") for item in open_blockers)
+            any(item.startswith("tick_stream_candidate_not_fresh_for_new_risk") for item in open_blockers)
         )
         self.assertFalse(
-            any(item.startswith("tick_stream_symbols_not_fresh_for_new_risk") for item in close_blockers)
+            any(item.startswith("tick_stream_candidate_not_fresh_for_new_risk") for item in close_blockers)
+        )
+
+    def test_unrelated_stale_symbols_do_not_block_fresh_open_candidate(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 1,
+            "symbol_tick_freshness": {
+                "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+            },
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="jm2609.DCE")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertFalse(
+            any(item.startswith("tick_stream_") for item in blockers),
+            blockers,
+        )
+
+    def test_stale_open_candidate_remains_blocked(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 1,
+            "symbol_tick_freshness": {
+                "blocked_new_risk_symbols": ["AP610.CZCE", "si2609.GFEX"],
+            },
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="si2609.GFEX")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertIn(
+            "tick_stream_candidate_not_fresh_for_new_risk:si2609.GFEX",
+            blockers,
+        )
+
+    def test_unready_transport_blocks_open_candidate(self) -> None:
+        args = self.args()
+        args.mode = "live-real"
+        args.submit_mode = "live-real"
+        args.ai_pool_preflight_allowed = 1
+        controller = {
+            "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
+            "stage905_executor_status": "executor_dry_run_ready",
+            "stage905_blocked_count": 0,
+            "stage905_ready_count": 1,
+            "stage904_retry_open_dry_run_count": 0,
+        }
+        tick_result = {
+            "all_symbols_ready": 0,
+            "transport_ready": 0,
+            "symbol_tick_freshness": {"blocked_new_risk_symbols": []},
+        }
+
+        with patch.object(
+            stage930,
+            "_spool_authorization_snapshot",
+            return_value=self.spool_snapshot(
+                self.spool_candidate(vt_symbol="jm2609.DCE")
+            ),
+        ):
+            blockers = stage930._stage931_submit_blockers(
+                args,
+                "2026-07-16",
+                controller,
+                {"real_submit_permitted": 1},
+                1,
+                tick_result,
+            )
+
+        self.assertIn(
+            "tick_stream_transport_not_ready_for_new_risk",
+            blockers,
         )
 
     def test_run_cycle_rechecks_symbol_freshness_immediately_before_stage931(self) -> None:
@@ -2194,6 +2934,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         pre_submit_tick = {
             "refresh_status": "tick_stream_symbol_freshness_blocked_new_risk",
             "all_symbols_ready": 0,
+            "transport_ready": 1,
             "symbol_tick_freshness": {"blocked_new_risk_symbols": ["JM609.DCE"]},
         }
         controller = {
@@ -2218,6 +2959,11 @@ class Stage930FastLaneTest(unittest.TestCase):
                 return_value={"summary": {"real_submit_permitted": 1, "order_api_called_count": 0}},
             ),
             patch.object(stage930, "_managed_tick_stream_status", return_value=pre_submit_tick) as gate,
+            patch.object(
+                stage930,
+                "_spool_authorization_snapshot",
+                return_value=self.spool_snapshot(self.spool_candidate()),
+            ),
             patch.object(stage930, "_ready_intents_close_only", return_value=False),
             patch.object(stage930, "_ready_reduce_close_count", return_value=0),
             patch.object(stage930, "_run_stage931") as submit,
@@ -2233,7 +2979,7 @@ class Stage930FastLaneTest(unittest.TestCase):
         self.assertIs(cycle["pre_submit_tick_gate"], pre_submit_tick)
         self.assertTrue(
             any(
-                item.startswith("tick_stream_symbols_not_fresh_for_new_risk")
+                item.startswith("tick_stream_candidate_not_fresh_for_new_risk")
                 for item in cycle["stage931_submit_blockers"]
             )
         )

@@ -1205,6 +1205,7 @@ class Stage179ExecutorServeTest(unittest.TestCase):
                     "intent_id": "intent-1",
                     "payload_sha256": "a" * 64,
                     "intent_kind": "close",
+                    "vt_symbol": "JM609.DCE",
                     "source": "stage904_c9_intraday_close",
                     "intent_role": "c9_initial_stop_close",
                     "trace_id": "trace-1",
@@ -1574,7 +1575,88 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         self.assertEqual("sent", result.disposition)
         self.assertEqual(2, result.send_order_call_count)
         self.assertEqual(2, session.send_order_call_count)
+        readiness = session.readiness_lease(
+            now_epoch_ns=self.clock.time_ns()
+        )
+        self.assertEqual(2, readiness.send_order_api_called_count)
+        self.assertEqual(2, readiness.order_api_called_count)
+        self.assertEqual(1, readiness.order_api_evidence_complete)
         self.assertEqual(["batch-slot-1"], durable_slots)
+
+    def test_readiness_lease_reports_native_send_and_cancel_snapshot(self) -> None:
+        counts = {
+            "send_order_api_called_count": 1,
+            "cancel_order_api_called_count": 1,
+            "order_api_called_count": 2,
+            "order_api_evidence_complete": 1,
+        }
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: "CTP.1",
+            order_api_count_snapshot=lambda: dict(counts),
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+
+        readiness = session.readiness_lease(
+            now_epoch_ns=self.clock.time_ns()
+        )
+
+        self.assertEqual(1, readiness.send_order_api_called_count)
+        self.assertEqual(1, readiness.cancel_order_api_called_count)
+        self.assertEqual(2, readiness.order_api_called_count)
+        self.assertEqual(1, readiness.order_api_evidence_complete)
+
+    def test_incomplete_order_api_readiness_blocks_before_send(self) -> None:
+        sent: list[str] = []
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: sent.append("send") or "CTP.1",
+            order_api_count_snapshot=lambda: {
+                "send_order_api_called_count": 1,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 1,
+                "order_api_evidence_complete": 0,
+            },
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+        session.connect()
+        readiness = session.readiness_lease(
+            now_epoch_ns=self.clock.time_ns()
+        )
+
+        result = session.execute_with_readiness(
+            readiness=readiness,
+            lease=SimpleNamespace(
+                intent=SimpleNamespace(intent_id="intent-1")
+            ),
+            hard_deadline_monotonic=self.clock.monotonic() + 20.0,
+        )
+
+        self.assertEqual("blocked", result.disposition)
+        self.assertEqual([], sent)
+        self.assertIn(
+            "stage179_readiness_order_api_evidence_incomplete",
+            result.blockers,
+        )
 
     def test_multi_child_empty_return_is_unknown_and_does_not_retry(self) -> None:
         session = stage931.CtpExecutionSession.for_callbacks(
@@ -1742,6 +1824,11 @@ class Stage179ExecutorServeTest(unittest.TestCase):
         )
         session.connect()
         lease = session.readiness_lease(now_epoch_ns=self.clock.time_ns())
+        self.assertEqual("warm_live_executor", lease.service_kind)
+        self.assertEqual(0, lease.send_order_api_called_count)
+        self.assertEqual(0, lease.cancel_order_api_called_count)
+        self.assertEqual(0, lease.order_api_called_count)
+        self.assertEqual(1, lease.order_api_evidence_complete)
         self.clock.advance(3.0)
 
         expired = session.execute_with_readiness(

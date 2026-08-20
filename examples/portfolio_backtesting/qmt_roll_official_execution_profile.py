@@ -38,6 +38,7 @@ class OfficialExecutionProfile:
     current_positions_path: Path
     pending_orders_path: Path
     pending_orders_audit_path: Path
+    entry_risk_path: Path | None
     allowed_intent_sources: tuple[str, ...]
     intraday_stop_retry_enabled: bool
 
@@ -90,6 +91,7 @@ STAGE372_20W_PROFILE = OfficialExecutionProfile(
     current_positions_path=_STAGE372_CURRENT_POSITIONS_PATH,
     pending_orders_path=_STAGE372_PENDING_ORDERS_PATH,
     pending_orders_audit_path=_STAGE372_PENDING_ORDERS_AUDIT_PATH,
+    entry_risk_path=None,
     allowed_intent_sources=("stage260_stage372_daily",),
     intraday_stop_retry_enabled=False,
 )
@@ -117,6 +119,11 @@ C9_15W_PROFILE = OfficialExecutionProfile(
     current_positions_path=_C9_CURRENT_POSITIONS_PATH,
     pending_orders_path=_C9_PENDING_ORDERS_PATH,
     pending_orders_audit_path=_C9_PENDING_ORDERS_AUDIT_PATH,
+    entry_risk_path=(
+        SIGNAL_INPUT_DIR
+        / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_entry_risk_"
+        "stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
+    ),
     allowed_intent_sources=(
         "stage901_pending_order",
         "stage904_c9_intraday_close",
