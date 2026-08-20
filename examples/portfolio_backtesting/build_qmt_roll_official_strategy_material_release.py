@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import shutil
 import subprocess
 import tempfile
@@ -74,6 +75,17 @@ class PreparedRelease:
     staged_paths: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class MasterPublication:
+    release_id: str
+    remote: str
+    branch: str
+    previous_remote_commit: str
+    published_commit: str
+    changed_paths: tuple[str, ...]
+    status: str
+
+
 def _git(repo_root: Path, *args: str, check: bool = True) -> str:
     forbidden = {"push", "reset", "stash"}
     if args and args[0] in forbidden:
@@ -90,6 +102,76 @@ def _git(repo_root: Path, *args: str, check: bool = True) -> str:
         message = process.stderr.strip() or process.stdout.strip() or "unknown"
         raise MaterialReleaseError(f"git_command_failed:{args[0] if args else 'git'}:{message}")
     return process.stdout
+
+
+def _validate_remote_target(remote: str, branch: str) -> None:
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", remote):
+        raise MaterialReleaseError("publish_remote_invalid")
+    if branch != "master":
+        raise MaterialReleaseError("publish_branch_must_be_master")
+
+
+def _remote_branch_head(repo_root: Path, remote: str, branch: str) -> str:
+    process = subprocess.run(
+        ["git", "-C", str(repo_root), "ls-remote", "--heads", remote, branch],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if process.returncode != 0:
+        message = process.stderr.strip() or process.stdout.strip() or "unknown"
+        raise MaterialReleaseError(f"remote_head_query_failed:{message}")
+    rows = [line.split() for line in process.stdout.splitlines() if line.strip()]
+    expected_ref = f"refs/heads/{branch}"
+    exact = [row[0] for row in rows if len(row) == 2 and row[1] == expected_ref]
+    if len(exact) != 1 or not re.fullmatch(r"[0-9a-f]{40}", exact[0]):
+        raise MaterialReleaseError("remote_master_head_missing")
+    return exact[0]
+
+
+def _push_head_to_master(repo_root: Path, remote: str, branch: str) -> None:
+    process = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repo_root),
+            "push",
+            "--no-force",
+            "--porcelain",
+            remote,
+            f"HEAD:refs/heads/{branch}",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if process.returncode != 0:
+        message = process.stderr.strip() or process.stdout.strip() or "unknown"
+        raise MaterialReleaseError(f"direct_master_push_failed:{message}")
+
+
+@contextmanager
+def _detached_worktree(repo_root: Path, commit: str, *, prefix: str) -> Iterator[Path]:
+    parent = Path(tempfile.mkdtemp(prefix=prefix))
+    worktree = parent / "checkout"
+    try:
+        _git(repo_root, "worktree", "add", "--detach", str(worktree), commit)
+        yield worktree
+    finally:
+        if worktree.exists():
+            process = subprocess.run(
+                ["git", "-C", str(repo_root), "worktree", "remove", "--force", str(worktree)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            if process.returncode != 0:
+                message = process.stderr.strip() or process.stdout.strip() or "unknown"
+                raise MaterialReleaseError(f"temporary_worktree_cleanup_failed:{message}")
+        try:
+            parent.rmdir()
+        except OSError as exc:
+            raise MaterialReleaseError(f"temporary_worktree_parent_cleanup_failed:{parent}") from exc
 
 
 def _write_bytes_atomically(path: Path, data: bytes) -> None:
@@ -558,6 +640,7 @@ def commit_prepared_release(*, repo_root: Path, prepared: PreparedRelease, confi
     if confirmation != required:
         raise MaterialReleaseError("release_commit_confirmation_missing")
     verify_release_tree(prepared.release_dir)
+    _verify_all_material_releases(repo_root / MATERIAL_ROOT_NAME)
     assert_exact_staged_paths(repo_root, prepared.staged_paths)
     _git(repo_root, "commit", "-m", f"release(materials): {prepared.release_id}")
     return _git(repo_root, "rev-parse", "HEAD").strip()
@@ -578,6 +661,249 @@ def assert_release_commit_contains_exact_release(repo_root: Path, release_id: st
     if len(candidates) != 1:
         raise MaterialReleaseError("release_commit_missing_exact_release")
     return repo_root / candidates[0]
+
+
+def assert_exact_release_commit(repo_root: Path, release_id: str, release_commit: str) -> Path:
+    manifest_path = assert_release_commit_contains_exact_release(repo_root, release_id, release_commit)
+    subject = _git(repo_root, "show", "-s", "--format=%s", release_commit).strip()
+    if subject != f"release(materials): {release_id}":
+        raise MaterialReleaseError("release_commit_subject_invalid")
+    changed = {
+        line.strip()
+        for line in _git(
+            repo_root,
+            "diff-tree",
+            "--no-commit-id",
+            "--name-only",
+            "-r",
+            release_commit,
+        ).splitlines()
+        if line.strip()
+    }
+    release_dir = PurePosixPath(manifest_path.relative_to(repo_root).as_posix()).parent
+    strategy_root = release_dir.parent.parent
+    allowed_exact = {str(strategy_root / "index.json"), ".gitattributes"}
+    if not changed or any(
+        path not in allowed_exact and not path.startswith(f"{release_dir.as_posix()}/")
+        for path in changed
+    ):
+        raise MaterialReleaseError("release_commit_changed_paths_invalid")
+    return manifest_path
+
+
+def _assert_regular_tree(root: Path) -> None:
+    if root.is_symlink() or not root.is_dir():
+        raise MaterialReleaseError("material_root_not_regular")
+    for path in root.rglob("*"):
+        if path.is_symlink():
+            raise MaterialReleaseError(f"material_publish_symlink_forbidden:{path.relative_to(root).as_posix()}")
+
+
+def _assert_same_tree(left: Path, right: Path) -> None:
+    left_files = {
+        path.relative_to(left).as_posix(): sha256_file(path)
+        for path in left.rglob("*")
+        if path.is_file()
+    }
+    right_files = {
+        path.relative_to(right).as_posix(): sha256_file(path)
+        for path in right.rglob("*")
+        if path.is_file()
+    }
+    if left_files != right_files:
+        raise MaterialReleaseError("remote_material_release_immutable_conflict")
+
+
+def _merge_release_index(source: Path, target: Path) -> None:
+    source_payload = _load_index(source.parent)
+    target_payload = _load_index(target.parent)
+    if source_payload.get("official_version") != target_payload.get("official_version"):
+        raise MaterialReleaseError("release_index_official_version_mismatch")
+    merged: dict[str, dict[str, object]] = {}
+    versions: dict[str, str] = {}
+    for item in (*target_payload["releases"], *source_payload["releases"]):
+        if not isinstance(item, dict) or not item.get("release_id"):
+            raise MaterialReleaseError("release_index_invalid")
+        release_id = str(item["release_id"])
+        material_version = str(item.get("material_version", ""))
+        if not re.fullmatch(r"m\d{4}", material_version):
+            raise MaterialReleaseError("release_index_invalid")
+        prior_release_id = versions.get(material_version)
+        if prior_release_id is not None and prior_release_id != release_id:
+            raise MaterialReleaseError("remote_material_version_conflict")
+        versions[material_version] = release_id
+        if release_id in merged and merged[release_id] != item:
+            raise MaterialReleaseError("remote_release_index_conflict")
+        merged[release_id] = dict(item)
+    target_payload["releases"] = sorted(
+        merged.values(),
+        key=lambda item: (str(item.get("material_version", "")), str(item.get("release_id", ""))),
+    )
+    _write_bytes_atomically(target, canonical_json_bytes(target_payload) + b"\n")
+
+
+def _merge_material_root(source_root: Path, target_root: Path) -> None:
+    _assert_regular_tree(source_root)
+    if not target_root.exists():
+        target_root.mkdir(parents=True)
+    else:
+        _assert_regular_tree(target_root)
+    for source_strategy in sorted(path for path in source_root.iterdir() if path.is_dir()):
+        target_strategy = target_root / source_strategy.name
+        target_strategy.mkdir(parents=True, exist_ok=True)
+        source_releases = source_strategy / "releases"
+        target_releases = target_strategy / "releases"
+        target_releases.mkdir(parents=True, exist_ok=True)
+        for source_release in sorted(path for path in source_releases.iterdir() if path.is_dir()):
+            target_release = target_releases / source_release.name
+            if target_release.exists():
+                _assert_regular_tree(target_release)
+                _assert_same_tree(source_release, target_release)
+            else:
+                shutil.copytree(source_release, target_release)
+        source_index = source_strategy / "index.json"
+        target_index = target_strategy / "index.json"
+        if target_index.exists():
+            _merge_release_index(source_index, target_index)
+        else:
+            shutil.copyfile(source_index, target_index)
+
+
+def _verify_all_material_releases(material_root: Path) -> None:
+    _assert_regular_tree(material_root)
+    manifests = sorted(material_root.glob("*/releases/*/manifest.json"))
+    if not manifests:
+        raise MaterialReleaseError("material_publish_has_no_releases")
+    for manifest in manifests:
+        verify_release_tree(manifest.parent)
+    for strategy_root in sorted(path for path in material_root.iterdir() if path.is_dir()):
+        index = _load_index(strategy_root)
+        if index.get("official_version") != strategy_root.name:
+            raise MaterialReleaseError("release_index_official_version_mismatch")
+        rows = index["releases"]
+        indexed: dict[str, dict[str, object]] = {}
+        versions: dict[str, str] = {}
+        for row in rows:
+            if not isinstance(row, dict) or not row.get("release_id"):
+                raise MaterialReleaseError("release_index_invalid")
+            release_id = str(row["release_id"])
+            material_version = str(row.get("material_version", ""))
+            if release_id in indexed:
+                raise MaterialReleaseError("release_index_duplicate_release_id")
+            if material_version in versions and versions[material_version] != release_id:
+                raise MaterialReleaseError("remote_material_version_conflict")
+            indexed[release_id] = row
+            versions[material_version] = release_id
+        actual_dirs = {
+            path.name: path
+            for path in (strategy_root / "releases").iterdir()
+            if path.is_dir()
+        }
+        if set(indexed) != set(actual_dirs):
+            raise MaterialReleaseError("release_index_directory_set_mismatch")
+        for release_id, release_dir in actual_dirs.items():
+            manifest = verify_release_tree(release_dir)
+            expected = {
+                "material_version": manifest["material_version"],
+                "release_id": manifest["release_id"],
+                "created_at_cst": manifest["created_at_cst"],
+                "source_commit": manifest["source_commit"],
+                "manifest_sha256": manifest["manifest_sha256"],
+                "tree_fingerprint": manifest["tree_fingerprint"],
+                "file_count": len(manifest["files"]),
+            }
+            if manifest["strategy_version"] != strategy_root.name or indexed[release_id] != expected:
+                raise MaterialReleaseError("release_index_manifest_mismatch")
+
+
+def _material_root_uses_lfs(material_root: Path) -> bool:
+    for manifest_path in material_root.glob("*/releases/*/manifest.json"):
+        manifest = verify_release_tree(manifest_path.parent)
+        if any(str(row.get("storage")) == StorageKind.GIT_LFS.value for row in manifest["files"]):
+            return True
+    return False
+
+
+def publish_materials_to_master(
+    *,
+    repo_root: Path,
+    release_id: str,
+    release_commit: str,
+    confirmation: str,
+    remote: str = "origin",
+    branch: str = "master",
+) -> MasterPublication:
+    """Publish only the immutable material root directly to remote master."""
+
+    required = f"I_APPROVE_DIRECT_OFFICIAL_MATERIAL_PUSH_TO_MASTER:{release_id}"
+    if confirmation != required:
+        raise MaterialReleaseError("direct_master_push_confirmation_missing")
+    _validate_remote_target(remote, branch)
+    assert_exact_release_commit(repo_root, release_id, release_commit)
+    previous_remote_commit = _remote_branch_head(repo_root, remote, branch)
+    _git(repo_root, "fetch", "--no-tags", remote, f"refs/heads/{branch}")
+    fetched_commit = _git(repo_root, "rev-parse", "FETCH_HEAD").strip()
+    if fetched_commit != previous_remote_commit:
+        raise MaterialReleaseError("remote_master_changed_during_fetch")
+    with _detached_worktree(repo_root, release_commit, prefix="official-material-source-") as source:
+        source_root = source / MATERIAL_ROOT_NAME
+        _verify_all_material_releases(source_root)
+        uses_lfs = _material_root_uses_lfs(source_root)
+        if uses_lfs:
+            raise MaterialReleaseError("direct_master_lfs_remote_not_proven")
+        release_candidates = list(source_root.glob(f"*/releases/{release_id}"))
+        if len(release_candidates) != 1:
+            raise MaterialReleaseError("release_id_not_unique")
+        with _detached_worktree(repo_root, fetched_commit, prefix="official-material-master-") as target:
+            target_root = target / MATERIAL_ROOT_NAME
+            _merge_material_root(source_root, target_root)
+            staged_roots = [MATERIAL_ROOT_NAME]
+            _verify_all_material_releases(target_root)
+            verify_release(repo_root=target, release_id=release_id)
+            _git(target, "add", "--", *staged_roots)
+            changed_paths = tuple(
+                sorted(
+                    line.strip()
+                    for line in _git(target, "diff", "--cached", "--name-only", "--diff-filter=ACMR").splitlines()
+                    if line.strip()
+                )
+            )
+            if any(
+                path != MATERIAL_ROOT_NAME
+                and not path.startswith(f"{MATERIAL_ROOT_NAME}/")
+                for path in changed_paths
+            ):
+                raise MaterialReleaseError("direct_master_publish_path_outside_material_root")
+            if not changed_paths:
+                confirmed_remote_commit = _remote_branch_head(target, remote, branch)
+                if confirmed_remote_commit != previous_remote_commit:
+                    raise MaterialReleaseError("remote_master_changed_before_noop_readback")
+                return MasterPublication(
+                    release_id=release_id,
+                    remote=remote,
+                    branch=branch,
+                    previous_remote_commit=previous_remote_commit,
+                    published_commit=previous_remote_commit,
+                    changed_paths=(),
+                    status="already_published",
+                )
+            _git(target, "commit", "--no-gpg-sign", "-m", f"publish(materials): {release_id}")
+            published_commit = _git(target, "rev-parse", "HEAD").strip()
+            if _git(target, "merge-base", previous_remote_commit, published_commit).strip() != previous_remote_commit:
+                raise MaterialReleaseError("direct_master_publish_not_fast_forward")
+            _push_head_to_master(target, remote, branch)
+            confirmed_remote_commit = _remote_branch_head(target, remote, branch)
+            if confirmed_remote_commit != published_commit:
+                raise MaterialReleaseError("direct_master_push_readback_mismatch")
+            return MasterPublication(
+                release_id=release_id,
+                remote=remote,
+                branch=branch,
+                previous_remote_commit=previous_remote_commit,
+                published_commit=published_commit,
+                changed_paths=changed_paths,
+                status="published",
+            )
 
 
 def assert_qualification_passed(qualification: Mapping[str, object], release_commit: str) -> None:
@@ -720,7 +1046,7 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Freeze and verify official strategy materials")
-    parser.add_argument("action", choices=("prepare", "commit", "verify", "activate"))
+    parser.add_argument("action", choices=("prepare", "commit", "verify", "publish-master", "activate"))
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument("--publication-request")
     parser.add_argument("--stage179-manifest")
@@ -728,6 +1054,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--release-commit")
     parser.add_argument("--qualification-json")
     parser.add_argument("--confirmation")
+    parser.add_argument("--remote", default="origin")
+    parser.add_argument("--target-branch", default="master")
     parser.add_argument("--capital", type=float, default=150000.0)
     parser.add_argument("--capital-label", default="15w")
     parser.add_argument("--research-line", default="futures_official_strategy_material_governance")
@@ -769,6 +1097,27 @@ def main(argv: list[str] | None = None) -> int:
             "manifest_sha256": manifest["manifest_sha256"],
             "tree_fingerprint": manifest["tree_fingerprint"],
             "file_count": len(manifest["files"]),
+        }).decode("utf-8"))
+        return 0
+    if args.action == "publish-master":
+        if not args.release_id or not args.release_commit:
+            raise MaterialReleaseError("master_publication_arguments_required")
+        publication = publish_materials_to_master(
+            repo_root=repo,
+            release_id=args.release_id,
+            release_commit=args.release_commit,
+            confirmation=args.confirmation or "",
+            remote=args.remote,
+            branch=args.target_branch,
+        )
+        print(canonical_json_bytes({
+            "status": publication.status,
+            "release_id": publication.release_id,
+            "remote": publication.remote,
+            "branch": publication.branch,
+            "previous_remote_commit": publication.previous_remote_commit,
+            "published_commit": publication.published_commit,
+            "changed_paths": list(publication.changed_paths),
         }).decode("utf-8"))
         return 0
     if not args.release_id or not args.release_commit or not args.qualification_json:

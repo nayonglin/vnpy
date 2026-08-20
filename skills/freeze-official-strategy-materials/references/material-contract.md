@@ -49,6 +49,6 @@ official_strategy_materials/
 
 - Prepare：release 目录、strategy index、必要 attributes。
 - Release commit：`release(materials): <release_id>`。
+- Master publication：从最新远端 master 创建只含 `official_strategy_materials/` release/index 的 `publish(materials): <release_id>` 快进提交并直接 push；不新增或修改 `CURRENT.json`，不创建 PR、不 force-push、不合并来源分支。当前 direct-master 只支持普通 Git 资产，发现 Git LFS 即 fail-closed。
 - Activation commit：只含 `CURRENT.json`，`activate(materials): <release_id>`。
-- 所有命令均不 push、不部署、不连接 CTP、不调用订单 API。
-
+- 除受控 master 产物发布外，所有命令均不 push；所有命令都不部署、不连接 CTP、不调用订单 API。
