@@ -160,6 +160,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     rollover_reopen_enabled: bool = True
     enable_rollover_shape_same_volume_reopen: bool = False
     rollover_shape_volume_policy: str = "shrink_to_allowed"
+    rollover_shape_history_mode: str = "target_contract_only"
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -442,6 +443,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "rollover_reopen_enabled",
         "enable_rollover_shape_same_volume_reopen",
         "rollover_shape_volume_policy",
+        "rollover_shape_history_mode",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -1671,14 +1673,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         if not self.rollover_reopen_enabled:
             return
-        if not new_bar:
-            return
 
-        target_am: ArrayManager = self.ams[target_contract]
+        target_am: ArrayManager | None = self.ams.get(target_contract)
         shape_snapshot: dict[str, Any] | None = None
         if self.enable_rollover_shape_same_volume_reopen:
-            history = self._build_observed_array_manager_history(target_am)
+            current_bar_dates = [self._bar_date(bar) for bar in bars.values()]
+            current_bar_date = max(current_bar_dates) if current_bar_dates else None
+            history, history_snapshot = self._build_rollover_shape_history(
+                old_contract=old_contract,
+                target_contract=target_contract,
+                old_bar=old_bar,
+                new_bar=new_bar,
+                target_am=target_am,
+                target_bar_from_current=bool(
+                    new_bar is not None
+                    and target_contract in bars
+                    and current_bar_date is not None
+                    and self._bar_date(new_bar) == current_bar_date
+                ),
+            )
             shape_snapshot = self._rollover_shape_continuation_snapshot(old_direction, history)
+            if not int(history_snapshot["history_input_ready"]):
+                shape_snapshot["allowed"] = 0
+                shape_snapshot["reason"] = str(history_snapshot["history_input_reason"])
+            shape_snapshot.update(history_snapshot)
             if not int(shape_snapshot["allowed"]):
                 self._record_rollover_shape_same_volume_diagnostic(
                     state=state,
@@ -1686,8 +1704,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     target_contract=target_contract,
                     old_direction=old_direction,
                     old_risk_mode=old_risk_mode,
-                    bar=new_bar,
-                    target_am_inited=bool(target_am.inited),
+                    bar=new_bar or old_bar,
+                    target_am_inited=bool(target_am and target_am.inited),
                     previous_volume=previous_volume,
                     selected_volume=0,
                     final_volume=0,
@@ -1698,12 +1716,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 return
             signal_data = self._rollover_shape_signal_data(old_direction, old_risk_mode, shape_snapshot)
         else:
+            if not new_bar or target_am is None:
+                return
             if not target_am.inited:
                 return
             history = self._build_history_df(target_am)
             signal_data = self._generate_signal(target_am, history)
             if not self._rollover_reopen_allowed(old_direction, history, signal_data):
                 return
+
+        if new_bar is None:
+            return
 
         guard_fields = self._rollover_reopen_drawdown_guard_fields()
         if int(guard_fields["rollover_reopen_drawdown_guard_enabled"]) and not int(
@@ -1726,7 +1749,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     old_direction=old_direction,
                     old_risk_mode=old_risk_mode,
                     bar=new_bar,
-                    target_am_inited=bool(target_am.inited),
+                    target_am_inited=bool(target_am and target_am.inited),
                     previous_volume=previous_volume,
                     selected_volume=0,
                     final_volume=0,
@@ -1774,7 +1797,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     old_direction=old_direction,
                     old_risk_mode=old_risk_mode,
                     bar=new_bar,
-                    target_am_inited=bool(target_am.inited),
+                    target_am_inited=bool(target_am and target_am.inited),
                     previous_volume=previous_volume,
                     selected_volume=selected_volume,
                     final_volume=0,
@@ -1813,7 +1836,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 old_direction=old_direction,
                 old_risk_mode=old_risk_mode,
                 bar=new_bar,
-                target_am_inited=bool(target_am.inited),
+                target_am_inited=bool(target_am and target_am.inited),
                 previous_volume=previous_volume,
                 selected_volume=selected_volume,
                 final_volume=volume,
@@ -2634,8 +2657,35 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "direction": old_direction,
                 "risk_mode": old_risk_mode,
                 "target_am_inited": int(target_am_inited),
+                "history_mode": str(shape_snapshot.get("history_mode") or ""),
+                "history_source": str(shape_snapshot.get("history_source") or ""),
+                "history_input_ready": int(shape_snapshot.get("history_input_ready") or 0),
+                "history_input_reason": str(shape_snapshot.get("history_input_reason") or ""),
                 "observed_bar_count": int(shape_snapshot.get("observed_bar_count") or 0),
                 "required_bar_count": int(shape_snapshot.get("required_bar_count") or 0),
+                "target_observed_bar_count": int(
+                    shape_snapshot.get("target_observed_bar_count") or 0
+                ),
+                "old_contract_observed_bar_count": int(
+                    shape_snapshot.get("old_contract_observed_bar_count") or 0
+                ),
+                "source_observed_bar_count": int(
+                    shape_snapshot.get("source_observed_bar_count") or 0
+                ),
+                "roll_adjustment_ratio": float(
+                    shape_snapshot.get("roll_adjustment_ratio", float("nan"))
+                ),
+                "target_bar_appended": int(shape_snapshot.get("target_bar_appended") or 0),
+                "same_day_bar_ready": int(shape_snapshot.get("same_day_bar_ready") or 0),
+                "market_data_ready": int(shape_snapshot.get("market_data_ready") or 0),
+                "metadata_ready": int(shape_snapshot.get("metadata_ready") or 0),
+                "target_contract_size": int(shape_snapshot.get("target_contract_size") or 0),
+                "target_price_tick": float(
+                    shape_snapshot.get("target_price_tick", float("nan"))
+                ),
+                "target_margin_ratio": float(
+                    shape_snapshot.get("target_margin_ratio", float("nan"))
+                ),
                 "bullish_alignment": int(shape_snapshot.get("bullish_alignment") or 0),
                 "bearish_alignment": int(shape_snapshot.get("bearish_alignment") or 0),
                 "macd_hist": float(shape_snapshot.get("macd_hist", float("nan"))),
@@ -7579,6 +7629,186 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if observed_count <= 0:
             return history.iloc[0:0].copy()
         return history.tail(observed_count).reset_index(drop=True)
+
+    def _rollover_target_readiness_snapshot(
+        self,
+        *,
+        target_contract: str,
+        new_bar: BarData | None,
+        target_bar_from_current: bool,
+    ) -> dict[str, Any]:
+        same_day_bar_ready = bool(new_bar is not None and target_bar_from_current)
+        market_data_ready = False
+        if new_bar is not None:
+            prices = [
+                float(new_bar.open_price),
+                float(new_bar.high_price),
+                float(new_bar.low_price),
+                float(new_bar.close_price),
+            ]
+            market_data_ready = bool(
+                all(np.isfinite(value) and value > 0 for value in prices)
+                and prices[1] >= max(prices[0], prices[2], prices[3])
+                and prices[2] <= min(prices[0], prices[1], prices[3])
+                and np.isfinite(float(new_bar.volume))
+                and float(new_bar.volume) > 0
+            )
+
+        try:
+            contract_size = int(self.get_size(target_contract))
+        except Exception:
+            contract_size = 0
+        try:
+            price_tick = float(self.get_pricetick(target_contract))
+        except Exception:
+            price_tick = 0.0
+        try:
+            margin_ratio = float(self._margin_ratio_for_symbol(target_contract))
+        except Exception:
+            margin_ratio = 0.0
+        metadata_ready = bool(
+            contract_size > 0
+            and np.isfinite(price_tick)
+            and price_tick > 0
+            and np.isfinite(margin_ratio)
+            and margin_ratio > 0
+        )
+
+        if new_bar is None:
+            readiness_reason = "target_same_day_bar_missing"
+        elif not same_day_bar_ready:
+            readiness_reason = "target_bar_not_same_day"
+        elif not market_data_ready:
+            readiness_reason = "target_same_day_market_not_tradable"
+        elif not metadata_ready:
+            readiness_reason = "target_contract_metadata_incomplete"
+        else:
+            readiness_reason = "ready"
+        return {
+            "same_day_bar_ready": int(same_day_bar_ready),
+            "market_data_ready": int(market_data_ready),
+            "metadata_ready": int(metadata_ready),
+            "target_contract_size": int(contract_size),
+            "target_price_tick": float(price_tick),
+            "target_margin_ratio": float(margin_ratio),
+            "target_readiness_reason": readiness_reason,
+        }
+
+    def _build_rollover_shape_history(
+        self,
+        *,
+        old_contract: str,
+        target_contract: str,
+        old_bar: BarData,
+        new_bar: BarData | None,
+        target_am: ArrayManager | None,
+        target_bar_from_current: bool,
+    ) -> tuple[pd.DataFrame, dict[str, Any]]:
+        history_mode = str(self.rollover_shape_history_mode or "").strip().lower()
+        target_history = (
+            self._build_observed_array_manager_history(target_am)
+            if target_am is not None
+            else pd.DataFrame(columns=["open", "high", "low", "close", "volume", "open_interest"])
+        )
+        old_am: ArrayManager | None = self.ams.get(old_contract)
+        old_history = (
+            self._build_observed_array_manager_history(old_am)
+            if old_am is not None
+            else pd.DataFrame(columns=target_history.columns)
+        )
+        readiness = self._rollover_target_readiness_snapshot(
+            target_contract=target_contract,
+            new_bar=new_bar,
+            target_bar_from_current=target_bar_from_current,
+        )
+        snapshot: dict[str, Any] = {
+            "history_mode": history_mode,
+            "history_source": "",
+            "target_observed_bar_count": int(len(target_history)),
+            "old_contract_observed_bar_count": int(len(old_history)),
+            "source_observed_bar_count": 0,
+            "roll_adjustment_ratio": float("nan"),
+            "target_bar_appended": 0,
+            "history_input_ready": 0,
+            "history_input_reason": "invalid_rollover_shape_history_mode",
+            **readiness,
+        }
+
+        if history_mode == "target_contract_only":
+            snapshot.update(
+                {
+                    "history_source": "target_contract_observed",
+                    "source_observed_bar_count": int(len(target_history)),
+                    "roll_adjustment_ratio": 1.0,
+                    "history_input_ready": int(new_bar is not None and target_am is not None),
+                    "history_input_reason": (
+                        "ready"
+                        if new_bar is not None and target_am is not None
+                        else "target_contract_history_unavailable"
+                    ),
+                }
+            )
+            return target_history, snapshot
+
+        if history_mode != "backwards_ratio_continuous":
+            return target_history.iloc[0:0].copy(), snapshot
+
+        snapshot.update(
+            {
+                "history_source": "old_contract_backwards_ratio_with_target_current_bar",
+                "source_observed_bar_count": int(len(old_history)),
+                "history_input_reason": str(readiness["target_readiness_reason"]),
+            }
+        )
+        if str(readiness["target_readiness_reason"]) != "ready" or new_bar is None:
+            return old_history.iloc[0:0].copy(), snapshot
+        if old_history.empty:
+            snapshot["history_input_reason"] = "old_contract_history_unavailable"
+            return old_history, snapshot
+
+        old_close = float(old_bar.close_price)
+        new_close = float(new_bar.close_price)
+        if not np.isfinite(old_close) or old_close <= 0 or not np.isfinite(new_close) or new_close <= 0:
+            snapshot["history_input_reason"] = "invalid_roll_adjustment_anchor"
+            return old_history.iloc[0:0].copy(), snapshot
+        roll_adjustment_ratio = new_close / old_close
+        if not np.isfinite(roll_adjustment_ratio) or roll_adjustment_ratio <= 0:
+            snapshot["history_input_reason"] = "invalid_roll_adjustment_ratio"
+            return old_history.iloc[0:0].copy(), snapshot
+
+        history = old_history.copy().reset_index(drop=True)
+        price_columns = ["open", "high", "low", "close"]
+        for column in price_columns:
+            history[column] = pd.to_numeric(history[column], errors="coerce") * roll_adjustment_ratio
+        if history[price_columns].isna().any().any() or not np.isfinite(
+            history[price_columns].to_numpy(dtype="float64")
+        ).all():
+            snapshot["history_input_reason"] = "continuous_history_non_finite"
+            return history.iloc[0:0].copy(), snapshot
+
+        target_row = {
+            "open": float(new_bar.open_price),
+            "high": float(new_bar.high_price),
+            "low": float(new_bar.low_price),
+            "close": float(new_bar.close_price),
+            "volume": float(new_bar.volume),
+            "open_interest": float(new_bar.open_interest),
+        }
+        target_bar_appended = int(self._bar_date(old_bar) != self._bar_date(new_bar))
+        if target_bar_appended:
+            history = pd.concat([history, pd.DataFrame([target_row])], ignore_index=True)
+        else:
+            last_index = history.index[-1]
+            history.loc[last_index, list(target_row)] = list(target_row.values())
+        snapshot.update(
+            {
+                "roll_adjustment_ratio": float(roll_adjustment_ratio),
+                "target_bar_appended": target_bar_appended,
+                "history_input_ready": 1,
+                "history_input_reason": "ready",
+            }
+        )
+        return history, snapshot
 
     def _entry_stop_price(self, direction: str, bar: BarData, history: pd.DataFrame, use_day_extreme: bool) -> float:
         basic_long = float(bar.close_price) * (1 - self.stop_loss_pct)

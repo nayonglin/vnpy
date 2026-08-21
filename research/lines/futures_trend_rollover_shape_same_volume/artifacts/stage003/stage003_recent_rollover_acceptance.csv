@@ -1,0 +1,3 @@
+﻿date,product_vt_symbol,old_contract,target_contract,exchange,direction,old_last_bar_date,target_last_bar_date,target_observed_bar_count,source_observed_bar_count,indicator_observed_bar_count,target_bar_appended,required_bar_count,same_day_bar_ready,market_data_ready,metadata_ready,contract_size,pricetick,margin_ratio,roll_adjustment_ratio,bullish_alignment,bearish_alignment,macd_hist,shape_allowed,shape_reason,target_history_gate_bypassed
+2026-08-18,si.GFEX,si2609,si2611,GFEX,long,2026-08-17,2026-08-18,2,41,42,1,40,1,1,1,5,5.0,0.12,1.009253903990746,1,0,77.77415977097549,1,shape_and_macd_aligned,1
+2026-08-19,jm.DCE,jm2609,jm2701,DCE,long,2026-08-19,2026-08-19,2,41,41,0,40,1,1,1,60,0.5,0.2,1.1247784473590925,1,0,37.79622827134158,1,shape_and_macd_aligned,1

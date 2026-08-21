@@ -206,6 +206,8 @@ def _publish_outputs_atomically(
     output_dir: Path,
     frames: dict[str, pd.DataFrame],
     decision: dict[str, Any],
+    *,
+    decision_filename: str = DECISION_PATH.name,
 ) -> None:
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     temporary_dir = Path(
@@ -215,7 +217,7 @@ def _publish_outputs_atomically(
     try:
         for filename, frame in frames.items():
             frame.to_csv(temporary_dir / filename, index=False, encoding="utf-8-sig")
-        (temporary_dir / DECISION_PATH.name).write_text(
+        (temporary_dir / decision_filename).write_text(
             json.dumps(decision, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )

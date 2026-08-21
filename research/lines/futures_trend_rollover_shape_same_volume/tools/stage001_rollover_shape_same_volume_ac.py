@@ -31,10 +31,16 @@ TRADE_EVENTS_PATH = OUTPUT_DIR / "stage001_trade_events.csv"
 DECISION_PATH = OUTPUT_DIR / "stage001_decision.json"
 
 
-def _overrides(*, candidate: bool, volume_policy: str = "exact_or_skip") -> dict[str, Any]:
+def _overrides(
+    *,
+    candidate: bool,
+    volume_policy: str = "exact_or_skip",
+    history_mode: str = "target_contract_only",
+) -> dict[str, Any]:
     overrides = live_cfg.build_official_live_strategy_overrides()
     overrides["enable_rollover_shape_same_volume_reopen"] = bool(candidate)
     overrides["rollover_shape_volume_policy"] = volume_policy
+    overrides["rollover_shape_history_mode"] = history_mode
     return overrides
 
 
@@ -44,6 +50,7 @@ def _run_arm(
     candidate: bool,
     metadata: dict[str, Any],
     volume_policy: str = "exact_or_skip",
+    history_mode: str = "target_contract_only",
     label: str = "",
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, pd.DataFrame]]:
     original_builder = s901.build_official_live_strategy_overrides
@@ -51,6 +58,7 @@ def _run_arm(
         s901.build_official_live_strategy_overrides = lambda: _overrides(
             candidate=candidate,
             volume_policy=volume_policy,
+            history_mode=history_mode,
         )
         combined, frames, live_spec = s901._run_live_c9(metadata, START, END)
     finally:

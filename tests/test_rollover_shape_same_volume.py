@@ -25,18 +25,24 @@ def _history_from_closes(closes: list[float]) -> pd.DataFrame:
     )
 
 
-def _bar(symbol: str, close_price: float) -> BarData:
+def _bar(
+    symbol: str,
+    close_price: float,
+    *,
+    volume: float = 100,
+    bar_datetime: datetime | None = None,
+) -> BarData:
     return BarData(
         gateway_name="test",
         symbol=symbol,
         exchange=Exchange.DCE,
-        datetime=datetime(2026, 8, 20, 15, 0),
+        datetime=bar_datetime or datetime(2026, 8, 20, 15, 0),
         interval=Interval.DAILY,
         open_price=close_price,
         high_price=close_price + 0.5,
         low_price=close_price - 0.5,
         close_price=close_price,
-        volume=100,
+        volume=volume,
         open_interest=1000,
     )
 
@@ -85,9 +91,13 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
         guard_passed: bool = True,
         engine_bars: dict[str, BarData] | None = None,
         volume_policy: str = "shrink_to_allowed",
+        history_mode: str = "target_contract_only",
+        target_closes: list[float] | None = None,
+        target_price_tick: float = 1.0,
     ) -> None:
         self.enable_rollover_shape_same_volume_reopen = candidate_enabled
         self.rollover_shape_volume_policy = volume_policy
+        self.rollover_shape_history_mode = history_mode
         self.rollover_reopen_enabled = True
         self.enable_rollover_reopen_drawdown_guard = not guard_passed
         self.rollover_reopen_max_portfolio_drawdown_pct = 0.10
@@ -102,7 +112,12 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
         self.portfolio_equity_high_water = 150000.0
         self.portfolio_drawdown_pct = 0.0
         self.ams = {
-            "jm2701.DCE": _short_history_array_manager([float(value) for value in range(1, 41)])
+            "jm2609.DCE": _short_history_array_manager([float(value) for value in range(60, 101)]),
+            "jm2701.DCE": _short_history_array_manager(
+                target_closes
+                if target_closes is not None
+                else [float(value) for value in range(1, 41)]
+            ),
         }
         self.allowed_volume = allowed_volume
         self.guard_passed = guard_passed
@@ -121,6 +136,7 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
         self.pending_active_products: set[str] = set()
         self.sizing_margin_seen: float | None = None
         self.sizing_cluster_margin_seen: float | None = None
+        self.target_price_tick = target_price_tick
         self.strategy_engine = SimpleNamespace(bars=dict(engine_bars or {}))
 
     def _bar_from_current_or_engine(
@@ -186,6 +202,9 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
 
     def get_size(self, vt_symbol: str) -> int:
         return 10
+
+    def get_pricetick(self, vt_symbol: str) -> float:
+        return self.target_price_tick
 
     def _margin_ratio_for_symbol(self, vt_symbol: str) -> float:
         return 0.10
@@ -323,6 +342,99 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual("targeted", strategy.rollover_shape_same_volume_diagnostics[0]["status"])
         self.assertEqual("full", strategy.rollover_shape_same_volume_diagnostics[0]["volume_outcome"])
         self.assertEqual([("jm.DCE", 2, False)], strategy.reservations)
+
+    def test_continuous_mode_uses_one_target_bar_and_old_contract_indicator_history(self) -> None:
+        strategy = _RolloverHarness(
+            allowed_volume=5,
+            history_mode="backwards_ratio_continuous",
+            target_closes=[40.0],
+        )
+        state = _state(volume=2)
+        bars = {
+            "jm2609.DCE": _bar("jm2609", 100.0),
+            "jm2701.DCE": _bar("jm2701", 40.0),
+        }
+
+        strategy._handle_rollover(state, "jm2701.DCE", bars)
+
+        self.assertEqual(1, len(strategy.opened))
+        self.assertEqual(2, strategy.opened[0]["volume"])
+        self.assertEqual(41, strategy.opened[0]["history_count"])
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual("backwards_ratio_continuous", diagnostic["history_mode"])
+        self.assertEqual(1, diagnostic["target_observed_bar_count"])
+        self.assertEqual(41, diagnostic["source_observed_bar_count"])
+        self.assertEqual(1, diagnostic["same_day_bar_ready"])
+        self.assertEqual(1, diagnostic["market_data_ready"])
+        self.assertEqual(1, diagnostic["metadata_ready"])
+        self.assertAlmostEqual(0.4, diagnostic["roll_adjustment_ratio"])
+        self.assertEqual("targeted", diagnostic["status"])
+
+    def test_continuous_mode_rejects_target_bar_without_trading_volume(self) -> None:
+        strategy = _RolloverHarness(
+            allowed_volume=5,
+            history_mode="backwards_ratio_continuous",
+            target_closes=[40.0],
+        )
+        state = _state(volume=2)
+        bars = {
+            "jm2609.DCE": _bar("jm2609", 100.0),
+            "jm2701.DCE": _bar("jm2701", 40.0, volume=0),
+        }
+
+        strategy._handle_rollover(state, "jm2701.DCE", bars)
+
+        self.assertEqual([], strategy.opened)
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual("skipped", diagnostic["status"])
+        self.assertEqual("target_same_day_market_not_tradable", diagnostic["reason"])
+        self.assertEqual(0, diagnostic["market_data_ready"])
+
+    def test_continuous_mode_appends_target_bar_when_old_contract_stopped_previous_day(self) -> None:
+        strategy = _RolloverHarness(
+            allowed_volume=5,
+            history_mode="backwards_ratio_continuous",
+            target_closes=[40.0],
+            engine_bars={
+                "jm2609.DCE": _bar(
+                    "jm2609",
+                    100.0,
+                    bar_datetime=datetime(2026, 8, 19, 15, 0),
+                )
+            },
+        )
+        state = _state(volume=2)
+        bars = {"jm2701.DCE": _bar("jm2701", 40.0)}
+
+        strategy._handle_rollover(state, "jm2701.DCE", bars)
+
+        self.assertEqual(1, len(strategy.opened))
+        self.assertEqual(42, strategy.opened[0]["history_count"])
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual(1, diagnostic["target_bar_appended"])
+        self.assertEqual(41, diagnostic["source_observed_bar_count"])
+        self.assertEqual(42, diagnostic["observed_bar_count"])
+
+    def test_continuous_mode_rejects_incomplete_target_contract_metadata(self) -> None:
+        strategy = _RolloverHarness(
+            allowed_volume=5,
+            history_mode="backwards_ratio_continuous",
+            target_closes=[40.0],
+            target_price_tick=0.0,
+        )
+        state = _state(volume=2)
+        bars = {
+            "jm2609.DCE": _bar("jm2609", 100.0),
+            "jm2701.DCE": _bar("jm2701", 40.0),
+        }
+
+        strategy._handle_rollover(state, "jm2701.DCE", bars)
+
+        self.assertEqual([], strategy.opened)
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual("skipped", diagnostic["status"])
+        self.assertEqual("target_contract_metadata_incomplete", diagnostic["reason"])
+        self.assertEqual(0, diagnostic["metadata_ready"])
 
     def test_rollover_releases_old_margin_before_exact_capacity_sizing(self) -> None:
         strategy = _RolloverHarness(allowed_volume=5)
