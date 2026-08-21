@@ -84,8 +84,10 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
         candidate_enabled: bool = True,
         guard_passed: bool = True,
         engine_bars: dict[str, BarData] | None = None,
+        volume_policy: str = "shrink_to_allowed",
     ) -> None:
         self.enable_rollover_shape_same_volume_reopen = candidate_enabled
+        self.rollover_shape_volume_policy = volume_policy
         self.rollover_reopen_enabled = True
         self.enable_rollover_reopen_drawdown_guard = not guard_passed
         self.rollover_reopen_max_portfolio_drawdown_pct = 0.10
@@ -255,27 +257,53 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(0, snapshot["allowed"])
         self.assertEqual("insufficient_indicator_history", snapshot["reason"])
 
-    def test_exact_rollover_volume_keeps_previous_volume_when_capacity_is_sufficient(self) -> None:
+    def test_shrink_policy_keeps_previous_volume_when_capacity_is_sufficient(self) -> None:
         strategy = object.__new__(QmtRollPortfolioStrategy)
 
-        volume, reason = strategy._exact_rollover_reopen_volume(
+        volume, reason = strategy._rollover_shape_reopen_volume(
             previous_volume=2,
             sizing_snapshot={"selected_volume": 5},
+            volume_policy="shrink_to_allowed",
         )
 
         self.assertEqual(2, volume)
         self.assertEqual("previous_volume_fully_allowed", reason)
 
-    def test_exact_rollover_volume_skips_instead_of_reducing_previous_volume(self) -> None:
+    def test_shrink_policy_reduces_to_allowed_positive_volume(self) -> None:
         strategy = object.__new__(QmtRollPortfolioStrategy)
 
-        volume, reason = strategy._exact_rollover_reopen_volume(
+        volume, reason = strategy._rollover_shape_reopen_volume(
             previous_volume=2,
             sizing_snapshot={"selected_volume": 1},
+            volume_policy="shrink_to_allowed",
+        )
+
+        self.assertEqual(1, volume)
+        self.assertEqual("reduced_to_allowed_volume", reason)
+
+    def test_exact_policy_remains_reproducible_and_skips_partial_capacity(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+
+        volume, reason = strategy._rollover_shape_reopen_volume(
+            previous_volume=2,
+            sizing_snapshot={"selected_volume": 1},
+            volume_policy="exact_or_skip",
         )
 
         self.assertEqual(0, volume)
         self.assertEqual("previous_volume_not_fully_allowed", reason)
+
+    def test_unknown_volume_policy_fails_closed(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+
+        volume, reason = strategy._rollover_shape_reopen_volume(
+            previous_volume=2,
+            sizing_snapshot={"selected_volume": 2},
+            volume_policy="unknown",
+        )
+
+        self.assertEqual(0, volume)
+        self.assertEqual("invalid_rollover_volume_policy", reason)
 
     def test_rollover_reopens_exact_previous_volume_with_non_inited_40_bar_contract(self) -> None:
         strategy = _RolloverHarness(allowed_volume=5)
@@ -293,6 +321,7 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(2, strategy.opened[0]["volume"])
         self.assertEqual(40, strategy.opened[0]["history_count"])
         self.assertEqual("targeted", strategy.rollover_shape_same_volume_diagnostics[0]["status"])
+        self.assertEqual("full", strategy.rollover_shape_same_volume_diagnostics[0]["volume_outcome"])
         self.assertEqual([("jm.DCE", 2, False)], strategy.reservations)
 
     def test_rollover_releases_old_margin_before_exact_capacity_sizing(self) -> None:
@@ -358,7 +387,7 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
             strategy.rollover_shape_same_volume_diagnostics[0]["reason"],
         )
 
-    def test_rollover_skips_when_full_previous_volume_is_not_allowed(self) -> None:
+    def test_rollover_reduces_to_allowed_volume_when_full_previous_volume_is_not_allowed(self) -> None:
         strategy = _RolloverHarness(allowed_volume=1)
         state = _state(volume=2)
         bars = {
@@ -369,7 +398,29 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         strategy._handle_rollover(state, "jm2701.DCE", bars)
 
         self.assertEqual([("jm2609.DCE", 0)], strategy.targets)
+        self.assertEqual(1, len(strategy.opened))
+        self.assertEqual(1, strategy.opened[0]["volume"])
+        self.assertEqual([("jm.DCE", 1, False)], strategy.reservations)
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual("targeted", diagnostic["status"])
+        self.assertEqual("reduced", diagnostic["volume_outcome"])
+        self.assertEqual(1, diagnostic["was_reduced"])
+        self.assertEqual("reduced_to_allowed_volume", diagnostic["reason"])
+
+    def test_rollover_skips_when_no_positive_volume_is_allowed(self) -> None:
+        strategy = _RolloverHarness(allowed_volume=0)
+        state = _state(volume=2)
+        bars = {
+            "jm2609.DCE": _bar("jm2609", 100.0),
+            "jm2701.DCE": _bar("jm2701", 40.0),
+        }
+
+        strategy._handle_rollover(state, "jm2701.DCE", bars)
+
         self.assertEqual([], strategy.opened)
+        diagnostic = strategy.rollover_shape_same_volume_diagnostics[0]
+        self.assertEqual("skipped", diagnostic["status"])
+        self.assertEqual("no_positive_volume_allowed", diagnostic["reason"])
 
 
 if __name__ == "__main__":

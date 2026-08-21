@@ -159,6 +159,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_ma_trend_stop: bool = True
     rollover_reopen_enabled: bool = True
     enable_rollover_shape_same_volume_reopen: bool = False
+    rollover_shape_volume_policy: str = "shrink_to_allowed"
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -440,6 +441,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_ma_trend_stop",
         "rollover_reopen_enabled",
         "enable_rollover_shape_same_volume_reopen",
+        "rollover_shape_volume_policy",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -1747,16 +1749,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         sizing.update(released_risk_snapshot)
         selected_volume: int = int(sizing["selected_volume"])
         if self.enable_rollover_shape_same_volume_reopen:
-            volume, volume_reason = self._exact_rollover_reopen_volume(
+            volume, volume_reason = self._rollover_shape_reopen_volume(
                 previous_volume=previous_volume,
                 sizing_snapshot=sizing,
+                volume_policy=self.rollover_shape_volume_policy,
             )
             sizing.update(
                 {
                     "rollover_previous_volume": previous_volume,
-                    "rollover_selected_volume_before_exact_gate": selected_volume,
-                    "rollover_exact_volume": volume,
-                    "rollover_exact_volume_reason": volume_reason,
+                    "rollover_selected_volume_before_policy": selected_volume,
+                    "rollover_volume_policy": self.rollover_shape_volume_policy,
+                    "rollover_final_volume": volume,
+                    "rollover_volume_reason": volume_reason,
                 }
             )
         else:
@@ -2638,6 +2642,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "previous_volume": int(previous_volume),
                 "selected_volume_before_exact_gate": int(selected_volume),
                 "final_volume": int(final_volume),
+                "volume_policy": str(self.rollover_shape_volume_policy),
+                "volume_outcome": (
+                    "skipped"
+                    if int(final_volume) <= 0
+                    else "reduced"
+                    if int(final_volume) < int(previous_volume)
+                    else "full"
+                ),
+                "was_reduced": int(0 < int(final_volume) < int(previous_volume)),
                 "status": status,
                 "reason": reason,
             }
@@ -8159,18 +8172,28 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
 
     @staticmethod
-    def _exact_rollover_reopen_volume(
+    def _rollover_shape_reopen_volume(
         *,
         previous_volume: int,
         sizing_snapshot: dict[str, Any],
+        volume_policy: str,
     ) -> tuple[int, str]:
         previous_volume = max(0, int(previous_volume))
         allowed_volume = max(0, int(sizing_snapshot.get("selected_volume") or 0))
         if previous_volume <= 0:
             return 0, "previous_volume_not_positive"
-        if allowed_volume < previous_volume:
+        if allowed_volume <= 0:
+            return 0, "no_positive_volume_allowed"
+        if volume_policy == "exact_or_skip" and allowed_volume < previous_volume:
             return 0, "previous_volume_not_fully_allowed"
-        return previous_volume, "previous_volume_fully_allowed"
+        if volume_policy == "shrink_to_allowed":
+            final_volume = min(previous_volume, allowed_volume)
+            if final_volume < previous_volume:
+                return final_volume, "reduced_to_allowed_volume"
+            return final_volume, "previous_volume_fully_allowed"
+        if volume_policy == "exact_or_skip":
+            return previous_volume, "previous_volume_fully_allowed"
+        return 0, "invalid_rollover_volume_policy"
 
     def _generate_signal(self, am: ArrayManager, history: pd.DataFrame) -> dict[str, Any]:
         close = pd.Series(am.close_array)

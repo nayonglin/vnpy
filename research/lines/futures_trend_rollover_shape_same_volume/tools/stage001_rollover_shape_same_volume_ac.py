@@ -31,9 +31,10 @@ TRADE_EVENTS_PATH = OUTPUT_DIR / "stage001_trade_events.csv"
 DECISION_PATH = OUTPUT_DIR / "stage001_decision.json"
 
 
-def _overrides(*, candidate: bool) -> dict[str, Any]:
+def _overrides(*, candidate: bool, volume_policy: str = "exact_or_skip") -> dict[str, Any]:
     overrides = live_cfg.build_official_live_strategy_overrides()
     overrides["enable_rollover_shape_same_volume_reopen"] = bool(candidate)
+    overrides["rollover_shape_volume_policy"] = volume_policy
     return overrides
 
 
@@ -42,10 +43,15 @@ def _run_arm(
     profile_name: str,
     candidate: bool,
     metadata: dict[str, Any],
+    volume_policy: str = "exact_or_skip",
+    label: str = "",
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, pd.DataFrame]]:
     original_builder = s901.build_official_live_strategy_overrides
     try:
-        s901.build_official_live_strategy_overrides = lambda: _overrides(candidate=candidate)
+        s901.build_official_live_strategy_overrides = lambda: _overrides(
+            candidate=candidate,
+            volume_policy=volume_policy,
+        )
         combined, frames, live_spec = s901._run_live_c9(metadata, START, END)
     finally:
         s901.build_official_live_strategy_overrides = original_builder
@@ -53,7 +59,7 @@ def _run_arm(
     metric_capital = replace(
         live_spec.capital,
         variant=profile_name,
-        label=(
+        label=label or (
             "C: 正式 C9/15万 + 换月形态确认原手数完整重开"
             if candidate
             else "A: 正式 C9/15万原样基线"
