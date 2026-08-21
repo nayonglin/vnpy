@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage003 已完成；新主力仅当日可交易行情和元数据、形态使用点时 backward-ratio 连续历史的工程合同与完整 A/B/C 通过，研究保留、不晋级正式配置
+- 当前状态：Stage004 正式晋级审计失败；连续历史工程合同保留，但 `2022` 起点回撤恶化 `6.0876pp`、`2018-01` 一年窗口收益/Sharpe 恶化、聚合滑点超过预声明上限，不晋级正式配置
 - 正式基线：`origin/master@8b3e534ae4336240157fdf69abae98599f0dbfd4`
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
@@ -46,8 +46,16 @@
 - 过拟合风险：规则层面低、绩效结论层面中等。数据语义是结构修复，但只有 `23` 次换月和 `5` 次历史短样本，不能按当前收益继续挑复权方式或指标参数。
 - 继续价值：工程与固定规则 forward shadow 有，主动参数优化价值低；不据当前结果扫描 MA、MACD、复权方式、品种、日期或手数比例。
 
+## Stage004 正式晋级审计
+
+- 用户明确授权直接晋升后，冻结 `2019-2025` 七个独立 start-year 和四个一年弱/近期窗口，以真引擎逐窗独立冷启动比较 A/C。
+- C 的 start-year 收益胜率 `7/7`、收益差中位 `+27.2869pp`，但 `2022` 起点只多赚 `4.4100pp`，最大回撤从 `-39.9820%` 恶化到 `-46.0696%`，恶化 `6.0876pp`。
+- `2018-01` 一年窗口收益从 `-3.9197%` 恶化到 `-10.0331%`，Sharpe 从 `-0.1592` 恶化到 `-0.5063`。
+- 十一个窗口聚合滑点 C/A=`106.6559%`，超过预声明 `105%` 上限；DD、Sharpe、成本三项 gate 失败，最终 `promotion_pass=false`。
+- 结论：用户授权不替代风险证据；不修改正式配置、不发布正式物料、不推送 master、不激活生产。
+
 ## 下一步
 
-1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow，积累更多换月和容量不足事件。
-2. 若用户明确要求晋级，另做正式物料冻结、生产支持链完整回归、独立复审和激活门禁；Stage003 不自动修改正式配置。
-3. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救结果；当前不激活实盘。
+1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件。
+2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；当前不进入正式物料与激活流程。
+3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
