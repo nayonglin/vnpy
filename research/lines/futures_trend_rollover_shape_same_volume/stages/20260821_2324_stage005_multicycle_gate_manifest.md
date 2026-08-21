@@ -1,7 +1,8 @@
 # Stage005 多周期 A/C 运行前 Gate Manifest
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 冻结时间：`2026-08-21 20:30 CST`
+- 实际不可变冻结时间：`2026-08-21 23:24 CST`，以提交 `91aa8d81e212e50891931829177a6eae64665840` 的提交时间为准。
+- 审计说明：最初文件名和正文中的 `20:30` 是计划运行时间，不是实际冻结时间；本次只校正时间 provenance，以下窗口、A/C 身份、gate 和输出合同与结果产生前提交的版本完全相同。结果文件于 `23:44` 生成。
 - 冻结目的：在读取 Stage005 新结果前固定多周期窗口、A/C 身份、晋级门和全部资金曲线输出。
 - A：当前正式 C9/15万，换月续仓开关关闭。
 - C：A + `enable_rollover_shape_same_volume_reopen=True` + `backwards_ratio_continuous` + `shrink_to_allowed`。

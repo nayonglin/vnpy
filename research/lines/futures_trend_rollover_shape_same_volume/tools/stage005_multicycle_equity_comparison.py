@@ -176,9 +176,11 @@ def _validate_outputs(summary: pd.DataFrame, curves: pd.DataFrame) -> None:
         "account_survival_pass",
         "broker10_100_pass",
     ]
-    if summary[critical].apply(pd.to_numeric, errors="coerce").isna().any().any():
+    critical_values = summary[critical].apply(pd.to_numeric, errors="coerce")
+    if not np.isfinite(critical_values.to_numpy(dtype=float)).all():
         raise RuntimeError("stage005_critical_metric_missing")
-    if curves.empty or curves["account_equity"].isna().any():
+    curve_equity = pd.to_numeric(curves["account_equity"], errors="coerce")
+    if curves.empty or not np.isfinite(curve_equity.to_numpy(dtype=float)).all():
         raise RuntimeError("stage005_curve_missing")
     curve_pairs = set(
         zip(curves["window_id"].astype(str), curves["promotion_arm"].astype(str), strict=False)
@@ -384,9 +386,9 @@ def _plot_window_grid(curves: pd.DataFrame, comparison: pd.DataFrame, years: int
     for ax in axes.ravel()[len(selected):]:
         ax.axis("off")
     handles, labels = axes.ravel()[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=2)
     fig.suptitle(f"Stage005 {years}-Year Independent Rolling Equity Curves", y=0.998, fontsize=15)
-    fig.tight_layout(rect=[0, 0, 1, 0.975])
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.975), ncol=2)
+    fig.tight_layout(rect=[0, 0, 1, 0.94])
     buffer = BytesIO()
     fig.savefig(buffer, format="png", dpi=150)
     plt.close(fig)

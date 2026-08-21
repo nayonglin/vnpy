@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage004 正式晋级审计失败；连续历史工程合同保留，但 `2022` 起点回撤恶化 `6.0876pp`、`2018-01` 一年窗口收益/Sharpe 恶化、聚合滑点超过预声明上限，不晋级正式配置
+- 当前状态：Stage005 多周期审计再次确认不晋级；完整周期和 3 年聚合通过，但 1 年 Sharpe 非劣率仅 `66.67%`，2 年 DD/Sharpe 非劣率均 `76.92%` 且新增 DD50 失败
 - 正式基线：`origin/master@8b3e534ae4336240157fdf69abae98599f0dbfd4`
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
@@ -54,8 +54,16 @@
 - 十一个窗口聚合滑点 C/A=`106.6559%`，超过预声明 `105%` 上限；DD、Sharpe、成本三项 gate 失败，最终 `promotion_pass=false`。
 - 结论：用户授权不替代风险证据；不修改正式配置、不发布正式物料、不推送 master、不激活生产。
 
+## Stage005 多周期资金曲线审计
+
+- 在结果产生前提交冻结 1/2/3 年、每年 1 月和 6 月独立冷启动窗口及全部 gate；共 `43` 窗口、`86` 个 A/C 真引擎运行，临近完整窗口只观察不投票。
+- 1 年 `15` 个完整窗口：收益胜率 `60.00%`、收益差中位 `+1.6267pp`、DD 非劣率 `93.33%`，但 Sharpe 非劣率仅 `66.67%`，失败。
+- 2 年 `13` 个完整窗口：收益胜率 `53.85%`、收益差中位 `+0.7867pp`，但 DD/Sharpe 非劣率均 `76.92%`；`2020-06` 收益差 `-204.4657pp`、回撤恶化 `9.3533pp` 并新增 DD50 失败，失败。
+- 3 年 `11` 个完整窗口全部聚合门通过，但不能覆盖 1/2 年失败；完整周期 C 虽多赚 `178.1011pp`，仍出现正式 A 没有的 broker100 失败。
+- 决策：`confirm_do_not_promote_after_multicycle`；五张完整/逐周期/汇总资金曲线与原始曲线 CSV 一并保留，不改正式配置、物料、master 或生产。
+
 ## 下一步
 
-1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件。
+1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件；不再增加历史窗口来重复证明同一失败。
 2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；当前不进入正式物料与激活流程。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。

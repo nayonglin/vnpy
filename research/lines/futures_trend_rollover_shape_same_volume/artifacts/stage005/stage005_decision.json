@@ -1,0 +1,469 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage005",
+  "generated_at": "2026-08-21T23:44:09+08:00",
+  "gate_contract": {
+    "data_start": "2018-01-01",
+    "data_end": "2026-05-29",
+    "start_schedule": "January and June",
+    "durations_years": [
+      1,
+      2,
+      3
+    ],
+    "complete_windows_only_for_decision": true,
+    "terminal_near_complete_tolerance_days": 7,
+    "candidate": {
+      "enable_rollover_shape_same_volume_reopen": true,
+      "rollover_shape_history_mode": "backwards_ratio_continuous",
+      "rollover_shape_volume_policy": "shrink_to_allowed"
+    }
+  },
+  "window_count": 43,
+  "arm_run_count": 86,
+  "predeclared_windows": [
+    {
+      "window_id": "full_2018_2026",
+      "window_group": "full_period",
+      "duration_years": 0,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-01-01",
+      "end": "2026-05-29"
+    },
+    {
+      "window_id": "roll_1y_2018_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-01-01",
+      "end": "2018-12-31"
+    },
+    {
+      "window_id": "roll_1y_2018_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-06-01",
+      "end": "2019-05-31"
+    },
+    {
+      "window_id": "roll_1y_2019_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-01-01",
+      "end": "2019-12-31"
+    },
+    {
+      "window_id": "roll_1y_2019_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-06-01",
+      "end": "2020-05-31"
+    },
+    {
+      "window_id": "roll_1y_2020_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-01-01",
+      "end": "2020-12-31"
+    },
+    {
+      "window_id": "roll_1y_2020_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-06-01",
+      "end": "2021-05-31"
+    },
+    {
+      "window_id": "roll_1y_2021_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-01-01",
+      "end": "2021-12-31"
+    },
+    {
+      "window_id": "roll_1y_2021_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-06-01",
+      "end": "2022-05-31"
+    },
+    {
+      "window_id": "roll_1y_2022_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-01-01",
+      "end": "2022-12-31"
+    },
+    {
+      "window_id": "roll_1y_2022_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-06-01",
+      "end": "2023-05-31"
+    },
+    {
+      "window_id": "roll_1y_2023_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2023-01-01",
+      "end": "2023-12-31"
+    },
+    {
+      "window_id": "roll_1y_2023_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2023-06-01",
+      "end": "2024-05-31"
+    },
+    {
+      "window_id": "roll_1y_2024_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    },
+    {
+      "window_id": "roll_1y_2024_06",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2024-06-01",
+      "end": "2025-05-31"
+    },
+    {
+      "window_id": "roll_1y_2025_01",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    {
+      "window_id": "roll_1y_2025_06_near_complete",
+      "window_group": "rolling_1y",
+      "duration_years": 1,
+      "complete": false,
+      "terminal_near_complete": true,
+      "start": "2025-06-01",
+      "end": "2026-05-29"
+    },
+    {
+      "window_id": "roll_2y_2018_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-01-01",
+      "end": "2019-12-31"
+    },
+    {
+      "window_id": "roll_2y_2018_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-06-01",
+      "end": "2020-05-31"
+    },
+    {
+      "window_id": "roll_2y_2019_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-01-01",
+      "end": "2020-12-31"
+    },
+    {
+      "window_id": "roll_2y_2019_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-06-01",
+      "end": "2021-05-31"
+    },
+    {
+      "window_id": "roll_2y_2020_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-01-01",
+      "end": "2021-12-31"
+    },
+    {
+      "window_id": "roll_2y_2020_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-06-01",
+      "end": "2022-05-31"
+    },
+    {
+      "window_id": "roll_2y_2021_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-01-01",
+      "end": "2022-12-31"
+    },
+    {
+      "window_id": "roll_2y_2021_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-06-01",
+      "end": "2023-05-31"
+    },
+    {
+      "window_id": "roll_2y_2022_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-01-01",
+      "end": "2023-12-31"
+    },
+    {
+      "window_id": "roll_2y_2022_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-06-01",
+      "end": "2024-05-31"
+    },
+    {
+      "window_id": "roll_2y_2023_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2023-01-01",
+      "end": "2024-12-31"
+    },
+    {
+      "window_id": "roll_2y_2023_06",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2023-06-01",
+      "end": "2025-05-31"
+    },
+    {
+      "window_id": "roll_2y_2024_01",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2024-01-01",
+      "end": "2025-12-31"
+    },
+    {
+      "window_id": "roll_2y_2024_06_near_complete",
+      "window_group": "rolling_2y",
+      "duration_years": 2,
+      "complete": false,
+      "terminal_near_complete": true,
+      "start": "2024-06-01",
+      "end": "2026-05-29"
+    },
+    {
+      "window_id": "roll_3y_2018_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-01-01",
+      "end": "2020-12-31"
+    },
+    {
+      "window_id": "roll_3y_2018_06",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2018-06-01",
+      "end": "2021-05-31"
+    },
+    {
+      "window_id": "roll_3y_2019_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-01-01",
+      "end": "2021-12-31"
+    },
+    {
+      "window_id": "roll_3y_2019_06",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2019-06-01",
+      "end": "2022-05-31"
+    },
+    {
+      "window_id": "roll_3y_2020_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-01-01",
+      "end": "2022-12-31"
+    },
+    {
+      "window_id": "roll_3y_2020_06",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2020-06-01",
+      "end": "2023-05-31"
+    },
+    {
+      "window_id": "roll_3y_2021_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-01-01",
+      "end": "2023-12-31"
+    },
+    {
+      "window_id": "roll_3y_2021_06",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2021-06-01",
+      "end": "2024-05-31"
+    },
+    {
+      "window_id": "roll_3y_2022_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-01-01",
+      "end": "2024-12-31"
+    },
+    {
+      "window_id": "roll_3y_2022_06",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2022-06-01",
+      "end": "2025-05-31"
+    },
+    {
+      "window_id": "roll_3y_2023_01",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": true,
+      "terminal_near_complete": false,
+      "start": "2023-01-01",
+      "end": "2025-12-31"
+    },
+    {
+      "window_id": "roll_3y_2023_06_near_complete",
+      "window_group": "rolling_3y",
+      "duration_years": 3,
+      "complete": false,
+      "terminal_near_complete": true,
+      "start": "2023-06-01",
+      "end": "2026-05-29"
+    }
+  ],
+  "full_period_gates": {
+    "return_not_below_A": true,
+    "dd_worsening_le_1pp": true,
+    "sharpe_noninferior_001": true,
+    "slippage_ratio_le_105pct": true,
+    "candidate_survival": true
+  },
+  "cycle_gates": [
+    {
+      "duration_years": 1,
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_A": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_candidate_survival": true,
+        "broker100_fail_count_not_above_A": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 2,
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_A": false,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_candidate_survival": true,
+        "broker100_fail_count_not_above_A": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 3,
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_A": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "slippage_ratio_le_105pct": true,
+        "all_candidate_survival": true,
+        "broker100_fail_count_not_above_A": true
+      },
+      "pass": true
+    }
+  ],
+  "all_multicycle_gates_pass": false,
+  "decision": "confirm_do_not_promote_after_multicycle",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

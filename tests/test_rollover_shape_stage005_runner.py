@@ -68,6 +68,45 @@ class Stage005RunnerTest(unittest.TestCase):
         self.assertFalse(decision["all_multicycle_gates_pass"])
         self.assertEqual("confirm_do_not_promote_after_multicycle", decision["decision"])
 
+    def test_output_validation_rejects_nonfinite_metrics(self) -> None:
+        summary_rows = []
+        curve_rows = []
+        for window in stage005.WINDOWS:
+            for arm in stage005.ARMS:
+                summary_rows.append(
+                    {
+                        "window_id": window["window_id"],
+                        "promotion_arm": arm["arm"],
+                        "end_equity": 1.0,
+                        "total_return_pct": 1.0,
+                        "max_dd_pct": -1.0,
+                        "sharpe": 1.0,
+                        "total_slippage": 1.0,
+                        "total_trade_count": 1.0,
+                        "nonzero_daily_win_rate_pct": 1.0,
+                        "account_survival_pass": 1.0,
+                        "broker10_100_pass": 1.0,
+                    }
+                )
+                curve_rows.append(
+                    {
+                        "window_id": window["window_id"],
+                        "promotion_arm": arm["arm"],
+                        "account_equity": 1.0,
+                    }
+                )
+        summary = pd.DataFrame(summary_rows)
+        curves = pd.DataFrame(curve_rows)
+
+        summary.loc[0, "sharpe"] = float("inf")
+        with self.assertRaisesRegex(RuntimeError, "stage005_critical_metric_missing"):
+            stage005._validate_outputs(summary, curves)
+
+        summary.loc[0, "sharpe"] = 1.0
+        curves.loc[0, "account_equity"] = float("-inf")
+        with self.assertRaisesRegex(RuntimeError, "stage005_curve_missing"):
+            stage005._validate_outputs(summary, curves)
+
 
 if __name__ == "__main__":
     unittest.main()
