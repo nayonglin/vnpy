@@ -1,0 +1,60 @@
+- iframe [active] [ref=f2e2]:
+  - generic [ref=f3e2]:
+    - generic [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - heading "Stage003 A/B/C 资金曲线" [level=2] [ref=f3e5]
+        - paragraph [ref=f3e6]: 2018-01-02—2026-05-29 · 初始资金 15 万元 · 日频
+      - generic [ref=f3e7]:
+        - text: 权益纵轴
+        - combobox "权益纵轴" [ref=f3e8]:
+          - option "线性坐标"
+          - option "对数坐标" [selected]
+    - generic "策略版本图例" [ref=f3e9]:
+      - button "A 正式基线 末值 ¥1,307.12 万 · 最大回撤 −56.21%" [pressed] [ref=f3e10] [cursor=pointer]:
+        - generic [ref=f3e12]: A 正式基线
+        - generic [ref=f3e13]: 末值 ¥1,307.12 万 · 最大回撤 −56.21%
+      - button "B 自身≥40根 末值 ¥1,349.30 万 · 最大回撤 −57.27%" [active] [ref=f3e14] [cursor=pointer]:
+        - generic [ref=f3e16]: B 自身≥40根
+        - generic [ref=f3e17]: 末值 ¥1,349.30 万 · 最大回撤 −57.27%
+      - button "C 当日行情+连续历史 末值 ¥1,333.84 万 · 最大回撤 −56.99%" [pressed] [ref=f3e18] [cursor=pointer]:
+        - generic [ref=f3e20]: C 当日行情+连续历史
+        - generic [ref=f3e21]: 末值 ¥1,333.84 万 · 最大回撤 −56.99%
+    - generic [ref=f3e22]:
+      - region [ref=f3e23]:
+        - heading "账户权益" [level=3] [ref=f3e24]
+        - img "A、B、C 账户权益时间序列" [ref=f3e26]:
+          - generic [ref=f3e27]:
+            - generic [ref=f3e30]:
+              - generic [ref=f3e32]: 2020-01
+              - generic [ref=f3e34]: 2022-01
+              - generic [ref=f3e36]: 2024-01
+              - generic [ref=f3e38]: 2026-01
+            - generic [ref=f3e40]:
+              - generic [ref=f3e95]: 10.0万
+              - generic [ref=f3e97]: 20.0万
+              - generic [ref=f3e99]: 50.0万
+              - generic [ref=f3e101]: 100.0万
+              - generic [ref=f3e103]: 200.0万
+              - generic [ref=f3e44]: 500.0万
+              - generic [ref=f3e46]: 1000.0万
+              - generic [ref=f3e50]: 2000.0万
+          - generic [ref=f3e57]: 日期
+          - generic [ref=f3e58]: 账户权益（元）
+      - region [ref=f3e59]:
+        - heading "相对正式基线 A 的权益差额" [level=3] [ref=f3e60]
+        - img "B、C 相对 A 的权益差额时间序列" [ref=f3e62]:
+          - generic [ref=f3e63]:
+            - generic [ref=f3e66]:
+              - generic [ref=f3e68]: 2020-01
+              - generic [ref=f3e70]: 2022-01
+              - generic [ref=f3e72]: 2024-01
+              - generic [ref=f3e74]: 2026-01
+            - generic [ref=f3e76]:
+              - generic [ref=f3e78]: −100.0万
+              - generic [ref=f3e80]: −50.0万
+              - generic [ref=f3e82]: "0"
+              - generic [ref=f3e84]: 50.0万
+          - generic [ref=f3e92]: 日期
+          - generic [ref=f3e93]: 相对 A 差额（元）
+    - tooltip
+    - paragraph [ref=f3e94]: A 为正式 C9 十五万基线，B 为新合约自身四十根历史，C 为新合约仅要求当日行情和元数据并用连续历史。图中展示三条账户权益曲线以及 B、C 相对 A 的权益差额。

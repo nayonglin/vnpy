@@ -61,6 +61,7 @@ DAILY_PATH = EXAMPLES_DIR / "backtest_outputs" / (
 )
 DATABASE_PATH = REPO_ROOT / ".vntrader" / "database.db"
 MAPPING_PATH = EXAMPLES_DIR / "backtest_outputs" / "tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv"
+LOCAL_MINUTE_ROOT = EXAMPLES_DIR / "downloaded_futures"
 
 START = pd.Timestamp("2018-01-01")
 DEFAULT_END = pd.Timestamp("2026-08-12")
@@ -68,11 +69,14 @@ DAILY_PRE = 30
 DAILY_POST = 30
 INTRADAY_PRE = 5
 INTRADAY_POST = 5
+MONTHLY_PRE = 10
+MONTHLY_POST = 10
 CHINA_TZ = ZoneInfo("Asia/Shanghai")
 MA_PERIODS = (5, 10, 20, 40)
 # Include a small whole-week cushion because the earliest available source
 # week can be partial even when the product calendar contains that period.
 WEEKLY_MA_WARMUP_WEEKS = max(MA_PERIODS) + 5
+MONTHLY_MA_WARMUP_MONTHS = max(MA_PERIODS) + 5
 
 
 @dataclass(frozen=True)
@@ -140,6 +144,32 @@ def _run_current_c9(end: pd.Timestamp) -> tuple[pd.DataFrame, pd.DataFrame, dict
     if selected.empty:
         raise RuntimeError("Current C9/15w replay produced no profit/loss tail episodes.")
     return combined, closed, frames, spec
+
+
+def _strategy_inputs(
+    end: pd.Timestamp,
+    *,
+    reuse_existing: bool,
+    closed_path: Path = CLOSED_LOTS_PATH,
+    selected_path: Path = SELECTED_EPISODES_PATH,
+    daily_path: Path = STRATEGY_DAILY_PATH,
+    summary_path: Path = SUMMARY_PATH,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, Any | None, dict[str, Any]]:
+    if not reuse_existing:
+        combined, closed, _frames, spec = _run_current_c9(end)
+        return combined, closed, _selected_tail_episodes(closed), spec, {}
+
+    required = (closed_path, selected_path, daily_path, summary_path)
+    missing = [str(path) for path in required if not path.exists()]
+    if missing:
+        raise FileNotFoundError(f"Cannot reuse missing atlas artifacts: {missing}")
+    combined = pd.read_csv(daily_path, encoding="utf-8-sig")
+    closed = pd.read_csv(closed_path, encoding="utf-8-sig")
+    selected = pd.read_csv(selected_path, encoding="utf-8-sig")
+    prior_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if combined.empty or closed.empty or selected.empty:
+        raise RuntimeError("Existing atlas strategy artifacts are empty.")
+    return combined, closed, selected, None, prior_summary
 
 
 def _trade_episodes(closed: pd.DataFrame) -> pd.DataFrame:
@@ -297,6 +327,9 @@ def _context_daily(
     row: Any,
     mapping: pd.DataFrame,
     bar_cache: dict[str, pd.DataFrame],
+    *,
+    allow_daily_download: bool = True,
+    data_end: pd.Timestamp | None = None,
 ) -> tuple[pd.DataFrame, list[pd.Timestamp]]:
     product_value = str(row.product)
     if "." in product_value:
@@ -307,6 +340,8 @@ def _context_daily(
     calendar = mapping[
         mapping["product"].astype(str).str.lower().eq(product.lower()) & mapping["exchange"].eq(exchange)
     ].drop_duplicates("date").sort_values("date").reset_index(drop=True)
+    if data_end is not None:
+        calendar = calendar[calendar["date"].le(pd.Timestamp(data_end).normalize())].reset_index(drop=True)
     entry_date = pd.Timestamp(row.entry_date).normalize()
     exit_date = pd.Timestamp(row.exit_date).normalize()
     entry_index = _date_index(calendar, entry_date, exact=True)
@@ -321,8 +356,23 @@ def _context_daily(
         display_end += 1
     display_dates = set(calendar.iloc[display_start:display_end]["date"])
 
+    monthly_start_period = entry_date.to_period("M") - MONTHLY_PRE
+    monthly_end_period = exit_date.to_period("M") + MONTHLY_POST
+    calendar_months = calendar["date"].dt.to_period("M")
+    monthly_visible_indices = calendar.index[
+        (calendar_months >= monthly_start_period) & (calendar_months <= monthly_end_period)
+    ]
+    if len(monthly_visible_indices):
+        monthly_display_start = int(monthly_visible_indices[0])
+        monthly_display_end = int(monthly_visible_indices[-1]) + 1
+    else:
+        monthly_display_start = display_start
+        monthly_display_end = display_end
+
     # Keep the requested chart window unchanged, but load enough earlier daily
-    # bars to seed a genuine 40-week moving average on the first visible week.
+    # bars to seed genuine 40-week and 40-month moving averages.  The monthly
+    # panel has its own wider visible window, while the original three panels
+    # retain their existing display dates.
     warmup_start = display_start
     if display_start > 0:
         prior_periods = (
@@ -338,7 +388,20 @@ def _context_daily(
                     calendar["date"].dt.to_period("W-FRI").eq(first_warmup_period)
                 ][0]
             )
-    wanted = calendar.iloc[warmup_start:display_end].copy()
+    monthly_warmup_start = monthly_display_start
+    if monthly_display_start > 0:
+        prior_months = (
+            calendar.iloc[:monthly_display_start]["date"]
+            .dt.to_period("M")
+            .drop_duplicates()
+            .tail(MONTHLY_MA_WARMUP_MONTHS)
+        )
+        if len(prior_months):
+            first_warmup_month = prior_months.iloc[0]
+            monthly_warmup_start = int(calendar.index[calendar_months.eq(first_warmup_month)][0])
+    warmup_start = min(warmup_start, monthly_warmup_start)
+    context_end = max(display_end, monthly_display_end)
+    wanted = calendar.iloc[warmup_start:context_end].copy()
     def bars(source: str) -> pd.DataFrame:
         if source not in bar_cache:
             bar_cache[source] = _contract_daily(source)
@@ -347,11 +410,40 @@ def _context_daily(
     exact_bars = bars(str(row.vt_symbol))
     exact_by_date = exact_bars.set_index("date")
     output: list[dict[str, Any]] = []
+    local_minute_checked: set[str] = set()
     for item in wanted.itertuples(index=False):
+        item_month = pd.Timestamp(item.date).to_period("M")
+        monthly_display = monthly_start_period <= item_month <= monthly_end_period
+        required_visible = item.date in display_dates or monthly_display
         source = str(row.vt_symbol) if item.date in exact_by_date.index else str(item.main_contract_vt)
-        source_bars = bars(source)
+        try:
+            source_bars = bars(source)
+        except RuntimeError:
+            if allow_daily_download:
+                raise
+            source_bars = pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume"])
+            bar_cache[source] = source_bars
         matched = source_bars[source_bars["date"].eq(item.date)]
-        if matched.empty:
+        if matched.empty and not allow_daily_download and source not in local_minute_checked:
+            local_minute_checked.add(source)
+            recovered = _daily_from_existing_minute_files(
+                source,
+                [pd.Timestamp(value).normalize() for value in calendar["date"]],
+            )
+            if not recovered.empty:
+                combined_bars = (
+                    recovered.copy()
+                    if source_bars.empty
+                    else pd.concat([source_bars, recovered], ignore_index=True, sort=False)
+                )
+                source_bars = (
+                    combined_bars.drop_duplicates("date", keep="last")
+                    .sort_values("date")
+                    .reset_index(drop=True)
+                )
+                bar_cache[source] = source_bars
+                matched = source_bars[source_bars["date"].eq(item.date)]
+        if matched.empty and allow_daily_download:
             downloaded = _fetch_daily_tq(source, wanted["date"].min(), wanted["date"].max())
             source_bars = (
                 pd.concat([source_bars, downloaded], ignore_index=True, sort=False)
@@ -362,11 +454,14 @@ def _context_daily(
             bar_cache[source] = source_bars
             matched = source_bars[source_bars["date"].eq(item.date)]
         if matched.empty:
+            if not required_visible:
+                continue
             raise RuntimeError(f"Missing daily context bar for {row.open_trade_id}: {source} {item.date.date()}.")
         bar = matched.iloc[0].to_dict()
         bar["source_vt_symbol"] = source
         bar["context_fallback"] = int(source != str(row.vt_symbol))
         bar["display"] = int(item.date in display_dates)
+        bar["monthly_display"] = int(monthly_display)
         output.append(bar)
     daily = pd.DataFrame(output).sort_values("date").reset_index(drop=True)
     _date_index(daily, entry_date, exact=True)
@@ -541,6 +636,62 @@ def _assign_trading_day(frame: pd.DataFrame, daily_dates: list[pd.Timestamp]) ->
     return result.dropna(subset=["trading_day"]).reset_index(drop=True)
 
 
+def _daily_from_minute_frame(
+    frame: pd.DataFrame,
+    daily_dates: list[pd.Timestamp],
+) -> pd.DataFrame:
+    if frame.empty:
+        return pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume"])
+    minute = frame.copy()
+    minute["bar_datetime"] = pd.to_datetime(minute["bar_datetime"], errors="coerce")
+    minute = minute.dropna(subset=["bar_datetime", "open", "high", "low", "close"])
+    minute = minute.sort_values("bar_datetime").drop_duplicates("bar_datetime", keep="last")
+    minute = _assign_trading_day(minute, daily_dates)
+    if minute.empty:
+        return pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume"])
+    minute["volume"] = pd.to_numeric(minute.get("volume", 0.0), errors="coerce").fillna(0.0)
+    aggregations: dict[str, tuple[str, str]] = {
+        "open": ("open", "first"),
+        "high": ("high", "max"),
+        "low": ("low", "min"),
+        "close": ("close", "last"),
+        "volume": ("volume", "sum"),
+    }
+    if "close_oi" in minute.columns:
+        aggregations["close_oi"] = ("close_oi", "last")
+    return (
+        minute.groupby("trading_day", sort=True)
+        .agg(**aggregations)
+        .reset_index()
+        .rename(columns={"trading_day": "date"})
+    )
+
+
+def _daily_from_existing_minute_files(
+    vt_symbol: str,
+    daily_dates: list[pd.Timestamp],
+) -> pd.DataFrame:
+    symbol, exchange = str(vt_symbol).split(".", 1)
+    candidates = sorted(
+        LOCAL_MINUTE_ROOT.glob(f"*/{exchange}/{symbol}_completed_minute_backtest.csv")
+    )
+    frames: list[pd.DataFrame] = []
+    for path in candidates:
+        try:
+            frames.append(
+                pd.read_csv(
+                    path,
+                    encoding="utf-8-sig",
+                    usecols=["bar_datetime", "open", "high", "low", "close", "volume", "close_oi"],
+                )
+            )
+        except (OSError, ValueError):
+            continue
+    if not frames:
+        return pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume"])
+    return _daily_from_minute_frame(pd.concat(frames, ignore_index=True, sort=False), daily_dates)
+
+
 def _weekly_from_daily(daily: pd.DataFrame) -> pd.DataFrame:
     data = daily.copy()
     data["week"] = data["date"].dt.to_period("W-FRI").astype(str)
@@ -559,12 +710,62 @@ def _weekly_from_daily(daily: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def _monthly_from_daily(daily: pd.DataFrame) -> pd.DataFrame:
+    data = daily.copy().sort_values("date").reset_index(drop=True)
+    data["month"] = pd.to_datetime(data["date"], errors="coerce").dt.to_period("M").astype(str)
+    return (
+        data.groupby("month", sort=False)
+        .agg(
+            date_start=("date", "min"),
+            date_end=("date", "max"),
+            open=("open", "first"),
+            high=("high", "max"),
+            low=("low", "min"),
+            close=("close", "last"),
+            volume=("volume", "sum"),
+        )
+        .reset_index()
+    )
+
+
+def _monthly_window(
+    monthly: pd.DataFrame,
+    *,
+    entry_date: pd.Timestamp,
+    exit_date: pd.Timestamp,
+) -> pd.DataFrame:
+    start = pd.Timestamp(entry_date).to_period("M") - MONTHLY_PRE
+    end = pd.Timestamp(exit_date).to_period("M") + MONTHLY_POST
+    periods = pd.PeriodIndex(monthly["month"], freq="M")
+    return monthly.loc[(periods >= start) & (periods <= end)].copy().reset_index(drop=True)
+
+
 def _add_moving_averages(frame: pd.DataFrame) -> pd.DataFrame:
     result = frame.copy()
     close = pd.to_numeric(result["close"], errors="coerce")
     for period in MA_PERIODS:
         result[f"ma{period}"] = close.rolling(period, min_periods=period).mean()
     return result
+
+
+def _period_coordinates(
+    context_dates: pd.Series | pd.DatetimeIndex,
+    periods: pd.DataFrame,
+) -> tuple[list[float], list[float]]:
+    dates = pd.Series(pd.to_datetime(context_dates, errors="coerce")).dropna().reset_index(drop=True)
+    positions = {pd.Timestamp(value).normalize(): index + 0.5 for index, value in enumerate(dates)}
+    x_values: list[float] = []
+    widths: list[float] = []
+    for row in periods.itertuples(index=False):
+        members = [
+            positions[pd.Timestamp(value).normalize()]
+            for value in dates[dates.between(pd.Timestamp(row.date_start), pd.Timestamp(row.date_end))]
+        ]
+        if not members:
+            raise RuntimeError(f"Period {row.date_start}..{row.date_end} has no shared-axis trading days.")
+        x_values.append(float(np.mean(members)))
+        widths.append(float(len(members) * 0.78))
+    return x_values, widths
 
 
 def _records(
@@ -618,6 +819,22 @@ def _records(
             aggregated_days.append(pd.Timestamp(trading_day).date().isoformat())
         daily_full = _add_moving_averages(daily_full)
         weekly_full = _add_moving_averages(_weekly_from_daily(daily_full))
+        monthly_full = _add_moving_averages(_monthly_from_daily(daily_full))
+        monthly = _monthly_window(
+            monthly_full,
+            entry_date=entry_date,
+            exit_date=exit_date,
+        )
+        context_day_positions = {
+            pd.Timestamp(value).normalize(): index + 0.5
+            for index, value in enumerate(daily_full["date"])
+        }
+        monthly["x"], monthly["width"] = _period_coordinates(daily_full["date"], monthly)
+        monthly_context = daily_full[
+            daily_full["date"].between(monthly["date_start"].iloc[0], monthly["date_end"].iloc[-1])
+        ]
+        chart_x_start = float(context_day_positions[monthly_context["date"].iloc[0]] - 0.5)
+        chart_x_end = float(context_day_positions[monthly_context["date"].iloc[-1]] + 0.5)
         display_start_date = daily.loc[0, "date"]
         display_end_date = daily.loc[len(daily) - 1, "date"]
         daily = daily_full[daily_full["display"].eq(1)].copy().reset_index(drop=True)
@@ -625,36 +842,31 @@ def _records(
             weekly_full["date_start"].ge(display_start_date)
             & weekly_full["date_end"].le(display_end_date)
         ].copy().reset_index(drop=True)
-        day_positions = {date: index for index, date in enumerate(daily["date"])}
-        daily["x"] = np.arange(len(daily), dtype=float) + 0.5
-        weekly["x"] = [
-            float(np.mean([day_positions[value] + 0.5 for value in daily.loc[daily["date"].between(start, end), "date"]]))
-            for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
-        ]
-        weekly["width"] = [
-            int(daily["date"].between(start, end).sum()) * 0.78
-            for start, end in zip(weekly["date_start"], weekly["date_end"], strict=False)
-        ]
+        daily["x"] = [context_day_positions[pd.Timestamp(value).normalize()] for value in daily["date"]]
+        weekly["x"], weekly["width"] = _period_coordinates(daily_full["date"], weekly)
         minute["x"] = np.nan
         for trading_day, indices in minute.groupby("trading_day", sort=False).groups.items():
-            if trading_day not in day_positions:
+            normalized_day = pd.Timestamp(trading_day).normalize()
+            if normalized_day not in context_day_positions:
                 continue
             index_list = list(indices)
             count = len(index_list)
-            minute.loc[index_list, "x"] = day_positions[trading_day] + (np.arange(count) + 0.5) / count
+            minute.loc[index_list, "x"] = (
+                context_day_positions[normalized_day] - 0.5 + (np.arange(count) + 0.5) / count
+            )
         minute = minute.dropna(subset=["x"]).reset_index(drop=True)
         minute = _add_moving_averages(minute)
         covered_dates = set(pd.to_datetime(minute["trading_day"]).dt.normalize())
         missing_dates = [value.date().isoformat() for value in intraday_dates if value not in covered_dates]
-        entry_x = float(day_positions[entry_date] + 0.5)
-        exit_x = float(day_positions[exit_date] + 0.5)
+        entry_x = float(context_day_positions[entry_date])
+        exit_x = float(context_day_positions[exit_date])
         fallback_days = [
             value.date().isoformat() for value in daily.loc[daily["context_fallback"].eq(1), "date"]
         ]
         entry_source = str(daily.loc[daily["date"].eq(entry_date), "source_vt_symbol"].iloc[0])
         exit_source = str(daily.loc[daily["date"].eq(exit_date), "source_vt_symbol"].iloc[0])
         source_switch_x = [
-            float(index + 0.5)
+            float(daily.loc[index, "x"])
             for index in range(1, len(daily))
             if daily.loc[index, "source_vt_symbol"] != daily.loc[index - 1, "source_vt_symbol"]
         ]
@@ -688,8 +900,12 @@ def _records(
                 "loss_r_threshold": float(row.loss_r_threshold),
                 "entry_x": entry_x,
                 "exit_x": exit_x,
+                "chart_x_start": chart_x_start,
+                "chart_x_end": chart_x_end,
                 "daily_start": daily["date"].iloc[0].date().isoformat(),
                 "daily_end": daily["date"].iloc[-1].date().isoformat(),
+                "monthly_start": str(monthly["month"].iloc[0]),
+                "monthly_end": str(monthly["month"].iloc[-1]),
                 "intraday_start": intraday_dates[0].date().isoformat(),
                 "intraday_end": intraday_dates[-1].date().isoformat(),
                 "missing_15m_dates": missing_dates,
@@ -700,6 +916,17 @@ def _records(
                 "entry_marker_price": float(row.entry_price) if entry_source == vt_symbol else None,
                 "exit_marker_price": float(row.exit_price) if exit_source == vt_symbol else None,
                 "daily_from_15m_dates": aggregated_days,
+            },
+            "monthly": {
+                "x": series(monthly, "x"),
+                "label": monthly["month"].tolist(),
+                "open": series(monthly, "open"),
+                "high": series(monthly, "high"),
+                "low": series(monthly, "low"),
+                "close": series(monthly, "close"),
+                "volume": series(monthly, "volume"),
+                "width": series(monthly, "width"),
+                **{f"ma{period}": series(monthly, f"ma{period}") for period in MA_PERIODS},
             },
             "daily": {
                 "x": series(daily, "x"),
@@ -740,6 +967,7 @@ def _records(
         manifest_rows.append(
             {
                 **record["meta"],
+                "monthly_bars": len(monthly),
                 "daily_bars": len(daily),
                 "weekly_bars": len(weekly),
                 "bars_15m": len(minute),
@@ -756,7 +984,7 @@ def _html(records: list[dict[str, Any]], summary: dict[str, Any]) -> str:
     records_json = json.dumps(_json_safe(records), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     summary_json = json.dumps(_json_safe(summary), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     plotly_js = get_plotlyjs()
-    title = "C9/15万历史盈亏尾部：周K × 日K × 15分钟K 逐笔复盘"
+    title = "C9/15万历史盈亏尾部：月K × 周K × 日K × 15分钟K 逐笔复盘"
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><script>{plotly_js}</script>
@@ -768,11 +996,11 @@ def _html(records: list[dict[str, Any]], summary: dict[str, Any]) -> str:
 select,button{{height:38px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 10px;font-size:13px}} button{{cursor:pointer}}
 .metrics{{display:grid;grid-template-columns:repeat(8,minmax(120px,1fr));gap:8px;margin-bottom:10px}} .metric{{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 10px}}
 .metric .k{{font-size:11px;color:var(--muted)}} .metric .v{{font-size:16px;font-weight:700;margin-top:3px}}
-.panel{{background:#fff;border:1px solid var(--line);border-radius:8px}} #chart{{height:1240px;width:100%}}
+.panel{{background:#fff;border:1px solid var(--line);border-radius:8px}} #chart{{height:1540px;width:100%}}
 .footer{{font-size:12px;color:var(--muted);padding:10px 2px}} .warn{{color:#b42318;font-weight:600}}
-@media(max-width:1000px){{.toolbar{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}#chart{{height:1050px}}}}
+@media(max-width:1000px){{.toolbar{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}#chart{{height:1350px}}}}
 </style></head><body><div class="page"><h1>{html.escape(title)}</h1>
-<div class="note">每周、每日和每个15分钟柱共用交易日坐标，并分别叠加 MA5/10/20/40；周K和日K使用图窗外历史预热，历史不足完整周期时均线留空，不用短样本冒充。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
+<div class="note">月K展示开仓前10个月至最终平仓后10个月的可用历史；四周期共享同一条完整上下文交易日坐标，框选、缩放和平移会同步且同一日期垂直对齐。月、周、日和15分钟K分别叠加 MA5/10/20/40，并使用图窗外历史预热，历史不足完整周期时均线留空，不用短样本冒充。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。</div>
 <div class="toolbar"><select id="result"><option value="profit">盈利交易</option><option value="loss">亏损交易</option></select><select id="sort"><option value="extreme">R绝对值从大到小</option><option value="near">R绝对值从小到大</option></select><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
 <div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
 <div class="footer">数据：当前正式 {html.escape(OFFICIAL_LIVE_ALIAS)}（{html.escape(OFFICIAL_LIVE_VERSION)}）；盈利侧=正R前20%，亏损侧=负R最差20%，两侧均可补入R缺失时的同方向盈亏额尾部；部分平仓按一次开仓聚合到最终平仓。本图用于对照复盘，不是交易规则。</div>
@@ -788,43 +1016,53 @@ function rfmt(v){{return v===null?'N/A':fmt(v)}}
 function refreshSelect(){{tradeEl.innerHTML=filtered.map((r,i)=>`<option value="${{i}}">#${{i+1}} ${{r.meta.vt_symbol}} ${{r.meta.direction}} R=${{rfmt(r.meta.r_multiple)}} ${{r.meta.entry_date}}→${{r.meta.exit_date}}</option>`).join('');tradeEl.value=String(active)}}
 function colors(o,c){{return o.map((v,i)=>c[i]>=v?'#d92d20':'#039855')}}
 function render(){{if(!filtered.length){{Plotly.purge('chart');document.getElementById('metrics').innerHTML='<div class="warn">没有符合筛选条件的交易</div>';return}}
- const r=filtered[active],m=r.meta,d=r.daily,w=r.weekly,q=r.intraday; tradeEl.value=String(active);
+ const r=filtered[active],m=r.meta,mo=r.monthly,d=r.daily,w=r.weekly,q=r.intraday; tradeEl.value=String(active);
  const missing=m.missing_15m_dates.length?`<span class="warn">${{m.missing_15m_dates.length}}日缺15m</span>`:'完整';
  const source=m.context_fallback_dates.length?`${{m.context_fallback_dates.length}}日主力代理`:'全程精确合约';
  const resultLabel=m.result_type==='profit'?'盈利':'亏损';
  const metric=[['R排序',`#${{active+1}}`],['结果',resultLabel],['合约',m.vt_symbol],['方向',m.direction],['净利润',fmt(m.realized_pnl,0)],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['15m覆盖',missing]];
  document.getElementById('metrics').innerHTML=metric.map(([k,v])=>`<div class="metric"><div class="k">${{k}}</div><div class="v">${{v}}</div></div>`).join('');
  const traces=[
-  {{type:'candlestick',x:w.x,open:w.open,high:w.high,low:w.low,close:w.close,name:'周K',yaxis:'y',showlegend:false,increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'scatter',mode:'lines',x:w.x,y:w.ma5,yaxis:'y',name:'周MA5',showlegend:false,line:{{color:'#f59e0b',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:w.x,y:w.ma10,yaxis:'y',name:'周MA10',showlegend:false,line:{{color:'#2563eb',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:w.x,y:w.ma20,yaxis:'y',name:'周MA20',showlegend:false,line:{{color:'#9333ea',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:w.x,y:w.ma40,yaxis:'y',name:'周MA40',showlegend:false,line:{{color:'#111827',width:1.5}}}},
-  {{type:'bar',x:w.x,y:w.volume,width:w.width,marker:{{color:colors(w.open,w.close),opacity:.55}},name:'周成交量',yaxis:'y2',showlegend:false,hovertext:w.label,hovertemplate:'%{{hovertext}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
-  {{type:'candlestick',x:d.x,open:d.open,high:d.high,low:d.low,close:d.close,name:'日K',yaxis:'y3',showlegend:false,customdata:d.source,hovertemplate:'%{{customdata}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'scatter',mode:'lines',x:d.x,y:d.ma5,yaxis:'y3',name:'MA5',legendgroup:'ma',line:{{color:'#f59e0b',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:d.x,y:d.ma10,yaxis:'y3',name:'MA10',legendgroup:'ma',line:{{color:'#2563eb',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:d.x,y:d.ma20,yaxis:'y3',name:'MA20',legendgroup:'ma',line:{{color:'#9333ea',width:1.4}}}},
-  {{type:'scatter',mode:'lines',x:d.x,y:d.ma40,yaxis:'y3',name:'MA40',legendgroup:'ma',line:{{color:'#111827',width:1.5}}}},
-  {{type:'bar',x:d.x,y:d.volume,width:.72,marker:{{color:colors(d.open,d.close),opacity:.55}},name:'日成交量',yaxis:'y4',showlegend:false,customdata:d.date,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
-  {{type:'candlestick',x:q.x,open:q.open,high:q.high,low:q.low,close:q.close,name:'15分钟K',yaxis:'y5',showlegend:false,customdata:q.datetime.map((v,i)=>[v,q.source[i]]),hovertemplate:'%{{customdata[0]}} %{{customdata[1]}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
-  {{type:'scatter',mode:'lines',x:q.x,y:q.ma5,yaxis:'y5',name:'15m MA5',showlegend:false,line:{{color:'#f59e0b',width:1.2}}}},
-  {{type:'scatter',mode:'lines',x:q.x,y:q.ma10,yaxis:'y5',name:'15m MA10',showlegend:false,line:{{color:'#2563eb',width:1.2}}}},
-  {{type:'scatter',mode:'lines',x:q.x,y:q.ma20,yaxis:'y5',name:'15m MA20',showlegend:false,line:{{color:'#9333ea',width:1.2}}}},
-  {{type:'scatter',mode:'lines',x:q.x,y:q.ma40,yaxis:'y5',name:'15m MA40',showlegend:false,line:{{color:'#111827',width:1.3}}}},
-  {{type:'bar',x:q.x,y:q.volume,marker:{{color:colors(q.open,q.close),opacity:.6}},name:'15分钟成交量',yaxis:'y6',showlegend:false,customdata:q.datetime,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
-  {{type:'scatter',mode:'markers',x:[m.entry_x,m.exit_x],y:[m.entry_marker_price,m.exit_marker_price],yaxis:'y3',name:'同源成交价格（日）',marker:{{symbol:['triangle-up','triangle-down'],size:12,color:['#2563eb','#9333ea']}}}}
+  {{type:'candlestick',x:mo.x,open:mo.open,high:mo.high,low:mo.low,close:mo.close,name:'月K',xaxis:'x2',yaxis:'y',showlegend:false,increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:mo.x,y:mo.ma5,xaxis:'x2',yaxis:'y',name:'月MA5',showlegend:false,line:{{color:'#f59e0b',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:mo.x,y:mo.ma10,xaxis:'x2',yaxis:'y',name:'月MA10',showlegend:false,line:{{color:'#2563eb',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:mo.x,y:mo.ma20,xaxis:'x2',yaxis:'y',name:'月MA20',showlegend:false,line:{{color:'#9333ea',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:mo.x,y:mo.ma40,xaxis:'x2',yaxis:'y',name:'月MA40',showlegend:false,line:{{color:'#111827',width:1.5}}}},
+  {{type:'bar',x:mo.x,y:mo.volume,width:mo.width,xaxis:'x2',yaxis:'y2',marker:{{color:colors(mo.open,mo.close),opacity:.55}},name:'月成交量',showlegend:false,hovertext:mo.label,hovertemplate:'%{{hovertext}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:w.x,open:w.open,high:w.high,low:w.low,close:w.close,name:'周K',yaxis:'y3',showlegend:false,increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma5,yaxis:'y3',name:'周MA5',showlegend:false,line:{{color:'#f59e0b',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma10,yaxis:'y3',name:'周MA10',showlegend:false,line:{{color:'#2563eb',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma20,yaxis:'y3',name:'周MA20',showlegend:false,line:{{color:'#9333ea',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:w.x,y:w.ma40,yaxis:'y3',name:'周MA40',showlegend:false,line:{{color:'#111827',width:1.5}}}},
+  {{type:'bar',x:w.x,y:w.volume,width:w.width,marker:{{color:colors(w.open,w.close),opacity:.55}},name:'周成交量',yaxis:'y4',showlegend:false,hovertext:w.label,hovertemplate:'%{{hovertext}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:d.x,open:d.open,high:d.high,low:d.low,close:d.close,name:'日K',yaxis:'y5',showlegend:false,customdata:d.source,hovertemplate:'%{{customdata}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma5,yaxis:'y5',name:'MA5',legendgroup:'ma',line:{{color:'#f59e0b',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma10,yaxis:'y5',name:'MA10',legendgroup:'ma',line:{{color:'#2563eb',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma20,yaxis:'y5',name:'MA20',legendgroup:'ma',line:{{color:'#9333ea',width:1.4}}}},
+  {{type:'scatter',mode:'lines',x:d.x,y:d.ma40,yaxis:'y5',name:'MA40',legendgroup:'ma',line:{{color:'#111827',width:1.5}}}},
+  {{type:'bar',x:d.x,y:d.volume,width:.72,marker:{{color:colors(d.open,d.close),opacity:.55}},name:'日成交量',yaxis:'y6',showlegend:false,customdata:d.date,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'candlestick',x:q.x,open:q.open,high:q.high,low:q.low,close:q.close,name:'15分钟K',yaxis:'y7',showlegend:false,customdata:q.datetime.map((v,i)=>[v,q.source[i]]),hovertemplate:'%{{customdata[0]}} %{{customdata[1]}}<br>O=%{{open}} H=%{{high}}<br>L=%{{low}} C=%{{close}}<extra></extra>',increasing:{{line:{{color:'#d92d20'}}}},decreasing:{{line:{{color:'#039855'}}}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma5,yaxis:'y7',name:'15m MA5',showlegend:false,line:{{color:'#f59e0b',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma10,yaxis:'y7',name:'15m MA10',showlegend:false,line:{{color:'#2563eb',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma20,yaxis:'y7',name:'15m MA20',showlegend:false,line:{{color:'#9333ea',width:1.2}}}},
+  {{type:'scatter',mode:'lines',x:q.x,y:q.ma40,yaxis:'y7',name:'15m MA40',showlegend:false,line:{{color:'#111827',width:1.3}}}},
+  {{type:'bar',x:q.x,y:q.volume,marker:{{color:colors(q.open,q.close),opacity:.6}},name:'15分钟成交量',yaxis:'y8',showlegend:false,customdata:q.datetime,hovertemplate:'%{{customdata}}<br>Vol=%{{y:,.0f}}<extra></extra>'}},
+  {{type:'scatter',mode:'markers',x:[m.entry_x,m.exit_x],y:[m.entry_marker_price,m.exit_marker_price],yaxis:'y5',name:'同源成交价格（日）',marker:{{symbol:['triangle-up','triangle-down'],size:12,color:['#2563eb','#9333ea']}}}}
  ];
  const tickStep=Math.max(1,Math.ceil(d.date.length/18)),tickvals=d.x.filter((_,i)=>i%tickStep===0),ticktext=d.date.filter((_,i)=>i%tickStep===0);
- const switches=m.source_switch_x.map(x=>({{type:'line',xref:'x',yref:'paper',x0:x,x1:x,y0:0,y1:1,line:{{color:'#98a2b3',width:1,dash:'dash'}}}}));
+ const monthTickStep=Math.max(1,Math.ceil(mo.label.length/16)),monthTickvals=mo.x.filter((_,i)=>i%monthTickStep===0),monthTicktext=mo.label.filter((_,i)=>i%monthTickStep===0);
+ const lowerPanelTop=.78;
+ const switches=m.source_switch_x.map(x=>({{type:'line',xref:'x',yref:'paper',x0:x,x1:x,y0:0,y1:lowerPanelTop,line:{{color:'#98a2b3',width:1,dash:'dash'}}}}));
  const layout={{title:{{text:`${{resultLabel}} #${{active+1}} ${{m.vt_symbol}} ${{m.direction}}｜${{m.entry_date}} → ${{m.exit_date}}｜R=${{rfmt(m.r_multiple)}}｜PnL=${{fmt(m.realized_pnl,0)}}｜${{m.selection_basis}}｜${{source}}`,x:.01}},
-  margin:{{l:72,r:28,t:54,b:76}},paper_bgcolor:'#fff',plot_bgcolor:'#fff',hovermode:'x unified',showlegend:true,legend:{{orientation:'h',y:1.04,x:1,xanchor:'right'}},
-  xaxis:{{range:[0,d.x.length],tickvals,ticktext,tickangle:-35,showgrid:false,rangeslider:{{visible:false}},title:'交易日（周/日/15分钟垂直对齐，可框选缩放）'}},
-  yaxis:{{domain:[.83,1],title:'周K',showgrid:true,gridcolor:'#eef1f4'}},yaxis2:{{domain:[.75,.81],title:'周量',showgrid:true,gridcolor:'#f2f4f7'}},
-  yaxis3:{{domain:[.48,.73],title:'日K',showgrid:true,gridcolor:'#eef1f4'}},yaxis4:{{domain:[.40,.46],title:'日量',showgrid:true,gridcolor:'#f2f4f7'}},
-  yaxis5:{{domain:[.11,.38],title:'15分钟K',showgrid:true,gridcolor:'#eef1f4'}},yaxis6:{{domain:[0,.09],title:'15m量',showgrid:true,gridcolor:'#f2f4f7'}},
-  shapes:[{{type:'rect',xref:'x',yref:'paper',x0:m.entry_x,x1:m.exit_x,y0:0,y1:1,fillcolor:'#fef3c7',opacity:.17,line:{{width:0}}}},{{type:'line',xref:'x',yref:'paper',x0:m.entry_x,x1:m.entry_x,y0:0,y1:1,line:{{color:'#2563eb',width:1.5,dash:'dot'}}}},{{type:'line',xref:'x',yref:'paper',x0:m.exit_x,x1:m.exit_x,y0:0,y1:1,line:{{color:'#9333ea',width:1.5,dash:'dot'}}}},...switches],
-  annotations:[{{xref:'x',yref:'paper',x:m.entry_x,y:1,text:'开仓',showarrow:false,font:{{color:'#2563eb'}}}},{{xref:'x',yref:'paper',x:m.exit_x,y:1,text:'平仓',showarrow:false,font:{{color:'#9333ea'}}}}]}};
+  margin:{{l:72,r:28,t:74,b:76}},paper_bgcolor:'#fff',plot_bgcolor:'#fff',hovermode:'x unified',showlegend:true,legend:{{orientation:'h',y:1.065,x:1,xanchor:'right'}},
+  xaxis:{{range:[m.chart_x_start,m.chart_x_end],tickvals,ticktext,tickangle:-35,showgrid:false,rangeslider:{{visible:false}},title:'共享交易日坐标（四周期同步缩放；下方三周期仅在原窗口内显示）'}},
+  xaxis2:{{matches:'x',tickvals:monthTickvals,ticktext:monthTicktext,tickangle:-35,showgrid:false,rangeslider:{{visible:false}},side:'top',anchor:'y'}},
+  yaxis:{{domain:[.86,1],title:'月K',showgrid:true,gridcolor:'#eef1f4',anchor:'x2'}},yaxis2:{{domain:[.80,.84],title:'月量',showgrid:true,gridcolor:'#f2f4f7',anchor:'x2'}},
+  yaxis3:{{domain:[.64,.78],title:'周K',showgrid:true,gridcolor:'#eef1f4'}},yaxis4:{{domain:[.58,.62],title:'周量',showgrid:true,gridcolor:'#f2f4f7'}},
+  yaxis5:{{domain:[.34,.56],title:'日K',showgrid:true,gridcolor:'#eef1f4'}},yaxis6:{{domain:[.28,.32],title:'日量',showgrid:true,gridcolor:'#f2f4f7'}},
+  yaxis7:{{domain:[.07,.26],title:'15分钟K',showgrid:true,gridcolor:'#eef1f4'}},yaxis8:{{domain:[0,.05],title:'15m量',showgrid:true,gridcolor:'#f2f4f7'}},
+  shapes:[{{type:'rect',xref:'x',yref:'paper',x0:m.entry_x,x1:m.exit_x,y0:0,y1:lowerPanelTop,fillcolor:'#fef3c7',opacity:.17,line:{{width:0}}}},{{type:'line',xref:'x',yref:'paper',x0:m.entry_x,x1:m.entry_x,y0:0,y1:lowerPanelTop,line:{{color:'#2563eb',width:1.5,dash:'dot'}}}},{{type:'line',xref:'x',yref:'paper',x0:m.exit_x,x1:m.exit_x,y0:0,y1:lowerPanelTop,line:{{color:'#9333ea',width:1.5,dash:'dot'}}}},...switches],
+  annotations:[{{xref:'x',yref:'paper',x:m.entry_x,y:lowerPanelTop,text:'开仓',showarrow:false,font:{{color:'#2563eb'}}}},{{xref:'x',yref:'paper',x:m.exit_x,y:lowerPanelTop,text:'平仓',showarrow:false,font:{{color:'#9333ea'}}}}]}};
  Plotly.react('chart',traces,layout,{{responsive:true,displaylogo:false,scrollZoom:true}})
 }}
 resultEl.onchange=apply;sortEl.onchange=apply;yearEl.onchange=apply;productEl.onchange=apply;tradeEl.onchange=()=>{{active=Number(tradeEl.value);render()}};
@@ -835,27 +1073,48 @@ apply();
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build C9/15w historical profit/loss-tail weekly/daily/15m HTML atlas.")
+    parser = argparse.ArgumentParser(description="Build C9/15w historical profit/loss-tail monthly/weekly/daily/15m HTML atlas.")
     parser.add_argument("--end", default=_latest_completed_date().date().isoformat())
     parser.add_argument("--reuse-market", action="store_true", help="Reuse the already materialized 15m market file.")
+    parser.add_argument(
+        "--reuse-strategy",
+        action="store_true",
+        help="Reuse the frozen closed lots, selected episodes, and strategy daily artifacts without rerunning C9.",
+    )
+    parser.add_argument(
+        "--no-market-download",
+        action="store_true",
+        help="Use only existing daily/15m market files; fail if a visible chart window is incomplete.",
+    )
     args = parser.parse_args()
     end = pd.Timestamp(args.end).normalize()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     started = time.time()
-    combined, closed, frames, spec = _run_current_c9(end)
-    selected = _selected_tail_episodes(closed)
-    closed.to_csv(CLOSED_LOTS_PATH, index=False, encoding="utf-8-sig")
-    selected[selected["result_type"].eq("profit")].to_csv(WINNERS_PATH, index=False, encoding="utf-8-sig")
-    selected.to_csv(SELECTED_EPISODES_PATH, index=False, encoding="utf-8-sig")
-    combined.to_csv(STRATEGY_DAILY_PATH, index=False, encoding="utf-8-sig")
+    combined, closed, selected, spec, prior_summary = _strategy_inputs(
+        end,
+        reuse_existing=bool(args.reuse_strategy),
+    )
+    if not args.reuse_strategy:
+        closed.to_csv(CLOSED_LOTS_PATH, index=False, encoding="utf-8-sig")
+        selected[selected["result_type"].eq("profit")].to_csv(WINNERS_PATH, index=False, encoding="utf-8-sig")
+        selected.to_csv(SELECTED_EPISODES_PATH, index=False, encoding="utf-8-sig")
+        combined.to_csv(STRATEGY_DAILY_PATH, index=False, encoding="utf-8-sig")
+
+    effective_data_end = pd.to_datetime(combined["date"], errors="coerce").dropna().max().normalize()
 
     mapping = _main_mapping()
     bar_cache: dict[str, pd.DataFrame] = {}
     daily_by_episode: dict[str, pd.DataFrame] = {}
     intraday_dates_by_episode: dict[str, list[pd.Timestamp]] = {}
     for row in selected.itertuples(index=False):
-        daily, intraday_dates = _context_daily(row, mapping, bar_cache)
+        daily, intraday_dates = _context_daily(
+            row,
+            mapping,
+            bar_cache,
+            allow_daily_download=not args.no_market_download,
+            data_end=effective_data_end,
+        )
         daily_by_episode[str(row.open_trade_id)] = daily
         intraday_dates_by_episode[str(row.open_trade_id)] = intraday_dates
     source_ranges: dict[str, list[pd.Timestamp]] = {}
@@ -888,6 +1147,11 @@ def main() -> None:
             missing = sorted(required.difference(available))
             if not missing:
                 continue
+            if args.no_market_download:
+                raise RuntimeError(
+                    f"Reused 15m market data is incomplete for {vt_symbol}: "
+                    f"{[value.date().isoformat() for value in missing]}"
+                )
             frame, fetch_status = _fetch_15m(vt_symbol, min(missing), max(missing))
             frame = _assign_trading_day(frame, _product_calendar(mapping, vt_symbol))
             supplemental_frames.append(frame)
@@ -929,7 +1193,11 @@ def main() -> None:
     manifest.to_csv(MANIFEST_PATH, index=False, encoding="utf-8-sig")
 
     equity_column = "account_equity" if "account_equity" in combined.columns else "equity"
-    metrics = s901.s650._metrics(combined, spec.capital, 1.0)
+    metrics = (
+        prior_summary.get("backtest_metrics", {})
+        if args.reuse_strategy
+        else s901.s650._metrics(combined, spec.capital, 1.0)
+    )
     summary = {
         "line_id": LINE_ID,
         "stage": STAGE,
@@ -940,7 +1208,7 @@ def main() -> None:
         "account_capital": OFFICIAL_LIVE_CAPITAL,
         "analysis_start": START.date().isoformat(),
         "requested_end": end.date().isoformat(),
-        "effective_data_end": pd.to_datetime(combined["date"], errors="coerce").max().date().isoformat(),
+        "effective_data_end": effective_data_end.date().isoformat(),
         "closed_lots": int(len(closed)),
         "winner_lots": int(closed["winner"].sum()),
         "big_winner_lots": int(selected["result_type"].eq("profit").sum()),
@@ -955,13 +1223,25 @@ def main() -> None:
         "chart_bars_15m": int(manifest["bars_15m"].sum()),
         "intraday_missing_days": int(manifest["intraday_missing_days"].sum()),
         "context_fallback_days": int(manifest["context_fallback_days"].sum()),
+        "monthly_bars": int(manifest["monthly_bars"].sum()),
+        "monthly_window": {
+            "months_before_entry": MONTHLY_PRE,
+            "months_after_exit": MONTHLY_POST,
+            "ma_warmup_months": MONTHLY_MA_WARMUP_MONTHS,
+        },
         "winner_selection": "Profit episodes selected by top-20% R, plus top-20% realized profit when R is unavailable.",
         "loser_selection": "Loss episodes selected by bottom-20% R, plus bottom-20% realized loss when R is unavailable.",
         "end_equity": float(pd.to_numeric(combined[equity_column], errors="coerce").dropna().iloc[-1])
         if equity_column in combined.columns and combined[equity_column].notna().any()
         else None,
         "backtest_metrics": _json_safe(metrics),
-        "strategy_profile": str(spec.profile),
+        "strategy_profile": (
+            str(prior_summary.get("strategy_profile", ""))
+            if args.reuse_strategy
+            else str(spec.profile)
+        ),
+        "strategy_reused": bool(args.reuse_strategy),
+        "market_download_disabled": bool(args.no_market_download),
         "fetch_status": [asdict(item) for item in fetch_rows],
         "elapsed_seconds": round(time.time() - started, 3),
         "artifacts": {

@@ -1,0 +1,2 @@
+[  149849ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js:1
+[  149849ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js:1

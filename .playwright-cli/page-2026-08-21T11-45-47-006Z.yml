@@ -1,0 +1,217 @@
+- generic [ref=e2]:
+  - heading "C9/15万历史盈亏尾部：月K × 周K × 日K × 15分钟K 逐笔复盘" [level=1] [ref=e3]
+  - generic [ref=e4]: 月K展示开仓前10个月至最终平仓后10个月的可用历史；四周期共享同一条完整上下文交易日坐标，框选、缩放和平移会同步且同一日期垂直对齐。月、周、日和15分钟K分别叠加 MA5/10/20/40，并使用图窗外历史预热，历史不足完整周期时均线留空，不用短样本冒充。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间。15m窗口内的日K由同一批15m聚合；灰虚线表示精确合约缺历史数据后切到当日主力上下文。成交线只定位交易日，不伪造分钟成交时刻；若平仓日已切换上下文，则不把旧合约成交价画到代理K线上。
+  - generic [ref=e5]:
+    - combobox [ref=e6]:
+      - option "盈利交易" [selected]
+      - option "亏损交易"
+    - combobox [ref=e7]:
+      - option "R绝对值从大到小" [selected]
+      - option "R绝对值从小到大"
+    - combobox [ref=e8]:
+      - option "全部年份" [selected]
+      - option "2018"
+      - option "2019"
+      - option "2020"
+      - option "2021"
+      - option "2022"
+      - option "2023"
+      - option "2024"
+      - option "2025"
+      - option "2026"
+    - combobox [ref=e9]:
+      - option "全部品种" [selected]
+      - option "AP.CZCE"
+      - option "CF.CZCE"
+      - option "FG"
+      - option "FG.CZCE"
+      - option "MA.CZCE"
+      - option "OI.CZCE"
+      - option "SH.CZCE"
+      - option "SM.CZCE"
+      - option "au.SHFE"
+      - option "cu.SHFE"
+      - option "fu.SHFE"
+      - option "hc.SHFE"
+      - option "jm.DCE"
+      - option "lc.GFEX"
+      - option "lh.DCE"
+      - option "rb.SHFE"
+      - option "ru.SHFE"
+      - option "si.GFEX"
+      - option "sp.SHFE"
+    - combobox [ref=e10]:
+      - option "#1 rb2210.SHFE short R=213.50 2022-07-07→2022-07-21" [selected]
+      - option "#2 jm2205.DCE long R=96.00 2022-02-14→2022-02-28"
+      - option "#3 hc2210.SHFE short R=83.40 2022-07-07→2022-07-21"
+      - option "#4 lc2509.GFEX long R=75.25 2025-07-11→2025-07-24"
+      - option "#5 fu2509.SHFE short R=54.67 2025-08-07→2025-08-21"
+      - option "#6 SM409.CZCE long R=37.69 2024-04-24→2024-05-16"
+      - option "#7 FG009.CZCE long R=33.77 2020-07-03→2020-08-12"
+      - option "#8 au2006.SHFE long R=22.26 2020-02-17→2020-02-26"
+      - option "#9 AP101.CZCE short R=15.77 2020-11-20→2020-12-16"
+      - option "#10 FG109.CZCE long R=15.67 2021-04-14→2021-05-17"
+      - option "#11 SM201.CZCE long R=15.46 2021-09-01→2021-09-27"
+      - option "#12 FG201.CZCE short R=12.92 2021-09-13→2021-09-23"
+      - option "#13 sp2009.SHFE short R=11.57 2020-04-15→2020-05-22"
+      - option "#14 jm2005.DCE long R=10.00 2020-02-11→2020-02-19"
+      - option "#15 si2509.GFEX long R=8.87 2025-07-10→2025-07-29"
+      - option "#16 cu2007.SHFE long R=8.54 2020-06-03→2020-06-22"
+      - option "#17 lc2407.GFEX short R=8.26 2024-05-31→2024-06-27"
+      - option "#18 hc2101.SHFE long R=8.00 2020-09-03→2020-09-07"
+      - option "#19 fu2509.SHFE long R=7.86 2025-06-12→2025-06-25"
+      - option "#20 hc2110.SHFE long R=7.68 2021-04-23→2021-05-17"
+      - option "#21 jm2401.DCE long R=7.20 2023-11-03→2023-11-22"
+      - option "#22 fu2001.SHFE short R=7.20 2019-11-08→2019-11-22"
+      - option "#23 AP201.CZCE long R=6.92 2021-10-12→2021-10-29"
+      - option "#24 ru2501.SHFE long R=6.61 2024-09-12→2024-09-24"
+      - option "#25 lc2601.GFEX long R=6.33 2025-11-12→2025-11-24"
+      - option "#26 CF909.CZCE short R=6.27 2019-08-02→2019-08-12"
+      - option "#27 OI201.CZCE long R=6.17 2021-09-24→2021-11-08"
+      - option "#28 fu2503.SHFE long R=6.09 2024-12-17→2025-01-08"
+      - option "#29 CF005.CZCE short R=5.96 2020-03-13→2020-03-26"
+      - option "#30 FG601.CZCE short R=N/A 2025-11-05→2025-11-25"
+    - button "上一笔" [ref=e11] [cursor=pointer]
+    - button "下一笔" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: R排序
+      - generic [ref=e16]: "#1"
+    - generic [ref=e17]:
+      - generic [ref=e18]: 结果
+      - generic [ref=e19]: 盈利
+    - generic [ref=e20]:
+      - generic [ref=e21]: 合约
+      - generic [ref=e22]: rb2210.SHFE
+    - generic [ref=e23]:
+      - generic [ref=e24]: 方向
+      - generic [ref=e25]: short
+    - generic [ref=e26]:
+      - generic [ref=e27]: 净利润
+      - generic [ref=e28]: 687,470
+    - generic [ref=e29]:
+      - generic [ref=e30]: R倍数
+      - generic [ref=e31]: "213.50"
+    - generic [ref=e32]:
+      - generic [ref=e33]: 平仓lot
+      - generic [ref=e34]: "1"
+    - generic [ref=e35]:
+      - generic [ref=e36]: 15m覆盖
+      - generic [ref=e37]: 完整
+  - generic [ref=e41]:
+    - img:
+      - generic:
+        - generic:
+          - generic:
+            - generic: 2022-05-23
+            - generic: 2022-05-30
+            - generic: 2022-06-07
+            - generic: 2022-06-14
+            - generic: 2022-06-21
+            - generic: 2022-06-28
+            - generic: 2022-07-05
+            - generic: 2022-07-12
+            - generic: 2022-07-19
+            - generic: 2022-07-26
+            - generic: 2022-08-02
+            - generic: 2022-08-09
+            - generic: 2022-08-16
+            - generic: 2022-08-23
+            - generic: 2022-08-30
+          - generic:
+            - generic: "4000"
+            - generic: "4500"
+        - generic:
+          - generic:
+            - generic: "0"
+            - generic: 5M
+            - generic: 10M
+        - generic:
+          - generic:
+            - generic: "3600"
+            - generic: "3800"
+            - generic: "4000"
+            - generic: "4200"
+            - generic: "4400"
+            - generic: "4600"
+            - generic: "4800"
+        - generic:
+          - generic:
+            - generic: "0"
+            - generic: 1M
+            - generic: 2M
+            - generic: 3M
+        - generic:
+          - generic:
+            - generic: "3600"
+            - generic: "3800"
+            - generic: "4000"
+            - generic: "4200"
+            - generic: "4400"
+        - generic:
+          - generic:
+            - generic: "0"
+            - generic: 100k
+            - generic: 200k
+            - generic: 300k
+            - generic: 400k
+        - generic:
+          - generic:
+            - generic: 2021-09
+            - generic: 2021-11
+            - generic: 2022-01
+            - generic: 2022-03
+            - generic: 2022-05
+            - generic: 2022-07
+            - generic: 2022-09
+            - generic: 2022-11
+            - generic: 2023-01
+            - generic: 2023-03
+            - generic: 2023-05
+          - generic:
+            - generic: "3500"
+            - generic: "4000"
+            - generic: "4500"
+            - generic: "5000"
+            - generic: "5500"
+            - generic: "6000"
+        - generic:
+          - generic:
+            - generic: "0"
+            - generic: 20M
+            - generic: 40M
+    - img:
+      - generic:
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - generic [ref=e126]: MA5
+              - generic [ref=e127] [cursor=pointer]
+            - generic [ref=e128]:
+              - generic [ref=e129]: MA10
+              - generic [ref=e130] [cursor=pointer]
+            - generic [ref=e131]:
+              - generic [ref=e132]: MA20
+              - generic [ref=e133] [cursor=pointer]
+            - generic [ref=e134]:
+              - generic [ref=e135]: MA40
+              - generic [ref=e136] [cursor=pointer]
+          - generic [ref=e138]:
+            - generic [ref=e139]: 同源成交价格（日）
+            - generic [ref=e144] [cursor=pointer]
+        - generic: "盈利 #1 rb2210.SHFE short｜2022-07-07 → 2022-07-21｜R=213.50｜PnL=687,470｜episode R前20%｜全程精确合约"
+        - generic: 开仓
+        - generic: 平仓
+    - toolbar [ref=e145]:
+      - button "Download plot as a PNG" [ref=e147] [cursor=pointer]
+      - generic [ref=e150]:
+        - button "Zoom" [ref=e151] [cursor=pointer]
+        - button "Pan" [ref=e154] [cursor=pointer]
+        - button "Box Select" [ref=e157] [cursor=pointer]
+        - button "Lasso Select" [ref=e160] [cursor=pointer]
+      - generic [ref=e163]:
+        - button "Zoom in" [ref=e164] [cursor=pointer]
+        - button "Zoom out" [ref=e167] [cursor=pointer]
+        - button "Autoscale" [ref=e170] [cursor=pointer]
+        - button "Reset axes" [ref=e173] [cursor=pointer]
+  - generic [ref=e176]: 数据：当前正式 Stage847-C9-15w（official_live_stage847_c9_15w_stage819_05r_stop_retry_once）；盈利侧=正R前20%，亏损侧=负R最差20%，两侧均可补入R缺失时的同方向盈亏额尾部；部分平仓按一次开仓聚合到最终平仓。本图用于对照复盘，不是交易规则。
