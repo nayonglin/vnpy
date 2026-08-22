@@ -1468,7 +1468,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             if entry_allowed_today and can_post_quality_add and post_quality_signal:
                 self.post_entry_quality_add_signal_count += 1
-                add_volume = self._calculate_post_entry_quality_add_volume(state)
+                add_volume, add_sizing_snapshot = self._calculate_directional_boosted_add_sizing(
+                    state,
+                    target_bar,
+                    history,
+                    "post_quality_add",
+                )
                 if add_volume <= 0:
                     self.post_entry_quality_add_zero_volume_count += 1
                 add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
@@ -1506,6 +1511,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         add_volume,
                         history,
                         post_quality_stats,
+                        sizing_snapshot_extra=add_sizing_snapshot,
                     )
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
@@ -1514,7 +1520,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             can_add, add_type = self._check_regular_add_conditions(state, target_bar, history)
             if entry_allowed_today and can_add and add_type:
-                add_volume: int = self._calculate_regular_add_volume(state)
+                add_volume, add_sizing_snapshot = self._calculate_directional_boosted_add_sizing(
+                    state,
+                    target_bar,
+                    history,
+                    "regular_add",
+                )
                 add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
                     state.contract_vt_symbol,
                     add_volume,
@@ -1543,7 +1554,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     and add_volume > 0
                     and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price)
                 ):
-                    self._execute_regular_add(state, target_bar, add_type, add_volume, history)
+                    self._execute_regular_add(
+                        state,
+                        target_bar,
+                        add_type,
+                        add_volume,
+                        history,
+                        sizing_snapshot_extra=add_sizing_snapshot,
+                    )
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{add_type}"
@@ -1551,7 +1569,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
             can_don_add, don_add_type = self._check_donchian_add_conditions(state, target_bar, history)
             if entry_allowed_today and can_don_add and don_add_type:
-                add_volume = self._calculate_donchian_add_volume(state)
+                add_volume, add_sizing_snapshot = self._calculate_directional_boosted_add_sizing(
+                    state,
+                    target_bar,
+                    history,
+                    "donchian_add",
+                )
                 add_volume = self._risk_cluster_heat_gate_adjust_add_volume(
                     state.contract_vt_symbol,
                     add_volume,
@@ -1580,7 +1603,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     and add_volume > 0
                     and self._can_allocate_margin(state.contract_vt_symbol, add_volume, target_bar.close_price)
                 ):
-                    self._execute_donchian_add(state, target_bar, don_add_type, add_volume, history)
+                    self._execute_donchian_add(
+                        state,
+                        target_bar,
+                        don_add_type,
+                        add_volume,
+                        history,
+                        sizing_snapshot_extra=add_sizing_snapshot,
+                    )
                     self._reserve_intrabar_margin(state.contract_vt_symbol, add_volume, float(target_bar.close_price))
                     self._apply_state_target(state)
                     self.last_signal = f"{product_vt}:{don_add_type}"
@@ -7595,6 +7625,62 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         volume = int(math.floor(base_volume * multiplier + 1e-12))
         return min(max(0, volume), self.max_position_size)
 
+    def _calculate_directional_boosted_add_sizing(
+        self,
+        state: ProductState,
+        bar: BarData,
+        history: pd.DataFrame,
+        entry_context: str,
+    ) -> tuple[int, dict[str, Any]]:
+        if entry_context == "post_quality_add":
+            base_volume = self._calculate_post_entry_quality_add_volume(state)
+            use_day_extreme_stop = bool(self.post_entry_quality_add_use_day_extreme_stop)
+        elif entry_context == "regular_add":
+            base_volume = self._calculate_regular_add_volume(state)
+            use_day_extreme_stop = bool(self.regular_add_use_day_extreme_stop)
+        elif entry_context == "donchian_add":
+            base_volume = self._calculate_donchian_add_volume(state)
+            use_day_extreme_stop = True
+        else:
+            raise ValueError(f"unsupported directional boost add context: {entry_context}")
+
+        snapshot = self._directional_30d_risk_boost_snapshot(state.direction, history)
+        contract_vt_symbol = state.contract_vt_symbol
+        stop_price = self._entry_stop_price(
+            state.direction,
+            bar,
+            history,
+            use_day_extreme=use_day_extreme_stop,
+        )
+        size = self.get_size(contract_vt_symbol)
+        min_risk = max(float(self.get_pricetick(contract_vt_symbol)) * size, 1.0)
+        risk_per_contract = max(abs(float(bar.close_price) - stop_price) * size, min_risk)
+        risk_amount_before_boost = float(base_volume) * risk_per_contract
+        target_risk_amount = risk_amount_before_boost * float(
+            snapshot["directional_30d_risk_boost_multiplier"]
+        )
+        boosted_volume = (
+            int(math.floor(target_risk_amount / risk_per_contract + 1e-12))
+            if risk_per_contract > 0
+            else 0
+        )
+        boosted_volume = min(max(0, boosted_volume), self.max_position_size)
+        margin_ratio = self._margin_ratio_for_symbol(contract_vt_symbol)
+        margin_per_contract = float(bar.close_price) * size * margin_ratio
+        snapshot.update(
+            {
+                "entry_context": entry_context,
+                "risk_amount_before_directional_30d_boost": risk_amount_before_boost,
+                "risk_amount": target_risk_amount,
+                "risk_per_contract": risk_per_contract,
+                "margin_ratio": margin_ratio,
+                "margin_per_contract": margin_per_contract,
+                "selected_volume_before_directional_30d_boost": int(base_volume),
+                "selected_volume_after_directional_30d_boost": int(boosted_volume),
+            }
+        )
+        return boosted_volume, snapshot
+
     def _execute_post_entry_quality_add(
         self,
         state: ProductState,
@@ -7603,6 +7689,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         volume: int,
         history: pd.DataFrame,
         stats: dict[str, float],
+        *,
+        sizing_snapshot_extra: dict[str, Any] | None = None,
     ) -> None:
         snapshot_extra = {
             "post_entry_quality_add_enabled": int(self.enable_post_entry_quality_add),
@@ -7622,6 +7710,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "post_entry_quality_add_long60_ratio": float(stats.get("long60_ratio", 0.0) or 0.0),
             "post_entry_quality_add_avg_adverse_wick_pct": float(stats.get("avg_adverse_wick_pct", 0.0) or 0.0),
         }
+        if sizing_snapshot_extra:
+            snapshot_extra.update(sizing_snapshot_extra)
         self._append_layer(
             state,
             "post_quality",
@@ -7680,8 +7770,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _calculate_regular_add_volume(self, state: ProductState) -> int:
         return min(max(1, int(round(state.base_volume() * self.regular_add_volume_multiplier))), self.max_position_size)
 
-    def _execute_regular_add(self, state: ProductState, bar: BarData, signal: str, volume: int, history: pd.DataFrame) -> None:
-        self._append_layer(state, "add", volume, bar, signal, history, self.regular_add_use_day_extreme_stop)
+    def _execute_regular_add(
+        self,
+        state: ProductState,
+        bar: BarData,
+        signal: str,
+        volume: int,
+        history: pd.DataFrame,
+        *,
+        sizing_snapshot_extra: dict[str, Any] | None = None,
+    ) -> None:
+        self._append_layer(
+            state,
+            "add",
+            volume,
+            bar,
+            signal,
+            history,
+            self.regular_add_use_day_extreme_stop,
+            sizing_snapshot_extra=sizing_snapshot_extra,
+        )
         state.last_add_date = self._bar_date(bar)
         state.last_signal = signal
         self._apply_add_position_profit_lock(state)
@@ -7715,8 +7823,26 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         multiplier = multipliers[add_index] if add_index < len(multipliers) else multipliers[-1]
         return min(max(1, int(round(base_volume * multiplier))), self.max_position_size)
 
-    def _execute_donchian_add(self, state: ProductState, bar: BarData, signal: str, volume: int, history: pd.DataFrame) -> None:
-        self._append_layer(state, "donchian", volume, bar, signal, history, True)
+    def _execute_donchian_add(
+        self,
+        state: ProductState,
+        bar: BarData,
+        signal: str,
+        volume: int,
+        history: pd.DataFrame,
+        *,
+        sizing_snapshot_extra: dict[str, Any] | None = None,
+    ) -> None:
+        self._append_layer(
+            state,
+            "donchian",
+            volume,
+            bar,
+            signal,
+            history,
+            True,
+            sizing_snapshot_extra=sizing_snapshot_extra,
+        )
         state.last_donchian_add_date = self._bar_date(bar)
         state.last_signal = signal
         self._apply_add_position_profit_lock(state)

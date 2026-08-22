@@ -1,0 +1,38 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage006",
+  "generated_at": "2026-08-22T20:45:40+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "arms": {
+    "A": "stage006_A_official_live_c9_15w",
+    "C": "stage006_C_rollover_continuation",
+    "D": "stage006_D_rollover_plus_directional_30d_risk_1p2"
+  },
+  "candidate": {
+    "enable_rollover_shape_same_volume_reopen": true,
+    "rollover_shape_history_mode": "backwards_ratio_continuous",
+    "rollover_shape_volume_policy": "shrink_to_allowed",
+    "enable_directional_30d_risk_boost": true,
+    "directional_30d_risk_boost_lookback": 30,
+    "directional_30d_risk_boost_multiplier": 1.2,
+    "entry_context_scope": "all base, reverse, rollover, and add entry contexts"
+  },
+  "predeclared_gates": {
+    "directional_boost_contract_pass": true,
+    "directional_boost_triggered": true,
+    "D_return_not_below_C": true,
+    "D_dd_noninferior_2pp_vs_C": false,
+    "D_sharpe_noninferior_002_vs_C": true,
+    "D_slippage_not_above_10pct_vs_C": false,
+    "D_account_survival": true,
+    "D_broker100_not_worse_than_C": false
+  },
+  "escalate_to_multicycle": false,
+  "decision": "stop_directional_30d_risk_boost_after_full_period",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

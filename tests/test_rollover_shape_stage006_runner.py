@@ -41,6 +41,8 @@ def _metric_row(
         "total_trade_count": total_trade_count,
         "account_survival_pass": account_survival_pass,
         "broker10_100_pass": broker10_100_pass,
+        "max_broker10_margin_to_equity_pct": 90.0 if broker10_100_pass else 101.0,
+        "days_over_100pct": 0 if broker10_100_pass else 1,
     }
 
 
@@ -124,6 +126,26 @@ class Stage006DirectionalRiskBoostRunnerTest(unittest.TestCase):
 
         self.assertFalse(decision["escalate_to_multicycle"])
         self.assertFalse(decision["predeclared_gates"]["D_dd_noninferior_2pp_vs_C"])
+
+    def test_decision_detects_broker100_severity_worsening_even_when_both_arms_fail(self) -> None:
+        rows = [
+            _metric_row("A", 1000.0, 100.0, -30.0, 1.00, 100.0, 100, 1, 1),
+            _metric_row("C", 1100.0, 110.0, -31.0, 1.05, 105.0, 105, 1, 0),
+            _metric_row("D", 1200.0, 120.0, -32.0, 1.04, 110.0, 110, 1, 0),
+        ]
+        rows[1]["max_broker10_margin_to_equity_pct"] = 100.4
+        rows[1]["days_over_100pct"] = 1
+        rows[2]["max_broker10_margin_to_equity_pct"] = 114.6
+        rows[2]["days_over_100pct"] = 4
+        summary = pd.DataFrame(rows)
+        boost_summary = pd.DataFrame(
+            [{"group_type": "total", "risk_amount_contract_pass": 1, "aligned_count": 2}]
+        )
+
+        decision = stage006._decision(summary, boost_summary)
+
+        self.assertFalse(decision["escalate_to_multicycle"])
+        self.assertFalse(decision["predeclared_gates"]["D_broker100_not_worse_than_C"])
 
 
 if __name__ == "__main__":

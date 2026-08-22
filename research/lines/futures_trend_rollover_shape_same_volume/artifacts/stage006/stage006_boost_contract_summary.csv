@@ -1,0 +1,6 @@
+﻿group_type,group_value,entry_count,aligned_count,unaligned_count,risk_amount_contract_pass
+total,all,377,371,6,1
+direction,long,303,297,6,1
+direction,short,74,74,0,1
+entry_context,flat_entry,354,348,6,1
+entry_context,rollover_reopen,23,23,0,1

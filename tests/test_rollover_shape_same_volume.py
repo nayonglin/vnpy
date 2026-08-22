@@ -341,7 +341,93 @@ class _DirectionalBoostSizingHarness(QmtRollPortfolioStrategy):
         return {}
 
 
+class _DirectionalBoostAddHarness(QmtRollPortfolioStrategy):
+    def __init__(self) -> None:
+        self.enable_directional_30d_risk_boost = True
+        self.directional_30d_risk_boost_lookback = 30
+        self.directional_30d_risk_boost_multiplier = 1.2
+        self.post_entry_quality_add_volume_multiplier = 0.5
+        self.post_entry_quality_add_use_day_extreme_stop = True
+        self.regular_add_volume_multiplier = 0.5
+        self.regular_add_use_day_extreme_stop = True
+        self.donchian_add_volume_multipliers = "2.0,1.0"
+        self.max_position_size = 100
+
+    def _entry_stop_price(
+        self,
+        direction: str,
+        bar: BarData,
+        history: pd.DataFrame,
+        use_day_extreme: bool,
+    ) -> float:
+        return 90.0 if direction == "long" else 110.0
+
+    def get_size(self, vt_symbol: str) -> int:
+        return 10
+
+    def get_pricetick(self, vt_symbol: str) -> float:
+        return 1.0
+
+    def _margin_ratio_for_symbol(self, vt_symbol: str) -> float:
+        return 0.1
+
+
 class RolloverShapeSameVolumeTest(unittest.TestCase):
+    def test_directional_30d_boost_applies_to_real_add_sizing_entrypoint(self) -> None:
+        strategy = _DirectionalBoostAddHarness()
+        state = _state(volume=10)
+        history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])
+        bar = _bar("jm2609", 100.0)
+
+        expected = {
+            "post_quality_add": (5, 6),
+            "regular_add": (5, 6),
+            "donchian_add": (20, 24),
+        }
+        for entry_context, (before, after) in expected.items():
+            with self.subTest(entry_context=entry_context):
+                volume, sizing = strategy._calculate_directional_boosted_add_sizing(
+                    state,
+                    bar,
+                    history,
+                    entry_context,
+                )
+
+                self.assertEqual(before, sizing["selected_volume_before_directional_30d_boost"])
+                self.assertEqual(after, volume)
+                self.assertEqual(after, sizing["selected_volume_after_directional_30d_boost"])
+                self.assertEqual(1, sizing["directional_30d_risk_boost_aligned"])
+                self.assertEqual(1.2, sizing["directional_30d_risk_boost_multiplier"])
+                self.assertEqual(
+                    sizing["risk_amount_before_directional_30d_boost"] * 1.2,
+                    sizing["risk_amount"],
+                )
+
+    def test_directional_30d_add_sizing_rounds_down_and_keeps_hard_position_cap(self) -> None:
+        strategy = _DirectionalBoostAddHarness()
+        state = _state(volume=1)
+        history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])
+        bar = _bar("jm2609", 100.0)
+
+        volume, sizing = strategy._calculate_directional_boosted_add_sizing(
+            state,
+            bar,
+            history,
+            "regular_add",
+        )
+        self.assertEqual(1, volume)
+        self.assertEqual(1, sizing["selected_volume_before_directional_30d_boost"])
+
+        state.layers[0].volume = 100
+        volume, sizing = strategy._calculate_directional_boosted_add_sizing(
+            state,
+            bar,
+            history,
+            "donchian_add",
+        )
+        self.assertEqual(100, volume)
+        self.assertEqual(100, sizing["selected_volume_after_directional_30d_boost"])
+
     def test_directional_30d_boost_is_recorded_in_entry_risk_diagnostics(self) -> None:
         strategy = _DirectionalBoostSizingHarness()
         history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])

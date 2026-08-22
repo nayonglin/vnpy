@@ -228,7 +228,9 @@ def _decision(summary: pd.DataFrame, boost_summary: pd.DataFrame) -> dict[str, A
         ),
         "D_account_survival": bool(int(d["account_survival_pass"]) == 1),
         "D_broker100_not_worse_than_C": bool(
-            int(d["broker10_100_pass"]) >= int(c["broker10_100_pass"])
+            float(d["max_broker10_margin_to_equity_pct"])
+            <= float(c["max_broker10_margin_to_equity_pct"]) + 1e-12
+            and int(d["days_over_100pct"]) <= int(c["days_over_100pct"])
         ),
     }
     escalate = bool(all(gates.values()))
@@ -245,7 +247,7 @@ def _decision(summary: pd.DataFrame, boost_summary: pd.DataFrame) -> dict[str, A
             "enable_directional_30d_risk_boost": True,
             "directional_30d_risk_boost_lookback": 30,
             "directional_30d_risk_boost_multiplier": 1.2,
-            "entry_context_scope": "all risk-budget entry contexts",
+            "entry_context_scope": "all base, reverse, rollover, and add entry contexts",
         },
         "predeclared_gates": gates,
         "escalate_to_multicycle": escalate,
@@ -263,7 +265,13 @@ def _decision(summary: pd.DataFrame, boost_summary: pd.DataFrame) -> dict[str, A
 def _validate_summary(summary: pd.DataFrame) -> None:
     if len(summary) != len(ARMS) or set(summary["experiment_arm"].astype(str)) != {"A", "C", "D"}:
         raise RuntimeError("stage006_arm_identity_mismatch")
-    critical = [*METRICS, "account_survival_pass", "broker10_100_pass"]
+    critical = [
+        *METRICS,
+        "account_survival_pass",
+        "broker10_100_pass",
+        "max_broker10_margin_to_equity_pct",
+        "days_over_100pct",
+    ]
     numeric = summary[critical].apply(pd.to_numeric, errors="coerce")
     if numeric.isna().any().any() or not np.isfinite(numeric.to_numpy(dtype="float64")).all():
         raise RuntimeError("stage006_critical_metric_invalid")
