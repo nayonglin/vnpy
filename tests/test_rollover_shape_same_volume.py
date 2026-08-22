@@ -220,7 +220,241 @@ class _RolloverHarness(QmtRollPortfolioStrategy):
         self.reservations.append((product_vt_symbol, volume, count_active_position))
 
 
+class _DirectionalBoostSizingHarness(QmtRollPortfolioStrategy):
+    def __init__(self) -> None:
+        self.enable_directional_30d_risk_boost = True
+        self.directional_30d_risk_boost_lookback = 30
+        self.directional_30d_risk_boost_multiplier = 1.2
+        self.fixed_size = 0
+        self.source_symbol_by_contract: dict[str, str] = {}
+        self.risk_ratio_of_total_assets = 0.01
+        self.max_position_size = 100
+        self.min_position_size = 1
+        self.estimated_equity = 100_000.0
+        self.base_capital = 100_000.0
+        self.portfolio_drawdown_pct = 0.0
+        self.portfolio_equity_high_water = 100_000.0
+        self.loss_streak = 0
+        self.profit_recovery_streak = 0
+        self.pending_entry_diagnostics: dict[tuple[str, str, str], list[dict[str, object]]] = {}
+        self.entry_risk_diagnostics: list[dict[str, object]] = []
+
+    def _entry_structure_recovery_fields(self, **kwargs: object) -> dict[str, object]:
+        return {"streak_entry_structure_risk_recovery_effective_multiplier": 1.0}
+
+    def _current_streak_multiplier(self) -> float:
+        return 1.0
+
+    def _product_vt_symbol(self, vt_symbol: str) -> str:
+        return "rb.SHFE"
+
+    def _failure_memory_micro_sizing_fields(self, **kwargs: object) -> dict[str, object]:
+        return {}
+
+    def _oi_price_confirm_risk_restore_fields(self, **kwargs: object) -> dict[str, object]:
+        return {}
+
+    def _portfolio_overheat_cooldown_fields(self, entry_context: str) -> dict[str, object]:
+        return {"portfolio_overheat_cooldown_scale": 1.0}
+
+    def _sizing_equity_snapshot(self) -> dict[str, object]:
+        return {}
+
+    def _limited_available_balance(self, entry_context: str) -> float:
+        return 100_000.0
+
+    def _allowed_capital(self, entry_context: str) -> float:
+        return 100_000.0
+
+    def _single_trade_capital_limit(self) -> float:
+        return 100_000.0
+
+    def _free_capital_after_reservations(self) -> float:
+        return 100_000.0
+
+    def _risk_amount_from_ratio(self, *args: object, **kwargs: object) -> float:
+        return 1_000.0
+
+    def _entry_stop_price(
+        self,
+        direction: str,
+        bar: BarData,
+        history: pd.DataFrame,
+        use_day_extreme: bool,
+    ) -> float:
+        return 90.0
+
+    def get_size(self, vt_symbol: str) -> int:
+        return 10
+
+    def get_pricetick(self, vt_symbol: str) -> float:
+        return 1.0
+
+    def _margin_ratio_for_symbol(self, vt_symbol: str) -> float:
+        return 0.1
+
+    def _risk_cluster_cap_fields(
+        self,
+        vt_symbol: str,
+        volume: int,
+        margin_per_contract: float,
+    ) -> dict[str, object]:
+        return {"risk_cluster_selected_volume": volume}
+
+    def _apply_risk_cluster_heat_gate_to_volume(
+        self,
+        vt_symbol: str,
+        volume: int,
+        margin_per_contract: float,
+        entry_context: str,
+    ) -> dict[str, object]:
+        return {"risk_cluster_heat_gate_selected_volume": volume}
+
+    def _apply_env_gate_to_volume(
+        self,
+        base_volume: int,
+        *,
+        entry_context: str,
+        apply_env_gate: bool,
+    ) -> dict[str, object]:
+        return {"selected_volume": base_volume}
+
+    def _incremental_margin_budget_gate_adjust_volume(
+        self,
+        *,
+        selected_volume: int,
+        margin_per_contract: float,
+        entry_context: str,
+    ) -> tuple[int, dict[str, object]]:
+        return selected_volume, {}
+
+    def _reserved_margin_in_use(self) -> float:
+        return 0.0
+
+    def _effective_capital_usage_ratio(self, entry_context: str) -> float:
+        return 1.0
+
+    def _effective_max_concurrent_positions(self, entry_context: str) -> int:
+        return 10
+
+    def _recovery_sleeve_fields(self, *args: object, **kwargs: object) -> dict[str, object]:
+        return {}
+
+
 class RolloverShapeSameVolumeTest(unittest.TestCase):
+    def test_directional_30d_boost_is_recorded_in_entry_risk_diagnostics(self) -> None:
+        strategy = _DirectionalBoostSizingHarness()
+        history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])
+        bar = _bar("rb2605", 100.0)
+        sizing = strategy._calculate_entry_sizing(
+            "rb2605.SHFE",
+            "long",
+            bar,
+            history,
+            {"signal": "long_case1a", "risk_mode": "regular"},
+        )
+
+        strategy._record_entry_risk_diagnostic(
+            product_vt_symbol="rb.SHFE",
+            contract_vt_symbol="rb2605.SHFE",
+            direction="long",
+            bar=bar,
+            signal="long_case1a",
+            layer_kind="base",
+            volume=int(sizing["selected_volume"]),
+            stop_price=float(sizing["stop_price"]),
+            risk_mode="regular",
+            sizing_snapshot=sizing,
+        )
+
+        diagnostic = strategy.entry_risk_diagnostics[0]
+        self.assertEqual(1, diagnostic["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1.2, diagnostic["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(1_000.0, diagnostic["risk_amount_before_directional_30d_boost"])
+        self.assertEqual(1_200.0, diagnostic["target_risk_amount"])
+
+    def test_directional_30d_boost_applies_to_every_risk_budget_entry_context(self) -> None:
+        strategy = _DirectionalBoostSizingHarness()
+        history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])
+        bar = _bar("rb2605", 100.0)
+
+        for entry_context in [
+            "flat_entry",
+            "reverse_entry",
+            "rollover_reopen",
+            "regular_add",
+            "donchian_add",
+        ]:
+            with self.subTest(entry_context=entry_context):
+                sizing = strategy._calculate_entry_sizing(
+                    "rb2605.SHFE",
+                    "long",
+                    bar,
+                    history,
+                    {"signal": "long_case1a", "risk_mode": "regular"},
+                    entry_context=entry_context,
+                )
+
+                self.assertEqual(1_000.0, sizing["risk_amount_before_directional_30d_boost"])
+                self.assertEqual(1_200.0, sizing["risk_amount"])
+                self.assertEqual(12, sizing["contracts_by_risk"])
+                self.assertEqual(12, sizing["selected_volume"])
+
+    def test_directional_30d_boost_multiplies_long_risk_for_net_rise(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_directional_30d_risk_boost = True
+        strategy.directional_30d_risk_boost_lookback = 30
+        strategy.directional_30d_risk_boost_multiplier = 1.2
+        history = _history_from_closes([100.0] + [95.0] * 29 + [110.0])
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertAlmostEqual(0.10, snapshot["directional_30d_return"])
+        self.assertEqual(1, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1.2, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("direction_aligned", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_directional_30d_boost_multiplies_short_risk_for_net_fall(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_directional_30d_risk_boost = True
+        strategy.directional_30d_risk_boost_lookback = 30
+        strategy.directional_30d_risk_boost_multiplier = 1.2
+        history = _history_from_closes([100.0] + [105.0] * 29 + [90.0])
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("short", history)
+
+        self.assertAlmostEqual(-0.10, snapshot["directional_30d_return"])
+        self.assertEqual(1, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1.2, snapshot["directional_30d_risk_boost_multiplier"])
+
+    def test_directional_30d_boost_keeps_base_risk_for_opposite_or_flat_move(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_directional_30d_risk_boost = True
+        strategy.directional_30d_risk_boost_lookback = 30
+        strategy.directional_30d_risk_boost_multiplier = 1.2
+
+        for direction, end_close in [("long", 90.0), ("short", 110.0), ("long", 100.0)]:
+            with self.subTest(direction=direction, end_close=end_close):
+                history = _history_from_closes([100.0] + [100.0] * 29 + [end_close])
+                snapshot = strategy._directional_30d_risk_boost_snapshot(direction, history)
+
+                self.assertEqual(0, snapshot["directional_30d_risk_boost_aligned"])
+                self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+                self.assertEqual("direction_not_aligned", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_directional_30d_boost_fails_closed_without_31_valid_closes(self) -> None:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_directional_30d_risk_boost = True
+        strategy.directional_30d_risk_boost_lookback = 30
+        strategy.directional_30d_risk_boost_multiplier = 1.2
+        history = _history_from_closes([100.0] * 30)
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(0, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("insufficient_history", snapshot["directional_30d_risk_boost_reason"])
+
     def test_long_rollover_accepts_40_observed_bars_without_full_am_initialization(self) -> None:
         strategy = object.__new__(QmtRollPortfolioStrategy)
         strategy.ma_short = 5

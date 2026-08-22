@@ -161,6 +161,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_rollover_shape_same_volume_reopen: bool = False
     rollover_shape_volume_policy: str = "shrink_to_allowed"
     rollover_shape_history_mode: str = "target_contract_only"
+    enable_directional_30d_risk_boost: bool = False
+    directional_30d_risk_boost_lookback: int = 30
+    directional_30d_risk_boost_multiplier: float = 1.2
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -444,6 +447,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_rollover_shape_same_volume_reopen",
         "rollover_shape_volume_policy",
         "rollover_shape_history_mode",
+        "enable_directional_30d_risk_boost",
+        "directional_30d_risk_boost_lookback",
+        "directional_30d_risk_boost_multiplier",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -4726,6 +4732,71 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             ),
         }
 
+    def _directional_30d_risk_boost_snapshot(
+        self,
+        direction: str,
+        history: pd.DataFrame,
+    ) -> dict[str, Any]:
+        enabled = bool(self.enable_directional_30d_risk_boost)
+        lookback = int(self.directional_30d_risk_boost_lookback or 0)
+        configured_multiplier = float(self.directional_30d_risk_boost_multiplier or 0.0)
+        snapshot: dict[str, Any] = {
+            "directional_30d_risk_boost_enabled": int(enabled),
+            "directional_30d_risk_boost_lookback": lookback,
+            "directional_30d_start_close": float("nan"),
+            "directional_30d_end_close": float("nan"),
+            "directional_30d_return": float("nan"),
+            "directional_30d_risk_boost_aligned": 0,
+            "directional_30d_risk_boost_multiplier": 1.0,
+            "directional_30d_risk_boost_reason": "disabled",
+        }
+        if not enabled:
+            return snapshot
+        if lookback <= 0 or not np.isfinite(configured_multiplier) or configured_multiplier < 1.0:
+            snapshot["directional_30d_risk_boost_reason"] = "invalid_configuration"
+            return snapshot
+
+        close = pd.to_numeric(history.get("close", pd.Series(dtype="float64")), errors="coerce")
+        required_count = lookback + 1
+        if len(close) < required_count:
+            snapshot["directional_30d_risk_boost_reason"] = "insufficient_history"
+            return snapshot
+
+        window = close.tail(required_count).to_numpy(dtype="float64")
+        if not np.isfinite(window).all() or window[0] <= 0 or window[-1] <= 0:
+            snapshot["directional_30d_risk_boost_reason"] = "invalid_history"
+            return snapshot
+
+        start_close = float(window[0])
+        end_close = float(window[-1])
+        directional_return = end_close / start_close - 1.0
+        snapshot.update(
+            {
+                "directional_30d_start_close": start_close,
+                "directional_30d_end_close": end_close,
+                "directional_30d_return": directional_return,
+            }
+        )
+        if direction == "long":
+            aligned = directional_return > 0
+        elif direction == "short":
+            aligned = directional_return < 0
+        else:
+            snapshot["directional_30d_risk_boost_reason"] = "unsupported_direction"
+            return snapshot
+
+        if aligned:
+            snapshot.update(
+                {
+                    "directional_30d_risk_boost_aligned": 1,
+                    "directional_30d_risk_boost_multiplier": configured_multiplier,
+                    "directional_30d_risk_boost_reason": "direction_aligned",
+                }
+            )
+        else:
+            snapshot["directional_30d_risk_boost_reason"] = "direction_not_aligned"
+        return snapshot
+
     def _calculate_entry_sizing(
         self,
         vt_symbol: str,
@@ -4785,6 +4856,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         overheat_cooldown_fields = self._portfolio_overheat_cooldown_fields(entry_context)
         overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
+        directional_30d_risk_boost_fields = self._directional_30d_risk_boost_snapshot(direction, history)
         sizing_equity_fields = self._sizing_equity_snapshot()
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
@@ -4856,6 +4928,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **failure_memory_fields,
                 **oi_price_confirm_fields,
                 **overheat_cooldown_fields,
+                **directional_30d_risk_boost_fields,
                 **cluster_cap_fields,
                 **heat_gate_fields,
                 **env_gate_fields,
@@ -4888,6 +4961,8 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             risk_multiplier_override=effective_risk_multiplier,
         )
         risk_amount *= max(0.0, overheat_cooldown_scale)
+        risk_amount_before_directional_30d_boost = risk_amount
+        risk_amount *= float(directional_30d_risk_boost_fields["directional_30d_risk_boost_multiplier"])
         stop_price: float = self._entry_stop_price(direction, bar, history, use_day_extreme=True)
         size: int = self.get_size(vt_symbol)
         risk_per_contract: float = abs(float(bar.close_price) - stop_price) * size
@@ -4939,6 +5014,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "entry_context": entry_context,
             "risk_ratio": risk_ratio,
             "risk_amount": risk_amount,
+            "risk_amount_before_directional_30d_boost": risk_amount_before_directional_30d_boost,
             "limited_balance": limited_balance,
             "allowed_capital": allowed_capital,
             "single_trade_capital_limit": single_trade_capital_limit,
@@ -4960,6 +5036,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **failure_memory_fields,
             **oi_price_confirm_fields,
             **overheat_cooldown_fields,
+            **directional_30d_risk_boost_fields,
             **cluster_cap_fields,
             **heat_gate_fields,
             **env_gate_fields,
@@ -5503,6 +5580,39 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "post_entry_quality_add_avg_adverse_wick_pct": float(
                     sizing_snapshot.get("post_entry_quality_add_avg_adverse_wick_pct") or 0.0
+                ),
+                "directional_30d_risk_boost_enabled": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_enabled") or 0
+                ),
+                "directional_30d_risk_boost_lookback": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_lookback") or 0
+                ),
+                "directional_30d_start_close": float(
+                    sizing_snapshot.get("directional_30d_start_close")
+                    if sizing_snapshot.get("directional_30d_start_close") is not None
+                    else float("nan")
+                ),
+                "directional_30d_end_close": float(
+                    sizing_snapshot.get("directional_30d_end_close")
+                    if sizing_snapshot.get("directional_30d_end_close") is not None
+                    else float("nan")
+                ),
+                "directional_30d_return": float(
+                    sizing_snapshot.get("directional_30d_return")
+                    if sizing_snapshot.get("directional_30d_return") is not None
+                    else float("nan")
+                ),
+                "directional_30d_risk_boost_aligned": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_aligned") or 0
+                ),
+                "directional_30d_risk_boost_multiplier": float(
+                    sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
+                ),
+                "directional_30d_risk_boost_reason": str(
+                    sizing_snapshot.get("directional_30d_risk_boost_reason") or ""
+                ),
+                "risk_amount_before_directional_30d_boost": sizing_snapshot.get(
+                    "risk_amount_before_directional_30d_boost"
                 ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
@@ -6128,6 +6238,39 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "post_entry_quality_add_avg_adverse_wick_pct": float(
                     sizing_snapshot.get("post_entry_quality_add_avg_adverse_wick_pct") or 0.0
+                ),
+                "directional_30d_risk_boost_enabled": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_enabled") or 0
+                ),
+                "directional_30d_risk_boost_lookback": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_lookback") or 0
+                ),
+                "directional_30d_start_close": float(
+                    sizing_snapshot.get("directional_30d_start_close")
+                    if sizing_snapshot.get("directional_30d_start_close") is not None
+                    else float("nan")
+                ),
+                "directional_30d_end_close": float(
+                    sizing_snapshot.get("directional_30d_end_close")
+                    if sizing_snapshot.get("directional_30d_end_close") is not None
+                    else float("nan")
+                ),
+                "directional_30d_return": float(
+                    sizing_snapshot.get("directional_30d_return")
+                    if sizing_snapshot.get("directional_30d_return") is not None
+                    else float("nan")
+                ),
+                "directional_30d_risk_boost_aligned": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_aligned") or 0
+                ),
+                "directional_30d_risk_boost_multiplier": float(
+                    sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
+                ),
+                "directional_30d_risk_boost_reason": str(
+                    sizing_snapshot.get("directional_30d_risk_boost_reason") or ""
+                ),
+                "risk_amount_before_directional_30d_boost": sizing_snapshot.get(
+                    "risk_amount_before_directional_30d_boost"
                 ),
                 "target_risk_amount": sizing_snapshot.get("risk_amount"),
                 "planned_entry_price": entry_price,
