@@ -123,7 +123,8 @@ Include only demonstrated omissions plus these structural distinctions: independ
 Run:
 
 ```bash
-/Users/bytedance/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/futures-multicycle-backtest-report
+/Users/bytedance/Desktop/person/vnpy/.py311/bin/python -m pip install --quiet --target /tmp/codex-pyyaml-multicycle-20260822 PyYAML
+PYTHONPATH=/tmp/codex-pyyaml-multicycle-20260822 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python /Users/bytedance/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/futures-multicycle-backtest-report
 ```
 
 Expected: validator reports success with no malformed frontmatter or scaffold placeholders.
@@ -187,7 +188,7 @@ Run:
 ```bash
 git fetch origin master
 git rebase origin/master
-/Users/bytedance/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/futures-multicycle-backtest-report
+PYTHONPATH=/tmp/codex-pyyaml-multicycle-20260822 /Users/bytedance/Desktop/person/vnpy/.py311/bin/python /Users/bytedance/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/futures-multicycle-backtest-report
 git diff --check origin/master...HEAD
 ```
 
