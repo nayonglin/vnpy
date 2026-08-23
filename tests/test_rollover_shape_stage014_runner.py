@@ -81,7 +81,7 @@ class Stage014LongOnlyConfirmationOnlyRunnerTest(unittest.TestCase):
                     "directional_30d_risk_boost_enabled": 1,
                     "directional_30d_volume_confirmation_enabled": 1,
                     "directional_30d_risk_adjust_long_only": 1,
-                    "directional_30d_risk_boost_aligned": pd.NA,
+                    "directional_30d_risk_boost_aligned": 0,
                     "directional_30d_volume_ratio_threshold": 2.0,
                     "directional_30d_recent_volume_sum": pd.NA,
                     "directional_30d_prior_volume_sum": pd.NA,

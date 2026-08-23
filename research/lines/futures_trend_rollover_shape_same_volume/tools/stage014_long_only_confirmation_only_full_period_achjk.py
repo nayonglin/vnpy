@@ -189,9 +189,15 @@ def _risk_split_contract_summary(entry_risk: pd.DataFrame) -> pd.DataFrame:
         short_bypass = (
             short_mask
             & group["directional_30d_risk_boost_reason"].astype(str).eq("direction_excluded")
-            & group["directional_30d_risk_boost_aligned"].isna()
             & group["directional_30d_recent_volume_sum"].isna()
             & group["directional_30d_prior_volume_sum"].isna()
+            & group["directional_30d_risk_boost_applied"].fillna(0).astype(int).eq(0)
+            & np.isclose(
+                group["directional_30d_risk_boost_multiplier"],
+                1.0,
+                rtol=0.0,
+                atol=1e-12,
+            )
         )
         expected_multiplier = np.where(long_confirmation, 1.5, 1.0)
         expected_risk = group["risk_amount_before_directional_30d_boost"] * expected_multiplier
