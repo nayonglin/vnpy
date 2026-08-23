@@ -167,6 +167,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     directional_30d_risk_boost_require_volume_expansion: bool = False
     directional_30d_volume_recent_days: int = 10
     directional_30d_volume_prior_days: int = 10
+    directional_30d_volume_ratio_threshold: float = 1.0
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -456,6 +457,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "directional_30d_risk_boost_require_volume_expansion",
         "directional_30d_volume_recent_days",
         "directional_30d_volume_prior_days",
+        "directional_30d_volume_ratio_threshold",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -4781,12 +4783,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         recent_volume_days = int(getattr(self, "directional_30d_volume_recent_days", 10) or 0)
         prior_volume_days = int(getattr(self, "directional_30d_volume_prior_days", 10) or 0)
+        volume_ratio_threshold = float(
+            getattr(self, "directional_30d_volume_ratio_threshold", 1.0)
+        )
         snapshot: dict[str, Any] = {
             "directional_30d_risk_boost_enabled": int(enabled),
             "directional_30d_risk_boost_lookback": lookback,
             "directional_30d_volume_confirmation_enabled": int(require_volume_expansion),
             "directional_30d_volume_recent_days": recent_volume_days,
             "directional_30d_volume_prior_days": prior_volume_days,
+            "directional_30d_volume_ratio_threshold": volume_ratio_threshold,
             "directional_30d_recent_volume_sum": float("nan"),
             "directional_30d_prior_volume_sum": float("nan"),
             "directional_30d_volume_expanding": 0,
@@ -4848,7 +4854,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             return snapshot
 
-        if recent_volume_days <= 0 or prior_volume_days <= 0:
+        if (
+            recent_volume_days <= 0
+            or prior_volume_days <= 0
+            or not np.isfinite(volume_ratio_threshold)
+            or volume_ratio_threshold <= 0
+        ):
             snapshot["directional_30d_risk_boost_reason"] = "invalid_volume_configuration"
             return snapshot
         volume = pd.to_numeric(history.get("volume", pd.Series(dtype="float64")), errors="coerce")
@@ -4871,7 +4882,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if prior_volume_sum <= 0 or recent_volume_sum <= 0:
             snapshot["directional_30d_risk_boost_reason"] = "invalid_volume_history"
             return snapshot
-        if recent_volume_sum <= prior_volume_sum:
+        if recent_volume_sum <= prior_volume_sum * volume_ratio_threshold:
             snapshot["directional_30d_risk_boost_reason"] = "volume_not_expanding"
             return snapshot
         snapshot.update(
@@ -5683,6 +5694,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "directional_30d_volume_prior_days": int(
                     sizing_snapshot.get("directional_30d_volume_prior_days") or 0
                 ),
+                "directional_30d_volume_ratio_threshold": sizing_snapshot.get(
+                    "directional_30d_volume_ratio_threshold"
+                ),
                 "directional_30d_recent_volume_sum": sizing_snapshot.get(
                     "directional_30d_recent_volume_sum"
                 ),
@@ -6361,6 +6375,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "directional_30d_volume_prior_days": int(
                     sizing_snapshot.get("directional_30d_volume_prior_days") or 0
+                ),
+                "directional_30d_volume_ratio_threshold": sizing_snapshot.get(
+                    "directional_30d_volume_ratio_threshold"
                 ),
                 "directional_30d_recent_volume_sum": sizing_snapshot.get(
                     "directional_30d_recent_volume_sum"

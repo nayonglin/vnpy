@@ -395,6 +395,7 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         strategy.directional_30d_risk_boost_require_volume_expansion = True
         strategy.directional_30d_volume_recent_days = 10
         strategy.directional_30d_volume_prior_days = 10
+        strategy.directional_30d_volume_ratio_threshold = 1.0
         return strategy
 
     def test_volume_confirmation_includes_signal_day_and_applies_boost(self) -> None:
@@ -429,6 +430,48 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(0, snapshot["directional_30d_risk_boost_applied"])
         self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
         self.assertEqual("volume_not_expanding", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_volume_confirmation_requires_strictly_more_than_configured_ratio(self) -> None:
+        strategy = self._volume_confirmed_strategy()
+        strategy.directional_30d_volume_ratio_threshold = 2.0
+        closes = [100.0] + [95.0] * 29 + [110.0]
+
+        equal_snapshot = strategy._directional_30d_risk_boost_snapshot(
+            "long",
+            _history_from_closes(
+                closes,
+                volumes=[100.0] * 11 + [100.0] * 10 + [200.0] * 10,
+            ),
+        )
+        above_snapshot = strategy._directional_30d_risk_boost_snapshot(
+            "long",
+            _history_from_closes(
+                closes,
+                volumes=[100.0] * 11 + [100.0] * 10 + [199.0] * 9 + [210.0],
+            ),
+        )
+
+        self.assertEqual(2.0, equal_snapshot["directional_30d_volume_ratio_threshold"])
+        self.assertEqual(2_000.0, equal_snapshot["directional_30d_recent_volume_sum"])
+        self.assertEqual(1_000.0, equal_snapshot["directional_30d_prior_volume_sum"])
+        self.assertEqual(0, equal_snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual("volume_not_expanding", equal_snapshot["directional_30d_risk_boost_reason"])
+        self.assertEqual(2_001.0, above_snapshot["directional_30d_recent_volume_sum"])
+        self.assertEqual(1, above_snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.2, above_snapshot["directional_30d_risk_boost_multiplier"])
+
+    def test_volume_confirmation_fails_closed_for_invalid_ratio_threshold(self) -> None:
+        strategy = self._volume_confirmed_strategy()
+        strategy.directional_30d_volume_ratio_threshold = 0.0
+        history = _history_from_closes(
+            [100.0] + [95.0] * 29 + [110.0],
+            volumes=[100.0] * 11 + [50.0] * 10 + [200.0] * 10,
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(0, snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual("invalid_volume_configuration", snapshot["directional_30d_risk_boost_reason"])
 
     def test_volume_confirmation_fails_closed_for_invalid_volume(self) -> None:
         strategy = self._volume_confirmed_strategy()
