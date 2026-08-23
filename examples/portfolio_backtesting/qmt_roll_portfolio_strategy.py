@@ -164,6 +164,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_directional_30d_risk_boost: bool = False
     directional_30d_risk_boost_lookback: int = 30
     directional_30d_risk_boost_multiplier: float = 1.2
+    directional_30d_risk_nonconfirmation_multiplier: float = 1.0
     directional_30d_risk_boost_require_volume_expansion: bool = False
     directional_30d_volume_recent_days: int = 10
     directional_30d_volume_prior_days: int = 10
@@ -454,6 +455,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_directional_30d_risk_boost",
         "directional_30d_risk_boost_lookback",
         "directional_30d_risk_boost_multiplier",
+        "directional_30d_risk_nonconfirmation_multiplier",
         "directional_30d_risk_boost_require_volume_expansion",
         "directional_30d_volume_recent_days",
         "directional_30d_volume_prior_days",
@@ -4778,6 +4780,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         enabled = bool(self.enable_directional_30d_risk_boost)
         lookback = int(self.directional_30d_risk_boost_lookback or 0)
         configured_multiplier = float(self.directional_30d_risk_boost_multiplier or 0.0)
+        nonconfirmation_multiplier = float(
+            getattr(self, "directional_30d_risk_nonconfirmation_multiplier", 1.0) or 0.0
+        )
         require_volume_expansion = bool(
             getattr(self, "directional_30d_risk_boost_require_volume_expansion", False)
         )
@@ -4801,14 +4806,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "directional_30d_return": float("nan"),
             "directional_30d_risk_boost_aligned": 0,
             "directional_30d_risk_boost_applied": 0,
+            "directional_30d_risk_nonconfirmation_multiplier": nonconfirmation_multiplier,
             "directional_30d_risk_boost_multiplier": 1.0,
             "directional_30d_risk_boost_reason": "disabled",
         }
         if not enabled:
             return snapshot
-        if lookback <= 0 or not np.isfinite(configured_multiplier) or configured_multiplier < 1.0:
+        if (
+            lookback <= 0
+            or not np.isfinite(configured_multiplier)
+            or configured_multiplier < 1.0
+            or not np.isfinite(nonconfirmation_multiplier)
+            or nonconfirmation_multiplier <= 0.0
+            or nonconfirmation_multiplier > 1.0
+        ):
             snapshot["directional_30d_risk_boost_reason"] = "invalid_configuration"
             return snapshot
+        snapshot["directional_30d_risk_boost_multiplier"] = nonconfirmation_multiplier
 
         close = pd.to_numeric(history.get("close", pd.Series(dtype="float64")), errors="coerce")
         required_count = lookback + 1
@@ -5727,6 +5741,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "directional_30d_risk_boost_applied": int(
                     sizing_snapshot.get("directional_30d_risk_boost_applied") or 0
                 ),
+                "directional_30d_risk_nonconfirmation_multiplier": float(
+                    sizing_snapshot.get("directional_30d_risk_nonconfirmation_multiplier") or 1.0
+                ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
                 ),
@@ -6408,6 +6425,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "directional_30d_risk_boost_applied": int(
                     sizing_snapshot.get("directional_30d_risk_boost_applied") or 0
+                ),
+                "directional_30d_risk_nonconfirmation_multiplier": float(
+                    sizing_snapshot.get("directional_30d_risk_nonconfirmation_multiplier") or 1.0
                 ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
