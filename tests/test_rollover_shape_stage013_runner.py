@@ -52,6 +52,18 @@ def _window_summary() -> pd.DataFrame:
 
 
 class Stage013LongOnlyAsymmetricMulticycleRunnerTest(unittest.TestCase):
+    def test_date_identity_ignores_midnight_string_format_only(self) -> None:
+        normalize = getattr(
+            stage013,
+            "_date_keys",
+            lambda values: values.astype(str).tolist(),
+        )
+
+        self.assertEqual(
+            ["2018-01-02", "2026-05-29"],
+            normalize(pd.Series(["2018-01-02 00:00:00", "2026-05-29"])),
+        )
+
     def test_frozen_windows_five_arms_and_run_identity(self) -> None:
         self.assertEqual(43, len(stage013.WINDOWS))
         self.assertEqual(["A", "C", "H", "I", "J"], [arm["arm"] for arm in stage013.ARMS])

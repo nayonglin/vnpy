@@ -81,6 +81,11 @@ def _git_head() -> str:
     ).strip()
 
 
+def _date_keys(values: pd.Series) -> list[str]:
+    parsed = pd.to_datetime(values, errors="raise", format="mixed")
+    return parsed.dt.strftime("%Y-%m-%d").tolist()
+
+
 def _load_reused_arms() -> tuple[pd.DataFrame, pd.DataFrame]:
     summary = pd.read_csv(s11.SUMMARY_PATH)
     curve = pd.read_csv(s11.CURVE_PATH)
@@ -156,7 +161,7 @@ def _verify_reused_full_identity(summary: pd.DataFrame, curve: pd.DataFrame) -> 
             raise RuntimeError(f"stage013_reused_full_summary_drift:{arm}")
         left = curve[curve["window_id"].astype(str).eq("full_2018_2026") & curve["promotion_arm"].astype(str).eq(arm)].sort_values("date")
         right = source_curve[source_curve["experiment_arm"].astype(str).eq(arm)].sort_values("date")
-        if left["date"].astype(str).tolist() != right["date"].astype(str).tolist() or not np.allclose(left["account_equity"], right["account_equity"], rtol=0.0, atol=0.0):
+        if _date_keys(left["date"]) != _date_keys(right["date"]) or not np.allclose(left["account_equity"], right["account_equity"], rtol=0.0, atol=0.0):
             raise RuntimeError(f"stage013_reused_full_curve_drift:{arm}")
 
 
@@ -169,7 +174,7 @@ def _verify_i_full_identity(summary: pd.DataFrame, curve: pd.DataFrame) -> None:
         raise RuntimeError("stage013_i_full_summary_drift")
     left = curve[curve["window_id"].astype(str).eq("full_2018_2026") & curve["promotion_arm"].astype(str).eq("I")].sort_values("date")
     right = source_curve[source_curve["experiment_arm"].astype(str).eq("I")].sort_values("date")
-    if left["date"].astype(str).tolist() != right["date"].astype(str).tolist() or not np.allclose(left["account_equity"], right["account_equity"], rtol=0.0, atol=0.0):
+    if _date_keys(left["date"]) != _date_keys(right["date"]) or not np.allclose(left["account_equity"], right["account_equity"], rtol=0.0, atol=0.0):
         raise RuntimeError("stage013_i_full_curve_drift")
 
 
