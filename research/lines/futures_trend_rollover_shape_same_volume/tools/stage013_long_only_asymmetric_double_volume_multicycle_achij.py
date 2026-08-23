@@ -86,6 +86,18 @@ def _date_keys(values: pd.Series) -> list[str]:
     return parsed.dt.strftime("%Y-%m-%d").tolist()
 
 
+def _csv_equity_values_match(left: np.ndarray, right: np.ndarray) -> bool:
+    left_values = np.asarray(left, dtype="float64")
+    right_values = np.asarray(right, dtype="float64")
+    if left_values.shape != right_values.shape:
+        return False
+    if not np.isfinite(left_values).all() or not np.isfinite(right_values).all():
+        return False
+    difference = np.abs(left_values - right_values)
+    scale = np.maximum(np.maximum(np.abs(left_values), np.abs(right_values)), 1.0)
+    return bool((difference <= 1e-9).all() and (difference / scale <= 1e-15).all())
+
+
 def _load_reused_arms() -> tuple[pd.DataFrame, pd.DataFrame]:
     summary = pd.read_csv(s11.SUMMARY_PATH)
     curve = pd.read_csv(s11.CURVE_PATH)
@@ -174,7 +186,10 @@ def _verify_i_full_identity(summary: pd.DataFrame, curve: pd.DataFrame) -> None:
         raise RuntimeError("stage013_i_full_summary_drift")
     left = curve[curve["window_id"].astype(str).eq("full_2018_2026") & curve["promotion_arm"].astype(str).eq("I")].sort_values("date")
     right = source_curve[source_curve["experiment_arm"].astype(str).eq("I")].sort_values("date")
-    if _date_keys(left["date"]) != _date_keys(right["date"]) or not np.allclose(left["account_equity"], right["account_equity"], rtol=0.0, atol=0.0):
+    if _date_keys(left["date"]) != _date_keys(right["date"]) or not _csv_equity_values_match(
+        left["account_equity"].to_numpy(dtype="float64"),
+        right["account_equity"].to_numpy(dtype="float64"),
+    ):
         raise RuntimeError("stage013_i_full_curve_drift")
 
 

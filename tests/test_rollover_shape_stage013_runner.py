@@ -4,6 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -58,10 +59,25 @@ class Stage013LongOnlyAsymmetricMulticycleRunnerTest(unittest.TestCase):
             "_date_keys",
             lambda values: values.astype(str).tolist(),
         )
-
         self.assertEqual(
             ["2018-01-02", "2026-05-29"],
             normalize(pd.Series(["2018-01-02 00:00:00", "2026-05-29"])),
+        )
+
+    def test_csv_roundtrip_equity_tolerance_is_tight(self) -> None:
+        matches = getattr(stage013, "_csv_equity_values_match", np.array_equal)
+
+        self.assertTrue(
+            matches(
+                np.array([126_106.90000000001, 3_798_557.2000000007]),
+                np.array([126_106.9, 3_798_557.2]),
+            )
+        )
+        self.assertFalse(
+            matches(
+                np.array([126_106.900001]),
+                np.array([126_106.9]),
+            )
         )
 
     def test_frozen_windows_five_arms_and_run_identity(self) -> None:
