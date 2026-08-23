@@ -165,6 +165,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     directional_30d_risk_boost_lookback: int = 30
     directional_30d_risk_boost_multiplier: float = 1.2
     directional_30d_risk_nonconfirmation_multiplier: float = 1.0
+    directional_30d_risk_adjust_long_only: bool = False
     directional_30d_risk_boost_require_volume_expansion: bool = False
     directional_30d_volume_recent_days: int = 10
     directional_30d_volume_prior_days: int = 10
@@ -456,6 +457,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "directional_30d_risk_boost_lookback",
         "directional_30d_risk_boost_multiplier",
         "directional_30d_risk_nonconfirmation_multiplier",
+        "directional_30d_risk_adjust_long_only",
         "directional_30d_risk_boost_require_volume_expansion",
         "directional_30d_volume_recent_days",
         "directional_30d_volume_prior_days",
@@ -4783,6 +4785,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         nonconfirmation_multiplier = float(
             getattr(self, "directional_30d_risk_nonconfirmation_multiplier", 1.0) or 0.0
         )
+        long_only = bool(getattr(self, "directional_30d_risk_adjust_long_only", False))
         require_volume_expansion = bool(
             getattr(self, "directional_30d_risk_boost_require_volume_expansion", False)
         )
@@ -4807,10 +4810,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "directional_30d_risk_boost_aligned": 0,
             "directional_30d_risk_boost_applied": 0,
             "directional_30d_risk_nonconfirmation_multiplier": nonconfirmation_multiplier,
+            "directional_30d_risk_adjust_long_only": int(long_only),
             "directional_30d_risk_boost_multiplier": 1.0,
             "directional_30d_risk_boost_reason": "disabled",
         }
         if not enabled:
+            return snapshot
+        if long_only and direction == "short":
+            snapshot["directional_30d_risk_boost_reason"] = "direction_excluded"
             return snapshot
         if (
             lookback <= 0
@@ -5744,6 +5751,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "directional_30d_risk_nonconfirmation_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_nonconfirmation_multiplier") or 1.0
                 ),
+                "directional_30d_risk_adjust_long_only": int(
+                    sizing_snapshot.get("directional_30d_risk_adjust_long_only") or 0
+                ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
                 ),
@@ -6428,6 +6438,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "directional_30d_risk_nonconfirmation_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_nonconfirmation_multiplier") or 1.0
+                ),
+                "directional_30d_risk_adjust_long_only": int(
+                    sizing_snapshot.get("directional_30d_risk_adjust_long_only") or 0
                 ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0

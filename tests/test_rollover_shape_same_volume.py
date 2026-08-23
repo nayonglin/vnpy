@@ -489,6 +489,80 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(2, miss_add)
         self.assertEqual(7, hit_add)
 
+    def test_asymmetric_double_volume_long_only_bypasses_short_entry_and_add(self) -> None:
+        snapshot_strategy = self._asymmetric_double_volume_strategy()
+        snapshot_strategy.directional_30d_risk_adjust_long_only = True
+        short_history = _history_from_closes(
+            [110.0] + [105.0] * 29 + [90.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [199.0] * 9 + [210.0],
+        )
+
+        short_snapshot = snapshot_strategy._directional_30d_risk_boost_snapshot(
+            "short", short_history
+        )
+
+        self.assertEqual(1, short_snapshot.get("directional_30d_risk_adjust_long_only", 0))
+        self.assertEqual(1.0, short_snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(0, short_snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual(
+            "direction_excluded",
+            short_snapshot["directional_30d_risk_boost_reason"],
+        )
+
+        entry_strategy = _DirectionalBoostSizingHarness()
+        entry_strategy.directional_30d_risk_boost_multiplier = 1.5
+        entry_strategy.directional_30d_risk_nonconfirmation_multiplier = 0.5
+        entry_strategy.directional_30d_risk_boost_require_volume_expansion = True
+        entry_strategy.directional_30d_volume_ratio_threshold = 2.0
+        entry_strategy.directional_30d_risk_adjust_long_only = True
+        entry = entry_strategy._calculate_entry_sizing(
+            "rb2605.SHFE",
+            "short",
+            _bar("rb2605", 100.0),
+            short_history,
+            {"signal": "short_case1a", "risk_mode": "regular"},
+        )
+
+        add_strategy = _DirectionalBoostAddHarness()
+        add_strategy.directional_30d_risk_boost_multiplier = 1.5
+        add_strategy.directional_30d_risk_nonconfirmation_multiplier = 0.5
+        add_strategy.directional_30d_risk_boost_require_volume_expansion = True
+        add_strategy.directional_30d_volume_ratio_threshold = 2.0
+        add_strategy.directional_30d_risk_adjust_long_only = True
+        short_state = _state(volume=10)
+        short_state.direction = "short"
+        for layer in short_state.layers:
+            layer.direction = "short"
+        add_volume, add_snapshot = add_strategy._calculate_directional_boosted_add_sizing(
+            short_state,
+            _bar("jm2609", 100.0),
+            short_history,
+            "regular_add",
+        )
+
+        self.assertEqual(1_000.0, entry["risk_amount"])
+        self.assertEqual(10, entry["selected_volume"])
+        self.assertEqual(5, add_volume)
+        self.assertEqual(1.0, add_snapshot["directional_30d_risk_boost_multiplier"])
+
+    def test_asymmetric_double_volume_long_only_still_scales_long_hit_and_miss(self) -> None:
+        strategy = self._asymmetric_double_volume_strategy()
+        strategy.directional_30d_risk_adjust_long_only = True
+        closes = [100.0] + [95.0] * 29 + [110.0]
+        miss_history = _history_from_closes(closes, volumes=[100.0] * 31)
+        hit_history = _history_from_closes(
+            closes,
+            volumes=[100.0] * 11 + [100.0] * 10 + [199.0] * 9 + [210.0],
+        )
+
+        miss = strategy._directional_30d_risk_boost_snapshot("long", miss_history)
+        hit = strategy._directional_30d_risk_boost_snapshot("long", hit_history)
+
+        self.assertEqual(0.5, miss["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(0, miss["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.5, hit["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(1, hit["directional_30d_risk_boost_applied"])
+
     def test_volume_confirmation_includes_signal_day_and_applies_boost(self) -> None:
         strategy = self._volume_confirmed_strategy()
         closes = [100.0] + [95.0] * 29 + [110.0]
