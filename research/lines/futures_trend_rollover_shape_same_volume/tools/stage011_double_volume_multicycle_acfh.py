@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 from typing import Any, Callable
 from uuid import uuid4
@@ -230,7 +231,13 @@ def _validate_outputs(summary: pd.DataFrame, curves: pd.DataFrame) -> None:
 
 
 def _comparison(summary: pd.DataFrame) -> pd.DataFrame:
-    return _using_contract(s7._comparison, summary)
+    result = _using_contract(s7._comparison, summary)
+    # Treat numerically identical equity paths as a non-loss.  CSV round trips can
+    # leave a machine-epsilon return delta even when both arms are path-identical.
+    near_equal = pd.to_numeric(result["delta_return_pct"], errors="coerce").abs().le(1e-9)
+    result.loc[near_equal, "delta_return_pct"] = 0.0
+    result.loc[near_equal, "return_win"] = 1
+    return result
 
 
 def _aggregate(comparison: pd.DataFrame) -> pd.DataFrame:
@@ -550,5 +557,44 @@ def main() -> None:
     print(json.dumps(decision, ensure_ascii=False, indent=2))
 
 
+def rebuild_from_published() -> None:
+    """Rebuild derived reports without rerunning any backtest window."""
+    summary = pd.read_csv(SUMMARY_PATH)
+    curve = pd.read_csv(CURVE_PATH)
+    entry_risk = pd.read_csv(ENTRY_RISK_PATH)
+    trades = pd.read_csv(TRADES_PATH)
+    trade_events = pd.read_csv(TRADE_EVENTS_PATH)
+    _validate_outputs(summary, curve)
+    comparison = _comparison(summary)
+    aggregate = _aggregate(comparison)
+    volume_contract = s10._volume_contract_summary(entry_risk)
+    decision = _decision(comparison, aggregate, volume_contract)
+    charts = {
+        CHART_FILES["full_period"]: _plot_full(curve),
+        CHART_FILES["1y"]: _plot_window_grid(curve, comparison, 1),
+        CHART_FILES["2y"]: _plot_window_grid(curve, comparison, 2),
+        CHART_FILES["3y"]: _plot_window_grid(curve, comparison, 3),
+        CHART_FILES["aggregate"]: _plot_aggregate(aggregate),
+    }
+    _publish_atomically(
+        {
+            SUMMARY_PATH.name: summary,
+            COMPARISON_PATH.name: comparison,
+            AGGREGATE_PATH.name: aggregate,
+            CURVE_PATH.name: curve,
+            ENTRY_RISK_PATH.name: entry_risk,
+            TRADES_PATH.name: trades,
+            TRADE_EVENTS_PATH.name: trade_events,
+            VOLUME_CONTRACT_PATH.name: volume_contract,
+        },
+        decision,
+        charts,
+    )
+    print(json.dumps(decision, ensure_ascii=False, indent=2))
+
+
 if __name__ == "__main__":
-    main()
+    if "--rebuild-from-published" in sys.argv:
+        rebuild_from_published()
+    else:
+        main()

@@ -73,6 +73,23 @@ class Stage011DoubleVolumeMulticycleRunnerTest(unittest.TestCase):
         )
         self.assertEqual({"combined", "january", "june"}, set(aggregate["start_cohort"]))
 
+    def test_machine_epsilon_return_delta_is_counted_as_tie(self) -> None:
+        summary = _window_summary()
+        target = (
+            summary["window_id"].eq("roll_1y_2018_01")
+            & summary["promotion_arm"].eq("H")
+        )
+        summary.loc[target, "total_return_pct"] -= 1e-12
+
+        comparison = stage011._comparison(summary)
+        row = comparison[
+            comparison["window_id"].eq("roll_1y_2018_01")
+            & comparison["comparison"].eq("C_vs_H")
+        ].iloc[0]
+
+        self.assertEqual(0.0, float(row["delta_return_pct"]))
+        self.assertEqual(1, int(row["return_win"]))
+
     def test_decision_stays_not_promotable_when_h_cycle_gate_fails(self) -> None:
         comparison = stage011._comparison(_window_summary())
         aggregate = stage011._aggregate(comparison)

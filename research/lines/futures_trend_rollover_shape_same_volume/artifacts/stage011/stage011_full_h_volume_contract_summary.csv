@@ -1,0 +1,6 @@
+﻿group_type,group_value,diagnostic_intent_count,price_aligned_count,boost_applied_count,boost_suppressed_by_volume_count,threshold_contract_pass,risk_amount_contract_pass
+total,all,375,369,47,322,1,1
+direction,long,301,295,39,256,1,1
+direction,short,74,74,8,66,1,1
+entry_context,flat_entry,352,346,47,299,1,1
+entry_context,rollover_reopen,23,23,0,23,1,1
