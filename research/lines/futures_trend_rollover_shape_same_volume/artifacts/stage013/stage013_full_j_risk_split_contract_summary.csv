@@ -1,0 +1,6 @@
+﻿group_type,group_value,diagnostic_intent_count,long_confirmation_count,long_nonconfirmation_count,short_bypass_count,threshold_contract_pass,risk_amount_contract_pass
+total,all,364,40,251,73,1,1
+direction,long,291,40,251,0,1,1
+direction,short,73,0,0,73,1,1
+entry_context,flat_entry,343,40,235,68,1,1
+entry_context,rollover_reopen,21,0,16,5,1,1
