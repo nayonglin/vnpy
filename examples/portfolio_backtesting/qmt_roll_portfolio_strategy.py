@@ -164,6 +164,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_directional_30d_risk_boost: bool = False
     directional_30d_risk_boost_lookback: int = 30
     directional_30d_risk_boost_multiplier: float = 1.2
+    directional_30d_risk_boost_require_volume_expansion: bool = False
+    directional_30d_volume_recent_days: int = 10
+    directional_30d_volume_prior_days: int = 10
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -450,6 +453,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_directional_30d_risk_boost",
         "directional_30d_risk_boost_lookback",
         "directional_30d_risk_boost_multiplier",
+        "directional_30d_risk_boost_require_volume_expansion",
+        "directional_30d_volume_recent_days",
+        "directional_30d_volume_prior_days",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -4770,13 +4776,25 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         enabled = bool(self.enable_directional_30d_risk_boost)
         lookback = int(self.directional_30d_risk_boost_lookback or 0)
         configured_multiplier = float(self.directional_30d_risk_boost_multiplier or 0.0)
+        require_volume_expansion = bool(
+            getattr(self, "directional_30d_risk_boost_require_volume_expansion", False)
+        )
+        recent_volume_days = int(getattr(self, "directional_30d_volume_recent_days", 10) or 0)
+        prior_volume_days = int(getattr(self, "directional_30d_volume_prior_days", 10) or 0)
         snapshot: dict[str, Any] = {
             "directional_30d_risk_boost_enabled": int(enabled),
             "directional_30d_risk_boost_lookback": lookback,
+            "directional_30d_volume_confirmation_enabled": int(require_volume_expansion),
+            "directional_30d_volume_recent_days": recent_volume_days,
+            "directional_30d_volume_prior_days": prior_volume_days,
+            "directional_30d_recent_volume_sum": float("nan"),
+            "directional_30d_prior_volume_sum": float("nan"),
+            "directional_30d_volume_expanding": 0,
             "directional_30d_start_close": float("nan"),
             "directional_30d_end_close": float("nan"),
             "directional_30d_return": float("nan"),
             "directional_30d_risk_boost_aligned": 0,
+            "directional_30d_risk_boost_applied": 0,
             "directional_30d_risk_boost_multiplier": 1.0,
             "directional_30d_risk_boost_reason": "disabled",
         }
@@ -4815,16 +4833,55 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             snapshot["directional_30d_risk_boost_reason"] = "unsupported_direction"
             return snapshot
 
-        if aligned:
+        if not aligned:
+            snapshot["directional_30d_risk_boost_reason"] = "direction_not_aligned"
+            return snapshot
+
+        snapshot["directional_30d_risk_boost_aligned"] = 1
+        if not require_volume_expansion:
             snapshot.update(
                 {
-                    "directional_30d_risk_boost_aligned": 1,
+                    "directional_30d_risk_boost_applied": 1,
                     "directional_30d_risk_boost_multiplier": configured_multiplier,
                     "directional_30d_risk_boost_reason": "direction_aligned",
                 }
             )
-        else:
-            snapshot["directional_30d_risk_boost_reason"] = "direction_not_aligned"
+            return snapshot
+
+        if recent_volume_days <= 0 or prior_volume_days <= 0:
+            snapshot["directional_30d_risk_boost_reason"] = "invalid_volume_configuration"
+            return snapshot
+        volume = pd.to_numeric(history.get("volume", pd.Series(dtype="float64")), errors="coerce")
+        volume_required_count = recent_volume_days + prior_volume_days
+        if len(volume) < volume_required_count:
+            snapshot["directional_30d_risk_boost_reason"] = "insufficient_volume_history"
+            return snapshot
+        volume_window = volume.tail(volume_required_count).to_numpy(dtype="float64")
+        if not np.isfinite(volume_window).all() or (volume_window < 0).any():
+            snapshot["directional_30d_risk_boost_reason"] = "invalid_volume_history"
+            return snapshot
+        prior_volume_sum = float(volume_window[:prior_volume_days].sum())
+        recent_volume_sum = float(volume_window[prior_volume_days:].sum())
+        snapshot.update(
+            {
+                "directional_30d_prior_volume_sum": prior_volume_sum,
+                "directional_30d_recent_volume_sum": recent_volume_sum,
+            }
+        )
+        if prior_volume_sum <= 0 or recent_volume_sum <= 0:
+            snapshot["directional_30d_risk_boost_reason"] = "invalid_volume_history"
+            return snapshot
+        if recent_volume_sum <= prior_volume_sum:
+            snapshot["directional_30d_risk_boost_reason"] = "volume_not_expanding"
+            return snapshot
+        snapshot.update(
+            {
+                "directional_30d_volume_expanding": 1,
+                "directional_30d_risk_boost_applied": 1,
+                "directional_30d_risk_boost_multiplier": configured_multiplier,
+                "directional_30d_risk_boost_reason": "direction_and_volume_confirmed",
+            }
+        )
         return snapshot
 
     def _calculate_entry_sizing(
@@ -5617,6 +5674,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "directional_30d_risk_boost_lookback": int(
                     sizing_snapshot.get("directional_30d_risk_boost_lookback") or 0
                 ),
+                "directional_30d_volume_confirmation_enabled": int(
+                    sizing_snapshot.get("directional_30d_volume_confirmation_enabled") or 0
+                ),
+                "directional_30d_volume_recent_days": int(
+                    sizing_snapshot.get("directional_30d_volume_recent_days") or 0
+                ),
+                "directional_30d_volume_prior_days": int(
+                    sizing_snapshot.get("directional_30d_volume_prior_days") or 0
+                ),
+                "directional_30d_recent_volume_sum": sizing_snapshot.get(
+                    "directional_30d_recent_volume_sum"
+                ),
+                "directional_30d_prior_volume_sum": sizing_snapshot.get(
+                    "directional_30d_prior_volume_sum"
+                ),
+                "directional_30d_volume_expanding": int(
+                    sizing_snapshot.get("directional_30d_volume_expanding") or 0
+                ),
                 "directional_30d_start_close": float(
                     sizing_snapshot.get("directional_30d_start_close")
                     if sizing_snapshot.get("directional_30d_start_close") is not None
@@ -5634,6 +5709,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "directional_30d_risk_boost_aligned": int(
                     sizing_snapshot.get("directional_30d_risk_boost_aligned") or 0
+                ),
+                "directional_30d_risk_boost_applied": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_applied") or 0
                 ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0
@@ -6275,6 +6353,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "directional_30d_risk_boost_lookback": int(
                     sizing_snapshot.get("directional_30d_risk_boost_lookback") or 0
                 ),
+                "directional_30d_volume_confirmation_enabled": int(
+                    sizing_snapshot.get("directional_30d_volume_confirmation_enabled") or 0
+                ),
+                "directional_30d_volume_recent_days": int(
+                    sizing_snapshot.get("directional_30d_volume_recent_days") or 0
+                ),
+                "directional_30d_volume_prior_days": int(
+                    sizing_snapshot.get("directional_30d_volume_prior_days") or 0
+                ),
+                "directional_30d_recent_volume_sum": sizing_snapshot.get(
+                    "directional_30d_recent_volume_sum"
+                ),
+                "directional_30d_prior_volume_sum": sizing_snapshot.get(
+                    "directional_30d_prior_volume_sum"
+                ),
+                "directional_30d_volume_expanding": int(
+                    sizing_snapshot.get("directional_30d_volume_expanding") or 0
+                ),
                 "directional_30d_start_close": float(
                     sizing_snapshot.get("directional_30d_start_close")
                     if sizing_snapshot.get("directional_30d_start_close") is not None
@@ -6292,6 +6388,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 ),
                 "directional_30d_risk_boost_aligned": int(
                     sizing_snapshot.get("directional_30d_risk_boost_aligned") or 0
+                ),
+                "directional_30d_risk_boost_applied": int(
+                    sizing_snapshot.get("directional_30d_risk_boost_applied") or 0
                 ),
                 "directional_30d_risk_boost_multiplier": float(
                     sizing_snapshot.get("directional_30d_risk_boost_multiplier") or 1.0

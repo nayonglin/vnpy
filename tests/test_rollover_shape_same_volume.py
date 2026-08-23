@@ -12,14 +12,21 @@ from vnpy.trader.object import BarData
 from qmt_roll_portfolio_strategy import PositionLayer, ProductState, QmtRollPortfolioStrategy
 
 
-def _history_from_closes(closes: list[float]) -> pd.DataFrame:
+def _history_from_closes(
+    closes: list[float],
+    *,
+    volumes: list[float] | None = None,
+) -> pd.DataFrame:
+    history_volumes = volumes if volumes is not None else [100.0] * len(closes)
+    if len(history_volumes) != len(closes):
+        raise ValueError("volumes must match closes")
     return pd.DataFrame(
         {
             "open": closes,
             "high": [value + 0.5 for value in closes],
             "low": [value - 0.5 for value in closes],
             "close": closes,
-            "volume": [100.0] * len(closes),
+            "volume": history_volumes,
             "open_interest": [1000.0] * len(closes),
         }
     )
@@ -225,6 +232,9 @@ class _DirectionalBoostSizingHarness(QmtRollPortfolioStrategy):
         self.enable_directional_30d_risk_boost = True
         self.directional_30d_risk_boost_lookback = 30
         self.directional_30d_risk_boost_multiplier = 1.2
+        self.directional_30d_risk_boost_require_volume_expansion = False
+        self.directional_30d_volume_recent_days = 10
+        self.directional_30d_volume_prior_days = 10
         self.fixed_size = 0
         self.source_symbol_by_contract: dict[str, str] = {}
         self.risk_ratio_of_total_assets = 0.01
@@ -346,6 +356,9 @@ class _DirectionalBoostAddHarness(QmtRollPortfolioStrategy):
         self.enable_directional_30d_risk_boost = True
         self.directional_30d_risk_boost_lookback = 30
         self.directional_30d_risk_boost_multiplier = 1.2
+        self.directional_30d_risk_boost_require_volume_expansion = False
+        self.directional_30d_volume_recent_days = 10
+        self.directional_30d_volume_prior_days = 10
         self.post_entry_quality_add_volume_multiplier = 0.5
         self.post_entry_quality_add_use_day_extreme_stop = True
         self.regular_add_volume_multiplier = 0.5
@@ -373,6 +386,92 @@ class _DirectionalBoostAddHarness(QmtRollPortfolioStrategy):
 
 
 class RolloverShapeSameVolumeTest(unittest.TestCase):
+    @staticmethod
+    def _volume_confirmed_strategy() -> QmtRollPortfolioStrategy:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_directional_30d_risk_boost = True
+        strategy.directional_30d_risk_boost_lookback = 30
+        strategy.directional_30d_risk_boost_multiplier = 1.2
+        strategy.directional_30d_risk_boost_require_volume_expansion = True
+        strategy.directional_30d_volume_recent_days = 10
+        strategy.directional_30d_volume_prior_days = 10
+        return strategy
+
+    def test_volume_confirmation_includes_signal_day_and_applies_boost(self) -> None:
+        strategy = self._volume_confirmed_strategy()
+        closes = [100.0] + [95.0] * 29 + [110.0]
+        volumes = [100.0] * 11 + [50.0] * 10 + [60.0] * 9 + [600.0]
+        history = _history_from_closes(closes, volumes=volumes)
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(500.0, snapshot["directional_30d_prior_volume_sum"])
+        self.assertEqual(1_140.0, snapshot["directional_30d_recent_volume_sum"])
+        self.assertEqual(1, snapshot["directional_30d_volume_expanding"])
+        self.assertEqual(1, snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.2, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(
+            "direction_and_volume_confirmed",
+            snapshot["directional_30d_risk_boost_reason"],
+        )
+
+    def test_volume_confirmation_equal_or_lower_volume_keeps_base_risk(self) -> None:
+        strategy = self._volume_confirmed_strategy()
+        history = _history_from_closes(
+            [100.0] + [95.0] * 29 + [110.0],
+            volumes=[100.0] * 31,
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(1, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(0, snapshot["directional_30d_volume_expanding"])
+        self.assertEqual(0, snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("volume_not_expanding", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_volume_confirmation_fails_closed_for_invalid_volume(self) -> None:
+        strategy = self._volume_confirmed_strategy()
+        volumes = [100.0] * 31
+        volumes[-1] = float("nan")
+        history = _history_from_closes(
+            [100.0] + [95.0] * 29 + [110.0],
+            volumes=volumes,
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(1, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(0, snapshot["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("invalid_volume_history", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_volume_confirmation_is_applied_by_real_add_sizing_entrypoint(self) -> None:
+        strategy = _DirectionalBoostAddHarness()
+        strategy.directional_30d_risk_boost_require_volume_expansion = True
+        state = _state(volume=10)
+        bar = _bar("jm2609", 100.0)
+        closes = [100.0] + [95.0] * 29 + [110.0]
+
+        no_expansion, no_expansion_sizing = strategy._calculate_directional_boosted_add_sizing(
+            state,
+            bar,
+            _history_from_closes(closes, volumes=[100.0] * 31),
+            "regular_add",
+        )
+        expansion_volumes = [100.0] * 11 + [50.0] * 10 + [100.0] * 10
+        expansion, expansion_sizing = strategy._calculate_directional_boosted_add_sizing(
+            state,
+            bar,
+            _history_from_closes(closes, volumes=expansion_volumes),
+            "regular_add",
+        )
+
+        self.assertEqual(5, no_expansion)
+        self.assertEqual(0, no_expansion_sizing["directional_30d_risk_boost_applied"])
+        self.assertEqual(6, expansion)
+        self.assertEqual(1, expansion_sizing["directional_30d_risk_boost_applied"])
+
     def test_directional_30d_boost_applies_to_real_add_sizing_entrypoint(self) -> None:
         strategy = _DirectionalBoostAddHarness()
         state = _state(volume=10)
