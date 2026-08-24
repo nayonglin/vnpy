@@ -50811,3 +50811,13 @@ test 分桶：
 - 决策 `stop_n_long_atr_shock_filter_after_full_period`；A/C双门未同时通过，不自动跑多周期、不扫ATR倍数/周期/方向/品种/年份救参，不改正式物料/master/production/CTP，订单/撤单API `0/0`。
 - 运行前后过拟合风险均高：仅7次触发却经复利路径显著改变指标；一次固定证伪有价值，但当前没有继续历史优化价值。
 - 独立 reviewer 复算N基线、ATR合同、7次触发、复用身份、P指标和门禁；修复一处非阻断记录残留后，最终 `blocker=0/non-blocker=0`。
+
+# 2026-08-24 20:35 Stage021 / P版多空对称1倍ATR逆向冲击过滤全周期空增量
+
+- 结果前以 `b907562db36d38ca5e07c9b1eba8e3e5dd9e88c5` 冻结Q：完整继承P/N的多空成交量风险缩放，多头用 `前收-信号日收 > ATR5` 禁开，空头对称用 `信号日收-前收 > ATR5` 禁开；严格大于，普通/反转/换月生效，加仓和retry排除。
+- A/C/P从Stage020逐值复用，仅Q新跑1次。Q为 `15,135,800.10/9990.5334%/-44.9033%/Sharpe1.495411`，滑点 `1,571,580`、交易821、胜率 `52.8467%`、broker10峰值 `99.6724%`。
+- 946条诊断中多头483、空头463；拦截多头7、空头7，普通入口13、换月1。空头7次上涨/ATR为 `1.0309~1.6800`，配置、方向、严格边界与手数合同通过。
+- 但空头新增7条sizing候选在P原始trade中本来就没有形成对应空头OPEN；Q与P同为821条trade，2037日资金曲线及全部指标逐值一致。P_vs_Q形式门通过只是平局，不是空头过滤产生增量。
+- Q相对C全部门通过；相对A仍只有broker不恶化门失败，峰值 `99.6724% vs 91.4950%`。决策 `stop_p_symmetric_atr_shock_filter_after_full_period`，不跑多周期、不改后置门或ATR参数寻找可成交命中，不改正式物料/master/production/CTP，订单/撤单API `0/0`。
+- 运行前后过拟合风险均高；一次固定对称语义验证有价值，但运行后确认组合层零增量，没有继续历史优化价值。
+- 独立 reviewer 键级复算确认14/14 blocked均未进入entry_risk/OPEN/trade_events，P/Q的entry_risk、trade_events、trades、curve和summary全部一致；最终 `blocker=0/non-blocker=0`。

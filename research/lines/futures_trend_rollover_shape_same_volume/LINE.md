@@ -162,6 +162,15 @@
 - 独立 reviewer 复算实现、产物与门禁，最终 `blocker=0/non-blocker=0`。
 - 决策 `stop_n_long_atr_shock_filter_after_full_period`；不自动跑多周期、不扫ATR倍数或周期救参，不改正式物料/master/production/CTP。
 
+## Stage021 P版多空对称1倍ATR逆向冲击过滤全周期空增量
+
+- 结果前以 `b907562db36d38ca5e07c9b1eba8e3e5dd9e88c5` 冻结Q：继承P与N的全部风险缩放，多头大跌、空头大涨严格超过前置ATR5时禁开；普通/反转/换月生效，加仓与retry排除。
+- A/C/P逐值复用Stage020，仅Q新跑一次。946条诊断中Q拦截多头7、空头7；空头新增7条全部为普通入口，合同通过。
+- 但7条空头候选在P中本来就没有形成对应实际OPEN，Q与P同为821条trade、2037日资金曲线逐点最大差0，全部关键指标完全一致：`15,135,800.10/9990.5334%/-44.9033%/Sharpe1.495411`。
+- Q相对C通过、相对A仍因broker峰值 `99.6724% vs 91.4950%` 失败；P_vs_Q形式通过只是完全相等，不是新增alpha。
+- 独立 reviewer 键级复算确认14/14候选均未进入entry_risk/OPEN/trade_events，最终 `blocker=0/non-blocker=0`。
+- 决策 `stop_p_symmetric_atr_shock_filter_after_full_period`；不跑多周期、不调整后置门或ATR参数制造实际命中，不改正式物料/master/production/CTP。
+
 ## 下一步
 
 1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件；不再增加历史窗口来重复证明同一失败。
@@ -179,3 +188,4 @@
 13. Stage018 将相同规则扩展到空头后，只有4次空头高量和2次空头低量改变风险；N虽显著改善全周期收益/回撤/Sharpe并通过M增量对照，但A/C成本仍超105%。按冻结合同停止，不把少数事件的复利路径当成新alpha。
 14. Stage019 的固定 `多头信号日跌幅 > 2×前置ATR5` 在482条多头候选中0命中，O与M逐值相同；不为制造样本而降低倍数、改周期或扩入口，等待新增自然forward事件。
 15. Stage020 按用户纠正基于N并使用1倍ATR，7次触发让P相对C通过但仍恶化正式A的broker峰值；小样本路径改善不能覆盖A门失败，不继续扫参。
+16. Stage021 空头对称过滤命中7条sizing候选，但它们在P中原本就没有形成实际OPEN，Q与P逐值相同；该过滤与既有后置门重叠，不跑多周期或改门制造差异。
