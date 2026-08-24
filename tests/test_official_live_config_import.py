@@ -127,6 +127,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
         )
         self.assertEqual(
+            module.OFFICIAL_LIVE_RULESET_VERSION,
+            "stage021_q_rollover_volume_atr_v1",
+        )
+        self.assertEqual(
             module.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
             "2026-07-23",
         )
@@ -141,6 +145,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             ],
         )
         manifest = module.build_official_live_manifest()
+        self.assertEqual(
+            manifest["ruleset_version"],
+            "stage021_q_rollover_volume_atr_v1",
+        )
         self.assertNotIn("backtest_outputs", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
         self.assertIn("official_strategy_materials", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
         self.assertEqual(
@@ -152,6 +160,39 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         self.assertEqual(64, len(manifest["material_manifest_sha256"]))
         with self.assertRaises(AssertionError):
             dict(module.OFFICIAL_LIVE_STRATEGY_OVERRIDES)
+
+    def test_official_live_strategy_overrides_freeze_stage021_q(self) -> None:
+        import qmt_roll_official_live_config as module
+
+        base = {"account_capital": 300_000.0, "c3_capital": 300_000.0}
+        with patch.object(
+            module.stage847_c9_cfg,
+            "build_official_candidate_stage847_c9_overrides",
+            return_value=base.copy(),
+        ):
+            q = module.build_official_live_strategy_overrides()
+
+        expected_q = {
+            "enable_rollover_shape_same_volume_reopen": True,
+            "rollover_shape_volume_policy": "shrink_to_allowed",
+            "rollover_shape_history_mode": "backwards_ratio_continuous",
+            "enable_directional_30d_risk_boost": True,
+            "directional_30d_risk_boost_multiplier": 1.5,
+            "directional_30d_risk_adjust_long_only": False,
+            "directional_30d_risk_boost_require_volume_expansion": True,
+            "directional_30d_volume_ratio_threshold": 3.0,
+            "enable_directional_30d_low_volume_risk_discount": True,
+            "directional_30d_low_volume_ratio_threshold": 0.5,
+            "directional_30d_low_volume_risk_multiplier": 0.5,
+            "enable_long_signal_atr_shock_filter": True,
+            "enable_short_signal_atr_shock_filter": True,
+            "long_signal_atr_shock_period": 5,
+            "long_signal_atr_shock_multiplier": 1.0,
+            "long_signal_atr_shock_entry_contexts": "flat_entry,reverse_entry,rollover_reopen",
+        }
+        self.assertEqual(expected_q, {key: q[key] for key in expected_q})
+        self.assertEqual(150_000.0, q["account_capital"])
+        self.assertEqual(150_000.0, q["c3_capital"])
 
     def test_stage901_live_artifacts_follow_signal_input_across_process_import(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

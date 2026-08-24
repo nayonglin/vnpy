@@ -27,13 +27,15 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 OUTPUT_DIR: Path = DATA_ASSET_DIR
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928"
-OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage021-Q"
+OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry_stage021_q"
+OFFICIAL_LIVE_RULESET_VERSION: str = "stage021_q_rollover_volume_atr_v1"
+OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION: str = "stage847_c9_stage819_05r_stop_retry_v1"
 OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE847_C9_PROFILE_NAME
 OFFICIAL_LIVE_PROFILE_NAME: str = "stage847_c9_15w_stage819_05r_stop_retry_live"
 OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
 OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
-OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_override_15w_account_aligned_high_risk"
+OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_promoted_stage021_q"
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
 
@@ -180,9 +182,10 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
     "legacy_stage78_status": LEGACY_STAGE78_STATUS,
     "must_not_fallback_to_stage78_for_live": True,
     "operator_override_risk_acceptance": (
-        "C9 was promoted to live default by explicit operator request despite known "
-        "Stage896/899 DD50, broker100, and near-58% drawdown tails. The 15w switch "
-        "changes only the deployment capital profile to match the funded live account."
+        "Stage021-Q was promoted by explicit operator request despite its historical "
+        "A-relative broker peak gate failure. Q keeps the C9/15w control plane and adds "
+        "risk-capped rollover continuation, symmetric volume risk scaling, and symmetric "
+        "one-ATR5 adverse signal-day entry filters. Runtime execution remains fail-closed."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
     "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
@@ -194,6 +197,30 @@ def build_official_live_strategy_overrides() -> dict[str, Any]:
     overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["ai_product_pool_eligibility_path"] = str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
+    overrides.update(
+        {
+            "enable_rollover_shape_same_volume_reopen": True,
+            "rollover_shape_volume_policy": "shrink_to_allowed",
+            "rollover_shape_history_mode": "backwards_ratio_continuous",
+            "enable_directional_30d_risk_boost": True,
+            "directional_30d_risk_boost_lookback": 30,
+            "directional_30d_risk_boost_multiplier": 1.5,
+            "directional_30d_risk_nonconfirmation_multiplier": 1.0,
+            "directional_30d_risk_adjust_long_only": False,
+            "directional_30d_risk_boost_require_volume_expansion": True,
+            "directional_30d_volume_recent_days": 10,
+            "directional_30d_volume_prior_days": 10,
+            "directional_30d_volume_ratio_threshold": 3.0,
+            "enable_directional_30d_low_volume_risk_discount": True,
+            "directional_30d_low_volume_ratio_threshold": 0.5,
+            "directional_30d_low_volume_risk_multiplier": 0.5,
+            "enable_long_signal_atr_shock_filter": True,
+            "enable_short_signal_atr_shock_filter": True,
+            "long_signal_atr_shock_period": 5,
+            "long_signal_atr_shock_multiplier": 1.0,
+            "long_signal_atr_shock_entry_contexts": "flat_entry,reverse_entry,rollover_reopen",
+        }
+    )
     return overrides
 
 
@@ -222,6 +249,17 @@ class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
 OFFICIAL_LIVE_STRATEGY_OVERRIDES: Mapping[str, Any] = _LazyOfficialLiveStrategyOverrides()
 
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
+    "stage021_q_full_20180101_20260529": {
+        "end_equity": 15_135_800.10,
+        "total_return_pct": 9_990.5334,
+        "max_dd_pct": -44.9033,
+        "sharpe": 1.495411,
+        "total_slippage": 1_571_580.0,
+        "total_trade_count": 821.0,
+        "win_rate_pct": 52.8467,
+        "broker10_peak_margin_to_equity_pct": 99.6724,
+        "days_over_100pct": 0.0,
+    },
     "full_20180102_20260529_stage847_c9": {
         "end_equity": 51_297_786.20,
         "total_return_pct": 16_999.2621,
@@ -287,6 +325,8 @@ def build_official_live_manifest() -> dict[str, Any]:
         "alias": OFFICIAL_LIVE_ALIAS,
         "version": OFFICIAL_LIVE_VERSION,
         "family_version": OFFICIAL_LIVE_FAMILY_VERSION,
+        "ruleset_version": OFFICIAL_LIVE_RULESET_VERSION,
+        "previous_ruleset_version": OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION,
         "source_stage": OFFICIAL_LIVE_SOURCE_STAGE,
         "profile_name": OFFICIAL_LIVE_PROFILE_NAME,
         "base_profile_name": OFFICIAL_LIVE_BASE_PROFILE_NAME,
