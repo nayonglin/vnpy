@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -44,32 +45,37 @@ def test_publication_request_records_hashes_and_rejects_source_drift(tmp_path: P
         load_publication_request(request)
 
 
-def test_experiment_registry_copies_only_reproducibility_assets(tmp_path: Path) -> None:
-    repo = tmp_path / "repo"
-    repo.mkdir()
-    _git(repo, "init", "-b", "main")
-    _git(repo, "config", "user.name", "Tests")
-    _git(repo, "config", "user.email", "tests@example.com")
-    (repo / ".gitignore").write_text("source/\n", encoding="utf-8")
-    _git(repo, "add", ".gitignore")
-    _git(repo, "commit", "-m", "fixture")
-    source = repo / "source"
-    source.mkdir()
-    model = source / "pool.csv"
-    chart = source / "curve.png"
-    model.write_text("rank,symbol\n1,fu.SHFE\n", encoding="utf-8")
-    chart.write_bytes(b"chart")
-    result = register_experiment_artifacts(
-        repo_root=repo,
-        line_id="futures_trend_example",
-        stage="stage001",
-        run_id="20260819_153000",
-        artifacts=(
-            AiArtifact(model, "official-pool", "decision_asset", True),
-            AiArtifact(chart, "curve", "cache_or_visualization", False),
-        ),
-    )
-    assert result.copied_logical_names == ("official-pool",)
-    assert (result.destination / "payload/official-pool.csv").is_file()
-    assert not (result.destination / "payload/curve.png").exists()
-    assert result.staged_paths
+def test_experiment_registry_copies_only_reproducibility_assets() -> None:
+    # The production qualification runner intentionally keeps its own TMPDIR
+    # below a production-live evidence root.  This fixture represents a research
+    # repo, so keep it outside that protected namespace instead of weakening the
+    # registry's fail-closed production path guard.
+    with TemporaryDirectory(prefix="qmt-ai-registry-test-", dir="/tmp") as temp_dir:
+        repo = Path(temp_dir) / "repo"
+        repo.mkdir()
+        _git(repo, "init", "-b", "main")
+        _git(repo, "config", "user.name", "Tests")
+        _git(repo, "config", "user.email", "tests@example.com")
+        (repo / ".gitignore").write_text("source/\n", encoding="utf-8")
+        _git(repo, "add", ".gitignore")
+        _git(repo, "commit", "-m", "fixture")
+        source = repo / "source"
+        source.mkdir()
+        model = source / "pool.csv"
+        chart = source / "curve.png"
+        model.write_text("rank,symbol\n1,fu.SHFE\n", encoding="utf-8")
+        chart.write_bytes(b"chart")
+        result = register_experiment_artifacts(
+            repo_root=repo,
+            line_id="futures_trend_example",
+            stage="stage001",
+            run_id="20260819_153000",
+            artifacts=(
+                AiArtifact(model, "official-pool", "decision_asset", True),
+                AiArtifact(chart, "curve", "cache_or_visualization", False),
+            ),
+        )
+        assert result.copied_logical_names == ("official-pool",)
+        assert (result.destination / "payload/official-pool.csv").is_file()
+        assert not (result.destination / "payload/curve.png").exists()
+        assert result.staged_paths
