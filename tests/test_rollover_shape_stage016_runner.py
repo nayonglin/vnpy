@@ -4,6 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -62,6 +63,20 @@ class Stage016LongOnlyTripleVolumeMulticycleRunnerTest(unittest.TestCase):
             set(stage016.CHART_FILES),
         )
         self.assertEqual(5, len(set(stage016.CHART_FILES.values())))
+
+    def test_full_identity_accepts_one_csv_ulp_but_rejects_real_drift(self) -> None:
+        self.assertTrue(
+            stage016._csv_equity_values_match(
+                np.array([14_447_993.800000003]),
+                np.array([14_447_993.800000004]),
+            )
+        )
+        self.assertFalse(
+            stage016._csv_equity_values_match(
+                np.array([14_447_993.800001]),
+                np.array([14_447_993.800000]),
+            )
+        )
 
     def test_failed_full_period_gate_cannot_be_rescued_by_multicycle(self) -> None:
         comparisons = [name for name, _, _ in stage016.COMPARISONS]

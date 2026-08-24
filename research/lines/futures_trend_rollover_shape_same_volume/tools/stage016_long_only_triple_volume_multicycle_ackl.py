@@ -74,6 +74,18 @@ def _git_head() -> str:
     ).strip()
 
 
+def _csv_equity_values_match(left: np.ndarray, right: np.ndarray) -> bool:
+    left_values = np.asarray(left, dtype="float64")
+    right_values = np.asarray(right, dtype="float64")
+    if left_values.shape != right_values.shape:
+        return False
+    if not np.isfinite(left_values).all() or not np.isfinite(right_values).all():
+        return False
+    difference = np.abs(left_values - right_values)
+    scale = np.maximum(np.maximum(np.abs(left_values), np.abs(right_values)), 1.0)
+    return bool((difference <= 1e-9 + scale * 1e-15).all())
+
+
 def _load_reused_arms() -> tuple[pd.DataFrame, pd.DataFrame]:
     summary = pd.read_csv(s13.SUMMARY_PATH)
     curve = pd.read_csv(s13.CURVE_PATH)
@@ -138,7 +150,7 @@ def _verify_full_identity(summary: pd.DataFrame, curve: pd.DataFrame) -> None:
         right = source_curve[source_curve["experiment_arm"].astype(str).eq(arm)].sort_values("date")
         if s13._date_keys(left["date"]) != s13._date_keys(right["date"]):
             raise RuntimeError(f"stage016_full_curve_date_drift:{arm}")
-        if not s13._csv_equity_values_match(
+        if not _csv_equity_values_match(
             left["account_equity"].to_numpy(dtype="float64"),
             right["account_equity"].to_numpy(dtype="float64"),
         ):
