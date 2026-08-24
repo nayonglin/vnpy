@@ -2,8 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 import subprocess
+import sys
 
 import pytest
+
+PORTFOLIO_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_backtesting"
+if str(PORTFOLIO_DIR) not in sys.path:
+    sys.path.insert(0, str(PORTFOLIO_DIR))
 
 from qmt_roll_ai_artifact_registry import (
     AiArtifact,

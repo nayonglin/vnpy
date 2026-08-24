@@ -3,8 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import subprocess
+import sys
 
 import pytest
+
+PORTFOLIO_DIR = Path(__file__).resolve().parents[1] / "examples" / "portfolio_backtesting"
+if str(PORTFOLIO_DIR) not in sys.path:
+    sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import build_qmt_roll_official_strategy_material_release as material_release
 from build_qmt_roll_official_strategy_material_release import (
