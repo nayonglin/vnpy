@@ -1,0 +1,132 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage020",
+  "generated_at": "2026-08-24T20:20:35+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "arms": {
+    "A": "stage020_A_official_live_c9_15w",
+    "C": "stage020_C_rollover_continuation",
+    "N": "stage020_N_symmetric_triple_volume_hit_15_low_half_05",
+    "P": "stage020_P_n_plus_long_atr5_1x_shock_filter"
+  },
+  "run_provenance": {
+    "candidate_freeze_commit": "b9578feb30545566b7c5caacc164c981dabaf027",
+    "reused_source_stage": "Stage018",
+    "reused_source_commit": "f1255875ee2a56024e241f4850ab9dc2be26425f",
+    "reused_arms": [
+      "A",
+      "C",
+      "N"
+    ],
+    "new_arms": [
+      "P"
+    ],
+    "new_independent_run_count": 1
+  },
+  "P_rule": {
+    "base": "N",
+    "base_risk_scaling": "both long and short: aligned >3x volume uses 1.5; <0.5x volume uses 0.5; otherwise 1.0",
+    "atr_filter_direction": "long only",
+    "entry_contexts": [
+      "flat_entry",
+      "reverse_entry",
+      "rollover_reopen"
+    ],
+    "signal_day_drop": "previous close minus signal-day close",
+    "atr": "simple mean of 5 true ranges from completed days strictly before signal day",
+    "condition": "block only when signal-day drop is strictly greater than 1.0 times ATR5",
+    "invalid_or_insufficient_history": "keep N behavior",
+    "excluded_from_atr_filter": "short entries, all adds, C9 stop retry"
+  },
+  "promotion_comparisons": [
+    "A_vs_P",
+    "C_vs_P"
+  ],
+  "atr_filter_contract_gates": {
+    "configuration_contract_pass": true,
+    "blocking_contract_pass": true,
+    "blocked_signal_present": true
+  },
+  "full_period_gates": [
+    {
+      "comparison": "A_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_N",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_N",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_P",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_P",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "N_vs_P",
+      "gates": {
+        "return_not_below_left": false,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    }
+  ],
+  "escalate_to_multicycle": false,
+  "decision": "stop_n_long_atr_shock_filter_after_full_period",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

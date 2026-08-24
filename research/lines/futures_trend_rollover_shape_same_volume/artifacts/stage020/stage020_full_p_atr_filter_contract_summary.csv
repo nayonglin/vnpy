@@ -1,0 +1,6 @@
+﻿group_type,group_value,diagnostic_count,blocked_count,flat_entry_blocked_count,reverse_entry_blocked_count,rollover_reopen_blocked_count,configuration_contract_pass,blocking_contract_pass
+total,all,946,7,6,0,1,1,1
+direction,long,483,7,6,0,1,1,1
+direction,short,463,0,0,0,0,1,1
+entry_context,flat_entry,923,6,6,0,0,1,1
+entry_context,rollover_reopen,23,1,0,0,1,1,1
