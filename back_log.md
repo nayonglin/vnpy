@@ -50811,3 +50811,10 @@ test 分桶：
 - 决策 `stop_n_long_atr_shock_filter_after_full_period`；A/C双门未同时通过，不自动跑多周期、不扫ATR倍数/周期/方向/品种/年份救参，不改正式物料/master/production/CTP，订单/撤单API `0/0`。
 - 运行前后过拟合风险均高：仅7次触发却经复利路径显著改变指标；一次固定证伪有价值，但当前没有继续历史优化价值。
 - 独立 reviewer 复算N基线、ATR合同、7次触发、复用身份、P指标和门禁；修复一处非阻断记录残留后，最终 `blocker=0/non-blocker=0`。
+# 2026-08-25 01:15 Stage022 / Q正式晋升、master物料发布与生产激活
+
+- 用户明确 operator override 后，将 Stage021 Q 固定为正式 ruleset `stage021_q_rollover_volume_atr_v1`；未新增回测，沿用 Q 的 `15,135,800.10/9990.5334%/-44.9033%/Sharpe1.495411`、滑点 `1,571,580`、交易 `821`、胜率 `52.8467%`。
+- 正式物料 `m0009_20260825T010154+0800_55ecfcb20144` 共148文件，release commit `1651fb76cab34cf21617d4c24ed43865805ec1ee`；发布器以0冲突、非强制快进把物料直推远端 master `294e445802285c4e1fa4e7f5a61c13ff5919eaf0`。
+- 最终生产来源 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`；资格绑定296个代码与active material关键文件，35套/880测试通过、2次正式只读CTP捕获完整、独立评审 `P0/P1/P2=0/0/0`，订单/发单/撤单API `0/0/0`。
+- Stage948 激活 `production_launchd_activated_no_ctp_connection`，7/7生产launchd精确加载、冲突0、回滚0。当前夜盘因 `production_daily_data_receipt_invalid` 保持fail closed，未人工绕过或补造回执，订单API仍为0。
+- 过拟合判断：晋升动作不新增拟合，但Q来自后验研究且原broker门失败，策略选择风险保留；继续价值仅在自然forward实盘观察，不再扫描历史阈值、ATR周期或倍率。

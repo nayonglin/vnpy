@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage018 已完成 N（多空对称严格三倍量 `×1.5`、严格半量以下 `×0.5`）完整周期门；N 相对 M 通过增量诊断，但相对正式 A/换月 C 的滑点为 `109.5635%/110.1694%`，超过105%，不进入多周期、不晋级
-- 正式基线：`origin/master@8b3e534ae4336240157fdf69abae98599f0dbfd4`
+- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；m0009 已发布到远端 master，生产稳定目录固定到 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`，Stage948 7/7 launchd 已激活；当前因当日数据回执缺失保持 fail closed
+- 正式基线：远端 `master@294e445802285c4e1fa4e7f5a61c13ff5919eaf0`（m0009 正式物料）；生产来源 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
 - 分支：`codex/rollover-shape-same-volume`
@@ -162,10 +162,20 @@
 - 独立 reviewer 复算实现、产物与门禁，最终 `blocker=0/non-blocker=0`。
 - 决策 `stop_n_long_atr_shock_filter_after_full_period`；不自动跑多周期、不扫ATR倍数或周期救参，不改正式物料/master/production/CTP。
 
+## Stage022 Q正式晋升与生产激活
+
+- 用户明确授权 operator override，将 Stage021 Q 晋升为正式版本；该授权覆盖历史晋级门结论，但不删除原始反证。Q 完整周期仍为 `15,135,800.10/9990.5334%/-44.9033%/Sharpe1.495411`，滑点 `1,571,580`、交易 `821`、胜率 `52.8467%`、broker10峰值 `99.6724%`。
+- 正式 ruleset 固定为 `stage021_q_rollover_volume_atr_v1`：换月续开仅需新主力当日可交易行情与合约元数据；多空均参与严格三倍量 `×1.5`、严格半量以下 `×0.5`；多头大跌/空头大涨严格超过前置 ATR5 的 1 倍时禁开，普通、反转、换月重开生效，加仓与 retry 排除。
+- 正式物料 `m0009_20260825T010154+0800_55ecfcb20144` 共 148 个文件，release commit `1651fb76cab34cf21617d4c24ed43865805ec1ee`；远端 master `294e445802285c4e1fa4e7f5a61c13ff5919eaf0`，0 冲突、非强制快进发布。
+- 最终生产来源 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`；资格证据绑定 296 个代码与 active material 关键文件，35 套共 880 个测试通过，2 次正式只读 CTP 捕获完整，独立评审 `P0/P1/P2=0/0/0`，订单/发单/撤单 API 均为 `0`。
+- Stage948 激活状态 `production_launchd_activated_no_ctp_connection`；7/7 生产 launchd 精确加载，冲突/回滚均为 0。激活后夜盘启动因 `production_daily_data_receipt_invalid` fail closed，健康检查明确阻断且订单 API `0/0/0`；未人工补造数据回执或绕过执行闸。
+- 过拟合判断：晋升动作本身未新增参数，不产生新的拟合；但 Q 来自后验研究序列且原 broker 门失败，历史选择风险仍然存在，必须由 forward 实盘观察承担。
+- 继续价值：完成晋升与可恢复生产安装有价值；继续扫描历史阈值、ATR周期或倍率无价值，后续只记录自然 forward 事件与实盘安全证据。
+
 ## 下一步
 
 1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件；不再增加历史窗口来重复证明同一失败。
-2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；当前不进入正式物料与激活流程。
+2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。
 5. Stage008 量能确认也未改变晋级结论；量能字段只保留为新增自然 OOS 的只读归因标签，不继续做历史救参。
