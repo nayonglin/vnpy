@@ -1,0 +1,6 @@
+﻿group_type,group_value,diagnostic_intent_count,long_high_volume_count,long_low_volume_count,long_base_volume_count,short_bypass_count,threshold_contract_pass,risk_amount_contract_pass
+total,all,376,17,4,281,74,1,1
+direction,long,302,17,4,281,0,1,1
+direction,short,74,0,0,0,74,1,1
+entry_context,flat_entry,353,17,4,264,68,1,1
+entry_context,rollover_reopen,23,0,0,17,6,1,1

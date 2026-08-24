@@ -1,0 +1,132 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage017",
+  "generated_at": "2026-08-24T19:07:24+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "arms": {
+    "A": "stage017_A_official_live_c9_15w",
+    "C": "stage017_C_rollover_continuation",
+    "L": "stage017_L_long_triple_volume_hit_15_otherwise_10",
+    "M": "stage017_M_long_triple_volume_hit_15_low_half_05"
+  },
+  "run_provenance": {
+    "candidate_freeze_commit": "ebe805b8625e50f623353c1b34839ac7654cf5be",
+    "reused_source_stage": "Stage015",
+    "reused_source_commit": "9554adf7e9d02979af90557387a790ff7e46815e",
+    "reused_arms": [
+      "A",
+      "C",
+      "L"
+    ],
+    "new_arms": [
+      "M"
+    ],
+    "new_independent_run_count": 1
+  },
+  "M_rule": {
+    "price_direction_lookback_days_for_high_volume_boost": 30,
+    "recent_volume_window": "T-9 through T, includes signal day",
+    "prior_volume_window": "T-19 through T-10",
+    "long_high_volume_condition": "direction aligned and recent sum strictly greater than 3.0 times prior sum",
+    "long_high_volume_risk_multiplier": 1.5,
+    "long_low_volume_condition": "recent sum strictly less than 0.5 times prior sum, independent of 30d direction alignment",
+    "long_low_volume_risk_multiplier": 0.5,
+    "long_other_risk_multiplier": 1.0,
+    "short_risk_multiplier": 1.0,
+    "entry_context_scope": "flat, reverse, rollover reopen, regular add, donchian add, post-quality add"
+  },
+  "promotion_comparisons": [
+    "A_vs_M",
+    "C_vs_M"
+  ],
+  "risk_split_contract_gates": {
+    "threshold_contract_pass": true,
+    "risk_amount_contract_pass": true,
+    "long_high_volume_present": true,
+    "long_low_volume_present": true,
+    "long_base_volume_present": true,
+    "short_bypass_present": true
+  },
+  "full_period_gates": [
+    {
+      "comparison": "A_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_L",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_L",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_M",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_M",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "L_vs_M",
+      "gates": {
+        "return_not_below_left": false,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    }
+  ],
+  "escalate_to_multicycle": false,
+  "decision": "stop_long_triple_volume_with_low_volume_discount_after_full_period",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}
