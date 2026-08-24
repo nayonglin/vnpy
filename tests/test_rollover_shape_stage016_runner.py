@@ -64,7 +64,7 @@ class Stage016LongOnlyTripleVolumeMulticycleRunnerTest(unittest.TestCase):
         )
         self.assertEqual(5, len(set(stage016.CHART_FILES.values())))
 
-    def test_full_identity_accepts_one_csv_ulp_but_rejects_real_drift(self) -> None:
+    def test_full_identity_accepts_tight_csv_roundtrip_noise_but_rejects_real_drift(self) -> None:
         self.assertTrue(
             stage016._csv_equity_values_match(
                 np.array([14_447_993.800000003]),
