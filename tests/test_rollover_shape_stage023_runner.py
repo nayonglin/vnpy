@@ -95,11 +95,44 @@ class Stage023QLowVolume08RunnerTest(unittest.TestCase):
         }])
         atr = pd.DataFrame([{
             "group_type": "total", "configuration_contract_pass": 1, "blocking_contract_pass": 1,
+            "positive_volume_blocked_count": 1, "zero_volume_rule_hit_count": 0,
         }])
         no_effect = {"effect_present": False, "changed_metrics": [], "metric_differences": {}, "actual_trade_count": 0}
         decision = stage023._decision(comparison, volume, atr, no_effect)
         self.assertFalse(decision["escalate_to_multicycle"])
         self.assertEqual("stop_r_low_volume_08_after_full_period", decision["decision"])
+
+    def test_atr_contract_accounts_for_rule_hit_after_volume_layer_already_selected_zero(self) -> None:
+        rows = [
+            {
+                "direction": "long", "entry_context": "flat_entry",
+                "long_signal_atr_shock_enabled": 1, "short_signal_atr_shock_enabled": 1,
+                "long_signal_atr_shock_period": 5, "long_signal_atr_shock_multiplier": 1.0,
+                "long_signal_atr_shock_atr": 4.944, "long_signal_atr_shock_threshold": 4.944,
+                "signal_atr_shock_adverse_move": 7.2, "signal_atr_shock_move_kind": "signal_day_drop",
+                "long_signal_atr_shock_blocked": 1,
+                "long_signal_atr_shock_reason": "drop_strictly_above_threshold",
+                "long_signal_atr_shock_selected_volume_before": 0,
+                "long_signal_atr_shock_selected_volume_after": 0,
+            },
+            {
+                "direction": "short", "entry_context": "flat_entry",
+                "long_signal_atr_shock_enabled": 1, "short_signal_atr_shock_enabled": 1,
+                "long_signal_atr_shock_period": 5, "long_signal_atr_shock_multiplier": 1.0,
+                "long_signal_atr_shock_atr": 2.0, "long_signal_atr_shock_threshold": 2.0,
+                "signal_atr_shock_adverse_move": 2.1, "signal_atr_shock_move_kind": "signal_day_rise",
+                "long_signal_atr_shock_blocked": 1,
+                "long_signal_atr_shock_reason": "rise_strictly_above_threshold",
+                "long_signal_atr_shock_selected_volume_before": 3,
+                "long_signal_atr_shock_selected_volume_after": 0,
+            },
+        ]
+        contract = stage023._atr_filter_contract_summary(pd.DataFrame(rows))
+        total = contract[contract["group_type"].eq("total")].iloc[0]
+        self.assertEqual(1, int(total["zero_volume_rule_hit_count"]))
+        self.assertEqual(1, int(total["positive_volume_blocked_count"]))
+        self.assertEqual(1, int(total["configuration_contract_pass"]))
+        self.assertEqual(1, int(total["blocking_contract_pass"]))
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 from typing import Any
 from uuid import uuid4
@@ -230,6 +231,81 @@ def _volume_risk_contract_summary(entry_risk: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _atr_filter_contract_summary(diagnostics: pd.DataFrame) -> pd.DataFrame:
+    required = {
+        "direction", "entry_context", "long_signal_atr_shock_enabled", "short_signal_atr_shock_enabled",
+        "long_signal_atr_shock_period", "long_signal_atr_shock_multiplier", "long_signal_atr_shock_atr",
+        "long_signal_atr_shock_threshold", "signal_atr_shock_adverse_move", "signal_atr_shock_move_kind",
+        "long_signal_atr_shock_blocked", "long_signal_atr_shock_reason",
+        "long_signal_atr_shock_selected_volume_before", "long_signal_atr_shock_selected_volume_after",
+    }
+    empty = {
+        "group_type": "total", "group_value": "all", "diagnostic_count": 0, "blocked_count": 0,
+        "long_blocked_count": 0, "short_blocked_count": 0,
+        "positive_volume_blocked_count": 0, "zero_volume_rule_hit_count": 0,
+        "configuration_contract_pass": 0, "blocking_contract_pass": 0,
+    }
+    if diagnostics.empty or not required.issubset(diagnostics.columns):
+        return pd.DataFrame([empty])
+    frame = diagnostics.copy()
+    strings = {"direction", "entry_context", "signal_atr_shock_move_kind", "long_signal_atr_shock_reason"}
+    for column in required - strings:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+
+    def summarize(group_type: str, group_value: str, group: pd.DataFrame) -> dict[str, Any]:
+        direction = group["direction"].astype(str).str.lower()
+        context = group["entry_context"].astype(str)
+        relevant = direction.isin({"long", "short"}) & context.isin(s21.APPROVED_CONTEXTS)
+        valid = relevant & group["long_signal_atr_shock_atr"].gt(0) & group["signal_atr_shock_adverse_move"].notna()
+        expected = valid & group["signal_atr_shock_adverse_move"].gt(group["long_signal_atr_shock_threshold"])
+        blocked = group["long_signal_atr_shock_blocked"].fillna(0).astype(int).eq(1)
+        expected_kind = np.where(direction.eq("long"), "signal_day_drop", "signal_day_rise")
+        expected_reason = np.where(
+            direction.eq("long"),
+            "drop_strictly_above_threshold",
+            "rise_strictly_above_threshold",
+        )
+        config_ok = (
+            group["long_signal_atr_shock_enabled"].eq(1)
+            & group["short_signal_atr_shock_enabled"].eq(1)
+            & group["long_signal_atr_shock_period"].eq(5)
+            & np.isclose(group["long_signal_atr_shock_multiplier"], 1.0, rtol=0.0, atol=1e-12)
+        )
+        threshold_ok = ~valid | np.isclose(
+            group["long_signal_atr_shock_threshold"], group["long_signal_atr_shock_atr"],
+            rtol=1e-12, atol=1e-12, equal_nan=False,
+        )
+        kind_ok = ~relevant | group["signal_atr_shock_move_kind"].astype(str).eq(expected_kind)
+        before = group["long_signal_atr_shock_selected_volume_before"]
+        after = group["long_signal_atr_shock_selected_volume_after"]
+        reason_ok = group["long_signal_atr_shock_reason"].astype(str).eq(expected_reason)
+        blocking_ok = (
+            blocked.eq(expected)
+            & (~blocked | (after.eq(0) & reason_ok))
+            & (blocked | after.eq(before))
+            & before.ge(0)
+            & (relevant | ~blocked)
+        )
+        return {
+            "group_type": group_type,
+            "group_value": group_value,
+            "diagnostic_count": int(len(group)),
+            "blocked_count": int(blocked.sum()),
+            "long_blocked_count": int((blocked & direction.eq("long")).sum()),
+            "short_blocked_count": int((blocked & direction.eq("short")).sum()),
+            "positive_volume_blocked_count": int((blocked & before.gt(0)).sum()),
+            "zero_volume_rule_hit_count": int((blocked & before.eq(0)).sum()),
+            "configuration_contract_pass": int(len(group) > 0 and bool(np.asarray(config_ok & threshold_ok & kind_ok).all())),
+            "blocking_contract_pass": int(len(group) > 0 and bool(np.asarray(blocking_ok).all())),
+        }
+
+    rows = [summarize("total", "all", frame)]
+    for column, group_type in (("direction", "direction"), ("entry_context", "entry_context")):
+        for value, group in frame.groupby(column, sort=True, dropna=False):
+            rows.append(summarize(group_type, str(value), group))
+    return pd.DataFrame(rows)
+
+
 def _incremental_effect(summary: pd.DataFrame, frames: dict[str, pd.DataFrame]) -> dict[str, Any]:
     indexed = summary.set_index("experiment_arm")
     metrics = [
@@ -269,6 +345,7 @@ def _decision(
         "short_low_volume_present": bool(int(volume_total["short_low_volume_count"]) > 0),
         "atr_configuration_contract_pass": bool(int(atr_total["configuration_contract_pass"]) == 1),
         "atr_blocking_contract_pass": bool(int(atr_total["blocking_contract_pass"]) == 1),
+        "atr_positive_volume_block_present": bool(int(atr_total["positive_volume_blocked_count"]) > 0),
         "incremental_effect_present": bool(incremental["effect_present"]),
     }
     promotion_rows = [row for row in full_rows if row["comparison"] in PROMOTION_COMPARISONS]
@@ -379,7 +456,7 @@ def main() -> None:
     entry_risk = frames.get("entry_risk", pd.DataFrame()).copy()
     diagnostics = frames.get("long_signal_atr_shock", pd.DataFrame()).copy()
     volume_contract = _volume_risk_contract_summary(entry_risk)
-    atr_contract = s21._atr_filter_contract_summary(diagnostics)
+    atr_contract = _atr_filter_contract_summary(diagnostics)
     incremental = _incremental_effect(summary, frames)
     decision = _decision(comparison, volume_contract, atr_contract, incremental)
     _publish_atomically(
@@ -400,5 +477,43 @@ def main() -> None:
     print(json.dumps(decision, ensure_ascii=False, indent=2))
 
 
+def rebuild_from_published() -> None:
+    summary = pd.read_csv(SUMMARY_PATH)
+    curve = pd.read_csv(CURVE_PATH)
+    _validate_summary(summary, curve)
+    comparison = _comparison(summary)
+    entry_risk = pd.read_csv(ENTRY_RISK_PATH)
+    diagnostics = pd.read_csv(ATR_FILTER_PATH)
+    volume_contract = _volume_risk_contract_summary(entry_risk)
+    atr_contract = _atr_filter_contract_summary(diagnostics)
+    frames = {
+        "entry_risk": entry_risk,
+        "trades": pd.read_csv(TRADES_PATH),
+        "trade_events": pd.read_csv(TRADE_EVENTS_PATH),
+        "long_signal_atr_shock": diagnostics,
+    }
+    incremental = _incremental_effect(summary, frames)
+    decision = _decision(comparison, volume_contract, atr_contract, incremental)
+    _publish_atomically(
+        {
+            SUMMARY_PATH.name: summary,
+            COMPARISON_PATH.name: comparison,
+            CURVE_PATH.name: curve,
+            ENTRY_RISK_PATH.name: entry_risk,
+            TRADES_PATH.name: frames["trades"],
+            TRADE_EVENTS_PATH.name: frames["trade_events"],
+            ATR_FILTER_PATH.name: diagnostics,
+            VOLUME_CONTRACT_PATH.name: volume_contract,
+            ATR_CONTRACT_PATH.name: atr_contract,
+        },
+        decision,
+        _plot_full(curve),
+    )
+    print(json.dumps(decision, ensure_ascii=False, indent=2))
+
+
 if __name__ == "__main__":
-    main()
+    if "--rebuild-from-published" in sys.argv:
+        rebuild_from_published()
+    else:
+        main()
