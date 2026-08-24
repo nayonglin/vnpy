@@ -419,6 +419,53 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         strategy.directional_30d_low_volume_risk_multiplier = 0.5
         return strategy
 
+    @staticmethod
+    def _symmetric_triple_volume_with_low_volume_discount_strategy() -> QmtRollPortfolioStrategy:
+        strategy = (
+            RolloverShapeSameVolumeTest
+            ._long_triple_volume_with_low_volume_discount_strategy()
+        )
+        strategy.directional_30d_risk_adjust_long_only = False
+        return strategy
+
+    def test_symmetric_low_volume_discount_applies_to_short_without_30d_alignment(self) -> None:
+        strategy = self._symmetric_triple_volume_with_low_volume_discount_strategy()
+        history = _history_from_closes(
+            [90.0] + [95.0] * 29 + [110.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [49.0] * 9 + [58.0],
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("short", history)
+
+        self.assertEqual(0, snapshot["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1, snapshot["directional_30d_low_volume_discount_applied"])
+        self.assertEqual(0.5, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("low_volume_discount", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_symmetric_short_high_volume_requires_alignment_and_strict_threshold(self) -> None:
+        strategy = self._symmetric_triple_volume_with_low_volume_discount_strategy()
+        closes = [110.0] + [105.0] * 29 + [90.0]
+        high = strategy._directional_30d_risk_boost_snapshot(
+            "short",
+            _history_from_closes(
+                closes,
+                volumes=[100.0] * 11 + [100.0] * 10 + [299.0] * 9 + [310.0],
+            ),
+        )
+        exact_half = strategy._directional_30d_risk_boost_snapshot(
+            "short",
+            _history_from_closes(
+                closes,
+                volumes=[100.0] * 11 + [100.0] * 10 + [50.0] * 10,
+            ),
+        )
+
+        self.assertEqual(1, high["directional_30d_risk_boost_aligned"])
+        self.assertEqual(1, high["directional_30d_risk_boost_applied"])
+        self.assertEqual(1.5, high["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(0, exact_half["directional_30d_low_volume_discount_applied"])
+        self.assertEqual(1.0, exact_half["directional_30d_risk_boost_multiplier"])
+
     def test_long_low_volume_discount_applies_without_30d_direction_alignment(self) -> None:
         strategy = self._long_triple_volume_with_low_volume_discount_strategy()
         history = _history_from_closes(

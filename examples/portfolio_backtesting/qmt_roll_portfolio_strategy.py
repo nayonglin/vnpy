@@ -4904,7 +4904,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
             return snapshot
 
-        if not aligned and not (low_volume_discount_enabled and direction == "long"):
+        low_volume_direction_allowed = direction == "long" or not long_only
+        if not aligned and not (
+            low_volume_discount_enabled and low_volume_direction_allowed
+        ):
             snapshot["directional_30d_risk_boost_reason"] = "direction_not_aligned"
             return snapshot
 
@@ -4938,7 +4941,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return snapshot
         if (
             low_volume_discount_enabled
-            and direction == "long"
+            and low_volume_direction_allowed
             and recent_volume_sum < prior_volume_sum * low_volume_ratio_threshold
         ):
             snapshot.update(
