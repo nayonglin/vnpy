@@ -28,6 +28,12 @@ Every window starts a fresh engine, capital, positions, and account state. Warm-
 
 Record ending equity, return, max drawdown, Sharpe, slippage, trades, win rate, survival, and applicable margin gates. Fail on missing, non-finite, duplicate, or mismatched arm/window data.
 
+## Simple Run Safety
+
+Run and validate the full-period arms before starting any 1Y/2Y/3Y windows. IDs, dates, counts, and statuses must match exactly; compare CSV-backed floating values with a documented scale-aware tolerance or a canonical CSV round trip, with a test that accepts harmless serialization noise and rejects material drift.
+
+After each arm-window succeeds, save its summary and curve to a temporary checkpoint keyed by the frozen commit, data cutoff, arm, and window. On retry, reuse only checkpoints whose key and files still validate. Keep final publication atomic: checkpoints support resume but are not report results.
+
 ## Fixed Report Shape
 
 Lead with the promotion verdict, then report:
@@ -61,3 +67,5 @@ Full-period or one duration's advantage does not override a failed duration, Jan
 | One combined cycle statistic | Combined plus January plus June breakdown |
 | Full-curve slices | Fresh engine per window |
 | Custom charts per experiment | The fixed five-image order above |
+| Validate identities only after every rolling run | Validate full-period identities before fan-out |
+| Keep completed windows only in process memory | Write validated temporary checkpoints and resume |
