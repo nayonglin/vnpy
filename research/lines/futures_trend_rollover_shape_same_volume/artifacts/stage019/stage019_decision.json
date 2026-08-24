@@ -1,0 +1,131 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage019",
+  "generated_at": "2026-08-24T20:08:15+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "arms": {
+    "A": "stage019_A_official_live_c9_15w",
+    "C": "stage019_C_rollover_continuation",
+    "M": "stage019_M_long_triple_volume_hit_15_low_half_05",
+    "O": "stage019_O_m_plus_long_atr5_2x_shock_filter"
+  },
+  "run_provenance": {
+    "candidate_freeze_commit": "9b5beacbc808ca1376d1b13f2344e8ec10d1e1f6",
+    "reused_source_stage": "Stage017",
+    "reused_source_commit": "89c042d9e82900580ae8046dd399267436a4c15e",
+    "reused_arms": [
+      "A",
+      "C",
+      "M"
+    ],
+    "new_arms": [
+      "O"
+    ],
+    "new_independent_run_count": 1
+  },
+  "O_rule": {
+    "base": "M",
+    "direction": "long only",
+    "entry_contexts": [
+      "flat_entry",
+      "reverse_entry",
+      "rollover_reopen"
+    ],
+    "signal_day_drop": "previous close minus signal-day close",
+    "atr": "simple mean of 5 true ranges from completed days strictly before signal day",
+    "condition": "block only when signal-day drop is strictly greater than 2.0 times ATR5",
+    "invalid_or_insufficient_history": "keep M behavior",
+    "excluded": "short entries, all adds, C9 stop retry"
+  },
+  "promotion_comparisons": [
+    "A_vs_O",
+    "C_vs_O"
+  ],
+  "atr_filter_contract_gates": {
+    "configuration_contract_pass": true,
+    "blocking_contract_pass": true,
+    "blocked_signal_present": false
+  },
+  "full_period_gates": [
+    {
+      "comparison": "A_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_M",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_M",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_O",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_O",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "M_vs_O",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": true
+    }
+  ],
+  "escalate_to_multicycle": false,
+  "decision": "stop_m_long_atr_shock_filter_after_full_period",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}
