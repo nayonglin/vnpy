@@ -428,6 +428,95 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         strategy.directional_30d_risk_adjust_long_only = False
         return strategy
 
+    @staticmethod
+    def _long_signal_atr_shock_strategy() -> QmtRollPortfolioStrategy:
+        strategy = object.__new__(QmtRollPortfolioStrategy)
+        strategy.enable_long_signal_atr_shock_filter = True
+        strategy.long_signal_atr_shock_period = 5
+        strategy.long_signal_atr_shock_multiplier = 2.0
+        strategy.long_signal_atr_shock_entry_contexts = (
+            "flat_entry,reverse_entry,rollover_reopen"
+        )
+        return strategy
+
+    def test_long_signal_atr_shock_excludes_signal_day_and_uses_strict_boundary(self) -> None:
+        strategy = self._long_signal_atr_shock_strategy()
+        above = strategy._long_signal_atr_shock_snapshot(
+            "long",
+            _history_from_closes([100.0] * 6 + [97.9]),
+            "flat_entry",
+        )
+        exact = strategy._long_signal_atr_shock_snapshot(
+            "long",
+            _history_from_closes([100.0] * 6 + [98.0]),
+            "flat_entry",
+        )
+
+        self.assertEqual(1.0, above["long_signal_atr_shock_atr"])
+        self.assertAlmostEqual(2.1, above["long_signal_atr_shock_drop"])
+        self.assertEqual(1, above["long_signal_atr_shock_blocked"])
+        self.assertEqual("drop_strictly_above_threshold", above["long_signal_atr_shock_reason"])
+        self.assertEqual(0, exact["long_signal_atr_shock_blocked"])
+        self.assertEqual("drop_not_above_threshold", exact["long_signal_atr_shock_reason"])
+
+    def test_long_signal_atr_shock_blocks_only_approved_long_entry_contexts(self) -> None:
+        strategy = _DirectionalBoostSizingHarness()
+        strategy.enable_long_signal_atr_shock_filter = True
+        strategy.long_signal_atr_shock_period = 5
+        strategy.long_signal_atr_shock_multiplier = 2.0
+        strategy.long_signal_atr_shock_entry_contexts = (
+            "flat_entry,reverse_entry,rollover_reopen"
+        )
+        history = _history_from_closes([100.0] * 31 + [97.9])
+        bar = _bar("rb2605", 97.9)
+
+        for entry_context in ["flat_entry", "reverse_entry", "rollover_reopen"]:
+            with self.subTest(entry_context=entry_context):
+                sizing = strategy._calculate_entry_sizing(
+                    "rb2605.SHFE",
+                    "long",
+                    bar,
+                    history,
+                    {"signal": "long_case1a", "risk_mode": "regular"},
+                    entry_context=entry_context,
+                )
+                self.assertGreater(sizing["long_signal_atr_shock_selected_volume_before"], 0)
+                self.assertEqual(0, sizing["selected_volume"])
+                self.assertEqual(1, sizing["long_signal_atr_shock_blocked"])
+
+        add_sizing = strategy._calculate_entry_sizing(
+            "rb2605.SHFE",
+            "long",
+            bar,
+            history,
+            {"signal": "long_case1a", "risk_mode": "regular"},
+            entry_context="regular_add",
+        )
+        short_sizing = strategy._calculate_entry_sizing(
+            "rb2605.SHFE",
+            "short",
+            bar,
+            history,
+            {"signal": "short_case1a", "risk_mode": "regular"},
+            entry_context="flat_entry",
+        )
+        self.assertGreater(add_sizing["selected_volume"], 0)
+        self.assertEqual("entry_context_excluded", add_sizing["long_signal_atr_shock_reason"])
+        self.assertGreater(short_sizing["selected_volume"], 0)
+        self.assertEqual("direction_excluded", short_sizing["long_signal_atr_shock_reason"])
+
+    def test_long_signal_atr_shock_keeps_m_behavior_when_history_is_insufficient(self) -> None:
+        strategy = self._long_signal_atr_shock_strategy()
+
+        snapshot = strategy._long_signal_atr_shock_snapshot(
+            "long",
+            _history_from_closes([100.0] * 5 + [90.0]),
+            "flat_entry",
+        )
+
+        self.assertEqual(0, snapshot["long_signal_atr_shock_blocked"])
+        self.assertEqual("insufficient_prior_history", snapshot["long_signal_atr_shock_reason"])
+
     def test_symmetric_low_volume_discount_applies_to_short_without_30d_alignment(self) -> None:
         strategy = self._symmetric_triple_volume_with_low_volume_discount_strategy()
         history = _history_from_closes(

@@ -173,6 +173,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_directional_30d_low_volume_risk_discount: bool = False
     directional_30d_low_volume_ratio_threshold: float = 0.5
     directional_30d_low_volume_risk_multiplier: float = 0.5
+    enable_long_signal_atr_shock_filter: bool = False
+    long_signal_atr_shock_period: int = 5
+    long_signal_atr_shock_multiplier: float = 2.0
+    long_signal_atr_shock_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -468,6 +472,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_directional_30d_low_volume_risk_discount",
         "directional_30d_low_volume_ratio_threshold",
         "directional_30d_low_volume_risk_multiplier",
+        "enable_long_signal_atr_shock_filter",
+        "long_signal_atr_shock_period",
+        "long_signal_atr_shock_multiplier",
+        "long_signal_atr_shock_entry_contexts",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -805,6 +813,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.trade_event_diagnostics: list[dict[str, Any]] = []
         self.rollover_reopen_guard_diagnostics: list[dict[str, Any]] = []
         self.rollover_shape_same_volume_diagnostics: list[dict[str, Any]] = []
+        self.long_signal_atr_shock_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
@@ -4968,6 +4977,151 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         )
         return snapshot
 
+    def _long_signal_atr_shock_snapshot(
+        self,
+        direction: str,
+        history: pd.DataFrame,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        enabled = bool(self.enable_long_signal_atr_shock_filter)
+        period = int(self.long_signal_atr_shock_period or 0)
+        multiplier = float(self.long_signal_atr_shock_multiplier or 0.0)
+        contexts = {
+            item.strip()
+            for item in str(self.long_signal_atr_shock_entry_contexts or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        snapshot: dict[str, Any] = {
+            "long_signal_atr_shock_enabled": int(enabled),
+            "long_signal_atr_shock_period": period,
+            "long_signal_atr_shock_multiplier": multiplier,
+            "long_signal_atr_shock_entry_context": entry_context,
+            "long_signal_atr_shock_direction": direction,
+            "long_signal_atr_shock_prior_close": float("nan"),
+            "long_signal_atr_shock_signal_close": float("nan"),
+            "long_signal_atr_shock_drop": float("nan"),
+            "long_signal_atr_shock_atr": float("nan"),
+            "long_signal_atr_shock_threshold": float("nan"),
+            "long_signal_atr_shock_blocked": 0,
+            "long_signal_atr_shock_reason": "disabled",
+        }
+        if not enabled:
+            return snapshot
+        if direction != "long":
+            snapshot["long_signal_atr_shock_reason"] = "direction_excluded"
+            return snapshot
+        if entry_context not in contexts:
+            snapshot["long_signal_atr_shock_reason"] = "entry_context_excluded"
+            return snapshot
+        if period <= 0 or not np.isfinite(multiplier) or multiplier <= 0:
+            snapshot["long_signal_atr_shock_reason"] = "invalid_configuration"
+            return snapshot
+
+        required_count = period + 2
+        if history is None or len(history) < required_count:
+            snapshot["long_signal_atr_shock_reason"] = "insufficient_prior_history"
+            return snapshot
+        if not {"close", "high", "low"}.issubset(history.columns):
+            snapshot["long_signal_atr_shock_reason"] = "invalid_history"
+            return snapshot
+        window = history.tail(required_count)
+        close = pd.to_numeric(window["close"], errors="coerce")
+        high = pd.to_numeric(window["high"], errors="coerce")
+        low = pd.to_numeric(window["low"], errors="coerce")
+        if (
+            len(close) != required_count
+            or len(high) != required_count
+            or len(low) != required_count
+            or not np.isfinite(close.to_numpy(dtype="float64")).all()
+            or not np.isfinite(high.to_numpy(dtype="float64")).all()
+            or not np.isfinite(low.to_numpy(dtype="float64")).all()
+            or (close <= 0).any()
+            or (high <= 0).any()
+            or (low <= 0).any()
+            or (high < low).any()
+        ):
+            snapshot["long_signal_atr_shock_reason"] = "invalid_history"
+            return snapshot
+
+        completed = window.iloc[:-1]
+        completed_close = pd.to_numeric(completed["close"], errors="coerce")
+        completed_high = pd.to_numeric(completed["high"], errors="coerce")
+        completed_low = pd.to_numeric(completed["low"], errors="coerce")
+        previous_close = completed_close.shift(1)
+        true_range = pd.concat(
+            [
+                (completed_high - completed_low).abs(),
+                (completed_high - previous_close).abs(),
+                (completed_low - previous_close).abs(),
+            ],
+            axis=1,
+        ).max(axis=1).iloc[1:]
+        if len(true_range) != period or not np.isfinite(true_range.to_numpy(dtype="float64")).all():
+            snapshot["long_signal_atr_shock_reason"] = "invalid_prior_true_range"
+            return snapshot
+
+        atr = float(true_range.mean())
+        prior_close = float(completed_close.iloc[-1])
+        signal_close = float(close.iloc[-1])
+        drop = prior_close - signal_close
+        threshold = multiplier * atr
+        snapshot.update(
+            {
+                "long_signal_atr_shock_prior_close": prior_close,
+                "long_signal_atr_shock_signal_close": signal_close,
+                "long_signal_atr_shock_drop": drop,
+                "long_signal_atr_shock_atr": atr,
+                "long_signal_atr_shock_threshold": threshold,
+            }
+        )
+        if atr <= 0:
+            snapshot["long_signal_atr_shock_reason"] = "invalid_prior_atr"
+            return snapshot
+        if drop > threshold:
+            snapshot["long_signal_atr_shock_blocked"] = 1
+            snapshot["long_signal_atr_shock_reason"] = "drop_strictly_above_threshold"
+            return snapshot
+        snapshot["long_signal_atr_shock_reason"] = "drop_not_above_threshold"
+        return snapshot
+
+    def _apply_long_signal_atr_shock_to_sizing(
+        self,
+        sizing: dict[str, Any],
+        snapshot: dict[str, Any],
+        *,
+        vt_symbol: str,
+        direction: str,
+        bar: BarData,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        selected_before = max(0, int(sizing.get("selected_volume") or 0))
+        blocked = int(snapshot.get("long_signal_atr_shock_blocked") or 0)
+        selected_after = 0 if blocked else selected_before
+        sizing.update(snapshot)
+        sizing["long_signal_atr_shock_selected_volume_before"] = selected_before
+        sizing["long_signal_atr_shock_selected_volume_after"] = selected_after
+        sizing["selected_volume"] = selected_after
+        diagnostics = getattr(self, "long_signal_atr_shock_diagnostics", None)
+        if diagnostics is not None and int(snapshot.get("long_signal_atr_shock_enabled") or 0):
+            diagnostics.append(
+                {
+                    "diagnostic_index": len(diagnostics) + 1,
+                    "datetime": bar.datetime,
+                    "date": bar.datetime.date(),
+                    "contract_vt_symbol": vt_symbol,
+                    "product_vt_symbol": self.source_symbol_by_contract.get(
+                        vt_symbol,
+                        self._product_vt_symbol(vt_symbol),
+                    ),
+                    "direction": direction,
+                    "entry_context": entry_context,
+                    **snapshot,
+                    "long_signal_atr_shock_selected_volume_before": selected_before,
+                    "long_signal_atr_shock_selected_volume_after": selected_after,
+                }
+            )
+        return sizing
+
     def _calculate_entry_sizing(
         self,
         vt_symbol: str,
@@ -5028,6 +5182,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         overheat_cooldown_fields = self._portfolio_overheat_cooldown_fields(entry_context)
         overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
         directional_30d_risk_boost_fields = self._directional_30d_risk_boost_snapshot(direction, history)
+        long_signal_atr_shock_fields = self._long_signal_atr_shock_snapshot(
+            direction,
+            history,
+            entry_context,
+        )
         sizing_equity_fields = self._sizing_equity_snapshot()
         if self.fixed_size > 0:
             price: float = float(bar.close_price)
@@ -5106,7 +5265,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **incremental_gate_fields,
             }
             sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
-            return sizing_result
+            return self._apply_long_signal_atr_shock_to_sizing(
+                sizing_result,
+                long_signal_atr_shock_fields,
+                vt_symbol=vt_symbol,
+                direction=direction,
+                bar=bar,
+                entry_context=entry_context,
+            )
 
         limited_balance: float = self._limited_available_balance(entry_context)
         allowed_capital: float = self._allowed_capital(entry_context)
@@ -5214,7 +5380,14 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **incremental_gate_fields,
         }
         sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
-        return sizing_result
+        return self._apply_long_signal_atr_shock_to_sizing(
+            sizing_result,
+            long_signal_atr_shock_fields,
+            vt_symbol=vt_symbol,
+            direction=direction,
+            bar=bar,
+            entry_context=entry_context,
+        )
 
     def _calculate_entry_volume(
         self,
