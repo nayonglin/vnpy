@@ -148,7 +148,13 @@ def _comparison(summary: pd.DataFrame) -> pd.DataFrame:
         s17.s15.s10.COMPARISONS = original
 
 
-def _volume_risk_contract_summary(entry_risk: pd.DataFrame) -> pd.DataFrame:
+def _volume_risk_contract_summary(
+    entry_risk: pd.DataFrame,
+    *,
+    high_volume_ratio_threshold: float = 3.0,
+    low_volume_ratio_threshold: float = LOW_VOLUME_RATIO_THRESHOLD,
+    low_volume_risk_multiplier: float = LOW_VOLUME_RISK_MULTIPLIER,
+) -> pd.DataFrame:
     required = {
         "direction", "entry_context", "directional_30d_risk_boost_enabled",
         "directional_30d_volume_confirmation_enabled", "directional_30d_risk_adjust_long_only",
@@ -184,23 +190,23 @@ def _volume_risk_contract_summary(entry_risk: pd.DataFrame) -> pd.DataFrame:
         aligned = group["directional_30d_risk_boost_aligned"].fillna(0).astype(int).eq(1)
         valid_volume = group["directional_30d_prior_volume_sum"].gt(0) & group["directional_30d_recent_volume_sum"].gt(0)
         high_volume = valid_volume & group["directional_30d_recent_volume_sum"].gt(
-            group["directional_30d_prior_volume_sum"] * 3.0
+            group["directional_30d_prior_volume_sum"] * high_volume_ratio_threshold
         )
         low_volume = valid_volume & group["directional_30d_recent_volume_sum"].lt(
-            group["directional_30d_prior_volume_sum"] * LOW_VOLUME_RATIO_THRESHOLD
+            group["directional_30d_prior_volume_sum"] * low_volume_ratio_threshold
         )
         high = valid_direction & aligned & high_volume
         low = valid_direction & low_volume
-        expected_multiplier = np.select([low, high], [LOW_VOLUME_RISK_MULTIPLIER, 1.5], default=1.0)
+        expected_multiplier = np.select([low, high], [low_volume_risk_multiplier, 1.5], default=1.0)
         expected_risk = group["risk_amount_before_directional_30d_boost"] * expected_multiplier
         boost_applied = group["directional_30d_risk_boost_applied"].fillna(0).astype(int).eq(1)
         discount_applied = group["directional_30d_low_volume_discount_applied"].fillna(0).astype(int).eq(1)
         threshold_ok = (
             group["directional_30d_risk_adjust_long_only"].eq(0)
             & group["directional_30d_low_volume_discount_enabled"].eq(1)
-            & np.isclose(group["directional_30d_volume_ratio_threshold"], 3.0, rtol=0.0, atol=1e-12)
-            & np.isclose(group["directional_30d_low_volume_ratio_threshold"], LOW_VOLUME_RATIO_THRESHOLD, rtol=0.0, atol=1e-12)
-            & np.isclose(group["directional_30d_low_volume_risk_multiplier"], LOW_VOLUME_RISK_MULTIPLIER, rtol=0.0, atol=1e-12)
+            & np.isclose(group["directional_30d_volume_ratio_threshold"], high_volume_ratio_threshold, rtol=0.0, atol=1e-12)
+            & np.isclose(group["directional_30d_low_volume_ratio_threshold"], low_volume_ratio_threshold, rtol=0.0, atol=1e-12)
+            & np.isclose(group["directional_30d_low_volume_risk_multiplier"], low_volume_risk_multiplier, rtol=0.0, atol=1e-12)
             & np.isclose(group["directional_30d_risk_nonconfirmation_multiplier"], 1.0, rtol=0.0, atol=1e-12)
             & valid_direction
         )
