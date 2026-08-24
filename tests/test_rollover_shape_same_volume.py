@@ -407,6 +407,60 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         strategy.directional_30d_volume_ratio_threshold = 2.0
         return strategy
 
+    @staticmethod
+    def _long_triple_volume_with_low_volume_discount_strategy() -> QmtRollPortfolioStrategy:
+        strategy = RolloverShapeSameVolumeTest._volume_confirmed_strategy()
+        strategy.directional_30d_risk_boost_multiplier = 1.5
+        strategy.directional_30d_risk_nonconfirmation_multiplier = 1.0
+        strategy.directional_30d_risk_adjust_long_only = True
+        strategy.directional_30d_volume_ratio_threshold = 3.0
+        strategy.enable_directional_30d_low_volume_risk_discount = True
+        strategy.directional_30d_low_volume_ratio_threshold = 0.5
+        strategy.directional_30d_low_volume_risk_multiplier = 0.5
+        return strategy
+
+    def test_long_low_volume_discount_applies_without_30d_direction_alignment(self) -> None:
+        strategy = self._long_triple_volume_with_low_volume_discount_strategy()
+        history = _history_from_closes(
+            [110.0] + [105.0] * 29 + [100.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [49.0] * 9 + [58.0],
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(1_000.0, snapshot["directional_30d_prior_volume_sum"])
+        self.assertEqual(499.0, snapshot["directional_30d_recent_volume_sum"])
+        self.assertEqual(1, snapshot["directional_30d_low_volume_discount_applied"])
+        self.assertEqual(0.5, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("low_volume_discount", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_long_low_volume_discount_requires_strictly_less_than_half(self) -> None:
+        strategy = self._long_triple_volume_with_low_volume_discount_strategy()
+        history = _history_from_closes(
+            [100.0] + [95.0] * 29 + [110.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [50.0] * 10,
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("long", history)
+
+        self.assertEqual(500.0, snapshot["directional_30d_recent_volume_sum"])
+        self.assertEqual(0, snapshot["directional_30d_low_volume_discount_applied"])
+        self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual("volume_not_expanding", snapshot["directional_30d_risk_boost_reason"])
+
+    def test_long_low_volume_discount_bypasses_short_direction(self) -> None:
+        strategy = self._long_triple_volume_with_low_volume_discount_strategy()
+        history = _history_from_closes(
+            [110.0] + [105.0] * 29 + [90.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [49.0] * 9 + [58.0],
+        )
+
+        snapshot = strategy._directional_30d_risk_boost_snapshot("short", history)
+
+        self.assertEqual(1.0, snapshot["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(0, snapshot["directional_30d_low_volume_discount_applied"])
+        self.assertEqual("direction_excluded", snapshot["directional_30d_risk_boost_reason"])
+
     def test_asymmetric_double_volume_risk_uses_1_5_on_hit_and_0_5_otherwise(self) -> None:
         strategy = self._asymmetric_double_volume_strategy()
         long_closes = [100.0] + [95.0] * 29 + [110.0]
@@ -765,6 +819,49 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(1.2, diagnostic["directional_30d_risk_boost_multiplier"])
         self.assertEqual(1_000.0, diagnostic["risk_amount_before_directional_30d_boost"])
         self.assertEqual(1_200.0, diagnostic["target_risk_amount"])
+
+    def test_low_volume_discount_is_recorded_in_entry_risk_diagnostics(self) -> None:
+        strategy = _DirectionalBoostSizingHarness()
+        strategy.directional_30d_risk_boost_multiplier = 1.5
+        strategy.directional_30d_risk_nonconfirmation_multiplier = 1.0
+        strategy.directional_30d_risk_adjust_long_only = True
+        strategy.directional_30d_risk_boost_require_volume_expansion = True
+        strategy.directional_30d_volume_ratio_threshold = 3.0
+        strategy.enable_directional_30d_low_volume_risk_discount = True
+        strategy.directional_30d_low_volume_ratio_threshold = 0.5
+        strategy.directional_30d_low_volume_risk_multiplier = 0.5
+        history = _history_from_closes(
+            [110.0] + [105.0] * 29 + [100.0],
+            volumes=[100.0] * 11 + [100.0] * 10 + [49.0] * 9 + [58.0],
+        )
+        bar = _bar("rb2605", 100.0)
+        sizing = strategy._calculate_entry_sizing(
+            "rb2605.SHFE",
+            "long",
+            bar,
+            history,
+            {"signal": "long_case1a", "risk_mode": "regular"},
+        )
+
+        strategy._record_entry_risk_diagnostic(
+            product_vt_symbol="rb.SHFE",
+            contract_vt_symbol="rb2605.SHFE",
+            direction="long",
+            bar=bar,
+            signal="long_case1a",
+            layer_kind="base",
+            volume=int(sizing["selected_volume"]),
+            stop_price=float(sizing["stop_price"]),
+            risk_mode="regular",
+            sizing_snapshot=sizing,
+        )
+
+        diagnostic = strategy.entry_risk_diagnostics[0]
+        self.assertEqual(1, diagnostic["directional_30d_low_volume_discount_enabled"])
+        self.assertEqual(0.5, diagnostic["directional_30d_low_volume_ratio_threshold"])
+        self.assertEqual(1, diagnostic["directional_30d_low_volume_discount_applied"])
+        self.assertEqual(0.5, diagnostic["directional_30d_risk_boost_multiplier"])
+        self.assertEqual(500.0, diagnostic["target_risk_amount"])
 
     def test_directional_30d_boost_applies_to_every_risk_budget_entry_context(self) -> None:
         strategy = _DirectionalBoostSizingHarness()
