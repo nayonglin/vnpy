@@ -145,6 +145,10 @@ class Stage015LongOnlyTripleVolumeRunnerTest(unittest.TestCase):
 
         self.assertFalse(decision["escalate_to_multicycle"])
         self.assertEqual("stop_long_only_triple_volume_after_full_period", decision["decision"])
+        self.assertEqual(
+            "c122cc4e53bd93b1ff56d2477bdf4e2dc09aa1e5",
+            decision["run_provenance"]["reused_source_commit"],
+        )
 
 
 if __name__ == "__main__":

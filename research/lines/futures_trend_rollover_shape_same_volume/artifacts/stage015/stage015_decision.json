@@ -1,0 +1,179 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage015",
+  "generated_at": "2026-08-24T17:24:27+08:00",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-05-29"
+  },
+  "arms": {
+    "A": "stage015_A_official_live_c9_15w",
+    "C": "stage015_C_rollover_continuation",
+    "H": "stage015_H_double_volume_hit_12",
+    "K": "stage015_K_long_hit_15_otherwise_10",
+    "L": "stage015_L_long_triple_volume_hit_15_otherwise_10"
+  },
+  "run_provenance": {
+    "candidate_freeze_commit": "369cb650ac0f2afe7b01c5fcad0d34d0928b5c3c",
+    "reused_source_stage": "Stage014",
+    "reused_source_commit": "c122cc4e53bd93b1ff56d2477bdf4e2dc09aa1e5",
+    "reused_arms": [
+      "A",
+      "C",
+      "H",
+      "K"
+    ],
+    "new_arms": [
+      "L"
+    ],
+    "new_independent_run_count": 1
+  },
+  "L_rule": {
+    "price_direction_lookback_days": 30,
+    "recent_volume_window": "T-9 through T, includes signal day",
+    "prior_volume_window": "T-19 through T-10",
+    "volume_condition": "recent 10-day sum strictly greater than 3.0 times prior 10-day sum",
+    "long_risk_multiplier_when_both_confirm": 1.5,
+    "long_risk_multiplier_otherwise": 1.0,
+    "short_risk_multiplier": 1.0,
+    "entry_context_scope": "flat, reverse, rollover reopen, regular add, donchian add, post-quality add"
+  },
+  "promotion_comparisons": [
+    "A_vs_L",
+    "C_vs_L"
+  ],
+  "risk_split_contract_gates": {
+    "threshold_contract_pass": true,
+    "risk_amount_contract_pass": true,
+    "long_confirmation_present": true,
+    "long_nonconfirmation_present": true,
+    "short_bypass_present": true
+  },
+  "full_period_gates": [
+    {
+      "comparison": "A_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_H",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": false,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_H",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": false,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_K",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": false,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_K",
+      "gates": {
+        "return_not_below_left": false,
+        "dd_worsening_le_1pp": false,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "H_vs_K",
+      "gates": {
+        "return_not_below_left": false,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": false,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_L",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "C_vs_L",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_not_worse": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "H_vs_L",
+      "gates": {
+        "return_not_below_left": false,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": false,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "K_vs_L",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_1pp": true,
+        "sharpe_noninferior_001": true,
+        "slippage_ratio_le_105pct": true,
+        "right_survival": true,
+        "broker100_not_worse": false
+      },
+      "pass": false
+    }
+  ],
+  "escalate_to_multicycle": false,
+  "decision": "stop_long_only_triple_volume_after_full_period",
+  "order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

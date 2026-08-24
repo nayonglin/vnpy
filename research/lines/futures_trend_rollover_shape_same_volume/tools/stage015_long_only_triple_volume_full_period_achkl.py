@@ -46,7 +46,7 @@ ARMS: tuple[dict[str, Any], ...] = (
 REUSED_ARMS = {"A", "C", "H", "K"}
 NEW_RUN_ARMS = {"L"}
 REUSED_SOURCE_STAGE = "Stage014"
-REUSED_SOURCE_COMMIT = "c122cc4e5"
+REUSED_SOURCE_COMMIT = "c122cc4e53bd93b1ff56d2477bdf4e2dc09aa1e5"
 
 COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("A_vs_C", "A", "C"),
