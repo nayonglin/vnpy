@@ -459,6 +459,29 @@ class RolloverShapeSameVolumeTest(unittest.TestCase):
         self.assertEqual(0, exact["long_signal_atr_shock_blocked"])
         self.assertEqual("drop_not_above_threshold", exact["long_signal_atr_shock_reason"])
 
+    def test_short_signal_atr_shock_blocks_strict_rise_and_allows_exact_boundary(self) -> None:
+        strategy = self._long_signal_atr_shock_strategy()
+        strategy.enable_short_signal_atr_shock_filter = True
+        strategy.long_signal_atr_shock_multiplier = 1.0
+        above = strategy._long_signal_atr_shock_snapshot(
+            "short",
+            _history_from_closes([100.0] * 6 + [101.1]),
+            "flat_entry",
+        )
+        exact = strategy._long_signal_atr_shock_snapshot(
+            "short",
+            _history_from_closes([100.0] * 6 + [101.0]),
+            "rollover_reopen",
+        )
+
+        self.assertEqual(1.0, above["long_signal_atr_shock_atr"])
+        self.assertAlmostEqual(1.1, above["signal_atr_shock_adverse_move"])
+        self.assertEqual("signal_day_rise", above["signal_atr_shock_move_kind"])
+        self.assertEqual(1, above["long_signal_atr_shock_blocked"])
+        self.assertEqual("rise_strictly_above_threshold", above["long_signal_atr_shock_reason"])
+        self.assertEqual(0, exact["long_signal_atr_shock_blocked"])
+        self.assertEqual("rise_not_above_threshold", exact["long_signal_atr_shock_reason"])
+
     def test_long_signal_atr_shock_blocks_only_approved_long_entry_contexts(self) -> None:
         strategy = _DirectionalBoostSizingHarness()
         strategy.enable_long_signal_atr_shock_filter = True

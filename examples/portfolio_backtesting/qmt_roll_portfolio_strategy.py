@@ -174,6 +174,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     directional_30d_low_volume_ratio_threshold: float = 0.5
     directional_30d_low_volume_risk_multiplier: float = 0.5
     enable_long_signal_atr_shock_filter: bool = False
+    enable_short_signal_atr_shock_filter: bool = False
     long_signal_atr_shock_period: int = 5
     long_signal_atr_shock_multiplier: float = 2.0
     long_signal_atr_shock_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
@@ -473,6 +474,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "directional_30d_low_volume_ratio_threshold",
         "directional_30d_low_volume_risk_multiplier",
         "enable_long_signal_atr_shock_filter",
+        "enable_short_signal_atr_shock_filter",
         "long_signal_atr_shock_period",
         "long_signal_atr_shock_multiplier",
         "long_signal_atr_shock_entry_contexts",
@@ -4983,7 +4985,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         history: pd.DataFrame,
         entry_context: str,
     ) -> dict[str, Any]:
-        enabled = bool(self.enable_long_signal_atr_shock_filter)
+        long_enabled = bool(self.enable_long_signal_atr_shock_filter)
+        short_enabled = bool(self.enable_short_signal_atr_shock_filter)
+        enabled = bool(long_enabled or short_enabled)
         period = int(self.long_signal_atr_shock_period or 0)
         multiplier = float(self.long_signal_atr_shock_multiplier or 0.0)
         contexts = {
@@ -4993,6 +4997,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
         snapshot: dict[str, Any] = {
             "long_signal_atr_shock_enabled": int(enabled),
+            "short_signal_atr_shock_enabled": int(short_enabled),
             "long_signal_atr_shock_period": period,
             "long_signal_atr_shock_multiplier": multiplier,
             "long_signal_atr_shock_entry_context": entry_context,
@@ -5000,6 +5005,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_atr_shock_prior_close": float("nan"),
             "long_signal_atr_shock_signal_close": float("nan"),
             "long_signal_atr_shock_drop": float("nan"),
+            "short_signal_atr_shock_rise": float("nan"),
+            "signal_atr_shock_adverse_move": float("nan"),
+            "signal_atr_shock_move_kind": "",
             "long_signal_atr_shock_atr": float("nan"),
             "long_signal_atr_shock_threshold": float("nan"),
             "long_signal_atr_shock_blocked": 0,
@@ -5007,7 +5015,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         }
         if not enabled:
             return snapshot
-        if direction != "long":
+        if direction not in {"long", "short"}:
+            snapshot["long_signal_atr_shock_reason"] = "direction_excluded"
+            return snapshot
+        direction_enabled = long_enabled if direction == "long" else short_enabled
+        if not direction_enabled:
             snapshot["long_signal_atr_shock_reason"] = "direction_excluded"
             return snapshot
         if entry_context not in contexts:
@@ -5063,13 +5075,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         atr = float(true_range.mean())
         prior_close = float(completed_close.iloc[-1])
         signal_close = float(close.iloc[-1])
-        drop = prior_close - signal_close
+        adverse_move = prior_close - signal_close if direction == "long" else signal_close - prior_close
+        move_kind = "signal_day_drop" if direction == "long" else "signal_day_rise"
         threshold = multiplier * atr
         snapshot.update(
             {
                 "long_signal_atr_shock_prior_close": prior_close,
                 "long_signal_atr_shock_signal_close": signal_close,
-                "long_signal_atr_shock_drop": drop,
+                "long_signal_atr_shock_drop": adverse_move if direction == "long" else float("nan"),
+                "short_signal_atr_shock_rise": adverse_move if direction == "short" else float("nan"),
+                "signal_atr_shock_adverse_move": adverse_move,
+                "signal_atr_shock_move_kind": move_kind,
                 "long_signal_atr_shock_atr": atr,
                 "long_signal_atr_shock_threshold": threshold,
             }
@@ -5077,11 +5093,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         if atr <= 0:
             snapshot["long_signal_atr_shock_reason"] = "invalid_prior_atr"
             return snapshot
-        if drop > threshold:
+        reason_prefix = "drop" if direction == "long" else "rise"
+        if adverse_move > threshold:
             snapshot["long_signal_atr_shock_blocked"] = 1
-            snapshot["long_signal_atr_shock_reason"] = "drop_strictly_above_threshold"
+            snapshot["long_signal_atr_shock_reason"] = f"{reason_prefix}_strictly_above_threshold"
             return snapshot
-        snapshot["long_signal_atr_shock_reason"] = "drop_not_above_threshold"
+        snapshot["long_signal_atr_shock_reason"] = f"{reason_prefix}_not_above_threshold"
         return snapshot
 
     def _apply_long_signal_atr_shock_to_sizing(
