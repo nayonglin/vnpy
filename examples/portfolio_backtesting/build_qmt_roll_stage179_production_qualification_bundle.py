@@ -1217,6 +1217,26 @@ def build_trusted_production_qualification_bundle(
     if _git(repo, "status", "--porcelain", "--untracked-files=all"):
         raise ReleaseManifestError("production_bundle_requires_clean_tree")
     source_commit = _git(repo, "rev-parse", "--verify", "HEAD^{commit}")
+    normalized_critical_files = tuple(critical_files)
+    material_current = repo / "official_strategy_materials/CURRENT.json"
+    if material_current.is_file():
+        from qmt_roll_official_strategy_material_resolver import (
+            ActiveMaterialError,
+            active_release_critical_files,
+        )
+
+        try:
+            material_files = active_release_critical_files(
+                repo_root=repo,
+                require_deployable=True,
+            )
+        except ActiveMaterialError as exc:
+            raise ReleaseManifestError(
+                f"production_bundle_active_material_release_invalid:{exc}"
+            ) from exc
+        normalized_critical_files = tuple(
+            dict.fromkeys((*normalized_critical_files, *material_files))
+        )
     runtime_identity = _production_runtime_identity(repo)
     run_nonce = uuid.uuid4().hex
     started_at = _utc_now()
@@ -1275,7 +1295,7 @@ def build_trusted_production_qualification_bundle(
                 "pytest_invocations": pytest_invocations,
                 "readonly_invocations": readonly_invocations,
             },
-            critical_files=critical_files,
+            critical_files=normalized_critical_files,
             generated_at_utc=generated_at_utc or finished_at,
             _trusted_assembler_sentinel=_TRUSTED_ASSEMBLER_SENTINEL,
         )
