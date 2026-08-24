@@ -155,7 +155,11 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "ai/stage182/combined_eligibility.csv",
             manifest["ai_eligibility_logical_path"],
         )
-        self.assertTrue(manifest["material_release_id"].startswith("m0001_"))
+        self.assertRegex(manifest["material_release_id"], r"^m\d{4}_")
+        self.assertEqual(
+            manifest["material_release_id"],
+            module.OFFICIAL_LIVE_MATERIAL_RELEASE_ID,
+        )
         self.assertEqual(40, len(manifest["material_release_commit"]))
         self.assertEqual(64, len(manifest["material_manifest_sha256"]))
         with self.assertRaises(AssertionError):
