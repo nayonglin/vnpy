@@ -40,8 +40,10 @@
 - 总滑点：不适用，未回测。
 - 总交易次数：不适用，未回测。
 - 胜率：不适用，未回测。
-- 其他关键指标：相关测试 `144 passed, 53 subtests passed`；三个 Skill 均通过 `quick_validate.py`；使用 2026-08-25 正式只读影子绑定的不可变 AI 路径在临时目录成功生成回执，未覆盖生产回执；order/send/cancel API `0/0/0`。
+- 其他关键指标：较宽回归 `144 passed, 53 subtests passed`，最终聚焦回归 `70 passed, 48 subtests passed`；三个 Skill 均通过 `quick_validate.py`；使用 2026-08-25 正式只读影子绑定的不可变 AI 路径在临时目录成功生成回执，未覆盖生产回执；order/send/cancel API `0/0/0`。
 - 独立复核修正：m0013 激活前发现 `monthly_ai_pool_updated` 在 publication status 缺失或未知时可能继续执行的 fail-open 缺口，以及 terminal root blocker 与首个失败 stage blocker 可不一致的问题；两项均按正向协议/fail-closed 修复，m0013 保留为未激活候选，后继物料使用新版本号。
+- 最终独立复核：绑定源码 `14a2031aae2049e6f266c0e5f57fe4d27c9da6d6`，`P0/P1/P2=0/0/0`；已知动态 signal 详情仅归类到允许的 base blocker，未知或含敏感标记的错误继续统一降级。
+- 新正式物料候选：`m0014_20260825T173659+0800_14a2031aae20`，release commit `b8f87d45cba63740022c981f99de11df315cebb2`，共 `160` 文件，manifest SHA256 `fa86692c5aa2e758d406ba0b59a239e4f1a7c1c835b3d6918b0a6ba62a2fe2bc`，tree fingerprint `943ec711935f2dea7a5997641ed9c432c19937fdc2fd4497a7f3ba4af29b49d5`；m0013 不激活、不覆盖。
 
 ## 输出文件
 

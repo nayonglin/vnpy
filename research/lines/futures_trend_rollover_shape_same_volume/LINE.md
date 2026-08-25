@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`。Stage023 已补齐正式身份合同、完整 master 晋升器、闭环审计器和全部基线消费者；后继不可变物料 m0010 已激活并以受控非强制推送晋升到远端 master，正在从该 master SHA 完成 Stage948 生产安装；生产交易闸仍必须 fail closed
-- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`。m0010 正式晋升 commit 为 `4ca9fb83b19b232e05406a74bb3aa0c052179540`，新鲜远端 clone 已证明 active CURRENT、顶层源码和 payload 一致且 ahead/behind 为 `0/0`；最终仍以生产安装后的六身份闭环审计为准
+- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`。Stage025 已修复正式回执引用可变 AI 池路径的问题，并把后续月更 AI 池统一改为“候选生成后无条件 fail closed，完成新物料发布/资格/安装后才生效”；m0014 已封装并通过独立代码复核，待正式资格、master 晋升和 Stage948 安装闭环
+- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。Stage025 候选 `m0014_20260825T173659+0800_14a2031aae20` 绑定源码 `14a2031aae2049e6f266c0e5f57fe4d27c9da6d6`；最终仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
