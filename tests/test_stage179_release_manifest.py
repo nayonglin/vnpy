@@ -778,16 +778,30 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_official_strategy_material_release.py",
             "tests/test_ai_artifact_registry.py",
             "examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
+            "examples/portfolio_backtesting/qmt_roll_official_baseline_identity.py",
+            "examples/portfolio_backtesting/audit_qmt_roll_official_promotion_closure.py",
             "tests/test_official_strategy_material_resolver.py",
+            "tests/test_official_baseline_identity.py",
+            "tests/test_official_promotion_closure.py",
             "skills/freeze-official-strategy-materials/SKILL.md",
             "skills/freeze-official-strategy-materials/references/material-contract.md",
             "skills/freeze-official-strategy-materials/agents/openai.yaml",
+            "skills/version-ab-experiment/SKILL.md",
+            "skills/version-ab-experiment/agents/openai.yaml",
+            "skills/futures-live-execution-sop/SKILL.md",
+            "skills/futures-live-execution-sop/agents/openai.yaml",
+            "skills/futures-live-automation-startup/SKILL.md",
+            "skills/futures-multicycle-validation/SKILL.md",
+            "skills/futures-multicycle-validation/agents/openai.yaml",
+            "skills/futures-multicycle-backtest-report/SKILL.md",
         }
         self.assertTrue(required_files.issubset(set(builder.DEFAULT_CRITICAL_FILES)))
         self.assertTrue(
             {
                 "tests/test_official_strategy_material_release.py",
                 "tests/test_ai_artifact_registry.py",
+                "tests/test_official_baseline_identity.py",
+                "tests/test_official_promotion_closure.py",
             }.issubset(set(builder.PRODUCTION_REQUIRED_TEST_SUITES))
         )
 
