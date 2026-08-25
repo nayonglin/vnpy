@@ -78,6 +78,15 @@ RED 结论：旧 Skill 会选择 materials-only 发布，并明确禁止完成�
 - `git clone --no-local --branch master --single-branch` 新鲜远端克隆完成，HEAD/readback 均为 `4ca9fb83b19b232e05406a74bb3aa0c052179540`，ahead/behind=`0/0`；身份校验确认顶层源码、m0010 payload、CURRENT 与 Q ruleset 完全一致。
 - 本记录属于治理字节，不修改策略、物料 payload 或交易路径；追加后将以最终 master SHA 重新生成可信安装资格并执行 Stage948。
 
+## Fresh clone 可执行位缺陷与 m0011 修复（2026-08-25 13:30 CST）
+
+- 最终 master 资格首次运行因 fresh clone 缺少本机 `.vntrader/database.db`，11 个测试文件被同一运行时守卫阻断；补齐与隔离工作区一致的本机链接后，最小复现从 `8 failed` 变为 `8 passed + 14 subtests passed`。这些链接未进入 Git。
+- 第二次运行只剩 `tests/test_stage179_launchd_lifecycle.py` 失败；根因是 m0010 的 runtime shell 在来源 commit 为 `100755`，但冻结 payload 与 `promote-master` 复制后都变成 `100644`。新鲜 clone 无法直接执行 supervisor，证明 m0010 不能作为最终可运行闭环版本。
+- RED：新增可执行 runtime fixture 后，release payload 与远端 clone 两项模式断言均失败。
+- GREEN：发布器冻结和晋升均按来源 executable bit 归一化为 `0755/0644`，当前 supervisor 恢复 `0755`；发布、身份、闭环和 launchd 生命周期测试 `33 passed + 2 subtests passed`。
+- 决策：不在新鲜 clone 事后 `chmod` 冒充完成，不覆盖 m0010；创建新的不可变 m0011，重新走 release/activate/promote/fresh clone/资格/Stage948。
+- Skill 同步增加最小前置：fresh clone 资格前补齐但不跟踪本机运行链接，并对 runtime supervisor/launcher 执行 `test -x`；任何可执行位丢失时 fail closed。
+
 ## GREEN 压力场景
 
 同一请求在新 Skill 上的确定性规则断言原样输出：
