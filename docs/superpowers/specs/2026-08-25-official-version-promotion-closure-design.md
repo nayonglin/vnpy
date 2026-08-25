@@ -1,6 +1,6 @@
 # 正式版本晋升闭环 Skill 增强设计
 
-- 状态：待用户审阅
+- 状态：已确认
 - 日期：2026-08-25
 - 研究线：`futures_trend_rollover_shape_same_volume`
 - 当前正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
@@ -160,7 +160,7 @@ Skill 负责授权边界、顺序、停止条件和汇报；仓库脚本负责�
 实现完成后，用同一 Skill 对当前 Q 做一次补收口：
 
 - 将 Q 顶层源码和晋升记录合入并推送远端 master；
-- 把远端 `CURRENT.json` 从 `m0001` 更新为已激活的 `m0009`；
+- 把远端 `CURRENT.json` 从 `m0001` 更新为当前 Q 的有效正式 release；如果本次 Skill/发布治理文件变化进入正式 inventory，则生成后继物料版本（预计 `m0010`）并共同激活，不能把变化后的字节伪装成原 `m0009`；
 - 更新 `$freeze-official-strategy-materials` 本身，以及 `version-ab-experiment`、实盘 SOP、自动化启动 Skill、registry 和多周期正式基线解析；
 - 从远端 master 重新验证或安装生产，使最终生产身份绑定远端 master 中同一套 Q 源码；
 - 输出六项身份、冲突数、远端 SHA、生产状态和订单 API 计数。
@@ -177,7 +177,7 @@ Skill 负责授权边界、顺序、停止条件和汇报；仓库脚本负责�
 
 ## 11. 验收标准
 
-- 从远端 master 新 clone 后，resolver 得到 `m0009`/后续最新正式 release，而不是旧 `CURRENT.json`。
+- 从远端 master 新 clone 后，resolver 得到当前 Q 的有效正式 release（`m0009` 或包含本次治理修订的后继版本），而不是旧 `CURRENT.json`。
 - master 顶层正式配置、active payload 和生产配置的 ruleset 与关键 overrides 完全一致。
 - 新研究分支从远端 master 创建时，默认 A 为当前生产 ruleset。
 - 正式晋升记录和 registry 不再把已晋升版本描述为 research-only。
