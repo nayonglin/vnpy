@@ -168,6 +168,47 @@ class OfficialLivePostclosePipelineTest(unittest.TestCase):
                 finished_at_utc="2026-08-03T10:20:02Z",
             )
 
+    def test_terminal_root_blocker_must_match_first_failed_stage(self) -> None:
+        payload = pipeline.record_postclose_pipeline_stage(
+            self._new(),
+            stage="resolve-target",
+            status="failed",
+            started_at_utc="2026-08-03T08:35:00Z",
+            finished_at_utc="2026-08-03T08:35:01Z",
+            blocker="production_support_target_date_resolver_failed",
+        )
+
+        with self.assertRaisesRegex(
+            pipeline.PostclosePipelineError,
+            "postclose_pipeline_root_blocker_mismatch",
+        ):
+            pipeline.finish_postclose_pipeline_receipt(
+                payload,
+                status="failed",
+                root_blocker="production_signal_ai_pool_binding_mismatch",
+                email_disposition={"notification_status": "sent"},
+                finished_at_utc="2026-08-03T08:35:02Z",
+            )
+
+        valid = pipeline.finish_postclose_pipeline_receipt(
+            payload,
+            status="failed",
+            root_blocker="production_support_target_date_resolver_failed",
+            email_disposition={"notification_status": "sent"},
+            finished_at_utc="2026-08-03T08:35:02Z",
+        )
+        tampered = pipeline._with_digest(
+            {
+                **valid,
+                "root_blocker": "production_signal_ai_pool_binding_mismatch",
+            }
+        )
+        with self.assertRaisesRegex(
+            pipeline.PostclosePipelineError,
+            "postclose_pipeline_root_blocker_mismatch",
+        ):
+            pipeline._validate_payload(tampered)
+
     def test_success_requires_daily_receipt_and_report_digests(self) -> None:
         payload = self._new()
         for stage in pipeline.POSTCLOSE_PIPELINE_STAGES:

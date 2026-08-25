@@ -41,6 +41,7 @@
 - 总交易次数：不适用，未回测。
 - 胜率：不适用，未回测。
 - 其他关键指标：相关测试 `144 passed, 53 subtests passed`；三个 Skill 均通过 `quick_validate.py`；使用 2026-08-25 正式只读影子绑定的不可变 AI 路径在临时目录成功生成回执，未覆盖生产回执；order/send/cancel API `0/0/0`。
+- 独立复核修正：m0013 激活前发现 `monthly_ai_pool_updated` 在 publication status 缺失或未知时可能继续执行的 fail-open 缺口，以及 terminal root blocker 与首个失败 stage blocker 可不一致的问题；两项均按正向协议/fail-closed 修复，m0013 保留为未激活候选，后继物料使用新版本号。
 
 ## 输出文件
 

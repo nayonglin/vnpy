@@ -577,7 +577,7 @@ print("CONTRACT=" + json.dumps({
                 self.assertEqual(2, exit_code)
                 notify.assert_called_once()
 
-    def test_monthly_post_update_receipt_failure_uses_new_fallback_boundary(
+    def test_monthly_updated_candidate_stops_before_receipt_refresh(
         self,
     ) -> None:
         monthly = subprocess.CompletedProcess(
@@ -595,16 +595,8 @@ print("CONTRACT=" + json.dumps({
             patch.object(launcher.subprocess, "run", return_value=monthly),
             patch.object(
                 launcher,
-                "build_support_command",
-                return_value=["python", "stage909"],
-            ),
-            patch.object(
-                launcher,
                 "_run_precompute_and_issue_daily_receipt",
-                side_effect=launcher.ProductionSupportLaunchError(
-                    "production_support_precompute_process_failed"
-                ),
-            ),
+            ) as refresh,
             self.assertRaises(launcher.ProductionSupportLaunchError) as raised,
         ):
             launcher._run_monthly_ai_pool_and_refresh_receipt(
@@ -614,8 +606,9 @@ print("CONTRACT=" + json.dumps({
             )
 
         error = raised.exception
-        self.assertEqual("monthly-receipt-refresh", error.boundary)
+        self.assertEqual("monthly-stage935", error.boundary)
         self.assertFalse(error.downstream_email_attempted)
+        refresh.assert_not_called()
         notify, _payload, exit_code = self._invoke_main_failure(
             job="monthly-ai-pool",
             error=error,
@@ -882,7 +875,7 @@ print("CONTRACT=" + json.dumps({
                     launcher.SUPPORT_JOB_SPECS["monthly-ai-pool"]
                 )
 
-    def test_monthly_update_runs_precompute_before_issuing_new_receipt(self) -> None:
+    def test_monthly_update_without_publication_status_stays_fail_closed(self) -> None:
         monthly = subprocess.CompletedProcess(
             args=["stage935"],
             returncode=0,
@@ -891,44 +884,25 @@ print("CONTRACT=" + json.dumps({
             ),
             stderr="",
         )
-        precompute = subprocess.CompletedProcess(
-            args=["stage909"],
-            returncode=0,
-            stdout=json.dumps(
-                {
-                    "shadow_refresh_status": "shadow_refresh_completed",
-                    "execution_profile": "c9-15w",
-                    "refresh_attempted": 1,
-                    "target_date": "2026-07-21",
-                    "commands": [{"name": "official_live_shadow", "exit_code": 0}],
-                }
-            ),
-            stderr="",
-        )
         manifest = {"source_commit": "a" * 40, "manifest_sha256": "b" * 64}
         with (
-            patch.object(
-                launcher.subprocess,
-                "run",
-                side_effect=[monthly, precompute],
-            ) as run,
+            patch.object(launcher.subprocess, "run", return_value=monthly) as run,
             patch.object(
                 launcher,
-                "_resolve_target_date",
-                return_value=("2026-07-21", {}),
+                "_run_precompute_and_issue_daily_receipt",
+            ) as refresh,
+            self.assertRaisesRegex(
+                launcher.ProductionSupportLaunchError,
+                "production_support_monthly_ai_pool_material_publication_required",
             ),
-            patch.object(
-                launcher,
-                "build_and_write_production_daily_data_receipt",
-            ) as issue,
         ):
             launcher._run_monthly_ai_pool_and_refresh_receipt(
                 command=["python", "stage935"],
                 environment={},
                 manifest=manifest,
             )
-        self.assertEqual(2, run.call_count)
-        issue.assert_called_once()
+        self.assertEqual(1, run.call_count)
+        refresh.assert_not_called()
 
     def test_monthly_candidate_waits_for_immutable_material_publication(self) -> None:
         monthly = subprocess.CompletedProcess(
@@ -1101,31 +1075,38 @@ print("CONTRACT=" + json.dumps({
                     environment={},
                 )
 
-    def test_monthly_worker_rejects_unpublished_material_candidate(self) -> None:
-        payload = {
-            "automation_status": "monthly_ai_pool_updated",
-            "material_publication_status": "publication_required",
-            "send_order_api_called_count": 0,
-            "cancel_order_api_called_count": 0,
-            "order_api_called_count": 0,
-        }
-        completed = subprocess.CompletedProcess(
-            args=["stage935"],
-            returncode=0,
-            stdout=json.dumps(payload),
-            stderr="",
-        )
-        with (
-            patch.object(launcher.subprocess, "run", return_value=completed),
-            self.assertRaisesRegex(
-                launcher.ProductionSupportLaunchError,
-                "production_support_monthly_ai_pool_material_publication_required",
-            ),
+    def test_monthly_worker_rejects_every_updated_candidate_schema(self) -> None:
+        for publication_status in (
+            None,
+            "publication_required",
+            "future_unknown_status",
         ):
-            launcher._run_monthly_ai_pool_worker(
-                command=["python", "stage935"],
-                environment={},
+            payload = {
+                "automation_status": "monthly_ai_pool_updated",
+                "send_order_api_called_count": 0,
+                "cancel_order_api_called_count": 0,
+                "order_api_called_count": 0,
+            }
+            if publication_status is not None:
+                payload["material_publication_status"] = publication_status
+            completed = subprocess.CompletedProcess(
+                args=["stage935"],
+                returncode=0,
+                stdout=json.dumps(payload),
+                stderr="",
             )
+            with (
+                self.subTest(publication_status=publication_status),
+                patch.object(launcher.subprocess, "run", return_value=completed),
+                self.assertRaisesRegex(
+                    launcher.ProductionSupportLaunchError,
+                    "production_support_monthly_ai_pool_material_publication_required",
+                ),
+            ):
+                launcher._run_monthly_ai_pool_worker(
+                    command=["python", "stage935"],
+                    environment={},
+                )
 
     def test_postclose_report_worker_validates_real_stage929_envelope(self) -> None:
         payload = {

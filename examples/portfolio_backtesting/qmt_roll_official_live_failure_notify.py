@@ -28,8 +28,31 @@ FAILURE_NOTIFICATION_COOLDOWN_SECONDS = 30 * 60
 
 _TOKEN_RE = re.compile(r"[^A-Za-z0-9_.:-]+")
 _BLOCKER_RE = re.compile(
-    r"production_(?:launcher|signal|support)_[A-Za-z0-9_.:-]{1,100}"
+    r"production_(?:launcher|support)_[A-Za-z0-9_.:-]{1,100}"
 )
+_ALLOWED_SIGNAL_BLOCKERS = {
+    "production_signal_ai_eligibility_eval_date_missing",
+    "production_signal_ai_pool_audit_invalid",
+    "production_signal_ai_pool_binding_mismatch",
+    "production_signal_artifact_generation_changed",
+    "production_signal_artifact_missing",
+    "production_signal_artifact_path_invalid",
+    "production_signal_artifact_security_invalid",
+    "production_signal_csv_invalid",
+    "production_signal_decision_identity_mismatch",
+    "production_signal_decision_order_api_nonzero",
+    "production_signal_input_root_missing",
+    "production_signal_input_root_security_invalid",
+    "production_signal_json_invalid",
+    "production_signal_pending_cohort_invalid",
+}
+_SIGNAL_BLOCKERS_WITH_DETAIL = {
+    "production_signal_artifact_missing",
+    "production_signal_artifact_path_invalid",
+    "production_signal_artifact_security_invalid",
+    "production_signal_csv_invalid",
+    "production_signal_pending_cohort_invalid",
+}
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 _RUN_ID_RE = re.compile(r"[0-9a-f]{32}")
@@ -95,12 +118,16 @@ def normalize_official_live_failure_blocker(
     )
     candidate = _safe_token(value, fallback=safe_fallback)
     lowered = candidate.lower()
-    if (
-        _BLOCKER_RE.fullmatch(candidate) is None
-        or any(marker in lowered for marker in _SECRET_MARKERS)
-    ):
+    if any(marker in lowered for marker in _SECRET_MARKERS):
         return safe_fallback
-    return candidate
+    if _BLOCKER_RE.fullmatch(candidate) is not None:
+        return candidate
+    if candidate in _ALLOWED_SIGNAL_BLOCKERS:
+        return candidate
+    signal_base, separator, _detail = candidate.partition(":")
+    if separator and signal_base in _SIGNAL_BLOCKERS_WITH_DETAIL:
+        return signal_base
+    return safe_fallback
 
 
 def _safe_job(value: str) -> str:

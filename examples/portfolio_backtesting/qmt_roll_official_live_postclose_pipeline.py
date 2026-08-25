@@ -111,6 +111,17 @@ def _validate_payload(payload: Mapping[str, Any]) -> dict[str, Any]:
             or row.get("status") not in _STAGE_STATUSES
         ):
             raise PostclosePipelineError("postclose_pipeline_payload_invalid")
+    failed = next((row for row in stages if row["status"] == "failed"), None)
+    if failed is None:
+        if payload.get("root_stage") or payload.get("root_blocker"):
+            raise PostclosePipelineError(
+                "postclose_pipeline_root_blocker_mismatch"
+            )
+    elif (
+        payload.get("root_stage") != failed["stage"]
+        or payload.get("root_blocker") != failed.get("blocker")
+    ):
+        raise PostclosePipelineError("postclose_pipeline_root_blocker_mismatch")
     _zero_api(payload)
     observed_digest = str(payload.get("receipt_sha256", ""))
     expected = _with_digest(payload)
@@ -253,6 +264,10 @@ def finish_postclose_pipeline_receipt(
         failed = next((row for row in rows if row["status"] == "failed"), None)
         if failed is None or not root_blocker:
             raise PostclosePipelineError("postclose_pipeline_payload_invalid")
+        if str(failed.get("blocker", "")) != root_blocker:
+            raise PostclosePipelineError(
+                "postclose_pipeline_root_blocker_mismatch"
+            )
         root_stage = str(failed["stage"])
         for row in rows[POSTCLOSE_PIPELINE_STAGES.index(root_stage) + 1 :]:
             if row["status"] == "pending":

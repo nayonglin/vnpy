@@ -140,7 +140,7 @@ Read the private JSON artifacts directly for exact counts and identities. Do not
 Stage947 owns production month-end handling:
 
 - `monthly_ai_pool_already_current`: validate the existing receipt.
-- `monthly_ai_pool_updated` with `material_publication_status=publication_required`: the generated files are only a candidate. Stop fail-closed and use `freeze-official-strategy-materials` to create, qualify, promote, and install a new immutable material release before refreshing the shadow or signing a receipt.
+- `monthly_ai_pool_updated`: always treat the generated files as a candidate, regardless of a missing, known, or unknown `material_publication_status`. Stop fail-closed and use `freeze-official-strategy-materials` to create, qualify, promote, and install a new immutable material release before refreshing the shadow or signing a receipt.
 - Only after `CURRENT.json`, the stable checkout, and `PRODUCTION_AI_ELIGIBILITY_PATH` all resolve to the newly installed material may Stage909 rerun and a new receipt be signed.
 - any other state: fail closed.
 

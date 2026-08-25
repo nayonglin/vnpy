@@ -100,9 +100,30 @@ class OfficialLiveFailureNotifyTest(unittest.TestCase):
             ),
         )
         self.assertEqual(
+            "production_signal_artifact_missing",
+            failure_notify.normalize_official_live_failure_blocker(
+                "production_signal_artifact_missing:official_summary",
+                fallback="production_support_unexpected_failure",
+            ),
+        )
+        self.assertEqual(
+            "production_signal_pending_cohort_invalid",
+            failure_notify.normalize_official_live_failure_blocker(
+                "production_signal_pending_cohort_invalid:artifact_schema_mismatch",
+                fallback="production_support_unexpected_failure",
+            ),
+        )
+        self.assertEqual(
             "production_support_unexpected_failure",
             failure_notify.normalize_official_live_failure_blocker(
-                "production_signal_token_leaked",
+                "production_signal_pending_cohort_invalid:secret_token",
+                fallback="production_support_unexpected_failure",
+            ),
+        )
+        self.assertEqual(
+            "production_support_unexpected_failure",
+            failure_notify.normalize_official_live_failure_blocker(
+                "production_signal_future_unknown_error",
                 fallback="production_support_unexpected_failure",
             ),
         )

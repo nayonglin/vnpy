@@ -489,10 +489,7 @@ def _run_monthly_ai_pool_worker(
                 "production_support_monthly_ai_pool_order_api_evidence_invalid",
                 boundary="monthly-stage935",
             )
-    if (
-        status == "monthly_ai_pool_updated"
-        and summary.get("material_publication_status") == "publication_required"
-    ):
+    if status == "monthly_ai_pool_updated":
         raise ProductionSupportLaunchError(
             "production_support_monthly_ai_pool_material_publication_required",
             boundary="monthly-stage935",
@@ -1035,28 +1032,10 @@ def _run_monthly_ai_pool_and_refresh_receipt(
         raise decode_error
     status = str(summary.get("automation_status", ""))
     if status == "monthly_ai_pool_updated":
-        if summary.get("material_publication_status") == "publication_required":
-            raise ProductionSupportLaunchError(
-                "production_support_monthly_ai_pool_material_publication_required",
-                boundary="monthly-stage935",
-            )
-        precompute_spec = SUPPORT_JOB_SPECS["postclose-precompute"]
-        precompute_environment = dict(environment)
-        precompute_environment.update(dict(precompute_spec.gate_environment))
-        try:
-            _run_precompute_and_issue_daily_receipt(
-                spec=precompute_spec,
-                command=build_support_command(precompute_spec),
-                environment=precompute_environment,
-                manifest=manifest,
-            )
-        except Exception as exc:
-            raise ProductionSupportLaunchError(
-                "production_support_monthly_receipt_refresh_failed",
-                boundary="monthly-receipt-refresh",
-                downstream_email_attempted=False,
-            ) from exc
-        return
+        raise ProductionSupportLaunchError(
+            "production_support_monthly_ai_pool_material_publication_required",
+            boundary="monthly-stage935",
+        )
     if status != "monthly_ai_pool_already_current":
         raise ProductionSupportLaunchError(
             "production_support_monthly_ai_pool_not_qualified"
