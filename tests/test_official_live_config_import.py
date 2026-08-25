@@ -204,15 +204,22 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             QmtRollPortfolioStrategyStage847C9StopRetry,
         )
 
-        base_overrides = {"account_capital": 300_000.0, "c3_capital": 300_000.0}
+        base_overrides = (
+            live_config.stage847_c9_cfg._build_official_candidate_stage847_c9_overrides(
+                Path("/offline/stage847-universe.csv"),
+                Path("/offline/stage847-eligibility.csv"),
+            )
+        )
+        self.assertEqual(41, len(base_overrides))
         with patch.object(
             live_config.stage847_c9_cfg,
             "build_official_candidate_stage847_c9_overrides",
-            return_value=base_overrides,
+            return_value=base_overrides.copy(),
         ):
             override_keys = set(live_config.build_official_live_strategy_overrides())
         consumed_keys = set(QmtRollPortfolioStrategyStage847C9StopRetry.parameters)
 
+        self.assertEqual(61, len(override_keys))
         execution_profile_keys = {"account_capital", "c3_capital"}
         self.assertSetEqual(
             set(),
