@@ -1,9 +1,10 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；m0009 已发布到远端 master，生产稳定目录固定到 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`，Stage948 7/7 launchd 已激活；当前因当日数据回执缺失保持 fail closed
-- 正式基线：远端 `master@294e445802285c4e1fa4e7f5a61c13ff5919eaf0`（m0009 正式物料）；生产来源 `bb613eb1e8b45decef8e23dac8e00cf416df02cc`
+- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`。Stage023 已补齐正式身份合同、完整 master 晋升器、闭环审计器和全部基线消费者，正在生成包含这些治理字节的后继不可变物料并重新闭环 master/生产；生产仍因当日数据回执缺失保持 fail closed
+- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`。Stage023 完成前，远端 `master@294e445802285c4e1fa4e7f5a61c13ff5919eaf0` 与生产 `bb613eb1e8b45decef8e23dac8e00cf416df02cc` 是待收敛的历史身份，不再作为“同名即一致”的依据；以 active CURRENT + 顶层源码校验和最终六身份审计为准
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
+- 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
 - 分支：`codex/rollover-shape-same-volume`
 
