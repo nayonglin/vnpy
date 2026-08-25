@@ -1,4 +1,4 @@
 interface:
   display_name: "版本A/B/C实验"
-  short_description: "为有价值的新策略版本生成Stage78基准、单独版本、组合版本的A/B/C实验流程。"
-  default_prompt: "对这个有价值的新策略版本运行A/B/C实验设计：Stage78基准、单独版本、Stage78+新模块，并给出过拟合和值得继续判断。"
+  short_description: "基于活动正式物料身份设计A/B/C实验"
+  default_prompt: "先从 CURRENT.json 与正式源码解析活动实盘基线并核对生产身份，再设计 A/B/C 实验；Stage78/Stage372 只在明确点名时作为历史对照。"

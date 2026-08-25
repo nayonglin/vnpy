@@ -1,6 +1,6 @@
 ---
 name: version-ab-experiment
-description: Use for valuable vn.py strategy version candidates that may become formal, combine with Stage78, or need A/B/C validation. Trigger when the user asks to evaluate a valuable new version, combine a module with the Stage78 official baseline, run an A/B test, decide whether a candidate can be promoted, or prevent overfitting in version research. Do not use for pure attribution, monitor-only reports, or obviously low-value ideas unless the user asks to formalize them.
+description: Use for valuable vn.py strategy candidates that may become formal, combine with the active official strategy, or need A/B/C validation. Trigger when the user asks to optimize from the live version, evaluate a valuable new version, run an A/B test, decide whether a candidate can be promoted, or prevent overfitting in version research. Do not use for pure attribution, monitor-only reports, or obviously low-value ideas unless the user asks to formalize them.
 ---
 
 # Version A/B/C Experiment
@@ -9,11 +9,13 @@ description: Use for valuable vn.py strategy version candidates that may become 
 
 Use this skill only for versions with a plausible first-principles reason to matter. Do not run A/B/C for every idea.
 
-Default baseline:
+Default baseline contract:
 
-- `A = official_stage78_defensive_v1` unless `back_log.md` says a newer formal baseline has replaced it.
+- `A =` the checkout identity returned by active `official_strategy_materials/CURRENT.json` plus `assert_official_checkout_matches_active_material()`.
 - `B = new_module_standalone` when the module can be tested independently.
-- `C = official_stage78_defensive_v1 + new_module` as the real promotion candidate.
+- `C = active formal baseline + new_module` as the real promotion candidate.
+
+The current expected ruleset is `stage021_q_rollover_volume_atr_v1`, but resolve it from the active material instead of trusting this text. If checkout identity, remote master, and production identity differ, stop before creating a research branch or arm. Stage78 and Stage372 are historical controls only when the user explicitly names them.
 
 The key decision is not whether `B` looks good. The key decision is whether `C` improves `A` without damaging path robustness.
 
@@ -39,24 +41,25 @@ State both judgments before running:
    - stopped branches,
    - known weak windows,
    - prior related tests.
-2. Define the candidate hypothesis in one sentence:
+2. Load `official_strategy_materials/CURRENT.json`, run `assert_official_checkout_matches_active_material()`, and compare the six formal identities with remote master and stable production. A mismatch stops the run; do not guess from a stage name or registry prose.
+3. Define the candidate hypothesis in one sentence:
    - what structural problem it solves,
    - why it should generalize,
-   - how it can interact with Stage78.
-3. Predeclare arms:
+   - how it can interact with the active formal baseline.
+4. Predeclare arms:
    - `A`: formal baseline,
    - `B`: standalone candidate, if meaningful,
    - `C`: baseline plus candidate.
-4. Predeclare pass/fail metrics before seeing results:
+5. Predeclare pass/fail metrics before seeing results:
    - full-period equity, return, max drawdown, Sharpe, slippage, trades, win rate,
    - start-year robustness,
    - quarterly or rolling walk-forward,
    - weak-window behavior,
    - slippage/cost pressure when trading count changes.
-5. Use `.py311/bin/python` for all Python commands.
-6. Run the smallest valid experiment first. Escalate only if `C` has real evidence against `A`.
-7. Write Chinese results to `back_log.md` for every backtest.
-8. Update `memory.md` when the result changes future research policy.
+6. Use `.py311/bin/python` for all Python commands.
+7. Run the smallest valid experiment first. Escalate only if `C` has real evidence against `A`.
+8. Write Chinese results to the active research line stage file for every backtest; append `back_log.md` only for an important cross-line or formal-candidate milestone.
+9. Update `memory.md` only when the result changes future research policy.
 
 ## Promotion Rules
 
@@ -73,7 +76,7 @@ Use this decision table:
 | `C` needs extra threshold tweaks after failing | Stop; likely overfitting |
 | Monitor-only signal works | Keep as review priority, not trading rule |
 
-For a defensive baseline like Stage78, return improvement alone is not enough. Risk path quality and weak-window survival matter more.
+For the active formal baseline, return improvement alone is not enough. Risk path quality and weak-window survival matter more.
 
 ## Overfitting Controls
 
