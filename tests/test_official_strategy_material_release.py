@@ -45,7 +45,13 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
     _git(repo, "config", "user.email", "tests@example.com")
     source = repo / "pool.csv"
     source.write_text("rank,symbol\n1,fu.SHFE\n", encoding="utf-8")
-    _git(repo, "add", "pool.csv")
+    config = repo / "examples/portfolio_backtesting/qmt_roll_official_live_config.py"
+    config.parent.mkdir(parents=True)
+    config.write_text(
+        'OFFICIAL_LIVE_RULESET_VERSION: str = "stage021_q_rollover_volume_atr_v1"\n',
+        encoding="utf-8",
+    )
+    _git(repo, "add", "pool.csv", "examples/portfolio_backtesting/qmt_roll_official_live_config.py")
     _git(repo, "commit", "-m", "source")
     discovery = discover_materials(
         repo_root=repo,
@@ -56,6 +62,11 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
                 source_path=source,
                 logical_path="ai/pool.csv",
                 role=MaterialRole.DECISION_ASSET,
+            ),
+            MaterialDeclaration(
+                source_path=config,
+                logical_path="examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+                role=MaterialRole.STRATEGY_CONFIG,
             ),
         ),
         ai_artifacts=(),

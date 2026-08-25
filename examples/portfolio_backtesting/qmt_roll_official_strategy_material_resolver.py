@@ -70,12 +70,19 @@ def _load_current(current_path: Path) -> dict[str, object]:
         "activated_at_utc",
         "qualification",
     }
-    if set(payload) != required:
+    optional = {"ruleset_version", "source_commit"}
+    if not required.issubset(payload) or not set(payload).issubset(required | optional):
         raise ActiveMaterialError("active_material_current_fields_invalid")
     if payload["activation_mode"] not in {ACTIVE_MODE, BOOTSTRAP_MODE}:
         raise ActiveMaterialError("active_material_activation_mode_invalid")
     if not re.fullmatch(r"[0-9a-f]{40}", str(payload["release_commit"])):
         raise ActiveMaterialError("active_material_release_commit_invalid")
+    if "ruleset_version" in payload and not isinstance(payload["ruleset_version"], str):
+        raise ActiveMaterialError("active_material_ruleset_version_invalid")
+    if "source_commit" in payload and not re.fullmatch(
+        r"[0-9a-f]{40}", str(payload["source_commit"])
+    ):
+        raise ActiveMaterialError("active_material_source_commit_invalid")
     return payload
 
 

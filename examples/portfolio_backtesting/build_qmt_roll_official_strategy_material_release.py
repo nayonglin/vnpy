@@ -33,6 +33,15 @@ from qmt_roll_strategy_material_manifest import (
     serialize_material_manifest,
     sha256_file,
 )
+from qmt_roll_official_baseline_identity import (
+    OFFICIAL_CONFIG_LOGICAL_PATH,
+    OfficialBaselineIdentityError,
+    ruleset_version_from_config,
+)
+from qmt_roll_official_strategy_material_resolver import (
+    ActiveMaterialError,
+    unique_inventory_row,
+)
 
 
 LFS_SIZE_THRESHOLD_BYTES = 10 * 1024 * 1024
@@ -934,6 +943,13 @@ def write_current_atomically(
     if len(manifest_candidates) != 1:
         raise MaterialReleaseError("release_manifest_not_unique")
     manifest = verify_release_tree(manifest_candidates[0].parent)
+    try:
+        config_row = unique_inventory_row(manifest, OFFICIAL_CONFIG_LOGICAL_PATH)
+        ruleset_version = ruleset_version_from_config(
+            manifest_candidates[0].parent / str(config_row["payload_path"])
+        )
+    except (ActiveMaterialError, OfficialBaselineIdentityError) as exc:
+        raise MaterialReleaseError(f"release_ruleset_identity_invalid:{exc}") from exc
     payload = {
         "schema_version": 1,
         "activation_mode": activation_mode,
@@ -941,6 +957,8 @@ def write_current_atomically(
         "release_id": release_id,
         "release_commit": release_commit,
         "material_version": manifest["material_version"],
+        "ruleset_version": ruleset_version,
+        "source_commit": manifest["source_commit"],
         "manifest_sha256": manifest["manifest_sha256"],
         "tree_fingerprint": manifest["tree_fingerprint"],
         "activated_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
