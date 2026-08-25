@@ -20,8 +20,12 @@ from build_qmt_roll_official_strategy_material_release import (
     classify_storage,
     commit_prepared_release,
     prepare_release,
+    promote_official_version_to_master,
     publish_materials_to_master,
     verify_release,
+)
+from qmt_roll_official_baseline_identity import (
+    assert_official_checkout_matches_active_material,
 )
 from qmt_roll_strategy_material_discovery import MaterialDeclaration, discover_materials
 from qmt_roll_strategy_material_manifest import MaterialRole
@@ -51,7 +55,20 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
         'OFFICIAL_LIVE_RULESET_VERSION: str = "stage021_q_rollover_volume_atr_v1"\n',
         encoding="utf-8",
     )
-    _git(repo, "add", "pool.csv", "examples/portfolio_backtesting/qmt_roll_official_live_config.py")
+    skill = repo / "skills/freeze-official-strategy-materials/SKILL.md"
+    skill.parent.mkdir(parents=True)
+    skill.write_text("# Freeze official strategy materials\n", encoding="utf-8")
+    registry = repo / "research/registry.md"
+    registry.parent.mkdir(parents=True)
+    registry.write_text("# Research registry\n", encoding="utf-8")
+    _git(
+        repo,
+        "add",
+        "pool.csv",
+        "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+        "skills/freeze-official-strategy-materials/SKILL.md",
+        "research/registry.md",
+    )
     _git(repo, "commit", "-m", "source")
     discovery = discover_materials(
         repo_root=repo,
@@ -104,6 +121,50 @@ def _bare_master_remote(tmp_path: Path, repo: Path) -> Path:
     return remote
 
 
+def _qualified_activation_fixture(
+    tmp_path: Path,
+) -> tuple[Path, object, str, dict[str, object], Path]:
+    repo, request = _request(tmp_path)
+    remote = _bare_master_remote(tmp_path, repo)
+    prepared = prepare_release(request)
+    release_commit = commit_prepared_release(
+        repo_root=repo,
+        prepared=prepared,
+        confirmation=(
+            "I_UNDERSTAND_THIS_COMMITS_OFFICIAL_STRATEGY_MATERIALS:"
+            f"{prepared.release_id}"
+        ),
+    )
+    qualification = {
+        "status": "passed",
+        "release_commit": release_commit,
+        "order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+        "evidence_ids": ["test-evidence"],
+    }
+    activation_commit = activate_release(
+        repo_root=repo,
+        release_id=prepared.release_id,
+        release_commit=release_commit,
+        qualification=qualification,
+        confirmation=(
+            "I_UNDERSTAND_THIS_ACTIVATES_OFFICIAL_STRATEGY_MATERIALS:"
+            f"{prepared.release_id}"
+        ),
+    )
+    return repo, prepared, activation_commit, qualification, remote
+
+
+def _clone_master(remote: Path, target: Path) -> Path:
+    subprocess.run(
+        ["git", "clone", "--no-local", "--branch", "master", str(remote), str(target)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return target
+
+
 def test_prepare_is_immutable_and_verifiable(tmp_path: Path) -> None:
     repo, request = _request(tmp_path)
     prepared = prepare_release(request)
@@ -112,6 +173,136 @@ def test_prepare_is_immutable_and_verifiable(tmp_path: Path) -> None:
     manifest = verify_release(repo_root=repo, release_id=prepared.release_id)
     assert manifest["order_api_called_count"] == 0
     assert manifest["files"][0]["logical_path"] == "ai/pool.csv"
+
+
+def test_promote_master_publishes_source_current_and_governance(tmp_path: Path) -> None:
+    repo, release, activation, qualification, remote = _qualified_activation_fixture(tmp_path)
+    result = promote_official_version_to_master(
+        repo_root=repo,
+        release_id=release.release_id,
+        release_commit=qualification["release_commit"],
+        activation_commit=activation,
+        qualification=qualification,
+        governance_paths=(
+            "skills/freeze-official-strategy-materials/SKILL.md",
+            "research/registry.md",
+        ),
+        confirmation=f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release.release_id}",
+        remote="publish-origin",
+    )
+
+    clone = _clone_master(remote, tmp_path / "promoted-clone")
+    identity = assert_official_checkout_matches_active_material(clone)
+    assert identity.ruleset_version == "stage021_q_rollover_volume_atr_v1"
+    current = json.loads(
+        (clone / "official_strategy_materials/CURRENT.json").read_text(encoding="utf-8")
+    )
+    assert current["release_id"] == release.release_id
+    assert (clone / "skills/freeze-official-strategy-materials/SKILL.md").is_file()
+    assert (clone / "research/registry.md").is_file()
+    assert result.promoted_commit == _git(clone, "rev-parse", "HEAD")
+
+
+def test_promote_master_requires_exact_confirmation(tmp_path: Path) -> None:
+    repo, release, activation, qualification, _remote = _qualified_activation_fixture(tmp_path)
+    with pytest.raises(
+        MaterialReleaseError,
+        match="complete_official_promotion_confirmation_missing",
+    ):
+        promote_official_version_to_master(
+            repo_root=repo,
+            release_id=release.release_id,
+            release_commit=qualification["release_commit"],
+            activation_commit=activation,
+            qualification=qualification,
+            governance_paths=(),
+            confirmation="",
+            remote="publish-origin",
+        )
+
+
+def test_promote_master_rejects_activation_for_another_release(tmp_path: Path) -> None:
+    repo, release, _activation, qualification, _remote = _qualified_activation_fixture(tmp_path)
+    current_path = repo / "official_strategy_materials/CURRENT.json"
+    current = json.loads(current_path.read_text(encoding="utf-8"))
+    current["release_id"] = "m9999_wrong_release"
+    current_path.write_text(json.dumps(current, sort_keys=True) + "\n", encoding="utf-8")
+    _git(repo, "add", "official_strategy_materials/CURRENT.json")
+    _git(repo, "commit", "-m", "fixture: wrong activation")
+    wrong_activation = _git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(MaterialReleaseError, match="promotion_activation_release_mismatch"):
+        promote_official_version_to_master(
+            repo_root=repo,
+            release_id=release.release_id,
+            release_commit=qualification["release_commit"],
+            activation_commit=wrong_activation,
+            qualification=qualification,
+            governance_paths=(),
+            confirmation=f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release.release_id}",
+            remote="publish-origin",
+        )
+
+
+def test_promote_master_rejects_ruleset_drift(tmp_path: Path) -> None:
+    repo, release, _activation, qualification, _remote = _qualified_activation_fixture(tmp_path)
+    config = repo / "examples/portfolio_backtesting/qmt_roll_official_live_config.py"
+    config.write_text(
+        'OFFICIAL_LIVE_RULESET_VERSION: str = "drifted_ruleset"\n',
+        encoding="utf-8",
+    )
+    _git(repo, "add", "examples/portfolio_backtesting/qmt_roll_official_live_config.py")
+    _git(repo, "commit", "-m", "fixture: ruleset drift")
+    drifted_activation = _git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(MaterialReleaseError, match="top_level_ruleset_mismatch"):
+        promote_official_version_to_master(
+            repo_root=repo,
+            release_id=release.release_id,
+            release_commit=qualification["release_commit"],
+            activation_commit=drifted_activation,
+            qualification=qualification,
+            governance_paths=(),
+            confirmation=f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release.release_id}",
+            remote="publish-origin",
+        )
+
+
+def test_promote_master_rejects_governance_path_traversal(tmp_path: Path) -> None:
+    repo, release, activation, qualification, _remote = _qualified_activation_fixture(tmp_path)
+    with pytest.raises(MaterialReleaseError, match="promotion_governance_path_invalid"):
+        promote_official_version_to_master(
+            repo_root=repo,
+            release_id=release.release_id,
+            release_commit=qualification["release_commit"],
+            activation_commit=activation,
+            qualification=qualification,
+            governance_paths=("../outside.md",),
+            confirmation=f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release.release_id}",
+            remote="publish-origin",
+        )
+
+
+def test_promote_master_rechecks_remote_before_push(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo, release, activation, qualification, _remote = _qualified_activation_fixture(tmp_path)
+    real_head = material_release._remote_branch_head(repo, "publish-origin", "master")
+    observed = iter((real_head, "f" * 40))
+    monkeypatch.setattr(material_release, "_remote_branch_head", lambda *_args: next(observed))
+
+    with pytest.raises(MaterialReleaseError, match="remote_master_changed_before_promotion_push"):
+        promote_official_version_to_master(
+            repo_root=repo,
+            release_id=release.release_id,
+            release_commit=qualification["release_commit"],
+            activation_commit=activation,
+            qualification=qualification,
+            governance_paths=(),
+            confirmation=f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release.release_id}",
+            remote="publish-origin",
+        )
 
 
 def test_commit_refuses_unrelated_staged_path_and_never_pushes(tmp_path: Path) -> None:

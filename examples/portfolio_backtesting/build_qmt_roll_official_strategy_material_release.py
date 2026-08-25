@@ -36,6 +36,7 @@ from qmt_roll_strategy_material_manifest import (
 from qmt_roll_official_baseline_identity import (
     OFFICIAL_CONFIG_LOGICAL_PATH,
     OfficialBaselineIdentityError,
+    assert_official_checkout_matches_active_material,
     ruleset_version_from_config,
 )
 from qmt_roll_official_strategy_material_resolver import (
@@ -92,6 +93,17 @@ class MasterPublication:
     previous_remote_commit: str
     published_commit: str
     changed_paths: tuple[str, ...]
+    status: str
+
+
+@dataclass(frozen=True)
+class OfficialPromotionPublication:
+    release_id: str
+    previous_remote_commit: str
+    promoted_commit: str
+    changed_paths: tuple[str, ...]
+    source_commit: str
+    ruleset_version: str
     status: str
 
 
@@ -157,6 +169,32 @@ def _push_head_to_master(repo_root: Path, remote: str, branch: str) -> None:
     if process.returncode != 0:
         message = process.stderr.strip() or process.stdout.strip() or "unknown"
         raise MaterialReleaseError(f"direct_master_push_failed:{message}")
+
+
+def _push_commit_to_master(
+    repo_root: Path,
+    commit: str,
+    remote: str,
+    branch: str,
+) -> None:
+    process = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repo_root),
+            "push",
+            "--no-force",
+            "--porcelain",
+            remote,
+            f"{commit}:refs/heads/{branch}",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if process.returncode != 0:
+        message = process.stderr.strip() or process.stdout.strip() or "unknown"
+        raise MaterialReleaseError(f"complete_official_promotion_push_failed:{message}")
 
 
 @contextmanager
@@ -915,6 +953,240 @@ def publish_materials_to_master(
             )
 
 
+def _validated_promotion_path(value: str, *, error: str) -> PurePosixPath:
+    path = PurePosixPath(value)
+    if (
+        not value
+        or path.is_absolute()
+        or "." in path.parts
+        or ".." in path.parts
+        or path.as_posix() != value
+    ):
+        raise MaterialReleaseError(error)
+    return path
+
+
+def _copy_regular_file(source: Path, target: Path, *, error: str) -> None:
+    if source.is_symlink() or not source.is_file():
+        raise MaterialReleaseError(error)
+    cursor = target.parent
+    while not cursor.exists() and cursor != cursor.parent:
+        cursor = cursor.parent
+    if cursor.is_symlink() or not cursor.is_dir():
+        raise MaterialReleaseError(error)
+    before = sha256_file(source)
+    data = source.read_bytes()
+    if sha256_file(source) != before:
+        raise MaterialReleaseError(f"{error}_source_changed")
+    _write_bytes_atomically(target, data)
+    if sha256_file(target) != before:
+        raise MaterialReleaseError(f"{error}_copy_mismatch")
+
+
+def _commit_promotion_tree(
+    target: Path,
+    *,
+    previous_remote_commit: str,
+    activation_commit: str,
+    release_id: str,
+) -> str:
+    tree = _git(target, "write-tree").strip()
+    command = [
+        "git",
+        "-C",
+        str(target),
+        "commit-tree",
+        tree,
+        "-p",
+        previous_remote_commit,
+    ]
+    if activation_commit != previous_remote_commit:
+        command.extend(("-p", activation_commit))
+    process = subprocess.run(
+        command,
+        input=f"promote(official): {release_id}\n",
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if process.returncode != 0:
+        message = process.stderr.strip() or process.stdout.strip() or "unknown"
+        raise MaterialReleaseError(f"complete_official_promotion_commit_failed:{message}")
+    promoted_commit = process.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", promoted_commit):
+        raise MaterialReleaseError("complete_official_promotion_commit_invalid")
+    return promoted_commit
+
+
+def promote_official_version_to_master(
+    *,
+    repo_root: Path,
+    release_id: str,
+    release_commit: str,
+    activation_commit: str,
+    qualification: Mapping[str, object],
+    governance_paths: tuple[str, ...],
+    confirmation: str,
+    remote: str = "origin",
+    branch: str = "master",
+) -> OfficialPromotionPublication:
+    """Promote one qualified release, active pointer, source, and governance to master."""
+
+    required = f"I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:{release_id}"
+    if confirmation != required:
+        raise MaterialReleaseError("complete_official_promotion_confirmation_missing")
+    _validate_remote_target(remote, branch)
+    assert_exact_release_commit(repo_root, release_id, release_commit)
+    assert_qualification_passed(qualification, release_commit)
+    _git(repo_root, "cat-file", "-e", f"{activation_commit}^{{commit}}")
+    governance = tuple(
+        _validated_promotion_path(
+            item,
+            error="promotion_governance_path_invalid",
+        )
+        for item in governance_paths
+    )
+    if len(set(governance)) != len(governance):
+        raise MaterialReleaseError("promotion_governance_path_invalid")
+
+    previous_remote_commit = _remote_branch_head(repo_root, remote, branch)
+    _git(repo_root, "fetch", "--no-tags", remote, f"refs/heads/{branch}")
+    fetched_commit = _git(repo_root, "rev-parse", "FETCH_HEAD").strip()
+    if fetched_commit != previous_remote_commit:
+        raise MaterialReleaseError("remote_master_changed_during_fetch")
+
+    with _detached_worktree(
+        repo_root,
+        activation_commit,
+        prefix="official-promotion-source-",
+    ) as source:
+        current_path = source / MATERIAL_ROOT_NAME / "CURRENT.json"
+        try:
+            current = json.loads(current_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise MaterialReleaseError("promotion_activation_current_invalid") from exc
+        if (
+            not isinstance(current, dict)
+            or current.get("release_id") != release_id
+            or current.get("release_commit") != release_commit
+        ):
+            raise MaterialReleaseError("promotion_activation_release_mismatch")
+        if current.get("qualification") != dict(qualification):
+            raise MaterialReleaseError("promotion_activation_qualification_mismatch")
+        try:
+            source_identity = assert_official_checkout_matches_active_material(source)
+        except OfficialBaselineIdentityError as exc:
+            raise MaterialReleaseError(str(exc)) from exc
+
+        source_root = source / MATERIAL_ROOT_NAME
+        _verify_all_material_releases(source_root)
+        if _material_root_uses_lfs(source_root):
+            raise MaterialReleaseError("complete_official_promotion_lfs_remote_not_proven")
+        manifest = verify_release(repo_root=source, release_id=release_id)
+        top_level_rows = []
+        allowed_prefixes = ("examples/portfolio_backtesting/", "tests/", "skills/")
+        for row in manifest["files"]:
+            logical_path = str(row["logical_path"])
+            if logical_path.startswith(allowed_prefixes):
+                _validated_promotion_path(
+                    logical_path,
+                    error="promotion_manifest_logical_path_invalid",
+                )
+                top_level_rows.append(row)
+
+        with _detached_worktree(
+            repo_root,
+            fetched_commit,
+            prefix="official-promotion-master-",
+        ) as target:
+            _merge_material_root(source_root, target / MATERIAL_ROOT_NAME)
+            _copy_regular_file(
+                current_path,
+                target / MATERIAL_ROOT_NAME / "CURRENT.json",
+                error="promotion_current_copy_invalid",
+            )
+            allowed_top_level: set[str] = set()
+            release_dir = (
+                source
+                / MATERIAL_ROOT_NAME
+                / source_identity.strategy_version
+                / "releases"
+                / release_id
+            )
+            for row in top_level_rows:
+                logical_path = str(row["logical_path"])
+                payload_path = release_dir / str(row["payload_path"])
+                _copy_regular_file(
+                    payload_path,
+                    target / logical_path,
+                    error="promotion_manifest_source_invalid",
+                )
+                allowed_top_level.add(logical_path)
+            for relative in governance:
+                logical_path = relative.as_posix()
+                _copy_regular_file(
+                    source / logical_path,
+                    target / logical_path,
+                    error="promotion_governance_source_invalid",
+                )
+                allowed_top_level.add(logical_path)
+
+            try:
+                target_identity = assert_official_checkout_matches_active_material(target)
+            except OfficialBaselineIdentityError as exc:
+                raise MaterialReleaseError(str(exc)) from exc
+            if target_identity != source_identity:
+                raise MaterialReleaseError("promotion_target_identity_mismatch")
+
+            staged_roots = [MATERIAL_ROOT_NAME, *sorted(allowed_top_level)]
+            _git(target, "add", "--", *staged_roots)
+            changed_paths = tuple(
+                sorted(
+                    line.strip()
+                    for line in _git(
+                        target,
+                        "diff",
+                        "--cached",
+                        "--name-only",
+                        "--diff-filter=ACMR",
+                    ).splitlines()
+                    if line.strip()
+                )
+            )
+            if any(
+                path not in allowed_top_level
+                and path != MATERIAL_ROOT_NAME
+                and not path.startswith(f"{MATERIAL_ROOT_NAME}/")
+                for path in changed_paths
+            ):
+                raise MaterialReleaseError("complete_official_promotion_path_outside_allowlist")
+            if _remote_branch_head(target, remote, branch) != previous_remote_commit:
+                raise MaterialReleaseError("remote_master_changed_before_promotion_push")
+            promoted_commit = _commit_promotion_tree(
+                target,
+                previous_remote_commit=previous_remote_commit,
+                activation_commit=activation_commit,
+                release_id=release_id,
+            )
+            if (
+                _git(target, "merge-base", previous_remote_commit, promoted_commit).strip()
+                != previous_remote_commit
+            ):
+                raise MaterialReleaseError("complete_official_promotion_not_fast_forward")
+            _push_commit_to_master(target, promoted_commit, remote, branch)
+            if _remote_branch_head(target, remote, branch) != promoted_commit:
+                raise MaterialReleaseError("complete_official_promotion_readback_mismatch")
+            return OfficialPromotionPublication(
+                release_id=release_id,
+                previous_remote_commit=previous_remote_commit,
+                promoted_commit=promoted_commit,
+                changed_paths=changed_paths,
+                source_commit=source_identity.source_commit,
+                ruleset_version=source_identity.ruleset_version,
+                status="promoted",
+            )
+
+
 def assert_qualification_passed(qualification: Mapping[str, object], release_commit: str) -> None:
     if qualification.get("status") not in {"passed", "qualified"}:
         raise MaterialReleaseError("qualification_not_passed")
@@ -1064,13 +1336,25 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Freeze and verify official strategy materials")
-    parser.add_argument("action", choices=("prepare", "commit", "verify", "publish-master", "activate"))
+    parser.add_argument(
+        "action",
+        choices=(
+            "prepare",
+            "commit",
+            "verify",
+            "publish-master",
+            "promote-master",
+            "activate",
+        ),
+    )
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument("--publication-request")
     parser.add_argument("--stage179-manifest")
     parser.add_argument("--release-id")
     parser.add_argument("--release-commit")
+    parser.add_argument("--activation-commit")
     parser.add_argument("--qualification-json")
+    parser.add_argument("--governance-path", action="append", default=[])
     parser.add_argument("--confirmation")
     parser.add_argument("--remote", default="origin")
     parser.add_argument("--target-branch", default="master")
@@ -1137,6 +1421,42 @@ def main(argv: list[str] | None = None) -> int:
             "published_commit": publication.published_commit,
             "changed_paths": list(publication.changed_paths),
         }).decode("utf-8"))
+        return 0
+    if args.action == "promote-master":
+        if (
+            not args.release_id
+            or not args.release_commit
+            or not args.activation_commit
+            or not args.qualification_json
+        ):
+            raise MaterialReleaseError("complete_master_promotion_arguments_required")
+        qualification = json.loads(
+            Path(args.qualification_json).read_text(encoding="utf-8")
+        )
+        publication = promote_official_version_to_master(
+            repo_root=repo,
+            release_id=args.release_id,
+            release_commit=args.release_commit,
+            activation_commit=args.activation_commit,
+            qualification=qualification,
+            governance_paths=tuple(args.governance_path),
+            confirmation=args.confirmation or "",
+            remote=args.remote,
+            branch=args.target_branch,
+        )
+        print(
+            canonical_json_bytes(
+                {
+                    "status": publication.status,
+                    "release_id": publication.release_id,
+                    "previous_remote_commit": publication.previous_remote_commit,
+                    "promoted_commit": publication.promoted_commit,
+                    "changed_paths": list(publication.changed_paths),
+                    "source_commit": publication.source_commit,
+                    "ruleset_version": publication.ruleset_version,
+                }
+            ).decode("utf-8")
+        )
         return 0
     if not args.release_id or not args.release_commit or not args.qualification_json:
         raise MaterialReleaseError("activation_arguments_required")
