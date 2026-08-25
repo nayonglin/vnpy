@@ -49,6 +49,16 @@ official_strategy_materials/
 
 - Prepare：release 目录、strategy index、必要 attributes。
 - Release commit：`release(materials): <release_id>`。
-- Master publication：从最新远端 master 创建只含 `official_strategy_materials/` release/index 的 `publish(materials): <release_id>` 快进提交并直接 push；不新增或修改 `CURRENT.json`，不创建 PR、不 force-push、不合并来源分支。当前 direct-master 只支持普通 Git 资产，发现 Git LFS 即 fail-closed。
 - Activation commit：只含 `CURRENT.json`，`activate(materials): <release_id>`。
-- 除受控 master 产物发布外，所有命令均不 push；所有命令都不部署、不连接 CTP、不调用订单 API。
+- Candidate master publication：`publish-master` 从最新远端 master 创建只含 `official_strategy_materials/` release/index 的 `publish(materials): <release_id>` 快进提交并直接 push；不新增或修改 `CURRENT.json`，不发布顶层源码，不创建 PR、不 force-push。
+- Formal master promotion：资格与 activation 都通过后，`promote-master` 将 inventory 允许的顶层正式源码、不可变物料根、活动 `CURRENT.json` 和显式治理路径组装为 `promote(official): <release_id>`，非强制快进 push。提交必须保留 activation/release 可达历史并通过 fresh clone 身份审计。
+- Production install：只在完整正式晋升模式中，按 live SOP 用 Stage948 从已读取回的远端 master SHA 安装；不连接 CTP、不调用订单 API，安装审计必须为 order/send/cancel `0/0/0`。
+
+## 活动身份
+
+`CURRENT.json` schema-v1 的既有字段继续可读；新 activation 必须额外写入：
+
+- `ruleset_version`：从 release payload 内 `qmt_roll_official_live_config.py` 的唯一字面量 `OFFICIAL_LIVE_RULESET_VERSION` 解析。
+- `source_commit`：与 manifest 的 `source_commit` 完全一致。
+
+正式闭环必须同时给出并校验 `strategy_version`、`ruleset_version`、`source_commit`、`material_release_id`、`remote_master_sha`、`production_source_commit`。策略名相同但 ruleset 不同视为不同正式基线。
