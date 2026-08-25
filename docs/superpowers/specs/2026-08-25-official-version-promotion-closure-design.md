@@ -1,4 +1,4 @@
-# 正式版本晋升闭环 Skill 设计
+# 正式版本晋升闭环 Skill 增强设计
 
 - 状态：待用户审阅
 - 日期：2026-08-25
@@ -9,7 +9,7 @@
 
 ## 1. 背景
 
-现有正式物料发布器已经能够生成不可变 release、计算 SHA256、维护 `index.json`、直接非强制推送远端 `master`，并在独立 activation commit 中更新 `CURRENT.json`。但“发布物料”“激活物料”“把正式源码纳入 master”“更新研究默认基线”“安装生产”仍是分开的人工步骤。
+仓库已有 `skills/freeze-official-strategy-materials/`，正式物料发布器也已经能够生成不可变 release、计算 SHA256、维护 `index.json`、直接非强制推送远端 `master`，并在独立 activation commit 中更新 `CURRENT.json`。但现有 Skill 明确把“发布物料”“激活物料”“把正式源码纳入 master”“更新研究默认基线”“安装生产”分开，并规定 direct-master 只推 release/index、不得推 `CURRENT.json` 或正式源码。
 
 Stage021-Q 晋升暴露了三个实际缺口：
 
@@ -23,7 +23,7 @@ Stage021-Q 晋升暴露了三个实际缺口：
 
 ### 2.1 目标
 
-- 新增一个可自动发现的 repo-local Skill，处理“保存正式版、晋升正式、推 master、安装实盘”等请求。
+- 增强现有可自动发现的 `$freeze-official-strategy-materials`，在保留普通物料冻结能力的同时处理“保存正式版、晋升正式、推 master、安装实盘”等请求。
 - 每次晋升将正式源码、正式物料、激活指针、研究基线和生产安装绑定为同一套身份。
 - 从远端 `master` 新 clone 后，顶层源码和 resolver 均指向当前正式 ruleset，可直接作为后续研究分支的基线。
 - 只有远端与生产最终审计全部通过时，才允许报告“正式版本已保存并安装”。
@@ -71,10 +71,11 @@ Skill 负责授权边界、顺序、停止条件和汇报；仓库脚本负责�
 
 ### 5.1 Repo-local Skill
 
-新增 `skills/futures-official-version-promotion/`：
+增强现有 `skills/freeze-official-strategy-materials/`，不创建功能重叠的新 Skill：
 
-- `SKILL.md`：触发条件、授权边界、阶段顺序、停止条件和最终报告合同。
-- `agents/openai.yaml`：保持自动发现；默认提示只描述正式晋升目标，不暗示跳过用户授权。
+- `SKILL.md`：保留普通 release、Stage935 和实验 AI 资产登记流程；新增“只保存候选物料”与“晋升并安装正式版本”的明确分流、授权边界、阶段顺序、停止条件和最终报告合同。
+- `references/material-contract.md`：保留 release/activation 双提交；增加正式晋升提交、六项身份和远端 clone 验收合同。
+- `agents/openai.yaml`：保持自动发现；默认提示覆盖“保存正式物料”和“晋升正式版本”，不暗示跳过用户授权。
 - Skill 强制先使用 `futures-live-execution-sop`；候选来自策略研究时同时使用 `version-ab-experiment`。
 
 ### 5.2 发布器扩展
@@ -138,8 +139,8 @@ Skill 负责授权边界、顺序、停止条件和汇报；仓库脚本负责�
 
 ### 8.1 Skill 行为测试
 
-- 无 Skill 基线：给独立 agent 一个“赶快把候选保存成正式版并推 master”的场景，确认其可能只推物料、漏 `CURRENT.json`、漏顶层源码或继续选 Stage78。
-- 有 Skill：相同场景必须先形成六项身份，选择正式晋升动作，并在最终远端/生产审计前拒绝声称完成。
+- 现有 Skill 基线：给独立 agent 一个“赶快把候选保存成正式版并推 master”的场景，确认其会遵守旧合同而只推物料、漏 `CURRENT.json`、漏顶层源码或继续选 Stage78。
+- 增强后 Skill：相同场景必须先区分“候选物料发布”与“正式晋升”，形成六项身份，选择正式晋升动作，并在最终远端/生产审计前拒绝声称完成。
 
 ### 8.2 发布器测试
 
@@ -160,7 +161,7 @@ Skill 负责授权边界、顺序、停止条件和汇报；仓库脚本负责�
 
 - 将 Q 顶层源码和晋升记录合入并推送远端 master；
 - 把远端 `CURRENT.json` 从 `m0001` 更新为已激活的 `m0009`；
-- 更新 `version-ab-experiment`、实盘 SOP、自动化启动 Skill、registry 和多周期正式基线解析；
+- 更新 `$freeze-official-strategy-materials` 本身，以及 `version-ab-experiment`、实盘 SOP、自动化启动 Skill、registry 和多周期正式基线解析；
 - 从远端 master 重新验证或安装生产，使最终生产身份绑定远端 master 中同一套 Q 源码；
 - 输出六项身份、冲突数、远端 SHA、生产状态和订单 API 计数。
 
