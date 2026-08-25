@@ -356,6 +356,7 @@ _TRUSTED_READONLY_INVOCATION_FIELDS = {
     "environment_sha256",
 }
 DEFAULT_CRITICAL_FILES = (
+    "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
     "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",

@@ -1298,6 +1298,13 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
     from qmt_roll_ai_artifact_registry import load_publication_request
 
     repo = Path(args.repo_root).resolve(strict=True)
+    critical_paths = tuple(Path(path) for path in DEFAULT_CRITICAL_FILES)
+    production_python_entrypoints = tuple(
+        path
+        for path in critical_paths
+        if path.suffix == ".py"
+        and path.parts[:2] == ("examples", "portfolio_backtesting")
+    )
     publication = load_publication_request(Path(args.publication_request))
     declarations = [
         MaterialDeclaration(
@@ -1312,8 +1319,8 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
     ]
     discovery = discover_materials(
         repo_root=repo,
-        entrypoints=(),
-        declared_paths=tuple(Path(path) for path in DEFAULT_CRITICAL_FILES),
+        entrypoints=production_python_entrypoints,
+        declared_paths=critical_paths,
         config_assets=(),
         ai_artifacts=declarations,
     )

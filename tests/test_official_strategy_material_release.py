@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import json
 import subprocess
@@ -172,6 +173,55 @@ def _clone_master(remote: Path, target: Path) -> Path:
         text=True,
     )
     return target
+
+
+def test_cli_prepare_discovers_core_strategy_local_import_closure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The release inventory must contain the runtime strategy and its local imports."""
+    captured: dict[str, ReleaseRequest] = {}
+    monkeypatch.setattr(
+        "qmt_roll_ai_artifact_registry.load_publication_request",
+        lambda _path: {
+            "ai_artifacts": [],
+            "generator": "test-generator",
+            "data_cutoff": "2026-08-25",
+            "eval_date": "2026-08-25",
+            "training_label_cutoff": "2026-08-24",
+            "request_sha256": "test-request",
+            "official_version": "official-test",
+        },
+    )
+    monkeypatch.setattr(
+        material_release,
+        "prepare_release",
+        lambda request: captured.setdefault("request", request),
+    )
+
+    material_release._cli_prepare(
+        argparse.Namespace(
+            repo_root=str(PORTFOLIO_DIR.parents[1]),
+            publication_request="unused-by-this-discovery-test.json",
+            capital=150000.0,
+            capital_label="15w",
+            research_line="futures_official_strategy_material_governance",
+            stage179_manifest=None,
+        )
+    )
+
+    discovered_paths = set(captured["request"].discovery.repo_paths)
+    assert {
+        "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+        "examples/portfolio_backtesting/main_contract_mapping.py",
+        "examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+        "examples/portfolio_backtesting/qmt_roll_ai_path_damage_runtime.py",
+    }.issubset(discovered_paths)
+    assert "tests/test_strategy_material_discovery.py" in discovered_paths
+    assert "skills/freeze-official-strategy-materials/SKILL.md" in discovered_paths
+    assert not any(
+        blocker.startswith("unresolved_dynamic_import:tests/")
+        for blocker in captured["request"].discovery.blockers
+    )
 
 
 def test_prepare_is_immutable_and_verifiable(tmp_path: Path) -> None:
