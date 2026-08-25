@@ -11,8 +11,9 @@ This skill is an execution-discipline guide, not an alpha-research guide.
 
 - Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
 - Current official live profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Current line: `futures_trend_stage819_intraday_rules`.
-- Current strategy: C9/Stage847 15w, based on Stage819 with C9 entry-day `0.5R` stop/retry-once, C2 intraday stop, and broker10 cap.
+- Current ruleset: `stage021_q_rollover_volume_atr_v1`; resolve and verify it from active `CURRENT.json` plus the top-level config before every live action.
+- Current line: `futures_trend_rollover_shape_same_volume`.
+- Current strategy: Q on C9/Stage847 15w. It retains the C9/Stage819 execution stack and adds point-in-time rollover continuation, symmetric volume risk scaling, and two-sided ATR entry-shock blocking.
 - Current capital: `150000` only for live/virtual execution.
 - Current production cold-start boundary: `2026-07-23`; do not backfill or chase theoretical positions before it.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
@@ -25,9 +26,9 @@ Before running anything, read:
 1. `work-type.txt`
 2. `research/registry.md`
 3. `examples/portfolio_backtesting/qmt_roll_official_live_config.py`
-4. The current official line from the registry/config, currently `research/lines/futures_trend_stage819_intraday_rules/LINE.md`
+4. `research/lines/futures_trend_rollover_shape_same_volume/LINE.md`, currently the formal Q research line.
 5. `research/lines/futures_trend/LINE.md` only when comparing against a historical baseline.
-6. `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md` when AI pool timing matters.
+6. `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md` when AI pool timing matters; this inherited operational document does not redefine the active ruleset or research-line routing.
 
 State at the start and end:
 
@@ -47,6 +48,8 @@ When answering what is active in real production, use this priority:
    - `data-readiness/latest.json`
 3. Stable-root `qmt_roll_official_live_config.py`.
 4. Registry and release-branch records for explanation only.
+
+Load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()` before treating the unchanged strategy-version string as Q. If stable production, remote master, or active material differs in strategy, ruleset, source, or release identity, stop before CTP or session execution.
 
 Never let an arbitrary development checkout override a stable HEAD, manifest, activation receipt, or daily-data receipt. A runtime or framework upgrade requires a new qualified release; do not silently upgrade production from upstream or the development environment.
 
@@ -93,7 +96,7 @@ The unattended production route is owned by Stage945/947 and launchd. Do not rep
    - `review`: shadow records continue, but SimNow/live execution may only close, reduce risk, or reconcile; do not open new positions.
    - missing/unknown risk state: fail closed.
 7. Read Stage901 `pending_orders` as the primary theoretical list, but bind execution to the signed production target, current broker/ledger state, Stage904 live-stop alignment, and Stage927/931 gates.
-8. Write a Chinese stage record under `research/lines/futures_trend_stage819_intraday_rules/stages/`.
+8. Write a Chinese stage record under `research/lines/futures_trend_rollover_shape_same_volume/stages/`.
 
 For the deliberate `2026-07-23` cold start:
 
@@ -124,11 +127,11 @@ Stage260 and Stage251 are legacy SimNow/broker-test diagnostics only. They are n
    - `review` allows close/reduce/reconcile only; it blocks new opens.
    - Broker/SimNow positions override historical shadow positions.
    - A close signal requires a matching SimNow position in the opposite direction.
-7. Record a Chinese stage file under `research/lines/futures_trend_stage819_intraday_rules/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
+7. Record a Chinese stage file under `research/lines/futures_trend_rollover_shape_same_volume/stages/` with the target date, AI pool eval date, risk level, signal list, broker snapshot state, gate action, order API count, and next step.
 
 ## Monthly AI Pool Cadence
 
-The AI pool is monthly, not daily. Follow `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`.
+The AI pool is monthly, not daily. Follow the inherited operational cadence in `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`, while recording new evidence in the Q line.
 
 - Production runs Stage947 `monthly-ai-pool` -> Stage935 at 18:20 on weekdays; Stage935 itself decides whether a completed-month refresh is due.
 - If Stage935 updates the pool, Stage947 must rerun the qualified Stage909 precompute and issue a new daily receipt bound to the changed pool.
