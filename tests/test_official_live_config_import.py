@@ -198,6 +198,27 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         self.assertEqual(150_000.0, q["account_capital"])
         self.assertEqual(150_000.0, q["c3_capital"])
 
+    def test_every_official_live_override_is_consumed_by_stage847_strategy(self) -> None:
+        import qmt_roll_official_live_config as live_config
+        from analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine import (
+            QmtRollPortfolioStrategyStage847C9StopRetry,
+        )
+
+        base_overrides = {"account_capital": 300_000.0, "c3_capital": 300_000.0}
+        with patch.object(
+            live_config.stage847_c9_cfg,
+            "build_official_candidate_stage847_c9_overrides",
+            return_value=base_overrides,
+        ):
+            override_keys = set(live_config.build_official_live_strategy_overrides())
+        consumed_keys = set(QmtRollPortfolioStrategyStage847C9StopRetry.parameters)
+
+        execution_profile_keys = {"account_capital", "c3_capital"}
+        self.assertSetEqual(
+            set(),
+            override_keys - execution_profile_keys - consumed_keys,
+        )
+
     def test_production_receipt_uses_active_material_ai_pool_identity(self) -> None:
         import qmt_roll_official_live_config as live_config
         import run_qmt_roll_stage945_official_live_production_session_launcher as stage945
