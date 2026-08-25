@@ -15,6 +15,7 @@ from typing import Any, Mapping
 
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_live_config import (
+    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
 )
 from qmt_roll_official_live_phase_d_config import (
@@ -104,11 +105,7 @@ PRODUCTION_DATA_ROOT = (
 )
 PRODUCTION_DATA_LINK = PROJECT_DIR / "backtest_outputs"
 PRODUCTION_DATABASE_PATH = REPO_ROOT / ".vntrader" / "database.db"
-PRODUCTION_AI_ELIGIBILITY_PATH = (
-    PRODUCTION_DATA_LINK
-    / "qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_"
-    "eligibility_stage182_ai_product_pool_live_inference_v1.csv"
-)
+PRODUCTION_AI_ELIGIBILITY_PATH = OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
 PRODUCTION_LABELS = {
     "day": "local.qmt-roll.official-live.15w.c9-production-live-day-session",
     "night": "local.qmt-roll.official-live.15w.c9-production-live-night-session",

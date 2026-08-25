@@ -28,7 +28,7 @@ FAILURE_NOTIFICATION_COOLDOWN_SECONDS = 30 * 60
 
 _TOKEN_RE = re.compile(r"[^A-Za-z0-9_.:-]+")
 _BLOCKER_RE = re.compile(
-    r"production_(?:launcher|support)_[A-Za-z0-9_.:-]{1,100}"
+    r"production_(?:launcher|signal|support)_[A-Za-z0-9_.:-]{1,100}"
 )
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _COMMIT_RE = re.compile(r"[0-9a-f]{40}")

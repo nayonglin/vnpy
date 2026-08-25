@@ -930,6 +930,39 @@ print("CONTRACT=" + json.dumps({
         self.assertEqual(2, run.call_count)
         issue.assert_called_once()
 
+    def test_monthly_candidate_waits_for_immutable_material_publication(self) -> None:
+        monthly = subprocess.CompletedProcess(
+            args=["stage935"],
+            returncode=0,
+            stdout=json.dumps(
+                {
+                    "automation_status": "monthly_ai_pool_updated",
+                    "material_publication_status": "publication_required",
+                    "material_publication_request_path": "/private/request.json",
+                }
+            ),
+            stderr="",
+        )
+        with (
+            patch.object(launcher.subprocess, "run", return_value=monthly) as run,
+            patch.object(
+                launcher,
+                "_run_precompute_and_issue_daily_receipt",
+            ) as refresh,
+            self.assertRaisesRegex(
+                launcher.ProductionSupportLaunchError,
+                "production_support_monthly_ai_pool_material_publication_required",
+            ),
+        ):
+            launcher._run_monthly_ai_pool_and_refresh_receipt(
+                command=["python", "stage935"],
+                environment={},
+                manifest={"source_commit": "a" * 40},
+            )
+
+        self.assertEqual(1, run.call_count)
+        refresh.assert_not_called()
+
     def test_monthly_already_current_revalidates_without_precompute(self) -> None:
         monthly = subprocess.CompletedProcess(
             args=["stage935"],
@@ -1067,6 +1100,32 @@ print("CONTRACT=" + json.dumps({
                     command=["python", "stage935"],
                     environment={},
                 )
+
+    def test_monthly_worker_rejects_unpublished_material_candidate(self) -> None:
+        payload = {
+            "automation_status": "monthly_ai_pool_updated",
+            "material_publication_status": "publication_required",
+            "send_order_api_called_count": 0,
+            "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0,
+        }
+        completed = subprocess.CompletedProcess(
+            args=["stage935"],
+            returncode=0,
+            stdout=json.dumps(payload),
+            stderr="",
+        )
+        with (
+            patch.object(launcher.subprocess, "run", return_value=completed),
+            self.assertRaisesRegex(
+                launcher.ProductionSupportLaunchError,
+                "production_support_monthly_ai_pool_material_publication_required",
+            ),
+        ):
+            launcher._run_monthly_ai_pool_worker(
+                command=["python", "stage935"],
+                environment={},
+            )
 
     def test_postclose_report_worker_validates_real_stage929_envelope(self) -> None:
         payload = {

@@ -489,6 +489,14 @@ def _run_monthly_ai_pool_worker(
                 "production_support_monthly_ai_pool_order_api_evidence_invalid",
                 boundary="monthly-stage935",
             )
+    if (
+        status == "monthly_ai_pool_updated"
+        and summary.get("material_publication_status") == "publication_required"
+    ):
+        raise ProductionSupportLaunchError(
+            "production_support_monthly_ai_pool_material_publication_required",
+            boundary="monthly-stage935",
+        )
     return summary
 
 
@@ -1027,6 +1035,11 @@ def _run_monthly_ai_pool_and_refresh_receipt(
         raise decode_error
     status = str(summary.get("automation_status", ""))
     if status == "monthly_ai_pool_updated":
+        if summary.get("material_publication_status") == "publication_required":
+            raise ProductionSupportLaunchError(
+                "production_support_monthly_ai_pool_material_publication_required",
+                boundary="monthly-stage935",
+            )
         precompute_spec = SUPPORT_JOB_SPECS["postclose-precompute"]
         precompute_environment = dict(environment)
         precompute_environment.update(dict(precompute_spec.gate_environment))

@@ -140,8 +140,13 @@ Read the private JSON artifacts directly for exact counts and identities. Do not
 Stage947 owns production month-end handling:
 
 - `monthly_ai_pool_already_current`: validate the existing receipt.
-- `monthly_ai_pool_updated`: rerun the qualified Stage909 precompute and sign a new receipt bound to the updated pool.
+- `monthly_ai_pool_updated` with `material_publication_status=publication_required`: the generated files are only a candidate. Stop fail-closed and use `freeze-official-strategy-materials` to create, qualify, promote, and install a new immutable material release before refreshing the shadow or signing a receipt.
+- Only after `CURRENT.json`, the stable checkout, and `PRODUCTION_AI_ELIGIBILITY_PATH` all resolve to the newly installed material may Stage909 rerun and a new receipt be signed.
 - any other state: fail closed.
+
+Before qualification and again after installation, require
+`PRODUCTION_AI_ELIGIBILITY_PATH.resolve(strict=True) == OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve(strict=True)`.
+The receipt, shadow decision, and active material must bind the same resolved path and SHA256; a matching hash at a mutable `backtest_outputs` path is not sufficient.
 
 Do not pass `--allow-incomplete-month`, change ranking logic during startup, or run direct Stage182/183 as a substitute for Stage947.
 
@@ -150,7 +155,8 @@ Do not pass `--allow-incomplete-month`, change ranking logic during startup, or 
 - Use Stage948 atomic activation for an install, upgrade, or full control-plane reload.
 - Do not manually bootstrap individual production plists.
 - Do not use `launchctl kickstart -k` to force a trading session or order.
-- A one-off kickstart is only a diagnosed remediation after release, activation, receipt, exact surface, market window, and broker gates are already valid. Record why it was necessary.
+- A one-off kickstart of a trading session is only a diagnosed remediation after release, activation, receipt, exact surface, market window, and broker gates are already valid. Record why it was necessary.
+- A one-off kickstart of the no-order `postclose-precompute` support job may rebuild a missing, stale, or identity-mismatched receipt after a qualified install, but only after release, activation, code qualification, active-material identity, and the exact seven-label surface are valid. Record the blocker, require order/send/cancel `0/0/0`, and verify the new receipt before any trading session can proceed.
 - Never kickstart a legacy or conflicting label.
 
 ## Fail Closed

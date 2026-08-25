@@ -198,6 +198,19 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         self.assertEqual(150_000.0, q["account_capital"])
         self.assertEqual(150_000.0, q["c3_capital"])
 
+    def test_production_receipt_uses_active_material_ai_pool_identity(self) -> None:
+        import qmt_roll_official_live_config as live_config
+        import run_qmt_roll_stage945_official_live_production_session_launcher as stage945
+
+        self.assertEqual(
+            live_config.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve(strict=True),
+            stage945.PRODUCTION_AI_ELIGIBILITY_PATH.resolve(strict=True),
+        )
+        self.assertNotIn(
+            "backtest_outputs",
+            stage945.PRODUCTION_AI_ELIGIBILITY_PATH.parts,
+        )
+
     def test_stage901_live_artifacts_follow_signal_input_across_process_import(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()

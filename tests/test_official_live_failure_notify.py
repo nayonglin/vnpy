@@ -91,6 +91,22 @@ class OfficialLiveFailureNotifyTest(unittest.TestCase):
             email_sender=sender,
         )
 
+    def test_signal_asset_blocker_is_preserved_without_exposing_secrets(self) -> None:
+        self.assertEqual(
+            "production_signal_ai_pool_binding_mismatch",
+            failure_notify.normalize_official_live_failure_blocker(
+                "production_signal_ai_pool_binding_mismatch",
+                fallback="production_support_unexpected_failure",
+            ),
+        )
+        self.assertEqual(
+            "production_support_unexpected_failure",
+            failure_notify.normalize_official_live_failure_blocker(
+                "production_signal_token_leaked",
+                fallback="production_support_unexpected_failure",
+            ),
+        )
+
     def test_pipeline_context_is_sanitized_metadata_not_dedupe_identity(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self._private_root(directory)

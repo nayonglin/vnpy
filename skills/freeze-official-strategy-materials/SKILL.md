@@ -62,6 +62,14 @@ description: Use when freezing or publishing candidate official vn.py materials,
 
 不得靠文件名猜重要性。实验登记器只复制 `reproducibility_required=true` 的文件，只执行精确 `git add`，不自动 commit/push；晋升时它们必须进入正式 release inventory。
 
+### 实盘 AI 池月更
+
+1. Stage935 的 `monthly_ai_pool_updated` 只表示候选文件与 publication request 已生成，不表示活动实盘 AI 池已变化。
+2. 读取并校验 publication request 的来源 commit、eval date、数据截止日、训练标签截止日和五项 Stage182 资产；任何漂移立即阻断。
+3. 为任何字节变化分配新的 material version，走完整 `prepare → commit → verify → qualification → activate → promote-master → fresh clone → Stage948`。不得覆盖当前 release，也不得把 `backtest_outputs` 当作正式路径。
+4. 资格和安装后分别运行真实生产接线回归：Stage945 `PRODUCTION_AI_ELIGIBILITY_PATH`、正式配置 `OFFICIAL_LIVE_AI_ELIGIBILITY_PATH`、影子 decision 内 AI 路径和 `CURRENT.json` 解析出的 payload 路径必须 `resolve(strict=True)` 后完全相同，SHA256 也必须相同。
+5. 同时覆盖两条流程：池未变化时继续验证现有正式回执；池变化时在新 release 激活前保持 fail-closed，激活后重新 Stage909 并签发绑定新 release 的回执。
+
 详细字段与目录协议见 [material-contract.md](references/material-contract.md)。
 
 ## 硬性停止条件

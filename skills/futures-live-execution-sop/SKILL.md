@@ -134,7 +134,8 @@ Stage260 and Stage251 are legacy SimNow/broker-test diagnostics only. They are n
 The AI pool is monthly, not daily. Follow the inherited operational cadence in `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`, while recording new evidence in the Q line.
 
 - Production runs Stage947 `monthly-ai-pool` -> Stage935 at 18:20 on weekdays; Stage935 itself decides whether a completed-month refresh is due.
-- If Stage935 updates the pool, Stage947 must rerun the qualified Stage909 precompute and issue a new daily receipt bound to the changed pool.
+- If Stage935 generates a changed pool and a material publication request, that output is only a candidate: keep production fail-closed and run the full immutable material qualification, promotion, and Stage948 installation flow. Do not refresh the production shadow or issue a receipt against the mutable candidate path.
+- After the new release is installed, require the Stage945 receipt path, official live config path, shadow decision path, and active material payload path to resolve to the same file and SHA256; then Stage947 may rerun Stage909 and issue a new daily receipt.
 - If the pool is already current, Stage947 must validate the existing receipt.
 - Do not pass `--allow-incomplete-month`, change ranking logic, or call broker order APIs.
 

@@ -36,6 +36,9 @@ _RETRYABLE_MONTHLY_BLOCKERS = {
     "production_support_monthly_ai_pool_not_qualified",
     "production_support_monthly_receipt_refresh_failed",
 }
+_RETRYABLE_DAILY_RECEIPT_BLOCKERS = {
+    "production_signal_ai_pool_binding_mismatch",
+}
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
@@ -376,11 +379,21 @@ def postclose_pipeline_retry_eligible(payload: Mapping[str, Any]) -> bool:
         current = _validate_payload(payload)
     except PostclosePipelineError:
         return False
+    retryable_root = bool(
+        (
+            current.get("root_stage") == "refresh-monthly-ai-pool"
+            and current.get("root_blocker") in _RETRYABLE_MONTHLY_BLOCKERS
+        )
+        or (
+            current.get("root_stage") == "issue-daily-data-receipt"
+            and current.get("root_blocker")
+            in _RETRYABLE_DAILY_RECEIPT_BLOCKERS
+        )
+    )
     return bool(
         current["status"] == "failed"
         and current.get("retry_of", "") == ""
-        and current.get("root_stage") == "refresh-monthly-ai-pool"
-        and current.get("root_blocker") in _RETRYABLE_MONTHLY_BLOCKERS
+        and retryable_root
         and current.get("order_api_called_count") == 0
     )
 

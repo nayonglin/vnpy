@@ -92,6 +92,40 @@ class OfficialLivePostclosePipelineTest(unittest.TestCase):
         retried["retry_of"] = "d" * 32
         self.assertFalse(pipeline.postclose_pipeline_retry_eligible(retried))
 
+    def test_ai_pool_binding_receipt_failure_is_retryable_once(self) -> None:
+        payload = self._new()
+        for stage in pipeline.POSTCLOSE_PIPELINE_STAGES[:5]:
+            payload = pipeline.record_postclose_pipeline_stage(
+                payload,
+                stage=stage,
+                status="succeeded",
+                started_at_utc="2026-08-03T08:35:00Z",
+                finished_at_utc="2026-08-03T08:35:01Z",
+            )
+        payload = pipeline.record_postclose_pipeline_stage(
+            payload,
+            stage="issue-daily-data-receipt",
+            status="failed",
+            started_at_utc="2026-08-03T08:35:01Z",
+            finished_at_utc="2026-08-03T08:35:02Z",
+            blocker="production_signal_ai_pool_binding_mismatch",
+        )
+        payload = pipeline.finish_postclose_pipeline_receipt(
+            payload,
+            status="failed",
+            root_blocker="production_signal_ai_pool_binding_mismatch",
+            email_disposition={"notification_status": "sent"},
+            finished_at_utc="2026-08-03T08:35:03Z",
+        )
+
+        self.assertEqual("issue-daily-data-receipt", payload["root_stage"])
+        self.assertTrue(pipeline.postclose_pipeline_retry_eligible(payload))
+
+        unrelated = dict(payload)
+        unrelated["root_blocker"] = "production_signal_artifact_missing"
+        unrelated = pipeline._with_digest(unrelated)
+        self.assertFalse(pipeline.postclose_pipeline_retry_eligible(unrelated))
+
     def test_retry_identity_cannot_change_at_finalization(self) -> None:
         payload = pipeline.new_postclose_pipeline_receipt(
             pipeline_run_id="a" * 32,
