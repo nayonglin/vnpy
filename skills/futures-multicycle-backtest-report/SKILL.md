@@ -1,11 +1,15 @@
 ---
 name: futures-multicycle-backtest-report
-description: Use when a vn.py futures strategy candidate needs multicycle or multi-start robustness testing against an official baseline, especially for 1/2/3-year equity curves, semiannual starts, or a multicycle promotion audit. Do not use for single-window, attribution-only, or existing-curve requests.
+description: Compatibility entry for vn.py futures multicycle or multi-start reporting. Route new work through futures-multicycle-validation so the active official material identity, January/June starts, fixed five images, and promotion gates cannot diverge.
 ---
 
 # Futures Multicycle Backtest Report
 
 ## Core Contract
+
+**REQUIRED SUB-SKILL:** Use `futures-multicycle-validation` as the canonical workflow. This compatibility Skill must not construct arms or run windows independently.
+
+Before arm construction, load active `official_strategy_materials/CURRENT.json`, run `assert_official_checkout_matches_active_material()`, and require A's strategy version, ruleset version, material release ID, and source commit to match remote master and stable production. Any mismatch stops the run. Stage78/Stage372 are historical controls only when explicitly requested.
 
 A valid report compares the official baseline with the candidate through independent full-period, 1Y, 2Y, and 3Y runs. The rolling schedule is exactly every eligible January 1 and June 1 start.
 
