@@ -62,6 +62,22 @@ RED 结论：旧 Skill 会选择 materials-only 发布，并明确禁止完成�
 - 胜率：未运行回测。
 - 其他关键指标：Skill 结构校验 `Skill is valid!`；同一压力场景规则断言 `11/11 PASS`。
 
+## Q 正式物料、master 与可信生产资格（2026-08-25 13:11 CST）
+
+- 正式策略版本：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`。
+- 规则集版本：`stage021_q_rollover_volume_atr_v1`。
+- 物料版本：`m0010`；发布 ID：`m0010_20260825T123526+0800_8917e387ac81`。
+- 物料发布 commit：`3d6e403a02ce8f0944d23e2c13fc4ca8614e40ee`；物料激活 commit：`9f882aaa7b44bc39914119e74d989780cf1921d3`。
+- manifest SHA256：`ccc6fc73aac839d52667e0cc44f2588afcd62615d71706a931a67fa798f195dc`；物料文件数 160；必需文件缺失数 0。
+- 发布前聚焦资格：58 个 pytest 用例与 17 个子测试通过；激活后回归：23 个 pytest 用例通过。
+- 独立评审：P0/P1/P2 = `0/0/0`；评审源 commit 为 `9f882aaa7b44bc39914119e74d989780cf1921d3`。
+- 可信生产资格：37 个必需测试文件、890 个测试通过、0 失败、0 跳过；320 个关键文件；关键树指纹 `0e964a9ba378f5d991cb37d3b3f806247b3cf0b7e8239af75cd284af5e225b6c`。
+- 正式 CTP 只读资格：2 次独立捕获，账户/持仓/委托/成交查询完整；`order_api_called_count=0`、`send_order_api_called_count=0`、`cancel_order_api_called_count=0`。
+- 第一次可信资格尝试因评审文件权限为 `0644` 被 fail-closed 拒绝；修正为 `0600`。第二次因评审 JSON 不是规范序列化字节被 fail-closed 拒绝；规范化后第三次通过。两次失败均在证据封装阶段，未触发任何报单 API。
+- 受控正式晋升从远端 `master@294e445802285c4e1fa4e7f5a61c13ff5919eaf0` 非强制快进到 `4ca9fb83b19b232e05406a74bb3aa0c052179540`，冲突 0；未创建 PR。
+- `git clone --no-local --branch master --single-branch` 新鲜远端克隆完成，HEAD/readback 均为 `4ca9fb83b19b232e05406a74bb3aa0c052179540`，ahead/behind=`0/0`；身份校验确认顶层源码、m0010 payload、CURRENT 与 Q ruleset 完全一致。
+- 本记录属于治理字节，不修改策略、物料 payload 或交易路径；追加后将以最终 master SHA 重新生成可信安装资格并执行 Stage948。
+
 ## GREEN 压力场景
 
 同一请求在新 Skill 上的确定性规则断言原样输出：
