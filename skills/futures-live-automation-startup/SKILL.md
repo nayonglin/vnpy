@@ -13,7 +13,7 @@ Use this skill for the C9/15w production control plane. It is an execution SOP, 
 2. Read `research/registry.md`.
 3. Read `skills/futures-live-execution-sop/SKILL.md`.
 4. Read `examples/portfolio_backtesting/qmt_roll_official_live_config.py`.
-5. Read `research/lines/futures_trend_stage819_intraday_rules/LINE.md`.
+5. Read `research/lines/futures_trend_rollover_shape_same_volume/LINE.md`.
 6. For monthly AI-pool questions, read `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`.
 
 Start and end with:
@@ -24,6 +24,7 @@ Start and end with:
 ## Current Production Contract
 
 - Profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
+- Active ruleset: `stage021_q_rollover_volume_atr_v1`.
 - Execution profile: `c9-15w`.
 - Capital: `150000`.
 - Stable root: `/Users/bytedance/Desktop/person/vnpy_production_live`.
@@ -40,6 +41,8 @@ Use stable HEAD plus these private artifacts as production authority:
 - `data-readiness/latest.json`
 
 An arbitrary development checkout, release branch, or historical stage record cannot override them.
+
+Before install/start/restart, load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()`. Require its strategy version, Q ruleset, material release, and source identity to agree with remote master and the private production receipts. The unchanged C9 strategy-version string alone is insufficient proof that Q is installed.
 
 ## Exact Seven-Job Surface
 
@@ -179,4 +182,4 @@ Report in Chinese:
 - whether the next session is eligible, fail-closed, or pre-start skipped;
 - overfitting and continued-value judgments.
 
-If code, plists, or Skill files changed, record a stage file under `research/lines/futures_trend_stage819_intraday_rules/stages/`.
+If code, plists, or Skill files changed, record a stage file under `research/lines/futures_trend_rollover_shape_same_volume/stages/`.
