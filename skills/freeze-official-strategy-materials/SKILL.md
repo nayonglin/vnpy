@@ -33,7 +33,7 @@ description: Use when freezing or publishing candidate official vn.py materials,
 3. 运行发布器 `prepare`；由发布器完成依赖闭包、复制、SHA256、manifest、inventory、checksums、版本分配和精确暂存。
 4. 运行 `verify`，检查 `git diff --cached --name-only`；只允许本次 release、对应 `index.json` 和必要 `.gitattributes`。
 5. 用户明确授权提交后，使用发布器输出的精确确认文本执行 `commit`。不得手写或猜测确认文本绕过门禁。
-6. 用 `git clone --no-local` 校验 release commit；Git LFS 文件必须是实际内容，不能是 pointer。
+6. 用 `git clone --no-local` 校验 release commit；Git LFS 文件必须是实际内容，不能是 pointer；所有运行入口的 Git 可执行位必须与来源一致，并至少对 supervisor/launcher 运行 `test -x`。
 7. 运行资格时显式绑定 release ID、release commit、证据 ID，并要求 order/send/cancel API 计数均为零。资格失败时保留候选，不激活、不晋升。
 
 ## 候选物料发布
@@ -48,7 +48,7 @@ description: Use when freezing or publishing candidate official vn.py materials,
 2. 使用完整确认文本执行 `promote-master`，同时传入 release commit、activation commit、qualification JSON 和需要同步的治理路径。
 3. `promote-master` 只从物料 inventory 复制允许的 `examples/portfolio_backtesting/`、`tests/`、`skills/` 顶层正式文件，合并不可变物料根和活动 `CURRENT.json`，并复制显式治理路径；禁止绝对路径、`..`、symlink、未登记源码和并发漂移。
 4. 在目标 detached master worktree 中先运行 `assert_official_checkout_matches_active_material()`；再创建 `promote(official): <release_id>` 提交，非强制快进推送并独立读取远端 SHA。远端在 fetch/push 间变化立即阻断。
-5. 对远端 master 做 fresh clone，运行 `audit_qmt_roll_official_promotion_closure.py` 的 Git/身份部分；必须证明 master 顶层正式源码、活动物料和规则集一致，ahead/behind 为 `0/0`。
+5. 对远端 master 做 fresh clone，运行 `audit_qmt_roll_official_promotion_closure.py` 的 Git/身份部分；必须证明 master 顶层正式源码、活动物料和规则集一致，ahead/behind 为 `0/0`。执行测试前只补本机运行依赖：`.py311`、`backtest_outputs`、`.vntrader/database.db` 等已有运行态链接和权限为 `0600` 的本地 env；它们不得进入 Git，补齐后 `git status` 仍须干净。
 6. 按 `futures-live-execution-sop` 和 Stage948 从已验证的远端 master SHA 安装生产。不得连接 CTP；安装/激活审计中的 order/send/cancel API 必须为 `0/0/0`，7 个 launchd 必须精确绑定稳定生产目录，冲突为 0。
 7. 运行最终闭环审计。只有远端 master、生产 Git HEAD、生产 active material、release manifest、qualification、activation receipt、activation audit 和 7 个 plist 全部一致，才可报告完成。
 8. 最终必须同时报告六个身份字段：`strategy_version`、`ruleset_version`、`source_commit`、`material_release_id`、`remote_master_sha`、`production_source_commit`。缺一项不能声称“以后基于实盘版本”已唯一指向新正式版。
@@ -71,6 +71,7 @@ description: Use when freezing or publishing candidate official vn.py materials,
 - LFS filter、目标远端上传或 fresh clone 下载未证明。
 - publication request 源文件漂移、来源树不干净、release 已存在或物料版本冲突。
 - payload、inventory、checksums、manifest 任一哈希不一致。
+- release payload 或 fresh clone 中任一声明的可执行入口丢失 Git 可执行位。
 - `strategy_version` 相同但 `ruleset_version`、顶层 config 或 payload 不同。
 - bootstrap pointer 被用于生产资格。
 - 资格未通过、证据为空、release commit 不匹配或任一订单 API 计数非零。

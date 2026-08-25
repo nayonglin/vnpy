@@ -55,6 +55,9 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
         'OFFICIAL_LIVE_RULESET_VERSION: str = "stage021_q_rollover_volume_atr_v1"\n',
         encoding="utf-8",
     )
+    executable = repo / "examples/portfolio_backtesting/run_official_test.sh"
+    executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    executable.chmod(0o755)
     skill = repo / "skills/freeze-official-strategy-materials/SKILL.md"
     skill.parent.mkdir(parents=True)
     skill.write_text("# Freeze official strategy materials\n", encoding="utf-8")
@@ -66,6 +69,7 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
         "add",
         "pool.csv",
         "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+        "examples/portfolio_backtesting/run_official_test.sh",
         "skills/freeze-official-strategy-materials/SKILL.md",
         "research/registry.md",
     )
@@ -84,6 +88,11 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
                 source_path=config,
                 logical_path="examples/portfolio_backtesting/qmt_roll_official_live_config.py",
                 role=MaterialRole.STRATEGY_CONFIG,
+            ),
+            MaterialDeclaration(
+                source_path=executable,
+                logical_path="examples/portfolio_backtesting/run_official_test.sh",
+                role=MaterialRole.RUNTIME_CODE,
             ),
         ),
         ai_artifacts=(),
@@ -173,6 +182,10 @@ def test_prepare_is_immutable_and_verifiable(tmp_path: Path) -> None:
     manifest = verify_release(repo_root=repo, release_id=prepared.release_id)
     assert manifest["order_api_called_count"] == 0
     assert manifest["files"][0]["logical_path"] == "ai/pool.csv"
+    assert (
+        prepared.release_dir
+        / "payload/examples/portfolio_backtesting/run_official_test.sh"
+    ).stat().st_mode & 0o111
 
 
 def test_promote_master_publishes_source_current_and_governance(tmp_path: Path) -> None:
@@ -200,6 +213,9 @@ def test_promote_master_publishes_source_current_and_governance(tmp_path: Path) 
     assert current["release_id"] == release.release_id
     assert (clone / "skills/freeze-official-strategy-materials/SKILL.md").is_file()
     assert (clone / "research/registry.md").is_file()
+    assert (
+        clone / "examples/portfolio_backtesting/run_official_test.sh"
+    ).stat().st_mode & 0o111
     assert result.promoted_commit == _git(clone, "rev-parse", "HEAD")
 
 

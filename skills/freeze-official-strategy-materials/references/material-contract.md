@@ -47,6 +47,9 @@ official_strategy_materials/
 
 ## 提交边界
 
+- Git 管理的脚本必须保留来源 executable bit；冻结、晋升和 fresh clone 三处均需校验。发布器只归一化为 `0755`（来源可执行）或 `0644`（来源不可执行），不得依赖本机事后 `chmod`。
+- fresh clone 的 Python、行情目录、`.vntrader` 数据库和本地 env 属于运行依赖，可在资格前从受信本机路径链接/复制，但不得被 `git add` 或写入物料。
+
 - Prepare：release 目录、strategy index、必要 attributes。
 - Release commit：`release(materials): <release_id>`。
 - Activation commit：只含 `CURRENT.json`，`activate(materials): <release_id>`。

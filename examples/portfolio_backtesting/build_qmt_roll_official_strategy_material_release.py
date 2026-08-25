@@ -343,6 +343,12 @@ def _release_id(material_version: str, created_at_cst: str, source_commit: str) 
     return f"{material_version}_{timestamp}_{source_commit[:12]}"
 
 
+def _normalized_git_file_mode(path: Path) -> int:
+    """Preserve Git's executable bit while keeping material files non-writable."""
+
+    return 0o755 if path.stat().st_mode & 0o111 else 0o644
+
+
 def _parent_manifest(repo_root: Path, official_version: str) -> dict[str, object] | None:
     strategy_root = _strategy_root(repo_root, official_version)
     index = _load_index(strategy_root)
@@ -377,6 +383,7 @@ def _copy_and_snapshot_all(
         target = temporary / payload_relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
+        target.chmod(_normalized_git_file_mode(source))
         after_size = source.stat().st_size
         after_hash = sha256_file(source)
         if before_size != after_size or before_hash != after_hash or sha256_file(target) != before_hash:
@@ -979,7 +986,12 @@ def _copy_regular_file(source: Path, target: Path, *, error: str) -> None:
     if sha256_file(source) != before:
         raise MaterialReleaseError(f"{error}_source_changed")
     _write_bytes_atomically(target, data)
-    if sha256_file(target) != before:
+    expected_mode = _normalized_git_file_mode(source)
+    target.chmod(expected_mode)
+    if (
+        sha256_file(target) != before
+        or target.stat().st_mode & 0o777 != expected_mode
+    ):
         raise MaterialReleaseError(f"{error}_copy_mismatch")
 
 
