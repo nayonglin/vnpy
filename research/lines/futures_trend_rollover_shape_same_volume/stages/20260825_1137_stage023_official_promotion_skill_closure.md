@@ -87,6 +87,18 @@ RED 结论：旧 Skill 会选择 materials-only 发布，并明确禁止完成�
 - 决策：不在新鲜 clone 事后 `chmod` 冒充完成，不覆盖 m0010；创建新的不可变 m0011，重新走 release/activate/promote/fresh clone/资格/Stage948。
 - Skill 同步增加最小前置：fresh clone 资格前补齐但不跟踪本机运行链接，并对 runtime supervisor/launcher 执行 `test -x`；任何可执行位丢失时 fail closed。
 
+## 资格证据 schema 误读与 m0012 修复（2026-08-25 14:37 CST）
+
+- m0011 已完成可信生产资格与 Stage948 安装，但最终闭环审计器仍按旧测试 fixture 读取 qualification 顶层 `status/evidence_ids/order_api_called_count`，而生产 schema v3 将结果放在带 SHA256 的 `selected_suite_aggregate`、`formal_ctp_readonly`、`review` 引用证据中，因此出现假阴性的 fail-closed。
+- RED：fixture 改成生产 schema v3 后，闭环通过用例失败；篡改正式 CTP 引用证据时，旧审计器也不能给出 SHA256 不匹配阻断。
+- GREEN：审计器安全解析相对引用路径、拒绝绝对路径/`..`/symlink，核对引用文件 SHA256；要求测试汇总 passed 且零失败、正式 CTP 只读 qualified 且 order/send/cancel=`0/0/0`、独立评审 P0/P1/P2=`0/0/0`，并继续核对各证据 source commit。
+- 聚焦测试：`tests/test_official_promotion_closure.py` 为 `3 passed`，其中包含真实 schema 通过与证据篡改 fail-closed。
+- 决策：不忽略或手工解释 m0011 的审计告警；将审计修复纳入新的不可变 m0012，并重新执行 release/activate/promote/fresh clone/资格/Stage948/闭环审计。
+- 新增参数：无。
+- 修改参数：无。
+- 删除参数：无。
+- 新增/修改/删除回测结果：无；未运行回测。
+
 ## GREEN 压力场景
 
 同一请求在新 Skill 上的确定性规则断言原样输出：

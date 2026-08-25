@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import plistlib
 import subprocess
@@ -143,16 +144,53 @@ def _write_state(
     manifest_sha256: str,
 ) -> Path:
     state.mkdir(parents=True)
-    qualification = state / "qualification-bundle/qualification.json"
+    qualification_root = state / "qualification-bundle"
+    qualification = qualification_root / "qualification.json"
     qualification.parent.mkdir(parents=True)
+    selected_suite = {
+        "artifact_kind": "pytest_selected_suite_aggregate",
+        "source_commit": source_commit,
+        "status": "passed",
+        "passed_count": 1,
+        "failed_count": 0,
+        "skipped_count": 0,
+    }
+    formal_ctp = {
+        "artifact_kind": "formal_ctp_readonly_qualification",
+        "source_commit": source_commit,
+        "status": "qualified",
+        "order_api_called_count": 0,
+        "send_order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+    }
+    review = {
+        "artifact_kind": "production_qualification_independent_review",
+        "source_commit": source_commit,
+        "status": "passed",
+        "p0_count": 0,
+        "p1_count": 0,
+        "p2_count": 0,
+    }
+    artifact_refs: dict[str, dict[str, str]] = {}
+    for field, filename, payload in (
+        ("selected_suite_aggregate", "selected-suite-aggregate.json", selected_suite),
+        ("formal_ctp_readonly", "formal-ctp-readonly.json", formal_ctp),
+        ("review", "independent-review.json", review),
+    ):
+        raw = (json.dumps(payload, sort_keys=True) + "\n").encode()
+        (qualification_root / filename).write_bytes(raw)
+        artifact_refs[field] = {
+            "artifact_path": filename,
+            "artifact_sha256": hashlib.sha256(raw).hexdigest(),
+        }
     qualification.write_text(
         json.dumps(
             {
-                "status": "passed",
+                "schema_version": 3,
+                "evidence_kind": "stage179_c9_15w_production_qualification",
+                "evidence_sha256": "b" * 64,
                 "source_commit": source_commit,
-                "order_api_called_count": 0,
-                "cancel_order_api_called_count": 0,
-                "evidence_ids": ["fixture"],
+                **artifact_refs,
             }
         ),
         encoding="utf-8",
@@ -266,3 +304,17 @@ def test_audit_passes_only_six_identity_and_zero_api_match(tmp_path: Path) -> No
     assert result["send_order_api_called_count"] == 0
     assert result["cancel_order_api_called_count"] == 0
     assert result["launchd_label_count"] == 7
+
+
+def test_audit_rejects_tampered_qualification_artifact(tmp_path: Path) -> None:
+    fixture = _closure_fixture(tmp_path, all_match=True)
+    artifact = (
+        Path(fixture["production_state_root"])
+        / "qualification-bundle/formal-ctp-readonly.json"
+    )
+    artifact.write_text("{}\n", encoding="utf-8")
+
+    result = audit_official_promotion_closure(**fixture)
+
+    assert result["status"] == "fail_closed"
+    assert "production_formal_ctp_readonly_artifact_sha256_mismatch" in result["blockers"]

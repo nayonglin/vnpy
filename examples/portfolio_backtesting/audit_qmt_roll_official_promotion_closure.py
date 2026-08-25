@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import plistlib
@@ -53,6 +54,44 @@ def _json_object(path: Path, blocker: str, blockers: list[str]) -> dict[str, Any
         blockers.append(blocker)
         return None
     return payload
+
+
+def _referenced_json_object(
+    bundle_root: Path,
+    qualification: dict[str, Any] | None,
+    field: str,
+    blockers: list[str],
+) -> dict[str, Any] | None:
+    blocker_prefix = f"production_{field}"
+    if qualification is None or not isinstance(qualification.get(field), dict):
+        blockers.append(f"{blocker_prefix}_reference_missing")
+        return None
+    reference = qualification[field]
+    artifact_path = reference.get("artifact_path")
+    expected_sha256 = reference.get("artifact_sha256")
+    if not isinstance(artifact_path, str) or not artifact_path:
+        blockers.append(f"{blocker_prefix}_artifact_path_missing")
+        return None
+    if not isinstance(expected_sha256, str) or len(expected_sha256) != 64:
+        blockers.append(f"{blocker_prefix}_artifact_sha256_missing")
+        return None
+    relative = Path(artifact_path)
+    if relative.is_absolute() or ".." in relative.parts:
+        blockers.append(f"{blocker_prefix}_artifact_path_unsafe")
+        return None
+    artifact = bundle_root / relative
+    if artifact.is_symlink() or not artifact.is_file():
+        blockers.append(f"{blocker_prefix}_artifact_missing")
+        return None
+    try:
+        raw = artifact.read_bytes()
+    except OSError:
+        blockers.append(f"{blocker_prefix}_artifact_missing")
+        return None
+    if hashlib.sha256(raw).hexdigest() != expected_sha256:
+        blockers.append(f"{blocker_prefix}_artifact_sha256_mismatch")
+        return None
+    return _json_object(artifact, f"{blocker_prefix}_artifact_invalid", blockers)
 
 
 def _remote_url(repo_root: Path, remote: str) -> str:
@@ -219,6 +258,25 @@ def audit_official_promotion_closure(
         "production_qualification_missing",
         blockers,
     )
+    qualification_root = production_state_root / "qualification-bundle"
+    selected_suite = _referenced_json_object(
+        qualification_root,
+        qualification,
+        "selected_suite_aggregate",
+        blockers,
+    )
+    formal_ctp = _referenced_json_object(
+        qualification_root,
+        qualification,
+        "formal_ctp_readonly",
+        blockers,
+    )
+    independent_review = _referenced_json_object(
+        qualification_root,
+        qualification,
+        "review",
+        blockers,
+    )
     activation = _json_object(
         production_state_root / "activation/latest.json",
         "production_activation_audit_missing",
@@ -231,15 +289,27 @@ def audit_official_promotion_closure(
     )
 
     if qualification is not None:
-        if qualification.get("status") not in {"passed", "qualified"}:
+        if qualification.get("evidence_kind") != "stage179_c9_15w_production_qualification":
             blockers.append("production_qualification_not_passed")
-        evidence_ids = qualification.get("evidence_ids")
-        if not isinstance(evidence_ids, list) or not evidence_ids:
+        evidence_sha256 = qualification.get("evidence_sha256")
+        if not isinstance(evidence_sha256, str) or len(evidence_sha256) != 64:
             blockers.append("production_qualification_evidence_missing")
+    if selected_suite is not None:
+        if selected_suite.get("status") != "passed" or selected_suite.get("failed_count") != 0:
+            blockers.append("production_qualification_not_passed")
+    if formal_ctp is not None and formal_ctp.get("status") != "qualified":
+        blockers.append("production_qualification_not_passed")
+    if independent_review is not None:
+        for severity in ("p0_count", "p1_count", "p2_count"):
+            if independent_review.get(severity) != 0:
+                blockers.append(f"production_review_{severity}_nonzero")
     for name, payload in (
         ("release_manifest", release_manifest),
         ("qualification", qualification),
         ("activation", activation),
+        ("selected_suite", selected_suite),
+        ("formal_ctp", formal_ctp),
+        ("independent_review", independent_review),
     ):
         if payload is not None and payload.get("source_commit") != production_source_commit:
             blockers.append(f"production_{name}_source_commit_mismatch")
@@ -263,12 +333,17 @@ def audit_official_promotion_closure(
     send_count = _check_zero_count(activation, "send_order_api_called_count", blockers)
     cancel_count = _check_zero_count(activation, "cancel_order_api_called_count", blockers)
     qualification_order = _check_zero_count(
-        qualification,
+        formal_ctp,
         "order_api_called_count",
         blockers,
     )
+    qualification_send = _check_zero_count(
+        formal_ctp,
+        "send_order_api_called_count",
+        blockers,
+    )
     qualification_cancel = _check_zero_count(
-        qualification,
+        formal_ctp,
         "cancel_order_api_called_count",
         blockers,
     )
@@ -276,6 +351,8 @@ def audit_official_promotion_closure(
         blockers.append("production_order_api_count_evidence_mismatch")
     if qualification_cancel != cancel_count:
         blockers.append("production_cancel_order_api_count_evidence_mismatch")
+    if qualification_send != send_count:
+        blockers.append("production_send_order_api_count_evidence_mismatch")
 
     conflict_count: int | None = None
     if activation is None or not isinstance(

@@ -50,7 +50,7 @@ description: Use when freezing or publishing candidate official vn.py materials,
 4. 在目标 detached master worktree 中先运行 `assert_official_checkout_matches_active_material()`；再创建 `promote(official): <release_id>` 提交，非强制快进推送并独立读取远端 SHA。远端在 fetch/push 间变化立即阻断。
 5. 对远端 master 做 fresh clone，运行 `audit_qmt_roll_official_promotion_closure.py` 的 Git/身份部分；必须证明 master 顶层正式源码、活动物料和规则集一致，ahead/behind 为 `0/0`。执行测试前只补本机运行依赖：`.py311`、`backtest_outputs`、`.vntrader/database.db` 等已有运行态链接和权限为 `0600` 的本地 env；它们不得进入 Git，补齐后 `git status` 仍须干净。
 6. 按 `futures-live-execution-sop` 和 Stage948 从已验证的远端 master SHA 安装生产。不得连接 CTP；安装/激活审计中的 order/send/cancel API 必须为 `0/0/0`，7 个 launchd 必须精确绑定稳定生产目录，冲突为 0。
-7. 运行最终闭环审计。只有远端 master、生产 Git HEAD、生产 active material、release manifest、qualification、activation receipt、activation audit 和 7 个 plist 全部一致，才可报告完成。
+7. 运行最终闭环审计。审计器必须按生产 qualification schema 读取并校验 `selected_suite_aggregate`、`formal_ctp_readonly`、`review` 三个引用证据的相对路径与 SHA256；测试汇总必须通过且零失败，正式 CTP 只读证据必须 qualified 且 order/send/cancel 为 `0/0/0`，独立评审 P0/P1/P2 必须为 `0/0/0`。只有远端 master、生产 Git HEAD、生产 active material、release manifest、qualification、activation receipt、activation audit 和 7 个 plist 全部一致，才可报告完成。
 8. 最终必须同时报告六个身份字段：`strategy_version`、`ruleset_version`、`source_commit`、`material_release_id`、`remote_master_sha`、`production_source_commit`。缺一项不能声称“以后基于实盘版本”已唯一指向新正式版。
 
 ## AI 资产登记
