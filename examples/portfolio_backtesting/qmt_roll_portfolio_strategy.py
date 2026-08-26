@@ -65,6 +65,10 @@ class ProductState:
     last_donchian_add_date: str = ""
     last_post_quality_add_date: str = ""
     rollover_opened_today: str = ""
+    rollover_pending_target_contract: str = ""
+    rollover_pending_signal_date: str = ""
+    rollover_pending_last_counted_date: str = ""
+    rollover_pending_elapsed_trading_days: int = 0
     bars_since_entry: int = 0
     prev2day_stop_price: float | None = None
     post_quality_prev2day_relax_done: bool = False
@@ -87,6 +91,10 @@ class ProductState:
         self.last_donchian_add_date = ""
         self.last_post_quality_add_date = ""
         self.rollover_opened_today = ""
+        self.rollover_pending_target_contract = ""
+        self.rollover_pending_signal_date = ""
+        self.rollover_pending_last_counted_date = ""
+        self.rollover_pending_elapsed_trading_days = 0
         self.bars_since_entry = 0
         self.prev2day_stop_price = None
         self.post_quality_prev2day_relax_done = False
@@ -126,6 +134,7 @@ class DailyEntryContext:
     current_pos: int
     history: pd.DataFrame
     signal_data: dict[str, Any]
+    rollover_delay_active: bool = False
 
 
 class QmtRollPortfolioStrategy(StrategyTemplate):
@@ -161,6 +170,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     enable_rollover_shape_same_volume_reopen: bool = False
     rollover_shape_volume_policy: str = "shrink_to_allowed"
     rollover_shape_history_mode: str = "target_contract_only"
+    rollover_delay_trading_days: int = 0
     enable_directional_30d_risk_boost: bool = False
     directional_30d_risk_boost_lookback: int = 30
     directional_30d_risk_boost_multiplier: float = 1.2
@@ -461,6 +471,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "enable_rollover_shape_same_volume_reopen",
         "rollover_shape_volume_policy",
         "rollover_shape_history_mode",
+        "rollover_delay_trading_days",
         "enable_directional_30d_risk_boost",
         "directional_30d_risk_boost_lookback",
         "directional_30d_risk_boost_multiplier",
@@ -815,6 +826,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.trade_event_diagnostics: list[dict[str, Any]] = []
         self.rollover_reopen_guard_diagnostics: list[dict[str, Any]] = []
         self.rollover_shape_same_volume_diagnostics: list[dict[str, Any]] = []
+        self.rollover_delay_diagnostics: list[dict[str, Any]] = []
         self.long_signal_atr_shock_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
@@ -1223,6 +1235,30 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             if actual_contract and current_pos != 0:
                 state.contract_vt_symbol = actual_contract
 
+            rollover_delay_active = False
+            if current_pos != 0 and state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
+                actual_bar = actual_bar or self._bar_from_current_or_engine(actual_contract, bars)
+                if self._rollover_delay_due(
+                    state=state,
+                    target_contract=target_contract,
+                    current_date=current_date,
+                ):
+                    pass
+                elif int(self.rollover_delay_trading_days or 0) > 0:
+                    if actual_bar is None:
+                        self._record_rollover_delay_diagnostic(
+                            state=state,
+                            target_contract=target_contract,
+                            current_date=current_date,
+                            status="waiting_old_bar_missing",
+                        )
+                        continue
+                    target_contract = state.contract_vt_symbol
+                    target_bar = actual_bar
+                    rollover_delay_active = True
+            elif state.rollover_pending_target_contract:
+                self._clear_rollover_delay_state(state)
+
             target_am: ArrayManager = self.ams[target_contract]
             if not target_am.inited:
                 if current_pos != 0 and state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
@@ -1244,6 +1280,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     current_pos=current_pos,
                     history=history,
                     signal_data=signal_data,
+                    rollover_delay_active=rollover_delay_active,
                 )
             )
 
@@ -1260,6 +1297,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             current_pos = context.current_pos
             history = context.history
             signal_data = context.signal_data
+            rollover_delay_active = context.rollover_delay_active
             signal: str = str(signal_data["signal"])
             bullish: bool = bool(signal_data["bullish_alignment"])
             bearish: bool = bool(signal_data["bearish_alignment"])
@@ -1411,7 +1449,12 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         float(target_bar.close_price),
                         exit_reason="long_reverse_to_short",
                     )
-                    if entry_allowed_today and self.short_entry_enabled and self._can_open_short_signal(signal):
+                    if (
+                        not rollover_delay_active
+                        and entry_allowed_today
+                        and self.short_entry_enabled
+                        and self._can_open_short_signal(signal)
+                    ):
                         sizing = self._calculate_entry_sizing(
                             target_contract,
                             "short",
@@ -1458,7 +1501,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                         float(target_bar.close_price),
                         exit_reason="short_reverse_to_long",
                     )
-                    if entry_allowed_today and self.long_entry_enabled:
+                    if not rollover_delay_active and entry_allowed_today and self.long_entry_enabled:
                         sizing = self._calculate_entry_sizing(
                             target_contract,
                             "long",
@@ -1489,6 +1532,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                             self._apply_state_target(state)
                             self.last_signal = f"{product_vt}:{signal}"
                     continue
+
+            if rollover_delay_active:
+                continue
 
             can_post_quality_add, post_quality_signal, post_quality_stats = self._check_post_entry_quality_add_conditions(
                 state,
@@ -1664,6 +1710,73 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return pd.Timestamp(current_date).normalize() >= pd.Timestamp(start_text).normalize()
         except Exception:
             return True
+
+    @staticmethod
+    def _clear_rollover_delay_state(state: ProductState) -> None:
+        state.rollover_pending_target_contract = ""
+        state.rollover_pending_signal_date = ""
+        state.rollover_pending_last_counted_date = ""
+        state.rollover_pending_elapsed_trading_days = 0
+
+    def _record_rollover_delay_diagnostic(
+        self,
+        *,
+        state: ProductState,
+        target_contract: str,
+        current_date: str,
+        status: str,
+    ) -> None:
+        self.rollover_delay_diagnostics.append(
+            {
+                "diagnostic_index": len(self.rollover_delay_diagnostics) + 1,
+                "date": current_date,
+                "product_vt_symbol": state.product_vt_symbol,
+                "old_contract_vt_symbol": state.contract_vt_symbol,
+                "target_contract_vt_symbol": target_contract,
+                "signal_date": state.rollover_pending_signal_date,
+                "elapsed_trading_days": int(state.rollover_pending_elapsed_trading_days),
+                "required_trading_days": max(0, int(self.rollover_delay_trading_days or 0)),
+                "status": status,
+            }
+        )
+
+    def _rollover_delay_due(
+        self,
+        *,
+        state: ProductState,
+        target_contract: str,
+        current_date: str,
+    ) -> bool:
+        required_days = max(0, int(self.rollover_delay_trading_days or 0))
+        if required_days <= 0:
+            self._clear_rollover_delay_state(state)
+            return True
+
+        if state.rollover_pending_target_contract != target_contract:
+            state.rollover_pending_target_contract = target_contract
+            state.rollover_pending_signal_date = current_date
+            state.rollover_pending_last_counted_date = current_date
+            state.rollover_pending_elapsed_trading_days = 0
+            self._record_rollover_delay_diagnostic(
+                state=state,
+                target_contract=target_contract,
+                current_date=current_date,
+                status="scheduled",
+            )
+            return False
+
+        if state.rollover_pending_last_counted_date != current_date:
+            state.rollover_pending_elapsed_trading_days += 1
+            state.rollover_pending_last_counted_date = current_date
+
+        due = state.rollover_pending_elapsed_trading_days >= required_days
+        self._record_rollover_delay_diagnostic(
+            state=state,
+            target_contract=target_contract,
+            current_date=current_date,
+            status="due" if due else "waiting",
+        )
+        return due
 
     def _resolve_actual_position(
         self,

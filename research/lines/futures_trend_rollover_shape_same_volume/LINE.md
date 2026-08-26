@@ -180,9 +180,17 @@
 - C 的24次换月中15次续开、9次跳过；所有续开都使用新主力自身至少40根日K，无跨合约复权。JM2701 截至8月19日实际79根，策略取最近41根后 `MA20 < MA40`，因此多头排布不成立并跳过。
 - 决策 `stage027_target_contract_history_fail_full_period_keep_research_only`：语义修复成立，但不自动晋升或进入多周期；等待用户决定是否以语义正确优先继续固定规则验证，不允许围绕指标、根数、品种或年份救参。
 
+## Stage028 新主力自身K线延迟5交易日 A/B/C
+
+- 从 Stage027 `d4b54531d` 创建 `codex/stage028-rollover-delay-5d`；C相对B唯一新增 `rollover_delay_trading_days=5`。
+- D0不换月，D1-D4继续管理旧仓且禁止加仓/反向新开，D5仍持仓才平旧并按D5新合约自身K线重判；等待期原生退出会取消任务。
+- 完整周期：A正式Q `14,989,515.10/9893.0101%/-44.9033%/Sharpe1.468555`；B Stage027 `13,868,439.90/9145.6266%/-47.9843%/Sharpe1.418929`；C Stage028 `15,889,543.30/10493.0289%/-46.4506%/Sharpe1.437784`。
+- 24次登记中14次到D5、10次等待期风控退出；D5为8次续开、5次历史不足、1次形态不符。5个原不足事件从1根增至6根，仍不足40根。
+- C虽同时提高A/B期末权益并改善B回撤/Sharpe，但相对A Sharpe低 `0.030771`，且broker10峰值 `100.3426%`、超过100%一天；决策 `stage028_delay_5td_fail_full_period_keep_research_only`，不自动多周期或晋升。
+
 ## 下一步
 
-1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027 `target_contract_only` 保持独立修复研究候选，等待用户决定是否按语义正确优先进入固定多周期验证。在决定前不修改正式配置，不增加指标窗口或阈值。
+1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027/Stage028均保持研究候选。Stage028只有在用户明确要求后才能按固定5天进入多周期，不得扫描延迟天数或为单日broker100失败增加历史例外。
 2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。

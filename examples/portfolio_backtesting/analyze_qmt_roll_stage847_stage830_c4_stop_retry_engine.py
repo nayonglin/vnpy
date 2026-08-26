@@ -580,6 +580,9 @@ def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.
             "rollover_shape_same_volume": pd.DataFrame(
                 getattr(strategy, "rollover_shape_same_volume_diagnostics", []) if strategy else []
             ),
+            "rollover_delay": pd.DataFrame(
+                getattr(strategy, "rollover_delay_diagnostics", []) if strategy else []
+            ),
             "long_signal_atr_shock": pd.DataFrame(
                 getattr(strategy, "long_signal_atr_shock_diagnostics", []) if strategy else []
             ),
