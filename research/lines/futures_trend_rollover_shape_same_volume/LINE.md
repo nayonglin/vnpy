@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage027 已从该正式基线切出单变量修复候选 `stage027_q_target_contract_history_v1`，只把换月形态历史改为新主力自身日K；语义合同通过，但完整周期回撤和 Sharpe 门失败，保持研究态，未改正式物料或生产
+- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage027 的新主力自身K线和 Stage028 的固定5交易日延迟均保持研究态；Stage029 固定43窗/129臂多周期再次确认 Stage028 不可晋级，正式物料、master与生产未改变
 - 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。后续仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准；Stage027 不属于活动正式物料
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
@@ -189,9 +189,19 @@
 - C虽同时提高A/B期末权益并改善B回撤/Sharpe，但相对A Sharpe低 `0.030771`，且broker10峰值 `100.3426%`、超过100%一天；决策 `stage028_delay_5td_fail_full_period_keep_research_only`，不自动多周期或晋升。
 - 独立review最终 `P0/P1/P2=0/0/1`，唯一P2为记录闭环且已修正；`46 passed + 14 subtests`。独立 `/tmp` 全周期三臂各2098日并截至2026-08-25，summary/curve/delay/PNG与共享产物SHA逐字节一致；缺Bar同日守卫、overdue重试、真实Close取消证据和目标变化重置均闭合。
 
+## Stage029 Stage028 固定多周期反证
+
+- 用户明确要求补跑后，以固定 A正式Q / B Stage027 / C Stage028 三臂、全周期及1/2/3年每年1月和6月起点执行；共43窗、129个逻辑臂窗，其中126个滚动窗臂由独立真引擎和15万空仓冷启动首次计算。
+- C相对A的1/2/3年combined收益胜率为 `68.75%/50.00%/66.67%`，收益差中位 `+1.5283/+1.5617/+20.9333pp`；说明固定5日有局部收益优势，但不是跨周期单调优势。
+- 稳健性门失败：A_vs_C 2年DD非劣率仅 `64.29%`，3年Sharpe非劣率仅 `66.67%`；2年1月收益胜率 `42.86%` 且中位 `-1.6600pp`。最大回撤恶化出现在2022年起点，达到 `10.7620pp`。
+- C相对B的1年全部门通过，但2年6月收益胜率仅 `42.86%`、中位 `-0.4413pp`，3年DD/Sharpe非劣率仅 `75.00%/66.67%`；最差3年2019-01收益差 `-496.6379pp`。
+- 完整周期仍受约束：C虽多赚A `600.0188pp`，但Sharpe低 `0.030771` 且broker10峰值 `100.3426%`、超100%一天；相对B也新增broker100失败。决策 `confirm_stage028_not_promotable_after_multicycle`。
+- 五张固定资金曲线、129行summary、129行comparison、27行aggregate和decision均固化到 `artifacts/stage029/`；2年图标题仅按已验证曲线CSV重绘，不改变数值。正式物料、远端master、稳定生产、CTP、订单均未改变。
+- 独立review发现并关闭实际数据库绑定、严重截断和重复日期三项runner门禁缺口；现有64,497行curve通过严格时序合同，Stage027/028/029联合 `24 passed`，最终 `P0/P1/P2=0/0/0`。新合同使修复前checkpoint安全失效，但不影响已经独立复算的Stage029 CSV/PNG结论。
+
 ## 下一步
 
-1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027/Stage028均保持研究候选。Stage028只有在用户明确要求后才能按固定5天进入多周期，不得扫描延迟天数或为单日broker100失败增加历史例外。
+1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027/Stage028均保持研究候选。Stage029 已完成固定5天多周期反证并确认不可晋级，不得再扫描延迟天数、起点、品种或为broker100/弱窗口增加历史例外。
 2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -16,6 +18,47 @@ import stage029_stage028_multicycle_abc as stage029
 
 
 class Stage029Stage028MulticycleRunnerTest(unittest.TestCase):
+    @staticmethod
+    def _checkpoint_frames(
+        *, analysis_start: str = "2025-06-02", analysis_end: str = "2026-05-29"
+    ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, str]]:
+        contract = {
+            "window_id": "roll_1y_2025_06",
+            "arm": "A",
+            "requested_start": "2025-06-01",
+            "requested_end": "2026-05-31",
+        }
+        summary = pd.DataFrame(
+            [
+                {
+                    "window_id": contract["window_id"],
+                    "promotion_arm": contract["arm"],
+                    "analysis_start": analysis_start,
+                    "analysis_end": analysis_end,
+                    "end_equity": 160_000.0,
+                    "total_return_pct": 6.67,
+                    "max_dd_pct": -10.0,
+                    "sharpe": 1.0,
+                    "total_slippage": 100.0,
+                    "total_trade_count": 10,
+                    "nonzero_daily_win_rate_pct": 50.0,
+                    "account_survival_pass": 1,
+                    "broker10_100_pass": 1,
+                    "max_broker10_margin_to_equity_pct": 50.0,
+                    "days_over_100pct": 0,
+                }
+            ]
+        )
+        curve = pd.DataFrame(
+            {
+                "window_id": [contract["window_id"], contract["window_id"]],
+                "promotion_arm": [contract["arm"], contract["arm"]],
+                "date": [analysis_start, analysis_end],
+                "account_equity": [150_000.0, 160_000.0],
+            }
+        )
+        return summary, curve, contract
+
     def test_fixed_matrix_has_43_windows_and_129_arm_windows(self) -> None:
         self.assertEqual(43, len(stage029.WINDOWS))
         self.assertEqual(["A", "B", "C"], [arm["arm"] for arm in stage029.ARMS])
@@ -106,6 +149,39 @@ class Stage029Stage028MulticycleRunnerTest(unittest.TestCase):
             "confirm_stage028_not_promotable_after_multicycle",
             decision["decision"],
         )
+
+    def test_runtime_binding_rejects_non_project_override(self) -> None:
+        with patch.dict(os.environ, {"QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR": "1"}):
+            with self.assertRaisesRegex(RuntimeError, "override_forbidden"):
+                stage029._assert_runtime_database_binding()
+
+    def test_runtime_binding_uses_worktree_database(self) -> None:
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR", None)
+            binding = stage029._assert_runtime_database_binding()
+        self.assertEqual(str((ROOT / ".vntrader").resolve()), binding["temp_dir"])
+        self.assertEqual(
+            str((ROOT / ".vntrader" / "database.db").resolve()),
+            binding["database_path"],
+        )
+
+    def test_checkpoint_accepts_weekend_boundary_gap(self) -> None:
+        summary, curve, contract = self._checkpoint_frames()
+        self.assertTrue(stage029._checkpoint_frames_valid(summary, curve, contract))
+
+    def test_checkpoint_rejects_severely_truncated_end(self) -> None:
+        summary, curve, contract = self._checkpoint_frames(analysis_end="2025-07-22")
+        self.assertFalse(stage029._checkpoint_frames_valid(summary, curve, contract))
+
+    def test_checkpoint_rejects_curve_boundary_mismatch(self) -> None:
+        summary, curve, contract = self._checkpoint_frames()
+        curve.loc[curve.index[-1], "date"] = "2026-05-28"
+        self.assertFalse(stage029._checkpoint_frames_valid(summary, curve, contract))
+
+    def test_checkpoint_rejects_duplicate_curve_date(self) -> None:
+        summary, curve, contract = self._checkpoint_frames()
+        curve = pd.concat([curve, curve.iloc[[0]]], ignore_index=True)
+        self.assertFalse(stage029._checkpoint_frames_valid(summary, curve, contract))
 
 
 if __name__ == "__main__":

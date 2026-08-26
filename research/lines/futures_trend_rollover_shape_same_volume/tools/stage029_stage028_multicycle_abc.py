@@ -163,6 +163,42 @@ def _runtime_contract_hash() -> str:
     return digest.hexdigest()
 
 
+def _assert_runtime_database_binding() -> dict[str, str]:
+    if os.environ.get("QMT_BACKTEST_ALLOW_NON_PROJECT_TRADER_DIR") == "1":
+        raise RuntimeError("stage029_non_project_trader_dir_override_forbidden")
+
+    from vnpy.trader.database import get_database
+    from vnpy.trader.utility import TEMP_DIR, TRADER_DIR
+
+    expected_temp_dir = (PROJECT_DIR / ".vntrader").resolve()
+    expected_database_path = (expected_temp_dir / "database.db").resolve()
+    actual_temp_dir = Path(TEMP_DIR).resolve()
+    actual_trader_dir = Path(TRADER_DIR).resolve()
+    if actual_temp_dir != expected_temp_dir:
+        raise RuntimeError(
+            "stage029_runtime_temp_dir_mismatch:"
+            f"actual={actual_temp_dir}:expected={expected_temp_dir}:trader_dir={actual_trader_dir}"
+        )
+
+    database = get_database()
+    actual_database_raw = getattr(getattr(database, "db", None), "database", None)
+    if not actual_database_raw:
+        raise RuntimeError("stage029_runtime_database_path_unavailable")
+    actual_database_path = Path(actual_database_raw).resolve()
+    if actual_database_path != expected_database_path:
+        raise RuntimeError(
+            "stage029_runtime_database_mismatch:"
+            f"actual={actual_database_path}:expected={expected_database_path}"
+        )
+    if not actual_database_path.exists():
+        raise RuntimeError(f"stage029_database_missing:{actual_database_path}")
+    return {
+        "trader_dir": str(actual_trader_dir),
+        "temp_dir": str(actual_temp_dir),
+        "database_path": str(actual_database_path),
+    }
+
+
 def _preflight() -> dict[str, Any]:
     identity = s28._assert_identity_and_scope()
     subprocess.run(
@@ -172,11 +208,11 @@ def _preflight() -> dict[str, Any]:
     )
     if s28.override_diff("B", "C") != {"rollover_delay_trading_days": (None, 5)}:
         raise RuntimeError("stage029_candidate_scope_drift")
-    database_path = PROJECT_DIR / ".vntrader" / "database.db"
-    if not database_path.exists():
-        raise RuntimeError(f"stage029_database_missing:{database_path}")
+    runtime_binding = _assert_runtime_database_binding()
+    database_path = Path(runtime_binding["database_path"])
     return {
         **identity,
+        "runtime_binding": runtime_binding,
         "runner_head": _git("rev-parse", "HEAD"),
         "candidate_logic_commit": CANDIDATE_LOGIC_COMMIT,
         "database_path": str(database_path),
@@ -263,6 +299,7 @@ def _checkpoint_contract(
     return {
         "schema_version": 1,
         "runtime_contract_sha256": preflight["runtime_contract_sha256"],
+        "database_path": preflight["database_path"],
         "database_sha256": preflight["database_sha256"],
         "formal_manifest_sha256": preflight["formal_identity"]["manifest_sha256"],
         "candidate_logic_commit": CANDIDATE_LOGIC_COMMIT,
@@ -314,8 +351,26 @@ def _checkpoint_frames_valid(
     equity = pd.to_numeric(curve["account_equity"], errors="coerce")
     if not np.isfinite(equity.to_numpy(dtype=float)).all():
         return False
+    requested_start = pd.Timestamp(contract["requested_start"]).normalize()
+    requested_end = pd.Timestamp(contract["requested_end"]).normalize()
+    actual_start = pd.Timestamp(summary.iloc[0]["analysis_start"]).normalize()
     actual_end = pd.Timestamp(summary.iloc[0]["analysis_end"]).normalize()
-    return actual_end <= pd.Timestamp(contract["requested_end"]).normalize()
+    start_gap = (actual_start - requested_start).days
+    end_gap = (requested_end - actual_end).days
+    if not (0 <= start_gap <= TERMINAL_TOLERANCE_DAYS):
+        return False
+    if not (0 <= end_gap <= TERMINAL_TOLERANCE_DAYS):
+        return False
+    curve_dates = pd.to_datetime(curve["date"], errors="coerce", format="mixed")
+    if curve_dates.isna().any():
+        return False
+    normalized_curve_dates = curve_dates.dt.normalize()
+    if normalized_curve_dates.duplicated().any():
+        return False
+    return bool(
+        normalized_curve_dates.min() == actual_start
+        and normalized_curve_dates.max() == actual_end
+    )
 
 
 def _load_checkpoint(
@@ -413,6 +468,21 @@ def _validate_outputs(summary: pd.DataFrame, curves: pd.DataFrame) -> None:
     equity = pd.to_numeric(curves["account_equity"], errors="coerce")
     if curves.empty or not np.isfinite(equity.to_numpy(dtype=float)).all():
         raise RuntimeError("stage029_curve_missing")
+    for row in summary.to_dict(orient="records"):
+        contract = {
+            "window_id": str(row["window_id"]),
+            "arm": str(row["promotion_arm"]),
+            "requested_start": str(row["requested_start"]),
+            "requested_end": str(row["requested_end"]),
+        }
+        pair_curve = curves[
+            curves["window_id"].astype(str).eq(contract["window_id"])
+            & curves["promotion_arm"].astype(str).eq(contract["arm"])
+        ]
+        if not _checkpoint_frames_valid(pd.DataFrame([row]), pair_curve, contract):
+            raise RuntimeError(
+                f"stage029_window_coverage_invalid:{contract['window_id']}:{contract['arm']}"
+            )
     for years in DURATIONS_YEARS:
         rows = summary[
             summary["duration_years"].eq(years)
@@ -799,15 +869,36 @@ def _charts(curve: pd.DataFrame, comparison: pd.DataFrame, aggregate: pd.DataFra
 
 def _report(summary: pd.DataFrame, comparison: pd.DataFrame, aggregate: pd.DataFrame, decision: dict[str, Any]) -> str:
     full = summary[summary["window_id"].eq("full_2018_2026")].set_index("promotion_arm")
-    weakest = comparison[
+    eligible = comparison[
         comparison["complete_window"].eq(1)
         & comparison["comparison"].isin({"A_vs_C", "B_vs_C"})
         & comparison["duration_years"].isin(DURATIONS_YEARS)
-    ].sort_values("delta_return_pct").head(8)
+    ]
+    weakest = eligible.sort_values("delta_return_pct").head(8)
+    weakest_dd = eligible.sort_values("dd_worsening_pp", ascending=False).head(4)
+    weakest_sharpe = eligible.sort_values("delta_sharpe").head(4)
+    weakest_cost = eligible.sort_values("slippage_ratio", ascending=False).head(4)
+    c_rolling = summary[
+        summary["promotion_arm"].eq("C")
+        & summary["duration_years"].isin(DURATIONS_YEARS)
+        & summary["complete_window"].eq(1)
+    ]
+    identity = decision["identity"]
+    formal = identity["formal_identity"]
     lines = [
         "# Stage029 Stage028 五日延迟换月多周期报告",
         "",
         f"结论：`{decision['decision']}`。完整周期失败保持约束，任何局部窗口优势都不能覆盖正式晋级门失败。",
+        "",
+        "## 身份与范围",
+        "",
+        f"- 正式策略：`{formal['strategy_version']}`。",
+        f"- 正式 ruleset：`{formal['ruleset_version']}`。",
+        f"- 正式 source commit：`{formal['source_commit']}`。",
+        f"- 活动物料：`{formal['material_release_id']}`；manifest `{formal['manifest_sha256']}`。",
+        f"- 远端 master：`{identity['remote_master']}`；候选逻辑冻结提交 `{identity['candidate_logic_commit']}`。",
+        f"- 数据库：`{identity['database_path']}`；SHA256 `{identity['database_sha256']}`；截止 `2026-08-25`。",
+        "- A=正式Q立即换月/旧主力复权历史；B=Stage027立即换月/新主力自身K线；C=Stage028延迟5交易日/新主力自身K线。B到C唯一策略差异为 `rollover_delay_trading_days: None -> 5`。",
         "",
         "## 全周期",
         "",
@@ -844,18 +935,67 @@ def _report(summary: pd.DataFrame, comparison: pd.DataFrame, aggregate: pd.DataF
             f"回撤恶化 `{row.dd_worsening_pp:.4f}pp`，Sharpe差 `{row.delta_sharpe:+.4f}`，"
             f"滑点比 `{row.slippage_ratio:.4f}`。"
         )
+    lines.extend(["", "## 最弱回撤窗口", ""])
+    for row in weakest_dd.itertuples(index=False):
+        lines.append(
+            f"- `{row.comparison}` `{row.window_id}`：回撤恶化 `{row.dd_worsening_pp:.4f}pp`，"
+            f"收益差 `{row.delta_return_pct:+.4f}pp`，Sharpe差 `{row.delta_sharpe:+.4f}`。"
+        )
+    lines.extend(["", "## 最弱 Sharpe 窗口", ""])
+    for row in weakest_sharpe.itertuples(index=False):
+        lines.append(
+            f"- `{row.comparison}` `{row.window_id}`：Sharpe差 `{row.delta_sharpe:+.4f}`，"
+            f"收益差 `{row.delta_return_pct:+.4f}pp`，回撤恶化 `{row.dd_worsening_pp:.4f}pp`。"
+        )
+    lines.extend(["", "## 最高成本窗口", ""])
+    for row in weakest_cost.itertuples(index=False):
+        lines.append(
+            f"- `{row.comparison}` `{row.window_id}`：滑点比 `{row.slippage_ratio:.4f}`，"
+            f"收益差 `{row.delta_return_pct:+.4f}pp`，回撤恶化 `{row.dd_worsening_pp:.4f}pp`。"
+        )
+    weakest_survival = c_rolling.sort_values("min_equity").iloc[0]
     lines.extend(
         [
+            "",
+            "## 生存与容量",
+            "",
+            f"- C 的 `{len(c_rolling)}` 个完整滚动窗口全部账户生存；最低权益窗口 "
+            f"`{weakest_survival['window_id']}`，最低权益 `{weakest_survival['min_equity']:,.2f}`。",
+            "- 3年聚合相对A/B均新增1个 broker100 失败；全周期 C 的 broker10 峰值 "
+            f"`{full.loc['C', 'max_broker10_margin_to_equity_pct']:.4f}%`、超100% `{int(full.loc['C', 'days_over_100pct'])}` 天。",
             "",
             "## 五张固定图片",
             "",
             *[f"- `{filename}`" for filename in CHART_FILES.values()],
+            "",
+            "## 结果与记录链接",
+            "",
+            "- [窗口汇总](stage029_window_summary.csv)",
+            "- [逐窗比较](stage029_window_comparison.csv)",
+            "- [周期聚合](stage029_cycle_aggregate.csv)",
+            "- [资金曲线数据](stage029_equity_curves.csv)",
+            "- [决策 JSON](stage029_decision.json)",
+            "- [中文 Stage029 记录](../../stages/20260826_1714_stage029_stage028_multicycle_gate.md)",
+            "",
+            "## 验证与独立评审",
+            "",
+            "- 聚焦回归：Stage027/028/029 共 `24 passed`。",
+            "- 产物契约：43窗、129臂窗、129行comparison、27行aggregate；1/2/3年完整窗 `16/14/12` 且均包含January和June。",
+            "- 独立 reviewer：修复前发现数据库绑定、截断窗口和重复日期三项P1；修复后逐项反例关闭，最终 `P0/P1/P2=0/0/0`，允许提交。",
+            "- 当前严格 runner 合同使修复前 checkpoint 安全失效；本报告的 `checkpoint_reused=126` 仅归属于修复前冻结格式恢复运行。本轮既有CSV/PNG已经独立复算聚合并通过严格时序校验，无需为工具门禁修复重跑策略。",
             "",
             "## 安全边界",
             "",
             "- 每个滚动窗口均为独立真引擎、独立15万资金与空仓冷启动；未切片全周期曲线。",
             "- 只读取正式AI池/产品池与研究数据库；未连接CTP，未调用下单或撤单API。",
             "- 正式物料、远端master和稳定生产均未改变。",
+            "",
+            "## 过拟合与继续价值",
+            "",
+            "- 运行前过拟合判断：否。规则、窗口、起点和门禁均在结果前冻结，没有扫描天数、品种、方向、年份或失败窗口。",
+            "- 运行后过拟合判断：本次验证过程否；但固定5日表现存在明显起点依赖，若挑选有利窗口或继续扫描2-10天，会转为高风险过拟合。",
+            "- 运行前继续价值：是；14次D5执行不足以支撑正式决策，多周期是必要证伪。",
+            "- 运行后继续价值：否；不值得围绕固定等待天数继续优化，只保留状态机工程经验和失败证据。",
             "",
         ]
     )
