@@ -8424,12 +8424,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     "history_source": "target_contract_observed",
                     "source_observed_bar_count": int(len(target_history)),
                     "roll_adjustment_ratio": 1.0,
-                    "history_input_ready": int(new_bar is not None and target_am is not None),
-                    "history_input_reason": (
-                        "ready"
-                        if new_bar is not None and target_am is not None
-                        else "target_contract_history_unavailable"
-                    ),
+                    "history_input_reason": str(readiness["target_readiness_reason"]),
+                }
+            )
+            if str(readiness["target_readiness_reason"]) != "ready" or new_bar is None:
+                return target_history.iloc[0:0].copy(), snapshot
+            if target_am is None:
+                snapshot["history_input_reason"] = "target_contract_history_unavailable"
+                return target_history.iloc[0:0].copy(), snapshot
+            snapshot.update(
+                {
+                    "history_input_ready": 1,
+                    "history_input_reason": "ready",
                 }
             )
             return target_history, snapshot

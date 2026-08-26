@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`。Stage025 已修复正式回执引用可变 AI 池路径的问题，并把后续月更 AI 池统一改为“候选生成后无条件 fail closed，完成新物料发布/资格/安装后才生效”；m0014 已封装并通过独立代码复核，待正式资格、master 晋升和 Stage948 安装闭环
-- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。Stage025 候选 `m0014_20260825T173659+0800_14a2031aae20` 绑定源码 `14a2031aae2049e6f266c0e5f57fe4d27c9da6d6`；最终仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准
+- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage027 已从该正式基线切出单变量修复候选 `stage027_q_target_contract_history_v1`，只把换月形态历史改为新主力自身日K；语义合同通过，但完整周期回撤和 Sharpe 门失败，保持研究态，未改正式物料或生产
+- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。后续仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准；Stage027 不属于活动正式物料
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
@@ -173,9 +173,16 @@
 - 过拟合判断：晋升动作本身未新增参数，不产生新的拟合；但 Q 来自后验研究序列且原 broker 门失败，历史选择风险仍然存在，必须由 forward 实盘观察承担。
 - 继续价值：完成晋升与可恢复生产安装有价值；继续扫描历史阈值、ATR周期或倍率无价值，后续只记录自然 forward 事件与实盘安全证据。
 
+## Stage027 新主力自身历史修复 A/C
+
+- 从远端 master `09aa96a03` 创建 `codex/fix-rollover-new-contract-history`；候选与正式 Q 逐键比较后，唯一差异是 `rollover_shape_history_mode: backwards_ratio_continuous -> target_contract_only`。
+- 完整周期到 `2026-08-25`：A `14,989,515.10/9893.0101%/-44.9033%/Sharpe1.468555`；C `13,868,439.90/9145.6266%/-47.9843%/Sharpe1.418929`。C 滑点减少3.21%、broker10峰值改善11.8886pp，但期末权益少112.11万、回撤恶化3.0810pp、Sharpe下降0.049627。
+- C 的24次换月中15次续开、9次跳过；所有续开都使用新主力自身至少40根日K，无跨合约复权。JM2701 截至8月19日实际79根，策略取最近41根后 `MA20 < MA40`，因此多头排布不成立并跳过。
+- 决策 `stage027_target_contract_history_fail_full_period_keep_research_only`：语义修复成立，但不自动晋升或进入多周期；等待用户决定是否以语义正确优先继续固定规则验证，不允许围绕指标、根数、品种或年份救参。
+
 ## 下一步
 
-1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件；不再增加历史窗口来重复证明同一失败。
+1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027 `target_contract_only` 保持独立修复研究候选，等待用户决定是否按语义正确优先进入固定多周期验证。在决定前不修改正式配置，不增加指标窗口或阈值。
 2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。
