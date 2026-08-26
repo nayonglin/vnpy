@@ -1,7 +1,7 @@
 {
   "line_id": "futures_trend_rollover_shape_same_volume",
   "stage": "Stage028",
-  "generated_at": "2026-08-26T15:46:06+08:00",
+  "generated_at": "2026-08-26T16:31:14+08:00",
   "identity": {
     "formal_identity": {
       "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
@@ -109,11 +109,16 @@
     "diagnostic_count": 109,
     "scheduled_count": 24,
     "due_count": 14,
+    "overdue_count": 0,
+    "target_changed_reset_count": 0,
     "cancelled_before_due_count": 10,
+    "cancelled_has_real_old_contract_close_pass": true,
     "required_days_exact_5_pass": true,
     "due_elapsed_exact_5_pass": true,
-    "rollover_only_on_due_pass": true,
-    "due_has_rollover_diagnostic_pass": true,
+    "overdue_elapsed_gt_5_pass": true,
+    "rollover_only_on_due_or_overdue_pass": true,
+    "due_or_overdue_has_rollover_diagnostic_pass": true,
+    "scheduled_terminal_classification_pass": true,
     "all_pass": true
   },
   "comparisons": [

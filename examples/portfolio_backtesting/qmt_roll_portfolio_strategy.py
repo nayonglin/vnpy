@@ -1220,31 +1220,35 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 continue
 
             state: ProductState = self.states[product_vt]
-            target_bar: BarData | None = bars.get(target_contract)
-            if target_bar is None:
-                self._close_position_when_target_unavailable(
-                    product_vt,
-                    state=state,
-                    target_contract=target_contract,
-                    bars=bars,
-                    reason="rollover_close_missing_target_bar",
-                )
-                continue
-
             actual_contract, current_pos, actual_bar = self._resolve_actual_position(state, target_contract, bars)
             if actual_contract and current_pos != 0:
                 state.contract_vt_symbol = actual_contract
 
+            target_bar: BarData | None = bars.get(target_contract)
             rollover_delay_active = False
-            if current_pos != 0 and state.contract_vt_symbol and state.contract_vt_symbol != target_contract:
-                actual_bar = actual_bar or self._bar_from_current_or_engine(actual_contract, bars)
-                if self._rollover_delay_due(
+            if self._rollover_delay_applies(state, target_contract, current_pos):
+                actual_bar = self._same_day_bar(actual_contract, bars, current_date)
+                delay_due = self._rollover_delay_due(
                     state=state,
                     target_contract=target_contract,
                     current_date=current_date,
-                ):
-                    pass
-                elif int(self.rollover_delay_trading_days or 0) > 0:
+                )
+                if delay_due:
+                    if actual_bar is None:
+                        self._record_rollover_delay_diagnostic(
+                            state=state,
+                            target_contract=target_contract,
+                            current_date=current_date,
+                            status="due_old_bar_missing",
+                        )
+                        continue
+                    if target_bar is None:
+                        self._reconcile_state_with_position(state, current_pos, actual_bar)
+                        rollover_bars = dict(bars)
+                        rollover_bars[actual_contract] = actual_bar
+                        self._handle_rollover(state, target_contract, rollover_bars)
+                        continue
+                else:
                     if actual_bar is None:
                         self._record_rollover_delay_diagnostic(
                             state=state,
@@ -1258,6 +1262,16 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     rollover_delay_active = True
             elif state.rollover_pending_target_contract:
                 self._clear_rollover_delay_state(state)
+
+            if target_bar is None:
+                self._close_position_when_target_unavailable(
+                    product_vt,
+                    state=state,
+                    target_contract=target_contract,
+                    bars=bars,
+                    reason="rollover_close_missing_target_bar",
+                )
+                continue
 
             target_am: ArrayManager = self.ams[target_contract]
             if not target_am.inited:
@@ -1753,6 +1767,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return True
 
         if state.rollover_pending_target_contract != target_contract:
+            if state.rollover_pending_target_contract:
+                self._record_rollover_delay_diagnostic(
+                    state=state,
+                    target_contract=state.rollover_pending_target_contract,
+                    current_date=current_date,
+                    status="target_changed_reset",
+                )
             state.rollover_pending_target_contract = target_contract
             state.rollover_pending_signal_date = current_date
             state.rollover_pending_last_counted_date = current_date
@@ -1769,14 +1790,41 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             state.rollover_pending_elapsed_trading_days += 1
             state.rollover_pending_last_counted_date = current_date
 
-        due = state.rollover_pending_elapsed_trading_days >= required_days
+        elapsed_days = state.rollover_pending_elapsed_trading_days
+        due = elapsed_days >= required_days
         self._record_rollover_delay_diagnostic(
             state=state,
             target_contract=target_contract,
             current_date=current_date,
-            status="due" if due else "waiting",
+            status=("overdue" if elapsed_days > required_days else "due") if due else "waiting",
         )
         return due
+
+    def _rollover_delay_applies(
+        self,
+        state: ProductState,
+        target_contract: str,
+        current_pos: int,
+    ) -> bool:
+        return bool(
+            int(self.rollover_delay_trading_days or 0) > 0
+            and current_pos != 0
+            and state.contract_vt_symbol
+            and state.contract_vt_symbol != target_contract
+        )
+
+    def _same_day_bar(
+        self,
+        vt_symbol: str,
+        bars: dict[str, BarData],
+        current_date: str,
+    ) -> BarData | None:
+        bar = self._bar_from_current_or_engine(vt_symbol, bars)
+        if bar is None:
+            return None
+        if pd.Timestamp(bar.datetime).strftime("%Y-%m-%d") != current_date:
+            return None
+        return bar
 
     def _resolve_actual_position(
         self,
@@ -1818,8 +1866,18 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             return
 
         old_contract: str = state.contract_vt_symbol
-        old_bar: BarData | None = self._bar_from_current_or_engine(old_contract, bars)
-        new_bar: BarData | None = self._bar_from_current_or_engine(target_contract, bars)
+        delayed_rollover = bool(
+            int(self.rollover_delay_trading_days or 0) > 0
+            and state.rollover_pending_target_contract == target_contract
+        )
+        if delayed_rollover:
+            current_dates = [pd.Timestamp(bar.datetime).strftime("%Y-%m-%d") for bar in bars.values()]
+            current_date = max(current_dates) if current_dates else ""
+            old_bar = self._same_day_bar(old_contract, bars, current_date)
+            new_bar = self._same_day_bar(target_contract, bars, current_date)
+        else:
+            old_bar = self._bar_from_current_or_engine(old_contract, bars)
+            new_bar = self._bar_from_current_or_engine(target_contract, bars)
         if not old_bar:
             return
 

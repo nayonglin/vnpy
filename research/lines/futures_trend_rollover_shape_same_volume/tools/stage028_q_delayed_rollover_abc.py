@@ -202,6 +202,33 @@ def _comparison(summary: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _assert_full_period_coverage(summary: pd.DataFrame) -> None:
+    expected_end = END.strftime("%Y-%m-%d")
+    actual_by_arm = {
+        str(row.experiment_arm): str(row.analysis_end)
+        for row in summary.itertuples(index=False)
+    }
+    mismatches = {
+        arm: actual
+        for arm, actual in actual_by_arm.items()
+        if actual != expected_end
+    }
+    missing_arms = sorted(set(arm["arm"] for arm in ARMS) - set(actual_by_arm))
+    if mismatches or missing_arms:
+        raise RuntimeError(
+            "stage028_full_period_coverage_failed: "
+            + json.dumps(
+                {
+                    "expected_end": expected_end,
+                    "actual_by_arm": actual_by_arm,
+                    "mismatches": mismatches,
+                    "missing_arms": missing_arms,
+                },
+                ensure_ascii=False,
+            )
+        )
+
+
 def _history_contract(diagnostics: pd.DataFrame, arm: str) -> dict[str, Any]:
     frame = diagnostics[diagnostics["experiment_arm"].eq(arm)].copy()
     targeted = frame[frame["status"].astype(str).eq("targeted")]
@@ -236,16 +263,38 @@ def _history_contract(diagnostics: pd.DataFrame, arm: str) -> dict[str, Any]:
     return result
 
 
-def _delay_contract(delay: pd.DataFrame, rollover: pd.DataFrame) -> dict[str, Any]:
+def _delay_contract(
+    delay: pd.DataFrame,
+    rollover: pd.DataFrame,
+    trade_events: pd.DataFrame,
+) -> dict[str, Any]:
     frame = delay[delay["experiment_arm"].eq("C")].copy()
     due = frame[frame["status"].astype(str).eq("due")]
+    overdue = frame[frame["status"].astype(str).eq("overdue")]
+    execution = frame[frame["status"].astype(str).isin({"due", "overdue"})]
+    blocked_execution = frame[frame["status"].astype(str).eq("due_old_bar_missing")]
+    if not blocked_execution.empty:
+        blocked_keys = set(
+            zip(
+                blocked_execution["date"].astype(str),
+                blocked_execution["product_vt_symbol"].astype(str),
+                blocked_execution["target_contract_vt_symbol"].astype(str),
+            )
+        )
+        execution = execution[
+            [
+                (str(row.date), str(row.product_vt_symbol), str(row.target_contract_vt_symbol))
+                not in blocked_keys
+                for row in execution.itertuples(index=False)
+            ]
+        ]
     scheduled = frame[frame["status"].astype(str).eq("scheduled")]
     c_rollovers = rollover[rollover["experiment_arm"].eq("C")].copy()
-    due_keys = set(
+    execution_keys = set(
         zip(
-            due["date"].astype(str),
-            due["product_vt_symbol"].astype(str),
-            due["target_contract_vt_symbol"].astype(str),
+            execution["date"].astype(str),
+            execution["product_vt_symbol"].astype(str),
+            execution["target_contract_vt_symbol"].astype(str),
         )
     )
     rollover_keys = set(
@@ -255,11 +304,69 @@ def _delay_contract(delay: pd.DataFrame, rollover: pd.DataFrame) -> dict[str, An
             c_rollovers["target_contract_vt_symbol"].astype(str),
         )
     )
+
+    execution_task_keys = set(
+        zip(
+            execution["signal_date"].astype(str),
+            execution["product_vt_symbol"].astype(str),
+            execution["old_contract_vt_symbol"].astype(str),
+            execution["target_contract_vt_symbol"].astype(str),
+        )
+    )
+    reset = frame[frame["status"].astype(str).eq("target_changed_reset")]
+    reset_task_keys = set(
+        zip(
+            reset["signal_date"].astype(str),
+            reset["product_vt_symbol"].astype(str),
+            reset["old_contract_vt_symbol"].astype(str),
+            reset["target_contract_vt_symbol"].astype(str),
+        )
+    )
+    scheduled_task_keys = set(
+        zip(
+            scheduled["signal_date"].astype(str),
+            scheduled["product_vt_symbol"].astype(str),
+            scheduled["old_contract_vt_symbol"].astype(str),
+            scheduled["target_contract_vt_symbol"].astype(str),
+        )
+    )
+    c_events = trade_events[trade_events["experiment_arm"].eq("C")].copy()
+    c_events = c_events[c_events["offset"].astype(str).eq("Close")]
+    cancellation_checks: list[bool] = []
+    for scheduled_row in scheduled.itertuples(index=False):
+        task_key = (
+            str(scheduled_row.signal_date),
+            str(scheduled_row.product_vt_symbol),
+            str(scheduled_row.old_contract_vt_symbol),
+            str(scheduled_row.target_contract_vt_symbol),
+        )
+        if task_key in execution_task_keys or task_key in reset_task_keys:
+            continue
+        task_rows = frame[
+            frame["signal_date"].astype(str).eq(task_key[0])
+            & frame["product_vt_symbol"].astype(str).eq(task_key[1])
+            & frame["old_contract_vt_symbol"].astype(str).eq(task_key[2])
+            & frame["target_contract_vt_symbol"].astype(str).eq(task_key[3])
+        ]
+        last_wait_date = str(task_rows["date"].astype(str).max())
+        matching_close = c_events[
+            c_events["product_vt_symbol"].astype(str).eq(task_key[1])
+            & c_events["vt_symbol"].astype(str).eq(task_key[2])
+            & c_events["date"].astype(str).between(task_key[0], last_wait_date)
+        ]
+        cancellation_checks.append(not matching_close.empty)
+
+    cancelled_count = len(cancellation_checks)
     result = {
         "diagnostic_count": int(len(frame)),
         "scheduled_count": int(len(scheduled)),
         "due_count": int(len(due)),
-        "cancelled_before_due_count": int(max(0, len(scheduled) - len(due))),
+        "overdue_count": int(len(overdue)),
+        "target_changed_reset_count": int(len(reset_task_keys)),
+        "cancelled_before_due_count": int(cancelled_count),
+        "cancelled_has_real_old_contract_close_pass": bool(
+            cancelled_count == 0 or all(cancellation_checks)
+        ),
         "required_days_exact_5_pass": bool(
             not frame.empty
             and pd.to_numeric(frame["required_trading_days"], errors="coerce").eq(5).all()
@@ -268,14 +375,25 @@ def _delay_contract(delay: pd.DataFrame, rollover: pd.DataFrame) -> dict[str, An
             not due.empty
             and pd.to_numeric(due["elapsed_trading_days"], errors="coerce").eq(5).all()
         ),
-        "rollover_only_on_due_pass": bool(rollover_keys.issubset(due_keys)),
-        "due_has_rollover_diagnostic_pass": bool(due_keys.issubset(rollover_keys)),
+        "overdue_elapsed_gt_5_pass": bool(
+            overdue.empty
+            or pd.to_numeric(overdue["elapsed_trading_days"], errors="coerce").gt(5).all()
+        ),
+        "rollover_only_on_due_or_overdue_pass": bool(rollover_keys.issubset(execution_keys)),
+        "due_or_overdue_has_rollover_diagnostic_pass": bool(execution_keys.issubset(rollover_keys)),
+        "scheduled_terminal_classification_pass": bool(
+            len(scheduled_task_keys)
+            == len(execution_task_keys | reset_task_keys) + cancelled_count
+        ),
     }
     result["all_pass"] = bool(
         result["required_days_exact_5_pass"]
         and result["due_elapsed_exact_5_pass"]
-        and result["rollover_only_on_due_pass"]
-        and result["due_has_rollover_diagnostic_pass"]
+        and result["overdue_elapsed_gt_5_pass"]
+        and result["rollover_only_on_due_or_overdue_pass"]
+        and result["due_or_overdue_has_rollover_diagnostic_pass"]
+        and result["cancelled_has_real_old_contract_close_pass"]
+        and result["scheduled_terminal_classification_pass"]
     )
     return result
 
@@ -329,6 +447,7 @@ def main() -> None:
                 target.append(frame)
 
     summary = pd.concat(summaries, ignore_index=True, sort=False)
+    _assert_full_period_coverage(summary)
     curve = pd.concat(curves, ignore_index=True, sort=False)
     rollover = pd.concat(rollovers, ignore_index=True, sort=False)
     delay = pd.concat(delays, ignore_index=True, sort=False)
@@ -337,7 +456,7 @@ def main() -> None:
     comparison = _comparison(summary)
     b_history_contract = _history_contract(rollover, "B")
     c_history_contract = _history_contract(rollover, "C")
-    delay_contract = _delay_contract(delay, rollover)
+    delay_contract = _delay_contract(delay, rollover, trade_events_frame)
     if not b_history_contract["all_pass"] or not c_history_contract["all_pass"]:
         raise RuntimeError("stage028_target_history_contract_failed")
     if not delay_contract["all_pass"]:
