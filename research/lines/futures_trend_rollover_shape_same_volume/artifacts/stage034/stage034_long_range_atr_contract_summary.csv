@@ -1,0 +1,2 @@
+﻿diagnostic_count,valid_long_count,condition_met_count,expansion_stall_condition_count,ordered_drawdown_condition_count,both_condition_count,expansion_stall_only_count,ordered_drawdown_only_count,actual_incremental_block_count,matched_after_prior_zero_count,actual_block_context_counts,config_pass,or_semantics_pass,expansion_component_pass,ordered_component_pass,blocked_semantics_pass,prior_zero_not_double_counted_pass,short_never_blocked_pass,all_pass
+971,485,79,69,10,0,69,10,73,6,{'flat_entry': 73},True,True,True,True,True,True,True,True

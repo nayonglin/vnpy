@@ -197,6 +197,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     long_signal_range_recent_gain_lookback: int = 3
     long_signal_range_recent_gain_atr_multiplier: float = 0.5
     long_signal_range_enable_ordered_drawdown_filter: bool = False
+    long_signal_range_ordered_drawdown_atr_multiplier: float = 3.0
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -507,6 +508,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "long_signal_range_recent_gain_lookback",
         "long_signal_range_recent_gain_atr_multiplier",
         "long_signal_range_enable_ordered_drawdown_filter",
+        "long_signal_range_ordered_drawdown_atr_multiplier",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -5347,6 +5349,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         enable_ordered_drawdown = bool(
             self.long_signal_range_enable_ordered_drawdown_filter
         )
+        ordered_drawdown_atr_multiplier = float(
+            getattr(self, "long_signal_range_ordered_drawdown_atr_multiplier", 3.0)
+            or 0.0
+        )
         contexts = {
             item.strip()
             for item in str(self.long_signal_range_atr_entry_contexts or "").replace(";", ",").split(",")
@@ -5363,6 +5369,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_enable_ordered_drawdown_filter": int(
                 enable_ordered_drawdown
             ),
+            "long_signal_range_ordered_drawdown_atr_multiplier": (
+                ordered_drawdown_atr_multiplier
+            ),
             "long_signal_range_atr_entry_context": entry_context,
             "long_signal_range_atr_direction": direction,
             "long_signal_range_high": float("nan"),
@@ -5377,6 +5386,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_ordered_drawdown_peak": float("nan"),
             "long_signal_range_ordered_drawdown_trough": float("nan"),
             "long_signal_range_ordered_drawdown_value": float("nan"),
+            "long_signal_range_ordered_drawdown_atr_threshold": float("nan"),
             "long_signal_range_ordered_drawdown_peak_index": -1,
             "long_signal_range_ordered_drawdown_trough_index": -1,
             "long_signal_range_ordered_drawdown_peak_history_index": "",
@@ -5398,6 +5408,13 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             or atr_period <= 0
             or not np.isfinite(multiplier)
             or multiplier <= 0
+            or (
+                enable_ordered_drawdown
+                and (
+                    not np.isfinite(ordered_drawdown_atr_multiplier)
+                    or ordered_drawdown_atr_multiplier <= 0
+                )
+            )
             or (
                 require_recent_stall
                 and (
@@ -5467,6 +5484,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         low_value = float(range_low.min())
         range_value = high_value - low_value
         threshold = multiplier * prior_atr
+        ordered_drawdown_threshold = ordered_drawdown_atr_multiplier * prior_atr
         recent_gain = float("nan")
         recent_gain_threshold = float("nan")
         recent_stall_condition_met = 0
@@ -5523,7 +5541,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                     range_window.index[best_trough_index]
                 )
                 ordered_drawdown_condition_met = int(
-                    ordered_drawdown_value > threshold
+                    ordered_drawdown_value > ordered_drawdown_threshold
                 )
         expansion_stall_condition_met = int(
             range_value > threshold
@@ -5545,6 +5563,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "long_signal_range_ordered_drawdown_peak": ordered_drawdown_peak,
                 "long_signal_range_ordered_drawdown_trough": ordered_drawdown_trough,
                 "long_signal_range_ordered_drawdown_value": ordered_drawdown_value,
+                "long_signal_range_ordered_drawdown_atr_threshold": (
+                    ordered_drawdown_threshold
+                ),
                 "long_signal_range_ordered_drawdown_peak_index": (
                     ordered_drawdown_peak_index
                 ),
