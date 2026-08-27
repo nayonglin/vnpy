@@ -193,6 +193,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     long_signal_range_atr_period: int = 5
     long_signal_range_atr_multiplier: float = 3.0
     long_signal_range_atr_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
+    long_signal_range_require_recent_stall: bool = False
+    long_signal_range_recent_gain_lookback: int = 3
+    long_signal_range_recent_gain_atr_multiplier: float = 0.5
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -499,6 +502,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "long_signal_range_atr_period",
         "long_signal_range_atr_multiplier",
         "long_signal_range_atr_entry_contexts",
+        "long_signal_range_require_recent_stall",
+        "long_signal_range_recent_gain_lookback",
+        "long_signal_range_recent_gain_atr_multiplier",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -5331,6 +5337,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         lookback = int(self.long_signal_range_lookback or 0)
         atr_period = int(self.long_signal_range_atr_period or 0)
         multiplier = float(self.long_signal_range_atr_multiplier or 0.0)
+        require_recent_stall = bool(self.long_signal_range_require_recent_stall)
+        recent_gain_lookback = int(self.long_signal_range_recent_gain_lookback or 0)
+        recent_gain_atr_multiplier = float(
+            self.long_signal_range_recent_gain_atr_multiplier or 0.0
+        )
         contexts = {
             item.strip()
             for item in str(self.long_signal_range_atr_entry_contexts or "").replace(";", ",").split(",")
@@ -5341,6 +5352,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_lookback": lookback,
             "long_signal_range_atr_period": atr_period,
             "long_signal_range_atr_multiplier": multiplier,
+            "long_signal_range_require_recent_stall": int(require_recent_stall),
+            "long_signal_range_recent_gain_lookback": recent_gain_lookback,
+            "long_signal_range_recent_gain_atr_multiplier": recent_gain_atr_multiplier,
             "long_signal_range_atr_entry_context": entry_context,
             "long_signal_range_atr_direction": direction,
             "long_signal_range_high": float("nan"),
@@ -5348,6 +5362,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_value": float("nan"),
             "long_signal_range_prior_atr": float("nan"),
             "long_signal_range_atr_threshold": float("nan"),
+            "long_signal_range_recent_gain": float("nan"),
+            "long_signal_range_recent_gain_atr_threshold": float("nan"),
+            "long_signal_range_recent_stall_condition_met": 0,
             "long_signal_range_atr_condition_met": 0,
             "long_signal_range_atr_reason": "disabled",
         }
@@ -5364,11 +5381,23 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             or atr_period <= 0
             or not np.isfinite(multiplier)
             or multiplier <= 0
+            or (
+                require_recent_stall
+                and (
+                    recent_gain_lookback <= 0
+                    or not np.isfinite(recent_gain_atr_multiplier)
+                    or recent_gain_atr_multiplier < 0
+                )
+            )
         ):
             snapshot["long_signal_range_atr_reason"] = "invalid_configuration"
             return snapshot
 
-        required_count = max(lookback, atr_period + 2)
+        required_count = max(
+            lookback,
+            atr_period + 2,
+            recent_gain_lookback + 1 if require_recent_stall else 0,
+        )
         if history is None or len(history) < required_count:
             snapshot["long_signal_range_atr_reason"] = "insufficient_history"
             return snapshot
@@ -5421,6 +5450,24 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         low_value = float(range_low.min())
         range_value = high_value - low_value
         threshold = multiplier * prior_atr
+        recent_gain = float("nan")
+        recent_gain_threshold = float("nan")
+        recent_stall_condition_met = 0
+        if require_recent_stall:
+            recent_close = pd.to_numeric(
+                history["close"].tail(recent_gain_lookback + 1),
+                errors="coerce",
+            )
+            if (
+                len(recent_close) != recent_gain_lookback + 1
+                or not np.isfinite(recent_close.to_numpy(dtype="float64")).all()
+                or (recent_close <= 0).any()
+            ):
+                snapshot["long_signal_range_atr_reason"] = "invalid_recent_close_history"
+                return snapshot
+            recent_gain = float(recent_close.iloc[-1] - recent_close.iloc[0])
+            recent_gain_threshold = recent_gain_atr_multiplier * prior_atr
+            recent_stall_condition_met = int(recent_gain < recent_gain_threshold)
         snapshot.update(
             {
                 "long_signal_range_high": high_value,
@@ -5428,14 +5475,28 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "long_signal_range_value": range_value,
                 "long_signal_range_prior_atr": prior_atr,
                 "long_signal_range_atr_threshold": threshold,
+                "long_signal_range_recent_gain": recent_gain,
+                "long_signal_range_recent_gain_atr_threshold": recent_gain_threshold,
+                "long_signal_range_recent_stall_condition_met": recent_stall_condition_met,
             }
         )
         if prior_atr <= 0 or range_value < 0:
             snapshot["long_signal_range_atr_reason"] = "invalid_prior_atr_or_range"
             return snapshot
-        if range_value > threshold:
+        if range_value > threshold and (
+            not require_recent_stall or recent_stall_condition_met
+        ):
             snapshot["long_signal_range_atr_condition_met"] = 1
-            snapshot["long_signal_range_atr_reason"] = "range_strictly_above_threshold"
+            snapshot["long_signal_range_atr_reason"] = (
+                "range_strictly_above_and_recent_gain_below_threshold"
+                if require_recent_stall
+                else "range_strictly_above_threshold"
+            )
+            return snapshot
+        if range_value > threshold and require_recent_stall:
+            snapshot["long_signal_range_atr_reason"] = (
+                "range_above_but_recent_gain_not_stalled"
+            )
             return snapshot
         snapshot["long_signal_range_atr_reason"] = "range_not_above_threshold"
         return snapshot
