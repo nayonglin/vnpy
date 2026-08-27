@@ -196,6 +196,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     long_signal_range_require_recent_stall: bool = False
     long_signal_range_recent_gain_lookback: int = 3
     long_signal_range_recent_gain_atr_multiplier: float = 0.5
+    long_signal_range_enable_ordered_drawdown_filter: bool = False
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -505,6 +506,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "long_signal_range_require_recent_stall",
         "long_signal_range_recent_gain_lookback",
         "long_signal_range_recent_gain_atr_multiplier",
+        "long_signal_range_enable_ordered_drawdown_filter",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -5342,6 +5344,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         recent_gain_atr_multiplier = float(
             self.long_signal_range_recent_gain_atr_multiplier or 0.0
         )
+        enable_ordered_drawdown = bool(
+            self.long_signal_range_enable_ordered_drawdown_filter
+        )
         contexts = {
             item.strip()
             for item in str(self.long_signal_range_atr_entry_contexts or "").replace(";", ",").split(",")
@@ -5355,6 +5360,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_require_recent_stall": int(require_recent_stall),
             "long_signal_range_recent_gain_lookback": recent_gain_lookback,
             "long_signal_range_recent_gain_atr_multiplier": recent_gain_atr_multiplier,
+            "long_signal_range_enable_ordered_drawdown_filter": int(
+                enable_ordered_drawdown
+            ),
             "long_signal_range_atr_entry_context": entry_context,
             "long_signal_range_atr_direction": direction,
             "long_signal_range_high": float("nan"),
@@ -5365,6 +5373,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             "long_signal_range_recent_gain": float("nan"),
             "long_signal_range_recent_gain_atr_threshold": float("nan"),
             "long_signal_range_recent_stall_condition_met": 0,
+            "long_signal_range_expansion_stall_condition_met": 0,
+            "long_signal_range_ordered_drawdown_peak": float("nan"),
+            "long_signal_range_ordered_drawdown_trough": float("nan"),
+            "long_signal_range_ordered_drawdown_value": float("nan"),
+            "long_signal_range_ordered_drawdown_peak_index": -1,
+            "long_signal_range_ordered_drawdown_trough_index": -1,
+            "long_signal_range_ordered_drawdown_peak_history_index": "",
+            "long_signal_range_ordered_drawdown_trough_history_index": "",
+            "long_signal_range_ordered_drawdown_condition_met": 0,
             "long_signal_range_atr_condition_met": 0,
             "long_signal_range_atr_reason": "disabled",
         }
@@ -5468,6 +5485,50 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             recent_gain = float(recent_close.iloc[-1] - recent_close.iloc[0])
             recent_gain_threshold = recent_gain_atr_multiplier * prior_atr
             recent_stall_condition_met = int(recent_gain < recent_gain_threshold)
+        ordered_drawdown_peak = float("nan")
+        ordered_drawdown_trough = float("nan")
+        ordered_drawdown_value = float("nan")
+        ordered_drawdown_peak_index = -1
+        ordered_drawdown_trough_index = -1
+        ordered_drawdown_peak_history_index = ""
+        ordered_drawdown_trough_history_index = ""
+        ordered_drawdown_condition_met = 0
+        if enable_ordered_drawdown:
+            high_values = range_high.to_numpy(dtype="float64")
+            low_values = range_low.to_numpy(dtype="float64")
+            running_peak = float(high_values[0])
+            running_peak_index = 0
+            best_value = float("-inf")
+            best_peak_index = -1
+            best_trough_index = -1
+            for trough_index in range(1, len(range_window)):
+                candidate_value = running_peak - float(low_values[trough_index])
+                if candidate_value > best_value:
+                    best_value = candidate_value
+                    best_peak_index = running_peak_index
+                    best_trough_index = trough_index
+                if float(high_values[trough_index]) > running_peak:
+                    running_peak = float(high_values[trough_index])
+                    running_peak_index = trough_index
+            if best_peak_index >= 0 and best_trough_index > best_peak_index:
+                ordered_drawdown_peak = float(high_values[best_peak_index])
+                ordered_drawdown_trough = float(low_values[best_trough_index])
+                ordered_drawdown_value = float(best_value)
+                ordered_drawdown_peak_index = int(best_peak_index)
+                ordered_drawdown_trough_index = int(best_trough_index)
+                ordered_drawdown_peak_history_index = str(
+                    range_window.index[best_peak_index]
+                )
+                ordered_drawdown_trough_history_index = str(
+                    range_window.index[best_trough_index]
+                )
+                ordered_drawdown_condition_met = int(
+                    ordered_drawdown_value > threshold
+                )
+        expansion_stall_condition_met = int(
+            range_value > threshold
+            and (not require_recent_stall or recent_stall_condition_met)
+        )
         snapshot.update(
             {
                 "long_signal_range_high": high_value,
@@ -5478,20 +5539,48 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 "long_signal_range_recent_gain": recent_gain,
                 "long_signal_range_recent_gain_atr_threshold": recent_gain_threshold,
                 "long_signal_range_recent_stall_condition_met": recent_stall_condition_met,
+                "long_signal_range_expansion_stall_condition_met": (
+                    expansion_stall_condition_met
+                ),
+                "long_signal_range_ordered_drawdown_peak": ordered_drawdown_peak,
+                "long_signal_range_ordered_drawdown_trough": ordered_drawdown_trough,
+                "long_signal_range_ordered_drawdown_value": ordered_drawdown_value,
+                "long_signal_range_ordered_drawdown_peak_index": (
+                    ordered_drawdown_peak_index
+                ),
+                "long_signal_range_ordered_drawdown_trough_index": (
+                    ordered_drawdown_trough_index
+                ),
+                "long_signal_range_ordered_drawdown_peak_history_index": (
+                    ordered_drawdown_peak_history_index
+                ),
+                "long_signal_range_ordered_drawdown_trough_history_index": (
+                    ordered_drawdown_trough_history_index
+                ),
+                "long_signal_range_ordered_drawdown_condition_met": (
+                    ordered_drawdown_condition_met
+                ),
             }
         )
         if prior_atr <= 0 or range_value < 0:
             snapshot["long_signal_range_atr_reason"] = "invalid_prior_atr_or_range"
             return snapshot
-        if range_value > threshold and (
-            not require_recent_stall or recent_stall_condition_met
-        ):
+        if expansion_stall_condition_met or ordered_drawdown_condition_met:
             snapshot["long_signal_range_atr_condition_met"] = 1
-            snapshot["long_signal_range_atr_reason"] = (
-                "range_strictly_above_and_recent_gain_below_threshold"
-                if require_recent_stall
-                else "range_strictly_above_threshold"
-            )
+            if expansion_stall_condition_met and ordered_drawdown_condition_met:
+                snapshot["long_signal_range_atr_reason"] = (
+                    "range_stall_and_ordered_drawdown_both"
+                )
+            elif ordered_drawdown_condition_met:
+                snapshot["long_signal_range_atr_reason"] = (
+                    "ordered_drawdown_strictly_above_threshold"
+                )
+            else:
+                snapshot["long_signal_range_atr_reason"] = (
+                    "range_strictly_above_and_recent_gain_below_threshold"
+                    if require_recent_stall
+                    else "range_strictly_above_threshold"
+                )
             return snapshot
         if range_value > threshold and require_recent_stall:
             snapshot["long_signal_range_atr_reason"] = (
