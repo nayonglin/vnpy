@@ -1,0 +1,2 @@
+﻿diagnostic_count,valid_long_count,condition_met_count,actual_incremental_block_count,matched_after_prior_zero_count,actual_block_context_counts,config_pass,blocked_semantics_pass,positive_unblocked_threshold_pass,short_never_blocked_pass,prior_zero_not_double_counted_pass,all_pass
+976,489,320,310,10,"{'flat_entry': 307, 'rollover_reopen': 3}",True,True,True,True,True,True

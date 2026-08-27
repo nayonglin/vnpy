@@ -586,6 +586,9 @@ def _run_profile(profile: dict[str, Any], metadata: dict[str, Any]) -> tuple[pd.
             "long_signal_atr_shock": pd.DataFrame(
                 getattr(strategy, "long_signal_atr_shock_diagnostics", []) if strategy else []
             ),
+            "long_signal_range_atr": pd.DataFrame(
+                getattr(strategy, "long_signal_range_atr_diagnostics", []) if strategy else []
+            ),
             "pending_orders": _active_limit_orders_frame(engine),
         }
         for frame in frames.values():

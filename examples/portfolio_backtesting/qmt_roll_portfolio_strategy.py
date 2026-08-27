@@ -188,6 +188,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     long_signal_atr_shock_period: int = 5
     long_signal_atr_shock_multiplier: float = 2.0
     long_signal_atr_shock_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
+    enable_long_signal_range_atr_filter: bool = False
+    long_signal_range_lookback: int = 10
+    long_signal_range_atr_period: int = 5
+    long_signal_range_atr_multiplier: float = 3.0
+    long_signal_range_atr_entry_contexts: str = "flat_entry,reverse_entry,rollover_reopen"
     enable_rollover_reopen_drawdown_guard: bool = False
     rollover_reopen_max_portfolio_drawdown_pct: float = 0.10
     reverse_on_opposite_signal: bool = True
@@ -489,6 +494,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         "long_signal_atr_shock_period",
         "long_signal_atr_shock_multiplier",
         "long_signal_atr_shock_entry_contexts",
+        "enable_long_signal_range_atr_filter",
+        "long_signal_range_lookback",
+        "long_signal_range_atr_period",
+        "long_signal_range_atr_multiplier",
+        "long_signal_range_atr_entry_contexts",
         "enable_rollover_reopen_drawdown_guard",
         "rollover_reopen_max_portfolio_drawdown_pct",
         "reverse_on_opposite_signal",
@@ -828,6 +838,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.rollover_shape_same_volume_diagnostics: list[dict[str, Any]] = []
         self.rollover_delay_diagnostics: list[dict[str, Any]] = []
         self.long_signal_atr_shock_diagnostics: list[dict[str, Any]] = []
+        self.long_signal_range_atr_diagnostics: list[dict[str, Any]] = []
         self.trade_reason_by_trade_id: dict[str, str] = {}
         self.execution_price_overrides: dict[str, float] = {}
         self.trade_costs_total: float = 0.0
@@ -5310,6 +5321,166 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
         return sizing
 
+    def _long_signal_range_atr_snapshot(
+        self,
+        direction: str,
+        history: pd.DataFrame,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        enabled = bool(self.enable_long_signal_range_atr_filter)
+        lookback = int(self.long_signal_range_lookback or 0)
+        atr_period = int(self.long_signal_range_atr_period or 0)
+        multiplier = float(self.long_signal_range_atr_multiplier or 0.0)
+        contexts = {
+            item.strip()
+            for item in str(self.long_signal_range_atr_entry_contexts or "").replace(";", ",").split(",")
+            if item.strip()
+        }
+        snapshot: dict[str, Any] = {
+            "long_signal_range_atr_enabled": int(enabled),
+            "long_signal_range_lookback": lookback,
+            "long_signal_range_atr_period": atr_period,
+            "long_signal_range_atr_multiplier": multiplier,
+            "long_signal_range_atr_entry_context": entry_context,
+            "long_signal_range_atr_direction": direction,
+            "long_signal_range_high": float("nan"),
+            "long_signal_range_low": float("nan"),
+            "long_signal_range_value": float("nan"),
+            "long_signal_range_prior_atr": float("nan"),
+            "long_signal_range_atr_threshold": float("nan"),
+            "long_signal_range_atr_condition_met": 0,
+            "long_signal_range_atr_reason": "disabled",
+        }
+        if not enabled:
+            return snapshot
+        if direction != "long":
+            snapshot["long_signal_range_atr_reason"] = "direction_excluded"
+            return snapshot
+        if entry_context not in contexts:
+            snapshot["long_signal_range_atr_reason"] = "entry_context_excluded"
+            return snapshot
+        if (
+            lookback <= 0
+            or atr_period <= 0
+            or not np.isfinite(multiplier)
+            or multiplier <= 0
+        ):
+            snapshot["long_signal_range_atr_reason"] = "invalid_configuration"
+            return snapshot
+
+        required_count = max(lookback, atr_period + 2)
+        if history is None or len(history) < required_count:
+            snapshot["long_signal_range_atr_reason"] = "insufficient_history"
+            return snapshot
+        if not {"close", "high", "low"}.issubset(history.columns):
+            snapshot["long_signal_range_atr_reason"] = "invalid_history"
+            return snapshot
+
+        range_window = history.tail(lookback)
+        range_high = pd.to_numeric(range_window["high"], errors="coerce")
+        range_low = pd.to_numeric(range_window["low"], errors="coerce")
+        atr_window = history.tail(atr_period + 2)
+        atr_close = pd.to_numeric(atr_window["close"], errors="coerce")
+        atr_high = pd.to_numeric(atr_window["high"], errors="coerce")
+        atr_low = pd.to_numeric(atr_window["low"], errors="coerce")
+        numeric_series = (range_high, range_low, atr_close, atr_high, atr_low)
+        if (
+            any(not np.isfinite(series.to_numpy(dtype="float64")).all() for series in numeric_series)
+            or (range_high <= 0).any()
+            or (range_low <= 0).any()
+            or (atr_close <= 0).any()
+            or (atr_high <= 0).any()
+            or (atr_low <= 0).any()
+            or (range_high < range_low).any()
+            or (atr_high < atr_low).any()
+        ):
+            snapshot["long_signal_range_atr_reason"] = "invalid_history"
+            return snapshot
+
+        completed_close = atr_close.iloc[:-1]
+        completed_high = atr_high.iloc[:-1]
+        completed_low = atr_low.iloc[:-1]
+        previous_close = completed_close.shift(1)
+        true_range = pd.concat(
+            [
+                (completed_high - completed_low).abs(),
+                (completed_high - previous_close).abs(),
+                (completed_low - previous_close).abs(),
+            ],
+            axis=1,
+        ).max(axis=1).iloc[1:]
+        if (
+            len(true_range) != atr_period
+            or not np.isfinite(true_range.to_numpy(dtype="float64")).all()
+        ):
+            snapshot["long_signal_range_atr_reason"] = "invalid_prior_true_range"
+            return snapshot
+
+        prior_atr = float(true_range.mean())
+        high_value = float(range_high.max())
+        low_value = float(range_low.min())
+        range_value = high_value - low_value
+        threshold = multiplier * prior_atr
+        snapshot.update(
+            {
+                "long_signal_range_high": high_value,
+                "long_signal_range_low": low_value,
+                "long_signal_range_value": range_value,
+                "long_signal_range_prior_atr": prior_atr,
+                "long_signal_range_atr_threshold": threshold,
+            }
+        )
+        if prior_atr <= 0 or range_value < 0:
+            snapshot["long_signal_range_atr_reason"] = "invalid_prior_atr_or_range"
+            return snapshot
+        if range_value > threshold:
+            snapshot["long_signal_range_atr_condition_met"] = 1
+            snapshot["long_signal_range_atr_reason"] = "range_strictly_above_threshold"
+            return snapshot
+        snapshot["long_signal_range_atr_reason"] = "range_not_above_threshold"
+        return snapshot
+
+    def _apply_long_signal_range_atr_to_sizing(
+        self,
+        sizing: dict[str, Any],
+        snapshot: dict[str, Any],
+        *,
+        vt_symbol: str,
+        direction: str,
+        bar: BarData,
+        entry_context: str,
+    ) -> dict[str, Any]:
+        selected_before = max(0, int(sizing.get("selected_volume") or 0))
+        condition_met = int(snapshot.get("long_signal_range_atr_condition_met") or 0)
+        actually_blocked = int(bool(condition_met and selected_before > 0))
+        selected_after = 0 if actually_blocked else selected_before
+        sizing.update(snapshot)
+        sizing["long_signal_range_atr_blocked"] = actually_blocked
+        sizing["long_signal_range_atr_selected_volume_before"] = selected_before
+        sizing["long_signal_range_atr_selected_volume_after"] = selected_after
+        sizing["selected_volume"] = selected_after
+        diagnostics = getattr(self, "long_signal_range_atr_diagnostics", None)
+        if diagnostics is not None and int(snapshot.get("long_signal_range_atr_enabled") or 0):
+            diagnostics.append(
+                {
+                    "diagnostic_index": len(diagnostics) + 1,
+                    "datetime": bar.datetime,
+                    "date": bar.datetime.date(),
+                    "contract_vt_symbol": vt_symbol,
+                    "product_vt_symbol": self.source_symbol_by_contract.get(
+                        vt_symbol,
+                        self._product_vt_symbol(vt_symbol),
+                    ),
+                    "direction": direction,
+                    "entry_context": entry_context,
+                    **snapshot,
+                    "long_signal_range_atr_blocked": actually_blocked,
+                    "long_signal_range_atr_selected_volume_before": selected_before,
+                    "long_signal_range_atr_selected_volume_after": selected_after,
+                }
+            )
+        return sizing
+
     def _calculate_entry_sizing(
         self,
         vt_symbol: str,
@@ -5371,6 +5542,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         overheat_cooldown_scale = float(overheat_cooldown_fields["portfolio_overheat_cooldown_scale"])
         directional_30d_risk_boost_fields = self._directional_30d_risk_boost_snapshot(direction, history)
         long_signal_atr_shock_fields = self._long_signal_atr_shock_snapshot(
+            direction,
+            history,
+            entry_context,
+        )
+        long_signal_range_atr_fields = self._long_signal_range_atr_snapshot(
             direction,
             history,
             entry_context,
@@ -5453,9 +5629,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
                 **incremental_gate_fields,
             }
             sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
-            return self._apply_long_signal_atr_shock_to_sizing(
+            sizing_result = self._apply_long_signal_atr_shock_to_sizing(
                 sizing_result,
                 long_signal_atr_shock_fields,
+                vt_symbol=vt_symbol,
+                direction=direction,
+                bar=bar,
+                entry_context=entry_context,
+            )
+            return self._apply_long_signal_range_atr_to_sizing(
+                sizing_result,
+                long_signal_range_atr_fields,
                 vt_symbol=vt_symbol,
                 direction=direction,
                 bar=bar,
@@ -5568,9 +5752,17 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             **incremental_gate_fields,
         }
         sizing_result.update(self._recovery_sleeve_fields(sizing_result, bar, entry_context, direction, history))
-        return self._apply_long_signal_atr_shock_to_sizing(
+        sizing_result = self._apply_long_signal_atr_shock_to_sizing(
             sizing_result,
             long_signal_atr_shock_fields,
+            vt_symbol=vt_symbol,
+            direction=direction,
+            bar=bar,
+            entry_context=entry_context,
+        )
+        return self._apply_long_signal_range_atr_to_sizing(
+            sizing_result,
+            long_signal_range_atr_fields,
             vt_symbol=vt_symbol,
             direction=direction,
             bar=bar,
