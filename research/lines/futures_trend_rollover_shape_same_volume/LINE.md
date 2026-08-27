@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage027 的新主力自身K线和 Stage028 的固定5交易日延迟均保持研究态；Stage029 固定43窗/129臂多周期再次确认 Stage028 不可晋级，正式物料、master与生产未改变
+- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage037 在Stage034上加入空头镜像硬拦截，完整周期相对正式A全面改善，但相对Stage034 B的滑点为105.6559%，略超预声明105%门，当前保持研究态；正式物料、master与生产未改变
 - 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。后续仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准；Stage027 不属于活动正式物料
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
@@ -254,3 +254,11 @@
 - 相对Stage032无有序回撤参考，C期末权益 `+306,964.10`、回撤改善 `2.2911pp`、Sharpe `+0.018607`，但滑点 `1,580,570 > 1,527,820`，多 `52,750`，是唯一失败硬门。
 - C路径OR命中79：原条件A 69、四倍有序回撤10、重叠0；已有规则先归零6，过滤节点前正手数置0事件73，全部多头普通开仓。独立review `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。
 - 决策 `stage034_ordered_drawdown_4atr_fail_full_period_stop`；不跑多周期、不扫3.5/4.5/5倍、窗口、ATR、品种、方向或年份，不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage037 Stage034空头镜像硬拦截
+
+- Stage037严格继承Stage034，B/C唯一配置差异是 `enable_short_signal_range_atr_filter=true`；多头规则原样，空头A使用 `range10 > 3×prior ATR5 && close[T-3]-close[T] < 0.5×prior ATR5`，空头B使用先低后高反弹严格 `>4×prior ATR5`，两者OR、等号放行、只作用初始入口并硬置0。
+- A/B逐值复用Stage034冻结产物，只新跑C；数据库SHA `d7375e...` 与Stage034相同，三臂均为2098个交易日。
+- C为 `17,051,717.30/11267.8115%/-39.9147%/Sharpe1.543941`，滑点 `1,669,965`、交易 `733`、胜率 `53.1984%`、broker10峰值 `93.5807%`。相对B期末权益 `+1,523,403.70`、回撤改善 `0.4182pp`、Sharpe `+0.038240`；相对正式A期末权益 `+2,062,202.20`、回撤改善 `4.9886pp`、Sharpe `+0.075386`且滑点减少。
+- OR命中152个候选事件，多头79、空头73；正手数实际硬拦截144个，多头73、空头71；语义、时序、严格大于、入口和硬置0合同全部通过。
+- 唯一失败门是C滑点为B的 `105.6559%`，超过105%上限约 `0.6559pp`；独立reviewer复算为 `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。决策 `stage037_short_mirror_block_fail_full_period_stop`，不自动多周期、不救参、不改正式物料/master/production/CTP，订单API `0/0/0`。
