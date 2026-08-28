@@ -1,0 +1,164 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage049",
+  "generated_at": "2026-08-29T03:01:43+08:00",
+  "identity": {
+    "production_head": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "remote_master": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "origin_master_tracking": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "online_alias": "Stage847-C9-15w",
+    "online_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+    "online_source_stage": "Stage847/Stage928 + Stage021-Q",
+    "online_capital": 150000.0,
+    "online_config_sha256": "cc2de1f29709381287ca8d4aad6ebffe824fa22e1cb8b59c45f0aa90bd93d44a",
+    "production_config_sha256": "cc2de1f29709381287ca8d4aad6ebffe824fa22e1cb8b59c45f0aa90bd93d44a",
+    "online_to_stage037_override_diff": {
+      "enable_long_signal_range_atr_filter": [
+        null,
+        true
+      ],
+      "enable_short_signal_range_atr_filter": [
+        null,
+        true
+      ],
+      "long_signal_range_atr_entry_contexts": [
+        null,
+        "flat_entry,reverse_entry,rollover_reopen"
+      ],
+      "long_signal_range_atr_multiplier": [
+        null,
+        3.0
+      ],
+      "long_signal_range_atr_period": [
+        null,
+        5
+      ],
+      "long_signal_range_enable_ordered_drawdown_filter": [
+        null,
+        true
+      ],
+      "long_signal_range_lookback": [
+        null,
+        10
+      ],
+      "long_signal_range_ordered_drawdown_atr_multiplier": [
+        null,
+        4.0
+      ],
+      "long_signal_range_recent_gain_atr_multiplier": [
+        null,
+        0.5
+      ],
+      "long_signal_range_recent_gain_lookback": [
+        null,
+        3
+      ],
+      "long_signal_range_require_recent_stall": [
+        null,
+        true
+      ],
+      "rollover_delay_trading_days": [
+        null,
+        5
+      ],
+      "rollover_shape_history_mode": [
+        "backwards_ratio_continuous",
+        "target_contract_only"
+      ]
+    },
+    "runtime_binding": {
+      "trader_dir": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod",
+      "temp_dir": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/.vntrader",
+      "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/.vntrader/database.db",
+      "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+      "production_database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+      "latest_daily_date": "2026-08-28"
+    },
+    "ai_pool": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/combined_eligibility.csv",
+      "sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+      "row_count": 513,
+      "min_eval_date": "2019-12-31",
+      "max_eval_date": "2026-07-31",
+      "eval_date_count": 56,
+      "production_path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/combined_eligibility.csv",
+      "production_sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+      "production_parity_pass": true
+    },
+    "source_sha256": {
+      "stage037_strategy": "74664ccbde9de1cefeb7673570bb9c7afcbfd1171da4ace31fdfe10c95284af1",
+      "production_strategy": "af5d0fb9affedbb8a54f5c6691a2e0f0d32b6cc2193d5379b1b3923a3813ad94",
+      "stage037_config": "b235e9298f49ff7db182e872913e9f3ed1c840149c249a7d43eaa6a8c5399ab6",
+      "runner": "95ca9b9561451cc6ae6cae835a60007066a32e43501fd49d9826d8e8b9edb813"
+    },
+    "stage047_result_commit": "a50d83f6d6e45577696cc0181ce70aff50747be1",
+    "stage048_result_commit": "f57678fe7671affe15d3a9fdd67266080e8b5957",
+    "stage049_parent_head": "f57678fe7671affe15d3a9fdd67266080e8b5957",
+    "source_curve_sha256": "8a0063de2ebcdd992329cd3739c7c9ed771c68d739a327d635b6a0784c7b4ca0",
+    "source_summary_sha256": "d5ff0de52accb612c35314c5f815e65d151b4089f66d701a0d8ac16dd11294fa",
+    "source_decision_sha256": "fe4d62f2bb6c47ecbd761faad2202081805046a46619e77b2537c0ef84496c6a",
+    "stage048_decision_sha256": "801237f46a16f759c5a1bf242eec8406479e29bf0f4aeb9cc7a142c7c4945aaa",
+    "runtime_contract_sha256": "33ede3fed83fe46449e2c130b3c5ad74ec7fb29a74eda9f059ddc3d2053fd1be"
+  },
+  "source": {
+    "curve": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage047_stage037_vs_live/stage047_stage037_vs_live_curve.csv",
+    "summary": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage047_stage037_vs_live/stage047_stage037_vs_live_summary.csv",
+    "decision": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage047_stage037_vs_live/stage047_stage037_vs_live_decision.json",
+    "aligned_return_count": 2100,
+    "start_date": "2018-01-03",
+    "end_date": "2026-08-28"
+  },
+  "method": {
+    "type": "paired_circular_block_bootstrap_on_daily_returns",
+    "n_simulations_per_method": 10000,
+    "plot_simulations_per_main_method": 2000,
+    "block_lengths": [
+      1,
+      20,
+      60,
+      120
+    ],
+    "main_block_lengths": [
+      60,
+      120
+    ],
+    "random_seed": 4903720260829,
+    "common_indices_for_A_and_C": true
+  },
+  "predeclared_gates": {
+    "C_return_win_rate_pct_min": 55.0,
+    "C_return_delta_p50_pct_min": 0.0,
+    "C_dd_noninferior_2pp_rate_pct_min": 80.0,
+    "C_sharpe_noninferior_005_rate_pct_min": 80.0,
+    "C_p05_end_nav_not_below_A": true,
+    "C_prob_dd50_not_above_A": true,
+    "all_main_methods_required": true
+  },
+  "main_methods_all_pass": false,
+  "decision": "stage049_mc_does_not_support_stable_stage037_path_advantage_keep_research",
+  "promote_to_official": false,
+  "stage048_multicycle_hard_fail_remains_binding": true,
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false,
+  "outputs": {
+    "source_stats": "stage049_source_path_stats.csv",
+    "simulations": "stage049_simulations.csv",
+    "paired_simulations": "stage049_paired_simulations.csv",
+    "summary": "stage049_monte_carlo_summary.csv",
+    "paired_summary": "stage049_paired_summary.csv",
+    "report": "stage049_monte_carlo_report.md",
+    "fan_chart": "stage049_nav_fan_ac.png",
+    "drawdown_chart": "stage049_drawdown_probability_ac.png",
+    "paired_chart": "stage049_paired_advantage_ac.png"
+  }
+}
