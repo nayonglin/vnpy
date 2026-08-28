@@ -29,9 +29,9 @@
 
 - 正式源码提交：待冻结；Stage027-049/正式规则联合回归 `83 passed, 14 subtests passed`，物料/manifest/identity/Stage948 联合回归 `58 passed, 3 subtests passed`，三项运行 Skill quick validator 全部 `Skill is valid!`。
 - 独立评审：PASS，`P0/P1/P2/P3=0/0/0/1`，允许生成 source commit/material release；评审聚焦回归 `73 passed, 39 subtests passed`。唯一 P3 是过渡期 Skill 文案已写 Stage037、而 CURRENT/生产在安装前仍为 Q；Skill 本身要求以 CURRENT/稳定生产为权威且身份不一致 fail closed，因此不阻断，但闭环完成前不得声称 Stage037 已在线。
-- material release/manifest：待完成。
+- material release/manifest：`m0016_20260829T034012+0800_374df2d52e4f`，244文件，release commit `efef7217ee1b2194b064728257ff125035cec729`，manifest SHA256 `cc757212c8bef45617549630abf9b2dcf4f045bf8cb4af376cfd3e6a72da5cd4`。
 - 独立评审与资格：待完成。
-- activation/CURRENT：待完成。
+- activation/CURRENT：分支内已激活，activation commit `a1aff7bf9f7d0d5c2b7e0b4e9d452a58f400c41b`；CURRENT 已解析 Stage037 ruleset 与来源提交 `374df2d52e4f17220c5e2d4cae76f50d45bec47d`。
 - 远端 master：待完成。
 - fresh clone：待完成。
 - Stage948 生产安装：待完成。
