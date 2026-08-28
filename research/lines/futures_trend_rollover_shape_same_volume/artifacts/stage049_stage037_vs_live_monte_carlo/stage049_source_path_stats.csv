@@ -1,0 +1,3 @@
+﻿arm,label,start_date,end_date,source_days,return_count,historical_end_nav,historical_end_equity,historical_total_return_pct,historical_max_dd_pct,historical_sharpe,historical_total_slippage,historical_total_trade_count,historical_nonzero_daily_win_rate_pct
+A,A Current Online,2018-01-02,2026-08-28,2101,2100,97.77076733333335,14665615.100000003,9677.076733333335,-44.9033186039274,1.461353072442822,1743270.0,847,52.66903914590747
+C,C Stage037,2018-01-02,2026-08-28,2101,2100,112.41491533333338,16862237.30000001,11141.491533333336,-39.91474607744346,1.5395841221952555,1671655.0,734,53.150242326332794

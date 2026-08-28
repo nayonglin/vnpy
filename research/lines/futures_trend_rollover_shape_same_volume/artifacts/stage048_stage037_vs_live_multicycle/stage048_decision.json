@@ -1,0 +1,288 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage048",
+  "generated_at": "2026-08-29T02:40:05+08:00",
+  "identity": {
+    "production_head": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "remote_master": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "origin_master_tracking": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "online_alias": "Stage847-C9-15w",
+    "online_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+    "online_source_stage": "Stage847/Stage928 + Stage021-Q",
+    "online_capital": 150000.0,
+    "online_config_sha256": "cc2de1f29709381287ca8d4aad6ebffe824fa22e1cb8b59c45f0aa90bd93d44a",
+    "production_config_sha256": "cc2de1f29709381287ca8d4aad6ebffe824fa22e1cb8b59c45f0aa90bd93d44a",
+    "online_to_stage037_override_diff": {
+      "enable_long_signal_range_atr_filter": [
+        null,
+        true
+      ],
+      "enable_short_signal_range_atr_filter": [
+        null,
+        true
+      ],
+      "long_signal_range_atr_entry_contexts": [
+        null,
+        "flat_entry,reverse_entry,rollover_reopen"
+      ],
+      "long_signal_range_atr_multiplier": [
+        null,
+        3.0
+      ],
+      "long_signal_range_atr_period": [
+        null,
+        5
+      ],
+      "long_signal_range_enable_ordered_drawdown_filter": [
+        null,
+        true
+      ],
+      "long_signal_range_lookback": [
+        null,
+        10
+      ],
+      "long_signal_range_ordered_drawdown_atr_multiplier": [
+        null,
+        4.0
+      ],
+      "long_signal_range_recent_gain_atr_multiplier": [
+        null,
+        0.5
+      ],
+      "long_signal_range_recent_gain_lookback": [
+        null,
+        3
+      ],
+      "long_signal_range_require_recent_stall": [
+        null,
+        true
+      ],
+      "rollover_delay_trading_days": [
+        null,
+        5
+      ],
+      "rollover_shape_history_mode": [
+        "backwards_ratio_continuous",
+        "target_contract_only"
+      ]
+    },
+    "runtime_binding": {
+      "trader_dir": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod",
+      "temp_dir": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/.vntrader",
+      "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/.vntrader/database.db",
+      "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+      "production_database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+      "latest_daily_date": "2026-08-28"
+    },
+    "ai_pool": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage047-stage037-vs-live-fullperiod/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/combined_eligibility.csv",
+      "sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+      "row_count": 513,
+      "min_eval_date": "2019-12-31",
+      "max_eval_date": "2026-07-31",
+      "eval_date_count": 56,
+      "production_path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/combined_eligibility.csv",
+      "production_sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+      "production_parity_pass": true
+    },
+    "source_sha256": {
+      "stage037_strategy": "74664ccbde9de1cefeb7673570bb9c7afcbfd1171da4ace31fdfe10c95284af1",
+      "production_strategy": "af5d0fb9affedbb8a54f5c6691a2e0f0d32b6cc2193d5379b1b3923a3813ad94",
+      "stage037_config": "b235e9298f49ff7db182e872913e9f3ed1c840149c249a7d43eaa6a8c5399ab6",
+      "runner": "95ca9b9561451cc6ae6cae835a60007066a32e43501fd49d9826d8e8b9edb813"
+    },
+    "stage047_result_commit": "a50d83f6d6e45577696cc0181ce70aff50747be1",
+    "stage047_decision_sha256": "fe4d62f2bb6c47ecbd761faad2202081805046a46619e77b2537c0ef84496c6a",
+    "stage047_runner_sha256": "95ca9b9561451cc6ae6cae835a60007066a32e43501fd49d9826d8e8b9edb813",
+    "candidate_logic_commit": "827764ed33f95e9aee6cc03b2b6703805a939ace",
+    "stage048_parent_head": "a50d83f6d6e45577696cc0181ce70aff50747be1",
+    "runtime_contract_sha256": "e79c67761e5d71f701cd2d5c2041d8fd1e4f924d467c72a2e9859adabdff0d20"
+  },
+  "gate_contract": {
+    "data_start": "2018-01-01",
+    "data_end": "2026-08-28",
+    "start_schedule": "January and June independent cold starts",
+    "durations_years": [
+      1,
+      2,
+      3
+    ],
+    "complete_windows_only": true,
+    "arms": {
+      "A": "A: 当前线上 Stage847-C9-15w + Q",
+      "C": "C: Stage037 多空镜像硬拦截"
+    },
+    "full_period_gate": "return>=A, DD worsening<=2pp, Sharpe delta>=-0.02, slippage<=105%, survival and broker100 non-worse",
+    "cycle_gate": "return wins>=50%, median delta>=0, DD and Sharpe noninferior>=80%, aggregate slippage<=105%, survival and broker100 non-worse"
+  },
+  "run_provenance": {
+    "window_count": 43,
+    "logical_arm_window_count": 86,
+    "full_period_reused_and_verified_from_stage047": true,
+    "new_independent_run_count": 84,
+    "checkpoint_reused_count": 0,
+    "checkpoint_generated_count": 84
+  },
+  "full_period_gates": {
+    "return_not_below_left": true,
+    "dd_worsening_le_2pp": true,
+    "sharpe_noninferior_002": true,
+    "slippage_ratio_le_105pct": true,
+    "right_survival": true,
+    "broker100_fail_count_not_above_left": true
+  },
+  "cycle_gates": [
+    {
+      "duration_years": 1,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 1,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 1,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 2,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 2,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 2,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "slippage_ratio_le_105pct": false,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "duration_years": 3,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": true
+    },
+    {
+      "duration_years": 3,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "slippage_ratio_le_105pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": true
+    },
+    {
+      "duration_years": 3,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "slippage_ratio_le_105pct": false,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    }
+  ],
+  "all_multicycle_gates_pass": false,
+  "promote_to_official": false,
+  "decision": "stage037_multicycle_has_hard_fail_keep_research",
+  "overfitting_judgment": "固定规则跨起点验证本身不新增过拟合；Stage037历史后验选择风险仍保留。",
+  "continued_value_judgment": "只在冻结规则的稳健性与归因层面有价值，不扫描参数救援。",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}
