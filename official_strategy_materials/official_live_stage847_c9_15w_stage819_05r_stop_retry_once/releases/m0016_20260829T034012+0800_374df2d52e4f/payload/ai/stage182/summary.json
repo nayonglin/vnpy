@@ -1,0 +1,60 @@
+{
+  "model_tag": "stage182_ai_product_pool_live_inference_v1",
+  "source_model_tag": "product_suitability_wf_v1",
+  "generated_at": "2026-08-03 23:44",
+  "eval_date": "2026-07-31",
+  "source_max_date": "2026-08-03",
+  "training_label_cutoff": "2026-05-07",
+  "future_horizon_days": 60,
+  "train_rows": 1368,
+  "train_months": 76,
+  "feature_count": 108,
+  "live_rows": 18,
+  "source_paths": {
+    "source_prefix": "qmt_roll_stage183_ai_source_floor35",
+    "source_dir": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live",
+    "position_changes": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+    "entry_candidate_snapshots": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv"
+  },
+  "source_identities": {
+    "position_changes": {
+      "size": 36048902,
+      "mtime_ns": 1785771845422116546,
+      "sha256": "b3bacdf711c3282f703ea022332d89fc1fe007cc1fb25eb1a25abac7a1eff847"
+    },
+    "entry_candidate_snapshots": {
+      "size": 1253146,
+      "mtime_ns": 1785771845717349142,
+      "sha256": "96a36c13cdccd5ce73e718d780b4122e2554959d60b697bfbc9f8f99176a33a2"
+    }
+  },
+  "official_eligibility_path": "/Users/bytedance/Desktop/person/vnpy_production_live/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_ai_top8_plus_fu_satellite_post_signal_eligibility.csv",
+  "combined_eligibility_audit": {
+    "official_rows": 468,
+    "existing_combined_rows": 504,
+    "preserved_live_snapshot_rows": 36,
+    "preserved_live_snapshot_eval_dates": [
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-29",
+      "2026-06-30"
+    ],
+    "current_live_eval_dates": [
+      "2026-07-31"
+    ],
+    "combined_rows": 513,
+    "combined_eval_date_count": 56
+  },
+  "outputs": {
+    "live_pool": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage182_ai_product_pool_live_inference_latest_pool_stage182_ai_product_pool_live_inference_v1.csv",
+    "live_eligibility": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage182_ai_product_pool_live_inference_eligibility_stage182_ai_product_pool_live_inference_v1.csv",
+    "combined_eligibility": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage182_ai_product_pool_live_inference_combined_stage78_eligibility_stage182_ai_product_pool_live_inference_v1.csv",
+    "summary": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage182_ai_product_pool_live_inference_summary_stage182_ai_product_pool_live_inference_v1.json",
+    "report": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage182_ai_product_pool_live_inference_report_stage182_ai_product_pool_live_inference_v1.md"
+  },
+  "safety": {
+    "overwrites_official_stage78_eligibility": false,
+    "uses_future_label_for_eval_date": false,
+    "real_order_enabled": false
+  }
+}

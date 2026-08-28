@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool</string>
+    <key>Umask</key><string>077</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/bytedance/Desktop/person/vnpy_production_live/.py311/bin/python</string>
+        <string>/Users/bytedance/Desktop/person/vnpy_production_live/examples/portfolio_backtesting/run_qmt_roll_stage947_official_live_production_support_launcher.py</string>
+        <string>--job</string><string>monthly-ai-pool</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>OFFICIAL_LIVE_OUTPUT_DIR</key><string>/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live</string>
+        <key>OFFICIAL_LIVE_SIGNAL_INPUT_DIR</key><string>/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/signal-input</string>
+    </dict>
+    <key>WorkingDirectory</key><string>/Users/bytedance/Desktop/person/vnpy_production_live</string>
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>20</integer></dict>
+        <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>20</integer></dict>
+        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>20</integer></dict>
+        <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>20</integer></dict>
+        <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>20</integer></dict>
+    </array>
+    <key>StandardOutPath</key><string>/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/logs/monthly-ai-pool.out.log</string>
+    <key>StandardErrorPath</key><string>/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/logs/monthly-ai-pool.err.log</string>
+</dict>
+</plist>
