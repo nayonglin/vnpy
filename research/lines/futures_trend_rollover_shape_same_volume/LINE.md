@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage022 已按用户明确 operator override 将 Q 晋升为正式版；当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`。Stage025 已修复正式回执引用可变 AI 池路径的问题，并把后续月更 AI 池统一改为“候选生成后无条件 fail closed，完成新物料发布/资格/安装后才生效”；m0014 已封装并通过独立代码复核，待正式资格、master 晋升和 Stage948 安装闭环
-- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。Stage025 候选 `m0014_20260825T173659+0800_14a2031aae20` 绑定源码 `14a2031aae2049e6f266c0e5f57fe4d27c9da6d6`；最终仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准
+- 当前状态：用户在明确知悉 Stage048 多周期和 Stage049 蒙特卡洛硬失败后，授权 operator override 将 Stage037 晋升正式版；当前正在执行不可变物料、远端 master、fresh clone 与 Stage948 生产安装闭环。Stage037 完整继承 C9/15w 与 Q 风险规则，并增加新主力自身历史、换月延迟5交易日和多空镜像形态硬拦截。
+- 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
@@ -173,10 +173,36 @@
 - 过拟合判断：晋升动作本身未新增参数，不产生新的拟合；但 Q 来自后验研究序列且原 broker 门失败，历史选择风险仍然存在，必须由 forward 实盘观察承担。
 - 继续价值：完成晋升与可恢复生产安装有价值；继续扫描历史阈值、ATR周期或倍率无价值，后续只记录自然 forward 事件与实盘安全证据。
 
+## Stage027 新主力自身历史修复 A/C
+
+- 从远端 master `09aa96a03` 创建 `codex/fix-rollover-new-contract-history`；候选与正式 Q 逐键比较后，唯一差异是 `rollover_shape_history_mode: backwards_ratio_continuous -> target_contract_only`。
+- 完整周期到 `2026-08-25`：A `14,989,515.10/9893.0101%/-44.9033%/Sharpe1.468555`；C `13,868,439.90/9145.6266%/-47.9843%/Sharpe1.418929`。C 滑点减少3.21%、broker10峰值改善11.8886pp，但期末权益少112.11万、回撤恶化3.0810pp、Sharpe下降0.049627。
+- C 的24次换月中15次续开、9次跳过；所有续开都使用新主力自身至少40根日K，无跨合约复权。JM2701 截至8月19日实际79根，策略取最近41根后 `MA20 < MA40`，因此多头排布不成立并跳过。
+- 决策 `stage027_target_contract_history_fail_full_period_keep_research_only`：语义修复成立，但不自动晋升或进入多周期；等待用户决定是否以语义正确优先继续固定规则验证，不允许围绕指标、根数、品种或年份救参。
+
+## Stage028 新主力自身K线延迟5交易日 A/B/C
+
+- 从 Stage027 `d4b54531d` 创建 `codex/stage028-rollover-delay-5d`；C相对B唯一新增 `rollover_delay_trading_days=5`。
+- D0不换月，D1-D4继续管理旧仓且禁止加仓/反向新开，D5仍持仓才平旧并按D5新合约自身K线重判；等待期原生退出会取消任务。
+- 完整周期：A正式Q `14,989,515.10/9893.0101%/-44.9033%/Sharpe1.468555`；B Stage027 `13,868,439.90/9145.6266%/-47.9843%/Sharpe1.418929`；C Stage028 `15,889,543.30/10493.0289%/-46.4506%/Sharpe1.437784`。
+- 24次登记中14次到D5、10次等待期风控退出；D5为8次续开、5次历史不足、1次形态不符。5个原不足事件从1根增至6根，仍不足40根。
+- C虽同时提高A/B期末权益并改善B回撤/Sharpe，但相对A Sharpe低 `0.030771`，且broker10峰值 `100.3426%`、超过100%一天；决策 `stage028_delay_5td_fail_full_period_keep_research_only`，不自动多周期或晋升。
+- 独立review最终 `P0/P1/P2=0/0/1`，唯一P2为记录闭环且已修正；`46 passed + 14 subtests`。独立 `/tmp` 全周期三臂各2098日并截至2026-08-25，summary/curve/delay/PNG与共享产物SHA逐字节一致；缺Bar同日守卫、overdue重试、真实Close取消证据和目标变化重置均闭合。
+
+## Stage029 Stage028 固定多周期反证
+
+- 用户明确要求补跑后，以固定 A正式Q / B Stage027 / C Stage028 三臂、全周期及1/2/3年每年1月和6月起点执行；共43窗、129个逻辑臂窗，其中126个滚动窗臂由独立真引擎和15万空仓冷启动首次计算。
+- C相对A的1/2/3年combined收益胜率为 `68.75%/50.00%/66.67%`，收益差中位 `+1.5283/+1.5617/+20.9333pp`；说明固定5日有局部收益优势，但不是跨周期单调优势。
+- 稳健性门失败：A_vs_C 2年DD非劣率仅 `64.29%`，3年Sharpe非劣率仅 `66.67%`；2年1月收益胜率 `42.86%` 且中位 `-1.6600pp`。最大回撤恶化出现在2022年起点，达到 `10.7620pp`。
+- C相对B的1年全部门通过，但2年6月收益胜率仅 `42.86%`、中位 `-0.4413pp`，3年DD/Sharpe非劣率仅 `75.00%/66.67%`；最差3年2019-01收益差 `-496.6379pp`。
+- 完整周期仍受约束：C虽多赚A `600.0188pp`，但Sharpe低 `0.030771` 且broker10峰值 `100.3426%`、超100%一天；相对B也新增broker100失败。决策 `confirm_stage028_not_promotable_after_multicycle`。
+- 五张固定资金曲线、129行summary、129行comparison、27行aggregate和decision均固化到 `artifacts/stage029/`；2年图标题仅按已验证曲线CSV重绘，不改变数值。正式物料、远端master、稳定生产、CTP、订单均未改变。
+- 独立review发现并关闭实际数据库绑定、严重截断和重复日期三项runner门禁缺口；现有64,497行curve通过严格时序合同，Stage027/028/029联合 `24 passed`，最终 `P0/P1/P2=0/0/0`。新合同使修复前checkpoint安全失效，但不影响已经独立复算的Stage029 CSV/PNG结论。
+
 ## 下一步
 
-1. 固定 `backwards_ratio_continuous + shrink_to_allowed` 只做 forward shadow，积累更多自然换月和容量不足 OOS 事件；不再增加历史窗口来重复证明同一失败。
-2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
+1. 当前正式 Stage037 固定 `target_contract_only + rollover_delay_5td + symmetric_range_block + shrink_to_allowed` 做 forward shadow；Stage021-Q、Stage027与Stage028均降为历史对照。Stage048/049 的稳健性硬失败继续有效，不得扫描延迟天数、起点、品种或为弱窗口增加历史例外。
+2. 不扫复权方式、缩手比例、MA、MACD、ATR倍数、回看期、品种、日期或方向救 `2018/2022`；Stage037 按用户 operator override 进入正式物料与生产后，只记录自然 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。
 5. Stage008 量能确认也未改变晋级结论；量能字段只保留为新增自然 OOS 的只读归因标签，不继续做历史救参。
@@ -190,3 +216,49 @@
 13. Stage018 将相同规则扩展到空头后，只有4次空头高量和2次空头低量改变风险；N虽显著改善全周期收益/回撤/Sharpe并通过M增量对照，但A/C成本仍超105%。按冻结合同停止，不把少数事件的复利路径当成新alpha。
 14. Stage019 的固定 `多头信号日跌幅 > 2×前置ATR5` 在482条多头候选中0命中，O与M逐值相同；不为制造样本而降低倍数、改周期或扩入口，等待新增自然forward事件。
 15. Stage020 按用户纠正基于N并使用1倍ATR，7次触发让P相对C通过但仍恶化正式A的broker峰值；小样本路径改善不能覆盖A门失败，不继续扫参。
+16. Stage031 按用户确认严格回到Stage028固定5日版，新增“仅多头初始信号、含信号日10日高低区间严格大于3倍前置ATR5则禁开”。该条件在C路径489条有效多头候选中命中320条，扣除10条既有规则先归零后，有310个过滤节点前仍为正手数的sizing候选被置0；C仅为 `1,685,836.90/1023.8913%/-40.6333%/Sharpe0.996639`，相对B少 `14,203,706.40` 且Sharpe低 `0.441145`。决策 `stage031_long_range_3atr_fail_full_period_stop`：不进入多周期、不扫窗口/倍数/ATR周期/方向/品种救参，Stage030十日版也继续弃用。
+17. Stage032 用“10日区间严格>3×前置ATR5，且最近3日收盘净涨幅严格<0.5×前置ATR5”定义扩张后滞涨；图1 cu2109 拦截、图2 FG009 放行。C为 `15,221,349.50/10047.5663%/-42.6240%/Sharpe1.487094`，相对正式A全面改善，但相对Stage028 B少 `668,193.80`；按预声明收益门决策 `stage032_long_range_stall_fail_full_period_stop`，不跑多周期、不扫描阈值。
+18. Stage033 在Stage032 C上追加“过去10日较早高点减较晚低点严格>3×前置ATR5”的有序回撤条件，并与原扩张滞涨条件以OR关系过滤。OI905拦截、lh2201放行，但C仅为 `12,215,351.60/8043.5677%/-44.1556%/Sharpe1.427551`，相对Stage032 B少 `3,005,997.90` 且Sharpe低 `0.059543`；决策 `stage033_ordered_drawdown_or_fail_full_period_stop`，不跑多周期、不扫参。
+19. Stage034 只把Stage033有序回撤专用阈值从严格3倍收紧至4倍，原扩张滞涨仍为3倍且保持OR。C为 `15,528,313.60/10252.2091%/-40.3329%/Sharpe1.505701`，相对Stage032收益、回撤和Sharpe均改善，但滑点多 `52,750`，唯一预声明门失败；决策 `stage034_ordered_drawdown_4atr_fail_full_period_stop`，不跑多周期、不继续扫描倍数。
+
+## Stage031 Stage028多头10日区间大于3倍ATR5过滤反证
+
+- 分支 `codex/stage031-long-range-3atr-filter` 严格从Stage028基线 `fed43773f` 建立；Stage030十日延迟版没有进入候选覆盖或回测路径。A正式Q、B Stage028五日版、C=B+新增过滤，A/B均逐值复现既有Stage028结果。
+- 新规则只对多头 `flat_entry/reverse_entry/rollover_reopen` 生效：使用含信号日的10日高低区间，除以信号日前5个完整交易日True Range简单平均；严格 `>3` 时手数归零，空头、加仓、retry、退出和持仓管理不变。
+- C完整周期为 `1,685,836.90/1023.8913%/-40.6333%/Sharpe0.996639`，滑点 `179,100`、交易 `433`、胜率 `51.2252%`、broker10峰值 `83.2544%`；B为 `15,889,543.30/10493.0289%/-46.4506%/Sharpe1.437784`，滑点 `1,654,705`、交易 `810`。
+- C相对B回撤改善 `5.8174pp`、broker100从1天降为0，但期末权益少 `14,203,706.40`、Sharpe下降 `0.441145`。C路径310个正手数候选置0事件覆盖2018至2026，其中普通开仓307、换月重开3；它们不是B路径必然成交的310笔反事实交易，但仍说明区间扩张并非稀疏坏信号。
+- 独立review `PASS，P0=0/P1=0/P2=1`；唯一P2为310事件的反事实表述边界，已修正。决策 `stage031_long_range_3atr_fail_full_period_stop`；不跑多周期、不改4倍/5倍或其他窗口救参、不晋升、不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage032 Stage028多头10日扩张且3日滞涨过滤
+
+- C候选严格继承Stage028五日版：多头初始入口只有在 `range10 > 3×prior ATR5` 且 `close[T]-close[T-3] < 0.5×prior ATR5` 时归零；空头、加仓、retry、退出、换月等待和新主力自身历史不变，等于阈值放行。
+- 点名案例合同通过：cu2109信号日区间/ATR `4.3842`、3日涨幅/ATR `0.0411`，`13 -> 0`；FG009为 `3.6413/1.3043`，`17 -> 17`。这证明“扩张后滞涨”能按用户目标区分两图。
+- C完整周期 `15,221,349.50/10047.5663%/-42.6240%/Sharpe1.487094`，滑点 `1,527,820`、交易 `755`、胜率 `53.2103%`、broker10峰值 `93.1865%`；相对A期末权益 `+231,834.40`、回撤改善 `2.2793pp`、Sharpe `+0.018538`，A侧全部门通过。
+- 相对直接基线B，C回撤改善 `3.8266pp`、Sharpe `+0.049310`、滑点下降 `126,885`、broker100由1天降为0，但期末权益少 `668,193.80`，唯一核心收益门失败。63个C路径正手数候选置0事件覆盖2018至2026，全部为普通多头开仓，不是B必然成交的63笔反事实交易。
+- 独立review对原始数据库、双条件、无未来数据、A/B复现和C指标复算后为 `PASS，P0/P1/P2=0/0/0`；研究决策 `stage032_long_range_stall_fail_full_period_stop`。不跑多周期、不扫3/5日、0/0.25/0.75/1ATR、品种或年份，不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage033 Stage032多头有序峰谷回撤OR过滤
+
+- C严格继承Stage032，仅新增布尔开关：原条件A为 `range10 > 3×prior ATR5 && gain3 < 0.5×prior ATR5`；新条件B为过去10日 `max(High[i]-Low[j]), i<j > 3×prior ATR5`；最终按 `A OR B` 过滤，等号放行，仅作用于多头初始入口。
+- 点名案例全部通过：OI905前高7240、后低6815、有序回撤425、ATR5 104.6，比值 `4.0631`，被拦截；lh2201前高17670、后低16675、有序回撤995、ATR5 719，比值 `1.3839`，保持放行；cu2109由A拦截，FG009保持放行。
+- C完整周期为 `12,215,351.60/8043.5677%/-44.1556%/Sharpe1.427551`，滑点 `1,229,320`、交易 `724`、胜率 `52.6661%`、broker10峰值 `91.4104%`。相对Stage032 B期末权益少 `3,005,997.90`、Sharpe低 `0.059543`，相对正式A期末权益少 `2,774,163.50`、Sharpe低 `0.041004`，双基线收益和Sharpe硬门失败。
+- C路径OR命中97个诊断事件，其中A 69、B 34、重叠6、B独有28；扣除既有规则先归零6个后，有91个过滤节点前仍为正手数的候选事件被置0，全部为多头普通开仓，不是B必然成交的91笔反事实交易。
+- 首跑三臂计算后、原子发布前因点名验证器把lh2201普通全窗range 2080误作有序回撤而停止；策略原值995正确。只修验证常量和回归测试，冻结参数与策略未改，机械重跑一次。独立review `PASS，P0/P1/P2=0/0/1`；诊断字段命名P2已改为 `history_index`。
+- 研究决策 `stage033_ordered_drawdown_or_fail_full_period_stop`；不跑多周期、不扫描窗口/ATR/倍数/品种/方向/年份，不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage034 Stage033有序峰谷回撤4倍ATR敏感性
+
+- Stage034严格继承Stage033，只新增 `long_signal_range_ordered_drawdown_atr_multiplier=4.0`；原条件A继续使用 `range10 > 3×prior ATR5 && gain3 < 0.5×prior ATR5`，新条件B使用 `ordered_drawdown10 > 4×prior ATR5`，A OR B、等号放行、仅多头初始入口。
+- A/B从Stage033既有产物按SHA和Git blob复用，仅C新跑一次。点名合同通过：OI905 `4.0631>4` 仍拦截，lh2201放行，cu2109由原3倍条件A拦截，FG009放行。
+- C为 `15,528,313.60/10252.2091%/-40.3329%/Sharpe1.505701`，滑点 `1,580,570`、交易 `749`、胜率 `52.9032%`、broker10峰值 `83.1383%`。相对Stage033三倍版期末权益 `+3,312,962.00`、回撤改善 `3.8227pp`、Sharpe `+0.078150`；相对正式A也全面通过硬门。
+- 相对Stage032无有序回撤参考，C期末权益 `+306,964.10`、回撤改善 `2.2911pp`、Sharpe `+0.018607`，但滑点 `1,580,570 > 1,527,820`，多 `52,750`，是唯一失败硬门。
+- C路径OR命中79：原条件A 69、四倍有序回撤10、重叠0；已有规则先归零6，过滤节点前正手数置0事件73，全部多头普通开仓。独立review `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。
+- 决策 `stage034_ordered_drawdown_4atr_fail_full_period_stop`；不跑多周期、不扫3.5/4.5/5倍、窗口、ATR、品种、方向或年份，不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage037 Stage034空头镜像硬拦截
+
+- Stage037严格继承Stage034，B/C唯一配置差异是 `enable_short_signal_range_atr_filter=true`；多头规则原样，空头A使用 `range10 > 3×prior ATR5 && close[T-3]-close[T] < 0.5×prior ATR5`，空头B使用先低后高反弹严格 `>4×prior ATR5`，两者OR、等号放行、只作用初始入口并硬置0。
+- A/B逐值复用Stage034冻结产物，只新跑C；数据库SHA `d7375e...` 与Stage034相同，三臂均为2098个交易日。
+- C为 `17,051,717.30/11267.8115%/-39.9147%/Sharpe1.543941`，滑点 `1,669,965`、交易 `733`、胜率 `53.1984%`、broker10峰值 `93.5807%`。相对B期末权益 `+1,523,403.70`、回撤改善 `0.4182pp`、Sharpe `+0.038240`；相对正式A期末权益 `+2,062,202.20`、回撤改善 `4.9886pp`、Sharpe `+0.075386`且滑点减少。
+- OR命中152个候选事件，多头79、空头73；正手数实际硬拦截144个，多头73、空头71；语义、时序、严格大于、入口和硬置0合同全部通过。
+- 唯一失败门是C滑点为B的 `105.6559%`，超过105%上限约 `0.6559pp`；独立reviewer复算为 `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。决策 `stage037_short_mirror_block_fail_full_period_stop`，不自动多周期、不救参、不改正式物料/master/production/CTP，订单API `0/0/0`。
