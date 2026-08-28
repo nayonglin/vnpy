@@ -65,10 +65,12 @@ CHART_PATH = OUTPUT_DIR / "stage027_full_period_equity_ac.png"
 
 
 def build_arm_overrides(arm: str) -> dict[str, Any]:
+    candidate = candidate_cfg.build_candidate_overrides()
     if arm == "A":
-        return live_cfg.build_official_live_strategy_overrides()
+        candidate["rollover_shape_history_mode"] = "backwards_ratio_continuous"
+        return candidate
     if arm == "C":
-        return candidate_cfg.build_candidate_overrides()
+        return candidate
     raise ValueError(f"unknown stage027 arm: {arm}")
 
 

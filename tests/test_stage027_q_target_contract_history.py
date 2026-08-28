@@ -26,10 +26,11 @@ from qmt_roll_portfolio_strategy import QmtRollPortfolioStrategy  # noqa: E402
 
 
 def test_candidate_is_current_formal_q_with_only_history_mode_changed() -> None:
-    baseline = live_cfg.build_official_live_strategy_overrides()
+    baseline = stage027.build_arm_overrides("A")
     candidate = candidate_cfg.build_candidate_overrides()
 
-    assert live_cfg.OFFICIAL_LIVE_RULESET_VERSION == candidate_cfg.BASE_RULESET_VERSION
+    assert candidate_cfg.BASE_RULESET_VERSION == "stage021_q_rollover_volume_atr_v1"
+    assert live_cfg.OFFICIAL_LIVE_RULESET_VERSION != candidate_cfg.BASE_RULESET_VERSION
     assert candidate_cfg.CANDIDATE_VERSION == "stage027_q_target_contract_history_v1"
     assert candidate_cfg.BASE_COMMIT == "09aa96a03fb91124be90bd69861be3f834ab6299"
     assert stage027.override_diff() == {
@@ -41,8 +42,14 @@ def test_candidate_is_current_formal_q_with_only_history_mode_changed() -> None:
     assert candidate["enable_rollover_shape_same_volume_reopen"] is True
     assert candidate["rollover_shape_volume_policy"] == "shrink_to_allowed"
     assert candidate["rollover_shape_history_mode"] == "target_contract_only"
-    assert {key: value for key, value in candidate.items() if key != "rollover_shape_history_mode"} == {
-        key: value for key, value in baseline.items() if key != "rollover_shape_history_mode"
+    assert {
+        key: value
+        for key, value in candidate.items()
+        if key != "rollover_shape_history_mode"
+    } == {
+        key: value
+        for key, value in baseline.items()
+        if key != "rollover_shape_history_mode"
     }
 
 

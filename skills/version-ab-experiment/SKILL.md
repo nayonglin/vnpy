@@ -15,7 +15,7 @@ Default baseline contract:
 - `B = new_module_standalone` when the module can be tested independently.
 - `C = active formal baseline + new_module` as the real promotion candidate.
 
-The current expected ruleset is `stage021_q_rollover_volume_atr_v1`, but resolve it from the active material instead of trusting this text. If checkout identity, remote master, and production identity differ, stop before creating a research branch or arm. Stage78 and Stage372 are historical controls only when the user explicitly names them.
+The current expected ruleset is `stage037_stage034_long_short_mirror_hard_block_v1`, but resolve it from the active material instead of trusting this text. If checkout identity, remote master, and production identity differ, stop before creating a research branch or arm. Stage021-Q, Stage78, and Stage372 are historical controls only when the user explicitly names them.
 
 The key decision is not whether `B` looks good. The key decision is whether `C` improves `A` without damaging path robustness.
 

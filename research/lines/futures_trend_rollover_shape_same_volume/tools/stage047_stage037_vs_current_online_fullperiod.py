@@ -33,6 +33,7 @@ from qmt_roll_official_baseline_identity import (  # noqa: E402
 )
 import stage028_q_delayed_rollover_abc as s28  # noqa: E402
 import stage029_stage028_multicycle_abc as s29  # noqa: E402
+import stage027_q_target_contract_history_ac as s27  # noqa: E402
 import stage037_stage034_short_mirror_block_abc as s37  # noqa: E402
 
 
@@ -85,7 +86,7 @@ def _file_sha256(path: Path) -> str:
 
 def build_arm_overrides(arm: str) -> dict[str, Any]:
     if arm == "A":
-        return live_cfg.build_official_live_strategy_overrides()
+        return s27.build_arm_overrides("A")
     if arm == "C":
         return stage037_cfg.build_candidate_overrides()
     raise ValueError(f"unknown_stage047_arm:{arm}")

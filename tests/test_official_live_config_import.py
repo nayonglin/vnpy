@@ -128,7 +128,7 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         )
         self.assertEqual(
             module.OFFICIAL_LIVE_RULESET_VERSION,
-            "stage021_q_rollover_volume_atr_v1",
+            "stage037_stage034_long_short_mirror_hard_block_v1",
         )
         self.assertEqual(
             module.OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
@@ -147,7 +147,7 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         manifest = module.build_official_live_manifest()
         self.assertEqual(
             manifest["ruleset_version"],
-            "stage021_q_rollover_volume_atr_v1",
+            "stage037_stage034_long_short_mirror_hard_block_v1",
         )
         self.assertNotIn("backtest_outputs", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
         self.assertIn("official_strategy_materials", module.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.parts)
@@ -165,7 +165,7 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             dict(module.OFFICIAL_LIVE_STRATEGY_OVERRIDES)
 
-    def test_official_live_strategy_overrides_freeze_stage021_q(self) -> None:
+    def test_official_live_strategy_overrides_freeze_stage037(self) -> None:
         import qmt_roll_official_live_config as module
 
         base = {"account_capital": 300_000.0, "c3_capital": 300_000.0}
@@ -179,7 +179,6 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         expected_q = {
             "enable_rollover_shape_same_volume_reopen": True,
             "rollover_shape_volume_policy": "shrink_to_allowed",
-            "rollover_shape_history_mode": "backwards_ratio_continuous",
             "enable_directional_30d_risk_boost": True,
             "directional_30d_risk_boost_multiplier": 1.5,
             "directional_30d_risk_adjust_long_only": False,
@@ -195,6 +194,27 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "long_signal_atr_shock_entry_contexts": "flat_entry,reverse_entry,rollover_reopen",
         }
         self.assertEqual(expected_q, {key: q[key] for key in expected_q})
+        expected_stage037 = {
+            "enable_long_signal_range_atr_filter": True,
+            "enable_short_signal_range_atr_filter": True,
+            "long_signal_range_atr_entry_contexts": (
+                "flat_entry,reverse_entry,rollover_reopen"
+            ),
+            "long_signal_range_atr_multiplier": 3.0,
+            "long_signal_range_atr_period": 5,
+            "long_signal_range_enable_ordered_drawdown_filter": True,
+            "long_signal_range_lookback": 10,
+            "long_signal_range_ordered_drawdown_atr_multiplier": 4.0,
+            "long_signal_range_recent_gain_atr_multiplier": 0.5,
+            "long_signal_range_recent_gain_lookback": 3,
+            "long_signal_range_require_recent_stall": True,
+            "rollover_delay_trading_days": 5,
+            "rollover_shape_history_mode": "target_contract_only",
+        }
+        self.assertEqual(
+            expected_stage037,
+            {key: q[key] for key in expected_stage037},
+        )
         self.assertEqual(150_000.0, q["account_capital"])
         self.assertEqual(150_000.0, q["c3_capital"])
 
@@ -219,7 +239,7 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             override_keys = set(live_config.build_official_live_strategy_overrides())
         consumed_keys = set(QmtRollPortfolioStrategyStage847C9StopRetry.parameters)
 
-        self.assertEqual(61, len(override_keys))
+        self.assertEqual(73, len(override_keys))
         execution_profile_keys = {"account_capital", "c3_capital"}
         self.assertSetEqual(
             set(),

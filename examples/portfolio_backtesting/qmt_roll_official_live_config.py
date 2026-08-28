@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
+import qmt_roll_official_stage037_ruleset_config as stage037_ruleset_cfg
 from qmt_roll_official_live_lightweight_context import (
     DATA_ASSET_DIR,
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
@@ -27,17 +28,22 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 OUTPUT_DIR: Path = DATA_ASSET_DIR
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage021-Q"
-OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry_stage021_q"
-OFFICIAL_LIVE_RULESET_VERSION: str = "stage021_q_rollover_volume_atr_v1"
-OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION: str = "stage847_c9_stage819_05r_stop_retry_v1"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage037"
+OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry_stage037"
+OFFICIAL_LIVE_RULESET_VERSION: str = "stage037_stage034_long_short_mirror_hard_block_v1"
+OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION: str = (
+    stage037_ruleset_cfg.PREVIOUS_RULESET_VERSION
+)
 OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE847_C9_PROFILE_NAME
 OFFICIAL_LIVE_PROFILE_NAME: str = "stage847_c9_15w_stage819_05r_stop_retry_live"
 OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
 OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
-OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_promoted_stage021_q"
+OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_promoted_stage037"
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
+
+if OFFICIAL_LIVE_RULESET_VERSION != stage037_ruleset_cfg.RULESET_VERSION:
+    raise RuntimeError("official_stage037_ruleset_identity_drift")
 
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
@@ -182,10 +188,11 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
     "legacy_stage78_status": LEGACY_STAGE78_STATUS,
     "must_not_fallback_to_stage78_for_live": True,
     "operator_override_risk_acceptance": (
-        "Stage021-Q was promoted by explicit operator request despite its historical "
-        "A-relative broker peak gate failure. Q keeps the C9/15w control plane and adds "
-        "risk-capped rollover continuation, symmetric volume risk scaling, and symmetric "
-        "one-ATR5 adverse signal-day entry filters. Runtime execution remains fail-closed."
+        "Stage037 was promoted by explicit operator request despite Stage048 multi-cycle "
+        "and Stage049 Monte Carlo hard failures. It preserves the C9/15w control plane "
+        "and Stage021-Q risk rules, then uses target-contract-only rollover history, a "
+        "five-session rollover delay, and symmetric long/short range-stall or ordered-"
+        "drawdown hard entry filters. Runtime execution remains fail-closed."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
     "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
@@ -193,34 +200,12 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
 
 
 def build_official_live_strategy_overrides() -> dict[str, Any]:
-    overrides = stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
+    overrides = stage037_ruleset_cfg.apply_stage037_ruleset(
+        stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
+    )
     overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["ai_product_pool_eligibility_path"] = str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
-    overrides.update(
-        {
-            "enable_rollover_shape_same_volume_reopen": True,
-            "rollover_shape_volume_policy": "shrink_to_allowed",
-            "rollover_shape_history_mode": "backwards_ratio_continuous",
-            "enable_directional_30d_risk_boost": True,
-            "directional_30d_risk_boost_lookback": 30,
-            "directional_30d_risk_boost_multiplier": 1.5,
-            "directional_30d_risk_nonconfirmation_multiplier": 1.0,
-            "directional_30d_risk_adjust_long_only": False,
-            "directional_30d_risk_boost_require_volume_expansion": True,
-            "directional_30d_volume_recent_days": 10,
-            "directional_30d_volume_prior_days": 10,
-            "directional_30d_volume_ratio_threshold": 3.0,
-            "enable_directional_30d_low_volume_risk_discount": True,
-            "directional_30d_low_volume_ratio_threshold": 0.5,
-            "directional_30d_low_volume_risk_multiplier": 0.5,
-            "enable_long_signal_atr_shock_filter": True,
-            "enable_short_signal_atr_shock_filter": True,
-            "long_signal_atr_shock_period": 5,
-            "long_signal_atr_shock_multiplier": 1.0,
-            "long_signal_atr_shock_entry_contexts": "flat_entry,reverse_entry,rollover_reopen",
-        }
-    )
     return overrides
 
 
@@ -249,6 +234,15 @@ class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
 OFFICIAL_LIVE_STRATEGY_OVERRIDES: Mapping[str, Any] = _LazyOfficialLiveStrategyOverrides()
 
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
+    "stage047_stage037_full_20180102_20260828": {
+        "end_equity": 16_862_237.30,
+        "total_return_pct": 11_141.4915,
+        "max_dd_pct": -39.9147,
+        "sharpe": 1.539584,
+        "total_slippage": 1_671_655.0,
+        "total_trade_count": 734.0,
+        "win_rate_pct": 53.1502,
+    },
     "stage021_q_full_20180101_20260529": {
         "end_equity": 15_135_800.10,
         "total_return_pct": 9_990.5334,

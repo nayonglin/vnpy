@@ -24,7 +24,7 @@ Start and end with:
 ## Current Production Contract
 
 - Profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Active ruleset: `stage021_q_rollover_volume_atr_v1`.
+- Active ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`.
 - Execution profile: `c9-15w`.
 - Capital: `150000`.
 - Stable root: `/Users/bytedance/Desktop/person/vnpy_production_live`.
@@ -42,7 +42,7 @@ Use stable HEAD plus these private artifacts as production authority:
 
 An arbitrary development checkout, release branch, or historical stage record cannot override them.
 
-Before install/start/restart, load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()`. Require its strategy version, Q ruleset, material release, and source identity to agree with remote master and the private production receipts. The unchanged C9 strategy-version string alone is insufficient proof that Q is installed.
+Before install/start/restart, load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()`. Require its strategy version, Stage037 ruleset, material release, and source identity to agree with remote master and the private production receipts. The unchanged C9 strategy-version string alone is insufficient proof that Stage037 is installed.
 
 ## Exact Seven-Job Surface
 

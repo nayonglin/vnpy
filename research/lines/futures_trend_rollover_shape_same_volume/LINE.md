@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Q 已按用户明确 operator override 成为正式版，当前正式 ruleset 为 `stage021_q_rollover_volume_atr_v1`，远端 master 基线为 `09aa96a03fb91124be90bd69861be3f834ab6299`。Stage037 在Stage034上加入空头镜像硬拦截，完整周期相对正式A全面改善，但相对Stage034 B的滑点为105.6559%，略超预声明105%门，当前保持研究态；正式物料、master与生产未改变
-- 正式基线：策略名 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` + ruleset `stage021_q_rollover_volume_atr_v1`，alpha 不变。后续仍以远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份闭环为准；Stage027 不属于活动正式物料
+- 当前状态：用户在明确知悉 Stage048 多周期和 Stage049 蒙特卡洛硬失败后，授权 operator override 将 Stage037 晋升正式版；当前正在执行不可变物料、远端 master、fresh clone 与 Stage948 生产安装闭环。Stage037 完整继承 C9/15w 与 Q 风险规则，并增加新主力自身历史、换月延迟5交易日和多空镜像形态硬拦截。
+- 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
@@ -201,8 +201,8 @@
 
 ## 下一步
 
-1. 当前正式 Q 继续固定 `backwards_ratio_continuous + shrink_to_allowed` 做 forward shadow；Stage027/Stage028均保持研究候选。Stage029 已完成固定5天多周期反证并确认不可晋级，不得再扫描延迟天数、起点、品种或为broker100/弱窗口增加历史例外。
-2. 不扫复权方式、缩手比例、MA、MACD、品种、日期或方向救 `2018/2022`；Q 已按用户 operator override 进入正式物料与生产，后续只做 forward 观察。
+1. 当前正式 Stage037 固定 `target_contract_only + rollover_delay_5td + symmetric_range_block + shrink_to_allowed` 做 forward shadow；Stage021-Q、Stage027与Stage028均降为历史对照。Stage048/049 的稳健性硬失败继续有效，不得扫描延迟天数、起点、品种或为弱窗口增加历史例外。
+2. 不扫复权方式、缩手比例、MA、MACD、ATR倍数、回看期、品种、日期或方向救 `2018/2022`；Stage037 按用户 operator override 进入正式物料与生产后，只记录自然 forward 观察。
 3. 只有新增、未参与本次设计的 forward 样本改变风险判断，才重新开启新的正式晋级审计。
 4. `30日+1.2倍` 风险增强路线经 Stage007 多周期再次确认关闭；不扫 `20/40/60` 日、`1.1/1.3/1.5` 倍、品种、方向、年份或起点。
 5. Stage008 量能确认也未改变晋级结论；量能字段只保留为新增自然 OOS 的只读归因标签，不继续做历史救参。

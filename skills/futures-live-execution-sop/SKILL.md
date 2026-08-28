@@ -11,9 +11,9 @@ This skill is an execution-discipline guide, not an alpha-research guide.
 
 - Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
 - Current official live profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Current ruleset: `stage021_q_rollover_volume_atr_v1`; resolve and verify it from active `CURRENT.json` plus the top-level config before every live action.
+- Current ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`; resolve and verify it from active `CURRENT.json` plus the top-level config before every live action.
 - Current line: `futures_trend_rollover_shape_same_volume`.
-- Current strategy: Q on C9/Stage847 15w. It retains the C9/Stage819 execution stack and adds point-in-time rollover continuation, symmetric volume risk scaling, and two-sided ATR entry-shock blocking.
+- Current strategy: Stage037 on C9/Stage847 15w. It retains the C9/Stage819 execution stack and Stage021-Q risk rules, then adds target-contract-only rollover history, a five-session rollover delay, and symmetric long/short range-stall or ordered-drawdown entry blocking.
 - Current capital: `150000` only for live/virtual execution.
 - Current production cold-start boundary: `2026-07-23`; do not backfill or chase theoretical positions before it.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
@@ -26,7 +26,7 @@ Before running anything, read:
 1. `work-type.txt`
 2. `research/registry.md`
 3. `examples/portfolio_backtesting/qmt_roll_official_live_config.py`
-4. `research/lines/futures_trend_rollover_shape_same_volume/LINE.md`, currently the formal Q research line.
+4. `research/lines/futures_trend_rollover_shape_same_volume/LINE.md`, currently the formal Stage037 research line.
 5. `research/lines/futures_trend/LINE.md` only when comparing against a historical baseline.
 6. `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md` when AI pool timing matters; this inherited operational document does not redefine the active ruleset or research-line routing.
 
@@ -49,7 +49,7 @@ When answering what is active in real production, use this priority:
 3. Stable-root `qmt_roll_official_live_config.py`.
 4. Registry and release-branch records for explanation only.
 
-Load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()` before treating the unchanged strategy-version string as Q. If stable production, remote master, or active material differs in strategy, ruleset, source, or release identity, stop before CTP or session execution.
+Load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()` before treating the unchanged strategy-version string as Stage037. If stable production, remote master, or active material differs in strategy, ruleset, source, or release identity, stop before CTP or session execution.
 
 Never let an arbitrary development checkout override a stable HEAD, manifest, activation receipt, or daily-data receipt. A runtime or framework upgrade requires a new qualified release; do not silently upgrade production from upstream or the development environment.
 
@@ -131,7 +131,7 @@ Stage260 and Stage251 are legacy SimNow/broker-test diagnostics only. They are n
 
 ## Monthly AI Pool Cadence
 
-The AI pool is monthly, not daily. Follow the inherited operational cadence in `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`, while recording new evidence in the Q line.
+The AI pool is monthly, not daily. Follow the inherited operational cadence in `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`, while recording new evidence in the Stage037 formal line.
 
 - Production runs Stage947 `monthly-ai-pool` -> Stage935 at 18:20 on weekdays; Stage935 itself decides whether a completed-month refresh is due.
 - If Stage935 generates a changed pool and a material publication request, that output is only a candidate: keep production fail-closed and run the full immutable material qualification, promotion, and Stage948 installation flow. Do not refresh the production shadow or issue a receipt against the mutable candidate path.
