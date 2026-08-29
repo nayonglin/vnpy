@@ -84,6 +84,14 @@
 - 进一步复核确认历史Stage037 candidate虽然仍声明Top8，但其路径曾动态跟随活动物料而指向Top10，破坏历史复跑。现已把Stage037 candidate显式固定到不可变 `m0016_20260829T034012+0800_374df2d52e4f` 的Top8 combined eligibility；测试同时读取CSV验证其strategy列，正式Top10与历史Top8均可独立加载。包含Stage179 manifest builder的定向验证为 `82 passed, 54 subtests passed`。
 - 原m0001保持不可变且不得作为最终生产发布；必须以修复后的clean source commit重新生成后继正式物料、重新推送master、重新独立复审并从Stage948 prepare开始完整重走生产闭环。
 
+## m0002后继物料（2026-08-30 07:10 CST）
+
+- 最终source commit：`c308631c9b802dd5800ab55a0214b8dd41ec7139`；独立source reviewer `APPROVE`，P0/P1/P2=`0/0/0`。
+- 41项生产required suite完整通过：`947 passed, 697 subtests passed`，耗时`474.18s`；另有身份/隔离/manifest定向组合`82 passed, 54 subtests passed`。
+- 后继不可变物料：`m0002_20260830T070610+0800_c308631c9b80`，共254个manifest文件、9个AI资产；release commit `634ebc49408d0ebe7b6b99f11712a84b838cad94`，manifest `2d4ccbc536b97e155a61d31a8a8b1286279ab94dc75f201645014a9fcd1500b0`，tree `8423befc3b568dfa9af0c971cd26720b18d267ea51b9524df970486253545239`。
+- 私有material qualification精确绑定release commit，状态passed；明确 `natural_research_gates_pass=false`、`operator_override=true`、known failures preserved，order/send/cancel=`0/0/0`。
+- 当前工作区CURRENT activation commit：`738125f9fbaa7e9cc6c39565b1faa19a0bf72277`。此处只证明本地正式物料激活，远端master、fresh clone、生产资格、Stage948和最终六身份仍待完成，不能称已在线。
+
 ## 过拟合反思
 
 - 运行前判断：是，风险高。
