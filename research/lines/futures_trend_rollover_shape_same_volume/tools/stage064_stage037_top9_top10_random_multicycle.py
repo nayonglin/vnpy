@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict, replace
 from datetime import datetime
+import gzip
 from hashlib import sha256
 from io import BytesIO
 import json
@@ -83,7 +84,7 @@ CHART_FILES = {
 SUMMARY_NAME = "stage064_random_window_summary.csv"
 COMPARISON_NAME = "stage064_random_window_comparison.csv"
 AGGREGATE_NAME = "stage064_random_cycle_aggregate.csv"
-CURVE_NAME = "stage064_random_equity_curves.csv"
+CURVE_NAME = "stage064_random_equity_curves.csv.gz"
 DECISION_NAME = "stage064_decision.json"
 REPORT_NAME = "stage064_random_multicycle_report.md"
 REUSE_SOURCE_PATHS = (
@@ -101,6 +102,20 @@ def _file_sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _gzip_uncompressed_sha256(path: Path) -> str:
+    digest = sha256()
+    with gzip.open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _json_sha256(payload: dict[str, Any]) -> str:
+    return sha256(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    ).hexdigest()
 
 
 def _git_blob_sha256(commit: str, path: Path) -> str:
@@ -697,7 +712,7 @@ def _decision(
         "run_provenance": {
             "random_window_count": EXPECTED_RANDOM_WINDOW_COUNT,
             "logical_arm_window_count": EXPECTED_ENGINE_RUN_COUNT,
-            "new_engine_run_count": EXPECTED_ENGINE_RUN_COUNT,
+            "new_engine_run_count": checkpoint_generated,
             "checkpoint_reused_count": checkpoint_reused,
             "checkpoint_generated_count": checkpoint_generated,
             "random_windows_redrawn_after_results": False,
@@ -924,6 +939,26 @@ def _report(
     return "\n".join(lines)
 
 
+def _runtime_contract_layers(
+    decision: dict[str, Any], current_runner_runtime_sha256: str
+) -> dict[str, Any]:
+    engine_sha = str(decision["identity"]["runtime_contract_sha256"])
+    return {
+        "engine_checkpoint": {
+            "sha256": engine_sha,
+            "scope": "576 Stage064 engine checkpoints and their published numerical evidence",
+            "generated_before_publication_hardening": engine_sha
+            != current_runner_runtime_sha256,
+        },
+        "current_runner": {
+            "sha256": current_runner_runtime_sha256,
+            "scope": "future engine/checkpoint runs and deterministic gzip publication",
+            "matches_engine_checkpoint_contract": engine_sha
+            == current_runner_runtime_sha256,
+        },
+    }
+
+
 def _publish(
     frames: dict[str, pd.DataFrame],
     decision: dict[str, Any],
@@ -935,11 +970,54 @@ def _publish(
     backup = OUTPUT_DIR.with_name(f".stage064.backup-{uuid4().hex}")
     try:
         for name, frame in frames.items():
-            frame.to_csv(temporary / name, index=False, encoding="utf-8-sig")
-        decision["render_provenance"] = {
-            "generator": str(Path(__file__).resolve().relative_to(PROJECT_DIR.resolve())),
-            "generator_sha256": _file_sha256(Path(__file__)),
-            "chart_sha256": {name: sha256(payload).hexdigest() for name, payload in charts.items()},
+            compression = (
+                {"method": "gzip", "compresslevel": 9, "mtime": 0}
+                if name.endswith(".gz")
+                else None
+            )
+            frame.to_csv(
+                temporary / name,
+                index=False,
+                encoding="utf-8-sig",
+                compression=compression,
+            )
+        chart_sha = {name: sha256(payload).hexdigest() for name, payload in charts.items()}
+        existing_render = decision.get("render_provenance")
+        if existing_render is None:
+            decision["render_provenance"] = {
+                "generator": str(Path(__file__).resolve().relative_to(PROJECT_DIR.resolve())),
+                "generator_sha256": _file_sha256(Path(__file__)),
+                "chart_sha256": chart_sha,
+            }
+        elif existing_render.get("chart_sha256") != chart_sha:
+            raise RuntimeError("stage064_repack_chart_sha_drift")
+
+        curve_path = temporary / CURVE_NAME
+        curve_frame = frames[CURVE_NAME]
+        curve_provenance = {
+            "path": CURVE_NAME,
+            "compression": "gzip-mtime-0",
+            "compressed_sha256": _file_sha256(curve_path),
+            "uncompressed_sha256": _gzip_uncompressed_sha256(curve_path),
+            "compressed_size_bytes": curve_path.stat().st_size,
+            "row_count": int(len(curve_frame)),
+            "arm_window_count": int(
+                curve_frame.groupby(["window_id", "promotion_arm"]).ngroups
+            ),
+        }
+        decision["artifact_provenance"] = {
+            "random_equity_curves": curve_provenance,
+        }
+        publication_payload = {
+            "publisher_sha256": _file_sha256(Path(__file__)),
+            "runtime_contracts": decision["runtime_contracts"],
+            "curve": curve_provenance,
+            "chart_sha256": chart_sha,
+        }
+        decision["publication_provenance"] = {
+            **publication_payload,
+            "sha256": _json_sha256(publication_payload),
+            "atomic_directory_replace": True,
         }
         (temporary / DECISION_NAME).write_text(
             json.dumps(decision, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -970,12 +1048,70 @@ def _freeze_only() -> None:
     print(json.dumps(metadata, ensure_ascii=False, indent=2), flush=True)
 
 
+def _repack_existing() -> None:
+    if not OUTPUT_DIR.exists():
+        raise RuntimeError("stage064_repack_output_missing")
+    preflight, _eligibility_paths, plan = _preflight()
+    paths = {
+        SUMMARY_NAME: OUTPUT_DIR / SUMMARY_NAME,
+        COMPARISON_NAME: OUTPUT_DIR / COMPARISON_NAME,
+        AGGREGATE_NAME: OUTPUT_DIR / AGGREGATE_NAME,
+        CURVE_NAME: OUTPUT_DIR / CURVE_NAME,
+    }
+    if not all(path.exists() for path in paths.values()):
+        raise RuntimeError(f"stage064_repack_artifact_missing:{paths}")
+    frames = {
+        SUMMARY_NAME: pd.read_csv(paths[SUMMARY_NAME], low_memory=False),
+        COMPARISON_NAME: pd.read_csv(paths[COMPARISON_NAME]),
+        AGGREGATE_NAME: pd.read_csv(paths[AGGREGATE_NAME]),
+        CURVE_NAME: pd.read_csv(paths[CURVE_NAME], low_memory=False),
+    }
+    windows = [_window_dict(row) for row in plan.itertuples(index=False)]
+    _validate_outputs(frames[SUMMARY_NAME], frames[CURVE_NAME], windows)
+    rebuilt_aggregate = _random_aggregate(frames[COMPARISON_NAME])
+    pd.testing.assert_frame_equal(
+        rebuilt_aggregate.reset_index(drop=True),
+        frames[AGGREGATE_NAME].reset_index(drop=True),
+        check_dtype=False,
+        rtol=1e-12,
+        atol=1e-9,
+    )
+    decision = json.loads((OUTPUT_DIR / DECISION_NAME).read_text(encoding="utf-8"))
+    decision["runtime_contracts"] = _runtime_contract_layers(
+        decision, preflight["runtime_contract_sha256"]
+    )
+    charts = {name: (OUTPUT_DIR / name).read_bytes() for name in CHART_FILES.values()}
+    report = (OUTPUT_DIR / REPORT_NAME).read_text(encoding="utf-8")
+    _publish(frames, decision, charts, report)
+    print(
+        json.dumps(
+            {
+                "repacked": True,
+                "engine_runtime": decision["runtime_contracts"]["engine_checkpoint"][
+                    "sha256"
+                ],
+                "current_runner_runtime": decision["runtime_contracts"]["current_runner"][
+                    "sha256"
+                ],
+                "curve": decision["artifact_provenance"]["random_equity_curves"],
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        flush=True,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--freeze-only", action="store_true")
+    parser.add_argument("--repack-existing", action="store_true")
     args = parser.parse_args()
     if args.freeze_only:
         _freeze_only()
+        return
+    if args.repack_existing:
+        _repack_existing()
         return
 
     preflight, eligibility_paths, plan = _preflight()
@@ -1033,6 +1169,9 @@ def main() -> None:
     aggregate = _random_aggregate(comparison)
     full_summary, full_curve = _load_full_period_source()
     decision = _decision(preflight, aggregate, reused, generated)
+    decision["runtime_contracts"] = _runtime_contract_layers(
+        decision, preflight["runtime_contract_sha256"]
+    )
     charts = {
         CHART_FILES["full_period"]: _plot_full(full_curve),
         CHART_FILES["1y"]: _plot_random_fan(curve, 1),

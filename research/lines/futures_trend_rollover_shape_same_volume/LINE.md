@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；用户明确授权以CURRENT/master的Stage037作为离线正式对照完成Stage063 Top9/Top10多周期诊断，但不允许据此晋升或安装生产。Top9在全周期Sharpe/成本及若干January/June分组失败；Top10虽显著增厚收益，但跨周期成本、DD非劣和broker门失败；两者均不晋升，停止TopN扫描。
+- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；用户明确授权以CURRENT/master的Stage037作为离线正式对照完成Stage063固定起点和Stage064随机起点诊断，但不允许据此晋升或安装生产。Stage064新增192窗、576次冷启动后，Top9因2年DD非劣率失败，Top10因DD、成本和broker门失败；两者均不晋升，停止TopN与随机窗口扫描。
 - 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
@@ -39,6 +39,8 @@
 - 失败后不扫描 MA 周期、MACD 参数、方向、品种、年份或手数比例救参。
 
 ## 当前判断
+
+- Stage064：结果前冻结种子 `1246746679971163672`，1/2/3年各随机抽64个实际交易日起点，A/B/C共576个15万元空仓独立真引擎运行，0复用、0失败、结果后0重抽。Top9对Stage037全部192窗收益胜/非劣率 `78.65%`、DD非劣率 `84.90%`、Sharpe非劣率 `88.02%`、滑点比 `104.59%`，但2年DD非劣率仅 `78.12%<80%`；Top10收益胜/非劣率 `84.38%`，但DD非劣率 `72.92%`、滑点比 `113.66%` 且新增broker100失败。两者随机门与Stage063固定门都未全过，决策 `random_stress_diagnostic_only_keep_stage037_stop_topn_scan`。
 
 - Stage063：A=正式Stage037 Top8+fu、B=Top9+fu、C=Top10+fu；全周期3臂复用并核验Stage062，A的42个滚动窗复用并核验Stage059，B/C新增84次真引擎独立冷启动。Top9的1/2/3年combined收益胜/非劣率为 `87.50%/85.71%/75.00%`，但全周期Sharpe低 `0.021236`、滑点比 `106.18%`，且1年January成本、2年DD、3年January Sharpe和June成本失败。Top10对应收益胜/非劣率 `87.50%/92.86%/83.33%`，但聚合滑点比分别 `112.48%/114.22%/114.70%`，DD非劣率降至 `81.25%/71.43%/66.67%`，2/3年June另新增broker100失败窗。决策 `offline_top9_top10_multicycle_has_hard_fail_keep_stage037`，不再扫描TopN。
 
