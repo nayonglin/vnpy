@@ -73,6 +73,25 @@
 - 是否进入下一步：是，继续完成受控master、fresh clone、Stage948与最终六身份审计。
 - 下一步：所有闭环完成前不得声称Top10+fu已在线；生产只读闸门失败时停止在已完成边界，不绕过。
 
+## 生产预审P0与修复（2026-08-30 06:45 CST）
+
+- Stage948仅完成未激活prepare后，独立生产reviewer在精确生产cwd发现 `qmt_roll_official_live_lightweight_context.py` 仍用旧部署版本 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once` 校验新活动物料策略 `ai_top10_plus_fu_official_live_v1`，导入会报 `official_live_material_strategy_version_mismatch`。该问题定级P0，资格和激活立即停止。
+- 旧生产worktree已在零运行PID、零交易进程下原样恢复为clean detached `09aa96a03fb91124be90bd69861be3f834ab6299`；失败候选仅可恢复归档，不覆盖、不删除旧生产证据，launchd未发生写入或重载，CTP/order/send/cancel仍为`0/0/0/0`。
+- 根因是“部署profile版本”和“正式AI物料策略版本”共用同一身份字段。修复后保留原Stage847部署版本，新增 `OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION` 并直接绑定正式AI policy唯一真源；活动物料只与该独立字段比较，runtime manifest显式输出 `material_strategy_version`。
+- 新增回归断言锁定两个身份不可混用；生产cwd等价导入成功，`tests/test_official_live_config_import.py + tests/test_stage945_production_launcher.py` 为 `39 passed, 29 subtests passed`。本修复不改alpha、Stage037参数、AI成员或历史回测数值。
+- reviewer指出m0001的AI summary保留了构建机绝对路径（P2、运行不依赖）。后继构建器已改为只写 `source/stage061_top10_eligibility.csv` 和五个逻辑文件名，新增可移植性回归；与身份修复合并后的定向验证为 `43 passed, 29 subtests passed`。
+- 激活后还暴露一条旧测试口径红灯：原测试把Stage037 alpha相等扩大成AI policy也必须等于历史Top8。现已把AI策略与eligibility路径单独断言，剩余alpha/风控字段仍全量相等；该隔离测试已加入生产required suite与关键指纹，required suite从40增至41，防止后续正式AI池变更绕开Stage037隔离验证。
+- 进一步复核确认历史Stage037 candidate虽然仍声明Top8，但其路径曾动态跟随活动物料而指向Top10，破坏历史复跑。现已把Stage037 candidate显式固定到不可变 `m0016_20260829T034012+0800_374df2d52e4f` 的Top8 combined eligibility；测试同时读取CSV验证其strategy列，正式Top10与历史Top8均可独立加载。包含Stage179 manifest builder的定向验证为 `82 passed, 54 subtests passed`。
+- 原m0001保持不可变且不得作为最终生产发布；必须以修复后的clean source commit重新生成后继正式物料、重新推送master、重新独立复审并从Stage948 prepare开始完整重走生产闭环。
+
+## m0002后继物料（2026-08-30 07:10 CST）
+
+- 最终source commit：`c308631c9b802dd5800ab55a0214b8dd41ec7139`；独立source reviewer `APPROVE`，P0/P1/P2=`0/0/0`。
+- 41项生产required suite完整通过：`947 passed, 697 subtests passed`，耗时`474.18s`；另有身份/隔离/manifest定向组合`82 passed, 54 subtests passed`。
+- 后继不可变物料：`m0002_20260830T070610+0800_c308631c9b80`，共254个manifest文件、9个AI资产；release commit `634ebc49408d0ebe7b6b99f11712a84b838cad94`，manifest `2d4ccbc536b97e155a61d31a8a8b1286279ab94dc75f201645014a9fcd1500b0`，tree `8423befc3b568dfa9af0c971cd26720b18d267ea51b9524df970486253545239`。
+- 私有material qualification精确绑定release commit，状态passed；明确 `natural_research_gates_pass=false`、`operator_override=true`、known failures preserved，order/send/cancel=`0/0/0`。
+- 当前工作区CURRENT activation commit：`738125f9fbaa7e9cc6c39565b1faa19a0bf72277`。此处只证明本地正式物料激活，远端master、fresh clone、生产资格、Stage948和最终六身份仍待完成，不能称已在线。
+
 ## 过拟合反思
 
 - 运行前判断：是，风险高。
