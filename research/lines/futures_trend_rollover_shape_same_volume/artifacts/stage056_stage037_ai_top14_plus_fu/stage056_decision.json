@@ -1,0 +1,131 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage056",
+  "generated_at": "2026-08-29T17:25:37+08:00",
+  "post_review_annotation": {
+    "reviewed_at": "2026-08-29T17:33:12+08:00",
+    "numerical_artifacts_frozen_at_generated_at": true,
+    "numerical_results_changed_by_review": false,
+    "governance_fields_added_after_independent_review": true,
+    "independent_review_final": "P0/P1/P2/P3=0/0/0/0",
+    "annotation": "Independent review found stable production identity drift. Numeric outputs are preserved, while identity_gate, source hashes, labels, and the non-qualifying offline decision were added as post-review governance metadata."
+  },
+  "base_master_commit": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+  "base_ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+  "candidate_version": "stage056_stage037_ai_top14_plus_fu_v1",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-08-28"
+  },
+  "hypothesis": "Stage037不变，仅把AI选品由Top8非fu+fu扩至Top14非fu+fu，检验容量和横截面分散效果。",
+  "frozen_scope": {
+    "model_non_fu_count": 14,
+    "fixed_fu": "fu.SHFE",
+    "total_product_count": 15,
+    "pre_ai_boundary": "static18 unchanged",
+    "membership_only_dates": [
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-29"
+    ],
+    "membership_only_policy": "lock formal Top8 then fill six by same-model point-in-time replay ranking"
+  },
+  "source_identity": {
+    "formal_eligibility_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0016_20260829T034012+0800_374df2d52e4f/payload/ai/stage182/combined_eligibility.csv",
+    "formal_eligibility_sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+    "market_ranking_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_predictions_product_suitability_market_wf_v2.csv",
+    "market_ranking_sha256": "d6440436e86e3bff2477a8cd3a166aeccaf1fe764400d9700ff8a60ecc80808d",
+    "stage189_ranking_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage189_ai_product_pool_backfill_multimonth_pool_stage189_ai_product_pool_backfill_multimonth_v1.csv",
+    "stage189_ranking_sha256": "2a144a6657dd5780998f4751f82fd003d6dc86cd4150f243f0b1d2347f9ad05c",
+    "latest_ranking_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0016_20260829T034012+0800_374df2d52e4f/payload/ai/stage182/latest_pool.csv",
+    "latest_ranking_sha256": "3bc1e2941380feb8ebc539f2fd04f7d992d06804c4ceaace0b8b5fbfdd561d05",
+    "main_contract_mapping_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+    "main_contract_mapping_sha256": "e6f65a32bbb01ec6a4657c909f99f3840ae98b879b89c986a16b251b2a005996",
+    "full_minute_bars_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_stage861_stage860_full_visual_atlas_v1.csv",
+    "full_minute_bars_sha256": "8e861633b08a82819a668c30c6799e2098d2beaa6863698351145018ea586784",
+    "candidate_eligibility_sha256": "ea968dac37221fa5831abbb7cd65c07ac1add604633616603c817029b8026ce2",
+    "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage051-deep-v-rebound-failure-long-filter/.vntrader/database.db",
+    "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+    "database_latest_daily_date": "2026-08-28",
+    "stage183_position_changes_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+    "stage183_position_changes_sha256": "1dc73f8d66730cc2a2f452742eea3bd9e390cd72b2389b08921d6b30b3966b88",
+    "stage183_entry_snapshots_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+    "stage183_entry_snapshots_sha256": "eb669f0348096bb965679436081a3546a01cf29d1d69f0c6287d5e99d24e28f6"
+  },
+  "identity_gate": {
+    "pass": false,
+    "classification": "master_m0016_stage037_offline_research_baseline_not_current_production",
+    "checkout_head": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "remote_master": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "checkout_release_id": "m0016_20260829T034012+0800_374df2d52e4f",
+    "checkout_ruleset": "stage037_stage034_long_short_mirror_hard_block_v1",
+    "production_head": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "production_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+    "production_ruleset": "stage021_q_rollover_volume_atr_v1",
+    "review_status": "protocol_invalid_as_formal_baseline_ab_keep_numeric_output_as_offline_diagnostic_only"
+  },
+  "override_diff": {
+    "ai_product_pool_eligibility_path": [
+      "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0016_20260829T034012+0800_374df2d52e4f/payload/ai/stage182/combined_eligibility.csv",
+      "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage056_stage037_ai_top14_plus_fu/stage056_candidate_eligibility.csv"
+    ],
+    "ai_product_pool_strategy": [
+      "ai_top8_plus_fu_satellite_post_signal_entry_filter",
+      "ai_top14_plus_fu_satellite_post_signal_entry_filter"
+    ]
+  },
+  "gates": {
+    "selector_contract_pass": true,
+    "only_ai_pool_path_and_strategy_changed": true,
+    "formal_top8_preserved_every_month": true,
+    "full_period_coverage_pass": true,
+    "candidate_account_survival": true,
+    "candidate_has_real_effect": true,
+    "candidate_max_drawdown_not_worse": false,
+    "candidate_sharpe_not_lower_than_formal": false,
+    "candidate_broker10_100_pass": false,
+    "candidate_dd40_pass": false,
+    "formal_identity_parity_pass": false,
+    "no_order_api": true
+  },
+  "comparisons": [
+    {
+      "comparison": "formal_stage037_top8_fu_vs_top14_fu",
+      "A_end_equity": 16859940.60000001,
+      "C_end_equity": 19095929.800000023,
+      "delta_end_equity": 2235989.200000014,
+      "A_total_return_pct": 11139.960400000005,
+      "C_total_return_pct": 12630.619866666682,
+      "delta_total_return_pct": 1490.659466666677,
+      "A_max_dd_pct": -39.91474607744346,
+      "C_max_dd_pct": -44.73401343952019,
+      "delta_max_dd_pct": -4.8192673620767295,
+      "A_sharpe": 1.5388212007263535,
+      "C_sharpe": 1.5000597998926755,
+      "delta_sharpe": -0.03876140083367807,
+      "A_total_slippage": 1659555.0,
+      "C_total_slippage": 2577090.0,
+      "delta_total_slippage": 917535.0,
+      "A_total_trade_count": 734.0,
+      "C_total_trade_count": 920.0,
+      "delta_total_trade_count": 186.0,
+      "A_nonzero_daily_win_rate_pct": 53.23101777059773,
+      "C_nonzero_daily_win_rate_pct": 53.42857142857142,
+      "delta_nonzero_daily_win_rate_pct": 0.1975536579736925,
+      "A_max_broker10_margin_to_equity_pct": 93.58070146346671,
+      "C_max_broker10_margin_to_equity_pct": 111.80026461281321,
+      "delta_max_broker10_margin_to_equity_pct": 18.2195631493465,
+      "A_days_over_100pct": 0.0,
+      "C_days_over_100pct": 2.0,
+      "delta_days_over_100pct": 2.0
+    }
+  ],
+  "promote_to_official": false,
+  "decision": "protocol_invalid_production_identity_drift_keep_offline_diagnostic_only_do_not_promote",
+  "overfitting_assessment": "medium: one frozen breadth point, but selected after seeing prior Top8 behavior; no parameter scan in this stage",
+  "continue_value_assessment": "yes: isolates breadth/capacity while holding Stage037 alpha and risk logic fixed",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：用户在明确知悉 Stage048 多周期和 Stage049 蒙特卡洛硬失败后，授权 operator override 将 Stage037 晋升正式版；当前正在执行不可变物料、远端 master、fresh clone 与 Stage948 生产安装闭环。Stage037 完整继承 C9/15w 与 Q 风险规则，并增加新主力自身历史、换月延迟5交易日和多空镜像形态硬拦截。
+- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；Stage056只能保留为用户指定master Stage037的离线诊断，不能作为合规正式基线A/C。其Top14非fu+fu虽提高期末权益，但回撤、Sharpe、成本与broker容量门均恶化，不晋升。
 - 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
@@ -262,3 +262,12 @@
 - C为 `17,051,717.30/11267.8115%/-39.9147%/Sharpe1.543941`，滑点 `1,669,965`、交易 `733`、胜率 `53.1984%`、broker10峰值 `93.5807%`。相对B期末权益 `+1,523,403.70`、回撤改善 `0.4182pp`、Sharpe `+0.038240`；相对正式A期末权益 `+2,062,202.20`、回撤改善 `4.9886pp`、Sharpe `+0.075386`且滑点减少。
 - OR命中152个候选事件，多头79、空头73；正手数实际硬拦截144个，多头73、空头71；语义、时序、严格大于、入口和硬置0合同全部通过。
 - 唯一失败门是C滑点为B的 `105.6559%`，超过105%上限约 `0.6559pp`；独立reviewer复算为 `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。决策 `stage037_short_mirror_block_fail_full_period_stop`，不自动多周期、不救参、不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage056 master m0016 Stage037离线AI Top14非fu+固定fu诊断
+
+- 数值路径唯一行为变量是月度AI池宽度：A为master m0016 Stage037 Top8非fu+fu，C为Top14非fu+fu；Stage037策略、风险、换月、出场、资金和2019-12-31 static18前AI边界全部不变。
+- C为 `19,095,929.80/12630.6199%/-44.7340%/Sharpe1.500060`，滑点 `2,577,090`、交易 `920`、非零交易日胜率 `53.4286%`；相对A期末权益增加 `2,235,989.20`，但回撤恶化 `4.8193pp`、Sharpe下降 `0.038761`、滑点增加 `917,535`。
+- C的broker10峰值由A的 `93.5807%` 升至 `111.8003%`，新增2天超过100%，DD40与broker100门失败；收益改善不能覆盖容量和尾部风险恶化。
+- `2026-03/04/05` 原始9–14名评分未被历史正式物料保存，候选明确锁定当时正式Top8，再以同模型时点重放排名补6个，标记 `membership_locked_score_fill`；其余月份使用冻结全18品种评分，所有月正式Top8均保留。
+- 身份审查发现稳定生产 `09aa96a/m0015/Stage021-Q` 与master `a7d8599/m0016/Stage037` 不一致，严格A/B技能本应在运行前停止；本结果降级为离线数字证据，runner已补六身份fail-closed前置。
+- 决策 `protocol_invalid_production_identity_drift_keep_offline_diagnostic_only_do_not_promote`；不修改正式AI池、正式物料、master、生产或CTP，不扫描其他TopN救参。只有先解决正式物料与稳定生产身份偏差后，才可重新讨论合规复跑。
