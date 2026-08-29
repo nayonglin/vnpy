@@ -67,6 +67,9 @@ EQUITY_CHART_NAME = "stage061_equity_top10_top19.png"
 RESPONSE_CHART_NAME = "stage061_metric_response.png"
 PLOT_TITLE = "OFFLINE RESEARCH — Stage061 AI Top10–Top19 Full Period"
 REPORT_BANNER = "> **离线研究，非当前实盘策略；不得据此发单或自动晋升。**"
+PRE_AI_FU_BOUNDARY_NOTE = (
+    "`fu.SHFE`只在55个正式AI月度快照中固定放行；2019-12-31的static18前AI边界保持原18品种且不含fu。"
+)
 
 
 def _arm(top_n: int) -> dict[str, Any]:
@@ -340,26 +343,70 @@ def _relabel(frame: pd.DataFrame, arm: dict[str, Any]) -> pd.DataFrame:
     return result
 
 
+def _assert_relabel_preserves_payload(
+    source: pd.DataFrame,
+    target: pd.DataFrame,
+    *,
+    context: str,
+) -> None:
+    identity_columns = {
+        "experiment_arm",
+        "requested_top_n",
+        "actual_ranked_count",
+        "actual_total_count",
+        "profile",
+        "variant",
+        "arm",
+        "label",
+    }
+    payload_columns = [
+        column for column in source.columns if column not in identity_columns
+    ]
+    missing_payload_columns = sorted(set(payload_columns) - set(target.columns))
+    if missing_payload_columns:
+        raise RuntimeError(
+            f"stage061_reuse_payload_columns_drift:{context}:"
+            f"{missing_payload_columns}"
+        )
+    left = source[payload_columns].reset_index(drop=True)
+    right = target[payload_columns].reset_index(drop=True)
+    if not left.equals(right):
+        raise RuntimeError(f"stage061_reuse_payload_drift:{context}")
+
+
 def _load_reference_and_top14() -> tuple[dict[int | str, pd.DataFrame], dict[int | str, pd.DataFrame], dict[int, pd.DataFrame]]:
     source_summary = pd.read_csv(STAGE056_DIR / s56.SUMMARY_NAME)
     source_curve = pd.read_csv(STAGE056_DIR / s56.CURVE_NAME)
     source_trades = pd.read_csv(STAGE056_DIR / s56.TRADES_NAME)
-    reference_summary = _relabel(
-        source_summary[source_summary["experiment_arm"].astype(str).eq("A")], REFERENCE
-    )
-    reference_curve = _relabel(
-        source_curve[source_curve["experiment_arm"].astype(str).eq("A")], REFERENCE
-    )
+    source_reference_summary = source_summary[
+        source_summary["experiment_arm"].astype(str).eq("A")
+    ]
+    source_reference_curve = source_curve[
+        source_curve["experiment_arm"].astype(str).eq("A")
+    ]
+    reference_summary = _relabel(source_reference_summary, REFERENCE)
+    reference_curve = _relabel(source_reference_curve, REFERENCE)
     top14_arm = ARMS[4]
-    top14_summary = _relabel(
-        source_summary[source_summary["experiment_arm"].astype(str).eq("C")], top14_arm
-    )
-    top14_curve = _relabel(
-        source_curve[source_curve["experiment_arm"].astype(str).eq("C")], top14_arm
-    )
-    top14_trades = _relabel(
-        source_trades[source_trades["experiment_arm"].astype(str).eq("C")], top14_arm
-    )
+    source_top14_summary = source_summary[
+        source_summary["experiment_arm"].astype(str).eq("C")
+    ]
+    source_top14_curve = source_curve[
+        source_curve["experiment_arm"].astype(str).eq("C")
+    ]
+    source_top14_trades = source_trades[
+        source_trades["experiment_arm"].astype(str).eq("C")
+    ]
+    top14_summary = _relabel(source_top14_summary, top14_arm)
+    top14_curve = _relabel(source_top14_curve, top14_arm)
+    top14_trades = _relabel(source_top14_trades, top14_arm)
+    for source, target, context in (
+        (source_reference_summary, reference_summary, "reference_summary"),
+        (source_reference_curve, reference_curve, "reference_curve"),
+        (source_top14_summary, top14_summary, "top14_summary"),
+        (source_top14_curve, top14_curve, "top14_curve"),
+        (source_top14_trades, top14_trades, "top14_trades"),
+    ):
+        _assert_relabel_preserves_payload(source, target, context=context)
     return (
         {"REF": reference_summary, 14: top14_summary},
         {"REF": reference_curve, 14: top14_curve},
@@ -474,11 +521,18 @@ def _duplicate_top19(
     top18_trades: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     arm = ARMS[-1]
-    return (
+    duplicated = (
         _relabel(top18_summary, arm),
         _relabel(top18_curve, arm),
         _relabel(top18_trades, arm),
     )
+    for source, target, context in zip(
+        (top18_summary, top18_curve, top18_trades),
+        duplicated,
+        ("top19_summary", "top19_curve", "top19_trades"),
+    ):
+        _assert_relabel_preserves_payload(source, target, context=context)
+    return duplicated
 
 
 def _assert_coverage(summary: pd.DataFrame, curve: pd.DataFrame) -> None:
@@ -578,6 +632,36 @@ def _comparison(summary: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _cost_only_fail_top_ns(comparison: pd.DataFrame) -> list[int]:
+    non_cost_gate_columns = [
+        column
+        for column in comparison.columns
+        if column.startswith("gate_")
+        and column != "gate_slippage_le_105pct_of_stage037"
+    ]
+    mask = (
+        comparison[non_cost_gate_columns].all(axis=1)
+        & ~comparison["gate_slippage_le_105pct_of_stage037"]
+    )
+    return comparison.loc[mask, "requested_top_n"].astype(int).tolist()
+
+
+def _continue_value_assessment(comparison: pd.DataFrame) -> str:
+    passing = comparison.loc[
+        comparison["all_full_period_gates_pass"] & comparison["requested_top_n"].ne(19),
+        "requested_top_n",
+    ].astype(int).tolist()
+    if passing:
+        return "有限：通过全周期硬门且处于相邻稳定平台的TopN才值得进入预声明多周期。"
+    cost_only = _cost_only_fail_top_ns(comparison)
+    if cost_only:
+        return (
+            f"有限：TopN {cost_only} 仅失败绝对总滑点预算，允许另立预声明的容量/成本归一化验证；"
+            "冻结105%门不变、不得继续扫TopN或直接晋升。"
+        )
+    return "无：没有TopN接近通过全周期硬门，不应再扫描宽度或进入多周期。"
+
+
 def _plot_equity(curve: pd.DataFrame) -> bytes:
     fig, ax = plt.subplots(figsize=(15, 7))
     reference = curve[curve["experiment_arm"].astype(str).eq("REF")].sort_values("date")
@@ -646,7 +730,8 @@ def _report(summary: pd.DataFrame, comparison: pd.DataFrame, decision: dict[str,
         "",
         REPORT_BANNER,
         "",
-        f"区间：`{START.date()}` 至 `{END.date()}`。AI过滤保持开启，唯一行为变量是月度AI排名池宽度；`fu.SHFE`始终固定放行。",
+        f"区间：`{START.date()}` 至 `{END.date()}`。AI过滤保持开启，唯一行为变量是月度AI排名池宽度；正式AI月度快照固定放行 `fu.SHFE`。",
+        f"边界例外：{PRE_AI_FU_BOUNDARY_NOTE}",
         "",
         f"参考 Stage037 Top8+fu：期末权益 `{baseline['end_equity']:,.2f}`，总收益 `{baseline['total_return_pct']:.4f}%`，最大回撤 `{baseline['max_dd_pct']:.4f}%`，Sharpe `{baseline['sharpe']:.6f}`。",
         "",
@@ -663,6 +748,7 @@ def _report(summary: pd.DataFrame, comparison: pd.DataFrame, decision: dict[str,
             f"{'PASS' if row.all_full_period_gates_pass else 'FAIL'} |"
         )
     passing = comparison.loc[comparison["all_full_period_gates_pass"], "requested_top_n"].tolist()
+    cost_only = _cost_only_fail_top_ns(comparison)
     lines.extend(
         [
             "",
@@ -671,6 +757,7 @@ def _report(summary: pd.DataFrame, comparison: pd.DataFrame, decision: dict[str,
             "- Top19的历史排名输入只有18个非fu，因此逐月成员与Top18完全相同；Top19复用Top18，不计作独立证据。",
             "- Top14逐值复用Stage056已验证全周期结果；其余TopN均使用同一Stage037真引擎和独立15万元冷启动。",
             f"- 通过单版本全周期硬门的名义TopN：`{passing}`。即使存在PASS，也只进入多周期候选清单，不允许从10个结果里直接挑冠军晋升。",
+            f"- 仅失败绝对总滑点门的TopN：`{cost_only}`。这表示冻结成本预算失败，不表示其收益、回撤或Sharpe劣化；只能另立容量/成本归一化问题，不能事后改门。",
             f"- 最终决策：`{decision['decision']}`。",
             "- 未连接CTP，未调用订单、发单或撤单API，未修改正式AI池、master或生产。",
             "",
@@ -764,6 +851,7 @@ def main() -> None:
         },
         "source_identity": identity,
         "full_period_gate_pass_top_ns_excluding_duplicate": passing,
+        "cost_only_fail_top_ns": _cost_only_fail_top_ns(comparison),
         "formal_production_ac_compliant": False,
         "promotion_permitted": False,
         "promote": False,
@@ -773,11 +861,7 @@ def main() -> None:
             else "offline_width_sweep_no_fullperiod_candidate_keep_stage037"
         ),
         "overfitting_assessment": "高：同时观察10个相邻TopN存在多重比较；结果只能用于判断宽度响应平台，不能后验挑单点冠军。",
-        "continue_value_assessment": (
-            "有限：仅通过全周期硬门且处于相邻稳定平台的TopN值得进入预声明多周期；其余停止。"
-            if passing
-            else "无：没有TopN通过全周期硬门，不应再扫描宽度或进入多周期。"
-        ),
+        "continue_value_assessment": _continue_value_assessment(comparison),
         "order_api_called_count": 0,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,
