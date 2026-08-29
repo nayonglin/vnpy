@@ -53,6 +53,8 @@ TRADES_NAME = "stage060_candidate_trades.csv"
 DECISION_NAME = "stage060_decision.json"
 REPORT_NAME = "stage060_report.md"
 CHART_NAME = "stage060_equity_abc.png"
+PLOT_TITLE = "OFFLINE RESEARCH — Stage060: Stage037 vs Stage056 vs No AI Pool"
+REPORT_BANNER = "> **离线研究，非当前实盘策略；不得据此发单或自动晋升。**"
 
 ARMS: tuple[dict[str, str], ...] = (
     {
@@ -189,7 +191,54 @@ def _load_reused_ab() -> tuple[pd.DataFrame, pd.DataFrame]:
     curve = pd.concat(curves, ignore_index=True, sort=False)
     if len(summary) != 2 or set(summary["experiment_arm"].astype(str)) != {"A", "B"}:
         raise RuntimeError("stage060_reused_ab_identity_failed")
+    _verify_reused_ab(source_summary, source_curve, summary, curve)
     return summary, curve
+
+
+def _verify_reused_ab(
+    source_summary: pd.DataFrame,
+    source_curve: pd.DataFrame,
+    summary: pd.DataFrame,
+    curve: pd.DataFrame,
+) -> None:
+    source_indexed = source_summary.set_index("experiment_arm")
+    target_indexed = summary.set_index("experiment_arm")
+    numeric = [
+        column
+        for column in source_summary.columns
+        if pd.api.types.is_numeric_dtype(source_summary[column])
+    ]
+    for target, source in (("A", "A"), ("B", "C")):
+        for column in numeric:
+            left = target_indexed.loc[target, column]
+            right = source_indexed.loc[source, column]
+            if pd.isna(left) and pd.isna(right):
+                continue
+            if float(left) != float(right):
+                raise RuntimeError(
+                    f"stage060_reused_summary_drift:{target}<-{source}:{column}:{left}!={right}"
+                )
+        target_curve = curve[curve["experiment_arm"].astype(str).eq(target)].reset_index(drop=True)
+        source_arm_curve = source_curve[
+            source_curve["experiment_arm"].astype(str).eq(source)
+        ].reset_index(drop=True)
+        for column in ("date", "account_equity", "trade_count", "total_slippage"):
+            if not target_curve[column].equals(source_arm_curve[column]):
+                raise RuntimeError(
+                    f"stage060_reused_curve_drift:{target}<-{source}:{column}"
+                )
+
+
+def _label_candidate_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    result = frame.copy()
+    arm = ARMS[2]
+    result["experiment_arm"] = arm["arm"]
+    for column in ("profile", "variant", "arm"):
+        if column in result.columns:
+            result[column] = arm["profile"]
+    if "label" in result.columns:
+        result["label"] = arm["label"]
+    return result
 
 
 def _run_c(metadata: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, pd.DataFrame]]:
@@ -211,9 +260,8 @@ def _run_c(metadata: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict[s
     summary["window_name"] = "full_2018_20260828"
     summary["window_label"] = "2018-01-01 independent start to 2026-08-28"
     curve["experiment_arm"] = "C"
-    for frame in frames.values():
-        if not frame.empty:
-            frame["experiment_arm"] = "C"
+    for name, frame in tuple(frames.items()):
+        frames[name] = _label_candidate_frame(frame)
     return summary, curve, frames
 
 
@@ -298,7 +346,7 @@ def _plot(curve: pd.DataFrame) -> bytes:
             linewidth=1.35,
             label=arm["plot_label"],
         )
-    ax.set_title("Stage060 Full Period: Stage037 vs Stage056 vs No AI Pool")
+    ax.set_title(PLOT_TITLE)
     ax.set_ylabel("Equity (10k CNY)")
     ax.grid(alpha=0.25)
     ax.legend()
@@ -313,6 +361,8 @@ def _report(summary: pd.DataFrame, comparison: pd.DataFrame, decision: dict[str,
     indexed = summary.set_index("experiment_arm")
     lines = [
         "# Stage060 Stage037 关闭 AI 选品全周期 A/B/C",
+        "",
+        REPORT_BANNER,
         "",
         f"区间：`{START.date()}` 至 `{END.date()}`。C 相对 A 的唯一变量是关闭 AI 选品过滤；底层策略、风险参数、19品种配置全集均不变。",
         "",
@@ -408,7 +458,11 @@ def main() -> None:
             else "offline_no_ai_fullperiod_hard_fail_keep_stage037"
         ),
         "overfitting_assessment": "中等：这是预先冻结的单变量消融，不做参数扫描，但仍是在已有研究结果后提出。",
-        "continue_value_assessment": "有：能直接检验AI选品是否贡献了净风险调整收益；若全周期硬门禁失败则不再扩展。",
+        "continue_value_assessment": (
+            "有条件：全周期硬门禁通过后才值得进入多周期。"
+            if all(gates.values())
+            else "无：收益、回撤和Sharpe硬门同时失败，关闭AI选品方向应在全周期阶段停止，不再跑多周期或救参。"
+        ),
         "order_api_called_count": 0,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,

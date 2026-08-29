@@ -96,6 +96,46 @@ def test_stage060_reuses_stage056_ab_metrics_without_relabeling_drift() -> None:
     assert by_arm.loc["B", "end_equity"] == source_summary.loc["C", "end_equity"]
     assert set(curve["experiment_arm"].astype(str)) == {"A", "B"}
 
+    source_curve = pd.read_csv(runner.STAGE056_DIR / runner.s56.CURVE_NAME)
+    for target, source in (("A", "A"), ("B", "C")):
+        target_row = by_arm.loc[target]
+        source_row = source_summary.loc[source]
+        numeric = [
+            column
+            for column in source_summary.columns
+            if pd.api.types.is_numeric_dtype(source_summary[column])
+        ]
+        for column in numeric:
+            assert target_row[column] == pytest.approx(source_row[column], nan_ok=True)
+        target_equity = curve.loc[
+            curve["experiment_arm"].astype(str).eq(target), "account_equity"
+        ].reset_index(drop=True)
+        source_equity = source_curve.loc[
+            source_curve["experiment_arm"].astype(str).eq(source), "account_equity"
+        ].reset_index(drop=True)
+        pd.testing.assert_series_equal(target_equity, source_equity, check_names=False)
+
+
+def test_stage060_candidate_frames_are_never_labeled_as_live() -> None:
+    runner = _runner()
+    source = pd.DataFrame(
+        {
+            "profile": ["stage847_c9_15w_stage819_05r_stop_retry_live"],
+            "variant": ["stage847_c9_15w_stage819_05r_stop_retry_live"],
+            "arm": ["stage847_c9_15w_stage819_05r_stop_retry_live"],
+            "label": ["live"],
+        }
+    )
+
+    labeled = runner._label_candidate_frame(source)
+
+    assert set(labeled["experiment_arm"]) == {"C"}
+    for column in ("profile", "variant", "arm"):
+        assert set(labeled[column]) == {runner.ARMS[2]["profile"]}
+    assert set(labeled["label"]) == {runner.ARMS[2]["label"]}
+    assert "OFFLINE" in runner.PLOT_TITLE
+    assert "离线研究" in runner.REPORT_BANNER
+
 
 def test_stage060_full_period_gate_requires_risk_cost_and_capacity_noninferiority() -> None:
     runner = _runner()

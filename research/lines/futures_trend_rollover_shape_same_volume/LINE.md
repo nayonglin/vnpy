@@ -282,3 +282,12 @@
 - 决策 `offline_research_multicycle_has_hard_fail_keep_stage037`；不晋升Stage056、不扫描其他TopN救参。正式物料、远端master、生产、CTP和订单API均未改变。
 - 单一复现入口为 `stage059_run_and_publish.py`：先执行Stage059真引擎/检查点发布，再自动执行review annotation；因此任何fresh复跑都会保留严格胜率字段、OFFLINE标签和冻结gate不变的审计信息。
 - 独立review最终 `P0/P1/P2/P3=0/0/0/0`；43窗/86臂、84个checkpoint SHA、聚合/gate、五图、严格胜率和生产安全边界全部复算通过。接受边界仅为“离线诊断、不可晋升”。
+
+## Stage060 Stage037 关闭 AI 选品全周期反证
+
+- C严格从Stage037只修改 `enable_ai_product_pool_filter: true -> false`；AI eligibility路径和策略标识仍保留但不参与准入，使用既有static18+fu配置全集19品种。A/B逐值复用Stage056的Stage037 Top8+fu与Stage056 Top14+fu，只新跑C。
+- C为 `1,054,100.70/602.7338%/-62.5110%/Sharpe0.729200`，滑点 `336,640`、交易 `1,038`、非零交易日胜率 `50.4225%`、broker10峰值 `94.2332%`；相对A少赚 `10,537.2266pp`、回撤恶化 `22.5963pp`、Sharpe下降 `0.809622`。
+- C绝对滑点虽低于A/B，但这是其资金复利路径长期显著更小造成的，不可解释为交易成本效率更好；交易次数反而比A多304次。
+- 收益、回撤和Sharpe三个预声明硬门同时失败，只有账户存活、绝对滑点和broker100天数通过；决策 `offline_no_ai_fullperiod_hard_fail_keep_stage037`。
+- 当前稳定生产仍为Stage021-Q而非Stage037，因此本次明确是用户授权的离线消融，不满足正式生产A/C身份同源门，不允许晋升。关闭AI方向到此停止，不跑多周期、不扫描子集或TopN救参，不改正式物料/master/生产/CTP。
+- 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；初审发现的成交CSV live误标签和离线水印/复用校验问题均已修复。1038条C成交全部使用Stage060离线身份，A/B所有关键summary与2101点curve逐值0差，C指标独立复算最大误差 `2.27e-13`。
