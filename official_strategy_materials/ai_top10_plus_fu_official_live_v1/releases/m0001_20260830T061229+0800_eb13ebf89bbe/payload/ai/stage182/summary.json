@@ -1,0 +1,108 @@
+{
+  "model_tag": "stage065_top10_fu_formal_ai_bundle_v1",
+  "source_model_tag": "product_suitability_wf_v1",
+  "generated_at_cst": "2026-08-30T06:10:36+08:00",
+  "eval_date": "2026-07-31",
+  "data_cutoff": "2026-08-03",
+  "source_max_date": "2026-08-03",
+  "training_label_cutoff": "2026-05-07",
+  "training_label_cutoff_provenance": "Stage182 live model metadata inherited by the Stage061 frozen ranking source",
+  "source": {
+    "stage": "Stage061",
+    "commit": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
+    "source_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/.tools/stage061_ai_top10_to_top19_checkpoints/eligibility/stage061_top10_eligibility.csv",
+    "sha256": "cf3cced22a61b354dadbc2f67091143eec74d7a2f03577faf2fd4c10dcec0c0d",
+    "row_count": 623,
+    "eval_date_count": 56,
+    "ai_eval_date_count": 55,
+    "pre_ai_eval_date": "2019-12-31",
+    "latest_eval_date": "2026-07-31"
+  },
+  "eligibility_contract": {
+    "strategy": "ai_top10_plus_fu_official_live_v1",
+    "fixed_product": "fu.SHFE",
+    "ranked_non_fu_count": 10,
+    "ai_month_total_product_count": 11,
+    "pre_ai_static_product_count": 18,
+    "pre_ai_static_contains_fu": false,
+    "pre_ai_eval_date": "2019-12-31",
+    "latest_eval_date": "2026-07-31",
+    "eval_date_count": 56,
+    "ai_eval_date_count": 55
+  },
+  "research_evidence": {
+    "Stage061": {
+      "passed": false,
+      "decision": "offline_width_sweep_no_fullperiod_candidate_keep_stage037",
+      "failed_gates": [
+        "full_period_slippage_ratio_le_105pct"
+      ],
+      "top10_full_period": {
+        "end_equity": 21870488.8,
+        "total_return_pct": 14480.325867,
+        "max_drawdown_pct": -39.914746,
+        "sharpe": 1.586976,
+        "total_slippage": 2163390.0,
+        "trade_count": 798,
+        "win_rate_pct": 53.734756,
+        "broker10_peak_pct": 93.580701,
+        "slippage_ratio_to_stage037": 1.3035964460352323
+      }
+    },
+    "Stage063": {
+      "passed": false,
+      "decision": "offline_top9_top10_multicycle_has_hard_fail_keep_stage037",
+      "failed_gates": [
+        "full_period_slippage_ratio_le_105pct",
+        "fixed_cycle_dd_noninferior_rate_ge_80pct",
+        "fixed_cycle_aggregate_slippage_le_105pct",
+        "fixed_cycle_broker100_fail_count_not_above_stage037"
+      ]
+    },
+    "Stage064": {
+      "passed": false,
+      "decision": "random_stress_diagnostic_only_keep_stage037_stop_topn_scan",
+      "failed_gates": [
+        "random_dd_noninferior_rate_ge_80pct",
+        "random_aggregate_slippage_le_105pct",
+        "random_broker100_fail_count_not_above_stage037",
+        "stage063_fixed_multicycle_gates_already_failed"
+      ],
+      "top10_random_all_192_windows": {
+        "return_noninferior_rate_pct": 84.375,
+        "median_return_delta_pct": 9.973333,
+        "dd_noninferior_2pp_rate_pct": 72.916667,
+        "sharpe_noninferior_005_rate_pct": 92.708333,
+        "aggregate_slippage_ratio": 1.136614,
+        "broker100_fail_count": 1
+      }
+    }
+  },
+  "promotion_decision": {
+    "natural_gates_pass": false,
+    "operator_override": true,
+    "override_scope": "user_authorized_direct_formal_promotion_of_top10_plus_fixed_fu",
+    "known_failures_preserved": true
+  },
+  "outputs": {
+    "live_pool": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/stage065-promotion.I8xgr8/ai_bundle/latest_pool.csv",
+    "live_eligibility": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/stage065-promotion.I8xgr8/ai_bundle/live_eligibility.csv",
+    "combined_eligibility": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/stage065-promotion.I8xgr8/ai_bundle/combined_eligibility.csv",
+    "summary": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/stage065-promotion.I8xgr8/ai_bundle/summary.json",
+    "report": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/stage065-promotion.I8xgr8/ai_bundle/report.md"
+  },
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false,
+  "safety": {
+    "overwrites_official_stage78_eligibility": false,
+    "uses_future_label_for_eval_date": false,
+    "real_order_enabled": false,
+    "runs_backtest": false,
+    "trains_or_scores_model": false,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0
+  }
+}
