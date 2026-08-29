@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from qmt_roll_official_ai_pool_policy import OFFICIAL_AI_PRODUCT_POOL_STRATEGY
 from qmt_roll_official_strategy_material_resolver import (
     load_active_material_release,
     resolve_active_material,
@@ -26,6 +27,7 @@ OFFICIAL_LIVE_ALIAS = "Stage847-C9-15w"
 OFFICIAL_LIVE_VERSION = (
     "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
 )
+OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
 OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE = "2026-07-23"
 OFFICIAL_LIVE_AI_LOGICAL_PATH = "ai/stage182/combined_eligibility.csv"
 OFFICIAL_LIVE_AI_LATEST_POOL_LOGICAL_PATH = "ai/stage182/latest_pool.csv"
@@ -39,7 +41,10 @@ OFFICIAL_LIVE_MATERIAL_RELEASE = load_active_material_release(
     OFFICIAL_LIVE_MATERIAL_CURRENT_PATH,
     repo_root=REPO_ROOT,
 )
-if OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version != OFFICIAL_LIVE_VERSION:
+if (
+    OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version
+    != OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION
+):
     raise RuntimeError("official_live_material_strategy_version_mismatch")
 OFFICIAL_LIVE_MATERIAL_RELEASE_ID = OFFICIAL_LIVE_MATERIAL_RELEASE.release_id
 OFFICIAL_LIVE_MATERIAL_RELEASE_COMMIT = OFFICIAL_LIVE_MATERIAL_RELEASE.release_commit

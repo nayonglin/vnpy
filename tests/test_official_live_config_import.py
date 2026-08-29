@@ -127,6 +127,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
         )
         self.assertEqual(
+            module.OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION,
+            "ai_top10_plus_fu_official_live_v1",
+        )
+        self.assertEqual(
             module.OFFICIAL_LIVE_RULESET_VERSION,
             "stage037_stage034_long_short_mirror_hard_block_v1",
         )
@@ -158,6 +162,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         self.assertEqual(
             "ai_top10_plus_fu_official_live_v1",
             manifest["ai_pool_policy_version"],
+        )
+        self.assertEqual(
+            "ai_top10_plus_fu_official_live_v1",
+            manifest["material_strategy_version"],
         )
         self.assertEqual(
             {
