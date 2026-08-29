@@ -1,0 +1,386 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage064",
+  "generated_at": "2026-08-30T02:34:11+08:00",
+  "identity": {
+    "research_protocol": "user_authorized_offline_stage037_top9_top10_multicycle",
+    "checkout_stage037_identity_pass": true,
+    "production_identity_matches_stage037": false,
+    "user_authorized_offline_identity_override": true,
+    "user_authorized_offline_identity_override_reason": "2026-08-29 user authorized continuing offline Stage037 comparisons despite stable production remaining Stage021-Q; Stage064 only adds frozen random windows",
+    "formal_production_ac_compliant": false,
+    "promotion_permitted": false,
+    "checkout_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+      "source_commit": "374df2d52e4f17220c5e2d4cae76f50d45bec47d",
+      "material_release_id": "m0016_20260829T034012+0800_374df2d52e4f",
+      "release_commit": "efef7217ee1b2194b064728257ff125035cec729",
+      "manifest_sha256": "cc757212c8bef45617549630abf9b2dcf4f045bf8cb4af376cfd3e6a72da5cd4"
+    },
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "checkout_head": "ea8769c9593ee68d9e96a2ede117d3f5ab618423",
+    "production_head": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "remote_master": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage051-deep-v-rebound-failure-long-filter/.vntrader/database.db",
+    "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+    "random_seed": 1246746679971163672,
+    "window_plan": {
+      "commit": "ea8769c9593ee68d9e96a2ede117d3f5ab618423",
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/inputs/stage064_stage037_top9_top10_random_windows.csv",
+      "workspace_sha256": "5a0997ea77eb0f17167810f72789dc52f18a7ec71c5b42ccf03de7d2e7c5af12",
+      "git_blob_sha256": "5a0997ea77eb0f17167810f72789dc52f18a7ec71c5b42ccf03de7d2e7c5af12"
+    },
+    "reuse_source_contract": {
+      "commit": "81bb5e5779caf545513770e6afb157be89fea09e",
+      "files": {
+        "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage063_stage037_top9_top10_multicycle/stage063_decision.json": {
+          "workspace_sha256": "a2754fa3d3802d8e88ba9f3ed52b71e9fc3d61fa3fe0cd7c53f94d11351b6ef5",
+          "git_blob_sha256": "a2754fa3d3802d8e88ba9f3ed52b71e9fc3d61fa3fe0cd7c53f94d11351b6ef5"
+        },
+        "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage063_stage037_top9_top10_multicycle/stage063_window_summary.csv": {
+          "workspace_sha256": "5a12b05f202094136fcc082e59e84f88103a4fa4fb10abe756c7eeee5e0fe7f9",
+          "git_blob_sha256": "5a12b05f202094136fcc082e59e84f88103a4fa4fb10abe756c7eeee5e0fe7f9"
+        },
+        "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage063_stage037_top9_top10_multicycle/stage063_equity_curves.csv": {
+          "workspace_sha256": "e3730efa54845b69a759312dcada2079acd162e7edda593f3c297e7b710f5a14",
+          "git_blob_sha256": "e3730efa54845b69a759312dcada2079acd162e7edda593f3c297e7b710f5a14"
+        },
+        "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage061_ai_top10_to_top19_fullperiod/stage061_eligibility.csv": {
+          "workspace_sha256": "359e10e5a992326c0d11934eacb88ef4ecd33d1f13110d206298bc493498a5ff",
+          "git_blob_sha256": "359e10e5a992326c0d11934eacb88ef4ecd33d1f13110d206298bc493498a5ff"
+        },
+        "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage062_ai_top9_fullperiod/stage062_eligibility.csv": {
+          "workspace_sha256": "f1f9b9a1b20bdb54cab4418a36048ab5aa999ae9104beeec897526d712ba9946",
+          "git_blob_sha256": "f1f9b9a1b20bdb54cab4418a36048ab5aa999ae9104beeec897526d712ba9946"
+        }
+      }
+    },
+    "eligibility_sha256": {
+      "B": "f8da4f75f81e34eb3f526f2bd5ced58af9cf801cb45d29f4d870458470d6da69",
+      "C": "aacc52aee9e69e9be59055d31ad6f707a661b99e41b41541351626745ec466c9"
+    },
+    "runtime_contract_sha256": "9dfac9ba5603ce98a7c5a345f4afc06efa711a972e90c4a7af2b7365944f2ff5"
+  },
+  "random_design": {
+    "sampling": "uniform without replacement from actual trading dates",
+    "durations_years": [
+      1,
+      2,
+      3
+    ],
+    "samples_per_duration": 64,
+    "random_seed": 1246746679971163672,
+    "same_windows_for_all_arms": true,
+    "fresh_engine_capital_position_state_per_arm_window": true,
+    "overlapping_windows_are_stress_scenarios_not_independent_observations": true
+  },
+  "gate_contract": {
+    "return_win_rate_ge_50pct": 50.0,
+    "median_return_delta_nonnegative": 0.0,
+    "dd_noninferior_2pp_rate_ge_80pct": 80.0,
+    "sharpe_noninferior_005_rate_ge_80pct": 80.0,
+    "aggregate_slippage_le_105pct": 1.05,
+    "survival_and_dd50_and_broker100_not_worse": true,
+    "fixed_stage063_failures_cannot_be_rescued_by_random_windows": true
+  },
+  "run_provenance": {
+    "random_window_count": 192,
+    "logical_arm_window_count": 576,
+    "new_engine_run_count": 576,
+    "checkpoint_reused_count": 0,
+    "checkpoint_generated_count": 576,
+    "random_windows_redrawn_after_results": false,
+    "full_period_reused_from_stage063": true
+  },
+  "random_cycle_gates": [
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 0,
+      "cohort": "random_all",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 1,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 2,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 3,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 0,
+      "cohort": "random_all",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 1,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 2,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 3,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 0,
+      "cohort": "random_all",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 1,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 2,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 3,
+      "cohort": "random",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    }
+  ],
+  "random_all_gates_pass": {
+    "B": false,
+    "C": false
+  },
+  "stage063_fixed_multicycle_gates_pass": {
+    "B": false,
+    "C": false
+  },
+  "candidate_all_robustness_gates_pass": {
+    "B": false,
+    "C": false
+  },
+  "formal_production_ac_compliant": false,
+  "promotion_permitted": false,
+  "promote_to_official": false,
+  "decision": "random_stress_diagnostic_only_keep_stage037_stop_topn_scan",
+  "overfitting_judgment": "高：Top9/Top10是后验边界候选；随机窗口只做预冻结反证，不构成独立样本外发现。",
+  "continued_value_judgment": "本次随机压力测试有一次性价值；结果后不重抽窗口、不继续扫描TopN。",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false,
+  "render_provenance": {
+    "generator": "research/lines/futures_trend_rollover_shape_same_volume/tools/stage064_stage037_top9_top10_random_multicycle.py",
+    "generator_sha256": "bd0ba4d3ae3711645fbdd436eef3b05489275c2d292a489c371cbd303f10a9d1",
+    "chart_sha256": {
+      "stage064_full_period_equity_abc.png": "bf790ab3c1976a20ebce5c7dfc9faf14222f05eb02327b44fa63c24278876dfb",
+      "stage064_random_equity_fan_1y_abc.png": "48202a443d6b3307b8706c7a1b0ead38897a5abd7263bd2876f5fe8a6e5ba5cf",
+      "stage064_random_equity_fan_2y_abc.png": "1fee65535b34edae7d07d34cb0264fc699d0f92f779a04e532052ad1b06d012d",
+      "stage064_random_equity_fan_3y_abc.png": "4f3f512ea0f6556e1bef9a21977be1a36635feeb6973355aa699258ec7d2ea1f",
+      "stage064_random_aggregate_abc.png": "2894ab81a1afbdd424a495b4e7c10a783eb9447ed53a9eceba95db405024137f"
+    }
+  },
+  "runtime_contracts": {
+    "engine_checkpoint": {
+      "sha256": "9dfac9ba5603ce98a7c5a345f4afc06efa711a972e90c4a7af2b7365944f2ff5",
+      "scope": "576 Stage064 engine checkpoints and their published numerical evidence",
+      "generated_before_publication_hardening": true
+    },
+    "current_runner": {
+      "sha256": "2d09595ace2214f6722a6b001366e11e6656844bd7a4e0e70cb1d067c387dbce",
+      "scope": "future engine/checkpoint runs and deterministic gzip publication",
+      "matches_engine_checkpoint_contract": false
+    }
+  },
+  "artifact_provenance": {
+    "random_equity_curves": {
+      "path": "stage064_random_equity_curves.csv.gz",
+      "compression": "gzip-mtime-0",
+      "compressed_sha256": "fc4843fc8e1b942300b1ed0a57f4838b13e4dac95d74d6f0c396aaf61c9ebebd",
+      "uncompressed_sha256": "8faede77d4c172788b7a88051612673fea4c4d0a9a289625b3886a2583eabab5",
+      "compressed_size_bytes": 8162665,
+      "row_count": 279420,
+      "arm_window_count": 576
+    }
+  },
+  "publication_provenance": {
+    "publisher_sha256": "eea0d7d2000761cac1358a63219b83eb7d3b16a21feb28f440991a1b57502462",
+    "runtime_contracts": {
+      "engine_checkpoint": {
+        "sha256": "9dfac9ba5603ce98a7c5a345f4afc06efa711a972e90c4a7af2b7365944f2ff5",
+        "scope": "576 Stage064 engine checkpoints and their published numerical evidence",
+        "generated_before_publication_hardening": true
+      },
+      "current_runner": {
+        "sha256": "2d09595ace2214f6722a6b001366e11e6656844bd7a4e0e70cb1d067c387dbce",
+        "scope": "future engine/checkpoint runs and deterministic gzip publication",
+        "matches_engine_checkpoint_contract": false
+      }
+    },
+    "curve": {
+      "path": "stage064_random_equity_curves.csv.gz",
+      "compression": "gzip-mtime-0",
+      "compressed_sha256": "fc4843fc8e1b942300b1ed0a57f4838b13e4dac95d74d6f0c396aaf61c9ebebd",
+      "uncompressed_sha256": "8faede77d4c172788b7a88051612673fea4c4d0a9a289625b3886a2583eabab5",
+      "compressed_size_bytes": 8162665,
+      "row_count": 279420,
+      "arm_window_count": 576
+    },
+    "chart_sha256": {
+      "stage064_full_period_equity_abc.png": "bf790ab3c1976a20ebce5c7dfc9faf14222f05eb02327b44fa63c24278876dfb",
+      "stage064_random_equity_fan_1y_abc.png": "48202a443d6b3307b8706c7a1b0ead38897a5abd7263bd2876f5fe8a6e5ba5cf",
+      "stage064_random_equity_fan_2y_abc.png": "1fee65535b34edae7d07d34cb0264fc699d0f92f779a04e532052ad1b06d012d",
+      "stage064_random_equity_fan_3y_abc.png": "4f3f512ea0f6556e1bef9a21977be1a36635feeb6973355aa699258ec7d2ea1f",
+      "stage064_random_aggregate_abc.png": "2894ab81a1afbdd424a495b4e7c10a783eb9447ed53a9eceba95db405024137f"
+    },
+    "sha256": "98135751511d31ed1413d87112e20446dbb330bbba5a560847651e5680ba008a",
+    "atomic_directory_replace": true
+  }
+}
