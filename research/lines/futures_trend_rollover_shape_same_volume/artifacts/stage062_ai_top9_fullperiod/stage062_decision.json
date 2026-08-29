@@ -1,0 +1,143 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage062",
+  "generated_at": "2026-08-29T22:38:18+08:00",
+  "base_master_commit": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+  "base_ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+  "base_stage061_commit": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
+  "candidate_version": "stage062_stage037_ai_top9_boundary_check_v1",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-08-28"
+  },
+  "hypothesis": "在Stage061宽度响应左边界补充Top9，判断Top10的优势是局部平台还是边界偶然。",
+  "frozen_scope": {
+    "requested_top_ns": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "new_engine_top_ns": [
+      9
+    ],
+    "reused_stage061_top_ns": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "fixed_fu": "fu.SHFE",
+    "top19_duplicate_of_top18": true,
+    "membership_only_dates": [
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-29"
+    ],
+    "membership_only_policy": "lock formal Top8 then fill to 9 from same-eval-date model ranking, then append fu",
+    "strict_model_top9_match_month_count": 53,
+    "strict_model_top9_mismatch_dates": [
+      "2026-03-31",
+      "2026-05-29"
+    ]
+  },
+  "source_identity": {
+    "research_protocol": "explicit_stage037_ai_top9_offline_boundary_check",
+    "checkout_stage037_identity_pass": true,
+    "production_identity_matches_stage037": false,
+    "stage061_source_commit": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
+    "formal_production_ac_compliant": false,
+    "promotion_permitted": false,
+    "checkout_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+      "source_commit": "374df2d52e4f17220c5e2d4cae76f50d45bec47d",
+      "material_release_id": "m0016_20260829T034012+0800_374df2d52e4f",
+      "release_commit": "efef7217ee1b2194b064728257ff125035cec729",
+      "manifest_sha256": "cc757212c8bef45617549630abf9b2dcf4f045bf8cb4af376cfd3e6a72da5cd4"
+    },
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "checkout_head": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
+    "remote_master": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage051-deep-v-rebound-failure-long-filter/.vntrader/database.db",
+    "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+    "candidate_eligibility_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/.tools/stage062_ai_top9_checkpoint/stage062_top9_eligibility.csv",
+    "candidate_eligibility_sha256": "873579eff898c95b9d790822aa4241410bc65e7fa0518fae3cbe935c5bac3aa9",
+    "formal_eligibility_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0016_20260829T034012+0800_374df2d52e4f/payload/ai/stage182/combined_eligibility.csv",
+    "formal_eligibility_sha256": "56b6a35419831809a27cf222a019e0a62c9dc34390fd996243ee26353a7004cf",
+    "ranking_audit_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/.tools/stage062_ai_top9_checkpoint/stage062_full_ranking_audit.csv",
+    "ranking_audit_sha256": "2d90c47aefd893a772df57edf9d4d10507cf7557e39c2526dffba5df0d4ee558",
+    "ranking_audit_row_count": 990,
+    "ranking_provenance_counts": {
+      "frozen_market_walkforward_v2": 900,
+      "stage189_rerun_membership_locked_fill": 54,
+      "stage182_point_in_time_replay": 18,
+      "formal_m0016_latest_pool": 18
+    },
+    "ranking_source_files": {
+      "market_walkforward": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_suitability_market_walkforward_predictions_product_suitability_market_wf_v2.csv",
+        "sha256": "d6440436e86e3bff2477a8cd3a166aeccaf1fe764400d9700ff8a60ecc80808d"
+      },
+      "stage189_membership_fill": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage189_ai_product_pool_backfill_multimonth_pool_stage189_ai_product_pool_backfill_multimonth_v1.csv",
+        "sha256": "2a144a6657dd5780998f4751f82fd003d6dc86cd4150f243f0b1d2347f9ad05c"
+      },
+      "formal_latest_pool": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0016_20260829T034012+0800_374df2d52e4f/payload/ai/stage182/latest_pool.csv",
+        "sha256": "3bc1e2941380feb8ebc539f2fd04f7d992d06804c4ceaace0b8b5fbfdd561d05"
+      },
+      "stage183_position_changes": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+        "sha256": "1dc73f8d66730cc2a2f452742eea3bd9e390cd72b2389b08921d6b30b3966b88"
+      },
+      "stage183_entry_snapshots": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+        "sha256": "eb669f0348096bb965679436081a3546a01cf29d1d69f0c6287d5e99d24e28f6"
+      }
+    },
+    "product_universe_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv",
+    "product_universe_sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34",
+    "stage061_artifact_sha256": {
+      "stage061_summary.csv": "8b930d4d930b05647db44291f4ed5e93fc229db1416227cab8544503f0dc8918",
+      "stage061_equity_curve.csv": "e5fcca67bc0bd42a9228d41dab469d2550464720c8692fc8fa58108c92f41632",
+      "stage061_trades.csv": "f53d31c4a66a72840ef897a4738530572812116651c9e5fda9b693a30108795e",
+      "stage061_decision.json": "dfd26b321c5e0ad55678b6fb842b9b56eb2689e3a2e6c48ecf0cb2aa0c3a71cc"
+    }
+  },
+  "top9_all_full_period_gates_pass": false,
+  "top9_failed_gates": [
+    "sharpe_not_lower_by_more_than_002",
+    "slippage_le_105pct_of_stage037"
+  ],
+  "formal_production_ac_compliant": false,
+  "promotion_permitted": false,
+  "promote": false,
+  "decision": "offline_top9_fullperiod_fail_keep_stage037",
+  "overfitting_assessment": "高：Top9是在看到Top10位于上一轮最优边界后追加，存在明显后验边界扩展；只能作为一次性敏感性证据。",
+  "continue_value_assessment": "无：Top9未通过冻结全周期门，本轮边界补测结束，不再继续扫TopN。",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

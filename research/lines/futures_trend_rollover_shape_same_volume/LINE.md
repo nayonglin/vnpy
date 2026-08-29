@@ -300,3 +300,12 @@
 - 8个TopN独立真引擎、Top14逐值复用Stage056、Top19逐月成员一致后复用Top18；所有11条含参考曲线均覆盖2101个交易日，资金曲线末值和回撤已独立复算一致。
 - 没有名义TopN通过全部预声明门，决策 `offline_width_sweep_no_fullperiod_candidate_keep_stage037`；Top10位于本次搜索边界，不能因全周期冠军直接晋升或继续扫更窄/小数TopN救参。正式AI池、master、生产、CTP和订单均未改变。
 - 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；Top10–12被准确标成仅绝对滑点门失败，2019-12-31 static18前AI的fu例外已注明，Top14/Top19复用具备运行时、磁盘和payload完整性三重校验。后续只有预先独立定义容量/成本归一化问题仍有有限价值，不事后改门或继续扫TopN。
+
+## Stage062 Stage037 AI Top9 全周期左边界补测
+
+- 用户显式要求在Stage061后补测Top9，属于看到Top10为上一轮左边界冠军后的后验边界扩展；冻结只新增一个Top9真引擎，Stage037参考与Top10–19逐值复用Stage061，原六项全周期门不变。
+- Top9为 `16,871,625.40/11147.7503%/-39.9147%/Sharpe1.517586`，滑点 `1,762,115`、交易766、胜率 `53.3650%`、broker10峰值 `93.5807%`。相对Stage037收益只多 `7.7899pp`、回撤相同，但Sharpe低 `0.021236`、滑点为 `106.18%`，同时失败Sharpe和105%滑点门。
+- Top9相对Top10少 `3332.5756pp` 收益、Sharpe低 `0.069390`；Top10的显著优势没有向Top9延伸，Top9不属于Top10–12收益平台。
+- 55个月均为9个非fu+固定fu、正式Top8全部保留；其中53个月严格等同模型Top9，2026-03-31与2026-05-29为“正式Top8锁定+同月模型补足至9”例外，2026-04-30虽走锁定政策但恰好等同严格Top9；2019-12-31 static18前AI边界仍不含fu。完整source rank、provenance和各源SHA已固化，所有复用summary/2101点curve/trades与Stage061逐值一致。
+- 决策 `offline_top9_fullperiod_fail_keep_stage037`；不进入多周期、不晋升、不继续向Top8以下或小数TopN扫描，不改正式AI池、master、生产或CTP，订单API `0/0/0`。
+- 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；数值、六门、Stage061复用、53/2成员划分、同eval_date评分、PIT源SHA与离线安全均从原始curve/ranking/formal/candidate eligibility独立复算闭合。
