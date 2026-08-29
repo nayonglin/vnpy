@@ -1,0 +1,4 @@
+interface:
+  display_name: "期货实盘执行SOP"
+  short_description: "期货官方实盘/虚拟盘的影子盘、CTP闸门、AI池、smoke order和对账纪律。"
+  default_prompt: "Use $futures-live-execution-sop to verify the active CURRENT.json and Q ruleset first, then run today's read-only live-execution workflow and state whether the next session is actionable or fail-closed."

@@ -1,0 +1,91 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage061",
+  "generated_at": "2026-08-29T19:30:22+08:00",
+  "base_master_commit": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+  "base_ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+  "candidate_version": "stage061_stage037_ai_top10_to_top19_width_sweep_v1",
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-08-28"
+  },
+  "hypothesis": "在保持Stage037与AI排序模型不变时，观察TopN扩大后的风险收益和容量响应是否形成稳定平台。",
+  "frozen_scope": {
+    "requested_top_ns": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "fixed_fu": "fu.SHFE",
+    "ranked_non_fu_available": 18,
+    "top19_duplicate_of_top18": true,
+    "engine_run_top_ns": [
+      10,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      18
+    ],
+    "reused_top_ns": {
+      "14": "stage056_top14",
+      "19": "stage061_top18_duplicate"
+    }
+  },
+  "source_identity": {
+    "research_protocol": "explicit_stage037_ai_top10_to_top19_offline_width_sweep",
+    "checkout_stage037_identity_pass": true,
+    "production_identity_matches_stage037": false,
+    "formal_production_ac_compliant": false,
+    "promotion_permitted": false,
+    "checkout_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+      "source_commit": "374df2d52e4f17220c5e2d4cae76f50d45bec47d",
+      "material_release_id": "m0016_20260829T034012+0800_374df2d52e4f",
+      "release_commit": "efef7217ee1b2194b064728257ff125035cec729",
+      "manifest_sha256": "cc757212c8bef45617549630abf9b2dcf4f045bf8cb4af376cfd3e6a72da5cd4"
+    },
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "checkout_head": "5bc7d6ebec2dbb80b410acbc0da4731f40fd5199",
+    "remote_master": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage051-deep-v-rebound-failure-long-filter/.vntrader/database.db",
+    "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+    "product_universe_path": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv",
+    "product_universe_sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34",
+    "ranked_non_fu_count": 18,
+    "configured_total_product_count": 19
+  },
+  "full_period_gate_pass_top_ns_excluding_duplicate": [],
+  "cost_only_fail_top_ns": [
+    10,
+    11,
+    12
+  ],
+  "formal_production_ac_compliant": false,
+  "promotion_permitted": false,
+  "promote": false,
+  "decision": "offline_width_sweep_no_fullperiod_candidate_keep_stage037",
+  "overfitting_assessment": "高：同时观察10个相邻TopN存在多重比较；结果只能用于判断宽度响应平台，不能后验挑单点冠军。",
+  "continue_value_assessment": "有限：TopN [10, 11, 12] 仅失败绝对总滑点预算，允许另立预声明的容量/成本归一化验证；冻结105%门不变、不得继续扫TopN或直接晋升。",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}
