@@ -32,6 +32,7 @@ SOURCE_ELIGIBILITY_SHA256 = (
 )
 SOURCE_COMMIT = "6750783fe7aab92e6dbdd6820fa212e2e53ea353"
 SOURCE_STRATEGY = "ai_top10_plus_fu_width_sweep"
+SOURCE_LOGICAL_PATH = "source/stage061_top10_eligibility.csv"
 OFFICIAL_STRATEGY = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
 FIXED_PRODUCT = OFFICIAL_AI_FIXED_PRODUCT
 RANKED_NON_FU_COUNT = OFFICIAL_AI_RANKED_PRODUCT_COUNT
@@ -172,7 +173,7 @@ def _load_and_validate_source(source_path: Path) -> tuple[pd.DataFrame, dict[str
 
     latest_eval_date = str(ai["eval_date"].max())
     audit = {
-        "source_path": str(source_path),
+        "source_path": SOURCE_LOGICAL_PATH,
         "sha256": source_sha256,
         "row_count": int(len(frame)),
         "eval_date_count": int(frame["eval_date"].nunique()),
@@ -390,7 +391,7 @@ def build_bundle(
             "override_scope": "user_authorized_direct_formal_promotion_of_top10_plus_fixed_fu",
             "known_failures_preserved": True,
         },
-        "outputs": {name: str(path) for name, path in output_paths.items()},
+        "outputs": {name: path.name for name, path in output_paths.items()},
         "order_api_called_count": 0,
         "send_order_api_called_count": 0,
         "cancel_order_api_called_count": 0,

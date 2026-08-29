@@ -176,6 +176,14 @@ def test_build_bundle_writes_five_assets_with_official_pool_contract(
     assert summary["source_max_date"] == "2026-08-03"
     assert summary["source"]["commit"] == "6750783fe7aab92e6dbdd6820fa212e2e53ea353"
     assert summary["source"]["sha256"] == source_sha256
+    assert summary["source"]["source_path"] == "source/stage061_top10_eligibility.csv"
+    assert summary["outputs"] == {
+        "live_pool": "latest_pool.csv",
+        "live_eligibility": "live_eligibility.csv",
+        "combined_eligibility": "combined_eligibility.csv",
+        "summary": "summary.json",
+        "report": "report.md",
+    }
     assert summary["eligibility_contract"] == {
         "strategy": OFFICIAL_STRATEGY,
         "fixed_product": "fu.SHFE",
