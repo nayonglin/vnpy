@@ -10,7 +10,17 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+    official_ai_pool_snapshot_blockers,
+)
+
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_live_lightweight_context import (
+    OFFICIAL_LIVE_AI_LATEST_POOL_PATH,
+)
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_SUMMARY_PATH,
@@ -58,11 +68,7 @@ STAGE901_ENTRY_CANDIDATES_PATH = (
     / "qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow_entry_candidates_"
     "stage901_stage847_c9_2026_ytd_live_shadow_v1.csv"
 )
-STAGE182_LATEST_POOL_PATH = (
-    OUTPUT_DIR
-    / "qmt_roll_stage182_ai_product_pool_live_inference_latest_pool_"
-    "stage182_ai_product_pool_live_inference_v1.csv"
-)
+STAGE182_LATEST_POOL_PATH = OFFICIAL_LIVE_AI_LATEST_POOL_PATH
 STAGE608_CONTRACTS_PATH = (
     OUTPUT_DIR / "qmt_roll_stage608_readonly_tick_snapshot_probe_contracts_stage608_readonly_tick_snapshot_probe_v1.csv"
 )
@@ -107,8 +113,8 @@ BLOCKED_CANDIDATE_COLUMNS: list[tuple[str, str]] = [
     ("ai_pool_entry_effective_date", "AI池生效日"),
     ("ai_pool_rank_text", "AI池排名"),
     ("ai_pool_score", "AI分数"),
-    ("ai_pool_top8_threshold", "Top8门槛分"),
-    ("ai_pool_gap_to_top8", "距Top8门槛"),
+    ("ai_pool_threshold", f"Top{OFFICIAL_AI_RANKED_PRODUCT_COUNT}门槛分"),
+    ("ai_pool_gap_to_threshold", f"距Top{OFFICIAL_AI_RANKED_PRODUCT_COUNT}门槛"),
     ("simple_trend_suitability_score", "简单适配分"),
     ("ai_drag_reasons", "主要拖分项"),
 ]
@@ -452,7 +458,7 @@ def _markdown_table(frame: pd.DataFrame, columns: list[tuple[str, str]]) -> str:
                 "ai_pool_pool_size",
             }:
                 values.append(_format_number(value, decimals=0))
-            elif key in {"ai_pool_score", "ai_pool_top8_threshold", "ai_pool_gap_to_top8"}:
+            elif key in {"ai_pool_score", "ai_pool_threshold", "ai_pool_gap_to_threshold"}:
                 values.append(_format_number(value, decimals=6))
             elif key in {
                 "order_price",
@@ -536,7 +542,7 @@ def _format_plain_value(key: str, value: Any) -> str:
         "net_pnl_std_120d",
     }:
         return _format_number(value, decimals=2)
-    if key in {"ai_pool_score", "ai_pool_top8_threshold", "ai_pool_gap_to_top8"}:
+    if key in {"ai_pool_score", "ai_pool_threshold", "ai_pool_gap_to_threshold"}:
         return _format_number(value, decimals=6)
     return _clean(value)
 
@@ -580,16 +586,41 @@ def _pool_row(pool: pd.DataFrame, product_vt_symbol: str) -> dict[str, Any]:
 
 
 def _pool_threshold(pool: pd.DataFrame) -> tuple[float, str]:
-    if pool.empty or "ai_rank" not in pool.columns:
-        return 0.0, ""
-    ranked = pool.copy()
+    required = {
+        "strategy",
+        "eval_date",
+        "product_vt_symbol",
+        "ai_rank",
+        "predicted_product_suitability_probability",
+        "source_score_type",
+    }
+    missing = sorted(required - set(pool.columns))
+    if pool.empty or missing:
+        raise RuntimeError(
+            "official_ai_latest_pool_contract_invalid:"
+            + (f"missing_columns={','.join(missing)}" if missing else "empty")
+        )
+    ranked = pool[
+        pool["strategy"].astype(str).eq(OFFICIAL_AI_PRODUCT_POOL_STRATEGY)
+    ].copy()
+    blockers = official_ai_pool_snapshot_blockers(
+        products=ranked["product_vt_symbol"].tolist(),
+        ranks=ranked["ai_rank"].tolist(),
+        top_ns=[OFFICIAL_AI_TOTAL_PRODUCT_COUNT] * len(ranked),
+        eval_date=ranked["eval_date"].iloc[0] if not ranked.empty else None,
+        score_types=ranked["source_score_type"].tolist(),
+    )
+    if blockers:
+        raise RuntimeError(
+            "official_ai_latest_pool_contract_invalid:" + ",".join(blockers)
+        )
     ranked["ai_rank"] = pd.to_numeric(ranked["ai_rank"], errors="coerce")
-    top8 = ranked[ranked["ai_rank"].eq(8)]
-    if top8.empty:
-        top8 = ranked.sort_values("ai_rank").head(8).tail(1)
-    if top8.empty:
-        return 0.0, ""
-    row = top8.iloc[0]
+    threshold_rows = ranked[
+        ranked["ai_rank"].eq(OFFICIAL_AI_RANKED_PRODUCT_COUNT)
+    ]
+    if len(threshold_rows) != 1:
+        raise RuntimeError("official_ai_latest_pool_contract_invalid:rank10_missing")
+    row = threshold_rows.iloc[0]
     return _to_float(row.get("predicted_product_suitability_probability"), 0.0), _clean(row.get("product_vt_symbol"))
 
 
@@ -666,7 +697,7 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
         return pd.DataFrame()
 
     pool = _read_csv_maybe(STAGE182_LATEST_POOL_PATH)
-    top8_threshold, top8_product = _pool_threshold(pool)
+    pool_threshold, threshold_product = _pool_threshold(pool)
     rows: list[dict[str, Any]] = []
     for raw in candidates.to_dict(orient="records"):
         product = _clean(raw.get("product_vt_symbol")) or _product_from_vt_symbol(_clean(raw.get("contract_vt_symbol")))
@@ -681,16 +712,21 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
         pool_rank = _to_int(pool_row.get("ai_rank", raw.get("ai_product_pool_rank")), 0)
         pool_size = int(len(pool)) if not pool.empty else 0
         simple_score = _to_float(pool_row.get("simple_trend_suitability_score"), 0.0)
-        gap_to_top8 = top8_threshold - pool_score if top8_threshold > 0 and pool_score > 0 else 0.0
+        gap_to_threshold = (
+            pool_threshold - pool_score
+            if pool_threshold > 0 and pool_score > 0
+            else 0.0
+        )
         raw_skip = _clean(raw.get("skip_reason"))
         if raw_skip == "ai_product_pool_blocked" and pool_rank and pool_size:
             reason_text = (
                 f"AI池未入选：排名{pool_rank}/{pool_size}，"
                 f"分数{_format_number(pool_score, decimals=6)}，"
-                f"Top8门槛{_format_number(top8_threshold, decimals=6)}"
+                f"Top{OFFICIAL_AI_RANKED_PRODUCT_COUNT}门槛"
+                f"{_format_number(pool_threshold, decimals=6)}"
             )
-            if top8_product:
-                reason_text += f"（门槛品种{top8_product}）"
+            if threshold_product:
+                reason_text += f"（门槛品种{threshold_product}）"
         else:
             reason_text = SKIP_REASON_TEXT.get(raw_skip, raw_skip or "被策略过滤")
 
@@ -719,9 +755,9 @@ def _build_blocked_candidate_details(wrapper: dict[str, Any]) -> pd.DataFrame:
                 "ai_pool_pool_size": pool_size,
                 "ai_pool_rank_text": f"{pool_rank}/{pool_size}" if pool_rank and pool_size else "无",
                 "ai_pool_score": pool_score,
-                "ai_pool_top8_threshold": top8_threshold,
-                "ai_pool_gap_to_top8": gap_to_top8,
-                "ai_pool_top8_product": top8_product,
+                "ai_pool_threshold": pool_threshold,
+                "ai_pool_gap_to_threshold": gap_to_threshold,
+                "ai_pool_threshold_product": threshold_product,
                 "simple_trend_suitability_score": simple_score,
                 "net_pnl_sum_60d": _to_float(pool_row.get("net_pnl_sum_60d"), 0.0),
                 "net_pnl_sum_120d": _to_float(pool_row.get("net_pnl_sum_120d"), 0.0),
@@ -931,7 +967,7 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
     ai_expected = _clean(ai_pool.get("expected_eval_date"))
     ai_current = _clean(ai_pool.get("current_eval_date"))
     ai_pool_ok = bool(
-        ai_pool.get("automation_status") in {"monthly_ai_pool_already_current", "monthly_ai_pool_updated"}
+        ai_pool.get("automation_status") == "monthly_ai_pool_already_current"
         and (not ai_expected or not ai_current or ai_expected == ai_current)
     )
     minute_ok = bool(minute_audit.get("source_exists") is True and _to_int(minute_audit.get("loaded_symbol_count"), 0) > 0)
@@ -1238,12 +1274,18 @@ def _run_stage935_preflight(args: argparse.Namespace, log_path: Path) -> dict[st
         )
     summary = _parse_stage903_stdout(result.stdout)
     status = str(summary.get("automation_status", ""))
-    allowed = int(result.returncode == 0 and status in {"monthly_ai_pool_already_current", "monthly_ai_pool_updated"})
+    # A newly generated pool is only a mutable candidate.  It must be frozen into
+    # an immutable material release, qualified, promoted and installed before any
+    # trading controller may consume it.  Only the already-active immutable pool
+    # is allowed to reach Stage903.
+    allowed = int(result.returncode == 0 and status == "monthly_ai_pool_already_current")
     return {
         "preflight_status": "ai_pool_preflight_passed" if allowed else "ai_pool_preflight_blocked",
         "exit_code": result.returncode,
         "automation_status": status,
         "action": summary.get("action", ""),
+        "material_publication_status": summary.get("material_publication_status", ""),
+        "material_publication_request_path": summary.get("material_publication_request_path", ""),
         "expected_eval_date": summary.get("expected_eval_date", ""),
         "current_eval_date": summary.get("current_eval_date", ""),
         "resolved_target_date": summary.get("resolved_target_date", ""),

@@ -22,6 +22,12 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import run_qmt_roll_stage947_official_live_production_support_launcher as launcher  # noqa: E402
 import run_qmt_roll_stage945_official_live_production_session_launcher as session_launcher  # noqa: E402
 import qmt_roll_official_live_postclose_pipeline as postclose_pipeline  # noqa: E402
+from qmt_roll_official_ai_pool_policy import (  # noqa: E402
+    OFFICIAL_AI_FIXED_PRODUCT,
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+)
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
@@ -194,26 +200,50 @@ print("CONTRACT=" + json.dumps({
             live_pool = data / "stage182-live-pool.csv"
             live_pool.write_text("product_vt_symbol\nold.SHFE\n", encoding="utf-8")
             live_eligibility = data / "stage182-live.csv"
-            live_rows = [
-                ("fu.SHFE", 1),
-                ("jm.DCE", 2),
-                ("rb.SHFE", 3),
-                ("i.DCE", 4),
-                ("m.DCE", 5),
-                ("ag.SHFE", 6),
-                ("cu.SHFE", 7),
-                ("TA.CZCE", 8),
-                ("MA.CZCE", 9),
+            ranked_products = [
+                "jm.DCE",
+                "rb.SHFE",
+                "i.DCE",
+                "m.DCE",
+                "ag.SHFE",
+                "cu.SHFE",
+                "TA.CZCE",
+                "MA.CZCE",
+                "au.SHFE",
+                "lc.GFEX",
             ]
-            strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+            self.assertEqual(OFFICIAL_AI_RANKED_PRODUCT_COUNT, len(ranked_products))
+            live_rows = list(
+                enumerate([*ranked_products, OFFICIAL_AI_FIXED_PRODUCT], start=1)
+            )
+            strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+            live_pool_text = (
+                "strategy,eval_date,product_vt_symbol,"
+                "predicted_product_suitability_probability,ai_rank,"
+                "selection_role,source_score_type\n"
+                + "".join(
+                    (
+                        f"{strategy},2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{'fixed_fu' if symbol == OFFICIAL_AI_FIXED_PRODUCT else 'model_ranked'},"
+                        "stage182_live\n"
+                    )
+                    for rank, symbol in live_rows
+                )
+            )
+            live_pool.write_text(live_pool_text, encoding="utf-8")
             eligibility_header = (
                 "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
             )
             live_eligibility.write_text(
                 eligibility_header
                 + "".join(
-                    f"{strategy},stage182_live,2026-06-30,{symbol},{10-rank},{rank},9\n"
-                    for symbol, rank in live_rows
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
                 ),
                 encoding="utf-8",
             )
@@ -221,9 +251,13 @@ print("CONTRACT=" + json.dumps({
             report.write_text("old report\n", encoding="utf-8")
             combined = data / "stage182-combined.csv"
             combined_text = eligibility_header + "".join(
-                f"{strategy},stage182_live,{date},{symbol},{10-rank},{rank},9\n"
+                (
+                    f"{strategy},stage182_live,{date},{symbol},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
                 for date in ("2026-03-31", "2026-04-30", "2026-05-29", "2026-06-30")
-                for symbol, rank in live_rows
+                for rank, symbol in live_rows
             )
             combined.write_text(combined_text, encoding="utf-8")
 
@@ -284,16 +318,17 @@ print("CONTRACT=" + json.dumps({
             )
 
             candidate_live_pool = control / live_pool.name
-            candidate_live_pool.write_text(
-                "product_vt_symbol\nfu.SHFE\n",
-                encoding="utf-8",
-            )
+            candidate_live_pool.write_text(live_pool_text, encoding="utf-8")
             candidate_live = control / live_eligibility.name
             candidate_live.write_text(
                 eligibility_header
                 + "".join(
-                    f"{strategy},stage182_live,2026-06-30,{symbol},{10-rank},{rank},9\n"
-                    for symbol, rank in live_rows
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
                 ),
                 encoding="utf-8",
             )

@@ -72,6 +72,17 @@ def _read_csv_maybe(path: Path) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+def _official_shadow_ai_pool_contract_ready(summary: dict[str, Any]) -> bool:
+    audit = summary.get("ai_pool_audit", {})
+    if not isinstance(audit, dict):
+        return False
+    return bool(
+        summary.get("shadow_replay_ai_pool_status") == "valid"
+        and audit.get("contract_status") == "valid"
+        and not audit.get("missing_required_eval_dates")
+    )
+
+
 def _env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
@@ -431,12 +442,32 @@ def main() -> None:
             pending_target_ready = False
             pending_target_error = str(exc)
     shadow_target_ready = str(official_summary.get("analysis_end", "")) == target_date
+    ai_pool_contract_ready = _official_shadow_ai_pool_contract_ready(official_summary)
+    _check_row(
+        checks,
+        check="official_shadow_ai_pool_contract_ready",
+        passed=args.mode == "plan-only" or ai_pool_contract_ready,
+        severity="block",
+        observed=(
+            f"shadow_status={official_summary.get('shadow_replay_ai_pool_status', '')};"
+            f"contract_status={official_summary.get('ai_pool_audit', {}).get('contract_status', '')}"
+        ),
+        required="shadow_replay_ai_pool_status=valid and ai_pool_audit.contract_status=valid",
+        blocker="official_shadow_ai_pool_contract_invalid",
+    )
+    checks_df = pd.DataFrame(checks)
+    blocking = checks_df[checks_df["severity"].eq("block") & checks_df["passed"].eq(0)]
     if args.mode == "plan-only":
         shadow_refresh_status = "shadow_refresh_plan_only"
-    elif not blocking.empty:
+    elif any(
+        row["check"] != "official_shadow_ai_pool_contract_ready"
+        for row in blocking.to_dict(orient="records")
+    ):
         shadow_refresh_status = "shadow_refresh_blocked"
     elif any(row["exit_code"] != 0 for row in commands) or len(commands) != len(specs):
         shadow_refresh_status = "shadow_refresh_command_failed"
+    elif not ai_pool_contract_ready:
+        shadow_refresh_status = "shadow_refresh_completed_but_ai_pool_contract_invalid"
     elif shadow_target_ready and pending_target_ready:
         shadow_refresh_status = "shadow_refresh_completed"
     else:
@@ -466,6 +497,10 @@ def main() -> None:
         "official_summary_generated_at_after": official_summary.get("generated_at", ""),
         "pending_order_audit_target_ready": int(pending_target_ready),
         "pending_order_audit_error": pending_target_error,
+        "official_shadow_ai_pool_contract_ready": int(ai_pool_contract_ready),
+        "official_shadow_ai_pool_contract_status": official_summary.get(
+            "shadow_replay_ai_pool_status", ""
+        ),
         "blocking_failure_count": int(len(blocking)),
         "commands": commands,
         "sanitized_command_plan": command_plan,

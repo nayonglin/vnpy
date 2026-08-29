@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 import analyze_qmt_roll_ai_product_suitability_walkforward as suitability
@@ -23,11 +24,12 @@ from analyze_qmt_roll_ai_product_suitability_walkforward import (
     score_model,
     train_model,
 )
-from run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest import (
-    AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
-    FU_PRODUCT,
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_FIXED_PRODUCT,
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
 )
-from qmt_roll_official_stage78_config import build_official_stage78_paths
 
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
@@ -146,41 +148,96 @@ def _build_live_eligibility(scored: pd.DataFrame, eval_date: pd.Timestamp) -> pd
         ascending=[False, False, True],
     ).reset_index(drop=True)
     ranked["ai_rank"] = range(1, len(ranked) + 1)
-    top8 = ranked.head(8).copy()
+    ranked_non_fixed = ranked[
+        ~ranked["product_vt_symbol"].astype(str).eq(OFFICIAL_AI_FIXED_PRODUCT)
+    ].copy()
+    selected = ranked_non_fixed.head(OFFICIAL_AI_RANKED_PRODUCT_COUNT).copy()
+    if len(selected) != OFFICIAL_AI_RANKED_PRODUCT_COUNT:
+        raise ValueError("not enough non-fixed products for official Top10 AI pool")
 
     rows: list[dict[str, Any]] = []
-    for row in top8.itertuples(index=False):
+    for rank, row in enumerate(selected.itertuples(index=False), start=1):
         rows.append(
             {
-                "strategy": AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
+                "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
                 "score_type": "stage182_live_monthly_ai_probability",
                 "eval_date": eval_date.date().isoformat(),
                 "product_vt_symbol": str(row.product_vt_symbol),
                 "score": _safe_float(getattr(row, PROBABILITY_COLUMN)),
-                "score_rank": int(getattr(row, "ai_rank")),
-                "top_n": 9,
+                "score_rank": rank,
+                "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
             }
         )
 
-    selected_products = {str(row["product_vt_symbol"]) for row in rows}
-    if FU_PRODUCT not in selected_products:
-        min_score = min((_safe_float(row["score"]) for row in rows), default=0.0)
-        rows.append(
-            {
-                "strategy": AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME,
-                "score_type": "stage182_live_fixed_fu_satellite",
-                "eval_date": eval_date.date().isoformat(),
-                "product_vt_symbol": FU_PRODUCT,
-                "score": min_score - 1e-6,
-                "score_rank": 9,
-                "top_n": 9,
-            }
-        )
+    min_score = min((_safe_float(row["score"]) for row in rows), default=0.0)
+    rows.append(
+        {
+            "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+            "score_type": "stage182_live_fixed_fu_satellite",
+            "eval_date": eval_date.date().isoformat(),
+            "product_vt_symbol": OFFICIAL_AI_FIXED_PRODUCT,
+            "score": min_score - 1e-6,
+            "score_rank": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+            "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+        }
+    )
 
     result = pd.DataFrame(rows)
     result.sort_values(["eval_date", "score_rank", "product_vt_symbol"], inplace=True)
     result.reset_index(drop=True, inplace=True)
     return result
+
+
+def _build_published_live_pool(
+    scored_pool: pd.DataFrame,
+    live_eligibility: pd.DataFrame,
+) -> pd.DataFrame:
+    """Build the exact decision rows consumed by formal reporting."""
+    selected = live_eligibility[
+        ["strategy", "eval_date", "product_vt_symbol", "score", "score_rank", "score_type"]
+    ].copy()
+    feature_rows = scored_pool.drop(
+        columns=[
+            "strategy",
+            "eval_date",
+            "ai_rank",
+            "selection_role",
+            "source_score_type",
+        ],
+        errors="ignore",
+    ).copy()
+    published = selected.merge(
+        feature_rows,
+        on="product_vt_symbol",
+        how="left",
+        validate="one_to_one",
+    )
+    model_ranks = scored_pool.set_index("product_vt_symbol").get("ai_rank")
+    if model_ranks is not None:
+        published["model_ai_rank"] = pd.to_numeric(
+            published["product_vt_symbol"].map(model_ranks),
+            errors="coerce",
+        )
+    published[PROBABILITY_COLUMN] = pd.to_numeric(published["score"], errors="raise")
+    published["ai_rank"] = pd.to_numeric(published["score_rank"], errors="raise").astype(int)
+    published["selection_role"] = published["product_vt_symbol"].map(
+        lambda value: "fixed_fu" if str(value) == OFFICIAL_AI_FIXED_PRODUCT else "model_ranked"
+    )
+    published["source_score_type"] = published["score_type"].astype(str)
+    published.drop(columns=["score", "score_rank", "score_type"], inplace=True)
+    leading = [
+        "strategy",
+        "eval_date",
+        "product_vt_symbol",
+        PROBABILITY_COLUMN,
+        "ai_rank",
+        "selection_role",
+        "source_score_type",
+    ]
+    trailing = [column for column in published.columns if column not in leading]
+    published.sort_values(["ai_rank", "product_vt_symbol"], inplace=True)
+    published.reset_index(drop=True, inplace=True)
+    return published.loc[:, [*leading, *trailing]]
 
 
 def _align_eligibility_schema(frame: pd.DataFrame) -> pd.DataFrame:
@@ -189,12 +246,24 @@ def _align_eligibility_schema(frame: pd.DataFrame) -> pd.DataFrame:
         if column not in aligned.columns:
             aligned[column] = ""
     aligned = aligned.loc[:, ELIGIBILITY_COLUMNS].copy()
-    aligned["eval_date"] = pd.to_datetime(aligned["eval_date"], errors="coerce").dt.date.astype(str)
+    eval_dates = pd.to_datetime(aligned["eval_date"], errors="coerce")
+    if eval_dates.isna().any():
+        raise RuntimeError("stage182_eligibility_eval_date_invalid")
+    aligned["eval_date"] = eval_dates.dt.date.astype(str)
     aligned["strategy"] = aligned["strategy"].astype(str)
-    aligned["product_vt_symbol"] = aligned["product_vt_symbol"].astype(str)
-    aligned["score"] = pd.to_numeric(aligned["score"], errors="coerce").fillna(0.0)
-    aligned["score_rank"] = pd.to_numeric(aligned["score_rank"], errors="coerce").fillna(999).astype(int)
-    aligned["top_n"] = pd.to_numeric(aligned["top_n"], errors="coerce").fillna(0).astype(int)
+    aligned["product_vt_symbol"] = aligned["product_vt_symbol"].astype(str).str.strip()
+    if aligned["product_vt_symbol"].eq("").any():
+        raise RuntimeError("stage182_eligibility_product_empty")
+    for column in ("score", "score_rank", "top_n"):
+        aligned[column] = pd.to_numeric(aligned[column], errors="coerce")
+    numeric = aligned[["score", "score_rank", "top_n"]].to_numpy(dtype=float)
+    if not np.isfinite(numeric).all():
+        raise RuntimeError("stage182_eligibility_numeric_invalid")
+    rank_values = aligned[["score_rank", "top_n"]].to_numpy(dtype=float)
+    if not np.equal(rank_values, np.floor(rank_values)).all():
+        raise RuntimeError("stage182_eligibility_rank_or_top_n_not_integer")
+    aligned["score_rank"] = aligned["score_rank"].astype(int)
+    aligned["top_n"] = aligned["top_n"].astype(int)
     return aligned
 
 
@@ -205,17 +274,22 @@ def _preservable_combined_snapshot_mask(frame: pd.DataFrame) -> pd.Series:
     )
 
 
-def _build_combined_eligibility(live_eligibility: pd.DataFrame) -> tuple[pd.DataFrame, Path, dict[str, Any]]:
-    _, official_eligibility_path = build_official_stage78_paths()
-    official = _align_eligibility_schema(pd.read_csv(official_eligibility_path))
-    existing = (
-        _align_eligibility_schema(pd.read_csv(COMBINED_ELIGIBILITY_PATH, encoding="utf-8-sig"))
-        if COMBINED_ELIGIBILITY_PATH.exists()
-        else pd.DataFrame(columns=ELIGIBILITY_COLUMNS)
+def _build_combined_eligibility(
+    live_eligibility: pd.DataFrame,
+    *,
+    seed_combined_eligibility_path: Path | None = None,
+) -> tuple[pd.DataFrame, Path, dict[str, Any]]:
+    if seed_combined_eligibility_path is None:
+        raise RuntimeError("stage182_immutable_seed_combined_eligibility_required")
+    seed_path = Path(seed_combined_eligibility_path).expanduser().resolve(strict=True)
+    official_eligibility_path = seed_path
+    official = pd.DataFrame(columns=ELIGIBILITY_COLUMNS)
+    existing = _align_eligibility_schema(
+        pd.read_csv(seed_path, encoding="utf-8-sig")
     )
     live = _align_eligibility_schema(live_eligibility)
     eval_dates = set(live_eligibility["eval_date"].astype(str))
-    strategy = str(AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME)
+    strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
 
     existing_strategy = existing[
         existing["strategy"].astype(str).eq(strategy)
@@ -232,6 +306,7 @@ def _build_combined_eligibility(live_eligibility: pd.DataFrame) -> tuple[pd.Data
     combined.reset_index(drop=True, inplace=True)
     audit = {
         "official_rows": int(len(official)),
+        "seed_combined_eligibility_path": str(seed_path),
         "existing_combined_rows": int(len(existing)),
         "preserved_live_snapshot_rows": int(len(preserved)),
         "preserved_live_snapshot_eval_dates": sorted(preserved_eval_dates),
@@ -338,7 +413,7 @@ def build_report(summary: dict[str, Any], live_pool: pd.DataFrame, live_eligibil
             f"- Train rows: `{summary['train_rows']}`",
             f"- Feature count: `{summary['feature_count']}`",
             f"- Live rows: `{summary['live_rows']}`",
-            f"- Strategy: `{AI_SATELLITE_POST_SIGNAL_STRATEGY_NAME}`",
+            f"- Strategy: `{OFFICIAL_AI_PRODUCT_POOL_STRATEGY}`",
             "",
             "## Leakage Boundary",
             "",
@@ -384,6 +459,15 @@ def main() -> None:
         help="Directory for Stage182 candidate outputs.",
     )
     parser.add_argument(
+        "--seed-combined-eligibility",
+        type=Path,
+        required=True,
+        help=(
+            "Immutable active-material combined eligibility used as the only "
+            "official-history seed for a production candidate."
+        ),
+    )
+    parser.add_argument(
         "--allow-incomplete-month",
         action="store_true",
         help="Allow scoring on the latest available date even if its calendar month is incomplete.",
@@ -423,11 +507,15 @@ def main() -> None:
     live_pool["ai_rank"] = range(1, len(live_pool) + 1)
 
     live_eligibility = _build_live_eligibility(live_pool, eval_date)
-    combined, official_eligibility_path, combined_audit = _build_combined_eligibility(live_eligibility)
+    published_live_pool = _build_published_live_pool(live_pool, live_eligibility)
+    combined, official_eligibility_path, combined_audit = _build_combined_eligibility(
+        live_eligibility,
+        seed_combined_eligibility_path=args.seed_combined_eligibility,
+    )
 
     _assert_source_identities_unchanged(source_paths, source_identities)
 
-    live_pool.to_csv(output_paths["live_pool"], index=False, encoding="utf-8-sig")
+    published_live_pool.to_csv(output_paths["live_pool"], index=False, encoding="utf-8-sig")
     live_eligibility.to_csv(output_paths["live_eligibility"], index=False, encoding="utf-8-sig")
     combined.to_csv(output_paths["combined_eligibility"], index=False, encoding="utf-8-sig")
 
@@ -442,7 +530,8 @@ def main() -> None:
         "train_rows": int(len(train_df)),
         "train_months": int(train_df[DATE_COLUMN].nunique()),
         "feature_count": int(len(feature_columns)),
-        "live_rows": int(len(live_pool)),
+        "live_rows": int(len(published_live_pool)),
+        "scored_product_rows": int(len(live_pool)),
         "source_paths": source_paths,
         "source_identities": source_identities,
         "official_eligibility_path": str(official_eligibility_path),
@@ -459,7 +548,7 @@ def main() -> None:
         encoding="utf-8",
     )
     output_paths["report"].write_text(
-        build_report(summary, live_pool, live_eligibility),
+        build_report(summary, published_live_pool, live_eligibility),
         encoding="utf-8",
     )
 

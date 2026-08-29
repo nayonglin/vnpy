@@ -33,6 +33,10 @@ from qmt_roll_ai_path_damage_runtime import (
     PathDamageRuntimeModel,
     build_path_damage_runtime_feature_row,
 )
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    official_ai_pool_snapshot_blockers,
+)
 
 
 @dataclass
@@ -910,7 +914,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.selection_pairwise_volume_tilt_last_date_by_direction: dict[str, pd.Timestamp] = {}
         self.ai_product_pool_by_date: dict[pd.Timestamp, dict[str, dict[str, Any]]] = {}
         self.ai_product_pool_eval_dates: list[pd.Timestamp] = []
+        self.ai_product_pool_load_status: str = "disabled"
         if self.enable_ai_product_pool_filter:
+            self.ai_product_pool_load_status = "not_loaded"
             self._load_ai_product_pool_eligibility()
         self.supply_demand_signals: pd.DataFrame = pd.DataFrame()
         self.supply_demand_signal_index: dict[tuple[str, str], pd.DataFrame] = {}
@@ -932,26 +938,71 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             )
 
     def _load_ai_product_pool_eligibility(self) -> None:
+        self.ai_product_pool_load_status = "invalid"
+
+        def fail(reason: str) -> None:
+            self.write_log(reason)
+            raise RuntimeError(f"ai_product_pool_contract_invalid:{reason}")
+
         path = Path(str(self.ai_product_pool_eligibility_path or ""))
-        if not path.exists():
-            self.write_log(f"AI product pool eligibility file missing: {path}")
-            return
+        if not path.is_file():
+            fail(f"eligibility_file_missing:{path}")
 
         df = pd.read_csv(path)
         required_columns = {"strategy", "eval_date", "product_vt_symbol", "score", "score_rank", "top_n"}
         missing_columns = required_columns - set(df.columns)
         if missing_columns:
-            self.write_log(f"AI product pool eligibility missing columns: {sorted(missing_columns)}")
-            return
+            fail(f"eligibility_columns_missing:{','.join(sorted(missing_columns))}")
+
+        if (
+            str(self.ai_product_pool_strategy) == OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+            and "score_type" not in df.columns
+        ):
+            fail("eligibility_columns_missing:score_type")
 
         df = df[df["strategy"].astype(str) == str(self.ai_product_pool_strategy)].copy()
         if df.empty:
-            self.write_log(f"AI product pool strategy has no rows: {self.ai_product_pool_strategy}")
-            return
+            fail(f"strategy_rows_missing:{self.ai_product_pool_strategy}")
 
-        df["eval_date"] = pd.to_datetime(df["eval_date"]).dt.normalize()
+        df["eval_date"] = pd.to_datetime(df["eval_date"], errors="coerce").dt.normalize()
+        if df["eval_date"].isna().any():
+            fail("eval_date_invalid")
+        df["product_vt_symbol"] = df["product_vt_symbol"].astype(str).str.strip()
+        if df["product_vt_symbol"].eq("").any():
+            fail("product_vt_symbol_empty")
         for column in ["score", "score_rank", "top_n"]:
-            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0.0)
+            df[column] = pd.to_numeric(df[column], errors="coerce")
+        numeric = df[["score", "score_rank", "top_n"]].to_numpy(dtype=float)
+        if not np.isfinite(numeric).all():
+            fail("numeric_value_invalid")
+        for column in ("score_rank", "top_n"):
+            values = df[column].to_numpy(dtype=float)
+            if not np.equal(values, np.floor(values)).all() or (values <= 0).any():
+                fail(f"{column}_not_positive_integer")
+            df[column] = df[column].astype(int)
+
+        for eval_date, group in df.groupby("eval_date", sort=True):
+            date_text = pd.Timestamp(eval_date).date().isoformat()
+            if group["product_vt_symbol"].duplicated().any():
+                fail(f"duplicate_product:eval_date={date_text}")
+            ranks = sorted(group["score_rank"].tolist())
+            if ranks != list(range(1, len(group) + 1)):
+                fail(f"rank_range_invalid:eval_date={date_text}")
+            if set(group["top_n"].tolist()) != {len(group)}:
+                fail(f"top_n_invalid:eval_date={date_text}")
+            if str(self.ai_product_pool_strategy) == OFFICIAL_AI_PRODUCT_POOL_STRATEGY:
+                blockers = official_ai_pool_snapshot_blockers(
+                    products=group["product_vt_symbol"].tolist(),
+                    ranks=group["score_rank"].tolist(),
+                    top_ns=group["top_n"].tolist(),
+                    eval_date=date_text,
+                    score_types=group["score_type"].tolist(),
+                )
+                if blockers:
+                    fail(
+                        "official_snapshot_invalid:"
+                        f"eval_date={date_text}:blockers={','.join(blockers)}"
+                    )
 
         by_date: dict[pd.Timestamp, dict[str, dict[str, Any]]] = {}
         for eval_date, group in df.groupby("eval_date"):
@@ -965,6 +1016,9 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
             }
         self.ai_product_pool_by_date = by_date
         self.ai_product_pool_eval_dates = sorted(by_date)
+        if not self.ai_product_pool_eval_dates:
+            fail("eligible_snapshot_missing")
+        self.ai_product_pool_load_status = "valid"
 
     def _ai_product_pool_snapshot(self, product_vt_symbol: str, trade_date: pd.Timestamp) -> dict[str, Any]:
         if not self.enable_ai_product_pool_filter:
@@ -981,14 +1035,15 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         snapshot: dict[str, Any] = {
             "ai_product_pool_enabled": 1,
             "ai_product_pool_strategy": str(self.ai_product_pool_strategy),
-            "ai_product_pool_allowed": 1,
+            "ai_product_pool_allowed": 0,
             "ai_product_pool_signal_date": "",
             "ai_product_pool_score": 0.0,
             "ai_product_pool_rank": 0,
             "ai_product_pool_top_n": 0,
         }
+        if getattr(self, "ai_product_pool_load_status", "invalid") != "valid":
+            return snapshot
         if not self.ai_product_pool_eval_dates:
-            snapshot["ai_product_pool_allowed"] = 1
             return snapshot
 
         normalized_date = pd.Timestamp(trade_date)
@@ -1003,6 +1058,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         signal_index = int(eval_index.searchsorted(normalized_date, side="left") - 1)
         if signal_index < 0:
             # Before the first out-of-sample AI signal, keep the original strategy unchanged.
+            snapshot["ai_product_pool_allowed"] = 1
             return snapshot
 
         signal_date = pd.Timestamp(eval_index[signal_index])

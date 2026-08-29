@@ -11,9 +11,10 @@ This skill is an execution-discipline guide, not an alpha-research guide.
 
 - Resolve the current official profile from `examples/portfolio_backtesting/qmt_roll_official_live_config.py`; do not hard-code a historical strategy as the live default.
 - Current official live profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Current ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`; resolve and verify it from active `CURRENT.json` plus the top-level config before every live action.
+- Current alpha/risk ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`; resolve and verify it from active `CURRENT.json` plus the top-level config before every live action.
+- Current AI policy version: `ai_top10_plus_fu_official_live_v1`; verify it independently from the live manifest and immutable AI assets. Do not invent or validate an aggregate alpha-plus-AI ruleset string.
 - Current line: `futures_trend_rollover_shape_same_volume`.
-- Current strategy: Stage037 on C9/Stage847 15w. It retains the C9/Stage819 execution stack and Stage021-Q risk rules, then adds target-contract-only rollover history, a five-session rollover delay, and symmetric long/short range-stall or ordered-drawdown entry blocking.
+- Current strategy: Stage037 on C9/Stage847 15w with the official AI policy `ai_top10_plus_fu_official_live_v1`. It retains the C9/Stage819 execution stack and Stage021-Q risk rules, then adds target-contract-only rollover history, a five-session rollover delay, symmetric long/short range-stall or ordered-drawdown entry blocking, and exactly 10 model-ranked non-fu products plus fixed `fu.SHFE` (11 products total).
 - Current capital: `150000` only for live/virtual execution.
 - Current production cold-start boundary: `2026-07-23`; do not backfill or chase theoretical positions before it.
 - Treat historical baselines and old capital paths, including Stage78-1 `500000` and old `30w`, as research references unless the user explicitly asks to run them as comparisons.
@@ -132,6 +133,9 @@ Stage260 and Stage251 are legacy SimNow/broker-test diagnostics only. They are n
 ## Monthly AI Pool Cadence
 
 The AI pool is monthly, not daily. Follow the inherited operational cadence in `research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md`, while recording new evidence in the Stage037 formal line.
+
+- The live pool contract is defined only by `qmt_roll_official_ai_pool_policy.py`: ranks `1..10` are exactly 10 model-ranked non-fu products, rank `11` is exactly the single fixed `fu.SHFE`, there are 11 unique rows, `top_n=11`, and strategy is `ai_top10_plus_fu_official_live_v1`. Stage182, Stage935, Stage901/909, Stage929, the formal config, release fingerprint, and production receipt must all resolve to that same policy.
+- A future AI-pool update must preserve the fixed-fu rule and may not silently fall back to an old Top8/Top9 constant. Any row-count, rank, strategy, fixed-product, source-hash, or path mismatch is fail-closed.
 
 - Production runs Stage947 `monthly-ai-pool` -> Stage935 at 18:20 on weekdays; Stage935 itself decides whether a completed-month refresh is due.
 - If Stage935 generates a changed pool and a material publication request, that output is only a candidate: keep production fail-closed and run the full immutable material qualification, promotion, and Stage948 installation flow. Do not refresh the production shadow or issue a receipt against the mutable candidate path.

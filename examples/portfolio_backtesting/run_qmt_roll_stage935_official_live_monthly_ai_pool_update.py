@@ -13,14 +13,26 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
+import numpy as np
 import pandas as pd
 
 from qmt_roll_ai_artifact_registry import AiArtifact, write_publication_request
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_FIXED_PRODUCT,
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+    official_ai_pool_snapshot_blockers,
+)
 from qmt_roll_official_live_lightweight_context import (
     ALL_FUTURES_MAPPING_PATH,
     CONTROL_OUTPUT_DIR,
     DATA_ASSET_DIR,
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
+    OFFICIAL_LIVE_AI_LATEST_POOL_PATH,
+    OFFICIAL_LIVE_AI_LIVE_ELIGIBILITY_PATH,
+    OFFICIAL_LIVE_AI_REPORT_PATH,
+    OFFICIAL_LIVE_AI_SUMMARY_PATH,
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
     OFFICIAL_LIVE_VERSION,
@@ -110,6 +122,16 @@ def _canonical_stage182_paths() -> dict[str, Path]:
         "combined_eligibility": STAGE182_COMBINED_ELIGIBILITY_PATH,
         "summary": STAGE182_SUMMARY_PATH,
         "report": STAGE182_REPORT_PATH,
+    }
+
+
+def _active_material_stage182_paths() -> dict[str, Path]:
+    return {
+        "live_pool": OFFICIAL_LIVE_AI_LATEST_POOL_PATH,
+        "live_eligibility": OFFICIAL_LIVE_AI_LIVE_ELIGIBILITY_PATH,
+        "combined_eligibility": OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
+        "summary": OFFICIAL_LIVE_AI_SUMMARY_PATH,
+        "report": OFFICIAL_LIVE_AI_REPORT_PATH,
     }
 
 
@@ -407,6 +429,7 @@ def _build_stage182_command(
     source_prefix: str,
     source_dir: Path,
     output_dir: Path,
+    seed_combined_eligibility_path: Path,
 ) -> list[str]:
     return [
         str(PYTHON_PATH),
@@ -417,6 +440,8 @@ def _build_stage182_command(
         str(source_dir.expanduser().resolve(strict=False)),
         "--output-dir",
         str(output_dir.expanduser().resolve(strict=False)),
+        "--seed-combined-eligibility",
+        str(seed_combined_eligibility_path.expanduser().resolve(strict=True)),
     ]
 
 
@@ -758,7 +783,7 @@ def _combined_eval_date_audit(
     combined_path: Path = STAGE182_COMBINED_ELIGIBILITY_PATH,
 ) -> dict[str, Any]:
     combined = _read_csv(combined_path)
-    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
     result: dict[str, Any] = {
         "path": str(combined_path),
         "exists": bool(combined_path.exists()),
@@ -774,6 +799,9 @@ def _combined_eval_date_audit(
         "invalid_rank_eval_dates": [],
         "invalid_top_n_eval_dates": [],
         "missing_fixed_fu_eval_dates": [],
+        "invalid_fixed_product_rank_eval_dates": [],
+        "invalid_contract_eval_dates": [],
+        "contract_blockers_by_eval_date": {},
         "row_counts_by_required_eval_date": {},
     }
     if combined.empty or "eval_date" not in combined.columns:
@@ -794,32 +822,48 @@ def _combined_eval_date_audit(
         date for date in required_dates if int(row_counts.get(date, 0)) <= 0
     ]
     result["invalid_row_count_eval_dates"] = [
-        date for date in required_dates if int(row_counts.get(date, 0)) != 9
+        date
+        for date in required_dates
+        if int(row_counts.get(date, 0)) != OFFICIAL_AI_TOTAL_PRODUCT_COUNT
     ]
     for date in required_dates:
         rows = combined[combined["eval_date"].eq(date)].copy()
-        if (
-            "product_vt_symbol" not in rows.columns
-            or rows["product_vt_symbol"].astype(str).nunique() != 9
-        ):
+        required = {"product_vt_symbol", "score_rank", "top_n"}
+        if not required.issubset(rows.columns):
+            snapshot_blockers = [
+                "unique_product_count",
+                "missing_fixed_product",
+                "rank_range",
+                "top_n",
+                "fixed_product_rank",
+            ]
+        else:
+            snapshot_blockers = official_ai_pool_snapshot_blockers(
+                products=rows["product_vt_symbol"].tolist(),
+                ranks=rows["score_rank"].tolist(),
+                top_ns=rows["top_n"].tolist(),
+                eval_date=date,
+                score_types=(
+                    rows["score_type"].tolist()
+                    if "score_type" in rows.columns
+                    else None
+                ),
+            )
+        if snapshot_blockers:
+            result["invalid_contract_eval_dates"].append(date)
+            result["contract_blockers_by_eval_date"][date] = list(
+                snapshot_blockers
+            )
+        if "unique_product_count" in snapshot_blockers:
             result["invalid_unique_product_eval_dates"].append(date)
-        if (
-            "product_vt_symbol" not in rows.columns
-            or "fu.SHFE" not in set(rows["product_vt_symbol"].astype(str))
-        ):
+        if "missing_fixed_product" in snapshot_blockers:
             result["missing_fixed_fu_eval_dates"].append(date)
-        if "score_rank" not in rows.columns:
+        if "rank_range" in snapshot_blockers:
             result["invalid_rank_eval_dates"].append(date)
-        else:
-            ranks = pd.to_numeric(rows["score_rank"], errors="coerce")
-            if sorted(ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
-                result["invalid_rank_eval_dates"].append(date)
-        if "top_n" not in rows.columns:
+        if "top_n" in snapshot_blockers:
             result["invalid_top_n_eval_dates"].append(date)
-        else:
-            top_n = pd.to_numeric(rows["top_n"], errors="coerce")
-            if len(rows) != 9 or not top_n.eq(9).all():
-                result["invalid_top_n_eval_dates"].append(date)
+        if "fixed_product_rank" in snapshot_blockers:
+            result["invalid_fixed_product_rank_eval_dates"].append(date)
     return result
 
 
@@ -841,6 +885,7 @@ def _validate_stage182_outputs(
 ) -> dict[str, Any]:
     selected_paths = paths or _canonical_stage182_paths()
     summary_path = selected_paths["summary"]
+    live_pool_path = selected_paths["live_pool"]
     live_eligibility_path = selected_paths["live_eligibility"]
     combined_eligibility_path = selected_paths["combined_eligibility"]
     summary = _read_json(summary_path)
@@ -849,7 +894,7 @@ def _validate_stage182_outputs(
     eval_date = _date_text(summary.get("eval_date", ""))
     source_max_date = _date_text(summary.get("source_max_date", ""))
     top_products: list[str] = []
-    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
     required_eligibility_columns = {
         "strategy",
         "score_type",
@@ -858,6 +903,15 @@ def _validate_stage182_outputs(
         "score",
         "score_rank",
         "top_n",
+    }
+    required_live_pool_columns = {
+        "strategy",
+        "eval_date",
+        "product_vt_symbol",
+        "predicted_product_suitability_probability",
+        "ai_rank",
+        "selection_role",
+        "source_score_type",
     }
 
     if not summary:
@@ -931,8 +985,11 @@ def _validate_stage182_outputs(
                 if current_identities != expected_identities:
                     blockers.append("stage182_source_changed_after_stage183_validation")
 
+    live_pool = _read_csv(live_pool_path)
     live_eligibility = _read_csv(live_eligibility_path)
     combined = _read_csv(combined_eligibility_path)
+    if live_pool.empty:
+        blockers.append("stage182_live_pool_missing_or_empty")
     if live_eligibility.empty:
         blockers.append("stage182_live_eligibility_missing_or_empty")
     if combined.empty:
@@ -943,35 +1000,81 @@ def _validate_stage182_outputs(
     combined_missing_columns = sorted(required_eligibility_columns - set(combined.columns))
     if combined_missing_columns:
         blockers.append("stage182_combined_eligibility_required_columns_missing")
+    live_pool_missing_columns = sorted(required_live_pool_columns - set(live_pool.columns))
+    if live_pool_missing_columns:
+        blockers.append("stage182_live_pool_required_columns_missing")
+
+    live_pool_identity: list[tuple[str, int]] = []
+    live_pool_rows = pd.DataFrame()
+    if (
+        eval_date
+        and not live_pool.empty
+        and not live_pool_missing_columns
+    ):
+        live_pool_rows = live_pool[
+            live_pool["eval_date"].astype(str).eq(eval_date)
+            & live_pool["strategy"].astype(str).eq(strategy)
+        ].copy()
+        pool_blockers = official_ai_pool_snapshot_blockers(
+            products=live_pool_rows["product_vt_symbol"].tolist(),
+            ranks=live_pool_rows["ai_rank"].tolist(),
+            top_ns=[OFFICIAL_AI_TOTAL_PRODUCT_COUNT] * len(live_pool_rows),
+            eval_date=eval_date,
+            score_types=live_pool_rows["source_score_type"].tolist(),
+        )
+        if pool_blockers:
+            blockers.append("stage182_live_pool_official_contract_invalid")
+        else:
+            live_pool_rows["ai_rank"] = pd.to_numeric(
+                live_pool_rows["ai_rank"], errors="raise"
+            ).astype(int)
+            live_pool_identity = sorted(
+                zip(
+                    live_pool_rows["product_vt_symbol"].astype(str),
+                    live_pool_rows["ai_rank"],
+                    strict=False,
+                )
+            )
+        roles = live_pool_rows.set_index("product_vt_symbol")["selection_role"].astype(str).to_dict()
+        if roles.get(OFFICIAL_AI_FIXED_PRODUCT) != "fixed_fu" or any(
+            role != "model_ranked"
+            for product, role in roles.items()
+            if product != OFFICIAL_AI_FIXED_PRODUCT
+        ):
+            blockers.append("stage182_live_pool_selection_role_invalid")
 
     live_identity: list[tuple[str, int]] = []
     if eval_date and not live_eligibility.empty and "eval_date" in live_eligibility.columns:
         rows = live_eligibility[live_eligibility["eval_date"].astype(str).eq(eval_date)].copy()
         if "strategy" in rows.columns:
             rows = rows[rows["strategy"].astype(str).eq(strategy)].copy()
-        if len(rows) != 9:
-            blockers.append("stage182_live_eligibility_eval_rows_not_9")
+        if len(rows) != OFFICIAL_AI_TOTAL_PRODUCT_COUNT:
+            blockers.append("stage182_live_eligibility_eval_rows_not_official_count")
         if "product_vt_symbol" in rows.columns:
             top_products = rows.sort_values(["score_rank", "product_vt_symbol"], kind="stable")[
                 "product_vt_symbol"
             ].astype(str).tolist()
             if len(set(top_products)) != len(top_products):
                 blockers.append("stage182_live_eligibility_duplicate_products")
-        if "score_rank" in rows.columns and "product_vt_symbol" in rows.columns:
-            ranks = pd.to_numeric(rows["score_rank"], errors="coerce")
-            if sorted(ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
-                blockers.append("stage182_live_eligibility_ranks_not_1_to_9")
-            live_identity = sorted(
-                zip(
-                    rows["product_vt_symbol"].astype(str),
-                    ranks.fillna(999).astype(int),
-                    strict=False,
-                )
+        if {"score_rank", "top_n", "product_vt_symbol"}.issubset(rows.columns):
+            live_contract_blockers = official_ai_pool_snapshot_blockers(
+                products=rows["product_vt_symbol"].tolist(),
+                ranks=rows["score_rank"].tolist(),
+                top_ns=rows["top_n"].tolist(),
+                eval_date=eval_date,
+                score_types=rows["score_type"].tolist(),
             )
-        if "top_n" in rows.columns:
-            top_n = pd.to_numeric(rows["top_n"], errors="coerce")
-            if len(rows) and not top_n.eq(9).all():
-                blockers.append("stage182_live_eligibility_top_n_not_9")
+            if live_contract_blockers:
+                blockers.append("stage182_live_eligibility_official_contract_invalid")
+            else:
+                ranks = pd.to_numeric(rows["score_rank"], errors="raise").astype(int)
+                live_identity = sorted(
+                    zip(
+                        rows["product_vt_symbol"].astype(str),
+                        ranks,
+                        strict=False,
+                    )
+                )
 
     combined_identity: list[tuple[str, int]] = []
     if eval_date and not combined.empty and "eval_date" in combined.columns:
@@ -982,31 +1085,71 @@ def _validate_stage182_outputs(
             ].copy()
         if combined_rows.empty:
             blockers.append("stage182_combined_missing_eval_date_rows")
-        if len(combined_rows) != 9:
-            blockers.append("stage182_combined_eval_rows_not_9")
+        if len(combined_rows) != OFFICIAL_AI_TOTAL_PRODUCT_COUNT:
+            blockers.append("stage182_combined_eval_rows_not_official_count")
         if "product_vt_symbol" in combined_rows.columns:
             combined_products = combined_rows["product_vt_symbol"].astype(str).tolist()
             if len(set(combined_products)) != len(combined_products):
                 blockers.append("stage182_combined_duplicate_products")
-        if "score_rank" in combined_rows.columns and "product_vt_symbol" in combined_rows.columns:
-            combined_ranks = pd.to_numeric(combined_rows["score_rank"], errors="coerce")
-            if sorted(combined_ranks.dropna().astype(int).tolist()) != list(range(1, 10)):
-                blockers.append("stage182_combined_ranks_not_1_to_9")
-            combined_identity = sorted(
-                zip(
-                    combined_rows["product_vt_symbol"].astype(str),
-                    combined_ranks.fillna(999).astype(int),
-                    strict=False,
-                )
+        if {"score_rank", "top_n", "product_vt_symbol"}.issubset(combined_rows.columns):
+            combined_contract_blockers = official_ai_pool_snapshot_blockers(
+                products=combined_rows["product_vt_symbol"].tolist(),
+                ranks=combined_rows["score_rank"].tolist(),
+                top_ns=combined_rows["top_n"].tolist(),
+                eval_date=eval_date,
+                score_types=combined_rows["score_type"].tolist(),
             )
-        if "top_n" in combined_rows.columns:
-            combined_top_n = pd.to_numeric(combined_rows["top_n"], errors="coerce")
-            if len(combined_rows) and not combined_top_n.eq(9).all():
-                blockers.append("stage182_combined_top_n_not_9")
+            if combined_contract_blockers:
+                blockers.append("stage182_combined_official_contract_invalid")
+            else:
+                combined_ranks = pd.to_numeric(
+                    combined_rows["score_rank"], errors="raise"
+                ).astype(int)
+                combined_identity = sorted(
+                    zip(
+                        combined_rows["product_vt_symbol"].astype(str),
+                        combined_ranks,
+                        strict=False,
+                    )
+                )
     if live_identity and combined_identity != live_identity:
-        blockers.append("stage182_combined_current_top9_mismatch")
-    if top_products and "fu.SHFE" not in top_products:
-        blockers.append("stage182_top9_missing_fixed_fu_satellite")
+        blockers.append("stage182_combined_current_official_pool_mismatch")
+    if live_pool_identity and live_pool_identity != live_identity:
+        blockers.append("stage182_live_pool_current_official_pool_mismatch")
+    if live_pool_identity and live_identity:
+        score_compare = live_pool_rows[
+            ["product_vt_symbol", "predicted_product_suitability_probability", "source_score_type"]
+        ].merge(
+            rows[["product_vt_symbol", "score", "score_type"]],
+            on="product_vt_symbol",
+            how="outer",
+            validate="one_to_one",
+        )
+        pool_scores = pd.to_numeric(
+            score_compare["predicted_product_suitability_probability"],
+            errors="coerce",
+        )
+        eligibility_scores = pd.to_numeric(score_compare["score"], errors="coerce")
+        if (
+            pool_scores.isna().any()
+            or eligibility_scores.isna().any()
+            or not bool(
+                pd.Series(
+                    np.isclose(
+                        pool_scores.to_numpy(),
+                        eligibility_scores.to_numpy(),
+                        rtol=0.0,
+                        atol=1e-12,
+                    )
+                ).all()
+            )
+            or not score_compare["source_score_type"].astype(str).equals(
+                score_compare["score_type"].astype(str)
+            )
+        ):
+            blockers.append("stage182_live_pool_score_identity_mismatch")
+    if top_products and OFFICIAL_AI_FIXED_PRODUCT not in top_products:
+        blockers.append("stage182_official_pool_missing_fixed_product")
     combined_eval_date_audit = _combined_eval_date_audit(
         expected_eval_date,
         combined_path=combined_eligibility_path,
@@ -1014,7 +1157,11 @@ def _validate_stage182_outputs(
     if combined_eval_date_audit.get("missing_recent_eval_dates"):
         blockers.append("stage182_combined_missing_recent_eval_dates")
     if combined_eval_date_audit.get("invalid_row_count_eval_dates"):
-        blockers.append("stage182_combined_required_eval_date_rows_not_9")
+        blockers.append(
+            "stage182_combined_required_eval_date_rows_not_official_count"
+        )
+    if combined_eval_date_audit.get("invalid_contract_eval_dates"):
+        blockers.append("stage182_combined_required_eval_date_contract_invalid")
     if any(
         combined_eval_date_audit.get(key)
         for key in (
@@ -1022,6 +1169,7 @@ def _validate_stage182_outputs(
             "invalid_rank_eval_dates",
             "invalid_top_n_eval_dates",
             "missing_fixed_fu_eval_dates",
+            "invalid_fixed_product_rank_eval_dates",
         )
     ):
         blockers.append("stage182_combined_required_eval_date_shape_invalid")
@@ -1034,10 +1182,12 @@ def _validate_stage182_outputs(
         "source_max_date": source_max_date,
         "top_products": top_products,
         "summary_path": str(summary_path),
+        "live_pool_path": str(live_pool_path),
         "live_eligibility_path": str(live_eligibility_path),
         "combined_eligibility_path": str(combined_eligibility_path),
         "official_live_ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
         "combined_eval_date_audit": combined_eval_date_audit,
+        "live_pool_missing_columns": live_pool_missing_columns,
         "live_missing_columns": live_missing_columns,
         "combined_missing_columns": combined_missing_columns,
     }
@@ -1047,7 +1197,11 @@ def _build_base_summary(args: argparse.Namespace) -> dict[str, Any]:
     as_of = _parse_as_of(str(args.as_of or ""))
     resolved_target_date, resolver_evidence = _resolve_latest_completed(as_of, str(args.data_ready_time))
     expected_eval_date = _expected_monthly_eval_date(resolved_target_date)
-    current_validation = _validate_stage182_outputs(expected_eval_date=expected_eval_date)
+    current_validation = _validate_stage182_outputs(
+        expected_eval_date=expected_eval_date,
+        paths=_active_material_stage182_paths(),
+        require_official_path=False,
+    )
     current_eval_date = current_validation.get("eval_date", "")
     update_reasons: list[str] = []
     current_ts = _timestamp(str(current_eval_date))
@@ -1205,6 +1359,7 @@ def _execute_update(summary: dict[str, Any], args: argparse.Namespace) -> dict[s
         source_prefix=source_prefix,
         source_dir=CONTROL_OUTPUT_DIR,
         output_dir=CONTROL_OUTPUT_DIR,
+        seed_combined_eligibility_path=OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     )
     stage182_result = _run_command(stage182_cmd, timeout=int(args.inference_timeout_seconds))
     summary["commands"]["stage182_live_inference"] = stage182_result
@@ -1321,7 +1476,11 @@ def _build_report(summary: dict[str, Any]) -> str:
         f"最近需保留月度截面：{', '.join(map(str, combined_audit.get('required_recent_eval_dates') or [])) or '未读取'}",
         f"缺失月度截面：{', '.join(map(str, combined_audit.get('missing_recent_eval_dates') or [])) or '无'}",
         f"更新原因：{';'.join(summary.get('update_reasons') or []) or '无'}",
-        f"Top9 品种：{', '.join(map(str, top_products)) or '未读取'}",
+        (
+            f"Top{OFFICIAL_AI_RANKED_PRODUCT_COUNT}+"
+            f"{OFFICIAL_AI_FIXED_PRODUCT.split('.', 1)[0]} 品种："
+            f"{', '.join(map(str, top_products)) or '未读取'}"
+        ),
         f"正式物料发布状态：{summary.get('material_publication_status', '未生成')}",
         f"正式物料发布请求：{summary.get('material_publication_request_path', '') or '无'}",
         f"阻断：{';'.join(summary.get('blockers') or []) or '无'}",

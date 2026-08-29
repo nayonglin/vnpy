@@ -765,6 +765,34 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         self.assertIn(suite, builder.DEFAULT_CRITICAL_FILES)
         self.assertIn(suite, builder.PRODUCTION_REQUIRED_TEST_SUITES)
 
+    def test_official_ai_pool_policy_is_pinned_in_production_release_surface(
+        self,
+    ) -> None:
+        policy = (
+            "examples/portfolio_backtesting/"
+            "qmt_roll_official_ai_pool_policy.py"
+        )
+        policy_suites = {
+            "tests/test_stage065_top10_fu_formal_ai_bundle.py",
+            "tests/test_stage901_official_ai_pool_policy.py",
+            "tests/test_stage929_official_ai_pool_policy.py",
+        }
+        formal_bundle_builder = (
+            "examples/portfolio_backtesting/"
+            "build_qmt_roll_stage065_top10_fu_formal_ai_bundle.py"
+        )
+
+        self.assertIn(policy, builder.DEFAULT_CRITICAL_FILES)
+        self.assertIn(formal_bundle_builder, builder.DEFAULT_CRITICAL_FILES)
+        self.assertTrue(
+            policy_suites.issubset(set(builder.DEFAULT_CRITICAL_FILES))
+        )
+        self.assertTrue(
+            policy_suites.issubset(
+                set(builder.PRODUCTION_REQUIRED_TEST_SUITES)
+            )
+        )
+
     def test_strategy_material_toolchain_is_pinned_in_production_release_surface(
         self,
     ) -> None:

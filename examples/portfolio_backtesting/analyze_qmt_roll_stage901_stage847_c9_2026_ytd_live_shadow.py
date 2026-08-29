@@ -14,6 +14,11 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    official_ai_pool_snapshot_blockers,
+)
+
 import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as s650
 import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653
@@ -490,19 +495,50 @@ def _required_ai_eval_dates(analysis_start: pd.Timestamp, analysis_end: pd.Times
 
 def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Timestamp) -> dict[str, Any]:
     required_eval_dates = _required_ai_eval_dates(analysis_start, analysis_end)
+    calendar_blockers = [] if required_eval_dates else ["trading_calendar_unavailable"]
     if not path.exists():
         return {
             "path": str(path),
             "exists": False,
             "required_eval_dates": required_eval_dates,
             "missing_required_eval_dates": required_eval_dates,
+            "contract_status": "invalid",
+            "invalid_contract_eval_dates": required_eval_dates,
+            "contract_blockers": [
+                *calendar_blockers,
+                "eligibility_file_missing",
+                *[f"{date}:missing_eval_date" for date in required_eval_dates],
+            ],
         }
     payload = path.read_bytes()
     eligibility_sha256 = hashlib.sha256(payload).hexdigest()
     frame = pd.read_csv(BytesIO(payload), encoding="utf-8-sig")
-    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
-    if "strategy" in frame.columns:
-        frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
+    required_columns = {
+        "strategy",
+        "score_type",
+        "eval_date",
+        "product_vt_symbol",
+        "score_rank",
+        "top_n",
+    }
+    missing_columns = sorted(required_columns - set(frame.columns))
+    if missing_columns:
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": int(len(frame)),
+            "eligibility_sha256": eligibility_sha256,
+            "required_eval_dates": required_eval_dates,
+            "missing_required_eval_dates": required_eval_dates,
+            "contract_status": "invalid",
+            "invalid_contract_eval_dates": required_eval_dates,
+            "contract_blockers": [
+                *calendar_blockers,
+                f"missing_columns:{','.join(missing_columns)}",
+            ],
+        }
+    strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+    frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
     if frame.empty:
         return {
             "path": str(path),
@@ -511,14 +547,51 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
             "eligibility_sha256": eligibility_sha256,
             "required_eval_dates": required_eval_dates,
             "missing_required_eval_dates": required_eval_dates,
+            "contract_status": "invalid",
+            "invalid_contract_eval_dates": required_eval_dates,
+            "contract_blockers": [
+                *calendar_blockers,
+                "official_strategy_rows_missing",
+                *[f"{date}:missing_eval_date" for date in required_eval_dates],
+            ],
         }
     frame["eval_date"] = pd.to_datetime(frame["eval_date"], errors="coerce").dt.normalize()
+    if frame["eval_date"].isna().any():
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": int(len(frame)),
+            "eligibility_sha256": eligibility_sha256,
+            "required_eval_dates": required_eval_dates,
+            "missing_required_eval_dates": required_eval_dates,
+            "contract_status": "invalid",
+            "invalid_contract_eval_dates": required_eval_dates,
+            "contract_blockers": [*calendar_blockers, "invalid_eval_date"],
+        }
     latest_date = frame["eval_date"].max()
     latest = frame[frame["eval_date"].eq(latest_date)].sort_values(["score_rank", "product_vt_symbol"])
     available_eval_dates = {
         pd.Timestamp(value).date().isoformat()
         for value in frame["eval_date"].dropna().drop_duplicates().tolist()
     }
+    contract_blockers: list[str] = list(calendar_blockers)
+    invalid_contract_eval_dates: list[str] = []
+    for required_date in required_eval_dates:
+        snapshot = frame[
+            frame["eval_date"].eq(pd.Timestamp(required_date))
+        ].sort_values(["score_rank", "product_vt_symbol"])
+        snapshot_blockers = official_ai_pool_snapshot_blockers(
+            products=snapshot["product_vt_symbol"].tolist(),
+            ranks=snapshot["score_rank"].tolist(),
+            top_ns=snapshot["top_n"].tolist(),
+            eval_date=required_date,
+            score_types=snapshot["score_type"].tolist(),
+        )
+        if snapshot_blockers:
+            invalid_contract_eval_dates.append(required_date)
+            contract_blockers.extend(
+                f"{required_date}:{blocker}" for blocker in snapshot_blockers
+            )
     return {
         "path": str(path),
         "exists": True,
@@ -532,7 +605,24 @@ def _ai_pool_audit(path: Path, analysis_start: pd.Timestamp, analysis_end: pd.Ti
         "missing_required_eval_dates": [
             date for date in required_eval_dates if date not in available_eval_dates
         ],
+        "contract_status": "invalid" if contract_blockers else "valid",
+        "invalid_contract_eval_dates": invalid_contract_eval_dates,
+        "contract_blockers": contract_blockers,
     }
+
+
+def _assert_ai_pool_contract_valid(audit: dict[str, Any]) -> None:
+    if (
+        audit.get("contract_status") == "valid"
+        and not audit.get("missing_required_eval_dates")
+    ):
+        return
+    blockers = [str(value) for value in audit.get("contract_blockers", [])]
+    missing_dates = [
+        str(value) for value in audit.get("missing_required_eval_dates", [])
+    ]
+    detail = ";".join([*blockers, *[f"missing_eval_date:{value}" for value in missing_dates]])
+    raise RuntimeError(f"official_ai_pool_contract_invalid:{detail or 'unknown'}")
 
 
 def _csv_bytes(frame: pd.DataFrame) -> bytes:
@@ -883,6 +973,7 @@ def _write_report(
         f"- AI 池最新 eval_date：`{decision['ai_pool_audit'].get('max_eval_date', '')}`。",
         f"- 本次回放需要 AI 池 eval_date：`{', '.join(decision['ai_pool_audit'].get('required_eval_dates', []))}`。",
         f"- 本次回放缺失 AI 池 eval_date：`{', '.join(decision['ai_pool_audit'].get('missing_required_eval_dates', [])) or '无'}`。",
+        f"- AI 池正式合同：`{decision['ai_pool_audit'].get('contract_status', 'invalid')}`；异常月份：`{', '.join(decision['ai_pool_audit'].get('invalid_contract_eval_dates', [])) or '无'}`。",
         f"- AI 池最新品种：`{', '.join(decision['ai_pool_audit'].get('latest_products', []))}`。",
         f"- 实际 strategy override AI 池：`{decision['strategy_ai_product_pool_eligibility_path']}`。",
         f"- C9 分钟K源：`{decision['minute_audit'].get('source', '')}`，已加载合约数 `{decision['minute_audit'].get('loaded_symbol_count', '')}`。",
@@ -992,6 +1083,13 @@ def main() -> None:
     analysis_start = pd.Timestamp(str(args.analysis_start)).normalize()
     analysis_end = pd.Timestamp(str(args.target_date)).normalize()
 
+    ai_pool_audit = _ai_pool_audit(
+        OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
+        analysis_start,
+        analysis_end,
+    )
+    _assert_ai_pool_contract_valid(ai_pool_audit)
+
     metadata = s513._metadata()
     combined, frames, spec = _run_live_c9(metadata, analysis_start, analysis_end)
     positions = frames.get("positions", pd.DataFrame()).copy()
@@ -1034,7 +1132,6 @@ def main() -> None:
     )
 
     current_row = summary[summary["variant"].eq(OFFICIAL_LIVE_PROFILE_NAME)].to_dict(orient="records")
-    ai_pool_audit = _ai_pool_audit(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH, analysis_start, analysis_end)
     decision = {
         "stage": "Stage901",
         "line_id": LINE_ID,
@@ -1054,8 +1151,10 @@ def main() -> None:
         "decision": "stage901_c9_live_default_shadow_measured_no_order_api",
         "execution_scope": "read-only backtest/shadow performance only; no CTP connection and no order API call",
         "shadow_replay_ai_pool_status": (
-            "valid" if not ai_pool_audit.get("missing_required_eval_dates")
-            else "invalid_missing_required_eval_dates"
+            "valid"
+            if not ai_pool_audit.get("missing_required_eval_dates")
+            and ai_pool_audit.get("contract_status") == "valid"
+            else "invalid_ai_pool_contract"
         ),
         "target_signal_count": int(len(signal_plan)),
         "pending_order_count": int(len(pending_orders)),

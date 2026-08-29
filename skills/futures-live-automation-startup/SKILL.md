@@ -24,7 +24,8 @@ Start and end with:
 ## Current Production Contract
 
 - Profile: `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`.
-- Active ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`.
+- Active alpha/risk ruleset: `stage037_stage034_long_short_mirror_hard_block_v1`.
+- Active AI policy: `ai_top10_plus_fu_official_live_v1`, exactly 10 ranked non-fu products at ranks `1..10` plus the single fixed `fu.SHFE` at rank `11` (11 rows, ranks `1..11`, `top_n=11`).
 - Execution profile: `c9-15w`.
 - Capital: `150000`.
 - Stable root: `/Users/bytedance/Desktop/person/vnpy_production_live`.
@@ -42,7 +43,7 @@ Use stable HEAD plus these private artifacts as production authority:
 
 An arbitrary development checkout, release branch, or historical stage record cannot override them.
 
-Before install/start/restart, load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()`. Require its strategy version, Stage037 ruleset, material release, and source identity to agree with remote master and the private production receipts. The unchanged C9 strategy-version string alone is insufficient proof that Stage037 is installed.
+Before install/start/restart, load stable-root `official_strategy_materials/CURRENT.json` and run `assert_official_checkout_matches_active_material()`. Require the strategy version and pure Stage037 ruleset from CURRENT/material identity, then independently verify the live manifest AI policy/version and its immutable five-asset paths. Both identities, the material release, source commit, remote master and private production receipts must agree. Never synthesize an aggregate ruleset string from the alpha ruleset and AI policy. The unchanged C9 strategy-version string alone is insufficient proof that the current formal strategy is installed.
 
 ## Exact Seven-Job Surface
 
@@ -141,6 +142,7 @@ Stage947 owns production month-end handling:
 
 - `monthly_ai_pool_already_current`: validate the existing receipt.
 - `monthly_ai_pool_updated`: always treat the generated files as a candidate, regardless of a missing, known, or unknown `material_publication_status`. Stop fail-closed and use `freeze-official-strategy-materials` to create, qualify, promote, and install a new immutable material release before refreshing the shadow or signing a receipt.
+- Before publication, validate the candidate against `qmt_roll_official_ai_pool_policy.py`: strategy name, 10 ranked non-fu products at ranks `1..10`, the single fixed `fu.SHFE` at rank `11`, 11 unique rows, ranks `1..11`, `top_n=11`, and the declared source hashes. Never overwrite an active material payload or reuse an old Top8/Top9 strategy identifier.
 - Only after `CURRENT.json`, the stable checkout, and `PRODUCTION_AI_ELIGIBILITY_PATH` all resolve to the newly installed material may Stage909 rerun and a new receipt be signed.
 - any other state: fail closed.
 

@@ -190,7 +190,13 @@ def test_cli_prepare_discovers_core_strategy_local_import_closure(
             "training_label_cutoff": "2026-08-24",
             "request_sha256": "test-request",
             "official_version": "official-test",
+            "source_commit": _git(PORTFOLIO_DIR.parents[1], "rev-parse", "HEAD"),
         },
+    )
+    monkeypatch.setattr(
+        material_release,
+        "assert_publication_source_commit",
+        lambda _repo, source_commit: source_commit,
     )
     monkeypatch.setattr(
         material_release,
@@ -222,6 +228,29 @@ def test_cli_prepare_discovers_core_strategy_local_import_closure(
         blocker.startswith("unresolved_dynamic_import:tests/")
         for blocker in captured["request"].discovery.blockers
     )
+
+
+def test_publication_request_source_commit_must_match_clean_head(
+    tmp_path: Path,
+) -> None:
+    repo, _request_value = _request(tmp_path)
+    head = _git(repo, "rev-parse", "HEAD")
+    validator = getattr(
+        material_release,
+        "assert_publication_source_commit",
+        None,
+    )
+    assert callable(validator), "material publisher must bind request to clean HEAD"
+
+    assert validator(repo, head) == head
+    with pytest.raises(MaterialReleaseError, match="publication_source_commit_invalid"):
+        validator(repo, "not-a-commit")
+    with pytest.raises(MaterialReleaseError, match="publication_source_commit_not_head"):
+        validator(repo, "0" * 40)
+
+    (repo / "pool.csv").write_text("rank,symbol\n1,cu.SHFE\n", encoding="utf-8")
+    with pytest.raises(MaterialReleaseError, match="source_tree_not_clean"):
+        validator(repo, head)
 
 
 def test_prepare_is_immutable_and_verifiable(tmp_path: Path) -> None:

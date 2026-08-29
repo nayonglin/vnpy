@@ -10,6 +10,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import pandas as pd
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTFOLIO_DIR = ROOT / "examples" / "portfolio_backtesting"
@@ -19,6 +21,12 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import build_qmt_roll_stage182_ai_product_pool_live_inference_runner as stage182  # noqa: E402
 import build_qmt_roll_stage183_ai_product_pool_source_refresh as stage183  # noqa: E402
 from qmt_roll_ai_artifact_registry import load_publication_request  # noqa: E402
+from qmt_roll_official_ai_pool_policy import (  # noqa: E402
+    OFFICIAL_AI_FIXED_PRODUCT,
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+)
 import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935  # noqa: E402
 
 
@@ -114,6 +122,116 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         for name, path in paths.items():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(f"{name}:{marker}\n", encoding="utf-8")
+
+    def test_stage182_live_eligibility_selects_top10_non_fu_plus_fixed_fu(self) -> None:
+        scored = pd.DataFrame(
+            {
+                "product_vt_symbol": [
+                    OFFICIAL_AI_FIXED_PRODUCT,
+                    *[
+                        f"p{index}.TEST"
+                        for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 3)
+                    ],
+                ],
+                stage182.PROBABILITY_COLUMN: [
+                    0.99,
+                    *[
+                        0.90 - index * 0.01
+                        for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 3)
+                    ],
+                ],
+                stage182.SIMPLE_SCORE_COLUMN: [
+                    99.0,
+                    *[
+                        90.0 - index
+                        for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 3)
+                    ],
+                ],
+            }
+        )
+
+        eligibility = stage182._build_live_eligibility(
+            scored,
+            pd.Timestamp("2026-07-31"),
+        )
+
+        self.assertEqual(OFFICIAL_AI_TOTAL_PRODUCT_COUNT, len(eligibility))
+        self.assertEqual(
+            [
+                *[
+                    f"p{index}.TEST"
+                    for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 1)
+                ],
+                OFFICIAL_AI_FIXED_PRODUCT,
+            ],
+            eligibility["product_vt_symbol"].tolist(),
+        )
+        self.assertEqual(
+            list(range(1, OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1)),
+            eligibility["score_rank"].tolist(),
+        )
+        self.assertEqual(
+            {OFFICIAL_AI_TOTAL_PRODUCT_COUNT},
+            set(eligibility["top_n"].tolist()),
+        )
+        self.assertEqual(
+            {OFFICIAL_AI_PRODUCT_POOL_STRATEGY},
+            set(eligibility["strategy"].tolist()),
+        )
+
+        published = stage182._build_published_live_pool(scored, eligibility)
+        self.assertEqual(OFFICIAL_AI_TOTAL_PRODUCT_COUNT, len(published))
+        self.assertEqual(
+            list(range(1, OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1)),
+            published["ai_rank"].tolist(),
+        )
+        self.assertEqual(
+            [OFFICIAL_AI_PRODUCT_POOL_STRATEGY],
+            published["strategy"].drop_duplicates().tolist(),
+        )
+        self.assertEqual(
+            OFFICIAL_AI_FIXED_PRODUCT,
+            published.iloc[-1]["product_vt_symbol"],
+        )
+        self.assertEqual("fixed_fu", published.iloc[-1]["selection_role"])
+
+    def test_stage182_report_uses_official_top10_plus_fu_strategy(self) -> None:
+        summary = {
+            "generated_at": "2026-08-30T09:15:00+08:00",
+            "eval_date": "2026-07-31",
+            "source_max_date": "2026-08-03",
+            "source_paths": {"source_prefix": "stage183-source"},
+            "training_label_cutoff": "2026-05-07",
+            "train_rows": 100,
+            "feature_count": 10,
+            "live_rows": 11,
+        }
+        live_pool = pd.DataFrame(
+            columns=[
+                "ai_rank",
+                "product_vt_symbol",
+                stage182.PROBABILITY_COLUMN,
+                stage182.SIMPLE_SCORE_COLUMN,
+            ]
+        )
+        live_eligibility = pd.DataFrame(
+            columns=[
+                "eval_date",
+                "product_vt_symbol",
+                "score",
+                "score_rank",
+                "top_n",
+                "score_type",
+            ]
+        )
+
+        report = stage182.build_report(summary, live_pool, live_eligibility)
+
+        self.assertIn(
+            f"Strategy: `{OFFICIAL_AI_PRODUCT_POOL_STRATEGY}`",
+            report,
+        )
+        self.assertNotIn("ai_top8", report.lower())
 
     def test_stage935_success_writes_material_request_without_git_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -414,6 +532,8 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
     def test_stage935_stage182_command_uses_control_root_for_source_and_output(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             control_root = Path(directory).resolve() / "control"
+            immutable_seed = Path(directory).resolve() / "official-material.csv"
+            immutable_seed.write_text("seed\n", encoding="utf-8")
             build_command = getattr(stage935, "_build_stage182_command", None)
             self.assertTrue(
                 callable(build_command),
@@ -423,6 +543,7 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 source_prefix=self.SOURCE_PREFIX,
                 source_dir=control_root,
                 output_dir=control_root,
+                seed_combined_eligibility_path=immutable_seed,
             )
 
         self.assertEqual(str(stage935.PYTHON_PATH), command[0])
@@ -435,9 +556,110 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 str(control_root),
                 "--output-dir",
                 str(control_root),
+                "--seed-combined-eligibility",
+                str(immutable_seed),
             ],
             command[2:],
         )
+
+    def test_stage182_combined_history_is_seeded_from_active_immutable_material(
+        self,
+    ) -> None:
+        products = [
+            *[f"p{index}.TEST" for index in range(1, 11)],
+            OFFICIAL_AI_FIXED_PRODUCT,
+        ]
+        columns = stage182.ELIGIBILITY_COLUMNS
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            immutable_seed = root / "active-material-combined.csv"
+            seed_rows = [
+                {
+                    "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+                    "score_type": "stage182_promoted_ai_probability_top10_plus_fixed_fu",
+                    "eval_date": "2026-06-30",
+                    "product_vt_symbol": product,
+                    "score": 12 - rank,
+                    "score_rank": rank,
+                    "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+                }
+                for rank, product in enumerate(products, start=1)
+            ]
+            pd.DataFrame(seed_rows, columns=columns).to_csv(
+                immutable_seed,
+                index=False,
+                encoding="utf-8-sig",
+            )
+            live = pd.DataFrame(
+                [
+                    {
+                        **row,
+                        "eval_date": "2026-07-31",
+                        "score_type": "stage182_live_monthly_ai_probability",
+                    }
+                    for row in seed_rows
+                ],
+                columns=columns,
+            )
+
+            combined, _official_path, audit = stage182._build_combined_eligibility(
+                live,
+                seed_combined_eligibility_path=immutable_seed,
+            )
+
+        official_rows = combined[
+            combined["strategy"].eq(OFFICIAL_AI_PRODUCT_POOL_STRATEGY)
+        ]
+        self.assertEqual(
+            ["2026-06-30", "2026-07-31"],
+            sorted(official_rows["eval_date"].unique().tolist()),
+        )
+        self.assertNotIn("old.TEST", set(combined["product_vt_symbol"]))
+        self.assertEqual(str(immutable_seed), audit["seed_combined_eligibility_path"])
+        self.assertEqual(11, audit["preserved_live_snapshot_rows"])
+
+    def test_stage182_refuses_to_build_combined_without_immutable_seed(self) -> None:
+        live = pd.DataFrame(columns=stage182.ELIGIBILITY_COLUMNS)
+
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "stage182_immutable_seed_combined_eligibility_required",
+        ):
+            stage182._build_combined_eligibility(live)
+
+    def test_stage182_rejects_fractional_rank_in_immutable_seed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            seed = Path(directory) / "combined.csv"
+            pd.DataFrame(
+                [
+                    {
+                        "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+                        "score_type": "stage182_promoted_ai_probability_top10_plus_fixed_fu",
+                        "eval_date": "2026-06-30",
+                        "product_vt_symbol": "p1.TEST",
+                        "score": 1.0,
+                        "score_rank": 1.5,
+                        "top_n": 1,
+                    }
+                ],
+                columns=stage182.ELIGIBILITY_COLUMNS,
+            ).to_csv(seed, index=False, encoding="utf-8-sig")
+
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "stage182_eligibility_rank_or_top_n_not_integer",
+            ):
+                stage182._build_combined_eligibility(
+                    pd.DataFrame(columns=stage182.ELIGIBILITY_COLUMNS),
+                    seed_combined_eligibility_path=seed,
+                )
+
+    def test_stage182_cli_requires_immutable_seed(self) -> None:
+        with (
+            patch.object(sys, "argv", ["stage182"]),
+            self.assertRaises(SystemExit),
+        ):
+            stage182.main()
 
     def test_stage935_rejects_nonisolated_candidate_output_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -776,8 +998,10 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
         self.assertEqual("not_needed", receipt["rollback_status"])
         self.assertIn("backup_cleanup_warning", receipt)
 
-    def test_stage935_candidate_validation_rejects_truncated_combined_top9(self) -> None:
-        strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    def test_stage935_candidate_validation_rejects_truncated_combined_official_pool(
+        self,
+    ) -> None:
+        strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
         products = [
             "jm.DCE",
             "si.GFEX",
@@ -787,7 +1011,9 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             "cu.SHFE",
             "SM.CZCE",
             "lh.DCE",
-            "fu.SHFE",
+            "rb.SHFE",
+            "m.DCE",
+            OFFICIAL_AI_FIXED_PRODUCT,
         ]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
@@ -807,7 +1033,11 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
             )
             live_rows = "".join(
-                f"{strategy},stage182_live,2026-07-31,{product},{10-rank},{rank},9\n"
+                (
+                    f"{strategy},stage182_live,2026-07-31,{product},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
                 for rank, product in enumerate(products, start=1)
             )
             paths["live_eligibility"].write_text(
@@ -815,7 +1045,10 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 encoding="utf-8",
             )
             truncated_combined_rows = "".join(
-                f"{strategy},stage182_live,{date},jm.DCE,1,1,9\n"
+                (
+                    f"{strategy},stage182_live,{date},jm.DCE,1,1,"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
                 for date in eval_dates
             )
             paths["combined_eligibility"].write_text(
@@ -849,16 +1082,18 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
 
         self.assertEqual("invalid", validation["validation_status"])
         self.assertIn(
-            "stage182_combined_required_eval_date_rows_not_9",
+            "stage182_combined_required_eval_date_rows_not_official_count",
             validation["blockers"],
         )
         self.assertIn(
-            "stage182_combined_current_top9_mismatch",
+            "stage182_combined_current_official_pool_mismatch",
             validation["blockers"],
         )
 
-    def test_stage935_combined_audit_rejects_malformed_historical_top9(self) -> None:
-        strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    def test_stage935_combined_audit_rejects_malformed_historical_official_pool(
+        self,
+    ) -> None:
+        strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
         products = [
             "jm.DCE",
             "si.GFEX",
@@ -868,7 +1103,9 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             "cu.SHFE",
             "SM.CZCE",
             "lh.DCE",
-            "fu.SHFE",
+            "rb.SHFE",
+            "m.DCE",
+            OFFICIAL_AI_FIXED_PRODUCT,
         ]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
@@ -889,7 +1126,10 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                         product = "jm.DCE"
                         rank = 1
                     rows.append(
-                        f"{strategy},stage182_live,{date},{product},1,{rank},9\n"
+                        (
+                            f"{strategy},stage182_live,{date},{product},1,{rank},"
+                            f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                        )
                     )
             combined.write_text(header + "".join(rows), encoding="utf-8")
 
@@ -905,6 +1145,315 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             audit["invalid_unique_product_eval_dates"],
         )
         self.assertIn("2026-04-30", audit["invalid_rank_eval_dates"])
+
+    def test_stage935_combined_audit_accepts_top10_plus_fixed_fu_history(self) -> None:
+        products = [
+            *[
+                f"p{index}.TEST"
+                for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 1)
+            ],
+            OFFICIAL_AI_FIXED_PRODUCT,
+        ]
+        eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            combined = root / "combined.csv"
+            header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            rows = "".join(
+                (
+                    f"{OFFICIAL_AI_PRODUCT_POOL_STRATEGY},stage182_live,"
+                    f"{date},{product},{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},"
+                    f"{rank},{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
+                for date in eval_dates
+                for rank, product in enumerate(products, start=1)
+            )
+            combined.write_text(header + rows, encoding="utf-8")
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                audit = stage935._combined_eval_date_audit(
+                    "2026-07-31",
+                    combined_path=combined,
+                )
+
+        self.assertEqual([], audit["missing_recent_eval_dates"])
+        self.assertEqual([], audit["invalid_row_count_eval_dates"])
+        self.assertEqual([], audit["invalid_unique_product_eval_dates"])
+        self.assertEqual([], audit["invalid_rank_eval_dates"])
+        self.assertEqual([], audit["invalid_top_n_eval_dates"])
+        self.assertEqual([], audit["missing_fixed_fu_eval_dates"])
+
+    def test_stage935_combined_audit_rejects_missing_product_value(self) -> None:
+        products = [*[f"p{index}.TEST" for index in range(1, 11)], OFFICIAL_AI_FIXED_PRODUCT]
+        eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            combined = root / "combined.csv"
+            rows = [
+                {
+                    "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+                    "score_type": "stage182_live",
+                    "eval_date": date,
+                    "product_vt_symbol": (
+                        None if date == "2026-04-30" and rank == 1 else product
+                    ),
+                    "score": OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank,
+                    "score_rank": rank,
+                    "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+                }
+                for date in eval_dates
+                for rank, product in enumerate(products, start=1)
+            ]
+            pd.DataFrame(rows).to_csv(combined, index=False, encoding="utf-8-sig")
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                audit = stage935._combined_eval_date_audit(
+                    "2026-07-31",
+                    combined_path=combined,
+                )
+
+        self.assertIn("2026-04-30", audit["invalid_contract_eval_dates"])
+        self.assertIn(
+            "product_value",
+            audit["contract_blockers_by_eval_date"]["2026-04-30"],
+        )
+
+    def test_stage935_combined_audit_rejects_fixed_fu_inside_ranked_top10(self) -> None:
+        products = ["fu.SHFE", *[f"p{index}.TEST" for index in range(1, 11)]]
+        eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            combined = root / "combined.csv"
+            header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            rows = "".join(
+                (
+                    "ai_top10_plus_fu_official_live_v1,stage182_live,"
+                    f"{date},{product},{12-rank},{rank},11\n"
+                )
+                for date in eval_dates
+                for rank, product in enumerate(products, start=1)
+            )
+            combined.write_text(header + rows, encoding="utf-8")
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                audit = stage935._combined_eval_date_audit(
+                    "2026-07-31",
+                    combined_path=combined,
+                )
+
+        self.assertEqual(eval_dates, audit["invalid_fixed_product_rank_eval_dates"])
+
+    def test_stage935_validation_accepts_top10_plus_fixed_fu_bundle(self) -> None:
+        products = [
+            *[
+                f"p{index}.TEST"
+                for index in range(1, OFFICIAL_AI_RANKED_PRODUCT_COUNT + 1)
+            ],
+            OFFICIAL_AI_FIXED_PRODUCT,
+        ]
+        eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            paths = self._stage182_bundle_paths(root / "candidate")
+            paths["live_pool"].parent.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame(
+                {
+                    "strategy": [OFFICIAL_AI_PRODUCT_POOL_STRATEGY] * len(products),
+                    "eval_date": ["2026-07-31"] * len(products),
+                    "product_vt_symbol": products,
+                    "predicted_product_suitability_probability": list(
+                        range(OFFICIAL_AI_TOTAL_PRODUCT_COUNT, 0, -1)
+                    ),
+                    "ai_rank": list(range(1, OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1)),
+                    "selection_role": [
+                        *["model_ranked"] * OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+                        "fixed_fu",
+                    ],
+                    "source_score_type": ["stage182_live"] * len(products),
+                }
+            ).to_csv(paths["live_pool"], index=False, encoding="utf-8-sig")
+            header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            live_rows = "".join(
+                (
+                    f"{OFFICIAL_AI_PRODUCT_POOL_STRATEGY},stage182_live,2026-07-31,"
+                    f"{product},{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
+                for rank, product in enumerate(products, start=1)
+            )
+            paths["live_eligibility"].write_text(header + live_rows, encoding="utf-8")
+            combined_rows = "".join(
+                (
+                    f"{OFFICIAL_AI_PRODUCT_POOL_STRATEGY},stage182_live,"
+                    f"{date},{product},{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},"
+                    f"{rank},{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
+                for date in eval_dates
+                for rank, product in enumerate(products, start=1)
+            )
+            paths["combined_eligibility"].write_text(
+                header + combined_rows,
+                encoding="utf-8",
+            )
+            paths["report"].write_text("candidate report\n", encoding="utf-8")
+            paths["summary"].write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-07-31",
+                        "source_max_date": "2026-08-03",
+                        "outputs": {name: str(path) for name, path in paths.items()},
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                validation = stage935._validate_stage182_outputs(
+                    expected_eval_date="2026-07-31",
+                    paths=paths,
+                    require_official_path=False,
+                    require_declared_outputs=True,
+                )
+                malformed_combined = pd.read_csv(paths["combined_eligibility"])
+                malformed_combined.loc[
+                    malformed_combined["eval_date"].astype(str).eq("2026-04-30")
+                    & malformed_combined["score_rank"].eq(1),
+                    "product_vt_symbol",
+                ] = None
+                malformed_combined.to_csv(
+                    paths["combined_eligibility"],
+                    index=False,
+                    encoding="utf-8-sig",
+                )
+                invalid_validation = stage935._validate_stage182_outputs(
+                    expected_eval_date="2026-07-31",
+                    paths=paths,
+                    require_official_path=False,
+                    require_declared_outputs=True,
+                )
+
+        self.assertEqual([], validation["blockers"])
+        self.assertEqual("valid", validation["validation_status"])
+        self.assertEqual(products, validation["top_products"])
+        self.assertEqual("invalid", invalid_validation["validation_status"])
+        self.assertIn(
+            "stage182_combined_required_eval_date_contract_invalid",
+            invalid_validation["blockers"],
+        )
+
+    def test_stage935_validation_rejects_malformed_latest_pool(self) -> None:
+        products = [
+            *[f"p{index}.TEST" for index in range(1, 11)],
+            OFFICIAL_AI_FIXED_PRODUCT,
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            paths = self._stage182_bundle_paths(root)
+            paths["live_pool"].parent.mkdir(parents=True, exist_ok=True)
+            paths["live_pool"].write_text(
+                "product_vt_symbol\n" + "".join(f"{product}\n" for product in products),
+                encoding="utf-8",
+            )
+            header = "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            rows = "".join(
+                (
+                    f"{OFFICIAL_AI_PRODUCT_POOL_STRATEGY},stage182_live,2026-07-31,"
+                    f"{product},{12-rank},{rank},11\n"
+                )
+                for rank, product in enumerate(products, start=1)
+            )
+            paths["live_eligibility"].write_text(header + rows, encoding="utf-8")
+            paths["combined_eligibility"].write_text(header + rows, encoding="utf-8")
+            paths["report"].write_text("report\n", encoding="utf-8")
+            paths["summary"].write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-07-31",
+                        "source_max_date": "2026-08-03",
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            validation = stage935._validate_stage182_outputs(
+                expected_eval_date="2026-07-31",
+                paths=paths,
+                require_official_path=False,
+            )
+
+        self.assertEqual("invalid", validation["validation_status"])
+        self.assertIn("stage182_live_pool_required_columns_missing", validation["blockers"])
+
+    def test_stage935_combined_audit_rejects_fractional_ranks(self) -> None:
+        products = [*[f"p{index}.TEST" for index in range(1, 11)], OFFICIAL_AI_FIXED_PRODUCT]
+        eval_dates = ["2026-04-30", "2026-05-29", "2026-06-30", "2026-07-31"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            mapping = root / "mapping.csv"
+            mapping.write_text(
+                "date\n" + "".join(f"{date}\n" for date in eval_dates) + "2026-08-03\n",
+                encoding="utf-8",
+            )
+            combined = root / "combined.csv"
+            pd.DataFrame(
+                [
+                    {
+                        "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+                        "score_type": "stage182_live",
+                        "eval_date": date,
+                        "product_vt_symbol": product,
+                        "score": 12 - rank,
+                        "score_rank": rank + 0.5,
+                        "top_n": 11,
+                    }
+                    for date in eval_dates
+                    for rank, product in enumerate(products, start=1)
+                ]
+            ).to_csv(combined, index=False, encoding="utf-8-sig")
+
+            with patch.object(stage935, "ALL_FUTURES_MAPPING_PATH", mapping):
+                audit = stage935._combined_eval_date_audit(
+                    "2026-07-31",
+                    combined_path=combined,
+                )
+
+        self.assertEqual(eval_dates, audit["invalid_rank_eval_dates"])
 
 
 if __name__ == "__main__":

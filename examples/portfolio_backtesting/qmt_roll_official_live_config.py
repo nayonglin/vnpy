@@ -6,6 +6,12 @@ from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
 import qmt_roll_official_stage037_ruleset_config as stage037_ruleset_cfg
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_FIXED_PRODUCT,
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+)
 from qmt_roll_official_live_lightweight_context import (
     DATA_ASSET_DIR,
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
@@ -28,9 +34,14 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 OUTPUT_DIR: Path = DATA_ASSET_DIR
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage037"
-OFFICIAL_LIVE_FAMILY_VERSION: str = "stage819_c9_intraday_stop_retry_stage037"
-OFFICIAL_LIVE_RULESET_VERSION: str = "stage037_stage034_long_short_mirror_hard_block_v1"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage037 + Stage061-Top10+fu"
+OFFICIAL_LIVE_FAMILY_VERSION: str = (
+    "stage819_c9_intraday_stop_retry_stage037_ai_top10_plus_fu"
+)
+OFFICIAL_LIVE_RULESET_VERSION: str = (
+    "stage037_stage034_long_short_mirror_hard_block_v1"
+)
+OFFICIAL_LIVE_AI_POOL_POLICY_VERSION: str = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
 OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION: str = (
     stage037_ruleset_cfg.PREVIOUS_RULESET_VERSION
 )
@@ -38,9 +49,34 @@ OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE8
 OFFICIAL_LIVE_PROFILE_NAME: str = "stage847_c9_15w_stage819_05r_stop_retry_live"
 OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
 OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
-OFFICIAL_LIVE_ROLE: str = "official_live_deployment_profile_operator_promoted_stage037"
+OFFICIAL_LIVE_ROLE: str = (
+    "official_live_deployment_profile_operator_promoted_stage037_ai_top10_plus_fu"
+)
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
+
+OFFICIAL_LIVE_AI_POOL_POLICY: dict[str, Any] = {
+    "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    "ranked_product_count": OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    "ranked_product_rank_min": 1,
+    "ranked_product_rank_max": OFFICIAL_AI_RANKED_PRODUCT_COUNT,
+    "fixed_product": OFFICIAL_AI_FIXED_PRODUCT,
+    "fixed_product_rank": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+    "total_product_count": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+    "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
+    "source_stage": "Stage061",
+    "source_commit": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
+    "source_eligibility_sha256": (
+        "cf3cced22a61b354dadbc2f67091143eec74d7a2f03577faf2fd4c10dcec0c0d"
+    ),
+    "natural_promotion_permitted": False,
+    "operator_override": True,
+    "hard_failures": [
+        "stage061_fullperiod_slippage_ratio_130.36pct_gt_105pct_gate",
+        "stage063_fixed_multicycle_hard_fail",
+        "stage064_random_windows_drawdown_cost_broker_hard_fail",
+    ],
+}
 
 if OFFICIAL_LIVE_RULESET_VERSION != stage037_ruleset_cfg.RULESET_VERSION:
     raise RuntimeError("official_stage037_ruleset_identity_drift")
@@ -192,7 +228,10 @@ OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
         "and Stage049 Monte Carlo hard failures. It preserves the C9/15w control plane "
         "and Stage021-Q risk rules, then uses target-contract-only rollover history, a "
         "five-session rollover delay, and symmetric long/short range-stall or ordered-"
-        "drawdown hard entry filters. Runtime execution remains fail-closed."
+        "drawdown hard entry filters. Top10+fixed-fu is also an explicit operator "
+        "override: Stage061 failed the frozen 105% slippage gate at 130.36%, and "
+        "Stage063/064 retained fixed/random multicycle hard failures. Runtime execution "
+        "remains fail-closed; these failures are preserved rather than rewritten as pass."
     ),
     "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
     "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
@@ -205,7 +244,9 @@ def build_official_live_strategy_overrides() -> dict[str, Any]:
     )
     overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
     overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
+    overrides["enable_ai_product_pool_filter"] = True
     overrides["ai_product_pool_eligibility_path"] = str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
+    overrides["ai_product_pool_strategy"] = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
     return overrides
 
 
@@ -234,6 +275,20 @@ class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
 OFFICIAL_LIVE_STRATEGY_OVERRIDES: Mapping[str, Any] = _LazyOfficialLiveStrategyOverrides()
 
 OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
+    "stage061_top10_plus_fu_full_20180102_20260828_operator_override": {
+        "end_equity": 21_870_488.80,
+        "total_return_pct": 14_480.3259,
+        "max_dd_pct": -39.9147,
+        "sharpe": 1.586976,
+        "total_slippage": 2_163_390.0,
+        "total_trade_count": 798.0,
+        "win_rate_pct": 53.7348,
+        "broker10_peak_margin_to_equity_pct": 93.5807,
+        "slippage_ratio_vs_stage037_pct": 130.36,
+        "frozen_slippage_gate_pct": 105.0,
+        "natural_promotion_permitted": 0.0,
+        "operator_override": 1.0,
+    },
     "stage047_stage037_full_20180102_20260828": {
         "end_equity": 16_862_237.30,
         "total_return_pct": 11_141.4915,
@@ -320,6 +375,7 @@ def build_official_live_manifest() -> dict[str, Any]:
         "version": OFFICIAL_LIVE_VERSION,
         "family_version": OFFICIAL_LIVE_FAMILY_VERSION,
         "ruleset_version": OFFICIAL_LIVE_RULESET_VERSION,
+        "ai_pool_policy_version": OFFICIAL_LIVE_AI_POOL_POLICY_VERSION,
         "previous_ruleset_version": OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION,
         "source_stage": OFFICIAL_LIVE_SOURCE_STAGE,
         "profile_name": OFFICIAL_LIVE_PROFILE_NAME,
@@ -331,6 +387,7 @@ def build_official_live_manifest() -> dict[str, Any]:
         "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
         "ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
         "ai_eligibility_logical_path": OFFICIAL_LIVE_AI_LOGICAL_PATH,
+        "ai_pool_policy": OFFICIAL_LIVE_AI_POOL_POLICY,
         "material_release_id": OFFICIAL_LIVE_MATERIAL_RELEASE_ID,
         "material_release_commit": OFFICIAL_LIVE_MATERIAL_RELEASE_COMMIT,
         "material_manifest_sha256": OFFICIAL_LIVE_MATERIAL_MANIFEST_SHA256,

@@ -155,6 +155,43 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             "ai/stage182/combined_eligibility.csv",
             manifest["ai_eligibility_logical_path"],
         )
+        self.assertEqual(
+            "ai_top10_plus_fu_official_live_v1",
+            manifest["ai_pool_policy_version"],
+        )
+        self.assertEqual(
+            {
+                "strategy": "ai_top10_plus_fu_official_live_v1",
+                "ranked_product_count": 10,
+                "ranked_product_rank_min": 1,
+                "ranked_product_rank_max": 10,
+                "fixed_product": "fu.SHFE",
+                "fixed_product_rank": 11,
+                "total_product_count": 11,
+                "top_n": 11,
+            },
+            {
+                key: manifest["ai_pool_policy"][key]
+                for key in (
+                    "strategy",
+                    "ranked_product_count",
+                    "ranked_product_rank_min",
+                    "ranked_product_rank_max",
+                    "fixed_product",
+                    "fixed_product_rank",
+                    "total_product_count",
+                    "top_n",
+                )
+            },
+        )
+        self.assertTrue(manifest["ai_pool_policy"]["operator_override"])
+        self.assertFalse(
+            manifest["ai_pool_policy"]["natural_promotion_permitted"]
+        )
+        self.assertIn(
+            "stage061_fullperiod_slippage_ratio_130.36pct_gt_105pct_gate",
+            manifest["ai_pool_policy"]["hard_failures"],
+        )
         self.assertRegex(manifest["material_release_id"], r"^m\d{4}_")
         self.assertEqual(
             manifest["material_release_id"],
@@ -217,6 +254,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         )
         self.assertEqual(150_000.0, q["account_capital"])
         self.assertEqual(150_000.0, q["c3_capital"])
+        self.assertEqual(
+            "ai_top10_plus_fu_official_live_v1",
+            q["ai_product_pool_strategy"],
+        )
 
     def test_every_official_live_override_is_consumed_by_stage847_strategy(self) -> None:
         import qmt_roll_official_live_config as live_config
@@ -229,6 +270,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
                 Path("/offline/stage847-universe.csv"),
                 Path("/offline/stage847-eligibility.csv"),
             )
+        )
+        self.assertEqual(
+            "ai_top8_plus_fu_satellite_post_signal_entry_filter",
+            base_overrides["ai_product_pool_strategy"],
         )
         self.assertEqual(41, len(base_overrides))
         with patch.object(

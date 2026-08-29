@@ -18,7 +18,19 @@ def test_formal_stage037_ruleset_equals_frozen_research_candidate() -> None:
     formal = live_cfg.build_official_live_strategy_overrides()
     candidate = candidate_cfg.build_candidate_overrides()
 
-    assert formal == candidate
+    assert {
+        key: value
+        for key, value in formal.items()
+        if key != "ai_product_pool_strategy"
+    } == {
+        key: value
+        for key, value in candidate.items()
+        if key != "ai_product_pool_strategy"
+    }
+    assert formal["ai_product_pool_strategy"] == "ai_top10_plus_fu_official_live_v1"
+    assert candidate["ai_product_pool_strategy"] == (
+        "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    )
     assert live_cfg.OFFICIAL_LIVE_RULESET_VERSION == candidate_cfg.CANDIDATE_VERSION
     assert stage037_cfg.RULESET_VERSION == candidate_cfg.CANDIDATE_VERSION
     assert stage037_cfg.PREVIOUS_RULESET_VERSION == stage021_q_cfg.RULESET_VERSION

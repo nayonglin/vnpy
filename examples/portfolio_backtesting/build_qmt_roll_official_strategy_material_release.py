@@ -292,6 +292,16 @@ def assert_clean_source_tree(repo_root: Path, source_commit: str) -> None:
         raise MaterialReleaseError("source_tree_not_clean")
 
 
+def assert_publication_source_commit(repo_root: Path, source_commit: str) -> str:
+    if not re.fullmatch(r"[0-9a-f]{40}", str(source_commit)):
+        raise MaterialReleaseError("publication_source_commit_invalid")
+    head = _git(repo_root, "rev-parse", "HEAD").strip()
+    if source_commit != head:
+        raise MaterialReleaseError("publication_source_commit_not_head")
+    assert_clean_source_tree(repo_root, source_commit)
+    return source_commit
+
+
 @contextmanager
 def publication_lock(repo_root: Path) -> Iterator[None]:
     lock_path = Path(_git(repo_root, "rev-parse", "--git-path", "strategy-material-publication.lock").strip())
@@ -1306,6 +1316,10 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
         and path.parts[:2] == ("examples", "portfolio_backtesting")
     )
     publication = load_publication_request(Path(args.publication_request))
+    source_commit = assert_publication_source_commit(
+        repo,
+        str(publication.get("source_commit", "")),
+    )
     declarations = [
         MaterialDeclaration(
             source_path=Path(str(row["path"])),
@@ -1326,7 +1340,6 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
     )
     now_utc = datetime.now(timezone.utc)
     now_cst = now_utc.astimezone().replace(microsecond=0)
-    source_commit = _git(repo, "rev-parse", "HEAD").strip()
     stage179_manifest_path = Path(args.stage179_manifest).resolve(strict=True) if args.stage179_manifest else None
     provenance = {
         "generator": publication["generator"],
@@ -1334,6 +1347,7 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
         "eval_date": publication["eval_date"],
         "training_label_cutoff": publication["training_label_cutoff"],
         "publication_request_sha256": publication["request_sha256"],
+        "publication_source_commit": source_commit,
         "stage179_manifest_path": str(stage179_manifest_path) if stage179_manifest_path else "not_provided",
         "stage179_manifest_sha256": sha256_file(stage179_manifest_path) if stage179_manifest_path else "not_provided",
     }

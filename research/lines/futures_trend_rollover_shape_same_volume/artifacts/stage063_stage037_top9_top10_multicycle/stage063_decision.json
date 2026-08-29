@@ -592,7 +592,7 @@
     }
   },
   "render_provenance": {
-    "rendered_at": "2026-08-30T00:00:16+08:00",
+    "rendered_at": "2026-08-30T06:01:01+08:00",
     "renderer": "research/lines/futures_trend_rollover_shape_same_volume/tools/stage063_render_charts.py",
     "renderer_sha256": "15e68740e5e13a963314a9bd18f966a5241f25d2b391237b266bf5c1fb08f8ed",
     "chart_sha256": {
@@ -610,7 +610,7 @@
       "generated_before_reuse_hardening": true
     },
     "current_runner": {
-      "sha256": "bf36bdd9f276288a1810f92eded0772f577c6f58ace024f872e17c9fd1335420",
+      "sha256": "1ba28d702db14dbc35dda43558d052e8041ccd0bce23ddedf82c498156dd0237",
       "scope": "future engine/checkpoint runs; includes all frozen Stage059/061/062 reuse source files",
       "matches_engine_checkpoint_contract": false
     },

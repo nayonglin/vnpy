@@ -11,6 +11,11 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_ai_pool_policy import (
+    OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    official_ai_pool_snapshot_blockers,
+)
+
 import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513  # noqa: E402
 import analyze_qmt_roll_stage650_stage526_200k_capital_reality_check as s650  # noqa: E402
 import analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage as s653  # noqa: E402
@@ -156,18 +161,91 @@ def _md_table(frame: pd.DataFrame, max_rows: int | None = None) -> str:
     return s650._md_table(frame, max_rows=max_rows)
 
 
-def _ai_pool_audit(path: Path) -> dict[str, Any]:
+def _ai_pool_audit(
+    path: Path,
+    *,
+    strategy: str = OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+    enforce_official_contract: bool = True,
+) -> dict[str, Any]:
     if not path.exists():
-        return {"path": str(path), "exists": False}
+        return {
+            "path": str(path),
+            "exists": False,
+            "contract_status": "invalid",
+            "contract_blockers": ["eligibility_file_missing"],
+        }
     frame = pd.read_csv(path, encoding="utf-8-sig")
-    strategy = "ai_top8_plus_fu_satellite_post_signal_entry_filter"
-    if "strategy" in frame.columns:
-        frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
+    required_columns = {
+        "strategy",
+        "eval_date",
+        "product_vt_symbol",
+        "score_rank",
+        "top_n",
+    }
+    missing_columns = sorted(required_columns - set(frame.columns))
+    if missing_columns:
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": int(len(frame)),
+            "contract_status": "invalid",
+            "contract_blockers": [f"missing_columns:{','.join(missing_columns)}"],
+        }
+    frame = frame[frame["strategy"].astype(str).eq(strategy)].copy()
     if frame.empty:
-        return {"path": str(path), "exists": True, "rows": 0}
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": 0,
+            "contract_status": "invalid",
+            "contract_blockers": ["strategy_rows_missing"],
+        }
     frame["eval_date"] = pd.to_datetime(frame["eval_date"], errors="coerce").dt.normalize()
+    if frame["eval_date"].isna().any():
+        return {
+            "path": str(path),
+            "exists": True,
+            "rows": int(len(frame)),
+            "contract_status": "invalid",
+            "contract_blockers": ["invalid_eval_date"],
+        }
     latest_date = frame["eval_date"].max()
     latest = frame[frame["eval_date"].eq(latest_date)].sort_values(["score_rank", "product_vt_symbol"])
+    if enforce_official_contract:
+        if "score_type" not in latest.columns:
+            return {
+                "path": str(path),
+                "exists": True,
+                "rows": int(len(frame)),
+                "contract_status": "invalid",
+                "contract_blockers": ["missing_columns:score_type"],
+            }
+        contract_blockers = official_ai_pool_snapshot_blockers(
+            products=latest["product_vt_symbol"].tolist(),
+            ranks=latest["score_rank"].tolist(),
+            top_ns=latest["top_n"].tolist(),
+            eval_date=latest_date,
+            score_types=latest["score_type"].tolist(),
+        )
+    else:
+        contract_blockers = []
+        products = latest["product_vt_symbol"].astype(str)
+        ranks = pd.to_numeric(latest["score_rank"], errors="coerce")
+        top_ns = pd.to_numeric(latest["top_n"], errors="coerce")
+        if products.eq("").any() or products.nunique() != len(latest):
+            contract_blockers.append("unique_product_count")
+        if (
+            ranks.isna().any()
+            or not ranks.eq(ranks.round()).all()
+            or sorted(ranks.astype(int).tolist()) != list(range(1, len(latest) + 1))
+        ):
+            contract_blockers.append("rank_range")
+        if (
+            top_ns.isna().any()
+            or not top_ns.eq(top_ns.round()).all()
+            or set(top_ns.astype(int).tolist()) != {len(latest)}
+        ):
+            contract_blockers.append("top_n")
     return {
         "path": str(path),
         "exists": True,
@@ -176,7 +254,16 @@ def _ai_pool_audit(path: Path) -> dict[str, Any]:
         "max_eval_date": latest_date.date().isoformat(),
         "unique_eval_dates": int(frame["eval_date"].nunique()),
         "latest_products": latest["product_vt_symbol"].astype(str).tolist(),
+        "contract_status": "invalid" if contract_blockers else "valid",
+        "contract_blockers": contract_blockers,
     }
+
+
+def _assert_ai_pool_contract_valid(audit: dict[str, Any]) -> None:
+    if audit.get("contract_status") == "valid":
+        return
+    blockers = ";".join(str(value) for value in audit.get("contract_blockers", []))
+    raise RuntimeError(f"official_ai_pool_contract_invalid:{blockers or 'unknown'}")
 
 
 def _run_variant_dynamic(
@@ -422,6 +509,15 @@ def main() -> None:
         DEFAULT_AI_ELIGIBILITY_PATH
     )
     ai_eligibility_path = Path(ai_path_text).expanduser().resolve()
+    legacy_ai_strategy = str(
+        dict(OFFICIAL_LIVE_STRATEGY_OVERRIDES).get("ai_product_pool_strategy", "")
+    )
+    ai_pool_audit = _ai_pool_audit(
+        ai_eligibility_path,
+        strategy=legacy_ai_strategy,
+        enforce_official_contract=False,
+    )
+    _assert_ai_pool_contract_valid(ai_pool_audit)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     metadata = s513._metadata()
@@ -502,7 +598,8 @@ def main() -> None:
         "analysis_start": analysis_start.date().isoformat(),
         "analysis_end": analysis_end.date().isoformat(),
         "latest_available_data_date": latest_date.date().isoformat(),
-        "ai_pool_audit": _ai_pool_audit(ai_eligibility_path),
+        "ai_pool_audit": ai_pool_audit,
+        "shadow_replay_ai_pool_status": "valid",
         "current_variant": current_row[0] if current_row else {},
         "baseline_variant": baseline_row[0] if baseline_row else {},
         "official_live_version": OFFICIAL_LIVE_VERSION,

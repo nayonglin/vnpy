@@ -39,6 +39,10 @@ official_strategy_materials/
 
 每次实验或月更必须显式登记：文件路径、逻辑名、角色、是否为复现必需、feature schema version。Stage935 正式候选固定登记五项：latest pool、live eligibility、combined eligibility、summary、report。
 
+当前 Top10+fu 正式 AI 合同额外要求：唯一策略名为 `ai_top10_plus_fu_official_live_v1`；每个 AI 月份的 rank `1..10` 必须恰好是 10 个模型排名的非 `fu` 品种，rank `11` 必须是唯一且固定的 `fu.SHFE`，共 11 个唯一品种、`top_n=11`。该合同的 policy 源码、生成器、消费者、审计器、测试和五项 AI 资产必须同时进入 release inventory。任何后续 AI 池变更都生成新的不可变 release，不得原地改旧 payload。
+
+唯一历史例外是 `2019-12-31` 的 pre-AI 边界：必须恰好 18 个唯一品种、不含 `fu.SHFE`、rank `1..18`、`top_n=18`，且 `score_type` 以 `static18_pre_ai_boundary` 结尾。其他日期不得使用该边界；任一日期的品种、rank、top_n 或 score_type 缺失都必须 fail closed。
+
 原始行情、数据库、临时特征缓存和图表默认不保存实体。若某文件实际影响决策或无法廉价、确定性重建，必须改为复现必需资产。
 
 ## Git LFS
@@ -51,6 +55,7 @@ official_strategy_materials/
 - fresh clone 的 Python、行情目录、`.vntrader` 数据库和本地 env 属于运行依赖，可在资格前从受信本机路径链接/复制，但不得被 `git add` 或写入物料。
 
 - Prepare：release 目录、strategy index、必要 attributes。
+- Prepare 前 publication request 的 `source_commit` 必须是 40 位 Git SHA、与当前 clean HEAD 完全一致，并写入 manifest provenance；不得把旧 commit 生成的 AI 资产静默绑定到新代码。
 - Release commit：`release(materials): <release_id>`。
 - Activation commit：只含 `CURRENT.json`，`activate(materials): <release_id>`。
 - Candidate master publication：`publish-master` 从最新远端 master 创建只含 `official_strategy_materials/` release/index 的 `publish(materials): <release_id>` 快进提交并直接 push；不新增或修改 `CURRENT.json`，不发布顶层源码，不创建 PR、不 force-push。
