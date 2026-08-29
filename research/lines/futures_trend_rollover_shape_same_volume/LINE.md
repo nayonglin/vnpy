@@ -1,8 +1,8 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。m0001生产预审发现身份P0后已停止并恢复旧生产；修复后的m0002已在晋升工作区激活，远端master、生产资格与Stage948仍待闭环。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
-- 正式候选基线：策略版本 `ai_top10_plus_fu_official_live_v1`，ruleset `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `c308631c9b802dd5800ab55a0214b8dd41ec7139`，不可变物料 `m0002_20260830T070610+0800_c308631c9b80`，release commit `634ebc49408d0ebe7b6b99f11712a84b838cad94`，activation commit `738125f9fbaa7e9cc6c39565b1faa19a0bf72277`。m0001保留为被生产预审P0否决的不可变历史，不得用于安装。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
+- 当前状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。m0001生产预审发现身份P0后已停止并恢复旧生产；m0002虽修复身份/可移植性，但远端一致性审计发现历史Stage037配置未进入关键物料清单，未安装生产；补齐后的m0003已在晋升工作区激活，远端master、生产资格与Stage948仍待闭环。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
+- 正式候选基线：策略版本 `ai_top10_plus_fu_official_live_v1`，ruleset `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `f9e42b9ea2967e31aaa34f595c05c0798bbf5e0b`，不可变物料 `m0003_20260830T072335+0800_f9e42b9ea296`，release commit `ae7e8172561d5faef4f5d1a95a6beb43436b6e41`，activation commit `9218188c8563f07de801b646aa093fac9d05f2e5`。m0001保留为被生产预审P0否决的不可变历史，m0002保留为被远端物料闭包审计取代的历史，二者均不得用于安装。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
 - 正式策略：`ai_top10_plus_fu_official_live_v1`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都必须新建不可变 release；本版为新策略命名空间 `m0001`，不得覆盖 Stage037 m0016 或其历史AI资产。
 - 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu`
@@ -40,7 +40,7 @@
 
 ## 当前判断
 
-- Stage065：用户显式 operator override 选择 Top10+固定fu。新合同只改 AI eligibility 宽度，Stage037 alpha/风险/换月/出场保持不变；55个AI月精确为10个模型非fu+固定fu，2019-12-31唯一pre-AI边界为static18且不含fu。自然晋级仍FAIL：全周期滑点比`130.36%`，固定/随机多周期仍有DD、成本与broker硬失败。m0001在生产预审因live/material身份混用被P0否决并安全回滚；m0002分离live profile、material strategy与AI policy，历史Stage037固定回m0016 Top8资产，AI summary去除本机绝对路径。41项正式suite为`947 passed, 697 subtests`，独立source review `P0/P1/P2=0/0/0`；m0002 manifest `2d4ccbc536b97e155a61d31a8a8b1286279ab94dc75f201645014a9fcd1500b0`、tree `8423befc3b568dfa9af0c971cd26720b18d267ea51b9524df970486253545239`，order/send/cancel均为0。继续价值仅在完成master、生产与身份闭环，不再扫描TopN或调整晋级门。
+- Stage065：用户显式 operator override 选择 Top10+固定fu。新合同只改 AI eligibility 宽度，Stage037 alpha/风险/换月/出场保持不变；55个AI月精确为10个模型非fu+固定fu，2019-12-31唯一pre-AI边界为static18且不含fu。自然晋级仍FAIL：全周期滑点比`130.36%`，固定/随机多周期仍有DD、成本与broker硬失败。m0001在生产预审因live/material身份混用被P0否决并安全回滚；m0002分离live profile、material strategy与AI policy，但远端审计发现历史Stage037配置未进入关键物料闭包，因此未安装；m0003把该配置及依赖闭包纳入260个manifest文件，AI summary保持无本机绝对路径。41项正式suite为`948 passed, 697 subtests`，独立source review `P0/P1/P2=0/0/0`；m0003 manifest `3a2cad3d328cbaf8562f42863a142433da019aec3cde4f071749e3bb66e2effe`、tree `3716a6251f667f6d53af7cb9a157047e3c8a2e9cc83804165a3588b31a94fa85`，order/send/cancel均为0。继续价值仅在完成master、生产与身份闭环，不再扫描TopN或调整晋级门。
 
 - Stage064：结果前冻结种子 `1246746679971163672`，1/2/3年各随机抽64个实际交易日起点，A/B/C共576个15万元空仓独立真引擎运行，0复用、0失败、结果后0重抽。Top9对Stage037全部192窗收益胜/非劣率 `78.65%`、DD非劣率 `84.90%`、Sharpe非劣率 `88.02%`、滑点比 `104.59%`，但2年DD非劣率仅 `78.12%<80%`；Top10收益胜/非劣率 `84.38%`，但DD非劣率 `72.92%`、滑点比 `113.66%` 且新增broker100失败。两者随机门与Stage063固定门都未全过，决策 `random_stress_diagnostic_only_keep_stage037_stop_topn_scan`。
 

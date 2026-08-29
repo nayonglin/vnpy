@@ -92,6 +92,17 @@
 - 私有material qualification精确绑定release commit，状态passed；明确 `natural_research_gates_pass=false`、`operator_override=true`、known failures preserved，order/send/cancel=`0/0/0`。
 - 当前工作区CURRENT activation commit：`738125f9fbaa7e9cc6c39565b1faa19a0bf72277`。此处只证明本地正式物料激活，远端master、fresh clone、生产资格、Stage948和最终六身份仍待完成，不能称已在线。
 
+## m0003关键物料闭包修复（2026-08-30 07:35 CST）
+
+- 远端m0002一致性审计确认：`qmt_roll_candidate_stage037_short_mirror_block_config.py` 的修复字节未进入 `DEFAULT_CRITICAL_FILES`，因此m0002虽能在来源worktree通过测试，却不能保证master顶层和其他电脑clone后的历史Stage037复现一致。m0002保持不可变，但不得安装生产。
+- 新增回归测试先稳定复现清单缺口，再把历史Stage037配置加入关键物料；依赖发现器同时收齐其导入闭包。该变更只修发布完整性，不改变正式Top10+fu成员、Stage037 alpha/risk、回测结果或交易行为。
+- 最终source commit：`f9e42b9ea2967e31aaa34f595c05c0798bbf5e0b`；独立source reviewer `APPROVE`，review id `stage065-source-f9e42b9-review-20260829T232540Z`，P0/P1/P2=`0/0/0`。
+- 41项生产required suite完整通过：`948 passed, 697 subtests passed`，耗时`497.49s`；正式物料/Stage037/晋升闭环/Stage948定向组合为`89 passed, 28 subtests passed`。
+- 新不可变物料：`m0003_20260830T072335+0800_f9e42b9ea296`，共260个manifest文件、9个AI资产；release commit `ae7e8172561d5faef4f5d1a95a6beb43436b6e41`，manifest `3a2cad3d328cbaf8562f42863a142433da019aec3cde4f071749e3bb66e2effe`，tree `3716a6251f667f6d53af7cb9a157047e3c8a2e9cc83804165a3588b31a94fa85`。
+- `git clone --no-local` 对release commit复验通过：260个文件哈希一致、所有来源/物料可执行位一致、supervisor保持可执行、Git LFS文件数为0、clone状态干净。
+- 私有material qualification精确绑定m0003并passed，仍明确 `natural_research_gates_pass=false`、`operator_override=true`、known failures preserved，order/send/cancel=`0/0/0`；CURRENT activation commit为`9218188c8563f07de801b646aa093fac9d05f2e5`。
+- 当前边界：仅完成m0003本地冻结与激活；远端master、fresh clone、生产独立review、双CTP只读、Stage948和最终六身份仍待完成，不能称已在线。
+
 ## 过拟合反思
 
 - 运行前判断：是，风险高。
