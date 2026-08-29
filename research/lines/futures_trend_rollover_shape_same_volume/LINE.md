@@ -1,12 +1,12 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；用户明确授权以CURRENT/master的Stage037作为离线正式对照完成Stage063固定起点和Stage064随机起点诊断，但不允许据此晋升或安装生产。Stage064新增192窗、576次冷启动后，Top9因2年DD非劣率失败，Top10因DD、成本和broker门失败；两者均不晋升，停止TopN与随机窗口扫描。
-- 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
-- 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
-- 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
-- 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
-- 分支：`codex/rollover-shape-same-volume`
+- 当前状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
+- 正式基线：策略版本改为 `ai_top10_plus_fu_official_live_v1`，ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `eb13ebf89bbed5b63452f793a76b7caa36d49a1b`，不可变物料 `m0001_20260830T061229+0800_eb13ebf89bbe`，release commit `5a319bbc62e323ed295c96c6094b76d9109e7be2`，activation commit `ddf5ee2682a0d0bc43a4eebd1109429b6f867bbe`。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
+- 正式策略：`ai_top10_plus_fu_official_live_v1`
+- 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都必须新建不可变 release；本版为新策略命名空间 `m0001`，不得覆盖 Stage037 m0016 或其历史AI资产。
+- 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu`
+- 分支：`codex/promote-stage065-top10-fu-official`
 
 ## 结构性假设
 
@@ -39,6 +39,8 @@
 - 失败后不扫描 MA 周期、MACD 参数、方向、品种、年份或手数比例救参。
 
 ## 当前判断
+
+- Stage065：用户显式 operator override 选择 Top10+固定fu。新合同只改 AI eligibility 宽度，Stage037 alpha/风险/换月/出场保持不变；55个AI月精确为10个模型非fu+固定fu，2019-12-31唯一pre-AI边界为static18且不含fu。自然晋级仍FAIL：全周期滑点比`130.36%`，固定/随机多周期仍有DD、成本与broker硬失败。正式代码整组测试`945 passed, 697 subtests`，独立review `P0/P1/P2=0/0/0`并独立通过`182 passed, 67 subtests`；物料manifest `a6f4232ca5cdf9ec249978994a65e2141f1eb0ecb589656737f74d531803779a`、tree `cf41df217e743b91005c7a15aea0931baf3a7ad494eb27202bccc3477f06b81c`，order/send/cancel均为0。继续价值仅在完成master、生产与身份闭环，不再扫描TopN或调整晋级门。
 
 - Stage064：结果前冻结种子 `1246746679971163672`，1/2/3年各随机抽64个实际交易日起点，A/B/C共576个15万元空仓独立真引擎运行，0复用、0失败、结果后0重抽。Top9对Stage037全部192窗收益胜/非劣率 `78.65%`、DD非劣率 `84.90%`、Sharpe非劣率 `88.02%`、滑点比 `104.59%`，但2年DD非劣率仅 `78.12%<80%`；Top10收益胜/非劣率 `84.38%`，但DD非劣率 `72.92%`、滑点比 `113.66%` 且新增broker100失败。两者随机门与Stage063固定门都未全过，决策 `random_stress_diagnostic_only_keep_stage037_stop_topn_scan`。
 
