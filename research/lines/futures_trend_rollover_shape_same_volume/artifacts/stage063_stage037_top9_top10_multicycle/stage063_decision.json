@@ -1,0 +1,623 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage063",
+  "generated_at": "2026-08-29T23:45:22+08:00",
+  "identity": {
+    "research_protocol": "user_authorized_offline_stage037_top9_top10_multicycle",
+    "checkout_stage037_identity_pass": true,
+    "production_identity_matches_stage037": false,
+    "user_authorized_offline_identity_override": true,
+    "user_authorized_offline_identity_override_reason": "2026-08-29 user confirmed offline Stage037 CURRENT/master baseline despite stable production remaining Stage021-Q",
+    "formal_production_ac_compliant": false,
+    "promotion_permitted": false,
+    "checkout_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+      "source_commit": "374df2d52e4f17220c5e2d4cae76f50d45bec47d",
+      "material_release_id": "m0016_20260829T034012+0800_374df2d52e4f",
+      "release_commit": "efef7217ee1b2194b064728257ff125035cec729",
+      "manifest_sha256": "cc757212c8bef45617549630abf9b2dcf4f045bf8cb4af376cfd3e6a72da5cd4"
+    },
+    "production_identity": {
+      "strategy_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+      "ruleset_version": "stage021_q_rollover_volume_atr_v1",
+      "source_commit": "c097d7836dd4133a88e61effa230b473c24355b3",
+      "material_release_id": "m0015_20260825T205121+0800_c097d7836dd4",
+      "release_commit": "d0901f8143bd5e04bf5f6f15d0470bd4fb2d14b2",
+      "manifest_sha256": "495f37eaa9802ba5b8042d15ca599d62d72ab607f595d4b1492a5904981c38d0"
+    },
+    "checkout_head": "7da37e00361c1ed2a44a47b768969f82b50ab39e",
+    "production_head": "09aa96a03fb91124be90bd69861be3f834ab6299",
+    "remote_master": "a7d8599e9d895aa6fc7c73b25ef7f2e48d4e4c14",
+    "database_path": "/Users/bytedance/Desktop/person/vnpy/.worktrees/stage051-deep-v-rebound-failure-long-filter/.vntrader/database.db",
+    "database_sha256": "ee83eae2159afec2b745a5827f73aaf9da1e71d65af2c0a624496555c08b6ebe",
+    "stage059_decision_sha256": "f3e6b52064c2b034669c1a3439d0726354b843c82f6ff0804a857eded3741616",
+    "stage062_decision_sha256": "81b567306c7cc670758bb2ee466950d749c4f54238834c2c484ff501e304edd6",
+    "eligibility_sha256": {
+      "B": "f8da4f75f81e34eb3f526f2bd5ced58af9cf801cb45d29f4d870458470d6da69",
+      "C": "aacc52aee9e69e9be59055d31ad6f707a661b99e41b41541351626745ec466c9"
+    },
+    "runtime_contract_sha256": "80086a01863ee57764fcd74f806c44020f59038e54fc0d3f70bcd37e39c34932"
+  },
+  "gate_contract": {
+    "data_start": "2018-01-01",
+    "data_end": "2026-08-28",
+    "start_schedule": "January and June independent cold starts",
+    "durations_years": [
+      1,
+      2,
+      3
+    ],
+    "complete_windows_only": true,
+    "arms": {
+      "A": "A: 正式Stage037 Top8+fu（9品种）",
+      "B": "B: Top9+fu（10品种）",
+      "C": "C: Top10+fu（11品种）"
+    },
+    "full_period": "return>=A, DD worsening<=2pp, Sharpe delta>=-0.02, slippage<=105%, survival and broker100 non-worse",
+    "cycle": "return wins>=50%, median delta>=0, DD and Sharpe noninferior>=80%, aggregate slippage<=105%, survival and broker100 non-worse"
+  },
+  "run_provenance": {
+    "window_count": 43,
+    "logical_arm_window_count": 129,
+    "full_period_reused_and_verified_from_stage062": true,
+    "formal_rolling_reused_and_verified_from_stage059": true,
+    "published_reuse_count": 45,
+    "new_candidate_run_count": 84,
+    "checkpoint_reused_count": 0,
+    "checkpoint_generated_count": 84
+  },
+  "full_period_gates": [
+    {
+      "comparison": "A_vs_B",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_2pp": true,
+        "sharpe_noninferior_002": false,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_2pp": true,
+        "sharpe_noninferior_002": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "gates": {
+        "return_not_below_left": true,
+        "dd_worsening_le_2pp": true,
+        "sharpe_noninferior_002": true,
+        "slippage_ratio_le_105pct": false,
+        "right_survival": true,
+        "broker100_fail_count_not_above_left": true
+      },
+      "pass": false
+    }
+  ],
+  "cycle_gates": [
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 1,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 1,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 1,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 2,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 2,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 2,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 3,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": true
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 3,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": false,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": true
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_B",
+      "duration_years": 3,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 1,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 1,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 1,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 2,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 2,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 2,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 3,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 3,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "A_vs_C",
+      "duration_years": 3,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 1,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 1,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 1,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 2,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 2,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 2,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": false,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 3,
+      "start_cohort": "combined",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 3,
+      "start_cohort": "january",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": true,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    },
+    {
+      "comparison": "B_vs_C",
+      "duration_years": 3,
+      "start_cohort": "june",
+      "gates": {
+        "return_win_rate_ge_50pct": true,
+        "median_return_delta_nonnegative": true,
+        "dd_noninferior_2pp_rate_ge_80pct": true,
+        "dd50_fail_count_not_above_left": true,
+        "sharpe_noninferior_005_rate_ge_80pct": true,
+        "all_right_survival": true,
+        "broker100_fail_count_not_above_left": false,
+        "aggregate_slippage_le_105pct": false
+      },
+      "pass": false
+    }
+  ],
+  "candidate_all_multicycle_gates_pass": {
+    "B": false,
+    "C": false
+  },
+  "any_candidate_all_multicycle_gates_pass": false,
+  "formal_production_ac_compliant": false,
+  "promotion_permitted": false,
+  "promote_to_official": false,
+  "decision": "offline_top9_top10_multicycle_has_hard_fail_keep_stage037",
+  "overfitting_judgment": "高：Top9/Top10来自已观察Top10-Top19响应后的后验边界研究；本阶段固定窗口且不再调参。",
+  "continued_value_judgment": "有一次性诊断价值：检验Top9/Top10全周期表现是否跨1月与6月冷启动稳定；失败后停止TopN救参。",
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false,
+  "publication_reuse_contract": {
+    "commit": "ec84131ebcb36563415c61b4049601876fd652d5",
+    "files": {
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage059_stage056_vs_stage037_multicycle/stage059_decision.json": {
+        "workspace_sha256": "f3e6b52064c2b034669c1a3439d0726354b843c82f6ff0804a857eded3741616",
+        "git_blob_sha256": "f3e6b52064c2b034669c1a3439d0726354b843c82f6ff0804a857eded3741616"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage059_stage056_vs_stage037_multicycle/stage059_window_summary.csv": {
+        "workspace_sha256": "954ecdb6f92597a4a1465d052837ef118292dd83a94d110d7666dd02dae783b6",
+        "git_blob_sha256": "954ecdb6f92597a4a1465d052837ef118292dd83a94d110d7666dd02dae783b6"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage059_stage056_vs_stage037_multicycle/stage059_equity_curves.csv": {
+        "workspace_sha256": "bc9531db302f9349e1158310bbc0d97845ad91b255c1130df6ed4152c5009c34",
+        "git_blob_sha256": "bc9531db302f9349e1158310bbc0d97845ad91b255c1130df6ed4152c5009c34"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage061_ai_top10_to_top19_fullperiod/stage061_eligibility.csv": {
+        "workspace_sha256": "359e10e5a992326c0d11934eacb88ef4ecd33d1f13110d206298bc493498a5ff",
+        "git_blob_sha256": "359e10e5a992326c0d11934eacb88ef4ecd33d1f13110d206298bc493498a5ff"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage062_ai_top9_fullperiod/stage062_decision.json": {
+        "workspace_sha256": "81b567306c7cc670758bb2ee466950d749c4f54238834c2c484ff501e304edd6",
+        "git_blob_sha256": "81b567306c7cc670758bb2ee466950d749c4f54238834c2c484ff501e304edd6"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage062_ai_top9_fullperiod/stage062_summary.csv": {
+        "workspace_sha256": "5918ebc10ba7bd44188f1ae16fb7cc580b820fb4867f790e48b6f4457971a664",
+        "git_blob_sha256": "5918ebc10ba7bd44188f1ae16fb7cc580b820fb4867f790e48b6f4457971a664"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage062_ai_top9_fullperiod/stage062_equity_curve.csv": {
+        "workspace_sha256": "e4696917c45ad103cf27b0f7450a788a05a3cb7b622dbfbdb147ff7c58ccbfba",
+        "git_blob_sha256": "e4696917c45ad103cf27b0f7450a788a05a3cb7b622dbfbdb147ff7c58ccbfba"
+      },
+      "research/lines/futures_trend_rollover_shape_same_volume/artifacts/stage062_ai_top9_fullperiod/stage062_eligibility.csv": {
+        "workspace_sha256": "f1f9b9a1b20bdb54cab4418a36048ab5aa999ae9104beeec897526d712ba9946",
+        "git_blob_sha256": "f1f9b9a1b20bdb54cab4418a36048ab5aa999ae9104beeec897526d712ba9946"
+      }
+    }
+  },
+  "render_provenance": {
+    "rendered_at": "2026-08-30T00:00:16+08:00",
+    "renderer": "research/lines/futures_trend_rollover_shape_same_volume/tools/stage063_render_charts.py",
+    "renderer_sha256": "15e68740e5e13a963314a9bd18f966a5241f25d2b391237b266bf5c1fb08f8ed",
+    "chart_sha256": {
+      "stage063_full_period_equity_abc.png": "c64cb3ccd2bfd18f22666197bc6bc4d78fd7f243e755ffcdfda7d3d5e956d6ca",
+      "stage063_equity_curves_1y_abc.png": "87b550d38258da50450c7d69b4957ff4adb74d1af79fa85886a0c10a3d882309",
+      "stage063_equity_curves_2y_abc.png": "863119ece01f2a080421e45acdf05ebbea4fa4b4ab57bb8af03d49ae64c6df7e",
+      "stage063_equity_curves_3y_abc.png": "f9bf1d40b1778d9edc31fcd5a504a29ec7b52ae744831715fe4ecdc2757e9129",
+      "stage063_cycle_aggregate_abc.png": "1a57f9de1c3a6adf3c1dd66d3f8654f331ca762e85ec8eb6a03a0cb774755a36"
+    }
+  },
+  "runtime_contracts": {
+    "engine_checkpoint": {
+      "sha256": "80086a01863ee57764fcd74f806c44020f59038e54fc0d3f70bcd37e39c34932",
+      "scope": "84 B/C engine checkpoints generated with the original runner, database and eligibility contract",
+      "generated_before_reuse_hardening": true
+    },
+    "current_runner": {
+      "sha256": "bf36bdd9f276288a1810f92eded0772f577c6f58ace024f872e17c9fd1335420",
+      "scope": "future engine/checkpoint runs; includes all frozen Stage059/061/062 reuse source files",
+      "matches_engine_checkpoint_contract": false
+    },
+    "publication": {
+      "sha256": "53f1fa1f3766ce6be270e85e5d7d9df45b2abb01ec9af7af7c0bf86b19cbaa6f",
+      "scope": "published reused evidence, renderer and five chart payloads",
+      "covers_published_reuse_and_charts": true
+    }
+  }
+}

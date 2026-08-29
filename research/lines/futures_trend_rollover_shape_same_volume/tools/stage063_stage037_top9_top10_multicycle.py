@@ -44,6 +44,7 @@ OUTPUT_DIR = LINE_DIR / "artifacts" / "stage063_stage037_top9_top10_multicycle"
 CHECKPOINT_DIR = PROJECT_DIR / ".tools" / "stage063_stage037_top9_top10_multicycle_checkpoints"
 INPUT_DIR = CHECKPOINT_DIR / "inputs"
 STAGE059_DIR = s59.OUTPUT_DIR
+STAGE061_DIR = s61.OUTPUT_DIR
 STAGE062_DIR = s62.OUTPUT_DIR
 
 DATA_START = pd.Timestamp("2018-01-01")
@@ -52,6 +53,7 @@ START_MONTHS = (1, 6)
 DURATIONS_YEARS = (1, 2, 3)
 TERMINAL_TOLERANCE_DAYS = 7
 RUNNER_CONTRACT_VERSION = 1
+REUSE_SOURCE_COMMIT = "ec84131ebcb36563415c61b4049601876fd652d5"
 
 BASE_MASTER_COMMIT = s56.BASE_MASTER_COMMIT
 BASE_RULESET_VERSION = s56.BASE_RULESET_VERSION
@@ -113,6 +115,16 @@ AGGREGATE_NAME = "stage063_cycle_aggregate.csv"
 CURVE_NAME = "stage063_equity_curves.csv"
 DECISION_NAME = "stage063_decision.json"
 REPORT_NAME = "stage063_multicycle_report.md"
+REUSE_SOURCE_PATHS = (
+    STAGE059_DIR / s59.DECISION_NAME,
+    STAGE059_DIR / s59.SUMMARY_NAME,
+    STAGE059_DIR / s59.CURVE_NAME,
+    STAGE061_DIR / s61.ELIGIBILITY_NAME,
+    STAGE062_DIR / s62.DECISION_NAME,
+    STAGE062_DIR / s62.SUMMARY_NAME,
+    STAGE062_DIR / s62.CURVE_NAME,
+    STAGE062_DIR / s62.ELIGIBILITY_NAME,
+)
 
 
 def _build_windows() -> tuple[dict[str, Any], ...]:
@@ -173,6 +185,53 @@ def _file_sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _json_sha256(value: Any) -> str:
+    payload = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
+
+
+def _git_blob_sha256(commit: str, path: Path) -> str:
+    relative = path.resolve().relative_to(PROJECT_DIR.resolve())
+    payload = subprocess.run(
+        ["git", "show", f"{commit}:{relative.as_posix()}"],
+        cwd=PROJECT_DIR,
+        check=True,
+        capture_output=True,
+    ).stdout
+    return sha256(payload).hexdigest()
+
+
+def _assert_reuse_sources_frozen() -> dict[str, Any]:
+    source_dirs = sorted({str(path.parent.relative_to(PROJECT_DIR)) for path in REUSE_SOURCE_PATHS})
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard", "--", *source_dirs],
+        cwd=PROJECT_DIR,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    if untracked:
+        raise RuntimeError(f"stage063_reuse_source_untracked_drift:{untracked}")
+
+    files: dict[str, dict[str, str]] = {}
+    for path in REUSE_SOURCE_PATHS:
+        relative = str(path.resolve().relative_to(PROJECT_DIR.resolve()))
+        workspace_sha = _file_sha256(path)
+        git_blob_sha = _git_blob_sha256(REUSE_SOURCE_COMMIT, path)
+        if workspace_sha != git_blob_sha:
+            raise RuntimeError(
+                "stage063_reuse_source_git_drift:"
+                f"{relative}:workspace={workspace_sha}:git={git_blob_sha}"
+            )
+        files[relative] = {
+            "workspace_sha256": workspace_sha,
+            "git_blob_sha256": git_blob_sha,
+        }
+    return {"commit": REUSE_SOURCE_COMMIT, "files": files}
 
 
 def _assert_offline_identity_contract(
@@ -251,6 +310,7 @@ def _runtime_contract_hash(eligibility_paths: dict[str, Path]) -> str:
         PROJECT_DIR / "examples" / "portfolio_backtesting" / "qmt_roll_portfolio_strategy.py",
         STAGE059_DIR / s59.DECISION_NAME,
         STAGE062_DIR / s62.DECISION_NAME,
+        *REUSE_SOURCE_PATHS,
         eligibility_paths["B"],
         eligibility_paths["C"],
     ):
@@ -260,6 +320,7 @@ def _runtime_contract_hash(eligibility_paths: dict[str, Path]) -> str:
 
 
 def _preflight() -> tuple[dict[str, Any], dict[str, Path]]:
+    reuse_source_contract = _assert_reuse_sources_frozen()
     eligibility_paths = _prepare_eligibility_paths()
     checkout = asdict(s56.assert_official_checkout_matches_active_material(PROJECT_DIR))
     production = asdict(s56.assert_official_checkout_matches_active_material(s56.PRODUCTION_ROOT))
@@ -300,6 +361,7 @@ def _preflight() -> tuple[dict[str, Any], dict[str, Path]]:
             "database_sha256": _file_sha256(s56.DATABASE_PATH),
             "stage059_decision_sha256": _file_sha256(STAGE059_DIR / s59.DECISION_NAME),
             "stage062_decision_sha256": _file_sha256(STAGE062_DIR / s62.DECISION_NAME),
+            "reuse_source_contract": reuse_source_contract,
             "eligibility_sha256": {
                 arm: _file_sha256(path) for arm, path in eligibility_paths.items()
             },

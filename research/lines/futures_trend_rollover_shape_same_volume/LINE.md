@@ -1,7 +1,7 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；Stage056只能保留为用户指定master Stage037的离线诊断，不能作为合规正式基线A/C。其Top14非fu+fu虽提高期末权益，但回撤、Sharpe、成本与broker容量门均恶化，不晋升。
+- 当前状态：远端master物料为m0016 Stage037，但稳定生产仍是m0015 Stage021-Q，六身份不一致；用户明确授权以CURRENT/master的Stage037作为离线正式对照完成Stage063 Top9/Top10多周期诊断，但不允许据此晋升或安装生产。Top9在全周期Sharpe/成本及若干January/June分组失败；Top10虽显著增厚收益，但跨周期成本、DD非劣和broker门失败；两者均不晋升，停止TopN扫描。
 - 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
 - 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
@@ -39,6 +39,8 @@
 - 失败后不扫描 MA 周期、MACD 参数、方向、品种、年份或手数比例救参。
 
 ## 当前判断
+
+- Stage063：A=正式Stage037 Top8+fu、B=Top9+fu、C=Top10+fu；全周期3臂复用并核验Stage062，A的42个滚动窗复用并核验Stage059，B/C新增84次真引擎独立冷启动。Top9的1/2/3年combined收益胜/非劣率为 `87.50%/85.71%/75.00%`，但全周期Sharpe低 `0.021236`、滑点比 `106.18%`，且1年January成本、2年DD、3年January Sharpe和June成本失败。Top10对应收益胜/非劣率 `87.50%/92.86%/83.33%`，但聚合滑点比分别 `112.48%/114.22%/114.70%`，DD非劣率降至 `81.25%/71.43%/66.67%`，2/3年June另新增broker100失败窗。决策 `offline_top9_top10_multicycle_has_hard_fail_keep_stage037`，不再扫描TopN。
 
 - Stage003 A/B/C：A `13,071,214.10/8614.1427%/-56.2069%/Sharpe1.3622`；B `13,492,951.90/8895.3013%/-57.2674%/Sharpe1.3631`；C `13,338,365.80/8792.2439%/-56.9876%/Sharpe1.3627`。
 - C 相对 B：期末权益 `-154,586.10`、收益 `-103.0574pp`、最大回撤改善 `0.2797pp`、Sharpe `-0.0004`、滑点减少 `56,150`、交易增加 `14`；结构语义通过，但没有性能晋级证据。
