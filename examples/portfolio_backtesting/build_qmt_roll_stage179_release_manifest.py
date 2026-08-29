@@ -368,6 +368,7 @@ DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
+    "examples/portfolio_backtesting/qmt_roll_candidate_stage037_short_mirror_block_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py",
     "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",

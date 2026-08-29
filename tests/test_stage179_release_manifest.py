@@ -793,6 +793,16 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             )
         )
 
+    def test_stage037_historical_candidate_is_pinned_in_production_release_surface(
+        self,
+    ) -> None:
+        candidate = (
+            "examples/portfolio_backtesting/"
+            "qmt_roll_candidate_stage037_short_mirror_block_config.py"
+        )
+
+        self.assertIn(candidate, builder.DEFAULT_CRITICAL_FILES)
+
     def test_strategy_material_toolchain_is_pinned_in_production_release_surface(
         self,
     ) -> None:
