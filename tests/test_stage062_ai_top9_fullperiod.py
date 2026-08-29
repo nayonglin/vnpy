@@ -8,6 +8,7 @@ import sys
 
 import pandas as pd
 import pytest
+from matplotlib.colors import to_rgb
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,6 +153,29 @@ def test_stage062_reuses_stage061_reference_and_top10_to_top19_exactly() -> None
     assert set(trades) == set(range(10, 20))
     assert len(curves["REF"]) == 2101
     assert all(len(curves[top_n]) == 2101 for top_n in range(10, 20))
+
+
+def test_stage062_top9_and_top10_equity_lines_are_visually_distinct() -> None:
+    runner = _runner()
+
+    assert hasattr(runner, "_equity_line_style")
+    top9 = runner._equity_line_style(9, "#123456")
+    top10 = runner._equity_line_style(10, "#123456")
+    top11 = runner._equity_line_style(11, "#abcdef")
+
+    rgb9 = to_rgb(top9["color"])
+    rgb10 = to_rgb(top10["color"])
+    rgb_distance = sum((left - right) ** 2 for left, right in zip(rgb9, rgb10)) ** 0.5
+    assert rgb_distance > 0.75
+    assert top9["linewidth"] >= 2.5
+    assert top10["linewidth"] >= 2.5
+    assert top11 == {
+        "color": "#abcdef",
+        "linewidth": 1.25,
+        "linestyle": "-",
+        "alpha": 0.9,
+        "zorder": 2,
+    }
 
 
 def test_stage062_published_artifacts_include_top9_and_preserve_stage061() -> None:

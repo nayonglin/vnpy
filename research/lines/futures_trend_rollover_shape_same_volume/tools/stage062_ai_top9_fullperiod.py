@@ -577,6 +577,21 @@ def _comparison(summary: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _equity_line_style(top_n: int, default_color: Any) -> dict[str, Any]:
+    base = {
+        "color": default_color,
+        "linewidth": 1.25,
+        "linestyle": "-",
+        "alpha": 0.9,
+        "zorder": 2,
+    }
+    highlights = {
+        9: {"color": "#dc2626", "linewidth": 2.8, "alpha": 1.0, "zorder": 5},
+        10: {"color": "#2563eb", "linewidth": 2.8, "alpha": 1.0, "zorder": 5},
+    }
+    return {**base, **highlights.get(top_n, {})}
+
+
 def _plot_equity(curve: pd.DataFrame) -> bytes:
     fig, ax = plt.subplots(figsize=(15, 7))
     reference = curve[curve["experiment_arm"].astype(str).eq("REF")].sort_values("date")
@@ -595,10 +610,8 @@ def _plot_equity(curve: pd.DataFrame) -> bytes:
         ax.plot(
             pd.to_datetime(frame["date"]),
             pd.to_numeric(frame["account_equity"]) / 10_000,
-            color=color,
-            linewidth=1.25,
-            alpha=0.9,
             label=label,
+            **_equity_line_style(top_n, color),
         )
     ax.set_title(PLOT_TITLE)
     ax.set_ylabel("Equity (10k CNY)")
