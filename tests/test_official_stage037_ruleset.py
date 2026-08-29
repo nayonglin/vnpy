@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 from pathlib import Path
 import sys
 
@@ -18,7 +19,29 @@ def test_formal_stage037_ruleset_equals_frozen_research_candidate() -> None:
     formal = live_cfg.build_official_live_strategy_overrides()
     candidate = candidate_cfg.build_candidate_overrides()
 
-    assert formal == candidate
+    ai_identity_fields = {
+        "ai_product_pool_eligibility_path",
+        "ai_product_pool_strategy",
+    }
+    assert formal["ai_product_pool_strategy"] == "ai_top10_plus_fu_official_live_v1"
+    assert formal["ai_product_pool_eligibility_path"] == str(
+        live_cfg.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH
+    )
+    assert Path(formal["ai_product_pool_eligibility_path"]).is_file()
+    assert candidate["ai_product_pool_strategy"] == (
+        "ai_top8_plus_fu_satellite_post_signal_entry_filter"
+    )
+    candidate_eligibility = Path(candidate["ai_product_pool_eligibility_path"])
+    assert "m0016_20260829T034012+0800_374df2d52e4f" in candidate_eligibility.parts
+    with candidate_eligibility.open(encoding="utf-8-sig", newline="") as handle:
+        assert {
+            row["strategy"] for row in csv.DictReader(handle)
+        } == {candidate["ai_product_pool_strategy"]}
+    assert {
+        key: value for key, value in formal.items() if key not in ai_identity_fields
+    } == {
+        key: value for key, value in candidate.items() if key not in ai_identity_fields
+    }
     assert live_cfg.OFFICIAL_LIVE_RULESET_VERSION == candidate_cfg.CANDIDATE_VERSION
     assert stage037_cfg.RULESET_VERSION == candidate_cfg.CANDIDATE_VERSION
     assert stage037_cfg.PREVIOUS_RULESET_VERSION == stage021_q_cfg.RULESET_VERSION

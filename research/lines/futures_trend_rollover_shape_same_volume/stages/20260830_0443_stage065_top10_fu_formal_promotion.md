@@ -80,6 +80,8 @@
 - 根因是“部署profile版本”和“正式AI物料策略版本”共用同一身份字段。修复后保留原Stage847部署版本，新增 `OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION` 并直接绑定正式AI policy唯一真源；活动物料只与该独立字段比较，runtime manifest显式输出 `material_strategy_version`。
 - 新增回归断言锁定两个身份不可混用；生产cwd等价导入成功，`tests/test_official_live_config_import.py + tests/test_stage945_production_launcher.py` 为 `39 passed, 29 subtests passed`。本修复不改alpha、Stage037参数、AI成员或历史回测数值。
 - reviewer指出m0001的AI summary保留了构建机绝对路径（P2、运行不依赖）。后继构建器已改为只写 `source/stage061_top10_eligibility.csv` 和五个逻辑文件名，新增可移植性回归；与身份修复合并后的定向验证为 `43 passed, 29 subtests passed`。
+- 激活后还暴露一条旧测试口径红灯：原测试把Stage037 alpha相等扩大成AI policy也必须等于历史Top8。现已把AI策略与eligibility路径单独断言，剩余alpha/风控字段仍全量相等；该隔离测试已加入生产required suite与关键指纹，required suite从40增至41，防止后续正式AI池变更绕开Stage037隔离验证。
+- 进一步复核确认历史Stage037 candidate虽然仍声明Top8，但其路径曾动态跟随活动物料而指向Top10，破坏历史复跑。现已把Stage037 candidate显式固定到不可变 `m0016_20260829T034012+0800_374df2d52e4f` 的Top8 combined eligibility；测试同时读取CSV验证其strategy列，正式Top10与历史Top8均可独立加载。包含Stage179 manifest builder的定向验证为 `82 passed, 54 subtests passed`。
 - 原m0001保持不可变且不得作为最终生产发布；必须以修复后的clean source commit重新生成后继正式物料、重新推送master、重新独立复审并从Stage948 prepare开始完整重走生产闭环。
 
 ## 过拟合反思
