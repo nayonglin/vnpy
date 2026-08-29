@@ -1,12 +1,12 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：用户在明确知悉 Stage048 多周期和 Stage049 蒙特卡洛硬失败后，授权 operator override 将 Stage037 晋升正式版；当前正在执行不可变物料、远端 master、fresh clone 与 Stage948 生产安装闭环。Stage037 完整继承 C9/15w 与 Q 风险规则，并增加新主力自身历史、换月延迟5交易日和多空镜像形态硬拦截。
-- 正式基线：策略名保持 `official_live_stage847_c9_15w_stage819_05r_stop_retry_once`，新 ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`。完成状态只能由远端 master、生产 HEAD、CURRENT、manifest、资格和激活回执六身份一致证明；Stage021-Q 降为历史正式对照。
-- 正式策略：`official_live_stage847_c9_15w_stage819_05r_stop_retry_once`
-- 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都分配新的 `material_version`；历史 m0009 不覆盖，Stage023 预期创建 m0010
-- 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/rollover-shape-same-volume`
-- 分支：`codex/rollover-shape-same-volume`
+- 当前状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
+- 正式基线：策略版本改为 `ai_top10_plus_fu_official_live_v1`，ruleset 固定为 `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `eb13ebf89bbed5b63452f793a76b7caa36d49a1b`，不可变物料 `m0001_20260830T061229+0800_eb13ebf89bbe`，release commit `5a319bbc62e323ed295c96c6094b76d9109e7be2`，activation commit `ddf5ee2682a0d0bc43a4eebd1109429b6f867bbe`。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
+- 正式策略：`ai_top10_plus_fu_official_live_v1`
+- 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都必须新建不可变 release；本版为新策略命名空间 `m0001`，不得覆盖 Stage037 m0016 或其历史AI资产。
+- 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu`
+- 分支：`codex/promote-stage065-top10-fu-official`
 
 ## 结构性假设
 
@@ -39,6 +39,12 @@
 - 失败后不扫描 MA 周期、MACD 参数、方向、品种、年份或手数比例救参。
 
 ## 当前判断
+
+- Stage065：用户显式 operator override 选择 Top10+固定fu。新合同只改 AI eligibility 宽度，Stage037 alpha/风险/换月/出场保持不变；55个AI月精确为10个模型非fu+固定fu，2019-12-31唯一pre-AI边界为static18且不含fu。自然晋级仍FAIL：全周期滑点比`130.36%`，固定/随机多周期仍有DD、成本与broker硬失败。正式代码整组测试`945 passed, 697 subtests`，独立review `P0/P1/P2=0/0/0`并独立通过`182 passed, 67 subtests`；物料manifest `a6f4232ca5cdf9ec249978994a65e2141f1eb0ecb589656737f74d531803779a`、tree `cf41df217e743b91005c7a15aea0931baf3a7ad494eb27202bccc3477f06b81c`，order/send/cancel均为0。继续价值仅在完成master、生产与身份闭环，不再扫描TopN或调整晋级门。
+
+- Stage064：结果前冻结种子 `1246746679971163672`，1/2/3年各随机抽64个实际交易日起点，A/B/C共576个15万元空仓独立真引擎运行，0复用、0失败、结果后0重抽。Top9对Stage037全部192窗收益胜/非劣率 `78.65%`、DD非劣率 `84.90%`、Sharpe非劣率 `88.02%`、滑点比 `104.59%`，但2年DD非劣率仅 `78.12%<80%`；Top10收益胜/非劣率 `84.38%`，但DD非劣率 `72.92%`、滑点比 `113.66%` 且新增broker100失败。两者随机门与Stage063固定门都未全过，决策 `random_stress_diagnostic_only_keep_stage037_stop_topn_scan`。
+
+- Stage063：A=正式Stage037 Top8+fu、B=Top9+fu、C=Top10+fu；全周期3臂复用并核验Stage062，A的42个滚动窗复用并核验Stage059，B/C新增84次真引擎独立冷启动。Top9的1/2/3年combined收益胜/非劣率为 `87.50%/85.71%/75.00%`，但全周期Sharpe低 `0.021236`、滑点比 `106.18%`，且1年January成本、2年DD、3年January Sharpe和June成本失败。Top10对应收益胜/非劣率 `87.50%/92.86%/83.33%`，但聚合滑点比分别 `112.48%/114.22%/114.70%`，DD非劣率降至 `81.25%/71.43%/66.67%`，2/3年June另新增broker100失败窗。决策 `offline_top9_top10_multicycle_has_hard_fail_keep_stage037`，不再扫描TopN。
 
 - Stage003 A/B/C：A `13,071,214.10/8614.1427%/-56.2069%/Sharpe1.3622`；B `13,492,951.90/8895.3013%/-57.2674%/Sharpe1.3631`；C `13,338,365.80/8792.2439%/-56.9876%/Sharpe1.3627`。
 - C 相对 B：期末权益 `-154,586.10`、收益 `-103.0574pp`、最大回撤改善 `0.2797pp`、Sharpe `-0.0004`、滑点减少 `56,150`、交易增加 `14`；结构语义通过，但没有性能晋级证据。
@@ -262,3 +268,50 @@
 - C为 `17,051,717.30/11267.8115%/-39.9147%/Sharpe1.543941`，滑点 `1,669,965`、交易 `733`、胜率 `53.1984%`、broker10峰值 `93.5807%`。相对B期末权益 `+1,523,403.70`、回撤改善 `0.4182pp`、Sharpe `+0.038240`；相对正式A期末权益 `+2,062,202.20`、回撤改善 `4.9886pp`、Sharpe `+0.075386`且滑点减少。
 - OR命中152个候选事件，多头79、空头73；正手数实际硬拦截144个，多头73、空头71；语义、时序、严格大于、入口和硬置0合同全部通过。
 - 唯一失败门是C滑点为B的 `105.6559%`，超过105%上限约 `0.6559pp`；独立reviewer复算为 `PASS，P0/P1/P2=0/0/0`，研究晋级FAIL。决策 `stage037_short_mirror_block_fail_full_period_stop`，不自动多周期、不救参、不改正式物料/master/production/CTP，订单API `0/0/0`。
+
+## Stage056 master m0016 Stage037离线AI Top14非fu+固定fu诊断
+
+- 数值路径唯一行为变量是月度AI池宽度：A为master m0016 Stage037 Top8非fu+fu，C为Top14非fu+fu；Stage037策略、风险、换月、出场、资金和2019-12-31 static18前AI边界全部不变。
+- C为 `19,095,929.80/12630.6199%/-44.7340%/Sharpe1.500060`，滑点 `2,577,090`、交易 `920`、非零交易日胜率 `53.4286%`；相对A期末权益增加 `2,235,989.20`，但回撤恶化 `4.8193pp`、Sharpe下降 `0.038761`、滑点增加 `917,535`。
+- C的broker10峰值由A的 `93.5807%` 升至 `111.8003%`，新增2天超过100%，DD40与broker100门失败；收益改善不能覆盖容量和尾部风险恶化。
+- `2026-03/04/05` 原始9–14名评分未被历史正式物料保存，候选明确锁定当时正式Top8，再以同模型时点重放排名补6个，标记 `membership_locked_score_fill`；其余月份使用冻结全18品种评分，所有月正式Top8均保留。
+- 身份审查发现稳定生产 `09aa96a/m0015/Stage021-Q` 与master `a7d8599/m0016/Stage037` 不一致，严格A/B技能本应在运行前停止；本结果降级为离线数字证据，runner已补六身份fail-closed前置。
+- 决策 `protocol_invalid_production_identity_drift_keep_offline_diagnostic_only_do_not_promote`；不修改正式AI池、正式物料、master、生产或CTP，不扫描其他TopN救参。只有先解决正式物料与稳定生产身份偏差后，才可重新讨论合规复跑。
+
+## Stage059 Stage056 与 Stage037 多周期反证
+
+- 用户明确要求在生产身份仍不一致时直接做离线研究比较；A固定为master m0016 Stage037 Top8+fu，C固定为Stage056 Top14+fu。全周期复用Stage056并逐值校验，其余42窗×2臂均为15万元空仓独立真引擎运行；1/2/3年分别16/14/12窗，每种周期都包含1月和6月起点。
+- 全周期C虽比A多赚 `1490.6595pp`，但回撤恶化 `4.8193pp`、Sharpe下降 `0.038761`、滑点为A的 `155.29%`，broker10峰值由 `93.5807%` 升至 `111.8003%`，新增2天超过100%；全周期六门仅收益与生存通过。
+- 1/2/3年combined预声明 `C>=A` 比例为 `62.50%/78.57%/58.33%`，但DD非劣率仅 `62.50%/57.14%/50.00%`，Sharpe非劣率仅 `56.25%/78.57%/58.33%`，聚合滑点比分别 `119.11%/117.11%/116.26%`；9个周期×起点组全部硬失败。
+- 因AI池在2022年前没有行为差异，预声明 `>=` 会把零差窗口记为胜。严格只看实际产生差异的9个窗口，1/2/3年正收益胜率为 `3/9=33.33%`、`6/9=66.67%`、`4/9=44.44%`；不能用名义胜率掩盖无效果窗口。
+- 3年候选新增1个DD50失败和1个broker100失败；最差收益窗 `2020-01` 为 `-275.7400pp`，`2020-06` 为 `-258.2467pp`。Stage056的全周期更高收益主要伴随更高成本和风险暴露，不具备跨起点稳健性。
+- 决策 `offline_research_multicycle_has_hard_fail_keep_stage037`；不晋升Stage056、不扫描其他TopN救参。正式物料、远端master、生产、CTP和订单API均未改变。
+- 单一复现入口为 `stage059_run_and_publish.py`：先执行Stage059真引擎/检查点发布，再自动执行review annotation；因此任何fresh复跑都会保留严格胜率字段、OFFLINE标签和冻结gate不变的审计信息。
+- 独立review最终 `P0/P1/P2/P3=0/0/0/0`；43窗/86臂、84个checkpoint SHA、聚合/gate、五图、严格胜率和生产安全边界全部复算通过。接受边界仅为“离线诊断、不可晋升”。
+
+## Stage060 Stage037 关闭 AI 选品全周期反证
+
+- C严格从Stage037只修改 `enable_ai_product_pool_filter: true -> false`；AI eligibility路径和策略标识仍保留但不参与准入，使用既有static18+fu配置全集19品种。A/B逐值复用Stage056的Stage037 Top8+fu与Stage056 Top14+fu，只新跑C。
+- C为 `1,054,100.70/602.7338%/-62.5110%/Sharpe0.729200`，滑点 `336,640`、交易 `1,038`、非零交易日胜率 `50.4225%`、broker10峰值 `94.2332%`；相对A少赚 `10,537.2266pp`、回撤恶化 `22.5963pp`、Sharpe下降 `0.809622`。
+- C绝对滑点虽低于A/B，但这是其资金复利路径长期显著更小造成的，不可解释为交易成本效率更好；交易次数反而比A多304次。
+- 收益、回撤和Sharpe三个预声明硬门同时失败，只有账户存活、绝对滑点和broker100天数通过；决策 `offline_no_ai_fullperiod_hard_fail_keep_stage037`。
+- 当前稳定生产仍为Stage021-Q而非Stage037，因此本次明确是用户授权的离线消融，不满足正式生产A/C身份同源门，不允许晋升。关闭AI方向到此停止，不跑多周期、不扫描子集或TopN救参，不改正式物料/master/生产/CTP。
+- 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；初审发现的成交CSV live误标签和离线水印/复用校验问题均已修复。1038条C成交全部使用Stage060离线身份，A/B所有关键summary与2101点curve逐值0差，C指标独立复算最大误差 `2.27e-13`。
+
+## Stage061 Stage037 AI Top10–Top19 全周期宽度响应
+
+- AI过滤保持开启，Stage037逻辑、风险、换月、出场、资金和成本不变；名义Top10–19分别取模型排名前N个非fu并固定放行fu。历史每月只有18个非fu排名，因此Top19逐月成员与Top18完全相同，复用路径且不计独立证据。
+- Top10最佳，为 `21,870,488.80/14480.3259%/-39.9147%/Sharpe1.586976`，滑点 `2,163,390`、交易798、胜率 `53.7348%`、broker10峰值 `93.5807%`；相对Stage037增加 `3340.3655pp` 收益、回撤完全相同、Sharpe提高 `0.048155`，但绝对滑点为 `130.36%`，唯一失败冻结105%门。
+- Top11/12也只因滑点门失败；Top13新增broker100失败，Top14再新增回撤与Sharpe失败。Top10至14收益/Sharpe随宽度近似单调下降；Top15后收益、回撤和Sharpe断崖恶化，低排名尾部不是免费分散。
+- 8个TopN独立真引擎、Top14逐值复用Stage056、Top19逐月成员一致后复用Top18；所有11条含参考曲线均覆盖2101个交易日，资金曲线末值和回撤已独立复算一致。
+- 没有名义TopN通过全部预声明门，决策 `offline_width_sweep_no_fullperiod_candidate_keep_stage037`；Top10位于本次搜索边界，不能因全周期冠军直接晋升或继续扫更窄/小数TopN救参。正式AI池、master、生产、CTP和订单均未改变。
+- 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；Top10–12被准确标成仅绝对滑点门失败，2019-12-31 static18前AI的fu例外已注明，Top14/Top19复用具备运行时、磁盘和payload完整性三重校验。后续只有预先独立定义容量/成本归一化问题仍有有限价值，不事后改门或继续扫TopN。
+
+## Stage062 Stage037 AI Top9 全周期左边界补测
+
+- 用户显式要求在Stage061后补测Top9，属于看到Top10为上一轮左边界冠军后的后验边界扩展；冻结只新增一个Top9真引擎，Stage037参考与Top10–19逐值复用Stage061，原六项全周期门不变。
+- Top9为 `16,871,625.40/11147.7503%/-39.9147%/Sharpe1.517586`，滑点 `1,762,115`、交易766、胜率 `53.3650%`、broker10峰值 `93.5807%`。相对Stage037收益只多 `7.7899pp`、回撤相同，但Sharpe低 `0.021236`、滑点为 `106.18%`，同时失败Sharpe和105%滑点门。
+- Top9相对Top10少 `3332.5756pp` 收益、Sharpe低 `0.069390`；Top10的显著优势没有向Top9延伸，Top9不属于Top10–12收益平台。
+- 55个月均为9个非fu+固定fu、正式Top8全部保留；其中53个月严格等同模型Top9，2026-03-31与2026-05-29为“正式Top8锁定+同月模型补足至9”例外，2026-04-30虽走锁定政策但恰好等同严格Top9；2019-12-31 static18前AI边界仍不含fu。完整source rank、provenance和各源SHA已固化，所有复用summary/2101点curve/trades与Stage061逐值一致。
+- 决策 `offline_top9_fullperiod_fail_keep_stage037`；不进入多周期、不晋升、不继续向Top8以下或小数TopN扫描，不改正式AI池、master、生产或CTP，订单API `0/0/0`。
+- 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；数值、六门、Stage061复用、53/2成员划分、同eval_date评分、PIT源SHA与离线安全均从原始curve/ranking/formal/candidate eligibility独立复算闭合。
