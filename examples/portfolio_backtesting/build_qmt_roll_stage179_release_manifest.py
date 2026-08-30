@@ -512,6 +512,7 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage948_production_installer.py",
     "tests/test_stage179_production_assets.py",
     "tests/test_stage179_launchd_lifecycle.py",
+    "research/lines/futures_trend_stage819_intraday_rules/SOP_c9_15w_monthly_ai_pool.md",
     "skills/freeze-official-strategy-materials/SKILL.md",
     "skills/freeze-official-strategy-materials/references/material-contract.md",
     "skills/freeze-official-strategy-materials/agents/openai.yaml",

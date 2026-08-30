@@ -765,6 +765,27 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         self.assertIn(suite, builder.DEFAULT_CRITICAL_FILES)
         self.assertIn(suite, builder.PRODUCTION_REQUIRED_TEST_SUITES)
 
+    def test_monthly_ai_pool_sop_is_pinned_and_requires_full_material_promotion(
+        self,
+    ) -> None:
+        sop = (
+            "research/lines/futures_trend_stage819_intraday_rules/"
+            "SOP_c9_15w_monthly_ai_pool.md"
+        )
+        self.assertIn(sop, builder.DEFAULT_CRITICAL_FILES)
+
+        content = (PORTFOLIO_DIR.parents[1] / sop).read_text(encoding="utf-8")
+        self.assertIn(
+            "monthly_ai_pool_updated`：只生成候选 AI 池与 material publication request",
+            content,
+        )
+        self.assertIn(
+            "prepare → commit → verify → qualification → activate → "
+            "promote-master → fresh clone → Stage948",
+            content,
+        )
+        self.assertIn("Stage948 完成安装后", content)
+
     def test_official_ai_pool_policy_is_pinned_in_production_release_surface(
         self,
     ) -> None:

@@ -34,6 +34,7 @@ from qmt_roll_official_live_lightweight_context import (
     OFFICIAL_LIVE_AI_REPORT_PATH,
     OFFICIAL_LIVE_AI_SUMMARY_PATH,
     OFFICIAL_LIVE_ALIAS,
+    OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
     OFFICIAL_LIVE_VERSION,
     STAGE173_SUMMARY_PATH,
@@ -212,7 +213,7 @@ def _write_material_publication_request(
     )
     return write_publication_request(
         destination=destination,
-        official_version=OFFICIAL_LIVE_VERSION,
+        official_version=OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION,
         generator=str(STAGE182_PATH.relative_to(PROJECT_ROOT)),
         data_cutoff=source_max_date,
         eval_date=eval_date,

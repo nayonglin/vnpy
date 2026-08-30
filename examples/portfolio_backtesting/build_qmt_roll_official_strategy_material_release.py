@@ -48,6 +48,12 @@ from qmt_roll_official_strategy_material_resolver import (
 LFS_SIZE_THRESHOLD_BYTES = 10 * 1024 * 1024
 MODEL_LFS_SUFFIXES = {".parquet", ".pkl", ".pickle", ".joblib", ".pt", ".pth", ".onnx"}
 MATERIAL_ROOT_NAME = "official_strategy_materials"
+AUTO_PROMOTED_GOVERNANCE_PATHS = frozenset(
+    {
+        "research/lines/futures_trend_stage819_intraday_rules/"
+        "SOP_c9_15w_monthly_ai_pool.md",
+    }
+)
 
 
 class MaterialReleaseError(RuntimeError):
@@ -1109,7 +1115,10 @@ def promote_official_version_to_master(
         allowed_prefixes = ("examples/portfolio_backtesting/", "tests/", "skills/")
         for row in manifest["files"]:
             logical_path = str(row["logical_path"])
-            if logical_path.startswith(allowed_prefixes):
+            if (
+                logical_path.startswith(allowed_prefixes)
+                or logical_path in AUTO_PROMOTED_GOVERNANCE_PATHS
+            ):
                 _validated_promotion_path(
                     logical_path,
                     error="promotion_manifest_logical_path_invalid",

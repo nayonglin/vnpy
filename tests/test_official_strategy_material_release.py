@@ -65,6 +65,13 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
     registry = repo / "research/registry.md"
     registry.parent.mkdir(parents=True)
     registry.write_text("# Research registry\n", encoding="utf-8")
+    monthly_sop = (
+        repo
+        / "research/lines/futures_trend_stage819_intraday_rules/"
+        "SOP_c9_15w_monthly_ai_pool.md"
+    )
+    monthly_sop.parent.mkdir(parents=True)
+    monthly_sop.write_text("# Monthly AI pool material SOP\n", encoding="utf-8")
     _git(
         repo,
         "add",
@@ -73,6 +80,8 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
         "examples/portfolio_backtesting/run_official_test.sh",
         "skills/freeze-official-strategy-materials/SKILL.md",
         "research/registry.md",
+        "research/lines/futures_trend_stage819_intraday_rules/"
+        "SOP_c9_15w_monthly_ai_pool.md",
     )
     _git(repo, "commit", "-m", "source")
     discovery = discover_materials(
@@ -93,6 +102,14 @@ def _request(tmp_path: Path) -> tuple[Path, ReleaseRequest]:
             MaterialDeclaration(
                 source_path=executable,
                 logical_path="examples/portfolio_backtesting/run_official_test.sh",
+                role=MaterialRole.RUNTIME_CODE,
+            ),
+            MaterialDeclaration(
+                source_path=monthly_sop,
+                logical_path=(
+                    "research/lines/futures_trend_stage819_intraday_rules/"
+                    "SOP_c9_15w_monthly_ai_pool.md"
+                ),
                 role=MaterialRole.RUNTIME_CODE,
             ),
         ),
@@ -224,6 +241,10 @@ def test_cli_prepare_discovers_core_strategy_local_import_closure(
     }.issubset(discovered_paths)
     assert "tests/test_strategy_material_discovery.py" in discovered_paths
     assert "skills/freeze-official-strategy-materials/SKILL.md" in discovered_paths
+    assert (
+        "research/lines/futures_trend_stage819_intraday_rules/"
+        "SOP_c9_15w_monthly_ai_pool.md"
+    ) in discovered_paths
     assert not any(
         blocker.startswith("unresolved_dynamic_import:tests/")
         for blocker in captured["request"].discovery.blockers
@@ -292,6 +313,11 @@ def test_promote_master_publishes_source_current_and_governance(tmp_path: Path) 
     assert current["release_id"] == release.release_id
     assert (clone / "skills/freeze-official-strategy-materials/SKILL.md").is_file()
     assert (clone / "research/registry.md").is_file()
+    assert (
+        clone
+        / "research/lines/futures_trend_stage819_intraday_rules/"
+        "SOP_c9_15w_monthly_ai_pool.md"
+    ).read_text(encoding="utf-8") == "# Monthly AI pool material SOP\n"
     assert (
         clone / "examples/portfolio_backtesting/run_official_test.sh"
     ).stat().st_mode & 0o111

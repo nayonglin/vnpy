@@ -256,6 +256,10 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             payload = load_publication_request(request_path)
 
         self.assertEqual("official_candidate", payload["promotion_scope"])
+        self.assertEqual(
+            OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
+            payload["official_version"],
+        )
         self.assertEqual(5, len(payload["ai_artifacts"]))
         self.assertEqual(0, payload["order_api_called_count"])
 
