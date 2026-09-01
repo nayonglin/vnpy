@@ -1,0 +1,12 @@
+﻿strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,si.GFEX,0.7440095586377378,1,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,cu.SHFE,0.6362487518283395,2,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,SM.CZCE,0.6233242830549391,3,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,lc.GFEX,0.6027722588170664,4,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,SA.CZCE,0.6024350660835224,5,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,au.SHFE,0.6014563609070191,6,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,sp.SHFE,0.5827540814696923,7,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,lh.DCE,0.5699859749954981,8,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,FG.CZCE,0.5589719264023735,9,11
+ai_top10_plus_fu_official_live_v1,stage182_live_monthly_ai_probability,2026-08-31,SH.CZCE,0.5578766159784061,10,11
+ai_top10_plus_fu_official_live_v1,stage182_live_fixed_fu_satellite,2026-08-31,fu.SHFE,0.5578756159784061,11,11
