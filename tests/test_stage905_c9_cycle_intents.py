@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import hashlib
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import sys
 import tempfile
@@ -106,6 +106,9 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
             "vt_symbol": "JM609.DCE",
             "direction": "short",
             "volume": 2,
+            "root_entry_volume": 2,
+            "root_entry_price": 1245.5,
+            "root_initial_stop_price": 1257.5,
             "stage847_retry_trigger_price": 1245.5,
             "stage847_stop_price": 1251.5,
             "live_bid_price_1": 1251.0,
@@ -153,6 +156,7 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
                     {
                         "vt_symbol": "JM609.DCE",
                         "pricetick": 0.5,
+                        "size": 60,
                         "min_volume": 1,
                         "max_volume": 100,
                         "gateway_name": "CTP",
@@ -182,6 +186,26 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
             },
             stage260_summary={"executable_count": stage260_executable},
             execution_ledger_rows=(),
+            broker_account={
+                "equity": 150000, "available": 150000, "margin": 0, "frozen": 0,
+                "product_margin": {}, "generation_uuid": "fixture-generation",
+                "account_fingerprint": "fixture-account",
+                "generated_at": datetime.fromtimestamp(1784000000, tz=timezone.utc).isoformat(),
+            },
+            entry_risk=pd.DataFrame([
+                {
+                    "date": "2026-07-13", "contract_vt_symbol": "JM609.DCE", "direction": "short",
+                    "risk_ratio": 0.018, "risk_multiplier": 1.0,
+                    "directional_30d_risk_boost_multiplier": 1.0, "size": 60,
+                    "margin_ratio": 0.2, "risk_cluster_cap_enabled": 1,
+                    "risk_cluster_cap_ratio": 0.25, "risk_cluster_name": "JM.DCE",
+                    "stop_price": (
+                        float(pending_orders.iloc[0]["stop_price"])
+                        if pending_orders is not None and not pending_orders.empty and "stop_price" in pending_orders
+                        else 1257.5
+                    ),
+                }
+            ]),
         )
 
     def _stage904_summary(
@@ -1011,8 +1035,8 @@ class Stage905C9CycleIntentTest(unittest.TestCase):
         )
         request = stage905.json.loads(checked["order_request_json"])
         self.assertEqual("SI2609", request["symbol"])
-        self.assertEqual("空", request["direction"])
-        self.assertEqual("平", request["offset"])
+        self.assertEqual(stage905.Direction.SHORT.value, request["direction"])
+        self.assertEqual(stage905.Offset.CLOSE.value, request["offset"])
         self.assertEqual(6, request["volume"])
 
     def test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks(self) -> None:

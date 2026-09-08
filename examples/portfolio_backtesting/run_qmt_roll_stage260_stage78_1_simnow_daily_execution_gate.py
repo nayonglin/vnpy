@@ -6,7 +6,7 @@ import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -19,6 +19,8 @@ from qmt_roll_official_execution_profile import (
     resolve_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import STAGE901_PENDING_ORDERS_PATH
+from qmt_roll_official_live_broker_close_sizing import size_full_close_intent
+from qmt_roll_official_live_execution_ledger import read_execution_ledger
 from qmt_roll_official_pending_artifact import (
     ValidatedArtifactSnapshot,
     load_validated_artifact_snapshot,
@@ -369,6 +371,8 @@ def _decision_for_signal(
 
     if not readonly_gate["passed"]:
         reasons.append("readonly_gate_not_passed")
+    if row.get("broker_close_sizing_error"):
+        reasons.append(str(row["broker_close_sizing_error"]))
     if active_order_count > 0:
         reasons.append(f"active_order_count={active_order_count}")
     if offset == "open" and risk_level == "review":
@@ -408,6 +412,7 @@ def _decision_for_signal(
         "direction": direction,
         "offset": offset,
         "planned_volume": volume,
+        "broker_close_sizing": row.get("broker_close_sizing", {}),
         "theoretical_price": _to_float(row.get("theoretical_price"), 0.0),
         "exit_reason": row.get("exit_reason", ""),
         "risk_level": risk_level,
@@ -503,6 +508,7 @@ def run_daily_execution_gate(
     readonly_summary: Mapping[str, Any],
     positions: pd.DataFrame,
     orders: pd.DataFrame,
+    broker_trade_rows: Sequence[Mapping[str, Any]] | None = None,
     max_snapshot_age_seconds: int = 300,
     now: datetime | None = None,
     write_outputs: bool = True,
@@ -510,7 +516,7 @@ def run_daily_execution_gate(
     assert_canonical_execution_profile(profile)
     artifact_hashes: Mapping[str, str] = {}
     pending_cohort_id = ""
-    if not profile.intraday_stop_retry_enabled:
+    if not profile.intraday_stop_retry_enabled or artifact_snapshot is not None:
         materialized = materialize_validated_artifact_snapshot(
             profile,
             artifact_snapshot,
@@ -578,7 +584,25 @@ def run_daily_execution_gate(
     active_orders = _active_order_count(orders)
     risk_snapshot = _build_risk_snapshot(official_summary)
     decision_rows: list[dict[str, Any]] = []
+    close_ledger_rows = None
     for raw in candidates.to_dict(orient="records"):
+        if profile.intraday_stop_retry_enabled and _normalize_offset(raw.get("offset")) == "close":
+            try:
+                if raw.get("execution_source") != "stage901_pending_order":
+                    raise ValueError("broker_full_close_pending_source_required")
+                if close_ledger_rows is None:
+                    close_ledger_rows = read_execution_ledger()
+                close_sizing = size_full_close_intent(
+                    intent=raw, pending_orders=pending_orders, current_positions=current_positions,
+                    official_summary=official_summary, broker_positions=positions,
+                    execution_ledger_rows=close_ledger_rows,
+                    broker_trade_rows=broker_trade_rows,
+                    require_broker_trade_coverage=False,
+                )
+                raw["volume"] = close_sizing["volume"]
+                raw["broker_close_sizing"] = close_sizing
+            except ValueError as exc:
+                raw["broker_close_sizing_error"] = str(exc)
         row = _decision_for_signal(
             raw,
             risk_snapshot,
@@ -727,9 +751,7 @@ def main() -> None:
             else None
         ),
         artifact_snapshot=(
-            None
-            if profile.intraday_stop_retry_enabled
-            else load_validated_artifact_snapshot(profile)
+            load_validated_artifact_snapshot(profile)
         ),
         readonly_summary=readonly_summary,
         positions=_read_csv_maybe(readonly_outputs.get("positions")),

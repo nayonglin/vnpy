@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
-from datetime import datetime
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -29,7 +29,14 @@ from qmt_roll_official_live_intent_spool import (
     record_trace_observation,
     spool_counts,
     wakeup_socket_path,
+    _row_to_intent,
+    reconcile_sent_open,
+    SpoolError,
 )
+from qmt_roll_official_live_broker_account_snapshot import load_broker_account_snapshot
+from qmt_roll_official_live_broker_open_queue import build_sent_open_reconciliation_proof
+from qmt_roll_official_live_execution_ledger import read_execution_ledger
+from qmt_roll_official_live_phase_d_config import READONLY_SUMMARY_PATH, READONLY_QUERY_BUNDLE_MANIFEST_PATH
 from qmt_roll_official_live_tick_reader import TickStreamJournalReader
 from qmt_roll_official_live_tick_types import (
     DurableTickBatch,
@@ -790,6 +797,8 @@ def _intents_for_detector_commit(
     accepted: list[dict[str, Any]] = []
     for intent in intents:
         source = _clean(intent.get("source"))
+        if _clean(intent.get("offset")) == "open" and _clean(intent.get("broker_sizing_error")):
+            continue
         if source == "stage901_pending_order":
             if _clean(intent.get("executor_status")) != (
                 "dry_run_order_request_payload_ready"
@@ -829,6 +838,65 @@ def _intents_for_detector_commit(
         return (3, _clean(intent.get("intent_id")))
 
     return sorted(accepted, key=priority)
+
+
+def _broker_snapshot_watermark(connection: sqlite3.Connection) -> int:
+    row = connection.execute("SELECT MAX(updated_epoch_ns) FROM intents WHERE state='reconciled'").fetchone()
+    return int(row[0] or 0)
+
+
+def _reconcile_sent_open_intents(connection: sqlite3.Connection, *, clock: Clock) -> tuple[str, ...]:
+    rows = connection.execute(
+        "SELECT * FROM intents WHERE intent_kind='open' AND state='sent' ORDER BY spool_sequence"
+    ).fetchall()
+    if not rows:
+        return ()
+    try:
+        snapshot = load_broker_account_snapshot(
+            READONLY_SUMMARY_PATH, READONLY_QUERY_BUNDLE_MANIFEST_PATH,
+            now=datetime.fromtimestamp(clock.epoch_ns() / 1_000_000_000, tz=timezone.utc),
+        )
+        ledger_rows = read_execution_ledger()
+    except (ValueError, OSError, TypeError) as exc:
+        return (f"sent_reconciliation_snapshot_blocked:{exc}",)
+    blockers = []
+    for row in rows:
+        try:
+            sent = _row_to_intent(row)
+            stamp = ClockStamp.from_clock(clock)
+            proof = build_sent_open_reconciliation_proof(
+                sent_intent=asdict(sent), broker_snapshot=snapshot,
+                execution_ledger_rows=ledger_rows,
+                now=datetime.fromtimestamp(stamp.epoch_ns / 1_000_000_000, tz=timezone.utc),
+            )
+            reconcile_sent_open(
+                connection, evidence=proof, broker_snapshot=snapshot, execution_ledger_rows=ledger_rows,
+                now_epoch_ns=stamp.epoch_ns, now_monotonic_ns=stamp.monotonic_ns,
+                clock_domain_id=stamp.clock_domain_id,
+            )
+        except (SpoolError, ValueError, TypeError) as exc:
+            blockers.append(f"sent_reconciliation_blocked:{row['intent_id']}:{exc}")
+    return tuple(blockers)
+
+
+def _broker_open_queue_state(
+    connection: sqlite3.Connection,
+    *,
+    target_date: str,
+    verify_sent: bool = False,
+) -> tuple[set[str], str]:
+    existing = set()
+    blocked = False
+    for intent_id, day, state, disposition in connection.execute(
+        "SELECT intent_id, target_date, state, ledger_disposition FROM intents WHERE intent_kind='open'"
+    ):
+        if day == target_date:
+            existing.add(str(intent_id))
+        if state in {"ready", "leased", "sending", "side_effect_unknown"} or (state == "sent" and not verify_sent):
+            blocked = True
+        if state == "blocked" and disposition not in {"", "no_side_effect_retryable", "post_slot_no_native_retryable"}:
+            blocked = True
+    return existing, "broker_sizing_unreconciled_open_intent" if blocked else ""
 
 
 def _unstamped_committed_intent_ids(connection: sqlite3.Connection) -> list[str]:
@@ -1095,6 +1163,7 @@ def run_detector_once(
         raise TypeError("config_must_be_detector_config")
     connection = open_spool(config.spool_path)
     try:
+        sent_reconciliation_blockers = _reconcile_sent_open_intents(connection, clock=clock)
         repaired = _repair_unstamped_commits(connection, clock=clock)
         _repair_pending_publication(connection, config=config)
         cursor_before = read_detector_cursor(
@@ -1111,7 +1180,7 @@ def run_detector_once(
                 cursor_after=cursor_before,
                 durable_through=None,
                 repaired=repaired,
-                blockers=(str(exc),),
+                blockers=(str(exc), *sent_reconciliation_blockers),
             )
         heartbeat_blockers = _heartbeat_acceptance_blockers(heartbeat)
         if heartbeat_blockers:
@@ -1122,7 +1191,7 @@ def run_detector_once(
                 cursor_after=cursor_before,
                 durable_through=None,
                 repaired=repaired,
-                blockers=heartbeat_blockers,
+                blockers=(*heartbeat_blockers, *sent_reconciliation_blockers),
             )
         try:
             batch = _read_durable_batch(config, connection, heartbeat)
@@ -1134,7 +1203,7 @@ def run_detector_once(
                 cursor_after=cursor_before,
                 durable_through=None,
                 repaired=repaired,
-                blockers=(str(exc),),
+                blockers=(str(exc), *sent_reconciliation_blockers),
             )
         if batch.gap is not None:
             return _result_with_spool_counts(
@@ -1145,7 +1214,7 @@ def run_detector_once(
                 durable_through=batch.durable_through,
                 tick_count=len(batch.records),
                 repaired=repaired,
-                blockers=(f"tick_reader_gap:{batch.gap.reason}",),
+                blockers=(f"tick_reader_gap:{batch.gap.reason}", *sent_reconciliation_blockers),
             )
         if not batch.records:
             return _result_with_spool_counts(
@@ -1159,6 +1228,7 @@ def run_detector_once(
                 cursor_after=cursor_before,
                 durable_through=batch.durable_through,
                 repaired=repaired,
+                blockers=sent_reconciliation_blockers,
             )
         if batch.next_cursor is None:
             return _result_with_spool_counts(
@@ -1169,7 +1239,7 @@ def run_detector_once(
                 durable_through=batch.durable_through,
                 tick_count=len(batch.records),
                 repaired=repaired,
-                blockers=("tick_reader_next_cursor_missing",),
+                blockers=("tick_reader_next_cursor_missing", *sent_reconciliation_blockers),
             )
         _validate_batch_traces(batch, clock=clock)
         stage904_result = run_intraday_monitor(
@@ -1206,8 +1276,11 @@ def run_detector_once(
                 durable_through=batch.durable_through,
                 tick_count=len(batch.records),
                 repaired=repaired,
-                blockers=after_stage904_blockers,
+                blockers=(*after_stage904_blockers, *sent_reconciliation_blockers),
             )
+        existing_open_ids, sizing_blocker = _broker_open_queue_state(
+            connection, target_date=config.target_date,
+        )
         stage905_result = run_executor_dry_run(
             config.target_date,
             mode="dry-run",
@@ -1221,6 +1294,9 @@ def run_detector_once(
             ),
             clock=clock,
             write_compat_outputs=False,
+            existing_open_intent_ids=tuple(sorted(existing_open_ids)),
+            open_sizing_blocker=";".join(sent_reconciliation_blockers) or sizing_blocker,
+            broker_snapshot_not_before_epoch_ns=_broker_snapshot_watermark(connection),
         )
         intents_frame = stage905_result.intents
         if not isinstance(intents_frame, pd.DataFrame):
@@ -1264,7 +1340,7 @@ def run_detector_once(
                 durable_through=batch.durable_through,
                 tick_count=len(batch.records),
                 repaired=repaired,
-                blockers=before_commit_blockers,
+                blockers=(*before_commit_blockers, *sent_reconciliation_blockers),
             )
         commit_stamp_epoch_ns = clock.epoch_ns()
         commit_stamp_monotonic_ns = clock.monotonic_ns()
@@ -1312,6 +1388,7 @@ def run_detector_once(
             expired_count=int(counts.get("expired", 0)),
             repaired=repaired,
             notified=notified,
+            blockers=sent_reconciliation_blockers,
         )
     finally:
         connection.close()

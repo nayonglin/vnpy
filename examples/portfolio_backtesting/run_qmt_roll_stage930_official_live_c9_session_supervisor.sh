@@ -49,7 +49,7 @@ wait_for_group_exit() {
   local pgid="$1"
   local timeout="$2"
   local deadline
-  deadline="$(${PYTHON_PATH} -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${timeout}")"
+  deadline="$("${PYTHON_PATH}" -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${timeout}")"
   while group_alive "${pgid}"; do
     reap_active_child_if_exited "${active_pid}" || true
     if ! group_alive "${pgid}"; then
@@ -125,7 +125,7 @@ exit_if_terminated() {
 
 interruptible_restart_delay() {
   local deadline
-  deadline="$(${PYTHON_PATH} -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${restart_delay}")"
+  deadline="$("${PYTHON_PATH}" -S -c 'import sys,time; print(time.monotonic() + float(sys.argv[1]))' "${restart_delay}")"
   while true; do
     exit_if_terminated
     if "${PYTHON_PATH}" -S -c 'import sys,time; raise SystemExit(0 if time.monotonic() >= float(sys.argv[1]) else 1)' "${deadline}"; then

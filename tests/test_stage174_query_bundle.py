@@ -767,7 +767,17 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
                     "BrokerID": "9999",
                     "InvestorID": "00001234",
                     "AccountID": "00001234",
+                    "CurrencyID": "CNY",
+                    "Balance": 200000.0,
+                    "Available": 180000.0,
+                    "CurrMargin": 19000.0,
+                    "FrozenMargin": 100.0,
+                    "FrozenCash": 20.0,
+                    "FrozenCommission": 3.0,
                 }
+                self.onRspQryTradingAccount(
+                    {**data, "Balance": 999999.0}, {"ErrorID": 0}, reqid - 50, True
+                )
                 self._later(
                     0.01,
                     lambda: self.onRspQryTradingAccount(
@@ -890,6 +900,13 @@ class Stage174ReadonlyQueryBundleTest(unittest.TestCase):
             lifecycle["new_connection_generation"],
         )
         self.assertTrue(result["broker_query_bundle"]["complete"])
+        sizing = stage174.build_broker_account_snapshot(
+            result, result["rows"]["raw_queried_accounts"], result["rows"]["raw_queried_positions"],
+        )
+        self.assertEqual(200000.0, sizing["equity"])
+        self.assertEqual(19000.0, sizing["margin"])
+        self.assertEqual(123.0, sizing["frozen"])
+        self.assertEqual(lifecycle["new_connection_generation"], sizing["connection_generation"])
         self.assertEqual(0, result["order_api_called_count"])
         self.assertEqual(0, result["native_mutation_api_called_count"])
         self.assertEqual(

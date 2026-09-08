@@ -6,6 +6,7 @@ from datetime import datetime
 from io import BytesIO
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -28,7 +29,11 @@ import analyze_qmt_roll_stage861_stage860_full_visual_atlas as s861
 from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
 from qmt_roll_official_execution_profile import C9_15W_PROFILE
 from qmt_roll_official_pending_artifact import PENDING_ARTIFACT_SCHEMA_VERSION
-from qmt_roll_official_live_execution_ledger import read_execution_ledger
+from qmt_roll_official_live_execution_ledger import (
+    _event_trade_identity,
+    read_execution_ledger,
+    weighted_open_fill,
+)
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_ALIAS,
@@ -217,6 +222,8 @@ def _live_stop_alignment_events(
         if fingerprint and payload:
             payload_by_fingerprint[fingerprint] = payload
     rows: list[dict[str, Any]] = []
+    seen_fills: dict[str, tuple[Any, ...]] = {}
+    cycle_fills: dict[tuple[str, ...], dict[str, Any] | None] = {}
     for row in ledger_rows:
         if _clean_text(row.get("event_type")) != "filled_or_part_filled":
             continue
@@ -269,6 +276,25 @@ def _live_stop_alignment_events(
         if latest_open_date is not None and generated_date < latest_open_date:
             continue
 
+        root_id = _clean_text(event_value("root_position_id"))
+        epoch_id = _clean_text(event_value("position_epoch_id"))
+        cycle_id = _clean_text(event_value("position_cycle_id"))
+        target_date = _clean_text(event_value("target_date"))
+        cycle_key = (target_date, vt_symbol, position_direction, root_id, epoch_id, cycle_id)
+        if cycle_key not in cycle_fills:
+            cycle_fills[cycle_key] = weighted_open_fill(
+                ledger_rows, target_date, vt_symbol, position_direction,
+                root_position_id=root_id, position_epoch_id=epoch_id, position_cycle_id=cycle_id,
+            ) if root_id and epoch_id and cycle_id else None
+        cycle_fill = cycle_fills[cycle_key] or {}
+        fill_identity = _event_trade_identity(row)
+        fill_value = (cycle_key, offset, volume, _to_float(row.get("price"), 0),
+                      _clean_text(row.get("fill_price_source")))
+        fill_conflict = bool(fill_identity and fill_identity in seen_fills and seen_fills[fill_identity] != fill_value)
+        if fill_identity and fill_identity in seen_fills and not fill_conflict:
+            continue
+        if fill_identity:
+            seen_fills[fill_identity] = fill_value
         rows.append(
             {
                 "generated_at": _clean_text(row.get("generated_at")),
@@ -292,6 +318,15 @@ def _live_stop_alignment_events(
                     latest_open_date.date().isoformat() if latest_open_date is not None else ""
                 ),
                 "alignment_note": alignment_note,
+                "root_position_id": root_id,
+                "position_epoch_id": epoch_id,
+                "position_cycle_id": cycle_id,
+                "position_cycle_no": event_value("position_cycle_no"),
+                "root_entry_volume": event_value("root_entry_volume"),
+                "actual_cycle_entry_volume": cycle_fill.get("volume"),
+                "fill_identity": fill_identity,
+                "fill_identity_conflict": fill_conflict,
+                "fill_price_source": _clean_text(row.get("fill_price_source")),
             }
         )
     return pd.DataFrame(rows)
@@ -325,7 +360,56 @@ def _alignment_group(events: pd.DataFrame) -> pd.DataFrame:
     grouped["net_stop_close_volume"] = (
         grouped["stop_close_volume"] - grouped["retry_open_volume"]
     ).clip(lower=0.0)
+    for index, group in grouped.iterrows():
+        matched = frame[frame["vt_symbol"].eq(group["vt_symbol"]) & frame["position_direction"].eq(group["position_direction"])]
+        evidence = _whole_epoch_alignment(matched.to_dict(orient="records"))
+        for key, value in evidence.items():
+            grouped.at[index, key] = value
     return grouped
+
+
+def _whole_epoch_alignment(events: list[dict[str, Any]]) -> dict[str, Any]:
+    result = {"epoch_alignment_status": "quarantined", "epoch_alignment_blocker": "root_epoch_evidence_missing",
+              "root_actual_volume": 0.0, "root_position_id": "", "position_epoch_id": ""}
+    relevant = [row for row in events if row.get("alignment_note") != "live_bug_repair_close_not_subtracted_from_shadow"]
+    if not relevant:
+        return {**result, "epoch_alignment_status": "unchanged", "epoch_alignment_blocker": ""}
+    identities = {(_clean_text(row.get("root_position_id")), _clean_text(row.get("position_epoch_id"))) for row in relevant}
+    if len(identities) != 1 or not all(next(iter(identities))):
+        return result
+    root, epoch = next(iter(identities))
+    result.update(root_position_id=root, position_epoch_id=epoch)
+    for row in relevant:
+        values = [row.get(key) for key in ("root_entry_volume", "actual_cycle_entry_volume", "fill_volume")]
+        if any(isinstance(value, bool) or not math.isfinite(_to_float(value, float("nan")))
+               or _to_float(value) <= 0 or not _to_float(value).is_integer() for value in values):
+            return result
+        if (not row.get("position_cycle_id") or not row.get("fill_identity") or row.get("fill_identity_conflict")
+                or row.get("fill_price_source") != "event_trade_weighted_avg"
+                or not math.isfinite(_to_float(row.get("fill_price"), float("nan")))
+                or _to_float(row.get("fill_price")) <= 0
+                or _to_float(row.get("position_cycle_no"), -1) not in {0, 1}):
+            return result
+    root_volumes = {_to_float(row["root_entry_volume"]) for row in relevant}
+    if len(root_volumes) != 1:
+        return result
+    root_volume = next(iter(root_volumes))
+    result["root_actual_volume"] = root_volume
+    latest_cycle = max(_to_float(row["position_cycle_no"]) for row in relevant)
+    latest = [row for row in relevant if _to_float(row["position_cycle_no"]) == latest_cycle]
+    cycle_ids = {_clean_text(row["position_cycle_id"]) for row in latest}
+    entry_volumes = {_to_float(row["actual_cycle_entry_volume"]) for row in latest}
+    if len(cycle_ids) != 1 or len(entry_volumes) != 1:
+        return result
+    actual_volume = next(iter(entry_volumes))
+    if (latest_cycle == 0 and actual_volume != root_volume) or actual_volume > root_volume:
+        return {**result, "epoch_alignment_blocker": "root_actual_volume_mismatch"}
+    closed_volume = sum(_to_float(row["stop_close_volume"]) for row in latest)
+    if closed_volume == actual_volume:
+        return {**result, "epoch_alignment_status": "whole_epoch_flat", "epoch_alignment_blocker": ""}
+    if closed_volume == 0 and latest_cycle == 1:
+        return {**result, "epoch_alignment_status": "whole_epoch_open", "epoch_alignment_blocker": ""}
+    return {**result, "epoch_alignment_blocker": "partial_or_excess_root_close_not_supported"}
 
 
 def _apply_live_stop_to_current_positions(
@@ -334,11 +418,8 @@ def _apply_live_stop_to_current_positions(
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     if current_positions.empty or grouped.empty:
         return current_positions.copy(), []
-    deltas = {
-        (_clean_text(row["vt_symbol"]), _clean_text(row["position_direction"])): min(
-            0.0,
-            _to_float(row.get("position_delta_volume"), 0.0),
-        )
+    evidence_by_key = {
+        (_clean_text(row["vt_symbol"]), _clean_text(row["position_direction"])): row
         for row in grouped.to_dict(orient="records")
     }
     frame = current_positions.copy()
@@ -347,14 +428,27 @@ def _apply_live_stop_to_current_positions(
     for idx, row in frame.iterrows():
         vt_symbol = _clean_text(row.get("vt_symbol"))
         direction = _normal_direction(row.get("direction"))
-        delta = deltas.get((vt_symbol, direction), 0.0)
-        if delta >= 0:
+        evidence = evidence_by_key.get((vt_symbol, direction))
+        if not evidence:
+            continue
+        status = evidence.get("epoch_alignment_status", "quarantined")
+        if status in {"unchanged", "whole_epoch_open"}:
             continue
         original_signed = _to_float(row.get("end_pos", row.get("volume")), 0.0)
         original_volume = abs(original_signed)
         if original_volume <= 0:
             continue
-        new_volume = max(0.0, original_volume + delta)
+        if status == "quarantined":
+            keep_mask.at[idx] = False
+            audit_rows.append({
+                "vt_symbol": vt_symbol, "direction": direction, "original_volume": original_volume,
+                "new_volume": None, "applied_delta_volume": None, "row_removed": 1,
+                "status": "quarantined", "blocker": evidence.get("epoch_alignment_blocker") or "root_epoch_evidence_missing",
+                "root_position_id": evidence.get("root_position_id", ""),
+                "position_epoch_id": evidence.get("position_epoch_id", ""),
+            })
+            continue
+        new_volume = 0.0
         applied_delta = new_volume - original_volume
         if abs(applied_delta) <= 1e-9:
             continue
@@ -369,7 +463,7 @@ def _apply_live_stop_to_current_positions(
         frame.at[idx, "live_stop_alignment_delta_volume"] = applied_delta
         if "live_stop_alignment_note" not in frame.columns:
             frame["live_stop_alignment_note"] = ""
-        frame.at[idx, "live_stop_alignment_note"] = "aligned_with_stage904_realtime_stop_fill"
+        frame.at[idx, "live_stop_alignment_note"] = "aligned_with_proven_whole_root_epoch_stop"
         if new_volume <= 1e-9:
             keep_mask.at[idx] = False
         audit_rows.append(
@@ -380,6 +474,10 @@ def _apply_live_stop_to_current_positions(
                 "new_volume": new_volume,
                 "applied_delta_volume": applied_delta,
                 "row_removed": int(new_volume <= 1e-9),
+                "status": "whole_epoch_flat",
+                "root_actual_volume": evidence["root_actual_volume"],
+                "root_position_id": evidence["root_position_id"],
+                "position_epoch_id": evidence["position_epoch_id"],
             }
         )
     return frame.loc[keep_mask].reset_index(drop=True), audit_rows
@@ -393,12 +491,14 @@ def _suppress_stage901_open_rows(
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     if frame.empty or grouped.empty:
         return frame.copy(), []
+    quarantined = {_clean_text(row["vt_symbol"]).upper() for row in grouped.to_dict(orient="records")
+                   if row.get("epoch_alignment_status") == "quarantined"}
     suppress_keys = {
         (_clean_text(row["vt_symbol"]), _clean_text(row["position_direction"]))
         for row in grouped.to_dict(orient="records")
         if _to_float(row.get("suppress_signal_plan_volume"), 0.0) > 0
     }
-    if not suppress_keys:
+    if not suppress_keys and not quarantined:
         return frame.copy(), []
     out = frame.copy()
     keep_mask = pd.Series(True, index=out.index)
@@ -407,7 +507,7 @@ def _suppress_stage901_open_rows(
         vt_symbol = _clean_text(row.get("vt_symbol"))
         direction = _normal_direction(row.get("direction"))
         offset = _normal_offset(row.get("offset"))
-        if offset != "open" or (vt_symbol, direction) not in suppress_keys:
+        if vt_symbol.upper() not in quarantined and (offset != "open" or (vt_symbol, direction) not in suppress_keys):
             continue
         keep_mask.at[idx] = False
         audit_rows.append(
@@ -417,7 +517,10 @@ def _suppress_stage901_open_rows(
                 "direction": direction,
                 "offset": offset,
                 "volume": _to_float(row.get("volume", row.get("planned_volume")), 0.0),
-                "suppress_reason": "stage901_open_already_touched_by_stage904_realtime_stop_logic",
+                "suppress_reason": (
+                    "stage901_root_epoch_quarantined_blocks_all_symbol_signals" if vt_symbol.upper() in quarantined
+                    else "stage901_open_already_touched_by_stage904_realtime_stop_logic"
+                ),
             }
         )
     return out.loc[keep_mask].reset_index(drop=True), audit_rows
@@ -465,6 +568,10 @@ def _align_shadow_with_live_stop_fills(
         "position_adjustments": position_adjustments,
         "suppressed_rows": suppressed_signals + suppressed_pending,
         "events": events.to_dict(orient="records"),
+        "quarantined_symbols": sorted({_clean_text(row["vt_symbol"]) for row in grouped.to_dict(orient="records")
+                                       if row.get("epoch_alignment_status") == "quarantined"}),
+        "blockers": [f"shadow_epoch_quarantined:{row['vt_symbol']}:{row['epoch_alignment_blocker']}"
+                     for row in grouped.to_dict(orient="records") if row.get("epoch_alignment_status") == "quarantined"],
     }
     return aligned_positions, aligned_signal_plan, aligned_pending_orders, events, live_stop_alignment
 

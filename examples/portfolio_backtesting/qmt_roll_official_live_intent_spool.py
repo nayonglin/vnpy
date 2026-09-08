@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -2287,6 +2288,70 @@ def reconcile_side_effect_unknown(
         return _row_to_intent(updated)
 
 
+def reconcile_sent_open(
+    connection: sqlite3.Connection,
+    *,
+    evidence: Mapping[str, Any],
+    broker_snapshot: Mapping[str, Any],
+    execution_ledger_rows: Sequence[Mapping[str, Any]],
+    now_epoch_ns: int,
+    now_monotonic_ns: int,
+    clock_domain_id: str,
+) -> SpoolIntent:
+    """Revalidate exact sent evidence, then atomically persist proof and terminal state."""
+    from qmt_roll_official_live_broker_open_queue import build_sent_open_reconciliation_proof
+
+    if not isinstance(evidence, Mapping):
+        raise SpoolValidationError("sent_reconciliation_evidence_type_invalid")
+    intent_id = _required_text(evidence.get("intent_id"), field_name="intent_id", max_bytes=512)
+    normalized_now, normalized_monotonic, normalized_domain = _validate_now_stamp(
+        now_epoch_ns=now_epoch_ns, now_monotonic_ns=now_monotonic_ns, clock_domain_id=clock_domain_id,
+    )
+    now = datetime.fromtimestamp(normalized_now // 1_000_000_000, tz=timezone.utc).replace(
+        microsecond=(normalized_now % 1_000_000_000) // 1000,
+    )
+    with _write_transaction(connection):
+        row = connection.execute("SELECT * FROM intents WHERE intent_id=?", (intent_id,)).fetchone()
+        if row is None or row["state"] != "sent" or row["intent_kind"] != "open":
+            raise SpoolTransitionError("sent_reconciliation_compare_and_swap_mismatch")
+        current = _row_to_intent(row)
+        try:
+            expected = build_sent_open_reconciliation_proof(
+                sent_intent=asdict(current), broker_snapshot=broker_snapshot,
+                execution_ledger_rows=execution_ledger_rows, now=now,
+            )
+        except ValueError as exc:
+            raise SpoolValidationError(str(exc)) from exc
+        if dict(evidence) != expected:
+            raise SpoolTransitionError("sent_reconciliation_proof_mismatch")
+        evidence_json = _canonical_json_text(
+            {"proof": expected, "observed_epoch_ns": normalized_now,
+             "observed_monotonic_ns": normalized_monotonic, "clock_domain_id": normalized_domain},
+            field_name="sent_reconciliation_evidence",
+        )
+        changed = connection.execute(
+            """
+            UPDATE intents
+            SET state='reconciled', updated_epoch_ns=?,
+                lease_owner='', lease_token='', lease_expires_epoch_ns=0,
+                lease_expires_monotonic_ns=0, lease_clock_domain_id='',
+                ledger_disposition='reconciled', recovery_evidence_json=?, last_error='',
+                state_revision=state_revision+1
+            WHERE intent_id=? AND state='sent' AND intent_kind='open'
+              AND lease_owner=? AND lease_token=? AND payload_sha256=?
+              AND state_revision=? AND updated_epoch_ns=?
+            """,
+            (normalized_now, evidence_json, intent_id, current.lease_owner, current.lease_token,
+             current.payload_sha256, current.state_revision, current.updated_epoch_ns),
+        ).rowcount
+        if changed != 1:
+            raise SpoolTransitionError("sent_reconciliation_compare_and_swap_lost")
+        updated = connection.execute("SELECT * FROM intents WHERE intent_id=?", (intent_id,)).fetchone()
+        if updated is None:
+            raise SpoolStorageError("sent_reconciliation_readback_missing")
+        return _row_to_intent(updated)
+
+
 def record_trace_observation(
     connection: sqlite3.Connection,
     *,
@@ -2978,6 +3043,7 @@ __all__ = [
     "record_trace_observation",
     "recover_expired_lease",
     "reconcile_side_effect_unknown",
+    "reconcile_sent_open",
     "side_effect_unknown_leases",
     "spool_counts",
     "transition_intent",

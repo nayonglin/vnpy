@@ -19,6 +19,11 @@ from typing import Any
 
 import pandas as pd
 
+from qmt_roll_official_live_broker_account_snapshot import (
+    broker_sizing_sha256,
+    build_broker_account_snapshot,
+)
+
 from vnpy.event import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import (
@@ -2050,6 +2055,14 @@ def _run_probe(
             request_return_code=final_query_requests["contracts"].get("return_code"),
             request_sent_at=final_query_requests["contracts"].get("request_sent_at"),
         )
+        for name, query in (
+            ("orders", order_query), ("trades", trade_query),
+            ("positions", position_query), ("account", account_query),
+            ("contracts", contract_query),
+        ):
+            query["connection_generation"] = _clean_ctp_text(
+                final_query_requests[name].get("connection_generation")
+            )
         response_rows = normalized_orders + normalized_trades + normalized_positions
         response_account_match = bool(
             all(
@@ -2320,6 +2333,15 @@ def main() -> None:
         and query_bundle.get("full_snapshot_current_generation") is True
     )
 
+    try:
+        result["broker_sizing"] = build_broker_account_snapshot(
+            result, rows.get("raw_queried_accounts", []), rows.get("raw_queried_positions", []),
+        )
+    except ValueError as exc:
+        result["broker_sizing"] = {"schema_version": 1, "complete": False, "reason": str(exc)}
+    sizing_hash = broker_sizing_sha256(result["broker_sizing"])
+    query_bundle["broker_sizing_sha256"] = sizing_hash
+
     # Summary is published before the manifest.  A crash at any earlier point
     # leaves either the prior manifest or no matching manifest, so consumers
     # fail closed instead of combining files from different generations.
@@ -2336,6 +2358,8 @@ def main() -> None:
         "trade_identity_complete": bool(query_bundle.get("trade_identity_complete")),
         "complete": bool(query_bundle.get("complete")),
         "artifacts": artifacts,
+        "broker_sizing": result["broker_sizing"],
+        "broker_sizing_sha256": sizing_hash,
         "summary_binding": {
             "path": str(SUMMARY_PATH.resolve()),
             "generated_at": _clean_ctp_text(result.get("generated_at")),

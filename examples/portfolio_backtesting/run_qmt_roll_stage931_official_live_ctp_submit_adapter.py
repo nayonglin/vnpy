@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import signal
 import sys
 import tempfile
@@ -41,6 +42,7 @@ from qmt_roll_official_live_execution_ledger import (
     reserve_execution_api_slots,
     reserve_execution_ledger_intent,
 )
+from qmt_roll_official_live_broker_sizing import SIZING_VERSION, size_open_intent
 from qmt_roll_official_live_execution_service import (
     ExecutionResult,
     ExecutorServicePaths,
@@ -504,6 +506,57 @@ def _stage179_callback_key(kind: str, payload: Mapping[str, Any]) -> str:
     return f"stage179-{kind}-" + hashlib.sha256(encoded).hexdigest()
 
 
+def _raw_trade_ownership_evidence(td_api: Any, data: Any) -> dict[str, Any]:
+    try:
+        converted, blockers = _raw_ctp_trade_row(data, reqid=0, row_index=0)
+        if blockers or converted is None:
+            raise ValueError
+        broker_id = str(getattr(td_api, "brokerid", "") or "")
+        investor_id = str(getattr(td_api, "userid", "") or "")
+        if not broker_id or not investor_id or data.get("BrokerID") != broker_id or data.get("InvestorID") != investor_id:
+            raise ValueError
+        trading_day = datetime.strptime(str(data.get("TradingDay", "")), "%Y%m%d").date().isoformat()
+        trade_date = datetime.strptime(str(data.get("TradeDate", "")), "%Y%m%d").date().isoformat()
+        if str(data.get("HedgeFlag", "")) != "1":
+            raise ValueError
+        if not math.isfinite(converted["price"]) or not math.isfinite(converted["volume"]) or not converted["volume"].is_integer():
+            raise ValueError
+        return {**converted, "broker_trading_day": trading_day, "broker_trade_date": trade_date,
+                "broker_hedge_flag": "1", "account_fingerprint": hashlib.sha256(f"{broker_id}\0{investor_id}".encode()).hexdigest(),
+                "broker_trade_metadata_source": "ctp_on_rtn_trade"}
+    except (ValueError, KeyError, TypeError, AttributeError, OverflowError):
+        return {"invalid": True}
+
+
+def _bind_trade_ownership_evidence(rows: Mapping[str, Any], event: Mapping[str, Any]) -> dict[str, Any]:
+    result = dict(event)
+    for name in ("broker_trading_day", "broker_trade_date", "broker_hedge_flag", "account_fingerprint", "broker_trade_metadata_source"):
+        result.pop(name, None)
+    try:
+        timestamp = pd.Timestamp(event.get("broker_trade_at") or event.get("datetime"))
+        if pd.isna(timestamp):
+            raise ValueError
+        exchange = str(event.get("exchange", "") or "")
+        identity = (exchange, str(event.get("tradeid", "") or ""), timestamp.date().isoformat())
+        evidence = rows.get("_raw_trade_ownership_evidence", {}).get(identity, {})
+        if evidence.get("invalid"):
+            result["broker_trade_metadata_conflict"] = True
+        if evidence.get("invalid") or not evidence:
+            raise ValueError
+        if (f"{evidence['symbol']}.{evidence['exchange']}" != event.get("vt_symbol")
+                or evidence["broker_trade_at"] != timestamp.isoformat()
+                or evidence["direction"] != _normalize_direction_text(event.get("direction"))
+                or evidence["offset"] != _normalize_offset_text(event.get("offset"))
+                or evidence["price"] != float(event["price"])
+                or evidence["volume"] != float(event["volume"])):
+            raise ValueError
+        for name in ("broker_trading_day", "broker_trade_date", "broker_hedge_flag", "account_fingerprint", "broker_trade_metadata_source"):
+            result[name] = evidence[name]
+    except (ValueError, KeyError, TypeError, AttributeError, OverflowError):
+        result["broker_trade_metadata_unavailable"] = True
+    return result
+
+
 def _stage179_warm_callback_base(
     context: Mapping[str, Any],
     callback: Mapping[str, Any],
@@ -648,7 +701,24 @@ def _persist_stage179_warm_broker_callback(
         if broker_trade_at:
             event["broker_trade_at"] = broker_trade_at
             event["generated_at"] = broker_trade_at
-        results.append(append_broker_callback_event_once(event, ledger_path))
+        fill_result = append_broker_callback_event_once(event, ledger_path)
+        results.append(fill_result)
+        if callback.get("broker_trade_metadata_conflict") is True:
+            results.append(append_broker_callback_event_once({
+                **base, "event_type": "broker_trade_ownership_metadata_conflict",
+                "vt_orderid": vt_orderid, "tradeid": tradeid, "broker_trade_at": broker_trade_at,
+                "broker_callback_key": _stage179_callback_key("trade-ownership-conflict", identity),
+            }, ledger_path))
+        metadata_fields = ("broker_trading_day", "broker_trade_date", "broker_hedge_flag", "account_fingerprint", "broker_trade_metadata_source")
+        if not fill_result.get("blocker") and confirmed and all(callback.get(name) for name in metadata_fields):
+            metadata = {name: callback[name] for name in metadata_fields}
+            metadata_event = {
+                **base, "event_type": "broker_trade_ownership_metadata",
+                "vt_orderid": vt_orderid, "tradeid": tradeid, "vt_tradeid": vt_tradeid,
+                "broker_trade_at": broker_trade_at, "price": price, "volume": volume, **metadata,
+                "broker_callback_key": _stage179_callback_key("trade-ownership-metadata", identity),
+            }
+            results.append(append_broker_callback_event_once(metadata_event, ledger_path))
         return results
 
     if kind == "position":
@@ -1663,6 +1733,7 @@ def _raw_ctp_trade_row(
         "price": float(price),
         "volume": float(volume),
         "broker_trade_at": broker_trade_at,
+        "broker_trading_day": str(data.get("TradingDay", "") or ""),
         "trade_query_reqid": reqid,
     }, []
 
@@ -2094,6 +2165,7 @@ def _final_order_query_epoch(
                     "confirmed": True,
                     "orders": authoritative,
                     "active_orders": active_orders,
+                    "callbacks_sha256": _canonical_evidence_sha256(callbacks),
                 }
             )
             break
@@ -2184,13 +2256,78 @@ def _final_trade_query_epoch(
             if blockers:
                 result["blockers"] = blockers
             else:
-                result.update({"confirmed": True, "trades": trades})
+                result.update({"confirmed": True, "trades": trades, "callbacks_sha256": _canonical_evidence_sha256(callbacks)})
             break
         sleeper(min(0.05, max(0.0, deadline - monotonic())))
     else:
         result["blockers"] = [f"final_trade_query_timeout:reqid={reqid}"]
     epoch["active_reqid"] = None
     return result
+
+
+def _final_position_detail_query_epoch(
+    td_api: Any, rows: dict[str, Any], *, max_wait_seconds: float,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    started = monotonic()
+    deadline = started + max(0.0, float(max_wait_seconds))
+    result: dict[str, Any] = {"confirmed": False, "position_details": [], "blockers": [], "reqid": None}
+    broker_id = str(getattr(td_api, "brokerid", "") or "")
+    investor_id = str(getattr(td_api, "userid", "") or "")
+    try:
+        trading_day = datetime.strptime(str(td_api.getTradingDay()), "%Y%m%d").date().isoformat()
+    except (ValueError, TypeError, AttributeError):
+        result["blockers"] = ["position_detail_trading_day_unavailable"]
+        return result
+    if not broker_id or not investor_id or not callable(getattr(td_api, "reqQryInvestorPositionDetail", None)):
+        result["blockers"] = ["position_detail_query_prerequisite_missing"]
+        return result
+    last_query = _to_float(rows.get("_ctp_last_query_monotonic"), 0.0)
+    next_allowed = last_query + CTP_QUERY_INTERVAL_SECONDS if last_query else started
+    while monotonic() < next_allowed:
+        remaining = min(next_allowed, deadline) - monotonic()
+        if remaining <= 0:
+            result["blockers"] = ["position_detail_query_pacing_timeout"]
+            return result
+        sleeper(min(0.05, remaining))
+    if monotonic() >= deadline:
+        result["blockers"] = ["position_detail_query_deadline_exceeded"]
+        return result
+    reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
+    td_api.reqid = reqid
+    result.update(reqid=reqid, trading_day=trading_day)
+    rows.setdefault("position_detail_query_callbacks", []).clear()
+    epoch: dict[str, Any] = {"active_reqid": reqid, "complete_reqid": None, "details": [], "blockers": []}
+    rows["_position_detail_query_epoch"] = epoch
+    rows["_ctp_last_query_monotonic"] = monotonic()
+    try:
+        request_ret = td_api.reqQryInvestorPositionDetail({"BrokerID": broker_id, "InvestorID": investor_id}, reqid)
+        if request_ret != 0:
+            result["blockers"] = ["position_detail_query_request_failed"]
+            return result
+        while monotonic() < deadline:
+            if epoch["blockers"]:
+                result["blockers"] = list(epoch["blockers"])
+                return result
+            if epoch["complete_reqid"] == reqid:
+                details = [dict(detail) for detail in epoch["details"]]
+                if any(detail.get("BrokerID") != broker_id or detail.get("InvestorID") != investor_id for detail in details):
+                    result["blockers"] = ["position_detail_account_identity_mismatch"]
+                elif str(td_api.getTradingDay()) != trading_day.replace("-", ""):
+                    result["blockers"] = ["position_detail_trading_day_changed"]
+                else:
+                    result.update(confirmed=True, position_details=details,
+                                  callbacks_sha256=_canonical_evidence_sha256(rows.get("position_detail_query_callbacks", [])))
+                return result
+            sleeper(min(0.05, max(0.0, deadline - monotonic())))
+        result["blockers"] = ["position_detail_query_timeout"]
+        return result
+    except Exception as exc:
+        result["blockers"] = [f"position_detail_query_exception:{type(exc).__name__}"]
+        return result
+    finally:
+        epoch["active_reqid"] = None
 
 
 def _final_position_query_epoch(
@@ -2339,6 +2476,7 @@ def _final_position_query_epoch(
                     "success": True,
                     "confirmed": True,
                     "positions": authoritative,
+                    "callbacks_sha256": _canonical_evidence_sha256(callbacks),
                 }
             )
             break
@@ -2423,6 +2561,7 @@ def _final_open_account_funds_query_epoch(
     query_interval_seconds: float = CTP_QUERY_INTERVAL_SECONDS,
     poll_seconds: float = 0.05,
     hard_deadline_monotonic: float | None = None,
+    require_broker_sizing: bool = False,
 ) -> dict[str, Any]:
     """Return one fresh raw, reqid-bound TradingAccount funds row."""
 
@@ -2585,6 +2724,26 @@ def _final_open_account_funds_query_epoch(
                     ),
                 }
             )
+            if require_broker_sizing:
+                try:
+                    values = {
+                        name: _broker_sizing_number(raw.get(name), field=name)
+                        for name in (
+                            "Balance", "Available", "CurrMargin", "FrozenMargin",
+                            "FrozenCash", "FrozenCommission",
+                        )
+                    }
+                    if values["Balance"] <= 0 or raw.get("CurrencyID") != "CNY":
+                        raise ValueError("final_broker_sizing_positive_cny_equity_required")
+                    frozen = _broker_sizing_number(math.fsum(
+                        values[name] for name in ("FrozenMargin", "FrozenCash", "FrozenCommission")
+                    ), field="frozen")
+                    result.update({
+                        "equity": values["Balance"], "frozen": frozen,
+                        "account_values": values, "currency_id": "CNY",
+                    })
+                except (ValueError, TypeError, OverflowError) as exc:
+                    result["blockers"].append(f"final_broker_sizing_raw_account_invalid:{exc}")
             result["blockers"] = list(
                 dict.fromkeys(result["blockers"])
             )
@@ -2940,6 +3099,233 @@ def _final_open_max_order_volume_query_epoch(
     return result
 
 
+BROKER_SIZING_MAX_AGE_SECONDS = 300.0
+
+
+def _broker_sizing_number(value: Any, *, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        raise ValueError(f"final_broker_sizing_invalid_number:{field}")
+    parsed = _strict_ctp_account_number(value)
+    if parsed is None or parsed < 0:
+        raise ValueError(f"final_broker_sizing_invalid_number:{field}")
+    return parsed
+
+
+def _requires_c9_broker_sizing(intent_row: Mapping[str, Any] | None) -> bool:
+    row = intent_row or {}
+    return bool(
+        row.get("execution_profile") == C9_15W_PROFILE.profile_key
+        or row.get("intent_role") in {"c9_initial_open", "c9_retry_open_once"}
+        or row.get("source") in {"stage901_pending_order", "stage904_c9_intraday_retry_open"}
+    )
+
+
+def _broker_sizing_position_evidence(
+    rows: Mapping[str, Any], *, broker_id: str, investor_id: str,
+) -> tuple[dict[str, float], str, int]:
+    epoch = rows.get("_position_query_epoch")
+    if not isinstance(epoch, dict):
+        raise ValueError("final_broker_sizing_position_epoch_missing")
+    reqid = _to_int(epoch.get("complete_reqid"), -1)
+    raw_positions = epoch.get("broker_sizing_raw_positions")
+    if (
+        reqid <= 0 or epoch.get("strict_identity") is not True
+        or epoch.get("identity_blockers") or not isinstance(raw_positions, list)
+        or epoch.get("expected_broker_id") != broker_id
+        or epoch.get("expected_investor_id") != investor_id
+        or epoch.get("authoritative_position_rows") != len(raw_positions)
+    ):
+        raise ValueError("final_broker_sizing_position_epoch_unverified")
+    product_margin: dict[str, float] = {}
+    normalized = []
+    for position in raw_positions:
+        if not isinstance(position, dict):
+            raise ValueError("final_broker_sizing_position_invalid")
+        if position.get("BrokerID") != broker_id or position.get("InvestorID") != investor_id:
+            raise ValueError("final_broker_sizing_position_account_mismatch")
+        match = re.fullmatch(r"([A-Za-z]+)[0-9]{3,4}", str(position.get("InstrumentID", "")))
+        exchange = position.get("ExchangeID")
+        if not match or exchange not in {"CZCE", "CFFEX", "SHFE", "INE", "DCE", "GFEX"}:
+            raise ValueError("final_broker_sizing_product_unverifiable")
+        volume = _broker_sizing_number(position.get("Position"), field="Position")
+        margin = _broker_sizing_number(position.get("UseMargin"), field="UseMargin")
+        if not volume.is_integer() or position.get("PosiDirection") not in {"2", "3"}:
+            raise ValueError("final_broker_sizing_position_invalid")
+        if volume > 0 and margin <= 0:
+            raise ValueError("final_broker_sizing_positive_position_margin_unverifiable")
+        product = match.group(1)
+        product = product.upper() if exchange in {"CZCE", "CFFEX"} else product.lower()
+        product = f"{product}.{exchange}"
+        product_margin[product] = _broker_sizing_number(
+            product_margin.get(product, 0.0) + margin, field="product_margin",
+        )
+        normalized.append(_raw_ctp_position_row(position, reqid=reqid, vt_symbol_by_instrument={}))
+    current_positions = rows.get("positions", [])
+    if any(_to_int(position.get("position_query_reqid"), -1) != reqid for position in current_positions):
+        raise ValueError("final_broker_sizing_position_reqid_mismatch")
+    if _canonical_position_snapshot(normalized) != _canonical_position_snapshot(current_positions):
+        raise ValueError("final_broker_sizing_position_snapshot_mismatch")
+    digest = _canonical_evidence_sha256({"reqid": reqid, "raw_positions": raw_positions})
+    return product_margin, digest, reqid
+
+
+def _broker_sizing_contract_evidence(main_engine: Any, vt_symbol: str) -> dict[str, Any]:
+    get_contract = getattr(main_engine, "get_contract", None)
+    if not callable(get_contract):
+        raise ValueError("final_broker_sizing_contract_lookup_missing")
+    try:
+        contract = get_contract(vt_symbol)
+    except Exception as exc:
+        raise ValueError("final_broker_sizing_contract_lookup_failed") from exc
+    if contract is None:
+        raise ValueError("final_broker_sizing_contract_missing")
+    if getattr(contract, "gateway_name", None) != "CTP" or getattr(contract, "vt_symbol", None) != vt_symbol:
+        raise ValueError("final_broker_sizing_contract_identity_mismatch")
+    size = _broker_sizing_number(getattr(contract, "size", None), field="contract_size")
+    if size <= 0:
+        raise ValueError("final_broker_sizing_contract_size_invalid")
+    return {"vt_symbol": vt_symbol, "gateway_name": "CTP", "size": size}
+
+
+def _final_broker_sizing_check(
+    intent_row: Mapping[str, Any], requests: list[OrderRequest],
+    account: Mapping[str, Any], rows: Mapping[str, Any],
+    *, main_engine: Any = None,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {"confirmed": False, "blockers": []}
+    try:
+        audit = intent_row.get("broker_sizing")
+        inputs = intent_row.get("broker_sizing_inputs")
+        if not isinstance(audit, dict) or not isinstance(inputs, dict):
+            raise ValueError("final_broker_sizing_signed_audit_missing")
+        if audit.get("version") != SIZING_VERSION:
+            raise ValueError("final_broker_sizing_version_invalid")
+        frozen = json.loads(json.dumps({"audit": audit, "inputs": inputs}, allow_nan=False))
+        audit, inputs = frozen["audit"], frozen["inputs"]
+        if set(inputs) != {"intent", "signal", "account", "policy", "pricetick"}:
+            raise ValueError("final_broker_sizing_inputs_invalid")
+        if any(not isinstance(inputs[name], dict) for name in ("intent", "signal", "account", "policy")):
+            raise ValueError("final_broker_sizing_inputs_invalid")
+        payloads = []
+        if isinstance(intent_row.get("order_request"), dict):
+            payloads.append(intent_row["order_request"])
+        if intent_row.get("order_request_json"):
+            payloads.append(json.loads(intent_row["order_request_json"]))
+        if not payloads or any(
+            not isinstance(payload, dict)
+            or payload.get("broker_sizing") != audit
+            or payload.get("broker_sizing_inputs") != inputs
+            for payload in payloads
+        ):
+            raise ValueError("final_broker_sizing_payload_audit_mismatch")
+        replay = size_open_intent(**inputs)
+        for name, expected in replay.items():
+            actual = audit.get(name)
+            if isinstance(expected, (int, float)):
+                if _broker_sizing_number(actual, field=name) != expected:
+                    raise ValueError(f"final_broker_sizing_audit_replay_mismatch:{name}")
+            elif actual != expected:
+                raise ValueError(f"final_broker_sizing_audit_replay_mismatch:{name}")
+        issued = pd.Timestamp(audit.get("generated_at"))
+        if pd.isna(issued) or issued.tzinfo is None:
+            raise ValueError("final_broker_sizing_timestamp_invalid")
+        age = time.time() - issued.timestamp()
+        if age < 0 or age > BROKER_SIZING_MAX_AGE_SECONDS:
+            raise ValueError("final_broker_sizing_audit_expired_or_future")
+        if not isinstance(audit.get("generation_uuid"), str) or not audit["generation_uuid"].strip():
+            raise ValueError("final_broker_sizing_generation_missing")
+        fingerprint = hashlib.sha256(
+            f"{account['broker_id']}\0{account['account_id']}".encode("utf-8")
+        ).hexdigest()
+        if audit.get("account_fingerprint") != fingerprint:
+            raise ValueError("final_broker_sizing_account_fingerprint_mismatch")
+        if not requests or any(request.offset != Offset.OPEN for request in requests):
+            raise ValueError("final_broker_sizing_mixed_batch_unverifiable")
+        first = requests[0]
+        contract_evidence = _broker_sizing_contract_evidence(main_engine, first.vt_symbol)
+        if contract_evidence["size"] != _broker_sizing_number(inputs["signal"].get("size"), field="signal_size"):
+            raise ValueError("final_broker_sizing_contract_size_mismatch")
+        tick = _broker_sizing_number(inputs["pricetick"], field="pricetick")
+        price = _broker_sizing_number(first.price, field="physical_price")
+        if tick <= 0 or price <= 0 or not math.isclose(price / tick, round(price / tick), rel_tol=0, abs_tol=1e-7):
+            raise ValueError("final_broker_sizing_physical_price_not_on_tick")
+        for request in requests:
+            if (request.vt_symbol, request.direction, request.price) != (first.vt_symbol, first.direction, first.price):
+                raise ValueError("final_broker_sizing_mixed_batch_unverifiable")
+        original_intent = inputs["intent"]
+        for name, expected in (
+            ("vt_symbol", first.vt_symbol), ("direction", _normalize_direction_text(first.direction.value)),
+            ("offset", "open"), ("intent_role", intent_row.get("intent_role")),
+        ):
+            if original_intent.get(name) != expected:
+                raise ValueError(f"final_broker_sizing_intent_mismatch:{name}")
+        stop_field = (
+            "root_initial_stop_price" if original_intent.get("intent_role") == "c9_retry_open_once"
+            else "strategy_initial_stop_price"
+        )
+        original_stop = _broker_sizing_number(original_intent.get("strategy_initial_stop_price"), field="original_stop")
+        if any(_broker_sizing_number(payload.get(stop_field), field=stop_field) != original_stop
+               for payload in [intent_row, *payloads]):
+            raise ValueError("final_broker_sizing_execution_stop_mismatch")
+        if original_intent.get("intent_role") == "c9_retry_open_once":
+            for name in ("root_entry_volume", "root_entry_price", "root_initial_stop_price"):
+                expected = _broker_sizing_number(original_intent.get(name), field=name)
+                if any(_broker_sizing_number(payload.get(name), field=name) != expected
+                       for payload in [intent_row, *payloads]):
+                    raise ValueError(f"final_broker_sizing_retry_root_mismatch:{name}")
+        if any(_normalize_direction_text(payload.get("direction")) != original_intent["direction"]
+               or payload.get("vt_symbol") != first.vt_symbol for payload in payloads):
+            raise ValueError("final_broker_sizing_order_identity_mismatch")
+        volume = math.fsum(_broker_sizing_number(request.volume, field="request_volume") for request in requests)
+        signed_volume = _broker_sizing_number(audit.get("volume"), field="volume")
+        if volume != signed_volume or any(
+            _broker_sizing_number(payload.get("volume"), field="payload_volume") != signed_volume for payload in payloads
+        ) or _broker_sizing_number(intent_row.get("planned_volume"), field="planned_volume") != signed_volume:
+            raise ValueError("final_broker_sizing_signed_volume_mismatch")
+        products, position_digest, position_reqid = _broker_sizing_position_evidence(
+            rows, broker_id=account["broker_id"], investor_id=account["account_id"],
+        )
+        if account["curr_margin"] > 0 and not products:
+            raise ValueError("final_broker_sizing_product_margin_unverifiable")
+        if inputs["signal"].get("risk_cluster_cap_enabled"):
+            match = re.fullmatch(r"([A-Za-z]+)[0-9]{3,4}", first.symbol)
+            if not match:
+                raise ValueError("final_broker_sizing_contract_unverifiable")
+            product = match.group(1)
+            product = product.upper() if first.exchange.value in {"CZCE", "CFFEX"} else product.lower()
+            if str(inputs["signal"].get("risk_cluster_name", "")).upper() != f"{product}.{first.exchange.value}".upper():
+                raise ValueError("final_broker_sizing_cluster_unverifiable")
+        fresh_account = {
+            "equity": account["equity"], "available": account["available"],
+            "margin": account["curr_margin"], "frozen": account["frozen"],
+            "product_margin": products, "account_fingerprint": fingerprint,
+            "generation_uuid": f"stage931:{account['reqid']}:{position_reqid}",
+            "generated_at": datetime.fromtimestamp(time.time(), tz=ZoneInfo("Asia/Shanghai")).isoformat(),
+        }
+        fresh = size_open_intent(**{
+            **inputs, "intent": {**original_intent, "limit_price": float(first.price)},
+            "account": fresh_account,
+        })
+        actual_risk = _broker_sizing_number(fresh["risk_per_contract"] * volume, field="actual_risk")
+        result.update({
+            "requested_volume": volume, "allowed_volume": fresh["volume"],
+            "actual_risk": actual_risk, "signed_risk_budget": audit["risk_budget"],
+            "fresh_sizing": fresh, "position_evidence_sha256": position_digest,
+            "contract_evidence": contract_evidence,
+            "signed_audit_sha256": _canonical_evidence_sha256(frozen),
+            "issued_epoch": issued.timestamp(),
+            "expires_epoch": issued.timestamp() + BROKER_SIZING_MAX_AGE_SECONDS,
+        })
+        if volume > fresh["volume"]:
+            result["blockers"].append("final_broker_sizing_volume_exceeds_fresh_limit")
+        if actual_risk > audit["risk_budget"] + 1e-9:
+            result["blockers"].append("final_broker_sizing_original_risk_budget_exceeded")
+        result["confirmed"] = not result["blockers"]
+    except (ValueError, TypeError, KeyError, OverflowError, AttributeError) as exc:
+        result["blockers"].append(f"final_broker_sizing_unverifiable:{exc}")
+    return result
+
+
 def _final_open_funds_margin_gate(
     td_api: Any,
     rows: dict[str, Any],
@@ -2950,6 +3336,8 @@ def _final_open_funds_margin_gate(
     monotonic: Callable[[], float] = time.monotonic,
     sleeper: Callable[[float], None] = time.sleep,
     hard_deadline_monotonic: float | None = None,
+    intent_row: Mapping[str, Any] | None = None,
+    main_engine: Any = None,
 ) -> dict[str, Any]:
     """Authorize OPEN only with fresh raw funds and broker max volume."""
 
@@ -2991,6 +3379,23 @@ def _final_open_funds_margin_gate(
                 "elapsed_seconds": max(0.0, monotonic() - started),
             }
         )
+        if _requires_resized_broker_close(intent_row):
+            proof = rows.get("_resized_close_proof")
+            result["broker_close_sizing_gate"] = proof
+            result["broker_close_sizing_gate_sha256"] = _canonical_evidence_sha256(proof)
+            close_blockers = []
+            if not isinstance(proof, dict) or proof.get("audit") != (intent_row or {}).get("broker_close_sizing"):
+                close_blockers.append("resized_close_proof_missing_or_wrong_intent")
+            else:
+                close_blockers.extend(_resized_close_converted_bundle_blockers(proof, requests))
+                close_blockers.extend(_resized_close_consistency_blockers(td_api, rows, requests, result))
+            if close_blockers:
+                result.update(success=False, confirmed=False, status="blocked", blockers=close_blockers)
+            else:
+                rows["_resized_close_bound_gate"] = result
+                rows["_resized_close_requests"] = list(requests)
+                rows["_resized_close_native_count"] = 0
+                rows["_resized_close_owned_event_watermark"] = dict(proof["event_watermark"])
         return result
     if result["blockers"] or not groups:
         if not groups:
@@ -3007,12 +3412,20 @@ def _final_open_funds_margin_gate(
         monotonic=monotonic,
         sleeper=sleeper,
         hard_deadline_monotonic=hard_deadline_monotonic,
+        require_broker_sizing=_requires_c9_broker_sizing(intent_row),
     )
     result["account"] = account_result
     result["query_api_called_count"] += _to_int(
         account_result.get("query_api_called_count"), 0
     )
     result["blockers"].extend(account_result.get("blockers", []))
+    if account_result.get("confirmed") and _requires_c9_broker_sizing(intent_row):
+        sizing_check = _final_broker_sizing_check(
+            intent_row or {}, requests, account_result, rows, main_engine=main_engine,
+        )
+        result["broker_sizing_check"] = sizing_check
+        result["broker_sizing_check_sha256"] = _canonical_evidence_sha256(sizing_check)
+        result["blockers"].extend(sizing_check["blockers"])
     if account_result.get("confirmed"):
         for group in groups:
             max_result = _final_open_max_order_volume_query_epoch(
@@ -3034,6 +3447,11 @@ def _final_open_funds_margin_gate(
     result["blockers"] = list(
         dict.fromkeys(str(item) for item in result["blockers"] if str(item))
     )
+    if _requires_c9_broker_sizing(intent_row):
+        result["blockers"].extend(_event_watermark_blockers(
+            result["event_watermark"], _execution_event_watermark(rows),
+            phase="final_broker_sizing_query_window",
+        ))
     if (
         not result["blockers"]
         and account_result.get("confirmed")
@@ -3101,6 +3519,8 @@ def _final_open_funds_margin_gate(
             "max_volume_queries": result["max_volume_queries"],
             "event_watermark": result["event_watermark"],
             "query_watermark": result["query_watermark"],
+            **({"broker_sizing_check_sha256": result["broker_sizing_check_sha256"]}
+               if "broker_sizing_check_sha256" in result else {}),
         }
     )
     result["elapsed_seconds"] = max(0.0, monotonic() - started)
@@ -3115,6 +3535,7 @@ def _open_funds_gate_consistency_blockers(
     *,
     owned_native_insert_count: int = 0,
     owned_event_watermark: Mapping[str, Any] | None = None,
+    main_engine: Any = None,
 ) -> list[str]:
     """Zero-I/O proof that the exact priced OPEN bundle still owns its gate."""
 
@@ -3123,6 +3544,14 @@ def _open_funds_gate_consistency_blockers(
         for request in requests
     )
     if not has_open:
+        if "broker_close_sizing_gate" in gate:
+            blockers = _resized_close_consistency_blockers(
+                td_api, rows, requests, gate, owned_native_insert_count=owned_native_insert_count,
+                owned_event_watermark=owned_event_watermark,
+            )
+            if not blockers and owned_event_watermark is not None:
+                rows["_resized_close_owned_event_watermark"] = dict(owned_event_watermark)
+            return blockers
         # A protective CLOSE must never be delayed or blocked by OPEN funds.
         return []
     blockers: list[str] = []
@@ -3142,6 +3571,28 @@ def _open_funds_gate_consistency_blockers(
         blockers.append("final_open_funds_broker_identity_changed")
     if investor_id != str(watermark.get("investor_id", "")):
         blockers.append("final_open_funds_investor_identity_changed")
+    if "broker_sizing_check_sha256" in gate:
+        sizing_check = gate.get("broker_sizing_check", {})
+        if not isinstance(sizing_check, dict) or _canonical_evidence_sha256(sizing_check) != gate["broker_sizing_check_sha256"]:
+            blockers.append("final_broker_sizing_evidence_changed")
+        else:
+            now = time.time()
+            if not sizing_check.get("confirmed") or not (
+                sizing_check.get("issued_epoch", float("inf")) <= now <= sizing_check.get("expires_epoch", 0)
+            ):
+                blockers.append("final_broker_sizing_audit_expired_or_unconfirmed")
+            try:
+                contract_evidence = _broker_sizing_contract_evidence(main_engine, requests[0].vt_symbol)
+                if contract_evidence != sizing_check.get("contract_evidence"):
+                    blockers.append("final_broker_sizing_contract_evidence_changed")
+            except (ValueError, TypeError, KeyError, OverflowError, AttributeError, IndexError) as exc:
+                blockers.append(f"final_broker_sizing_contract_evidence_invalid:{exc}")
+            try:
+                _, digest, _ = _broker_sizing_position_evidence(rows, broker_id=broker_id, investor_id=investor_id)
+                if digest != sizing_check.get("position_evidence_sha256"):
+                    blockers.append("final_broker_sizing_position_evidence_changed")
+            except (ValueError, TypeError, KeyError, OverflowError) as exc:
+                blockers.append(f"final_broker_sizing_position_evidence_invalid:{exc}")
     expected_owned_count = _to_int(owned_native_insert_count, -1)
     if expected_owned_count < 0:
         blockers.append(
@@ -3746,6 +4197,9 @@ def _instrument_ctp_readiness_callbacks(
     original_order_rsp = getattr(td_api_class, "onRspQryOrder", None)
     trade_rsp_existed = hasattr(td_api_class, "onRspQryTrade")
     original_trade_rsp = getattr(td_api_class, "onRspQryTrade", None)
+    original_trade_rtn = getattr(td_api_class, "onRtnTrade", None)
+    detail_rsp_existed = hasattr(td_api_class, "onRspQryInvestorPositionDetail")
+    original_detail_rsp = getattr(td_api_class, "onRspQryInvestorPositionDetail", None)
     order_insert_existed = hasattr(td_api_class, "reqOrderInsert")
     original_order_insert = getattr(td_api_class, "reqOrderInsert", None)
     order_action_existed = hasattr(td_api_class, "reqOrderAction")
@@ -3950,6 +4404,10 @@ def _instrument_ctp_readiness_callbacks(
         rows["positions"].extend(authoritative_rows)
         epoch["authoritative_position_rows"] = len(authoritative_rows)
         epoch["identity_blockers"] = list(dict.fromkeys(identity_blockers))
+        epoch["broker_sizing_raw_positions"] = [
+            dict(callback_data) for callback_data, _, _, _ in pending
+            if isinstance(callback_data, dict) and callback_data
+        ]
         result: Any = None
         for callback_args in list(pending):
             result = original_position_rsp(self, *callback_args)
@@ -4085,6 +4543,47 @@ def _instrument_ctp_readiness_callbacks(
         epoch["pending_callbacks"] = []
         return None
 
+    def instrumented_trade_rtn(self: Any, data: dict) -> Any:
+        evidence = _raw_trade_ownership_evidence(self, data)
+        cache = rows.setdefault("_raw_trade_ownership_evidence", {})
+        if not evidence.get("invalid"):
+            identity = (evidence["exchange"], evidence["tradeid"], evidence["broker_trade_date"])
+            previous = cache.get(identity)
+            cache[identity] = evidence if previous is None or previous == evidence else {"invalid": True}
+        else:
+            exchange = str(data.get("ExchangeID", "") or "").strip() if isinstance(data, dict) else ""
+            tradeid = str(data.get("TradeID", "") or "").strip() if isinstance(data, dict) else ""
+            for identity in list(cache):
+                if (not exchange or identity[0] == exchange) and (not tradeid or identity[1] == tradeid):
+                    cache[identity] = {"invalid": True}
+            if exchange and tradeid:
+                try:
+                    trade_date = datetime.strptime(str(data.get("TradeDate", "")), "%Y%m%d").date().isoformat()
+                    cache[(exchange, tradeid, trade_date)] = {"invalid": True}
+                except (ValueError, TypeError):
+                    pass
+        return original_trade_rtn(self, data)
+
+    def instrumented_position_detail_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        callback = _callback_row(data, error, reqid, last)
+        callback["data_sha256"] = _canonical_evidence_sha256(data)
+        rows.setdefault("position_detail_query_callbacks", []).append(callback)
+        epoch = rows.get("_position_detail_query_epoch", {})
+        if not isinstance(epoch, dict) or epoch.get("active_reqid") is None:
+            return None
+        if reqid != epoch["active_reqid"]:
+            epoch["blockers"].append("position_detail_foreign_query_callback")
+        elif epoch["complete_reqid"] is not None:
+            epoch["blockers"].append("position_detail_callback_after_last")
+        elif callback["error_id"] or not isinstance(data, dict):
+            epoch["blockers"].append("position_detail_callback_invalid_or_error")
+        else:
+            if data:
+                epoch["details"].append(dict(data))
+            if last:
+                epoch["complete_reqid"] = reqid
+        return None
+
     def instrumented_order_insert(self: Any, data: dict, reqid: int) -> Any:
         audit: dict[str, Any] = {
             "reqid": reqid,
@@ -4111,14 +4610,25 @@ def _instrument_ctp_readiness_callbacks(
             with guard:
                 before_native = rows.get("_before_native_order_insert")
                 if not callable(before_native):
-                    raise RuntimeError(
-                        "stage179_before_native_order_insert_hook_missing"
-                    )
-                # The hook must durably persist the exact native identity
-                # before reqOrderInsert can cross the process boundary.  Any
-                # append failure aborts here and therefore proves no native
-                # side effect.
+                    raise RuntimeError("stage179_before_native_order_insert_hook_missing")
                 before_native(self, dict(data), reqid)
+                close_gate = rows.get("_resized_close_bound_gate")
+                if isinstance(close_gate, dict):
+                    close_requests = list(rows.get("_resized_close_requests", []))
+                    close_index = _to_int(rows.get("_resized_close_native_count"), -1)
+                    close_blockers = _resized_close_consistency_blockers(
+                        self, rows, close_requests, close_gate, owned_native_insert_count=close_index + 1,
+                        owned_event_watermark=rows.get("_resized_close_owned_event_watermark"),
+                    )
+                    if not 0 <= close_index < len(close_requests):
+                        close_blockers.append("resized_close_native_request_missing")
+                    else:
+                        close_blockers.extend(_native_insert_request_blockers(self, self, data, close_requests[close_index]))
+                    if reqid != _to_int(getattr(self, "reqid", -1), -1):
+                        close_blockers.append("resized_close_native_reqid_mismatch")
+                    if close_blockers:
+                        raise RuntimeError("resized_close_native_gate_blocked:" + ";".join(close_blockers))
+                    rows["_resized_close_native_count"] = close_index + 1
                 _increment_native_order_api_call_count(
                     rows, "send_order_api_called_count"
                 )
@@ -4188,6 +4698,9 @@ def _instrument_ctp_readiness_callbacks(
         td_api_class.onRspQryInvestorPosition = instrumented_position_rsp
         td_api_class.onRspQryOrder = instrumented_order_rsp
         td_api_class.onRspQryTrade = instrumented_trade_rsp
+        if callable(original_trade_rtn):
+            td_api_class.onRtnTrade = instrumented_trade_rtn
+        td_api_class.onRspQryInvestorPositionDetail = instrumented_position_detail_rsp
         if order_insert_existed and callable(original_order_insert):
             td_api_class.reqOrderInsert = instrumented_order_insert
         if order_action_existed and callable(original_order_action):
@@ -4213,6 +4726,12 @@ def _instrument_ctp_readiness_callbacks(
             td_api_class.onRspQryTrade = original_trade_rsp
         else:
             delattr(td_api_class, "onRspQryTrade")
+        if callable(original_trade_rtn):
+            td_api_class.onRtnTrade = original_trade_rtn
+        if detail_rsp_existed:
+            td_api_class.onRspQryInvestorPositionDetail = original_detail_rsp
+        else:
+            delattr(td_api_class, "onRspQryInvestorPositionDetail")
         if order_insert_existed:
             td_api_class.reqOrderInsert = original_order_insert
         if order_action_existed:
@@ -5713,7 +6232,341 @@ def _post_final_gate_pre_api_slot_blockers(
     )
 
 
+def _requires_resized_broker_close(row: Mapping[str, Any] | None) -> bool:
+    audit = (row or {}).get("broker_close_sizing")
+    if audit is None:
+        return False
+    try:
+        return _broker_sizing_number(audit["volume"], field="close_volume") != _broker_sizing_number(
+            audit["shadow_volume"], field="shadow_volume",
+        )
+    except (ValueError, TypeError, KeyError):
+        return True
+
+
+def _resized_close_ownership_proof(
+    td_api: Any, rows: Mapping[str, Any], row: Mapping[str, Any], request: OrderRequest,
+    trade_query: Mapping[str, Any], detail_query: Mapping[str, Any], final_gate: Mapping[str, Any],
+    ledger_rows: list[dict[str, Any]], *, deadline: float,
+) -> dict[str, Any]:
+    """Bind whole-position ownership to fresh opening-lot and execution evidence."""
+    from qmt_roll_official_live_broker_close_sizing import validate_owned_full_close
+    from qmt_roll_official_live_broker_position_ownership import validate_position_detail_ownership
+    from qmt_roll_official_live_execution_ledger import _ledger_integrity_blocker, _record_checksum
+
+    if _ledger_integrity_blocker(ledger_rows) or any(
+        not item.get("record_checksum") or item["record_checksum"] != _record_checksum(item) for item in ledger_rows
+    ):
+        raise ValueError("resized_close_ledger_integrity_unverifiable")
+    audit = json.loads(json.dumps(row.get("broker_close_sizing"), allow_nan=False))
+    if not isinstance(audit, dict) or audit.get("mode") != "full_close":
+        raise ValueError("resized_close_audit_invalid")
+    payloads = []
+    if isinstance(row.get("order_request"), dict):
+        payloads.append(row["order_request"])
+    if row.get("order_request_json"):
+        payloads.append(json.loads(row["order_request_json"]))
+    if not payloads or any(not isinstance(payload, dict) or payload.get("broker_close_sizing") != audit for payload in payloads):
+        raise ValueError("resized_close_payload_audit_mismatch")
+    if request.offset != Offset.CLOSE:
+        raise ValueError("resized_close_logical_full_close_required")
+    symbol = request.vt_symbol
+    direction = _normalize_direction_text(request.direction.value)
+    position_direction = _opposite_position_direction(direction)
+    volume = _broker_sizing_number(request.volume, field="close_volume")
+    if volume <= 0 or not volume.is_integer():
+        raise ValueError("resized_close_volume_invalid")
+    for source in [row, *payloads]:
+        if source.get("vt_symbol") != symbol or _normalize_direction_text(source.get("direction")) != direction:
+            raise ValueError("resized_close_order_identity_mismatch")
+    if audit.get("vt_symbol") != symbol or audit.get("position_direction") != position_direction:
+        raise ValueError("resized_close_audit_identity_mismatch")
+    if any(_broker_sizing_number(audit.get(name), field=name) != volume for name in ("volume", "broker_gross_volume", "owned_net_volume")):
+        raise ValueError("resized_close_audit_volume_mismatch")
+    if _broker_sizing_number(row.get("planned_volume"), field="planned_volume") != volume or any(
+        _broker_sizing_number(payload.get("volume"), field="payload_volume") != volume for payload in payloads
+    ):
+        raise ValueError("resized_close_signed_volume_mismatch")
+    broker_id = str(getattr(td_api, "brokerid", "") or "")
+    investor_id = str(getattr(td_api, "userid", "") or "")
+    fingerprint = hashlib.sha256(f"{broker_id}\0{investor_id}".encode()).hexdigest()
+    if not broker_id or not investor_id or audit.get("account_fingerprint") != fingerprint:
+        raise ValueError("resized_close_account_fingerprint_mismatch")
+    if not str(getattr(td_api, "frontid", "") or "") or not str(getattr(td_api, "sessionid", "") or ""):
+        raise ValueError("resized_close_connection_generation_missing")
+    target_date = str(row.get("target_date", ""))
+    trading_day = str(detail_query.get("trading_day", ""))
+    if not trading_day or str(td_api.getTradingDay()) != trading_day.replace("-", ""):
+        raise ValueError("resized_close_broker_trading_day_changed")
+    snapshot = final_gate.get("snapshot", {})
+    if not detail_query.get("confirmed") or not trade_query.get("confirmed") or not snapshot.get("confirmed") or not snapshot.get("stable"):
+        raise ValueError("resized_close_query_bundle_incomplete")
+    trade_reqid = _to_int(trade_query.get("reqid"), -1)
+    query_reqids = [_to_int(detail_query.get("reqid"), -1), trade_reqid, *[_to_int(snapshot.get(name, {}).get("reqid"), -1)
+                                  for name in ("order_q1", "position", "order_q2")]]
+    if query_reqids[0] <= 0 or query_reqids != list(range(query_reqids[0], query_reqids[0] + 5)):
+        raise ValueError("resized_close_query_sequence_unowned")
+    callback_snapshot = json.loads(json.dumps({name: rows.get(name, []) for name in
+                                               ("position_detail_query_callbacks", "trade_query_callbacks",
+                                                "position_query_callbacks", "order_query_callbacks")}, allow_nan=False))
+    for name, captured in (("position_detail", detail_query), ("trade", trade_query),
+                           ("position", snapshot["position"]), ("order", snapshot["order_q2"])):
+        callbacks = callback_snapshot[f"{name}_query_callbacks"]
+        if _canonical_evidence_sha256(callbacks) != captured.get("callbacks_sha256"):
+            raise ValueError(f"resized_close_{name}_callbacks_changed_after_completion")
+        if (not callbacks or sum(bool(callback.get("last")) for callback in callbacks) != 1
+                or not callbacks[-1].get("last") or any(
+                    callback.get("reqid") != captured.get("reqid") or callback.get("error_id") for callback in callbacks)):
+            raise ValueError(f"resized_close_{name}_callbacks_not_exact_complete_epoch")
+    position_snapshot = json.loads(json.dumps(rows.get("positions", []), allow_nan=False))
+    positions = [position for position in position_snapshot if _vt_symbol_from_row(position) == symbol]
+    gross = 0.0
+    today_volume = 0.0
+    yesterday_volume = 0.0
+    for position in positions:
+        position_volume = _broker_sizing_number(position.get("volume"), field="position_volume")
+        if _to_int(position.get("position_query_reqid"), -1) != query_reqids[3]:
+            raise ValueError("resized_close_position_query_identity_mismatch")
+        if _normalize_direction_text(position.get("direction")) != position_direction and position_volume:
+            raise ValueError("resized_close_hedged_position_uncovered")
+        position_today = _broker_sizing_number(position.get("today_volume"), field="today_volume")
+        position_yesterday = _broker_sizing_number(position.get("yesterday_volume"), field="yesterday_volume")
+        if not position_today.is_integer() or not position_yesterday.is_integer() or position_today + position_yesterday != position_volume:
+            raise ValueError("resized_close_position_buckets_invalid")
+        today_volume += position_today
+        yesterday_volume += position_yesterday
+        if _broker_sizing_number(position.get("frozen"), field="position_frozen") != 0:
+            raise ValueError("resized_close_frozen_position")
+        gross += position_volume
+    if gross != volume:
+        raise ValueError("resized_close_exact_gross_mismatch")
+    detail_ownership = validate_position_detail_ownership(
+        execution_ledger_rows=ledger_rows, position_detail_rows=detail_query.get("position_details"),
+        vt_symbol=symbol, position_direction=position_direction, broker_gross_volume=int(volume),
+        account_fingerprint=fingerprint, trading_day=trading_day,
+    )
+    if detail_ownership.get("today_volume") != today_volume or detail_ownership.get("yesterday_volume") != yesterday_volume:
+        raise ValueError("resized_close_detail_position_buckets_mismatch")
+    ownership = validate_owned_full_close(
+        execution_ledger_rows=ledger_rows, vt_symbol=symbol, position_direction=position_direction,
+        broker_gross_volume=int(volume), broker_trade_rows=trade_query.get("trades"),
+    )
+    if any(not audit.get(name) or ownership.get(name) != audit[name]
+           for name in ("root_position_id", "position_epoch_id", "owned_net_volume")):
+        raise ValueError("resized_close_owned_epoch_changed")
+    linked = {item.get("intent_fingerprint"): item["intent_payload"] for item in ledger_rows
+              if item.get("intent_fingerprint") and isinstance(item.get("intent_payload"), dict)}
+    fills: dict[tuple[str, str], dict[str, Any]] = {}
+    expected_today: set[tuple[str, str]] = set()
+    for item in ledger_rows:
+        payload = item.get("intent_payload") or linked.get(item.get("intent_fingerprint"), {})
+        event = {**payload, **{name: value for name, value in item.items() if value is not None and value != ""}}
+        if str(event.get("vt_symbol", "")).upper() != symbol.upper():
+            continue
+        if event.get("event_type") in {"broker_trade_callback_unbound", "broker_trade_callback_unidentified"}:
+            raise ValueError("resized_close_unbound_trade_coverage_missing")
+        if event.get("event_type") != "filled_or_part_filled":
+            continue
+        if event.get("source") not in {"stage901_pending_order", "stage904_c9_intraday_close", "stage904_c9_intraday_retry_open"}:
+            raise ValueError("resized_close_unowned_ledger_fill")
+        if event.get("fill_price_source") != "event_trade_weighted_avg":
+            raise ValueError("resized_close_unpriced_ledger_fill")
+        tradeid = str(event.get("tradeid") or event.get("trade_id") or "")
+        trade_at = str(event.get("broker_trade_at") or "")
+        if not tradeid or not trade_at or not event.get("vt_orderid"):
+            raise ValueError("resized_close_durable_trade_identity_missing")
+        identity = (tradeid, trade_at[:10])
+        fill = {
+            "vt_orderid": event["vt_orderid"], "direction": _normalize_direction_text(event.get("direction")),
+            "offset": _normalize_offset_text(event.get("offset")),
+            "volume": _broker_sizing_number(event.get("trade_volume_delta"), field="trade_volume_delta"),
+            "price": _broker_sizing_number(event.get("price"), field="fill_price"),
+        }
+        if identity in fills and fills[identity] != fill:
+            raise ValueError("resized_close_conflicting_durable_trade")
+        fills[identity] = fill
+        if str(event.get("broker_trading_day") or "").replace("-", "") == trading_day.replace("-", ""):
+            expected_today.add(identity)
+        elif not event.get("broker_trading_day") and trade_at[:10] == trading_day:
+            expected_today.add(identity)
+    covered: set[tuple[str, str]] = set()
+    traded_by_order: dict[str, float] = {}
+    for trade in trade_query.get("trades", []):
+        if trade.get("broker_id") != broker_id or trade.get("investor_id") != investor_id:
+            raise ValueError("resized_close_trade_account_mismatch")
+        if f"{trade.get('symbol')}.{trade.get('exchange')}" != symbol:
+            continue
+        tradeid = str(trade.get("tradeid", ""))
+        identity = (tradeid, str(trade.get("broker_trade_at", ""))[:10])
+        if trade.get("trade_query_reqid") != trade_reqid or str(trade.get("broker_trading_day", "")).replace("-", "") != trading_day.replace("-", ""):
+            raise ValueError("resized_close_trade_query_day_or_reqid_mismatch")
+        matches = [order for order in snapshot.get("order_q2", {}).get("orders", [])
+                   if order.get("exchange") == trade.get("exchange") and order.get("order_sys_id") == trade.get("order_sys_id")]
+        if len(matches) != 1:
+            raise ValueError("resized_close_trade_order_binding_missing_or_ambiguous")
+        order = matches[0]
+        if order.get("broker_id") != broker_id or order.get("investor_id") != investor_id or order.get("vt_symbol") != symbol:
+            raise ValueError("resized_close_order_account_identity_mismatch")
+        candidate = {
+            "vt_orderid": order.get("vt_orderid"), "direction": trade.get("direction"), "offset": trade.get("offset"),
+            "volume": _broker_sizing_number(trade.get("volume"), field="query_trade_volume"),
+            "price": _broker_sizing_number(trade.get("price"), field="query_trade_price"),
+        }
+        if identity not in fills or fills[identity] != candidate or identity in covered:
+            raise ValueError("resized_close_query_trade_not_owned_exactly")
+        if order.get("direction") != candidate["direction"] or order.get("offset") != candidate["offset"]:
+            raise ValueError("resized_close_order_trade_semantics_mismatch")
+        covered.add(identity)
+        orderid = str(order["vt_orderid"])
+        traded_by_order[orderid] = traded_by_order.get(orderid, 0.0) + candidate["volume"]
+    if not expected_today.issubset(covered):
+        raise ValueError("resized_close_trade_coverage_incomplete")
+    for order in snapshot.get("order_q2", {}).get("orders", []):
+        if order.get("vt_symbol") == symbol and _broker_sizing_number(order.get("traded"), field="order_traded") != traded_by_order.get(str(order.get("vt_orderid")), 0.0):
+            raise ValueError("resized_close_order_trade_volume_coverage_mismatch")
+    return {
+        "confirmed": True, "audit": audit, "ownership": ownership, "position_detail_ownership": detail_ownership,
+        "today_volume": today_volume, "yesterday_volume": yesterday_volume, "trading_day": trading_day,
+        "ledger_sha256": _canonical_evidence_sha256(ledger_rows),
+        "trade_ids": sorted(covered), "expires_monotonic": deadline,
+        "front_id": str(getattr(td_api, "frontid", "")), "session_id": str(getattr(td_api, "sessionid", "")),
+        "query_watermark": dict(final_gate["query_watermark"]),
+        "event_watermark": dict(final_gate["final_event_watermark"]),
+        "positions_sha256": _canonical_evidence_sha256(position_snapshot),
+        "callbacks_sha256": _canonical_evidence_sha256(callback_snapshot),
+        "logical_bundle": _physical_request_bundle([request]),
+    }
+
+
+def _resized_close_converted_bundle_blockers(
+    proof: Mapping[str, Any], requests: list[OrderRequest],
+) -> list[str]:
+    try:
+        logical = proof["logical_bundle"]
+        if len(logical) != 1 or not requests:
+            raise ValueError
+        expected = logical[0]
+        today = _broker_sizing_number(proof["today_volume"], field="today_volume")
+        yesterday = _broker_sizing_number(proof["yesterday_volume"], field="yesterday_volume")
+        if today + yesterday != expected["volume"]:
+            raise ValueError
+        quantities: dict[str, float] = {}
+        for child in _physical_request_bundle(requests):
+            child_volume = _broker_sizing_number(child.get("volume"), field="child_volume")
+            if not child_volume.is_integer() or child_volume <= 0:
+                raise ValueError
+            offset = child.get("offset")
+            if offset in quantities:
+                raise ValueError
+            quantities[offset] = child_volume
+            adjusted = {**child, "offset": expected["offset"], "volume": expected["volume"]}
+            if adjusted != expected:
+                raise ValueError
+        if expected["exchange"] in {Exchange.SHFE.value, Exchange.INE.value}:
+            buckets = {offset: lots for offset, lots in (
+                (Offset.CLOSETODAY.value, today), (Offset.CLOSEYESTERDAY.value, yesterday),
+            ) if lots > 0}
+        else:
+            buckets = {Offset.CLOSE.value: today + yesterday}
+        if quantities != buckets:
+            raise ValueError
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return ["resized_close_converted_bundle_mismatch"]
+    return []
+
+
+def _resized_close_consistency_blockers(
+    td_api: Any, rows: Mapping[str, Any], requests: list[OrderRequest], gate: Mapping[str, Any],
+    *, owned_native_insert_count: int = 0, owned_event_watermark: Mapping[str, Any] | None = None,
+) -> list[str]:
+    proof = gate.get("broker_close_sizing_gate")
+    if not isinstance(proof, dict) or not proof.get("confirmed") or not gate.get("confirmed"):
+        return ["resized_close_proof_missing_or_unconfirmed"]
+    blockers: list[str] = []
+    if _canonical_evidence_sha256(proof) != gate.get("broker_close_sizing_gate_sha256"):
+        blockers.append("resized_close_proof_changed")
+    if _canonical_evidence_sha256(_physical_request_bundle(requests)) != gate.get("request_bundle_sha256"):
+        blockers.append("resized_close_physical_bundle_changed")
+    if time.monotonic() >= proof.get("expires_monotonic", 0):
+        blockers.append("resized_close_proof_expired")
+    if str(getattr(td_api, "frontid", "")) != proof.get("front_id") or str(getattr(td_api, "sessionid", "")) != proof.get("session_id"):
+        blockers.append("resized_close_connection_generation_changed")
+    if str(td_api.getTradingDay()) != str(proof.get("trading_day", "")).replace("-", ""):
+        blockers.append("resized_close_broker_trading_day_changed")
+    blockers.extend(_physical_batch_query_watermark_blockers(td_api, rows, proof.get("query_watermark", {}),
+                                                            owned_native_insert_count=owned_native_insert_count))
+    baseline = dict(owned_event_watermark) if owned_event_watermark is not None else proof.get("event_watermark", {})
+    blockers.extend(_event_watermark_blockers(baseline, _execution_event_watermark(rows), phase="resized_close_native"))
+    if _canonical_evidence_sha256(rows.get("positions", [])) != proof.get("positions_sha256"):
+        blockers.append("resized_close_positions_changed")
+    if _canonical_evidence_sha256({name: rows.get(name, []) for name in
+                                  ("trade_query_callbacks", "order_query_callbacks", "position_query_callbacks", "position_detail_query_callbacks")}) != proof.get("callbacks_sha256"):
+        blockers.append("resized_close_query_evidence_changed")
+    return blockers
+
+
 def _post_reprice_final_state_gate(
+    main_engine: MainEngine, td_api: Any, rows: dict[str, Any], intent_row: dict[str, Any], req: OrderRequest,
+    *, query_lock: Any = None, ledger_path: Path = LIVE_EXECUTION_LEDGER_PATH, **kwargs: Any,
+) -> dict[str, Any]:
+    rows.pop("_resized_close_proof", None)
+    rows.pop("_resized_close_bound_gate", None)
+    rows.pop("_resized_close_requests", None)
+    rows.pop("_resized_close_native_count", None)
+    rows.pop("_resized_close_owned_event_watermark", None)
+    if not _requires_resized_broker_close(intent_row):
+        return _post_reprice_final_state_gate_unlocked(main_engine, td_api, rows, intent_row, req, **kwargs)
+    deadline = min(time.monotonic() + max(0.0, float(kwargs.get("max_wait_seconds", 0))),
+                   float(kwargs.get("hard_deadline_monotonic") or float("inf")))
+    failure = {"success": False, "confirmed": False, "blockers": []}
+    if deadline <= time.monotonic() or query_lock is None or not query_lock.acquire(timeout=max(0.0, deadline - time.monotonic())):
+        failure["blockers"] = ["resized_close_query_lock_or_deadline_unavailable"]
+        return failure
+    try:
+        if time.monotonic() >= deadline:
+            failure["blockers"] = ["resized_close_query_lock_deadline_exceeded"]
+            return failure
+        connection_before = tuple(str(getattr(td_api, name, "")) for name in ("brokerid", "userid", "frontid", "sessionid"))
+        detail_query = _final_position_detail_query_epoch(td_api, rows, max_wait_seconds=max(0.0, deadline - time.monotonic()),
+                                                        monotonic=time.monotonic, sleeper=time.sleep)
+        if not detail_query.get("confirmed"):
+            failure["blockers"] = list(detail_query.get("blockers", [])) or ["resized_close_detail_query_incomplete"]
+            return failure
+        trade_query = _final_trade_query_epoch(td_api, rows, max_wait_seconds=max(0.0, deadline - time.monotonic()),
+                                             monotonic=time.monotonic, sleeper=time.sleep)
+        if not trade_query.get("confirmed"):
+            failure["blockers"] = list(trade_query.get("blockers", [])) or ["resized_close_trade_query_incomplete"]
+            return failure
+        result = _post_reprice_final_state_gate_unlocked(
+            main_engine, td_api, rows, intent_row, req,
+            **{**kwargs, "max_wait_seconds": max(0.0, deadline - time.monotonic()), "hard_deadline_monotonic": deadline},
+        )
+        if not result.get("confirmed"):
+            return result
+        if connection_before != tuple(str(getattr(td_api, name, "")) for name in ("brokerid", "userid", "frontid", "sessionid")):
+            raise ValueError("resized_close_query_connection_generation_changed")
+        proof = _resized_close_ownership_proof(td_api, rows, intent_row, req, trade_query, detail_query, result,
+                                              read_execution_ledger(ledger_path), deadline=deadline)
+        blockers = _event_watermark_blockers(result["final_event_watermark"], _execution_event_watermark(rows), phase="resized_close_ledger_read")
+        if _canonical_evidence_sha256({name: rows.get(name, []) for name in
+                                      ("position_detail_query_callbacks", "trade_query_callbacks", "position_query_callbacks", "order_query_callbacks")}) != proof["callbacks_sha256"]:
+            blockers.append("resized_close_callbacks_changed_during_proof")
+        if _canonical_evidence_sha256(rows.get("positions", [])) != proof["positions_sha256"]:
+            blockers.append("resized_close_positions_changed_during_proof")
+        if blockers or time.monotonic() >= deadline:
+            result.update(success=False, confirmed=False, blockers=blockers or ["resized_close_proof_deadline_exceeded"])
+            return result
+        rows["_resized_close_proof"] = proof
+        result["broker_close_sizing_gate"] = proof
+        return result
+    except (ValueError, TypeError, KeyError, AttributeError, OverflowError, OSError) as exc:
+        failure["blockers"] = [f"resized_close_proof_unverifiable:{exc}"]
+        return failure
+    finally:
+        query_lock.release()
+
+
+def _post_reprice_final_state_gate_unlocked(
     main_engine: MainEngine,
     td_api: Any,
     rows: dict[str, Any],
@@ -5781,6 +6634,8 @@ def _post_reprice_final_state_gate(
         max_wait_seconds=max(0.0, float(max_wait_seconds)),
         readiness_state=readiness_state,
         hard_deadline_monotonic=hard_deadline_monotonic,
+        monotonic=time.monotonic,
+        sleeper=time.sleep,
     )
     blockers.extend(
         f"post_reprice_snapshot:{blocker}"
@@ -8599,7 +9454,9 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
             original_gateway_on_order = ctp_gateway.on_order
             original_gateway_on_trade = ctp_gateway.on_trade
             original_gateway_on_position = ctp_gateway.on_position
-            event_ingress_lock = Lock()
+            event_ingress_lock = threading.RLock()
+            rows["_execution_event_ingress_lock"] = event_ingress_lock
+            close_query_lock = threading.RLock()
             event_ingress_counts = {
                 "order": 0,
                 "trade": 0,
@@ -8642,7 +9499,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                 rows["orders"].append(_object_to_row(event.data))
 
             def on_trade(event: Any) -> None:
-                rows["trades"].append(_object_to_row(event.data))
+                rows["trades"].append(_bind_trade_ownership_evidence(rows, _object_to_row(event.data)))
 
             def on_account(event: Any) -> None:
                 rows["accounts"].append(_object_to_row(event.data))
@@ -8960,6 +9817,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                             float(args.final_order_query_wait_seconds),
                         ),
                         readiness_state=readiness_state,
+                        query_lock=close_query_lock,
+                        ledger_path=LIVE_EXECUTION_LEDGER_PATH,
                     )
                     readiness_state_summary = readiness_state.to_summary()
                     reprice_result = dict(
@@ -9152,6 +10011,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                             float(args.final_order_query_wait_seconds),
                         ),
                         readiness_state=readiness_state,
+                        intent_row=row,
+                        main_engine=main_engine,
                     )
                 post_reprice_final_gate["open_funds_gate"] = dict(
                     open_funds_gate
@@ -9225,6 +10086,7 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
                         rows,
                         final_requests,
                         open_funds_gate,
+                        main_engine=main_engine,
                     )
                 )
                 if ctp_td_api is None or readiness_state is None:
@@ -10230,7 +11092,7 @@ def _build_stage179_warm_ctp_session(
                 persist_callback("order", row)
 
             def on_warm_trade(event: Any) -> None:
-                row = _object_to_row(event.data)
+                row = _bind_trade_ownership_evidence(rows, _object_to_row(event.data))
                 persist_callback("trade", row)
 
             event_engine.register(EVENT_ORDER, on_warm_order)
@@ -10878,6 +11740,8 @@ def _build_stage179_warm_ctp_session(
                 ),
                 readiness_state=readiness_state,
                 hard_deadline_monotonic=hard_deadline_monotonic,
+                query_lock=state["ctp_query_lock"],
+                ledger_path=paths.ledger_path,
             )
             blockers.extend(final_gate.get("blockers", []))
         conversion: dict[str, Any] = {}
@@ -10938,6 +11802,8 @@ def _build_stage179_warm_ctp_session(
                             hard_deadline_monotonic=(
                                 hard_deadline_monotonic
                             ),
+                            intent_row=row,
+                            main_engine=main_engine,
                         )
                     finally:
                         state["ctp_query_lock"].release()
@@ -10949,6 +11815,8 @@ def _build_stage179_warm_ctp_session(
                     max_wait_seconds=0.0,
                     readiness_state=readiness_state,
                     hard_deadline_monotonic=hard_deadline_monotonic,
+                    intent_row=row,
+                    main_engine=main_engine,
                 )
             blockers.extend(open_funds_gate.get("blockers", []))
             if open_funds_gate.get("confirmed"):
@@ -11055,6 +11923,7 @@ def _build_stage179_warm_ctp_session(
                 state["rows"],
                 list(context.get("requests", [])),
                 dict(context.get("open_funds_gate", {})),
+                main_engine=state.get("main_engine"),
             )
         )
         blockers.extend(
@@ -12097,6 +12966,7 @@ def _build_stage179_warm_ctp_session(
                     list(context.get("requests", [])),
                     dict(context.get("open_funds_gate", {})),
                     owned_native_insert_count=expected_owned_count,
+                    main_engine=state.get("main_engine"),
                     owned_event_watermark=(
                         dict(batch.get("event_watermark", {}))
                         if isinstance(batch, dict)

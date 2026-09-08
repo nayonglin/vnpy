@@ -509,6 +509,8 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
     def test_term_ignoring_child_and_grandchild_are_killed_without_restart(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
+            python_path = temp / "python with spaces"
+            python_path.symlink_to(sys.executable)
             state_path = temp / "pids.json"
             daemon_path = temp / "ignore_term.py"
             daemon_path.write_text(
@@ -541,7 +543,7 @@ while True:
             environment = dict(os.environ)
             environment.update(
                 {
-                    "STAGE930_PYTHON_PATH": sys.executable,
+                    "STAGE930_PYTHON_PATH": str(python_path),
                     "STAGE930_DAEMON_SCRIPT": str(daemon_path),
                     "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
                     "STAGE930_SUPERVISOR_TERM_TIMEOUT_SECONDS": "0.3",
@@ -558,14 +560,15 @@ while True:
                 stderr=subprocess.STDOUT,
                 env=environment,
             )
+            owned_pgid = None
+
             def cleanup() -> None:
                 if supervisor.poll() is None:
                     supervisor.kill()
                     supervisor.wait(timeout=2)
-                if state_path.exists():
-                    published = json.loads(state_path.read_text(encoding="utf-8"))
+                if owned_pgid is not None:
                     try:
-                        os.killpg(int(published["pgid"]), signal.SIGKILL)
+                        os.killpg(owned_pgid, signal.SIGKILL)
                     except ProcessLookupError:
                         pass
 
@@ -576,6 +579,7 @@ while True:
             self.assertTrue(state_path.exists(), "daemon never published child PIDs")
             pids = json.loads(state_path.read_text(encoding="utf-8"))
             self.assertEqual(pids["child"], pids["pgid"])
+            owned_pgid = int(pids["pgid"])
 
             supervisor.send_signal(signal.SIGTERM)
             output, _ = supervisor.communicate(timeout=5)
@@ -585,6 +589,41 @@ while True:
             self.assertFalse(_process_alive(pids["grandchild"]), output)
             self.assertEqual(1, output.count("starting daemon"), output)
             self.assertIn("escalating PGID", output)
+
+    def test_restart_delay_supports_python_path_with_spaces(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temp = Path(directory)
+            python_path = temp / "python with spaces"
+            python_path.symlink_to(sys.executable)
+            daemon_path = temp / "exit_nonzero.py"
+            daemon_path.write_text(
+                "import time\ntime.sleep(0.2)\nraise SystemExit(7)\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "STAGE930_PYTHON_PATH": str(python_path),
+                    "STAGE930_DAEMON_SCRIPT": str(daemon_path),
+                    "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
+                    "STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS": "0.1",
+                    "STAGE930_SUPERVISOR_MAX_RESTARTS": "1",
+                    "STAGE930_LOG_DIR": str(temp),
+                }
+            )
+            result = subprocess.run(
+                [str(SUPERVISOR)],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment,
+                timeout=5,
+            )
+
+        self.assertEqual(7, result.returncode, result.stdout)
+        self.assertEqual(2, result.stdout.count("starting daemon"), result.stdout)
+        self.assertIn("max restarts exceeded: 1", result.stdout)
+        self.assertNotIn("Traceback", result.stdout)
 
 
 if __name__ == "__main__":

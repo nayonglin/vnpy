@@ -6,7 +6,7 @@ import hashlib
 import json
 import math
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -30,10 +30,17 @@ from qmt_roll_official_live_c9_intraday_state import (
     generate_root_position_id,
 )
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
+from qmt_roll_official_live_broker_sizing import official_sizing_policy, size_open_intent
+from qmt_roll_official_pending_artifact import (
+    load_validated_artifact_snapshot,
+    materialize_validated_artifact_snapshot,
+)
 from qmt_roll_official_live_phase_d_config import (
     READONLY_CONTRACTS_PATH,
     READONLY_ORDERS_PATH,
     READONLY_POSITIONS_PATH,
+    READONLY_SUMMARY_PATH,
+    READONLY_QUERY_BUNDLE_MANIFEST_PATH,
     build_phase_d_config,
 )
 from run_qmt_alignment_backtest import OUTPUT_DIR
@@ -182,6 +189,12 @@ class Stage905SnapshotInputs:
     stage902_summary: Mapping[str, Any]
     stage260_summary: Mapping[str, Any]
     execution_ledger_rows: Sequence[Mapping[str, Any]]
+    broker_account: Mapping[str, Any] | None = None
+    entry_risk: pd.DataFrame | None = None
+    sizing_policy: Mapping[str, Any] | None = None
+    current_positions: pd.DataFrame | None = None
+    official_summary: Mapping[str, Any] | None = None
+    broker_account_fingerprint: str = ""
 
 
 @dataclass(frozen=True)
@@ -189,6 +202,80 @@ class Stage905RunResult:
     intents: pd.DataFrame
     summary: dict[str, Any]
     paths: Mapping[str, Path]
+
+
+def _check_broker_sizing_snapshot(
+    account: Mapping[str, Any], *, now: datetime, not_before_epoch_ns: int = 0,
+) -> None:
+    if not account or not account.get("generation_uuid") or not account.get("account_fingerprint"):
+        raise ValueError("broker_sizing_account_identity_missing")
+    try:
+        generated = datetime.fromisoformat(str(account.get("generated_at", "")))
+    except ValueError as exc:
+        raise ValueError("broker_sizing_account_time_invalid") from exc
+    if generated.tzinfo is None or now.tzinfo is None:
+        raise ValueError("broker_sizing_account_time_timezone_missing")
+    age = (now - generated).total_seconds()
+    if not 0 <= age <= 300:
+        raise ValueError("broker_sizing_account_stale_or_future")
+    if not_before_epoch_ns:
+        started = datetime.fromisoformat(str(account.get("query_started_at", "")))
+        if started.tzinfo is None or int(started.timestamp() * 1_000_000_000) <= not_before_epoch_ns:
+            raise ValueError("broker_sizing_snapshot_precedes_reconciliation")
+        if started > generated:
+            raise ValueError("broker_sizing_query_after_generation")
+
+
+def _size_c9_open_intent(
+    row: Mapping[str, Any],
+    *,
+    entry_risk: pd.DataFrame,
+    broker_account: Mapping[str, Any],
+    policy: Mapping[str, Any],
+    pricetick: float,
+) -> dict[str, Any]:
+    required = {"date", "contract_vt_symbol", "direction"}
+    if not required.issubset(entry_risk.columns):
+        raise ValueError("broker_sizing_entry_risk_missing")
+    risk_date = _clean(row.get("entry_risk_date")) or _clean(row.get("target_date"))
+    matches = entry_risk[
+        entry_risk["date"].astype(str).str[:10].eq(risk_date)
+        & entry_risk["contract_vt_symbol"].astype(str).str.upper().eq(_clean(row.get("vt_symbol")).upper())
+        & entry_risk["direction"].map(_normalize_direction_text).eq(_normalize_direction_text(row.get("direction")))
+    ]
+    if len(matches) != 1:
+        raise ValueError("broker_sizing_entry_risk_missing_or_ambiguous")
+    signal = matches.iloc[0].to_dict()
+    order = {
+        key: row[key]
+        for key in (
+            "vt_symbol", "direction", "offset", "planned_volume", "limit_price",
+            "strategy_initial_stop_price", "intent_role", "root_entry_volume",
+            "root_entry_price", "root_initial_stop_price",
+        )
+        if key in row
+    }
+    if order.get("intent_role") == RETRY_INTENT_ROLE:
+        order["strategy_initial_stop_price"] = order.get("root_initial_stop_price")
+    order["limit_price"], _ = _resolved_intent_price(row, pricetick)
+    decision = size_open_intent(
+        intent=order, signal=signal, account=broker_account, policy=policy, pricetick=pricetick,
+    )
+    result = {
+        **row,
+        "shadow_planned_volume": row.get("planned_volume"),
+        "planned_volume": decision["volume"],
+        "broker_sizing": decision,
+        "broker_sizing_inputs": {
+            "intent": order, "signal": signal, "account": dict(broker_account),
+            "policy": dict(policy), "pricetick": pricetick,
+        },
+    }
+    if order.get("intent_role") == INITIAL_OPEN_INTENT_ROLE:
+        result["root_entry_volume"] = decision["volume"]
+    if decision["volume"] == 0:
+        result["broker_sizing_error"] = "broker_sizing_no_risk_capacity"
+    return result
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -509,6 +596,25 @@ def _protective_close_price(intent: dict[str, Any], direction_text: str, priceti
         price = basis + protection_ticks * tick_value if tick_value > 0 else basis
         return _clip_price(price, lower, upper), f"marketable_buy_close:ask_or_live={basis};protection_ticks={protection_ticks}"
     return fallback_price, "protective_close_price_invalid_direction"
+
+
+def _resolved_intent_price(intent: Mapping[str, Any], pricetick: float) -> tuple[float, str]:
+    price = _to_float(intent.get("limit_price"), 0.0)
+    direction = _normalize_direction_text(intent.get("direction"))
+    reason = ""
+    source = _clean(intent.get("source"))
+    if source in {"stage904_c9_intraday_close", "stage904_c9_intraday_retry_open"}:
+        original = price
+        price, reason = _protective_close_price(dict(intent), direction, pricetick, original)
+        if original > 0 and price > 0:
+            label = "stop_trigger_price" if source == "stage904_c9_intraday_close" else "retry_trigger_price"
+            reason = f"{reason};{label}={original};order_price={price}"
+    if pricetick and price > 0 and not _price_on_tick(price, pricetick):
+        original = price
+        price = _snap_price_to_tick(price, pricetick, direction)
+        snapped = f"limit_price_snapped_to_tick:{original}->{price}"
+        reason = f"{reason};{snapped}" if reason else snapped
+    return price, reason
 
 
 def _normalized_pending_datetime(value: Any) -> str:
@@ -1282,6 +1388,10 @@ def _validate_intent(
     stage260_executable = int(_to_float(stage260_summary.get("executable_count"), 0))
     source = _clean(intent.get("source"))
     intraday_close_intent = source == "stage904_c9_intraday_close" and offset_text == "close"
+    if offset_text == "open" and _clean(intent.get("broker_sizing_error")):
+        reasons.append(_clean(intent.get("broker_sizing_error")))
+    if offset_text == "close" and _clean(intent.get("broker_close_sizing_error")):
+        reasons.append(_clean(intent.get("broker_close_sizing_error")))
     intraday_retry_open_intent = source == "stage904_c9_intraday_retry_open" and offset_text == "open"
     traced_initial_open_intent = (
         source == "stage901_pending_order"
@@ -1448,20 +1558,9 @@ def _validate_intent(
     pricetick = _to_float(contract.get("pricetick") if contract else None, 0.0)
     min_volume = _to_float(contract.get("min_volume") if contract else None, 0.0)
     max_volume = _to_float(contract.get("max_volume") if contract else None, 0.0)
-    price_adjustment_reason = ""
-    if intraday_close_intent or intraday_retry_open_intent:
-        original_price = price
-        price, price_adjustment_reason = _protective_close_price(intent, direction_text, pricetick, original_price)
-        if price <= 0:
-            reasons.append("protective_intraday_price_missing")
-        elif original_price > 0:
-            trigger_label = "stop_trigger_price" if intraday_close_intent else "retry_trigger_price"
-            price_adjustment_reason = f"{price_adjustment_reason};{trigger_label}={original_price};order_price={price}"
-    if pricetick and price > 0 and not _price_on_tick(price, pricetick):
-        original_price = price
-        price = _snap_price_to_tick(price, pricetick, direction_text)
-        snap_reason = f"limit_price_snapped_to_tick:{original_price}->{price}"
-        price_adjustment_reason = f"{price_adjustment_reason};{snap_reason}" if price_adjustment_reason else snap_reason
+    price, price_adjustment_reason = _resolved_intent_price(intent, pricetick)
+    if (intraday_close_intent or intraday_retry_open_intent) and price <= 0:
+        reasons.append("protective_intraday_price_missing")
     if pricetick and not _price_on_tick(price, pricetick):
         reasons.append("price_not_on_tick")
     if min_volume and volume < min_volume:
@@ -1565,6 +1664,9 @@ def _validate_intent(
             *IDENTITY_TEXT_FIELDS,
             *IDENTITY_NUMBER_FIELDS,
             *STAGE904_MIGRATION_AUDIT_FIELDS,
+            "broker_sizing",
+            "broker_sizing_inputs",
+            "broker_close_sizing",
         ):
             if _clean(intent.get(key)):
                 order_request_payload[key] = intent[key]
@@ -1709,6 +1811,10 @@ def run_executor_dry_run(
     stage260_decisions: pd.DataFrame | None = None,
     clock: Clock = SYSTEM_CLOCK,
     write_compat_outputs: bool = True,
+    existing_open_intent_ids: Sequence[str] = (),
+    open_sizing_blocker: str = "",
+    broker_snapshot_not_before_epoch_ns: int = 0,
+    sent_open_intents: Sequence[Mapping[str, Any]] = (),
 ) -> Stage905RunResult:
     profile = (
         execution_profile
@@ -1795,14 +1901,37 @@ def run_executor_dry_run(
         if in_memory_stage904
         else ()
     )
+    broker_account = None
+    entry_risk = pd.DataFrame()
+    current_positions = pd.DataFrame()
+    official_summary = {}
+    broker_account_fingerprint = ""
+    sizing_policy = None
+    broker_sizing_input_error = ""
     if snapshots is None:
         pending_orders = _read_csv_maybe(profile.pending_orders_path)
         contracts = _read_csv_maybe(READONLY_CONTRACTS_PATH)
         positions = _read_csv_maybe(READONLY_POSITIONS_PATH)
         orders = _read_csv_maybe(READONLY_ORDERS_PATH)
+        readonly_metadata = _read_json(READONLY_SUMMARY_PATH)
+        readonly_bundle = readonly_metadata.get("broker_query_bundle") if isinstance(readonly_metadata, Mapping) else None
+        readonly_account = readonly_bundle.get("account") if isinstance(readonly_bundle, Mapping) else None
+        if isinstance(readonly_account, Mapping):
+            broker_account_fingerprint = _clean(readonly_account.get("account_fingerprint"))
         stage902_summary = _read_json(_stage902_summary_path(target_date))
         stage260_summary = _read_json(_stage260_summary_path(target_date))
         execution_ledger_rows = read_execution_ledger()
+        if profile.intraday_stop_retry_enabled:
+            try:
+                signal_snapshot = materialize_validated_artifact_snapshot(
+                    profile, load_validated_artifact_snapshot(profile),
+                )
+                pending_orders = signal_snapshot.pending_orders
+                entry_risk = signal_snapshot.entry_risk
+                current_positions = signal_snapshot.current_positions
+                official_summary = signal_snapshot.official_summary
+            except (ValueError, OSError) as exc:
+                broker_sizing_input_error = f"broker_sizing_signal_snapshot_invalid:{exc}"
         if stage260_decisions is None:
             stage260_decisions = _read_csv_maybe(
                 _stage260_decisions_path(target_date)
@@ -1815,6 +1944,12 @@ def run_executor_dry_run(
         stage902_summary = dict(snapshots.stage902_summary)
         stage260_summary = dict(snapshots.stage260_summary)
         execution_ledger_rows = [dict(row) for row in snapshots.execution_ledger_rows]
+        broker_account = snapshots.broker_account
+        entry_risk = snapshots.entry_risk.copy(deep=True) if snapshots.entry_risk is not None else pd.DataFrame()
+        sizing_policy = snapshots.sizing_policy
+        current_positions = snapshots.current_positions.copy(deep=True) if snapshots.current_positions is not None else pd.DataFrame()
+        official_summary = dict(snapshots.official_summary or {})
+        broker_account_fingerprint = snapshots.broker_account_fingerprint
     if stage260_decisions is None:
         stage260_decisions = pd.DataFrame()
     else:
@@ -1853,8 +1988,76 @@ def run_executor_dry_run(
         row["official_live_version"] = profile.official_version
         row["capital"] = profile.capital
         row["capital_label"] = profile.capital_label
-    intent_rows = [
-        _validate_intent(
+    intent_rows = []
+    sized_open_count = 0
+    for row in raw_intents:
+        if (profile.intraday_stop_retry_enabled and row.get("offset") == "close"
+                and row.get("source") == "stage901_pending_order"):
+            row = dict(row)
+            try:
+                from qmt_roll_official_live_broker_close_sizing import size_full_close_intent
+                if broker_sizing_input_error:
+                    raise ValueError(broker_sizing_input_error)
+                decision = size_full_close_intent(
+                    intent=row, pending_orders=pending_orders, current_positions=current_positions,
+                    official_summary=official_summary, broker_positions=positions,
+                    execution_ledger_rows=execution_ledger_rows,
+                    require_broker_trade_coverage=False,
+                )
+                if decision["volume"] > 0 and decision["volume"] != decision["shadow_volume"]:
+                    if (len(broker_account_fingerprint) != 64
+                            or any(character not in "0123456789abcdef" for character in broker_account_fingerprint)):
+                        raise ValueError("broker_full_close_account_fingerprint_missing")
+                    decision["account_fingerprint"] = broker_account_fingerprint
+                row.update({"planned_volume": decision["volume"], "broker_close_sizing": decision,
+                            "shadow_planned_volume": row["planned_volume"]})
+                if decision["volume"] == 0:
+                    row["force_skip_reason"] = "broker_flat_for_full_close"
+            except (ValueError, OSError, TypeError) as exc:
+                row["broker_close_sizing_error"] = str(exc)
+        if profile.intraday_stop_retry_enabled and row.get("offset") == "open":
+            row = dict(row)
+            if row.get("intent_id") in existing_open_intent_ids:
+                continue
+            try:
+                if open_sizing_blocker or sized_open_count:
+                    raise ValueError(open_sizing_blocker or "broker_sizing_wait_prior_open")
+                if broker_sizing_input_error:
+                    raise ValueError(broker_sizing_input_error)
+                now = datetime.fromtimestamp(run_now.epoch_ns / 1_000_000_000, tz=timezone.utc)
+                if broker_account is None and snapshots is None:
+                    from qmt_roll_official_live_broker_account_snapshot import load_broker_account_snapshot
+                    broker_account = load_broker_account_snapshot(
+                        READONLY_SUMMARY_PATH, READONLY_QUERY_BUNDLE_MANIFEST_PATH, now=now,
+                    )
+                    positions = pd.DataFrame(broker_account["positions"])
+                    orders = pd.DataFrame(broker_account["orders"])
+                _check_broker_sizing_snapshot(
+                    broker_account or {}, now=now, not_before_epoch_ns=broker_snapshot_not_before_epoch_ns,
+                )
+                if sent_open_intents:
+                    from qmt_roll_official_live_broker_open_queue import evaluate_sent_open_budget_release
+                    for sent_intent in sent_open_intents:
+                        release = evaluate_sent_open_budget_release(
+                            sent_intent=sent_intent, broker_snapshot=broker_account,
+                            execution_ledger_rows=execution_ledger_rows, now=now,
+                        )
+                        if not release["budget_released"]:
+                            raise ValueError(release["blocker"])
+                if _active_order_count(orders) or _unknown_order_status_count(orders):
+                    raise ValueError("broker_sizing_orders_not_quiescent")
+                contract = _contract_row(contracts, _clean(row.get("vt_symbol")))
+                row = _size_c9_open_intent(
+                    row, entry_risk=entry_risk,
+                    broker_account={key: value for key, value in broker_account.items() if key not in {"positions", "orders", "trades"}},
+                    policy=sizing_policy if sizing_policy is not None else official_sizing_policy(),
+                    pricetick=_to_float(contract.get("pricetick") if contract else None, 0),
+                )
+                if _to_float(contract.get("size") if contract else None, 0) != row["broker_sizing"]["size"]:
+                    raise ValueError("broker_sizing_contract_size_mismatch")
+            except (ValueError, OSError, TypeError) as exc:
+                row["broker_sizing_error"] = str(exc)
+        checked = _validate_intent(
             row,
             contracts=contracts,
             positions=positions,
@@ -1868,8 +2071,9 @@ def run_executor_dry_run(
             now_stamp=run_now,
             stage904_batch_blockers=stage904_batch_blockers,
         )
-        for row in raw_intents
-    ]
+        intent_rows.append(checked)
+        if row.get("offset") == "open" and checked["executor_status"] == "dry_run_order_request_payload_ready":
+            sized_open_count += 1
     intents = pd.DataFrame(intent_rows)
     for field_name in STAGE904_EXACT_INT_FIELDS:
         if any(field_name in row for row in intent_rows):

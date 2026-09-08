@@ -2226,6 +2226,61 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
                 stage,
             )
 
+    def test_broker_sizing_modules_are_frozen_in_default_critical_files(self) -> None:
+        modules = {
+            f"examples/portfolio_backtesting/qmt_roll_official_live_broker_{name}.py"
+            for name in ("account_snapshot", "close_sizing", "open_queue", "position_ownership", "sizing")
+        }
+        self.assertTrue(modules <= set(builder.DEFAULT_CRITICAL_FILES), modules - set(builder.DEFAULT_CRITICAL_FILES))
+        self.assertEqual(builder.DEFAULT_CRITICAL_FILES, bundle_builder.DEFAULT_CRITICAL_FILES)
+        repo = PORTFOLIO_DIR.parents[1]
+        for path in modules:
+            with self.subTest(path=path):
+                self.assertTrue((repo / path).is_file())
+
+    def test_broker_sizing_tests_are_required_and_frozen_without_duplicates(self) -> None:
+        suites = {
+            "tests/test_official_live_broker_account_snapshot.py",
+            "tests/test_official_live_broker_close_sizing.py",
+            "tests/test_official_live_broker_open_queue.py",
+            "tests/test_official_live_broker_position_ownership.py",
+            "tests/test_official_live_broker_sizing.py",
+            "tests/test_sent_open_reconciliation.py",
+            "tests/test_stage901_broker_whole_epoch_alignment.py",
+            "tests/test_stage905_broker_sizing.py",
+            "tests/test_stage931_broker_sizing_gate.py",
+            "tests/test_stage941_broker_sizing_queue.py",
+            "tests/test_stage174_query_bundle.py",
+        }
+        required = builder.PRODUCTION_REQUIRED_TEST_SUITES
+        critical = builder.DEFAULT_CRITICAL_FILES
+        self.assertTrue(suites <= set(required), suites - set(required))
+        self.assertTrue(set(required) <= set(critical), set(required) - set(critical))
+        self.assertEqual(len(required), len(set(required)))
+        self.assertEqual(len(critical), len(set(critical)))
+        self.assertEqual(required, bundle_builder.PRODUCTION_REQUIRED_TEST_SUITES)
+        for suite in suites:
+            with self.subTest(suite=suite):
+                self.assertTrue((PORTFOLIO_DIR.parents[1] / suite).is_file())
+
+    def test_broker_sizing_release_entrypoints_have_resolvable_local_import_closure(self) -> None:
+        from qmt_roll_strategy_material_discovery import resolve_local_import_closure
+
+        repo = PORTFOLIO_DIR.parents[1]
+        closure, unresolved = resolve_local_import_closure(
+            repo,
+            (
+                Path("examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py"),
+                Path("examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py"),
+                Path("examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py"),
+            ),
+        )
+        self.assertEqual(unresolved, ())
+        for name in ("account_snapshot", "close_sizing", "open_queue", "position_ownership", "sizing"):
+            with self.subTest(module=name):
+                module = Path(f"examples/portfolio_backtesting/qmt_roll_official_live_broker_{name}.py")
+                self.assertIn(module, closure)
+
 
 if __name__ == "__main__":
     unittest.main()
