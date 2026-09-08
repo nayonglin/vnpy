@@ -475,6 +475,36 @@ class Stage931PostRepriceFinalGateTest(unittest.TestCase):
                 self.assertTrue(stage931._final_reprice_blockers(result))
                 self.assertEqual(100.0, request.price)
 
+    def test_pending_order_reprice_binds_declared_open_or_close_offset(self) -> None:
+        cases = (
+            ("close", stage931.Offset.CLOSE, "applied"),
+            ("open", stage931.Offset.OPEN, "applied"),
+            ("close", stage931.Offset.OPEN, "blocked_c9_source_offset_mismatch"),
+            ("open", stage931.Offset.CLOSE, "blocked_c9_source_offset_mismatch"),
+            ("invalid", stage931.Offset.OPEN, "blocked_c9_source_offset_mismatch"),
+        )
+        for declared, requested, expected in cases:
+            with self.subTest(declared=declared, requested=requested):
+                intent = {**self._c9_intent("stage901_pending_order"), "offset": declared}
+                request = self._request(direction=stage931.Direction.SHORT, offset=requested)
+                result = stage931._post_snapshot_final_reprice(
+                    self._stage372_engine(), {"ticks": [self._stage372_tick()]}, intent, request,
+                    max_tick_age_seconds=30, q2_completed_monotonic=120.0, tick_wait_seconds=0,
+                )
+                self.assertEqual(expected, result["final_reprice_status"])
+                if expected != "applied":
+                    self.assertEqual(100.0, request.price)
+
+    def test_pending_close_still_requires_fresh_post_q2_tick(self) -> None:
+        intent = {**self._c9_intent("stage901_pending_order"), "offset": "close"}
+        request = self._request(direction=stage931.Direction.SHORT, offset=stage931.Offset.CLOSE)
+        result = stage931._post_snapshot_final_reprice(
+            self._stage372_engine(), {"ticks": [self._stage372_tick(received_monotonic=119.0)]},
+            intent, request, max_tick_age_seconds=30, q2_completed_monotonic=120.0, tick_wait_seconds=0,
+        )
+        self.assertEqual("blocked_c9_no_fresh_post_q2_ctp_tick", result["final_reprice_status"])
+        self.assertEqual(100.0, request.price)
+
     def test_c9_source_names_cannot_disguise_the_wrong_offset(self) -> None:
         cases = (
             ("stage901_pending_order", stage931.Offset.CLOSE),

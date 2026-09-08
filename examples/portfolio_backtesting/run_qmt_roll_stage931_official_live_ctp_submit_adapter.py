@@ -6055,7 +6055,9 @@ def _post_snapshot_final_reprice(
         )
 
     c9_source_policy = {
-        "stage901_pending_order": ("open", False),
+        "stage901_pending_order": (
+            _normalize_offset_text(intent_row.get("offset")) or "open", False
+        ),
         "stage904_c9_intraday_close": ("close", False),
         "stage904_c9_intraday_retry_open": ("open", True),
     }
@@ -13552,6 +13554,7 @@ def _build_stage179_warm_ctp_session(
                 )
             send_base = {
                 "target_date": lease.intent.target_date,
+                "source": context.get("row", {}).get("source", ""),
                 "reservation_record_checksum": context.get("reservation_record_checksum", ""),
                 "intent_id": lease.intent.intent_id,
                 "intent_payload_sha256": lease.intent.payload_sha256,
