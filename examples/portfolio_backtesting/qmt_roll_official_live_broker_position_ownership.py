@@ -3,7 +3,7 @@
 CTP defines OpenDate, TradeDate and TradingDay separately. The vnpy gateway
 constructs TradeData.datetime from TradeDate/TradeTime, not TradingDay. Historical
 fills therefore require a persisted raw broker_trading_day; differing OpenDate
-also requires a persisted broker_open_date from broker position-detail evidence.
+also requires a replayable seal joining broker detail to the original ledger.
 Neither target_date nor a calendar heuristic supplies these missing fields.
 """
 
@@ -18,10 +18,13 @@ import re
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from qmt_roll_official_live_broker_open_date_seal import collect_open_date_reservation_history, validate_open_date_seal
+
 
 PROOF_VERSION = "ctp_position_detail_owned_lots_v1"
 OWNED_SOURCES = frozenset({"stage901_pending_order", "stage904_c9_intraday_close", "stage904_c9_intraday_retry_open"})
 SIDECAR_FIELDS = ("account_fingerprint", "broker_trade_date", "broker_trading_day", "broker_hedge_flag", "broker_trade_metadata_source")
+SEAL_SOURCE = "ctp_query_open_date_seal_v1"
 
 
 def _fail(reason: str) -> None:
@@ -130,7 +133,7 @@ def _sidecar_signature(event: Mapping[str, Any]) -> tuple[Any, ...]:
 
 
 def _sidecar_value(name: str, value: Any) -> str:
-    return _date(value, name) if name in {"broker_trade_date", "broker_trading_day"} else _text(value, name)
+    return _date(value, name) if name in {"broker_trade_date", "broker_trading_day", "broker_open_date"} else _text(value, name)
 
 
 def _ownership_sidecars(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: str) -> dict[tuple[str, str, str], list[dict[str, Any]]]:
@@ -142,6 +145,8 @@ def _ownership_sidecars(rows: Sequence[Mapping[str, Any]], symbol: str, fingerpr
             continue
         signature = _sidecar_signature(row)
         metadata = {name: _sidecar_value(name, row.get(name)) for name in SIDECAR_FIELDS}
+        if row.get("broker_open_date") not in (None, ""):
+            metadata["broker_open_date"] = _date(row["broker_open_date"], "broker_open_date")
         if metadata["account_fingerprint"] != fingerprint:
             _fail("sidecar_account_fingerprint_mismatch")
         if metadata["broker_trade_date"] != signature[2][:10]:
@@ -157,17 +162,110 @@ def _ownership_sidecars(rows: Sequence[Mapping[str, Any]], symbol: str, fingerpr
     return indexed
 
 
+def _open_date_seals(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: str) -> tuple[dict[str, dict[str, Any]], dict[str, Mapping[str, Any]]]:
+    actual: dict[str, list[Mapping[str, Any]]] = {}
+    for row in rows:
+        checksum = row.get("record_checksum")
+        if isinstance(checksum, str):
+            actual.setdefault(checksum, []).append(row)
+
+    def require_reference(reference: Any) -> Mapping[str, Any]:
+        if not isinstance(reference, Mapping):
+            _fail("seal_reference_invalid")
+        checksum = reference.get("record_checksum")
+        if not isinstance(checksum, str) or checksum != _digest({name: value for name, value in reference.items() if name != "record_checksum"}):
+            _fail("seal_reference_checksum_invalid")
+        candidates = actual.get(checksum, [])
+        if not candidates or any(_digest(candidate) != _digest(reference) for candidate in candidates):
+            _fail("seal_reference_missing_or_conflicting")
+        return candidates[0]
+
+    indexed: dict[str, dict[str, Any]] = {}
+    identities: dict[str, dict[str, Any]] = {}
+    current_payloads: dict[str, Mapping[str, Any]] = {}
+    for row in rows:
+        if row.get("event_type") != "broker_position_open_date_sealed":
+            continue
+        if _text(row.get("vt_symbol"), "seal_symbol").upper() != symbol:
+            continue
+        evidence = row.get("evidence")
+        if not isinstance(evidence, Mapping):
+            _fail("seal_evidence_missing")
+        references: dict[str, list[Mapping[str, Any]]] = {}
+        for name in ("native_order_events", "canonical_fills", "linked_intent_events", "reservation_history"):
+            embedded = evidence.get(name)
+            if not isinstance(embedded, list) or (name != "linked_intent_events" and not embedded):
+                _fail("seal_references_missing")
+            references[name] = [require_reference(reference) for reference in embedded]
+        actual_native = {
+            _digest(native) for native in rows
+            if native.get("event_type") == "native_order_identity_persisted_before_insert"
+            and (native.get("physical_batch_id") == row.get("physical_batch_id")
+                 or native.get("vt_orderid") == row.get("vt_orderid"))
+        }
+        if actual_native != {_digest(native) for native in references["native_order_events"]}:
+            _fail("seal_native_batch_reference_conflict")
+        actual_fills = {
+            _digest(fill) for fill in rows
+            if fill.get("event_type") == "filled_or_part_filled" and fill.get("vt_orderid") == row.get("vt_orderid")
+        }
+        if actual_fills != {_digest(fill) for fill in references["canonical_fills"]}:
+            _fail("seal_canonical_fill_set_incomplete_or_conflicting")
+        if len(references["native_order_events"]) != 1:
+            _fail("seal_native_reference_not_unique")
+        history = collect_open_date_reservation_history(rows, references["native_order_events"][0])
+        if _digest(history) != _digest(references["reservation_history"]):
+            _fail("seal_reservation_history_incomplete_or_conflicting")
+        linked = [event for event in history if isinstance(event.get("intent_payload"), Mapping)]
+        if _digest(linked) != _digest(references["linked_intent_events"]):
+            _fail("seal_linked_intent_set_incomplete_or_conflicting")
+        baseline = evidence.get("flat_baseline_event")
+        if not isinstance(baseline, Mapping) or not any(
+            _digest(native.get("flat_baseline_event")) == _digest(baseline)
+            for native in references["native_order_events"]
+        ):
+            _fail("seal_flat_baseline_reference_missing")
+        checksum = _text(row.get("canonical_fill_record_checksum"), "seal_canonical_fill_checksum")
+        canonical = [reference for reference in references["canonical_fills"] if reference.get("record_checksum") == checksum]
+        if len(canonical) != 1:
+            _fail("seal_canonical_fill_reference_not_unique")
+        proof = validate_open_date_seal(row, canonical[0], fingerprint)
+        native = references["native_order_events"][0]
+        current = [event for event in history if event.get("event_type") == "reserved"
+                   and event.get("record_checksum") == native.get("reservation_record_checksum")]
+        if len(current) != 1 or not isinstance(current[0].get("intent_payload"), Mapping):
+            _fail("seal_current_reservation_not_unique")
+        key = native["intent_fingerprint"]
+        payload = current[0]["intent_payload"]
+        if key in current_payloads and current_payloads[key] != payload:
+            _fail("seal_current_reservation_payload_conflict")
+        current_payloads[key] = payload
+        semantic = {name: value for name, value in proof.items() if name != "proof_sha256"}
+        semantic["canonical_fill_record_checksum"] = checksum
+        identity = proof["seal_identity"]
+        if identity in identities and identities[identity] != semantic:
+            _fail("seal_identity_metadata_conflict")
+        if checksum in indexed and indexed[checksum] != semantic:
+            _fail("seal_canonical_fill_metadata_conflict")
+        identities[identity] = indexed[checksum] = semantic
+    return indexed, current_payloads
+
+
 def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: str, trading_day: str) -> list[dict[str, Any]]:
-    payloads: dict[str, Mapping[str, Any]] = {}
     for row in rows:
         if not isinstance(row, Mapping):
             _fail("ledger_row_invalid")
-        if row.get("event_type") == "broker_trade_ownership_metadata_conflict":
+        if row.get("event_type") in {"broker_trade_ownership_metadata_conflict", "broker_position_open_date_seal_conflict"}:
             conflict_symbol = row.get("vt_symbol")
             if not isinstance(conflict_symbol, str) or not conflict_symbol.strip() or conflict_symbol.strip().upper() == symbol:
-                _fail("broker_trade_ownership_metadata_conflict")
+                _fail(row["event_type"])
+    seals, current_payloads = _open_date_seals(rows, symbol, fingerprint)
+    payloads: dict[str, Mapping[str, Any]] = dict(current_payloads)
+    for row in rows:
         key = row.get("intent_fingerprint")
         payload = row.get("intent_payload")
+        if key in current_payloads:
+            continue
         if key and isinstance(payload, Mapping):
             if key in payloads and payloads[key] != payload:
                 _fail("linked_payload_conflict")
@@ -187,6 +285,7 @@ def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: s
             continue
         if event["event_type"] != "filled_or_part_filled" or event.get("source") not in OWNED_SOURCES:
             _fail("unbound_or_unowned_trade")
+        seal = seals.get(row.get("record_checksum"))
         for name in ("root_position_id", "position_epoch_id", "vt_symbol", "direction", "offset"):
             if row.get(name) not in (None, "") and payload.get(name) not in (None, "") and row[name] != payload[name]:
                 _fail(f"linked_{name}_conflict")
@@ -198,9 +297,18 @@ def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: s
                     _fail("sidecar_fill_identity_or_economics_conflict")
                 for name, value in sidecar["metadata"].items():
                     if event.get(name) not in (None, "") and _sidecar_value(name, event[name]) != value:
-                        _fail(f"sidecar_existing_{name}_conflict")
+                        if not (seal and name == "broker_trade_metadata_source" and event[name] == SEAL_SOURCE):
+                            _fail(f"sidecar_existing_{name}_conflict")
                     event[name] = value
                 matched_sidecars.add(sidecar["index"])
+        if seal:
+            for name in (*SIDECAR_FIELDS, "broker_open_date"):
+                value = _sidecar_value(name, seal[name])
+                for raw in (row, payload, event):
+                    if raw.get(name) not in (None, "") and _sidecar_value(name, raw[name]) != value:
+                        if not (name == "broker_trade_metadata_source" and raw[name] == "ctp_on_rtn_trade"):
+                            _fail(f"seal_existing_{name}_conflict")
+                event[name] = value
         account_values = _account_values(event) + _account_values(payload)
         if not account_values or any(value != fingerprint for value in account_values):
             _fail("ledger_account_fingerprint_missing_or_mismatch")
@@ -225,7 +333,9 @@ def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: s
             _fail("broker_trade_date_conflict")
         if "broker_hedge_flag" in event and event["broker_hedge_flag"] != "1":
             _fail("broker_hedge_flag_uncovered")
-        if "broker_trade_metadata_source" in event and event["broker_trade_metadata_source"] != "ctp_on_rtn_trade":
+        if "broker_trade_metadata_source" in event and event["broker_trade_metadata_source"] != "ctp_on_rtn_trade" and not (
+            seal and event["broker_trade_metadata_source"] == SEAL_SOURCE
+        ):
             _fail("broker_trade_metadata_source_unverified")
         raw_day = event.get("broker_trading_day")
         broker_day = _date(raw_day, "broker_trading_day") if raw_day not in (None, "") else None
@@ -235,6 +345,8 @@ def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: s
             _fail("broker_trading_day_out_of_bounds")
         raw_open_date = event.get("broker_open_date")
         open_date = _date(raw_open_date, "broker_open_date") if raw_open_date not in (None, "") else trade_date
+        if open_date != trade_date and not seal:
+            _fail("broker_open_date_seal_required")
         if open_date > trading_day or (broker_day is None and open_date != trade_date):
             _fail("broker_open_date_unproven")
         fill = {
@@ -247,6 +359,9 @@ def _ledger_fills(rows: Sequence[Mapping[str, Any]], symbol: str, fingerprint: s
             "volume": _number(event.get("trade_volume_delta", event.get("volume")), "fill_volume", lots=True),
             "price": _number(event.get("price"), "fill_price"),
         }
+        if seal:
+            fill["open_date_seal_identity"] = seal["seal_identity"]
+            fill["broker_trade_metadata_source"] = SEAL_SOURCE
         if event.get("volume") is not None and _number(event["volume"], "fill_volume", lots=True) != fill["volume"]:
             _fail("fill_volume_conflict")
         identity = (exchange, broker_day or trade_date, tradeid)
@@ -277,8 +392,12 @@ def validate_position_detail_ownership(
     This function verifies lot ownership, not authorization or executable size.
     Native metadata may reside in broker_trade_ownership_metadata sidecars.
     Sidecars must exactly bind the canonical fill's order, trade time, economic
-    fields and existing intent/root/epoch. Only the five raw metadata fields
-    are enriched in a local copy; conflicts and orphan sidecars fail closed.
+    fields and existing intent/root/epoch. Query-derived metadata requires a
+    replayed open-date seal and identical native/fill/intent references in the
+    actual ledger, complete native/canonical sets and the ordered reservation
+    safety projection shared with the producer. Ordinary later audits do not
+    change that projection. Its flat baseline may be embedded in the native row.
+    Only a local copy is enriched; conflicts and orphan sidecars fail closed.
     """
     try:
         if isinstance(execution_ledger_rows, (str, bytes)) or not isinstance(execution_ledger_rows, Sequence):
@@ -362,6 +481,7 @@ def validate_position_detail_ownership(
                 "broker_trading_day": opening["broker_trading_day"],
                 "vt_orderid": opening["vt_orderid"], "open_price": open_price,
                 "ledger_open_volume": opening["volume"], "remaining_volume": remaining,
+                **{name: opening[name] for name in ("open_date_seal_identity", "broker_trade_metadata_source") if name in opening},
             })
             total += remaining
             if (opening["broker_trading_day"] or opening["trade_date"]) == day:

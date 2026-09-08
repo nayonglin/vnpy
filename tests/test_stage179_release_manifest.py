@@ -2229,7 +2229,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
     def test_broker_sizing_modules_are_frozen_in_default_critical_files(self) -> None:
         modules = {
             f"examples/portfolio_backtesting/qmt_roll_official_live_broker_{name}.py"
-            for name in ("account_snapshot", "close_sizing", "open_queue", "position_ownership", "sizing")
+            for name in ("account_snapshot", "close_sizing", "open_date_seal", "open_queue", "position_ownership", "sizing")
         }
         self.assertTrue(modules <= set(builder.DEFAULT_CRITICAL_FILES), modules - set(builder.DEFAULT_CRITICAL_FILES))
         self.assertEqual(builder.DEFAULT_CRITICAL_FILES, bundle_builder.DEFAULT_CRITICAL_FILES)
@@ -2242,6 +2242,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
         suites = {
             "tests/test_official_live_broker_account_snapshot.py",
             "tests/test_official_live_broker_close_sizing.py",
+            "tests/test_official_live_broker_open_date_seal.py",
             "tests/test_official_live_broker_open_queue.py",
             "tests/test_official_live_broker_position_ownership.py",
             "tests/test_official_live_broker_sizing.py",
@@ -2249,6 +2250,7 @@ class Stage179ReleaseManifestTest(unittest.TestCase):
             "tests/test_stage901_broker_whole_epoch_alignment.py",
             "tests/test_stage905_broker_sizing.py",
             "tests/test_stage931_broker_sizing_gate.py",
+            "tests/test_stage931_broker_open_date_seal.py",
             "tests/test_stage941_broker_sizing_queue.py",
             "tests/test_stage174_query_bundle.py",
         }

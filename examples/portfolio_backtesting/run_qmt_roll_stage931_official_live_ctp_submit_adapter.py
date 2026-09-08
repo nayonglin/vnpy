@@ -2231,6 +2231,7 @@ def _final_trade_query_epoch(
             ),
             -1,
         )
+        result["request_ret"] = request_ret
     except Exception as exc:
         result["blockers"] = [f"final_trade_query_exception:{exc!r}"]
         epoch["active_reqid"] = None
@@ -2303,6 +2304,7 @@ def _final_position_detail_query_epoch(
     rows["_ctp_last_query_monotonic"] = monotonic()
     try:
         request_ret = td_api.reqQryInvestorPositionDetail({"BrokerID": broker_id, "InvestorID": investor_id}, reqid)
+        result["request_ret"] = request_ret
         if request_ret != 0:
             result["blockers"] = ["position_detail_query_request_failed"]
             return result
@@ -3945,6 +3947,364 @@ def _execution_event_watermark(rows: dict[str, Any]) -> dict[str, int]:
     }
 
 
+OPEN_DATE_SEAL_MAX_WINDOW_NS = 8_000_000_000
+
+
+def _begin_open_date_capture(td_api: Any, rows: dict[str, Any], deadline: float, *, flat: bool = False) -> dict[str, Any] | None:
+    if not rows.get("_open_date_service_generation"):
+        return None
+    try:
+        day = datetime.strptime(str(td_api.getTradingDay()), "%Y%m%d").date().isoformat()
+    except (AttributeError, ValueError, TypeError):
+        return None
+    started = time.monotonic_ns()
+    deadline_ns = min(int(deadline * 1e9), started + OPEN_DATE_SEAL_MAX_WINDOW_NS)
+    capture = {
+        "service_generation": rows["_open_date_service_generation"],
+        "connection_generation": rows.get("_open_date_connection_generation", ""),
+        "trading_day_before": day, "started_monotonic_ns": started,
+        "deadline_monotonic_ns": deadline_ns, "max_window_ns": max(0, deadline_ns - started),
+        "event_watermark_before": _execution_event_watermark(rows),
+        "native_api_watermark_before": _native_order_api_count_snapshot(rows),
+        "query_watermark_before": {"reqid": td_api.reqid}, "queries": {}, "pending": [], "requests": {},
+    }
+    if flat:
+        capture["flat_watch"] = {"kind": "flat", "invalid": False, "terminal_reqids": set(),
+                                 "proof_sha256": "", "native_started": False, "sealed_watch": None}
+    rows["_open_date_capture"] = capture
+    return capture
+
+
+def _record_open_date_query(capture: dict[str, Any] | None, name: str, result: Mapping[str, Any], td_api: Any) -> None:
+    if capture is None:
+        return
+    request = capture["requests"].pop(str(result.get("reqid")), {})
+    capture["queries"][name] = {
+        **request, "reqid": result.get("reqid"),
+        "callbacks": json.loads(json.dumps(capture["pending"], allow_nan=False)),
+    }
+    capture["pending"].clear()
+
+
+def _finish_open_date_capture(capture: dict[str, Any] | None, td_api: Any, rows: dict[str, Any], *, keep: bool = False) -> dict[str, Any]:
+    if capture is None:
+        return {}
+    try:
+        capture.update({
+            "trading_day_after": datetime.strptime(str(td_api.getTradingDay()), "%Y%m%d").date().isoformat(),
+            "completed_monotonic_ns": time.monotonic_ns(),
+            "event_watermark_after": _execution_event_watermark(rows),
+            "native_api_watermark_after": _native_order_api_count_snapshot(rows),
+            "query_watermark_after": {"reqid": td_api.reqid},
+        })
+        if capture["pending"] or capture["requests"]:
+            raise ValueError("open_date_unowned_callbacks")
+        frozen = json.loads(json.dumps({name: value for name, value in capture.items()
+                                       if name not in {"pending", "requests", "flat_watch"}}, allow_nan=False))
+        if capture.get("flat_watch") is not None:
+            capture["flat_watch"]["proof_sha256"] = _canonical_evidence_sha256(frozen)
+        return frozen
+    finally:
+        if not keep and rows.get("_open_date_capture") is capture:
+            rows.pop("_open_date_capture", None)
+
+
+def _open_date_preinsert_blockers(row: Mapping[str, Any], requests: list[OrderRequest], *, cold: bool = False) -> list[str]:
+    if not _requires_c9_broker_sizing(row) or not any(request.offset == Offset.OPEN for request in requests):
+        return []
+    if cold:
+        return ["c9_open_date_seal_cold_unproven_open_forbidden"]
+    if len(requests) != 1 or requests[0].offset != Offset.OPEN:
+        return ["c9_open_date_seal_single_open_child_required"]
+    return []
+
+
+def _open_date_risk_blockers(state: Mapping[str, Any], offset: str) -> list[str]:
+    if _normalize_offset_text(offset) != "open":
+        return []
+    return [f"c9_open_date_seal_pending:{orderid}:{reason}" for orderid, reason in
+            sorted(dict(state.get("open_date_seal_pending", {})).items())]
+
+
+def _open_date_flat_watch_blockers(td_api: Any, rows: Mapping[str, Any], proof: Mapping[str, Any]) -> list[str]:
+    queries = proof.get("queries", {})
+    reqids = [queries.get(name, {}).get("reqid") for name in ("order_before", "positions", "order_after")]
+    watches = [rows.get("_open_date_flat_query_watches", {}).get((td_api, reqid)) for reqid in reqids]
+    watch = watches[0]
+    if (watch is None or any(item is not watch for item in watches) or len(set(reqids)) != 3
+            or watch["invalid"] or watch["native_started"] or watch["terminal_reqids"] != set(reqids)
+            or watch["proof_sha256"] != _canonical_evidence_sha256(proof)):
+        return ["open_date_flat_query_watch_invalid"]
+    return []
+
+
+def _open_date_reuse_watermark(state: Mapping[str, Any]) -> dict[str, Any]:
+    rows = state["rows"]
+    td_api = state.get("td_api")
+    return {"events": _execution_event_watermark(rows), "native": _native_order_api_count_snapshot(rows),
+            "reqid": getattr(td_api, "reqid", None), "td_api": id(td_api),
+            "broker_connection": tuple(str(getattr(td_api, name, "")) for name in ("brokerid", "userid", "frontid", "sessionid")),
+            "trading_day": str(td_api.getTradingDay()),
+            "engine": id(state.get("main_engine")), "connection_generation": state.get("connection_generation"),
+            "invalidated": state.get("transport_generation_invalidated")}
+
+
+def _open_date_history_blockers(row: Mapping[str, Any], offset: str, ledger_rows: list[dict[str, Any]]) -> list[str]:
+    if _normalize_offset_text(offset) != "open" or not _requires_c9_broker_sizing(row):
+        return []
+    from qmt_roll_official_live_execution_ledger import _ledger_integrity_blocker, _record_checksum
+    if _ledger_integrity_blocker(ledger_rows) or any(
+        not item.get("record_checksum") or item["record_checksum"] != _record_checksum(item) for item in ledger_rows
+    ):
+        return ["c9_open_date_seal_history_integrity_unverifiable"]
+    symbol = str(row.get("vt_symbol", "")).strip().upper()
+    blockers = []
+    for event in ledger_rows:
+        if event.get("event_type") not in {"broker_trade_callback_unbound", "broker_trade_callback_unidentified",
+                "broker_trade_ownership_metadata_conflict", "broker_position_open_date_seal_conflict"}:
+            continue
+        event_symbol = event.get("vt_symbol")
+        if not symbol or not isinstance(event_symbol, str) or not event_symbol.strip() or event_symbol.strip().upper() == symbol:
+            blockers.append(f"c9_open_date_seal_history_unsealable:{event['event_type']}")
+    return sorted(set(blockers))
+
+
+def _make_open_date_flat_baseline(native: Mapping[str, Any], requests: list[OrderRequest], proof: Mapping[str, Any],
+                                  batch_id: str, fingerprint: str) -> dict[str, Any]:
+    from qmt_roll_official_live_broker_open_date_seal import _envelope
+    frozen = json.loads(json.dumps(proof, allow_nan=False))
+    raw = _envelope(frozen, ("order_before", "positions", "order_after"), fingerprint)
+    blockers = _open_date_preinsert_blockers(native, requests)
+    if blockers or not frozen:
+        raise ValueError("open_date_flat_proof_missing_or_multi_child")
+    if any(not str(native.get(name, "")).strip() for name in ("intent_fingerprint", "root_position_id", "position_epoch_id", "vt_symbol")):
+        raise ValueError("open_date_flat_owner_missing")
+    if any(item.get("OrderStatus") not in {"0", "2", "4", "5"} for item in raw["order_after"]):
+        raise ValueError("open_date_flat_active_orders")
+    for position in raw["positions"]:
+        if f"{position.get('InstrumentID')}.{position.get('ExchangeID')}".upper() == str(native["vt_symbol"]).upper():
+            if _broker_sizing_number(position.get("Position"), field="flat_position") != 0:
+                raise ValueError("open_date_baseline_not_flat")
+    return {"event_type": "broker_open_flat_baseline", "version": "ctp_owned_open_flat_baseline_v1",
+            "physical_batch_id": batch_id, "account_fingerprint": fingerprint,
+            **{name: native.get(name, "") for name in ("intent_fingerprint", "root_position_id", "position_epoch_id", "vt_symbol")},
+            "service_generation": frozen["service_generation"], "connection_generation": frozen["connection_generation"],
+            "trading_day": frozen["trading_day_before"], "physical_requests": [
+                {"child_order_index": index, "child_order_count": len(requests), "symbol": request.symbol,
+                 "exchange": request.exchange.value, "direction": _normalize_direction_text(request.direction.value),
+                 "offset": _normalize_offset_text(request.offset.value), "type": request.type.value,
+                 "volume": request.volume, "price": request.price, "reference": request.reference}
+                for index, request in enumerate(requests)], "proof": frozen, "proof_sha256": _canonical_evidence_sha256(frozen)}
+
+
+def _poison_open_date_seal(watch: Mapping[str, Any], reason: str, detail: Any = None) -> None:
+    native = watch["native"]
+    state = watch["state"]
+    state["open_date_seal_pending"][native["vt_orderid"]] = reason
+    watch["poisoned"] = True
+    event = {"event_type": "broker_position_open_date_seal_conflict", "target_date": native["target_date"],
+             "vt_orderid": native["vt_orderid"], "vt_symbol": native["vt_symbol"],
+             "intent_fingerprint": native.get("intent_fingerprint", ""), "root_position_id": native.get("root_position_id", ""),
+             "position_epoch_id": native.get("position_epoch_id", ""), "native_record_checksum": native["record_checksum"],
+             "reason": reason, "evidence_sha256": _canonical_evidence_sha256(detail)}
+    event["broker_callback_key"] = "open-date-conflict:" + _canonical_evidence_sha256(event)
+    saved = append_broker_callback_event_once(event, watch["ledger_path"])
+    if saved.get("blocker"):
+        state["open_date_seal_pending"][native["vt_orderid"]] = f"poison_persistence_failed:{saved['blocker']}"
+
+
+def _validate_open_date_zero_exposure(native: Mapping[str, Any], bundle: Mapping[str, Any], fingerprint: str) -> None:
+    from qmt_roll_official_live_broker_open_date_seal import _envelope, _record
+    _record(native)
+    baseline = native.get("flat_baseline_event", {})
+    if (native.get("flat_baseline_sha256") != _canonical_evidence_sha256(baseline)
+            or baseline.get("account_fingerprint") != fingerprint
+            or baseline.get("trading_day") != bundle.get("trading_day_before")
+            or _normalize_offset_text(native.get("offset")) != "open"):
+        raise ValueError("zero_exposure_native_baseline")
+    if native.get("connection_generation") == bundle.get("connection_generation"):
+        if _to_int(native.get("native_insert_monotonic_ns"), -1) <= 0 or bundle["started_monotonic_ns"] < native["native_insert_monotonic_ns"]:
+            raise ValueError("zero_exposure_query_before_native")
+    queried = _envelope(bundle, ("order_before", "trades", "position_details", "positions", "order_after"), fingerprint)
+    if sorted(map(_canonical_evidence_sha256, queried["order_before"])) != sorted(map(_canonical_evidence_sha256, queried["order_after"])):
+        raise ValueError("zero_exposure_order_changed")
+    symbol = str(native.get("vt_symbol", "")).upper()
+    matches = [row for row in queried["order_after"] if str(row.get("FrontID")) == str(native.get("front_id"))
+               and str(row.get("SessionID")) == str(native.get("session_id")) and row.get("OrderRef") == native.get("order_ref")
+               and f"{row.get('InstrumentID')}.{row.get('ExchangeID')}".upper() == symbol]
+    if len(matches) != 1:
+        raise ValueError("zero_exposure_native_order_not_unique")
+    order = matches[0]
+    if (order.get("OrderStatus") not in {"4", "5"} or not str(order.get("OrderSysID", "")).strip()
+            or order.get("CombOffsetFlag") != "0" or order.get("CombHedgeFlag") != "1"
+            or _normalize_direction_text(native.get("direction")) != ("long" if order.get("Direction") == "0" else "short")
+            or order.get("VolumeTotalOriginal") != native.get("volume") or order.get("LimitPrice") != native.get("price")
+            or _broker_sizing_number(order.get("VolumeTraded"), field="zero_traded") != 0
+            or order.get("VolumeTotal") != order.get("VolumeTotalOriginal")):
+        raise ValueError("zero_exposure_terminal_unproven")
+    for name, field in (("trades", "Volume"), ("position_details", "Volume"), ("positions", "Position")):
+        for row in queried[name]:
+            if f"{row.get('InstrumentID')}.{row.get('ExchangeID')}".upper() != symbol:
+                continue
+            if name == "trades" and (row.get("ExchangeID"), row.get("OrderSysID")) != (order["ExchangeID"], order["OrderSysID"]):
+                continue
+            if _broker_sizing_number(row.get(field), field=f"zero_{name}") != 0:
+                raise ValueError("zero_exposure_nonzero_broker_evidence")
+
+
+def _seal_owned_open_order(state: dict[str, Any], ledger_path: Path, vt_orderid: str, *, max_wait_seconds: float) -> dict[str, Any]:
+    from qmt_roll_official_live_broker_open_date_seal import build_open_date_seals, validate_open_date_seal
+    pending = state.setdefault("open_date_seal_pending", {})
+    pending[vt_orderid] = "pending"
+    acquired = False
+    capture = None
+    watch = None
+    deadline = time.monotonic() + min(OPEN_DATE_SEAL_MAX_WINDOW_NS / 1e9, max(0.0, max_wait_seconds))
+    try:
+        acquired = state["ctp_query_lock"].acquire(timeout=max(0.0, deadline - time.monotonic()))
+        if not acquired:
+            raise ValueError("query_lock_deadline")
+        td_api, rows = state["td_api"], state["rows"]
+        rows["_execution_event_ingress_lock"] = state["execution_event_ingress_lock"]
+        generation = state["connection_generation"]
+        engine = state.get("main_engine")
+        ledger = read_execution_ledger(ledger_path)
+        natives = [row for row in ledger if row.get("event_type") == "native_order_identity_persisted_before_insert" and row.get("vt_orderid") == vt_orderid]
+        fills = [row for row in ledger if row.get("event_type") == "filled_or_part_filled" and row.get("vt_orderid") == vt_orderid]
+        if len(natives) != 1:
+            raise ValueError("durable_native_missing")
+        native = natives[0]
+        fingerprint = hashlib.sha256(f"{td_api.brokerid}\0{td_api.userid}".encode()).hexdigest()
+        baseline = native.get("flat_baseline_event", {})
+        existing = [row for row in ledger if row.get("event_type") == "broker_position_open_date_sealed" and row.get("vt_orderid") == vt_orderid]
+        history_blockers = _open_date_history_blockers(native, "open", ledger)
+        if history_blockers:
+            raise ValueError("unbound_or_metadata_conflict:" + ",".join(history_blockers))
+
+        def reuse_boundary(before: Mapping[str, Any]) -> None:
+            if (pending.get(vt_orderid) != "pending" or before != _open_date_reuse_watermark(state)
+                    or state.get("connection_generation") != generation or state.get("transport_generation_invalidated")
+                    or state.get("td_api") is not td_api or state.get("main_engine") is not engine
+                    or time.monotonic() >= deadline):
+                raise ValueError("existing_seal_reuse_boundary_changed")
+
+        def zero_reuse_ledger(receipt: Mapping[str, Any]) -> None:
+            current = read_execution_ledger(ledger_path)
+            if _open_date_history_blockers(native, "open", current):
+                raise ValueError("zero_exposure_reuse_ledger_conflict")
+            order_rows = [item for item in current if item.get("vt_orderid") == vt_orderid]
+            if ([item for item in order_rows if item.get("event_type") == "native_order_identity_persisted_before_insert"] != [native]
+                    or [item for item in order_rows if item.get("event_type") == "broker_open_zero_exposure_reconciled"] != [receipt]
+                    or any(item.get("event_type") == "filled_or_part_filled" for item in order_rows)):
+                raise ValueError("zero_exposure_reuse_ledger_changed")
+
+        if existing:
+            if len(existing) > len(fills):
+                raise ValueError("existing_seal_coverage")
+            validated = set()
+            for fill in fills:
+                candidates = [row for row in existing if row.get("canonical_fill_record_checksum") == fill.get("record_checksum")]
+                if len(candidates) > 1:
+                    raise ValueError("existing_seal_identity")
+                if candidates:
+                    validate_open_date_seal(candidates[0], fill, fingerprint)
+                    validated.add(candidates[0]["record_checksum"])
+            if len(validated) != len(existing):
+                raise ValueError("existing_seal_orphan")
+            if len(existing) == len(fills):
+                with state["execution_event_ingress_lock"]:
+                    before = _open_date_reuse_watermark(state)
+                    ledger = read_execution_ledger(ledger_path)
+                    rebuilt = build_open_date_seals(execution_ledger_rows=ledger, native_order_event=native,
+                        flat_baseline_event=baseline, query_bundle=existing[0]["evidence"]["query_bundle"],
+                        account_fingerprint=fingerprint)
+                    if sorted(map(_canonical_evidence_sha256, rebuilt)) != sorted(map(_canonical_evidence_sha256, existing)):
+                        raise ValueError("existing_seal_coverage_changed")
+                    reuse_boundary(before)
+                    pending.pop(vt_orderid, None)
+                    return {"confirmed": True, "reused": True}
+        zeros = [row for row in ledger if row.get("event_type") == "broker_open_zero_exposure_reconciled" and row.get("vt_orderid") == vt_orderid]
+        if zeros and not fills:
+            with state["execution_event_ingress_lock"]:
+                before = _open_date_reuse_watermark(state)
+                if len(zeros) != 1 or zeros[0].get("native_order_event") != native:
+                    raise ValueError("zero_exposure_identity")
+                zero_reuse_ledger(zeros[0])
+                _validate_open_date_zero_exposure(native, zeros[0]["query_bundle"], fingerprint)
+                zero_reuse_ledger(zeros[0])
+                reuse_boundary(before)
+                pending.pop(vt_orderid, None)
+                return {"confirmed": True, "zero_exposure": True, "reused": True}
+        if str(td_api.getTradingDay()) != str(baseline.get("trading_day", "")).replace("-", ""):
+            raise ValueError("not_opening_trading_day")
+        rows["_open_date_service_generation"] = state["service_generation"]
+        rows["_open_date_connection_generation"] = generation
+        capture = _begin_open_date_capture(td_api, rows, deadline)
+        if capture is None:
+            raise ValueError("capture_missing")
+        watch = {"native": native, "state": state, "ledger_path": ledger_path, "poisoned": False}
+        sequence = (("order_before", _final_order_query_epoch), ("trades", _final_trade_query_epoch),
+                    ("position_details", _final_position_detail_query_epoch), ("positions", _final_position_query_epoch),
+                    ("order_after", _final_order_query_epoch))
+        for name, query in sequence:
+            if time.monotonic() >= deadline:
+                raise ValueError("query_deadline")
+            result = query(td_api, rows, max_wait_seconds=max(0.0, deadline - time.monotonic()))
+            _record_open_date_query(capture, name, result, td_api)
+            if not result.get("confirmed"):
+                raise ValueError(f"{name}:{result.get('blockers')}")
+            rows.setdefault("_open_date_sealed_query_watches", {})[(td_api, result["reqid"])] = watch
+        with state["execution_event_ingress_lock"]:
+            bundle = _finish_open_date_capture(capture, td_api, rows, keep=True)
+
+            def commit_boundary() -> None:
+                if (watch["poisoned"] or capture["pending"] or capture["requests"]
+                        or bundle["event_watermark_after"] != _execution_event_watermark(rows)
+                        or bundle["native_api_watermark_after"] != _native_order_api_count_snapshot(rows)
+                        or bundle["query_watermark_after"]["reqid"] != td_api.reqid
+                        or state.get("connection_generation") != generation or state.get("transport_generation_invalidated")
+                        or str(td_api.getTradingDay()) != bundle["trading_day_after"].replace("-", "")
+                        or time.monotonic() >= deadline):
+                    _poison_open_date_seal(watch, "seal_commit_boundary_changed", bundle["query_watermark_after"])
+                    raise ValueError("seal_commit_boundary_changed")
+            if (state.get("transport_generation_invalidated") or state.get("connection_generation") != generation
+                    or state.get("td_api") is not td_api or state.get("main_engine") is not engine):
+                raise ValueError("connection_changed")
+            ledger = read_execution_ledger(ledger_path)
+            fills = [row for row in ledger if row.get("event_type") == "filled_or_part_filled" and row.get("vt_orderid") == vt_orderid]
+            if not fills:
+                _validate_open_date_zero_exposure(native, bundle, fingerprint)
+                commit_boundary()
+                zero = {"event_type": "broker_open_zero_exposure_reconciled", "target_date": native["target_date"],
+                        "vt_orderid": vt_orderid, "vt_symbol": native["vt_symbol"], "account_fingerprint": fingerprint,
+                        "native_order_event": native, "query_bundle": bundle,
+                        "broker_callback_key": f"open-zero:{native['record_checksum']}"}
+                saved = append_broker_callback_event_once(zero, ledger_path)
+                if saved.get("blocker"):
+                    raise ValueError(str(saved["blocker"]))
+                commit_boundary()
+                pending.pop(vt_orderid, None)
+                return {"confirmed": True, "zero_exposure": True}
+            seals = build_open_date_seals(execution_ledger_rows=ledger, native_order_event=native,
+                                         flat_baseline_event=baseline, query_bundle=bundle, account_fingerprint=fingerprint)
+            commit_boundary()
+            for seal in seals:
+                saved = append_broker_callback_event_once(seal, ledger_path)
+                commit_boundary()
+                if saved.get("blocker"):
+                    raise ValueError(str(saved["blocker"]))
+            pending.pop(vt_orderid, None)
+            return {"confirmed": True, "seal_count": len(seals)}
+    except Exception as exc:
+        pending[vt_orderid] = f"{type(exc).__name__}:{exc}"
+        return {"confirmed": False, "blockers": [pending[vt_orderid]]}
+    finally:
+        if capture is not None and state["rows"].get("_open_date_capture") is capture:
+            state["rows"].pop("_open_date_capture", None)
+        if acquired:
+            state["ctp_query_lock"].release()
+
+
 def _final_pre_send_snapshot_epoch(
     td_api: Any,
     rows: dict[str, Any],
@@ -3985,6 +4345,7 @@ def _final_pre_send_snapshot_epoch(
     def remaining_budget() -> float:
         return max(0.0, deadline - monotonic())
 
+    capture = _begin_open_date_capture(td_api, rows, deadline, flat=True)
     order_q1 = _final_order_query_epoch(
         td_api,
         rows,
@@ -3994,6 +4355,7 @@ def _final_pre_send_snapshot_epoch(
         hard_deadline_monotonic=hard_deadline_monotonic,
     )
     result["order_q1"] = order_q1
+    _record_open_date_query(capture, "order_before", order_q1, td_api)
     if not order_q1.get("confirmed"):
         result["blockers"] = [
             f"final_snapshot_q1:{blocker}"
@@ -4011,6 +4373,7 @@ def _final_pre_send_snapshot_epoch(
         hard_deadline_monotonic=hard_deadline_monotonic,
     )
     result["position"] = position
+    _record_open_date_query(capture, "positions", position, td_api)
     if not position.get("confirmed"):
         result["blockers"] = [
             f"final_snapshot_position:{blocker}"
@@ -4045,6 +4408,7 @@ def _final_pre_send_snapshot_epoch(
     result["q2_completed_monotonic"] = monotonic()
     result["event_watermark_after_q2"] = _execution_event_watermark(rows)
     result["order_q2"] = order_q2
+    _record_open_date_query(capture, "order_after", order_q2, td_api)
     # Bind the later physical batch to the exact final Q2 owned by this
     # snapshot.  Never recapture td_api.reqid/last-query at bundle assembly:
     # an unrelated query could race after Q2 and otherwise become the
@@ -4087,6 +4451,12 @@ def _final_pre_send_snapshot_epoch(
     if not result["blockers"]:
         result.update({"success": True, "confirmed": True, "stable": True})
     result["elapsed_seconds"] = max(0.0, monotonic() - started)
+    if result["confirmed"] and capture is not None:
+        result["open_date_envelope"] = _finish_open_date_capture(capture, td_api, rows)
+        watch_blockers = _open_date_flat_watch_blockers(td_api, rows, result["open_date_envelope"])
+        if watch_blockers:
+            result.update(success=False, confirmed=False, stable=False)
+            result["blockers"].extend(watch_blockers)
     return result
 
 
@@ -4210,8 +4580,55 @@ def _instrument_ctp_readiness_callbacks(
         "onFrontDisconnected",
         None,
     )
+    original_query_methods = {name: getattr(td_api_class, name) for name in (
+        "reqQryOrder", "reqQryTrade", "reqQryInvestorPosition", "reqQryInvestorPositionDetail"
+    ) if callable(getattr(td_api_class, name, None))}
+
+    def guarded_query_callback(original: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapped(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+            lock = rows.get("_execution_event_ingress_lock")
+            with lock if hasattr(lock, "__enter__") else nullcontext():
+                flat_watch = rows.get("_open_date_flat_query_watches", {}).get((self, reqid))
+                if flat_watch is not None:
+                    if reqid in flat_watch["terminal_reqids"]:
+                        flat_watch["invalid"] = True
+                        if flat_watch["native_started"]:
+                            _poison_open_date_seal(flat_watch["sealed_watch"], "late_flat_baseline_callback",
+                                                  {"reqid": reqid, "data": data, "error": error, "last": last})
+                    if last:
+                        flat_watch["terminal_reqids"].add(reqid)
+                watch = rows.get("_open_date_sealed_query_watches", {}).get((self, reqid))
+                if watch is not None:
+                    _poison_open_date_seal(watch, "late_sealed_query_callback", {"reqid": reqid, "data": data, "error": error, "last": last})
+                return original(self, data, error, reqid, last)
+        return wrapped
+
+    def capture_query(original: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapped(self: Any, request: dict, reqid: int) -> Any:
+            capture = rows.get("_open_date_capture")
+            entry = None
+            if isinstance(capture, dict):
+                key = str(reqid)
+                if key in capture["requests"]:
+                    raise ValueError("open_date_duplicate_query_reqid")
+                entry = {"request": json.loads(json.dumps(request, allow_nan=False)),
+                         "started_monotonic_ns": time.monotonic_ns()}
+                capture["requests"][key] = entry
+                if capture.get("flat_watch") is not None:
+                    rows.setdefault("_open_date_flat_query_watches", {})[(self, reqid)] = capture["flat_watch"]
+            result = original(self, request, reqid)
+            if entry is not None:
+                entry["request_ret"] = result
+            return result
+        return wrapped
 
     def _callback_row(data: Any, error: Any, reqid: int, last: bool) -> dict[str, Any]:
+        capture = rows.get("_open_date_capture")
+        if isinstance(capture, dict):
+            capture["pending"].append(json.loads(json.dumps({
+                "reqid": reqid, "last": bool(last), "data": data, "error": error,
+                "received_monotonic_ns": time.monotonic_ns(),
+            }, allow_nan=False)))
         if error is None or error == {}:
             error_id = 0
         elif isinstance(error, dict):
@@ -4409,8 +4826,13 @@ def _instrument_ctp_readiness_callbacks(
             if isinstance(callback_data, dict) and callback_data
         ]
         result: Any = None
-        for callback_args in list(pending):
-            result = original_position_rsp(self, *callback_args)
+        previous_depth = int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0))
+        _ORDER_QUERY_FORWARD_CONTEXT.depth = previous_depth + 1
+        try:
+            for callback_args in list(pending):
+                result = original_position_rsp(self, *callback_args)
+        finally:
+            _ORDER_QUERY_FORWARD_CONTEXT.depth = previous_depth
         epoch["pending_callbacks"] = []
         return result
 
@@ -4611,7 +5033,7 @@ def _instrument_ctp_readiness_callbacks(
                 before_native = rows.get("_before_native_order_insert")
                 if not callable(before_native):
                     raise RuntimeError("stage179_before_native_order_insert_hook_missing")
-                before_native(self, dict(data), reqid)
+                flat_watch = before_native(self, dict(data), reqid)
                 close_gate = rows.get("_resized_close_bound_gate")
                 if isinstance(close_gate, dict):
                     close_requests = list(rows.get("_resized_close_requests", []))
@@ -4629,6 +5051,10 @@ def _instrument_ctp_readiness_callbacks(
                     if close_blockers:
                         raise RuntimeError("resized_close_native_gate_blocked:" + ";".join(close_blockers))
                     rows["_resized_close_native_count"] = close_index + 1
+                if isinstance(flat_watch, dict) and flat_watch.get("kind") == "flat":
+                    if flat_watch["invalid"] or flat_watch["native_started"]:
+                        raise BrokerSendBatchError("open_date_flat_query_watch_invalid", send_order_call_count=0)
+                    flat_watch["native_started"] = True
                 _increment_native_order_api_call_count(
                     rows, "send_order_api_called_count"
                 )
@@ -4690,17 +5116,19 @@ def _instrument_ctp_readiness_callbacks(
             return None
 
     try:
+        for name, original in original_query_methods.items():
+            setattr(td_api_class, name, capture_query(original))
         td_api_class.onRspSettlementInfoConfirm = instrumented_settlement_rsp
         td_api_class.onRspQryTradingAccount = instrumented_account_rsp
         td_api_class.onRspQryMaxOrderVolume = (
             instrumented_max_order_volume_rsp
         )
-        td_api_class.onRspQryInvestorPosition = instrumented_position_rsp
-        td_api_class.onRspQryOrder = instrumented_order_rsp
-        td_api_class.onRspQryTrade = instrumented_trade_rsp
+        td_api_class.onRspQryInvestorPosition = guarded_query_callback(instrumented_position_rsp)
+        td_api_class.onRspQryOrder = guarded_query_callback(instrumented_order_rsp)
+        td_api_class.onRspQryTrade = guarded_query_callback(instrumented_trade_rsp)
         if callable(original_trade_rtn):
             td_api_class.onRtnTrade = instrumented_trade_rtn
-        td_api_class.onRspQryInvestorPositionDetail = instrumented_position_detail_rsp
+        td_api_class.onRspQryInvestorPositionDetail = guarded_query_callback(instrumented_position_detail_rsp)
         if order_insert_existed and callable(original_order_insert):
             td_api_class.reqOrderInsert = instrumented_order_insert
         if order_action_existed and callable(original_order_action):
@@ -4709,6 +5137,8 @@ def _instrument_ctp_readiness_callbacks(
             td_api_class.onFrontDisconnected = instrumented_front_disconnected
         yield
     finally:
+        for name, original in original_query_methods.items():
+            setattr(td_api_class, name, original)
         td_api_class.onRspSettlementInfoConfirm = original_settlement_rsp
         td_api_class.onRspQryTradingAccount = original_account_rsp
         if max_order_volume_rsp_existed:
@@ -8154,6 +8584,9 @@ def _resolve_reconciliation_order(state: dict[str, Any], vt_orderid: str) -> Non
     lock = state.get("reconciliation_lock")
     manager = lock if hasattr(lock, "__enter__") else nullcontext()
     with manager:
+        seal_resolved = state.get("_on_open_date_reconciled")
+        if callable(seal_resolved):
+            seal_resolved(vt_orderid)
         state.get("reconciliation_pending_order_ids", set()).discard(vt_orderid)
         blockers = state.get("reconciliation_blockers")
         if isinstance(blockers, _RecoverableReconciliationBlockers):
@@ -8402,6 +8835,7 @@ def _submit_pre_reserved_child(
                 max_age_seconds=args.max_stage904_age_seconds,
             )
         )
+    pre_send_blockers.extend(_open_date_preinsert_blockers(row, [req], cold=True))
     if pre_send_blockers:
         result["blockers"] = pre_send_blockers
         result["adapter_status"] = "adapter_blocked_stage904_rebind_before_send"
@@ -10533,6 +10967,10 @@ def _build_stage179_warm_ctp_session(
     reconciliation_lock = threading.RLock()
     execution_event_ingress_lock = threading.RLock()
     state: dict[str, Any] = {
+        "service_generation": service_generation,
+        "open_date_seal_pending": {},
+        "open_date_seal_workers": set(),
+        "open_date_owned_order_ids": set(),
         "main_engine": None,
         "event_engine": None,
         "gateway": None,
@@ -10815,6 +11253,28 @@ def _build_stage179_warm_ctp_session(
             state["authorization_pin"] = None
             state["intent_contexts"].clear()
 
+    def schedule_open_date_seal(vt_orderid: str) -> None:
+        if not vt_orderid:
+            return
+        with state["reconciliation_lock"]:
+            state["open_date_seal_pending"][vt_orderid] = "pending"
+            if vt_orderid in state["open_date_seal_workers"]:
+                return
+            state["open_date_seal_workers"].add(vt_orderid)
+
+        def seal_worker() -> None:
+            try:
+                _seal_owned_open_order(state, paths.ledger_path, vt_orderid,
+                                       max_wait_seconds=max(0.0, float(args.final_order_query_wait_seconds)))
+            finally:
+                with state["reconciliation_lock"]:
+                    state["open_date_seal_workers"].discard(vt_orderid)
+        Thread(target=seal_worker, name=f"stage179-open-date-{vt_orderid}", daemon=True).start()
+
+    state["_on_open_date_reconciled"] = lambda orderid: (
+        schedule_open_date_seal(orderid) if orderid in state["open_date_owned_order_ids"] else None
+    )
+
     def connect_startup_bundle() -> dict[str, Any]:
         # This import is deliberately inside the post-gate adapter factory.
         from vnpy_ctp import CtpGateway
@@ -10880,7 +11340,8 @@ def _build_stage179_warm_ctp_session(
                 return original_trade(trade)
 
             def ingress_position(position: Any) -> Any:
-                increment("position")
+                if not int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0)):
+                    increment("position")
                 row = _object_to_row(position)
                 rows["position_events_unscoped"].append(row)
                 persist_callback("position", row)
@@ -11119,7 +11580,7 @@ def _build_stage179_warm_ctp_session(
                 native_td_api: Any,
                 native_request: dict[str, Any],
                 reqid: int,
-            ) -> None:
+            ) -> dict[str, Any] | None:
                 native_gate = state.get("native_dynamic_gate")
                 if not callable(native_gate):
                     raise RuntimeError("stage179_native_dynamic_gate_missing")
@@ -11143,6 +11604,12 @@ def _build_stage179_warm_ctp_session(
                     raise RuntimeError(
                         "stage179_native_insert_context_missing"
                     )
+                flat_watch = None
+                if native_context.get("flat_baseline_event"):
+                    proof = native_context["flat_baseline_event"].get("proof", {})
+                    if _open_date_flat_watch_blockers(native_td_api, rows, proof):
+                        raise BrokerSendBatchError("open_date_flat_query_watch_invalid", send_order_call_count=0)
+                    flat_watch = rows["_open_date_flat_query_watches"][(native_td_api, proof["queries"]["order_before"]["reqid"])]
                 front_id = str(getattr(native_td_api, "frontid", "") or "")
                 session_id = str(
                     getattr(native_td_api, "sessionid", "") or ""
@@ -11176,6 +11643,11 @@ def _build_stage179_warm_ctp_session(
                     "order_ref": order_ref,
                     "vt_orderid": vt_orderid,
                     "req_order_insert_reqid": int(reqid),
+                    "native_insert_monotonic_ns": time.monotonic_ns(),
+                    "native_api_watermark": _native_order_api_count_snapshot(rows),
+                    "event_watermark": _execution_event_watermark(rows),
+                    "query_watermark": {"reqid": int(reqid) - 1},
+                    "native_query_snapshot": _physical_batch_query_watermark(native_td_api, rows),
                 }
                 result = append_broker_callback_event_once(
                     {
@@ -11198,6 +11670,10 @@ def _build_stage179_warm_ctp_session(
                         + blocker
                     )
                 state["native_insert_identity"] = identity
+                if native_context.get("flat_baseline_event"):
+                    state["open_date_owned_order_ids"].add(vt_orderid)
+                    flat_watch["sealed_watch"] = {"native": result["ledger_event"], "state": state,
+                                                  "ledger_path": paths.ledger_path, "poisoned": False}
                 child_context = state.get("native_child_context")
                 batch = state.get("active_physical_batch")
                 if not isinstance(child_context, dict) or not isinstance(
@@ -11227,6 +11703,7 @@ def _build_stage179_warm_ctp_session(
                     vt_orderid
                 ] = owned_child
                 state["order_contexts"][vt_orderid] = child_context
+                return flat_watch
 
             rows["_before_native_order_insert"] = (
                 persist_before_native_order_insert
@@ -11242,6 +11719,11 @@ def _build_stage179_warm_ctp_session(
             if ready and not blockers:
                 state["transport_generation_invalidated"] = False
                 ledger_rows = read_execution_ledger(paths.ledger_path)
+                for native in ledger_rows:
+                    if (native.get("event_type") == "native_order_identity_persisted_before_insert"
+                            and _requires_c9_broker_sizing(native) and _normalize_offset_text(native.get("offset")) == "open"):
+                        state["open_date_owned_order_ids"].add(str(native.get("vt_orderid", "") or ""))
+                        schedule_open_date_seal(str(native.get("vt_orderid", "") or ""))
                 recovered: set[str] = set()
                 unresolved: list[tuple[str, dict[str, Any]]] = []
                 for ledger_row in reversed(ledger_rows):
@@ -11643,6 +12125,13 @@ def _build_stage179_warm_ctp_session(
             }
 
         req = _order_request_from_payload(dict(order_payload))
+        ownership_blockers = _open_date_risk_blockers(state, req.offset.value)
+        if _requires_c9_broker_sizing(row) and req.offset == Offset.OPEN:
+            ownership_blockers.extend(_open_date_history_blockers(row, "open", read_execution_ledger(paths.ledger_path)))
+        if ownership_blockers:
+            return {"blockers": ownership_blockers}
+        rows["_open_date_service_generation"] = service_generation
+        rows["_open_date_connection_generation"] = state.get("connection_generation", "")
         rows["_position_vt_symbol_by_instrument"] = {
             req.symbol.upper(): req.vt_symbol
         }
@@ -11751,6 +12240,7 @@ def _build_stage179_warm_ctp_session(
             conversion = _final_offset_conversion(main_engine, rows, req)
             blockers.extend(conversion.get("blockers", []))
             physical_requests = list(conversion.get("requests", []))
+            blockers.extend(_open_date_preinsert_blockers(row, physical_requests))
             blockers.extend(
                 _enforce_physical_order_time_in_force(physical_requests)
             )
@@ -11900,6 +12390,7 @@ def _build_stage179_warm_ctp_session(
                 )
             ),
             "open_funds_gate": dict(open_funds_gate),
+            "open_date_flat_proof": json.loads(json.dumps(final_gate.get("snapshot", {}).get("open_date_envelope", {}), allow_nan=False)),
             "physical_batch_query_watermark": dict(
                 physical_batch_query_watermark
             ),
@@ -11955,6 +12446,9 @@ def _build_stage179_warm_ctp_session(
         if request is None or not requests:
             blockers.append("stage179_send_context_missing_before_api_slot")
         else:
+            if _requires_c9_broker_sizing(row) and any(item.offset == Offset.OPEN for item in requests):
+                blockers.extend(_open_date_history_blockers(row, "open", read_execution_ledger(paths.ledger_path)))
+                blockers.extend(_open_date_flat_watch_blockers(state.get("td_api"), state["rows"], context.get("open_date_flat_proof", {})))
             for child_request in requests:
                 blockers.extend(
                     _pre_reserved_child_intent_blockers(row, child_request)
@@ -12905,6 +13399,9 @@ def _build_stage179_warm_ctp_session(
         main_engine = state.get("main_engine")
         if not requests or main_engine is None:
             raise RuntimeError("stage179_send_context_missing")
+        open_date_blockers = _open_date_preinsert_blockers(context.get("row", {}), requests)
+        if open_date_blockers:
+            raise BrokerSendBatchError(";".join(open_date_blockers), send_order_call_count=0)
         order_ids: list[str] = []
 
         def dynamic_child_blockers(
@@ -12917,6 +13414,13 @@ def _build_stage179_warm_ctp_session(
             blockers = leased_authorization_blockers(
                 lease, child_offset=child_request.offset.value
             )
+            blockers.extend(_open_date_risk_blockers(state, child_request.offset.value))
+            if child_request.offset == Offset.OPEN and _requires_c9_broker_sizing(context.get("row", {})):
+                proof = context.get("open_date_flat_proof", {})
+                blockers.extend(_open_date_flat_watch_blockers(state.get("td_api"), state["rows"], proof))
+                if (not proof or proof.get("event_watermark_after") != _execution_event_watermark(state["rows"])
+                        or proof.get("native_api_watermark_after") != _native_order_api_count_snapshot(state["rows"])):
+                    blockers.append("open_date_flat_proof_native_watermark_changed")
             if "hard_deadline_monotonic" not in context:
                 # Direct unit harnesses predating the production fresh-bundle
                 # contract still exercise authorization revocation only.
@@ -13048,6 +13552,7 @@ def _build_stage179_warm_ctp_session(
                 )
             send_base = {
                 "target_date": lease.intent.target_date,
+                "reservation_record_checksum": context.get("reservation_record_checksum", ""),
                 "intent_id": lease.intent.intent_id,
                 "intent_payload_sha256": lease.intent.payload_sha256,
                 "intent_kind": lease.intent.intent_kind,
@@ -13090,6 +13595,15 @@ def _build_stage179_warm_ctp_session(
                     context.get("close_attempt_lease_token", "")
                 )
             insert_start_index = len(state["rows"]["order_insert_requests"])
+            if request.offset == Offset.OPEN and _requires_c9_broker_sizing(context.get("row", {})):
+                batch = state.get("active_physical_batch", {})
+                baseline = _make_open_date_flat_baseline(
+                    send_base, requests, context.get("open_date_flat_proof", {}), str(batch.get("batch_id", "")),
+                    str(context.get("row", {}).get("broker_sizing", {}).get("account_fingerprint", "")),
+                )
+                send_base.update(physical_batch_id=baseline["physical_batch_id"], flat_baseline_event=baseline,
+                                 account_fingerprint=baseline["account_fingerprint"],
+                                 flat_baseline_sha256=_canonical_evidence_sha256(baseline))
             state.pop("native_insert_identity", None)
             state["native_insert_context"] = dict(send_base)
             state["native_child_context"] = child_context
