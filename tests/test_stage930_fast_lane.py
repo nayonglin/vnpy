@@ -319,6 +319,18 @@ class Stage930FastLaneTest(unittest.TestCase):
             ),
         )
 
+    def test_stage901_full_position_close_has_reduce_close_scope(self) -> None:
+        self.assertEqual(
+            ("reduce_close_only", "reduce_close_submit_permitted"),
+            stage930._fast_lane_scope(
+                SimpleNamespace(
+                    intent_kind="close",
+                    source="stage901_pending_order",
+                    intent_role="c9_full_position_close",
+                )
+            ),
+        )
+
     def test_live_real_persistent_detector_requires_broker_fill_price(self) -> None:
         args = self.args()
         args.mode = "live-real"

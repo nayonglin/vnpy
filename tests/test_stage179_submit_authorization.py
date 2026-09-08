@@ -535,6 +535,18 @@ class Stage179SubmitAuthorizationTest(unittest.TestCase):
                     blockers,
                 )
 
+    def test_stage901_full_position_close_uses_reduce_close_authorization(self) -> None:
+        row = {
+            **self.fast_row(),
+            "source": "stage901_pending_order",
+            "intent_role": "c9_full_position_close",
+        }
+        self.publish_fast(authorized_intents=[row])
+        self.assertEqual(
+            [],
+            self.validate(**(self.fast_validate_values() | row)),
+        )
+
     def test_fast_retry_open_uses_scope_specific_controller_and_stage927(self) -> None:
         self.publish_fast(scope="retry_open_only")
         expected = self.fast_validate_values(scope="retry_open_only")

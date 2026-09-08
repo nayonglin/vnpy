@@ -55,7 +55,8 @@ def make_seal_inputs(*, prior_safe_retry=False, prior_recovery=False):
     fingerprint = hashlib.sha256(b"broker\0account").hexdigest()
     owner.update(intent_id="intent-id", intent_payload_sha256="a" * 64,
                  spool_lease_owner="lease-owner", spool_lease_token="lease-token", intent_kind="open",
-                 position_cycle_id="cycle", intent_role="initial_open")
+                 position_cycle_id="cycle", position_cycle_no=0,
+                 state_generation="epoch:0", intent_role="initial_open")
     request = {"child_order_index": 0, "child_order_count": 1, "symbol": "SH611", "exchange": "CZCE",
                "direction": "long", "offset": "open", "type": "FAK", "volume": 4, "price": 1948,
                "reference": "Stage905PhaseD:intent"}

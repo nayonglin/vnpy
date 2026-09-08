@@ -9,6 +9,10 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
+from qmt_roll_official_live_broker_close_sizing import (
+    FULL_POSITION_CLOSE_INTENT_ROLE,
+)
+
 
 SUBMIT_AUTHORIZATION_SCHEMA_VERSION = 5
 SUBMIT_AUTHORIZATION_FILENAME = "stage179_submit_authorization.json"
@@ -45,6 +49,7 @@ _FAST_CLOSE_ROLES = {
     "c9_initial_stop_close",
     "c9_retry_failed_stop_close",
 }
+_FULL_POSITION_CLOSE_SOURCE = "stage901_pending_order"
 _FAST_RETRY_OPEN_SOURCE = "stage904_c9_intraday_retry_open"
 _FAST_RETRY_OPEN_ROLE = "c9_retry_open_once"
 _INITIAL_OPEN_SOURCE = "stage901_pending_order"
@@ -250,10 +255,15 @@ def _normalized_authorized_intents(
                 raise ValueError(
                     "stage179_submit_authorization_reduce_close_scope_contains_open"
                 )
-            if (
-                row["source"] != _FAST_CLOSE_SOURCE
-                or row["intent_role"] not in _FAST_CLOSE_ROLES
-            ):
+            fast_stop_close = (
+                row["source"] == _FAST_CLOSE_SOURCE
+                and row["intent_role"] in _FAST_CLOSE_ROLES
+            )
+            full_position_close = (
+                row["source"] == _FULL_POSITION_CLOSE_SOURCE
+                and row["intent_role"] == FULL_POSITION_CLOSE_INTENT_ROLE
+            )
+            if not (fast_stop_close or full_position_close):
                 raise ValueError(
                     "stage179_submit_authorization_fast_close_source_role_invalid"
                 )

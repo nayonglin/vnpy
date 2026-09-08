@@ -23,6 +23,10 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from qmt_roll_official_live_broker_close_sizing import (
+    FULL_POSITION_CLOSE_INTENT_ROLE,
+)
+
 from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
     OfficialExecutionProfile,
@@ -1780,9 +1784,17 @@ def _fast_lane_scope(candidate: Any) -> tuple[str, str]:
         return "initial_open_only", "initial_open_submit_permitted"
     if (
         candidate.intent_kind == "close"
-        and candidate.source == "stage904_c9_intraday_close"
-        and candidate.intent_role
-        in {"c9_initial_stop_close", "c9_retry_failed_stop_close"}
+        and (
+            (
+                candidate.source == "stage904_c9_intraday_close"
+                and candidate.intent_role
+                in {"c9_initial_stop_close", "c9_retry_failed_stop_close"}
+            )
+            or (
+                candidate.source == "stage901_pending_order"
+                and candidate.intent_role == FULL_POSITION_CLOSE_INTENT_ROLE
+            )
+        )
     ):
         return "reduce_close_only", "reduce_close_submit_permitted"
     if (

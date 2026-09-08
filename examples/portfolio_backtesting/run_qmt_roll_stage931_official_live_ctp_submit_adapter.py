@@ -23,6 +23,10 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from qmt_roll_official_live_broker_close_sizing import (
+    FULL_POSITION_CLOSE_INTENT_ROLE,
+)
+
 from qmt_roll_official_execution_profile import (
     C9_15W_PROFILE,
     ExecutionStrategyMode,
@@ -189,6 +193,7 @@ FINGERPRINT_SCOPED_NONRETRYABLE_CLOSE_BLOCKERS = frozenset(
 LEDGER_METADATA_FIELDS = (
     "root_position_id",
     "position_epoch_id",
+    "state_generation",
     "position_cycle_id",
     "position_cycle_no",
     "parent_position_cycle_id",
@@ -6666,14 +6671,18 @@ def _post_final_gate_pre_api_slot_blockers(
 
 def _requires_resized_broker_close(row: Mapping[str, Any] | None) -> bool:
     audit = (row or {}).get("broker_close_sizing")
-    if audit is None:
-        return False
-    try:
-        return _broker_sizing_number(audit["volume"], field="close_volume") != _broker_sizing_number(
-            audit["shadow_volume"], field="shadow_volume",
-        )
-    except (ValueError, TypeError, KeyError):
-        return True
+    return bool(
+        audit is not None
+        or _artifact_text((row or {}).get("intent_role"))
+        == FULL_POSITION_CLOSE_INTENT_ROLE
+    )
+
+
+def _full_close_cycle_no(value: Any, *, field: str) -> int:
+    number = _broker_sizing_number(value, field=field)
+    if not number.is_integer() or int(number) not in {0, 1}:
+        raise ValueError(f"resized_close_position_cycle_no_invalid:{field}")
+    return int(number)
 
 
 def _resized_close_ownership_proof(
@@ -6711,6 +6720,20 @@ def _resized_close_ownership_proof(
     for source in [row, *payloads]:
         if source.get("vt_symbol") != symbol or _normalize_direction_text(source.get("direction")) != direction:
             raise ValueError("resized_close_order_identity_mismatch")
+        for name in (
+            "root_position_id",
+            "position_epoch_id",
+            "position_cycle_id",
+            "state_generation",
+        ):
+            if not source.get(name) or source.get(name) != audit.get(name):
+                raise ValueError(f"resized_close_order_owner_mismatch:{name}")
+        if _full_close_cycle_no(
+            source.get("position_cycle_no"), field="order_position_cycle_no"
+        ) != _full_close_cycle_no(
+            audit.get("position_cycle_no"), field="audit_position_cycle_no"
+        ):
+            raise ValueError("resized_close_order_owner_mismatch:position_cycle_no")
     if audit.get("vt_symbol") != symbol or audit.get("position_direction") != position_direction:
         raise ValueError("resized_close_audit_identity_mismatch")
     if any(_broker_sizing_number(audit.get(name), field=name) != volume for name in ("volume", "broker_gross_volume", "owned_net_volume")):
@@ -6784,7 +6807,19 @@ def _resized_close_ownership_proof(
         broker_gross_volume=int(volume), broker_trade_rows=trade_query.get("trades"),
     )
     if any(not audit.get(name) or ownership.get(name) != audit[name]
-           for name in ("root_position_id", "position_epoch_id", "owned_net_volume")):
+           for name in (
+               "root_position_id",
+               "position_epoch_id",
+               "position_cycle_id",
+               "state_generation",
+               "owned_net_volume",
+           )) or _full_close_cycle_no(
+               ownership.get("position_cycle_no"),
+               field="ownership_position_cycle_no",
+           ) != _full_close_cycle_no(
+               audit.get("position_cycle_no"),
+               field="audit_position_cycle_no",
+           ):
         raise ValueError("resized_close_owned_epoch_changed")
     linked = {item.get("intent_fingerprint"): item["intent_payload"] for item in ledger_rows
               if item.get("intent_fingerprint") and isinstance(item.get("intent_payload"), dict)}
@@ -7594,8 +7629,19 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
                 expected_policy = "stage179_open_fak_v1"
             elif (
                 row_offset == "close"
-                and source == "stage904_c9_intraday_close"
-                and role in {"c9_initial_stop_close", "c9_retry_failed_stop_close"}
+                and (
+                    (
+                        source == "stage904_c9_intraday_close"
+                        and role in {
+                            "c9_initial_stop_close",
+                            "c9_retry_failed_stop_close",
+                        }
+                    )
+                    or (
+                        source == "stage901_pending_order"
+                        and role == FULL_POSITION_CLOSE_INTENT_ROLE
+                    )
+                )
             ):
                 expected_type = OrderType.LIMIT
                 expected_policy = "stage179_limit_gfd_v1"
@@ -7625,6 +7671,7 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
             "root_position_id",
             "position_cycle_id",
             "position_epoch_id",
+            "state_generation",
             "intent_role",
             "monitor_run_id",
             "risk_alert_level",
@@ -7653,6 +7700,49 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
             }:
                 blockers.append(f"stage905_close_source_role_offset_mismatch:{label}")
         elif source == "stage901_pending_order":
+            if row_offset == "close":
+                if role != FULL_POSITION_CLOSE_INTENT_ROLE:
+                    blockers.append(
+                        f"stage905_pending_close_intent_role_invalid:{label}"
+                    )
+                close_audit = row.get("broker_close_sizing")
+                if (
+                    not isinstance(close_audit, Mapping)
+                    or _artifact_text(close_audit.get("mode")) != "full_close"
+                ):
+                    blockers.append(
+                        f"stage905_pending_close_ownership_audit_invalid:{label}"
+                    )
+                else:
+                    for key in (
+                        "root_position_id",
+                        "position_cycle_id",
+                        "position_epoch_id",
+                        "state_generation",
+                    ):
+                        if not _artifact_text(row.get(key)) or _artifact_text(
+                            row.get(key)
+                        ) != _artifact_text(close_audit.get(key)):
+                            blockers.append(
+                                f"stage905_pending_close_{key}_mismatch:{label}"
+                            )
+                    try:
+                        row_cycle_no = _full_close_cycle_no(
+                            row.get("position_cycle_no"),
+                            field="artifact_row_position_cycle_no",
+                        )
+                        audit_cycle_no = _full_close_cycle_no(
+                            close_audit.get("position_cycle_no"),
+                            field="artifact_audit_position_cycle_no",
+                        )
+                    except ValueError:
+                        row_cycle_no = -1
+                        audit_cycle_no = -2
+                    if row_cycle_no != audit_cycle_no:
+                        blockers.append(
+                            f"stage905_pending_close_position_cycle_no_mismatch:{label}"
+                        )
+                continue
             if row_offset != "open" or role != "c9_initial_open":
                 blockers.append(
                     f"stage905_initial_open_source_role_offset_mismatch:{label}"

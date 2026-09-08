@@ -30,6 +30,9 @@ from qmt_roll_official_live_c9_intraday_state import (
     generate_root_position_id,
 )
 from qmt_roll_official_live_execution_ledger import read_execution_ledger
+from qmt_roll_official_live_broker_close_sizing import (
+    FULL_POSITION_CLOSE_INTENT_ROLE,
+)
 from qmt_roll_official_live_broker_sizing import official_sizing_policy, size_open_intent
 from qmt_roll_official_pending_artifact import (
     load_validated_artifact_snapshot,
@@ -70,6 +73,7 @@ IDENTITY_TEXT_FIELDS = (
     "root_position_id",
     "position_cycle_id",
     "position_epoch_id",
+    "state_generation",
     "position_epoch_source",
     "parent_position_cycle_id",
     "intent_role",
@@ -2004,13 +2008,22 @@ def run_executor_dry_run(
                     execution_ledger_rows=execution_ledger_rows,
                     require_broker_trade_coverage=False,
                 )
-                if decision["volume"] > 0 and decision["volume"] != decision["shadow_volume"]:
+                if decision["volume"] > 0:
                     if (len(broker_account_fingerprint) != 64
                             or any(character not in "0123456789abcdef" for character in broker_account_fingerprint)):
                         raise ValueError("broker_full_close_account_fingerprint_missing")
                     decision["account_fingerprint"] = broker_account_fingerprint
                 row.update({"planned_volume": decision["volume"], "broker_close_sizing": decision,
                             "shadow_planned_volume": row["planned_volume"]})
+                if decision["volume"] > 0:
+                    row.update({
+                        "intent_role": FULL_POSITION_CLOSE_INTENT_ROLE,
+                        "root_position_id": decision["root_position_id"],
+                        "position_cycle_id": decision["position_cycle_id"],
+                        "position_cycle_no": decision["position_cycle_no"],
+                        "position_epoch_id": decision["position_epoch_id"],
+                        "state_generation": decision["state_generation"],
+                    })
                 if decision["volume"] == 0:
                     row["force_skip_reason"] = "broker_flat_for_full_close"
             except (ValueError, OSError, TypeError) as exc:

@@ -9,6 +9,9 @@ from typing import Any, Mapping, Sequence
 import pandas as pd
 
 
+FULL_POSITION_CLOSE_INTENT_ROLE = "c9_full_position_close"
+
+
 def _text(value: Any) -> str:
     return str(value).strip() if value is not None else ""
 
@@ -132,6 +135,7 @@ def _owned_epoch(
     payloads = {str(row.get("intent_fingerprint")): row["intent_payload"] for row in rows
                 if row.get("intent_fingerprint") and isinstance(row.get("intent_payload"), Mapping)}
     net: dict[tuple[str, str], int] = {}
+    ownership_metadata: dict[tuple[str, str], tuple[str, int, str]] = {}
     seen: dict[tuple, tuple] = {}
     fills: dict[tuple, tuple] = {}
     for row in rows:
@@ -151,14 +155,34 @@ def _owned_epoch(
         close_audit = event.get("broker_close_sizing") or {}
         root = _text(event.get("root_position_id") or close_audit.get("root_position_id"))
         epoch = _text(event.get("position_epoch_id") or close_audit.get("position_epoch_id"))
+        cycle = _text(event.get("position_cycle_id") or close_audit.get("position_cycle_id"))
+        cycle_no = _lots(
+            event.get("position_cycle_no", close_audit.get("position_cycle_no"))
+        )
+        state_generation = _text(
+            event.get("state_generation") or close_audit.get("state_generation")
+        )
         owned = event.get("source") in {"stage901_pending_order", "stage904_c9_intraday_close", "stage904_c9_intraday_retry_open"}
         if not owned:
             raise ValueError("broker_full_close_owned_trade_unbound")
-        if not root or not epoch or event.get("fill_price_source") != "event_trade_weighted_avg":
+        generation_revision = (
+            state_generation.removeprefix(f"{epoch}:")
+            if state_generation.startswith(f"{epoch}:")
+            else ""
+        )
+        if (
+            not root
+            or not epoch
+            or not cycle
+            or cycle_no not in {0, 1}
+            or not generation_revision.isdecimal()
+            or str(int(generation_revision)) != generation_revision
+            or event.get("fill_price_source") != "event_trade_weighted_avg"
+        ):
             raise ValueError("broker_full_close_owned_fill_unverified")
         identity, economics = _trade_evidence(event, symbol, ledger=True)
         event_direction, opening, volume, price = economics
-        value = (root, epoch, economics)
+        value = (root, epoch, cycle, cycle_no, state_generation, economics)
         if identity in seen:
             if seen[identity] != value:
                 raise ValueError("broker_full_close_owned_fill_conflict")
@@ -168,6 +192,10 @@ def _owned_epoch(
         if not ((opening and event_direction == direction) or (not opening and event_direction != direction)):
             continue
         key = (root, epoch)
+        metadata = (cycle, cycle_no, state_generation)
+        if key in ownership_metadata and ownership_metadata[key] != metadata:
+            raise ValueError("broker_full_close_owned_position_identity_conflict")
+        ownership_metadata[key] = metadata
         net[key] = net.get(key, 0) + (volume if opening else -volume)
     covered: set[tuple] = set()
     for trade in broker_trade_rows if require_broker_trade_coverage else []:
@@ -186,7 +214,10 @@ def _owned_epoch(
     if len(active) != 1 or active[0][1] != gross:
         raise ValueError("broker_full_close_owned_net_volume_mismatch")
     (root, epoch), volume = active[0]
+    cycle, cycle_no, state_generation = ownership_metadata[(root, epoch)]
     return {"root_position_id": root, "position_epoch_id": epoch, "owned_net_volume": volume,
+            "position_cycle_id": cycle, "position_cycle_no": cycle_no,
+            "state_generation": state_generation,
             "broker_trade_coverage_count": len(covered),
             "broker_trade_coverage_verified": require_broker_trade_coverage,
             "final_broker_trade_coverage_required": True}
@@ -275,7 +306,7 @@ def size_full_close_intent(
             execution_ledger_rows, symbol=symbol.upper(), direction=position_direction,
             gross=gross, broker_trade_rows=broker_trade_rows,
             require_broker_trade_coverage=require_broker_trade_coverage,
-        ) if gross and gross != shadow_volume else {}
+        ) if gross else {}
         return {
             "mode": "full_close", "volume": gross, "broker_gross_volume": gross,
             "shadow_volume": shadow_volume, "shadow_position_volume": abs(signed_volume),

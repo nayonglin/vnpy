@@ -32,7 +32,9 @@ def close_inputs():
         "execution_ledger_rows": [{
             "event_type": "filled_or_part_filled", "source": "stage901_pending_order", "intent_role": "c9_initial_open",
             "vt_symbol": "SH611.CZCE", "direction": "long", "offset": "open", "trade_volume_delta": 3,
-            "root_position_id": "root-1", "position_epoch_id": "epoch-1", "vt_tradeid": "CTP.open1",
+            "root_position_id": "root-1", "position_epoch_id": "epoch-1",
+            "position_cycle_id": "root-1:cycle0", "position_cycle_no": 0,
+            "state_generation": "epoch-1:0", "vt_tradeid": "CTP.open1",
             "fill_price_source": "event_trade_weighted_avg", "price": 1948,
         }],
     }
@@ -162,12 +164,28 @@ def test_resizing_requires_unique_owned_epoch_not_just_broker_gross():
 
 def test_equal_quantity_compatibility_still_requires_full_close_proof():
     inputs = close_inputs()
-    inputs["execution_ledger_rows"] = None
     inputs["broker_positions"].loc[0, "volume"] = 4
-    assert size(**inputs)["volume"] == 4
+    inputs["execution_ledger_rows"][0]["trade_volume_delta"] = 4
+    result = size(**inputs)
+    assert result["volume"] == result["owned_net_volume"] == 4
+    assert result["state_generation"] == "epoch-1:0"
+    inputs["execution_ledger_rows"] = None
+    with pytest.raises(ValueError, match="owned"):
+        size(**inputs)
     inputs["pending_orders"].loc[0, "volume"] = 2
     inputs["official_summary"]["pending_orders"][0]["volume"] = 2
     with pytest.raises(ValueError):
+        size(**inputs)
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["position_cycle_id", "position_cycle_no", "state_generation"],
+)
+def test_owned_epoch_requires_complete_authorization_identity(field):
+    inputs = close_inputs()
+    inputs["execution_ledger_rows"][0].pop(field)
+    with pytest.raises(ValueError, match="owned|lots"):
         size(**inputs)
 
 
@@ -182,6 +200,9 @@ def test_larger_real_position_does_not_swallow_unowned_addition():
     assert result["root_position_id"] == "root-1"
     assert result["position_epoch_id"] == "epoch-1"
     assert result["owned_net_volume"] == 5
+    assert result["position_cycle_id"] == "root-1:cycle0"
+    assert result["position_cycle_no"] == 0
+    assert result["state_generation"] == "epoch-1:0"
 
 
 @pytest.mark.parametrize("case", ["two_epochs", "partial_closed", "unknown_fill_identity", "unpriced", "duplicate_conflict"])
@@ -206,12 +227,29 @@ def test_owned_net_quantity_and_fill_identity_must_be_unambiguous(case):
 def test_owned_net_uses_linked_payload_and_deduplicates_exact_fills():
     inputs = close_inputs()
     fill = inputs["execution_ledger_rows"][0]
-    payload = {key: fill.pop(key) for key in ("source", "intent_role", "vt_symbol", "direction", "offset", "root_position_id", "position_epoch_id")}
+    payload = {key: fill.pop(key) for key in (
+        "source", "intent_role", "vt_symbol", "direction", "offset",
+        "root_position_id", "position_epoch_id", "position_cycle_id",
+        "position_cycle_no", "state_generation",
+    )}
     fill["intent_fingerprint"] = "fingerprint-1"
     inputs["execution_ledger_rows"] = [
         {"intent_fingerprint": "fingerprint-1", "intent_payload": payload}, fill, dict(fill),
     ]
     assert size(**inputs)["owned_net_volume"] == 3
+
+
+def test_duplicate_trade_identity_cannot_change_position_cycle_metadata():
+    inputs = close_inputs()
+    duplicate = {
+        **inputs["execution_ledger_rows"][0],
+        "position_cycle_id": "root-1:cycle1",
+        "position_cycle_no": 1,
+        "state_generation": "epoch-1:1",
+    }
+    inputs["execution_ledger_rows"].append(duplicate)
+    with pytest.raises(ValueError, match="owned_fill_conflict"):
+        size(**inputs)
 
 
 def validate_owned(inputs):

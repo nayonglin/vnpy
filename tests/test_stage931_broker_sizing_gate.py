@@ -464,12 +464,18 @@ def close_case():
         "mode": "full_close", "volume": 4, "broker_gross_volume": 4,
         "shadow_volume": 7, "shadow_position_volume": 7,
         "vt_symbol": "SH611.CZCE", "position_direction": "long",
-        "root_position_id": "root-1", "position_epoch_id": "epoch-1", "owned_net_volume": 4,
+        "root_position_id": "root-1", "position_epoch_id": "epoch-1",
+        "position_cycle_id": "root-1:cycle0", "position_cycle_no": 0,
+        "state_generation": "epoch-1:0", "owned_net_volume": 4,
         "account_fingerprint": FINGERPRINT, "cohort_id": "a" * 64, "target_date": "2026-09-08",
     }
     payload = {
         "broker_close_sizing": audit, "vt_symbol": "SH611.CZCE", "direction": "short",
         "offset": "close", "volume": 4, "price": 1948,
+        "intent_role": "c9_full_position_close",
+        "root_position_id": "root-1", "position_epoch_id": "epoch-1",
+        "position_cycle_id": "root-1:cycle0", "position_cycle_no": 0,
+        "state_generation": "epoch-1:0",
     }
     row = {**payload, "target_date": "2026-09-08", "planned_volume": 4,
            "execution_profile": "c9-15w", "source": "stage901_pending_order",
@@ -491,6 +497,8 @@ def close_case():
         "event_type": "filled_or_part_filled", "source": "stage901_pending_order",
         "target_date": "2026-09-08", "vt_symbol": "SH611.CZCE", "direction": "long", "offset": "open",
         "root_position_id": "root-1", "position_epoch_id": "epoch-1", "vt_orderid": "CTP.1_2_3",
+        "position_cycle_id": "root-1:cycle0", "position_cycle_no": 0,
+        "state_generation": "epoch-1:0",
         "vt_tradeid": "CTP.T1", "tradeid": "T1", "trade_fill_key": "ctp:CZCE:T1",
         "volume": 4, "trade_volume_delta": 4, "price": 1948,
         "fill_price_source": "event_trade_weighted_avg", "broker_trade_at": "2026-09-08T09:30:00+08:00",
@@ -561,7 +569,25 @@ def test_resized_full_close_owned_today_epoch_passes_trade_then_final_q2(monkeyp
     assert stage931._open_funds_gate_consistency_blockers(td_api, rows, physical, funds) == []
 
 
-@pytest.mark.parametrize("fault", ["epoch", "account", "manual", "unbound", "overnight", "foreign_query", "missing_trade", "trade_volume", "order_identity", "payload", "ledger_decode", "checksum"])
+def test_equal_quantity_full_close_still_requires_final_ownership_gate(monkeypatch):
+    def change(row, _trade, _order, _position, _ledger):
+        row["broker_close_sizing"]["shadow_volume"] = 4
+        row["broker_close_sizing"]["shadow_position_volume"] = 4
+        row["order_request"]["broker_close_sizing"] = copy.deepcopy(
+            row["broker_close_sizing"]
+        )
+        row["order_request_json"] = json.dumps(row["order_request"])
+
+    result, funds, td_api, rows, *_ = run_close_gate(monkeypatch, change=change)
+    assert result["confirmed"], result["blockers"]
+    assert funds["confirmed"], funds["blockers"]
+    assert [call["kind"] for call in td_api.calls] == [
+        "detail", "trade", "order", "position", "order"
+    ]
+    assert rows["_resized_close_proof"]["ownership"]["owned_net_volume"] == 4
+
+
+@pytest.mark.parametrize("fault", ["epoch", "account", "manual", "unbound", "overnight", "foreign_query", "missing_trade", "trade_volume", "order_identity", "payload", "outer_identity", "fractional_cycle", "boolean_cycle", "ledger_decode", "checksum"])
 def test_resized_close_rejects_unproven_ownership(monkeypatch, fault):
     def change(row, trade, order, position, ledger):
         if fault == "epoch":
@@ -586,6 +612,25 @@ def test_resized_close_rejects_unproven_ownership(monkeypatch, fault):
             order["OrderRef"] = "manual-ref"
         elif fault == "payload":
             row["order_request"]["broker_close_sizing"]["position_epoch_id"] = "new"
+        elif fault == "outer_identity":
+            for target in (row, row["order_request"]):
+                target.update(
+                    root_position_id="other-root",
+                    position_epoch_id="other-epoch",
+                    position_cycle_id="other-cycle",
+                    position_cycle_no=1,
+                    state_generation="other-epoch:99",
+                )
+            row["order_request_json"] = json.dumps(row["order_request"])
+        elif fault in {"fractional_cycle", "boolean_cycle"}:
+            invalid_cycle = 0.9 if fault == "fractional_cycle" else True
+            row["position_cycle_no"] = invalid_cycle
+            row["order_request"]["position_cycle_no"] = invalid_cycle
+            row["broker_close_sizing"]["position_cycle_no"] = invalid_cycle
+            row["order_request"]["broker_close_sizing"][
+                "position_cycle_no"
+            ] = invalid_cycle
+            row["order_request_json"] = json.dumps(row["order_request"])
         elif fault == "ledger_decode":
             ledger.append({"event_type": "ledger_decode_error", "ledger_line_number": 2})
         elif fault == "checksum":

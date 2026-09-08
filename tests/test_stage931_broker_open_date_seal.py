@@ -368,7 +368,8 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
     from qmt_roll_official_live_runtime_profile import ExecutionRuntimeProfile, OrderScope, resolve_runtime_profile
     inputs = make_seal_inputs()
     restarting = False
-    authorized = baseline_fault in {"authorized", "authorization_missing", "authorization_revoked"}
+    closing = baseline_fault in {"close_authorized", "close_authorization_missing", "close_authorization_revoked"}
+    authorized = closing or baseline_fault in {"authorized", "authorization_missing", "authorization_revoked"}
     vt_symbol = f"{symbol}.{exchange}"
     for query in inputs["query_bundle"]["queries"].values():
         for callback in query["callbacks"]:
@@ -377,6 +378,18 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
     paths = ExecutorServicePaths.for_spool(spool_path=tmp_path / "spool", ledger_path=tmp_path / "ledger")
     runtime = resolve_runtime_profile(profile=ExecutionRuntimeProfile.SIMNOW, order_scope=OrderScope.TEST,
                                       repo_root=Path(__file__).resolve().parents[1], output_root=tmp_path / "runtime")
+    if closing:
+        from qmt_roll_official_live_broker_open_date_seal import build_open_date_seals
+
+        for row in inputs["execution_ledger_rows"]:
+            append_execution_ledger_event(row, paths.ledger_path)
+        for seal in build_open_date_seals(**inputs):
+            append_execution_ledger_event(seal, paths.ledger_path)
+        for name in ("order_before", "trades", "order_after"):
+            inputs["query_bundle"]["queries"][name]["callbacks"] = [{"data": {}, "error": {}, "last": True}]
+        inputs["query_bundle"]["queries"]["position_details"]["callbacks"][0]["data"]["TradingDay"] = "20260909"
+        inputs["query_bundle"]["queries"]["positions"]["callbacks"][0]["data"].update(
+            TradingDay="20260909", PositionDate="2", TodayPosition=0, YdPosition=2, LongFrozen=0, ShortFrozen=0, UseMargin=1000)
 
     class Events:
         def __init__(self):
@@ -399,7 +412,9 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
         def __init__(self, gateway):
             super().__init__(inputs)
             self.gateway = gateway
-            self.flat = not restarting
+            self.flat = not restarting and not closing
+            if closing:
+                self.day = "20260909"
             self.native_calls = 0
             self.login_status = True
             self.contract_inited = True
@@ -433,37 +448,52 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
 
                 durable = read_execution_ledger(paths.ledger_path)
                 assert all(row["record_checksum"] == _record_checksum(row) for row in durable)
-                native, = [row for row in durable if row["event_type"] == "native_order_identity_persisted_before_insert"]
-                reserved, = [row for row in durable if row["event_type"] == "reserved"]
-                slot, = [row for row in durable if row["event_type"] == "api_slot_reserved"]
+                current_intent_id = "authorized-close" if closing else "authorized-open"
+                current = [row for row in durable if row.get("intent_id") == current_intent_id]
+                native, = [row for row in current if row["event_type"] == "native_order_identity_persisted_before_insert"]
+                reserved, = [row for row in current if row["event_type"] == "reserved"]
+                slot, = [row for row in current if row["event_type"] == "api_slot_reserved"]
                 assert native["reservation_record_checksum"] == reserved["record_checksum"]
-                assert native["intent_id"] == reserved["intent_id"] == slot["intent_id"] == "authorized-open"
+                assert native["intent_id"] == reserved["intent_id"] == slot["intent_id"] == current_intent_id
+                assert native["source"] == reserved["intent_payload"]["source"] == "stage901_pending_order"
                 assert native["intent_fingerprint"] == reserved["intent_fingerprint"] == slot["intent_fingerprint"]
                 assert native["spool_lease_token"] == reserved["spool_lease_token"] == slot["spool_lease_token"]
                 assert native["intent_payload_sha256"] == reserved["intent_payload_sha256"] == slot["intent_payload_sha256"]
                 assert slot["api_slot_type"] == "send_order" and slot["api_slot_reserved"] == 1
-                assert native["req_order_insert_reqid"] == reqid and native["vt_orderid"] == "CTP.1_2_3"
+                assert native["req_order_insert_reqid"] == reqid and native["vt_orderid"] == ("CTP.1_2_4" if closing else "CTP.1_2_3")
                 assert native["native_api_called"] == 0 and self.native_calls == 0
                 with sqlite3.connect(f"file:{paths.spool_path}?mode=ro", uri=True) as observer:
                     observer.row_factory = sqlite3.Row
-                    persisted = dict(observer.execute("SELECT * FROM intents WHERE intent_id=?", ("authorized-open",)).fetchone())
+                    persisted = dict(observer.execute("SELECT * FROM intents WHERE intent_id=?", (current_intent_id,)).fetchone())
                 assert persisted["state"] == "sending" and persisted["ledger_disposition"] == slot["api_slot_batch_id"]
                 assert persisted["lease_token"] == native["spool_lease_token"]
                 assert persisted["payload_sha256"] == native["intent_payload_sha256"]
-                context = state["intent_contexts"]["authorized-open"]
+                context = state["intent_contexts"][current_intent_id]
                 assert time.monotonic() < context["hard_deadline_monotonic"]
-                assert state["active_physical_batch"]["batch_id"] == native["physical_batch_id"]
-                assert native["flat_baseline_event"]["proof"] == context["open_date_flat_proof"]
-                assert (request["VolumeTotalOriginal"], request["LimitPrice"]) == (4, 1948)
+                if closing:
+                    batch, = [row for row in current if row["event_type"] == "physical_batch_lock_acquired"]
+                    assert state["active_physical_batch"]["batch_id"] == batch["physical_batch_id"]
+                    assert context["row"]["intent_role"] == native["intent_role"] == "c9_full_position_close"
+                    assert context["row"]["broker_close_sizing"]["shadow_volume"] == 4
+                    assert context["row"]["broker_close_sizing"]["volume"] == 2
+                    assert context["open_funds_gate"]["broker_close_sizing_gate"]["yesterday_volume"] == 2
+                    assert (request["VolumeTotalOriginal"], request["LimitPrice"], request["Direction"], request["CombOffsetFlag"], request["TimeCondition"]) == (2, 1937, "1", "1", "3")
+                    assert not any(name in {"funds", "max_volume"} for name, _ in self.calls)
+                else:
+                    assert state["active_physical_batch"]["batch_id"] == native["physical_batch_id"]
+                    assert native["flat_baseline_event"]["proof"] == context["open_date_flat_proof"]
+                    assert (request["VolumeTotalOriginal"], request["LimitPrice"]) == (4, 1948)
             self.native_calls += 1
             return 0
 
         def onRtnTrade(self, raw):
             self.gateway.on_trade(SimpleNamespace(vt_symbol=vt_symbol, symbol=symbol, exchange=stage931.Exchange(exchange),
-                tradeid=raw["TradeID"], vt_tradeid=f"CTP.{raw['TradeID']}", vt_orderid="CTP.1_2_3", orderid="1_2_3",
+                tradeid=raw["TradeID"], vt_tradeid=f"CTP.{raw['TradeID']}",
+                vt_orderid="CTP.1_2_4" if closing else "CTP.1_2_3", orderid="1_2_4" if closing else "1_2_3",
                 gateway_name="CTP",
-                direction=stage931.Direction.LONG, offset=stage931.Offset.OPEN, price=raw["Price"], volume=raw["Volume"],
-                datetime=datetime.fromisoformat("2026-09-07T21:30:00+08:00")))
+                direction=stage931.Direction.SHORT if closing else stage931.Direction.LONG,
+                offset=stage931.Offset.CLOSE if closing else stage931.Offset.OPEN, price=raw["Price"], volume=raw["Volume"],
+                datetime=datetime.fromisoformat("2026-09-08T21:30:00+08:00" if closing else "2026-09-07T21:30:00+08:00")))
 
     class Gateway:
         def __init__(self, events):
@@ -515,25 +545,32 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
         def send_order(self, request, gateway_name):
             assert authorized and gateway_name == "CTP"
             assert (request.vt_symbol, request.direction, request.offset, request.type, request.price, request.volume) == (
-                vt_symbol, stage931.Direction.LONG, stage931.Offset.OPEN, stage931.OrderType.FAK, 1948, 4)
-            assert request.reference == "Stage905PhaseD:authorized-open"
+                (vt_symbol, stage931.Direction.SHORT, stage931.Offset.CLOSE, stage931.OrderType.LIMIT, 1937, 2) if closing
+                else (vt_symbol, stage931.Direction.LONG, stage931.Offset.OPEN, stage931.OrderType.FAK, 1948, 4))
+            assert request.reference == ("Stage905PhaseD:authorized-close" if closing else "Stage905PhaseD:authorized-open")
             api = self.gateway.td_api
             api.reqid += 1
             raw = {"BrokerID": "broker", "InvestorID": "account", "UserID": "account", "InstrumentID": symbol, "ExchangeID": exchange,
-                   "OrderRef": "3", "Direction": "0", "CombOffsetFlag": "0", "CombHedgeFlag": "1",
+                   "OrderRef": "4" if closing else "3", "Direction": "1" if closing else "0", "CombOffsetFlag": "1" if closing else "0", "CombHedgeFlag": "1",
                    "LimitPrice": request.price, "VolumeTotalOriginal": request.volume,
-                   "OrderPriceType": "2", "TimeCondition": "1", "VolumeCondition": "1"}
+                   "OrderPriceType": "2", "TimeCondition": "3" if closing else "1", "VolumeCondition": "1"}
             assert api.reqOrderInsert(raw, api.reqid) == 0
-            api.flat = False
-            api.onRtnTrade(inputs["query_bundle"]["queries"]["trades"]["callbacks"][0]["data"])
-            self.gateway.on_order(SimpleNamespace(vt_symbol=vt_symbol, vt_orderid="CTP.1_2_3", gateway_name="CTP",
-                direction=stage931.Direction.LONG, offset=stage931.Offset.OPEN, price=request.price,
-                volume=request.volume, traded=2, status=Status.CANCELLED, reference=request.reference))
-            return "CTP.1_2_3"
+            api.flat = closing
+            trade = {"BrokerID": "broker", "InvestorID": "account", "ExchangeID": exchange, "InstrumentID": symbol,
+                "OrderSysID": "SYS2", "TradeID": "T2", "Direction": "1", "OffsetFlag": "1", "HedgeFlag": "1",
+                "Price": request.price, "Volume": 2, "TradeDate": "20260908", "TradingDay": "20260909", "TradeTime": "21:30:00"} if closing else inputs["query_bundle"]["queries"]["trades"]["callbacks"][0]["data"]
+            api.onRtnTrade(trade)
+            vt_orderid = "CTP.1_2_4" if closing else "CTP.1_2_3"
+            self.gateway.on_order(SimpleNamespace(vt_symbol=vt_symbol, vt_orderid=vt_orderid, gateway_name="CTP",
+                direction=request.direction, offset=request.offset, price=request.price,
+                volume=request.volume, traded=2, status=Status.ALLTRADED if closing else Status.CANCELLED, reference=request.reference))
+            return vt_orderid
 
         def get_order(self, orderid):
-            return SimpleNamespace(vt_symbol=vt_symbol, vt_orderid=orderid, direction="long", offset="open", volume=4, traded=2,
-                                   status=Status.CANCELLED, reference="Stage905PhaseD:authorized-open")
+            return SimpleNamespace(vt_symbol=vt_symbol, vt_orderid=orderid, direction="short" if closing else "long",
+                offset="close" if closing else "open", volume=2 if closing else 4, traded=2,
+                status=Status.ALLTRADED if closing else Status.CANCELLED,
+                reference="Stage905PhaseD:authorized-close" if closing else "Stage905PhaseD:authorized-open")
 
     package = ModuleType("vnpy_ctp")
     package.CtpGateway = Gateway
@@ -552,7 +589,7 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
     if not authorized:
         monkeypatch.setattr(stage931, "_wait_for_ctp_readiness", lambda *args, **kwargs: (True, [], {}, stage931.CtpReadinessState(account_required=True)))
     monkeypatch.setattr(stage931, "CTP_QUERY_INTERVAL_SECONDS", 0)
-    session = stage931._build_stage179_warm_ctp_session(SimpleNamespace(target_date="2026-09-08", connect_wait_seconds=4 if authorized else 0,
+    session = stage931._build_stage179_warm_ctp_session(SimpleNamespace(target_date="2026-09-09" if closing else "2026-09-08", connect_wait_seconds=4 if authorized else 0,
         final_order_query_wait_seconds=8, fill_wait_seconds=0, close_retry_after_cancel_seconds=30, final_reprice_tick_wait_seconds=1), runtime, paths)
     closure = dict(zip(session._send_order.__code__.co_freevars, [cell.cell_contents for cell in session._send_order.__closure__]))
     state = closure["state"]
@@ -571,7 +608,7 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
         assert session._connect_startup_bundle()["ready"]
     try:
         if authorized:
-            _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatch, baseline_fault)
+            _exercise_authorized_intent(session, state, paths, runtime, inputs, monkeypatch, baseline_fault)
             return
         rows, api = state["rows"], state["td_api"]
         rows["_open_date_service_generation"] = session.service_generation
@@ -588,7 +625,8 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
         assert capacity["confirmed"], capacity
         owner = {name: inputs["native_order_event"][name] for name in
                  ("target_date", "intent_fingerprint", "root_position_id", "position_epoch_id", "vt_symbol", "source", "direction", "offset")}
-        owner.update(position_cycle_id="cycle", intent_role="c9_initial_open", intent_id="intent",
+        owner.update(position_cycle_id="cycle", position_cycle_no=0,
+                     state_generation="epoch:0", intent_role="c9_initial_open", intent_id="intent",
                      spool_lease_owner=session.service_generation, spool_lease_token="lease",
                      intent_payload_sha256="a" * 64, intent_kind="open", vt_symbol=vt_symbol)
         reserved = reserve_execution_ledger_intent(target_date="2026-09-08", row=owner,
@@ -693,9 +731,14 @@ def test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkey
         audit = {"mode": "full_close", "volume": 2, "broker_gross_volume": 2, "owned_net_volume": 2,
                  "shadow_volume": 4, "shadow_position_volume": 4, "vt_symbol": vt_symbol, "position_direction": "long",
                  "root_position_id": owner["root_position_id"], "position_epoch_id": owner["position_epoch_id"],
+                 "position_cycle_id": owner["position_cycle_id"], "position_cycle_no": owner["position_cycle_no"],
+                 "state_generation": owner["state_generation"],
                  "account_fingerprint": inputs["account_fingerprint"], "target_date": "2026-09-09"}
         payload = {"broker_close_sizing": audit, "vt_symbol": vt_symbol, "direction": "short", "offset": "close",
-                   "volume": 2, "price": 1948}
+                   "volume": 2, "price": 1948, "intent_role": "c9_full_position_close",
+                   "root_position_id": owner["root_position_id"], "position_epoch_id": owner["position_epoch_id"],
+                   "position_cycle_id": owner["position_cycle_id"], "position_cycle_no": owner["position_cycle_no"],
+                   "state_generation": owner["state_generation"]}
         close_row = {**payload, "target_date": "2026-09-09", "planned_volume": 2, "source": "stage901_pending_order",
                      "execution_profile": "c9-15w", "order_request": copy.deepcopy(payload), "order_request_json": json.dumps(payload)}
         close = stage931.OrderRequest(symbol=symbol, exchange=stage931.Exchange(exchange), direction=stage931.Direction.SHORT,
@@ -750,7 +793,12 @@ def test_authorized_spool_lease_rejects_lost_authorization_before_native(tmp_pat
     test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkeypatch, "CZCE", "SH611", False, fault)
 
 
-def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatch, authorization_mode):
+@pytest.mark.parametrize("mode", ["close_authorized", "close_authorization_missing", "close_authorization_revoked"])
+def test_normal_full_close_authorized_spool_to_native(tmp_path, monkeypatch, mode):
+    test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkeypatch, "CZCE", "SH611", False, mode)
+
+
+def _exercise_authorized_intent(session, state, paths, runtime, inputs, monkeypatch, authorization_mode):
     from qmt_roll_official_execution_profile import C9_15W_PROFILE
     from qmt_roll_official_live_broker_sizing import size_open_intent
     import qmt_roll_official_live_intent_spool as spool
@@ -758,11 +806,21 @@ def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatc
     from qmt_roll_official_live_submit_authorization import publish_submit_authorization, revoke_submit_authorization, submit_authorization_path
     from test_official_live_intent_spool import OfficialLiveIntentSpoolTest
     from test_stage931_broker_sizing_gate import sizing_row
+    closing = authorization_mode.startswith("close_")
+    authorization_mode = authorization_mode.removeprefix("close_")
+    target_date = "2026-09-09" if closing else "2026-09-08"
+    if closing:
+        until = time.monotonic() + 10
+        while state["open_date_seal_workers"] and time.monotonic() < until:
+            time.sleep(0.01)
+        assert not state["open_date_seal_workers"]
+        state["td_api"].calls.clear()
+    historical_ledger = read_execution_ledger(paths.ledger_path)
 
     class SessionClock(datetime):
         @classmethod
         def now(cls, tz=None):
-            return cls(2026, 9, 7, 21, 30, tzinfo=tz)
+            return cls(2026, 9, 8 if closing else 7, 21, 30, tzinfo=tz)
 
     monkeypatch.setattr(stage931, "datetime", SessionClock)
     epoch = time.time_ns()
@@ -804,6 +862,36 @@ def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatc
         "offset": "开", "type": "FAK", "volume": 4, "price": 1948, "reference": "Stage905PhaseD:authorized-open",
         "broker_sizing": audit, "broker_sizing_inputs": broker_inputs, "strategy_initial_stop_price": 1933,
         "gateway_name": "CTP", "physical_tif_policy_version": "stage179_open_fak_v1"}
+    if closing:
+        from qmt_roll_official_live_broker_close_sizing import size_full_close_intent
+
+        pending = {"vt_symbol": "SH611.CZCE", "direction": "short", "offset": "close", "volume": 4,
+                   "traded": 0, "target_date": target_date, "price": 1937}
+        cohort = stage931._canonical_evidence_sha256(pending)
+        pending["cohort_id"] = cohort
+        close_audit = size_full_close_intent(intent={**pending, "planned_volume": 4},
+            pending_orders=stage931.pd.DataFrame([pending]),
+            current_positions=stage931.pd.DataFrame([{"vt_symbol": "SH611.CZCE", "direction": "long", "date": target_date, "end_pos": 4}]),
+            official_summary={"cohort_id": cohort, "analysis_end": target_date, "pending_orders": [pending]},
+            broker_positions=stage931.pd.DataFrame([{"vt_symbol": "SH611.CZCE", "direction": "long", "volume": 2, "frozen": 0}]),
+            execution_ledger_rows=historical_ledger, require_broker_trade_coverage=False)
+        close_audit["account_fingerprint"] = inputs["account_fingerprint"]
+        assert close_audit["volume"] == close_audit["owned_net_volume"] == 2 and close_audit["shadow_volume"] == 4
+        payload.update(intent_id="authorized-close", target_date="2026-09-09", offset="close", direction="short",
+                       intent_role="c9_full_position_close", planned_volume=2, limit_price=1937, strategy_initial_stop_price="",
+                       broker_close_sizing=close_audit, shadow_planned_volume=4)
+        payload.pop("broker_sizing")
+        payload.pop("broker_sizing_inputs")
+        payload["order_request"].update(intent_id="authorized-close", target_date="2026-09-09", offset="平", direction="空",
+            intent_role="c9_full_position_close", volume=2, price=1937, type="限价", physical_tif_policy_version="stage179_limit_gfd_v1",
+            reference="Stage905PhaseD:authorized-close", strategy_initial_stop_price="", broker_close_sizing=close_audit)
+        payload["order_request"].pop("broker_sizing")
+        payload["order_request"].pop("broker_sizing_inputs")
+        for name in ("root_position_id", "position_cycle_id", "position_cycle_no", "position_epoch_id", "state_generation"):
+            payload[name] = close_audit[name]
+            payload["order_request"][name] = close_audit[name]
+        payload.pop("strategy_initial_stop_price", None)
+        payload["order_request"].pop("strategy_initial_stop_price", None)
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     intent.update(payload)
     intent.update(spool_payload_json=encoded, payload_sha256=hashlib.sha256(encoded.encode()).hexdigest())
@@ -822,19 +910,43 @@ def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatc
         def publish():
             now = time.time_ns()
             expires = min(now + 20_000_000_000, candidate["deadline_epoch_ns"])
-            return publish_submit_authorization(path=auth_path, target_date="2026-09-08", execution_profile="c9-15w",
+            controller_evidence = {
+                "target_date": target_date,
+                "controller_status": (
+                    "persistent_intraday_fast_ready"
+                    if closing
+                    else "phase_d_controller_live_real_ready_no_submit_step"
+                ),
+                "expires_epoch_ns": expires,
+            }
+            if not closing:
+                controller_evidence.update(
+                    stage905_executor_status="executor_dry_run_ready",
+                    stage905_blocked_count=0,
+                    stage905_ready_count=1,
+                )
+            stage927_evidence = {
+                (
+                    "reduce_close_submit_permitted"
+                    if closing
+                    else "real_submit_permitted"
+                ): 1,
+                "expires_epoch_ns": expires,
+            }
+            return publish_submit_authorization(path=auth_path, target_date=target_date, execution_profile="c9-15w",
                 runtime_profile="simnow", order_scope="test", service_generation=session.service_generation,
-                connection_generation=session.connection_generation, cycle_id="stage235-offline", intent_scope="all",
+                connection_generation=session.connection_generation, cycle_id="stage236-offline" if closing else "stage235-offline",
+                authorization_lane="persistent_intraday_fast" if closing else "slow_controller",
+                intent_scope="reduce_close_only" if closing else "all",
                 authorized_intents=[candidate], issued_epoch_ns=now, expires_epoch_ns=expires,
-                controller_evidence={"target_date": "2026-09-08", "controller_status": "phase_d_controller_live_real_ready_no_submit_step",
-                    "stage905_executor_status": "executor_dry_run_ready", "stage905_blocked_count": 0, "stage905_ready_count": 1, "expires_epoch_ns": expires},
-                stage927_evidence={"real_submit_permitted": 1, "expires_epoch_ns": expires},
+                controller_evidence=controller_evidence,
+                stage927_evidence=stage927_evidence,
                 broker_gate_evidence={"status": "ready", "service_generation": session.service_generation,
                     "connection_generation": session.connection_generation, "expires_epoch_ns": expires},
                 tick_watermark_evidence={"all_symbols_ready": 1, "expires_epoch_ns": expires}, spool_path=paths.spool_path,
                 spool_snapshot_digest=snapshot.snapshot_digest, cursor_digest=snapshot.cursor_digest,
                 stage902_evidence_digest=stage931._canonical_evidence_sha256({"allow_new_open": 1}),
-                stage927_evidence_digest=stage931._canonical_evidence_sha256({"real_submit_permitted": 1}))
+                stage927_evidence_digest=stage931._canonical_evidence_sha256(stage927_evidence))
 
         api = state["td_api"]
         send_errors = []
@@ -877,7 +989,7 @@ def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatc
                 assert expected in result.blockers, result.blockers
                 assert result.send_order_call_count == result.cancel_order_call_count == api.native_calls == 0
                 assert not slot_callbacks and session.api_slot_call_count == 0
-                assert not read_execution_ledger(paths.ledger_path)
+                assert read_execution_ledger(paths.ledger_path) == historical_ledger
                 assert connection.execute("SELECT state FROM intents WHERE intent_id=?", (lease.intent.intent_id,)).fetchone()[0] == "leased"
                 return
             assert result.disposition == "sent", "\n".join([*result.blockers, *send_errors])
@@ -886,6 +998,21 @@ def _exercise_authorized_open(session, state, paths, runtime, inputs, monkeypatc
             assert adapter.mark_result(lease, result, now_epoch_ns=time.time_ns(), now_monotonic_ns=time.monotonic_ns(),
                                        clock_domain_id="boot-a").state == "sent"
         assert api.native_calls == 1
+        if closing:
+            current = [row for row in read_execution_ledger(paths.ledger_path) if row.get("intent_id") == "authorized-close"]
+            native, = [row for row in current if row["event_type"] == "native_order_identity_persisted_before_insert"]
+            fill, = [row for row in current if row["event_type"] == "filled_or_part_filled"]
+            assert native["source"] == fill["source"] == "stage901_pending_order"
+            assert stage931._normalize_offset_text(native["offset"]) == fill["offset"] == "close"
+            for name in ("root_position_id", "position_epoch_id", "position_cycle_id", "position_cycle_no"):
+                assert native[name] == fill[name] == close_audit[name]
+            assert native["spool_lease_token"] == fill["spool_lease_token"] == lease.lease_token
+            assert native["volume"] == fill["volume"] == 2 and fill["tradeid"] == "T2"
+            assert native["order_type"] == stage931.OrderType.LIMIT.value and native["intent_role"] == "c9_full_position_close"
+            assert not any(row["event_type"] == "broker_position_open_date_sealed" for row in current)
+            assert [name for name, _ in api.calls] == ["order_before", "positions", "order_after", "position_details", "trades", "order_before", "positions", "order_after"]
+            assert not any(row["event_type"] == "broker_trade_callback_unbound" for row in current)
+            return
         until = time.monotonic() + 10
         while state["open_date_seal_workers"] and time.monotonic() < until:
             time.sleep(0.02)
@@ -943,7 +1070,25 @@ def _assert_authorized_next_day_close(state, paths, inputs, root):
         execution_ledger_rows=ledger, broker_trade_rows=[])
     audit["account_fingerprint"] = inputs["account_fingerprint"]
     assert audit["volume"] == audit["owned_net_volume"] == 2 and audit["shadow_volume"] == 4
-    payload = {"broker_close_sizing": audit, "vt_symbol": "SH611.CZCE", "direction": "short", "offset": "close", "volume": 2, "price": 1948}
+    payload = {
+        "broker_close_sizing": audit,
+        "vt_symbol": "SH611.CZCE",
+        "direction": "short",
+        "offset": "close",
+        "volume": 2,
+        "price": 1948,
+        "intent_role": "c9_full_position_close",
+        **{
+            name: audit[name]
+            for name in (
+                "root_position_id",
+                "position_epoch_id",
+                "position_cycle_id",
+                "position_cycle_no",
+                "state_generation",
+            )
+        },
+    }
     close_row = {**payload, "target_date": "2026-09-09", "planned_volume": 2, "pricetick": 1,
                  "source": "stage901_pending_order", "execution_profile": "c9-15w", "order_request": copy.deepcopy(payload)}
     request = stage931.OrderRequest(symbol="SH611", exchange=stage931.Exchange.CZCE, direction=stage931.Direction.SHORT,

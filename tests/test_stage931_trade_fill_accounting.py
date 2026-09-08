@@ -2369,6 +2369,26 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 pd.DataFrame([row])
             ),
         )
+        for invalid_cycle in (0.9, 1.9, True):
+            invalid_audit = dict(ownership, position_cycle_no=invalid_cycle)
+            invalid_payload = {
+                **payload,
+                "position_cycle_no": invalid_cycle,
+                "broker_close_sizing": invalid_audit,
+            }
+            invalid_row = {
+                **row,
+                "position_cycle_no": invalid_cycle,
+                "broker_close_sizing": invalid_audit,
+                "order_request_json": stage931.json.dumps(
+                    invalid_payload, sort_keys=True
+                ),
+            }
+            self.assertTrue(
+                stage931._stage905_ready_intent_artifact_blockers(
+                    pd.DataFrame([invalid_row])
+                )
+            )
 
         stage904_only_evidence = {
             "manual_intervention_required": 1,
@@ -2439,6 +2459,61 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 ),
                 (field, final_child_blockers),
             )
+
+    def test_stage901_pending_full_close_artifact_is_not_forced_into_initial_open_contract(self) -> None:
+        intent_id = "STAGE905-PENDING-CLOSE-001"
+        ownership = {
+            "mode": "full_close",
+            "root_position_id": "root-1",
+            "position_cycle_id": "root-1:cycle0",
+            "position_cycle_no": 0,
+            "position_epoch_id": "epoch-1",
+            "state_generation": "epoch-1:0",
+        }
+        payload = {
+            "intent_id": intent_id,
+            "target_date": "2026-09-09",
+            "source": "stage901_pending_order",
+            "intent_role": "c9_full_position_close",
+            "symbol": "SH611",
+            "exchange": "CZCE",
+            "direction": stage931.Direction.SHORT.value,
+            "type": stage931.OrderType.LIMIT.value,
+            "physical_tif_policy_version": "stage179_limit_gfd_v1",
+            "volume": 2,
+            "price": 1948.0,
+            "offset": stage931.Offset.CLOSE.value,
+            "reference": f"Stage905PhaseD:{intent_id}",
+            "gateway_name": "CTP",
+            "vt_symbol": "SH611.CZCE",
+            "broker_close_sizing": ownership,
+            **{key: value for key, value in ownership.items() if key != "mode"},
+        }
+        row = {
+            "intent_id": intent_id,
+            "target_date": payload["target_date"],
+            "source": payload["source"],
+            "intent_role": payload["intent_role"],
+            "symbol": payload["symbol"],
+            "exchange": payload["exchange"],
+            "direction": "short",
+            "offset": "close",
+            "planned_volume": 2,
+            "order_request_price": 1948.0,
+            "order_request_volume": 2,
+            "vt_symbol": payload["vt_symbol"],
+            "broker_close_sizing": ownership,
+            **{key: value for key, value in ownership.items() if key != "mode"},
+            "executor_status": "dry_run_order_request_payload_ready",
+            "order_request_json": stage931.json.dumps(payload, sort_keys=True),
+        }
+
+        self.assertEqual(
+            [],
+            stage931._stage905_ready_intent_artifact_blockers(
+                pd.DataFrame([row])
+            ),
+        )
 
     def test_close_only_artifact_scope_ignores_unrelated_broken_open(self) -> None:
         close_payload = {

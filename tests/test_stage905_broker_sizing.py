@@ -220,7 +220,17 @@ def test_daily_full_close_uses_real_quantity_without_requiring_account_funds(mon
         current_positions=inputs["current_positions"], official_summary=inputs["official_summary"],
         broker_account_fingerprint="a" * 64,
     )
-    decision = {"mode": "full_close", "volume": 3, "shadow_volume": 4, "cohort_id": "c" * 64}
+    decision = {
+        "mode": "full_close",
+        "volume": 3,
+        "shadow_volume": 4,
+        "cohort_id": "c" * 64,
+        "root_position_id": "root-1",
+        "position_cycle_id": "root-1:cycle0",
+        "position_cycle_no": 0,
+        "position_epoch_id": "epoch-1",
+        "state_generation": "epoch-1:0",
+    }
     calls = []
     def verified_close(**kwargs):
         calls.append(kwargs)
@@ -229,6 +239,8 @@ def test_daily_full_close_uses_real_quantity_without_requiring_account_funds(mon
     result = execute(snapshots=snapshots)
     assert result.summary["ready_count"] == 1
     assert result.intents.iloc[0]["planned_volume"] == 3
+    assert result.intents.iloc[0]["intent_role"] == "c9_full_position_close"
+    assert result.intents.iloc[0]["root_position_id"] == "root-1"
     assert json.loads(result.intents.iloc[0]["order_request_json"])["broker_close_sizing"] == decision
     assert len(calls) == 1
 
