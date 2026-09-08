@@ -1,0 +1,4 @@
+interface:
+  display_name: "版本A/B/C实验"
+  short_description: "基于活动正式物料身份设计A/B/C实验"
+  default_prompt: "先从 CURRENT.json 与正式源码解析活动实盘基线并核对生产身份，再设计 A/B/C 实验；Stage78/Stage372 只在明确点名时作为历史对照。"
