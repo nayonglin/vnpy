@@ -857,7 +857,7 @@ def _exercise_authorized_intent(session, state, paths, runtime, inputs, monkeypa
         capital=C9_15W_PROFILE.capital, capital_label=C9_15W_PROFILE.capital_label)
     payload["order_request"] = {**{name: payload[name] for name in (
         "intent_id", "action_id", "source", "target_date", "execution_profile", "official_live_version", "capital", "capital_label",
-        "root_position_id", "position_epoch_id", "position_cycle_id", "position_cycle_no", "intent_role")},
+        "root_position_id", "position_epoch_id", "position_cycle_id", "position_cycle_no", "state_generation", "intent_role")},
         "symbol": "SH611", "exchange": "CZCE", "vt_symbol": "SH611.CZCE", "direction": "多",
         "offset": "开", "type": "FAK", "volume": 4, "price": 1948, "reference": "Stage905PhaseD:authorized-open",
         "broker_sizing": audit, "broker_sizing_inputs": broker_inputs, "strategy_initial_stop_price": 1933,

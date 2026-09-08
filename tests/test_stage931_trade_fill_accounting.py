@@ -2369,27 +2369,6 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 pd.DataFrame([row])
             ),
         )
-        for invalid_cycle in (0.9, 1.9, True):
-            invalid_audit = dict(ownership, position_cycle_no=invalid_cycle)
-            invalid_payload = {
-                **payload,
-                "position_cycle_no": invalid_cycle,
-                "broker_close_sizing": invalid_audit,
-            }
-            invalid_row = {
-                **row,
-                "position_cycle_no": invalid_cycle,
-                "broker_close_sizing": invalid_audit,
-                "order_request_json": stage931.json.dumps(
-                    invalid_payload, sort_keys=True
-                ),
-            }
-            self.assertTrue(
-                stage931._stage905_ready_intent_artifact_blockers(
-                    pd.DataFrame([invalid_row])
-                )
-            )
-
         stage904_only_evidence = {
             "manual_intervention_required": 1,
             "risk_alert_level": "P1",
@@ -2514,6 +2493,26 @@ class Stage931TradeFillAccountingTest(unittest.TestCase):
                 pd.DataFrame([row])
             ),
         )
+        for invalid_cycle in (0.9, 1.9, True):
+            invalid_audit = dict(ownership, position_cycle_no=invalid_cycle)
+            invalid_payload = {
+                **payload,
+                "position_cycle_no": invalid_cycle,
+                "broker_close_sizing": invalid_audit,
+            }
+            invalid_row = {
+                **row,
+                "position_cycle_no": invalid_cycle,
+                "broker_close_sizing": invalid_audit,
+                "order_request_json": stage931.json.dumps(
+                    invalid_payload, sort_keys=True
+                ),
+            }
+            self.assertTrue(
+                stage931._stage905_ready_intent_artifact_blockers(
+                    pd.DataFrame([invalid_row])
+                )
+            )
 
     def test_close_only_artifact_scope_ignores_unrelated_broken_open(self) -> None:
         close_payload = {

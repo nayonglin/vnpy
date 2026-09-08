@@ -657,10 +657,27 @@ def test_restarted_sealed_ledger_enters_next_day_full_close_gate_with_empty_trad
         position.update(BrokerID="broker", InvestorID="account", Position=2, TodayPosition=0,
                         YdPosition=2, TradingDay="20260909")
         row.update(target_date="2026-09-09", planned_volume=2, volume=2)
-        row["broker_close_sizing"].update(volume=2, broker_gross_volume=2, owned_net_volume=2,
-                                         root_position_id="root", position_epoch_id="epoch",
-                                         account_fingerprint=FINGERPRINT, target_date="2026-09-09")
-        row["order_request"].update(volume=2, broker_close_sizing=copy.deepcopy(row["broker_close_sizing"]))
+        ownership = {
+            "root_position_id": "root",
+            "position_epoch_id": "epoch",
+            "position_cycle_id": "cycle",
+            "position_cycle_no": 0,
+            "state_generation": "epoch:0",
+        }
+        row.update(ownership)
+        row["broker_close_sizing"].update(
+            volume=2,
+            broker_gross_volume=2,
+            owned_net_volume=2,
+            account_fingerprint=FINGERPRINT,
+            target_date="2026-09-09",
+            **ownership,
+        )
+        row["order_request"].update(
+            volume=2,
+            broker_close_sizing=copy.deepcopy(row["broker_close_sizing"]),
+            **ownership,
+        )
         row["order_request_json"] = json.dumps(row["order_request"])
 
     monkeypatch.setattr(gate.FakeCloseTdApi, "__init__", initialize)
