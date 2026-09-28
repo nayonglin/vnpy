@@ -1,0 +1,42 @@
+{
+  "started_at": "2026-09-06T06:09:34.620662+08:00",
+  "symbols": [
+    "CZCE.CF005",
+    "CZCE.CF009",
+    "CZCE.FG009",
+    "CZCE.OI009",
+    "CZCE.SA009",
+    "CZCE.SM009",
+    "DCE.jm2005",
+    "DCE.jm2009",
+    "SHFE.au2006",
+    "SHFE.hc2005",
+    "SHFE.rb2005",
+    "SHFE.ru2005",
+    "SHFE.sp2005"
+  ],
+  "requests": [
+    {
+      "asof": "2026-08-28",
+      "status": "technical_failure",
+      "error_type": "Exception"
+    },
+    {
+      "asof": "2020-01-08",
+      "status": "technical_failure",
+      "error_type": "Exception"
+    }
+  ],
+  "strategy_backtests": 0,
+  "price_requests": 0,
+  "model_fit_predict": 0,
+  "reviewer_count": 0,
+  "finished_at": "2026-09-06T06:09:38.080026+08:00",
+  "outputs": {
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024b_explicit_contract_probe/input_manifest.json",
+      "bytes": 2494,
+      "sha256": "3fa74d2d6577e67e9ec0e85edb7d130ead29abf3e07c56875683692b440703c9"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "status": "catalog_qualified_not_bar_coverage",
+  "started_at": "2026-09-06T06:30:36.293923+08:00",
+  "historical_vintage_proven": false,
+  "full_chain_bar_coverage_proven": false,
+  "network_request_count": 0,
+  "label_read_count": 0,
+  "model_fit_predict_count": 0,
+  "strategy_backtest_count": 0,
+  "reviewer_count": 0,
+  "production_write_count": 0,
+  "event_count": 276,
+  "event_contract_count": 189,
+  "catalog_contract_count": 1325,
+  "catalog_product_count": 18,
+  "missing_event_contracts": [],
+  "product_mismatch_event_ids": [],
+  "expiry_mismatch_event_ids": [],
+  "cache_counts": {
+    "total": 14246,
+    "non_future": 11758,
+    "other_product": 1900,
+    "before_start": 457,
+    "included": 131
+  },
+  "added_contract_count": 125,
+  "overlap_contract_count": 6,
+  "inputs_unchanged": true,
+  "finished_at": "2026-09-06T06:30:37.476278+08:00",
+  "outputs": {
+    "cache_raw_projection.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/cache_raw_projection.csv.gz",
+      "bytes": 1121,
+      "sha256": "46a67f77855ceafe37b0fb8583a593aebc3fc16b4ad7f43f1b45aa465bb6fd55"
+    },
+    "catalog.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/catalog.csv.gz",
+      "bytes": 15415,
+      "sha256": "bb6b7fd68228a5074328e3cc8a2001e4e4c1b0bba86632a7158d9b9d0cb4679c"
+    },
+    "catalog_sources.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/catalog_sources.csv",
+      "bytes": 28129,
+      "sha256": "abe02d11939f5cb1c0618759fd0c9393c9425d8c16142e662c2eee3defa3cca9"
+    },
+    "combined_raw_catalog.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/combined_raw_catalog.csv.gz",
+      "bytes": 9643,
+      "sha256": "4c1e81819211de911130c9dc4a6444ffc5a0bc36a1ac0a4c6aa810957cd447ac"
+    },
+    "event_catalog_coverage.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/event_catalog_coverage.csv",
+      "bytes": 31590,
+      "sha256": "24c055a00f598476faca7f4bae516bb5c03c45e593e0c304db815324eb351e29"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage026_sdk_cache_catalog/input_manifest.json",
+      "bytes": 4098,
+      "sha256": "43d1a038522a2d70a94a86be65f5af235db3652b87f2920b893fd32de641f577"
+    }
+  }
+}

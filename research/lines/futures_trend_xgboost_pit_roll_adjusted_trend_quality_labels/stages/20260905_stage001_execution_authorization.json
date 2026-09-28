@@ -1,0 +1,65 @@
+{
+  "allowed_data_reads": [
+    "frozen_expiry_safe_path_identity",
+    "frozen_expiry_safe_leg_identity",
+    "frozen_feature_panel_identity",
+    "selected_actual_contract_previous_close",
+    "selected_actual_contract_return_close",
+    "same_contract_leg_log_return",
+    "roll_adjusted_path_label_value",
+    "qid_relevance_value"
+  ],
+  "authorization_basis": "用户已明确授权，并声明后续研究操作默认授权，不再逐次询问",
+  "authorized": true,
+  "authorized_at": "2026-09-05T03:08:07+08:00",
+  "authorized_scope": "Stage001唯一一次逐合约同合约close读取、20日roll-adjusted趋势质量标签与qid relevance生成",
+  "forbidden_scope": [
+    "cross_contract_price_comparison",
+    "future_trend_sign_used_as_model_feature_or_trade_direction",
+    "alternative_label_formula",
+    "holding_period_or_sample_change",
+    "model_fit_or_predict",
+    "strategy_effect_calculation",
+    "strategy_backtest",
+    "true_engine",
+    "holdout_read",
+    "ctp_connection",
+    "order_api",
+    "production_write"
+  ],
+  "implementation_sha256": {
+    "core": "91ccb92f7f8668e6eb5866e161fd18f62921ede6fac20e8ac33040cd14ef6bc7",
+    "core_tests": "23e5e15c28dc4479e9cbcf3bd309a59a11755c8ca6e65dcf19b815476938d824",
+    "plan": "e51ffe9c78222bc4c5a3b891f0a7a95b181a6ee8c0bce78d2f8747c63a5c26c6",
+    "preregistration": "02699a9985aa62036e8b971138ee6f037d0a1b1fbb1cce9f3250875516525eb2",
+    "publisher_dependency": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+    "runner": "2dff13f11e18c7c334aa0f8f60ee00faf7c2d37b5278353d85ce52816c782ebd",
+    "runner_tests": "84aac48a9007f60f171c7917595e01c1a101eb1f7e46a0701b7750efc7fb5a1b",
+    "upstream_runner_dependency": "1768f482b53d924b3941aae95c09942ec85c95a1132017177fa84d6d2226c331",
+    "v2_manifest_adapter_dependency": "d9440071f4035286197a37d4f0aa1bac8e13f6a764a571a74f89e0be8632a238"
+  },
+  "input_sha256": {
+    "feature_manifest": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a",
+    "feature_panel": "1e4ebb1942dc066eb1164dc82e7e0412fe10d433e57aa5b8b8ab3b71822344ac",
+    "source_bars": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+    "source_manifest": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+    "source_summary": "67dcdb174bf7e253e100138eff1ec0b644c6a7cc68c0806f71aff10c66f00939",
+    "upstream_legs": "db2fcffc24053cbb5c540a699bc47f19149d54eeb66aa2b57057707f346a92da",
+    "upstream_manifest": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+    "upstream_paths": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+    "upstream_summary": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+    "v2_contract_manifest": "7428e753607ff44b39f0e3510e29493ec96b4163a35fa261791da7d819b27b79",
+    "v2_contract_summary": "a25817cbbd6da47dde8d711adf35ef70cc37422476060a2e652db37aaed7536d"
+  },
+  "line_id": "futures_trend_xgboost_pit_roll_adjusted_trend_quality_labels",
+  "nonce": "6ec60297-d6d8-4f25-aacf-61f62a1e19cc",
+  "regression_tests_passed": 342,
+  "runtime": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "platform": "macOS-15.7.4-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "stage": "stage001_roll_adjusted_trend_quality_labels"
+}

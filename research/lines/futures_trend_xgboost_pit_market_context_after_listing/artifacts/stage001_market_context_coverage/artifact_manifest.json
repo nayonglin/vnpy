@@ -1,0 +1,10 @@
+{
+  "coverage_by_eval_product.csv": "54eab60914d94dbf90f64b8cf266263eeaa8d17d29007e0c1849e8a0097f57b7",
+  "fold_activation_audit.csv": "fd0207425f5daadc09f18e55f8c68d23c9dda0efef41ee3cc8e7e32ebf61491c",
+  "missing_window_cells.csv.gz": "adce019521859990c8e76a1f26b6ce1f59daeb4574446068fa826bd77928483b",
+  "month_activation_audit.csv": "0f18589174f65ad3014797fcb2fe932480090c104b1667eec8e66b6a37871f93",
+  "ranked_a_panel.csv": "1c841acc3a76a1ecd0f5f3572013c3c97cf4092ac456657f1b87ad3031c14df2",
+  "report.md": "cfa45993690a4f535aff2465592678452585faa5405a55d9ad9349b8e6747060",
+  "stage001_summary.json": "2fbd2140b52df417263971ff796af88d82a3e3a7daa2256dd0fee209bd3f4ec1",
+  "year_activation_audit.csv": "8916756ee5bdba0c17da22added5653eb83ed8eda07168325b6081f6d3e36460"
+}

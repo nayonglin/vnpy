@@ -1,0 +1,63 @@
+{
+  "audit_summary": {
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage011_basis_source_audit/summary.json",
+    "bytes": 3056,
+    "sha256": "66ecfd90e71419a1a5533eaa2f0669406ba9f5b330b4de13ae204f298661adef"
+  },
+  "probes": [
+    {
+      "date": "2025-12-10",
+      "url": "https://www.100ppi.com/sf/day-2025-12-10.html",
+      "fetch_started_at_utc": "2026-09-05T18:50:05.336733+00:00",
+      "attempts": 1,
+      "http_status": 200,
+      "historical_revision_verified": false,
+      "response_url": "https://www.100ppi.com/sf/day-2025-12-10.html",
+      "raw_response": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage011_basis_source_audit/source_probe/2025-12-10.html",
+        "bytes": 660,
+        "sha256": "42bc7e66ac24e12f5ca6442417ea6c14802c12792b223d30a7368c3b61a0c294"
+      },
+      "status": "probe_failed",
+      "error": "RuntimeError:page_date_mismatch",
+      "fetch_finished_at_utc": "2026-09-05T18:50:05.559378+00:00"
+    },
+    {
+      "date": "2026-04-20",
+      "url": "https://www.100ppi.com/sf/day-2026-04-20.html",
+      "fetch_started_at_utc": "2026-09-05T18:50:05.560394+00:00",
+      "attempts": 1,
+      "http_status": 200,
+      "historical_revision_verified": false,
+      "response_url": "https://www.100ppi.com/sf/day-2026-04-20.html",
+      "raw_response": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage011_basis_source_audit/source_probe/2026-04-20.html",
+        "bytes": 660,
+        "sha256": "a947fd107dd324cb660b2b64ccf1ee22c8204ea267d97a397ae07b9f232f4731"
+      },
+      "status": "probe_failed",
+      "error": "RuntimeError:page_date_mismatch",
+      "fetch_finished_at_utc": "2026-09-05T18:50:05.710564+00:00"
+    },
+    {
+      "date": "2026-08-28",
+      "url": "https://www.100ppi.com/sf/day-2026-08-28.html",
+      "fetch_started_at_utc": "2026-09-05T18:50:05.711867+00:00",
+      "attempts": 1,
+      "http_status": 200,
+      "historical_revision_verified": false,
+      "response_url": "https://www.100ppi.com/sf/day-2026-08-28.html",
+      "raw_response": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage011_basis_source_audit/source_probe/2026-08-28.html",
+        "bytes": 660,
+        "sha256": "a947fd107dd324cb660b2b64ccf1ee22c8204ea267d97a397ae07b9f232f4731"
+      },
+      "status": "probe_failed",
+      "error": "RuntimeError:page_date_mismatch",
+      "fetch_finished_at_utc": "2026-09-05T18:50:05.845033+00:00"
+    }
+  ],
+  "requests": 3,
+  "retries": 0,
+  "data_extension_performed": false
+}

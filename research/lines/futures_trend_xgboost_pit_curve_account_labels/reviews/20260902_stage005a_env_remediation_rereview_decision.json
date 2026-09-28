@@ -1,0 +1,12 @@
+{
+  "decision": "ALLOW_STAGE005A_SMOKE",
+  "generated_at": "2026-09-02T18:54:54+08:00",
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_env_remediation_rereview.md",
+  "review_sha256": "625f2d8ce710acce589566fa5f952e44d46ba563756740e48fe3d8b4d9c910ce",
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  }
+}

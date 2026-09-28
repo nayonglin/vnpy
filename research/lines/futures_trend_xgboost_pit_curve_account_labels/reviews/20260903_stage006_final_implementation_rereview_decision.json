@@ -1,0 +1,33 @@
+{
+  "decision": "ALLOW_FROZEN_STAGE006_DEVELOPMENT_RUN",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260903_stage006_final_implementation_rereview.md",
+  "review_sha256": "2a071535916f15fb2f486e4793735dd54c1d4039a15762bf2f15a8e7e486df3c",
+  "runner_sha256": "3dd5bd70875994924c291741e144244a021c8465b67504a2a414a691c824eaac",
+  "tests_sha256": "fd5ca6151525b42248fa154de247a1702417cbb13ddf89cd05b3fe1c3399d031",
+  "remediation_sha256": "963aef38379bdc65f6806e79abd9f0a1af171ea7b1dc0a3a7ad6091890644976",
+  "prior_block_review_sha256": "5458b1c43456b19d81aa3ca6bb2a45f54763a28c79d65dbe605fde0c01488c55",
+  "prior_block_decision_sha256": "0286bd5af52af2c7c992d795de62706a5cf347c692bd3be076aef9fa122f2740",
+  "prereg_sha256": "53c9a6e0caad907d21c4fc4e94052836978dd8f81b74ede4e825d94a2b265525",
+  "contract_sha256": "543bd677790fd4d28ed429ae743af39a57f94dece26dfa9fae898b318e6b06ac",
+  "runtime_identity_sha256": "f0a469f5a8387ba8171be5b3e2c8c6b0d9fc0e8de7f5b0914e08ef4f327fddbc",
+  "allowed_scope": "one_frozen_stage006_development_run_only_no_holdout_no_production_no_ctp_no_orders",
+  "authorization_creation_allowed": true,
+  "not_authorized": [
+    "second_or_replacement_stage006_run",
+    "hyperparameter_search_or_result_based_rescue",
+    "true_engine_backtest",
+    "holdout_prediction_read_generate_train_or_effect",
+    "model_promotion_or_return_improvement_claim",
+    "production_write",
+    "ctp_connection",
+    "live_trading",
+    "order_api_call"
+  ]
+}

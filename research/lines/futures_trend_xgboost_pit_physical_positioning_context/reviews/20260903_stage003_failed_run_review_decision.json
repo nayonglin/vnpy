@@ -1,0 +1,67 @@
+{
+  "decision": "BLOCK",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_failed_run_independent_review.md",
+  "review_sha256": "3709012c3a10ab0bfae7ff37b924c2dc6bccc90b45d60c97d689006d66b71cda",
+  "authorization_sha256": "8b7b77c037419702e40390945e48a274bdb61d10722a0d583ce82c099b4c348f",
+  "consumption_receipt_sha256": "11cbb1af3806707368e6269c8aff5c5441fa36ef8bbf381b51f80116f16ab127",
+  "bound_files_identity_sha256": "e6355d8a06161cfa36968fdf10f0865ca8514301d7fed8afb100700b069d000c",
+  "runner_sha256": "2bbd6af436af2b761720269695e1c052aee3980ed7bedcc4969b1483b10d0a86",
+  "contract_sha256": "e800b2b347bcb92472234a0a391b77b487de27de1f79ee191354b635232c15a2",
+  "nonce": "558332d4683c115524391c6ca430eb467b9016db510b2b1f7881987a7a8e4161",
+  "scope": "one_new_stage003_development_oos_run_only",
+  "authorization_consumed_once": true,
+  "temp_entry_count": 0,
+  "final_result_exists": false,
+  "blocking_findings": [
+    {
+      "id": "P2-1",
+      "summary": "The exception path persists neither the append-only event ledger nor a nonce-bound technical-failure bundle, so the reported traceback and exact label/fit/predict zero counts cannot be independently reconstructed from durable state."
+    }
+  ],
+  "durably_verified": [
+    "authorization and canonical consumption receipt identities are exact",
+    "all 27 bound files currently match the authorization",
+    "the one-time nonce and scope are identical in authorization and receipt",
+    "the temporary result directory contains zero entries",
+    "the final result directory does not exist"
+  ],
+  "control_flow_inference_not_durably_attested": {
+    "initial_development_main_label_rows_opened": 62,
+    "oos_test_label_rows_opened": 0,
+    "other_development_main_label_rows_read": 0,
+    "a2_label_rows_read": 0,
+    "holdout_label_rows_read": 0,
+    "fit_calls": 0,
+    "prediction_calls": 0,
+    "selection_count": 0,
+    "seal_count": 0,
+    "artifact_count": 0
+  },
+  "fresh_checks": {
+    "pytest": "4 passed in 2.16s",
+    "real_label_rows_read_by_reviewer": 0,
+    "fit_calls_by_reviewer": 0,
+    "stage003_entrypoint_calls_by_reviewer": 0
+  },
+  "operational_disposition": "STOP_STAGE003_FROZEN_SHAPE_NO_RERUN",
+  "allowed_scope": [],
+  "not_authorized": [
+    "rerunning run_stage003 or main",
+    "creating or modifying an authorization or consumption receipt",
+    "modifying or deleting the temporary or final result path",
+    "changing the contract, labels, months, features, model parameters, selector, weights, or gates for rescue",
+    "reading additional aggregate, per-job, or holdout label data",
+    "fit, prediction, effect evaluation, or backtesting",
+    "true-engine execution",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

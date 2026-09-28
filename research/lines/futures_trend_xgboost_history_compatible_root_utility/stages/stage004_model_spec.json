@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "analysis_start": "2020-01-02",
+  "analysis_end": "2026-08-28",
+  "capital": 150000,
+  "features": ["directional_rsi", "directional_ma_gap", "directional_ma_slope", "open_interest_change_pct", "stop_distance_pct", "portfolio_drawdown_pct", "margin_to_equity_before", "active_positions_fraction", "same_direction_correlation", "loss_streak"],
+  "targets": ["return_marginal", "drawdown_marginal"],
+  "training": {
+    "schedule": "calendar_month_start",
+    "minimum_mature_events": 60,
+    "strict_decision_and_end_before_cutoff": true,
+    "target_transform": "separate_training_fold_mean_std_ddof0",
+    "constant_target_behavior": "predict_training_mean",
+    "target_units_after_inverse": "fraction",
+    "sample_weight": "uniform",
+    "history": "expanding"
+  },
+  "estimator": {
+    "n_estimators": 80,
+    "max_depth": 2,
+    "learning_rate": 0.05,
+    "min_child_weight": 20,
+    "reg_lambda": 10,
+    "reg_alpha": 1,
+    "subsample": 1,
+    "colsample_bytree": 1,
+    "tree_method": "hist",
+    "n_jobs": 1,
+    "random_state": 20260905,
+    "objective": "reg:squarederror",
+    "base_score": 0
+  },
+  "action": "skip_only_if_both_inverse_predictions_strictly_negative",
+  "fixed_fu_action": "unchanged",
+  "missing_or_untrained_model_action": "unchanged",
+  "versions": {"xgboost": "3.2.0", "scikit-learn": "1.8.0", "pandas": "2.3.3", "numpy": "2.4.4"},
+  "historical_evidence_type": "development_walk_forward_not_untouched_holdout"
+}

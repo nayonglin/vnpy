@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "eighth_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a0701b-c33b-7fc3-8637-557735b01a81",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1,
+    "P3": 1
+  },
+  "findings": [
+    {
+      "id": "R8-P2-001",
+      "severity": "P2",
+      "finding": "The event lock silently runs unlocked when claim.json is absent, and completion never rereads and binds the current state claim under the lock.",
+      "action": "Fail closed without claim, validate the locked current claim payload and binding before every event write, and add claim deletion/replacement plus real multiprocess contention tests."
+    },
+    {
+      "id": "R8-P3-001",
+      "severity": "P3",
+      "finding": "The post-final-rename exception path discards the reconcile exception and reports only a generic error.",
+      "action": "Preserve both the original and reconciliation failures and add a permanent-drift diagnostic call-chain test."
+    }
+  ],
+  "seventh_round_closure": {
+    "R7-P2-001": "closed",
+    "R7-P2-002": "partial_open"
+  },
+  "sixth_and_fifth_round_regression": {
+    "R6-P2-001": "closed",
+    "R5-P1-001": "closed",
+    "R5-P2-001": "partial_open",
+    "R5-P2-002": "closed"
+  },
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

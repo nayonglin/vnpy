@@ -1,0 +1,183 @@
+{
+  "generated_at": "2026-09-01T16:57:20+08:00",
+  "decision": "stage007_fullperiod_fail_stop_xgboost_c3",
+  "formal_release_id": "m0004_20260831T112631+0800_2485073e9594",
+  "status_scope": "development_candidate_not_independent_final_oos",
+  "preflight": {
+    "repository": {
+      "production_head": "1961d98ccb2b9129e35fe982b7330ae4217dcde6",
+      "production_status": "",
+      "workspace_vnpy_status": ""
+    },
+    "candidate_rows": 623,
+    "candidate_dates": 56,
+    "oos_months": 49,
+    "mean_changed_member_count_vs_formal": 2.4693877551020407,
+    "runtime_database_sha256": "ecbe812bd092ec8cedbd00d8b4b3ec2b1fa9311034dc8379fc6981033405eaf3",
+    "production_vs_runtime_boundary_parity": {
+      "passed": true,
+      "boundary_end": "2026-08-28 23:59:59",
+      "live_rows": 1022367,
+      "frozen_rows": 1022367,
+      "live_minus_frozen": 0,
+      "frozen_minus_live": 0,
+      "live_max_datetime": "2026-09-01 00:00:00",
+      "frozen_max_datetime": "2026-08-31 00:00:00",
+      "live_sha256_at_check": "30ec0ee3e9675b9150a0548dfb4e9ed347d89286b960d689f9775af15e15d15a",
+      "frozen_sha256": "ecbe812bd092ec8cedbd00d8b4b3ec2b1fa9311034dc8379fc6981033405eaf3"
+    },
+    "checkpoint_reuse_allowed": false,
+    "arm_sequence": [
+      "A1",
+      "A2",
+      "C"
+    ]
+  },
+  "identity_contract_sha256": "8173d8add520c48d4dcaab5ae221de3d7c7165903e663b4086c35930015ce750",
+  "input_identity_pass": true,
+  "production_vs_runtime_boundary_parity_before": {
+    "passed": true,
+    "boundary_end": "2026-08-28 23:59:59",
+    "live_rows": 1022367,
+    "frozen_rows": 1022367,
+    "live_minus_frozen": 0,
+    "frozen_minus_live": 0,
+    "live_max_datetime": "2026-09-01 00:00:00",
+    "frozen_max_datetime": "2026-08-31 00:00:00",
+    "live_sha256_at_check": "30ec0ee3e9675b9150a0548dfb4e9ed347d89286b960d689f9775af15e15d15a",
+    "frozen_sha256": "ecbe812bd092ec8cedbd00d8b4b3ec2b1fa9311034dc8379fc6981033405eaf3"
+  },
+  "production_vs_runtime_boundary_parity_after": {
+    "passed": true,
+    "boundary_end": "2026-08-28 23:59:59",
+    "live_rows": 1022367,
+    "frozen_rows": 1022367,
+    "live_minus_frozen": 0,
+    "frozen_minus_live": 0,
+    "live_max_datetime": "2026-09-01 00:00:00",
+    "frozen_max_datetime": "2026-08-31 00:00:00",
+    "live_sha256_at_check": "30ec0ee3e9675b9150a0548dfb4e9ed347d89286b960d689f9775af15e15d15a",
+    "frozen_sha256": "ecbe812bd092ec8cedbd00d8b4b3ec2b1fa9311034dc8379fc6981033405eaf3"
+  },
+  "checkpoint_reuse_allowed": false,
+  "arm_sequence": [
+    "A1",
+    "A2",
+    "C"
+  ],
+  "baseline_repeat": {
+    "passed": true,
+    "gates": {
+      "summary_payload_within_1e_9": true,
+      "curve_payload_exact": true,
+      "trade_payload_exact": true,
+      "summary_row_count_exact": true,
+      "curve_row_count_exact": true,
+      "trade_row_count_exact": true
+    },
+    "summary_max_abs_error": 0.0,
+    "curve_max_abs_error": 0.0
+  },
+  "coverage": {
+    "passed": true,
+    "gates": {
+      "A_dates_unique": true,
+      "A_first_date": true,
+      "A_last_date": true,
+      "C_dates_unique": true,
+      "C_first_date": true,
+      "C_last_date": true,
+      "arm_dates_equal": true
+    },
+    "row_counts": {
+      "A": 2101,
+      "C": 2101
+    }
+  },
+  "qualification": {
+    "passed": false,
+    "gates": {
+      "input_identity_pass": true,
+      "baseline_reproduction_pass": true,
+      "coverage_pass": true,
+      "total_return_strictly_higher": false,
+      "max_drawdown_strictly_better": false,
+      "sharpe_noninferior": false,
+      "slippage_le_105pct": true,
+      "trade_count_positive": true,
+      "account_survival_pass": true,
+      "broker10_peak_le_100pct": true,
+      "days_over_100pct_not_worse": true
+    },
+    "deltas": {
+      "end_equity": -17338950.400000013,
+      "total_return_pct": -11559.300266666676,
+      "max_dd_pct": -15.06802333798656,
+      "sharpe": -0.3806683932959596,
+      "total_slippage": -1198210.0,
+      "total_trade_count": -19.0,
+      "nonzero_daily_win_rate_pct": -2.132578719261815,
+      "max_broker10_margin_to_equity_pct": 0.0,
+      "days_over_100pct": 0.0
+    }
+  },
+  "metrics": {
+    "A1": {
+      "end_equity": 21678173.800000016,
+      "total_return_pct": 14352.115866666676,
+      "max_dd_pct": -39.91474607744346,
+      "sharpe": 1.5852658463483842,
+      "total_slippage": 2166380.0,
+      "total_trade_count": 798.0,
+      "nonzero_daily_win_rate_pct": 53.49544072948328,
+      "account_survival_pass": 1.0,
+      "max_broker10_margin_to_equity_pct": 93.58070146346672,
+      "days_over_100pct": 0.0,
+      "arm": "A1"
+    },
+    "A2": {
+      "end_equity": 21678173.800000016,
+      "total_return_pct": 14352.115866666676,
+      "max_dd_pct": -39.91474607744346,
+      "sharpe": 1.5852658463483842,
+      "total_slippage": 2166380.0,
+      "total_trade_count": 798.0,
+      "nonzero_daily_win_rate_pct": 53.49544072948328,
+      "account_survival_pass": 1.0,
+      "max_broker10_margin_to_equity_pct": 93.58070146346672,
+      "days_over_100pct": 0.0,
+      "arm": "A2"
+    },
+    "C": {
+      "end_equity": 4339223.4,
+      "total_return_pct": 2792.8156,
+      "max_dd_pct": -54.98276941543002,
+      "sharpe": 1.2045974530524246,
+      "total_slippage": 968170.0,
+      "total_trade_count": 779.0,
+      "nonzero_daily_win_rate_pct": 51.36286201022146,
+      "account_survival_pass": 1.0,
+      "max_broker10_margin_to_equity_pct": 93.58070146346672,
+      "days_over_100pct": 0.0,
+      "arm": "C"
+    }
+  },
+  "candidate_pool": {
+    "oos_months": 49,
+    "first_oos_date": "2022-04-29",
+    "last_oos_date": "2026-04-30",
+    "mean_changed_member_count_vs_formal": 2.4693877551020407,
+    "pre_and_post_oos_formal_rows_preserved": true,
+    "fixed_fu_rank": 11
+  },
+  "adaptive_reuse_warning": "Stage001-003 used the same 49 months adaptively; even a Stage007 pass requires untouched or new forward shadow evidence",
+  "safety": {
+    "strategy_backtest_ran": true,
+    "writes_production": false,
+    "ctp_connected": false,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0,
+    "automatic_promotion": false
+  }
+}

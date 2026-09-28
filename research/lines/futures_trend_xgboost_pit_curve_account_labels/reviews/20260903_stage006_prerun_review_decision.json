@@ -1,0 +1,32 @@
+{
+  "decision": "BLOCK_STAGE006_IMPLEMENTATION",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 3,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260903_stage006_prerun_independent_review.md",
+  "review_sha256": "0afee27b68f7a34c12dfcc18326604e52c3bba4b9b4dd95116cecf4ce5410286",
+  "prereg_sha256": "9da4733439fb7dbecfc36bee8efb864e1a3789f250ec9784e8ad607587c01b90",
+  "contract_sha256": "c0a78756c9c1aa79078e4cc2a85173def086cc2e08340873a80afc9b6cab40f5",
+  "allowed_scope": "none; remediate the frozen preregistration and machine contract, then obtain a new independent prereview before implementation",
+  "not_authorized": [
+    "stage006_implementation",
+    "stage006_tests",
+    "model_training",
+    "development_effect_evaluation",
+    "true_engine_backtest",
+    "holdout_feature_prediction",
+    "holdout_label_read_or_generation",
+    "production_change",
+    "ctp_connection",
+    "order_submission"
+  ],
+  "required_remediation": [
+    "encode phased test-label access and explicit zero holdout prediction/read/generation/training counts",
+    "encode all data transformation, finite-value, rank/qid/sort, average-percentile, zero-fill, manifest, command, and scope rules in the machine contract",
+    "bind platform, interpreter, package, and XGBoost build/runtime identity before and after any future authorized training run"
+  ]
+}

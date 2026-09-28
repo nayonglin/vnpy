@@ -1,0 +1,34 @@
+{
+  "decision": "ALLOW_STAGE003_TDD_IMPLEMENTATION_AFTER_SHA_REMEDIATION_ONLY",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_remediation_rereview.md",
+  "review_sha256": "616a4cff7ce936aa78b757dafd12a495859b0e003c10d39e3d802f66239e6d03",
+  "remediation_sha256": "e9a14c35522c59f5393974d1b82614cbf1863b80ee3bb6724a0ad496cb685c47",
+  "corrected_contract_sha256": "e894e93b697b313d55afbaab8f112efc2c877f9a5abd7200deba5af5377630d1",
+  "frozen_full_feature_split_sha256": "a87c73e94eb2afae47ffb106ec60d2720ff881fcecda496aa81af5895165c2b1",
+  "authorization_bound_file_count": 24,
+  "allowed_scope": [
+    "TDD implementation under the complete immutable Stage003 governance chain",
+    "implementation of exact lowercase 64-hex input SHA validation",
+    "identity-only validation of the corrected full-split SHA",
+    "synthetic and adversarial tests without real label values"
+  ],
+  "not_authorized": [
+    "reading any aggregate, per-job, development, or holdout label values",
+    "fit or training",
+    "real prediction or effect evaluation",
+    "backtesting",
+    "creating an authorization",
+    "running the Stage003 production entrypoint",
+    "holdout access",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "decision": "BLOCK_STAGE006_DEVELOPMENT_RUN",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 1,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260903_stage006_final_implementation_review.md",
+  "review_sha256": "5458b1c43456b19d81aa3ca6bb2a45f54763a28c79d65dbe605fde0c01488c55",
+  "runner_sha256": "b6b83e6f798de088a747bc0cde52bd713484c44d0ea06dc221ba21be8c1fa3dc",
+  "tests_sha256": "dd1a5add83c518d305931141c58e2fd8c45a3f3a6a7c6560a65d17d7e9292252",
+  "prereg_sha256": "53c9a6e0caad907d21c4fc4e94052836978dd8f81b74ede4e825d94a2b265525",
+  "contract_sha256": "543bd677790fd4d28ed429ae743af39a57f94dece26dfa9fae898b318e6b06ac",
+  "runtime_identity_sha256": "f0a469f5a8387ba8171be5b3e2c8c6b0d9fc0e8de7f5b0914e08ef4f327fddbc",
+  "remediation_sha256": "72a1ca52459586b0d46fb03ecad78c02119c505e6152f380a85f71d29959a6b0",
+  "blocking_findings": [
+    "P1-1: caller-controlled consumption_path and result_dir allow the same authorization identity to be consumed more than once",
+    "P1-2: caller-controlled ranker_factory permits a non-frozen estimator while technical gates do not verify the actual estimator type",
+    "P2-1: pre-effect seal verification does not recompute and compare model, prediction, and selection payload hashes before opening test labels"
+  ],
+  "run_authorization_created": false,
+  "run_authorization_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage006_dual_ranker_development_oos/run_authorization.json",
+  "allowed_scope": [],
+  "not_authorized": [
+    "create_or_consume_stage006_run_authorization",
+    "stage006_real_development_label_read",
+    "stage006_model_training",
+    "stage006_effect_evaluation",
+    "true_engine_backtest",
+    "holdout_prediction_read_generate_train_or_effect",
+    "model_promotion_or_return_improvement_claim",
+    "production_write",
+    "ctp_connection",
+    "live_trading",
+    "order_api_call"
+  ]
+}

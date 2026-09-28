@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-08-31T20:34:30+08:00",
+  "status": "pass",
+  "method": "standard_library_csv_math_fsum_no_sklearn_no_training",
+  "verified_feature_rows": 1944,
+  "verified_adjacent_rows": 1836,
+  "independent_max_probability_error": 1.1102230246251565e-16,
+  "production_source_hashes_unchanged": true,
+  "official_top10_scores_and_order_match": true,
+  "artifact_hashes": {
+    "adjacent_rank_contributions.csv": "0f6518933e5f1e45ea089f02405c0a22bfb30697ec6051219e57b7cd8b8d9c36",
+    "contribution_overview.png": "a1c824b69e8206eee2f7a279b8f35ef6e910de03cc332d37e3fd15b919b68149",
+    "factor_group_contributions.csv": "2b68aaef3ea42ab3814dc2c232a4a30efc51cfe26d39b0b851ebbfc76a79ad8a",
+    "feature_contributions.csv": "d774e78ca547c96012b9c773b2d70be8de2baf4c30c705da124d264a1a51c6f7",
+    "feature_contributions_zh.csv": "c593f01a9dfe3232239f9df0320ecae51b4bfdcf0f3ebdfb1b5f954a7362fe8e",
+    "formal_pool_snapshot.csv": "69b8b8320da600875a4fce89de1c86dcd08fa0278ccb5ce89f82abf834ac1d3b",
+    "model_coefficients.csv": "dabd5fd6d29d1ed477c50a81624773a02b1a0e197d7433ab03cf0399a909c61e",
+    "model_coefficients_zh.csv": "923f94f52a47e083381236e34fce790474981bfc69a520d5a8b097ab6dd50b58",
+    "model_snapshot.json": "41aa2c44e9d1fbfa0457dd4ea4f9d9e5c9cfe2c43d1ed41cf0d266c87ed04a9d",
+    "product_scores_and_features.csv": "ccfd3dcc7e2a0de8b47a303ce5ac3f18d3617fc961481138789ad2e8beb3c08e",
+    "report.md": "c7ad698f1c9f50b21d635ae66d3f18c2d97900bd08b9e60236b9b3a8ab845861",
+    "reproduction_summary.json": "4769a387c6a0847c259d5b8e25bf0058270568bcafbc2f9a871608f006e04870",
+    "score_parity.csv": "0deab1e408d78d6a8a9e990c22b155c0bae5d79ca6b8f18c6cb0cc76487948aa",
+    "selected_product_contributions.png": "8303485b7f9114223b84218c70cbc96a4dab2d7cf6f56ae34e6f74c09621052e",
+    "training_samples.csv": "92f36b6647cae9d8db04b0a1351749f9103a1988799dbb8dff0ad1d350d1d431"
+  }
+}

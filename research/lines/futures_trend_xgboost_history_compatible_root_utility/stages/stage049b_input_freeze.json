@@ -1,0 +1,10 @@
+{
+  "execution_authorized": true,
+  "file_contract_sha256": "6f269ac7df72d1e27d5c2a454a2943b0068edfc8a450879d3cfd5240e8e671d9",
+  "input_file_count": 9562,
+  "input_logical_key_sha256": "989991add228a8b46c7f2641dc4e4634ac203d276729edea79b33bdc4a447bd0",
+  "line_id": "futures_trend_xgboost_history_compatible_root_utility",
+  "runtime_contract_sha256": "04396eb74da1ed4812b0eabcc94e28cd2a64f90a1839d08ace6630faf2149e1e",
+  "schema_version": 1,
+  "stage": "stage049b_holding_full_replay"
+}

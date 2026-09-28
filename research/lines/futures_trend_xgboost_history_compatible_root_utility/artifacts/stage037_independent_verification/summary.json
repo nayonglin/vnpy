@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "method": "stdlib CSV streaming OHLCV and readonly SQLite; no Stage036/037 normalize aggregate qualify or run calls",
+  "verified_at": "2026-09-06T09:40:06.123889+08:00",
+  "input_count": 2177,
+  "outputs_verified": 3,
+  "checked_minutes": 3965415,
+  "checked_contract_days": 12251,
+  "compatible_contract_days": 12231,
+  "windows_verified": 1002,
+  "changed_windows": [
+    {
+      "date": "2024-03-26",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-03-27",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-03-28",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-03-29",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-04-01",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-04-02",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-04-08",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-04-09",
+      "vt_symbol": "SH405.CZCE"
+    },
+    {
+      "date": "2024-07-03",
+      "vt_symbol": "SH409.CZCE"
+    }
+  ],
+  "original_993_windows_unchanged": true,
+  "source_summary_sha256": "679154fb8f126b2faefac802056870eb7fa0082f4d37d9d2375b8a7be8bb3ed8",
+  "reviewer_started": false,
+  "new_replay_count": 0,
+  "model_fit_predict_count": 0
+}

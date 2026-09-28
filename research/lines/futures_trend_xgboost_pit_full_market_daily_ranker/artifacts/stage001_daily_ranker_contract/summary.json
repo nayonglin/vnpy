@@ -1,0 +1,219 @@
+{
+  "action_months": 48,
+  "all_gates_passed": false,
+  "base_query_count": 1067,
+  "base_row_count": 57528,
+  "base_width_max": 61,
+  "base_width_median": 53.0,
+  "base_width_min": 49,
+  "challenger_rows": 1771,
+  "created_at": "2026-09-04T23:20:15+08:00",
+  "ctp_connection_count": 0,
+  "decision": "stage001_daily_ranker_contract_fail_close_no_labels",
+  "effect_evaluable_folds": 36,
+  "evidence_scope": "label_free_pit_daily_ranker_contract_only",
+  "expected_counts": {
+    "action_months": 48,
+    "base_query_count": 1067,
+    "base_row_count": 57528,
+    "base_width_max": 61,
+    "base_width_median": 53.0,
+    "base_width_min": 49,
+    "challenger_rows": 1771,
+    "effect_evaluable_folds": 36,
+    "first_fold": "2023-03-31",
+    "first_query_date": "2022-01-28",
+    "fold_count": 37,
+    "formal_anchor_rows": 48,
+    "inference_only_folds": 1,
+    "label_query_count": 1046,
+    "label_row_count": 52484,
+    "label_width_max": 60,
+    "label_width_median": 50.0,
+    "label_width_min": 30,
+    "last_fold": "2026-06-30",
+    "last_query_date": "2026-06-30",
+    "maximum_train_qids": 1045,
+    "minimum_challengers_per_month": 34,
+    "minimum_nonzero_cross_section_qids": 1000,
+    "minimum_train_qids": 261,
+    "model_feature_count": 19,
+    "open_interest_ratio_missing": 80,
+    "raw_feature_count": 17,
+    "rejected_label_rows": 5044,
+    "volume_ratio_missing": 420
+  },
+  "first_fold": "2023-03-31",
+  "first_query_date": "2022-01-28",
+  "fold_count": 37,
+  "forbidden_model_feature_count": 0,
+  "formal_anchor_rows": 48,
+  "formal_month_violation_count": 0,
+  "formal_rank10_identity_valid": true,
+  "future_close_value_reads": 0,
+  "future_feature_rows_used": 0,
+  "future_label_rows_used": 0,
+  "future_return_calculations": 0,
+  "future_train_qid_count": 0,
+  "gates": {
+    "feature_gate": false,
+    "formal_scoring_fold_gate": true,
+    "input_identity_gate": true,
+    "label_plan_gate": true,
+    "query_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "implementation_identities": {
+    "contract_core": "2e48b80ee229ab6a40c72b945b6eaf64d3b7c05c42a609801a37146ea9dfbaf6",
+    "stage001_runner": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541"
+  },
+  "independent_reviewer_reason": "no_backtest_result_produced",
+  "independent_reviewer_required": false,
+  "inference_only_folds": 1,
+  "input_identities_after": {
+    "bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "coverage": {
+      "mtime_ns": 1788494032010655526,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/coverage_by_eval_product.csv.gz",
+      "sha256": "6b8a55f44aa9422653fd01eea667fcede59bedab9b2ef8e6cceba31e636cb30d",
+      "size": 60168
+    },
+    "formal_ranking": {
+      "mtime_ns": 1788254750426583386,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage009_formal_full_ranking_recovery/formal_full_ranking.csv",
+      "sha256": "b2cb417b6c57a7679ae43a1e564c1e79683ca9644b3434cb6a3bfc9e039fcfc0",
+      "size": 74747
+    },
+    "mapping": {
+      "mtime_ns": 1788493417020060646,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/pit_main_contract_mapping.csv.gz",
+      "sha256": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+      "size": 339628
+    },
+    "metadata": {
+      "mtime_ns": 1788494031987332964,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/invariant_product_metadata.csv",
+      "sha256": "23141510dc4b82f397db07f61d5bfce0cfe0621858f135f49c3044360dd46174",
+      "size": 2021
+    },
+    "monthly": {
+      "mtime_ns": 1788494032011716620,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/monthly_coverage.csv",
+      "sha256": "dbd394954d92ef041dcc00f88c6ed90df62e7b2b3578fb6cabaafb848d1c2047",
+      "size": 2015
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "source_summary": {
+      "mtime_ns": 1788494032106227548,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/stage002_summary.json",
+      "sha256": "67dcdb174bf7e253e100138eff1ec0b644c6a7cc68c0806f71aff10c66f00939",
+      "size": 11480
+    }
+  },
+  "input_identities_before": {
+    "bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "coverage": {
+      "mtime_ns": 1788494032010655526,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/coverage_by_eval_product.csv.gz",
+      "sha256": "6b8a55f44aa9422653fd01eea667fcede59bedab9b2ef8e6cceba31e636cb30d",
+      "size": 60168
+    },
+    "formal_ranking": {
+      "mtime_ns": 1788254750426583386,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage009_formal_full_ranking_recovery/formal_full_ranking.csv",
+      "sha256": "b2cb417b6c57a7679ae43a1e564c1e79683ca9644b3434cb6a3bfc9e039fcfc0",
+      "size": 74747
+    },
+    "mapping": {
+      "mtime_ns": 1788493417020060646,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/pit_main_contract_mapping.csv.gz",
+      "sha256": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+      "size": 339628
+    },
+    "metadata": {
+      "mtime_ns": 1788494031987332964,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/invariant_product_metadata.csv",
+      "sha256": "23141510dc4b82f397db07f61d5bfce0cfe0621858f135f49c3044360dd46174",
+      "size": 2021
+    },
+    "monthly": {
+      "mtime_ns": 1788494032011716620,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/monthly_coverage.csv",
+      "sha256": "dbd394954d92ef041dcc00f88c6ed90df62e7b2b3578fb6cabaafb848d1c2047",
+      "size": 2015
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "source_summary": {
+      "mtime_ns": 1788494032106227548,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/stage002_summary.json",
+      "sha256": "67dcdb174bf7e253e100138eff1ec0b644c6a7cc68c0806f71aff10c66f00939",
+      "size": 11480
+    }
+  },
+  "input_identity_stable": true,
+  "label_forbidden_column_count": 0,
+  "label_identity_violation_count": 0,
+  "label_query_count": 1046,
+  "label_row_count": 52484,
+  "label_value_reads": 0,
+  "label_width_max": 60,
+  "label_width_median": 50.0,
+  "label_width_min": 30,
+  "last_fold": "2026-06-30",
+  "last_query_date": "2026-06-30",
+  "line_id": "futures_trend_xgboost_pit_full_market_daily_ranker",
+  "mapping_rows": 105440,
+  "maximum_train_qids": 1045,
+  "minimum_challengers_per_month": 34,
+  "minimum_nonzero_cross_section_qids": 1067,
+  "minimum_train_qids": 261,
+  "missing_flag_mismatch_count": 0,
+  "model_feature_count": 19,
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "open_interest_ratio_missing": 80,
+  "order_api_called_count": 0,
+  "production_files_written": 0,
+  "raw_feature_count": 17,
+  "rejected_label_rows": 5044,
+  "resolved_mapping_rows": 91653,
+  "sealed_holdout_rows": 0,
+  "source_date_violation_count": 0,
+  "source_manifest_valid": true,
+  "strategy_backtest_runs": 0,
+  "unexpected_nonfinite_feature_count": 0,
+  "unresolved_mapping_rows": 13787,
+  "volume_ratio_missing": 460
+}

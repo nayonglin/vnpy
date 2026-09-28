@@ -1,0 +1,40 @@
+{
+  "decision": "ALLOW_STAGE003_TDD_IMPLEMENTATION_ONLY",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_rereview.md",
+  "review_sha256": "d288ef4eeb7a246d285378c48e51b40e9c0ff2f233e14ec384e113fa5b1e327c",
+  "original_preregistration_sha256": "859d060217e6ef381170d439086ec0d7097d2c18152f2c0ff0aaacb78124cbea",
+  "initial_review_sha256": "53491926fc97c8bed6d04cc522b7d27eda572fe1f84d38ebb72a5c4c478c6000",
+  "initial_decision_sha256": "f7506bbb2d551291c6dfab294623218387167ccc77ca739dc1d0ac3356032b03",
+  "remediation_sha256": "52bb25107cbd8b1848c2e9da0b138958ead54d7ca85f3a0a45fe4e6611baf1c1",
+  "closed_findings": [
+    "P2-1",
+    "P2-2",
+    "P3-empty-replacement-semantics"
+  ],
+  "p3_findings": [
+    "The consumption receipt exact schema contains two SHA fields, while adjacent prose says three; implementations must follow the exact schema and validate the nonce separately."
+  ],
+  "allowed_scope": [
+    "TDD implementation strictly bound to the frozen Stage003 contract",
+    "machine-contract implementation",
+    "synthetic and adversarial tests without real label values"
+  ],
+  "not_authorized": [
+    "reading aggregate, per-job, development, or holdout label values",
+    "fit or training",
+    "prediction or effect evaluation",
+    "backtesting",
+    "creating an authorization",
+    "running Stage003, Stage005, or Stage006 entrypoints",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

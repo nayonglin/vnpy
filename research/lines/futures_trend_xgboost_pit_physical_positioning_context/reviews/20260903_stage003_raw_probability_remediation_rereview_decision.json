@@ -1,0 +1,32 @@
+{
+  "decision": "ALLOW_STAGE003_TDD_IMPLEMENTATION_AFTER_PROBABILITY_REMEDIATION_ONLY",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_remediation_rereview.md",
+  "review_sha256": "b3420dc4a154cc0bed74515db6a2f16b14da131142a8f8675faefcc882ba3793",
+  "remediation_sha256": "bf565a1c4be4b61992d6caccf208c984378c93b69c3127353f6b2aeb3d15d23a",
+  "machine_contract_sha256": "37dc6533143d1ed457088400e75d7a04364f62a70ea4c4a8fb95bd26e9cbe698",
+  "allowed_scope": [
+    "TDD implementation strictly following the original preregistration and both remediation preregistrations",
+    "machine-contract implementation",
+    "synthetic and adversarial tests without real label values",
+    "implementation of the exact six-column full-split projection and raw-probability isolation gates"
+  ],
+  "not_authorized": [
+    "reading any aggregate, per-job, development, or holdout label values",
+    "fit or training",
+    "real prediction or effect evaluation",
+    "backtesting",
+    "creating an authorization",
+    "running the Stage003 production entrypoint",
+    "holdout access",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

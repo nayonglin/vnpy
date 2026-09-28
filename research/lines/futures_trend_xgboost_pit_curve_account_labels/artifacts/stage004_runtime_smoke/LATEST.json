@@ -1,0 +1,9 @@
+{
+  "campaign_file_contract_sha256": "a4a5a4278bfdb4131a790fd80696e00d3aa8b760ea40b44732f8bf36007f3bac",
+  "campaign_id": "campaign_20260902T153215+0800_55582",
+  "campaign_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage004_runtime_smoke/campaigns/campaign_20260902T153215+0800_55582",
+  "completed_jobs": 4,
+  "decision": "stage004_runtime_smoke_pass_allow_development_label_batch_preregistration",
+  "status": "smoke_passed",
+  "total_jobs": 270
+}

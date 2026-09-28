@@ -1,0 +1,18 @@
+{
+  "verified_at": "2026-09-06T06:45:52.833093+08:00",
+  "stage027_summary": {
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage027_native_chain_source/summary.json",
+    "bytes": 938817,
+    "sha256": "1cc361ac370fa3d300eaa86d51ac9f151d063b0c7668242e426d7067192969c4"
+  },
+  "inputs_verified": 9,
+  "outputs_verified": 2687,
+  "contracts": 1325,
+  "raw_rows": 13250000,
+  "daily_rows": 272649,
+  "independent_csv_decimal_comparison": true,
+  "old_probe_rb2005_exact_rows": 130,
+  "full_chain_qualified": false,
+  "strategy_backtest_count": 0,
+  "reviewer_count": 0
+}

@@ -1,0 +1,13 @@
+{
+  "failed": [],
+  "mode": "next",
+  "model_fit_count": 0,
+  "passed_count": 64,
+  "plan_sha256": "4d0e8861930de7cdda0b4f98a245197eb85e09c5bc551c2d0b05fee15bffe6c7",
+  "reviewer_started": false,
+  "selected_count": 64,
+  "stage": "stage004_label_batch",
+  "status": "passed",
+  "total_completed_count": 93,
+  "total_planned_count": 274
+}

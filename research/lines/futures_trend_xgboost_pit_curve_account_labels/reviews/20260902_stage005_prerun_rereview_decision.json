@@ -1,0 +1,13 @@
+{
+  "decision": "BLOCK_STAGE005_BATCH",
+  "generated_at": "2026-09-02T20:30:42+08:00",
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_rereview.md",
+  "review_sha256": "44e889d7a15d0b738d2ce9cafddd9aab397b45d8ba46f0e125c00b48ce97c55b",
+  "run_authorization_created": false,
+  "severity": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 1,
+    "P3": 0
+  }
+}

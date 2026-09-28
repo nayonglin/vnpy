@@ -1,0 +1,24 @@
+{
+  "verified_at": "2026-09-06T07:20:15.021211+08:00",
+  "source_summary": {
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/summary.json",
+    "bytes": 2417,
+    "sha256": "f438d3e22a8d646d0de7610073bfd7d0eceee43edb6a09106ee7782a5298c83a"
+  },
+  "inputs_verified": 2744,
+  "outputs_verified": 5,
+  "contexts_verified": 261060,
+  "event_rows_verified": 276,
+  "inventory_status_counts": {
+    "available": 261060,
+    "actual_contract_window_missing": 5726,
+    "incomplete_chain_window": 100
+  },
+  "max_abs_feature_error": {
+    "own_oi_share_change_5d": 1.1102230246251565e-16,
+    "deferred_oi_share_change_5d": 1.1102230246251565e-16
+  },
+  "candidate_spec_only_appended_two_features": true,
+  "reviewer_count": 0,
+  "model_fit_predict_count": 0
+}

@@ -1,0 +1,19 @@
+{
+  "historical_fit_predict_count": 0,
+  "inherited_count": 14,
+  "mode": "canary",
+  "new_completed": 1,
+  "planned": 1002,
+  "results": [
+    {
+      "observation_id": "513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea",
+      "status": "passed",
+      "worker_seconds": 41.28673754102783
+    }
+  ],
+  "reviewer_count": 0,
+  "stage": "stage042_holding_labels",
+  "status": "passed",
+  "total_completed": 15,
+  "training_ready": false
+}

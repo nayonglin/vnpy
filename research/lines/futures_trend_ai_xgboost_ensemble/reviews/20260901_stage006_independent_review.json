@@ -1,0 +1,24 @@
+{
+  "reviewed_at": "2026-09-01T16:50:00+08:00",
+  "reviewer_agent_id": "01a05c25-303f-7700-8d35-d3ac9fc666e6",
+  "verdict": "PASS",
+  "allow_development_true_engine": true,
+  "allow_production_promotion": false,
+  "p0_findings": [],
+  "p1_findings": [],
+  "p2_blockers": [],
+  "reviewed_stage006_summary_sha256": "0c103f1952e0de5df7db8b3d01510f2b8c3de94173416ff035cc8f8193f1a1e7",
+  "reviewed_stage006_predictions_sha256": "53474d64e1cfc93685fcaf208bb52c78c540c1bb03b311ae273084de88719206",
+  "reviewed_stage006_split_audit_sha256": "884942549ab78fb749944682788fe209ab7d181c2eba91d8658574fa743cd736",
+  "findings": [
+    "future_label_end matches the last day of each product's i+1 through i+60 path",
+    "all 49 corrected folds require complete monthly labels and max label_end <= test EOD",
+    "C3 reuses the original Stage002 eleven gates and passes all eleven",
+    "the result is development-only because the same 49 months were adaptively reused"
+  ],
+  "conditions": [
+    "freeze the current model, weights, TopN, confirmation months and gates",
+    "do not tune after observing the cold-process result",
+    "do not treat a pass as production or formal-candidate evidence"
+  ]
+}

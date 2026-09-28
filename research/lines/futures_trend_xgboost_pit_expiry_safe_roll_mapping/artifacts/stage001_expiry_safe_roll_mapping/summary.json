@@ -1,0 +1,204 @@
+{
+  "all_gates_passed": true,
+  "canaries": {
+    "expiry": [
+      {
+        "leg_index": 1,
+        "original_contract_vt": "wr2310.SHFE",
+        "product_vt_symbol": "wr.SHFE",
+        "query_date": "2023-10-13"
+      },
+      {
+        "leg_index": 18,
+        "original_contract_vt": "RS511.CZCE",
+        "product_vt_symbol": "RS.CZCE",
+        "query_date": "2025-10-21"
+      }
+    ],
+    "stable": {
+      "first_contract_vt": "sc2403.INE",
+      "label_end": "2024-03-08",
+      "minimum_roll_count": 1,
+      "product_vt_symbol": "sc.INE",
+      "query_date": "2024-01-31"
+    }
+  },
+  "close_value_reads": 0,
+  "created_at": "2026-09-05T01:14:28+08:00",
+  "ctp_connection_count": 0,
+  "decision": "stage001_expiry_safe_roll_mapping_pass_allow_roll_label_generator_preregistration_only",
+  "expected_counts": {
+    "holding_period": 20,
+    "leg_rows": 1125440,
+    "path_qids": 1046,
+    "path_rows": 56272,
+    "v2_invalid_leg_rows": 6,
+    "v2_invalid_path_rows": 6
+  },
+  "expiry_fallback_event_count": 2,
+  "expiry_fallback_leg_count": 6,
+  "failure_counts": {},
+  "fallback_candidate_count_max": 11,
+  "fallback_candidate_count_median": 3.0,
+  "fallback_candidate_count_min": 3,
+  "future_return_calculations": 0,
+  "gates": {
+    "causal_selection_gate": true,
+    "endpoint_presence_gate": true,
+    "expiry_canary_gate": true,
+    "expiry_coverage_gate": true,
+    "fallback_selection_gate": true,
+    "frozen_count_gate": true,
+    "input_identity_gate": true,
+    "non_expiry_unchanged_gate": true,
+    "path_identity_gate": true,
+    "stable_canary_gate": true,
+    "upstream_manifest_gate": true,
+    "v2_failure_contract_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "implementation_identities": {
+    "core_sha256": "44082c9f17d60743b67a129977c67e6f4f55a59343059ccca8be41178cb04efc",
+    "runner_sha256": "1768f482b53d924b3941aae95c09942ec85c95a1132017177fa84d6d2226c331"
+  },
+  "independent_reviewer_reason": "no_backtest_result_produced",
+  "independent_reviewer_required": false,
+  "input_identities_after": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "v2_legs": {
+      "mtime_ns": 1788540753080670961,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_legs.csv.gz",
+      "sha256": "7f0d6092a0166fc1fe8ee5b0fbb5f4e4166678cf82e0dedb7f882bab5782b149",
+      "size": 4677683
+    },
+    "v2_manifest": {
+      "mtime_ns": 1788540753112288192,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/artifact_manifest.json",
+      "sha256": "f2a4cf72f0bddeb7fc103bc30714f6fc3380bc7f099bda2a16f57efb667797fd",
+      "size": 3865
+    },
+    "v2_paths": {
+      "mtime_ns": 1788540747532916264,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_label_plan.csv.gz",
+      "sha256": "b67ac38d242260ff685422c20deb7ffc24cbc31f3e1deef8fc7f9b476c8a038a",
+      "size": 233878
+    },
+    "v2_summary": {
+      "mtime_ns": 1788540753087730235,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/summary.json",
+      "sha256": "ab605d61fe2a26314fa8e351d00e829929392052f6b4b10055eb509954a6ea57",
+      "size": 7887
+    }
+  },
+  "input_identities_before": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "v2_legs": {
+      "mtime_ns": 1788540753080670961,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_legs.csv.gz",
+      "sha256": "7f0d6092a0166fc1fe8ee5b0fbb5f4e4166678cf82e0dedb7f882bab5782b149",
+      "size": 4677683
+    },
+    "v2_manifest": {
+      "mtime_ns": 1788540753112288192,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/artifact_manifest.json",
+      "sha256": "f2a4cf72f0bddeb7fc103bc30714f6fc3380bc7f099bda2a16f57efb667797fd",
+      "size": 3865
+    },
+    "v2_paths": {
+      "mtime_ns": 1788540747532916264,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_label_plan.csv.gz",
+      "sha256": "b67ac38d242260ff685422c20deb7ffc24cbc31f3e1deef8fc7f9b476c8a038a",
+      "size": 233878
+    },
+    "v2_summary": {
+      "mtime_ns": 1788540753087730235,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/summary.json",
+      "sha256": "ab605d61fe2a26314fa8e351d00e829929392052f6b4b10055eb509954a6ea57",
+      "size": 7887
+    }
+  },
+  "invalid_leg_rows": 0,
+  "invalid_path_rows": 0,
+  "label_value_reads": 0,
+  "leg_rows": 1125440,
+  "line_id": "futures_trend_xgboost_pit_expiry_safe_roll_mapping",
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "opened_bar_columns": [
+    "datetime",
+    "symbol",
+    "exchange",
+    "interval",
+    "volume",
+    "open_interest"
+  ],
+  "opened_catalog_columns": [
+    "vt_symbol",
+    "product_vt_symbol",
+    "expire_date"
+  ],
+  "order_api_called_count": 0,
+  "path_qids": 1046,
+  "path_rows": 56272,
+  "production_files_written": 0,
+  "roll_event_count": 29360,
+  "sealed_holdout_rows": 0,
+  "source_verification": {
+    "artifact_count": 13,
+    "errors": [],
+    "manifest_mode": "logical_key_with_path",
+    "verified": true
+  },
+  "stage": "stage001_expiry_safe_roll_mapping_qualification",
+  "strategy_backtest_runs": 0,
+  "v2_summary_identity": {
+    "decision": "stage001_v2_roll_aware_label_plan_fail_close_no_labels",
+    "failure_counts": {
+      "return_bar_missing": 6
+    },
+    "invalid_path_rows": 6,
+    "leg_rows": 1125440,
+    "path_rows": 56272
+  },
+  "v2_verification": {
+    "artifact_count": 9,
+    "errors": [],
+    "input_count": 7,
+    "verified": true
+  },
+  "valid_path_rows": 56272
+}

@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "verified_at": "2026-09-06T07:48:01.602108+08:00",
+  "source_summary_sha256": "8eaa7db2d706aece34c0c8fdd421f84afc68d19d5b6113979d0c9756161c20c1",
+  "input_logical_count": 5421,
+  "unique_input_count": 5401,
+  "archive_count": 8,
+  "days": 1614,
+  "metrics": {
+    "A": {
+      "end_equity": 12226270.600000013,
+      "total_return_pct": 8050.847066666675,
+      "max_drawdown_pct": -45.92157323451009,
+      "sharpe": 1.6839432501429918,
+      "total_slippage": 1100560.0,
+      "total_commission": 0.0,
+      "trade_count": 655,
+      "nonzero_daily_win_rate_pct": 54.24187725631769
+    },
+    "C": {
+      "end_equity": 978341.8000000005,
+      "total_return_pct": 552.2278666666671,
+      "max_drawdown_pct": -54.4764370870091,
+      "sharpe": 0.9977908366422029,
+      "total_slippage": 201390.0,
+      "total_commission": 0.0,
+      "trade_count": 497,
+      "nonzero_daily_win_rate_pct": 50.0
+    }
+  },
+  "max_daily_equity_conservation_error": {
+    "A": 8.87666828930378e-10,
+    "C": 1.1641532182693481e-10
+  },
+  "years": [
+    {
+      "year": "2020",
+      "A_return_pct": 108.27440000000004,
+      "A_net_pnl": 162411.60000000003,
+      "C_return_pct": 108.27440000000004,
+      "C_net_pnl": 162411.60000000003,
+      "return_change_pp": 0.0,
+      "cash_pnl_change": 0.0
+    },
+    {
+      "year": "2021",
+      "A_return_pct": 479.6140732290351,
+      "A_net_pnl": 1498370.0000000002,
+      "C_return_pct": 432.36230664930486,
+      "C_net_pnl": 1350750.0000000002,
+      "return_change_pp": -47.25176657973026,
+      "cash_pnl_change": -147620.0
+    },
+    {
+      "year": "2022",
+      "A_return_pct": 7.021034452746822,
+      "A_net_pnl": 127135.6,
+      "C_return_pct": -12.229719589485466,
+      "C_net_pnl": -203399.9999999999,
+      "return_change_pp": -19.250754042232288,
+      "cash_pnl_change": -330535.5999999999
+    },
+    {
+      "year": "2023",
+      "A_return_pct": -4.783486105598323,
+      "A_net_pnl": -92700.0,
+      "C_return_pct": -21.96146274843782,
+      "C_net_pnl": -320585.0,
+      "return_change_pp": -17.177976642839496,
+      "cash_pnl_change": -227885.0
+    },
+    {
+      "year": "2024",
+      "A_return_pct": 318.15062205143124,
+      "A_net_pnl": 5870570.000000002,
+      "C_return_pct": -4.2039135986466025,
+      "C_net_pnl": -47890.0,
+      "return_change_pp": -322.3545356500778,
+      "cash_pnl_change": -5918460.000000002
+    },
+    {
+      "year": "2025",
+      "A_return_pct": 69.19548273700448,
+      "A_net_pnl": 5338976.200000004,
+      "C_return_pct": -11.749415781335514,
+      "C_net_pnl": -128219.79999999968,
+      "return_change_pp": -80.94489851834,
+      "cash_pnl_change": -5467196.000000004
+    },
+    {
+      "year": "2026",
+      "A_return_pct": -6.346287363584057,
+      "A_net_pnl": -828492.7999999973,
+      "C_return_pct": 1.5860789718844304,
+      "C_net_pnl": 15275.000000000218,
+      "return_change_pp": 7.932366335468488,
+      "cash_pnl_change": 843767.7999999975
+    }
+  ],
+  "fitted_or_predicted_models": 0,
+  "new_backtests": 0,
+  "reviewer_count": 0,
+  "runtime_cleaned": true
+}

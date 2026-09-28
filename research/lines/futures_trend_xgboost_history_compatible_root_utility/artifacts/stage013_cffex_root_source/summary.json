@@ -1,0 +1,28 @@
+{
+  "status": "source_not_qualified",
+  "new_historical_models": 0,
+  "new_labels": 0,
+  "new_backtests": 0,
+  "reviewers": 0,
+  "error": "ConnectionError:HTTPSConnectionPool(host='www.cffex.com.cn', port=443): Max retries exceeded with url: /sj/historysj/202606/zip/202606.zip (Caused by NewConnectionError(\"HTTPSConnection(host='www.cffex.com.cn', port=443): Failed to establish a new connection: [Errno 65] No route to host\"))",
+  "input_count": 94,
+  "verified_old_archives": 84,
+  "outputs": {
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage013_cffex_root_source/input_manifest.json",
+      "bytes": 42955,
+      "sha256": "6f8a3992cc1cf8ba35d1cc8c72380ead2289a80cc85cf321d91cb618ce80b9f6"
+    },
+    "month_inventory.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage013_cffex_root_source/month_inventory.json",
+      "bytes": 23355,
+      "sha256": "91f838cb61661e515f321111c900a22023411a5a98101da73f49e4ef1bd71c82"
+    },
+    "raw_extension/202606.request.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage013_cffex_root_source/raw_extension/202606.request.json",
+      "bytes": 572,
+      "sha256": "a1328a296c667c9776937bfc5264482f4d95225d99a1dc5bc1cb667f45d08321"
+    }
+  },
+  "created_at_utc": "2026-09-05T19:23:47.757794+00:00"
+}

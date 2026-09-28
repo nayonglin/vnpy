@@ -1,0 +1,170 @@
+{
+  "artifacts": {
+    "decision.json": {
+      "sha256": "6f21fbf74ef9abdb2b142d786cfd950411ec9e37726c9aff519e4a8b3cdb6ca8",
+      "size": 572
+    },
+    "effect_qualification.json": {
+      "sha256": "4a0986e57db777263d1de0ab63f13842db7d854770ab7fea7bc667f57058afd2",
+      "size": 867
+    },
+    "fold_audit.csv": {
+      "sha256": "ea9b797ab6b9c0c9c3c9d7d0fe15e66847fe51e2de0f307932161fe7dad95e0d",
+      "size": 5161
+    },
+    "input_audit.json": {
+      "sha256": "98d9266c2e184a6b263d9727632a714704f5c64f19882e4373ae467bfcec40ae",
+      "size": 3101
+    },
+    "model_manifest.json": {
+      "sha256": "3ea3eea1558ca95dfa516d0b2875066857c39c91957afd0f11d5f26fd7823779",
+      "size": 4263
+    },
+    "models/20240430_drawdown_improvement.ubj": {
+      "sha256": "0a162ea46b89e68cc54eea62fdf281d361fd476ef0957d31a719bb6d3887552d",
+      "size": 45456
+    },
+    "models/20240430_return_delta.ubj": {
+      "sha256": "118f5a82a42e7b2ef29365100c7df3aaf1cd2629fbc69ddb0d2340525dd10dfa",
+      "size": 45456
+    },
+    "models/20240531_drawdown_improvement.ubj": {
+      "sha256": "ac07ba14ad0c884bfb2564a15dc6473f7a139eb9a97b6e0d9fc4d1bf965014f0",
+      "size": 45456
+    },
+    "models/20240531_return_delta.ubj": {
+      "sha256": "e39245566b49fd7402bc8e2cb4ea03aa61481ea37e905ebd7063f7008fa903e1",
+      "size": 45456
+    },
+    "models/20240628_drawdown_improvement.ubj": {
+      "sha256": "2417a8717808133dc216d80d116fc63066db9dbc2e5a070b6d19c6dc6282034e",
+      "size": 45456
+    },
+    "models/20240628_return_delta.ubj": {
+      "sha256": "db5f7b9c7149644afd180023283ad21a045093c540d6c8d89bd0803108f0f55a",
+      "size": 45456
+    },
+    "models/20240731_drawdown_improvement.ubj": {
+      "sha256": "720a62d8e85563bb9e541567a14527ef146bf7d5f7386ab3e5b593425da42fb8",
+      "size": 45456
+    },
+    "models/20240731_return_delta.ubj": {
+      "sha256": "8cd147cbc837121df16fbd026d8ef2f129f6c009eee5c141d26721f9e26de36a",
+      "size": 45455
+    },
+    "models/20240830_drawdown_improvement.ubj": {
+      "sha256": "58a3d29b8f3970824ecb38de239fba43348639ebc985f0327c552a8deda62cdf",
+      "size": 45456
+    },
+    "models/20240830_return_delta.ubj": {
+      "sha256": "c87a1496b465b84638fc911c726b53e969563a03f96fa413a0c437082adccfa3",
+      "size": 45456
+    },
+    "models/20240930_drawdown_improvement.ubj": {
+      "sha256": "8d042f6efe9ed68370ea0668f33c4487b3b8680c75175e56ceb7ede838bd9682",
+      "size": 45456
+    },
+    "models/20240930_return_delta.ubj": {
+      "sha256": "2932347c51b7f72b32bc29c028a19e89b5a4b606bcb4eac88f30550690d84ad3",
+      "size": 45456
+    },
+    "models/20241031_drawdown_improvement.ubj": {
+      "sha256": "7c4984bf46861d89ec2bede0d7f5744e52200c4c39e85e55e228c04b19a179f9",
+      "size": 45456
+    },
+    "models/20241031_return_delta.ubj": {
+      "sha256": "e7b2019d0f1bfcc005ddb09d165383bf7bf9a51a89e4daf943e92538da7875bc",
+      "size": 45455
+    },
+    "models/20241129_drawdown_improvement.ubj": {
+      "sha256": "841b02227c79a42dd29e7f6ff2ea2693cac3f95022d52112c19f4ef3b631438d",
+      "size": 45456
+    },
+    "models/20241129_return_delta.ubj": {
+      "sha256": "b9a6d80bf9925b1b30ccdf7f080b75e93cfc44abb7672ecd3ee62f54af1ddf2a",
+      "size": 45455
+    },
+    "models/20241231_drawdown_improvement.ubj": {
+      "sha256": "39bc13c1cf0c5fc2e9fa5ac41d1935a929eb77059df9a8c98488da419887a5ae",
+      "size": 45456
+    },
+    "models/20241231_return_delta.ubj": {
+      "sha256": "586fab8dd5a98c13b88e1e68530c7242cccbbecc76f40411aa6ffb6d2abd7259",
+      "size": 45455
+    },
+    "models/20250127_drawdown_improvement.ubj": {
+      "sha256": "4d68a78c812dff2c8d8f20dfc47858ac9851f924917112798e73237cd406eca6",
+      "size": 45456
+    },
+    "models/20250127_return_delta.ubj": {
+      "sha256": "3c881440e656569228b7741fd1079de827212c921bc97e14f192b64ca77d0c31",
+      "size": 45455
+    },
+    "models/20250228_drawdown_improvement.ubj": {
+      "sha256": "1a28efebf3b8860af6077a6833913345251738001ed2319c2ddfc3483a8d0793",
+      "size": 45456
+    },
+    "models/20250228_return_delta.ubj": {
+      "sha256": "1d8e88ac5bc693e6b143f59bee3a09b6da70eb2ecdc32000a804cd02d6c73889",
+      "size": 45455
+    },
+    "models/20250331_drawdown_improvement.ubj": {
+      "sha256": "40caf0dfaadd70b538da2357ccd98fd9b0d98a462bb8d6561ce5735e02f858a2",
+      "size": 45456
+    },
+    "models/20250331_return_delta.ubj": {
+      "sha256": "486c9bdc2adb6ae86dd259d5e0d6a712565e195d6c62df41888286bfabf06f96",
+      "size": 45456
+    },
+    "models/20250430_drawdown_improvement.ubj": {
+      "sha256": "2d5a27df74ae77ba2a06277416de66d387132aa17668f77cf1fca62b801e5850",
+      "size": 45456
+    },
+    "models/20250430_return_delta.ubj": {
+      "sha256": "1128bee5274310209039e6e16ef2b2ef35047315db46e37bd9d0e92cd859d4b2",
+      "size": 45455
+    },
+    "models/20250530_drawdown_improvement.ubj": {
+      "sha256": "6f1d5efabd6f77c6cc029e60f75995c338fd41b835f7923ad79b81514595d79b",
+      "size": 45456
+    },
+    "models/20250530_return_delta.ubj": {
+      "sha256": "95222230e2291d6e88f4b968bb7b32e539d8aacbb44065d7d2250a1c243c47e4",
+      "size": 45456
+    },
+    "models/20250630_drawdown_improvement.ubj": {
+      "sha256": "84c7b17bc272037acea6e625486ef5e0c417a2ba57b89142cf910f462dc293a5",
+      "size": 45456
+    },
+    "models/20250630_return_delta.ubj": {
+      "sha256": "1bbeed6c50628a6588eb6092ec682b17028f9ee446c2d26cb4efee6486ad2f6f",
+      "size": 45456
+    },
+    "monthly_arm_selections.csv": {
+      "sha256": "46e5fe8cda67a23069bcbb5a85267fbba223a6b4b65302094f4256161933338b",
+      "size": 3631
+    },
+    "oos_predictions.csv": {
+      "sha256": "829128b31a73890489796a784f118c2b51d121f6cc89da6c0c133b49e6d6e566",
+      "size": 67904
+    },
+    "panel_audit.json": {
+      "sha256": "7373af0149955200e3fd69cab476c6aba2fb60d08be5fd4ae3289787559f5348",
+      "size": 251
+    },
+    "report.md": {
+      "sha256": "87524a9ae9b6b015199037b24fb83b63f7e0a2c40bbd5e0a8817c6e9c501220d",
+      "size": 2363
+    },
+    "run_receipt.json": {
+      "sha256": "a57bd8cd99366ed38bb0f0466c51e3d8bb83cd1baa75e769ef6f36d34ef5ca15",
+      "size": 11771
+    },
+    "technical_qualification.json": {
+      "sha256": "5e657752d7902243d36b093ad9b3cc47d239c0b83f88dbffd35e5ea43e7b807e",
+      "size": 836
+    }
+  },
+  "manifest_semantics": "all_bundle_files_except_this_manifest",
+  "stage": "Stage016"
+}

@@ -1,0 +1,313 @@
+{
+  "stage": "stage020_member_raw_probe",
+  "created_at_utc": "2026-09-05T21:07:30.295436+00:00",
+  "status": "bounded_probe_completed",
+  "decision": "inspect_carriers_before_any_rebuild",
+  "planned_request_count": 8,
+  "network_attempt_count": 5,
+  "readable_carrier_count": 2,
+  "failed_request_count": 3,
+  "skipped_request_count": 3,
+  "new_label_count": 0,
+  "new_fit_count": 0,
+  "new_prediction_count": 0,
+  "new_strategy_replay_count": 0,
+  "reviewer_started": false,
+  "full_history_coverage_verified": false,
+  "records": [
+    {
+      "id": "shfe_20200107",
+      "exchange": "SHFE",
+      "method": "GET",
+      "date": "20200107",
+      "contract": "rb2005",
+      "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/pm20200107.dat",
+      "status": "carrier_readable",
+      "started_at_utc": "2026-09-05T21:07:28.835271+00:00",
+      "body_truncated": false,
+      "http_status": 200,
+      "received_bytes": 434214,
+      "content_type": "application/json",
+      "inspection": {
+        "evidence_level": "readable_carrier_only",
+        "historical_publication_verified": false,
+        "historical_revision_verified": false,
+        "raw_rank_member_completeness_verified": false,
+        "row_count": 1126,
+        "expected_contract_present": true,
+        "declared_report_date": "20200107",
+        "field_names": [
+          "CJ1",
+          "CJ1_CHG",
+          "CJ2",
+          "CJ2_CHG",
+          "CJ3",
+          "CJ3_CHG",
+          "INSTRUMENTID",
+          "PARTICIPANTABBR1",
+          "PARTICIPANTABBR2",
+          "PARTICIPANTABBR3",
+          "PARTICIPANTID1",
+          "PARTICIPANTID2",
+          "PARTICIPANTID3",
+          "PRODUCTNAME",
+          "PRODUCTSORTNO",
+          "RANK"
+        ]
+      },
+      "completed_at_utc": "2026-09-05T21:07:29.185556+00:00",
+      "body_identity": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20200107.body",
+        "size": 434214,
+        "mtime_ns": 1788642449185443373,
+        "sha256": "a59a3b3f56564c57110bd4fa014527970c461ce4bd2b201e08aa2326e0f809a7"
+      }
+    },
+    {
+      "id": "shfe_20260828",
+      "exchange": "SHFE",
+      "method": "GET",
+      "date": "20260828",
+      "contract": null,
+      "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/pm20260828.dat",
+      "status": "carrier_readable",
+      "started_at_utc": "2026-09-05T21:07:29.204058+00:00",
+      "body_truncated": false,
+      "http_status": 200,
+      "received_bytes": 555591,
+      "content_type": "application/json",
+      "inspection": {
+        "evidence_level": "readable_carrier_only",
+        "historical_publication_verified": false,
+        "historical_revision_verified": false,
+        "raw_rank_member_completeness_verified": false,
+        "row_count": 1785,
+        "expected_contract_present": null,
+        "declared_report_date": "20260828",
+        "field_names": [
+          "CJ1",
+          "CJ1_CHG",
+          "CJ2",
+          "CJ2_CHG",
+          "CJ3",
+          "CJ3_CHG",
+          "INSTRUMENTID",
+          "PARTICIPANTABBR1",
+          "PARTICIPANTABBR2",
+          "PARTICIPANTABBR3",
+          "PARTICIPANTID1",
+          "PARTICIPANTID2",
+          "PARTICIPANTID3",
+          "PRODUCTNAME",
+          "RANK"
+        ]
+      },
+      "completed_at_utc": "2026-09-05T21:07:29.496381+00:00",
+      "body_identity": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20260828.body",
+        "size": 555591,
+        "mtime_ns": 1788642449496203487,
+        "sha256": "3e91e22bb799d2af455f49299931b5877082e6531704077f50abc268307c8a09"
+      }
+    },
+    {
+      "id": "czce_20200311",
+      "exchange": "CZCE",
+      "method": "GET",
+      "date": "20200311",
+      "contract": "CF005",
+      "url": "http://www.czce.com.cn/cn/DFSStaticFiles/Future/2020/20200311/FutureDataHolding.xls",
+      "status": "failed",
+      "started_at_utc": "2026-09-05T21:07:29.515707+00:00",
+      "body_truncated": false,
+      "http_status": 301,
+      "received_bytes": 0,
+      "content_type": "text/html",
+      "error": "RuntimeError:http_status:301",
+      "completed_at_utc": "2026-09-05T21:07:29.699545+00:00",
+      "body_identity": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/czce_20200311.body",
+        "size": 0,
+        "mtime_ns": 1788642449699070865,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "czce_20260828",
+      "exchange": "CZCE",
+      "method": "GET",
+      "date": "20260828",
+      "contract": null,
+      "url": "http://www.czce.com.cn/cn/DFSStaticFiles/Future/2026/20260828/FutureDataHolding.xlsx",
+      "status": "skipped_after_exchange_failure",
+      "recorded_at_utc": "2026-09-05T21:07:29.712027+00:00"
+    },
+    {
+      "id": "dce_20200108",
+      "exchange": "DCE",
+      "method": "POST",
+      "date": "20200108",
+      "contract": "jm2005",
+      "url": "http://www.dce.com.cn/dcereport/publicweb/dailystat/memberDealPosi/batchDownload",
+      "json": {
+        "tradeDate": "20200108",
+        "varietyId": "jm",
+        "contractId": "jm2005",
+        "tradeType": "1",
+        "lang": "zh"
+      },
+      "status": "failed",
+      "started_at_utc": "2026-09-05T21:07:29.714272+00:00",
+      "body_truncated": false,
+      "http_status": 412,
+      "received_bytes": 3217,
+      "content_type": "text/html; charset=utf-8",
+      "error": "RuntimeError:http_status:412",
+      "completed_at_utc": "2026-09-05T21:07:29.875111+00:00",
+      "body_identity": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/dce_20200108.body",
+        "size": 3217,
+        "mtime_ns": 1788642449874880639,
+        "sha256": "68eb0b9f816a613c9e2b45eb1b5695fc84a125766dedb49027f1cdbd966a7633"
+      }
+    },
+    {
+      "id": "gfex_20230822_1",
+      "exchange": "GFEX",
+      "method": "POST",
+      "date": "20230822",
+      "contract": "si2310",
+      "url": "http://www.gfex.com.cn/u/interfacesWebTiMemberDealPosiQuotes/loadList",
+      "data": {
+        "trade_date": "20230822",
+        "trade_type": "0",
+        "variety": "si",
+        "contract_id": "si2310",
+        "data_type": "1"
+      },
+      "status": "failed",
+      "started_at_utc": "2026-09-05T21:07:29.916036+00:00",
+      "body_truncated": false,
+      "http_status": 200,
+      "received_bytes": 29182,
+      "content_type": "text/html",
+      "error": "JSONDecodeError:Expecting value: line 1 column 1 (char 0)",
+      "completed_at_utc": "2026-09-05T21:07:30.194761+00:00",
+      "body_identity": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/gfex_20230822_1.body",
+        "size": 29182,
+        "mtime_ns": 1788642450194718400,
+        "sha256": "a25a6742f3de7f62648855154da15770153327c607b56bac10ced527ce18fe8f"
+      }
+    },
+    {
+      "id": "gfex_20230822_2",
+      "exchange": "GFEX",
+      "method": "POST",
+      "date": "20230822",
+      "contract": "si2310",
+      "url": "http://www.gfex.com.cn/u/interfacesWebTiMemberDealPosiQuotes/loadList",
+      "data": {
+        "trade_date": "20230822",
+        "trade_type": "0",
+        "variety": "si",
+        "contract_id": "si2310",
+        "data_type": "2"
+      },
+      "status": "skipped_after_exchange_failure",
+      "recorded_at_utc": "2026-09-05T21:07:30.283352+00:00"
+    },
+    {
+      "id": "gfex_20230822_3",
+      "exchange": "GFEX",
+      "method": "POST",
+      "date": "20230822",
+      "contract": "si2310",
+      "url": "http://www.gfex.com.cn/u/interfacesWebTiMemberDealPosiQuotes/loadList",
+      "data": {
+        "trade_date": "20230822",
+        "trade_type": "0",
+        "variety": "si",
+        "contract_id": "si2310",
+        "data_type": "3"
+      },
+      "status": "skipped_after_exchange_failure",
+      "recorded_at_utc": "2026-09-05T21:07:30.283956+00:00"
+    }
+  ],
+  "source_count": 9,
+  "outputs": {
+    "czce_20200311.body": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/czce_20200311.body",
+      "size": 0,
+      "mtime_ns": 1788642449699070865,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "czce_20200311.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/czce_20200311.json",
+      "size": 827,
+      "mtime_ns": 1788642449709453010,
+      "sha256": "d77f043e37987542c1b07612062f88c7e5b42cbd4f0bb5a7733aa6eb5963e4f4"
+    },
+    "dce_20200108.body": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/dce_20200108.body",
+      "size": 3217,
+      "mtime_ns": 1788642449874880639,
+      "sha256": "68eb0b9f816a613c9e2b45eb1b5695fc84a125766dedb49027f1cdbd966a7633"
+    },
+    "dce_20200108.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/dce_20200108.json",
+      "size": 980,
+      "mtime_ns": 1788642449913315500,
+      "sha256": "f0ed27123ba0c95a5ed4c65a6ae020ff77a98e74d343e3e1d06305780b8486e7"
+    },
+    "gfex_20230822_1.body": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/gfex_20230822_1.body",
+      "size": 29182,
+      "mtime_ns": 1788642450194718400,
+      "sha256": "a25a6742f3de7f62648855154da15770153327c607b56bac10ced527ce18fe8f"
+    },
+    "gfex_20230822_1.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/gfex_20230822_1.json",
+      "size": 997,
+      "mtime_ns": 1788642450282667621,
+      "sha256": "81a0069b2e0e58b0d3b3de9ccfe0ba0ec93b364a44ff8b4fceb93e567ad46369"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/input_manifest.json",
+      "size": 4091,
+      "mtime_ns": 1788642448835219784,
+      "sha256": "7c5143d094ae91872619402af9f77c97463e59802e3502d72d4a741a52862ea7"
+    },
+    "journal.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/journal.json",
+      "size": 7341,
+      "mtime_ns": 1788642450284580220,
+      "sha256": "20afbeb9dcad04fcb13139127206376ed4ebf955671ea103bf32ecd0d84c09fe"
+    },
+    "shfe_20200107.body": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20200107.body",
+      "size": 434214,
+      "mtime_ns": 1788642449185443373,
+      "sha256": "a59a3b3f56564c57110bd4fa014527970c461ce4bd2b201e08aa2326e0f809a7"
+    },
+    "shfe_20200107.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20200107.json",
+      "size": 1458,
+      "mtime_ns": 1788642449200621412,
+      "sha256": "a18ed720d1774a161fccfaa7c6e5234c835b4208c7227021e6e40fbfe7cb103c"
+    },
+    "shfe_20260828.body": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20260828.body",
+      "size": 555591,
+      "mtime_ns": 1788642449496203487,
+      "sha256": "3e91e22bb799d2af455f49299931b5877082e6531704077f50abc268307c8a09"
+    },
+    "shfe_20260828.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage020_member_raw_probe/shfe_20260828.json",
+      "size": 1431,
+      "mtime_ns": 1788642449512742025,
+      "sha256": "9b917e591651b1e280b6e1ed2373e73073c49cb47fab6cfbbbc6c0ee99876f89"
+    }
+  }
+}

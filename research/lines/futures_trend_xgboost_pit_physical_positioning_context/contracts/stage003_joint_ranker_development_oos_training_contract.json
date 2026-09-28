@@ -1,0 +1,295 @@
+{
+  "authorization": {
+    "bound_file_keys": [
+      "stage003_original_preregistration",
+      "stage003_remediation_preregistration",
+      "stage003_initial_review",
+      "stage003_initial_review_decision",
+      "stage003_rereview",
+      "stage003_rereview_decision",
+      "stage003_probability_gap_review",
+      "stage003_probability_gap_review_decision",
+      "stage003_probability_remediation_preregistration",
+      "stage003_probability_remediation_rereview",
+      "stage003_probability_remediation_rereview_decision",
+      "stage003_full_split_sha_gap_review",
+      "stage003_full_split_sha_gap_review_decision",
+      "stage003_full_split_sha_remediation_preregistration",
+      "stage003_full_split_sha_remediation_rereview",
+      "stage003_full_split_sha_remediation_rereview_decision",
+      "stage003_final_implementation_block_review",
+      "stage003_final_implementation_block_review_decision",
+      "stage003_final_implementation_remediation_preregistration",
+      "training_contract",
+      "runner",
+      "test_contract",
+      "test_state_machine",
+      "test_adversarial",
+      "runtime_identity",
+      "final_implementation_review",
+      "final_implementation_review_decision"
+    ],
+    "bound_file_paths": {
+      "final_implementation_review": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_rereview.md",
+      "final_implementation_review_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_rereview_decision.json",
+      "runner": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/tools/stage003_joint_ranker_development_oos.py",
+      "runtime_identity": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage006_dual_ranker_development_oos/runtime_identity.json",
+      "stage003_initial_review": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_independent_review.md",
+      "stage003_initial_review_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_review_decision.json",
+      "stage003_original_preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0318_stage003_joint_ranker_development_oos_preregistration.md",
+      "stage003_remediation_preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0331_stage003_prerun_block_remediation_preregistration.md",
+      "stage003_rereview": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_rereview.md",
+      "stage003_rereview_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_rereview_decision.json",
+      "stage003_probability_gap_review": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_contract_gap_review.md",
+      "stage003_probability_gap_review_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_contract_gap_review_decision.json",
+      "stage003_probability_remediation_preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0359_stage003_raw_probability_input_remediation_preregistration.md",
+      "stage003_probability_remediation_rereview": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_remediation_rereview.md",
+      "stage003_probability_remediation_rereview_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_remediation_rereview_decision.json",
+      "stage003_full_split_sha_gap_review": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_contract_gap_review.md",
+      "stage003_full_split_sha_gap_review_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_contract_gap_review_decision.json",
+      "stage003_full_split_sha_remediation_preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0416_stage003_full_split_sha_identity_remediation_preregistration.md",
+      "stage003_full_split_sha_remediation_rereview": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_remediation_rereview.md",
+      "stage003_full_split_sha_remediation_rereview_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_remediation_rereview_decision.json",
+      "stage003_final_implementation_block_review": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_review.md",
+      "stage003_final_implementation_block_review_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_review_decision.json",
+      "stage003_final_implementation_remediation_preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0503_stage003_final_implementation_block_remediation_preregistration.md",
+      "test_adversarial": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/tests/test_stage003_joint_ranker_adversarial.py",
+      "test_contract": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/tests/test_stage003_joint_ranker_contract.py",
+      "test_state_machine": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/tests/test_stage003_joint_ranker_state_machine.py",
+      "training_contract": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/contracts/stage003_joint_ranker_development_oos_training_contract.json"
+    },
+    "consumption_receipt_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/authorizations/stage003_joint_ranker_development_oos_authorization.consumed.json",
+    "decision": "AUTHORIZE_ONE_STAGE003_DEVELOPMENT_OOS_RUN",
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/authorizations/stage003_joint_ranker_development_oos_authorization.json",
+    "result_dir": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/artifacts/stage003_joint_ranker_development_oos",
+    "scope": "one_new_stage003_development_oos_run_only",
+    "temp_result_dir": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/artifacts/stage003_joint_ranker_development_oos.tmp"
+  },
+  "decisions": {
+    "effect_fail": "stage003_joint_ranker_development_oos_fail_stop_no_true_engine_no_holdout",
+    "effect_pass": "stage003_joint_ranker_development_oos_pass_allow_true_engine_ac_preregistration_only",
+    "technical_fail": "stage003_contract_or_pit_invalid_stop_no_effect_claim"
+  },
+  "effect_gate_keys": [
+    "replacement_count_and_year_coverage",
+    "replacement_product_diversity",
+    "total_return_delta_positive",
+    "total_drawdown_improvement_positive",
+    "leave_best_out_return_delta_positive",
+    "leave_best_out_drawdown_improvement_positive",
+    "each_year_return_delta_nonnegative",
+    "each_year_drawdown_improvement_nonnegative",
+    "joint_positive_replacement_rate",
+    "median_replacement_return_delta_nonnegative",
+    "median_replacement_drawdown_improvement_nonnegative"
+  ],
+  "effect_thresholds": {
+    "joint_positive_rate": 0.6,
+    "minimum_replacement_months": 5,
+    "minimum_replacement_products": 3,
+    "required_years": [
+      2023,
+      2024
+    ]
+  },
+  "folds": {
+    "active_fold_count": 13,
+    "active_test_dates": [
+      "2023-07-31",
+      "2023-08-31",
+      "2023-09-28",
+      "2023-10-31",
+      "2023-11-30",
+      "2024-01-31",
+      "2024-03-29",
+      "2024-04-30",
+      "2024-06-28",
+      "2024-07-31",
+      "2024-08-30",
+      "2024-09-30",
+      "2024-11-29"
+    ],
+    "fallback_month_count": 4,
+    "fallback_test_dates": [
+      "2023-12-29",
+      "2024-02-29",
+      "2024-05-31",
+      "2024-10-31"
+    ],
+    "initial_training_qids": 13,
+    "initial_training_rows": 62,
+    "test_rows": [
+      7,
+      6,
+      7,
+      6,
+      6,
+      6,
+      7,
+      7,
+      8,
+      8,
+      8,
+      7,
+      8
+    ],
+    "training_qids": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "training_rows": [
+      62,
+      69,
+      75,
+      82,
+      88,
+      94,
+      100,
+      107,
+      114,
+      122,
+      130,
+      138,
+      145
+    ]
+  },
+  "input_sha256": {
+    "development_jobs": "7ee2062e9700d1c1e8800f42ce8dd0ba75470e4953e30c099c37741aed39b8f3",
+    "development_labels_aggregate": "b4e5f7f638298ff1bd572b378ae096345273488df67c5b5386ba776deec3798d",
+    "full_feature_split": "a87c73e94eb2afae47ffb106ec60d2720ff881fcecda496aa81af5895165c2b1",
+    "reconciliation_aggregate": "f964992306202c2589a6ff20962aa10144beca58fa393a93dc650b543073b75c",
+    "runtime_identity": "f0a469f5a8387ba8171be5b3e2c8c6b0d9fc0e8de7f5b0914e08ef4f327fddbc",
+    "stage002_feature_panel": "12b1e6afc5b4411e0cbab9b9ea59a6137eefcd7358decd69d2c327cae1407547",
+    "stage002_manifest": "41cfef41f6e4555f4886c5ec71be92637a02250ce1a50ff7499c7b31cc8557ce",
+    "stage002_month_eligibility": "26ee18e1bf9268c2bef98ac6e5138cd35a75589327443bf911ab9eef9f019853",
+    "stage002_summary": "13b81dd8b0ee111a022568ceb5a4a76ea88f59e626623c2c305c34af2cc1cf7f",
+    "stage003_metadata_summary": "b44e21dc5070675b23c03a26973cc76f4ad8c93d79c6add7be4fd480cd945c0a",
+    "stage005_decision": "1cffbfcf0872de9c2a0256071de95ca4a750a72b74025865a1beb8b18fe8a111",
+    "stage005_manifest": "526f945c2e7523b78076331a2473a606f6f8ce775a0a8ac7850dcd593a31eedf",
+    "stage005_postrun_decision": "d35d46f90614e3c8a4c59510b05de845afedae5a1db8c8ca1a17913fad1fc6b0",
+    "stage005_postrun_review": "d1933474704dfa116bb88ca5c32465c686166f5541755081e559af9db5816d32"
+  },
+  "input_sha256_format": "^[0-9a-f]{64}$",
+  "input_projection": {
+    "feature_rows": 218,
+    "full_feature_split_allowed_columns": [
+      "eval_date",
+      "next_eval_date",
+      "product_vt_symbol",
+      "a_rank",
+      "split",
+      "pit_logistic_probability"
+    ],
+    "join_keys": [
+      "eval_date",
+      "product_vt_symbol",
+      "a_rank"
+    ],
+    "probability_delta_absolute_tolerance": 1e-12,
+    "probability_range": [
+      0.0,
+      1.0
+    ],
+    "right_only_source_keys_sha256": "b23dea181667fd436a1b9ab55b8e141b0e3fadd378610da3aa8e4e07b644aa41",
+    "right_only_source_rows": 156,
+    "raw_probability_allowed_uses": [
+      "lr_percentile",
+      "selector_tie_break",
+      "prediction_payload",
+      "effect_open_recomputation"
+    ],
+    "raw_probability_forbidden_uses": [
+      "xgboost_feature_matrix",
+      "qid",
+      "training_target",
+      "label_join",
+      "label_relevance",
+      "feature_usage_gate",
+      "derived_feature"
+    ],
+    "split_projection_rows": 374
+  },
+  "label_access": {
+    "aggregate_data_rows_parsed": 0,
+    "holdout_label_rows_read": 0,
+    "initial_job_label_rows": 62,
+    "other_development_main_label_rows_read": 0,
+    "test_job_label_rows": 91,
+    "unique_job_label_rows": 153
+  },
+  "model": {
+    "class": "xgboost.XGBRanker",
+    "fit_count": 26,
+    "params": {
+      "colsample_bytree": 1,
+      "eval_metric": "ndcg",
+      "gamma": 0,
+      "lambdarank_normalization": true,
+      "lambdarank_num_pair_per_sample": 1,
+      "lambdarank_pair_method": "mean",
+      "lambdarank_score_normalization": true,
+      "learning_rate": 0.03,
+      "max_depth": 2,
+      "min_child_weight": 1,
+      "n_estimators": 32,
+      "n_jobs": 1,
+      "ndcg_exp_gain": false,
+      "objective": "rank:ndcg",
+      "random_state": 42,
+      "reg_alpha": 0,
+      "reg_lambda": 5,
+      "subsample": 1,
+      "tree_method": "hist"
+    }
+  },
+  "model_features": [
+    "formal_probability_delta_vs_rank10",
+    "basis_dom_rate_delta_vs_rank10",
+    "basis_near_rate_delta_vs_rank10",
+    "member_net_position_ratio_delta_vs_rank10",
+    "member_net_position_change_ratio_delta_vs_rank10",
+    "member_turnover_pressure_ratio_delta_vs_rank10"
+  ],
+  "receipt_exact_keys": [
+    "decision",
+    "scope",
+    "nonce",
+    "authorization_path",
+    "authorization_sha256",
+    "bound_files_identity_sha256",
+    "result_dir"
+  ],
+  "seal": {
+    "active_exact_keys": [
+      "seal_type",
+      "eval_date",
+      "label_read_count_before_seal",
+      "primary_model_sha256",
+      "repeat_model_sha256",
+      "fold_input_sha256",
+      "prediction_sha256",
+      "selection_sha256"
+    ],
+    "fallback_exact_keys": [
+      "seal_type",
+      "eval_date",
+      "reason",
+      "arm_a",
+      "arm_b",
+      "arm_c",
+      "label_read_count_before_seal",
+      "label_read_count_after_seal"
+    ]
+  }
+}

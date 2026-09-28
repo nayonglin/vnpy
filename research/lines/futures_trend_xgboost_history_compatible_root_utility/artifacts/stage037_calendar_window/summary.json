@@ -1,0 +1,65 @@
+{
+  "A_calendar_exact": true,
+  "all_observations_qualified": true,
+  "candidate_contract_count": 120,
+  "daily_aggregate_status_counts": {
+    "positive_volume": 12149,
+    "untraded_flat": 82,
+    "untraded_nonflat": 20
+  },
+  "daily_comparison_count": 12251,
+  "daily_compatible_count": 12231,
+  "daily_guard_count": 20,
+  "daily_mismatch_counts": {
+    "A_reference_present": 0,
+    "minute_A_match": 20,
+    "minute_source_match": 20,
+    "source_A_match": 0
+  },
+  "file_contract_sha256": "d29fe6869298c90c86f802e8697e643dd625de0de0bfefb0ce9a0baa4861ff5e",
+  "gate_counts": {
+    "expected_open_matches": 1002,
+    "next_daily_compatible": 1002,
+    "observation_daily_compatible": 1002,
+    "required_guard_day": 0,
+    "window_clock_complete": 1002
+  },
+  "model_fit_predict_count": 0,
+  "new_download_count": 0,
+  "new_replay_count": 0,
+  "new_utility_label_count": 0,
+  "observation_count": 1002,
+  "outputs": {
+    "contracts": {
+      "mtime_ns": 1788658613838675386,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage037_calendar_window/contracts.csv",
+      "sha256": "82dd275d4473c3d31c7c757167687c1275f4ed45edd90c1c78164d4134a4bc5c",
+      "size": 3334
+    },
+    "daily_comparison": {
+      "mtime_ns": 1788658613834231572,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage037_calendar_window/daily_comparison.csv",
+      "sha256": "76269700d4e1eb380119b776865fe1dc73a7fe171bf808bc6d87919dfe1a6c72",
+      "size": 2336428
+    },
+    "windows": {
+      "mtime_ns": 1788658613743802477,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage037_calendar_window/windows.csv",
+      "sha256": "118ee743a11295a1c5713ef163aedda9e25f10b1d7251c4b7155f962d00b2fad",
+      "size": 252607
+    }
+  },
+  "proxy_status_counts": {
+    "proxy_supported": 1002
+  },
+  "reviewer_started": false,
+  "source_conditional_coverage_inherited": false,
+  "source_global_coverage_complete": false,
+  "source_manifest_sha256": "4b6655ec696699345475b8506f35192d586cfb9b0bd149a51c35f9f5915da0ec",
+  "source_minute_rows": 3965415,
+  "stage": "stage037_calendar_window",
+  "status": "source_proxy_qualified_not_execution",
+  "status_counts": {
+    "source_proxy_qualified_not_execution": 1002
+  }
+}

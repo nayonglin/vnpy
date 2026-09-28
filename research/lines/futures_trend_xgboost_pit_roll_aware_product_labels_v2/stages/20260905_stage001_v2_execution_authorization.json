@@ -1,0 +1,45 @@
+{
+  "authorization_basis": "用户已明确授权，并声明后续研究操作默认授权，不再逐次询问",
+  "authorized": true,
+  "authorized_at": "2026-09-05T00:51:14+08:00",
+  "authorized_scope": "Stage001 V2唯一一次无价格值、无标签、无训练的换月路径资格执行",
+  "forbidden_scope": [
+    "close_value_read",
+    "return_calculation",
+    "label_value_read",
+    "model_fit_or_predict",
+    "strategy_backtest",
+    "holdout_read",
+    "ctp_connection",
+    "order_api",
+    "production_write"
+  ],
+  "implementation_sha256": {
+    "core": "d51ee5c5fb9045b98afb2878ef1d948bd008cdb4c49bbd081b1cf37482711fc3",
+    "original_runner": "1d67a9899344a739a7c39e89190a8ca0499dbcda6413394eabde0c9eb87a8991",
+    "plan": "fb38696b8eee3c44cabc482993aea569476874318a072987b24d980c1aa180f4",
+    "preregistration": "518d7b7941e8315d47aefb16e16dfd81c0b740f0ae458676cc028603edf86307",
+    "v2_runner": "d9440071f4035286197a37d4f0aa1bac8e13f6a764a571a74f89e0be8632a238",
+    "v2_runner_tests": "d15926246d49ce9c315dc6c0d288cade491f34bcdfe244d5abe9472cabd1c299"
+  },
+  "input_sha256": {
+    "accepted_label_plan": "426c40e5f0bc1a819e291abcc66c7f35eae6b9c5015634ddf8c42878c6afbc42",
+    "model_features": "1e4ebb1942dc066eb1164dc82e7e0412fe10d433e57aa5b8b8ab3b71822344ac",
+    "rejected_label_plan": "5fab12846f2aeef92abd21c537dd150ff3aa9b9345fe673b279b6e40a28562b6",
+    "source_bars": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+    "source_manifest": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+    "source_mapping": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+    "v1_manifest": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a"
+  },
+  "line_id": "futures_trend_xgboost_pit_roll_aware_product_labels_v2",
+  "nonce": "80d49c0e-a7c0-4c07-8c9e-b3e9d3d21b7f",
+  "regression_tests_passed": 74,
+  "runtime": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "platform": "macOS-15.7.4-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "stage": "stage001_v2_roll_aware_label_plan_qualification"
+}

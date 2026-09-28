@@ -1,0 +1,87 @@
+{
+  "authorized": true,
+  "authorization_scope": "single_stage002_development_oos",
+  "allowed_run_count": 1,
+  "authorized_at_cst": "2026-09-04T16:05:19+0800",
+  "authorized_by": "user",
+  "authorization_basis": "用户要求继续XGBoost研究并授权数据源重建；Stage001边界契约已通过，按冻结预注册执行唯一一次development OOS。",
+  "authorization_nonce": "33e91c86-9046-44a5-8f21-235f3e4af5a4",
+  "bindings": {
+    "stage002_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/stages/20260904_1554_stage002_base_margin_development_oos_preregistration.md",
+      "sha256": "aa69099461c914d13653edd9f1ac1bc5a4d1f5e681e0f3b50e42bd17ea8c1b3d"
+    },
+    "stage002_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/tools/stage002_base_margin_development_oos.py",
+      "sha256": "782d76b8620db93a5a760ba9e838333e237439b2b99ae0b65989115f99a8a1c4"
+    },
+    "stage002_tests": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/tests/test_stage002_base_margin_development_oos.py",
+      "sha256": "abd2736167bf1606924c7aeed1617b2b14720744572fa9105280b9e9c1580088"
+    },
+    "stage001_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/tools/stage001_model_ranked_contract.py",
+      "sha256": "b05799b8f0c8001f8719f1de7ef0790e1806913d7467a8404a8ecbd306de38f8"
+    },
+    "stage001_summary": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/artifacts/stage001_model_ranked_contract/summary.json",
+      "sha256": "63c63d729d693ac7cecb44ff3cefac2100c10dea7a2a4a13a2b3d550fffa0aa1"
+    },
+    "stage001_manifest": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/artifacts/stage001_model_ranked_contract/artifact_manifest.json",
+      "sha256": "9d24f6e62ecf315af8dd3b08a7f0d444705fbfcba2752581f0942e08ad498c2d"
+    },
+    "stage001_fold_plan": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/artifacts/stage001_model_ranked_contract/fold_plan.csv",
+      "sha256": "a14fbde27943e1c73eaa8c1e2ea14834e212616e82fe024ba193697369a25e6c"
+    },
+    "causal_formal_features": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_residual/tools/causal_formal_features.py",
+      "sha256": "930c81fca2de049983c75c7470873e781b086a208993f9817fb04fd3649ef15f"
+    },
+    "predecessor_stage001_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_residual/tools/stage001_label_free_contract.py",
+      "sha256": "6f315ecb5ca63f0fbf83495119226c65da397c2a5dbbf7ef8cefa80a9c34c2bd"
+    },
+    "formal_current": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json",
+      "sha256": "f17c0f6bfeea4a08ec7c22a1eb63d4b51e4cfb2472f1ce07fac8ce2cc570b219"
+    },
+    "formal_release_manifest": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/manifest.json",
+      "sha256": "d62e58d01284e30b28054387592604862ffeff6e55a13c63192793e95bc55c21"
+    },
+    "formal_lr_model": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4"
+    },
+    "formal_inference_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
+      "sha256": "ca15504e946e39fe6c5b0180e5bdf07bf38749973ceedd2085ba77480e3c9edc"
+    },
+    "formal_pool_policy": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/examples/portfolio_backtesting/qmt_roll_official_ai_pool_policy.py",
+      "sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5"
+    },
+    "formal_stage182_summary": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/ai/stage182/summary.json",
+      "sha256": "e119fcdaddb16d173bf8737edd39e3241dc2b277ea96f908d6eeb71bf9bdd5c3"
+    },
+    "formal_latest_pool": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/ai/stage182/latest_pool.csv",
+      "sha256": "9c28774c5f7d02de837a30408c93cd5ba9aa925e03280b1d9b294fbaaf70a814"
+    },
+    "stage183_position_changes": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+      "sha256": "17c81f2dbb30f836b544161c3fc4d4bd6415151d89b8f8937378739e868c21aa"
+    },
+    "stage183_entry_snapshots": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+      "sha256": "f838186527b1453923635bda31ec8e1656a0bdacfec633a6b85f2cda8e3b26a0"
+    },
+    "historical_feature_panel": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_score_attribution/artifacts/stage001_20260731/training_samples.csv",
+      "sha256": "92f36b6647cae9d8db04b0a1351749f9103a1988799dbb8dff0ad1d350d1d431"
+    }
+  }
+}

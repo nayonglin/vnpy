@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "stage": "stage002_event_feature_qualification",
+  "line_id": "futures_trend_xgboost_formal_signal_marginal_utility_v4",
+  "input_file_count": 1458,
+  "input_logical_key_sha256": "615d7ea931c09fbf03abc842c8f563690e65e9893464aabbdea548275656502b",
+  "file_contract_sha256": "01d6d8aac93bc97f564a4905e1d73cafd0b6eaaf698aa52e5e4e1ccb83a99ffe",
+  "runtime_contract_sha256": "04396eb74da1ed4812b0eabcc94e28cd2a64f90a1839d08ace6630faf2149e1e",
+  "execution_authorized": true
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "期货回测复盘 HTML"
+  short_description: "用冻结回测产物生成统一多周期逐笔复盘页面并完成数据身份校验。"
+  default_prompt: "Use $futures-recap-html to generate the current completed futures backtest as the repository's canonical multiscale recap HTML."
+policy:
+  allow_implicit_invocation: true

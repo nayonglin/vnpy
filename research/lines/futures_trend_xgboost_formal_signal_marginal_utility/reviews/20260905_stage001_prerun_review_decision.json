@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "eleventh_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a0709c-a017-7311-b489-0e2423170a6e",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "reviewed_at": "2026-09-05T16:17:51+08:00",
+  "decision": "ALLOW_STAGE001_UNIQUE_RUN",
+  "allowed": true,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "findings": [],
+  "closure": {
+    "R10-P2-001": "closed",
+    "R9-P2-001": "closed",
+    "R9-P3-001": "closed",
+    "R9-P3-002": "closed",
+    "R7-P2-002": "closed",
+    "R5-P2-001": "closed"
+  },
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false,
+    "labels_training_prediction_backtest_permitted": false,
+    "production_operations_permitted": false
+  }
+}

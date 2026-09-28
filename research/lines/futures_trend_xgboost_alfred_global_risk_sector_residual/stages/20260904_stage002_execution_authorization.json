@@ -1,0 +1,94 @@
+{
+  "authorized": true,
+  "authorization_scope": "single_stage002_alfred_development_oos",
+  "allowed_run_count": 1,
+  "authorization_nonce": "6a379360-9efb-49ea-a891-87808e9cf7e9",
+  "issued_at": "2026-09-04T22:26:24+08:00",
+  "authorization_basis": "User explicitly granted default authorization for subsequent research operations; production, CTP, and order actions remain excluded.",
+  "bindings": {
+    "causal_formal_features": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_residual/tools/causal_formal_features.py",
+      "sha256": "930c81fca2de049983c75c7470873e781b086a208993f9817fb04fd3649ef15f"
+    },
+    "formal_current": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json",
+      "sha256": "f17c0f6bfeea4a08ec7c22a1eb63d4b51e4cfb2472f1ce07fac8ce2cc570b219"
+    },
+    "formal_feature_contract": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/artifacts/stage001_model_ranked_contract/feature_contract.json",
+      "sha256": "64909eeca4d84348c9adea29062430d8010b0e194ab87edd37169752facfb182"
+    },
+    "formal_lr_model": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4"
+    },
+    "formal_qmt_universe": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/examples/portfolio_backtesting/qmt_universe.py",
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    "formal_release_manifest": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/manifest.json",
+      "sha256": "d62e58d01284e30b28054387592604862ffeff6e55a13c63192793e95bc55c21"
+    },
+    "formal_stage182_summary": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/payload/ai/stage182/summary.json",
+      "sha256": "e119fcdaddb16d173bf8737edd39e3241dc2b277ea96f908d6eeb71bf9bdd5c3"
+    },
+    "historical_feature_panel": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_score_attribution/artifacts/stage001_20260731/training_samples.csv",
+      "sha256": "92f36b6647cae9d8db04b0a1351749f9103a1988799dbb8dff0ad1d350d1d431"
+    },
+    "model_ranked_stage001_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_model_ranked/tools/stage001_model_ranked_contract.py",
+      "sha256": "b05799b8f0c8001f8719f1de7ef0790e1806913d7467a8404a8ecbd306de38f8"
+    },
+    "predecessor_stage001_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_lr_xgboost_base_margin_residual/tools/stage001_label_free_contract.py",
+      "sha256": "6f315ecb5ca63f0fbf83495119226c65da397c2a5dbbf7ef8cefa80a9c34c2bd"
+    },
+    "stage001_feature_contract": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/artifacts/stage001_alfred_global_risk_contract/feature_contract.json",
+      "sha256": "a13e5252f0cc7c4d8fc1d28ec288675d12f35b1a701a57f42be4cf7d99bfdfc7"
+    },
+    "stage001_fold_plan": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/artifacts/stage001_alfred_global_risk_contract/copied_fold_plan.csv",
+      "sha256": "a14fbde27943e1c73eaa8c1e2ea14834e212616e82fe024ba193697369a25e6c"
+    },
+    "stage001_interaction_panel": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/artifacts/stage001_alfred_global_risk_contract/interaction_panel.csv",
+      "sha256": "3837f272d24e573431b0be145d49b5b71b4384fc930e5ca05d28213be7a617ee"
+    },
+    "stage001_manifest": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/artifacts/stage001_alfred_global_risk_contract/artifact_manifest.json",
+      "sha256": "94161cb2e7a300c9a60e770f2a5cbc7426d26e734b461d7ded541a8a73eb447f"
+    },
+    "stage001_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/tools/stage001_alfred_global_risk_contract.py",
+      "sha256": "4083cdfe4dc9d54dd5180f509c4d180255a097a55b03432de940db42228c8ce1"
+    },
+    "stage001_summary": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/artifacts/stage001_alfred_global_risk_contract/summary.json",
+      "sha256": "64c8b9903750e3600dfae0fabec74f6b611656a0b271321521984f0fb7154619"
+    },
+    "stage002_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/stages/20260904_2124_stage002_alfred_global_risk_development_oos_preregistration.md",
+      "sha256": "5f9b9a438ae7265f7aac03eba3ad96bfd395262351d417bc2940557964e627c5"
+    },
+    "stage002_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/tools/stage002_alfred_global_risk_development_oos.py",
+      "sha256": "737bf783b3cb2cacf280cd20241f090cbe0e2aae350325a3a5c9ba50059cc232"
+    },
+    "stage002_tests": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_alfred_global_risk_sector_residual/tests/test_stage002_alfred_global_risk_development_oos.py",
+      "sha256": "bf37bb6b44574171eb3f611146ffc356dcf17bb64622a7bc9a32d4c5258eaafb"
+    },
+    "stage183_entry_snapshots": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+      "sha256": "f838186527b1453923635bda31ec8e1656a0bdacfec633a6b85f2cda8e3b26a0"
+    },
+    "stage183_position_changes": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+      "sha256": "17c81f2dbb30f836b544161c3fc4d4bd6415151d89b8f8937378739e868c21aa"
+    }
+  }
+}

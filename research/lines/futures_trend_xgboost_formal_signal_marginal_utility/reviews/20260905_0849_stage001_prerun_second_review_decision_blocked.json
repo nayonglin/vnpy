@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "second_round_independent_readonly_reviewer",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 2,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "finding": "Subprocess zero counters are bypassable and the worker runs git before the guard.",
+      "action": "Remove worker subprocesses, deny descendant exec and guard every Python process entry point."
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "finding": "The parent imports production modules before the durable execution state and outside OS enforcement.",
+      "action": "Use import-free discovery or consume the authorization before a sandboxed preflight."
+    },
+    {
+      "id": "P2-1",
+      "severity": "P2",
+      "finding": "Worker receipts are not fully cross-validated and retain paths removed after publication.",
+      "action": "Freeze the receipt schema, verify every identity against actual files and publish portable identities."
+    },
+    {
+      "id": "P2-2",
+      "severity": "P2",
+      "finding": "Incomplete durable-state staging cannot recover to a technical failure.",
+      "action": "Recover claim-only, truncated-event and pre-rename staging states without replay."
+    }
+  ],
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

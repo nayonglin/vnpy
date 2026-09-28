@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "independent_readonly_reviewer",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 3,
+    "P2": 3,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "finding": "PIT static/dynamic and rank10 contracts are not hard gates.",
+      "action": "Require the unique static boundary, exact dynamic calendar, ten model rows and trailing fixed fu per month."
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "finding": "Event PIT chronology and frozen decision interval are not enforced.",
+      "action": "Require ai_eval_date before decision_date and decision_date inside the frozen interval."
+    },
+    {
+      "id": "P1-3",
+      "severity": "P1",
+      "finding": "Sensitive-operation counters and network/write boundaries can report false zeroes.",
+      "action": "Add process-level enforcement, executable auditing and bypass regression tests."
+    },
+    {
+      "id": "P2-1",
+      "severity": "P2",
+      "finding": "The expected 1409 logical inputs and item-level identities are not frozen.",
+      "action": "Bind canonical paths into the digest and compare every path, size, mtime and SHA before and after."
+    },
+    {
+      "id": "P2-2",
+      "severity": "P2",
+      "finding": "Worker isolation receipts are under-validated.",
+      "action": "Validate every runtime, module, source-contract and replay-count field with drift tests."
+    },
+    {
+      "id": "P2-3",
+      "severity": "P2",
+      "finding": "Claim/event/publish ordering has unrecoverable crash windows.",
+      "action": "Use a recoverable durable state transition and publish before removing attempts, with fault tests."
+    }
+  ],
+  "constraints": {
+    "read_only": true,
+    "files_modified": false,
+    "tests_or_replays_run": false,
+    "authorization_created": false
+  }
+}

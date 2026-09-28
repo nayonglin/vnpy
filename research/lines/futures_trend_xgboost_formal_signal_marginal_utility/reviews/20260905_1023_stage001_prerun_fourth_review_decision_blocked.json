@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "fourth_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a06f50-b535-7a32-95ea-6e2019e812ab",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 3,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "R4-P1-001",
+      "severity": "P1",
+      "finding": "Worker startup is neither isolated from Python startup injection nor attested as actually sandboxed before capability consumption.",
+      "action": "Use an isolated minimal bootstrap, environment allowlist and a non-forgeable parent-to-worker sandbox launch proof before importing the runner body."
+    },
+    {
+      "id": "R4-P1-002",
+      "severity": "P1",
+      "finding": "Success reconciliation accepts invalid or conflicting final directories and permits terminal-state reversal.",
+      "action": "Validate the complete success bundle and claim binding, reject dual terminals and enforce irreversible terminal transitions."
+    },
+    {
+      "id": "R4-P2-001",
+      "severity": "P2",
+      "finding": "Failure recovery can downgrade authenticated nonzero sensitive counters to stale event values.",
+      "action": "Authenticate receipt identity separately and merge counters monotonically across durable evidence."
+    },
+    {
+      "id": "R4-P2-002",
+      "severity": "P2",
+      "finding": "Success validation does not bind the exact top-level evidence set, qualification semantics, authorization or published event frame.",
+      "action": "Freeze and verify the exact bundle schema and bind all top-level evidence to both workers, claim and authorization."
+    },
+    {
+      "id": "R4-P2-003",
+      "severity": "P2",
+      "finding": "Same-direction correlation conflates a genuine zero with unavailable correlation history.",
+      "action": "Track active and valid-correlation counts and fail closed when active positions exist without a computable correlation."
+    }
+  ],
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

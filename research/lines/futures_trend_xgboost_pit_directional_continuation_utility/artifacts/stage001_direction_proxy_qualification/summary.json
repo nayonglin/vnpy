@@ -1,0 +1,491 @@
+{
+  "active_development_qid_count": 1043,
+  "contract": {
+    "expected_development_products": 62,
+    "expected_development_qids": 1046,
+    "expected_development_rows": 55226,
+    "expected_explicit_cost_products": 17,
+    "expected_fallback_cost_products": 46,
+    "expected_fixed_fu_rows": 1067,
+    "expected_formal_action_dates": 48,
+    "expected_formal_development_dates": 47,
+    "expected_formal_inference_dates": 1,
+    "expected_inference_qids": 21,
+    "expected_inference_rows": 1235,
+    "expected_model_products": 63,
+    "expected_model_qids": 1067,
+    "expected_model_rows": 56461,
+    "expected_panel_products": 64,
+    "expected_panel_qids": 1067,
+    "expected_panel_rows": 57528,
+    "expected_qid_width_max": 60,
+    "expected_qid_width_median": 52.0,
+    "expected_qid_width_min": 48,
+    "min_active_development_qids": 252,
+    "min_observable_per_development_qid": 10,
+    "require_runtime_identity": true,
+    "required_direction_years": [
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ]
+  },
+  "cost_contract_name": "research_code_defined_cost_proxy",
+  "ctp_call_count": 0,
+  "decision": "stage001_direction_proxy_qualification_fail_close_no_future_labels",
+  "development_qid_count": 1046,
+  "development_row_count": 55226,
+  "direction_long_count": 6850,
+  "direction_neutral_count": 42833,
+  "direction_short_count": 6763,
+  "explicit_cost_product_count": 17,
+  "failed_gates": [
+    "formal_action_direction_coverage"
+  ],
+  "fallback_cost_product_count": 46,
+  "flat_fill_bar_usage_count": 0,
+  "formula_mismatch_count": 0,
+  "future_close_value_read_count": 0,
+  "future_ohlc_field_access_count": 0,
+  "future_ohlc_numeric_parse_count": 0,
+  "future_return_compute_count": 0,
+  "gate_fail_count": 1,
+  "gates": [
+    {
+      "expected": "all declared input SHA256 values match and every direct input is unchanged during the run",
+      "gate": "input_identity_contract",
+      "observed": {
+        "expected_sha_mismatches": {},
+        "run_identity_drift": {}
+      },
+      "passed": true
+    },
+    {
+      "expected": "{'rows': 57528, 'qids': 1067, 'products': 64, 'fixed_fu_rows': 1067, 'model_rows': 56461, 'model_qids': 1067, 'model_products': 63, 'width_min': 48, 'width_median': 52.0, 'width_max': 60, 'duplicate_panel_count': 0}",
+      "gate": "model_scope_identity",
+      "observed": {
+        "duplicate_panel_count": 0,
+        "fixed_fu_rows": 1067,
+        "model_products": 63,
+        "model_qids": 1067,
+        "model_rows": 56461,
+        "products": 64,
+        "qids": 1067,
+        "rows": 57528,
+        "width_max": 60,
+        "width_median": 52.0,
+        "width_min": 48
+      },
+      "passed": true
+    },
+    {
+      "expected": "{'rows': 55226, 'qids': 1046, 'products': 62, 'inference_rows': 1235, 'inference_qids': 21, 'identity_delta': 0, 'expiry_duplicate_count': 0}",
+      "gate": "development_identity",
+      "observed": {
+        "expiry_duplicate_count": 0,
+        "identity_delta": 0,
+        "inference_qids": 21,
+        "inference_rows": 1235,
+        "products": 62,
+        "qids": 1046,
+        "rows": 55226
+      },
+      "passed": true
+    },
+    {
+      "expected": "dates=48, development=47, inference=1, missing_identity_count=0",
+      "gate": "formal_plan_identity",
+      "observed": {
+        "dates": 48,
+        "development_dates": 47,
+        "inference_dates": 1,
+        "missing_identity_count": 0
+      },
+      "passed": true
+    },
+    {
+      "expected": "frozen Stage847 strategy MRO, engine new_bars owner, and merged direction settings",
+      "gate": "runtime_identity",
+      "observed": {
+        "actual_settings": {
+          "account_capital": 150000.0,
+          "array_manager_size_floor": 40,
+          "c3_capital": 150000.0,
+          "donchian_entry_period": 20,
+          "enable_ai_product_pool_filter": true,
+          "enable_rsi_filter": false,
+          "long_entry_enabled": true,
+          "ma5_angle_reversal_angle_threshold_deg": 45.0,
+          "ma5_angle_reversal_filter_enabled": false,
+          "ma5_angle_reversal_lookback_days": 10,
+          "ma5_extreme_compare_days": 3,
+          "ma5_extreme_filter_enabled": true,
+          "ma_extra_long": 40,
+          "ma_long": 20,
+          "ma_mid": 10,
+          "ma_short": 5,
+          "max_concurrent_positions": 4,
+          "research_exact_array_manager_size": 41,
+          "reverse_on_opposite_signal": false,
+          "rollover_reopen_enabled": true,
+          "rsi_length": 6,
+          "short_entry_enabled": true,
+          "short_ma5_slope_filter_enabled": true,
+          "wick_chop_filter_enabled": true,
+          "wick_chop_filter_lookback": 10,
+          "wick_chop_filter_max_days": 5
+        },
+        "engine_mro": [
+          "Stage847StopRetryEngine",
+          "Stage840IntradayEngine",
+          "Stage827IntradayC2Engine",
+          "ConfirmedDailyNextRealOpenEngine",
+          "SameDayCloseBacktestingEngine"
+        ],
+        "engine_mro_match": true,
+        "expected_engine_mro": [
+          "Stage847StopRetryEngine",
+          "Stage840IntradayEngine",
+          "Stage827IntradayC2Engine",
+          "ConfirmedDailyNextRealOpenEngine",
+          "SameDayCloseBacktestingEngine"
+        ],
+        "expected_owners": {
+          "engine_new_bars": "analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.ConfirmedDailyNextRealOpenEngine",
+          "strategy_passes_entry_filters": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy",
+          "strategy_rollover_reopen_allowed": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy"
+        },
+        "expected_settings": {
+          "account_capital": 150000.0,
+          "array_manager_size_floor": 40,
+          "c3_capital": 150000.0,
+          "donchian_entry_period": 20,
+          "enable_ai_product_pool_filter": true,
+          "enable_rsi_filter": false,
+          "long_entry_enabled": true,
+          "ma5_angle_reversal_angle_threshold_deg": 45.0,
+          "ma5_angle_reversal_filter_enabled": false,
+          "ma5_angle_reversal_lookback_days": 10,
+          "ma5_extreme_compare_days": 3,
+          "ma5_extreme_filter_enabled": true,
+          "ma_extra_long": 40,
+          "ma_long": 20,
+          "ma_mid": 10,
+          "ma_short": 5,
+          "max_concurrent_positions": 4,
+          "research_exact_array_manager_size": 41,
+          "reverse_on_opposite_signal": false,
+          "rollover_reopen_enabled": true,
+          "rsi_length": 6,
+          "short_entry_enabled": true,
+          "short_ma5_slope_filter_enabled": true,
+          "wick_chop_filter_enabled": true,
+          "wick_chop_filter_lookback": 10,
+          "wick_chop_filter_max_days": 5
+        },
+        "expected_strategy_mro": [
+          "QmtRollPortfolioStrategyStage847C9StopRetry",
+          "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+          "QmtRollPortfolioStrategyStage827C2",
+          "QmtRollPortfolioStrategyLongTighterInitialStop",
+          "QmtRollPortfolioStrategyExactAm",
+          "QmtRollPortfolioStrategy"
+        ],
+        "owners": {
+          "engine_new_bars": "analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.ConfirmedDailyNextRealOpenEngine",
+          "strategy_passes_entry_filters": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy",
+          "strategy_rollover_reopen_allowed": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy"
+        },
+        "owners_match": true,
+        "profile": "stage847_stage819_c4_05r_stop_retry_once",
+        "runtime_identity_pass": true,
+        "settings_match": true,
+        "source_files": {
+          "new_bars": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py",
+          "rollover_reopen_allowed": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py"
+        },
+        "strategy_class": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.QmtRollPortfolioStrategyStage847C9StopRetry",
+        "strategy_mro": [
+          "QmtRollPortfolioStrategyStage847C9StopRetry",
+          "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+          "QmtRollPortfolioStrategyStage827C2",
+          "QmtRollPortfolioStrategyLongTighterInitialStop",
+          "QmtRollPortfolioStrategyExactAm",
+          "QmtRollPortfolioStrategy"
+        ],
+        "strategy_mro_match": true
+      },
+      "passed": true
+    },
+    {
+      "expected": "all query contracts resolve uniquely; source SHA/read/OHLC errors=0",
+      "gate": "source_contract_identity",
+      "observed": {
+        "direction_formula_error_count": 0,
+        "future_ohlc_field_access_count": 0,
+        "future_ohlc_numeric_parse_count": 0,
+        "source_contract_missing_count": 0,
+        "source_manifest_parse_error_count": 0,
+        "source_read_error_count": 0,
+        "source_sha_after_mismatch_count": 0,
+        "source_sha_mismatch_count": 0,
+        "technical_error_row_count": 0,
+        "used_ohlc_invalid_count": 0
+      },
+      "passed": true
+    },
+    {
+      "expected": "both counts=0",
+      "gate": "ohlc_and_causality",
+      "observed": {
+        "flat_fill_bar_usage_count": 0,
+        "post_query_bar_usage_count": 0
+      },
+      "passed": true
+    },
+    {
+      "expected": "0",
+      "gate": "formula_parity",
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "expected": "qid_count=1046, min_observable_rows>=10",
+      "gate": "development_qid_observable_width",
+      "observed": {
+        "min_observable_rows": 48,
+        "qid_count": 1046
+      },
+      "passed": true
+    },
+    {
+      "expected": "date_count=48, min_observable_rows>=10, min_active_direction_rows>=1",
+      "gate": "formal_action_direction_coverage",
+      "observed": {
+        "date_count": 48,
+        "min_active_direction_rows": 0,
+        "min_observable_rows": 49
+      },
+      "passed": false
+    },
+    {
+      "expected": "active_development_qids>=252; each required year has long>0 and short>0",
+      "gate": "direction_non_degenerate",
+      "observed": {
+        "active_development_qids": 1043,
+        "yearly_direction": {
+          "2022": {
+            "long": 1628,
+            "short": 1312
+          },
+          "2023": {
+            "long": 1574,
+            "short": 1176
+          },
+          "2024": {
+            "long": 1281,
+            "short": 1788
+          },
+          "2025": {
+            "long": 1432,
+            "short": 1801
+          },
+          "2026": {
+            "long": 898,
+            "short": 362
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "expected": "rows=63, explicit=17, fallback=46, error empty",
+      "gate": "cost_metadata_contract",
+      "observed": {
+        "error": "",
+        "explicit": 17,
+        "fallback": 46,
+        "rows": 63
+      },
+      "passed": true
+    },
+    {
+      "expected": "all forbidden operation counters=0",
+      "gate": "forbidden_operation_zero",
+      "observed": {
+        "ctp_call_count": 0,
+        "future_close_value_read_count": 0,
+        "future_return_compute_count": 0,
+        "label_generate_count": 0,
+        "logistic_fit_count": 0,
+        "model_predict_count": 0,
+        "order_api_call_count": 0,
+        "production_write_count": 0,
+        "sealed_holdout_read_count": 0,
+        "strategy_backtest_count": 0,
+        "true_engine_run_count": 0,
+        "xgboost_fit_count": 0
+      },
+      "passed": true
+    }
+  ],
+  "generated_at": "2026-09-05T06:57:51.127806+08:00",
+  "historical_real_fee_claimed": false,
+  "inference_only_qid_count": 21,
+  "inference_only_row_count": 1235,
+  "input_identity_drift_count": 0,
+  "label_generate_count": 0,
+  "line_id": "futures_trend_xgboost_pit_directional_continuation_utility",
+  "logistic_fit_count": 0,
+  "model_predict_count": 0,
+  "model_product_count": 63,
+  "model_qid_count": 1067,
+  "model_row_count": 56461,
+  "order_api_call_count": 0,
+  "panel_row_count": 57528,
+  "post_query_bar_usage_count": 0,
+  "production_cost_claimed": false,
+  "production_write_count": 0,
+  "proxy_observable_row_count": 56446,
+  "proxy_unobservable_row_count": 15,
+  "runtime_identity": {
+    "actual_settings": {
+      "account_capital": 150000.0,
+      "array_manager_size_floor": 40,
+      "c3_capital": 150000.0,
+      "donchian_entry_period": 20,
+      "enable_ai_product_pool_filter": true,
+      "enable_rsi_filter": false,
+      "long_entry_enabled": true,
+      "ma5_angle_reversal_angle_threshold_deg": 45.0,
+      "ma5_angle_reversal_filter_enabled": false,
+      "ma5_angle_reversal_lookback_days": 10,
+      "ma5_extreme_compare_days": 3,
+      "ma5_extreme_filter_enabled": true,
+      "ma_extra_long": 40,
+      "ma_long": 20,
+      "ma_mid": 10,
+      "ma_short": 5,
+      "max_concurrent_positions": 4,
+      "research_exact_array_manager_size": 41,
+      "reverse_on_opposite_signal": false,
+      "rollover_reopen_enabled": true,
+      "rsi_length": 6,
+      "short_entry_enabled": true,
+      "short_ma5_slope_filter_enabled": true,
+      "wick_chop_filter_enabled": true,
+      "wick_chop_filter_lookback": 10,
+      "wick_chop_filter_max_days": 5
+    },
+    "engine_mro": [
+      "Stage847StopRetryEngine",
+      "Stage840IntradayEngine",
+      "Stage827IntradayC2Engine",
+      "ConfirmedDailyNextRealOpenEngine",
+      "SameDayCloseBacktestingEngine"
+    ],
+    "engine_mro_match": true,
+    "expected_engine_mro": [
+      "Stage847StopRetryEngine",
+      "Stage840IntradayEngine",
+      "Stage827IntradayC2Engine",
+      "ConfirmedDailyNextRealOpenEngine",
+      "SameDayCloseBacktestingEngine"
+    ],
+    "expected_owners": {
+      "engine_new_bars": "analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.ConfirmedDailyNextRealOpenEngine",
+      "strategy_passes_entry_filters": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy",
+      "strategy_rollover_reopen_allowed": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy"
+    },
+    "expected_settings": {
+      "account_capital": 150000.0,
+      "array_manager_size_floor": 40,
+      "c3_capital": 150000.0,
+      "donchian_entry_period": 20,
+      "enable_ai_product_pool_filter": true,
+      "enable_rsi_filter": false,
+      "long_entry_enabled": true,
+      "ma5_angle_reversal_angle_threshold_deg": 45.0,
+      "ma5_angle_reversal_filter_enabled": false,
+      "ma5_angle_reversal_lookback_days": 10,
+      "ma5_extreme_compare_days": 3,
+      "ma5_extreme_filter_enabled": true,
+      "ma_extra_long": 40,
+      "ma_long": 20,
+      "ma_mid": 10,
+      "ma_short": 5,
+      "max_concurrent_positions": 4,
+      "research_exact_array_manager_size": 41,
+      "reverse_on_opposite_signal": false,
+      "rollover_reopen_enabled": true,
+      "rsi_length": 6,
+      "short_entry_enabled": true,
+      "short_ma5_slope_filter_enabled": true,
+      "wick_chop_filter_enabled": true,
+      "wick_chop_filter_lookback": 10,
+      "wick_chop_filter_max_days": 5
+    },
+    "expected_strategy_mro": [
+      "QmtRollPortfolioStrategyStage847C9StopRetry",
+      "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+      "QmtRollPortfolioStrategyStage827C2",
+      "QmtRollPortfolioStrategyLongTighterInitialStop",
+      "QmtRollPortfolioStrategyExactAm",
+      "QmtRollPortfolioStrategy"
+    ],
+    "owners": {
+      "engine_new_bars": "analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.ConfirmedDailyNextRealOpenEngine",
+      "strategy_passes_entry_filters": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy",
+      "strategy_rollover_reopen_allowed": "qmt_roll_portfolio_strategy.QmtRollPortfolioStrategy"
+    },
+    "owners_match": true,
+    "profile": "stage847_stage819_c4_05r_stop_retry_once",
+    "runtime_identity_pass": true,
+    "settings_match": true,
+    "source_files": {
+      "new_bars": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py",
+      "rollover_reopen_allowed": "/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py"
+    },
+    "strategy_class": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.QmtRollPortfolioStrategyStage847C9StopRetry",
+    "strategy_mro": [
+      "QmtRollPortfolioStrategyStage847C9StopRetry",
+      "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+      "QmtRollPortfolioStrategyStage827C2",
+      "QmtRollPortfolioStrategyLongTighterInitialStop",
+      "QmtRollPortfolioStrategyExactAm",
+      "QmtRollPortfolioStrategy"
+    ],
+    "strategy_mro_match": true
+  },
+  "sealed_holdout_read_count": 0,
+  "source_contract_count": 1551,
+  "stage": "Stage001",
+  "strategy_backtest_count": 0,
+  "technical_error_row_count": 0,
+  "true_engine_run_count": 0,
+  "xgboost_fit_count": 0,
+  "yearly_direction_counts": {
+    "2022": {
+      "long": 1628,
+      "short": 1312
+    },
+    "2023": {
+      "long": 1574,
+      "short": 1176
+    },
+    "2024": {
+      "long": 1281,
+      "short": 1788
+    },
+    "2025": {
+      "long": 1432,
+      "short": 1801
+    },
+    "2026": {
+      "long": 898,
+      "short": 362
+    }
+  }
+}

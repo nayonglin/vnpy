@@ -1,0 +1,18 @@
+{
+  "development_identity_delta": 0,
+  "formal_identity_missing_count": 0,
+  "input_identity_drift": {},
+  "input_sha_mismatches": {},
+  "runtime_identity_pass": true,
+  "source_stats": {
+    "direction_formula_error_count": 0,
+    "future_ohlc_field_access_count": 0,
+    "future_ohlc_numeric_parse_count": 0,
+    "source_contract_missing_count": 0,
+    "source_manifest_parse_error_count": 0,
+    "source_read_error_count": 0,
+    "source_sha_after_mismatch_count": 0,
+    "source_sha_mismatch_count": 0,
+    "used_ohlc_invalid_count": 0
+  }
+}

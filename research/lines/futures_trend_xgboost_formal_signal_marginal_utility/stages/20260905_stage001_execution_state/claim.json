@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "stage": "stage001_formal_event_feature_qualification",
+  "line_id": "futures_trend_xgboost_formal_signal_marginal_utility",
+  "scope": "one_new_stage001_formal_event_feature_qualification_run_only",
+  "campaign_nonce": "0dd82d24bbe5d663a628a617738acd27d3c8d156f10569726768fff3146d62fa",
+  "lease_id": "bd22b6dbea9c481ad350d5ed7f505fcd9acd476c3ecfcf84106ece55e3ddc706",
+  "authorization_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_formal_signal_marginal_utility/stages/20260905_stage001_execution_authorization.json",
+  "authorization_sha256": "c6e1b8b5bf97e5e89286f078e928943e808431bb3adc3d4dbc95cdc304bca396",
+  "authorization_payload_sha256": "3efc2826ee0d16f9b1f1f8f8a2119ca3dd8c72bcc8a60401635deb4327961df6",
+  "input_file_contract_sha256": "b7b0dc8457e916fcaca8a7dd3b28f5ba932cbed84d41cd05b24278bf26a24fd8",
+  "claimed_at": "2026-09-05T16:22:54+08:00",
+  "replay_permitted": false
+}

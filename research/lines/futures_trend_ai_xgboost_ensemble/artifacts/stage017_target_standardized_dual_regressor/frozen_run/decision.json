@@ -1,0 +1,20 @@
+{
+  "allows_development_true_engine_ac": false,
+  "allows_production_change": false,
+  "allows_sealed_holdout_labels": false,
+  "ctp_connected": false,
+  "decision": "stage017_target_standardized_oos_fail_stop_feature_label_family",
+  "effect_evaluated": true,
+  "effect_passed": false,
+  "generated_at": "2026-09-02T08:19:42+08:00",
+  "line_id": "futures_trend_ai_xgboost_ensemble",
+  "order_api_called_count": 0,
+  "parameter_scan_count": 0,
+  "passed": false,
+  "sealed_holdout_label_values_read": false,
+  "stage": "Stage017",
+  "stops_current_feature_label_family": true,
+  "target_transform_scan_count": 0,
+  "technical_passed": true,
+  "trains_model": true
+}

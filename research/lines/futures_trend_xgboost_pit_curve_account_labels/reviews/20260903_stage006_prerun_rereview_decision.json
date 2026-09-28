@@ -1,0 +1,29 @@
+{
+  "decision": "ALLOW_STAGE006_IMPLEMENTATION_ONLY",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260903_stage006_prerun_rereview.md",
+  "review_sha256": "e021a7a8add52db9722097f21699326d545430a20ee371269d05d6feeb2754d8",
+  "prereg_sha256": "53c9a6e0caad907d21c4fc4e94052836978dd8f81b74ede4e825d94a2b265525",
+  "contract_sha256": "543bd677790fd4d28ed429ae743af39a57f94dece26dfa9fae898b318e6b06ac",
+  "runtime_identity_sha256": "f0a469f5a8387ba8171be5b3e2c8c6b0d9fc0e8de7f5b0914e08ef4f327fddbc",
+  "remediation_sha256": "72a1ca52459586b0d46fb03ecad78c02119c505e6152f380a85f71d29959a6b0",
+  "allowed_scope": "TDD implementation against the frozen Stage006 contract and synthetic tests only; no real label-value access, training, or effect evaluation",
+  "not_authorized": [
+    "development_label_value_read",
+    "per_job_label_json_read",
+    "model_training",
+    "development_effect_evaluation",
+    "true_engine_backtest",
+    "holdout_feature_prediction",
+    "holdout_label_read_or_generation",
+    "production_change",
+    "ctp_connection",
+    "order_submission"
+  ]
+}

@@ -1,0 +1,1242 @@
+{
+  "canonical_verified": 33,
+  "file_contract_sha256": "90d8e888703b2444024533d330a87dcd547b9ac14f5e0d158714611d7e603f57",
+  "fully_verified_roots": 9,
+  "historical_fit_predict_count": 0,
+  "inherited_verified": 14,
+  "new_replay_count": 0,
+  "original_root_inventory": 276,
+  "outputs": {
+    "counterfactual_metrics.csv": {
+      "mtime_ns": 1788667717607860817,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage043_label_collection/20260906_120837_593205/counterfactual_metrics.csv",
+      "sha256": "8c77d9eb3f36a44ae8c7080f20fdaa7fa5d50f6e2726dc72ddcc12617e91a608",
+      "size": 17905
+    },
+    "observations.csv": {
+      "mtime_ns": 1788667717606396709,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage043_label_collection/20260906_120837_593205/observations.csv",
+      "sha256": "20c73947de1d4b5db5216e3c3a1936368f48fef337e53c8f0e36c41fb263ae75",
+      "size": 348508
+    }
+  },
+  "pending": 955,
+  "planned": 1002,
+  "reviewer_count": 0,
+  "roots_with_any_verified_observation": 10,
+  "source_identities": {
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/features.csv": {
+      "mtime_ns": 1788664118792583344,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/features.csv",
+      "sha256": "2d6a78f88a11a9298f06cb9a936407397b881598826c1ac57e11aa5d923dfabd",
+      "size": 257390
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/jobs.json": {
+      "mtime_ns": 1788664118873654895,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/jobs.json",
+      "sha256": "489cec9b12020936cd5a3d121890348def64b7d6ec017e2f13ab3f3a28d89057",
+      "size": 3191410
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/model_spec.json": {
+      "mtime_ns": 1788664118977328688,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/model_spec.json",
+      "sha256": "e51ba4d13923c74054e756e403a3060ee411a6718a32b1c716465342fb950661",
+      "size": 1155
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/monthly_inventory.json": {
+      "mtime_ns": 1788664118975260007,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/monthly_inventory.json",
+      "sha256": "2562b87b8b06d83328505e5a73ead44723597b1fc12d7f76721664ceb0b71723",
+      "size": 5689928
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/summary.json": {
+      "mtime_ns": 1788664118987741842,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage040_holding_panel/summary.json",
+      "sha256": "c96b103e20da072584606f786baf7bd05973492f4abd0df8d79b67fa4a3aa94c",
+      "size": 9405
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/input_manifest.json": {
+      "mtime_ns": 1788664955056612751,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/input_manifest.json",
+      "sha256": "ae15b983ab79595ceca9b24a82bf716029dad793617e7888022c23872b73f98f",
+      "size": 1051284
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/archive_receipt.json": {
+      "mtime_ns": 1788665068052859738,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/archive_receipt.json",
+      "sha256": "e1adc5a5cd51918adb5f3aafb0e9129cfd4881bf951bbd6acee15247dbb0e18c",
+      "size": 3541
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/exit_audit.json": {
+      "mtime_ns": 1788665067191103612,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/exit_audit.json",
+      "sha256": "f7ec245dd06a05d18d6a1122c9923fb4317f1cab51e0a196ed1ecdc904d268e7",
+      "size": 2392
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/label.json": {
+      "mtime_ns": 1788665068053306233,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/label.json",
+      "sha256": "34ebcdf55ffe7a173095201f3a6a0568f86ddcb4b85780da009a6bc44412e5f6",
+      "size": 1765
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/receipt.json": {
+      "mtime_ns": 1788665067189750671,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d/receipt.json",
+      "sha256": "625a4fe33cc2fa1fc615638fac4e13187289bef2e3032035225483f5b6418239",
+      "size": 23744
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/archive_receipt.json": {
+      "mtime_ns": 1788665321733136039,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/archive_receipt.json",
+      "sha256": "6418c0e19db741f2f56417f785682ef9de053bc46784e2047961b8f40d3b7a0b",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/exit_audit.json": {
+      "mtime_ns": 1788665320914081097,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/exit_audit.json",
+      "sha256": "45aae2b3bc774a7b503e2ba474db05c7e95452b89885d64f67653ee21b064ab6",
+      "size": 2319
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/label.json": {
+      "mtime_ns": 1788665321733641824,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/label.json",
+      "sha256": "4d86ad83dd0242cea432d59a6f61ce41eb06935c3b7032a30295f10c541406f2",
+      "size": 1762
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/receipt.json": {
+      "mtime_ns": 1788665320912866779,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/0b9e271ed610d6060e3ddd0e9dbea590979ffff100852fbe177517645803809c/receipt.json",
+      "sha256": "44fa90258e54c80541add3eb17b42cb5a18951a503bae166abd8667f3c5230e0",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/archive_receipt.json": {
+      "mtime_ns": 1788665285942555002,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/archive_receipt.json",
+      "sha256": "37f193f5e4a697933c1d38bf13ada3c97a733c0a29c5f3aca044b449dd1287dd",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/exit_audit.json": {
+      "mtime_ns": 1788665285123867222,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/exit_audit.json",
+      "sha256": "196778bfe7f66b82f964d07731e4ec5cc3d146029023578e0578be8ff3ef0aee",
+      "size": 2361
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/label.json": {
+      "mtime_ns": 1788665285942888373,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/label.json",
+      "sha256": "095abfdbac661526bbed4a0bc4dece56f53ae419b4a8afdba4c6ead152b3ce44",
+      "size": 1753
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/receipt.json": {
+      "mtime_ns": 1788665285122129578,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/1fcee10fbb024eda67616dcebbb2ed46166570a63a5806293c8d64f90bdf43e3/receipt.json",
+      "sha256": "59394bde5817588ab204025f13da9a6a3cd161376b4a3b248791d88d923ef456",
+      "size": 23556
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/archive_receipt.json": {
+      "mtime_ns": 1788665141615663483,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/archive_receipt.json",
+      "sha256": "669e09e32504540b0814c82b78a1dac0464a4322635a74522aff78c2d7f63d86",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/exit_audit.json": {
+      "mtime_ns": 1788665140813468400,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/exit_audit.json",
+      "sha256": "80a8eb9ceb6a9ee01ab8956dc2dc30e06e7e65d1d239bb23afc836f057780f8a",
+      "size": 2321
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/label.json": {
+      "mtime_ns": 1788665141616023436,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/label.json",
+      "sha256": "468b8ca95970973c98086ff551e9ee8de32f5acc62b0d71822247cca35cb2702",
+      "size": 1760
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/receipt.json": {
+      "mtime_ns": 1788665140812578454,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/2dd56f0e7b6958ca67b2eef50e3a260c84caceefda7c6f471c41559f2c78cd7f/receipt.json",
+      "sha256": "e39f30276852aa446fb5029030085a229d2aef0cecbaa992305a2a8a2cf98e8d",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/archive_receipt.json": {
+      "mtime_ns": 1788665504371540612,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/archive_receipt.json",
+      "sha256": "ff181308b6fbda8ee46ce3c82f6c505105654e79af2b3a11b355030025786a66",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/exit_audit.json": {
+      "mtime_ns": 1788665503592449306,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/exit_audit.json",
+      "sha256": "ede30cb78234102599b98071656156fe5a677ca0c463a507050cdd558f7ce8fa",
+      "size": 2334
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/label.json": {
+      "mtime_ns": 1788665504371881857,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/label.json",
+      "sha256": "409ffbe34acc05f907a0cc394016d7498b92a5aacdbdbf210fff02bdd0139277",
+      "size": 1775
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/receipt.json": {
+      "mtime_ns": 1788665503591307697,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/339db1b2123599f339921b219b0a4099901e73897b61e9e281b1e0fdee9b50f4/receipt.json",
+      "sha256": "87531e2d4d6d19b8c2d4833cfd100e773317770fd6b9804336d8a2ff75d76427",
+      "size": 23571
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/archive_receipt.json": {
+      "mtime_ns": 1788665466886354855,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/archive_receipt.json",
+      "sha256": "81a375078dfeef38d0ac86197b6f8ad90fd9a3a5ae205d74f2336178ab63186a",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/exit_audit.json": {
+      "mtime_ns": 1788665466088858711,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/exit_audit.json",
+      "sha256": "154a0dbfbf6c967e1cbf1f288face75e9226ae89b7012c23ff76ae9308ea5817",
+      "size": 2333
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/label.json": {
+      "mtime_ns": 1788665466886790016,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/label.json",
+      "sha256": "840274b4712c74ac2c2a8c36621f5a4ee158d2b2999199362fd2fb67946af45d",
+      "size": 1763
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/receipt.json": {
+      "mtime_ns": 1788665466088068180,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/4dbb228dfe6b35cab6560bc0ee897b83040392bf5827d1a459d584f38c82979a/receipt.json",
+      "sha256": "93309c3657f977821cca9a092c01101532dc2f704ce10b8b6176316f3cc63878",
+      "size": 23558
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/archive_receipt.json": {
+      "mtime_ns": 1788665250494236846,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/archive_receipt.json",
+      "sha256": "21bfa60fbb33d55d3794fb76c4209187a57936d91900d3358b499cfdd538df22",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/exit_audit.json": {
+      "mtime_ns": 1788665249619485767,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/exit_audit.json",
+      "sha256": "6a63e3c617ec906bf703df4d3602eb87f8d003b282882fd7a6c0e77c53cf4996",
+      "size": 2325
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/label.json": {
+      "mtime_ns": 1788665250494612550,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/label.json",
+      "sha256": "c2001ecf9117633127028caf20e57de0ec2aa0354d60434b0ec58a365619844e",
+      "size": 1761
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/receipt.json": {
+      "mtime_ns": 1788665249618554279,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/684cc042609e8baff0e9b91350bc08fa06938b04b788eb3ae2d7c0ef7bd35c98/receipt.json",
+      "sha256": "38b42edb9b7a3f196d40d166b0ee4d37146fe4d4fa456a65eb4c4ffb867e0522",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/archive_receipt.json": {
+      "mtime_ns": 1788665353855882244,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/archive_receipt.json",
+      "sha256": "06cc010fc90f99c66a131ae77a447c8f12857826a366df87cda937c385de662d",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/exit_audit.json": {
+      "mtime_ns": 1788665353064014150,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/exit_audit.json",
+      "sha256": "bdf1af0a7c9dd61f99471c3b6d3e2eee2e66ae8b201c3f78b47703ec8aa70a20",
+      "size": 2362
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/label.json": {
+      "mtime_ns": 1788665353856218906,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/label.json",
+      "sha256": "a545b820577ab03aed385db99cfb659c8a30b50223358ca7ebec03bb0407d507",
+      "size": 1753
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/receipt.json": {
+      "mtime_ns": 1788665353063203118,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/785c2ae173c1ea643c11b4f718f62bd5e1b3059f3e1c76acb7f529f577b4d79a/receipt.json",
+      "sha256": "be3e30c74425c247043eec1ceb1ae45a25c636b65ca37cff8d5311b341c074b5",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/archive_receipt.json": {
+      "mtime_ns": 1788665391379640989,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/archive_receipt.json",
+      "sha256": "e0983f2c11456a428c72c0f6fe3e14c6371ca6874aa036fdf6102133e8a7bf40",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/exit_audit.json": {
+      "mtime_ns": 1788665390558881444,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/exit_audit.json",
+      "sha256": "69e181f9a0d22fe9c8d70e14dbbd0e564adb1c373e9764d4f0989e5348f36172",
+      "size": 2339
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/label.json": {
+      "mtime_ns": 1788665391379936235,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/label.json",
+      "sha256": "05091c0f7d7a5e9618bf3eec0b8420f0d0a3644c5da6ea5fa37fd3d9b7df45fe",
+      "size": 1721
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/receipt.json": {
+      "mtime_ns": 1788665390558070413,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/86765e362c7eacb055e4484accc8e7e1d3962686ff1fe3df14140dbf3480c0ff/receipt.json",
+      "sha256": "4c7c3a590b979ddb0712d340577f1450342bf30f36aec4a2b9286e10d2bf3cb5",
+      "size": 23558
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/archive_receipt.json": {
+      "mtime_ns": 1788665217081340480,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/archive_receipt.json",
+      "sha256": "de0d45f5bf83cc654aa2154066081935b52af8775819c23931d3fccf8c557ce7",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/exit_audit.json": {
+      "mtime_ns": 1788665216286954252,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/exit_audit.json",
+      "sha256": "320fd1b23562bf17ae06824b670660a13d351e11797ecc7ade43783072e4b370",
+      "size": 2358
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/label.json": {
+      "mtime_ns": 1788665217081615809,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/label.json",
+      "sha256": "f972dcf78640b0fb07d1e063d0dc657cc90853d4d9b9eae732583882c600a7d1",
+      "size": 1755
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/receipt.json": {
+      "mtime_ns": 1788665216285955765,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9664469c9d3b30a9e3b5df4635d7f3f7b32336b0c4a3c0aea616165bbe6c69b5/receipt.json",
+      "sha256": "7ec4b8e23a2a63437bc69de5de5cdcf672f0aed8f01a92825d929c37d4aec111",
+      "size": 23560
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/archive_receipt.json": {
+      "mtime_ns": 1788665179296902477,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/archive_receipt.json",
+      "sha256": "1341477222d4dc8b394adb4b433c102bbf9c1ce000114257ad308bb08fbdc966",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/exit_audit.json": {
+      "mtime_ns": 1788665178428434315,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/exit_audit.json",
+      "sha256": "e59bf3c0c15dea6c3d7546cb1239571a25bafe65108929949db5a61655c9a0e5",
+      "size": 2322
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/label.json": {
+      "mtime_ns": 1788665179297214723,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/label.json",
+      "sha256": "601548308cae819b92263248919afc9f4b504938c0535d0085aed41a1e54c890",
+      "size": 1757
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/receipt.json": {
+      "mtime_ns": 1788665178427587326,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/980e565fbfded77d190836951b50e2780a0499a84b85348a9c8e93234d7c43f1/receipt.json",
+      "sha256": "7870f5aef96107861682322b06e85f92d74a7f79f169088d05d355d6b696dbdb",
+      "size": 23554
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/archive_receipt.json": {
+      "mtime_ns": 1788665023594720633,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/archive_receipt.json",
+      "sha256": "c61e765729a3615055059f91e6337195a443c4b41bfe1acd594477d836600709",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/exit_audit.json": {
+      "mtime_ns": 1788665022758860329,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/exit_audit.json",
+      "sha256": "3c194de543e28f391c7d5f317bf9e66681a1c0a33237ff380041ca6f1d60628f",
+      "size": 2350
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/label.json": {
+      "mtime_ns": 1788665023595290500,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/label.json",
+      "sha256": "327f9ded3ed1ca8682f85d97007125c38fae6ff459f412ebf5f31b81b779a59b",
+      "size": 1751
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/receipt.json": {
+      "mtime_ns": 1788665022756801815,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa/receipt.json",
+      "sha256": "f739bfa16d5e8f9f9b0a1e686f8492d0929bea5c2232bf54a9f5ad54525e81d6",
+      "size": 23556
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/archive_receipt.json": {
+      "mtime_ns": 1788664986335162699,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/archive_receipt.json",
+      "sha256": "16bb8c11f5a6fba824ccbc09c3d3b0ea52faddc1c92243004bf501bc8d14ca24",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/exit_audit.json": {
+      "mtime_ns": 1788664985549061611,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/exit_audit.json",
+      "sha256": "12e7892fe2c04ea59917205aaf14728b3e7b657e8f3691f26ed019f96eeb5fd6",
+      "size": 2336
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/label.json": {
+      "mtime_ns": 1788664986335495569,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/label.json",
+      "sha256": "f88cd5b520ccf8fecb96fd7f17eec64b009c923943bf4e237e768773c30762c8",
+      "size": 1761
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/receipt.json": {
+      "mtime_ns": 1788664985547657672,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f/receipt.json",
+      "sha256": "ff2369594a4cb5f52ce092457d819c98ff31c1a883eb88556c31fa9f2c0c727d",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/archive_receipt.json": {
+      "mtime_ns": 1788665429725185765,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/archive_receipt.json",
+      "sha256": "87144867b27bc37f5566ea0fff3dcfb13b8e3f0bc3cb343f198c2b449166f89a",
+      "size": 3540
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/exit_audit.json": {
+      "mtime_ns": 1788665428922626730,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/exit_audit.json",
+      "sha256": "98e687ef236654e356fca44548de48ac65567746dd02c32eaed8e82e5cd6fd7b",
+      "size": 2333
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/label.json": {
+      "mtime_ns": 1788665429725572177,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/label.json",
+      "sha256": "3085f4e5f9a221cbf613cef988aaa03682b99298991c5067ae9b4135d00dc83e",
+      "size": 1764
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/receipt.json": {
+      "mtime_ns": 1788665428920767921,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041b_holding_labels/jobs/c505899f2f8e78b663cfaaddaf84d8970a836de359fd91dc159b751bc3564754/receipt.json",
+      "sha256": "5d6e853b0a064b82e589bc93564c53523d70695bce74bdc17edfbb5ae32a61fc",
+      "size": 23571
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041c_label_collection/20260906_113658_906705/summary.json": {
+      "mtime_ns": 1788665818934715327,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage041c_label_collection/20260906_113658_906705/summary.json",
+      "sha256": "c38155585d0ba3470c3a782964809ff4028f9ce26ec1c089b3491e48df5dbc54",
+      "size": 41316
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/input_manifest.json": {
+      "mtime_ns": 1788666886183399837,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/input_manifest.json",
+      "sha256": "397188a0db90adc3efe35c3a794bd7912c5c3badfa4708e03b82a79a6349017f",
+      "size": 1134808
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/archive_receipt.json": {
+      "mtime_ns": 1788667320194804298,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/archive_receipt.json",
+      "sha256": "41dee92d75b62acb48f1aa2e1b40279761bd3bc319e1528ecfcb26f45ef3b280",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/exit_audit.json": {
+      "mtime_ns": 1788667317187375055,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/exit_audit.json",
+      "sha256": "d65e1ea51764feaca39543a3783ac280f7f8b4578c2967c42fe0bb7e0b9683ef",
+      "size": 2338
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/label.json": {
+      "mtime_ns": 1788667320195157720,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/label.json",
+      "sha256": "018527aaeb59fe45da201011eb5a3c1db49ce892a7a2780b5d0a6fb7616861c8",
+      "size": 1767
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/receipt.json": {
+      "mtime_ns": 1788667317185273814,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3/receipt.json",
+      "sha256": "4ab77f882ecb3732f95c1d5a512573b7164c1323f0da65f2d257cf9f54730096",
+      "size": 23721
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/archive_receipt.json": {
+      "mtime_ns": 1788667173647500532,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/archive_receipt.json",
+      "sha256": "e185b5b06c479b4d9c1eb64ac7b929c124af157da7c5edb831016d71bc1ba433",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/exit_audit.json": {
+      "mtime_ns": 1788667171849366192,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/exit_audit.json",
+      "sha256": "f262bbb7331d17a7a3c297927f6b0f3f3c3ac4f5dc9c1c32f4dad5b6177cbf10",
+      "size": 2360
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/label.json": {
+      "mtime_ns": 1788667173647910538,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/label.json",
+      "sha256": "a1e4875ed8f11460ccc04703ea8806a03ac043a9985d76a379883fd8b2353213",
+      "size": 1785
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/receipt.json": {
+      "mtime_ns": 1788667171848166423,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0/receipt.json",
+      "sha256": "cc47e25e515a4d29ba774f0e6323db0304e1938af4c776932f3e9e86886a7794",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/archive_receipt.json": {
+      "mtime_ns": 1788667415873982735,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/archive_receipt.json",
+      "sha256": "2aca13e2e7b3ef1d91f41e9df41c71ccb184044b11c21434e1cb3323d945bea2",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/exit_audit.json": {
+      "mtime_ns": 1788667413041675521,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/exit_audit.json",
+      "sha256": "4e2330a4bb36807583299e8bd3ac5af150f742bbc50428bf5b6f4d5df5a80c11",
+      "size": 2349
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/label.json": {
+      "mtime_ns": 1788667415874354533,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/label.json",
+      "sha256": "f12ccb31a96d92b0931ed456120aaf3fe99b4cc0eda7c2d5c78f7448e4345346",
+      "size": 1728
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/receipt.json": {
+      "mtime_ns": 1788667413040160247,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e/receipt.json",
+      "sha256": "fbd1bb3d07396a8bc2432cbecd38188c7b919c7c6054510e2d91c570f2920d44",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/archive_receipt.json": {
+      "mtime_ns": 1788667065849209248,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/archive_receipt.json",
+      "sha256": "5598a70cdcbea324498787f126eb45fe9b63e62e27f233e20f11d75b924e2ef1",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/exit_audit.json": {
+      "mtime_ns": 1788667064255457137,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/exit_audit.json",
+      "sha256": "5adfb455ea8d031cdf22a8352528174dd5477a669d6fa50412250a78ac91d4a0",
+      "size": 2384
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/label.json": {
+      "mtime_ns": 1788667065849534378,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/label.json",
+      "sha256": "a73fd4133107798650317544c5352725d86a002b05d552a3682f2632a6b842b4",
+      "size": 1781
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/receipt.json": {
+      "mtime_ns": 1788667064254481247,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304/receipt.json",
+      "sha256": "c7bc06e98de67c4cff1faf9d0d75aeac6238692ccf91cd30275d3607ead83d3d",
+      "size": 23563
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/archive_receipt.json": {
+      "mtime_ns": 1788667174327090325,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/archive_receipt.json",
+      "sha256": "a24d1da34b78c89ad47782d607cdd3daf6d31cf87e492609da864a290d8e729d",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/exit_audit.json": {
+      "mtime_ns": 1788667172703465128,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/exit_audit.json",
+      "sha256": "1950317ff3d5aac63ef231dd96e2b7ee3341fe551eb0203a136e2807aa582c9b",
+      "size": 2386
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/label.json": {
+      "mtime_ns": 1788667174327530290,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/label.json",
+      "sha256": "f6f77fca1d5e1ba856447a3f93ffb7ce72e16e54a1d49dfe240e0c5b69a0eb1f",
+      "size": 1811
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/receipt.json": {
+      "mtime_ns": 1788667172701647559,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb/receipt.json",
+      "sha256": "06687911780d42ea3bc9cd0d7394dd2ab7e3c063408f79ac7ac07c43d12fe078",
+      "size": 23576
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/archive_receipt.json": {
+      "mtime_ns": 1788667465112964123,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/archive_receipt.json",
+      "sha256": "2a3ce86e5c8e8a765076225e0f3e057c1db0de7839f8d95d1420c10602cb9eae",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/exit_audit.json": {
+      "mtime_ns": 1788667463788280545,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/exit_audit.json",
+      "sha256": "b9eddfe40b5a94bb2d21a88a2bd3eec3c43a93a11528c4371fcdaa6139374134",
+      "size": 2351
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/label.json": {
+      "mtime_ns": 1788667465113298452,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/label.json",
+      "sha256": "281aef84a233ea2c16238f374524c2b6f82f8676a7c3bbc2eccb0fd08becd4f6",
+      "size": 1768
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/receipt.json": {
+      "mtime_ns": 1788667463786840898,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36/receipt.json",
+      "sha256": "fe76b117131d5da6a273720cad5e4634e49187c67b305f97bd4d49e7c98e7129",
+      "size": 23736
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/archive_receipt.json": {
+      "mtime_ns": 1788667522430631039,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/archive_receipt.json",
+      "sha256": "3f6f9ca3df1ec9c80956c38cabcc09e4af7e8a5823a8d292dfc76b229bfc3e40",
+      "size": 3537
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/exit_audit.json": {
+      "mtime_ns": 1788667519945406731,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/exit_audit.json",
+      "sha256": "5cbdd8a4820becbeb348c454ca29bd820a41c50f8fea3ac2efb720d752ecd09f",
+      "size": 2323
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/label.json": {
+      "mtime_ns": 1788667522431029493,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/label.json",
+      "sha256": "6ba52c13a486f43781f3ead74c65b1a04f70c9e7d615857a6653a740dfac7ffe",
+      "size": 1781
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/receipt.json": {
+      "mtime_ns": 1788667519943647043,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780/receipt.json",
+      "sha256": "0af25e00727d875ce5c0aa2be1ff83bce06e81518cc3de74c6f8dea336096a87",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/archive_receipt.json": {
+      "mtime_ns": 1788667268642812403,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/archive_receipt.json",
+      "sha256": "95f468b26fdcb218c40da08119950b9d238d2d88afde4efdea92625073e4895d",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/exit_audit.json": {
+      "mtime_ns": 1788667266330656777,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/exit_audit.json",
+      "sha256": "28f8f29e81c55b370e73a46b1c339e3e2e652e9559cf79ed6e42d5e3af4cc374",
+      "size": 2319
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/label.json": {
+      "mtime_ns": 1788667268643120408,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/label.json",
+      "sha256": "31f7ce38c27aa96bfad4c9cec83506ac15847e99f28d678031d200ae3b32eba0",
+      "size": 1764
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/receipt.json": {
+      "mtime_ns": 1788667266329294756,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906/receipt.json",
+      "sha256": "964ce98479760869468e11090ba397069362cbd512dadf4723e027109050e31a",
+      "size": 23561
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/archive_receipt.json": {
+      "mtime_ns": 1788667366154798464,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/archive_receipt.json",
+      "sha256": "6ae902662bc639cba1454556602e09c91a7c3c397ed0f1acbb945d1511542e3b",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/exit_audit.json": {
+      "mtime_ns": 1788667363086818456,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/exit_audit.json",
+      "sha256": "b1207e43f41b615a204ac3c5cd4d040d4e87da99d94fe33ab1d525e7314098bb",
+      "size": 2338
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/label.json": {
+      "mtime_ns": 1788667366155114677,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/label.json",
+      "sha256": "911ff67a7fa431c3260476a11764415598fde25f8dff1521146816cdca6eb4b0",
+      "size": 1751
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/receipt.json": {
+      "mtime_ns": 1788667363085742064,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405/receipt.json",
+      "sha256": "80243705a0411697dcba40dff551962a1795b0677760af5b0a1f8ee5560b0e0e",
+      "size": 23723
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/archive_receipt.json": {
+      "mtime_ns": 1788666939946509591,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/archive_receipt.json",
+      "sha256": "f3a4023d90d4ba0e05a52eebc9b7ccfc54508278a7cc127612df394d4e929040",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/exit_audit.json": {
+      "mtime_ns": 1788666939078887322,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/exit_audit.json",
+      "sha256": "8741c68500e307c8e4ba5e75789ce6824504847bc8d346ea97517a71137a24e4",
+      "size": 2347
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/label.json": {
+      "mtime_ns": 1788666939946885180,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/label.json",
+      "sha256": "670f84c5b06ed05a83dea9707ca799c5cd8b882a102e8781fc53281f0120475d",
+      "size": 1802
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/receipt.json": {
+      "mtime_ns": 1788666939077708012,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/513f85cf5e472350c12c3e644cc631ad1d668c6ba09a078bb84ecbd22cdbc3ea/receipt.json",
+      "sha256": "82d49c3ef52df051e30dd04b2c538ec303f8436ffb4326f1dc3902778c83fec9",
+      "size": 23575
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/archive_receipt.json": {
+      "mtime_ns": 1788667220731376579,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/archive_receipt.json",
+      "sha256": "066f742eb7b1da5313881e20351f450e92f92225410bd7a0179a47c3d2b90391",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/exit_audit.json": {
+      "mtime_ns": 1788667218411351415,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/exit_audit.json",
+      "sha256": "7c6ddcc5c0e1f39445ae6da17105ebe17db0e2d7cddf92ebaea9b90e8b9b3b3e",
+      "size": 2376
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/label.json": {
+      "mtime_ns": 1788667220731795085,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/label.json",
+      "sha256": "ff8f50b6e2c287a5d8c83d0bf1b5890da35250dc443a3dd258b45578d9576d2f",
+      "size": 1785
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/receipt.json": {
+      "mtime_ns": 1788667218409154589,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1/receipt.json",
+      "sha256": "37da536623cb4b6592bd0af7969cda8caaed383873a1f48d4bf4cbca9482ee3b",
+      "size": 23557
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/archive_receipt.json": {
+      "mtime_ns": 1788667109213406963,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/archive_receipt.json",
+      "sha256": "1e22ce2fad3d2e2d4680111eb9e2e91f4ea6f1393de3213c3e03d5e7d8148ec2",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/exit_audit.json": {
+      "mtime_ns": 1788667108251107736,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/exit_audit.json",
+      "sha256": "fa69a5d52f6e1d7dbdb09e0075d1a52da75ecb81df3c571257eef99524a07f6a",
+      "size": 2322
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/label.json": {
+      "mtime_ns": 1788667109213796677,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/label.json",
+      "sha256": "bfdab309f2a0d9beb88ecf5cb5db749fad910b66c9fe4c2d14bcbc9299a433c9",
+      "size": 1784
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/receipt.json": {
+      "mtime_ns": 1788667108249512586,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5/receipt.json",
+      "sha256": "08b8a3cdf668eda2b1d25349d906b022946e2c767b744ed080d6b0721cde604a",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/archive_receipt.json": {
+      "mtime_ns": 1788667219345490874,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/archive_receipt.json",
+      "sha256": "4669ce6b629d3ea1ce7e1b1075cd5acc53ee4f32045c969351a7d9e5d800bab2",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/exit_audit.json": {
+      "mtime_ns": 1788667218329567489,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/exit_audit.json",
+      "sha256": "911cff67976cde1a00f207bd6b5ee8a1d881a5c6a2068eee812a6fd96608a285",
+      "size": 2395
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/label.json": {
+      "mtime_ns": 1788667219345945340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/label.json",
+      "sha256": "facf4a86816feb5c236454f1b71460a7e161c96f55adce6aaf15a6f22312704d",
+      "size": 1779
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/receipt.json": {
+      "mtime_ns": 1788667218327858588,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76/receipt.json",
+      "sha256": "2d0b4ed03e5f2060cd91ced1603109f00104a17fe89938a5bb30c06bd7389438",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/archive_receipt.json": {
+      "mtime_ns": 1788667520869506566,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/archive_receipt.json",
+      "sha256": "dbc1a3809518eae99ec1a6fa1ac3db3fd11008001d1caade37ea58c7d4b69184",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/exit_audit.json": {
+      "mtime_ns": 1788667513098203954,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/exit_audit.json",
+      "sha256": "64087703ad5eff9ce0b82e873d034e047d3b5b0a64e190cf203d68c697f0377d",
+      "size": 2354
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/label.json": {
+      "mtime_ns": 1788667520869807645,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/label.json",
+      "sha256": "20894fdf34b2739692d9137c58896affe4a3908059970f43548d245b4edda2d9",
+      "size": 1769
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/receipt.json": {
+      "mtime_ns": 1788667513096602514,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f/receipt.json",
+      "sha256": "33791dd49787ff41d1f42ddeb2b80ffe4c236fe43042eccc2d6a3104028ed7c9",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/archive_receipt.json": {
+      "mtime_ns": 1788667466532401596,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/archive_receipt.json",
+      "sha256": "03c83efd532b491e1004089bff7376d8200f01fe664e7c281bb76d348c99da30",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/exit_audit.json": {
+      "mtime_ns": 1788667463696386881,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/exit_audit.json",
+      "sha256": "04b3cfeb31f34eb6d5d950f6c138001be2bb423373fbec16905458fc966a165f",
+      "size": 2338
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/label.json": {
+      "mtime_ns": 1788667466532722551,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/label.json",
+      "sha256": "cbc57c31f127ee9af776ac6b71d1a681653b6f0b0ddb8910759c58d8db14d6bf",
+      "size": 1753
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/receipt.json": {
+      "mtime_ns": 1788667463694825565,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3/receipt.json",
+      "sha256": "e502a1cda40622a1bf4258e378c00b6dd4704f89929719f1338f60a5a3f8ea31",
+      "size": 23738
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/archive_receipt.json": {
+      "mtime_ns": 1788667066519768652,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/archive_receipt.json",
+      "sha256": "0b3f48fac25aa28ee1dcd8943abe89bb14d69b3000b015693c385b6440779430",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/exit_audit.json": {
+      "mtime_ns": 1788667063955911360,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/exit_audit.json",
+      "sha256": "94bf76db04e21226802ff4a5b68ff89b59b1559440d06d5d88e60cdd92e16dae",
+      "size": 2372
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/label.json": {
+      "mtime_ns": 1788667066520059823,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/label.json",
+      "sha256": "6b2cbb1f659dd6a0334f02bdc4672e54375eb6cc41ba3bda96f6104a1bf972b2",
+      "size": 1775
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/receipt.json": {
+      "mtime_ns": 1788667063955034722,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9/receipt.json",
+      "sha256": "c56c4199fb8028640e333e11ece24c0c55bb16a9812c2749553a57078039045e",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/archive_receipt.json": {
+      "mtime_ns": 1788667577614315967,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/archive_receipt.json",
+      "sha256": "20fe658feaf96ddc2131c957ba67330f732aff299f98d93ba69792ddc4c5987a",
+      "size": 3537
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/exit_audit.json": {
+      "mtime_ns": 1788667576640386513,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/exit_audit.json",
+      "sha256": "c5c07e50a92786ad12bdbe5c2366ad1a2edaac4afd1950266b7f02c406dc1973",
+      "size": 2350
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/label.json": {
+      "mtime_ns": 1788667577614587006,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/label.json",
+      "sha256": "22270ad8ff1ac85d51c52c30f012c53f85f52f305adcf64ff9f7c98d948cf021",
+      "size": 1782
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/receipt.json": {
+      "mtime_ns": 1788667576639189694,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d/receipt.json",
+      "sha256": "b254bea006560c574821a54cd785acf3d9fc0944fe2424393df45b47b6e88802",
+      "size": 23738
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/archive_receipt.json": {
+      "mtime_ns": 1788667065215421744,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/archive_receipt.json",
+      "sha256": "a09c3288976764916e909596a864b4827af9d7bdc13d66093ed871e18d2232ff",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/exit_audit.json": {
+      "mtime_ns": 1788667064123375271,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/exit_audit.json",
+      "sha256": "bf25ff6c9323c0f66a316bbcfdda60438b2f6116ea2157b2fde35f22ecaa6693",
+      "size": 2383
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/label.json": {
+      "mtime_ns": 1788667065215789417,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/label.json",
+      "sha256": "802823b165ef15d2f4b3ff6964ba655c0e25e2a5731fb91477cd6c760aa1e5eb",
+      "size": 1754
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/receipt.json": {
+      "mtime_ns": 1788667064122131585,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587/receipt.json",
+      "sha256": "3626a104f8244ed64f07acacf62bcfb8c9f03ac0bd385eec6d5294c4e0158051",
+      "size": 23549
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/archive_receipt.json": {
+      "mtime_ns": 1788667415160576089,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/archive_receipt.json",
+      "sha256": "2881ca91806688494c498b3ac651bf8b1bea9772fad8e70c2d4818748bea01a3",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/exit_audit.json": {
+      "mtime_ns": 1788667413514031832,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/exit_audit.json",
+      "sha256": "37525cfe732bfe4131f1bb69e39270107992a065aeee0565e05d9cbc991eb5a0",
+      "size": 2372
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/label.json": {
+      "mtime_ns": 1788667415160898303,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/label.json",
+      "sha256": "a517a64a6d73bf892952199854590ba7e818ff775d55816cb7eb682fc83df5cc",
+      "size": 1766
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/receipt.json": {
+      "mtime_ns": 1788667413512671728,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c/receipt.json",
+      "sha256": "7ea5e63805c2ffdef54f037c17cc4d3e914a73cc6cb8c8b74d193ba44c54609d",
+      "size": 23736
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/archive_receipt.json": {
+      "mtime_ns": 1788667174996972134,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/archive_receipt.json",
+      "sha256": "fcf1623042b47d3ca380cf86a1a09dafc0a3e94e2ea9a5b8a2bd40320ba5a85e",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/exit_audit.json": {
+      "mtime_ns": 1788667172186776468,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/exit_audit.json",
+      "sha256": "6011218bd58fef9edbead1853eaa30f1e72fc1b9abcac084f2e1da5fd3981948",
+      "size": 2344
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/label.json": {
+      "mtime_ns": 1788667174997358223,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/label.json",
+      "sha256": "24c4e0792b0e2b69f545642046af5d60e0422cc1415004a9eb42a15e020d088f",
+      "size": 1739
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/receipt.json": {
+      "mtime_ns": 1788667172185542366,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7/receipt.json",
+      "sha256": "d1f31041ae3d93560711fabd610cc58dddbaf3f5e758e58c10518a9c87ff81a3",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/archive_receipt.json": {
+      "mtime_ns": 1788667578369298390,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/archive_receipt.json",
+      "sha256": "e863fd86131fac1cc66b63cdd53736b5e1519c1f58256e058fde05de8e55e3b9",
+      "size": 3537
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/exit_audit.json": {
+      "mtime_ns": 1788667576163297111,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/exit_audit.json",
+      "sha256": "b6c26124fc135a82c4da47a9c0ad932b3c5aca608612e06c31aeb32fe1dbe299",
+      "size": 2348
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/label.json": {
+      "mtime_ns": 1788667578369695552,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/label.json",
+      "sha256": "be44a9dae14a247eac1af2f792efb85965972987eda992c8790f8817a8009724",
+      "size": 1783
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/receipt.json": {
+      "mtime_ns": 1788667576159631445,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065/receipt.json",
+      "sha256": "a32c295f79116c976dbb30f00e1f3b0eec450b08a5422c373f62483be218094c",
+      "size": 23739
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/archive_receipt.json": {
+      "mtime_ns": 1788667365442595795,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/archive_receipt.json",
+      "sha256": "938d352bcf28dd404eeb8b1be4c293e5b13fbe4de75df11e2ac63449d60a05ba",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/exit_audit.json": {
+      "mtime_ns": 1788667363806536241,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/exit_audit.json",
+      "sha256": "13a9b68f10aedc1988d3528f80f13d04ea4e204651bd74f4b1ec75f0b7a5ee03",
+      "size": 2354
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/label.json": {
+      "mtime_ns": 1788667365443003676,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/label.json",
+      "sha256": "d2e0bb0a285a625b9ee1f9f7c5bafef5e0be22996365e3564d6f3782399eabb0",
+      "size": 1769
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/receipt.json": {
+      "mtime_ns": 1788667363804789547,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919/receipt.json",
+      "sha256": "5314e28a579079276f31a2383fd302f2e0cf9bddaf32a5f9215ee320200d9b4b",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/archive_receipt.json": {
+      "mtime_ns": 1788667109897397822,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/archive_receipt.json",
+      "sha256": "8feca41b4a26df401c0c4676e81fed6b685ea75abf13299bd8853dd29f7c8060",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/exit_audit.json": {
+      "mtime_ns": 1788667108279123125,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/exit_audit.json",
+      "sha256": "17f0a75ae5e2dc2ad0f3eb34ca47e44a51494c85ed7bdaf853b00377a4518b53",
+      "size": 2328
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/label.json": {
+      "mtime_ns": 1788667109898035207,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/label.json",
+      "sha256": "f37414a2e8eb6d327dc09f05d64f21f4c141446bb669e6137d45f8fe09b93040",
+      "size": 1784
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/receipt.json": {
+      "mtime_ns": 1788667108277374848,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca/receipt.json",
+      "sha256": "668fca2638f44a556b282798b4da71dc9be374d3d381a39ca2fcc6856bea0221",
+      "size": 23561
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/archive_receipt.json": {
+      "mtime_ns": 1788667267265238077,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/archive_receipt.json",
+      "sha256": "7f7ed475d42517004ba3b78ff63e71e6ef89c89d7664833eef553a8f5208d496",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/exit_audit.json": {
+      "mtime_ns": 1788667265845090887,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/exit_audit.json",
+      "sha256": "037745b8a474aa83657ae889669f936f92dcf80298755a1177691daade4ae2bc",
+      "size": 2371
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/label.json": {
+      "mtime_ns": 1788667267265537415,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/label.json",
+      "sha256": "c106092eee21a90a4b4b6c8ebe67b637facaf3d1daee2f39bed3d4ac28bfe30b",
+      "size": 1788
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/receipt.json": {
+      "mtime_ns": 1788667265843538655,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa/receipt.json",
+      "sha256": "ad9f8c603c796c0dc32c572ea6b2607a86a5dffeb318c19f847f6ecc13d9351e",
+      "size": 23562
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/archive_receipt.json": {
+      "mtime_ns": 1788667110541103021,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/archive_receipt.json",
+      "sha256": "1d5964f5e15b67161113831db55ca9d484fa56df3a9c252012233f4bca3ea6a6",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/exit_audit.json": {
+      "mtime_ns": 1788667108252146460,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/exit_audit.json",
+      "sha256": "2c880886afee9c2bd2b126a27aa1200715f3f680c2ad12141614770478a90b84",
+      "size": 2346
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/label.json": {
+      "mtime_ns": 1788667110541544153,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/label.json",
+      "sha256": "962733ff35b9be3f342f18310f92072ae7a964c0557182fc1d23a004c3bed7ca",
+      "size": 1781
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/receipt.json": {
+      "mtime_ns": 1788667108250757814,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042/receipt.json",
+      "sha256": "31112c048594649160cea10ef6f332ca5b7eda72d311c2fbf2d562a776c20e9d",
+      "size": 23560
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/archive_receipt.json": {
+      "mtime_ns": 1788667267933577071,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/archive_receipt.json",
+      "sha256": "f4e02f2a37ab69479575593a3eac8d5c28a3f01009b11129c136a9ef1a07a8ea",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/exit_audit.json": {
+      "mtime_ns": 1788667266242443628,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/exit_audit.json",
+      "sha256": "9b212662eb435fd0d06bad754fbbd9f3ae9f5d967209760cc69f822645ee7458",
+      "size": 2364
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/label.json": {
+      "mtime_ns": 1788667267934059828,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/label.json",
+      "sha256": "8c9cedfee8a60224152a81448a859ebd8ab1337f9c4afc881ce77d8fdd3ff98e",
+      "size": 1809
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/receipt.json": {
+      "mtime_ns": 1788667266240999897,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a/receipt.json",
+      "sha256": "3e5acff65cd2d69cd1326ad6c5af1711fa0f4e99a06fa86511d36e0442806053",
+      "size": 23571
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/archive_receipt.json": {
+      "mtime_ns": 1788667318700038085,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/archive_receipt.json",
+      "sha256": "33c824e816a48f090187145b22d1ad8abb4d69d6a5c3b2435f552f3e7f2b3f72",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/exit_audit.json": {
+      "mtime_ns": 1788667314446387995,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/exit_audit.json",
+      "sha256": "294aa472c13f88e8e27b55680d0031f1a969e0c56c7b91254eee5406e9dcaeb8",
+      "size": 2322
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/label.json": {
+      "mtime_ns": 1788667318700360757,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/label.json",
+      "sha256": "9f0d234865644efc5e561dc7aa810b97cd8e549aa9b0613207e0faca4375ae3d",
+      "size": 1779
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/receipt.json": {
+      "mtime_ns": 1788667314445133643,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2/receipt.json",
+      "sha256": "88f7b15d2ea0fd6c35e89ead78d27bc5ccd664a2d8daa11fb1a3e2caa24e48bc",
+      "size": 23561
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/archive_receipt.json": {
+      "mtime_ns": 1788667220045239977,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/archive_receipt.json",
+      "sha256": "e509201e34a207cfbff4f6647b83e0d119af50f7c9e5bfc8f557206d4ce4a084",
+      "size": 3533
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/exit_audit.json": {
+      "mtime_ns": 1788667218316146199,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/exit_audit.json",
+      "sha256": "50ad930534e88865e3147ce119c18f5e5c94c2796944cb95055df1a27bb5d6f0",
+      "size": 2372
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/label.json": {
+      "mtime_ns": 1788667220045708068,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/label.json",
+      "sha256": "8b87c534d2db3a2a6febf52c947a29c1fca3cc6ad335a234d2d26261118fdc0a",
+      "size": 1802
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/receipt.json": {
+      "mtime_ns": 1788667218314351422,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09/receipt.json",
+      "sha256": "f1ebcde4a3fe79c3c1a38e1169b3fda2a46beb328dc2d72aa20a8ca820f4457d",
+      "size": 23573
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/archive_receipt.json": {
+      "mtime_ns": 1788667414435486930,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/archive_receipt.json",
+      "sha256": "6b774b03c16a5451ebc5f1932f49e740761f38a34aa8c442934a4f0b4073dc4a",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/exit_audit.json": {
+      "mtime_ns": 1788667413004408197,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/exit_audit.json",
+      "sha256": "552d3969b271992a3825e22e36bac452fb88bf27f093293e4feba683f367798c",
+      "size": 2332
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/label.json": {
+      "mtime_ns": 1788667414435817560,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/label.json",
+      "sha256": "204ec9d33bf9b1fe1c3e9735708d71428246ece485c08940354aae8bb136ddd2",
+      "size": 1784
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/receipt.json": {
+      "mtime_ns": 1788667413003314764,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad/receipt.json",
+      "sha256": "8579880dd6f7fb89a3e2bcb162acb3fccb172059ef450402d9db95f3b34b2c40",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/archive_receipt.json": {
+      "mtime_ns": 1788667364734309603,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/archive_receipt.json",
+      "sha256": "01215c3d88825c409e77c44ccaabc0e1e44c500cf9f2345411e72f21ec7f8021",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/exit_audit.json": {
+      "mtime_ns": 1788667363384981003,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/exit_audit.json",
+      "sha256": "ca64cc609c5fe4eaddc59df5b4d5b581faf82109e33efeb5189d39c8e9a81651",
+      "size": 2329
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/label.json": {
+      "mtime_ns": 1788667364735809167,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/label.json",
+      "sha256": "4fd4d4292275e48ab3cef573c337be05795ef12a307bfd267fee5bb02366b112",
+      "size": 1784
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/receipt.json": {
+      "mtime_ns": 1788667363383670941,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da/receipt.json",
+      "sha256": "c068ab842b98a285cf6b250c82f803ce4a601abe325edf7346c25d9c8441c7ff",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/archive_receipt.json": {
+      "mtime_ns": 1788667319505367896,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/archive_receipt.json",
+      "sha256": "2395d1dc28e7928d54e9967086502b532e63051803900158e211384f51c6b86c",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/exit_audit.json": {
+      "mtime_ns": 1788667317692533579,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/exit_audit.json",
+      "sha256": "606b57522cce82a4fe305733e6f5bfcc175afab6e2a54793ee60039460c69eb4",
+      "size": 2339
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/label.json": {
+      "mtime_ns": 1788667319505839778,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/label.json",
+      "sha256": "1fa9fd641bb7930f150c1e7c31bb003cec386b00663884289d296587ef7d6f59",
+      "size": 1770
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/receipt.json": {
+      "mtime_ns": 1788667317691405603,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28/receipt.json",
+      "sha256": "47f503ca67dd61e61a8020bddfcc45135d8e150ef6245a8963ae3355d88846d5",
+      "size": 23737
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/archive_receipt.json": {
+      "mtime_ns": 1788667465812672930,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/archive_receipt.json",
+      "sha256": "3af572ea81571682c43933df2030b7fde4c2c67600bfc7a2d6adb6f87fa81cc6",
+      "size": 3534
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/exit_audit.json": {
+      "mtime_ns": 1788667464171323822,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/exit_audit.json",
+      "sha256": "93ed6da4a0b5295f3e3894a834d3a6cd19495806f2ff32fdb56125fa293c5960",
+      "size": 2355
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/label.json": {
+      "mtime_ns": 1788667465812996967,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/label.json",
+      "sha256": "fa986c43aaf65c0d925f86e3c7eb41e54ba3dab6a99fb90bfcd6357158f4952f",
+      "size": 1733
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/receipt.json": {
+      "mtime_ns": 1788667464169623635,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8/receipt.json",
+      "sha256": "c0efe015ff923e7572c71b9668c9a46662fb5de272cb114a6931de9e56002dd1",
+      "size": 23736
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/archive_receipt.json": {
+      "mtime_ns": 1788667521629539621,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/archive_receipt.json",
+      "sha256": "dd94437ca366f5c1284888dcc10e73cc8af1cf37e7fe60c5b84a674fcd43b8bb",
+      "size": 3537
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/exit_audit.json": {
+      "mtime_ns": 1788667519703572678,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/exit_audit.json",
+      "sha256": "19213d24f583f9442af2563a931ef06362cddfe53dd10d43f64a57d4eca7a606",
+      "size": 2351
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/label.json": {
+      "mtime_ns": 1788667521631033437,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/label.json",
+      "sha256": "7f921805d8f051bd0456d8fa0a5cfba56196cdb8cf84aa0cdfab18308f8815df",
+      "size": 1782
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/receipt.json": {
+      "mtime_ns": 1788667519702007821,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage042_holding_labels/jobs/fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957/receipt.json",
+      "sha256": "e07542e7edd9737c8c7a88b7d90cabf590d7aabea17db9bc9eab3f8fb6920f81",
+      "size": 23738
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/20260906_1157_stage043_joint_label_collection_contract.md": {
+      "mtime_ns": 1788667161759230944,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/20260906_1157_stage043_joint_label_collection_contract.md",
+      "sha256": "1f0e1946e0be26c07676d0edd37638cb6174541b6252750a2f1ac4f930e52afe",
+      "size": 2196
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/stage041b_input_freeze.json": {
+      "mtime_ns": 1788664928540457044,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/stage041b_input_freeze.json",
+      "sha256": "075e594cd6cc852810aba84251436521a34e9adb246d6ea2630310bd21657024",
+      "size": 483
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/stage042_input_freeze.json": {
+      "mtime_ns": 1788666839598381681,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/stage042_input_freeze.json",
+      "sha256": "8ff10dee586112b5d6b47c09206b4e26a0e7a62387328c2b19225b7d119eb69b",
+      "size": 482
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tests/test_stage043_label_collection.py": {
+      "mtime_ns": 1788667055750469869,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tests/test_stage043_label_collection.py",
+      "sha256": "7528993163849cefc792957e151463e2c5a636bb21b521ba32f43402be948dea",
+      "size": 2181
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tools/stage043_label_collection.py": {
+      "mtime_ns": 1788667161758570934,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tools/stage043_label_collection.py",
+      "sha256": "e0c8789749f4f5a318dfd80279cf53f701002c202cc7ee85eaf5d5464ca03fd7",
+      "size": 6035
+    }
+  },
+  "stage": "stage043_label_collection",
+  "status": "passed",
+  "total_observed_mature_roots": 155,
+  "training_ready": false,
+  "unobserved_censored_roots_preserved_in_plan": 2,
+  "unresolved_current_job_ids": [],
+  "verified": 47
+}

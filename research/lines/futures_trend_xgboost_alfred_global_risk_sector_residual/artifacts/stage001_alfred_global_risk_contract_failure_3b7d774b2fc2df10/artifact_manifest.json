@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "file_count": 3,
+  "files": [
+    {
+      "path": "event_ledger.ndjson",
+      "bytes": 16566,
+      "sha256": "a74e08ca3b2da3d641317f462ce095fadfec39be0567b67c5e45abf8bd62099f"
+    },
+    {
+      "path": "execution_receipt.json",
+      "bytes": 5040,
+      "sha256": "04d29f3042ace0f14a1020eede6f8305353470a030de88903e7245d82103c291"
+    },
+    {
+      "path": "technical_failure.json",
+      "bytes": 2086,
+      "sha256": "b46a1120f02ded1f11b1c9189a4712257427958321778b409fb18e09997182b1"
+    }
+  ]
+}

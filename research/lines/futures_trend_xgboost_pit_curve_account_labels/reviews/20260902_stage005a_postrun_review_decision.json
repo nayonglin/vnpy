@@ -1,0 +1,61 @@
+{
+  "campaign_id": "campaign_20260902T192840+0800_77391",
+  "campaign_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage005a_runtime_identity_remediation/campaigns/campaign_20260902T192840+0800_77391",
+  "decision": "allow_stage005_migration_to_v2_and_batch_prereview_only",
+  "allowed": true,
+  "allowed_scope": [
+    "migrate_stage005_to_v2",
+    "prepare_and_request_independent_batch_prereview"
+  ],
+  "explicitly_not_authorized": [
+    "run_any_of_270_jobs",
+    "run_266_main_jobs",
+    "run_4_a2_jobs",
+    "train_model",
+    "access_holdout",
+    "connect_ctp",
+    "submit_orders",
+    "change_production"
+  ],
+  "evidence_summary": {
+    "smoke_passed": true,
+    "gates_passed": 16,
+    "gates_total": 16,
+    "dangerous_scope_count_fields": 13,
+    "dangerous_scope_counts_all_zero": true,
+    "worker_count": 4,
+    "pid_tmp_mpl_unique_and_job_scoped": true,
+    "input_identity_all_passed": true,
+    "checkpoint_or_completed_result_reuse_detected": false,
+    "r10_a2_202201_label_sha256_equal": true,
+    "r10_a2_202201_label_sha256": "fa6ba74a589420af2071ac3bbe99c62bba7dc73d26fe0f381a9df7b6a07a94e1",
+    "r11_minus_r10_202202": {
+      "future_net_pnl": 120910.0,
+      "future_return": 0.02550704615537015,
+      "future_return_percentage_points": 2.550704615537015,
+      "future_max_drawdown_improvement": 0.01392502959236719,
+      "future_max_drawdown_improvement_percentage_points": 1.392502959236719
+    },
+    "existing_fresh_test_evidence": {
+      "related_test_files_passed": 30,
+      "py_compile_passed": true,
+      "rerun_in_this_review": false
+    }
+  },
+  "findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_postrun_independent_review.md",
+  "review_sha256": "a97e9ca9a65bac290192f89f0a08cce192e1af1eaef492d20798c08c8cfe8511",
+  "overfitting_assessment": {
+    "new_overfitting_risk_introduced": false,
+    "reason": "This review audited runtime identity, isolation, execution scope, and fixed label outputs only; it did not add model fitting, parameter search, or backtest evidence."
+  },
+  "continuation_assessment": {
+    "valuable_to_continue": true,
+    "limit": "Continue only through v2 migration and a new independent batch prereview; this decision is not authorization to launch the 270 jobs."
+  }
+}

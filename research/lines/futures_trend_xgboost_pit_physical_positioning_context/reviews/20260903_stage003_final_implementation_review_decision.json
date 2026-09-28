@@ -1,0 +1,47 @@
+{
+  "decision": "BLOCK",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 2,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_review.md",
+  "review_sha256": "2479f673c1a60e1032a39b7452142a101fcf03919f7be7548c7f051b131443af",
+  "machine_contract_sha256": "e894e93b697b313d55afbaab8f112efc2c877f9a5abd7200deba5af5377630d1",
+  "runner_sha256": "c169bd4f39b979193ab2d5a2a8ee4eeab3a025e1197812493bd54ede89ea3306",
+  "test_sha256": {
+    "test_contract": "36c759854babc952135321dfad7554f22e552844263e951e02e22552924791cb",
+    "test_state_machine": "93f18b01ff407ce10662f96d92df1711e414c5d2fcc2818b8be2513c830b1765",
+    "test_adversarial": "82ae15d505ebe9e3f1d0c70e246e364149ec2ba948c1b5648a6c46f0480ed5bf"
+  },
+  "blocking_findings": [
+    {
+      "id": "P2-1",
+      "summary": "Right-only full-split rows are not detected because extra_join_rows is computed from a feature-left join result whose length cannot exceed the feature row count; the required adversarial test is absent."
+    },
+    {
+      "id": "P2-2",
+      "summary": "Execution-scope and forbidden-label zero counts are copied from expected constants or returned as literals, then compared with the same expectations, so technical qualification can self-certify without event-derived evidence."
+    }
+  ],
+  "allowed_scope": [
+    "no-label remediation of the two blocking implementation defects",
+    "synthetic adversarial tests that do not invoke a real model fit",
+    "a new independent final implementation review"
+  ],
+  "not_authorized": [
+    "requesting or creating a Stage003 one-time run authorization",
+    "running run_stage003 or main",
+    "reading real aggregate or per-job label data rows",
+    "real fit or training",
+    "real prediction or effect evaluation",
+    "backtesting",
+    "holdout access",
+    "true-engine execution",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

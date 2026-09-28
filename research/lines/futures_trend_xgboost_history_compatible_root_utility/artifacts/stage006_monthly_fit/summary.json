@@ -1,0 +1,35 @@
+{
+  "baseline_predicted_skip_count": 82,
+  "baseline_prediction_count": 276,
+  "first_baseline_skip_date": "2021-06-24",
+  "historical_evidence_type": "development_walk_forward_not_untouched_holdout",
+  "historical_model_fit_count": 132,
+  "month_count": 80,
+  "network_attempt_count": 0,
+  "new_strategy_replay_count": 0,
+  "output_identities": {
+    "baseline_event_predictions.csv": {
+      "mtime_ns": 1788631548023945263,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage006_monthly_fit/baseline_event_predictions.csv",
+      "sha256": "4103af039d6a0c93aaa437cd9aceb722c9109173bdc7b3fd5495c20174b6cac7",
+      "size": 41178
+    },
+    "input_manifest.json": {
+      "mtime_ns": 1788631543521127257,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage006_monthly_fit/input_manifest.json",
+      "sha256": "f9bedc0202bf6180337195dcfaa12f0ad45b4de4ac19e272984f3e622ce1b288",
+      "size": 8661
+    },
+    "model_index.json": {
+      "mtime_ns": 1788631548024893929,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage006_monthly_fit/model_index.json",
+      "sha256": "aeb3039105e635e4346f12443a86e6e2f923f230ddc0ef734a31d3856e638e1b",
+      "size": 22084
+    }
+  },
+  "reviewer_started": false,
+  "saved_prediction_mismatch_count": 0,
+  "stage": "stage006_monthly_fit",
+  "status": "passed",
+  "trained_month_count": 66
+}

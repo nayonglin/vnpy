@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "stage": "stage001_formal_event_feature_qualification",
+  "files": {
+    "failure_receipt.json": {
+      "relative_path": "failure_receipt.json",
+      "size": 605992,
+      "sha256": "9ea62ba07c46cd72bd6d2fbaa9107429fc77913f66bcd4dac9440c5d782c8312"
+    }
+  },
+  "file_contract_sha256": "87ad179b24de454bc4d7cd9982856f8a7a9c16987d265154c968f59637b89d05"
+}

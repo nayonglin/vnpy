@@ -1,0 +1,9 @@
+{
+  "coverage_by_eval_product.csv": "b4d7200452795f75ac42c2a8870e43f4c1501b2d4702ee6cb05d56c4e93a143f",
+  "missing_required_cells.csv": "74bfc8174e933fc1c1273b2a2acd1e2d5d2c1742b44aa32683b53156b41e7aa6",
+  "product_daily_returns.csv.gz": "ff31d1bdf3ea3d8a309060243d165e82b5e7a0a8e26d26ba17f4a0ec926056fa",
+  "report.md": "0ad15abb817486e1ca638e1a3b6574c85008974e3a34f9a00a3e78216decb593",
+  "source_product_summary.csv": "b9b67e53fca7ab5ce9b40c5bb8f8979c5b748935ea1a626bb8207519366c5788",
+  "stage001_summary.json": "93080cafe85a298edb3e44899f7a6950f5846348653b3c59608ee937b6cd7785",
+  "window_audit.csv": "d8779853c048baf319122eb62f91d86546a5d916cf6525c4e191aadb29fa535b"
+}

@@ -1,0 +1,174 @@
+{
+  "historical_fit_predict_count": 0,
+  "inherited_count": 14,
+  "mode": "next",
+  "new_completed": 32,
+  "planned": 1002,
+  "results": [
+    {
+      "observation_id": "7a7a5e1e32f68c1727ff6ce5a84918a328cc8341bcfa35018d742247dc391587",
+      "status": "passed",
+      "worker_seconds": 38.559593499987386
+    },
+    {
+      "observation_id": "21502428384dfdf3432a84fa99be09dfe3cc0cd34da6def00b3aa2ca9f301304",
+      "status": "passed",
+      "worker_seconds": 38.662033165979665
+    },
+    {
+      "observation_id": "739bcb165c6869c8f97743d1f5a394d14d2a2cca46e315d75e20668330505ce9",
+      "status": "passed",
+      "worker_seconds": 38.39675633300794
+    },
+    {
+      "observation_id": "5a473b9c27a7604c3c1c18f5b2a50ff49d700159e0ef27728f1ccbbd9aeef5d5",
+      "status": "passed",
+      "worker_seconds": 39.75146587501513
+    },
+    {
+      "observation_id": "a02508f08e297ca634d9dd4d6c514c8996f12df1bb20b1bb732662b064593aca",
+      "status": "passed",
+      "worker_seconds": 39.76364350004587
+    },
+    {
+      "observation_id": "be3cf3e32db184cacc8d0f620c63b13e2815300455aacab96cbc5d318b6cc042",
+      "status": "passed",
+      "worker_seconds": 39.75068599998485
+    },
+    {
+      "observation_id": "11bf7ba923122d8de5de62bd5d82501a81e3c7b5c3db82827b49e09efeb116e0",
+      "status": "passed",
+      "worker_seconds": 59.33432291599456
+    },
+    {
+      "observation_id": "29c2b89269fa185a28847571484af95bc5411893a25bc8e0c2226b4cdf1e88bb",
+      "status": "passed",
+      "worker_seconds": 60.1781324170297
+    },
+    {
+      "observation_id": "90bf463de9dff22994cd77277fc2a1834352fea7a9da91b0cc78f10f67c2bef7",
+      "status": "passed",
+      "worker_seconds": 59.66687412495958
+    },
+    {
+      "observation_id": "5dc850e134e407add0d3486e9f61c8875a477e7081710cdbfd51a74aeba4de76",
+      "status": "passed",
+      "worker_seconds": 42.79216216696659
+    },
+    {
+      "observation_id": "e7ef35cae0a89e7ecccdc8e521f1d39804c64f391a8fd31c7e4c6f22baf99d09",
+      "status": "passed",
+      "worker_seconds": 42.784240791981574
+    },
+    {
+      "observation_id": "58c65446ddf7e57907fa6e2e02b59a03619270cccc99a13bc2f509dc1aad3ca1",
+      "status": "passed",
+      "worker_seconds": 42.84856616699835
+    },
+    {
+      "observation_id": "b6335de9dd0eae0f5941dac49d86bdf0598e567c40697bcda017f55f3b95b9aa",
+      "status": "passed",
+      "worker_seconds": 42.75429275003262
+    },
+    {
+      "observation_id": "c916fcf2a00513c0e8414ed93db470fe223fb603b52fd915b4dde6579d728c1a",
+      "status": "passed",
+      "worker_seconds": 43.15813141601393
+    },
+    {
+      "observation_id": "391d2fe861557e44c35aba877cbb1a7c34c9edea8e15c64d9caf269c88ef4906",
+      "status": "passed",
+      "worker_seconds": 43.25743200001307
+    },
+    {
+      "observation_id": "cc2ccd77600ff9db272231dfa096ceee7bed6a5f16b3a56049a32662f88accc2",
+      "status": "passed",
+      "worker_seconds": 44.46508754102979
+    },
+    {
+      "observation_id": "f4db01b588411bd1b8d640e7b9b97a11b46dd4d21e4fbda7590a2dfbaa952b28",
+      "status": "passed",
+      "worker_seconds": 47.74490233301185
+    },
+    {
+      "observation_id": "07fc2f6d986d39ebbd59362ffbfb6eefb203953bae0fb992c7770da0258ce3e3",
+      "status": "passed",
+      "worker_seconds": 47.251840500044636
+    },
+    {
+      "observation_id": "ed3f3074c41d73c23938f242d918a2cd665312d189e5d599570b7372764147da",
+      "status": "passed",
+      "worker_seconds": 42.762098416977096
+    },
+    {
+      "observation_id": "9eb7f890692890387eb3452765a0cf67460bc7c5ed71b2bf69c6c9aba9730919",
+      "status": "passed",
+      "worker_seconds": 43.17304558301112
+    },
+    {
+      "observation_id": "3c7e2399da5f32dca017ece17f7653134411747129b69c3d14742d09df5de405",
+      "status": "passed",
+      "worker_seconds": 42.46457087498857
+    },
+    {
+      "observation_id": "e837b46ef4de1a74ae67764ab1b498451845e03ec85d433ea88a9b11adfea5ad",
+      "status": "passed",
+      "worker_seconds": 44.828964499989524
+    },
+    {
+      "observation_id": "8c25d80f8d7b04f1d70e86aed1485dfdc9e8603eac0a78b552964bee6cb3e02c",
+      "status": "passed",
+      "worker_seconds": 45.29217854194576
+    },
+    {
+      "observation_id": "1aa35c8d4cbadf009ddf771bc952041a9e0044fe71b3361c112a999346ab8b9e",
+      "status": "passed",
+      "worker_seconds": 44.867374999972526
+    },
+    {
+      "observation_id": "321c95f6e524e0e9ed097864c3e22f355103dbbb4a6c9dcbb59eb228352a1b36",
+      "status": "passed",
+      "worker_seconds": 47.49110729095992
+    },
+    {
+      "observation_id": "f8d5f825d97af81b55f7bbc4b2a624187e170669b25e5337f099e0d5fabb66a8",
+      "status": "passed",
+      "worker_seconds": 47.85213270800887
+    },
+    {
+      "observation_id": "67d79ebbb75587467bf9858d2ef875e090582d0ba40ae4c78979c412e6dc76d3",
+      "status": "passed",
+      "worker_seconds": 47.410705458023585
+    },
+    {
+      "observation_id": "606b345215c4db66366895c7a6440b6e115f028d892ded0a36fce9c19ce1ac6f",
+      "status": "passed",
+      "worker_seconds": 46.167964500025846
+    },
+    {
+      "observation_id": "fecf2a4389d3cdaea286e6e220b0d356f973ea1ca2973e6ed48c610bee192957",
+      "status": "passed",
+      "worker_seconds": 52.770338125003036
+    },
+    {
+      "observation_id": "33ada71ba809afe307adb7cf8b033b7726496d5b3187ff16793515103a2ad780",
+      "status": "passed",
+      "worker_seconds": 52.995614082959946
+    },
+    {
+      "observation_id": "7a68fa583d8e1c8db2d06bfa76148b814b8903a167a19b96f7116ad6158b8c2d",
+      "status": "passed",
+      "worker_seconds": 52.10534595802892
+    },
+    {
+      "observation_id": "9c920e68ce51cddd89af55a52110a930da475d809198293d3e7e74290aa84065",
+      "status": "passed",
+      "worker_seconds": 51.64420204196358
+    }
+  ],
+  "reviewer_count": 0,
+  "stage": "stage042_holding_labels",
+  "status": "passed",
+  "total_completed": 47,
+  "training_ready": false
+}

@@ -1,0 +1,27 @@
+{
+  "mode": "canary",
+  "model_fit_count": 0,
+  "planned": 1002,
+  "results": [
+    {
+      "observation_id": "b4e078effd3c7e44d16542af85a275071841bc0152b4c2aa0bbb17c951d9ea1f",
+      "seconds": 30.104647666041274,
+      "status": "passed"
+    },
+    {
+      "observation_id": "9fc71cd9850c889c938af7ca637c34b29111d036e8cb3f4f97601064345e71aa",
+      "seconds": 37.25320308294613,
+      "status": "passed"
+    },
+    {
+      "observation_id": "060ada1884c6b7c686cdf5e1cd207a41c7ec929fb489fc866efa5d7ac6c4c27d",
+      "seconds": 44.45021441701101,
+      "status": "passed"
+    }
+  ],
+  "reviewer_count": 0,
+  "stage": "stage041b_holding_labels",
+  "status": "passed",
+  "total_completed": 3,
+  "training_ready": false
+}

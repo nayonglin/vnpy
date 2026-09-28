@@ -1,0 +1,49 @@
+{
+  "all_seven_frames_exact": true,
+  "file_contract_sha256": "aa736558c6eea8ed93570646e3373cb7ab0ffbde60bf2c5c1eeb042ddea8164d",
+  "formal_replay_call_count": 1,
+  "historical_model_fit_predict_count": 0,
+  "metrics": {
+    "end_equity": 12226270.600000013,
+    "max_drawdown_pct": -45.92157323451009,
+    "nonzero_daily_win_rate_pct": 54.24187725631769,
+    "sharpe": 1.6839432501429918,
+    "total_commission": 0.0,
+    "total_return_pct": 8050.847066666675,
+    "total_slippage": 1100560.0,
+    "trade_count": 655
+  },
+  "new_model_strategy_candidate": false,
+  "new_training_label_count": 0,
+  "observer_receipt_identity": {
+    "mtime_ns": 1788654056548512024,
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage033_holding_observer/workers/A/observer_receipt.json",
+    "sha256": "0362a6ae5e8016c08d51d1cf010e21115584faa9a25e57f283b86cacc7cdc627",
+    "size": 3296
+  },
+  "qualification": {
+    "actual_positions_exact": true,
+    "days": 1614,
+    "nonzero_contract_days": 1755,
+    "products": 19,
+    "rows": 30666,
+    "state_status_counts": {
+      "fixed_fu": 1614,
+      "flat": 27180,
+      "layer_not_synchronized": 1002,
+      "pending_orders_or_close_inventory": 548,
+      "rollover_pending": 47,
+      "unfilled_or_inconsistent_plan": 275
+    }
+  },
+  "reviewer_started": false,
+  "stage": "stage033_holding_observer",
+  "status": "observation_qualified_not_model",
+  "trace_identity": {
+    "mtime_ns": 1788654056528009494,
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage033_holding_observer/workers/A/holding_states.json.gz",
+    "sha256": "7cd88bc94b215bcdd6f3531783499f09b2d5b0a90ff20659eb79b077c865ffba",
+    "size": 337680
+  },
+  "worker_receipt_sha256": "dd55f72e8739a8dcc22857c7a87984b4dca0f3d49d1bebc7ea53d808d879e6bb"
+}

@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-09-06T08:59:29.819926+08:00",
+  "first_eligible_training_month": "2021-09-01",
+  "full_dd_pct": -45.921573234510085,
+  "immutable_prefix_dd_pct": -25.44370106661555,
+  "mature_count": 60,
+  "max_average_price_error": 0.0,
+  "method": "CSV and Fraction cost basis; no Inventory or reconcile helper calls",
+  "months_recounted": 80,
+  "new_replay_count": 0,
+  "reviewer_started": false,
+  "snapshot_count": 1755,
+  "source_ids_as_of_day": true,
+  "source_summary_sha256": "f70dd474f23d9e6a1c2971f11af731ee8431ec3b0ed7f0df9425e72fbe678b06",
+  "status": "passed",
+  "trade_count": 655,
+  "verified_input_count": 1540
+}

@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-09-01T15:50:55+08:00",
+  "decision": "stage004_invalid_baseline_reproduction_stop_before_candidate",
+  "baseline_reference_parity": {
+    "passed": false,
+    "gates": {
+      "end_equity_within_tolerance": false,
+      "total_return_pct_within_tolerance": false,
+      "max_dd_pct_within_tolerance": true,
+      "sharpe_within_tolerance": false,
+      "total_slippage_within_tolerance": false,
+      "total_trade_count_within_tolerance": true,
+      "win_rate_pct_within_tolerance": false,
+      "broker10_peak_margin_to_equity_pct_within_tolerance": true
+    },
+    "actual": {
+      "end_equity": 21678173.800000016,
+      "total_return_pct": 14352.115866666676,
+      "max_dd_pct": -39.91474607744346,
+      "sharpe": 1.5852658463483842,
+      "total_slippage": 2166380.0,
+      "total_trade_count": 798.0,
+      "win_rate_pct": 53.49544072948328,
+      "broker10_peak_margin_to_equity_pct": 93.58070146346671
+    },
+    "expected": {
+      "end_equity": 21870488.8,
+      "total_return_pct": 14480.3259,
+      "max_dd_pct": -39.9147,
+      "sharpe": 1.586976,
+      "total_slippage": 2163390.0,
+      "total_trade_count": 798.0,
+      "win_rate_pct": 53.7348,
+      "broker10_peak_margin_to_equity_pct": 93.5807
+    },
+    "deltas": {
+      "end_equity": -192314.9999999851,
+      "total_return_pct": -128.21003333332374,
+      "max_dd_pct": -4.607744345719311e-05,
+      "sharpe": -0.0017101536516157534,
+      "total_slippage": 2990.0,
+      "total_trade_count": 0.0,
+      "win_rate_pct": -0.23935927051672223,
+      "broker10_peak_margin_to_equity_pct": 1.463466716700168e-06
+    },
+    "tolerances": {
+      "end_equity": 0.11,
+      "total_return_pct": 0.00011,
+      "max_dd_pct": 0.00011,
+      "sharpe": 1.1e-06,
+      "total_slippage": 0.01,
+      "total_trade_count": 0.01,
+      "win_rate_pct": 0.00011,
+      "broker10_peak_margin_to_equity_pct": 0.00011
+    }
+  },
+  "safety": {
+    "writes_production": false,
+    "ctp_connected": false,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0
+  }
+}

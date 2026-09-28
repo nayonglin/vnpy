@@ -1,0 +1,11 @@
+{
+  "verified_at": "2026-09-06T09:37:10.849114+08:00",
+  "pdf_page": 45,
+  "printed_page": 44,
+  "visual_checked": true,
+  "text_sha256": "7ac6192796ac25bde5c0512c2b0810a538bc905f1499f9faba15dad427404ab4",
+  "image_sha256": "0fb3a84446a32ae95e6d801b02edb5e59f5f6f88cef16ac9b5e9544d1f88b080",
+  "render_status": "exit_0_after_fontconfig_warning",
+  "render_termination_attempt": "process_already_finished_no_signal_delivered",
+  "gazette_sha256": "a2f9302b1cb84bd63248c68d4ea4daf8cb7b91e05992eea7a6975d0243d56f0a"
+}

@@ -1,0 +1,9 @@
+{
+  "conditional_pit_samples.csv": "22fc20b184f1f0e283d0bc2041a37d9bc778646c6fcaad662235c87f2e216cfc",
+  "fold_audit.csv": "92082f0791376e3b1df337e4b07a4bc7cb1ef0e0fd3c1672141e809e3e773c69",
+  "model_parameters.csv": "b26acc4ea2ca16fd13c5a0b4712be5848037c433121b4750e45a4de254a1d90d",
+  "monthly_metrics.csv": "929faa683031c54b5d6195193d0e1e91df6b3d483c75a192368bdf08c3be26a2",
+  "oos_predictions.csv": "26ac9ea9f86aa80feaef2cb9de178b39c50f3a1473190b699146bc906f33bed9",
+  "report.md": "7be17aaf1e08f49649918863b96b7e91261ece6fceaaf75ff18949f31a7aeb89",
+  "stage002_summary.json": "2be847d9b0df073d5492656d2a134ac8a03e3828f7f0478d262bc901151b3411"
+}

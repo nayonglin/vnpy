@@ -1,0 +1,80 @@
+{
+  "artifacts": {
+    "expiry_fallbacks.csv.gz": {
+      "sha256": "e94a2647392dafe4fa611a8373dcfb141f32cb87fbf7af443a1b7d9d340c08a0",
+      "size": 452
+    },
+    "expiry_safe_legs.csv.gz": {
+      "sha256": "db2fcffc24053cbb5c540a699bc47f19149d54eeb66aa2b57057707f346a92da",
+      "size": 8335308
+    },
+    "expiry_safe_paths.csv.gz": {
+      "sha256": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+      "size": 230239
+    },
+    "input_identities.json": {
+      "sha256": "65ab949bbd1601bdad3507136b7b6cf38ce85c8c00706a3d619e9d86548c047e",
+      "size": 2457
+    },
+    "path_failures.csv.gz": {
+      "sha256": "44c8980b6c04e65036ddd2d694ee2b5672bd5af28e1e6c026ae8aec40a6daa1e",
+      "size": 253
+    },
+    "report.md": {
+      "sha256": "68a88a1bc81c534e0f59f3111f768d8a67d3cb09a4381df2e0a2cafb380ae6c0",
+      "size": 807
+    },
+    "summary.json": {
+      "sha256": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+      "size": 8390
+    },
+    "upstream_verification.json": {
+      "sha256": "ecb9588da732167a2341c5f1609d02fce5c20adcb2732a27210484119094a9db",
+      "size": 234
+    }
+  },
+  "input_identities": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "v2_legs": {
+      "mtime_ns": 1788540753080670961,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_legs.csv.gz",
+      "sha256": "7f0d6092a0166fc1fe8ee5b0fbb5f4e4166678cf82e0dedb7f882bab5782b149",
+      "size": 4677683
+    },
+    "v2_manifest": {
+      "mtime_ns": 1788540753112288192,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/artifact_manifest.json",
+      "sha256": "f2a4cf72f0bddeb7fc103bc30714f6fc3380bc7f099bda2a16f57efb667797fd",
+      "size": 3865
+    },
+    "v2_paths": {
+      "mtime_ns": 1788540747532916264,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/roll_aware_label_plan.csv.gz",
+      "sha256": "b67ac38d242260ff685422c20deb7ffc24cbc31f3e1deef8fc7f9b476c8a038a",
+      "size": 233878
+    },
+    "v2_summary": {
+      "mtime_ns": 1788540753087730235,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_roll_aware_product_labels_v2/artifacts/stage001_v2_roll_aware_label_plan/summary.json",
+      "sha256": "ab605d61fe2a26314fa8e351d00e829929392052f6b4b10055eb509954a6ea57",
+      "size": 7887
+    }
+  }
+}

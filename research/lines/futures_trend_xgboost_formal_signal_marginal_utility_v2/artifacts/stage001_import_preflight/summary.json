@@ -1,0 +1,47 @@
+{
+  "font_cache": {
+    "absolute_path_count": 0,
+    "afm_count": 60,
+    "font_manager_version": 390,
+    "sha256": "13e74b8b71bc612a81a67da228ab73c718d92ffb80896f3bdf481c0119938479",
+    "ttf_count": 38
+  },
+  "formal_identity": {
+    "capital": 150000.0,
+    "manifest_identity_sha256": "4d92133bd67821a421bf6017c477015e79a3a8e36889ae4eb527bb11a31956a5",
+    "official_live_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+    "release_commit": "e3bff060154736e18e3dff1268ca55137c39d462",
+    "release_id": "m0005_20260901T165450+0800_1961d98ccb2b",
+    "strategy_version": "ai_top10_plus_fu_official_live_v1"
+  },
+  "formal_replay_call_count": 0,
+  "line_id": "futures_trend_xgboost_formal_signal_marginal_utility_v2",
+  "network_connection_attempt_count": 0,
+  "portable_receipts_equal": true,
+  "production_head": "d492ee072aa5a9d71477235d79f17d2a5db59db3",
+  "release_attestation_sha256": "e4e8a149173b58c208533492723d02184a2fd5bf36c3ff7c7110b4fe2a1a0d9a",
+  "schema_version": 1,
+  "sensitive_counters": {
+    "account_query_count": 0,
+    "candidate_strategy_run_count": 0,
+    "ctp_connection_count": 0,
+    "holdout_read_count": 0,
+    "label_build_count": 0,
+    "label_value_read_count": 0,
+    "model_fit_count": 0,
+    "network_connection_count": 0,
+    "order_api_called_count": 0,
+    "prediction_count": 0,
+    "production_file_write_count": 0,
+    "sensitive_module_import_count": 0,
+    "subprocess_spawn_count": 0
+  },
+  "stage": "stage001_import_preflight",
+  "status": "passed",
+  "worker_count": 2,
+  "worker_ids": [
+    "A1",
+    "A2"
+  ],
+  "worker_pids_distinct": true
+}

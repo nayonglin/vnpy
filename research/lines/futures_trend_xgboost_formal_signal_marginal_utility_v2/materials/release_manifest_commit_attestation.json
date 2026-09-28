@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "repo_root": "/Users/bytedance/Desktop/person/vnpy_production_live",
+  "current_relative_path": "official_strategy_materials/CURRENT.json",
+  "current_sha256": "f17c0f6bfeea4a08ec7c22a1eb63d4b51e4cfb2472f1ce07fac8ce2cc570b219",
+  "manifest_relative_path": "official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0005_20260901T165450+0800_1961d98ccb2b/manifest.json",
+  "manifest_sha256": "d62e58d01284e30b28054387592604862ffeff6e55a13c63192793e95bc55c21",
+  "manifest_git_blob_oid": "eb0d87aee85607ade41872ff504a8b3651c72ef2",
+  "release_commit": "e3bff060154736e18e3dff1268ca55137c39d462",
+  "release_id": "m0005_20260901T165450+0800_1961d98ccb2b",
+  "strategy_version": "ai_top10_plus_fu_official_live_v1",
+  "manifest_identity_sha256": "4d92133bd67821a421bf6017c477015e79a3a8e36889ae4eb527bb11a31956a5"
+}

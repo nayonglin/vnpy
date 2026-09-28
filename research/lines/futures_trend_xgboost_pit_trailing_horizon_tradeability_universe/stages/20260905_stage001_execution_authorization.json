@@ -1,0 +1,66 @@
+{
+  "allowed_data_reads": [
+    "frozen_window_identity",
+    "prior_dynamic_failure_bundle_identity",
+    "catalog_contract_identity",
+    "catalog_expire_date",
+    "bar_identity",
+    "bar_volume",
+    "bar_open_interest",
+    "trailing_horizon_mapping_endpoint_and_event_qualification",
+    "future_path_volume_and_open_interest_after_selected_windows_freeze"
+  ],
+  "authorization_basis": "用户已明确授权，并声明后续研究操作默认授权，不再逐次询问",
+  "authorized": true,
+  "authorized_at": "2026-09-05T02:37:45+08:00",
+  "authorized_scope": "Stage001唯一一次无close、无标签、无训练的历史20日镜像可成交宇宙资格执行",
+  "forbidden_scope": [
+    "future_mapping_endpoint_or_capacity_used_for_universe_selection",
+    "same_day_or_future_historical_observation",
+    "future_main_contract_mapping",
+    "backward_expiry_roll",
+    "close_value_read",
+    "return_calculation",
+    "label_value_read",
+    "model_fit_or_predict",
+    "strategy_backtest",
+    "holdout_read",
+    "ctp_connection",
+    "order_api",
+    "production_write"
+  ],
+  "implementation_sha256": {
+    "core": "2a43a21db8a88de63ee207734ec0c87f8e9c91182024006be0239c596fbf11ab",
+    "core_tests": "d546f42164a5e7edf1d05695e87ef8c27750af857618d7b7a730e6bd8c0ba8d0",
+    "dynamic_core_dependency": "03fd08ce0e04a7a779b57adb14a27a32b4a0544392bdffe896d8b81833089496",
+    "dynamic_runner_dependency": "8ec6fce44cc87a6aea07b555f4a2f77954d64d8a18dcbcaaa886110b47d3734e",
+    "plan": "deb896a74ec5eadc074cb4c8b5fb82d8e08e967ec3eb47da69e5022ecddf6482",
+    "preregistration": "7a51df917abed5907ccb65fd0e2a67ce3b9aec871d3bb65bdd13137629c522b4",
+    "publisher_dependency": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+    "runner": "2dcdcdf75a3769dd65484d820590b534664e60e83d04ab2f3cd161a87a8abc13",
+    "runner_tests": "782d5bfe5a244cd7fc2b06ce8e5684a16e76afcb33b13b7335bc208bcdfa681d",
+    "tradeability_core_dependency": "491e7d5470618fa1a038661f67da577d5e8e57eb183f61217d20e6fd00773ba4",
+    "v2_manifest_adapter_dependency": "d9440071f4035286197a37d4f0aa1bac8e13f6a764a571a74f89e0be8632a238"
+  },
+  "input_sha256": {
+    "prior_dynamic_manifest": "452bd28ff22f66dbd987426f23252df875e5c4011b702eca7d1e511d9330f4e1",
+    "prior_dynamic_summary": "61c36ba8bedfa77ae4ac681fa151724db5235ff847f9b3dc9f243ccdd52be93e",
+    "source_bars": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+    "source_catalog": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+    "source_manifest": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+    "upstream_manifest": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+    "upstream_paths": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+    "upstream_summary": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f"
+  },
+  "line_id": "futures_trend_xgboost_pit_trailing_horizon_tradeability_universe",
+  "nonce": "ed050d77-12a3-4a6a-a9f1-12461c16afa8",
+  "regression_tests_passed": 332,
+  "runtime": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "platform": "macOS-15.7.4-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "stage": "stage001_trailing_horizon_tradeability_qualification"
+}

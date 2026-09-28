@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "stage": "stage001_formal_event_feature_qualification",
+  "line_id": "futures_trend_xgboost_formal_signal_marginal_utility",
+  "campaign_nonce": "0dd82d24bbe5d663a628a617738acd27d3c8d156f10569726768fff3146d62fa",
+  "lease_id": "bd22b6dbea9c481ad350d5ed7f505fcd9acd476c3ecfcf84106ece55e3ddc706",
+  "status": "running",
+  "phase": "worker_a1",
+  "sequence": 2,
+  "created_at": "2026-09-05T16:22:54+08:00",
+  "updated_at": "2026-09-05T16:22:54+08:00",
+  "counters": {
+    "label_value_read_count": 0,
+    "label_build_count": 0,
+    "model_fit_count": 0,
+    "prediction_count": 0,
+    "candidate_strategy_run_count": 0,
+    "holdout_read_count": 0,
+    "network_connection_count": 0,
+    "ctp_connection_count": 0,
+    "account_query_count": 0,
+    "order_api_called_count": 0,
+    "production_file_write_count": 0,
+    "sensitive_module_import_count": 0,
+    "subprocess_spawn_count": 0
+  },
+  "error": null
+}

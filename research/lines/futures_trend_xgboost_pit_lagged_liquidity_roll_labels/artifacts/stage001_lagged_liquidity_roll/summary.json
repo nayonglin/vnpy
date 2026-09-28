@@ -1,0 +1,201 @@
+{
+  "all_gates_passed": false,
+  "capacity_failure_counts": {
+    "volume_below_one_lot_capacity": 304,
+    "volume_below_one_lot_capacity|open_interest_below_one_lot_capacity": 23
+  },
+  "capacity_invalid_event_rows": 327,
+  "capacity_invalid_path_rows": 777,
+  "close_value_reads": 0,
+  "created_at": "2026-09-05T02:20:42+08:00",
+  "ctp_connection_count": 0,
+  "daily_candidate_rows": 643843,
+  "daily_mapping_invalid_rows": 8868,
+  "daily_mapping_rows": 67095,
+  "daily_mapping_valid_rows": 58227,
+  "decision": "stage001_lagged_liquidity_roll_fail_close_no_label_values",
+  "dynamic_leg_rows": 1097520,
+  "event_role_counts": {
+    "entry": 54413,
+    "exit": 54413,
+    "roll_close": 26757,
+    "roll_open": 26757
+  },
+  "execution_event_rows": 162340,
+  "expected_counts": {
+    "holding_period": 20,
+    "minimum_candidates_per_qid": 30,
+    "minimum_open_interest": 100.0,
+    "minimum_volume": 100.0,
+    "path_qids": 1046,
+    "path_rows": 56272
+  },
+  "future_return_calculations": 0,
+  "gates": {
+    "candidate_breadth_gate": true,
+    "causal_candidate_selection_gate": true,
+    "complete_dynamic_mapping_gate": false,
+    "daily_mapping_calendar_gate": true,
+    "dynamic_leg_structure_gate": true,
+    "execution_event_structure_gate": false,
+    "frozen_window_gate": true,
+    "identity_gate": true,
+    "input_identity_gate": true,
+    "minimum_one_lot_capacity_gate": false,
+    "monotone_expiry_coverage_gate": false,
+    "price_observation_quality_gate": false,
+    "source_manifest_gate": true,
+    "strict_lag_selection_gate": true,
+    "upstream_decision_gate": true,
+    "upstream_manifest_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "implementation_identities": {
+    "core_sha256": "03fd08ce0e04a7a779b57adb14a27a32b4a0544392bdffe896d8b81833089496",
+    "runner_sha256": "8ec6fce44cc87a6aea07b555f4a2f77954d64d8a18dcbcaaa886110b47d3734e",
+    "tradeability_core_sha256": "491e7d5470618fa1a038661f67da577d5e8e57eb183f61217d20e6fd00773ba4"
+  },
+  "independent_reviewer_reason": "no_backtest_result_produced",
+  "independent_reviewer_required": false,
+  "input_identities_after": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788542077936193109,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/artifact_manifest.json",
+      "sha256": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+      "size": 3709
+    },
+    "upstream_paths": {
+      "mtime_ns": 1788542068410157241,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/expiry_safe_paths.csv.gz",
+      "sha256": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+      "size": 230239
+    },
+    "upstream_summary": {
+      "mtime_ns": 1788542077907890722,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/summary.json",
+      "sha256": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+      "size": 8390
+    }
+  },
+  "input_identities_before": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788542077936193109,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/artifact_manifest.json",
+      "sha256": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+      "size": 3709
+    },
+    "upstream_paths": {
+      "mtime_ns": 1788542068410157241,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/expiry_safe_paths.csv.gz",
+      "sha256": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+      "size": 230239
+    },
+    "upstream_summary": {
+      "mtime_ns": 1788542077907890722,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/summary.json",
+      "sha256": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+      "size": 8390
+    }
+  },
+  "input_path_qids": 1046,
+  "input_path_rows": 56272,
+  "label_value_reads": 0,
+  "leg_failure_counts": {
+    "no_eligible_same_or_later_contract": 3797
+  },
+  "line_id": "futures_trend_xgboost_pit_lagged_liquidity_roll_labels",
+  "mapping_failure_counts": {
+    "no_eligible_contract": 4950,
+    "no_eligible_same_or_later_contract": 3918
+  },
+  "mapping_invalid_leg_rows": 3797,
+  "mapping_invalid_path_rows": 463,
+  "maximum_candidates_observed": 59,
+  "median_candidates_observed": 52.0,
+  "minimum_candidates_observed": 48,
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "opened_bar_columns": [
+    "datetime",
+    "symbol",
+    "exchange",
+    "interval",
+    "volume",
+    "open_interest"
+  ],
+  "order_api_called_count": 0,
+  "price_failure_counts": {
+    "previous_volume_nonpositive": 15,
+    "return_volume_nonpositive": 37
+  },
+  "price_invalid_leg_rows": 52,
+  "price_invalid_path_rows": 500,
+  "production_files_written": 0,
+  "qualification_invalid_path_rows": 790,
+  "qualification_valid_path_rows": 54086,
+  "raw_eligible_candidate_rows": 377683,
+  "retained_path_qids": 1046,
+  "retained_path_rows": 54876,
+  "roll_event_rows": 26873,
+  "same_day_or_future_selection_violation_rows": 0,
+  "sealed_holdout_rows": 0,
+  "selection_after_query_rows": 1042644,
+  "source_verification": {
+    "artifact_count": 13,
+    "errors": [],
+    "manifest_mode": "logical_key_with_path",
+    "verified": true
+  },
+  "stage": "stage001_lagged_liquidity_roll_qualification",
+  "strategy_backtest_runs": 0,
+  "unretained_path_rows": 1396,
+  "upstream_summary_identity": {
+    "decision": "stage001_expiry_safe_roll_mapping_pass_allow_roll_label_generator_preregistration_only",
+    "invalid_leg_rows": 0,
+    "invalid_path_rows": 0,
+    "path_qids": 1046,
+    "path_rows": 56272
+  },
+  "upstream_verification": {
+    "artifact_count": 8,
+    "errors": [],
+    "input_count": 7,
+    "verified": true
+  }
+}

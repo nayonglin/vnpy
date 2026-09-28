@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "third_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a06f21-7782-7f21-9ffc-a3677419247f",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 3,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "finding": "Direct worker invocation is not bound to authorization, durable state or a one-use parent capability.",
+      "action": "Bind worker ID and exact paths to nonce/lease in a durable one-use capability before any worker output or production import."
+    },
+    {
+      "id": "P2-1",
+      "severity": "P2",
+      "finding": "Handled execution-state creation faults delete staging and can erase authorization-consumption evidence.",
+      "action": "Fsync the parent after staging creation and preserve all nonce-bound staging for terminal reconciliation."
+    },
+    {
+      "id": "P2-2",
+      "severity": "P2",
+      "finding": "Failure-bundle publication has no recovery for process crashes before atomic rename.",
+      "action": "Add nonce-and-lease-bound recoverable failure staging and process-level fault tests."
+    },
+    {
+      "id": "P2-3",
+      "severity": "P2",
+      "finding": "Raw worker-issued receipts are deleted and the portable receipt lacks an exact final audit.",
+      "action": "Retain raw receipts, bind their file SHA, freeze portable schema and audit copied evidence after rename."
+    }
+  ],
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

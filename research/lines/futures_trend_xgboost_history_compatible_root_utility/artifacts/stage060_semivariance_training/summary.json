@@ -1,0 +1,37 @@
+{
+  "baseline_observation_count": 1002,
+  "baseline_predicted_exit_count": 200,
+  "evidence": "development_walk_forward_not_untouched_holdout",
+  "feature_count": 11,
+  "historical_model_fit_count": 120,
+  "month_count": 80,
+  "network_attempt_count": 0,
+  "new_strategy_replay_count": 0,
+  "output_identities": {
+    "baseline_observation_predictions.csv": {
+      "mtime_ns": 1788744808756921032,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage060_semivariance_training/baseline_observation_predictions.csv",
+      "sha256": "912281d83532c3d1980e8f20fa04b7605175370a5467ce4ab3f0a05a9d74b1d7",
+      "size": 213483
+    },
+    "input_manifest.json": {
+      "mtime_ns": 1788744799314584589,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage060_semivariance_training/input_manifest.json",
+      "sha256": "c145575c34b66344c174fe524378dbc79bf1477956368aad863d66b1cf4d4867",
+      "size": 8888247
+    },
+    "model_index.json": {
+      "mtime_ns": 1788744808752404586,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage060_semivariance_training/model_index.json",
+      "sha256": "10823c53ec4a8865aa9161eab0b22f06f21189657bde674806b16c3e2e984b5c",
+      "size": 23906
+    }
+  },
+  "parent_implementation": "stage044_holding_training",
+  "reviewer_count": 0,
+  "saved_prediction_mismatch_count": 0,
+  "semivariance_feature_summary_sha256": "8f69dfa9cd6c2c087323e0d775299043bb23cd39d61440f02e79b00d9f838faa",
+  "stage": "stage060_semivariance_training",
+  "status": "passed",
+  "trained_month_count": 60
+}

@@ -1,0 +1,38 @@
+{
+  "decision": "BLOCK_STAGE003_IMPLEMENTATION_FOR_RAW_PROBABILITY_CONTRACT_GAP",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_raw_probability_contract_gap_review.md",
+  "review_sha256": "59b6294dd380dce2cbadb087a669d28834e1ca45cc8804f2e6c593ee32e8cd53",
+  "frozen_stage002_feature_panel_sha256": "12b1e6afc5b4411e0cbab9b9ea59a6137eefcd7358decd69d2c327cae1407547",
+  "frozen_full_feature_split_sha256": "a87c73e94eb2afae47ffb106ec60d2720ff881fcecda496aa81af5895165c2b1",
+  "proposal_assessment": {
+    "permit_exact_existing_pit_logistic_probability_column_from_sha_frozen_full_split": "ACCEPT_AS_MINIMAL_NO_LABEL_DATA_SOURCE_REMEDIATION",
+    "add_only_the_new_remediation_to_authorization_binding": "INSUFFICIENT",
+    "required_authorization_binding": "Bind the new remediation, this gap review and decision, the post-remediation independent prereview and decision, and all existing final contract, runner, tests, runtime, and final implementation review identities using one exact key set."
+  },
+  "required_before_reconsideration": [
+    "Add a no-label remediation that permits exactly pit_logistic_probability in addition to the five already allowed full-split metadata columns.",
+    "Freeze one-to-one join, finiteness, range, and 1e-12 delta consistency gates.",
+    "Prohibit pit_logistic_probability from entering the six-feature XGB matrix or label logic.",
+    "Add synthetic and adversarial tests for source, projection, identity, and feature-isolation violations.",
+    "Run a new independent prereview and bind the complete governance chain before any authorization can exist."
+  ],
+  "not_authorized": [
+    "continued Stage003 implementation",
+    "reading any label values",
+    "fit or training",
+    "prediction or effect evaluation",
+    "backtesting",
+    "creating an authorization",
+    "holdout access",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "actions": {
+    "evaluated_count": 210,
+    "false_negative": 62,
+    "false_positive": 44,
+    "harm_recall": 0.38,
+    "period": "all",
+    "skip_count": 82,
+    "skip_precision": 0.4634146341463415,
+    "skipped_negative_return_count": 51,
+    "skipped_positive_both_count": 13,
+    "skipped_positive_return_count": 31,
+    "skipped_zero_return_count": 0,
+    "true_harm_count": 100,
+    "true_harm_rate": 0.47619047619047616,
+    "true_negative": 66,
+    "true_positive": 38
+  },
+  "candidate_primary_gate_passed": false,
+  "censored_events": 2,
+  "evaluated_events": 210,
+  "events": 276,
+  "evidence_type": "post_failure_descriptive_diagnostics",
+  "new_label_count": 0,
+  "new_model_fit_count": 0,
+  "new_model_prediction_count": 0,
+  "new_strategy_replay_count": 0,
+  "output_identities": {
+    "action_metrics.csv": {
+      "mtime_ns": 1788632821389319682,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/action_metrics.csv",
+      "sha256": "ac9ad071961ded2c08d7c3b84d9a44698f80bf487acb93aa03aa23cd3e514598",
+      "size": 837
+    },
+    "common_path_differences.csv": {
+      "mtime_ns": 1788632821397844037,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/common_path_differences.csv",
+      "sha256": "40680c18a47e424e6fc8624e15ee6c87355e08afeb51f1fe1ed8e8e3d27ae0c4",
+      "size": 161783
+    },
+    "event_predictions.csv": {
+      "mtime_ns": 1788632821387776595,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/event_predictions.csv",
+      "sha256": "0534369bd1d0e6c4dc9a20680bdf8c25f31d0d4827e20d0a6092bd5ed7eccc17",
+      "size": 207028
+    },
+    "regression_metrics.csv": {
+      "mtime_ns": 1788632821388717014,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/regression_metrics.csv",
+      "sha256": "c54069e8646263863df0d3e9008cdb94d445167430770307558b7ea9cb847a1a",
+      "size": 3600
+    }
+  },
+  "path_drift": {
+    "a_count": 276,
+    "a_only_count": 0,
+    "a_skip_common_count": 82,
+    "action_changed_count": 29,
+    "c_count": 284,
+    "c_only_count": 8,
+    "c_skip_common_count": 81,
+    "common_count": 276,
+    "feature_changed_counts": {
+      "active_positions_fraction": 58,
+      "directional_ma_gap": 0,
+      "directional_ma_slope": 0,
+      "directional_rsi": 0,
+      "loss_streak": 110,
+      "margin_to_equity_before": 123,
+      "open_interest_change_pct": 0,
+      "portfolio_drawdown_pct": 190,
+      "same_direction_correlation": 40,
+      "stop_distance_pct": 0
+    }
+  },
+  "regression": [
+    {
+      "baseline_mae": 0.04586401174321002,
+      "baseline_mse": 0.006892307478053617,
+      "count": 210,
+      "mean_prediction_error": -0.004180807033685241,
+      "model_mae": 0.04768646429408718,
+      "model_mse": 0.00692610558733817,
+      "mse_skill": -0.004903743687026951,
+      "pearson": 0.09282915013890032,
+      "period": "all",
+      "standardized_baseline_mse": 1.343048118032896,
+      "standardized_count": 210,
+      "standardized_model_mse": 1.3160134551885743,
+      "standardized_mse_skill": 0.020129333030835972,
+      "target": "return_marginal"
+    },
+    {
+      "baseline_mae": 0.016138308626812776,
+      "baseline_mse": 0.0005440866213722332,
+      "count": 210,
+      "mean_prediction_error": -0.0002891732952225292,
+      "model_mae": 0.01649799735253174,
+      "model_mse": 0.0005530946275040591,
+      "mse_skill": -0.016556198549978918,
+      "pearson": 0.0695289728908632,
+      "period": "all",
+      "standardized_baseline_mse": 1.4124760084194263,
+      "standardized_count": 210,
+      "standardized_model_mse": 1.417877274627884,
+      "standardized_mse_skill": -0.0038239702311841928,
+      "target": "drawdown_marginal"
+    }
+  ],
+  "reviewer_started": false,
+  "source_count": 2665,
+  "stage": "stage010_failure_diagnostics",
+  "status": "passed",
+  "training_statistics_recomputed_months": 80,
+  "untrained_events": 64
+}

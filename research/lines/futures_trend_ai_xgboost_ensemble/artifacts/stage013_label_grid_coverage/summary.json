@@ -1,0 +1,79 @@
+{
+  "line_id": "futures_trend_ai_xgboost_ensemble",
+  "stage": "Stage013",
+  "generated_at": "2026-09-01T18:06:51+08:00",
+  "decision": "stage013_full_grid_required_activity_pruning_rejected",
+  "coverage": {
+    "months": 51,
+    "full_grid_runs": 459,
+    "rank10_active_months": 12,
+    "active_challenger_rows": 99,
+    "months_with_active_challenger": 45,
+    "months_with_two_active_challengers": 31
+  },
+  "activity_pruned_runs_for_diagnostic_only": 150,
+  "runs_omitted_if_illegally_pruned": 309,
+  "activity_pruning_allowed": false,
+  "upstream_identity_clean": false,
+  "label_batch_launch_allowed": false,
+  "identity_blockers": [
+    "workspace_root_sitecustomize_not_in_stage012_contract",
+    "python_site_packages_pth_not_in_stage012_contract",
+    "stage012_identity_hardened_cold_rerun_pending",
+    "stage012_independent_review_pending"
+  ],
+  "reason": "T18 activity is post-decision and account-context-dependent; inactivity cannot establish a zero Top10 counterfactual label",
+  "budget": {
+    "stage012_observed_workers": 4,
+    "stage012_wall_seconds_median": 58.53679591701075,
+    "stage012_wall_seconds_max": 68.15759804198751,
+    "full_grid_main_runs": 459,
+    "A2_sentinel_repeat_runs": 5,
+    "total_process_runs": 464,
+    "serial_hours_at_observed_median": 7.544742584859163,
+    "serial_hours_at_observed_max": 8.78475708096728,
+    "two_worker_hours_at_observed_max": 4.39237854048364,
+    "four_worker_hours_at_observed_max": 2.19618927024182,
+    "budget_is_lower_bound_for_later_end_dates": true
+  },
+  "model_geometry": {
+    "month_groups": 51,
+    "rows": 459,
+    "legacy_feature_count": 108,
+    "rows_per_legacy_feature": 4.25,
+    "month_groups_per_legacy_feature": 0.4722222222222222,
+    "direct_108_feature_training_allowed": false,
+    "label_based_feature_selection_allowed": false
+  },
+  "next_protocol": {
+    "complete_rank_grid": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "A2_sentinel_every_n_months": 12,
+    "cold_process": true,
+    "checkpoint_reuse": false,
+    "campaign_level_identity_contract": true,
+    "compact_target_period_artifacts": true,
+    "partial_result_driven_pruning": false
+  },
+  "inputs": {
+    "activity_audit": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage011_marginal_slot_activity_qualification/activity_audit.csv",
+    "activity_audit_sha256": "943262bb54a0b1eb75baeeae09bf2fedf7ef744eb7c84814b40d63a1025b57fc",
+    "stage012_decision": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage012_active_account_slot_probe/attempt_20260901T175613+0800_49365/decision.json",
+    "stage012_decision_sha256": "28de27fcb7a7249ccca406b122f78057bd3d726c89759e60c571551a369a5d45",
+    "preregistration": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/stages/20260901_1805_stage013_label_grid_coverage.md",
+    "preregistration_sha256": "fda2cd1db36b35a021a675f7dab0139de26f0178d23ba224100eaceb48a6f5fa"
+  },
+  "runs_backtest": false,
+  "trains_model": false,
+  "order_api_called_count": 0,
+  "ctp_connected": false
+}

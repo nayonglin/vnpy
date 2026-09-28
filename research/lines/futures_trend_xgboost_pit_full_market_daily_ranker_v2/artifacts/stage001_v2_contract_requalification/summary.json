@@ -1,0 +1,230 @@
+{
+  "all_gates_passed": true,
+  "corrected_contract_decision": "stage001_daily_ranker_contract_pass_allow_stage002_preregistration_only",
+  "corrected_contract_gates": {
+    "feature_gate": true,
+    "formal_scoring_fold_gate": true,
+    "input_identity_gate": true,
+    "label_plan_gate": true,
+    "query_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "corrected_contract_observed": {
+    "action_months": 48,
+    "all_gates_passed": true,
+    "base_query_count": 1067,
+    "base_row_count": 57528,
+    "base_width_max": 61,
+    "base_width_median": 53.0,
+    "base_width_min": 49,
+    "challenger_rows": 1771,
+    "created_at": "2026-09-04T23:28:01+08:00",
+    "ctp_connection_count": 0,
+    "decision": "stage001_daily_ranker_contract_pass_allow_stage002_preregistration_only",
+    "effect_evaluable_folds": 36,
+    "evidence_scope": "label_free_pit_daily_ranker_contract_only",
+    "expected_counts": {
+      "action_months": 48,
+      "base_query_count": 1067,
+      "base_row_count": 57528,
+      "base_width_max": 61,
+      "base_width_median": 53.0,
+      "base_width_min": 49,
+      "challenger_rows": 1771,
+      "effect_evaluable_folds": 36,
+      "first_fold": "2023-03-31",
+      "first_query_date": "2022-01-28",
+      "fold_count": 37,
+      "formal_anchor_rows": 48,
+      "inference_only_folds": 1,
+      "label_query_count": 1046,
+      "label_row_count": 52484,
+      "label_width_max": 60,
+      "label_width_median": 50.0,
+      "label_width_min": 30,
+      "last_fold": "2026-06-30",
+      "last_query_date": "2026-06-30",
+      "maximum_train_qids": 1045,
+      "minimum_challengers_per_month": 34,
+      "minimum_nonzero_cross_section_qids": 1000,
+      "minimum_train_qids": 261,
+      "model_feature_count": 19,
+      "open_interest_ratio_missing": 80,
+      "raw_feature_count": 17,
+      "rejected_label_rows": 5044,
+      "volume_ratio_missing": 460
+    },
+    "first_fold": "2023-03-31",
+    "first_query_date": "2022-01-28",
+    "fold_count": 37,
+    "forbidden_model_feature_count": 0,
+    "formal_anchor_rows": 48,
+    "formal_month_violation_count": 0,
+    "formal_rank10_identity_valid": true,
+    "future_close_value_reads": 0,
+    "future_feature_rows_used": 0,
+    "future_label_rows_used": 0,
+    "future_return_calculations": 0,
+    "future_train_qid_count": 0,
+    "gates": {
+      "feature_gate": true,
+      "formal_scoring_fold_gate": true,
+      "input_identity_gate": true,
+      "label_plan_gate": true,
+      "query_gate": true,
+      "zero_side_effect_gate": true
+    },
+    "independent_reviewer_reason": "no_backtest_result_produced",
+    "independent_reviewer_required": false,
+    "inference_only_folds": 1,
+    "input_identity_stable": true,
+    "label_forbidden_column_count": 0,
+    "label_identity_violation_count": 0,
+    "label_query_count": 1046,
+    "label_row_count": 52484,
+    "label_value_reads": 0,
+    "label_width_max": 60,
+    "label_width_median": 50.0,
+    "label_width_min": 30,
+    "last_fold": "2026-06-30",
+    "last_query_date": "2026-06-30",
+    "line_id": "futures_trend_xgboost_pit_full_market_daily_ranker",
+    "mapping_rows": 105440,
+    "maximum_train_qids": 1045,
+    "minimum_challengers_per_month": 34,
+    "minimum_nonzero_cross_section_qids": 1067,
+    "minimum_train_qids": 261,
+    "missing_flag_mismatch_count": 0,
+    "model_feature_count": 19,
+    "model_fit_count": 0,
+    "model_predict_count": 0,
+    "open_interest_ratio_missing": 80,
+    "order_api_called_count": 0,
+    "production_files_written": 0,
+    "raw_feature_count": 17,
+    "rejected_label_rows": 5044,
+    "resolved_mapping_rows": 91653,
+    "sealed_holdout_rows": 0,
+    "source_date_violation_count": 0,
+    "source_manifest_valid": true,
+    "strategy_backtest_runs": 0,
+    "unexpected_nonfinite_feature_count": 0,
+    "unresolved_mapping_rows": 13787,
+    "volume_ratio_missing": 460
+  },
+  "created_at": "2026-09-04T23:28:01+08:00",
+  "ctp_connection_count": 0,
+  "decision": "stage001_daily_ranker_v2_contract_pass_allow_stage002_preregistration_only",
+  "evidence_scope": "label_free_v1_contract_requalification_only",
+  "future_close_value_reads": 0,
+  "future_return_calculations": 0,
+  "gates": {
+    "corrected_contract_gate": true,
+    "input_identity_gate": true,
+    "liquidity_union_gate": true,
+    "upstream_manifest_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "implementation_identities": {
+    "upstream_contract_core": "2e48b80ee229ab6a40c72b945b6eaf64d3b7c05c42a609801a37146ea9dfbaf6",
+    "upstream_stage001_runner": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+    "v2_runner": "9b4bc625e6ad26817e236982466c7b945880679f7f58bcd835ced969d6a52537"
+  },
+  "independent_reviewer_reason": "no_backtest_result_produced",
+  "independent_reviewer_required": false,
+  "input_identities_after": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_mapping": {
+      "mtime_ns": 1788493417020060646,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/pit_main_contract_mapping.csv.gz",
+      "sha256": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+      "size": 339628
+    },
+    "upstream_contract_core": {
+      "mtime_ns": 1788534570186147704,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/daily_ranker_contract.py",
+      "sha256": "2e48b80ee229ab6a40c72b945b6eaf64d3b7c05c42a609801a37146ea9dfbaf6",
+      "size": 33684
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788535220558918136,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/artifacts/stage001_daily_ranker_contract/artifact_manifest.json",
+      "sha256": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a",
+      "size": 4697
+    },
+    "upstream_stage001_runner": {
+      "mtime_ns": 1788535028362727865,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/stage001_daily_ranker_contract.py",
+      "sha256": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+      "size": 35683
+    }
+  },
+  "input_identities_before": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_mapping": {
+      "mtime_ns": 1788493417020060646,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/pit_main_contract_mapping.csv.gz",
+      "sha256": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+      "size": 339628
+    },
+    "upstream_contract_core": {
+      "mtime_ns": 1788534570186147704,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/daily_ranker_contract.py",
+      "sha256": "2e48b80ee229ab6a40c72b945b6eaf64d3b7c05c42a609801a37146ea9dfbaf6",
+      "size": 33684
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788535220558918136,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/artifacts/stage001_daily_ranker_contract/artifact_manifest.json",
+      "sha256": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a",
+      "size": 4697
+    },
+    "upstream_stage001_runner": {
+      "mtime_ns": 1788535028362727865,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/stage001_daily_ranker_contract.py",
+      "sha256": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+      "size": 35683
+    }
+  },
+  "label_value_reads": 0,
+  "line_id": "futures_trend_xgboost_pit_full_market_daily_ranker_v2",
+  "liquidity_diagnostics": {
+    "open_interest": {
+      "both": 21,
+      "fail_20": 21,
+      "fail_60": 80,
+      "only_20": 0,
+      "only_60": 59,
+      "union": 80
+    },
+    "volume": {
+      "both": 233,
+      "fail_20": 273,
+      "fail_60": 420,
+      "only_20": 40,
+      "only_60": 187,
+      "union": 460
+    }
+  },
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "order_api_called_count": 0,
+  "production_files_written": 0,
+  "strategy_backtest_runs": 0,
+  "upstream_verification": {
+    "artifact_count": 10,
+    "errors": [],
+    "input_count": 9,
+    "verified": true
+  }
+}

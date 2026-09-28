@@ -1,0 +1,30 @@
+{
+  "all_observations_have_proxy_support": false,
+  "candidate_contract_count": 120,
+  "file_contract_sha256": "69af86448b02648ff9a34bd71c29b8a6c209c9bc32cbb3abb9901ebd0dd04c90",
+  "model_fit_predict_count": 0,
+  "new_download_count": 0,
+  "new_replay_count": 0,
+  "new_utility_label_count": 0,
+  "observation_count": 1002,
+  "output": {
+    "mtime_ns": 1788656277104742798,
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage035_next_window/windows.csv",
+    "sha256": "5388eb9e0f38b495ec933a86c9c467624335c05e322aa6acf078c325db86dd3f",
+    "size": 81768
+  },
+  "reviewer_started": false,
+  "source_minute_rows": 1291049,
+  "stage": "stage035_next_window",
+  "status": "minute_proxy_coverage_failed",
+  "status_counts": {
+    "first_bar_volume_insufficient": 7,
+    "proxy_supported": 99,
+    "window_missing": 896
+  },
+  "window_counts": {
+    "day": 29,
+    "missing": 896,
+    "night": 77
+  }
+}

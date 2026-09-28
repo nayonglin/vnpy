@@ -1,0 +1,46 @@
+{
+  "all_observations_qualified": true,
+  "contract_count": 120,
+  "created_at_utc": "2026-09-06T23:22:41.459383+00:00",
+  "failed_count": 0,
+  "failure_counts": {},
+  "feature_count": 11,
+  "feature_unique_counts": {
+    "directional_late_return_30m": 943,
+    "late_volume_fraction_30m": 1002
+  },
+  "historical_fit_predict_count": 0,
+  "network_attempt_count": 0,
+  "new_download_count": 0,
+  "new_label_count": 0,
+  "new_strategy_replay_count": 0,
+  "observation_count": 1002,
+  "outputs": {
+    "candidate_spec.json": {
+      "mtime_ns": 1788736960361336797,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage052_late_session_features/candidate_spec.json",
+      "sha256": "a97d84a0a324b9644fb65be00f506ef20d87fe8ec801a9ff434f2c2ed255dd43",
+      "size": 1222
+    },
+    "input_manifest.json": {
+      "mtime_ns": 1788736949091345813,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage052_late_session_features/input_manifest.json",
+      "sha256": "73131700ddd6940d620d46b5b03e6e52862224aa53e1eb00e122b40a3208621a",
+      "size": 275020
+    },
+    "observation_late_features.csv": {
+      "mtime_ns": 1788736960360545031,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage052_late_session_features/observation_late_features.csv",
+      "sha256": "bedf9ec2b676e308c4908551dbf7a9619ecb3af1d4383996f05d898366621d52",
+      "size": 311397
+    }
+  },
+  "qualified_count": 1002,
+  "reviewer_started": false,
+  "root_count": 155,
+  "source_count": 498,
+  "source_global_coverage_complete": false,
+  "source_scope": "A_observations_only",
+  "stage": "stage052_late_session_features",
+  "status": "features_qualified_no_models"
+}

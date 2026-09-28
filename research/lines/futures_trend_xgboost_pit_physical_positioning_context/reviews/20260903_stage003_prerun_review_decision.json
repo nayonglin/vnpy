@@ -1,0 +1,105 @@
+{
+  "decision": "BLOCK_STAGE003_IMPLEMENTATION",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 2,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_prerun_independent_review.md",
+  "review_sha256": "53491926fc97c8bed6d04cc522b7d27eda572fe1f84d38ebb72a5c4c478c6000",
+  "preregistration_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0318_stage003_joint_ranker_development_oos_preregistration.md",
+  "preregistration_sha256": "859d060217e6ef381170d439086ec0d7097d2c18152f2c0ff0aaacb78124cbea",
+  "stage002_manifest_sha256": "41cfef41f6e4555f4886c5ec71be92637a02250ce1a50ff7499c7b31cc8557ce",
+  "stage002_eligible_feature_panel_sha256": "12b1e6afc5b4411e0cbab9b9ea59a6137eefcd7358decd69d2c327cae1407547",
+  "stage002_month_eligibility_sha256": "26ee18e1bf9268c2bef98ac6e5138cd35a75589327443bf911ab9eef9f019853",
+  "runtime_identity_sha256": "f0a469f5a8387ba8171be5b3e2c8c6b0d9fc0e8de7f5b0914e08ef4f327fddbc",
+  "blocking_findings": [
+    "P2-1: the one-run authorization contract does not freeze exact bound-file keys, authorization decision, canonical paths, atomic create-once consumption, preflight order, or serial/concurrent rejection semantics",
+    "P2-2: pre-effect label opening only explicitly reverifies the seal and model/prediction hashes, not the actual selection, feature-order, qid, ordered-training-identity, and primary/repeat-model payloads"
+  ],
+  "p3_findings": [
+    "The two replacement-only median metrics and gates have no exact JSON semantics when the replacement set is empty"
+  ],
+  "recomputed_split": {
+    "stage002_feature_rows": 218,
+    "development_feature_rows": 153,
+    "development_active_months": 26,
+    "sealed_holdout_feature_rows": 65,
+    "sealed_holdout_active_months": 9,
+    "initial_training_qids": 13,
+    "initial_training_rows": 62,
+    "active_oos_folds": 13,
+    "fallback_months": 4,
+    "unique_authorized_label_rows": 153,
+    "other_development_main_label_rows": 113,
+    "a2_rows": 4
+  },
+  "fold_sequences": {
+    "training_qids": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "training_rows": [
+      62,
+      69,
+      75,
+      82,
+      88,
+      94,
+      100,
+      107,
+      114,
+      122,
+      130,
+      138,
+      145
+    ],
+    "test_rows": [
+      7,
+      6,
+      7,
+      6,
+      6,
+      6,
+      7,
+      7,
+      8,
+      8,
+      8,
+      7,
+      8
+    ]
+  },
+  "allowed_scope": [
+    "unlabeled_preregistration_remediation_only",
+    "independent_rereview_after_remediation"
+  ],
+  "not_authorized": [
+    "stage003_tdd_implementation",
+    "authorization_creation",
+    "aggregate_label_or_reconciliation_data_row_read",
+    "per_job_label_read",
+    "sealed_holdout_label_read_or_generation",
+    "model_training_or_parameter_search",
+    "effect_evaluation",
+    "strategy_or_true_engine_backtest",
+    "stage006_prediction_or_effect_detail_read",
+    "production_write",
+    "ctp_connection",
+    "live_trading",
+    "order_api_call"
+  ]
+}

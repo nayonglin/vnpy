@@ -1,0 +1,193 @@
+{
+  "all_gates_passed": false,
+  "candidate_contract_rows": 591664,
+  "capacity_failure_counts": {
+    "open_interest_below_one_lot_capacity": 17,
+    "volume_below_one_lot_capacity": 2755,
+    "volume_below_one_lot_capacity|open_interest_below_one_lot_capacity": 681
+  },
+  "capacity_invalid_event_rows": 3453,
+  "capacity_invalid_path_rows": 3437,
+  "close_value_reads": 0,
+  "created_at": "2026-09-05T01:56:23+08:00",
+  "ctp_connection_count": 0,
+  "decision": "stage001_query_date_fixed_contract_fail_close_no_label_values",
+  "eligible_contract_rows": 264729,
+  "event_role_counts": {
+    "entry": 54305,
+    "exit": 54305
+  },
+  "execution_event_rows": 108610,
+  "expected_counts": {
+    "history_window": 20,
+    "holding_period": 20,
+    "minimum_candidates_per_qid": 30,
+    "minimum_open_interest": 100.0,
+    "minimum_volume": 100.0,
+    "path_qids": 1046,
+    "path_rows": 56272,
+    "required_capacity_days": 18
+  },
+  "fixed_leg_rows": 1086100,
+  "future_return_calculations": 0,
+  "future_selection_rows_used": 0,
+  "gates": {
+    "candidate_breadth_gate": true,
+    "causal_selection_gate": true,
+    "execution_event_structure_gate": true,
+    "expiry_coverage_gate": true,
+    "fixed_leg_structure_gate": true,
+    "frozen_window_gate": true,
+    "identity_gate": true,
+    "input_identity_gate": true,
+    "minimum_one_lot_capacity_gate": false,
+    "price_observation_quality_gate": false,
+    "source_manifest_gate": true,
+    "upstream_decision_gate": true,
+    "upstream_manifest_gate": true,
+    "zero_side_effect_gate": true
+  },
+  "implementation_identities": {
+    "core_sha256": "5f57401433dee933887e1c1cd2988f670430da803e7ce864fd3dfc8a2c7044ff",
+    "runner_sha256": "4abf970733a69e657b3a5e5adc585b29a266d9260bd15119a708a0895701290b",
+    "tradeability_core_sha256": "491e7d5470618fa1a038661f67da577d5e8e57eb183f61217d20e6fd00773ba4"
+  },
+  "independent_reviewer_reason": "no_backtest_result_produced",
+  "independent_reviewer_required": false,
+  "input_identities_after": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788542077936193109,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/artifact_manifest.json",
+      "sha256": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+      "size": 3709
+    },
+    "upstream_paths": {
+      "mtime_ns": 1788542068410157241,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/expiry_safe_paths.csv.gz",
+      "sha256": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+      "size": 230239
+    },
+    "upstream_summary": {
+      "mtime_ns": 1788542077907890722,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/summary.json",
+      "sha256": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+      "size": 8390
+    }
+  },
+  "input_identities_before": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_catalog": {
+      "mtime_ns": 1788493417018666340,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/asof_contract_catalog.csv.gz",
+      "sha256": "c733e5d85bab4349efb9bd25e2afdd689562718ffd608bff9a4f11964ab13bfc",
+      "size": 56822
+    },
+    "source_manifest": {
+      "mtime_ns": 1788494032146758154,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/artifact_manifest.json",
+      "sha256": "e3894cd20114182e9b3a9e986ed5e0310fe264de06368b5efe1b5efb6903681a",
+      "size": 1665078
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788542077936193109,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/artifact_manifest.json",
+      "sha256": "9f768fc6de7ccd3eb240c29f0444249bd333356d756b137197dc78e4f5f44d76",
+      "size": 3709
+    },
+    "upstream_paths": {
+      "mtime_ns": 1788542068410157241,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/expiry_safe_paths.csv.gz",
+      "sha256": "a3f2c1249085b872372f8f0aca2d1cbaf77ecb8a7bc04056f9118f077c16748e",
+      "size": 230239
+    },
+    "upstream_summary": {
+      "mtime_ns": 1788542077907890722,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_expiry_safe_roll_mapping/artifacts/stage001_expiry_safe_roll_mapping/summary.json",
+      "sha256": "6f994dd88896781a7f1af9e9760890540445dc8539a6349ae416b82bcf37283f",
+      "size": 8390
+    }
+  },
+  "input_path_qids": 1046,
+  "input_path_rows": 56272,
+  "label_value_reads": 0,
+  "line_id": "futures_trend_xgboost_pit_query_date_fixed_contract_labels",
+  "maximum_candidates_observed": 58,
+  "median_candidates_observed": 51.0,
+  "minimum_candidates_observed": 48,
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "opened_bar_columns": [
+    "datetime",
+    "symbol",
+    "exchange",
+    "interval",
+    "volume",
+    "open_interest"
+  ],
+  "order_api_called_count": 0,
+  "price_failure_counts": {
+    "previous_open_interest_nonpositive": 8,
+    "previous_volume_nonpositive": 3904,
+    "return_volume_nonpositive": 2685
+  },
+  "price_invalid_leg_rows": 6597,
+  "price_invalid_path_rows": 1916,
+  "production_files_written": 0,
+  "qualification_invalid_path_rows": 3615,
+  "qualification_valid_path_rows": 50690,
+  "roll_event_rows": 0,
+  "sealed_holdout_rows": 0,
+  "selected_path_qids": 1046,
+  "selected_path_rows": 54305,
+  "selection_failure_counts": {
+    "expires_before_label_end": 51560,
+    "history_capacity_days_below_18": 64220,
+    "query_open_interest_below_minimum": 2356,
+    "query_volume_below_minimum": 208799
+  },
+  "source_verification": {
+    "artifact_count": 13,
+    "errors": [],
+    "manifest_mode": "logical_key_with_path",
+    "verified": true
+  },
+  "stage": "stage001_query_date_fixed_contract_qualification",
+  "strategy_backtest_runs": 0,
+  "unselected_path_rows": 1967,
+  "upstream_summary_identity": {
+    "decision": "stage001_expiry_safe_roll_mapping_pass_allow_roll_label_generator_preregistration_only",
+    "invalid_leg_rows": 0,
+    "invalid_path_rows": 0,
+    "path_qids": 1046,
+    "path_rows": 56272
+  },
+  "upstream_verification": {
+    "artifact_count": 8,
+    "errors": [],
+    "input_count": 7,
+    "verified": true
+  }
+}

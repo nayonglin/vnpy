@@ -1,0 +1,107 @@
+{
+  "bindings": {
+    "block_rereview": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_rereview.md",
+      "sha256": "44e889d7a15d0b738d2ce9cafddd9aab397b45d8ba46f0e125c00b48ce97c55b"
+    },
+    "block_rereview_decision": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_rereview_decision.json",
+      "sha256": "aa396094e22b71f5b6fc11ead06a4323ff42c3e65cb35af53b621b3b8b8377d0"
+    },
+    "core": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tools/development_label_batch.py",
+      "sha256": "365b50c47c8147196a8a4741475ec7613641fee99564e165374737f775b0b0bd"
+    },
+    "core_tests": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tests/test_development_label_batch.py",
+      "sha256": "a4eb68fac325564036aae2322260fe3d6e833d31e783eb1fb11b5639e47f8e6e"
+    },
+    "preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/stages/20260902_1635_stage005_development_label_batch_preregistration.md",
+      "sha256": "ec96369d156b40f0b0400a68bdc7f45934e628a2aba4001af85a2102ed2a68cd"
+    },
+    "prerun_block_remediation_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/stages/20260902_2036_stage005b_prerun_block_remediation_preregistration.md",
+      "sha256": "8c1250a9e447a5815c962a96dfea22e8c7f6b30aedd0ec826136a07f2582e638"
+    },
+    "prerun_review": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_fourth_rereview.md",
+      "sha256": "64d1a5304dbf15a0d2c589f22967a7d320e6d700cae339593a6d7a8df5024c66"
+    },
+    "prerun_review_decision": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_fourth_rereview_decision.json",
+      "sha256": "cdf6c0ad196d3868469bdfde51059c929f339cb612ed2821c9f9f500a37a3334"
+    },
+    "runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tools/stage005_development_label_batch.py",
+      "sha256": "732eeb19264cf71ade57e2a8f1bd64c702496dad0fb9847d8cc08135cb6e9281"
+    },
+    "runner_tests": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tests/test_stage005_development_label_batch.py",
+      "sha256": "6c019f1e10e9c13b60613be382419db896616cfabb5b31d7b6eafeee44488d5a"
+    },
+    "second_block_remediation_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/stages/20260902_2101_stage005b_second_block_receipt_remediation_preregistration.md",
+      "sha256": "68c791301435f5619489ca8ed9191629e0441beb3ee16c9d85a29e1fa7756793"
+    },
+    "second_block_rereview": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_second_rereview.md",
+      "sha256": "0a7f0acf0a9c10f83ae8c891af47a589ad4fbce4ab01ec639df7b44a76bb1a12"
+    },
+    "second_block_rereview_decision": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_second_rereview_decision.json",
+      "sha256": "24558271506bb7f378b007065382b9ae9135f6ebc163f4ee4de1a415286382d1"
+    },
+    "stage005a_postrun_review": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_postrun_independent_review.md",
+      "sha256": "a97e9ca9a65bac290192f89f0a08cce192e1af1eaef492d20798c08c8cfe8511"
+    },
+    "stage005a_postrun_review_decision": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_postrun_review_decision.json",
+      "sha256": "631d5e8842362e421c08cd0e1209beadeaa1b7e9e69d4da5fa0161c3c290bcf8"
+    },
+    "stage005a_runner": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tools/stage005a_runtime_identity_remediation.py",
+      "sha256": "d707b6589520bf078c5eced3f9d67d2fa823fc9b3c62a6fc9d4153877c1860ee"
+    },
+    "stage005a_runner_tests": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/tests/test_stage005a_runtime_identity_remediation.py",
+      "sha256": "99b7490730afa1e9c53002cca50fcb89c4c713f792d3a9053e973a0b67d037b3"
+    },
+    "stage005a_runtime_receipt": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage005a_runtime_identity_remediation/runtime_snapshot_receipt.json",
+      "sha256": "f67186f8e1603c81afeb5800e3e742287228862e61e984aac6c843a1a69bf0c2"
+    },
+    "stage005a_scope_audit": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage005a_runtime_identity_remediation/campaigns/campaign_20260902T192840+0800_77391/execution_scope_audit.json",
+      "sha256": "a9ffbb58520f94c0c2bbb6af530afa0fd4eb12530c90f60e0fa575d8833de3bc"
+    },
+    "stage005a_smoke_authorization": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_worker_env_run_authorization.json",
+      "sha256": "d6a77d27b470b47da78379f1758e74916e3026bd72c662a0840f608ec0158926"
+    },
+    "stage005a_smoke_receipt": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/artifacts/stage005a_runtime_identity_remediation/campaigns/campaign_20260902T192840+0800_77391/smoke_receipt.json",
+      "sha256": "d373a16588f2a2ce4125982ebe5bcbaa21534b25ba02c935d9376b818ef2e053"
+    },
+    "third_block_remediation_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/stages/20260902_2119_stage005b_third_block_exact_type_remediation_preregistration.md",
+      "sha256": "3068aea1c40a1c5a14ed5fc478738754538da48fdea32486c21d518b59b49142"
+    },
+    "third_block_rereview": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_third_rereview.md",
+      "sha256": "859dfad1e958db24053b0d62bd0c0add871bd9f171c9372ac4ea012489750841"
+    },
+    "third_block_rereview_decision": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005_prerun_third_rereview_decision.json",
+      "sha256": "0ca5b5d0cb7db64668d095e734b07f9c78713884ead4b62258be0b845253e900"
+    },
+    "v2_migration_preregistration": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/stages/20260902_2012_stage005b_v2_batch_integration_preregistration.md",
+      "sha256": "dd67ce27e3a18d582371c102e1607a34b3b524fab5b3d7daf25e71e8d2b3a148"
+    }
+  },
+  "campaign_nonce": "8b88739e38da755af3c206f1ce5caaaf3bde7817b3d2e3f8852943fd293aed6b",
+  "decision": "ALLOW_STAGE005_BATCH",
+  "scope": "one_new_stage005_campaign_only"
+}

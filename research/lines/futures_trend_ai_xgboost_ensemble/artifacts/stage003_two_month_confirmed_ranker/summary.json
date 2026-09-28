@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-09-01T15:33:39+08:00",
+  "decision": "stage003_two_month_confirmed_pass_allow_true_engine",
+  "formal_release_id": "m0004_20260831T112631+0800_2485073e9594",
+  "upstream_stage002_summary_sha256": "2f11855be40d5b0159d93635911d0fe4e2c5b88dac38a500f0d2ba94b842d29c",
+  "oos_months": 49,
+  "arms": {
+    "A_logistic": {
+      "months": 49,
+      "mean_dual_rank_ic": 0.05793985233339564,
+      "median_dual_rank_ic": 0.1471913317248278,
+      "top10_mean_future_net_pnl_60d": 40787.755102040814,
+      "top10_p10_future_net_pnl_60d": -131975.0,
+      "top10_mean_future_max_drawdown_60d": -169782.04081632654,
+      "top10_p10_future_max_drawdown_60d": -271486.0,
+      "top10_turnover": 0.23750000000000004
+    },
+    "C3_confirmed": {
+      "months": 49,
+      "mean_dual_rank_ic": 0.12284005936180772,
+      "median_dual_rank_ic": 0.17764670781170006,
+      "top10_mean_future_net_pnl_60d": 55690.102040816324,
+      "top10_p10_future_net_pnl_60d": -112914.0,
+      "top10_mean_future_max_drawdown_60d": -155874.1836734694,
+      "top10_p10_future_max_drawdown_60d": -236089.0000000002,
+      "top10_turnover": 0.21875
+    }
+  },
+  "gate_inputs": {
+    "identity_pass": true,
+    "determinism_pass": true,
+    "path_parity_pass": true,
+    "oos_months": 49,
+    "a_mean_dual_rank_ic": 0.05793985233339564,
+    "candidate_mean_dual_rank_ic": 0.12284005936180772,
+    "a_median_dual_rank_ic": 0.1471913317248278,
+    "candidate_median_dual_rank_ic": 0.17764670781170006,
+    "a_top10_mean_future_pnl": 40787.755102040814,
+    "candidate_top10_mean_future_pnl": 55690.102040816324,
+    "a_top10_p10_future_pnl": -131975.0,
+    "candidate_top10_p10_future_pnl": -112914.0,
+    "a_top10_mean_future_drawdown": -169782.04081632654,
+    "candidate_top10_mean_future_drawdown": -155874.1836734694,
+    "a_top10_p10_future_drawdown": -271486.0,
+    "candidate_top10_p10_future_drawdown": -236089.0000000002,
+    "a_top10_turnover": 0.23750000000000004,
+    "candidate_top10_turnover": 0.21875,
+    "yearly_candidate_wins": 4,
+    "worst_year_dual_rank_ic_delta": -0.009593912184055045
+  },
+  "qualification": {
+    "passed": true,
+    "gates": {
+      "identity_path_and_determinism": true,
+      "oos_months_ge_45": true,
+      "mean_dual_rank_ic_strictly_better": true,
+      "median_dual_rank_ic_noninferior": true,
+      "top10_mean_future_pnl_strictly_better": true,
+      "top10_p10_future_pnl_noninferior": true,
+      "top10_mean_future_drawdown_strictly_better": true,
+      "top10_p10_future_drawdown_noninferior": true,
+      "top10_turnover_le_105pct": true,
+      "yearly_dual_rank_ic_wins_ge_3": true,
+      "worst_year_dual_rank_ic_delta_ge_minus_003": true
+    }
+  },
+  "confirmation": {
+    "months": 2,
+    "first_month_falls_back_to_a": true,
+    "mean_confirmed_count": 7.224489795918367,
+    "median_confirmed_count": 7.0,
+    "minimum_confirmed_count": 0,
+    "maximum_confirmed_count": 9
+  },
+  "source_unchanged": true,
+  "identities": {
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json",
+      "size": 1728,
+      "sha256": "17ed1a17776efc0d479e74258e5193c1e4262dbd19ae95a7b6bf531354cce5cd"
+    },
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/summary.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/summary.json",
+      "size": 3304,
+      "sha256": "39cc3b7b324afc884951eff698fcc6612dcc6a37f2acfffe7834d1654cdf2260"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage002_dual_objective_ranker.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage002_dual_objective_ranker.py",
+      "size": 26738,
+      "sha256": "4e3cec22e8746efb626172cebe144077084f18254cb8bc7cce6a58f323f8540e"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage002_dual_objective_ranker/summary.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage002_dual_objective_ranker/summary.json",
+      "size": 10924,
+      "sha256": "2f11855be40d5b0159d93635911d0fe4e2c5b88dac38a500f0d2ba94b842d29c"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage002_dual_objective_ranker/oos_predictions.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage002_dual_objective_ranker/oos_predictions.csv",
+      "size": 146975,
+      "sha256": "367d373dfaa5e9578d5219d09fcca9fd959a00ccf434b1e3d18c8f48c80994c2"
+    },
+    "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+      "size": 36048902,
+      "sha256": "b3bacdf711c3282f703ea022332d89fc1fe007cc1fb25eb1a25abac7a1eff847"
+    },
+    "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+      "size": 1253146,
+      "sha256": "96a36c13cdccd5ce73e718d780b4122e2554959d60b697bfbc9f8f99176a33a2"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage003_two_month_confirmed_ranker.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage003_two_month_confirmed_ranker.py",
+      "size": 11321,
+      "sha256": "55b582e5120de18bd442a8b4d62823717ae91acdfa8e3010a93053d69e0f8263"
+    }
+  },
+  "safety": {
+    "runs_strategy_backtest": false,
+    "writes_production": false,
+    "ctp_connected": false,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0
+  }
+}

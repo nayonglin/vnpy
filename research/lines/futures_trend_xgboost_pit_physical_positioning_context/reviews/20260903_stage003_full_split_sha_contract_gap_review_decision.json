@@ -1,0 +1,35 @@
+{
+  "decision": "BLOCK_STAGE003_IMPLEMENTATION_FOR_FULL_SPLIT_SHA_CONTRACT_GAP",
+  "allowed": false,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1,
+    "P3": 0
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_full_split_sha_contract_gap_review.md",
+  "review_sha256": "7fa0daffdfa0fb455ab0368f279f67499662dc8e21a366457cf7a6ecfbf60aac",
+  "defective_machine_contract_sha256": "37dc6533143d1ed457088400e75d7a04364f62a70ea4c4a8fb95bd26e9cbe698",
+  "defective_full_feature_split_sha_value": "a87c73e94eb2afae47ff881fcecda496aa81af5895165c2b1",
+  "expected_full_feature_split_sha256": "a87c73e94eb2afae47ffb106ec60d2720ff881fcecda496aa81af5895165c2b1",
+  "required_authorization_bound_file_count": 24,
+  "authorization_binding_assessment": "A new immutable SHA remediation, this gap review and decision, the corrected training contract identity under the existing training_contract key, and a new independent rereview and decision must be included in the exact authorization governance chain.",
+  "allowed_scope": [
+    "write one immutable no-label remediation for the truncated SHA defect",
+    "correct only input_sha256.full_feature_split in the machine contract",
+    "add no-label identity validation tests for exact lowercase 64-hex SHA values",
+    "perform a new independent prereview of the corrected contract and 24-file binding chain"
+  ],
+  "not_authorized": [
+    "continued Stage003 implementation beyond the SHA remediation",
+    "reading any label values",
+    "fit or training",
+    "prediction or effect evaluation",
+    "backtesting",
+    "creating an authorization",
+    "holdout access",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "status": "corrected_event_source_qualified_not_model",
+  "started_at": "2026-09-06T07:08:28.819766+08:00",
+  "reviewer_count": 0,
+  "label_read_count": 0,
+  "model_fit_predict_count": 0,
+  "strategy_backtest_count": 0,
+  "production_write_count": 0,
+  "historical_listing_universe_proven": false,
+  "historical_vintage_proven": false,
+  "corrected_contracts": 5,
+  "notice_contracts": 14,
+  "event_count": 276,
+  "event_status_counts": {
+    "available": 276
+  },
+  "missing_contract_days": 0,
+  "chain_status_counts": {
+    "available": 26901,
+    "not_yet_observed": 2925
+  },
+  "calendar_status_counts": {
+    "available": 26300,
+    "incomplete_chain_window": 2752
+  },
+  "official_yearbook_verified_contracts": 5,
+  "inputs_unchanged": true,
+  "finished_at": "2026-09-06T07:08:36.984585+08:00",
+  "outputs": {
+    "a_calendar_coverage.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/a_calendar_coverage.csv.gz",
+      "bytes": 109575,
+      "sha256": "32d5e6430c7e6f9a4e3d81dccb95ac2c1ce3276e15249a66e55262cacc64a567"
+    },
+    "chain_daily.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/chain_daily.csv.gz",
+      "bytes": 201173,
+      "sha256": "265e6c2ee7306848d38907c9c6edfd2a6b64485abb191a8c29e2d84193d76eaf"
+    },
+    "corrected_catalog.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/corrected_catalog.csv.gz",
+      "bytes": 15425,
+      "sha256": "76275fc7a65aabfd659c48560f38caf2ece7789ffcc4dd7de6e10d5c2fd26f22"
+    },
+    "event_coverage.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/event_coverage.csv",
+      "bytes": 38385,
+      "sha256": "5b05565a388404cb69a5aa03197f50855c0a021acaaed1fa17ecec556d8d6bcd"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/input_manifest.json",
+      "bytes": 1319179,
+      "sha256": "5598c9a54fe4ed7a2274c0d41762de709473bf4604d173b3abf66d54574584b6"
+    },
+    "missing_contract_days.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/missing_contract_days.csv.gz",
+      "bytes": 86,
+      "sha256": "842efc873fdaa9e368b4031d99c57b19b4767cc91a362e69da5d68a38c23a2c0"
+    },
+    "notice.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/notice.json",
+      "bytes": 1407,
+      "sha256": "39ba2025d76cd3a4b57d2ca850a36afddc111dfb37bf3beaed799697f7fae1ab"
+    },
+    "notice_applicability.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/notice_applicability.csv",
+      "bytes": 1236,
+      "sha256": "f483705e42d21c73d039819aeb243e613aaf2b27d4a566aa9ccad2cd6b4d6b8d"
+    },
+    "observed_lifetimes.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/observed_lifetimes.csv",
+      "bytes": 82405,
+      "sha256": "1a42d05876b405e2590dbdbe7202eaf1a2153f59d90ffb2efdca2504e3750e06"
+    },
+    "official_yearbook_comparison.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage029_corrected_chain_coverage/official_yearbook_comparison.csv",
+      "bytes": 371,
+      "sha256": "ec58f317693212ca603eeb687d2084c886ba7678a22123e9d63db2af83a6224e"
+    }
+  }
+}

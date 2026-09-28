@@ -1,0 +1,9 @@
+{
+  "campaign_id": "campaign_20260902T021241+0800_98656",
+  "campaign_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/artifacts/stage015_development_label_batch/campaign_20260902T021241+0800_98656",
+  "status": "complete",
+  "completed_jobs": 355,
+  "total_jobs": 355,
+  "decision": "stage015_development_account_labels_complete_allow_frozen_training",
+  "campaign_file_contract_sha256": "ac8e5a6e77b081eaad97bcc30ef89769d6586eecd1b079ccef713e8d3d8d5d4f"
+}

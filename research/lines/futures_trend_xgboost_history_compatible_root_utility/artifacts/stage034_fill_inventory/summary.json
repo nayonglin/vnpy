@@ -1,0 +1,67 @@
+{
+  "decision": "headroom_exists_not_model_evidence",
+  "first_eligible_training_month": "2021-09-01",
+  "full_max_drawdown_date": "2022-06-02",
+  "full_max_drawdown_pct": -45.92157323451009,
+  "immutable_prefix_max_drawdown_pct": -25.443701066615542,
+  "immutable_prefix_worst_date": "2021-08-20",
+  "mature_count_at_first_month": 60,
+  "mature_roots_with_inventory_observations": 155,
+  "min_train_events": 60,
+  "model_fit_predict_count": 0,
+  "new_strategy_replay_count": 0,
+  "new_utility_label_count": 0,
+  "outputs": {
+    "holding_cost_states": {
+      "compressed": {
+        "mtime_ns": 1788655465076978390,
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage034_fill_inventory/holding_cost_states.json.gz",
+        "sha256": "973a4669e3e86f3057b01f306718001d939f73d3b05244d47639b407efae3f4a",
+        "size": 132790
+      },
+      "raw_sha256": "6b6a5802eed0dfdb6dbd6b98ea6919ca5c0aa71719186da5082ab3df77f32c36"
+    },
+    "inventory": {
+      "compressed": {
+        "mtime_ns": 1788655464974979328,
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage034_fill_inventory/inventory.json.gz",
+        "sha256": "2c179749c2fc7be58f81707bbd3e8ce34db94186ba4aa9ff351498dddbf9825d",
+        "size": 19436
+      },
+      "raw_sha256": "70589f88d117ca15ec994a6d968fb1131f3cdc172b2342934fd37534e0e13dd8"
+    },
+    "monthly_population": {
+      "mtime_ns": 1788655465104613790,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage034_fill_inventory/monthly_population.csv",
+      "sha256": "452cf47968fd0404c7213483541579790daaccb53c97f76fdd26afdb1083eeda",
+      "size": 1962
+    },
+    "root_population": {
+      "mtime_ns": 1788655465102771749,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage034_fill_inventory/root_population.csv",
+      "sha256": "ae568ebd3b042a918a55f2977e1107a33176887470612f49bdd7bbc885adcf1c",
+      "size": 129629
+    }
+  },
+  "quality": {
+    "max_account_daily_error": 3.32e-10,
+    "max_pnl_error": 3.52e-10,
+    "nonzero_contract_days": 1755,
+    "position_rows": 494320,
+    "trade_count": 655
+  },
+  "reviewer_started": false,
+  "roots_with_inventory_observations": 155,
+  "source_file_contract_sha256": "d6dd4e8930032496d2e501e77dd00d68c0c72127b00172848997b380043a02d1",
+  "stage": "stage034_fill_inventory",
+  "state_counts": {
+    "fixed_fu": 1614,
+    "flat": 27180,
+    "inventory_reconciled_holding": 1002,
+    "pending_orders_or_close_inventory": 548,
+    "rollover_pending": 47,
+    "unfilled_or_inconsistent_plan": 275
+  },
+  "status": "inventory_reconciled_not_execution_or_model",
+  "strict_full_drawdown_improvement_possible": true
+}

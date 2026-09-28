@@ -1,0 +1,86 @@
+{
+  "stage": "stage019_member_concentration_source",
+  "status": "audit_completed",
+  "created_at_utc": "2026-09-05T20:59:49.155189+00:00",
+  "decision": "source_insufficient_no_feature_or_training",
+  "event_count": 276,
+  "event_status_counts": {
+    "outside_source_range": 122,
+    "available": 117,
+    "missing_contract": 37
+  },
+  "raw_row_count": 88649,
+  "source_first_date": "2022-01-04",
+  "source_last_date": "2026-04-17",
+  "source_date_count": 1037,
+  "source_product_count": 15,
+  "raw_aggregate_count": 14899,
+  "raw_contract_row_count": 73750,
+  "source_quality_counts": {
+    "ok": 87738,
+    "nonpositive_top20": 911
+  },
+  "unavailable_event_with_aggregate_count": 0,
+  "unavailable_event_with_other_contract_count": 0,
+  "first_60_mature_available_cutoff": "2024-04-01",
+  "calendar_source_gap_counts": {
+    "before_source_start": 486,
+    "after_source_end": 91
+  },
+  "source_count": 9,
+  "historical_publication_verified": false,
+  "historical_revision_verified": false,
+  "raw_rank_member_completeness_verified": false,
+  "full_runtime_contract_coverage_verified": false,
+  "future_target_columns_read": [],
+  "new_label_count": 0,
+  "new_fit_count": 0,
+  "new_prediction_count": 0,
+  "new_strategy_replay_count": 0,
+  "network_attempt_count": 0,
+  "reviewer_started": false,
+  "outputs": {
+    "event_coverage.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/event_coverage.csv",
+      "size": 39310,
+      "mtime_ns": 1788641989086412482,
+      "sha256": "d7184780f506b9e0e991896aec761ec1484d92dd15a22d1a2841c120366e321b"
+    },
+    "product_coverage.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/product_coverage.csv",
+      "size": 435,
+      "mtime_ns": 1788641989087066043,
+      "sha256": "95258e38f142471f57e516d211806bbc30a029f5812ff7ebf93762b26225df94"
+    },
+    "year_coverage.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/year_coverage.csv",
+      "size": 202,
+      "mtime_ns": 1788641989087679937,
+      "sha256": "60fb0a2611483428c12d27f6249c8d9491ee88281d48506fbb75689fd964a877"
+    },
+    "maturity_counts.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/maturity_counts.csv",
+      "size": 1134,
+      "mtime_ns": 1788641989088173868,
+      "sha256": "f9bded34971bf8de8ded17eb094a59b17e7ecab5be82d1525d3b42a900801655"
+    },
+    "calendar_source_date_gaps.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/calendar_source_date_gaps.csv",
+      "size": 17628,
+      "mtime_ns": 1788641989088909932,
+      "sha256": "f5bd6dbc3a6379230b42b1e67bcf0352d193943bf12f6119943076067d575f68"
+    },
+    "source_quality.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/source_quality.csv",
+      "size": 2999155,
+      "mtime_ns": 1788641989154087304,
+      "sha256": "00a64c2c1caca15ccc21510124f135b58412e3f90f83b46b4adc74dea59582ae"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage019_member_concentration_source/input_manifest.json",
+      "size": 4490,
+      "mtime_ns": 1788641988278559872,
+      "sha256": "3fd6f68e29b1bd8e01697761eff7c1a5fd15ce6e6cbdcc88315b081446c258b7"
+    }
+  }
+}

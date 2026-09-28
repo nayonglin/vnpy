@@ -1,0 +1,49 @@
+{
+  "decision": "ALLOW_STAGE003_ONE_TIME_RUN_AUTHORIZATION_REQUEST",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage003_final_implementation_rereview.md",
+  "review_sha256": "04fb67ef752c8104023897c920a3055708a3c05af74b3c8a822ad0ec1bd3b6dd",
+  "machine_contract_sha256": "e800b2b347bcb92472234a0a391b77b487de27de1f79ee191354b635232c15a2",
+  "runner_sha256": "2bbd6af436af2b761720269695e1c052aee3980ed7bedcc4969b1483b10d0a86",
+  "remediation_sha256": "cb6d29fc0e9247f30f1698a5b19790cb2b87dff01dbe576534cec34ed97eff80",
+  "test_sha256": {
+    "test_contract": "34fcf3d9e1fc9d70511e5f5c27c843e430d90e794d26d710fd8c64a7e7f66974",
+    "test_state_machine": "f47a3c276d6e3da0e99c2159ee8311d8de57a74dcc3959c306bea602643cc55c",
+    "test_adversarial": "23c11fe4973677ef268ce7e490a30f8ce26bb698298084257cb39604d670076c"
+  },
+  "fresh_tests": {
+    "pytest": "68 passed in 2.47s",
+    "py_compile": "passed"
+  },
+  "closed_findings": [
+    "P2-1: full-split right-only rows are constrained by the frozen 156-row canonical key digest and an additional right-only row fails closed",
+    "P2-2: label and execution-scope counts are derived from the event ledger, bound-runner AST audit, actual staging diff, and pre/post-publish artifact identity checks"
+  ],
+  "allowed_scope": [
+    "requesting a separately approved one-time Stage003 development OOS run authorization"
+  ],
+  "authorization_requirements": {
+    "bound_file_count": 27,
+    "bind_current_file_sha256": true,
+    "nonce": "new lowercase 64hex",
+    "scope": "one_new_stage003_development_oos_run_only",
+    "single_consumption": true
+  },
+  "not_authorized": [
+    "creating the Stage003 authorization or consumption receipt in this review",
+    "running run_stage003 or main before separate authorization",
+    "reading real aggregate, per-job, or holdout label data rows",
+    "real fit, training, prediction, effect evaluation, or backtesting",
+    "holdout access",
+    "true-engine execution",
+    "production integration",
+    "CTP connection",
+    "order placement"
+  ]
+}

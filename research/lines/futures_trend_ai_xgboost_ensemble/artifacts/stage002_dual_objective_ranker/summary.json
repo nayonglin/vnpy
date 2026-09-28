@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-09-01T15:28:59+08:00",
+  "decision": "stage002_dual_objective_ranker_fail_stop_no_backtest",
+  "qualified_arm": null,
+  "formal_release_id": "m0004_20260831T112631+0800_2485073e9594",
+  "panel": {
+    "rows": 1368,
+    "months": 76,
+    "products_per_month": 18,
+    "features": 108,
+    "panel_parity_max_abs_error": 1.4551915228366852e-11
+  },
+  "configuration": {
+    "future_horizon_trading_days": 60,
+    "dual_pnl_weight": 0.5,
+    "dual_drawdown_weight": 0.5,
+    "min_train_months": 24,
+    "label_gap_days": 92,
+    "top_n": 10,
+    "fusion_weight_logistic": 0.5,
+    "fusion_weight_ranker": 0.5,
+    "xgboost_ranker": {
+      "objective": "rank:ndcg",
+      "eval_metric": "ndcg@10",
+      "n_estimators": 120,
+      "max_depth": 2,
+      "learning_rate": 0.03,
+      "min_child_weight": 12.0,
+      "gamma": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.6,
+      "reg_alpha": 1.0,
+      "reg_lambda": 10.0,
+      "tree_method": "hist",
+      "lambdarank_pair_method": "topk",
+      "lambdarank_num_pair_per_sample": 10,
+      "random_state": 42,
+      "n_jobs": 1
+    }
+  },
+  "oos_months": 49,
+  "oos_start": "2022-04-29",
+  "oos_end": "2026-04-30",
+  "minimum_actual_label_gap_days": 92,
+  "path_parity_max_abs_error": 2.9103830456733704e-11,
+  "determinism_max_abs_error": 0.0,
+  "arms": {
+    "A_logistic": {
+      "months": 49,
+      "mean_dual_rank_ic": 0.05779807887110669,
+      "median_dual_rank_ic": 0.1471913317248278,
+      "top10_mean_future_net_pnl_60d": 40787.755102040814,
+      "top10_p10_future_net_pnl_60d": -131975.0,
+      "top10_mean_future_max_drawdown_60d": -169782.04081632654,
+      "top10_p10_future_max_drawdown_60d": -271486.0,
+      "top10_turnover": 0.23750000000000004
+    },
+    "B_ranker": {
+      "months": 49,
+      "mean_dual_rank_ic": 0.09483084880101678,
+      "median_dual_rank_ic": 0.055886158322761496,
+      "top10_mean_future_net_pnl_60d": 56310.20408163267,
+      "top10_p10_future_net_pnl_60d": -110775.99999999997,
+      "top10_mean_future_max_drawdown_60d": -158430.10204081633,
+      "top10_p10_future_max_drawdown_60d": -224084.0,
+      "top10_turnover": 0.27083333333333337
+    },
+    "C_fusion": {
+      "months": 49,
+      "mean_dual_rank_ic": 0.08771450779844797,
+      "median_dual_rank_ic": 0.03249479915246258,
+      "top10_mean_future_net_pnl_60d": 55028.06122448979,
+      "top10_p10_future_net_pnl_60d": -119837.99999999991,
+      "top10_mean_future_max_drawdown_60d": -161254.08163265308,
+      "top10_p10_future_max_drawdown_60d": -236105.0000000002,
+      "top10_turnover": 0.2625
+    }
+  },
+  "gate_inputs": {
+    "B_ranker": {
+      "identity_pass": true,
+      "determinism_pass": true,
+      "path_parity_pass": true,
+      "oos_months": 49,
+      "a_mean_dual_rank_ic": 0.05779807887110669,
+      "candidate_mean_dual_rank_ic": 0.09483084880101678,
+      "a_median_dual_rank_ic": 0.1471913317248278,
+      "candidate_median_dual_rank_ic": 0.055886158322761496,
+      "a_top10_mean_future_pnl": 40787.755102040814,
+      "candidate_top10_mean_future_pnl": 56310.20408163267,
+      "a_top10_p10_future_pnl": -131975.0,
+      "candidate_top10_p10_future_pnl": -110775.99999999997,
+      "a_top10_mean_future_drawdown": -169782.04081632654,
+      "candidate_top10_mean_future_drawdown": -158430.10204081633,
+      "a_top10_p10_future_drawdown": -271486.0,
+      "candidate_top10_p10_future_drawdown": -224084.0,
+      "a_top10_turnover": 0.23750000000000004,
+      "candidate_top10_turnover": 0.27083333333333337,
+      "yearly_candidate_wins": 3,
+      "worst_year_dual_rank_ic_delta": -0.1007599729090109
+    },
+    "C_fusion": {
+      "identity_pass": true,
+      "determinism_pass": true,
+      "path_parity_pass": true,
+      "oos_months": 49,
+      "a_mean_dual_rank_ic": 0.05779807887110669,
+      "candidate_mean_dual_rank_ic": 0.08771450779844797,
+      "a_median_dual_rank_ic": 0.1471913317248278,
+      "candidate_median_dual_rank_ic": 0.03249479915246258,
+      "a_top10_mean_future_pnl": 40787.755102040814,
+      "candidate_top10_mean_future_pnl": 55028.06122448979,
+      "a_top10_p10_future_pnl": -131975.0,
+      "candidate_top10_p10_future_pnl": -119837.99999999991,
+      "a_top10_mean_future_drawdown": -169782.04081632654,
+      "candidate_top10_mean_future_drawdown": -161254.08163265308,
+      "a_top10_p10_future_drawdown": -271486.0,
+      "candidate_top10_p10_future_drawdown": -236105.0000000002,
+      "a_top10_turnover": 0.23750000000000004,
+      "candidate_top10_turnover": 0.2625,
+      "yearly_candidate_wins": 4,
+      "worst_year_dual_rank_ic_delta": -0.014616378359854403
+    }
+  },
+  "qualification": {
+    "B_ranker": {
+      "passed": false,
+      "gates": {
+        "identity_path_and_determinism": true,
+        "oos_months_ge_45": true,
+        "mean_dual_rank_ic_strictly_better": true,
+        "median_dual_rank_ic_noninferior": false,
+        "top10_mean_future_pnl_strictly_better": true,
+        "top10_p10_future_pnl_noninferior": true,
+        "top10_mean_future_drawdown_strictly_better": true,
+        "top10_p10_future_drawdown_noninferior": true,
+        "top10_turnover_le_105pct": false,
+        "yearly_dual_rank_ic_wins_ge_3": true,
+        "worst_year_dual_rank_ic_delta_ge_minus_003": false
+      }
+    },
+    "C_fusion": {
+      "passed": false,
+      "gates": {
+        "identity_path_and_determinism": true,
+        "oos_months_ge_45": true,
+        "mean_dual_rank_ic_strictly_better": true,
+        "median_dual_rank_ic_noninferior": false,
+        "top10_mean_future_pnl_strictly_better": true,
+        "top10_p10_future_pnl_noninferior": true,
+        "top10_mean_future_drawdown_strictly_better": true,
+        "top10_p10_future_drawdown_noninferior": true,
+        "top10_turnover_le_105pct": false,
+        "yearly_dual_rank_ic_wins_ge_3": true,
+        "worst_year_dual_rank_ic_delta_ge_minus_003": true
+      }
+    }
+  },
+  "identities": {
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json",
+      "size": 1728,
+      "sha256": "17ed1a17776efc0d479e74258e5193c1e4262dbd19ae95a7b6bf531354cce5cd"
+    },
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/summary.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/official_live_stage847_c9_15w_stage819_05r_stop_retry_once/releases/m0015_20260825T205121+0800_c097d7836dd4/payload/ai/stage182/summary.json",
+      "size": 3304,
+      "sha256": "39cc3b7b324afc884951eff698fcc6612dcc6a37f2acfffe7834d1654cdf2260"
+    },
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0004_20260831T112631+0800_2485073e9594/payload/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0004_20260831T112631+0800_2485073e9594/payload/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "size": 35366,
+      "sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4"
+    },
+    "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0004_20260831T112631+0800_2485073e9594/payload/examples/portfolio_backtesting/qmt_universe.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy_production_live/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0004_20260831T112631+0800_2485073e9594/payload/examples/portfolio_backtesting/qmt_universe.py",
+      "size": 4781,
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_score_attribution/artifacts/stage001_20260731/training_samples.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_score_attribution/artifacts/stage001_20260731/training_samples.csv",
+      "size": 1289016,
+      "sha256": "92f36b6647cae9d8db04b0a1351749f9103a1988799dbb8dff0ad1d350d1d431"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage001_xgboost_qualification.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage001_xgboost_qualification.py",
+      "size": 24073,
+      "sha256": "bdb68a6507df8769ad5e31f73033f2c8114bbdfd4777b3b12b6aa7d3629a3987"
+    },
+    "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_position_changes_2020_2026_04.csv",
+      "size": 36048902,
+      "sha256": "b3bacdf711c3282f703ea022332d89fc1fe007cc1fb25eb1a25abac7a1eff847"
+    },
+    "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv": {
+      "path": "/Users/bytedance/Library/Application Support/qmt-roll-stage179/production-live/official-live/qmt_roll_stage183_ai_source_floor35_entry_candidate_snapshots_2020_2026_04.csv",
+      "size": 1253146,
+      "sha256": "96a36c13cdccd5ce73e718d780b4122e2554959d60b697bfbc9f8f99176a33a2"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage002_dual_objective_ranker.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_ai_xgboost_ensemble/tools/stage002_dual_objective_ranker.py",
+      "size": 26738,
+      "sha256": "4e3cec22e8746efb626172cebe144077084f18254cb8bc7cce6a58f323f8540e"
+    }
+  },
+  "source_unchanged": true,
+  "versions": {
+    "python": "3.11.15 | packaged by conda-forge | (main, Mar  5 2026, 16:59:26) [Clang 19.1.7 ]",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0",
+    "xgboost": "3.2.0"
+  },
+  "safety": {
+    "runs_strategy_backtest": false,
+    "writes_production": false,
+    "ctp_connected": false,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0
+  },
+  "references": [
+    "https://github.com/dmlc/xgboost/blob/master/doc/tutorials/learning_to_rank.rst",
+    "https://github.com/dmlc/xgboost/blob/master/doc/parameter.rst",
+    "https://academic.oup.com/rfs/advance-article/doi/10.1093/rfs/hhag022/8524346"
+  ]
+}

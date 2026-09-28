@@ -1,0 +1,10 @@
+{
+  "execution_authorized": true,
+  "file_contract_sha256": "8f56d47be187487d6c1bb7e298178bcf078ce87946ec4788d4684beb903fc0c9",
+  "input_file_count": 10086,
+  "input_logical_key_sha256": "bd13178493f909c9ed4e4768f555c8a854ce0f57ac22d25601011856b50867ab",
+  "line_id": "futures_trend_xgboost_history_compatible_root_utility",
+  "runtime_contract_sha256": "04396eb74da1ed4812b0eabcc94e28cd2a64f90a1839d08ace6630faf2149e1e",
+  "schema_version": 1,
+  "stage": "stage063_semivariance_full_replay"
+}

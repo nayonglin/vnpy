@@ -1,0 +1,36 @@
+{
+  "bounded_event_count": 168,
+  "breach_counts": {
+    "drawdown_marginal": 4,
+    "return_marginal": 2
+  },
+  "candidate_created": false,
+  "closed_bounded_event_count": 166,
+  "created_at": "2026-09-06T05:35:48.770658+08:00",
+  "event_count": 276,
+  "evidence_type": "post_failure_prequential_empirical_error_diagnostic",
+  "first_ready_month": "2022-01-01",
+  "formal_coverage_guarantee": false,
+  "joint_breach_count": 6,
+  "month_count": 80,
+  "new_historical_fits": 0,
+  "new_labels": 0,
+  "new_model_predictions": 0,
+  "new_strategy_replays": 0,
+  "nominal_joint_error_level": 0.05,
+  "output_identities": {
+    "details.json": "6646984a0b6b2f3f14d737d53c4459e70eea3354926dcfe150bacbc3b21ebb03"
+  },
+  "point_veto_count": 82,
+  "ready_month_count": 56,
+  "reviewers": 0,
+  "source_identities": {
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/event_predictions.csv": "0534369bd1d0e6c4dc9a20680bdf8c25f31d0d4827e20d0a6092bd5ed7eccc17",
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage010_failure_diagnostics/summary.json": "6f95554a54f97af78824e3460e26db98d3f946da9083be469be5ef88ef92cc7b",
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/stages/20260906_0533_stage022_prequential_error_contract.md": "330647c9661b19a872fe4c7e3a55be48880bdb35273fb75d20aeb207d3884c58",
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tests/test_stage022_prequential_error_audit.py": "07202a2cb7878d8beabb93da546f7535175568b2408611fde940ecb3fa365775",
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tools/stage022_prequential_error_audit.py": "9c8beb61d45a50c713b6cd9b12ed3e9f58c614b2480dc4343c4d33fb3a5ef177"
+  },
+  "status": "completed_diagnostic_only",
+  "supported_veto_count": 0
+}

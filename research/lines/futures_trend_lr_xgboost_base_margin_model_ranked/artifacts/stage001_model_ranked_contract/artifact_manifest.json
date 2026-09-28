@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "files": {
+    "summary.json": {
+      "size": 1933,
+      "sha256": "63c63d729d693ac7cecb44ff3cefac2100c10dea7a2a4a13a2b3d550fffa0aa1"
+    },
+    "input_identities.json": {
+      "size": 14426,
+      "sha256": "44d10699ca26393479fb7e7ba05ba03e75595b2dbf2d18454c26dd334a541993"
+    },
+    "feature_contract.json": {
+      "size": 3864,
+      "sha256": "64909eeca4d84348c9adea29062430d8010b0e194ab87edd37169752facfb182"
+    },
+    "fold_plan.csv": {
+      "size": 34282,
+      "sha256": "a14fbde27943e1c73eaa8c1e2ea14834e212616e82fe024ba193697369a25e6c"
+    },
+    "report.md": {
+      "size": 434,
+      "sha256": "ce8328109c058a552225b472e46453283a6d52f8c8c7b1d29545f0e9cce55586"
+    }
+  }
+}

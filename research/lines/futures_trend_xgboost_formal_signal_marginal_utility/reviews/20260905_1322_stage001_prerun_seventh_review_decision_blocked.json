@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "seventh_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a06ff2-b649-7d20-977d-0552fe0066cb",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 2,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "R7-P2-001",
+      "severity": "P2",
+      "finding": "The recovery path cleans the attempt and writes completed without reusing the normal completion primitive or revalidating current inputs and authorization immediately before sequence 7.",
+      "action": "Route normal and recovery completion through one primitive and force current success-bundle binding validation after cleanup immediately before the terminal update."
+    },
+    {
+      "id": "R7-P2-002",
+      "severity": "P2",
+      "finding": "Success completion has no expected-event CAS or mutex, while the generic event updater permits completed to completed and increments sequence again.",
+      "action": "Serialize completion on a stable lock, bind the exact publishing event and sequence 6 before atomic sequence 7, and make exact completed reads idempotent without mutation."
+    }
+  ],
+  "sixth_round_closure": {
+    "R6-P2-001": "partial_open"
+  },
+  "fifth_round_regression": {
+    "R5-P1-001": "closed",
+    "R5-P2-001": "partial_open",
+    "R5-P2-002": "closed"
+  },
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

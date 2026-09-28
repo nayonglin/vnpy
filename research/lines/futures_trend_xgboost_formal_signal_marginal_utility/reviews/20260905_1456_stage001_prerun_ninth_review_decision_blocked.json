@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "ninth_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a07048-afd1-7490-9595-fa11d4044eef",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1,
+    "P3": 2
+  },
+  "findings": [
+    {
+      "id": "R9-P2-001",
+      "severity": "P2",
+      "finding": "Event writers validate the locked state and then perform a path-based temporary create and os.replace, so claim, event or the entire current state directory can drift before the final rename.",
+      "action": "Perform all locked claim, event, temporary-file, rename and fsync operations relative to the locked directory fd; revalidate the anchor, exact claim and expected event immediately before rename; add deterministic drift tests."
+    },
+    {
+      "id": "R9-P3-001",
+      "severity": "P3",
+      "finding": "The real two-process lock test has no deterministic handshake proving that process B attempted lock acquisition before process A released it.",
+      "action": "Add attempted and entered markers around the actual lock acquisition so blocking is proven without a scheduling-delay assumption."
+    },
+    {
+      "id": "R9-P3-002",
+      "severity": "P3",
+      "finding": "The non-final-success failure path can replace the initial execution error with a failure-publication or event-update error.",
+      "action": "Preserve the initial, failure-publication and event-update errors in one deterministic diagnostic chain."
+    }
+  ],
+  "prior_round_closure": {
+    "R8-P2-001": "partial_open",
+    "R8-P3-001": "closed",
+    "R7-P2-001": "closed",
+    "R7-P2-002": "partial_open",
+    "R6-P2-001": "closed",
+    "R5-P1-001": "closed",
+    "R5-P2-001": "partial_open",
+    "R5-P2-002": "closed"
+  },
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

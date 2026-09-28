@@ -1,0 +1,237 @@
+{
+  "A_metrics": {
+    "end_equity": 12226270.600000013,
+    "max_drawdown_pct": -45.92157323451009,
+    "nonzero_daily_win_rate_pct": 54.24187725631769,
+    "sharpe": 1.6839432501429918,
+    "total_commission": 0.0,
+    "total_return_pct": 8050.847066666675,
+    "total_slippage": 1100560.0,
+    "trade_count": 655
+  },
+  "C_metrics": {
+    "end_equity": 4815916.500000005,
+    "max_drawdown_pct": -47.93682642500268,
+    "nonzero_daily_win_rate_pct": 53.96995708154506,
+    "sharpe": 1.4746076983528031,
+    "total_commission": 0.0,
+    "total_return_pct": 3110.611000000003,
+    "total_slippage": 803570.0,
+    "trade_count": 665
+  },
+  "actions": {
+    "count": 574,
+    "exit_any_zero": 8,
+    "exit_both_positive": 30,
+    "exit_drawdown_positive": 38,
+    "exit_return_positive": 80,
+    "exits": 200,
+    "fn": 198,
+    "fp": 96,
+    "period": "all",
+    "precision": 0.52,
+    "recall": 0.3443708609271523,
+    "roots": 95,
+    "tn": 176,
+    "tp": 104,
+    "true_exits": 302
+  },
+  "candidate_primary_gate_passed": false,
+  "created_at_utc": "2026-09-06T23:00:54.374639+00:00",
+  "drawdown_decomposed": false,
+  "evaluable": 574,
+  "evidence_type": "post_failure_descriptive_not_new_candidate",
+  "first_exit_actions": {
+    "count": 83,
+    "exit_any_zero": 5,
+    "exit_both_positive": 12,
+    "exit_drawdown_positive": 14,
+    "exit_return_positive": 34,
+    "exits": 83,
+    "fn": 0,
+    "fp": 41,
+    "precision": 0.5060240963855421,
+    "recall": 1.0,
+    "roots": 83,
+    "tn": 0,
+    "tp": 42,
+    "true_exits": 42
+  },
+  "first_exit_decomposition": {
+    "count": 83,
+    "horizon_days_quantiles": {
+      "0": 3.0,
+      "0.25": 4.0,
+      "0.5": 6.0,
+      "0.75": 9.0,
+      "1": 33.0
+    },
+    "max_reconciliation_error_cash": 9.604264050722122e-10,
+    "other_dominates_count": 9,
+    "other_nonzero_count": 36,
+    "other_share_quantiles": {
+      "0": 0.0,
+      "0.25": 0.0,
+      "0.5": 0.0,
+      "0.75": 0.1399353850505627,
+      "1": 0.9445250490739948
+    },
+    "target_total_fraction_correlation": 0.9895408540958668,
+    "target_total_sign_flip_count": 4,
+    "weighted_other_abs_net_share": 0.11833630597423955,
+    "zero_share_denominator_count": 0
+  },
+  "full_path_C_minus_A_cash": -7410354.100000004,
+  "full_path_cash_max_error": 5.587935447692871e-09,
+  "network_attempt_count": 0,
+  "new_fit_count": 0,
+  "new_label_count": 0,
+  "new_prediction_count": 0,
+  "new_strategy_replay_count": 0,
+  "observations": 1002,
+  "output_identities": {
+    "action_metrics.csv": {
+      "mtime_ns": 1788735648193384094,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/action_metrics.csv",
+      "sha256": "eb0ad44fe4f42933983cb2b4f6a84fdff5badc572368e198185aab18045519e1",
+      "size": 721
+    },
+    "first_exit_daily.csv": {
+      "mtime_ns": 1788735648217320838,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/first_exit_daily.csv",
+      "sha256": "a45195163c55e016d0c575824aa5fd5ffadf3e701ea1f93a931dcadd4e2d850f",
+      "size": 69113
+    },
+    "first_exit_decomposition.csv": {
+      "mtime_ns": 1788735648213846362,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/first_exit_decomposition.csv",
+      "sha256": "0c629ba796d7ff68f50c2fd2d92b48b689ec774fd21097d334b8f5350a25d97d",
+      "size": 30993
+    },
+    "first_exit_products.csv": {
+      "mtime_ns": 1788735648222142862,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/first_exit_products.csv",
+      "sha256": "b2882258230db6ad08a52f5566a3aa3803e1a40167f75aebfab05d265693e115",
+      "size": 137544
+    },
+    "first_exits.csv": {
+      "mtime_ns": 1788735648191921837,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/first_exits.csv",
+      "sha256": "0d5c884c393f11acf41503d036a19a1102599bc13bc284acacd4aa08c5a8ad2b",
+      "size": 44754
+    },
+    "full_path_product_delta.csv": {
+      "mtime_ns": 1788735648223033033,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/full_path_product_delta.csv",
+      "sha256": "4566d90c40d0052896622359f1f320f29afc5035910e1e9238f3d631d3c0ea77",
+      "size": 766
+    },
+    "full_path_year_delta.csv": {
+      "mtime_ns": 1788735648223401535,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/full_path_year_delta.csv",
+      "sha256": "b6166dc5898bd9c5211ebdd3fe2c23e69432de7b7f6ef3659c643020b5e14a26",
+      "size": 398
+    },
+    "input_manifest.json": {
+      "mtime_ns": 1788735626992255865,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/input_manifest.json",
+      "sha256": "9e256ecbdfbbac8d64d9deff2fd396ffa8707eb04ae01552751ade3c2945c251",
+      "size": 2674099
+    },
+    "joined_predictions.csv": {
+      "mtime_ns": 1788735648189592742,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/joined_predictions.csv",
+      "sha256": "12a9b035916f7dc7ea19658c99def8742c097485c1ad26d60bc3537a3160ec60",
+      "size": 495586
+    },
+    "path_crosswalk.csv": {
+      "mtime_ns": 1788735648211878394,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/path_crosswalk.csv",
+      "sha256": "a2adbf05f95f3d0bd2d027021fbded0b75beb6540fb352738ec14b26197d69ae",
+      "size": 382281
+    },
+    "regression_metrics.csv": {
+      "mtime_ns": 1788735648192767050,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage050_holding_failure_diagnostics/regression_metrics.csv",
+      "sha256": "1f5b3fe1a8e944713ce4bc033908e7c106a388bd2b2199cfac8b95352704c32e",
+      "size": 4915
+    }
+  },
+  "path_drift": {
+    "A_only": 354,
+    "C_label_transfer_count": 0,
+    "C_only": 15,
+    "action_changed": 30,
+    "all_features_equal": 439,
+    "common": 648,
+    "feature_changed": {
+      "day_range_fraction": 0,
+      "directional_close_location": 0,
+      "directional_day_return": 0,
+      "directional_unrealized_return": 0,
+      "layer_stop_buffer": 0,
+      "log_holding_bars": 0,
+      "loss_streak": 111,
+      "margin_to_equity": 209,
+      "portfolio_drawdown": 184
+    }
+  },
+  "positive_return_first_exits": 34,
+  "positive_return_first_exits_target_positive": 30,
+  "product_day_max_error": 1.4551915228366852e-11,
+  "regression": [
+    {
+      "baseline_mae": 0.06658406215101811,
+      "baseline_mse": 0.017857319993992548,
+      "bias": -0.028979876626789143,
+      "count": 574,
+      "mae": 0.06795558436781549,
+      "mse": 0.017455947936918726,
+      "mse_skill": 0.022476612235702187,
+      "period": "all",
+      "target": "return_marginal",
+      "weighting": "observation"
+    },
+    {
+      "baseline_mae": 0.02121640856572086,
+      "baseline_mse": 0.0008252119710383298,
+      "bias": 0.0023441659180047005,
+      "count": 574,
+      "mae": 0.02150695845790673,
+      "mse": 0.0008248950556000878,
+      "mse_skill": 0.0003840412516595837,
+      "period": "all",
+      "target": "drawdown_marginal",
+      "weighting": "observation"
+    },
+    {
+      "baseline_mae": 0.04416728208590776,
+      "baseline_mse": 0.007193705238720934,
+      "bias": 0.0007739831389427412,
+      "count": 574,
+      "mae": 0.04562067952136019,
+      "mse": 0.007232067413358424,
+      "mse_skill": -0.00533274207997847,
+      "period": "all",
+      "target": "return_marginal",
+      "weighting": "root_equal"
+    },
+    {
+      "baseline_mae": 0.020907015074604744,
+      "baseline_mse": 0.0007808196405349597,
+      "bias": 0.003905784403026669,
+      "count": 574,
+      "mae": 0.021386351883799774,
+      "mse": 0.000805440583094744,
+      "mse_skill": -0.03153217629479177,
+      "period": "all",
+      "target": "drawdown_marginal",
+      "weighting": "root_equal"
+    }
+  ],
+  "reviewer_started": false,
+  "source_count": 4294,
+  "stage": "stage050_holding_failure_diagnostics",
+  "status": "passed",
+  "training_statistics_verified_months": 80
+}

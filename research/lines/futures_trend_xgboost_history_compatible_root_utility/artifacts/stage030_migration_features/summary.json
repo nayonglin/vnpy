@@ -1,0 +1,52 @@
+{
+  "status": "migration_features_qualified_no_models",
+  "started_at": "2026-09-06T07:16:55.997414+08:00",
+  "label_read_count": 0,
+  "model_fit_predict_count": 0,
+  "strategy_backtest_count": 0,
+  "reviewer_count": 0,
+  "production_write_count": 0,
+  "historical_evidence_type": "development_not_untouched_holdout",
+  "event_count": 276,
+  "context_count": 261060,
+  "inventory_count": 266886,
+  "inventory_status_counts": {
+    "available": 261060,
+    "actual_contract_window_missing": 5726,
+    "incomplete_chain_window": 100
+  },
+  "features": [
+    "own_oi_share_change_5d",
+    "deferred_oi_share_change_5d"
+  ],
+  "candidate_feature_count": 12,
+  "inputs_unchanged": true,
+  "finished_at": "2026-09-06T07:17:06.044357+08:00",
+  "outputs": {
+    "candidate_model_spec.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/candidate_model_spec.json",
+      "bytes": 1614,
+      "sha256": "19671dbdd0297c599370aaf19cc83fc4eba496295a9f4b3ddefa738c3b1ef3e6"
+    },
+    "context_inventory.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/context_inventory.csv.gz",
+      "bytes": 672280,
+      "sha256": "dc38a20e07b6140438a142a589afef86e293d7ce025c48c2e542ea331cd3e0c9"
+    },
+    "contract_context.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/contract_context.csv.gz",
+      "bytes": 5857016,
+      "sha256": "93bad214d09b808cf1187cad12c24af91c59570682ccca97ff2be022b0feaea3"
+    },
+    "event_migration_features.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/event_migration_features.csv",
+      "bytes": 46545,
+      "sha256": "d8fed96af6fae0cf310a09fe9e1a140a7e324688d34b69f65a0df25c7c5f0faa"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage030_migration_features/input_manifest.json",
+      "bytes": 1326072,
+      "sha256": "6315a28b1e3c53831cf2eeb206aa63d305628118975222634b991c79dbd06945"
+    }
+  }
+}

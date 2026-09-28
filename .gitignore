@@ -63,3 +63,27 @@ examples/alpha_research/public_results/
 examples/portfolio_backtesting/backtest_outputs/
 research/lines/*/outputs/
 .worktrees/
+
+# Local browser automation output
+.playwright-cli/
+output/playwright/
+
+# Research runs can create tens of thousands of raw worker and model files.
+# Keep compact, reviewable evidence in Git; retain bulk artifacts locally.
+research/lines/*/artifacts/**
+!research/lines/*/artifacts/**/
+!research/lines/*/artifacts/**/*.md
+!research/lines/*/artifacts/**/*.png
+!research/lines/*/artifacts/**/summary.json
+!research/lines/*/artifacts/**/summary.csv
+!research/lines/*/artifacts/**/decision.json
+!research/lines/*/artifacts/**/audit.json
+!research/lines/*/artifacts/**/LATEST.json
+!research/lines/*/artifacts/**/monthly_metrics.csv
+!research/lines/*/artifacts/**/yearly_metrics.csv
+!research/lines/*/artifacts/**/artifact_manifest.json
+!research/lines/*/artifacts/**/model_manifest.json
+!research/lines/*/artifacts/**/scaler_manifest.json
+!research/lines/*/artifacts/**/verification.json
+!research/lines/*/artifacts/**/upstream_verification.json
+!research/lines/*/artifacts/**/read_verification.json

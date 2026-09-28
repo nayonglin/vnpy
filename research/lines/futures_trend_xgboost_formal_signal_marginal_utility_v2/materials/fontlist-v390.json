@@ -1,0 +1,994 @@
+{
+  "_FontManager__default_weight": "normal",
+  "__class__": "FontManager",
+  "_version": 390,
+  "afmlist": [
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/cmex10.afm",
+      "name": "Computer Modern",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/cmmi10.afm",
+      "name": "Computer Modern",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/cmr10.afm",
+      "name": "Computer Modern",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/cmsy10.afm",
+      "name": "Computer Modern",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/cmtt10.afm",
+      "name": "Computer Modern",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pagd8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pagdo8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pagk8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "book"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pagko8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "book"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pbkd8a.afm",
+      "name": "ITC Bookman",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pbkdi8a.afm",
+      "name": "ITC Bookman",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pbkl8a.afm",
+      "name": "ITC Bookman",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pbkli8a.afm",
+      "name": "ITC Bookman",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pcrb8a.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pcrbo8a.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pcrr8a.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pcrro8a.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvb8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvb8an.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "condensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvbo8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvbo8an.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "condensed",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvl8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvlo8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvr8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvr8an.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "condensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvro8a.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/phvro8an.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "condensed",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pncb8a.afm",
+      "name": "New Century Schoolbook",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pncbi8a.afm",
+      "name": "New Century Schoolbook",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pncr8a.afm",
+      "name": "New Century Schoolbook",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pncri8a.afm",
+      "name": "New Century Schoolbook",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pplb8a.afm",
+      "name": "Palatino",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pplbi8a.afm",
+      "name": "Palatino",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pplr8a.afm",
+      "name": "Palatino",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pplri8a.afm",
+      "name": "Palatino",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/psyr.afm",
+      "name": "Symbol",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/ptmb8a.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/ptmbi8a.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/ptmr8a.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/ptmri8a.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/putb8a.afm",
+      "name": "Utopia",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/putbi8a.afm",
+      "name": "Utopia",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/putr8a.afm",
+      "name": "Utopia",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/putri8a.afm",
+      "name": "Utopia",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pzcmi8a.afm",
+      "name": "ITC Zapf Chancery",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/afm/pzdr.afm",
+      "name": "ITC Zapf Dingbats",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Courier-Bold.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Courier-BoldOblique.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Courier-Oblique.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Courier.afm",
+      "name": "Courier",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Helvetica-Bold.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Helvetica-BoldOblique.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Helvetica-Oblique.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Helvetica.afm",
+      "name": "Helvetica",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Symbol.afm",
+      "name": "Symbol",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Times-Bold.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Times-BoldItalic.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Times-Italic.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/Times-Roman.afm",
+      "name": "Times",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman"
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/pdfcorefonts/ZapfDingbats.afm",
+      "name": "ZapfDingbats",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium"
+    }
+  ],
+  "defaultFamily": {
+    "afm": "Helvetica",
+    "ttf": "DejaVu Sans"
+  },
+  "default_size": null,
+  "ttflist": [
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSans-Bold.ttf",
+      "name": "DejaVu Sans",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSans-BoldOblique.ttf",
+      "name": "DejaVu Sans",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSans-Oblique.ttf",
+      "name": "DejaVu Sans",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSans.ttf",
+      "name": "DejaVu Sans",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSansDisplay.ttf",
+      "name": "DejaVu Sans Display",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSansMono-Bold.ttf",
+      "name": "DejaVu Sans Mono",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSansMono-BoldOblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSansMono-Oblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSansMono.ttf",
+      "name": "DejaVu Sans Mono",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSerif-Bold.ttf",
+      "name": "DejaVu Serif",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSerif-BoldItalic.ttf",
+      "name": "DejaVu Serif",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSerif-Italic.ttf",
+      "name": "DejaVu Serif",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSerif.ttf",
+      "name": "DejaVu Serif",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/DejaVuSerifDisplay.ttf",
+      "name": "DejaVu Serif Display",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXGeneral.ttf",
+      "name": "STIXGeneral",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXGeneralBol.ttf",
+      "name": "STIXGeneral",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXGeneralBolIta.ttf",
+      "name": "STIXGeneral",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXGeneralItalic.ttf",
+      "name": "STIXGeneral",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXNonUni.ttf",
+      "name": "STIXNonUnicode",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXNonUniBol.ttf",
+      "name": "STIXNonUnicode",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXNonUniBolIta.ttf",
+      "name": "STIXNonUnicode",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXNonUniIta.ttf",
+      "name": "STIXNonUnicode",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizFiveSymReg.ttf",
+      "name": "STIXSizeFiveSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizFourSymBol.ttf",
+      "name": "STIXSizeFourSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizFourSymReg.ttf",
+      "name": "STIXSizeFourSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizOneSymBol.ttf",
+      "name": "STIXSizeOneSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizOneSymReg.ttf",
+      "name": "STIXSizeOneSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizThreeSymBol.ttf",
+      "name": "STIXSizeThreeSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizThreeSymReg.ttf",
+      "name": "STIXSizeThreeSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizTwoSymBol.ttf",
+      "name": "STIXSizeTwoSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/STIXSizTwoSymReg.ttf",
+      "name": "STIXSizeTwoSym",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmb10.ttf",
+      "name": "cmb10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmex10.ttf",
+      "name": "cmex10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmmi10.ttf",
+      "name": "cmmi10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmr10.ttf",
+      "name": "cmr10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmss10.ttf",
+      "name": "cmss10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmsy10.ttf",
+      "name": "cmsy10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    },
+    {
+      "__class__": "FontEntry",
+      "fname": "fonts/ttf/cmtt10.ttf",
+      "name": "cmtt10",
+      "size": "scalable",
+      "stretch": "normal",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "files": {
+    "summary.json": {
+      "size": 1894,
+      "sha256": "748708f2a444354666f1df72c01e176eeb55ef02d4634d02afec824e6e7ef59a"
+    },
+    "input_identities.json": {
+      "size": 18808,
+      "sha256": "4e3dd7900cea084b446abf3ae50a16abd5404785eeaaeb403ae42038daa44332"
+    },
+    "model_params.json": {
+      "size": 582,
+      "sha256": "e6dad4b7efd622f4f74c163c33cb7b6816b4697a2c7ad6b93828a17c152552e6"
+    },
+    "authorization_receipt.json": {
+      "size": 6317,
+      "sha256": "2ef0a15b829ab523fc3ed6cfa7f773251edec543fc726292d8197f5ad3351028"
+    },
+    "oos_predictions.csv": {
+      "size": 144454,
+      "sha256": "1f886ca2642ebc7143c9b6e6096b5d4e9753199a3fbc278e10b8ea27847c64f6"
+    },
+    "fold_diagnostics.csv": {
+      "size": 4599,
+      "sha256": "51fb6a3c98435a95b60bf059bc111efdebc706c46f660d1172e6b8e3e1a2cb04"
+    },
+    "monthly_effects.csv": {
+      "size": 12026,
+      "sha256": "b6b48d234cfad768dd139ea754e491e661370add943577be64eeeb0fb777190f"
+    },
+    "yearly_effects.csv": {
+      "size": 110,
+      "sha256": "c97edfb0dd8b8bf0dd7b8bb44e068b46e85a978f9f396a0370fbcd0266f9d3c8"
+    },
+    "top10_selections.csv": {
+      "size": 23003,
+      "sha256": "9b987e4372086f4c50edf71db22177069c14a8b64372b4a1ba0b35548dca0dda"
+    },
+    "report.md": {
+      "size": 428,
+      "sha256": "4f061d37489903cc81333cdf8d55d9840f8cf86b15d30d7c719c533312d361e6"
+    }
+  }
+}

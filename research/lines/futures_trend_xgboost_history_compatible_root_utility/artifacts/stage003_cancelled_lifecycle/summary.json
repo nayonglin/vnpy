@@ -1,0 +1,79 @@
+{
+  "stage": "stage003_cancelled_lifecycle",
+  "status": "passed",
+  "event_count": 276,
+  "status_counts": {
+    "mature": 273,
+    "mature_cancelled_unfilled": 1,
+    "right_censored_open": 1,
+    "right_censored_pending_entry": 1
+  },
+  "adjudicated_event_id": "2bd6f24490dbe1222edb49251312e73b7cdf9425f6b1d03628c32a62ba8a9a76",
+  "terminal_evidence": {
+    "status": "mature_cancelled_unfilled",
+    "end_date": "2020-05-11",
+    "terminal_order_id": "BACKTESTING.25",
+    "terminal_reason": "same_bar_forced_margin_deleverage_cancelled_before_fill",
+    "root_trade_id": null,
+    "first_fill_date": null
+  },
+  "source_identities": {
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage001_history_qualification/summary.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage001_history_qualification/summary.json",
+      "size": 9383,
+      "sha256": "5a72506fea3f759f68fbf1e3e1cc9b96df1d66a928cff4943dc4f0af4c32e737"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage002b_unfilled_trace/summary.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage002b_unfilled_trace/summary.json",
+      "size": 4437,
+      "sha256": "cfa98cce63cca1c1548b942b3dcd52812332828fd82292ae3b56f7c66b455757"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage002b_unfilled_trace/workers/A/execution_trace.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage002b_unfilled_trace/workers/A/execution_trace.json",
+      "size": 62945,
+      "sha256": "08c24273666744fc1cf29a857b2b532b5c3e4448389f16412234c4b5c3e19189"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage001_history_qualification/event_lifecycles.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage001_history_qualification/event_lifecycles.csv",
+      "size": 124012,
+      "sha256": "e1cb453b96e474192fc638b4effc6b3ffbb45593183bc21c61cd76f2f06cd28e"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_formal_signal_marginal_utility_v4/tools/stage005_event_lifecycle_audit.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_formal_signal_marginal_utility_v4/tools/stage005_event_lifecycle_audit.py",
+      "size": 10429,
+      "sha256": "3c075fe4ccb8d98fe202172e15a95a77cdf7f264942041b8a83258337b744ab5"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tools/stage003_cancelled_lifecycle.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tools/stage003_cancelled_lifecycle.py",
+      "size": 6100,
+      "sha256": "750abf08f4aed2d4648b95faabd6ffe599683888f79a9943947e876fa0dd6a73"
+    },
+    "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tests/test_stage003_cancelled_lifecycle.py": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/tests/test_stage003_cancelled_lifecycle.py",
+      "size": 2702,
+      "sha256": "94430bc8dc97f1f92ffc7f20eb08bfb5874aa7012e9e8b69e87745dda7615644"
+    }
+  },
+  "event_lifecycle_identity": {
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage003_cancelled_lifecycle/event_lifecycles.csv",
+    "size": 124679,
+    "sha256": "d87652c9bb77612afbb03bf8cada3d63a00224a95e31be03cfd21495addee57b"
+  },
+  "objective_headroom_excluding_cancelled_conservatively": {
+    "min_train_events": 60,
+    "first_eligible_training_month": "2021-04-01",
+    "mature_count_at_first_month": 65,
+    "full_max_drawdown_pct": -45.92157323451009,
+    "full_max_drawdown_date": "2022-06-02",
+    "immutable_prefix_max_drawdown_pct": -22.705683780813313,
+    "immutable_prefix_worst_date": "2020-10-09",
+    "strict_full_drawdown_improvement_possible": true,
+    "decision": "headroom_exists_not_model_evidence"
+  },
+  "new_replay_count": 0,
+  "new_label_count": 0,
+  "model_fit_count": 0,
+  "reviewer_started": false,
+  "eligible_for_label_preregistration": true,
+  "cancelled_label_rule": "compute_accept_minus_skip_to_terminal_date_never_impute_zero"
+}

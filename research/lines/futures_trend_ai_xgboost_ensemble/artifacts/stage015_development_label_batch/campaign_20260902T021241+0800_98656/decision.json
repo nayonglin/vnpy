@@ -1,0 +1,484 @@
+{
+  "line_id": "futures_trend_ai_xgboost_ensemble",
+  "stage": "Stage015",
+  "generated_at": "2026-09-02T06:25:15+08:00",
+  "campaign_id": "campaign_20260902T021241+0800_98656",
+  "decision": "stage015_development_account_labels_complete_allow_frozen_training",
+  "passed": true,
+  "gates": {
+    "campaign_input_identity_stable": true,
+    "all_355_cold_jobs_complete": true,
+    "worker_identity_and_wall_time": true,
+    "worker_pid_tmp_runtime_isolation": true,
+    "entry_candidate_boundary_semantics": true,
+    "four_A2_sentinels_exact": true,
+    "monthly_predecision_payloads_exact": true,
+    "label_amount_reconciliation_exact": true,
+    "development_labels_351_rows": true,
+    "development_and_next_eval_dates_exact": true,
+    "sealed_holdout_labels_absent": true
+  },
+  "job_counts": {
+    "main": 351,
+    "A2_sentinel": 4,
+    "total": 355
+  },
+  "campaign_file_contract_sha256": "ac8e5a6e77b081eaad97bcc30ef89769d6586eecd1b079ccef713e8d3d8d5d4f",
+  "normalized_runtime_sha256": "8b37a9dbf8de6b7774d08be4729b4a197a258abdf018ccdc2f52ec7abf991028",
+  "max_worker_wall_seconds": 96.01085916601005,
+  "subprocess_timeout_seconds": 600.0,
+  "reconciliation_max_abs_error": 0.0,
+  "predecision_gates": {
+    "2022-04-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-05-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-06-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-07-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-08-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-09-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-10-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-11-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2022-12-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-01-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-02-28": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-03-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-04-28": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-05-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-06-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-07-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-08-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-09-28": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-10-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-11-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2023-12-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-01-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-02-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-03-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-04-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-05-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-06-28": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-07-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-08-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-09-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-10-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-11-29": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2024-12-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-01-27": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-02-28": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-03-31": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-04-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-05-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    },
+    "2025-06-30": {
+      "passed": true,
+      "payloads": {
+        "curve": true,
+        "trades": true,
+        "entry_candidates": true,
+        "entry_risk": true,
+        "trade_events": true
+      }
+    }
+  },
+  "A2_gates": {
+    "20220429_R10_A2": {
+      "baseline_job_id": "20220429_R10",
+      "passed": true,
+      "files": {
+        "label.json": true,
+        "curve.csv": true,
+        "combined.csv": true,
+        "trades.csv": true,
+        "entry_candidates.csv": true,
+        "entry_risk.csv": true,
+        "trade_events.csv": true
+      }
+    },
+    "20230428_R10_A2": {
+      "baseline_job_id": "20230428_R10",
+      "passed": true,
+      "files": {
+        "label.json": true,
+        "curve.csv": true,
+        "combined.csv": true,
+        "trades.csv": true,
+        "entry_candidates.csv": true,
+        "entry_risk.csv": true,
+        "trade_events.csv": true
+      }
+    },
+    "20240430_R10_A2": {
+      "baseline_job_id": "20240430_R10",
+      "passed": true,
+      "files": {
+        "label.json": true,
+        "curve.csv": true,
+        "combined.csv": true,
+        "trades.csv": true,
+        "entry_candidates.csv": true,
+        "entry_risk.csv": true,
+        "trade_events.csv": true
+      }
+    },
+    "20250430_R10_A2": {
+      "baseline_job_id": "20250430_R10",
+      "passed": true,
+      "files": {
+        "label.json": true,
+        "curve.csv": true,
+        "combined.csv": true,
+        "trades.csv": true,
+        "entry_candidates.csv": true,
+        "entry_risk.csv": true,
+        "trade_events.csv": true
+      }
+    }
+  },
+  "runs_backtest": true,
+  "trains_model": false,
+  "sealed_holdout_label_count": 0,
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "ctp_connected": false
+}

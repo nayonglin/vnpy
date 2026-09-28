@@ -1,0 +1,104 @@
+{
+  "started_at": "2026-09-06T06:21:52.938772+08:00",
+  "strategy_backtest_count": 0,
+  "model_fit_predict_count": 0,
+  "label_read_count": 0,
+  "reviewer_count": 0,
+  "production_write_count": 0,
+  "tushare": {
+    "status": "not_qualified",
+    "url": "https://api.tushare.pro",
+    "api_name": "fut_basic",
+    "params": {
+      "exchange": "SHFE",
+      "fut_type": "1",
+      "fut_code": "RB"
+    },
+    "step": "validate_response",
+    "http_status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "raw_response_sha256": "f8adc64cfcc475764d2128415eb82c245eb35e9ad86eb59c8455d984bb7ada60",
+    "raw_saved_exact": true,
+    "api_code": 40101,
+    "message": "\u60a8\u7684token\u4e0d\u5bf9\uff0c\u8bf7\u786e\u8ba4\u3002"
+  },
+  "tq_daily": {
+    "status": "daily_returned_not_full_chain",
+    "symbol": "SHFE.rb2005",
+    "asof": "2020-05-15",
+    "source_start": "2019-11-01",
+    "step": "save_and_compare",
+    "rows": 130,
+    "db_rows": 130,
+    "date_sets_exact": true,
+    "open_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "high_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "low_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "close_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "volume_tq_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "open_oi_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 130,
+      "max_abs_diff": 0.0
+    },
+    "close_oi_vs_db": {
+      "paired_finite_rows": 130,
+      "exact_rows": 1,
+      "max_abs_diff": 152304.0
+    }
+  },
+  "finished_at": "2026-09-06T06:21:57.493215+08:00",
+  "inputs_unchanged": true,
+  "outputs": {
+    "daily_comparison.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/daily_comparison.csv",
+      "bytes": 16662,
+      "sha256": "42f9d015b92f5ac4d373b1480e4f6500a394c5fe7a7151330aa85bd49f8bd0c3"
+    },
+    "frozen_db_rb2005.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/frozen_db_rb2005.csv",
+      "bytes": 7548,
+      "sha256": "adcc0a4dd9c64d52c53270e2a853eb79ae091bbae94e7abda84a4316642940dd"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/input_manifest.json",
+      "bytes": 3222,
+      "sha256": "aa371c40950f6b98a3c1b0d107efa827faf34ccbdf69cb286f9f54363e5c3f13"
+    },
+    "tq_bounded_daily.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/tq_bounded_daily.csv",
+      "bytes": 10543,
+      "sha256": "d8c77b2d3e7f75c7c44d8240de3e38f87f9a46147a3325b0fcad9ab1d250238d"
+    },
+    "tq_raw_serial.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/tq_raw_serial.csv.gz",
+      "bytes": 5641,
+      "sha256": "14ea61080e815eb69d7852d1609ea89904af22aa1146a2ea2b2ac2a1874dbc79"
+    },
+    "tushare_response.bin": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage025_early_source_probe/tushare_response.bin",
+      "bytes": 95,
+      "sha256": "f8adc64cfcc475764d2128415eb82c245eb35e9ad86eb59c8455d984bb7ada60"
+    }
+  }
+}

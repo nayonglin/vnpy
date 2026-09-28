@@ -1,0 +1,48 @@
+{
+  "status": "source_not_qualified",
+  "error": "RuntimeError:public_header_unavailable_stop_no_bypass",
+  "history": {},
+  "products_absent_from_catalog": [],
+  "requests": [
+    {
+      "name": "catalog",
+      "url": "https://www.99qh.com/data/spotTrend",
+      "params": null,
+      "attempts": 1,
+      "started_at_utc": "2026-09-05T19:02:23.248369+00:00",
+      "http_status": 200,
+      "bytes": 50130,
+      "body_sha256": "fac74431aafab24d7908af766deef648c170638ff61bbdedfb71684dd9b9dfb7",
+      "raw_response": {
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage012_alternative_spot_source/catalog.raw",
+        "bytes": 50130,
+        "sha256": "fac74431aafab24d7908af766deef648c170638ff61bbdedfb71684dd9b9dfb7"
+      },
+      "finished_at_utc": "2026-09-05T19:02:23.706149+00:00"
+    },
+    {
+      "name": "public_bootstrap",
+      "url": "https://centerapi.fx168api.com/app/common/v.js",
+      "params": null,
+      "attempts": 1,
+      "started_at_utc": "2026-09-05T19:02:23.735383+00:00",
+      "http_status": 200,
+      "bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finished_at_utc": "2026-09-05T19:02:23.990301+00:00"
+    }
+  ],
+  "request_count": 2,
+  "retry_count": 0,
+  "old_basis_cache_modified": false,
+  "full_data_extension_performed": false,
+  "new_historical_models": 0,
+  "new_labels": 0,
+  "new_backtests": 0,
+  "reviewers": 0,
+  "input_manifest": {
+    "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage012_alternative_spot_source/input_manifest.json",
+    "bytes": 7232,
+    "sha256": "fb0efe9d8bd7bd5390574ab74b1753dd4ee6ef4457be4d86d17aea42154ed4e0"
+  }
+}

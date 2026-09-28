@@ -1,0 +1,12 @@
+{
+  "decision": "BLOCK_STAGE005A_SMOKE",
+  "generated_at": "2026-09-02T18:18:32+08:00",
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260902_stage005a_prerun_independent_review.md",
+  "review_sha256": "82f2ae2eac4ade744ce92fe2db1bd497fbca6541b55ef476b62f1b27357be8f5",
+  "severity": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 2,
+    "P3": 1
+  }
+}

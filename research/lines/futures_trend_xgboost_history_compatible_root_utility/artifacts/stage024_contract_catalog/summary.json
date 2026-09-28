@@ -1,0 +1,136 @@
+{
+  "status": "catalog_gap_stop_no_bars",
+  "started_at": "2026-09-06T06:07:00.926881+08:00",
+  "cutoff": "2026-08-28",
+  "source_start": "2019-11-01",
+  "tqsdk_version": "3.9.4",
+  "historical_vintage_proven": false,
+  "query_backtest_is_strategy_backtest": false,
+  "strategy_backtest_count": 0,
+  "price_download_count": 0,
+  "label_read_count": 0,
+  "model_fit_count": 0,
+  "model_predict_count": 0,
+  "reviewer_count": 0,
+  "production_write_count": 0,
+  "event_count": 276,
+  "event_contract_count": 189,
+  "catalog_contract_count": 1200,
+  "catalog_product_count": 18,
+  "missing_event_contracts": [
+    "CF005.CZCE",
+    "CF009.CZCE",
+    "FG009.CZCE",
+    "OI009.CZCE",
+    "SA009.CZCE",
+    "SM009.CZCE",
+    "au2006.SHFE",
+    "hc2005.SHFE",
+    "jm2005.DCE",
+    "jm2009.DCE",
+    "rb2005.SHFE",
+    "ru2005.SHFE",
+    "sp2005.SHFE"
+  ],
+  "product_mismatch_event_ids": [],
+  "expiry_mismatch_event_ids": [],
+  "raw_catalog_rows": 1200,
+  "finished_at": "2026-09-06T06:07:08.932642+08:00",
+  "outputs": {
+    "catalog.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/catalog.csv.gz",
+      "bytes": 13983,
+      "sha256": "d6071eb322c161ef1471aed17210ac4b9cb147e6e5e856646072251c97f27a40"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/input_manifest.json",
+      "bytes": 2470,
+      "sha256": "47e1458e6cde99f840827ed13320c33a661981fdfca698ec99c9d2d4dcedee08"
+    },
+    "queried_symbols.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/queried_symbols.json",
+      "bytes": 19782,
+      "sha256": "8ca2403ca103d5a467f0300513df2be380bd981ce72be634a6d4fadd732ffabb"
+    },
+    "raw_catalog.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog.csv.gz",
+      "bytes": 8709,
+      "sha256": "32012b38e5807f5f17a699363158aa816c084406bc7d98efdb7191db890a97ff"
+    },
+    "raw_catalog_batch_000.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_000.csv.gz",
+      "bytes": 927,
+      "sha256": "af6a9f5bf6b76e6b373cbc5c806260687f262ba233c7681137bd2fba39721fd7"
+    },
+    "raw_catalog_batch_001.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_001.csv.gz",
+      "bytes": 986,
+      "sha256": "9e9b2196483d36d7f4d613327c4ee778e36c2b1e43f37b4f0a07f3f0604465a7"
+    },
+    "raw_catalog_batch_002.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_002.csv.gz",
+      "bytes": 1002,
+      "sha256": "ab5b5cf1af906413d920c80f091282218914f7358678bfdc4ea1ae7b2ce84537"
+    },
+    "raw_catalog_batch_003.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_003.csv.gz",
+      "bytes": 961,
+      "sha256": "1664779a9ddd626fe27d74152b7c306b081b70f7d221678b1497c878c6a87921"
+    },
+    "raw_catalog_batch_004.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_004.csv.gz",
+      "bytes": 928,
+      "sha256": "dff17226685863e61a84abd795142c0a2ec27e7d7bad9098ac82842f73c347d4"
+    },
+    "raw_catalog_batch_005.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_005.csv.gz",
+      "bytes": 1003,
+      "sha256": "c4a60bb7d564994e7d113e4b43fa9305f4809ac6a39efd0b92b85dfa105c9347"
+    },
+    "raw_catalog_batch_006.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_006.csv.gz",
+      "bytes": 1007,
+      "sha256": "23a19b33bb5ef80c0e7c53997356dda2c0466cb8b6d1e44c671a4e48460cad1c"
+    },
+    "raw_catalog_batch_007.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_007.csv.gz",
+      "bytes": 1051,
+      "sha256": "4b71a7b9ca36b2adb3600abd1d5b6bd4b7e4cb39f956c7dda339489826d44821"
+    },
+    "raw_catalog_batch_008.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_008.csv.gz",
+      "bytes": 960,
+      "sha256": "7e7e5e1b7e9e505049f5c67b14aa7e02cf696d5e51f3c510dc5036e060b3f843"
+    },
+    "raw_catalog_batch_009.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_009.csv.gz",
+      "bytes": 1008,
+      "sha256": "d2c58e5ea3d5c5558652de333374310a333634a5e2970277da999149bd2166b2"
+    },
+    "raw_catalog_batch_010.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_010.csv.gz",
+      "bytes": 1010,
+      "sha256": "5989157005fa2b07fdb0c4c01a0b918ccfd73d053f471650293c1d3a5c4f8e03"
+    },
+    "raw_catalog_batch_011.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_011.csv.gz",
+      "bytes": 994,
+      "sha256": "aa266ee0aba7a9dc794bec8565e2e57c2f4ae7b0adebee9cf976530dfab47bf9"
+    },
+    "raw_catalog_batch_012.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_012.csv.gz",
+      "bytes": 1002,
+      "sha256": "b7983e184d29fc2f8b251c23e9cb40ef05354a51c54614f74aff1f30ed366eed"
+    },
+    "raw_catalog_batch_013.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_013.csv.gz",
+      "bytes": 981,
+      "sha256": "9da287744b402b47052999c5f1f5f3c7d38325600dc10b4d27f2c7bfd0b63e7a"
+    },
+    "raw_catalog_batch_014.csv.gz": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage024_contract_catalog/raw_catalog_batch_014.csv.gz",
+      "bytes": 990,
+      "sha256": "9d289baba38f62831c07c1f039d5e01f2aa825f7322edaa4bbdd9bd5d3ab9325"
+    }
+  }
+}

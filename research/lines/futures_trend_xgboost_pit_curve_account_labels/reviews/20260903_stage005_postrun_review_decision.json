@@ -1,0 +1,24 @@
+{
+  "decision": "ALLOW_STAGE006_TRAINING_PREREGISTRATION_ONLY",
+  "allowed": true,
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_curve_account_labels/reviews/20260903_stage005_postrun_independent_review.md",
+  "review_sha256": "d1933474704dfa116bb88ca5c32465c686166f5541755081e559af9db5816d32",
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 1
+  },
+  "campaign_id": "campaign_20260902T214308+0800_13888",
+  "campaign_decision_sha256": "1cffbfcf0872de9c2a0256071de95ca4a750a72b74025865a1beb8b18fe8a111",
+  "allowed_scope": "Stage006 training plan preregistration and independent prereview only",
+  "not_authorized": [
+    "model_training",
+    "holdout_unsealing",
+    "holdout_label_read_or_generation",
+    "profit_improvement_claim",
+    "live_trading",
+    "ctp_connection",
+    "order_submission"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "all_observations_qualified": true,
+  "contract_count": 120,
+  "created_at_utc": "2026-09-07T01:21:15.452135+00:00",
+  "failed_count": 0,
+  "failure_counts": {},
+  "feature_count": 11,
+  "feature_unique_counts": {
+    "adverse_semivariance_5m": 1002,
+    "favorable_semivariance_5m": 1002
+  },
+  "historical_fit_predict_count": 0,
+  "network_attempt_count": 0,
+  "new_download_count": 0,
+  "new_label_count": 0,
+  "new_strategy_replay_count": 0,
+  "observation_count": 1002,
+  "outputs": {
+    "candidate_spec.json": {
+      "mtime_ns": 1788744074530602327,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage059_realized_semivariance_features/candidate_spec.json",
+      "sha256": "236e343b8927c64fa58a35ec7a2e933c576d38a48226f3580c92a316a6ab0825",
+      "size": 1219
+    },
+    "input_manifest.json": {
+      "mtime_ns": 1788744050094344749,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage059_realized_semivariance_features/input_manifest.json",
+      "sha256": "b6c9b47a4a7a68a19b30f30570efb481cc6e94d3117f59a838987731c92b0592",
+      "size": 277561
+    },
+    "observation_semivariance_features.csv": {
+      "mtime_ns": 1788744074203469554,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage059_realized_semivariance_features/observation_semivariance_features.csv",
+      "sha256": "91a07a53566cf1aec71f5ab1005c6bebfd8e5982e841f54b6d84eba5840d1a5a",
+      "size": 336079
+    },
+    "sampled_prices.csv": {
+      "mtime_ns": 1788744074527960233,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage059_realized_semivariance_features/sampled_prices.csv",
+      "sha256": "ba807448459a3a9a994c032b602cbab16e83b9fb03e2ad6d9e5c7aad51d7ea0b",
+      "size": 15691042
+    }
+  },
+  "qualified_count": 1002,
+  "reviewer_started": false,
+  "root_count": 155,
+  "sample_count": 65178,
+  "source_count": 503,
+  "source_global_coverage_complete": false,
+  "source_scope": "A_observations_only",
+  "stage": "stage059_realized_semivariance_features",
+  "status": "features_qualified_no_models",
+  "zero_trade_grid_count": 0
+}

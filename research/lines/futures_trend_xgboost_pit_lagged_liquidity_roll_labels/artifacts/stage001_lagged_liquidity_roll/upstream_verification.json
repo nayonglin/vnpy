@@ -1,0 +1,14 @@
+{
+  "source": {
+    "artifact_count": 13,
+    "errors": [],
+    "manifest_mode": "logical_key_with_path",
+    "verified": true
+  },
+  "upstream": {
+    "artifact_count": 8,
+    "errors": [],
+    "input_count": 7,
+    "verified": true
+  }
+}

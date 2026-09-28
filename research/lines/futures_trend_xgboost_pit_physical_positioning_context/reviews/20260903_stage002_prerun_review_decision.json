@@ -1,0 +1,90 @@
+{
+  "decision": "ALLOW_STAGE002_TDD_IMPLEMENTATION_ONLY",
+  "allowed": true,
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 2
+  },
+  "review_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/reviews/20260903_stage002_prerun_independent_review.md",
+  "review_sha256": "08fe767a4ba382fac502be3e1aebf9f9feed679800dc282d69a4c3896b880e83",
+  "preregistration_path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_physical_positioning_context/stages/20260903_0256_stage002_physical_feature_preregistration.md",
+  "preregistration_sha256": "1acaacc180b778d4f311aa7f54ecb66069016423242cbac4cc91741858569ad3",
+  "stage001_manifest_sha256": "c4436bef32a174e699a7f736a383591d3ef581c9c3fd00ee38ed076b562a29fa",
+  "stage001_feature_panel_sha256": "62ac505b07412bbd2f5110f6131ce9a9638a47942558ae93da28601731755d7e",
+  "recomputed_counts": {
+    "candidate_rows": 374,
+    "candidate_months": 47,
+    "candidate_products": 18,
+    "active_months": 35,
+    "model_eligible_rows": 218,
+    "rank10_anchors": 35,
+    "eligible_challengers": 183,
+    "segment_active_months": [
+      13,
+      13,
+      9
+    ],
+    "segment_eligible_rows": [
+      62,
+      91,
+      65
+    ],
+    "active_months_by_year": {
+      "2022": 8,
+      "2023": 10,
+      "2024": 9,
+      "2025": 8
+    }
+  },
+  "feature_degeneracy": {
+    "eligible_rows_all_finite": true,
+    "rank10_anchor_features_all_exact_zero": true,
+    "physical_challenger_unique_counts": [
+      183,
+      183,
+      183,
+      183,
+      183
+    ],
+    "physical_challenger_exact_zero_counts": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "correlation_recalculation": {
+    "eligible_all_rows": 218,
+    "eligible_all_basis_pair_spearman": 0.8510219949765314,
+    "eligible_all_max_other_abs_spearman": 0.2925248716363609,
+    "challenger_only_rows": 183,
+    "challenger_only_basis_pair_spearman": 0.8679615110477548,
+    "challenger_only_max_other_abs_spearman": 0.3313836911484809
+  },
+  "p3_findings": [
+    "The preregistration correlation statement matches all 218 eligible rows including 35 zero anchors, but does not explicitly state that denominator; challenger-only correlations differ.",
+    "Eligible challengers cover 13 of 18 candidate products, with five products having zero eligible challenger rows; future claims must remain limited to the mechanically complete evidence subuniverse."
+  ],
+  "allowed_scope": [
+    "stage002_unlabeled_feature_tdd_implementation",
+    "synthetic_tests",
+    "frozen_input_identity_tests",
+    "deterministic_unlabeled_artifact_generation"
+  ],
+  "not_authorized": [
+    "account_return_or_drawdown_label_read",
+    "sealed_holdout_label_read_or_generation",
+    "model_training_or_parameter_search",
+    "effect_evaluation",
+    "strategy_backtest",
+    "true_engine_backtest",
+    "stage006_model_result_detail_read",
+    "production_write",
+    "ctp_connection",
+    "live_trading",
+    "order_api_call"
+  ]
+}

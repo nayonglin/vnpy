@@ -1,0 +1,73 @@
+{
+  "attempt_audit": {
+    "active_attempt_id": null,
+    "attempt_count": 1,
+    "attempt_sequence_contiguous": true,
+    "attempt_sequence_unique": true,
+    "final_status": "complete",
+    "latest_attempt_id": "attempt_20260902T214433+0800_14022_1788356673916985000",
+    "mode": "finalized",
+    "passed": true,
+    "post_failure_count": 0,
+    "receipt_shape_valid": true,
+    "start_end_exact": true,
+    "statuses": [
+      "complete"
+    ]
+  },
+  "campaign_file_contract_sha256": "191c6e9b5487fefc5ad68304d4d034e150d36bb1b94e2598e33a0ce9ffcb45da",
+  "campaign_id": "campaign_20260902T214308+0800_13888",
+  "ctp_connected": false,
+  "decision": "stage005_development_account_labels_complete_allow_stage006_training_preregistration",
+  "execution_scope_counts": {
+    "ctp_connect_command_count": 0,
+    "ctp_connect_log_event_count": 0,
+    "holdout_job_count": 0,
+    "holdout_label_count": 0,
+    "holdout_output_count": 0,
+    "model_artifact_count": 0,
+    "model_training_command_count": 0,
+    "model_training_log_event_count": 0,
+    "order_command_count": 0,
+    "order_log_event_count": 0,
+    "unexpected_artifact_count": 0,
+    "unexpected_worker_command_count": 0,
+    "unknown_output_job_count": 0
+  },
+  "gates": {
+    "all_270_cold_jobs_complete": true,
+    "attempt_recovery_receipts_complete": true,
+    "campaign_input_identity_stable": true,
+    "development_labels_266_rows": true,
+    "development_months_35_exact": true,
+    "entry_candidate_boundary_semantics": true,
+    "execution_scope_explicit_zero_counts": true,
+    "four_A2_sentinels_exact": true,
+    "monthly_raw_predecision_evidence_exact": true,
+    "production_checkout_unchanged": true,
+    "quantized_label_reconciliation_exact": true,
+    "runtime_snapshot_unchanged": true,
+    "worker_identity_and_wall_time": true,
+    "worker_pid_tmp_runtime_isolation": true
+  },
+  "generated_at": "2026-09-03T00:42:12+08:00",
+  "job_counts": {
+    "A2_sentinel": 4,
+    "main": 266,
+    "total": 270
+  },
+  "line_id": "futures_trend_xgboost_pit_curve_account_labels",
+  "max_worker_wall_seconds": 85.2773285000003,
+  "monetary_quantization_order": "quantize_each_operand_to_0.000001_then_add_subtract",
+  "normalized_runtime_sha256": "abeb07901315d742a348f39baaede71877a8f746c6a5622cd0c8a33465baf6b9",
+  "order_api_called_count": 0,
+  "passed": true,
+  "predecision_month_count": 35,
+  "predecision_raw_file_count": 175,
+  "reconciliation_max_abs_error": 0.0,
+  "runs_backtest": true,
+  "sealed_holdout_label_count": 0,
+  "stage": "Stage005",
+  "subprocess_timeout_seconds": 600.0,
+  "trains_model": false
+}

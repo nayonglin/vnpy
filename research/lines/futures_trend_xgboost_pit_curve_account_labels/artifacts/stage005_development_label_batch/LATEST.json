@@ -1,0 +1,10 @@
+{
+  "attempt_id": "attempt_20260905T160234+0800_73363_1788595354479260000",
+  "campaign_file_contract_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "campaign_id": "test_validate_only_creates_a_z0",
+  "campaign_path": "/private/var/folders/n9/hgbtwt3503b8nkknjv1csx080000gn/T/pytest-of-bytedance/pytest-633/test_validate_only_creates_a_z0",
+  "completed_jobs": 1,
+  "selected_job_count": 0,
+  "status": "validating",
+  "total_jobs": 1
+}

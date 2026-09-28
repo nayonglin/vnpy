@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "fifth_round_independent_readonly_prereviewer",
+  "reviewer_session_id": "01a06f97-558c-76c0-b5b1-31a50ad11b19",
+  "reviewed_scope": "research/lines/futures_trend_xgboost_formal_signal_marginal_utility",
+  "decision": "BLOCK_STAGE001_UNIQUE_RUN",
+  "allowed": false,
+  "severity_counts": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 2,
+    "P3": 0
+  },
+  "findings": [
+    {
+      "id": "R5-P1-001",
+      "severity": "P1",
+      "finding": "Success reconciliation can mark completed without revalidating the complete worker terminal, replay, counter, formal identity, sandbox, guard and execution-event semantics.",
+      "action": "Persist the execution event in the success bundle and rerun the full worker and event semantic validators before any completed recovery transition."
+    },
+    {
+      "id": "R5-P2-001",
+      "severity": "P2",
+      "finding": "The exact success file set is enforced, but authorization, claim, 1410-input inventory, runtime constants and current production identity are not fully rebound during recovery.",
+      "action": "Validate the exact authorization bound-file set and current hashes, rebuild and bind the complete input and runtime contracts, and compare current production identity before completed recovery."
+    },
+    {
+      "id": "R5-P2-002",
+      "severity": "P2",
+      "finding": "The production correlation snapshot can return zero active peers before enumerating actual same-direction positions when candidate history is unavailable.",
+      "action": "Expose an explicit candidate-history availability state and fail closed whenever correlation availability is unknown."
+    }
+  ],
+  "fourth_round_closure": {
+    "R4-P1-001": "closed",
+    "R4-P1-002": "open",
+    "R4-P2-001": "closed",
+    "R4-P2-002": "open",
+    "R4-P2-003": "open"
+  },
+  "constraints": {
+    "authorization_absent": true,
+    "execution_state_absent": true,
+    "final_absent": true,
+    "failed_absent": true,
+    "stage001_run_executed": false
+  }
+}

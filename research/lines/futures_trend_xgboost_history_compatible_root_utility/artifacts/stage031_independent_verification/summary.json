@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "verified_at": "2026-09-06T07:36:53.801361+08:00",
+  "training_summary_sha256": "7c492cea8c88b9c2443f407bf7225a4f4d978b1bed8725297a931230169a4abc",
+  "source_identity_count": 3594,
+  "months": 80,
+  "model_count": 132,
+  "feature_count": 12,
+  "original_fields_exact": true,
+  "train_ids_and_frames_exact": true,
+  "strict_time_and_transforms_exact": true,
+  "fit_count": 0,
+  "predict_count": 0,
+  "reviewer_count": 0
+}

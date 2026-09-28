@@ -1,0 +1,19 @@
+{
+  "failed": [
+    {
+      "error": "daily_calendar_mismatch",
+      "event_id": "5a18f7dca90da5275c014d7201dfb1cbe4564ff75914cf3251c96215917f3dd5",
+      "status": "failed"
+    }
+  ],
+  "mode": "canary",
+  "model_fit_count": 0,
+  "passed_count": 4,
+  "plan_sha256": "4d0e8861930de7cdda0b4f98a245197eb85e09c5bc551c2d0b05fee15bffe6c7",
+  "reviewer_started": false,
+  "selected_count": 5,
+  "stage": "stage004_label_batch",
+  "status": "failed",
+  "total_completed_count": 4,
+  "total_planned_count": 274
+}

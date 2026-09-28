@@ -1,0 +1,55 @@
+{
+  "authorized": true,
+  "implementation_sha256": {
+    "core": "ab919d0e28e2d22583c935fd7862a836469c4799ab3380fd48f5406a5545c76e",
+    "core_tests": "4e9dcde3f03db707980ef7832caa211eefc90e43a0a59c25c3e569ec5580057c",
+    "preregistration": "8df75b82a2f4b54be5e5ce493970a0cab116dfeea80f4e3902c3e5274d19f30f",
+    "runner": "3e90e0712dd1e72a5107f29539634589d603700ace96ad42a8916e7b8c54622c",
+    "runner_tests": "5666c5ab1b0bb7fd3be039e7eafa2058f17a4a3defe3bf2bc807f7f617396b0e"
+  },
+  "input_sha256": {
+    "bars": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+    "fold_plan": "3c9514e7fe10b36a775cd8c9bfd16641d493cc8a64209319780326ba0f9fbb32",
+    "formal_scoring": "ed83264188655939cb1289d75f480174be3bdcc50e7ed2a9daf0731a48a73ed2",
+    "label_plan": "426c40e5f0bc1a819e291abcc66c7f35eae6b9c5015634ddf8c42878c6afbc42",
+    "model_features": "1e4ebb1942dc066eb1164dc82e7e0412fe10d433e57aa5b8b8ab3b71822344ac",
+    "v1_manifest": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a",
+    "v2_manifest": "7428e753607ff44b39f0e3510e29493ec96b4163a35fa261791da7d819b27b79",
+    "v2_summary": "a25817cbbd6da47dde8d711adf35ef70cc37422476060a2e652db37aaed7536d"
+  },
+  "issued_at": "2026-09-05T00:05:07+08:00",
+  "line_id": "futures_trend_xgboost_pit_full_market_daily_ranker_v2",
+  "model_params": {
+    "colsample_bytree": 1,
+    "eval_metric": "ndcg@10",
+    "gamma": 0,
+    "lambdarank_normalization": true,
+    "lambdarank_num_pair_per_sample": 10,
+    "lambdarank_pair_method": "topk",
+    "lambdarank_score_normalization": true,
+    "learning_rate": 0.03,
+    "max_depth": 2,
+    "min_child_weight": 5,
+    "n_estimators": 64,
+    "n_jobs": 1,
+    "ndcg_exp_gain": false,
+    "objective": "rank:ndcg",
+    "random_state": 42,
+    "reg_alpha": 0,
+    "reg_lambda": 10,
+    "subsample": 1,
+    "tree_method": "hist"
+  },
+  "nonce": "18c62516-7eef-49b1-b6f7-4d52b188bac0",
+  "regression_tests_passed": 78,
+  "review_sha256": "7d4d56005024b27d5d3adfe55f1ae4a6f35d80e2e900036a5508be4c97e6bbc3",
+  "runtime": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "platform": "macOS-15.7.4-arm64-arm-64bit",
+    "python": "3.11.15",
+    "xgboost": "3.2.0"
+  },
+  "stage": "stage002_daily_ranker_development_oos"
+}

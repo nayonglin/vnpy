@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "files": {
+    "event_ledger.ndjson": {
+      "size": 15643,
+      "sha256": "9a4c1da6b823d6bcc80a392eb19658ea9b3896c2146eef6b099bd48ccb5eacc9"
+    },
+    "execution_receipt.json": {
+      "size": 4956,
+      "sha256": "09d7473e25f87ec71593cb2d3467d16f46ff73f44c183fe02bfe6ebb22077816"
+    },
+    "technical_failure.json": {
+      "size": 352,
+      "sha256": "a0c9cf046831944b04530dd96a02949b080ee6aba3cfbdce80c85c47f55a4b60"
+    }
+  }
+}

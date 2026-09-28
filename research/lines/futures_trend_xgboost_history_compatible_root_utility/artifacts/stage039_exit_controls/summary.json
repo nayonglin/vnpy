@@ -1,0 +1,125 @@
+{
+  "file_contract_sha256": "7014b3d2bb8ac811efb8a11b255efa75de59f0d400afb93e1a00c082f968871c",
+  "formal_replay_call_count": 2,
+  "model_candidate": false,
+  "new_label_count": 0,
+  "new_xgboost_fit_count": 0,
+  "results": {
+    "A0": {
+      "exit_audit_identity": {
+        "mtime_ns": 1788662526916734625,
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage039_exit_controls/workers/A0/exit_audit.json",
+        "sha256": "08223faeb9786cca05370051055522904d06cd18883f8c796fd6cb29e86f099a",
+        "size": 76
+      },
+      "metrics": {
+        "end_equity": 12226270.600000013,
+        "max_drawdown_pct": -45.92157323451009,
+        "nonzero_daily_win_rate_pct": 54.24187725631769,
+        "sharpe": 1.6839432501429918,
+        "total_commission": 0.0,
+        "total_return_pct": 8050.847066666675,
+        "total_slippage": 1100560.0,
+        "trade_count": 655
+      },
+      "qualification": {
+        "action_count": 0,
+        "all_seven_frames_exact": true
+      },
+      "receipt_sha256": "d0b0679f42fed3e06a127c4fd8401f21af84af8eab8de13be4ca9d735bad4848",
+      "seconds": 331.4293958750204,
+      "status": "passed"
+    },
+    "E": {
+      "exit_audit_identity": {
+        "mtime_ns": 1788662569529607291,
+        "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage039_exit_controls/workers/E/exit_audit.json",
+        "sha256": "bfee24ec5687fcdf9f3a1943bc96849bf8ae368d2398851678a3e3ea4d912bfe",
+        "size": 723
+      },
+      "metrics": {
+        "end_equity": 151320.0,
+        "max_drawdown_pct": -1.6666666666666718,
+        "nonzero_daily_win_rate_pct": 66.66666666666666,
+        "sharpe": 1.7135397189081332,
+        "total_commission": 0.0,
+        "total_return_pct": 0.8799999999999919,
+        "total_slippage": 490.0,
+        "trade_count": 5
+      },
+      "qualification": {
+        "action": {
+          "fills": [
+            {
+              "cost": 120.0,
+              "fill_date": "2020-01-13",
+              "order_id": "BACKTESTING.4",
+              "position_after": 0.0,
+              "price": 1213.5,
+              "trade_id": "BACKTESTING.5",
+              "volume": 2.0
+            }
+          ],
+          "intents": [
+            {
+              "decision_date": "2020-01-10",
+              "direction": "SHORT",
+              "inventory": {
+                "jm2005.DCE": {
+                  "average_entry_price": "1203.0",
+                  "quantity": "2",
+                  "source_trade_ids": [
+                    "BACKTESTING.3"
+                  ]
+                }
+              },
+              "order_id": "BACKTESTING.4",
+              "order_price": 1207.5,
+              "other_order_ids": [
+                "BACKTESTING.3"
+              ],
+              "position_before": 2.0,
+              "product_vt_symbol": "jm.DCE",
+              "submitted_without_fill": true,
+              "volume": 2.0,
+              "vt_symbol": "jm2005.DCE"
+            }
+          ],
+          "resolutions": [
+            {
+              "fill_date": "2020-01-13",
+              "first_time": "2020-01-10T21:00:00",
+              "order_id": "BACKTESTING.4",
+              "price": 1213.5,
+              "source": "frozen_first_minute_proxy"
+            }
+          ],
+          "unfilled_order_ids": []
+        },
+        "fill_inventory": {
+          "max_pnl_error": 0.0,
+          "nonzero_contract_days": 2,
+          "position_rows": 4326,
+          "trade_count": 5
+        },
+        "prefix_all_seven_frames_exact": true,
+        "reference_prefix_metrics": {
+          "end_equity": 150900.0,
+          "max_drawdown_pct": -1.6666666666666718,
+          "nonzero_daily_win_rate_pct": 66.66666666666666,
+          "sharpe": 1.2792330082395684,
+          "total_commission": 0.0,
+          "total_return_pct": 0.6000000000000005,
+          "total_slippage": 370.0,
+          "trade_count": 4
+        }
+      },
+      "receipt_sha256": "7a52c3752a135cb66bba79f164d3c081b364e4988fb5c57e3a3f2e12d8769a01",
+      "seconds": 37.067976041988004,
+      "status": "passed"
+    }
+  },
+  "reviewer_count": 0,
+  "stage": "stage039_exit_controls",
+  "status": "engineering_controls_passed_not_model"
+}

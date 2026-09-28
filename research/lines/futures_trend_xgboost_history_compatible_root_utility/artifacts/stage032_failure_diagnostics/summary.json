@@ -1,0 +1,102 @@
+{
+  "status": "passed",
+  "created_at": "2026-09-06T07:49:05.240405+08:00",
+  "evidence_type": "post_failure_descriptive_not_causal",
+  "events": 276,
+  "evaluated_events": 210,
+  "censored_events": 2,
+  "untrained_events": 64,
+  "regression": [
+    {
+      "target": "return_marginal",
+      "count": 210,
+      "model_mse": 0.007030806092106909,
+      "baseline_mse": 0.006892307478053617,
+      "mse_skill": -0.020094665610072893,
+      "model_mae": 0.04765009837249631,
+      "baseline_mae": 0.04586401174321002,
+      "mean_prediction_error": -0.005534771642696001,
+      "standardized_count": 210,
+      "standardized_model_mse": 1.338163762341508,
+      "standardized_baseline_mse": 1.343048118032896,
+      "standardized_mse_skill": 0.0036367689480417686,
+      "pearson": 0.05259455682678834
+    },
+    {
+      "target": "drawdown_marginal",
+      "count": 210,
+      "model_mse": 0.0005631374013317348,
+      "baseline_mse": 0.0005440866213722332,
+      "mse_skill": -0.03501424076823256,
+      "model_mae": 0.0165851884198402,
+      "baseline_mae": 0.016138308626812776,
+      "mean_prediction_error": -0.0005027745688809122,
+      "standardized_count": 210,
+      "standardized_model_mse": 1.441581575553337,
+      "standardized_baseline_mse": 1.4124760084194263,
+      "standardized_mse_skill": -0.020606061243107376,
+      "pearson": 0.04278601633817438
+    }
+  ],
+  "actions": {
+    "evaluated_count": 210,
+    "skip_count": 77,
+    "true_harm_count": 100,
+    "true_harm_rate": 0.47619047619047616,
+    "true_positive": 32,
+    "false_positive": 45,
+    "false_negative": 68,
+    "true_negative": 65,
+    "skip_precision": 0.4155844155844156,
+    "harm_recall": 0.32,
+    "skipped_positive_return_count": 34,
+    "skipped_positive_both_count": 17,
+    "skipped_negative_return_count": 43,
+    "skipped_zero_return_count": 0
+  },
+  "path_drift": {
+    "a_count": 276,
+    "c_count": 286,
+    "common_count": 276,
+    "a_only_count": 0,
+    "c_only_count": 10,
+    "action_changed_count": 35,
+    "a_skip_common_count": 77,
+    "c_skip_common_count": 76,
+    "feature_changed_counts": {
+      "directional_rsi": 0,
+      "directional_ma_gap": 0,
+      "directional_ma_slope": 0,
+      "open_interest_change_pct": 0,
+      "stop_distance_pct": 0,
+      "portfolio_drawdown_pct": 198,
+      "margin_to_equity_before": 125,
+      "active_positions_fraction": 82,
+      "same_direction_correlation": 53,
+      "loss_streak": 103,
+      "own_oi_share_change_5d": 0,
+      "deferred_oi_share_change_5d": 0
+    }
+  },
+  "new_fit_predict_count": 0,
+  "new_backtest_count": 0,
+  "reviewer_count": 0,
+  "source_count": 88,
+  "outputs": {
+    "event_predictions.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage032_failure_diagnostics/event_predictions.csv",
+      "sha256": "bd88f11e809aebe4327e1017776e605a8f093530361a49ef69cb5cce4e0e0de2",
+      "bytes": 218925
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage032_failure_diagnostics/input_manifest.json",
+      "sha256": "3f0f3c4bd24ee5de76946c2def21f8f52dadf208be63e2c9014ac2d70bcf6197",
+      "bytes": 42035
+    },
+    "common_path_differences.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage032_failure_diagnostics/common_path_differences.csv",
+      "sha256": "975bbd3d934f632f29073cc3f2206013ed63d32632fa97e7409339b408fe819f",
+      "bytes": 186732
+    }
+  }
+}

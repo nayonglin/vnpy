@@ -1,0 +1,52 @@
+{
+  "artifacts": {
+    "input_identities.json": {
+      "sha256": "14ad8ddf583111e279cbfdcd8170a202f682c0045820c365685c942dd943a20e",
+      "size": 1721
+    },
+    "liquidity_diagnostics.json": {
+      "sha256": "464737896bd1de915cf1036ea142a116c91b225793f3fcb80220ea57d3b50dbf",
+      "size": 268
+    },
+    "report.md": {
+      "sha256": "78971a0b1508838a0620bdda0868dc8d0cf3768487a87c8d0e11c08573715a55",
+      "size": 479
+    },
+    "summary.json": {
+      "sha256": "a25817cbbd6da47dde8d711adf35ef70cc37422476060a2e652db37aaed7536d",
+      "size": 9101
+    }
+  },
+  "input_identities": {
+    "source_bars": {
+      "mtime_ns": 1788494031985940200,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/normalised_daily_bars.csv.gz",
+      "sha256": "f2cf98dbfde2e18031697d598c3147c0ee8f15d3feb6ab935b92bc44a919ece4",
+      "size": 10710500
+    },
+    "source_mapping": {
+      "mtime_ns": 1788493417020060646,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_source_rebuild/artifacts/stage002_endofday_source_rebuild/pit_main_contract_mapping.csv.gz",
+      "sha256": "1b9059e42161a71aaacd7d6367cbe4c7cd95eb944a1f463baf360aa038fec34d",
+      "size": 339628
+    },
+    "upstream_contract_core": {
+      "mtime_ns": 1788534570186147704,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/daily_ranker_contract.py",
+      "sha256": "2e48b80ee229ab6a40c72b945b6eaf64d3b7c05c42a609801a37146ea9dfbaf6",
+      "size": 33684
+    },
+    "upstream_manifest": {
+      "mtime_ns": 1788535220558918136,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/artifacts/stage001_daily_ranker_contract/artifact_manifest.json",
+      "sha256": "0ec63c32cf8fbe33a85bed16d20a94aaeb7d2ee9a5906670819e91d3671e702a",
+      "size": 4697
+    },
+    "upstream_stage001_runner": {
+      "mtime_ns": 1788535028362727865,
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_pit_full_market_daily_ranker/tools/stage001_daily_ranker_contract.py",
+      "sha256": "6ea6d90fe74a7a5c4e36fd72c994ade9228961a149a3524417f8c52e8d53d541",
+      "size": 35683
+    }
+  }
+}

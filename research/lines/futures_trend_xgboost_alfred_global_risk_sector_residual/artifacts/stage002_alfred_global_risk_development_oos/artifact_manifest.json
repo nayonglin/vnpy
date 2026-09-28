@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "file_count": 10,
+  "files": [
+    {
+      "path": "authorization_receipt.json",
+      "bytes": 6851,
+      "sha256": "bf2c70c4449d8042fd3d2fdd7b7bd8ff3979605b7b4a84fbc7df4b05e3a6e9ad"
+    },
+    {
+      "path": "fold_diagnostics.csv",
+      "bytes": 5023,
+      "sha256": "7cde3a709977fddd977720e978aa21416db4ef8cd7c1a71760fb4dcc6528e75a"
+    },
+    {
+      "path": "input_identities.json",
+      "bytes": 20698,
+      "sha256": "9536c6c5bbb3f43923b1e66265bad0a064b2c9ec81ae95da6b9f6da2e1cadd5b"
+    },
+    {
+      "path": "model_params.json",
+      "bytes": 2195,
+      "sha256": "660393c4114c627c8f1aa65c72e0ed0e9872756a3443ee2f6b3636c85752a4ff"
+    },
+    {
+      "path": "monthly_effects.csv",
+      "bytes": 11986,
+      "sha256": "7d5118374bf2f8f3a5d5602c3483312fbda3491451af790c5ed275ac1ab04b11"
+    },
+    {
+      "path": "oos_predictions.csv",
+      "bytes": 161573,
+      "sha256": "b8a1a2eae7a2d28796bd81c5f39363e5f659168850043c9c39e0d1720904567a"
+    },
+    {
+      "path": "report.md",
+      "bytes": 606,
+      "sha256": "7bd8c0465f7b073e8f647195cdd732537d076cc3d7515029873cd7d38275d668"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 3105,
+      "sha256": "ed262ae89707d92df64734886c1c806e58a25b3f40ba6220d0914b75e4a4ef33"
+    },
+    {
+      "path": "top10_selections.csv",
+      "bytes": 23002,
+      "sha256": "0a23e05d7e91f0c65d72366ae338ad2c2ab58f4b295dad94847700dc12f48333"
+    },
+    {
+      "path": "yearly_effects.csv",
+      "bytes": 81,
+      "sha256": "bcbde9297a06418d0a003b8e4ae8826bbf040d1b9b49c3e3d4449704c1414008"
+    }
+  ]
+}

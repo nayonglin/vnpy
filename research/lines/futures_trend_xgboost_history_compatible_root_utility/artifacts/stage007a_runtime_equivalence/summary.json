@@ -1,0 +1,88 @@
+{
+  "file_contract_sha256": "040a64786ce435372d1b789252d58f7c069acedccf4d839e72a7a2596450605a",
+  "formal_replay_call_count": 2,
+  "historical_model_fit_count": 0,
+  "new_model_strategy_candidate": false,
+  "new_training_label_count": 0,
+  "results": {
+    "A0": {
+      "all_seven_frames_exact": true,
+      "audit": {
+        "gate_call_count": 301,
+        "skip_count": 0,
+        "source_sha256": "825f8cded5ddb429c77329eecee08e9446c57f051cfc7cd6a52d569ad6ba540d",
+        "target": null,
+        "verified_snapshot_count": 0
+      },
+      "metrics": {
+        "end_equity": 12226270.600000013,
+        "max_drawdown_pct": -45.92157323451009,
+        "nonzero_daily_win_rate_pct": 54.24187725631769,
+        "sharpe": 1.6839432501429918,
+        "total_commission": 0.0,
+        "total_return_pct": 8050.847066666675,
+        "total_slippage": 1100560.0,
+        "trade_count": 655
+      },
+      "receipt_sha256": "865d9a06743440d2ee0180092cc165150a40e9d6af66d8239e3f5e88d4fd80dd",
+      "seconds": 344.1183670000173,
+      "status": "passed"
+    },
+    "S": {
+      "all_seven_frames_exact": true,
+      "audit": {
+        "gate_call_count": 124,
+        "pre_event_equity": 1796477.2000000002,
+        "skip_count": 1,
+        "source_sha256": "825f8cded5ddb429c77329eecee08e9446c57f051cfc7cd6a52d569ad6ba540d",
+        "target": {
+          "active_positions_fraction": 0.0,
+          "ai_eval_date": "2022-01-28",
+          "analysis_end": "2026-08-28",
+          "analysis_start": "2020-01-02",
+          "candidate_index": 241,
+          "candidate_status": "opened",
+          "contract_vt_symbol": "sp2205.SHFE",
+          "decision_date": "2022-02-08",
+          "decision_datetime": "2022-02-08T00:00:00+08:00",
+          "direction": "long",
+          "directional_ma_gap": 0.0009669369931378381,
+          "directional_ma_slope": 0.0035948222083592835,
+          "directional_rsi": 0.36953591780578393,
+          "entry_context": "flat_entry",
+          "event_id": "0b6b77b1582778490a948bf6ffb47151ccee3302eec9d1ba9688ef906edd31fe",
+          "formal_material_manifest_sha256": "4d92133bd67821a421bf6017c477015e79a3a8e36889ae4eb527bb11a31956a5",
+          "formal_release_id": "m0005_20260901T165450+0800_1961d98ccb2b",
+          "formal_strategy": "ai_top10_plus_fu_official_live_v1",
+          "is_opened": 1,
+          "loss_streak": 0.0,
+          "margin_to_equity_before": 0.0,
+          "official_live_version": "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+          "open_interest_change_pct": -0.03570440222016846,
+          "portfolio_drawdown_pct": 0.3610575401928893,
+          "product_vt_symbol": "sp.SHFE",
+          "same_direction_correlation": 0.0,
+          "signal": "long_case2",
+          "stop_distance_pct": 0.014036182158452901
+        },
+        "verified_snapshot_count": 1
+      },
+      "metrics": {
+        "end_equity": 1503137.2000000004,
+        "max_drawdown_pct": -40.4758170029012,
+        "nonzero_daily_win_rate_pct": 57.14285714285714,
+        "sharpe": 2.2621986431107497,
+        "total_commission": 0.0,
+        "total_return_pct": 902.091466666667,
+        "total_slippage": 68180.0,
+        "trade_count": 270
+      },
+      "receipt_sha256": "6df3f6b31da2fd41e195c627cbcd425bd7c7b34118b70c1e8dccb89e70f12c6b",
+      "seconds": 151.89319179201266,
+      "status": "passed"
+    }
+  },
+  "reviewer_started": false,
+  "stage": "stage007a_runtime_equivalence",
+  "status": "passed"
+}

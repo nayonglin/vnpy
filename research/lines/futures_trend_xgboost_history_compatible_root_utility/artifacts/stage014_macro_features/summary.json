@@ -1,0 +1,58 @@
+{
+  "status": "features_qualified_no_models",
+  "event_count": 276,
+  "calendar_count": 1614,
+  "source_factor_days": 1758,
+  "added_features": [
+    "directional_cffex_equity_momentum_20d",
+    "directional_cffex_rates_momentum_20d",
+    "cffex_equity_vol_ratio_20_120",
+    "cffex_rates_vol_ratio_20_120",
+    "cffex_equity_rates_corr_60d"
+  ],
+  "total_candidate_features": 15,
+  "event_feature_unique_counts": {
+    "directional_cffex_equity_momentum_20d": 251,
+    "directional_cffex_rates_momentum_20d": 251,
+    "cffex_equity_vol_ratio_20_120": 249,
+    "cffex_rates_vol_ratio_20_120": 249,
+    "cffex_equity_rates_corr_60d": 249
+  },
+  "event_features_finite": true,
+  "first_month_60_mature": "2021-03-01",
+  "new_historical_fits": 0,
+  "new_predictions": 0,
+  "new_labels": 0,
+  "new_backtests": 0,
+  "reviewers": 0,
+  "historical_vintage_verified": false,
+  "input_count": 118,
+  "outputs": {
+    "event_macro_features.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage014_macro_features/event_macro_features.csv",
+      "bytes": 59899,
+      "sha256": "9fa5878b0f1e50cb97eb3872ec378d003607b7d05104cb9acc6ccad4299f9956"
+    },
+    "input_manifest.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage014_macro_features/input_manifest.json",
+      "bytes": 53830,
+      "sha256": "9832a1b7fa86909aa475080f0bf11514d0e6d4d561804cb15d4cb9378e8c0043"
+    },
+    "macro_daily.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage014_macro_features/macro_daily.csv",
+      "bytes": 268417,
+      "sha256": "98a50a0c495c1d1e4ce1c0cb13708a9b97b1548407f11bed02aff0dbed968fc4"
+    },
+    "decision_context.csv": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage014_macro_features/decision_context.csv",
+      "bytes": 214668,
+      "sha256": "f074faaf203dd027ea138c4f030057be819fb431bca62a8c550d0e8ba5bc1f9d"
+    },
+    "candidate_model_spec.json": {
+      "path": "/Users/bytedance/Desktop/person/vnpy/research/lines/futures_trend_xgboost_history_compatible_root_utility/artifacts/stage014_macro_features/candidate_model_spec.json",
+      "bytes": 1746,
+      "sha256": "40461ee42cdb7ad73d9a2fcfbfb27a2171de3a735d92007e82aa5d63993b61a9"
+    }
+  },
+  "created_at_utc": "2026-09-05T19:39:57.524573+00:00"
+}

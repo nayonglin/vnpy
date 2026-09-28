@@ -1,0 +1,40 @@
+{
+  "allowed_run_count": 1,
+  "authorization_basis": "用户明确授权后续研究操作默认执行；生产、CTP和订单仍禁止",
+  "authorization_type": "user_standing_research_authorization",
+  "authorized": true,
+  "authorized_at": "2026-09-05T06:53:34.678656+08:00",
+  "bound_sha256": {
+    "core": "80a8a864080e8c6243c626f3497e4d5d280857891ae9ea82a6b55b0224086e18",
+    "core_tests": "507077b4e08a8f342d61056671cd205263860452265ff74838ba01bf2cb73e8e",
+    "plan": "f9316c33faaa21f659d28a8c874c8f8980ea522350247a31116db423d9fba310",
+    "preregistration": "7e0468c08b864d9c76b498615bdfd43702ea1fe91597454aba8ab11bed811306",
+    "runner": "8e3af3993b0f37e042cf7b50a76db09187fda22a073041362203d341d0f153b8",
+    "runner_tests": "0fb2f14c14ed5125e1f8b88625c2aafe40d44c8d9abf2cb566bbb3d155c43dc8"
+  },
+  "line_id": "futures_trend_xgboost_pit_directional_continuation_utility",
+  "nonce": "e2a20db1-105e-4c5d-b4f2-e4e70b597496",
+  "pre_run_state": {
+    "claim_exists": false,
+    "event_exists": false,
+    "output_exists": false
+  },
+  "scope": {
+    "allowed": [
+      "read_frozen_query_date_inputs",
+      "compute_counterfactual_direction_proxy",
+      "write_line_local_stage001_qualification_bundle"
+    ],
+    "prohibited": [
+      "future_close_or_return_read",
+      "label_generation",
+      "model_fit_or_predict",
+      "strategy_backtest",
+      "sealed_holdout_access",
+      "ctp_connection",
+      "order_api",
+      "production_write"
+    ]
+  },
+  "stage": "Stage001"
+}
