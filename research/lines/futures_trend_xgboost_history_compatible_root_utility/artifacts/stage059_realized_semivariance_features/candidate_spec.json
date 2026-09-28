@@ -1,0 +1,47 @@
+{
+  "action": "exit_only_both_inverse_predictions_negative",
+  "constant_target": "training_weighted_mean",
+  "estimator": {
+    "base_score": 0,
+    "colsample_bytree": 1,
+    "learning_rate": 0.05,
+    "max_depth": 2,
+    "min_child_weight": 20,
+    "n_estimators": 80,
+    "n_jobs": 1,
+    "objective": "reg:squarederror",
+    "random_state": 20260905,
+    "reg_alpha": 1,
+    "reg_lambda": 10,
+    "subsample": 1,
+    "tree_method": "hist"
+  },
+  "evidence": "development_walk_forward_not_untouched_holdout",
+  "features": [
+    "directional_unrealized_return",
+    "directional_day_return",
+    "day_range_fraction",
+    "directional_close_location",
+    "log_holding_bars",
+    "layer_stop_buffer",
+    "portfolio_drawdown",
+    "margin_to_equity",
+    "loss_streak",
+    "favorable_semivariance_5m",
+    "adverse_semivariance_5m"
+  ],
+  "minimum_mature_roots": 60,
+  "schedule": "strict_month_before_mature_expanding",
+  "target_transform": "training_fold_weighted_mean_population_std",
+  "targets": [
+    "return_marginal",
+    "drawdown_marginal"
+  ],
+  "versions": {
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.8.0",
+    "xgboost": "3.2.0"
+  },
+  "weight": "one_unit_per_mature_root"
+}

@@ -70,6 +70,7 @@ output/playwright/
 
 # Research runs can create tens of thousands of raw worker and model files.
 # Keep compact, reviewable evidence in Git; retain bulk artifacts locally.
+# Historical integration tests and replays must provision bulk frozen inputs externally.
 research/lines/*/artifacts/**
 !research/lines/*/artifacts/**/
 !research/lines/*/artifacts/**/*.md
@@ -84,6 +85,17 @@ research/lines/*/artifacts/**
 !research/lines/*/artifacts/**/artifact_manifest.json
 !research/lines/*/artifacts/**/model_manifest.json
 !research/lines/*/artifacts/**/scaler_manifest.json
+!research/lines/*/artifacts/**/model_spec.json
+!research/lines/*/artifacts/**/candidate_spec.json
+!research/lines/*/artifacts/**/model_eligible_feature_panel.csv
+!research/lines/*/artifacts/**/full_feature_split.csv
+!research/lines/*/artifacts/**/development_jobs.csv
+!research/lines/*/artifacts/**/runtime_identity.json
 !research/lines/*/artifacts/**/verification.json
 !research/lines/*/artifacts/**/upstream_verification.json
 !research/lines/*/artifacts/**/read_verification.json
+
+# Never re-include raw parallel-run internals through the evidence allowlist.
+research/lines/*/artifacts/**/jobs/**
+research/lines/*/artifacts/**/workers/**
+research/lines/*/artifacts/**/locks/**
