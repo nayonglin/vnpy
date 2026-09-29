@@ -1,0 +1,361 @@
+{
+  "created_at_utc": "2026-09-28T14:23:59.367809+00:00",
+  "scope": "Independent offline repaired-data review; no repair imports, strategy run or network",
+  "status": "PASS_WITH_DISCLOSED_LIMITATIONS",
+  "checks": {
+    "source_original_sha_unchanged": true,
+    "three_panels_692961_rows": true,
+    "schema_same": true,
+    "unique_keys": true,
+    "row_keys_same": true,
+    "snapshot_fields_identical_to_repair": true,
+    "only_three_fields_changed": true,
+    "exact_cell_counts": true,
+    "19_operations": true,
+    "field_changes_log_exact": true,
+    "repair_manifest_binding": true,
+    "output_snapshot_binding": true,
+    "output_identity_sha": true,
+    "spec_sha_binding": true,
+    "all_local_evidence_hashes": true,
+    "event_ratio_000001.SZSE_2020-12-31": true,
+    "all_other_ratios_unchanged_000001.SZSE": true,
+    "independent_cumulative_reconstruction_000001.SZSE": true,
+    "initial_factor_unchanged_000001.SZSE": true,
+    "event_ratio_000002.SZSE_2020-11-16": true,
+    "event_ratio_000002.SZSE_2020-11-19": true,
+    "event_ratio_000002.SZSE_2020-11-20": true,
+    "event_ratio_000002.SZSE_2025-01-09": true,
+    "all_other_ratios_unchanged_000002.SZSE": true,
+    "independent_cumulative_reconstruction_000002.SZSE": true,
+    "initial_factor_unchanged_000002.SZSE": true,
+    "event_ratio_002466.SZSE_2019-12-26": true,
+    "event_ratio_002466.SZSE_2020-01-02": true,
+    "all_other_ratios_unchanged_002466.SZSE": true,
+    "independent_cumulative_reconstruction_002466.SZSE": true,
+    "initial_factor_unchanged_002466.SZSE": true,
+    "event_ratio_600372.SSE_2020-11-19": true,
+    "all_other_ratios_unchanged_600372.SSE": true,
+    "independent_cumulative_reconstruction_600372.SSE": true,
+    "initial_factor_unchanged_600372.SSE": true,
+    "event_ratio_600655.SSE_2020-11-25": true,
+    "all_other_ratios_unchanged_600655.SSE": true,
+    "independent_cumulative_reconstruction_600655.SSE": true,
+    "initial_factor_unchanged_600655.SSE": true,
+    "event_ratio_600837.SSE_2020-11-27": true,
+    "all_other_ratios_unchanged_600837.SSE": true,
+    "independent_cumulative_reconstruction_600837.SSE": true,
+    "initial_factor_unchanged_600837.SSE": true,
+    "event_ratio_601607.SSE_2020-11-27": true,
+    "all_other_ratios_unchanged_601607.SSE": true,
+    "independent_cumulative_reconstruction_601607.SSE": true,
+    "initial_factor_unchanged_601607.SSE": true,
+    "other_all_symbol_factors_unchanged": true,
+    "legacy_identity": true,
+    "legacy_prefix_matches_raw_asof_exact": true,
+    "legacy_after_boundary_unchanged_exact": true,
+    "legacy_bridge_continuity": true,
+    "legacy_old_membership_false": true,
+    "legacy_four_cash_events_retained": true,
+    "action_ops_equal_prior_announcement_decisions": true,
+    "action_value_600188.SSE_2021-07-23": true,
+    "action_value_600188.SSE_2022-07-14": true,
+    "action_value_600188.SSE_2023-07-17": true,
+    "action_value_600221.SSE_2021-12-06": true,
+    "action_value_600600.SSE_2023-07-14": true,
+    "action_value_601808.SSE_2022-06-17": true,
+    "action_value_601898.SSE_2024-08-20": true,
+    "action_value_603259.SSE_2025-05-21": true,
+    "600837_cash_028_preserved": true,
+    "000651_cash3_preserved": true,
+    "600515_unsupported_in_source_snapshot_output": true,
+    "15_remaining_gaps_exact": true,
+    "remaining_gap_set_equals_disclosed_rights_list": true,
+    "remaining_gap_metadata_current": true
+  },
+  "hashes": {
+    "original_source": "fa1422b5e64016b61e3804bf3ccdffc2c4feb957f2ef94d892964ef75634377f",
+    "repaired_source": "fd5ce99ae03e5618b9365da387dabf5661ba8f30d61152c02858073b07579070",
+    "snapshot_panel": "e849804bc997e69a5d82321d03efc4717f5338913ec02aaca983c8059e3ecea3",
+    "repair_specification": "2864fe5f48569e38669b3b5d86de7b7d8b7981ce09031b5d837f51245f235b4d",
+    "field_changes": "f10db777ee291b93b93b0827007dc28e7b3590781ceb5a7ff9d38327576980be",
+    "legacy_factor_raw": "2ff3e00e26ddf3f5d859af97885a7cc18f2e05a6151a75aee6895a925032b3be"
+  },
+  "rows": 692961,
+  "columns": [
+    "date",
+    "vt_symbol",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "adj_factor",
+    "limit_up",
+    "limit_down",
+    "is_st",
+    "is_member",
+    "cash_dividend",
+    "split_ratio"
+  ],
+  "change_counts": {
+    "date": 0,
+    "vt_symbol": 0,
+    "open": 0,
+    "high": 0,
+    "low": 0,
+    "close": 0,
+    "volume": 0,
+    "adj_factor": 9409,
+    "limit_up": 0,
+    "limit_down": 0,
+    "is_st": 0,
+    "is_member": 0,
+    "cash_dividend": 7,
+    "split_ratio": 1
+  },
+  "operations": 19,
+  "factor_events": [
+    {
+      "vt_symbol": "000001.SZSE",
+      "date": "2020-12-31",
+      "original_ratio": 0.8318363563510756,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "000002.SZSE",
+      "date": "2020-11-16",
+      "original_ratio": 1.0063808144767292,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "000002.SZSE",
+      "date": "2020-11-19",
+      "original_ratio": 0.9744447360415021,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "000002.SZSE",
+      "date": "2020-11-20",
+      "original_ratio": 1.0262254625770892,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "000002.SZSE",
+      "date": "2025-01-09",
+      "original_ratio": 0.9882111512271733,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "002466.SZSE",
+      "date": "2019-12-26",
+      "original_ratio": 1,
+      "repaired_ratio": 1.18854804716583,
+      "expected_ratio": 1.18854804716583
+    },
+    {
+      "vt_symbol": "002466.SZSE",
+      "date": "2020-01-02",
+      "original_ratio": 1.18854804716583,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "600372.SSE",
+      "date": "2020-11-19",
+      "original_ratio": 0.9961224898270646,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "600655.SSE",
+      "date": "2020-11-25",
+      "original_ratio": 0.9088530729417988,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    },
+    {
+      "vt_symbol": "600837.SSE",
+      "date": "2020-11-27",
+      "original_ratio": 1.1811339906530975,
+      "repaired_ratio": 1.0211002260738509,
+      "expected_ratio": 1.0211002260738509
+    },
+    {
+      "vt_symbol": "601607.SSE",
+      "date": "2020-11-27",
+      "original_ratio": 0.9922229759560435,
+      "repaired_ratio": 1,
+      "expected_ratio": 1
+    }
+  ],
+  "maximum_non_target_ratio_relative_error": 2.220446049250313e-16,
+  "maximum_independent_cumulative_relative_error": 4.440892098500626e-16,
+  "legacy_prefix_rows": 1300,
+  "legacy_cash_event_checks": [
+    {
+      "date": "2020-08-11",
+      "cash": 0.049538,
+      "factor_ratio": 1.0034339087736082
+    },
+    {
+      "date": "2021-06-04",
+      "cash": 0.0504002,
+      "factor_ratio": 1.003533731139016
+    },
+    {
+      "date": "2022-06-14",
+      "cash": 0.05,
+      "factor_ratio": 1.004476164909639
+    },
+    {
+      "date": "2023-06-06",
+      "cash": 0.03,
+      "factor_ratio": 1.0006359806292158
+    }
+  ],
+  "moved_factor_rows": [
+    {
+      "date": "2019-12-25",
+      "adj_factor": 6.523621,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2019-12-26",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2019-12-27",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2019-12-30",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2019-12-31",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2020-01-02",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    },
+    {
+      "date": "2020-01-03",
+      "adj_factor": 7.753637,
+      "cash_dividend": 0,
+      "split_ratio": 1
+    }
+  ],
+  "remaining_rights_events": [
+    {
+      "vt_symbol": "000728.SZSE",
+      "date": "2020-10-22"
+    },
+    {
+      "vt_symbol": "000977.SZSE",
+      "date": "2020-03-19"
+    },
+    {
+      "vt_symbol": "002142.SZSE",
+      "date": "2021-12-02"
+    },
+    {
+      "vt_symbol": "002466.SZSE",
+      "date": "2019-12-26"
+    },
+    {
+      "vt_symbol": "600030.SSE",
+      "date": "2022-01-27"
+    },
+    {
+      "vt_symbol": "600919.SSE",
+      "date": "2020-12-17"
+    },
+    {
+      "vt_symbol": "600958.SSE",
+      "date": "2022-04-29"
+    },
+    {
+      "vt_symbol": "600999.SSE",
+      "date": "2020-07-20"
+    },
+    {
+      "vt_symbol": "601108.SSE",
+      "date": "2022-04-12"
+    },
+    {
+      "vt_symbol": "601162.SSE",
+      "date": "2020-03-19"
+    },
+    {
+      "vt_symbol": "601236.SSE",
+      "date": "2021-08-04"
+    },
+    {
+      "vt_symbol": "601377.SSE",
+      "date": "2022-08-25"
+    },
+    {
+      "vt_symbol": "601555.SSE",
+      "date": "2020-03-23"
+    },
+    {
+      "vt_symbol": "601555.SSE",
+      "date": "2021-12-23"
+    },
+    {
+      "vt_symbol": "601916.SSE",
+      "date": "2023-06-27"
+    }
+  ],
+  "unsupported_actions": [
+    {
+      "vt_symbol": "600515.SSE",
+      "date": "2021-12-22",
+      "reason": "临2021-107/110明确总转增7,517,717,142股中仅1,142,173,967股归中小股东，其余6,375,543,175股不归原股东；2.92387是总股本倍率，不是普通投资者权益，不能继续作为有效免费送股执行。原方案原股东等比例让渡3300000000及1583247960股，残留权益不能未经精确分配口径确认简单写成1.75。特殊除权参考价5.87，登记12/21、除权12/22、增股上市12/23；上市滞后一日和逐户碎股进位也未建模。暂不输出猜测性split修正，须明确阻断受影响持仓而非保留错误动作。",
+      "evidence": [
+        "https://static.cninfo.com.cn/finalpage/2021-12-16/1211922576.PDF",
+        "https://static.cninfo.com.cn/finalpage/2021-12-21/1211970832.PDF",
+        "https://static.cninfo.com.cn/finalpage/2021-09-13/1211030644.PDF"
+      ]
+    }
+  ],
+  "notes": [
+    "source_metadata.factor_gap_rows=24 is inherited raw-source count; computed current top-level factor_changes_without_actions=15. Consumers should not confuse these.",
+    "Snapshot stores source attrs in manifest.source_metadata rather than panel attrs; source, snapshot manifest, run identity and completed manifest unsupported-action lists agree.",
+    "600515 supplier split2.92387 remains forensic raw value and requires metadata-supported hard guard; this review confirms metadata binding, not account-exposure execution.",
+    "All 15 residual factor-only events correspond to existing locally documented paid-rights list; no shares/cash inferred.",
+    "Other 176 smaller reference-price residuals not individually re-announced; this review does not certify complete event truth or investment performance."
+  ],
+  "report_written_at_local": "2026-09-28 22:27 +08:00",
+  "verification_program": "\nfrom pathlib import Path\nimport json,hashlib,math\nimport pandas as pd\nimport numpy as np\nfrom datetime import datetime,timezone\nroot=Path('/Users/bytedance/Desktop/person/vnpy')\nbase=root/'examples/stock_backtesting/qmt357'\nv=root/'examples/stock_backtesting/qmt357_commit4ac255e'\nd=v/'data/repairs/stage010_repaired_v1'\ns=v/'data/snapshots/history_201910_20260928_repaired_v1'\nout=v/'outputs/fixed_2020_20260928_commit4ac255e_repaired_v1'\noriginal=base/'data/downloads/history_20191001_20260928/source_panel.parquet'\nsha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()\na=pd.read_parquet(original).sort_values(['vt_symbol','date']).reset_index(drop=True)\nb=pd.read_parquet(d/'source_panel.parquet').sort_values(['vt_symbol','date']).reset_index(drop=True)\nc=pd.read_parquet(s/'panel.parquet').sort_values(['vt_symbol','date']).reset_index(drop=True)\nspec=json.loads((d/'repair_specification.json').read_text())\nsm=json.loads((s/'manifest.json').read_text())\nom=json.loads((out/'manifest.json').read_text())\nidentity=json.loads((out/'run_identity.json').read_text())\nchecks={}\ndef check(key,condition):\n checks[key]=bool(condition)\n if not condition:raise AssertionError(key)\ncheck('source_original_sha_unchanged',sha(original)=='fa1422b5e64016b61e3804bf3ccdffc2c4feb957f2ef94d892964ef75634377f')\ncheck('three_panels_692961_rows',len(a)==len(b)==len(c)==692961)\ncheck('schema_same',list(a.columns)==list(b.columns)==list(c.columns))\ncheck('unique_keys',not a.duplicated(['date','vt_symbol']).any() and not b.duplicated(['date','vt_symbol']).any())\ncheck('row_keys_same',a[['date','vt_symbol']].equals(b[['date','vt_symbol']]))\ncheck('snapshot_fields_identical_to_repair',b.equals(c))\nchange_counts={}\nactual=[]\nfor f in a.columns:\n diff=~(a[f].eq(b[f])|(a[f].isna()&b[f].isna()))\n change_counts[f]=int(diff.sum())\n for i in np.flatnonzero(diff.to_numpy()):\n  actual.append({'date':a.at[i,'date'],'vt_symbol':a.at[i,'vt_symbol'],'field':f,'old':float(a.at[i,f]),'new':float(b.at[i,f])})\ncheck('only_three_fields_changed',all(n==0 for f,n in change_counts.items() if f not in ['adj_factor','cash_dividend','split_ratio']))\ncheck('exact_cell_counts',sum(change_counts.values())==9417 and change_counts['adj_factor']==9409 and change_counts['cash_dividend']==7 and change_counts['split_ratio']==1)\ncheck('19_operations',len(spec['operations'])==19)\nlog=pd.read_parquet(d/'field_changes.parquet').sort_values(['date','vt_symbol','field']).reset_index(drop=True)\nlog['date']=pd.to_datetime(log['date'])\naf=pd.DataFrame(actual).sort_values(['date','vt_symbol','field']).reset_index(drop=True)\ncheck('field_changes_log_exact',af.equals(log))\ncheck('repair_manifest_binding',sha(d/'source_panel.parquet')==sm['source_sha256'] and sha(s/'panel.parquet')==sm['panel_sha256'])\ncheck('output_snapshot_binding',om['snapshot']==sm and identity['snapshot']==sm)\ncheck('output_identity_sha',sha(out/'run_identity.json')==om['run_identity_sha256'])\ncheck('spec_sha_binding',sha(d/'repair_specification.json')==sm['source_metadata']['repair_specification_sha256'])\ncheck('all_local_evidence_hashes',all(sha(root/p)==h for p,h in spec['evidence_sha256'].items()))\nback_only=[\n ('000001.SZSE','2020-12-31'),('000002.SZSE','2020-11-16'),('000002.SZSE','2020-11-19'),\n ('000002.SZSE','2020-11-20'),('000002.SZSE','2025-01-09'),('600372.SSE','2020-11-19'),\n ('600655.SSE','2020-11-25'),('601607.SSE','2020-11-27')]\nevent_expected={ (sym,pd.Timestamp(day)):1.0 for sym,day in back_only}\nevent_expected[('600837.SSE',pd.Timestamp('2020-11-27'))]=13.55/13.27\nmove_step=7.753637/6.523621\nevent_expected[('002466.SZSE',pd.Timestamp('2019-12-26'))]=move_step\nevent_expected[('002466.SZSE',pd.Timestamp('2020-01-02'))]=1.0\nfactor_report=[]\nmax_other_ratio_error=0.0\nmax_expected_cumulative_error=0.0\nfor sym in sorted({x[0] for x in event_expected}):\n aa=a[a.vt_symbol.eq(sym)].set_index('date')\n bb=b[b.vt_symbol.eq(sym)].set_index('date')\n ar=aa.adj_factor/aa.adj_factor.shift()\n br=bb.adj_factor/bb.adj_factor.shift()\n target_dates={day:ratio for (ss,day),ratio in event_expected.items() if ss==sym}\n er=ar.copy()\n for day,expected in target_dates.items():\n  er.loc[day]=expected\n  factor_report.append({'vt_symbol':sym,'date':str(day.date()),'original_ratio':float(ar.loc[day]),'repaired_ratio':float(br.loc[day]),'expected_ratio':expected})\n  check('event_ratio_'+sym+'_'+str(day.date()),math.isclose(float(br.loc[day]),expected,rel_tol=1e-12,abs_tol=1e-12))\n mask=~ar.index.isin(target_dates)&ar.notna()\n err=float((br[mask]/ar[mask]-1).abs().max())\n max_other_ratio_error=max(max_other_ratio_error,err)\n check('all_other_ratios_unchanged_'+sym,err<1e-12)\n expected=er.fillna(1).cumprod()*float(aa.adj_factor.iloc[0])\n err=float((bb.adj_factor/expected-1).abs().max())\n max_expected_cumulative_error=max(max_expected_cumulative_error,err)\n check('independent_cumulative_reconstruction_'+sym,err<1e-12)\n check('initial_factor_unchanged_'+sym,float(aa.adj_factor.iloc[0])==float(bb.adj_factor.iloc[0]))\nknown_factor_symbols={x[0] for x in event_expected}|{'302132.SZSE'}\ncheck('other_all_symbol_factors_unchanged',a.loc[~a.vt_symbol.isin(known_factor_symbols),'adj_factor'].equals(b.loc[~b.vt_symbol.isin(known_factor_symbols),'adj_factor']))\nlegpath=v/'data/factor_crosscheck/legacy_300114/factors.parquet'\nlegacy=pd.read_parquet(legpath)\ncheck('legacy_identity',legacy.code.eq('sz.300114').all())\nlegacy['date']=pd.to_datetime(legacy.dividOperateDate)\nlegacy['factor']=pd.to_numeric(legacy.backAdjustFactor)\nlegacy=legacy.sort_values('date')\naa=a[a.vt_symbol.eq('302132.SZSE')].set_index('date')\nbb=b[b.vt_symbol.eq('302132.SZSE')].set_index('date')\nbefore=bb.index<pd.Timestamp('2025-02-18')\nexp=pd.merge_asof(pd.DataFrame({'date':bb.index[before]}),legacy[['date','factor']],on='date',direction='backward')['factor'].to_numpy()\ncheck('legacy_prefix_matches_raw_asof_exact',np.array_equal(bb.loc[before,'adj_factor'].to_numpy(),exp))\ncheck('legacy_after_boundary_unchanged_exact',aa.loc[~before,'adj_factor'].equals(bb.loc[~before,'adj_factor']))\ncheck('legacy_bridge_continuity',bb.loc[pd.Timestamp('2025-02-17'),'adj_factor']==bb.loc[pd.Timestamp('2025-02-18'),'adj_factor']==5.975678)\ncheck('legacy_old_membership_false',not bb.loc[bb.index<pd.Timestamp('2025-02-17'),'is_member'].any())\nlegacy_cash_dates=['2020-08-11','2021-06-04','2022-06-14','2023-06-06']\nlegacy_cash=[]\nfor day in legacy_cash_dates:\n day=pd.Timestamp(day);i=bb.index.get_loc(day);prev=float(bb.iloc[i-1].adj_factor)\n legacy_cash.append({'date':str(day.date()),'cash':float(bb.loc[day,'cash_dividend']),'factor_ratio':float(bb.loc[day,'adj_factor']/prev)})\ncheck('legacy_four_cash_events_retained',all(x['cash']>0 and x['factor_ratio']>1 for x in legacy_cash))\nca=json.loads((root/'research/lines/stock_qmt357_vnpy/stages/20260928_2210_stage010_action_corrections.json').read_text())\ncheck('action_ops_equal_prior_announcement_decisions',[o for o in spec['operations'] if o['kind']=='action']==ca['operations'])\nfor o in ca['operations']:\n ix=(b.vt_symbol.eq(o['vt_symbol'])&b.date.eq(pd.Timestamp(o['date'])))\n check('action_value_'+o['vt_symbol']+'_'+o['date'],float(b.loc[ix,o['field']].iloc[0])==o['new'])\nmt=(b.vt_symbol.eq('600837.SSE')&b.date.eq(pd.Timestamp('2020-11-27')))\ncheck('600837_cash_028_preserved',float(b.loc[mt,'cash_dividend'].iloc[0])==0.28)\ncheck('000651_cash3_preserved',float(b.loc[b.vt_symbol.eq('000651.SZSE')&b.date.eq(pd.Timestamp('2021-08-23')),'cash_dividend'].iloc[0])==3.0)\nu=sm['source_metadata']['unsupported_corporate_actions']\ncheck('600515_unsupported_in_source_snapshot_output',any(x['vt_symbol']=='600515.SSE' and x['date']=='2021-12-22' for x in u) and b.attrs.get('unsupported_corporate_actions')==u and identity['snapshot']['source_metadata']['unsupported_corporate_actions']==u and om['snapshot']['source_metadata']['unsupported_corporate_actions']==u)\nstocks=b[b.vt_symbol.ne('000300.SSE')].copy()\nstocks['previous_factor']=stocks.groupby('vt_symbol').adj_factor.shift()\nclose=np.array([math.isclose(x,y,rel_tol=1e-10,abs_tol=1e-12) for x,y in zip(stocks.adj_factor,stocks.previous_factor)])\ngaps=stocks.loc[stocks.previous_factor.notna()&~close&stocks.cash_dividend.eq(0)&stocks.split_ratio.eq(1)]\ngp=pd.read_parquet(d/'remaining_factor_gaps.parquet').sort_values(['vt_symbol','date']).reset_index(drop=True)\ncheck('15_remaining_gaps_exact',len(gaps)==15 and gaps.reset_index(drop=True).equals(gp))\nrights=[('000728.SZSE','2020-10-22'),('000977.SZSE','2020-03-19'),('002142.SZSE','2021-12-02'),\n('002466.SZSE','2019-12-26'),('600030.SSE','2022-01-27'),('600919.SSE','2020-12-17'),('600958.SSE','2022-04-29'),\n('600999.SSE','2020-07-20'),('601108.SSE','2022-04-12'),('601162.SSE','2020-03-19'),('601236.SSE','2021-08-04'),\n('601377.SSE','2022-08-25'),('601555.SSE','2020-03-23'),('601555.SSE','2021-12-23'),('601916.SSE','2023-06-27')]\nactual_gaps={(r.vt_symbol,str(r.date.date())) for r in gaps.itertuples()}\ncheck('remaining_gap_set_equals_disclosed_rights_list',actual_gaps==set(rights))\ncheck('remaining_gap_metadata_current',sm['factor_changes_without_actions']==15)\nmoved=a[a.vt_symbol.eq('002466.SZSE')].copy()\nmove_report=b.loc[b.vt_symbol.eq('002466.SZSE')&b.date.between('2019-12-25','2020-01-03'),['date','adj_factor','cash_dividend','split_ratio']].copy()\nmove_report['date']=move_report.date.dt.strftime('%Y-%m-%d')\nresult={\n 'created_at_utc':datetime.now(timezone.utc).isoformat(),'scope':'Independent offline repaired-data review; no repair imports, strategy run or network',\n 'status':'PASS_WITH_DISCLOSED_LIMITATIONS','checks':checks,\n 'hashes':{'original_source':sha(original),'repaired_source':sha(d/'source_panel.parquet'),'snapshot_panel':sha(s/'panel.parquet'),'repair_specification':sha(d/'repair_specification.json'),'field_changes':sha(d/'field_changes.parquet'),'legacy_factor_raw':sha(legpath)},\n 'rows':len(b),'columns':list(b.columns),'change_counts':change_counts,'operations':len(spec['operations']),\n 'factor_events':factor_report,'maximum_non_target_ratio_relative_error':max_other_ratio_error,\n 'maximum_independent_cumulative_relative_error':max_expected_cumulative_error,\n 'legacy_prefix_rows':int(before.sum()),'legacy_cash_event_checks':legacy_cash,'moved_factor_rows':move_report.to_dict('records'),\n 'remaining_rights_events':sorted([{'vt_symbol':ss,'date':dd} for ss,dd in rights],key=lambda x:(x['vt_symbol'],x['date'])),\n 'unsupported_actions':u,\n 'notes':[\n  'source_metadata.factor_gap_rows=24 is inherited raw-source count; computed current top-level factor_changes_without_actions=15. Consumers should not confuse these.',\n  'Snapshot stores source attrs in manifest.source_metadata rather than panel attrs; source, snapshot manifest, run identity and completed manifest unsupported-action lists agree.',\n  '600515 supplier split2.92387 remains forensic raw value and requires metadata-supported hard guard; this review confirms metadata binding, not account-exposure execution.',\n  'All 15 residual factor-only events correspond to existing locally documented paid-rights list; no shares/cash inferred.',\n  'Other 176 smaller reference-price residuals not individually re-announced; this review does not certify complete event truth or investment performance.'\n ]}\nprint(json.dumps(result,ensure_ascii=False,indent=2))\n",
+  "verification": {
+    "exit_code": 0,
+    "checks_passed": 69,
+    "independent": true,
+    "imports": "stdlib,pandas,numpy only; no repair implementation imported"
+  },
+  "paths": {
+    "original_source": "examples/stock_backtesting/qmt357/data/downloads/history_20191001_20260928/source_panel.parquet",
+    "repair": "examples/stock_backtesting/qmt357_commit4ac255e/data/repairs/stage010_repaired_v1",
+    "snapshot": "examples/stock_backtesting/qmt357_commit4ac255e/data/snapshots/history_201910_20260928_repaired_v1",
+    "output": "examples/stock_backtesting/qmt357_commit4ac255e/outputs/fixed_2020_20260928_commit4ac255e_repaired_v1"
+  }
+}

@@ -29,6 +29,7 @@
 | `futures_swing_no_lower_shadow` | 期货无下影线波段策略 | 商品期货波段/开盘惯性 | 独立研究线；B版看大做小弱转正但 Sharpe/滑点敏感不过关，不接第78 | Stage009：周线顺势 + 回撤后第一根 strict 无下影线收益`0.477%`、回撤`-5.1529%`、Sharpe`0.0481`，2倍滑点转负 | `research/lines/futures_swing_no_lower_shadow/` | 暂停主动优化；只做成本敏感、腿部归因、最差年份/品种只读复盘 |
 | `stock_range_paper_v1` | 股票震荡paper线 | A股横截面震荡/liquid_q3 paper | paper监控线，黄灯继续观察 | paper monitor suite：权益`2.2225`、回撤`-15.16%`、Sharpe`0.7373` | `research/lines/stock_range_paper_v1/` | 定期补数据、跑paper suite、积累OOS |
 | `stock_range_30w_industry_resid_core` | 股票震荡30万industry_resid_core线 | A股30万账户/行业残差核心 | 持有期硬规则被反证，转向组合风险归因 | Stage339未确认退出反证：第4-10日仍为正收益 | `research/lines/stock_range_30w_industry_resid_core/` | 做简单母本日期层/组合层风险归因 |
+| `stock_qmt357_vnpy` | QMT357独立股票迁移线 | 沪深300原筛选池/市场门禁/BB-RSI-MACD | 独立固定复现完成，不接期货/实盘；负结果保留 | Stage010/011修订数据不改原源；Stage012 commit参数+分级止损2020—2026-09-28收益-15.7597%/DD-29.2173%/Sharpe-0.0875；293测试、Stage013独立现金账本/1730止损及限定数据修复通过 | `research/lines/stock_qmt357_vnpy/` | 不直接晋级；如继续先做亏损/成本与剩余数据风险归因，不关闭保护或寻优 |
 
 ## 状态定义
 

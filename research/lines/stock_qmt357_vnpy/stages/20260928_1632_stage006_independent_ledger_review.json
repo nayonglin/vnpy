@@ -1,0 +1,562 @@
+{
+  "status": "PASS_ENGINEERING_LEDGER_NOT_ALPHA_VALIDATION",
+  "code_hashes_checked": 13,
+  "snapshot_and_source_hashes_match": true,
+  "downloader_freeze_matches": true,
+  "raw_union_complete": 420,
+  "max_errors": {
+    "daily_cash": 2.9103830456733704e-11,
+    "daily_market_value": 5.820766091346741e-11,
+    "daily_equity": 2.9103830456733704e-11,
+    "daily_position_count": 0,
+    "daily_trade_count": 0,
+    "daily_commission": 2.842170943040401e-14,
+    "daily_slippage": 0,
+    "daily_turnover": 1.4551915228366852e-11,
+    "fill_price": 2.842170943040401e-14,
+    "turnover": 1.4551915228366852e-11,
+    "trade_commission": 1.4210854715202004e-14,
+    "trade_slippage": 0,
+    "cash_after_trade": 2.9103830456733704e-11,
+    "coverage_shares": 0,
+    "coverage_mark": 0,
+    "coverage_market_value": 1.4551915228366852e-11,
+    "integer_action_shares": 0,
+    "roundtrip_entry_cost": 1.4551915228366852e-11,
+    "roundtrip_proceeds": 7.275957614183426e-12,
+    "roundtrip_dividends": 0,
+    "roundtrip_net_pnl": 1.8189894035458565e-12,
+    "summary_end_equity": 0,
+    "summary_total_return_pct": 0,
+    "summary_max_drawdown_pct": 0,
+    "summary_sharpe": 4.926614671774132e-16,
+    "summary_total_slippage": 0,
+    "summary_total_commission": 0,
+    "summary_total_trade_count": 0,
+    "summary_closed_round_trips": 0,
+    "summary_win_rate_pct": 0,
+    "summary_open_positions": 0,
+    "summary_trading_days": 0,
+    "total_realized_pnl_vs_equity": 6.548361852765083e-11,
+    "daily_returns": 9.974659986866641e-17,
+    "daily_drawdown": 3.552713678800501e-15,
+    "annual_start_equity": 0,
+    "annual_end_equity": 0,
+    "annual_return_pct": 1.7763568394002505e-15,
+    "annual_max_drawdown_pct": 1.7763568394002505e-15,
+    "annual_sharpe": 2.220446049250313e-15,
+    "annual_total_trade_count": 0,
+    "annual_total_commission": 0,
+    "annual_total_slippage": 0,
+    "annual_closed_round_trips": 0,
+    "annual_win_rate_pct": 7.105427357601002e-15,
+    "annual_open_positions": 0,
+    "annual_trading_days": 0,
+    "annual_sum_total_trade_count": 0,
+    "annual_sum_total_commission": 3.637978807091713e-12,
+    "annual_sum_total_slippage": 0,
+    "annual_sum_closed_round_trips": 0,
+    "annual_sum_trading_days": 0,
+    "annual_compound_return": 2.220446049250313e-16
+  },
+  "summary": {
+    "end_equity": 274636.16729999986,
+    "total_return_pct": -8.454610900000048,
+    "max_drawdown_pct": -32.78931911416938,
+    "sharpe": -0.057017800248148294,
+    "total_slippage": 17118.0,
+    "total_commission": 20246.132700000002,
+    "total_trade_count": 426,
+    "closed_round_trips": 213,
+    "win_rate_pct": 20.657276995305164,
+    "open_positions": 0,
+    "trading_days": 1633
+  },
+  "minimum_cash": 42.637999999817396,
+  "max_positions": 7,
+  "max_daily_buy_budget_pct": 29.976702464744754,
+  "order_fill_checks": 426,
+  "max_execution_delay_sessions": 2,
+  "held_stock_days": 2032,
+  "held_action_events": [
+    {
+      "date": "2020-06-19",
+      "vt_symbol": "000876.SZSE",
+      "old_shares": 2800,
+      "new_shares": 2800,
+      "dividend": 420.0
+    },
+    {
+      "date": "2020-07-15",
+      "vt_symbol": "601988.SSE",
+      "old_shares": 100,
+      "new_shares": 100,
+      "dividend": 19.1
+    },
+    {
+      "date": "2021-05-26",
+      "vt_symbol": "000977.SZSE",
+      "old_shares": 2500,
+      "new_shares": 2500,
+      "dividend": 275.0
+    },
+    {
+      "date": "2021-06-18",
+      "vt_symbol": "600019.SSE",
+      "old_shares": 9200,
+      "new_shares": 9200,
+      "dividend": 2760.0
+    },
+    {
+      "date": "2022-07-07",
+      "vt_symbol": "002252.SZSE",
+      "old_shares": 4900,
+      "new_shares": 4900,
+      "dividend": 137.20000000000002
+    },
+    {
+      "date": "2025-05-21",
+      "vt_symbol": "600760.SSE",
+      "old_shares": 1500,
+      "new_shares": 1500,
+      "dividend": 390.0
+    },
+    {
+      "date": "2025-06-27",
+      "vt_symbol": "002304.SZSE",
+      "old_shares": 1000,
+      "new_shares": 1000,
+      "dividend": 2317.0
+    },
+    {
+      "date": "2025-07-17",
+      "vt_symbol": "600026.SSE",
+      "old_shares": 7400,
+      "new_shares": 7400,
+      "dividend": 1554.0
+    },
+    {
+      "date": "2025-09-24",
+      "vt_symbol": "600346.SSE",
+      "old_shares": 4900,
+      "new_shares": 4900,
+      "dividend": 392.0
+    },
+    {
+      "date": "2025-10-17",
+      "vt_symbol": "600023.SSE",
+      "old_shares": 14800,
+      "new_shares": 14800,
+      "dividend": 740.0
+    },
+    {
+      "date": "2025-11-04",
+      "vt_symbol": "600426.SSE",
+      "old_shares": 100,
+      "new_shares": 100,
+      "dividend": 25.0
+    },
+    {
+      "date": "2026-05-15",
+      "vt_symbol": "600845.SSE",
+      "old_shares": 1100,
+      "new_shares": 1100,
+      "dividend": 253.0
+    }
+  ],
+  "realized_winners": 44,
+  "gap_exposure": [
+    {
+      "date": "2020-12-31",
+      "vt_symbol": "000001.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-16",
+      "vt_symbol": "000002.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-19",
+      "vt_symbol": "000002.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-20",
+      "vt_symbol": "000002.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-01-09",
+      "vt_symbol": "000002.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-10-22",
+      "vt_symbol": "000728.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-03-19",
+      "vt_symbol": "000977.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2021-12-02",
+      "vt_symbol": "002142.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-01-02",
+      "vt_symbol": "002466.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-02-18",
+      "vt_symbol": "302132.SZSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2022-01-27",
+      "vt_symbol": "600030.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-19",
+      "vt_symbol": "600372.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-25",
+      "vt_symbol": "600655.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-12-17",
+      "vt_symbol": "600919.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2022-04-29",
+      "vt_symbol": "600958.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-07-20",
+      "vt_symbol": "600999.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2022-04-12",
+      "vt_symbol": "601108.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-03-19",
+      "vt_symbol": "601162.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2021-08-04",
+      "vt_symbol": "601236.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2022-08-25",
+      "vt_symbol": "601377.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-03-23",
+      "vt_symbol": "601555.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2021-12-23",
+      "vt_symbol": "601555.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2020-11-27",
+      "vt_symbol": "601607.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2023-06-27",
+      "vt_symbol": "601916.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    }
+  ],
+  "missing_exposure": [
+    {
+      "date": "2025-03-05",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-06",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-07",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-10",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-11",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-12",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-13",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-14",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-17",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-18",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-19",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-20",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-21",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-24",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-25",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-26",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-27",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-28",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-03-31",
+      "vt_symbol": "600837.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-05",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-08",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-09",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-10",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-11",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-12",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-15",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-16",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-17",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-18",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-19",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-22",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-23",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-24",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-25",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-26",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-29",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    },
+    {
+      "date": "2025-09-30",
+      "vt_symbol": "601989.SSE",
+      "beginning_shares": 0,
+      "ending_shares": 0
+    }
+  ],
+  "historical_member_pairs": 440341,
+  "independent_missing_member_pairs": 37,
+  "merger_halt_exposure": [
+    {
+      "vt_symbol": "600837.SSE",
+      "first_halted_day": "2025-02-06",
+      "zero_volume_bars": 19,
+      "ending_bar": "2025-03-04",
+      "last_position_exit": "2020-12-08",
+      "held_from_halt_onward": []
+    },
+    {
+      "vt_symbol": "601989.SSE",
+      "first_halted_day": "2025-08-13",
+      "zero_volume_bars": 17,
+      "ending_bar": "2025-09-04",
+      "last_position_exit": null,
+      "held_from_halt_onward": []
+    }
+  ],
+  "derived_limit_violations": 41,
+  "buy_signals_with_gap_in_60bar_window": [],
+  "no_vnpy_imported": true,
+  "no_futures_strategy_imported": true
+}
