@@ -1,0 +1,86 @@
+{
+  "status": "FAILED_REPLAY_DIAGNOSTIC_ONLY_NOT_FULL_PERIOD_RESULT",
+  "error": "Unexplained corporate action for 000001.SZSE on 2020-12-31",
+  "failure_date": "2020-12-31",
+  "snapshot_sha256": "9c2096f3c269d60f1328b59f9c431b564bf2a29bf97eeed4fb99e26dce5a45b5",
+  "settings": {
+    "capital": 300000.0,
+    "max_positions": 3,
+    "position_size": 0.32,
+    "day_position_size": 0.9,
+    "cash_buffer": 0.05,
+    "stop_loss_pct": 0.02,
+    "stop_profit_pct": 0.45,
+    "commission_rate": 0.0003,
+    "minimum_commission": 5.0,
+    "stamp_duty_rate": 0.001,
+    "slippage_per_share": 0.01,
+    "annual_days": 252
+  },
+  "last_completed_date": "2020-12-30",
+  "held_at_failure": {
+    "000001.SZSE": {
+      "shares": 4000,
+      "buy_price": 18.880000000000003,
+      "buy_date": "2020-12-29",
+      "entry_cost": 75542.65600000002,
+      "stop_loss": 18.880000000000003,
+      "stop_profit": 27.376,
+      "adj_factor": 119.960317,
+      "dividends": 0.0
+    }
+  },
+  "failure_row": {
+    "date": "2020-12-31 00:00:00",
+    "vt_symbol": "000001.SZSE",
+    "open": 19.21,
+    "high": 19.58,
+    "low": 19.02,
+    "close": 19.34,
+    "volume": 92450343.0,
+    "adj_factor": 99.787353,
+    "limit_up": 21.12,
+    "limit_down": 17.28,
+    "is_st": false,
+    "is_member": true,
+    "cash_dividend": 0.0,
+    "split_ratio": 1.0
+  },
+  "failed_symbol_trades": [
+    {
+      "date": "2020-12-29T00:00:00",
+      "vt_symbol": "000001.SZSE",
+      "direction": "buy",
+      "price": 18.880000000000003,
+      "shares": 4000,
+      "turnover": 75520.00000000001,
+      "commission": 22.656000000000002,
+      "slippage": 40.0,
+      "signal_date": "2020-12-28T00:00:00",
+      "reason": "qmt357_reversal",
+      "cash_after": 32965.78709999997
+    }
+  ],
+  "failed_symbol_trailing": [
+    {
+      "date": "2020-12-29T00:00:00",
+      "vt_symbol": "000001.SZSE",
+      "buy_price": 18.880000000000003,
+      "observed_close": 19.17,
+      "peak": 19.17,
+      "old_stop": 18.5024,
+      "new_stop": 18.880000000000003
+    },
+    {
+      "date": "2020-12-30T00:00:00",
+      "vt_symbol": "000001.SZSE",
+      "buy_price": 18.880000000000003,
+      "observed_close": 19.2,
+      "peak": 19.2,
+      "old_stop": 18.880000000000003,
+      "new_stop": 18.880000000000003
+    }
+  ],
+  "processed_trades": 99,
+  "published_full_period_results": false
+}

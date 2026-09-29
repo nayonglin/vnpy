@@ -1,0 +1,9 @@
+{
+  "source": "qmt_stock/357.py",
+  "source_sha256": "44fb536a4addec99f035c38a89b87875052788f0aa3b99068789861324959574",
+  "migration_date": "2026-09-28",
+  "source_required_at_runtime": false,
+  "reference_architecture": "strategy / configuration / isolated runner / frozen manifest and outputs",
+  "imports_futures_strategy": false,
+  "connects_trading_account": false
+}

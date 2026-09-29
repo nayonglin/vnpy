@@ -1,0 +1,12 @@
+{
+  "repository": "git@github.com:nayonglin/qmt.git",
+  "commit": "4ac255ece55671bb74962f23b5d7fae22fa377e7",
+  "commit_time": "2025-04-24T00:06:41+08:00",
+  "source_file": "震荡股高卖低买策略.py",
+  "source_sha256": "5b55361e88ff5617558d92aefac78fe41915f4f6f7fb4376cf200ab42950000a",
+  "source_url": "https://github.com/nayonglin/qmt/blob/4ac255ece55671bb74962f23b5d7fae22fa377e7/震荡股高卖低买策略.py",
+  "parameters_source_lines": [213, 217],
+  "trailing_source_lines": [1269, 1322],
+  "scope": "user-approved effective parameters plus tiered stops; baseline entry logic and corrected cash/next-open execution retained",
+  "not_an_exact_qmt_intraday_replay": true
+}

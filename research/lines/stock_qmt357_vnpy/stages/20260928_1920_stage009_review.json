@@ -1,0 +1,70 @@
+{
+  "status": "PASS_SCOPE_AND_FAIL_CLOSED_DECLINE_FULL_PERFORMANCE",
+  "reviewed_at": "2026-09-28T19:21:36.144910+08:00",
+  "source_commit": "4ac255ece55671bb74962f23b5d7fae22fa377e7",
+  "source_blob_sha256": "5b55361e88ff5617558d92aefac78fe41915f4f6f7fb4376cf200ab42950000a",
+  "source_blob_verified_in_bare_git": true,
+  "baseline_core_sha256": {
+    "config.py": "237545494b1c0398c2e29a19cf29cdf89e48d511a6406a15af0d49c38662175b",
+    "signals.py": "4b927e171c20b4fe2789a914ad6815cd2e4e68dbed959083a7e7b96cc89ac49c",
+    "strategy.py": "47bca4cd64118d12d45665cbd050702c9fbabea7ed7d3602dd3d826ad6509505",
+    "engine.py": "4b3427ab45a896d8c0076c75c1c12591001a861edd1d9b2ad579481d227d941d"
+  },
+  "new_current_code_sha256": {
+    "__init__.py": "3454b9b11649638050f4a2cad63bcb95d39cf0b6dade386c83ad8ecd574d2932",
+    "config.py": "90ab6cdb9e4fbc4aaf67a4882225ad92ef5bbf531afb18b1974b0ea0ab4f28b2",
+    "engine.py": "e1a0b092c9c43a0be32b4ebf16ccc174237666638a7ce896b3dac187330cee04",
+    "run.py": "95017e29fa96060bc100df0a03f2cad5b3933ac925dec5e82e7690209d31439e",
+    "runtime.py": "22492a0ea2e258925cc36d070a7e069e641b6e7c1f7bd6068d62e15f25f13524",
+    "strategy.py": "abcee521ebfcb7bbdcf0177e137bc4a3f0044aac20ba1c0073cdf7c2dd46960b"
+  },
+  "diagnostic_sha256": "d28aad7d76c43392bc9a5f22c37ed2415c4910109d8a04244d4cbeff69ec3d32",
+  "snapshot_sha256": "9c2096f3c269d60f1328b59f9c431b564bf2a29bf97eeed4fb99e26dce5a45b5",
+  "source_sha256": "fa1422b5e64016b61e3804bf3ccdffc2c4feb957f2ef94d892964ef75634377f",
+  "settings_verified": {
+    "max_positions": 3,
+    "position_size": 0.32,
+    "day_position_size": 0.9,
+    "stop_loss_pct": 0.02,
+    "stop_profit_pct": 0.45
+  },
+  "failure_date": "2020-12-31",
+  "last_completed_date": "2020-12-30",
+  "independent_entry": {
+    "price": 18.880000000000003,
+    "shares": 4000,
+    "notional": 75520.00000000001,
+    "commission": 22.656000000000002,
+    "total_cost": 75542.65600000002,
+    "signal_date": "2020-12-28T00:00:00",
+    "date": "2020-12-29T00:00:00"
+  },
+  "independent_trailing": [
+    {
+      "date": "2020-12-29",
+      "peak": 19.17,
+      "stop": 18.880000000000003,
+      "observed_close": 19.17
+    },
+    {
+      "date": "2020-12-30",
+      "peak": 19.2,
+      "stop": 18.880000000000003,
+      "observed_close": 19.2
+    }
+  ],
+  "guard_predicate_true": true,
+  "factor_before": 119.960317,
+  "factor_after": 99.787353,
+  "factor_delta_pct": -16.816364364892443,
+  "fore_factor_unchanged": "0.781647",
+  "raw_preclose_equals_previous_close": true,
+  "old_and_new_factor_file_sha256": "4e1e48ad4995cfea58c0f5a6bfd4201a6759e9a57faa1d3e43a91dcb4e7d5b53",
+  "full_result_target_absent": true,
+  "processed_trades_99_is_producer_counter_not_independently_rebuilt": true,
+  "declared_limits": [
+    "No full trade/daily logs saved for aborted replay; other98 executions and entire partial ledger not reconstructed.",
+    "Failure diagnostic lacks execution-time code hashes; current hashes captured now, not backfilled into diagnostic.",
+    "No complete-period result, annual statistics, alpha, or official source correction conclusion."
+  ]
+}
