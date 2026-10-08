@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.qmt-roll.official-live.15w.c9-readonly-postclose-precompute</string>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+  <key>AbandonProcessGroup</key>
+  <false/>
+  <key>ExitTimeOut</key>
+  <integer>15</integer>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/bytedance/Desktop/person/vnpy/.py311/bin/python</string>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py</string>
+    <string>--execution-profile</string>
+    <string>c9-15w</string>
+    <string>--target-date-mode</string>
+    <string>latest-completed</string>
+    <string>--target-date-data-ready-time</string>
+    <string>16:30</string>
+    <string>--mode</string>
+    <string>run</string>
+    <string>--confirm-shadow-refresh</string>
+    <string>I_UNDERSTAND_THIS_RUNS_OFFICIAL_SHADOW_REFRESH</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OFFICIAL_LIVE_OUTPUT_DIR</key>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_c9_15w/precompute</string>
+    <key>OFFICIAL_LIVE_SIGNAL_INPUT_DIR</key>
+    <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_c9_15w/signal-input</string>
+    <key>OFFICIAL_LIVE_PHASE_D_SHADOW_REFRESH_ENABLED</key>
+    <string>1</string>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>/Users/bytedance/Desktop/person/vnpy</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>16</integer>
+    <key>Minute</key>
+    <integer>35</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_c9_15w/precompute/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/bytedance/Desktop/person/vnpy/examples/portfolio_backtesting/backtest_outputs/stage179_c9_15w/precompute/launchd.err.log</string>
+</dict>
+</plist>
