@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "zip": "vnpy_handoff_20261014.zip",
+  "bundle_root": "vnpy_handoff_20261014",
+  "bytes": 390993344,
+  "sha256": "64258daf5d955e0a2e256c094bf7a428a96260c8a1bad268636d9a90e977f9bb",
+  "parts": [
+    {
+      "name": "vnpy_handoff_20261014.zip.part001",
+      "bytes": 90000000,
+      "sha256": "d92fd5deefd330e8ad12b87848df91a6eac7fe7056ca4f016886dde96e37fcc8"
+    },
+    {
+      "name": "vnpy_handoff_20261014.zip.part002",
+      "bytes": 90000000,
+      "sha256": "af3fcaff88c004eb8c0ef0b34edadf0ce4e2af9960904c37fea1eca8070faf43"
+    },
+    {
+      "name": "vnpy_handoff_20261014.zip.part003",
+      "bytes": 90000000,
+      "sha256": "e990e3a81d73f55c0d5c946e774beb33307b23f4abe0140b9e092b510f978707"
+    },
+    {
+      "name": "vnpy_handoff_20261014.zip.part004",
+      "bytes": 90000000,
+      "sha256": "3b7ca888ba288ff7a9d31fa4a31788ff470b8cf006f81aa3907fc496bc60b5f5"
+    },
+    {
+      "name": "vnpy_handoff_20261014.zip.part005",
+      "bytes": 30993344,
+      "sha256": "d4e28dcc247e689df5b89b3f76ffcb0a42b9097e448e76761a9745e500f35acd"
+    }
+  ],
+  "source_sha": "77538e394167c290d5f2923f4d08931b9bbd7c4f",
+  "files": 12591,
+  "restore_files": 10876,
+  "skills": 10
+}
