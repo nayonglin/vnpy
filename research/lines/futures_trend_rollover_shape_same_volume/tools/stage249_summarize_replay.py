@@ -13,7 +13,7 @@ EPS=1e-6
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--output',type=Path,required=True)
     a=ap.parse_args();src=a.source.resolve();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
-    files=['trades.csv','daily.csv','positions.csv','execution_clock.csv','execution_proxy_usage.csv','internal_equity_daily.csv','entry_candidates.csv','effective_parameters.json','minute_scan_requests.csv']
+    files=['trades.csv','daily.csv','positions.csv','execution_clock.csv','execution_proxy_usage.csv','internal_equity_daily.csv','entry_candidates.csv','effective_parameters.json','minute_scan_requests.csv','run_provenance.json']
     hashes={name:hashlib.sha256((src/name).read_bytes()).hexdigest() for name in files}
     par=json.loads((src/'effective_parameters.json').read_text());t=pd.read_csv(src/'trades.csv').fillna('');u=pd.read_csv(src/'execution_proxy_usage.csv').fillna('');clock=pd.read_csv(src/'execution_clock.csv')
     assert t.trade_id.is_unique and u.trade_id.is_unique and clock.trade_id.is_unique
@@ -98,8 +98,16 @@ def main():
                 if col in match:cycles.loc[i,col]=match.iloc[0][col]
     for name,frame in [('complete_cycles',cycles),('complete_episodes',episodes),('open_positions',pd.DataFrame(open_rows)),('year_month_results',pd.DataFrame(grouped)),('retry_links',pd.DataFrame(retry_links)),('trades_costed',t)]:
         frame.to_csv(out/f'{name}.csv',index=False,encoding='utf-8-sig')
-    scans=pd.read_csv(src/'minute_scan_requests.csv').drop_duplicates(['vt_symbol','trading_date'])
-    checks={'status':'arithmetic_passed','source_hashes':hashes,'daily_rows':len(d),'fill_count':len(t),'equity_max_abs_residual':eqres,'sizing_max_abs_residual':sizingres,'independent_cashflow_max_abs_residual':cashres,'closed_cycles':len(cycles),'closed_episodes':len(episodes),'end_open_contracts':len(open_rows),'end_open_mtm':sum(x['net_mtm'] for x in open_rows),'scan_keys':len(scans),'incomplete_scan_keys':int(scans.coverage_status.ne('complete').sum()),'unique_missing_minutes':int(scans.missing_bar_count.sum()),'periods':periods}
+    requests=pd.read_csv(src/'minute_scan_requests.csv')
+    # Intraday requests on one symbol/day are suffixes of the same session;
+    # their union is the earliest requested start, including add-layer fills.
+    assert requests.groupby(['vt_symbol','trading_date']).session_end_exclusive.nunique().le(1).all()
+    scans=requests.sort_values('requested_start').drop_duplicates(['vt_symbol','trading_date'])
+    provenance=json.loads((src/'run_provenance.json').read_text())
+    checks={'status':'arithmetic_passed_only','diagnostic_incomplete_minutes':provenance['diagnostic_incomplete_minutes'],
+            'validation_status':'diagnostic_not_accepted' if provenance['diagnostic_incomplete_minutes'] else 'strict_engine_completed_pending_independent_review',
+            'scan_union_policy':'earliest request suffix within identical session end; source provenance is a separate gate',
+            'source_hashes':hashes,'daily_rows':len(d),'fill_count':len(t),'equity_max_abs_residual':eqres,'sizing_max_abs_residual':sizingres,'independent_cashflow_max_abs_residual':cashres,'closed_cycles':len(cycles),'closed_episodes':len(episodes),'end_open_contracts':len(open_rows),'end_open_mtm':sum(x['net_mtm'] for x in open_rows),'scan_keys':len(scans),'incomplete_scan_keys':int(scans.coverage_status.ne('complete').sum()),'unique_missing_minutes':int(scans.missing_bar_count.sum()),'periods':periods}
     for name,digest in hashes.items():assert hashlib.sha256((src/name).read_bytes()).hexdigest()==digest
     (out/'summary.json').write_text(json.dumps(checks,ensure_ascii=False,indent=2)+'\n');print(json.dumps({k:v for k,v in checks.items() if k!='source_hashes'},ensure_ascii=False))
 

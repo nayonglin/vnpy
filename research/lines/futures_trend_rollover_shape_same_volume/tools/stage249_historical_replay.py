@@ -195,7 +195,7 @@ def audit_correctness_overlay(root: Path, baseline: Path, active: Any) -> dict[s
 def capture_execution_proxy_usage(engine_class: type) -> Any:
     names = ["calculate_result", "new_bars"]
     originals = {name: (name in engine_class.__dict__, getattr(engine_class, name)) for name in names}
-    captured = {"usage": [], "equity": [], "trades": [], "minute_requests": []}
+    captured = {"usage": [], "equity": [], "trades": [], "minute_requests": [], "anchor_requests": []}
     def capture_bar(engine: Any, dt: Any) -> Any:
         result = originals["new_bars"][1](engine, dt)
         strategy = getattr(engine, "strategy", None)
@@ -207,6 +207,7 @@ def capture_execution_proxy_usage(engine_class: type) -> Any:
     def capture_result(engine: Any, *args: Any, **kwargs: Any) -> Any:
         result = originals["calculate_result"][1](engine, *args, **kwargs)
         captured["usage"][:] = [dict(row) for row in getattr(engine, "trade_usage_rows", [])]
+        captured["anchor_requests"][:] = [dict(row) for row in getattr(engine, "execution_anchor_requests", [])]
         strategy = getattr(engine, "strategy", None)
         captured["minute_requests"][:] = [dict(row) for obj in [engine, strategy] if obj is not None
             for row in getattr(obj, "minute_scan_requests", [])]
@@ -447,6 +448,7 @@ def main() -> None:
     pd.DataFrame(execution_proxy_rows["equity"]).to_csv(output / "internal_equity_daily.csv", index=False)
     clock.to_csv(output / "execution_clock.csv", index=False)
     pd.DataFrame(execution_proxy_rows["minute_requests"]).to_csv(output / "minute_scan_requests.csv", index=False)
+    pd.DataFrame(execution_proxy_rows["anchor_requests"]).to_csv(output / "execution_anchor_requests.csv", index=False)
     usage.to_csv(output / "execution_proxy_usage.csv", index=False, encoding="utf-8-sig")
     trade_ids = set(frames["trades"]["trade_id"].astype(str))
     usage_ids = set(usage.get("trade_id", pd.Series(dtype=str)).astype(str))
