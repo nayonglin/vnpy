@@ -257,9 +257,9 @@ Use this only when a broker asks to test the CTP CP/evaluation front such as `41
    - Explicit `RegisterUserSystemInfo` with the current `DataCollectforMacOS` output returned `ret=-6`; session then logged in as `SessionID=1816074420`.
    - Explicit `SubmitUserSystemInfo` with the current `DataCollectforMacOS` output returned `ret=-6`; session then logged in as `SessionID=1820006595`.
    - Empty-system-info control logged in as `SessionID=1822628046`.
-   - Treat `414xx/CP` terminal-reporting as unresolved until the broker confirms the AppType for `client_hermanna_1.0` and whether the printable `DataCollectforMacOS` `CollectData` can be passed directly to extended `ReqUserLogin`, or a linkable Mac `DataCollect.h`/library and raw `CTP_GetSystemInfo` bytes are required.
+   - Treat `414xx/CP` terminal-reporting as unresolved until the broker confirms the AppType for `<broker-confirmed-app-id>` and whether the printable `DataCollectforMacOS` `CollectData` can be passed directly to extended `ReqUserLogin`, or a linkable Mac `DataCollect.h`/library and raw `CTP_GetSystemInfo` bytes are required.
 12. Current confirmed Stage283 result:
-   - Broker confirmed `client_hermanna_1.0` AppType is direct investor.
+   - Broker confirmed `<broker-confirmed-app-id>` AppType is direct investor.
    - Normal `414xx/CP` route should not proactively call relay APIs `RegisterUserSystemInfo` or `SubmitUserSystemInfo`.
    - Keep Stage282 `ret=-6` relay-call results as diagnostic evidence only.
    - The normal direct-investor path is extended `ReqUserLogin(req, request_id, systemInfoLen, systemInfo)`.

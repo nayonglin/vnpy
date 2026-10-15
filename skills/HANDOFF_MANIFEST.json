@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "migration_date": "2026-10-15",
+  "skill_count": 11,
+  "existing_skills_unchanged": [
+    "freeze-official-strategy-materials",
+    "futures-live-automation-startup",
+    "futures-multicycle-backtest-report",
+    "futures-multicycle-validation",
+    "version-ab-experiment"
+  ],
+  "discovery": ".agents/skills/<name> -> ../../skills/<name>",
+  "files": [
+    {
+      "skill": "freeze-official-strategy-materials",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/freeze-official-strategy-materials",
+      "source_sha256": "d0cdc0d6c41102e5993573a56dd7f1feb5ed8c0cca2c2b75b4ecd48fc784d8e0",
+      "installed_sha256": "d0cdc0d6c41102e5993573a56dd7f1feb5ed8c0cca2c2b75b4ecd48fc784d8e0",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "freeze-official-strategy-materials",
+      "path": "agents/openai.yaml",
+      "origin": "existing-repository/skills/freeze-official-strategy-materials",
+      "source_sha256": "afa295a5b710ae5a0ee08b7dff5bd8b0fbeee2e97666e415d67d6541269a5ebc",
+      "installed_sha256": "afa295a5b710ae5a0ee08b7dff5bd8b0fbeee2e97666e415d67d6541269a5ebc",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "freeze-official-strategy-materials",
+      "path": "references/material-contract.md",
+      "origin": "existing-repository/skills/freeze-official-strategy-materials",
+      "source_sha256": "96404037bfad0c1c63d70148aad0a0a5cd5e0d7db05b5297738f8f5f65619219",
+      "installed_sha256": "96404037bfad0c1c63d70148aad0a0a5cd5e0d7db05b5297738f8f5f65619219",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-live-automation-startup",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/futures-live-automation-startup",
+      "source_sha256": "e8925c68b6d2107e4c86e0f43c34db905b2a229937aca290f4bb9f1fc96afdfb",
+      "installed_sha256": "e8925c68b6d2107e4c86e0f43c34db905b2a229937aca290f4bb9f1fc96afdfb",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-live-execution-sop",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/futures-live-execution-sop",
+      "source_sha256": "50d7063b8b44df8b332e8ed7fb7b4272f0510bafa44263849d73c6d7f9a077ee",
+      "installed_sha256": "4af05968961a5a7b26b3c134e2d8c74bdd484d82fe714b509e8f2f6e7170cb95",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-live-execution-sop",
+      "path": "agents/openai.yaml",
+      "origin": "existing-repository/skills/futures-live-execution-sop",
+      "source_sha256": "0e5ebd2789bf856d867116acb0248674282b3bf3bf82f6aae34838c655825631",
+      "installed_sha256": "0e5ebd2789bf856d867116acb0248674282b3bf3bf82f6aae34838c655825631",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-multicycle-backtest-report",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/futures-multicycle-backtest-report",
+      "source_sha256": "181bd25e4d8163e1d3fd71c6c093b12795398f857320d0425a7739299b04a533",
+      "installed_sha256": "181bd25e4d8163e1d3fd71c6c093b12795398f857320d0425a7739299b04a533",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-multicycle-validation",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/futures-multicycle-validation",
+      "source_sha256": "9658e602c6b4e44f0c203083351e099519c426a291ab173d7daa08f98ea9d005",
+      "installed_sha256": "9658e602c6b4e44f0c203083351e099519c426a291ab173d7daa08f98ea9d005",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-multicycle-validation",
+      "path": "agents/openai.yaml",
+      "origin": "existing-repository/skills/futures-multicycle-validation",
+      "source_sha256": "659a0f268d717d63eeb435021f6d974b4f55d77ea918f3f9aa6cd5f54b61dd96",
+      "installed_sha256": "659a0f268d717d63eeb435021f6d974b4f55d77ea918f3f9aa6cd5f54b61dd96",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-official-shadow",
+      "path": "SKILL.md",
+      "origin": "handoff-20261014/skills_external/codex-user/futures-official-shadow",
+      "source_sha256": "bd8db33f7ca9a15105f69570497d789e7695c67c733f671729b04e0a374a5cbd",
+      "installed_sha256": "d316d489fcc1beb5f61d92d4fbc19b522b836f95401cafb7e055b139f076a03c",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-official-shadow",
+      "path": "agents/openai.yaml",
+      "origin": "handoff-20261014/skills_external/codex-user/futures-official-shadow",
+      "source_sha256": "4cedb8a12396aa3a89f537ccac0b712cc5c2195b7c658019ffde48468b0bf83f",
+      "installed_sha256": "4cedb8a12396aa3a89f537ccac0b712cc5c2195b7c658019ffde48468b0bf83f",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-official-shadow",
+      "path": "scripts/export_official_shadow_events.py",
+      "origin": "handoff-20261014/skills_external/codex-user/futures-official-shadow",
+      "source_sha256": "cad41af5dd32ab2f5c7ae96bdfe860a5c59f33f409bec8f1aed61a6d2d79e06d",
+      "installed_sha256": "cad41af5dd32ab2f5c7ae96bdfe860a5c59f33f409bec8f1aed61a6d2d79e06d",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-recap-html",
+      "path": "SKILL.md",
+      "origin": "existing-working-tree/research/lines/futures_trend_rollover_shape_same_volume/references/futures-recap-html",
+      "source_sha256": "362bd130fdc07830b610e3f69385d1f5898d2d3448e7dd90da7aeab77fd7e9a2",
+      "installed_sha256": "362bd130fdc07830b610e3f69385d1f5898d2d3448e7dd90da7aeab77fd7e9a2",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-recap-html",
+      "path": "references/recap-contract.md",
+      "origin": "existing-working-tree/research/lines/futures_trend_rollover_shape_same_volume/references/futures-recap-html",
+      "source_sha256": "5ba99bda8725ffa134712f0a5ad8b8c92312dff0c4b3cae7ad6c53eef0f030ee",
+      "installed_sha256": "2f5daa2d83f6cac91298cb99b8f2dede9dbe8e46fc86b3e537c9d212522b7d73",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "pdf",
+      "path": "LICENSE.txt",
+      "origin": "handoff-20261014/skills_external/codex-user/pdf",
+      "source_sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
+      "installed_sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "pdf",
+      "path": "SKILL.md",
+      "origin": "handoff-20261014/skills_external/codex-user/pdf",
+      "source_sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2",
+      "installed_sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "pdf",
+      "path": "agents/openai.yaml",
+      "origin": "handoff-20261014/skills_external/codex-user/pdf",
+      "source_sha256": "f8b223e25343559f57e1839ccd849fd1494a9729da33da04bb5074b7f80f4887",
+      "installed_sha256": "f8b223e25343559f57e1839ccd849fd1494a9729da33da04bb5074b7f80f4887",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "pdf",
+      "path": "assets/pdf.png",
+      "origin": "handoff-20261014/skills_external/codex-user/pdf",
+      "source_sha256": "17da356d195d4e3fa24f9becbee6b8d9e60e13005762b5ab0809c520c76da6ee",
+      "installed_sha256": "17da356d195d4e3fa24f9becbee6b8d9e60e13005762b5ab0809c520c76da6ee",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "LICENSE.txt",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda",
+      "installed_sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "NOTICE.txt",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "417d5d3372914ecfd9fe102ac1d7dc2119253209f9718d6c222f616876c1904b",
+      "installed_sha256": "417d5d3372914ecfd9fe102ac1d7dc2119253209f9718d6c222f616876c1904b",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "SKILL.md",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "0ffaabcc8e0990627c4725f18bf1c7955534a796c1c199e872909de2013ce6a8",
+      "installed_sha256": "f81acd028a35fd024440497ac1575f38360667fc9778a168b0f9e479751c9392",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "agents/openai.yaml",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "ddda43720fc566fffa45264be8f17f7745a3cee28d5245d41d3b963bc9967230",
+      "installed_sha256": "ddda43720fc566fffa45264be8f17f7745a3cee28d5245d41d3b963bc9967230",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "assets/playwright-small.svg",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "f1d213c0f76735d8272c3d3e9fbf71fe7b894e2d1588907044c780f2c33a9732",
+      "installed_sha256": "f1d213c0f76735d8272c3d3e9fbf71fe7b894e2d1588907044c780f2c33a9732",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "assets/playwright.png",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "521669f088c838196c6c852ccc9abdd7234d8f37fc9a8a7a9af7db2d50193381",
+      "installed_sha256": "521669f088c838196c6c852ccc9abdd7234d8f37fc9a8a7a9af7db2d50193381",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "references/cli.md",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "7c069a8206ba20b9ddbdc42436b04de30bb3aa4a825ba98680757ee62e954900",
+      "installed_sha256": "a7fbebe2343c8116822db2b7d1fca6da8739ffbad7d329b558c28460ec19071b",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "references/workflows.md",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "a2b5835a00ebee3906c146adf7f764f7718ea3f89a8702d86eaa135dfe0fc8c2",
+      "installed_sha256": "a2b5835a00ebee3906c146adf7f764f7718ea3f89a8702d86eaa135dfe0fc8c2",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "playwright",
+      "path": "scripts/playwright_cli.sh",
+      "origin": "handoff-20261014/skills_external/codex-user/playwright",
+      "source_sha256": "aa3fdff5d0e4556177f4dfd5f04117e772aa54f94b6a2e34b6c0edf629c6b9b5",
+      "installed_sha256": "aa3fdff5d0e4556177f4dfd5f04117e772aa54f94b6a2e34b6c0edf629c6b9b5",
+      "modified": false,
+      "installed_mode": "0o755"
+    },
+    {
+      "skill": "tushare-data",
+      "path": "SKILL.md",
+      "origin": "handoff-20261014/skills_external/agents-user/tushare-data",
+      "source_sha256": "cff55673023ec019a8035a8d1824c66a7528003f6a431b93256a89f004837bea",
+      "installed_sha256": "cff55673023ec019a8035a8d1824c66a7528003f6a431b93256a89f004837bea",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "tushare-data",
+      "path": "references/数据接口.md",
+      "origin": "handoff-20261014/skills_external/agents-user/tushare-data",
+      "source_sha256": "800e4305729d29c134d32be64c73bdf29d6c1470edeca85ebebeca6c2d9bc33c",
+      "installed_sha256": "800e4305729d29c134d32be64c73bdf29d6c1470edeca85ebebeca6c2d9bc33c",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "tushare-data",
+      "path": "scripts/fund_data_demo.py",
+      "origin": "handoff-20261014/skills_external/agents-user/tushare-data",
+      "source_sha256": "bc6c94ef1f6e50681c3f2a957fd9a42c4c4050ab09a3584bd347705f589681d1",
+      "installed_sha256": "bc6c94ef1f6e50681c3f2a957fd9a42c4c4050ab09a3584bd347705f589681d1",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "tushare-data",
+      "path": "scripts/stock_data_demo.py",
+      "origin": "handoff-20261014/skills_external/agents-user/tushare-data",
+      "source_sha256": "ee1a80076bbfc7b6ac3592e044cfc8c264e50186c0e37bf10ca0ec7a0001ce63",
+      "installed_sha256": "ee1a80076bbfc7b6ac3592e044cfc8c264e50186c0e37bf10ca0ec7a0001ce63",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "version-ab-experiment",
+      "path": "SKILL.md",
+      "origin": "existing-repository/skills/version-ab-experiment",
+      "source_sha256": "5b9a61149b4753076bb3933a6c10f5a6a5b457ff531ef13c903484cdbc08eff0",
+      "installed_sha256": "5b9a61149b4753076bb3933a6c10f5a6a5b457ff531ef13c903484cdbc08eff0",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "version-ab-experiment",
+      "path": "agents/openai.yaml",
+      "origin": "existing-repository/skills/version-ab-experiment",
+      "source_sha256": "3d1ada27bb5daacccf50a491c0ead9550621ebccde4b25acd8b6796bda1aa437",
+      "installed_sha256": "3d1ada27bb5daacccf50a491c0ead9550621ebccde4b25acd8b6796bda1aa437",
+      "modified": false,
+      "installed_mode": "0o644"
+    }
+  ],
+  "mode_adaptations": [
+    {
+      "path": "skills/playwright/scripts/playwright_cli.sh",
+      "source_mode": "0o644",
+      "installed_mode": "0o755",
+      "reason": "Documented direct CLI invocation requires executable bit; contents unchanged."
+    }
+  ],
+  "content_adaptations": {
+    "futures-live-execution-sop/SKILL.md": "Replace two local-account-bearing AppID examples with a non-secret placeholder; preserve execution rules.",
+    "futures-official-shadow/SKILL.md": "Explicit verified production and private audit paths; preserve production identity gates.",
+    "futures-recap-html/references/recap-contract.md": "Disclose unavailable optional Stage050 tool and condition its use on restoration.",
+    "playwright/SKILL.md": "Resolve wrapper from this repository.",
+    "playwright/references/cli.md": "Resolve wrapper from this repository."
+  }
+}

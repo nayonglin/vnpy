@@ -1,0 +1,4 @@
+interface:
+  display_name: "Futures Official Shadow"
+  short_description: "Check receipt-bound C9/15w production signals"
+  default_prompt: "Use $futures-official-shadow to check today's receipt-bound C9/15w production shadow and next-session orders."

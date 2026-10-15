@@ -1,3 +1,10 @@
+## 仓库 Skill 发现与迁移
+
+1. 项目 Skill 的唯一维护位置是根目录 `skills/<name>/`；`.agents/skills/<name>` 使用仓库内相对符号链接供 Codex 自动发现。新增 Skill 时同时加入发现入口，保留脚本、参考文档和许可证。总清单、迁移来源与限制见 `skills/README.md` 和 `skills/HANDOFF_MANIFEST.json`。
+2. 用户要求复盘 HTML、逐笔复盘或多周期 K 线复盘时，先读取 `skills/futures-recap-html/SKILL.md` 及其 `references/recap-contract.md`。正式影子盘查询先读实盘 SOP，再读 `skills/futures-official-shadow/SKILL.md`。其余工作按对应 Skill 的触发范围读取。
+3. 克隆只提供操作指南和随附工具，不安装 Python/Node/CTP、恢复私有数据、配置凭证、授权生产发布或启动定时任务。先验证当前机器的依赖与数据；凭证仅在本地配置，不回显、不提交 Git。
+4. Skill 中旧机器的生产绝对路径是原环境身份信息。不能将其机械替换为当前 checkout、研究目录或邮件服务目录并声称已完成生产资格认证。缺失生产 manifest、qualification、activation、receipt 或行情时，应报告具体缺项。
+
 ## 工作模式
 
 1. 有需要你可以使用多agent模式，由你来决策
