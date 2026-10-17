@@ -1,0 +1,157 @@
+{
+  "phase": "coverage_precheck",
+  "calendar_days": 4072,
+  "gate_pass_days": 394,
+  "primary_days": 1641,
+  "primary_gate_pass_days": 332,
+  "per_year": {
+    "2010": {
+      "days": 242,
+      "pass_days": 62,
+      "coverage_median": 0.9166666666666666,
+      "reasons": {
+        "sector_coverage_below_80pct": 86,
+        "coverage_below_90pct;commodity_products_below_15;valid_sectors_below_5": 61,
+        "coverage_below_90pct;sector_coverage_below_80pct": 33
+      }
+    },
+    "2011": {
+      "days": 244,
+      "pass_days": 0,
+      "coverage_median": 0.9166666666666666,
+      "reasons": {
+        "sector_coverage_below_80pct": 224,
+        "coverage_below_90pct;sector_coverage_below_80pct": 20
+      }
+    },
+    "2012": {
+      "days": 243,
+      "pass_days": 0,
+      "coverage_median": 0.8571428571428571,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 206,
+        "sector_coverage_below_80pct": 37
+      }
+    },
+    "2013": {
+      "days": 238,
+      "pass_days": 0,
+      "coverage_median": 0.8181818181818182,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 238
+      }
+    },
+    "2014": {
+      "days": 245,
+      "pass_days": 0,
+      "coverage_median": 0.8478260869565217,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 226,
+        "coverage_below_90pct": 19
+      }
+    },
+    "2015": {
+      "days": 244,
+      "pass_days": 0,
+      "coverage_median": 0.7843137254901961,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 244
+      }
+    },
+    "2016": {
+      "days": 244,
+      "pass_days": 0,
+      "coverage_median": 0.803921568627451,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 244
+      }
+    },
+    "2017": {
+      "days": 244,
+      "pass_days": 0,
+      "coverage_median": 0.82,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 244
+      }
+    },
+    "2018": {
+      "days": 243,
+      "pass_days": 0,
+      "coverage_median": 0.8490566037735849,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 243
+      }
+    },
+    "2019": {
+      "days": 244,
+      "pass_days": 0,
+      "coverage_median": 0.8596491228070176,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 227,
+        "sector_coverage_below_80pct": 17
+      }
+    },
+    "2020": {
+      "days": 243,
+      "pass_days": 0,
+      "coverage_median": 0.796875,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 243
+      }
+    },
+    "2021": {
+      "days": 243,
+      "pass_days": 10,
+      "coverage_median": 0.7164179104477612,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 233
+      }
+    },
+    "2022": {
+      "days": 242,
+      "pass_days": 54,
+      "coverage_median": 0.8405797101449275,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 154,
+        "coverage_below_90pct": 34
+      }
+    },
+    "2023": {
+      "days": 242,
+      "pass_days": 37,
+      "coverage_median": 0.8636363636363636,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 192,
+        "sector_coverage_below_80pct": 7,
+        "coverage_below_90pct": 6
+      }
+    },
+    "2024": {
+      "days": 242,
+      "pass_days": 47,
+      "coverage_median": 0.821917808219178,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 180,
+        "sector_coverage_below_80pct": 15
+      }
+    },
+    "2025": {
+      "days": 243,
+      "pass_days": 97,
+      "coverage_median": 0.9367088607594937,
+      "reasons": {
+        "sector_coverage_below_80pct": 107,
+        "coverage_below_90pct;sector_coverage_below_80pct": 39
+      }
+    },
+    "2026": {
+      "days": 186,
+      "pass_days": 87,
+      "coverage_median": 0.926829268292683,
+      "reasons": {
+        "coverage_below_90pct;sector_coverage_below_80pct": 56,
+        "sector_coverage_below_80pct": 43
+      }
+    }
+  }
+}

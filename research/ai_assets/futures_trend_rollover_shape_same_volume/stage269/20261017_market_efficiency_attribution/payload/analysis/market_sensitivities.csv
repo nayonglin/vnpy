@@ -1,0 +1,7 @@
+metric,n,pearson_future20,spearman_future20,scope
+market_er20,122,-0.04621257838725338,-0.07108962173414274,descriptive same main certified/classified anchors; no independent auxiliary regrouping
+market_er120,17,-0.7519415330943628,-0.5661764705882354,descriptive same main certified/classified anchors; no independent auxiliary regrouping
+commodity_er60,122,0.18736122748268683,0.11901272084039094,descriptive same main certified/classified anchors; no independent auxiliary regrouping
+sector_equal_er60,122,0.37901501558372763,0.24838227892296133,descriptive same main certified/classified anchors; no independent auxiliary regrouping
+outside_pool_er60,122,0.17856868753777747,0.12254323541895705,descriptive same main certified/classified anchors; no independent auxiliary regrouping
+own_pool_er60,122,0.19522233983534268,0.12469856828901801,descriptive same main certified/classified anchors; no independent auxiliary regrouping

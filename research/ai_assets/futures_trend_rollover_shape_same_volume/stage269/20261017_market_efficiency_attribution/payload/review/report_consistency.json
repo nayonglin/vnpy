@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-10-17T22:07:08.481850+08:00",
+  "status": "PASS_REPORT_AND_FIGURE_CONSISTENCY",
+  "P0": 0,
+  "P1": 0,
+  "P2_existing": 2,
+  "data_recomputed": false,
+  "statistics_reestimated": false,
+  "report": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/stages/20261017_2204_stage269_market_efficiency_attribution_result.md",
+  "report_sha256": "103c0393e0f916041c99412f795a2c93ac9f3abbea986d6d271752a3b7366ac2",
+  "figure_hash_checks": {
+    "01_coverage_efficiency_equity.png": true,
+    "02_future20_groups_ci.png": true,
+    "03_annual_and_leave_year_out.png": true,
+    "04_controls_episode_mechanism.png": true
+  },
+  "figure_input_hash_checks": {
+    "market/market_daily.csv": true,
+    "analysis/joined_daily.csv": true,
+    "analysis/analysis_summary.json": true,
+    "analysis/primary_block60.json": true,
+    "analysis/annual_effects.csv": true,
+    "analysis/leave_year_out.csv": true,
+    "analysis/regression_summary.json": true,
+    "analysis/episode_groups.csv": true,
+    "analysis/episodes.csv": true
+  },
+  "figure_manifest_sha256": "c8fb9acb02d1bc36d5f266d93137c132818058d12907680ded8e1919355e3cd7",
+  "four_figures_visually_inspected": true,
+  "scope": "Read-only prose, numerical-unit, omission/censoring and visual consistency against previously reviewed artifacts; no data or inference rerun",
+  "minor_wording_note": "Group-environment exposure means describe all classified anchors (high62 including20 immature), while the forward-outcome main sample has high42; make the all-classified scope explicit if editing the sentence. Does not change the verdict or add a computation finding."
+}

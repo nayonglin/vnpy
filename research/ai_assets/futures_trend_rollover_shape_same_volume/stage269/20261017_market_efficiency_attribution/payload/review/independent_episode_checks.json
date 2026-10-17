@@ -1,0 +1,28 @@
+{
+  "n": 319,
+  "n_closed": 318,
+  "n_open": 1,
+  "classified": 28,
+  "risk_matches_actual_field": true,
+  "half_r_stopped": 137,
+  "retries": 84,
+  "root814": [
+    {
+      "root_id": 814,
+      "first_trade_id": "BACKTESTING.814",
+      "signal_order_id": "BACKTESTING.561",
+      "entry_date": "2026-10-14",
+      "asof_date": "2026-10-13",
+      "initial_risk": 20000.0,
+      "is_closed": false,
+      "is_open": true,
+      "net_pnl": null,
+      "net_R": null,
+      "open_net_mtm": -6000.0,
+      "half_r_stop": true,
+      "has_retry": true,
+      "retry_pnl": 4800.0,
+      "regime": "high"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "calendar_completeness": true,
+  "calendar_days": 1641,
+  "mature_labels": 1621,
+  "immature_tail": 20,
+  "classified_mature_rows": 122,
+  "groups": [
+    {
+      "regime": "low",
+      "n": 33,
+      "mean": -0.06493918190889841,
+      "profit_probability": 0.30303030303030304,
+      "min_date": "2025-03-11",
+      "max_date": "2026-09-01"
+    },
+    {
+      "regime": "mid",
+      "n": 47,
+      "mean": 0.023401018680636352,
+      "profit_probability": 0.6170212765957447,
+      "min_date": "2025-03-13",
+      "max_date": "2026-09-07"
+    },
+    {
+      "regime": "high",
+      "n": 42,
+      "mean": -0.006755949325115423,
+      "profit_probability": 0.2619047619047619,
+      "min_date": "2025-03-20",
+      "max_date": "2026-09-08"
+    }
+  ],
+  "return_difference": 0.05818323258378299,
+  "profit_probability_difference": -0.04112554112554112,
+  "bootstrap_sentinels": [
+    {
+      "block": 60,
+      "repeats": 2000,
+      "valid_repeats": 1980,
+      "return_ci": [
+        -0.14557985364032822,
+        0.1504969631559124
+      ],
+      "profit_probability_ci": [
+        -0.5555830039525692,
+        0.3111742424242423
+      ],
+      "method": "independent geometric-run stationary bootstrap, same fixed full calendar and seed42; RNG consumption intentionally differs"
+    },
+    {
+      "block": 120,
+      "repeats": 2000,
+      "valid_repeats": 1957,
+      "return_ci": [
+        -0.14060360221357712,
+        0.14540842668345805
+      ],
+      "profit_probability_ci": [
+        -0.5398319327731093,
+        0.2908080808080791
+      ],
+      "method": "independent geometric-run stationary bootstrap, same fixed full calendar and seed42; RNG consumption intentionally differs"
+    }
+  ]
+}

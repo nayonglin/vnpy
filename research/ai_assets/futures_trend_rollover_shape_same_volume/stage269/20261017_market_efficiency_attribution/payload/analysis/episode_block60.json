@@ -1,0 +1,31 @@
+{
+  "n_calendar": 1641,
+  "n_episodes": 319,
+  "n_closed": 318,
+  "n_open": 1,
+  "n_missing_entry_date": 0,
+  "n_classified": 28,
+  "n_low_R": 9,
+  "n_high_R": 9,
+  "n_low_closed_pnl": 9,
+  "n_high_closed_pnl": 9,
+  "mean_R_difference": -1.8137656245663836,
+  "closed_win_probability_difference": -0.2222222222222222,
+  "mean_R_ci": [
+    -4.378125989237102,
+    2.762095425681416
+  ],
+  "win_probability_ci": [
+    -0.42857142857142855,
+    0.25
+  ],
+  "bootstrap_valid_R_repeats": 1898,
+  "bootstrap_valid_win_repeats": 1898,
+  "bootstrap_invalid_R_repeats": 102,
+  "bootstrap_invalid_win_repeats": 102,
+  "block": 60,
+  "repeats": 2000,
+  "seed": 42,
+  "ci_method": "95% percentile stationary source-day block bootstrap of joint sumR/count/wins/closed-count; zero-episode days retained",
+  "scope": "auxiliary sparse historical subset description; open episodes censored; cannot rescue main hypothesis"
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "logical_name": "daily.csv",
+    "actual_sha256": "d7e0f569e8fca40df02493fb075f6ab323fc9ae6f351cf54ddc36529ac806b89",
+    "matches_frozen": true,
+    "bytes": 3627414
+  },
+  {
+    "logical_name": "trades.csv",
+    "actual_sha256": "97377e36ffa74f5c12dffa1cec218894f9ed86401e70aede7aef3208024ea6c6",
+    "matches_frozen": true,
+    "bytes": 357024
+  },
+  {
+    "logical_name": "positions.csv",
+    "actual_sha256": "cd4ee2ad2bfc6e952c84714bb9db31e1b1fd806e1a44c3408b340869f5935684",
+    "matches_frozen": true,
+    "bytes": 224937851
+  },
+  {
+    "logical_name": "entry_candidates.csv",
+    "actual_sha256": "80db61b6906cb4c19b822fed543ad1ef6ba2a2c90940a0523aab04f212e8848e",
+    "matches_frozen": true,
+    "bytes": 1512227
+  },
+  {
+    "logical_name": "entry_risk.csv",
+    "actual_sha256": "8180f4fef438a1ff39852f8680f9d5fc5cf8cdf8398e2523867a545c822d1d53",
+    "matches_frozen": true,
+    "bytes": 449904
+  },
+  {
+    "logical_name": "effective_parameters.json",
+    "actual_sha256": "e0b45b2f62bc6b5f0b1c49f067c58b7635a5b0145764a9fa77f1348b785d7268",
+    "matches_frozen": true,
+    "bytes": 83553
+  },
+  {
+    "logical_name": "run_provenance.json",
+    "actual_sha256": "5e43d29111219b7690995285caf6d8555aae6ca265ea7a617dd09b96a66647bc",
+    "matches_frozen": true,
+    "bytes": 4249
+  },
+  {
+    "logical_name": "code_overlay.json",
+    "actual_sha256": "8351611d2af9b2a2bcb61deb29e982ee7ff970080d4d00d26ee644c4993630b9",
+    "matches_frozen": true,
+    "bytes": 1664
+  },
+  {
+    "logical_name": "statistics_audit/complete_episodes.csv",
+    "actual_sha256": "3a764cdabdf4ef37a5e9c48d9b930000eb807964740c1535ecab45657f688291",
+    "matches_frozen": true,
+    "bytes": 13633
+  },
+  {
+    "logical_name": "statistics_audit/open_episodes.csv",
+    "actual_sha256": "369222a5faa0460e844d3f072316b945d3ce9ca5c95a55a01ef126cea1e127aa",
+    "matches_frozen": true,
+    "bytes": 88
+  },
+  {
+    "logical_name": "statistics_audit/summary.json",
+    "actual_sha256": "0f78e5e508b2be934b51bf75f38087b51b864b1b0cd055ee344c52fcc8cb7597",
+    "matches_frozen": true,
+    "bytes": 3839
+  },
+  {
+    "logical_name": "stage266_clean_daily.sqlite",
+    "actual_sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "matches_frozen": true,
+    "bytes": 378552320
+  }
+]

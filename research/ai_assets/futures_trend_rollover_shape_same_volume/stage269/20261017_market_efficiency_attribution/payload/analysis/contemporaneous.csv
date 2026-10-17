@@ -1,0 +1,5 @@
+metric,n,pearson,spearman,scope
+market_er60,332,-0.08028987135662491,-0.07745838655362085,same trailing60 window; explanatory only
+commodity_er60,332,-0.08363501702070686,-0.14348135532653714,same trailing60 window; explanatory only
+sector_equal_er60,332,-0.0009472627003106344,-0.0227170340948854,same trailing60 window; explanatory only
+outside_pool_er60,332,-0.03436755370777076,0.0031562094127037155,same trailing60 window; explanatory only

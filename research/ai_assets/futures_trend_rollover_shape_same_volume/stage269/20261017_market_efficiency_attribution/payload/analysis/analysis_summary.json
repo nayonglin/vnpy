@@ -1,0 +1,89 @@
+{
+  "stage": "stage269",
+  "recorded_at": "2026-10-17T22:01:31.920223+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "verdict": "INSUFFICIENT_CROSS_CYCLE_MARKET_COVERAGE",
+  "financial_replays": 0,
+  "AI_training": 0,
+  "downloads": 0,
+  "market_feature_computation_runs": 1,
+  "formal_parameters": "C9/150000; AI10 nonfu+fixed fu; half-R stop on; retry once",
+  "baseline_scope": "Stage251 A_final3 accepted correctness overlay, formal parameters; not production qualification",
+  "source_calendar_days": 1641,
+  "market_gate_days": 332,
+  "classified_days": 142,
+  "mature_classified_days": 122,
+  "nonoverlap20_qualified_anchors": 7,
+  "coverage_by_year": [
+    {
+      "year": 2020,
+      "calendar_days": 243,
+      "gate_days": 0,
+      "classified_days": 0,
+      "mature_classified_days": 0
+    },
+    {
+      "year": 2021,
+      "calendar_days": 243,
+      "gate_days": 10,
+      "classified_days": 0,
+      "mature_classified_days": 0
+    },
+    {
+      "year": 2022,
+      "calendar_days": 242,
+      "gate_days": 54,
+      "classified_days": 0,
+      "mature_classified_days": 0
+    },
+    {
+      "year": 2023,
+      "calendar_days": 242,
+      "gate_days": 37,
+      "classified_days": 0,
+      "mature_classified_days": 0
+    },
+    {
+      "year": 2024,
+      "calendar_days": 242,
+      "gate_days": 47,
+      "classified_days": 0,
+      "mature_classified_days": 0
+    },
+    {
+      "year": 2025,
+      "calendar_days": 243,
+      "gate_days": 97,
+      "classified_days": 55,
+      "mature_classified_days": 55
+    },
+    {
+      "year": 2026,
+      "calendar_days": 186,
+      "gate_days": 87,
+      "classified_days": 87,
+      "mature_classified_days": 67
+    }
+  ],
+  "primary_return_difference": 0.05818323258378299,
+  "primary_return_ci": [
+    -0.14153940222536582,
+    0.14612451836584917
+  ],
+  "primary_probability_difference": -0.04112554112554112,
+  "primary_probability_ci": [
+    -0.5346428571428571,
+    0.2551802299867314
+  ],
+  "episode_rows": 319,
+  "episode_closed": 318,
+  "episode_open": 1,
+  "episode_classified": 28,
+  "episode_risk_unmatched": 0,
+  "market_daily_sha256": "52b5adfd9552564cf7c8bcb3b81ea819000f2d9446bffb820c70e318e277b0a4",
+  "daily_sha256": "d7e0f569e8fca40df02493fb075f6ab323fc9ae6f351cf54ddc36529ac806b89",
+  "driver_sha256": "5982816fa5961196d727cbaca6b8ee3b096f2ffbf71e3e430e82cc9294e8aa7f",
+  "main_gate_unchanged": true,
+  "selection_warning": "All source periods previously seen; sparse conditional association cannot establish general rule or causality",
+  "next_step": "Stop this hypothesis stage; a future liquid-universe study needs independent predeclaration, no result-driven gate relaxation"
+}

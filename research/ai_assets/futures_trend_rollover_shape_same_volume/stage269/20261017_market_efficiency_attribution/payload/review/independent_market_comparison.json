@@ -1,0 +1,53 @@
+{
+  "source_sentinel_rows": 470,
+  "source_sentinel_numerics": {
+    "r": {
+      "mismatches": 0,
+      "max_absolute_error": 1.0061396160665481e-16
+    },
+    "er20": {
+      "mismatches": 0,
+      "max_absolute_error": 1.4988010832439613e-15
+    },
+    "er60": {
+      "mismatches": 0,
+      "max_absolute_error": 4.0245584642661925e-16
+    },
+    "er120": {
+      "mismatches": 0,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    "active_mismatches": 0,
+    "reference_epoch_mismatches": 0
+  },
+  "all_calendar_aggregation_mismatches": {
+    "market_er60": 0,
+    "raw_market_er60": 0,
+    "active_products": 0,
+    "valid_products": 0,
+    "coverage_ratio": 0,
+    "gate_pass": 0
+  },
+  "prior_only_rank_checks": {
+    "percentile_mismatches": 0,
+    "regime_mismatches": 0
+  },
+  "output_hash_checks": {
+    "product_sectors.json": true,
+    "product_features.csv.gz": true,
+    "market_daily.csv": true,
+    "sector_daily.csv": true,
+    "coverage_precheck.json": true,
+    "coverage_precheck.csv": true,
+    "coverage_by_product.csv": true,
+    "coverage_by_year_product.csv": true,
+    "coverage_by_year_sector.csv": true,
+    "missing_return_days.csv.gz": true
+  },
+  "fixed_sector_count": 8,
+  "mapping_has_94_products": true,
+  "main_source_days": 1641,
+  "main_gate_pass_days": 332,
+  "main_classified_days": 142,
+  "first_classified": "2025-03-11"
+}

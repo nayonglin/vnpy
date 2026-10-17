@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-10-17T22:07:08.481850+08:00",
+  "review_status": "PASS_COMPUTATION_INSUFFICIENT_HYPOTHESIS_EVIDENCE",
+  "P0": 0,
+  "P1": 0,
+  "P2": 2,
+  "financial_replays": 0,
+  "AI_training": 0,
+  "downloads": 0,
+  "full_stage266_QA_repeats": 0,
+  "review_script_sha256": "4b0b39d35195d21a2c24d9bf76cf1b0d819ed245233b37c309f2472541779a41",
+  "review_artifact_sha256": {
+    "independent_analysis_comparison.json": "ea5c3e7be148ce236ad3f04ca1b7a2b7467802ab9af15a1c8ef74079bd79edb2",
+    "independent_episode_checks.json": "61a30737681837ccf685167ae960b737411b68ac725888bbcfc1cb0bffa929cb",
+    "independent_episode_sentinels.csv": "900bcb1f1fe4cfeacc16c9636d47554512e9c5cedb85ddb65b528bd15eecef54",
+    "independent_market_comparison.json": "e9f29a9d216b309d3358a473749736f618f54c1da2d7068508ca789687d3fcc9",
+    "independent_market_sentinels.csv": "b9064d112a26b031e4fb3aecc87c39a786eba6f4d0b3c31503c5bbe15149a6b6",
+    "independent_outcome_sentinels.csv": "5bd659d345909b8be5b2f8766ed1198fb21228acf684e600af6a85bbc62cd198",
+    "independent_preliminary_review.json": "10882111295eccea831edf312a1042c489c07c2248ff8bcfff9cc44b5aa33491",
+    "independent_review.md": "ba34744cee10c92b8e491a1c68a7b3cbd85fe755f4bbe6dd0c5378284a268ddc",
+    "independent_statistics_sentinels.json": "a7566858f8604332fae5cbda520edda535b281d2f246be49e894d8829cbe7536",
+    "preliminary_source_fingerprints.json": "bf9fe15053b9bdeaa0b6e44ed3f0bbff018fc9d73b2b8a57caf9981498215282",
+    "report_consistency.json": "31f4507ec82a643987aa03534a3d086d2113331fd38a24bb2b6f010bc154f3cd",
+    "report_consistency.md": "69c073110a3b6fea449756ca3156e3bea63e3a58b50db6cccf2b0adcb6c0208e"
+  },
+  "claim_scope": "Computational source identity, causal timing, frozen gates, joint-date inference and mother episodes, plus read-only stage report and four-PNG numerical/visual consistency",
+  "report_and_figure_consistency": "PASS; see report_consistency.json"
+}

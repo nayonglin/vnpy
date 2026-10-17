@@ -1,0 +1,15 @@
+{
+  "financial_replays": 0,
+  "market_feature_computation_runs": 1,
+  "completed_attribution_runs": 1,
+  "pre_statistics_attempt_rejected": 1,
+  "rejection": "RQ YYYYMMDD int calendar parsed as ns; explicit calendar guard failed before statistics; parse_calendar fixed and tested",
+  "bootstrap_main_block": 60,
+  "bootstrap_sensitivity_block": 120,
+  "bootstrap_repeats": 2000,
+  "seed": 42,
+  "targeted_tests_passed": 37,
+  "source_db_not_rebuilt": true,
+  "downloads": 0,
+  "training_runs": 0
+}

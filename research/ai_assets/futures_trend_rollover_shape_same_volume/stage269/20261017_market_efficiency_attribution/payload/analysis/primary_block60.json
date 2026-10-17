@@ -1,0 +1,87 @@
+{
+  "outcome": "future20_return",
+  "n_calendar": 1641,
+  "n_labeled": 122,
+  "n_low": 33,
+  "n_mid": 47,
+  "n_high": 42,
+  "return_difference": 0.05818323258378299,
+  "profit_probability_difference": -0.04112554112554112,
+  "groups": [
+    {
+      "regime": "low",
+      "n_rows": 33,
+      "n": 33,
+      "mean": -0.06493918190889841,
+      "median": -0.05738008288315222,
+      "profit_probability": 0.30303030303030304,
+      "mean_ci": [
+        -0.15005568896842147,
+        0.1740565363204702
+      ],
+      "profit_probability_ci": [
+        0.06451612903225806,
+        0.9615384615384616
+      ]
+    },
+    {
+      "regime": "mid",
+      "n_rows": 47,
+      "n": 47,
+      "mean": 0.023401018680636352,
+      "median": 0.007743633814044193,
+      "profit_probability": 0.6170212765957447,
+      "mean_ci": [
+        -0.04083840967395976,
+        0.14219523507920603
+      ],
+      "profit_probability_ci": [
+        0.2678643724696356,
+        0.9090909090909091
+      ]
+    },
+    {
+      "regime": "high",
+      "n_rows": 62,
+      "n": 42,
+      "mean": -0.006755949325115423,
+      "median": -0.021225066873797216,
+      "profit_probability": 0.2619047619047619,
+      "mean_ci": [
+        -0.028321624607528108,
+        0.027931840926842484
+      ],
+      "profit_probability_ci": [
+        0.024761904761904766,
+        0.6119658119658122
+      ]
+    }
+  ],
+  "approx_60day_blocks": 27.35,
+  "approx_120day_blocks": 13.675,
+  "nonoverlap20_n": 7,
+  "return_ci": [
+    -0.14153940222536582,
+    0.14612451836584917
+  ],
+  "return_p_null_centered": 0.4161616161616162,
+  "profit_probability_ci": [
+    -0.5346428571428571,
+    0.2551802299867314
+  ],
+  "profit_probability_p_null_centered": 0.804040404040404,
+  "holm_pvalues": [
+    0.8323232323232324,
+    0.8323232323232324
+  ],
+  "block": 60,
+  "repeats": 2000,
+  "seed": 42,
+  "bootstrap_valid_repeats": 1979,
+  "bootstrap_invalid_repeats": 21,
+  "ci_method": "95% percentile stationary block bootstrap; fixed calendar rows, joint sample",
+  "p_value_method": "approximate two-sided null-centered bootstrap error tail; (1+count(abs(theta_star-theta_hat)>=abs(theta_hat)))/(B_valid+1)",
+  "missing_calendar_policy": "all calendar rows sampled jointly before complete-label masking; no compressed dropna calendar",
+  "evidence_status": "INSUFFICIENT_CROSS_CYCLE_MARKET_COVERAGE",
+  "inference_limitation": "Overlapping sparse historical anchors concentrated in 2025-2026; conditional block intervals, not independent observations or fresh OOS."
+}

@@ -1,0 +1,34 @@
+{
+  "recorded_at": "2026-10-17T22:06:22.433612+08:00",
+  "all_four_figures_visually_inspected": true,
+  "findings": "四图中文可读，单位/样本/区间与缓存一致；年度缺失无零值替代。图4长标签初版左缘裁切，增大边距后复核已修复。",
+  "pngs": [
+    {
+      "file": "01_coverage_efficiency_equity.png",
+      "width": 2880,
+      "height": 1980,
+      "sha256": "833030fb3fe8137826e4224c7857fbf73bac6bf4d94cd3a11f2f4529334e693c"
+    },
+    {
+      "file": "02_future20_groups_ci.png",
+      "width": 2880,
+      "height": 1620,
+      "sha256": "d76e43ea4ba06cd022371346e9b9535a528510b707508e24300aaa4ee1ca0c2e"
+    },
+    {
+      "file": "03_annual_and_leave_year_out.png",
+      "width": 2880,
+      "height": 2520,
+      "sha256": "8ccefe79f40676b6830d2bb576dc019af5f343a6ce5ee86023e965d0d82d352e"
+    },
+    {
+      "file": "04_controls_episode_mechanism.png",
+      "width": 3060,
+      "height": 2160,
+      "sha256": "688f9a9f4a9d1d41041a856ab4eb6f4dd13b4644ce1a551b0c78769aff1da5ae"
+    }
+  ],
+  "cache_inputs_unchanged": true,
+  "financial_replays": 0,
+  "statistics_reestimated": false
+}

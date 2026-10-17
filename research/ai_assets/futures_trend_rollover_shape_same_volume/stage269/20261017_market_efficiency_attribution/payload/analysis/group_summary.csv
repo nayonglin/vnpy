@@ -1,0 +1,13 @@
+regime,n_rows,n,mean,median,profit_probability,outcome,profit_probability_scope
+low,33,33,-0.06493918190889841,-0.05738008288315222,0.30303030303030304,future20_return,"original future20 net return, same label"
+mid,47,47,0.023401018680636352,0.007743633814044193,0.6170212765957447,future20_return,"original future20 net return, same label"
+high,62,42,-0.006755949325115423,-0.021225066873797216,0.2619047619047619,future20_return,"original future20 net return, same label"
+low,33,33,-207611.21212121207,-157360.0,0.30303030303030304,future20_cash,"original future20 net return, same label"
+mid,47,47,58048.93617021281,29240.0,0.6170212765957447,future20_cash,"original future20 net return, same label"
+high,62,42,-29148.33333333332,-63480.0,0.2619047619047619,future20_cash,"original future20 net return, same label"
+low,33,33,-0.9375005824211915,-0.8793231394644461,0.30303030303030304,normalized_future20_return,"original future20 net return, same label"
+mid,47,47,0.36916521540166947,0.07340727589067483,0.6170212765957447,normalized_future20_return,"original future20 net return, same label"
+high,62,42,-0.08981439323797258,-0.490803190451219,0.2619047619047619,normalized_future20_return,"original future20 net return, same label"
+low,33,33,-0.07450641081100835,-0.06702831912555812,0.30303030303030304,future20_return_extra_slippage,"original future20 net return, same label"
+mid,47,47,0.017325678648288753,0.005447312384107136,0.6170212765957447,future20_return_extra_slippage,"original future20 net return, same label"
+high,62,42,-0.012109244379190556,-0.0258273223280663,0.2619047619047619,future20_return_extra_slippage,"original future20 net return, same label"

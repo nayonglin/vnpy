@@ -1,0 +1,40 @@
+{
+  "scope": "already-seen retrospective appendix; not a tuning or unseen OOS target",
+  "outcome": "future20_return",
+  "n_calendar": 1641,
+  "n_labeled": 84,
+  "n_low": 22,
+  "n_mid": 29,
+  "n_high": 33,
+  "return_difference": 0.11866123888884206,
+  "profit_probability_difference": 0.015151515151515166,
+  "groups": [
+    {
+      "regime": "low",
+      "n_rows": 22,
+      "n": 22,
+      "mean": -0.1291141939646618,
+      "median": -0.1728839651094935,
+      "profit_probability": 0.13636363636363635
+    },
+    {
+      "regime": "mid",
+      "n_rows": 29,
+      "n": 29,
+      "mean": -0.008657315598432677,
+      "median": 0.0012215202915313,
+      "profit_probability": 0.5172413793103449
+    },
+    {
+      "regime": "high",
+      "n_rows": 33,
+      "n": 33,
+      "mean": -0.010452955075819748,
+      "median": -0.022755991461126,
+      "profit_probability": 0.15151515151515152
+    }
+  ],
+  "approx_60day_blocks": 27.35,
+  "approx_120day_blocks": 13.675,
+  "nonoverlap20_n": 5
+}

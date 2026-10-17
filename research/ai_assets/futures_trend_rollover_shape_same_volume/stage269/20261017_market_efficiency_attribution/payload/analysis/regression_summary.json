@@ -1,0 +1,133 @@
+[
+  {
+    "model": 0,
+    "x": "er60_expanding_pct",
+    "outcome": "future20_return",
+    "controls": [],
+    "year_fe": true,
+    "n": 122,
+    "n_calendar": 1641,
+    "n_missing_joint": 1519,
+    "beta": 0.10040283478188529,
+    "beta_per_sd": 0.02662061580919724,
+    "rank": 3,
+    "coefficients": {
+      "er60_expanding_pct": 0.10040283478188529,
+      "intercept": -0.01956889633485668,
+      "year_2026": -0.0789714705866262
+    },
+    "dropped_constant_controls": [],
+    "beta_units": "outcome per +1.0 original x unit; x percentile uses [0,1] units",
+    "ci_method": "not computed; no iid standard errors used for overlapping outcomes",
+    "status": "ok",
+    "reference_year": 2025,
+    "n_parameters": 3,
+    "condition_number_standardized": 2.7768581930317078,
+    "r_squared": 0.20926952535436383
+  },
+  {
+    "model": 1,
+    "x": "er60_expanding_pct",
+    "outcome": "future20_return",
+    "controls": [
+      "market_vol60"
+    ],
+    "year_fe": true,
+    "n": 122,
+    "n_calendar": 1641,
+    "n_missing_joint": 1519,
+    "beta": 0.09838347078255244,
+    "beta_per_sd": 0.026085205496112516,
+    "rank": 4,
+    "coefficients": {
+      "er60_expanding_pct": 0.09838347078255244,
+      "market_vol60": -3.188948639645276,
+      "intercept": 0.4906399041373227,
+      "year_2026": 0.05166315834464784
+    },
+    "dropped_constant_controls": [],
+    "beta_units": "outcome per +1.0 original x unit; x percentile uses [0,1] units",
+    "ci_method": "not computed; no iid standard errors used for overlapping outcomes",
+    "status": "ok",
+    "reference_year": 2025,
+    "n_parameters": 4,
+    "condition_number_standardized": 10.39941171320389,
+    "r_squared": 0.24378588305499893
+  },
+  {
+    "model": 2,
+    "x": "er60_expanding_pct",
+    "outcome": "future20_return",
+    "controls": [
+      "market_vol60",
+      "market_corr60",
+      "direction_breadth60",
+      "own_pool_er60"
+    ],
+    "year_fe": true,
+    "n": 122,
+    "n_calendar": 1641,
+    "n_missing_joint": 1519,
+    "beta": -0.0033996795453680815,
+    "beta_per_sd": -0.0009013845400703605,
+    "rank": 7,
+    "coefficients": {
+      "er60_expanding_pct": -0.0033996795453680815,
+      "market_vol60": -3.5076195032337014,
+      "market_corr60": -2.3712542940080636,
+      "direction_breadth60": 0.24887377781478986,
+      "own_pool_er60": 0.02601260976440389,
+      "intercept": 0.9381380639763385,
+      "year_2026": -0.02623612434574053
+    },
+    "dropped_constant_controls": [],
+    "beta_units": "outcome per +1.0 original x unit; x percentile uses [0,1] units",
+    "ci_method": "not computed; no iid standard errors used for overlapping outcomes",
+    "status": "ok",
+    "reference_year": 2025,
+    "n_parameters": 7,
+    "condition_number_standardized": 13.702153659095575,
+    "r_squared": 0.38824578384580766
+  },
+  {
+    "model": 3,
+    "x": "er60_expanding_pct",
+    "outcome": "future20_return",
+    "controls": [
+      "market_vol60",
+      "market_corr60",
+      "direction_breadth60",
+      "own_pool_er60",
+      "past60_vol",
+      "broker10_margin_to_equity_pct",
+      "c3_active_products"
+    ],
+    "year_fe": true,
+    "n": 122,
+    "n_calendar": 1641,
+    "n_missing_joint": 1519,
+    "beta": 0.012429701324589228,
+    "beta_per_sd": 0.0032955872640824937,
+    "rank": 10,
+    "coefficients": {
+      "er60_expanding_pct": 0.012429701324589228,
+      "market_vol60": -1.4705151935430694,
+      "market_corr60": -0.6681523473135418,
+      "direction_breadth60": 0.22618038202720966,
+      "own_pool_er60": -0.4230181407073551,
+      "past60_vol": -4.434655325828231,
+      "broker10_margin_to_equity_pct": 0.0032998499780459104,
+      "c3_active_products": -0.08548391404239501,
+      "intercept": 0.5111495547115263,
+      "year_2026": -0.1291743693971505
+    },
+    "dropped_constant_controls": [],
+    "beta_units": "outcome per +1.0 original x unit; x percentile uses [0,1] units",
+    "ci_method": "not computed; no iid standard errors used for overlapping outcomes",
+    "status": "ok",
+    "reference_year": 2025,
+    "n_parameters": 10,
+    "condition_number_standardized": 19.54319457462716,
+    "r_squared": 0.5274421645101577
+  }
+]

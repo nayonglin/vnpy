@@ -1,0 +1,24 @@
+{
+  "source_fingerprints_match": true,
+  "source_trade_checks": {
+    "daily_rows": 1641,
+    "fills": 816,
+    "closed_parent_episodes": 318,
+    "closed_cycles": 402,
+    "retries": 84,
+    "open_parent_episodes": 1,
+    "open_parent_net_mtm": -6000.0,
+    "source_equity_end": 2262595.0000000023,
+    "daily_net_reconciles_to_equity": true,
+    "closed_cycles_reconcile_to_parent": true
+  },
+  "sentinel_dates": [
+    "2020-01-02",
+    "2021-03-01",
+    "2023-06-30",
+    "2025-09-01",
+    "2026-10-14"
+  ],
+  "sentinel_rows": 470,
+  "scope": "five fixed-date cross sections, read-only source windows; no financial replay or training"
+}

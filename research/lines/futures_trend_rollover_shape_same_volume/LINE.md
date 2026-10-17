@@ -1,12 +1,13 @@
 # 主力合约换月形态确认与风控容量重开研究线
 
 - line_id：`futures_trend_rollover_shape_same_volume`
-- 当前状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。m0001生产预审发现身份P0后已停止并恢复旧生产；m0002虽修复身份/可移植性，但远端一致性审计发现历史Stage037配置未进入关键物料清单，未安装生产；补齐后的m0003已在晋升工作区激活，远端master、生产资格与Stage948仍待闭环。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
-- 正式候选基线：策略版本 `ai_top10_plus_fu_official_live_v1`，ruleset `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `f9e42b9ea2967e31aaa34f595c05c0798bbf5e0b`，不可变物料 `m0003_20260830T072335+0800_f9e42b9ea296`，release commit `ae7e8172561d5faef4f5d1a95a6beb43436b6e41`，activation commit `9218188c8563f07de801b646aa093fac9d05f2e5`。m0001保留为被生产预审P0否决的不可变历史，m0002保留为被远端物料闭包审计取代的历史，二者均不得用于安装。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
+- 当前研究状态（2026-10-17 22:04 CST）：Stage269市场效率归因完成，跨周期覆盖不足，停止ER择时扫描；分支`codex/ai-training-data-expansion`。最新证据见文末Stage269，早期晋升字段为历史记录，不代表当前生产事实。
+- Stage065历史晋升状态：Stage065 正按用户 operator override 晋升；ruleset 保持 Stage037，AI 选品改为 Top10 非fu+固定 `fu.SHFE` 共11品种。m0001生产预审发现身份P0后已停止并恢复旧生产；m0002虽修复身份/可移植性，但远端一致性审计发现历史Stage037配置未进入关键物料清单，未安装生产；补齐后的m0003已在晋升工作区激活，远端master、生产资格与Stage948仍待闭环。Stage061全周期、Stage063固定多周期和Stage064随机多周期的成本、回撤与broker硬失败原样保留，不能把人工授权写成自然门通过。
+- Stage065历史候选基线：策略版本 `ai_top10_plus_fu_official_live_v1`，ruleset `stage037_stage034_long_short_mirror_hard_block_v1`；来源提交 `f9e42b9ea2967e31aaa34f595c05c0798bbf5e0b`，不可变物料 `m0003_20260830T072335+0800_f9e42b9ea296`，release commit `ae7e8172561d5faef4f5d1a95a6beb43436b6e41`，activation commit `9218188c8563f07de801b646aa093fac9d05f2e5`。m0001保留为被生产预审P0否决的不可变历史，m0002保留为被远端物料闭包审计取代的历史，二者均不得用于安装。完成状态仍只由远端 master、生产 HEAD、CURRENT、manifest、资格与激活回执六身份一致证明。
 - 正式策略：`ai_top10_plus_fu_official_live_v1`
 - 正式物料策略：任何正式源码、配置、Skill、AI 决策资产或治理字节变化都必须新建不可变 release；本版为新策略命名空间 `m0001`，不得覆盖 Stage037 m0016 或其历史AI资产。
-- 工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu`
-- 分支：`codex/promote-stage065-top10-fu-official`
+- Stage065历史工作区：`/Users/bytedance/Desktop/person/vnpy/.worktrees/stage056-ai-top14-plus-fu`
+- Stage065历史分支：`codex/promote-stage065-top10-fu-official`
 
 ## 结构性假设
 
@@ -386,3 +387,12 @@
 - 以逐品种同合约真实log收益ER60聚合全市场中位数；代表合约按前日OI/成交量选，避免换月跳空与5月后旧全市场映射窄到19池。严格覆盖、商品only/板块等权/剔除正式19池对照在看PnL前冻结；20/120只作敏感性。
 - 严格区分同期60日归因和昨日ER对未来完整20日净收益及同标签盈利概率；固定历史扩展三等分、年份/波动/暴露/自身效率控制、60/120日联合时间块CI，合并retry成episode并披露未平仓。既有Stage017/018降仓规则未过稳健性，不再次扫阈值救参。
 - 当前只是可证伪方案，不是支持假说的结果；无新增按结果选参型过拟合，但旧研究选择偏差保留。继续价值在低成本判断解释与滞后信息是否不同，首轮只联表现成账本，不自动改正式策略或启动新引擎。详细协议：`stages/20261017_2134_stage268_market_efficiency_validation_design.md`。
+
+## Stage269 市场效率归因：证据不足后停止（2026-10-17 22:04 CST）
+
+- 严格复用Stage251 A_final3正式参数修复账本，市场特征1次、完成归因1次，金融引擎/训练/下载均0。首调用RQ整数日历格式被显式guard拒绝，在统计前定位修复，没有重跑市场或金融。
+- 固定覆盖门下1641日仅332合格、252此前观测分组后142，未来标签成熟122=低33/中47/高42，全部2025—2026；2020—2024无法跨周期验证，每20日固定锚点仅7合格。薄交易及严格60日窗口是覆盖限制，未放宽门或事后删品种。
+- 未来20日低/中/高均值−6.4939%/+2.3401%/−0.6756%，盈利概率30.30%/61.70%/26.19%；高低收益差+5.8183pp、60日块CI[−14.1539,+14.6125]pp，概率差−4.1126pp、CI[−53.4643,+25.5180]pp；120块同跨0。年度2025反向、2026正向，中组最好，不能改成中组择时。
+- 319母信号318闭合/1开放，风险/订单/日期/retry关联异常0；仅28可分类（27闭合），291缺组。高减低净R差−1.8138R且CI跨0；root814整母MTM−6000、retry腿+4800分开，不计闭合胜负。控制系数缩小且不稳，未发现独立增量。
+- 独立公式/SQL/标签/时序/控制FWL/episode/块法及图文复核通过，37针对性测试通过；P0/P1=0/0，2个P2口径注记已写清。四图及轻量证据登记AI资产，大行情/DB仅本地；正式参数、AI池、master、生产/CTP、原主库/映射与用户脏registry未改，未推远端。
+- 无新增按收益选参型过拟合，但稀疏已见历史不能当OOS。主判定INSUFFICIENT_CROSS_CYCLE_MARKET_COVERAGE，结束本轮；不扫窗口/门槛/中组规则，不将ER直接加入108。未来独立定义PIT流动性宇宙或训练目标资格仍有价值，不作为本轮改门救参。结果：`stages/20261017_2204_stage269_market_efficiency_attribution_result.md`；主摘要：`outputs/stage269_market_efficiency_validation/analysis/analysis_summary.json`。

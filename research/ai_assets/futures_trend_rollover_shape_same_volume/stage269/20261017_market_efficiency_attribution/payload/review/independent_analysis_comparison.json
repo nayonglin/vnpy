@@ -1,0 +1,219 @@
+{
+  "output_hash_checks": {
+    "analysis_summary.json": true,
+    "annual_effects.csv": true,
+    "contemporaneous.csv": true,
+    "episode_block60.json": true,
+    "episode_groups.csv": true,
+    "episodes.csv": true,
+    "execution_receipt.json": true,
+    "group_environment.csv": true,
+    "group_summary.csv": true,
+    "joined_daily.csv": true,
+    "known_weak_period_202509.json": true,
+    "leave_year_out.csv": true,
+    "market_sensitivities.csv": true,
+    "period_effects.csv": true,
+    "primary_block60.json": true,
+    "regression_summary.json": true,
+    "sensitivity_block120.json": true
+  },
+  "joined_rows": 1641,
+  "joined_unique_dates": true,
+  "outcome_mismatches": {
+    "future20_return": 0,
+    "future20_cash": 0,
+    "future20_profit": 0,
+    "future20_slippage": 0,
+    "past60_vol": 0,
+    "normalized_future20_return": 0,
+    "future20_return_extra_slippage": 0,
+    "regime": 0,
+    "label_end": 0
+  },
+  "main_point_estimate_mismatches": {
+    "return_difference": false,
+    "profit_probability_difference": false
+  },
+  "main_group_mismatches": {
+    "low": {
+      "n": false,
+      "mean": false,
+      "profit_probability": false
+    },
+    "mid": {
+      "n": false,
+      "mean": false,
+      "profit_probability": false
+    },
+    "high": {
+      "n": false,
+      "mean": false,
+      "profit_probability": false
+    }
+  },
+  "cross_boundary_split_checks": [
+    {
+      "split": "year_2020",
+      "mismatches": []
+    },
+    {
+      "split": "year_2021",
+      "mismatches": []
+    },
+    {
+      "split": "year_2022",
+      "mismatches": []
+    },
+    {
+      "split": "year_2023",
+      "mismatches": []
+    },
+    {
+      "split": "year_2024",
+      "mismatches": []
+    },
+    {
+      "split": "year_2025",
+      "mismatches": []
+    },
+    {
+      "split": "year_2026",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2020",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2021",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2022",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2023",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2024",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2025",
+      "mismatches": []
+    },
+    {
+      "split": "leave_2026",
+      "mismatches": []
+    },
+    {
+      "split": "2020-2022",
+      "mismatches": []
+    },
+    {
+      "split": "2023-2024",
+      "mismatches": []
+    },
+    {
+      "split": "2025+",
+      "mismatches": []
+    }
+  ],
+  "episode_mismatches": {
+    "initial_risk": 0,
+    "net_pnl": 0,
+    "net_R": 0,
+    "open_net_mtm": 0,
+    "retry_pnl": 0,
+    "entry_date": 0,
+    "asof_date": 0,
+    "first_trade_id": 0,
+    "signal_order_id": 0,
+    "is_closed": 0,
+    "is_open": 0,
+    "half_r_stop": 0,
+    "has_retry": 0,
+    "regime": 0
+  },
+  "bootstrap_crosscheck": [
+    {
+      "block": 60,
+      "formal_return_ci": [
+        -0.14153940222536582,
+        0.14612451836584917
+      ],
+      "independent_return_ci": [
+        -0.14557985364032822,
+        0.1504969631559124
+      ],
+      "formal_probability_ci": [
+        -0.5346428571428571,
+        0.2551802299867314
+      ],
+      "independent_probability_ci": [
+        -0.5555830039525692,
+        0.3111742424242423
+      ],
+      "formal_valid_repeats": 1979,
+      "independent_valid_repeats": 1980,
+      "both_methods_return_cross_zero": true,
+      "both_methods_probability_cross_zero": true
+    },
+    {
+      "block": 120,
+      "formal_return_ci": [
+        -0.12664939351284418,
+        0.14852547134773356
+      ],
+      "independent_return_ci": [
+        -0.14060360221357712,
+        0.14540842668345805
+      ],
+      "formal_probability_ci": [
+        -0.4784848484848485,
+        0.2729629629629629
+      ],
+      "independent_probability_ci": [
+        -0.5398319327731093,
+        0.2908080808080791
+      ],
+      "formal_valid_repeats": 1954,
+      "independent_valid_repeats": 1957,
+      "both_methods_return_cross_zero": true,
+      "both_methods_probability_cross_zero": true
+    }
+  ],
+  "regression_fwl_checks": [
+    {
+      "model": 0,
+      "sample_matches": true,
+      "formal_beta": 0.10040283478188529,
+      "independent_fwl_beta": 0.10040283478188426,
+      "beta_matches": true
+    },
+    {
+      "model": 1,
+      "sample_matches": true,
+      "formal_beta": 0.09838347078255244,
+      "independent_fwl_beta": 0.09838347078255251,
+      "beta_matches": true
+    },
+    {
+      "model": 2,
+      "sample_matches": true,
+      "formal_beta": -0.0033996795453680815,
+      "independent_fwl_beta": -0.003399679545368115,
+      "beta_matches": true
+    },
+    {
+      "model": 3,
+      "sample_matches": true,
+      "formal_beta": 0.012429701324589228,
+      "independent_fwl_beta": 0.012429701324589525,
+      "beta_matches": true
+    }
+  ]
+}

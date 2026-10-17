@@ -1,0 +1,4 @@
+period,outcome,n_calendar,n_labeled,n_low,n_mid,n_high,return_difference,profit_probability_difference,approx_60day_blocks,approx_120day_blocks,nonoverlap20_n
+2020-2022,future20_return,1641,0,0,0,0,,,27.35,13.675,0
+2023-2024,future20_return,1641,0,0,0,0,,,27.35,13.675,0
+2025+,future20_return,1641,122,33,47,42,0.05818323258378299,-0.04112554112554112,27.35,13.675,7

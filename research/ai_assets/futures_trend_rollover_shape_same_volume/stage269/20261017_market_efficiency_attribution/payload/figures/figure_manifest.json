@@ -1,0 +1,27 @@
+{
+  "stage": "stage269",
+  "font": "/System/Library/Fonts/STHeiti Medium.ttc",
+  "source_cache_unchanged": true,
+  "market_recomputed": false,
+  "statistics_reestimated": false,
+  "financial_replays": 0,
+  "script_sha256": "8c7b50fe5dbf4db557f3bb3e2555d0f8176c3e5ff3e30bdeb17c09a6d42562ac",
+  "input_sha256": {
+    "market/market_daily.csv": "52b5adfd9552564cf7c8bcb3b81ea819000f2d9446bffb820c70e318e277b0a4",
+    "analysis/joined_daily.csv": "eaf1e95ed7f0bfe51a1b251bf5e2e99897194d108352fd832d97b1a0f49d5452",
+    "analysis/analysis_summary.json": "b3218754e750f5bb832d075faae02af0322b65962e417301c51794a381b68438",
+    "analysis/primary_block60.json": "266ce4e33e745cf6ff2d0efd65a70e8b3dd6e712f2d6d4e821496cbac34ac8df",
+    "analysis/annual_effects.csv": "b3bd41730511d6a30edb79b63cd1361e4b83d74bd483193e3e8d301b7d3f600e",
+    "analysis/leave_year_out.csv": "43b4fa79446e42eedee13069d80ed326a688b539ea4ebb843cf33235902f17ed",
+    "analysis/regression_summary.json": "69386c1d50faa3438fce56968cd8c70d39cf53dfbd9a1313f818ab580c3c61fd",
+    "analysis/episode_groups.csv": "4e862fd8457829c13565e909d8fb340fbcff2593a85321d6da871fd53f6a9745",
+    "analysis/episodes.csv": "034137615e0990e6080e90c6e692b6133f809a4e8a127925acb9b70376006154"
+  },
+  "figure_sha256": {
+    "01_coverage_efficiency_equity.png": "833030fb3fe8137826e4224c7857fbf73bac6bf4d94cd3a11f2f4529334e693c",
+    "02_future20_groups_ci.png": "d76e43ea4ba06cd022371346e9b9535a528510b707508e24300aaa4ee1ca0c2e",
+    "03_annual_and_leave_year_out.png": "8ccefe79f40676b6830d2bb576dc019af5f343a6ce5ee86023e965d0d82d352e",
+    "04_controls_episode_mechanism.png": "688f9a9f4a9d1d41041a856ab4eb6f4dd13b4644ce1a551b0c78769aff1da5ae"
+  },
+  "note": "All 95% intervals are read directly from primary_block60.json; missing annual effects are left missing. OLS has no invented confidence interval. Figures are historical descriptive evidence with sparse coverage."
+}

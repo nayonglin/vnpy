@@ -1,0 +1,19 @@
+{
+  "analysis_summary.json": "b3218754e750f5bb832d075faae02af0322b65962e417301c51794a381b68438",
+  "annual_effects.csv": "b3bd41730511d6a30edb79b63cd1361e4b83d74bd483193e3e8d301b7d3f600e",
+  "contemporaneous.csv": "18d2a99b0f8533a6364d08a0be8431bcd5fc0bb311bffb99fdab27e0b1882e14",
+  "episode_block60.json": "6e3c652f201e1798df97aca177df00b7bf09b98b57e19bab70c8e7f432bbe471",
+  "episode_groups.csv": "4e862fd8457829c13565e909d8fb340fbcff2593a85321d6da871fd53f6a9745",
+  "episodes.csv": "034137615e0990e6080e90c6e692b6133f809a4e8a127925acb9b70376006154",
+  "execution_receipt.json": "b6450fe9c9cf886b4a41668cb757a4ab34a31355d65bbd88a79c8b8fb2fb6abb",
+  "group_environment.csv": "af41cb072d9b09f690308306296359b1f9cec275e53afef7cc0283b0a1fb04f6",
+  "group_summary.csv": "871a0c3b7d343897d58ea1949d33edde0123cf05308371039b2a8694bb5b30d6",
+  "joined_daily.csv": "eaf1e95ed7f0bfe51a1b251bf5e2e99897194d108352fd832d97b1a0f49d5452",
+  "known_weak_period_202509.json": "d6aae561a646deeb0105042fe0026cd688d0417a9574eb0b3268fe77318aa3f1",
+  "leave_year_out.csv": "43b4fa79446e42eedee13069d80ed326a688b539ea4ebb843cf33235902f17ed",
+  "market_sensitivities.csv": "34add216fe92a134388157cb6aa4a5612cea7d766583e33f0d90a2612b6c35e7",
+  "period_effects.csv": "f20f101f91285449958bd76d05ee4f84e952c0f9c8a324dd248bb35d059382db",
+  "primary_block60.json": "266ce4e33e745cf6ff2d0efd65a70e8b3dd6e712f2d6d4e821496cbac34ac8df",
+  "regression_summary.json": "69386c1d50faa3438fce56968cd8c70d39cf53dfbd9a1313f818ab580c3c61fd",
+  "sensitivity_block120.json": "32479b9dc8bfed40aa646e5f9e748cdcea1a04627769775832d32e035586bb23"
+}

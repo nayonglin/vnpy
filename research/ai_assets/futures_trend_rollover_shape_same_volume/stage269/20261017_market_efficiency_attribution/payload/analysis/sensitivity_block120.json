@@ -1,0 +1,85 @@
+{
+  "outcome": "future20_return",
+  "n_calendar": 1641,
+  "n_labeled": 122,
+  "n_low": 33,
+  "n_mid": 47,
+  "n_high": 42,
+  "return_difference": 0.05818323258378299,
+  "profit_probability_difference": -0.04112554112554112,
+  "groups": [
+    {
+      "regime": "low",
+      "n_rows": 33,
+      "n": 33,
+      "mean": -0.06493918190889841,
+      "median": -0.05738008288315222,
+      "profit_probability": 0.30303030303030304,
+      "mean_ci": [
+        -0.15553441835215776,
+        0.23390804511856741
+      ],
+      "profit_probability_ci": [
+        0.06896551724137931,
+        1.0
+      ]
+    },
+    {
+      "regime": "mid",
+      "n_rows": 47,
+      "n": 47,
+      "mean": 0.023401018680636352,
+      "median": 0.007743633814044193,
+      "profit_probability": 0.6170212765957447,
+      "mean_ci": [
+        -0.03507160614115141,
+        0.1804194165947611
+      ],
+      "profit_probability_ci": [
+        0.25747480403135503,
+        1.0
+      ]
+    },
+    {
+      "regime": "high",
+      "n_rows": 62,
+      "n": 42,
+      "mean": -0.006755949325115423,
+      "median": -0.021225066873797216,
+      "profit_probability": 0.2619047619047619,
+      "mean_ci": [
+        -0.024874979596873705,
+        0.05685199605699624
+      ],
+      "profit_probability_ci": [
+        0.0037313432835820895,
+        0.8
+      ]
+    }
+  ],
+  "approx_60day_blocks": 27.35,
+  "approx_120day_blocks": 13.675,
+  "nonoverlap20_n": 7,
+  "return_ci": [
+    -0.12664939351284418,
+    0.14852547134773356
+  ],
+  "return_p_null_centered": 0.4296675191815857,
+  "profit_probability_ci": [
+    -0.4784848484848485,
+    0.2729629629629629
+  ],
+  "profit_probability_p_null_centered": 0.7785166240409207,
+  "holm_pvalues": [
+    0.8593350383631714,
+    0.8593350383631714
+  ],
+  "block": 120,
+  "repeats": 2000,
+  "seed": 42,
+  "bootstrap_valid_repeats": 1954,
+  "bootstrap_invalid_repeats": 46,
+  "ci_method": "95% percentile stationary block bootstrap; fixed calendar rows, joint sample",
+  "p_value_method": "approximate two-sided null-centered bootstrap error tail; (1+count(abs(theta_star-theta_hat)>=abs(theta_hat)))/(B_valid+1)",
+  "missing_calendar_policy": "all calendar rows sampled jointly before complete-label masking; no compressed dropna calendar"
+}
