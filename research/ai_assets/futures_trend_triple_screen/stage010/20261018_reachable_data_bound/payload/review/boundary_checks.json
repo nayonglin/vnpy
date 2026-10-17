@@ -1,0 +1,292 @@
+{
+  "reviewed_at": "2026-10-18T00:13:02+08:00",
+  "status": "limited_static_and_four_mapping_boundary_review_pass_conditional_overapproximation",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "network_calls": 0,
+  "financial_replays": 0,
+  "indicator_streams_repeated": 0,
+  "full_state_closure_repeated": false,
+  "full_minute_or_account_audits_repeated": false,
+  "current_input_SHA_checked": 18,
+  "source_summary_sha256": "73d3f4725f28d4a5da77921275d4dd03472494724bc36d71eeaf065f8facbd4b",
+  "source_input_manifest_sha256": "2fd09a5878c150f2971beda10a47786e74b4d0b60db008d414e875f7f5dc3489",
+  "saved_output_unique_demands": 28268,
+  "saved_output_gaps": 23309,
+  "initial_seeds_nonterminal": 700,
+  "terminal_pending_demands": 20,
+  "independent_short_mapping_traces": [
+    {
+      "product": "cu.SHFE",
+      "held": "cu2003.SHFE",
+      "trace": [
+        {
+          "date": "2020-02-17",
+          "target": "cu2004.SHFE",
+          "elapsed": 0,
+          "due": false
+        },
+        {
+          "date": "2020-02-18",
+          "target": "cu2004.SHFE",
+          "elapsed": 1,
+          "due": false
+        },
+        {
+          "date": "2020-02-19",
+          "target": "cu2004.SHFE",
+          "elapsed": 2,
+          "due": false
+        },
+        {
+          "date": "2020-02-20",
+          "target": "cu2004.SHFE",
+          "elapsed": 3,
+          "due": false
+        },
+        {
+          "date": "2020-02-21",
+          "target": "cu2004.SHFE",
+          "elapsed": 4,
+          "due": false
+        },
+        {
+          "date": "2020-02-24",
+          "target": "cu2004.SHFE",
+          "elapsed": 5,
+          "due": true
+        }
+      ],
+      "transition": {
+        "signal_date": "2020-02-24",
+        "execution_trade_date": "2020-02-25",
+        "product_vt_symbol": "cu.SHFE",
+        "old_contract": "cu2003.SHFE",
+        "target_contract": "cu2004.SHFE",
+        "reason": "rollover_due",
+        "old_signal_real_bar": "True",
+        "target_signal_real_bar": "True",
+        "reopen_upper_bound": "True",
+        "old_branch_removed_at_next_batch": "True"
+      },
+      "last_old_contract_demand": "2020-02-25",
+      "next_batch_new_full": true
+    },
+    {
+      "product": "fu.SHFE",
+      "held": "fu2005.SHFE",
+      "trace": [
+        {
+          "date": "2020-04-07",
+          "target": "fu2009.SHFE",
+          "elapsed": 0,
+          "due": false
+        },
+        {
+          "date": "2020-04-08",
+          "target": "fu2009.SHFE",
+          "elapsed": 1,
+          "due": false
+        },
+        {
+          "date": "2020-04-09",
+          "target": "fu2009.SHFE",
+          "elapsed": 2,
+          "due": false
+        },
+        {
+          "date": "2020-04-10",
+          "target": "fu2009.SHFE",
+          "elapsed": 3,
+          "due": false
+        },
+        {
+          "date": "2020-04-13",
+          "target": "fu2009.SHFE",
+          "elapsed": 4,
+          "due": false
+        },
+        {
+          "date": "2020-04-14",
+          "target": "fu2009.SHFE",
+          "elapsed": 5,
+          "due": true
+        }
+      ],
+      "transition": {
+        "signal_date": "2020-04-14",
+        "execution_trade_date": "2020-04-15",
+        "product_vt_symbol": "fu.SHFE",
+        "old_contract": "fu2005.SHFE",
+        "target_contract": "fu2009.SHFE",
+        "reason": "rollover_due",
+        "old_signal_real_bar": "False",
+        "target_signal_real_bar": "True",
+        "reopen_upper_bound": "True",
+        "old_branch_removed_at_next_batch": "True"
+      },
+      "last_old_contract_demand": "2020-04-15",
+      "next_batch_new_full": true
+    },
+    {
+      "product": "SM.CZCE",
+      "held": "SM306.CZCE",
+      "trace": [
+        {
+          "date": "2023-05-16",
+          "target": "SM307.CZCE",
+          "elapsed": 0,
+          "due": false
+        },
+        {
+          "date": "2023-05-17",
+          "target": "SM307.CZCE",
+          "elapsed": 1,
+          "due": false
+        },
+        {
+          "date": "2023-05-18",
+          "target": "SM309.CZCE",
+          "elapsed": 0,
+          "due": false
+        },
+        {
+          "date": "2023-05-19",
+          "target": "SM309.CZCE",
+          "elapsed": 1,
+          "due": false
+        },
+        {
+          "date": "2023-05-22",
+          "target": "SM309.CZCE",
+          "elapsed": 2,
+          "due": false
+        },
+        {
+          "date": "2023-05-23",
+          "target": "SM309.CZCE",
+          "elapsed": 3,
+          "due": false
+        },
+        {
+          "date": "2023-05-24",
+          "target": "SM309.CZCE",
+          "elapsed": 4,
+          "due": false
+        },
+        {
+          "date": "2023-05-25",
+          "target": "SM309.CZCE",
+          "elapsed": 5,
+          "due": true
+        }
+      ],
+      "transition": {
+        "signal_date": "2023-05-25",
+        "execution_trade_date": "2023-05-26",
+        "product_vt_symbol": "SM.CZCE",
+        "old_contract": "SM306.CZCE",
+        "target_contract": "SM309.CZCE",
+        "reason": "rollover_due",
+        "old_signal_real_bar": "True",
+        "target_signal_real_bar": "True",
+        "reopen_upper_bound": "True",
+        "old_branch_removed_at_next_batch": "True"
+      },
+      "last_old_contract_demand": "2023-05-26",
+      "next_batch_new_full": true
+    },
+    {
+      "product": "SM.CZCE",
+      "held": "SM101.CZCE",
+      "trace": [
+        {
+          "date": "2020-12-17",
+          "target": "SM105.CZCE",
+          "elapsed": 0,
+          "due": false
+        },
+        {
+          "date": "2020-12-18",
+          "target": "SM105.CZCE",
+          "elapsed": 1,
+          "due": false
+        },
+        {
+          "date": "2020-12-21",
+          "target": "SM105.CZCE",
+          "elapsed": 2,
+          "due": false
+        },
+        {
+          "date": "2020-12-22",
+          "target": "SM105.CZCE",
+          "elapsed": 3,
+          "due": false
+        },
+        {
+          "date": "2020-12-23",
+          "target": "SM105.CZCE",
+          "elapsed": 4,
+          "due": false
+        },
+        {
+          "date": "2020-12-24",
+          "target": "SM105.CZCE",
+          "elapsed": 5,
+          "due": true
+        }
+      ],
+      "transition": {
+        "signal_date": "2020-12-24",
+        "execution_trade_date": "2020-12-25",
+        "product_vt_symbol": "SM.CZCE",
+        "old_contract": "SM101.CZCE",
+        "target_contract": "SM105.CZCE",
+        "reason": "rollover_due",
+        "old_signal_real_bar": "True",
+        "target_signal_real_bar": "True",
+        "reopen_upper_bound": "True",
+        "old_branch_removed_at_next_batch": "True"
+      },
+      "last_old_contract_demand": "2020-12-25",
+      "next_batch_new_full": true
+    }
+  ],
+  "reset_real_trace": "SM306 May16 targetSM307, May18 targetSM309 resets elapsed0; dueMay25/fillMay26",
+  "return_to_held_clear_scope": "static advance branch matches source; no separate real reversion sentinel claimed",
+  "no_real_fill_bar_constraints": 16,
+  "no_real_rows_all_anchor_and_constraint_labeled": true,
+  "constraint_contracts": [
+    "fu2005.SHFE",
+    "fu2009.SHFE",
+    "fu2605.SHFE"
+  ],
+  "known_failed_anchors_now_in_bound": [
+    {
+      "day": "2020-05-18",
+      "abstract_label": "possible_close",
+      "actual_failed_order_offset": "unknown_not_retained"
+    },
+    {
+      "day": "2020-08-12",
+      "abstract_label": "possible_close",
+      "actual_failed_order_offset": "unknown_not_retained"
+    }
+  ],
+  "abstract_close_label_does_not_prove_failed_order_type": true,
+  "Stage008_candidate_annotation_only": true,
+  "source_scope": "Stage005 frozen pure-alpha initial seeds plus current mapping and Stage004 real-bar flags; inherited earlier limited reviews",
+  "conditional_upper_bound": "flat cold start; reverse/all three adds off; ignore optional exits, shape, funds and AI; old state removed next batch conditional on strict execution being possible",
+  "actual_trades_proven": false,
+  "all_prices_qualified": false,
+  "full_feasible_candidate_path_proven": false,
+  "download_authorized": false,
+  "C0_attempt3_authorized": false,
+  "production_qualified": false,
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "overfitting": false,
+  "continued_value": true
+}

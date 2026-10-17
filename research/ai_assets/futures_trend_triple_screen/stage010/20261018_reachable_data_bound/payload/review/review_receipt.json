@@ -1,0 +1,32 @@
+{
+  "reviewed_at": "2026-10-18T00:13:41+08:00",
+  "reviewer": "first_screen_independent",
+  "status": "limited_static_and_4_real_mapping_trace_review_pass_conditional_upper_bound",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "source_summary_sha256": "73d3f4725f28d4a5da77921275d4dd03472494724bc36d71eeaf065f8facbd4b",
+  "source_input_manifest_sha256": "2fd09a5878c150f2971beda10a47786e74b4d0b60db008d414e875f7f5dc3489",
+  "current_input_SHA_checked": 18,
+  "real_mapping_boundary_samples": 4,
+  "full_closure_repeated": false,
+  "financial_replays": 0,
+  "network_calls": 0,
+  "required_sessions": 28268,
+  "gap_sessions": 23309,
+  "no_real_fill_constraints": 16,
+  "actual_trades_or_feasible_complete_paths_proven": false,
+  "all_prices_qualified": false,
+  "download_authorized": false,
+  "C0_attempt3_authorized": false,
+  "production_qualified": false,
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "review_artifact_sha256": {
+    "boundary_checks.json": "bb1785135c26e00285dce2808c33cda7a3aaf22a2d110c6c58af2c96625e5f4e",
+    "independent_review.md": "e74a61f4f5450e1a4a211c8b4713c284f44ddaac72d60de6da0340a83b2d6cc7",
+    "review_boundaries.py": "7c43ae32484f616008fa4e8a943e0b0c56a6bf2b0d64fdd7de182750d7344c48"
+  },
+  "overfitting": false,
+  "continued_value": true
+}

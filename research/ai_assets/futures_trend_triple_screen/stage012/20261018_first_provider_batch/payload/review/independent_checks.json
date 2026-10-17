@@ -1,0 +1,114 @@
+{
+  "full_grid_keys": 2475,
+  "full_legal_rows": 2475,
+  "full_completion_evidence_keys": 2475,
+  "quality_receipt_sessions": 11,
+  "independent_Decimal_aggregate_samples": [
+    {
+      "vt_symbol": "hc2010.SHFE",
+      "trading_date": "2020-04-07",
+      "rows": 225,
+      "checks": {
+        "open": true,
+        "high": true,
+        "low": true,
+        "close": true,
+        "volume": true,
+        "open_oi": true,
+        "close_oi": true
+      },
+      "aggregate": {
+        "open": "3060.0",
+        "high": "3081.0",
+        "low": "3035.0",
+        "close": "3063.0",
+        "volume": "276706.0",
+        "open_oi": "475178.0",
+        "close_oi": "483977.0"
+      },
+      "original_daily_csv_sha256": "796443f6772b8253383c41fc47b314205e7473b0e629baa8e213a3884d27d393",
+      "final_minute": "2020-04-07T14:59:00",
+      "final_successor": "2020-04-08T09:00:00"
+    },
+    {
+      "vt_symbol": "hc2010.SHFE",
+      "trading_date": "2020-04-10",
+      "rows": 225,
+      "checks": {
+        "open": true,
+        "high": true,
+        "low": true,
+        "close": true,
+        "volume": true,
+        "open_oi": true,
+        "close_oi": true
+      },
+      "aggregate": {
+        "open": "3149.0",
+        "high": "3210.0",
+        "low": "3135.0",
+        "close": "3209.0",
+        "volume": "344432.0",
+        "open_oi": "464513.0",
+        "close_oi": "440907.0"
+      },
+      "original_daily_csv_sha256": "796443f6772b8253383c41fc47b314205e7473b0e629baa8e213a3884d27d393",
+      "final_minute": "2020-04-10T14:59:00",
+      "final_successor": "2020-04-13T09:00:00"
+    },
+    {
+      "vt_symbol": "rb2010.SHFE",
+      "trading_date": "2020-04-01",
+      "rows": 225,
+      "checks": {
+        "open": true,
+        "high": true,
+        "low": true,
+        "close": true,
+        "volume": true,
+        "open_oi": true,
+        "close_oi": true
+      },
+      "aggregate": {
+        "open": "3245.0",
+        "high": "3245.0",
+        "low": "3154.0",
+        "close": "3169.0",
+        "volume": "1710110.0",
+        "open_oi": "1432887.0",
+        "close_oi": "1611977.0"
+      },
+      "original_daily_csv_sha256": "737c9e00cd13d877d8d8552d8aac3fe65d4605fab4ad7ddd3815be400a280d08",
+      "final_minute": "2020-04-01T14:59:00",
+      "final_successor": "2020-04-02T09:00:00"
+    },
+    {
+      "vt_symbol": "rb2010.SHFE",
+      "trading_date": "2020-04-10",
+      "rows": 225,
+      "checks": {
+        "open": true,
+        "high": true,
+        "low": true,
+        "close": true,
+        "volume": true,
+        "open_oi": true,
+        "close_oi": true
+      },
+      "aggregate": {
+        "open": "3306.0",
+        "high": "3376.0",
+        "low": "3298.0",
+        "close": "3373.0",
+        "volume": "1563049.0",
+        "open_oi": "1535127.0",
+        "close_oi": "1523575.0"
+      },
+      "original_daily_csv_sha256": "737c9e00cd13d877d8d8552d8aac3fe65d4605fab4ad7ddd3815be400a280d08",
+      "final_minute": "2020-04-10T14:59:00",
+      "final_successor": "2020-04-13T09:00:00"
+    }
+  ],
+  "frozen_inputs_measured": 17,
+  "frozen_input_changes": []
+}

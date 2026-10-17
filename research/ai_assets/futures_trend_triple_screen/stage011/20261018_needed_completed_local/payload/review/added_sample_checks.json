@@ -1,0 +1,117 @@
+{
+  "reviewed_at": "2026-10-18T00:20:37+08:00",
+  "status": "limited_new_data_sample_and_full_new_key_A0_disjointness_review_pass",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "financial_replays": 0,
+  "network_calls": 0,
+  "old_account_or_indicator_streams_repeated": false,
+  "full_added_price_qualification_repeated": false,
+  "full_new_key_stream_rows": 4646214,
+  "new_overlay_SHA256": "c65ce34e2f02ebfa2af0b6cdfadc4c15ba377458ea61cd8d7ccf4457066908e9",
+  "new_keys_strictly_sorted_unique": true,
+  "A0_actual_read_keys": 106731,
+  "added_intersection_A0_reads": 0,
+  "base_and_Stage002_bytes_current_SHA_unchanged": true,
+  "sampled_new_old_key_overlap": 0,
+  "source_manifest_binding_rows": 906,
+  "independently_rehashed_sample_source_files": 9,
+  "independent_session_samples": [
+    {
+      "symbol": "AP101.CZCE",
+      "date": "2020-09-25",
+      "result": "complete_session_and_seven_CSV_fields_match",
+      "old_minutes": 0,
+      "new_minutes": 225,
+      "expected": 225,
+      "source_ids": [
+        "local_0005"
+      ],
+      "consistent_cross_source_duplicate_keys": 0
+    },
+    {
+      "symbol": "SM403.CZCE",
+      "date": "2024-01-09",
+      "result": "complete_session_and_seven_CSV_fields_match",
+      "old_minutes": 224,
+      "new_minutes": 1,
+      "expected": 225,
+      "source_ids": [
+        "local_0287",
+        "local_0288"
+      ],
+      "consistent_cross_source_duplicate_keys": 224
+    },
+    {
+      "symbol": "rb2010.SHFE",
+      "date": "2020-08-12",
+      "result": "complete_session_and_seven_CSV_fields_match",
+      "old_minutes": 0,
+      "new_minutes": 345,
+      "expected": 345,
+      "source_ids": [
+        "local_0720",
+        "stage008_accepted_345"
+      ],
+      "consistent_cross_source_duplicate_keys": 345
+    },
+    {
+      "symbol": "FG209.CZCE",
+      "date": "2022-05-27",
+      "result": "base_conflict_preserved_whole_session_rejected",
+      "mismatched_existing_keys": 225,
+      "new_minutes": 0
+    },
+    {
+      "symbol": "cu2010.SHFE",
+      "date": "2020-08-27",
+      "result": "base_conflict_preserved_whole_session_rejected",
+      "mismatched_existing_keys": 283,
+      "new_minutes": 0
+    },
+    {
+      "symbol": "cu2507.SHFE",
+      "date": "2025-06-11",
+      "result": "base_conflict_preserved_whole_session_rejected",
+      "mismatched_existing_keys": 1,
+      "new_minutes": 0
+    },
+    {
+      "symbol": "AP005.CZCE",
+      "date": "2020-01-10",
+      "result": "missing_daily_CSV_rejected",
+      "new_minutes": 0
+    },
+    {
+      "symbol": "AP105.CZCE",
+      "date": "2021-03-25",
+      "result": "anchor_request_still_rejects_incomplete_session",
+      "candidate_anchor_present": true,
+      "observed": 224,
+      "expected": 225,
+      "new_minutes": 0
+    }
+  ],
+  "completion_basis": "inherited frozen completed-source declarations; Stage008 keeps independent provider successor qualification",
+  "qualified_added_rows": 4646214,
+  "qualified_added_contracts": 349,
+  "accepted_sessions": 13752,
+  "quarantined_sessions": 9557,
+  "remaining_full_sessions": 215,
+  "remaining_anchors": 9342,
+  "unresolved_no_real_fill_constraints": 16,
+  "source_summary_sha256": "a0b60215a8229ef83627789a7f4d46c228295b30fd12693c6d4941f4ac31663b",
+  "source_input_manifest_sha256": "31b64eb36444a8cfb337dccb470f2e8d1f7f734382128d77a1e3dc5fd38dfde5",
+  "qualification_confidence": "static append-only gate plus eight real source/session samples; not independent aggregate recomputation of all13752 accepted sessions",
+  "A0_replay_reuse_valid_for_this_append_only_data_change": true,
+  "old_source_values_overwrite_authorized": false,
+  "execution_fallback_authorized": false,
+  "C0_attempt3_authorized": false,
+  "full_candidate_feasibility_proven": false,
+  "production_qualified": false,
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "overfitting": false,
+  "continued_value": true
+}

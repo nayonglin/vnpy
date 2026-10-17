@@ -1,0 +1,29 @@
+{
+  "reviewed_at": "2026-10-18T00:22:33.221137+08:00",
+  "status": "limited_independent_grid_completion_and_4_Decimal_aggregates_pass",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "qualified_precise_sessions": 11,
+  "qualified_minute_rows": 2475,
+  "independent_aggregate_sessions": 4,
+  "provider_connections_by_reviewer": 0,
+  "financial_replays": 0,
+  "indicator_streams_repeated": 0,
+  "source_writes": 0,
+  "cache_or_overlay_written": false,
+  "execution_fallback_authorized": false,
+  "production_qualified": false,
+  "all_reviewed_files_unchanged": true,
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/batch_manifest.json": "67e6b22abc6454ca8fe38cc9be8f6130ef52e17d0a8a70f7e998b605a01586ce",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/preflight.json": "ec468d5e637fea1ae8e9a95cf2cdc3b42ffb7ba9ca265238e393ded449206014",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/network_attempt1/raw_completed_minutes.csv": "10508ac323cba9f7c63c83fcdcbfe20e6b87f3bfa2f96e10b15cc843ce475097",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/network_attempt1/completion_evidence.csv": "8eecc718ecf57523a6f5ebe198c5df5a72f646b07a43f75e3a2c4026899fcb06",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/network_attempt1/quality.json": "bffc946f89d909e03e1c7af26c13e0ca4db3b68d3102b6db57b3a35986ac90ba",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/network_attempt1/parent_receipt.json": "c49bc59cbffb1693a1928996e28e82a636ecd797a94c679914e2db76296f5c6c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_provider_batch/network_attempt1/worker_receipt.json": "823ddb150a12df5079b994f981fea59b6a3e5683487a4a69b119bd567100c6cd",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_independent_review/review_actual_batch.py": "32749a341b866bb6afad4cc479563be3955f94cd326de8900910c0e334a8ec9e"
+  },
+  "independent_checks_sha256": "2bda9a8f76c862acc2c752806d147e6ee938d4cfd285d161b99b11ac2298110b",
+  "report_sha256": "407d9ee1b1096a35d7c755e8953866b7aec3551b152dd647210c3416ddd3d89c"
+}

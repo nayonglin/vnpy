@@ -1,0 +1,10 @@
+{
+  "path_equivalent": true,
+  "intersection_count": 0,
+  "anchor_request_rows": 535,
+  "scan_request_rows": 501,
+  "distinct_actual_read_keys": 106731,
+  "added_keys": 4646214,
+  "intersection_examples": [],
+  "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+}

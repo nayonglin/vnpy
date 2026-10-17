@@ -1,0 +1,72 @@
+{
+  "status": "completed_needed_local_overlay_pending_independent_review",
+  "started_at": "2026-10-18 00:11:39.995904+08:00",
+  "completed_at": "2026-10-18 00:15:05.615191+08:00",
+  "elapsed_seconds": 205.62008829199476,
+  "financial_replays": 0,
+  "downloads": 0,
+  "account_engines": 0,
+  "strategy_initializations": 0,
+  "model_fits": 0,
+  "PnL_accessed": false,
+  "source_writes": 0,
+  "order_api_calls": 0,
+  "cancel_api_calls": 0,
+  "input_demand_rows": 28268,
+  "required_contracts": 491,
+  "source_files": 906,
+  "accepted_source_files": 906,
+  "requirements_ready_before": 4959,
+  "requirements_ready_after": 18711,
+  "remaining_requirements": 9557,
+  "remaining_full_sessions": 215,
+  "remaining_anchors": 9342,
+  "remaining_carry_or_missing_real_constraints": 16,
+  "missing_full_session_minutes": 66571,
+  "added_minutes": 4646214,
+  "added_contracts": 349,
+  "accepted_sessions": 13752,
+  "quarantined_sessions": 9557,
+  "quarantine_reasons": {
+    "required_daily_csv_seven_fields_missing": 4518,
+    "incomplete_session": 5036,
+    "base_overlap_conflict": 3
+  },
+  "new_key_intersection_with_base": 0,
+  "a0_path_equivalence": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 4646214,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "base_sha256": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+  "stage002_overlay_sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+  "original_sources_never_opened_for_write": true,
+  "financial_metrics": "N/A",
+  "production_qualified": false,
+  "runtime": {
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "numpy": "2.2.3",
+    "pandas": "2.2.3"
+  },
+  "artifact_sha256": {
+    "input_manifest.json": "31b64eb36444a8cfb337dccb470f2e8d1f7f734382128d77a1e3dc5fd38dfde5",
+    "overlay.csv": "c65ce34e2f02ebfa2af0b6cdfadc4c15ba377458ea61cd8d7ccf4457066908e9",
+    "remaining_demand.csv": "c62c580123a36274337b618b84dff317a7bd549145140406ae2e4932ad9c0a83",
+    "session_manifest.csv": "d4bf5e4f8de8a24d30864fba1da0538bab9b247294c1012ff76b5b3c82ae88f7",
+    "source_manifest.json": "51b5c86680b2de3a8f4d1abee58da667f6f395fe99e65a632da03d285bad5849",
+    "attempt_started.json": "df637e5bfeab8564d8d5e0a08520569a617614b30d2be49618bf930e98fc6e02",
+    "quarantine.csv": "39650487c74d3c4a4b6177b1109285f1fc9c22fba2a8c347433ef3d690dc38e4",
+    "demand_readiness.csv": "a839c9ee38416c12f29975abea2c9767475ba38f314511b3bd99042723606c57",
+    "a0_path_equivalence.json": "a5886ba574c278c1b432e45e4c8b8c9dfb9acaf85cf73cf7713518f2f482f99f"
+  },
+  "limitations": [
+    "Demand is the frozen Stage010 conservative bound, not actual fills.",
+    "Missing daily CSV remains rejected; no database fallback or isolated price repair.",
+    "Research overlay awaits independent review; no provider or C0 replay is auto-started."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "status": "completed_pure_reachable_demand_pending_independent_review",
+  "elapsed_seconds": 0.9854753339895979,
+  "network_calls": 0,
+  "financial_replays": 0,
+  "account_engines": 0,
+  "strategy_initializations": 0,
+  "outcome_fields_read": 0,
+  "indicator_streams_repeated": 0,
+  "weekly_tables_repeated": 0,
+  "model_fits": 0,
+  "source_writes": 0,
+  "cache_or_overlay_written": false,
+  "execution_fallback_enabled": false,
+  "production_qualified": false,
+  "all_inputs_unchanged": true,
+  "calendar_batches": 1641,
+  "initial_seed_events": 701,
+  "initial_seed_nonterminal_events": 700,
+  "settings_contract": {
+    "reverse_on_opposite_signal": false,
+    "enable_add_position": false,
+    "enable_donchian_add_position": false,
+    "enable_post_entry_quality_add": false,
+    "rollover_delay_trading_days": 5,
+    "rollover_reopen_enabled": true,
+    "enable_rollover_shape_same_volume_reopen": true,
+    "rollover_shape_history_mode": "target_contract_only",
+    "trade_start_date": "2020-01-01"
+  },
+  "diagnostics": {
+    "mandatory_close_states": 472,
+    "mandatory_reasons": {
+      "rollover_due": 472
+    },
+    "unique_rollover_open_seeds": 471,
+    "peak_abstract_states": 22,
+    "final_abstract_states": 19,
+    "state_days": 27796
+  },
+  "required_sessions": 28268,
+  "requirement_kind_counts": {
+    "anchor": 27106,
+    "full_session": 1162
+  },
+  "complete_required_sessions": 4959,
+  "gap_sessions": 23309,
+  "gap_required_minutes": 281335,
+  "gap_contracts": 491,
+  "gap_full_sessions": 771,
+  "gap_anchor_sessions": 22538,
+  "gap_real_daily_sessions": 23293,
+  "gap_carry_or_missing_real_sessions": 16,
+  "signal_carry_possible_sessions": 13,
+  "terminal_pending_demands": 20,
+  "stage008_qualified_candidates_in_demand": 1,
+  "coverage_scope": "Frozen Stage004 base+Stage002 only. Stage008 qualified rows are annotated, not merged.",
+  "interpretation": [
+    "Overapproximate necessary data bound, not actual trades; optional exits/shape/funds omitted.",
+    "Mandatory closes remove old states at next global batch; no ever-main-to-end expansion.",
+    "All reachable holding days contribute possible CLOSE anchors, including carry overapproximation.",
+    "Missing real daily fill bars and terminal events are constraints, not automatic download requests.",
+    "Coverage counts do not qualify prices; every added source requires Stage011 qualification."
+  ],
+  "artifact_sha256": {
+    "input_manifest.json": "2fd09a5878c150f2971beda10a47786e74b4d0b60db008d414e875f7f5dc3489",
+    "demand.csv": "670766157d0ed3973080b793bedd88978dda0f8a44de07f243d773718f2dafba",
+    "terminal_pending.csv": "201ea08e94e572360249bb0f6ba912cb76bd7d3ed43622e0540318c856327151",
+    "attempt_started.json": "66ffacec0fe16a34493a4f9a2f2754cea4b26978344111825679fcda51643e73",
+    "gaps.csv": "5dc9a4000948f7f1ea4550cd5f63fbaff82462458b4d0cd6d96d03879041a4e4",
+    "state_counts.csv": "8841c9f458de948bd3b32a929aaba1def2c51a943469f375d17a611e8cbf00df",
+    "mandatory_transitions.csv": "54553374073734297c7211f14cae8b96a71a8859c4f508bb8ea7801c39879a8f"
+  }
+}

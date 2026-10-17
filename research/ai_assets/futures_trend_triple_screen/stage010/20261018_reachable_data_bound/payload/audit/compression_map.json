@@ -1,0 +1,14 @@
+[
+  {
+    "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_reachable_demand/demand.csv",
+    "original_sha256": "670766157d0ed3973080b793bedd88978dda0f8a44de07f243d773718f2dafba",
+    "compressed_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_012_evidence_pack/stage010_audit_demand.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_reachable_demand/gaps.csv",
+    "original_sha256": "5dc9a4000948f7f1ea4550cd5f63fbaff82462458b4d0cd6d96d03879041a4e4",
+    "compressed_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_012_evidence_pack/stage010_audit_gaps.csv.gz",
+    "gzip_mtime": 0
+  }
+]

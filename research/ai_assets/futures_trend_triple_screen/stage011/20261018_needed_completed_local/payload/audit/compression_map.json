@@ -1,0 +1,14 @@
+[
+  {
+    "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/remaining_demand.csv",
+    "original_sha256": "c62c580123a36274337b618b84dff317a7bd549145140406ae2e4932ad9c0a83",
+    "compressed_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_012_evidence_pack/stage011_audit_remaining_demand.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/session_manifest.csv",
+    "original_sha256": "d4bf5e4f8de8a24d30864fba1da0538bab9b247294c1012ff76b5b3c82ae88f7",
+    "compressed_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage010_012_evidence_pack/stage011_audit_session_manifest.csv.gz",
+    "gzip_mtime": 0
+  }
+]

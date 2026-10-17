@@ -1,0 +1,32 @@
+{
+  "A0_distinct_actual_read_keys": 106731,
+  "base_matched_keys": 106731,
+  "missing_keys": 0,
+  "source_distribution": [
+    {
+      "minute_source": "stage246_tqsdk_entry_date_snapshot",
+      "keys": 72889,
+      "pct": 68.29224873748021
+    },
+    {
+      "minute_source": "stage249_completed_trading_day_fragment",
+      "keys": 33842,
+      "pct": 31.707751262519796
+    }
+  ],
+  "anchor_request_rows": 535,
+  "anchor_distinct_keys": 535,
+  "anchor_source_distribution": {
+    "stage249_completed_trading_day_fragment": 442,
+    "stage246_tqsdk_entry_date_snapshot": 93
+  },
+  "scan_request_rows": 501,
+  "scan_distinct_keys": 106515,
+  "scan_source_distribution": {
+    "stage246_tqsdk_entry_date_snapshot": 72870,
+    "stage249_completed_trading_day_fragment": 33645
+  },
+  "financial_replays": 0,
+  "price_or_daily_truth_audit_run": false,
+  "all_stage859_rows_assumed_wrong": false
+}
