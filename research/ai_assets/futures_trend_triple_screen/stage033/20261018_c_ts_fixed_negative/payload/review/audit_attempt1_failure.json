@@ -1,0 +1,11 @@
+{
+  "status": "independent_audit_consumer_contract_failed_no_acceptance",
+  "audit_exit_code": 1,
+  "financial_engine_runs": 0,
+  "audit_source_sha256": "a769cd17e90cd0c9789c137194dbd7e64ae32db358d6c77fbfc7357914e71ff0",
+  "failure": "AssertionError at raw_export_equivalence direct payload preflight == preflight_used.json",
+  "actual_financial_output_changed": false,
+  "actual_terminal_exit": 0,
+  "diagnostic": "only input_fingerprints grew from pre-run 2007 entries to raw/end-run 2117 entries; initial items preserved; recorder.files mutable reference. No economic result had been accepted.",
+  "repair": "JSON projection, exact remaining field equality, exact old-item subset and final manifest equality; retain growth counts"
+}

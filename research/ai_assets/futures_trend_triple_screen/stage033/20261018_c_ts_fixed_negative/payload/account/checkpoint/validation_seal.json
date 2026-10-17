@@ -1,0 +1,23 @@
+{
+  "schema": "stage031_engine_validation_seal_v1",
+  "status": "engine_snapshot_validated_not_independent_economic_review",
+  "run_id": "e9789c1e548e4bf5ae1e2d2f47212473",
+  "attempt": 2,
+  "arm": "C_TS",
+  "raw_sha256": "2f193bb7501efe32ca38fe27f9abbfd487be58fbd71cb3ed558dd3b1312a9b58",
+  "manifest_sha256": "327178d5a96342071aa1d2486a61f36f6cd2bef12a43e0be89da2bcc39401d93",
+  "writer_source_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "validated_at": "2026-10-18 03:17:34.604650+08:00",
+  "validation": {
+    "engine_returned": true,
+    "actual_settings_equal_accepted_A": true,
+    "parameters_equal_accepted_A": true,
+    "actual_daily_dates_equal_accepted_A0": true,
+    "captured_bar_failures": 0,
+    "strict_minute_missing_bars": 0,
+    "all_consumed_inputs_unchanged_during_run": true,
+    "frozen_correctness_code_unchanged": true,
+    "historical_shared_signal_input_empty": true
+  },
+  "production_qualified": false
+}

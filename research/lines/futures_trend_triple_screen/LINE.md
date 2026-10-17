@@ -3,7 +3,7 @@
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
 - 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 03:12 CST）：A0_attempt2与C0_attempt3完整且独立验收，周硬过滤负结果保持。C_TS attempt1已真实exit1，原引擎返回后synthetic信号身份导出失败，且旧runner没有完整raw账本checkpoint；无新绩效可接受。Stage031只修真实成交身份与先持久化完整账本，策略/引擎不变，新3项有限测试通过、独立delta复核P0/P1/P2=0/0/0（收据496e8de3...c242）。OI009精确anchor1根已独立验收，后续与cu2609各一anchor复用，不重下。金融累计6attempt/2 accepted，模型训练0；目标active，production_qualified=false。
+- 当前状态（2026-10-18 03:25 CST）：C_TS attempt2完整exit0并独立033验收P0/P1/P2=0/0/0，660825/340.55%/DD−32.758963%/Sharpe0.991077，382fills、163母59赢36.196319%。对A0净利润仅保留24.1800%，收益/Sharpe/峰margin门失败；停止固定C形状，不扫参、不扩多周期。实际R超u估值100/100、max50x；额外1.65日收盘margin峰122.329%（非分钟PIT），B必须先定一致估价口径。旧attempt1导出失败保留。金融7attempt/3 accepted、训练0；整体目标active、production_qualified=false。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -103,3 +103,12 @@
 - 失败证据及030独立失败审查登记17项，manifestb7cdc6f74de1a31838fa8d37e319c910ef4620165c19dba5d3e36018d0c1c137；大证据无损压缩并核原字节。不能从部分证据恢复或借A0补造金融结果。
 - 新031 runner绑定真实TradeData信号字段并验证synthetic母OPEN；返回后任何guard/导出前原子保存全部账户帧/capture，原guard通过才seal。后处理失败可仅sealed checkpoint重导出，新目录保留旧失败。真实producer与持久化/恢复3项有限测试通过，26旧suite/FI/行情资格未重复；032仅改4行provider作用域，无新网络。
 - 本阶段过拟合判断：新增否，只修导出/持久化、规则不变，历史研究选择风险仍在。继续价值：是，仍需一次可独立验收的完整C_TS金融闭环；绝不把基建完工或部分fill当alpha突破。
+
+## Stage033：完整C_TS负结果（2026-10-18 03:25 CST）
+
+- 新C_TS完整1641日，修复导出后仅必要一次新尝试221.568秒、无新增下载。原raw快照与全部导出经济表一致，独立现金/库存/成本/母链验收，033收据3fbcc1a3...b7ea；C0/A0不重跑、不改成绩。
+- C_TS收益340.55%/DD−32.758963%对A0的1408.396667%/−48.789850%，只保留24.1800%净利润；原七门收益、Sharpe、日收盘margin峰失败。停止此固定组合，不根据结果救周/FI/阈值。
+- 保留u-close native q/S使100/100条件实际R高于估值，max50x；这是本次固定合同的经济局限，不是风险匹配。原1.10报告口径之外，1.65日收盘峰122.328964%、>100一日，非分钟PIT。原费率佣金0、原滑点78550均完整核验，不能把旧native deployable_pass字段当晋级。
+- B_TS独立假说仍在原范围，尚无新金融；先定u-known trigger一致估价且S不改、保留active通用过滤、unknown禁开与19特征旧模型域外推披露，再决定最小实现。没有高收益且低回撤候选，目标active。新增过拟合否、固定C继续价值否、独立B有条件为是。
+
+- Stage031 reviewed delta登记12项，manifest34b317d76886a848e6984e4a90bcbb60d4200063d0387bf9676acb863430eb53，已提交f0c9f1580。Stage033完整负结果登记68项，manifestfa62dd88c3bf7da874e1030ef6aed5310144f63bdeb219c0e1f823a0d7380466；包含自有sealed账户checkpoint、原始导出、独立复算/消费者失败、实际source/协议与中文记录，不含原始行情/私有配置，不推送或部署。

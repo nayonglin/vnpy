@@ -1,0 +1,9 @@
+{
+  "started_at": "2026-10-18 03:13:45.157213+08:00",
+  "status": "started_no_retry_or_overwrite",
+  "pid": 18081,
+  "argv": [
+    "research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py",
+    "--run"
+  ]
+}

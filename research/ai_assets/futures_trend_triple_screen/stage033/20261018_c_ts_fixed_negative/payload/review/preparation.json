@@ -1,0 +1,32 @@
+{
+  "status": "ready_final_031_schema_bound_waiting_explicit_root_terminal_evidence",
+  "reviewer": "ordered_financial_auditor",
+  "source_scope": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage031_ordered_account/C_TS",
+  "algorithm_source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage030_independent_ordered_account_review.py",
+  "algorithm_sha256": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+  "wrapper_sha256": "a769cd17e90cd0c9789c137194dbd7e64ae32db358d6c77fbfc7357914e71ff0",
+  "inherited_nonfinancial_fixtures": 3,
+  "new_identity_nonfinancial_fixtures": 3,
+  "financial_replays": 0,
+  "financial_metrics_computed": false,
+  "actual_checkpoint_loaded": false,
+  "actual_run_outputs_accessed": false,
+  "old_stage030_changed": false,
+  "old_failed_receipt_changed": false,
+  "actual_execution_guard": "requires explicit root exit0 + completed summary SHA + checkpoint raw SHA + validation seal SHA + exact fixed source SHA",
+  "production_qualified": false,
+  "updated_at": "2026-10-18T03:12:24+08:00",
+  "exact_runner_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "checkpoint_payload_schema": "stage031_raw_account_checkpoint_v1",
+  "raw_to_export_equivalence": "all raw nontrade frames and combined exact CSV SHA; actual identities exact; raw trade fields and normalized identities independently compared",
+  "positions_plan": "serialized raw-to-export SHA plus original inventory arithmetic over already loaded raw positions, one inventory pass",
+  "required_completion_evidence": {
+    "exit_code": 0,
+    "terminal_observed": true,
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage031_ordered_account/C_TS",
+    "summary_sha256": "<actual complete summary sha>",
+    "runner_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+    "checkpoint_sha256": "<actual raw checkpoint sha>",
+    "validation_seal_sha256": "<actual seal sha>"
+  }
+}

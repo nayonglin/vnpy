@@ -1,0 +1,13 @@
+{
+  "exit_code": 0,
+  "terminal_observed": true,
+  "terminal_tool": "write_stdin",
+  "session_id": 68356,
+  "observed_at": "2026-10-18T03:17:48.279847+08:00",
+  "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage031_ordered_account/C_TS",
+  "summary_sha256": "3b7aeb30a1af362f5b8a96ea893e29711693ad2baefc7b6e5c0ad79d206ba690",
+  "runner_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "checkpoint_sha256": "2f193bb7501efe32ca38fe27f9abbfd487be58fbd71cb3ed558dd3b1312a9b58",
+  "validation_seal_sha256": "672fe49f2faa2ba4117669a1c3af65fdf12e30f9a1f6bf0aecd076b06f53fb72",
+  "full_required_exports_present": true
+}

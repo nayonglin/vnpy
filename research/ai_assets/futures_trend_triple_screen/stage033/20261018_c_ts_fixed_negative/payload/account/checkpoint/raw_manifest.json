@@ -1,0 +1,21 @@
+{
+  "schema": "stage031_raw_checkpoint_manifest_v1",
+  "status": "raw_evidence_not_validation_or_performance_pass",
+  "raw_filename": "raw_account.pkl.gz",
+  "raw_sha256": "2f193bb7501efe32ca38fe27f9abbfd487be58fbd71cb3ed558dd3b1312a9b58",
+  "raw_bytes": 2641545,
+  "output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage031_ordered_account/C_TS",
+  "run_id": "e9789c1e548e4bf5ae1e2d2f47212473",
+  "arm": "C_TS",
+  "attempt": 2,
+  "writer": "stage031_run_ordered_checkpoint.py",
+  "writer_source_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "run_context_sha256": "400531049964269828194820017abc322dbdedd5ebd1d091b55e648ecfa81a73",
+  "parent_runner_sha256": "c05924175609c09ce0a44b451bcc97497be2b30012cb9c971886217c4960c6af",
+  "strategy_engine_sha256": {
+    "stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+    "stage028_ordered_engine.py": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23"
+  },
+  "account_exports_only": true,
+  "production_qualified": false
+}

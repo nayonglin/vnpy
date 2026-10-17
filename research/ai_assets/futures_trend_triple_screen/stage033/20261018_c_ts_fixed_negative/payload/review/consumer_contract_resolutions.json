@@ -1,0 +1,23 @@
+{
+  "status": "resolved_independent_audit_consumer_issues_not_financial_strategy_changes",
+  "first_audit_failure_preserved": "audit_attempt1_failure.json",
+  "additional_resolved_consumers": [
+    "raw usage trade_id became index and must not be read as remaining value column",
+    "raw date/time values must preserve exact CSV serialization rather than str() guesses",
+    "actual native Long/Short/Open/Close explicit enums canonically map to 多/空/开/平",
+    "positions contain 3742 warmup rows strictly before 2020-01-01, all start/end/poschange/count/turnover/fees/slip/PnL fields zero; account-period or late missing days were never ignored",
+    "daily original seven-gate broker10 reporting multiplier is 1.10 pinned to Stage403 AST and consumed source hash; Stage830 1.65 is separately disclosed native admission/forced-margin budget"
+  ],
+  "first_preflight_difference": {
+    "initial_entries": 2007,
+    "final_entries": 2117,
+    "added_entries": 110,
+    "changed_initial_entries": 0,
+    "all_other_preflight_fields_equal_after_JSON_projection": true,
+    "cause": "preflight input_fingerprints references the actual recorder.files object; preflight_used was saved before the 110 run-time reads, raw checkpoint contains the completed recorder map"
+  },
+  "financial_engine_replays_to_fix_review": 0,
+  "financial_outputs_changed": false,
+  "audit_serializations_and_read_only_retries_disclosed": true,
+  "final_wrapper_sha256": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf"
+}
