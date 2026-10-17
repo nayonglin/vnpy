@@ -1,0 +1,30 @@
+{
+  "schema": "stage073_independent_test_receipt_v1",
+  "source_sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+  "test_sha256": "51731fdd31bd9fe2d7ba7f04ed34fc99f3c19fddb70dd7abae839d35c5771539",
+  "tests_run": 2,
+  "failures": 0,
+  "errors": 0,
+  "successful": true,
+  "outer_model_spies": {
+    "load": 0,
+    "runtime": 0,
+    "score": 0,
+    "predict": 0,
+    "fit": 0,
+    "old_smoke": 0
+  },
+  "frozen_numerical_stack": {
+    "numpy": "2.4.4",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0",
+    "joblib": "1.5.3"
+  },
+  "evidence_redirected_to": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review",
+  "financial_replays": 0,
+  "production_qualified": false,
+  "exit_code": 0,
+  "execution_mode": "stdin_heredoc",
+  "harness_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/independent_test_harness.py",
+  "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib, json, sys, tempfile, unittest\nfrom contextlib import ExitStack\nfrom unittest.mock import patch\nsys.dont_write_bytecode = True\nroot = Path('/Users/mac/Desktop/fian')\nline = root/'research/lines/futures_trend_triple_screen'\nout = line/'outputs/stage073_pairwise_off_policy_independent_review'\nout.mkdir(parents=True, exist_ok=True)\nsys.path.insert(0,str(line/'tools'))\nimport stage022_run_c0_qualified_wait as runtime\nwith tempfile.TemporaryDirectory(prefix='stage073_runtime_') as temp:\n    runtime.OUTPUT = Path(temp)/'runtime'\n    runtime.configure_runtime(Path(temp)/'shared')\n    import joblib\n    from sklearn.pipeline import Pipeline\n    import qmt_roll_ai_selection_pairwise_runtime as pairwise\n    calls = dict(load=0,runtime=0,score=0,predict=0,fit=0,old_smoke=0)\n    def forbidden(name):\n        def fail(*args,**kwargs):\n            calls[name] += 1\n            raise AssertionError('stage073_forbidden_model_path:'+name)\n        return fail\n    with ExitStack() as stack:\n        stack.enter_context(patch.object(joblib,'load',forbidden('load')))\n        stack.enter_context(patch.object(pairwise.SelectionPairwiseRuntimeModel,'__init__',forbidden('runtime')))\n        stack.enter_context(patch.object(pairwise.SelectionPairwiseRuntimeModel,'score_candidate_pool',forbidden('score')))\n        for name in ('predict','predict_proba'):\n            stack.enter_context(patch.object(Pipeline,name,forbidden('predict')))\n        stack.enter_context(patch.object(Pipeline,'fit',forbidden('fit')))\n        stack.enter_context(patch.object(runtime,'model_runtime_smoke',forbidden('old_smoke')))\n        import test_stage065_pairwise_off_integration as module\n        module.EVIDENCE = out\n        suite = unittest.defaultTestLoader.loadTestsFromTestCase(module.PairwiseOffIntegrationTests)\n        with (out/'independent_tests.txt').open('w') as stream:\n            result = unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)\n        receipt = dict(schema='stage073_independent_test_receipt_v1',\n            source_sha256=hashlib.sha256((line/'tools/stage065_pairwise_off_policy.py').read_bytes()).hexdigest(),\n            test_sha256=hashlib.sha256((line/'tools/test_stage065_pairwise_off_integration.py').read_bytes()).hexdigest(),\n            tests_run=result.testsRun, failures=len(result.failures),errors=len(result.errors),\n            successful=result.wasSuccessful(),outer_model_spies=calls,\n            frozen_numerical_stack={name:sys.modules[name].__version__ for name in ('numpy','pandas','sklearn','joblib')},\n            evidence_redirected_to=str(out),financial_replays=0,production_qualified=False)\n        (out/'independent_test_receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\\n')\n        print((out/'independent_tests.txt').read_text())\n        print(json.dumps(receipt,ensure_ascii=False,indent=2))\n        raise SystemExit(0 if result.wasSuccessful() and not any(calls.values()) else 1)\nPY"
+}

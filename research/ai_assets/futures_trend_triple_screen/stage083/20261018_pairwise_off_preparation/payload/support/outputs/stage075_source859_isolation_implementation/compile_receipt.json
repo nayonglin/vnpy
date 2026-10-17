@@ -1,0 +1,16 @@
+{
+  "schema": "stage075_two_source_compile_v1",
+  "exit_code": 0,
+  "files": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage071_source859_isolation.py",
+      "source_sha256": "12580b91d0e264ac4f63807679742cbbc67c8cb03e66dd42343cf9b72c26fe27",
+      "compiled_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage075_source859_isolation_implementation/stage071_source859_isolation.pyc"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage071_source859_isolation.py",
+      "source_sha256": "fe26881b53d8c2a9891a7f35bfd17e3477b3b630fc9cd4219823193c2b9a29b5",
+      "compiled_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage075_source859_isolation_implementation/test_stage071_source859_isolation.pyc"
+    }
+  ]
+}

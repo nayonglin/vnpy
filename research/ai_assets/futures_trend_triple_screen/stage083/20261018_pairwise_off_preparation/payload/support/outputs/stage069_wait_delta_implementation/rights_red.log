@@ -1,0 +1,14 @@
+test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (stage061_bounded_tests.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label) ... FAIL
+
+======================================================================
+FAIL: test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (stage061_bounded_tests.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 161, in test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label
+    self.assertFalse(full('AA.CZCE',pd.Timestamp('2020-01-01T21:00:00')))
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.039s
+
+FAILED (failures=1)

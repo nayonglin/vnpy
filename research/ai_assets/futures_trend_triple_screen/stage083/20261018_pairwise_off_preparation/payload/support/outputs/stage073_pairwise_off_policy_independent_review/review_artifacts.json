@@ -1,0 +1,54 @@
+{
+  "schema": "stage073_review_artifacts_v1",
+  "stage_record": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0604_stage073_pairwise_off_policy_independent_review.md",
+    "sha256": "75bc4135230045cb1711e880f09f4476e5cca23e10812be4efc2fda4fbcaaf07"
+  },
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/independent_test_harness.py",
+      "sha256": "3cb3941e05355787683873f76f8f3e15732292bd500aba4141ef0331d4778f9a",
+      "bytes": 2991
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/independent_test_receipt.json",
+      "sha256": "be345b13d926700358eadc3c3239cb6e516383bc7577761ef56ed6ec2e3913f1",
+      "bytes": 4081
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/independent_tests.txt",
+      "sha256": "c76867186cc7afc1096f52e9e3614449adbfafb3069516c3b6c3e1e39e9111dc",
+      "bytes": 456
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/review_receipt.json",
+      "sha256": "8b89f55f5d92efb8f96d247853b53b3afe0d6e690f6b11438b7d82313a0abec9",
+      "bytes": 1330
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/small_counterexamples.json",
+      "sha256": "3538c522265ded4e1026116f4d1825f906329156b06ec7ce9ad8b9fc371f908e",
+      "bytes": 18429
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/small_counterexamples.py",
+      "sha256": "89626d45794d92e06846744158917e6d7adb038c6fadec95aaad6a1a08b10635",
+      "bytes": 5916
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/source_binding_check.json",
+      "sha256": "f5079067abd8bc41081b922eccbc1cbc328a68298bf328dbf05b1b05183fd7cd",
+      "bytes": 3272
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/test1.json",
+      "sha256": "b90304bc9835235f3557c77d409534ced955df590ebb769777cc882404d1ce75",
+      "bytes": 49091
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/test2.json",
+      "sha256": "ba83d4017c8e0e6e6d667234a2a50b4cfc19cce99d77b683755a29b6e9b2e6ed",
+      "bytes": 28512
+    }
+  ]
+}

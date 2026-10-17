@@ -1,0 +1,29 @@
+[
+  {
+    "case": "rights_red",
+    "test": "test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label",
+    "tests_run": 1,
+    "failures": 1,
+    "errors": 0,
+    "mutant_test_status": 1,
+    "harness_exit_code": 0
+  },
+  {
+    "case": "atomic_red",
+    "test": "test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source",
+    "tests_run": 1,
+    "failures": 7,
+    "errors": 0,
+    "mutant_test_status": 1,
+    "harness_exit_code": 0
+  },
+  {
+    "case": "commit_red",
+    "test": "test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze",
+    "tests_run": 1,
+    "failures": 1,
+    "errors": 0,
+    "mutant_test_status": 1,
+    "harness_exit_code": 0
+  }
+]

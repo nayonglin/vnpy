@@ -1,0 +1,55 @@
+{
+  "schema": "stage070_pairwise_off_policy_implementation_v1",
+  "sources": {
+    "research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+      "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+      "bytes": 6964
+    },
+    "research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py": {
+      "sha256": "51731fdd31bd9fe2d7ba7f04ed34fc99f3c19fddb70dd7abae839d35c5771539",
+      "bytes": 21228
+    },
+    "research/lines/futures_trend_triple_screen/stages/20261018_0546_stage062_pairwise_off_implementation_plan.md": {
+      "sha256": "fc31120390ab4c04c95d52a7dfd629992aab0f6a4abf139d1976a0b2252343e1",
+      "bytes": 29092
+    },
+    "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": {
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+      "bytes": 492864
+    },
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "bytes": 50824
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+      "bytes": 60111
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": {
+      "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+      "bytes": 11298
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": {
+      "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+      "bytes": 25106
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": {
+      "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+      "bytes": 13613
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": {
+      "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+      "bytes": 14012
+    }
+  },
+  "stdlib_import_only": true,
+  "task_scope": [
+    1,
+    2
+  ],
+  "financial_replays": 0,
+  "model_loads": 0,
+  "model_predictions": 0,
+  "model_fits": 0,
+  "production_qualified": false
+}

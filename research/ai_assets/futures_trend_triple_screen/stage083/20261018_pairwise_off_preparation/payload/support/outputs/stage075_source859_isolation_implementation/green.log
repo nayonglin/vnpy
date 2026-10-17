@@ -1,0 +1,9 @@
+STAGE075_EVIDENCE_DIR=/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage075_source859_isolation_implementation/green_9hydya3v
+test_context_normal_and_exception_restore_exact_cache_objects (__main__.TestSource859Isolation.test_context_normal_and_exception_restore_exact_cache_objects) ... ok
+test_only_unproven859_removed_anchor_rights_not_promoted (__main__.TestSource859Isolation.test_only_unproven859_removed_anchor_rights_not_promoted) ... ok
+test_real_fu_projection_true021_replacement_and_retained_conflict (__main__.TestSource859Isolation.test_real_fu_projection_true021_replacement_and_retained_conflict) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.215s
+
+OK

@@ -1,0 +1,26 @@
+test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (stage061_bounded_tests.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) ... FAIL
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (stage061_bounded_tests.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 214, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    self.assertEqual([x['request_sha256'] for x in accepted['deliveries']],[good['request_sha256']])
+AssertionError: Lists differ: ['414[57 chars]c545', '2bcfb76c014769301345712e22a2f704d4660d[23 chars]f52'] != ['414[57 chars]c545']
+
+First list contains 1 additional elements.
+First extra element 1:
+'2bcfb76c014769301345712e22a2f704d4660d5a356f748cd51f75e31540cf52'
+
+- ['4146f5688b6da95dde9716c144266e7ec3792c26631ab67ecfc2deed0100c545',
+?                                                                    ^
+
++ ['4146f5688b6da95dde9716c144266e7ec3792c26631ab67ecfc2deed0100c545']
+?                                                                    ^
+
+-  '2bcfb76c014769301345712e22a2f704d4660d5a356f748cd51f75e31540cf52']
+
+----------------------------------------------------------------------
+Ran 1 test in 0.032s
+
+FAILED (failures=1)

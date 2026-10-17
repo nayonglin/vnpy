@@ -1,0 +1,65 @@
+{
+  "schema": "stage069_accepted_wait_delta_implementation_v1",
+  "recorded_at": "2026-10-18T05:58:59.886345+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "plan": "stages/20261018_0545_stage061_accepted_wait_delta_reuse_plan.md",
+  "interpreter": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "runtime": {
+    "pandas_version": "2.3.3",
+    "pandas_file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/__init__.py",
+    "numpy_version": "2.4.4",
+    "numpy_file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/numpy/__init__.py",
+    "frozen_site": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages"
+  },
+  "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py -v",
+  "red": {
+    "exit_code": 1,
+    "tests": 3,
+    "failures": 3,
+    "errors": 0,
+    "reason": "New API file absent before implementation"
+  },
+  "green": {
+    "exit_code": 0,
+    "tests": 3,
+    "failures": 0,
+    "errors": 0
+  },
+  "semantic_mutation_checks": {
+    "harness_exit_code": 0,
+    "cases": 3,
+    "detected": 3,
+    "scope": "isolated temporary source copies; original implementation untouched"
+  },
+  "file_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": "3f3cf7dfca8af51226271a3db4ea56927c6e8909f9a77ff262a1ea9d30a50e85",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py": "fa0fde4ca859e1a921ec30b4d36bf6eac9678bdc475873c6f473626c282a928c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/red.log": "8393812fbba3f3e2f2b26e1464a39c5d6e6131aa1bc8ab85e37581d5f2b32796",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/green.log": "37582ff0d4db23796bd395c171a1212a612022e8be2c1a6fdea0cc9a0dbd567b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/rights_red.log": "6ce6d2bb8ef8c29cfd91ccc5ee60f847f6a0125d63f0a010aec2203a56494e43",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/atomic_red.log": "273761aca1890e5fbbb6eed84bf286495332d4719dde120bf294ba1370642146",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/commit_red.log": "04f8f92e00d8e59ead4c9cb45864a8bec66a12dad042fe1d3d882bf605c1057f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/behavioral_red_evidence.json": "769b8d1455cb4145c2f00f0af498f6dc0f06929e442a55e6ffe0fdecfa67bc7d"
+  },
+  "terminal_contract": "stage063_B_TS_actual_tool_failure_terminal_v1_only",
+  "rulings": [
+    {
+      "decision": "Adapt the exact observed failed-owner Stage063 schema; success-owner inputs remain unsupported",
+      "reason": "The real Stage063 terminal omits run_id/context SHA; join failure.run_id to same-owner context and pin runner_used/source and times",
+      "cost": "Future successful account owners require a separately reviewed success/seal contract"
+    }
+  ],
+  "real_deliveries_frozen": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "predictions": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "independent_review_pending": true,
+  "production_qualified": false,
+  "next_dependencies": [
+    "Root independent review of the new layer",
+    "After review, root may freeze the original 190 committed packages",
+    "New complete A_OFF/B_OFF runner and separate full-account contract remain outside this task"
+  ]
+}

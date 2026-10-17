@@ -1,0 +1,44 @@
+{
+  "schema": "stage073_pairwise_off_policy_independent_review_v1",
+  "scope": [
+    "Task1",
+    "Task2"
+  ],
+  "disposition": "accepted_finite_engineering_boundaries",
+  "findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "source_sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+  "test_sha256": "51731fdd31bd9fe2d7ba7f04ed34fc99f3c19fddb70dd7abae839d35c5771539",
+  "source_bindings_all_matched": true,
+  "commands": [
+    {
+      "receipt": "independent_test_receipt.json",
+      "exit_code": 0,
+      "tests": 2
+    },
+    {
+      "receipt": "small_counterexamples.json",
+      "exit_code": 0,
+      "rejection_count": 88
+    }
+  ],
+  "actual_requested_settings_per_arm": 173,
+  "financial_replays": 0,
+  "network_requests": 0,
+  "model_loads": 0,
+  "model_predictions": 0,
+  "model_fits": 0,
+  "ctp_connections": 0,
+  "orders": 0,
+  "limitations": [
+    "Task3 checkpoint/export and actual-fill integration not implemented or reviewed",
+    "Task4 runner and financial readiness not implemented or reviewed",
+    "Monthly AI pool retained; not a whole-system model-free claim",
+    "Finite fixtures provide no full-history return, strict OOS, cost or production qualification proof",
+    "Original B remains real exit1 and full financial metrics N/A"
+  ],
+  "production_qualified": false
+}

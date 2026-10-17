@@ -1,0 +1,19 @@
+Matplotlib is building the font cache; this may take a moment.
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+test_disabled_profiles_native_and_b_no_model (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_disabled_profiles_native_and_b_no_model) ... FAIL
+
+======================================================================
+FAIL: test_disabled_profiles_native_and_b_no_model (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_disabled_profiles_native_and_b_no_model)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py", line 110, in test_disabled_profiles_native_and_b_no_model
+    p = self.need_policy()
+        ^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py", line 105, in need_policy
+    self.assertIsNotNone(policy, "new shared OFF policy is absent at the real native/B boundary")
+AssertionError: unexpectedly None : new shared OFF policy is absent at the real native/B boundary
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

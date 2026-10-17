@@ -1,0 +1,749 @@
+{
+  "status": "passed_finite_real_fill_checkpoint_export",
+  "cases": [
+    {
+      "arm": "A_OFF",
+      "fill": {
+        "actual_827_fill_calls": [
+          "BACKTESTING.1"
+        ],
+        "identities": [
+          {
+            "trade_id": "BACKTESTING.1",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Long",
+            "offset": "Open",
+            "price": 111.0,
+            "volume": 120.0,
+            "execution_datetime": "2026-01-07 09:00:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": null
+          },
+          {
+            "trade_id": "BACKTESTING.2",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Short",
+            "offset": "Close",
+            "price": 105.0,
+            "volume": 120.0,
+            "execution_datetime": "2026-01-07 09:00:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          },
+          {
+            "trade_id": "BACKTESTING.3",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Long",
+            "offset": "Open",
+            "price": 111.0,
+            "volume": 120.0,
+            "execution_datetime": "2026-01-07 09:01:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          },
+          {
+            "trade_id": "BACKTESTING.4",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Short",
+            "offset": "Close",
+            "price": 105.0,
+            "volume": 120.0,
+            "execution_datetime": "2026-01-07 09:01:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          }
+        ],
+        "prices": [
+          111.0,
+          105.0,
+          111.0,
+          105.0
+        ],
+        "volumes": [
+          120,
+          120,
+          120,
+          120
+        ],
+        "cost_once": 5318.4,
+        "native_signal": "long_case1a",
+        "reference_calendar": [
+          "2026-01-07"
+        ],
+        "synthetic_usage_signal_fields_absent": true
+      },
+      "classes": {
+        "strategy_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+        "strategy_name": "QmtRollPortfolioStrategyStage847C9StopRetry",
+        "engine_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+        "engine_name": "Stage847StopRetryEngine"
+      },
+      "summary": {
+        "status": "completed_pending_independent_review",
+        "arm": "A_OFF",
+        "attempt": 1,
+        "run_id": "5cecabc68cf94c74bc0dea36548ea680",
+        "result_scope": "finite_native_fill_checkpoint_fixture",
+        "fixture_only": true,
+        "reference_calendar_scope": "tiny_fixture",
+        "ordered_applicable": false,
+        "ordered_counts": null,
+        "signal_machine_arm": null,
+        "account_classes": {
+          "strategy_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+          "strategy_name": "QmtRollPortfolioStrategyStage847C9StopRetry",
+          "engine_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+          "engine_name": "Stage847StopRetryEngine"
+        },
+        "financial_replays": 0,
+        "financial_replays_this_export_process": 0,
+        "export_only": true,
+        "result_origin": "same_engine_sealed_account_snapshot",
+        "production_qualified": false,
+        "checkpoint": {
+          "manifest": {
+            "account_exports_only": true,
+            "arm": "A_OFF",
+            "attempt": 1,
+            "data_bindings_sha256": "dc04023e4a194ce3125dd8010095c4e34b3dc0cef9304da043464a75aaf5cf24",
+            "fixture_only": true,
+            "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF",
+            "policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+            "production_qualified": false,
+            "raw_bytes": 10537,
+            "raw_filename": "raw_account.pkl.gz",
+            "raw_sha256": "ff752102a30ca56196b0baf0082a940aa5065f20a5ad5ad58eb6197fecc6381b",
+            "reference_calendar_scope": "tiny_fixture",
+            "run_context_sha256": "8bd62ae84a77153b2e2fb4bf27af35121f9e6585d8c738b134d8deefa3dd382e",
+            "run_id": "5cecabc68cf94c74bc0dea36548ea680",
+            "schema": "stage065_raw_checkpoint_manifest_v1",
+            "source_bindings_sha256": "1904ab74f842a8694f29a3125871828e426cc1318dda128ef181b3e04f56adcf",
+            "status": "raw_evidence_not_validation_or_performance_pass",
+            "writer": "stage065_account_checkpoint.py",
+            "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+          },
+          "seal": {
+            "arm": "A_OFF",
+            "attempt": 1,
+            "fixture_only": true,
+            "manifest_sha256": "a4d642ca887c1a3ff8069ced4e58ec817d99213321f8a9f23522cb5810850eac",
+            "production_qualified": false,
+            "raw_sha256": "ff752102a30ca56196b0baf0082a940aa5065f20a5ad5ad58eb6197fecc6381b",
+            "reference_calendar_scope": "tiny_fixture",
+            "run_id": "5cecabc68cf94c74bc0dea36548ea680",
+            "schema": "stage065_engine_validation_seal_v1",
+            "status": "engine_snapshot_validated_not_independent_economic_review",
+            "validated_at": "2026-10-18 06:24:20.320090+08:00",
+            "validation": {
+              "actual_daily_count": 1,
+              "actual_daily_dates_equal_preflight_reference": true,
+              "actual_settings_match_off_expected": true,
+              "all_consumed_inputs_unchanged_during_run": true,
+              "captured_bar_failures": 0,
+              "engine_returned": true,
+              "fixture_only": true,
+              "frozen_correctness_code_unchanged": true,
+              "historical_shared_signal_input_empty": true,
+              "pairwise_decision_dependency_absent": true,
+              "parameters_match_reference_except_off_policy": true,
+              "reference_calendar_scope": "tiny_fixture",
+              "strict_minute_missing_bars": 0
+            },
+            "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+          },
+          "seal_sha256": "ed86880c71efd4f352b5c829d61b21e84dd223dcb87cd12f5a029dfe2a050f8d"
+        },
+        "source_bindings": {
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+            "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+            "bytes": 27561
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+            "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+            "bytes": 6964
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+            "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+            "bytes": 60111
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": {
+            "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+            "bytes": 56966
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": {
+            "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+            "bytes": 14012
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": {
+            "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+            "bytes": 13613
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": {
+            "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+            "bytes": 11298
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": {
+            "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+            "bytes": 25106
+          },
+          "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": {
+            "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+            "bytes": 492864
+          },
+          "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+            "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+            "bytes": 50824
+          },
+          "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/bound_fixture_source.py": {
+            "sha256": "478ab0fd17e2e0d154038d220da055fcfc5591d09ef1b0a228aa84d41434d7e7",
+            "bytes": 45
+          }
+        },
+        "data_bindings_sha256": "dc04023e4a194ce3125dd8010095c4e34b3dc0cef9304da043464a75aaf5cf24",
+        "disabled_pairwise": {
+          "schema": "stage065_disabled_pairwise_policy_v1",
+          "status": "disabled_by_shared_pairwise_free_policy",
+          "model_loads": 0,
+          "model_predictions": 0,
+          "model_fits": 0,
+          "eight_key_policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+          "fallback": "metadata_sorted_product_insertion_order",
+          "rank_protection": false
+        },
+        "exported_at": "2026-10-18 06:24:20.406259+08:00",
+        "statistics": {
+          "variant": "A_OFF_tiny_fixture",
+          "label": "A_OFF finite native fill fixture",
+          "cost_multiplier": 1.0,
+          "account_capital": 100000.0,
+          "c3_capital": 100000.0,
+          "risk_multiplier": 1.0,
+          "product_cap_ratio": 1.0,
+          "max_concurrent_positions": 10,
+          "end_equity": 80281.6,
+          "total_return_pct": -19.718399999999995,
+          "cagr_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "ulcer_pct": 0.0,
+          "sharpe": 0.0,
+          "min_equity": 80281.6,
+          "max_broker10_margin_to_equity_pct": 0.0,
+          "p95_broker10_margin_to_equity_pct": 0.0,
+          "days_over_100pct": 0,
+          "days_over_90pct": 0,
+          "days_equity_below_zero": 0,
+          "total_slippage": 4800.0,
+          "total_trade_count": 4.0,
+          "nonzero_daily_win_rate_pct": 0.0,
+          "dd40_pass": 1,
+          "broker10_100_pass": 1,
+          "account_survival_pass": 1,
+          "deployable_pass": 1,
+          "note": "Fixture only; no full account replay.",
+          "result_scope": "finite_native_fill_checkpoint_fixture",
+          "fixture_only": true,
+          "production_qualified": false
+        },
+        "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/exports/export_002",
+        "checkpoint_raw_sha256": "ff752102a30ca56196b0baf0082a940aa5065f20a5ad5ad58eb6197fecc6381b"
+      },
+      "checkpoint_binding": {
+        "manifest": {
+          "account_exports_only": true,
+          "arm": "A_OFF",
+          "attempt": 1,
+          "data_bindings_sha256": "dc04023e4a194ce3125dd8010095c4e34b3dc0cef9304da043464a75aaf5cf24",
+          "fixture_only": true,
+          "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF",
+          "policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+          "production_qualified": false,
+          "raw_bytes": 10537,
+          "raw_filename": "raw_account.pkl.gz",
+          "raw_sha256": "ff752102a30ca56196b0baf0082a940aa5065f20a5ad5ad58eb6197fecc6381b",
+          "reference_calendar_scope": "tiny_fixture",
+          "run_context_sha256": "8bd62ae84a77153b2e2fb4bf27af35121f9e6585d8c738b134d8deefa3dd382e",
+          "run_id": "5cecabc68cf94c74bc0dea36548ea680",
+          "schema": "stage065_raw_checkpoint_manifest_v1",
+          "source_bindings_sha256": "1904ab74f842a8694f29a3125871828e426cc1318dda128ef181b3e04f56adcf",
+          "status": "raw_evidence_not_validation_or_performance_pass",
+          "writer": "stage065_account_checkpoint.py",
+          "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+        },
+        "seal": {
+          "arm": "A_OFF",
+          "attempt": 1,
+          "fixture_only": true,
+          "manifest_sha256": "a4d642ca887c1a3ff8069ced4e58ec817d99213321f8a9f23522cb5810850eac",
+          "production_qualified": false,
+          "raw_sha256": "ff752102a30ca56196b0baf0082a940aa5065f20a5ad5ad58eb6197fecc6381b",
+          "reference_calendar_scope": "tiny_fixture",
+          "run_id": "5cecabc68cf94c74bc0dea36548ea680",
+          "schema": "stage065_engine_validation_seal_v1",
+          "status": "engine_snapshot_validated_not_independent_economic_review",
+          "validated_at": "2026-10-18 06:24:20.320090+08:00",
+          "validation": {
+            "actual_daily_count": 1,
+            "actual_daily_dates_equal_preflight_reference": true,
+            "actual_settings_match_off_expected": true,
+            "all_consumed_inputs_unchanged_during_run": true,
+            "captured_bar_failures": 0,
+            "engine_returned": true,
+            "fixture_only": true,
+            "frozen_correctness_code_unchanged": true,
+            "historical_shared_signal_input_empty": true,
+            "pairwise_decision_dependency_absent": true,
+            "parameters_match_reference_except_off_policy": true,
+            "reference_calendar_scope": "tiny_fixture",
+            "strict_minute_missing_bars": 0
+          },
+          "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+        },
+        "seal_sha256": "ed86880c71efd4f352b5c829d61b21e84dd223dcb87cd12f5a029dfe2a050f8d"
+      },
+      "single_read_counts": {
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/run_context.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/preflight_used.json": 1,
+        "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_000.bin": 1,
+        "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_001.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_002.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_003.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_004.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_005.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_006.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_007.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_008.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_009.bin": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/bound_fixture_source.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/sources/source_010.bin": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/checkpoint/raw_manifest.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/checkpoint/raw_account.pkl.gz": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/checkpoint/validation_seal.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/A_OFF/checkpoint/seal_receipt.json": 1
+      },
+      "export_only_spies": {
+        "engine": 0,
+        "replay": 0,
+        "data": 0,
+        "accepted061": 0,
+        "database": 0,
+        "minute": 0,
+        "model": 0,
+        "predict": 0
+      },
+      "raw_survived_validation_failure": true,
+      "seal_survived_export_failure": true
+    },
+    {
+      "arm": "B_OFF",
+      "fill": {
+        "actual_827_fill_calls": [
+          "BACKTESTING.1"
+        ],
+        "identities": [
+          {
+            "trade_id": "BACKTESTING.1",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Long",
+            "offset": "Open",
+            "price": 111.0,
+            "volume": 10.0,
+            "execution_datetime": "2026-01-07 11:00:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": null
+          },
+          {
+            "trade_id": "BACKTESTING.2",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Short",
+            "offset": "Close",
+            "price": 105.0,
+            "volume": 10.0,
+            "execution_datetime": "2026-01-07 11:00:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          },
+          {
+            "trade_id": "BACKTESTING.3",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Long",
+            "offset": "Open",
+            "price": 111.0,
+            "volume": 10.0,
+            "execution_datetime": "2026-01-07 11:01:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          },
+          {
+            "trade_id": "BACKTESTING.4",
+            "vt_symbol": "AP605.CZCE",
+            "direction": "Short",
+            "offset": "Close",
+            "price": 105.0,
+            "volume": 10.0,
+            "execution_datetime": "2026-01-07 11:01:00",
+            "trading_date": "2026-01-07",
+            "signal_datetime": "2026-01-06 00:00:00",
+            "signal_order_id": "BACKTESTING.1",
+            "intraday_episode_id": "BACKTESTING.1"
+          }
+        ],
+        "prices": [
+          111.0,
+          105.0,
+          111.0,
+          105.0
+        ],
+        "volumes": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "cost_once": 443.2,
+        "native_signal": "",
+        "reference_calendar": [
+          "2026-01-07"
+        ],
+        "synthetic_usage_signal_fields_absent": true
+      },
+      "classes": {
+        "strategy_module": "stage035_b_ts_strategy",
+        "strategy_name": "Stage035IndependentB_TS",
+        "engine_module": "stage028_ordered_engine",
+        "engine_name": "Stage028OrderedStage847StopRetryEngine"
+      },
+      "summary": {
+        "status": "completed_pending_independent_review",
+        "arm": "B_OFF",
+        "attempt": 1,
+        "run_id": "e0bf8f24a3c6428f8aaa6f30f86e8c37",
+        "result_scope": "finite_native_fill_checkpoint_fixture",
+        "fixture_only": true,
+        "reference_calendar_scope": "tiny_fixture",
+        "ordered_applicable": true,
+        "ordered_counts": {
+          "decision_rows": 1,
+          "decision_counts": {
+            "intent": 1
+          },
+          "fill_audit_rows": 1,
+          "execution_audit_rows": 1,
+          "pending_intents": 0
+        },
+        "signal_machine_arm": "B_TS",
+        "account_classes": {
+          "strategy_module": "stage035_b_ts_strategy",
+          "strategy_name": "Stage035IndependentB_TS",
+          "engine_module": "stage028_ordered_engine",
+          "engine_name": "Stage028OrderedStage847StopRetryEngine"
+        },
+        "financial_replays": 0,
+        "financial_replays_this_export_process": 0,
+        "export_only": true,
+        "result_origin": "same_engine_sealed_account_snapshot",
+        "production_qualified": false,
+        "checkpoint": {
+          "manifest": {
+            "account_exports_only": true,
+            "arm": "B_OFF",
+            "attempt": 1,
+            "data_bindings_sha256": "80eca747d19c606d6387699b4d5f62f45489d18281df33f35cf263604cc3cb97",
+            "fixture_only": true,
+            "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF",
+            "policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+            "production_qualified": false,
+            "raw_bytes": 11826,
+            "raw_filename": "raw_account.pkl.gz",
+            "raw_sha256": "ec440fc0ce8b2f760871f9f23f9b864ba8d083b887ebe8ded2a78b9d98629634",
+            "reference_calendar_scope": "tiny_fixture",
+            "run_context_sha256": "0bbab4012d5c0d6c593c9857af6e27b4921e40e6409b9815e8903b5c33ecd10c",
+            "run_id": "e0bf8f24a3c6428f8aaa6f30f86e8c37",
+            "schema": "stage065_raw_checkpoint_manifest_v1",
+            "source_bindings_sha256": "1904ab74f842a8694f29a3125871828e426cc1318dda128ef181b3e04f56adcf",
+            "status": "raw_evidence_not_validation_or_performance_pass",
+            "writer": "stage065_account_checkpoint.py",
+            "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+          },
+          "seal": {
+            "arm": "B_OFF",
+            "attempt": 1,
+            "fixture_only": true,
+            "manifest_sha256": "502c2bfcbb5226c4a941382ec688118c664f1fbb4847875fa96964e76c62147a",
+            "production_qualified": false,
+            "raw_sha256": "ec440fc0ce8b2f760871f9f23f9b864ba8d083b887ebe8ded2a78b9d98629634",
+            "reference_calendar_scope": "tiny_fixture",
+            "run_id": "e0bf8f24a3c6428f8aaa6f30f86e8c37",
+            "schema": "stage065_engine_validation_seal_v1",
+            "status": "engine_snapshot_validated_not_independent_economic_review",
+            "validated_at": "2026-10-18 06:24:20.489721+08:00",
+            "validation": {
+              "actual_daily_count": 1,
+              "actual_daily_dates_equal_preflight_reference": true,
+              "actual_settings_match_off_expected": true,
+              "all_consumed_inputs_unchanged_during_run": true,
+              "captured_bar_failures": 0,
+              "engine_returned": true,
+              "fixture_only": true,
+              "frozen_correctness_code_unchanged": true,
+              "historical_shared_signal_input_empty": true,
+              "pairwise_decision_dependency_absent": true,
+              "parameters_match_reference_except_off_policy": true,
+              "reference_calendar_scope": "tiny_fixture",
+              "strict_minute_missing_bars": 0
+            },
+            "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+          },
+          "seal_sha256": "43cb3572a2a3a3950c6441915b870f8f3947cf617582d0e12b0c0fe4fb6d0a2d"
+        },
+        "source_bindings": {
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+            "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+            "bytes": 27561
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+            "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+            "bytes": 6964
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+            "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+            "bytes": 60111
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": {
+            "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+            "bytes": 56966
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": {
+            "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+            "bytes": 14012
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": {
+            "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+            "bytes": 13613
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": {
+            "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+            "bytes": 11298
+          },
+          "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": {
+            "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+            "bytes": 25106
+          },
+          "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": {
+            "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+            "bytes": 492864
+          },
+          "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+            "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+            "bytes": 50824
+          },
+          "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/bound_fixture_source.py": {
+            "sha256": "478ab0fd17e2e0d154038d220da055fcfc5591d09ef1b0a228aa84d41434d7e7",
+            "bytes": 45
+          }
+        },
+        "data_bindings_sha256": "80eca747d19c606d6387699b4d5f62f45489d18281df33f35cf263604cc3cb97",
+        "disabled_pairwise": {
+          "schema": "stage065_disabled_pairwise_policy_v1",
+          "status": "disabled_by_shared_pairwise_free_policy",
+          "model_loads": 0,
+          "model_predictions": 0,
+          "model_fits": 0,
+          "eight_key_policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+          "fallback": "metadata_sorted_product_insertion_order",
+          "rank_protection": false
+        },
+        "exported_at": "2026-10-18 06:24:20.583537+08:00",
+        "statistics": {
+          "variant": "B_OFF_tiny_fixture",
+          "label": "B_OFF finite native fill fixture",
+          "cost_multiplier": 1.0,
+          "account_capital": 100000.0,
+          "c3_capital": 100000.0,
+          "risk_multiplier": 1.0,
+          "product_cap_ratio": 1.0,
+          "max_concurrent_positions": 10,
+          "end_equity": 98356.8,
+          "total_return_pct": -1.643199999999997,
+          "cagr_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "ulcer_pct": 0.0,
+          "sharpe": 0.0,
+          "min_equity": 98356.8,
+          "max_broker10_margin_to_equity_pct": 0.0,
+          "p95_broker10_margin_to_equity_pct": 0.0,
+          "days_over_100pct": 0,
+          "days_over_90pct": 0,
+          "days_equity_below_zero": 0,
+          "total_slippage": 400.0,
+          "total_trade_count": 4.0,
+          "nonzero_daily_win_rate_pct": 0.0,
+          "dd40_pass": 1,
+          "broker10_100_pass": 1,
+          "account_survival_pass": 1,
+          "deployable_pass": 1,
+          "note": "Fixture only; no full account replay.",
+          "result_scope": "finite_native_fill_checkpoint_fixture",
+          "fixture_only": true,
+          "production_qualified": false
+        },
+        "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/exports/export_002",
+        "checkpoint_raw_sha256": "ec440fc0ce8b2f760871f9f23f9b864ba8d083b887ebe8ded2a78b9d98629634"
+      },
+      "checkpoint_binding": {
+        "manifest": {
+          "account_exports_only": true,
+          "arm": "B_OFF",
+          "attempt": 1,
+          "data_bindings_sha256": "80eca747d19c606d6387699b4d5f62f45489d18281df33f35cf263604cc3cb97",
+          "fixture_only": true,
+          "output_directory": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF",
+          "policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+          "production_qualified": false,
+          "raw_bytes": 11826,
+          "raw_filename": "raw_account.pkl.gz",
+          "raw_sha256": "ec440fc0ce8b2f760871f9f23f9b864ba8d083b887ebe8ded2a78b9d98629634",
+          "reference_calendar_scope": "tiny_fixture",
+          "run_context_sha256": "0bbab4012d5c0d6c593c9857af6e27b4921e40e6409b9815e8903b5c33ecd10c",
+          "run_id": "e0bf8f24a3c6428f8aaa6f30f86e8c37",
+          "schema": "stage065_raw_checkpoint_manifest_v1",
+          "source_bindings_sha256": "1904ab74f842a8694f29a3125871828e426cc1318dda128ef181b3e04f56adcf",
+          "status": "raw_evidence_not_validation_or_performance_pass",
+          "writer": "stage065_account_checkpoint.py",
+          "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+        },
+        "seal": {
+          "arm": "B_OFF",
+          "attempt": 1,
+          "fixture_only": true,
+          "manifest_sha256": "502c2bfcbb5226c4a941382ec688118c664f1fbb4847875fa96964e76c62147a",
+          "production_qualified": false,
+          "raw_sha256": "ec440fc0ce8b2f760871f9f23f9b864ba8d083b887ebe8ded2a78b9d98629634",
+          "reference_calendar_scope": "tiny_fixture",
+          "run_id": "e0bf8f24a3c6428f8aaa6f30f86e8c37",
+          "schema": "stage065_engine_validation_seal_v1",
+          "status": "engine_snapshot_validated_not_independent_economic_review",
+          "validated_at": "2026-10-18 06:24:20.489721+08:00",
+          "validation": {
+            "actual_daily_count": 1,
+            "actual_daily_dates_equal_preflight_reference": true,
+            "actual_settings_match_off_expected": true,
+            "all_consumed_inputs_unchanged_during_run": true,
+            "captured_bar_failures": 0,
+            "engine_returned": true,
+            "fixture_only": true,
+            "frozen_correctness_code_unchanged": true,
+            "historical_shared_signal_input_empty": true,
+            "pairwise_decision_dependency_absent": true,
+            "parameters_match_reference_except_off_policy": true,
+            "reference_calendar_scope": "tiny_fixture",
+            "strict_minute_missing_bars": 0
+          },
+          "writer_source_sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+        },
+        "seal_sha256": "43cb3572a2a3a3950c6441915b870f8f3947cf617582d0e12b0c0fe4fb6d0a2d"
+      },
+      "single_read_counts": {
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/run_context.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/preflight_used.json": 1,
+        "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_000.bin": 1,
+        "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_001.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_002.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_003.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_004.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_005.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_006.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_007.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_008.bin": 1,
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_009.bin": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/bound_fixture_source.py": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/sources/source_010.bin": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/checkpoint/raw_manifest.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/checkpoint/raw_account.pkl.gz": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/checkpoint/validation_seal.json": 1,
+        "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_rlpq9k9_/snapshots/B_OFF/checkpoint/seal_receipt.json": 1
+      },
+      "export_only_spies": {
+        "engine": 0,
+        "replay": 0,
+        "data": 0,
+        "accepted061": 0,
+        "database": 0,
+        "minute": 0,
+        "model": 0,
+        "predict": 0
+      },
+      "raw_survived_validation_failure": true,
+      "seal_survived_export_failure": true
+    }
+  ],
+  "rejected_cases": [
+    "A_OFF:missing_parent",
+    "A_OFF:usage_signal_conflict",
+    "A_OFF:ordinary_signal_missing",
+    "A_OFF:tamper:raw_account.pkl.gz",
+    "A_OFF:tamper:raw_manifest.json",
+    "A_OFF:tamper:validation_seal.json",
+    "A_OFF:tamper:run_context.json",
+    "A_OFF:tamper:preflight_used.json",
+    "A_OFF:tamper:bound_fixture_source.py",
+    "A_OFF:tamper:source_000.bin",
+    "A_OFF:unsealed",
+    "A_OFF:cross_arm",
+    "A_OFF:symlink",
+    "A_OFF:external_copy",
+    "B_OFF:missing_parent",
+    "B_OFF:usage_signal_conflict",
+    "B_OFF:ordinary_signal_missing",
+    "B_OFF:tamper:raw_account.pkl.gz",
+    "B_OFF:tamper:raw_manifest.json",
+    "B_OFF:tamper:validation_seal.json",
+    "B_OFF:tamper:run_context.json",
+    "B_OFF:tamper:preflight_used.json",
+    "B_OFF:tamper:bound_fixture_source.py",
+    "B_OFF:tamper:source_000.bin",
+    "B_OFF:unsealed",
+    "B_OFF:cross_arm",
+    "B_OFF:symlink",
+    "B_OFF:external_copy"
+  ],
+  "task1_2_previously_reviewed_test_sha256": "51731fdd31bd9fe2d7ba7f04ed34fc99f3c19fddb70dd7abae839d35c5771539",
+  "raw_survived_real_source_guard_failure": true,
+  "seal_survived_real_clock_failure": true,
+  "financial_replays": 0,
+  "fixture_only": true,
+  "production_qualified": false
+}

@@ -3,7 +3,7 @@
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
 - 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 03:25 CST）：C_TS attempt2完整exit0并独立033验收P0/P1/P2=0/0/0，660825/340.55%/DD−32.758963%/Sharpe0.991077，382fills、163母59赢36.196319%。对A0净利润仅保留24.1800%，收益/Sharpe/峰margin门失败；停止固定C形状，不扫参、不扩多周期。实际R超u估值100/100、max50x；额外1.65日收盘margin峰122.329%（非分钟PIT），B必须先定一致估价口径。旧attempt1导出失败保留。金融7attempt/3 accepted、训练0；整体目标active、production_qualified=false。
+- 当前状态（2026-10-18 06:27 CST）：原B因225个source859旧不完整bar七值冲突真实exit1，非timeout、无完整账本，绩效N/A；金融仍8attempt/3 accepted，训练0。原C0/C_TS负结果和057/058固定pairwise19历史PIT限制保留。共同OFF政策经073、061字节修复经077及真实190包/44614键经081、071统一隔离经078、中性checkpoint Task3经079均已有限独立接受；083已登记74复现资产。Task4未接线、无新金融；更高收益且更低回撤目标active、未达成、production_qualified=false。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -162,3 +162,14 @@
 - 本阶段新增过拟合否，真实数据正确性与时间一致准备有继续价值；直接重跑旧B无价值。目标active，尚无达标候选，production_qualified=false，无push/部署/CTP或订单。
 
 - Stage067实际失败复现资产已保存282项，manifest a21b5427d37d677370ab4680870f9ef04f97be9d476dca783fb3c5f17aafafaf；061/062/063/064/066、原失败/等待身份及batch034—038终态元数据完整保留，无原始行情/私有配置/活跃记录，全部副本SHA通过。实现中的069/070未被本次归档或作为完成证据。
+
+## Stage069—081：共同政策、数据复用实现与真实冻结（2026-10-18 06:16 CST）
+
+- 070共同pairwise OFF只改预定八项，保留月AI池；真实173 settings/native A及原035 B、slot/margin/gross/reservation有限反例通过。073独立2tests与88项拒绝反例P0/P1/P2=0/0/0，receipt8b89f55f5d92efb8f96d247853b53b3afe0d6e690f6b11438b7d82313a0abec9；不授予金融或全历史PIT资格。原policy源码edaa018c…39f冻结，Task3扩test后不能冒称整份新test已被073审过。
+- 069的061初版通过3tests，但072独立发现被hash路径重开导致未签价格可被消费；074唯一修复波次使所有实际JSON/CSV解析消费同一已hash bytes，大闭包源流hash不缓存，保留原021资格门。077定向复核0/0/0，receipt3647594a…03e3b；旧069/072和失败反例保留，不抹掉审查发现。
+- 080实际单次freeze/session16182工具真exit0：190真正commit包、44614唯一键，其中full44565、仅anchor49；3157来源指纹，失败191末包6873f0…3730明确excluded。manifest48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f。081独立数据审查另签资格，077只是代码receipt；此层不是全路径已齐证明，44,614也不是新增物理键数。
+- 071统一在原各层/016/原两anchor/061之后，隔离剩余无完成七值证明的source859，保留原文件与021七值等值门；完成单根anchor与full交易权分离，不用旧开盘使用权给完成值背书。A_OFF/B_OFF同政策，不按年份/品种/PnL删行。075实施最多3有限反例，后续另人独立审查。
+- 062 Task3中性checkpoint/export由076实施：真实tiny native/B fill、raw先保存/校验后seal、纯导出零金融数据加载；微型fixture明确fixture_only，不捏造1641日或原A0金融门。真实runner须完整2020—2026和fixture_only=False，Task4尚未实施。原1800/7200限额未改，无036重启、金融/网络/训练/真实model调用。
+- 以上是必要数据/时间一致性准备，新增过拟合否，继续价值是；既有选择偏差和模型资格限制不消失，代码/数据成功不是策略alpha。071/076/081仍在工作中，尚未作为完成资产归档；不改用户registry或其他研究线，不推送、部署、CTP或下单。
+
+- 06:27后续实际终态：081数据资格独立0/0/0；075隔离与076 checkpoint分别经078/079独立0/0/0接受，receipt66d9e68b…f80b/ecb13661…a77，严格限定数据/代码与微型接合。083已登记74项/75文件，manifest0b6cb453efbfc3d775f0a56f7133156f1b2ae2bcc4ae472dbec418319d291645，原价格overlay仍只留本地；Task4的D061/D071与context自行持久化接口已在083明确，尚无金融readiness。下一步直接推进最小完整入口接线，不扩大有限审查或重复旧suite。

@@ -1,0 +1,8 @@
+test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (__main__.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label) ... ok
+test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source (__main__.AcceptedDeltaTests.test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source) ... ok
+test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.131s
+
+OK

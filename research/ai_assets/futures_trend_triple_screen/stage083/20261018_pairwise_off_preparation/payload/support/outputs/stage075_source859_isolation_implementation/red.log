@@ -1,0 +1,33 @@
+STAGE075_EVIDENCE_DIR=/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage075_source859_isolation_implementation/red_xzbzagi5
+test_context_normal_and_exception_restore_exact_cache_objects (__main__.TestSource859Isolation.test_context_normal_and_exception_restore_exact_cache_objects) ... FAIL
+test_only_unproven859_removed_anchor_rights_not_promoted (__main__.TestSource859Isolation.test_only_unproven859_removed_anchor_rights_not_promoted) ... FAIL
+test_real_fu_projection_true021_replacement_and_retained_conflict (__main__.TestSource859Isolation.test_real_fu_projection_true021_replacement_and_retained_conflict) ... FAIL
+
+======================================================================
+FAIL: test_context_normal_and_exception_restore_exact_cache_objects (__main__.TestSource859Isolation.test_context_normal_and_exception_restore_exact_cache_objects)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage071_source859_isolation.py", line 264, in test_context_normal_and_exception_restore_exact_cache_objects
+    self.assertIsNone(s901._FULL_MINUTE_BY_SYMBOL_CACHE)
+AssertionError: {'sentinel': <object object at 0x104b5bbe0>} is not None
+
+======================================================================
+FAIL: test_only_unproven859_removed_anchor_rights_not_promoted (__main__.TestSource859Isolation.test_only_unproven859_removed_anchor_rights_not_promoted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage071_source859_isolation.py", line 106, in test_only_unproven859_removed_anchor_rights_not_promoted
+    self.assertEqual(len(result), 5)
+AssertionError: 7 != 5
+
+======================================================================
+FAIL: test_real_fu_projection_true021_replacement_and_retained_conflict (__main__.TestSource859Isolation.test_real_fu_projection_true021_replacement_and_retained_conflict)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage071_source859_isolation.py", line 237, in test_real_fu_projection_true021_replacement_and_retained_conflict
+    self.assertEqual(len(isolated), 1)
+AssertionError: 226 != 1
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.145s
+
+FAILED (failures=3)

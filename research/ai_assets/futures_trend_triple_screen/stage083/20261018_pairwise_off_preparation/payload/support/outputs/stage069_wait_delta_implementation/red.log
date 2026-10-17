@@ -1,0 +1,41 @@
+test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (__main__.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label) ... FAIL
+test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source (__main__.AcceptedDeltaTests.test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source) ... FAIL
+test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) ... FAIL
+
+======================================================================
+FAIL: test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (__main__.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 151, in test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label
+    module=self.api()
+           ^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 144, in api
+    self.assertTrue(SOURCE.is_file(), 'Stage061 freeze/loader API is not implemented')
+AssertionError: False is not true : Stage061 freeze/loader API is not implemented
+
+======================================================================
+FAIL: test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source (__main__.AcceptedDeltaTests.test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 170, in test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source
+    module=self.api()
+           ^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 144, in api
+    self.assertTrue(SOURCE.is_file(), 'Stage061 freeze/loader API is not implemented')
+AssertionError: False is not true : Stage061 freeze/loader API is not implemented
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 202, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    module=self.api()
+           ^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 144, in api
+    self.assertTrue(SOURCE.is_file(), 'Stage061 freeze/loader API is not implemented')
+AssertionError: False is not true : Stage061 freeze/loader API is not implemented
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=3)

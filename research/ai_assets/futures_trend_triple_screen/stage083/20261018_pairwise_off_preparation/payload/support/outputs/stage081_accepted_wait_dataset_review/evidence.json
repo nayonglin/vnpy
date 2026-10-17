@@ -1,0 +1,192 @@
+{
+  "schema": "stage081_accepted_wait_dataset_independent_review_evidence_v1",
+  "reviewed_at": "2026-10-18T06:16:50.316826+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review_independent_dataset",
+  "review_scope": "对root一次真实freeze的固定manifest作独立数据集审查，研究限定；不重聚合daily、不重hash全部3157来源",
+  "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/manifest.json",
+  "manifest_sha256": "48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f",
+  "root_reported_freeze_terminal": {
+    "tool_session_id": 16182,
+    "terminal_chunk_id": "7f8959",
+    "true_exit_code": 0,
+    "freeze_calls": 1,
+    "source": "root task dispatch observation; reviewer did not rerun freeze"
+  },
+  "dataset_check_result": {
+    "schema": "stage081_accepted_wait_dataset_check_result_v1",
+    "checked_at": "2026-10-18T06:16:50.316826+08:00",
+    "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/manifest.json",
+    "manifest_sha256": "48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f",
+    "run_id": "ccc4a13cbc8e4691af41a16916c659f2",
+    "code_sha256": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+    "gate_counts": {
+      "data_requested": 191,
+      "data_qualified_appended": 190,
+      "data_gate_failed": 1
+    },
+    "resolver_pointers": 191,
+    "selected_commits": 190,
+    "accepted_request_order_sha256": "b8e968799862110aa666b0ff77ec9c7e3bae519548e94d57c094a46e5bdfa77d",
+    "excluded": [
+      {
+        "request_sha256": "6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730",
+        "reason": "data_gate_failed"
+      }
+    ],
+    "raw_rows_across_receipts": 44614,
+    "unique_keys": 44614,
+    "full_keys": 44565,
+    "anchor_keys": 44614,
+    "anchor_only_keys": 49,
+    "cross_receipt_same_value_overlaps": 0,
+    "cross_receipt_conflicts": 0,
+    "requirement_counts": {
+      "full_session": 145,
+      "anchor": 49
+    },
+    "source_fingerprints": 3157,
+    "source_reference_entries_across_190": 7382,
+    "source_union_exact": true,
+    "all_delivery_sources_match_terminal_owner": true,
+    "actual_objects_hash_checked": 959,
+    "closure_only_sources_not_rehashed": 2203,
+    "artifact_sha256": {
+      "source_run_snapshot.json": "2dd03a1af5e369ff49409a013e26930777c34f87bf4c406942e30000559caabf",
+      "accepted_deliveries.json": "7644c1973f83ff9b8a78121df939d5cf6c7c0a8115635671bbb6bc324d4cdc8b",
+      "overlay.csv": "8f11293533aa5dee86868b6d4cf583a64c21417dce71b6e9e70926ab7b476a00",
+      "rights.csv": "d0a83f33d500f633618d26dac81e687717e8b63074f7685fbe6f35742b3ebbf9"
+    },
+    "artifact_bytes": {
+      "source_run_snapshot.json": 5027,
+      "accepted_deliveries.json": 3697534,
+      "overlay.csv": 3293608,
+      "rights.csv": 4838244
+    },
+    "checks": {
+      "terminal_owner_same_run": true,
+      "original190_double_record_exact": true,
+      "canonical_requests_and_fingerprints": true,
+      "receipt_scope_and_flags": true,
+      "delivery_seven_value_union_exact": true,
+      "rights_full_anchor_and_proof_requests_exact": true,
+      "counts_and_sorting": true,
+      "four_artifact_hashes": true,
+      "failed_191_excluded": true,
+      "source_metadata_closure": true,
+      "manifest_and_artifacts_unchanged_at_end": true
+    },
+    "old_key_values_unchanged_basis": "Inherited from all 190 original 021 commits old_keys_changed=0 plus Stage077 accepted adapter equal_only_no_replace contract; no dead-engine RAM global reconstruction",
+    "findings": {
+      "P0": 0,
+      "P1": 0,
+      "P2": 0
+    },
+    "scope": {
+      "new_financial_replays": 0,
+      "code_suite_runs": 0,
+      "models_loaded": 0,
+      "model_fits": 0,
+      "predictions": 0,
+      "network_calls": 0,
+      "orders": 0,
+      "daily_reaggregations": 0,
+      "full_market_source_rehashes": 0,
+      "new_freeze_calls": 0,
+      "partial_PnL_read": false
+    },
+    "production_qualified": false
+  },
+  "ancillary_063_064_077_evidence": {
+    "stage064_selected_fields": {
+      "schema": "stage064_B_TS_failure_independent_review_receipt_v1",
+      "independent_review": true,
+      "reviewer": "delivery_guard_readonly",
+      "status": "failed_closed_confirmed_no_complete_performance",
+      "p0_findings": 0,
+      "p1_findings": 1,
+      "p2_findings": 1,
+      "p1_scope": "Runtime old-value incompatibility prevents complete financial result; concrete cause separately investigated, not attributed to alpha or model.",
+      "p2_scope": "Pointer/data acceptance alone cannot seed inheritance; require corresponding runtime-appended evidence and pinned identities.",
+      "result_qualified": false,
+      "last_delivery_inheritance_qualified": false,
+      "complete_metrics": "N/A",
+      "partial_PnL_reported": false,
+      "production_qualified": false
+    },
+    "fingerprints": {
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage077_wait_delta_fix_independent_review/review_receipt.json": "3647594a69cc97d991047428ab35c231165989081f1fc43022faa7fd5b103e3b",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage063_b_ts_actual_failure/actual_tool_terminal.json": "8f556fb6b76c27f28db7ff7799643bda5c7e934c844a29546545efe10d21981b",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage064_b_ts_failure_independent_review/review_receipt.json": "916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963"
+    }
+  },
+  "commands": [
+    {
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nfrom collections import Counter\nfrom datetime import datetime\nimport hashlib,importlib.util,io,json,sys,tempfile\nline=Path('research/lines/futures_trend_triple_screen').resolve();sys.path.insert(0,str(line/'tools'))\nimport stage022_run_c0_qualified_wait as runtime\ntemp=tempfile.TemporaryDirectory(prefix='stage081-runtime-');runtime.configure_runtime(Path(temp.name)/'shared')\nimport numpy as np,pandas as pd\nimport stage021_blocking_data_gate as gate\nimport stage061_accepted_wait_delta as module\nh=lambda b:hashlib.sha256(b).hexdigest()\nmanifest_path=line/'outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/manifest.json'\nmanifest_sha='48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f'\nassert not manifest_path.is_symlink()\nmb=manifest_path.read_bytes();assert h(mb)==manifest_sha;m=json.loads(mb)\nassert m['schema']==module.MANIFEST_SCHEMA and m['status']=='frozen_pending_independent_review'\nassert m['qualification_scope']=='accepted_exact_keys_only' and m['old_key_value_policy']=='equal_only_no_replace'\nassert m['production_qualified'] is False\npayloads={};verified={};expected_sources={};owner={}\ndef add_source(path,expected):\n    key=str(path);assert Path(key).is_absolute() and len(expected)==64\n    assert key not in expected_sources or expected_sources[key]==expected\n    expected_sources[key]=expected\ndef bound(path,expected,*,manifest_source=True,owner_required=False):\n    path=Path(path);key=str(path)\n    assert path.is_absolute() and not path.is_symlink()\n    if manifest_source:assert m['source_fingerprints'][key]==expected\n    if owner_required:assert owner[key]['sha256']==expected\n    if key not in payloads:payloads[key]=path.read_bytes()\n    assert h(payloads[key])==expected\n    verified[key]=expected\n    return payloads[key]\nartifacts={name:bound(manifest_path.parent/name,sha,manifest_source=False) for name,sha in m['artifacts'].items()}\nassert set(artifacts)=={'source_run_snapshot.json','accepted_deliveries.json','overlay.csv','rights.csv'}\nsnapshot=json.loads(artifacts['source_run_snapshot.json']);accepted=json.loads(artifacts['accepted_deliveries.json'])\nterminal=json.loads(bound(snapshot['terminal_evidence_path'],snapshot['terminal_sha256']))\nassert snapshot['terminal_evidence_path']==m['terminal_evidence_path'] and snapshot['terminal_sha256']==m['terminal_sha256']\nassert terminal['schema']=='stage063_B_TS_actual_tool_failure_terminal_v1' and terminal['financial_terminal_observed'] is True and terminal['financial_exit_code']==1\nassert terminal['run_failure_path']==snapshot['run_facts_path'] and terminal['run_failure_sha256']==snapshot['run_facts_sha256']\nfacts=json.loads(bound(snapshot['run_facts_path'],snapshot['run_facts_sha256']));owner=facts['input_fingerprints']\nassert facts['run_id']==snapshot['run_id']==accepted['run_id']==m['run_id']=='ccc4a13cbc8e4691af41a16916c659f2'\nassert facts['status']=='failed_closed_no_accepted_performance' and facts['arm']=='B_TS' and facts['attempt']==1 and facts['production_qualified'] is False\ncontext=json.loads(bound(snapshot['run_context_path'],snapshot['run_context_sha256']))\nassert context==snapshot['run_context'] and context['schema']=='stage036_run_context_v1'\nassert all(context[k]==facts[k] for k in ('run_id','arm','attempt','started_at'))\nassert context['output_directory']==str(Path(snapshot['run_facts_path']).parent)\nassert all(terminal[k]==facts[k] for k in ('started_at','failed_at'))\nrunner_sha=terminal['runner_source_sha256']\nassert runner_sha==terminal['used_runner_sha256']==context['writer_source_sha256']\nassert context['writer']=='stage036_run_b_ts_checkpoint.py'\nassert snapshot['runner_source_path']==terminal['runner_source_path'] and snapshot['runner_source_sha256']==runner_sha\nassert snapshot['terminal']==dict(financial_tool_session_id=terminal['financial_tool_session_id'],engine_pid_at_start=terminal['engine_pid_at_start'],financial_exit_code=1,financial_terminal_observed=True)\nassert snapshot['accepted_audit'] is None and snapshot['qualification_scope']=='committed_delivery_only_not_financial_qualification'\nbase=json.loads(bound(m['base_stack_path'],m['base_stack_sha256'],owner_required=True))\nassert snapshot['base_stack_path']==m['base_stack_path'] and snapshot['base_stack_sha256']==m['base_stack_sha256']==facts['data_stack_sha256']\nassert base['schema']=='stage022_qualified_data_stack_v1' and base['append_order']==['002','011','015','020']\nassert snapshot['inherited_anchor_inputs']==m['inherited_anchor_inputs']==facts['reused_anchor']['deliveries']\nassert facts['reused_anchor']['exact_anchor_keys']==2 and facts['reused_anchor']['full_session_keys']==0\nfor path,sha in [(snapshot['run_facts_path'],snapshot['run_facts_sha256']),(snapshot['terminal_evidence_path'],snapshot['terminal_sha256']),(snapshot['run_context_path'],snapshot['run_context_sha256']),(terminal['runner_source_path'],runner_sha),(Path(snapshot['run_facts_path']).parent/'runner_used.py',runner_sha),(m['base_stack_path'],m['base_stack_sha256'])]:\n    add_source(path,sha)\nfor item in m['inherited_anchor_inputs']:\n    for kind in ('request','receipt','data'):\n        path=item[kind+'_path'];sha=owner[path]['sha256'] if kind=='request' else item[kind+'_sha256']\n        assert owner[path]['sha256']==sha\n        add_source(path,sha)\ngates=facts['qualified_wait_gate_audit'];resolvers=facts['resolver_audit'];counts=dict(Counter(r['event'] for r in gates))\nassert counts==terminal['gate_event_counts']=={'data_requested':191,'data_qualified_appended':190,'data_gate_failed':1}\nassert len(resolvers)==terminal['resolver_wait_records']==191\nby={row['request_sha256']:row for row in resolvers};assert len(by)==len(resolvers)\nfailed={row['request_sha256'] for row in gates if row['event']=='data_gate_failed'}\nlast='6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730'\nassert failed=={last}\ncommits=[(i,row) for i,row in enumerate(gates) if row['event']=='data_qualified_appended']\nassert len({e['request_sha256'] for _,e in commits})==190\nassert accepted['schema']=='stage061_accepted_wait_deliveries_v1' and len(accepted['deliveries'])==m['accepted_deliveries']==190\nassert accepted['excluded']==[dict(request_sha256=last,reason='data_gate_failed')]\nvalues={};proof={};full_union=set();anchor_union=set();cross_receipt_overlap=0;source_entries=0;raw_rows=0;requirement_counts=Counter();order=[]\nfor frozen,(index,event) in zip(accepted['deliveries'],commits):\n    digest=event['request_sha256'];pointer=by[digest];order.append(digest)\n    assert digest not in failed and pointer['status']=='qualified_delivery_pointer_accepted'\n    assert type(event['old_keys_changed']) is int and event['old_keys_changed']==0\n    assert all(event[k]==pointer[k] for k in ('receipt_path','receipt_sha256','data_path','data_sha256'))\n    for pf,sf in (('request_path','request_file_sha256'),('response_path','response_sha256'),('receipt_path','receipt_sha256'),('data_path','data_sha256')):\n        bound(pointer[pf],pointer[sf],owner_required=True);add_source(pointer[pf],pointer[sf])\n    request_path=Path(pointer['request_path'])\n    assert request_path.parent==Path(snapshot['run_facts_path']).parent/'data_wait'/('request_'+digest)\n    request=json.loads(payloads[str(request_path)])\n    assert request['schema']==gate.REQUEST_SCHEMA and request['request_sha256']==digest==gate.request_sha256(request)\n    requested=[r for r in gates[:index] if r['event']=='data_requested' and r['request_sha256']==digest]\n    assert len(requested)==1 and requested[0]['request_sequence']==request['request_sequence']\n    fingerprint_path=request_path.with_name('request_fingerprint.json');fingerprint_sha=owner[str(fingerprint_path)]['sha256']\n    fingerprint=json.loads(bound(fingerprint_path,fingerprint_sha,owner_required=True));add_source(fingerprint_path,fingerprint_sha)\n    assert fingerprint==dict(request_sha256=digest,request_file_sha256=pointer['request_file_sha256'],request_path=str(request_path))\n    response=json.loads(payloads[pointer['response_path']])\n    assert response['schema']=='stage022_delivery_pointer_v1' and response['request_sha256']==digest\n    assert response['receipt_path']==pointer['receipt_path'] and response['receipt_sha256']==pointer['receipt_sha256']\n    receipt=json.loads(payloads[pointer['receipt_path']]);closure=receipt['source_fingerprints']\n    assert closure==pointer['source_fingerprints']\n    for path,sha in closure.items():\n        assert owner[path]['sha256']==sha\n        add_source(path,sha);source_entries+=1\n    assert all(r['requirement_kind'] in ('anchor','full_session') for r in request['requirements'])\n    identities={(r['vt_symbol'],r['execution_trade_date'],r['requirement_kind']) for r in request['requirements']}\n    assert len(identities)==len(request['requirements'])\n    requirement_counts.update(r['requirement_kind'] for r in request['requirements'])\n    data,full,anchor,audit=module._read_delivery_bytes(request,gate.QualifiedDelivery(Path(pointer['receipt_path']),pointer['receipt_sha256']),verified,payloads,owner)\n    assert audit['accepted_keys']==event['accepted_keys'] and type(event['appended_keys']) is int and 0<=event['appended_keys']<=len(data)\n    assert all(audit[k]==event[k] for k in audit)\n    expected_entry=dict(original_gate_index=index,request_sha256=digest,request_path=str(request_path),request_file_sha256=pointer['request_file_sha256'],\n       request_fingerprint_path=str(fingerprint_path),request_fingerprint_sha256=fingerprint_sha,response_path=pointer['response_path'],response_sha256=pointer['response_sha256'],\n       source_fingerprints=closure,accepted_requirements=receipt['accepted_requirements'],appended_keys=event['appended_keys'],old_keys_changed=0,**audit)\n    assert frozen==expected_entry\n    raw_rows+=len(data);full_union.update(full);anchor_union.update(full|anchor)\n    for row in data.itertuples(index=False):\n        key=(str(row.vt_symbol),pd.Timestamp(row.bar_datetime));seven=tuple(float(getattr(row,k)) for k in module.VALUES)\n        if key in values:\n            assert np.array_equal(values[key],seven);cross_receipt_overlap+=1\n        values[key]=seven;proof.setdefault(key,set()).add(digest)\nassert m['source_fingerprints']==expected_sources\noverlay=gate.old.normal_times(pd.read_csv(io.BytesIO(artifacts['overlay.csv']),float_precision='round_trip'))\nrights=gate.old.normal_times(pd.read_csv(io.BytesIO(artifacts['rights.csv'])))\nassert list(overlay.columns)==module.FIELDS and list(rights.columns)==['vt_symbol','bar_datetime','qualified_full','qualified_anchor','proof_requests']\nassert not gate.old.minute_keys(overlay).has_duplicates and not gate.old.minute_keys(rights).has_duplicates\noverlay_keys=[(str(r.vt_symbol),pd.Timestamp(r.bar_datetime)) for r in overlay.itertuples(index=False)]\nrights_keys=[(str(r.vt_symbol),pd.Timestamp(r.bar_datetime)) for r in rights.itertuples(index=False)]\nassert overlay_keys==rights_keys==sorted(values)\nassert np.isfinite(overlay[module.VALUES].to_numpy(dtype=float)).all()\nfor row in overlay.itertuples(index=False):\n    key=(str(row.vt_symbol),pd.Timestamp(row.bar_datetime))\n    assert np.array_equal(tuple(float(getattr(row,k)) for k in module.VALUES),values[key])\nfor row in rights.itertuples(index=False):\n    key=(str(row.vt_symbol),pd.Timestamp(row.bar_datetime))\n    assert row.qualified_full in (0,1) and row.qualified_anchor==1\n    assert bool(row.qualified_full)==(key in full_union) and bool(row.qualified_anchor)==(key in anchor_union)\n    assert json.loads(row.proof_requests)==sorted(proof[key]) and last not in proof[key]\nassert len(values)==m['accepted_keys']==44614\nassert len(full_union)==m['qualified_full_keys']==44565\nassert len(anchor_union)==m['qualified_anchor_keys']==44614\nassert len(anchor_union-full_union)==49 and len(expected_sources)==3157\nreview063=line/'outputs/stage064_b_ts_failure_independent_review/review_receipt.json'\nreview063_bytes=review063.read_bytes();assert h(review063_bytes)=='916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963'\ncode_sha=h((line/'tools/stage061_accepted_wait_delta.py').read_bytes());assert code_sha=='3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a'\nassert h(manifest_path.read_bytes())==manifest_sha\nfor name,payload in artifacts.items():assert h((manifest_path.parent/name).read_bytes())==h(payload)\nprint(json.dumps(dict(schema='stage081_accepted_wait_dataset_check_result_v1',checked_at=datetime.now().astimezone().isoformat(),manifest_path=str(manifest_path),manifest_sha256=manifest_sha,\nrun_id=m['run_id'],code_sha256=code_sha,gate_counts=counts,resolver_pointers=191,selected_commits=190,\naccepted_request_order_sha256=h(json.dumps(order,separators=(',',':')).encode()),excluded=accepted['excluded'],\nraw_rows_across_receipts=raw_rows,unique_keys=len(values),full_keys=len(full_union),anchor_keys=len(anchor_union),anchor_only_keys=len(anchor_union-full_union),\ncross_receipt_same_value_overlaps=cross_receipt_overlap,cross_receipt_conflicts=0,requirement_counts=dict(requirement_counts),\nsource_fingerprints=3157,source_reference_entries_across_190=source_entries,source_union_exact=True,all_delivery_sources_match_terminal_owner=True,\nactual_objects_hash_checked=len(verified)+1,closure_only_sources_not_rehashed=len(set(expected_sources)-set(verified)),\nartifact_sha256={name:h(payload) for name,payload in artifacts.items()},artifact_bytes={name:len(payload) for name,payload in artifacts.items()},\nchecks=dict(terminal_owner_same_run=True,original190_double_record_exact=True,canonical_requests_and_fingerprints=True,receipt_scope_and_flags=True,\ndelivery_seven_value_union_exact=True,rights_full_anchor_and_proof_requests_exact=True,counts_and_sorting=True,four_artifact_hashes=True,failed_191_excluded=True,\nsource_metadata_closure=True,manifest_and_artifacts_unchanged_at_end=True),\nold_key_values_unchanged_basis='Inherited from all 190 original 021 commits old_keys_changed=0 plus Stage077 accepted adapter equal_only_no_replace contract; no dead-engine RAM global reconstruction',\nfindings=dict(P0=0,P1=0,P2=0),scope=dict(new_financial_replays=0,code_suite_runs=0,models_loaded=0,model_fits=0,predictions=0,network_calls=0,orders=0,daily_reaggregations=0,\nfull_market_source_rehashes=0,new_freeze_calls=0,partial_PnL_read=False),production_qualified=False),ensure_ascii=False,indent=2))\nPY",
+      "chunk_id": "73fae6",
+      "wall_time_seconds": 2.251974125,
+      "exit_code": 0,
+      "original_token_count": 779,
+      "output": "{\n  \"schema\": \"stage081_accepted_wait_dataset_check_result_v1\",\n  \"checked_at\": \"2026-10-18T06:16:50.316826+08:00\",\n  \"manifest_path\": \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/manifest.json\",\n  \"manifest_sha256\": \"48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f\",\n  \"run_id\": \"ccc4a13cbc8e4691af41a16916c659f2\",\n  \"code_sha256\": \"3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a\",\n  \"gate_counts\": {\n    \"data_requested\": 191,\n    \"data_qualified_appended\": 190,\n    \"data_gate_failed\": 1\n  },\n  \"resolver_pointers\": 191,\n  \"selected_commits\": 190,\n  \"accepted_request_order_sha256\": \"b8e968799862110aa666b0ff77ec9c7e3bae519548e94d57c094a46e5bdfa77d\",\n  \"excluded\": [\n    {\n      \"request_sha256\": \"6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730\",\n      \"reason\": \"data_gate_failed\"\n    }\n  ],\n  \"raw_rows_across_receipts\": 44614,\n  \"unique_keys\": 44614,\n  \"full_keys\": 44565,\n  \"anchor_keys\": 44614,\n  \"anchor_only_keys\": 49,\n  \"cross_receipt_same_value_overlaps\": 0,\n  \"cross_receipt_conflicts\": 0,\n  \"requirement_counts\": {\n    \"full_session\": 145,\n    \"anchor\": 49\n  },\n  \"source_fingerprints\": 3157,\n  \"source_reference_entries_across_190\": 7382,\n  \"source_union_exact\": true,\n  \"all_delivery_sources_match_terminal_owner\": true,\n  \"actual_objects_hash_checked\": 959,\n  \"closure_only_sources_not_rehashed\": 2203,\n  \"artifact_sha256\": {\n    \"source_run_snapshot.json\": \"2dd03a1af5e369ff49409a013e26930777c34f87bf4c406942e30000559caabf\",\n    \"accepted_deliveries.json\": \"7644c1973f83ff9b8a78121df939d5cf6c7c0a8115635671bbb6bc324d4cdc8b\",\n    \"overlay.csv\": \"8f11293533aa5dee86868b6d4cf583a64c21417dce71b6e9e70926ab7b476a00\",\n    \"rights.csv\": \"d0a83f33d500f633618d26dac81e687717e8b63074f7685fbe6f35742b3ebbf9\"\n  },\n  \"artifact_bytes\": {\n    \"source_run_snapshot.json\": 5027,\n    \"accepted_deliveries.json\": 3697534,\n    \"overlay.csv\": 3293608,\n    \"rights.csv\": 4838244\n  },\n  \"checks\": {\n    \"terminal_owner_same_run\": true,\n    \"original190_double_record_exact\": true,\n    \"canonical_requests_and_fingerprints\": true,\n    \"receipt_scope_and_flags\": true,\n    \"delivery_seven_value_union_exact\": true,\n    \"rights_full_anchor_and_proof_requests_exact\": true,\n    \"counts_and_sorting\": true,\n    \"four_artifact_hashes\": true,\n    \"failed_191_excluded\": true,\n    \"source_metadata_closure\": true,\n    \"manifest_and_artifacts_unchanged_at_end\": true\n  },\n  \"old_key_values_unchanged_basis\": \"Inherited from all 190 original 021 commits old_keys_changed=0 plus Stage077 accepted adapter equal_only_no_replace contract; no dead-engine RAM global reconstruction\",\n  \"findings\": {\n    \"P0\": 0,\n    \"P1\": 0,\n    \"P2\": 0\n  },\n  \"scope\": {\n    \"new_financial_replays\": 0,\n    \"code_suite_runs\": 0,\n    \"models_loaded\": 0,\n    \"model_fits\": 0,\n    \"predictions\": 0,\n    \"network_calls\": 0,\n    \"orders\": 0,\n    \"daily_reaggregations\": 0,\n    \"full_market_source_rehashes\": 0,\n    \"new_freeze_calls\": 0,\n    \"partial_PnL_read\": false\n  },\n  \"production_qualified\": false\n}\n"
+    },
+    {
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport json,hashlib\nline=Path('research/lines/futures_trend_triple_screen').resolve()\np=line/'outputs/stage064_b_ts_failure_independent_review/review_receipt.json';r=json.loads(p.read_bytes())\nselected={k:r[k] for k in r if k in ('schema','status','independent_review','reviewer','p0_findings','p1_findings','p2_findings','p1_scope','p2_scope','result_qualified','last_delivery_inheritance_qualified','complete_metrics','production_qualified','partial_PnL_reported')}\npaths=[line/'tools/stage061_accepted_wait_delta.py',line/'tools/stage021_blocking_data_gate.py',line/'outputs/stage077_wait_delta_fix_independent_review/review_receipt.json',line/'outputs/stage063_b_ts_actual_failure/actual_tool_terminal.json',p]\nh=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()\nprint(json.dumps({'stage064_selected_fields':selected,'fingerprints':{str(p):h(p) for p in paths}},ensure_ascii=False,indent=2))\nPY",
+      "chunk_id": "bb86dd",
+      "wall_time_seconds": 0.000007583,
+      "exit_code": 0,
+      "original_token_count": 454,
+      "output": "{\n  \"stage064_selected_fields\": {\n    \"schema\": \"stage064_B_TS_failure_independent_review_receipt_v1\",\n    \"independent_review\": true,\n    \"reviewer\": \"delivery_guard_readonly\",\n    \"status\": \"failed_closed_confirmed_no_complete_performance\",\n    \"p0_findings\": 0,\n    \"p1_findings\": 1,\n    \"p2_findings\": 1,\n    \"p1_scope\": \"Runtime old-value incompatibility prevents complete financial result; concrete cause separately investigated, not attributed to alpha or model.\",\n    \"p2_scope\": \"Pointer/data acceptance alone cannot seed inheritance; require corresponding runtime-appended evidence and pinned identities.\",\n    \"result_qualified\": false,\n    \"last_delivery_inheritance_qualified\": false,\n    \"complete_metrics\": \"N/A\",\n    \"partial_PnL_reported\": false,\n    \"production_qualified\": false\n  },\n  \"fingerprints\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py\": \"3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py\": \"150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage077_wait_delta_fix_independent_review/review_receipt.json\": \"3647594a69cc97d991047428ab35c231165989081f1fc43022faa7fd5b103e3b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage063_b_ts_actual_failure/actual_tool_terminal.json\": \"8f556fb6b76c27f28db7ff7799643bda5c7e934c844a29546545efe10d21981b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage064_b_ts_failure_independent_review/review_receipt.json\": \"916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963\"\n  }\n}\n"
+    }
+  ],
+  "qualified_research_data": true,
+  "exact_rights_confirmed": true,
+  "old_key_values_unchanged": true,
+  "old_key_values_unchanged_basis": {
+    "original_evidence": "固定SHA的run_failure中190个真实data_qualified_appended均old_keys_changed=0，逐一匹配同owner resolver/receipt/data",
+    "new_adapter_evidence": "Stage077独立接受的061代码357042...及equal_only_no_replace合同，任一旧七值冲突均拒绝，无覆盖旧键",
+    "dataset_evidence": "本层overlay精确等于190份签署数据的七值并集，未引入最后失败包；四产物、proof_requests、权利逐键核对",
+    "limit": "不宣称重建已终止engine的RAM或对全部旧物理行情重新逐键比较；未来runner仍须原序加载并执行等值合并"
+  },
+  "source_closure_scope": {
+    "manifest_source_fingerprints": 3157,
+    "source_reference_entries_across_190": 7382,
+    "metadata_union_and_terminal_owner_checks": "对所有190份delivery的source映射逐项比对owner，及manifest完整3157项source集合和值精确相等",
+    "explicit_consumed_pinned_objects_checked": 959,
+    "closure_only_sources_not_rehashed": 2203,
+    "source_actual_hash_provenance": "实际freeze已重验来源；本次仅核实际消费的小型request/fingerprint/response/receipt/data及manifest/四artifacts，不重hash全市场原始闭包"
+  },
+  "findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "dataset_status": "independently_qualified_research_data_only",
+  "limits": [
+    "数据资格只授予manifest固定190个commit及精确44614键；不宣称未来A_OFF/B_OFF全路径齐数。",
+    "full只来自145条full_session要求的44565键；49条anchor要求仅grant其精确anchor键，proof不得升full。",
+    "064原B完整金融结果仍N/A，last_delivery_inheritance_qualified=false仍成立；本次只接受之前190个commit。",
+    "058两项模型历史PIT P1、source859完成字段问题及成功owner封存限制均不由本审查关闭。",
+    "本receipt不授权Task4金融，不代表生产资格，不替代后续完整账户审查。",
+    "只写Stage081及outputs/stage081_accepted_wait_dataset_review；frozen产物和作者代码未改。"
+  ],
+  "registry_note": "已读registry，未含本line_id；沿root指定既有研究线写唯一Stage，由root统一索引",
+  "reviewer_new_freeze_calls": 0,
+  "financial_replays": 0,
+  "code_suite_runs": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "predictions": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "daily_reaggregations": 0,
+  "full_market_source_rehashes": 0,
+  "partial_PnL_read": false,
+  "production_qualified": false,
+  "financial_execution_authorized": false,
+  "external_research": "本次是root限定的既有合同数据验收，仅本地原证据；无网上/GitHub调研或alpha研究。",
+  "overfitting": false,
+  "continued_value": true
+}
+

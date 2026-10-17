@@ -1,0 +1,172 @@
+{
+  "schema": "stage077_wait_delta_fix_independent_review_evidence_v1",
+  "reviewed_at": "2026-10-18T06:12:30.462026+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "scope": "原Stage072唯一P1-001的定向复核；Stage074同bytes绑定与原021 parser门等价性",
+  "reviewed_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py": "9479ee9d268563dcb49f53baf4f980da49b8b4f7d1372aa287dd1c653c4f8bc8",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0611_stage074_wait_delta_byte_binding_fix.md": "d1e586c55c184fe8a8727f1e034ad444f4cb85fd303b16af0c755e9c297567eb",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage074_wait_delta_byte_binding_fix/fix_evidence.json": "240ede69509d7966c38e7cfce60370f1529c0abbf2604949609f83169b8c140f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage074_wait_delta_byte_binding_fix/red.log": "04cef917672596caf58c74cbf84d0345f9eeefa89386df5ff0222384d74864a6",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage074_wait_delta_byte_binding_fix/green.log": "fdefcf22e8ae906e77601a242b1bc05bcfda940696be8fba9b2e0bd7b425659e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/implementation_evidence.json": "d6a4c9980613e26f5dd0660e737ed3a73d6f1d2d4817595b87e8d2203eb69554",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0603_stage072_wait_delta_independent_review.md": "cc25159cbe423201ff4e04f1554619d64abdf4c2a16cea9266b952301a1cea27",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage072_wait_delta_independent_review/evidence.json": "40b4dae8e1fba09b45b20044a27ea1d0b0895a03aae2277f2e58a66b90f9002a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage072_wait_delta_independent_review/review_receipt.json": "23167f7d4f610553c50dd00793e2b12ed6b4b225cbcecb360defd5a686f98fd6",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage068_execution_control/ledger.md": "ad80426e37cfdc62676cbb1ba88a6152eb3b189e771bc3094f5b7e361c82d2ac"
+  },
+  "original_finding": "Stage072 P1-001",
+  "original_finding_status": "closed_for_reviewed_code",
+  "remaining_findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "parser_contract_matrix": [
+    {
+      "check": "QualifiedDelivery类型与receipt绝对路径/SHA",
+      "old": "021:77-81",
+      "new": "061:126-129、47-60",
+      "verdict": "相同bytes验SHA，另加owner身份和叶子symlink拒绝；未放宽"
+    },
+    {
+      "check": "receipt schema/independent/reviewer/qualified/P0/P1",
+      "old": "021:82-86",
+      "new": "061:130-133",
+      "verdict": "相同"
+    },
+    {
+      "check": "request_sha256绑定",
+      "old": "021:87",
+      "new": "061:134-135",
+      "verdict": "相同"
+    },
+    {
+      "check": "wanted身份、accepted重复/未知范围拒绝",
+      "old": "021:88-94",
+      "new": "061:136-142",
+      "verdict": "相同"
+    },
+    {
+      "check": "accepted与completed_bars_and_daily_qualified必须True",
+      "old": "021:95-96",
+      "new": "061:143-144",
+      "verdict": "相同"
+    },
+    {
+      "check": "accepted_timestamps精确匹配required且要求集合完整",
+      "old": "021:97-103",
+      "new": "061:145-152",
+      "verdict": "相同"
+    },
+    {
+      "check": "full_session与anchor精确权利集合",
+      "old": "021:99-102",
+      "new": "061:147-150",
+      "verdict": "相同；freeze仍限定kind为anchor/full_session"
+    },
+    {
+      "check": "data绝对路径、source_fingerprints绑定及数据SHA",
+      "old": "021:104-109",
+      "new": "061:153-156",
+      "verdict": "相同bytes验证；另加owner绑定"
+    },
+    {
+      "check": "CSV字段、键唯一性、allowed精确集合",
+      "old": "021:110-112",
+      "new": "061:157-159",
+      "verdict": "相同；VALUES与旧old.VALUES完全一致"
+    },
+    {
+      "check": "七值finite与OHLC正值",
+      "old": "021:113-115",
+      "new": "061:160-162",
+      "verdict": "相同"
+    },
+    {
+      "check": "volume/OI非负、low/high边界",
+      "old": "021:116-117",
+      "new": "061:163-166",
+      "verdict": "相同"
+    },
+    {
+      "check": "输出data复制、full/anchor集合、audit",
+      "old": "021:118-119",
+      "new": "061:167-169",
+      "verdict": "相同；两个fixture逐值/逐集合/逐audit验证"
+    }
+  ],
+  "byte_consumption_checks": {
+    "manifest": "load:_json -> _bound_payload -> 缓存bytes验SHA/json.loads；未重开路径",
+    "review": "同manifest",
+    "receipt": "freeze预读和_read_delivery_bytes共用payloads；相同bytes验SHA/json.loads",
+    "request_response_fingerprint": "_bound_payload和_json共用操作内payloads",
+    "failure_terminal_context_base": "均从同份bytes绑定和解析；context沿root已批准缺外部pin适配",
+    "delivery_csv": "_bound_payload -> pd.read_csv(BytesIO(payload))，原021默认CSV解析参数保持",
+    "overlay_and_rights_csv": "先_bound_payload，再从payloads中的同bytes经BytesIO解析；overlay保留round_trip",
+    "closure_only_large_sources": "只调用_bind，sha256以1MiB块流读；不存payloads；末次rehash为附加漂移检测"
+  },
+  "commands": [
+    {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py -v",
+      "chunk_id": "6690ed",
+      "wall_time_seconds": 0.43476275,
+      "exit_code": 0,
+      "original_token_count": 166,
+      "output": "test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (__main__.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label) ... ok\ntest_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source (__main__.AcceptedDeltaTests.test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source) ... ok\ntest_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.145s\n\nOK\n",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nfrom unittest.mock import patch\nimport tempfile,sys,json,hashlib\ntools=Path('research/lines/futures_trend_triple_screen/tools').resolve();sys.path.insert(0,str(tools))\nimport test_stage061_accepted_wait_delta as t\nm=t.AcceptedDeltaTests().api()\nresult=[]\ndef build(root):\n    f=t.Fixture(root);f.add('AA.CZCE',['2020-01-01T21:00:00']);f.seal()\n    manifest=f.freeze(m);f.reviewed(m,manifest);return f,manifest\ndef load(f,manifest,recorder=None):\n    return m.load_accepted_delta(manifest,t.digest(manifest),f.root/'review.json',t.digest(f.root/'review.json'),\n       base_stack=f.stack,base_stack_sha256=t.digest(f.stack),inherited_anchor_inputs=f.payload['reused_anchor']['deliveries'],recorder=recorder)\nwith tempfile.TemporaryDirectory(prefix='stage077-original-symlink-') as tmp:\n    f,manifest=build(Path(tmp));p=manifest.parent/'overlay.csv'\n    good=f.root/'overlay.good.csv';evil=f.root/'overlay.evil.csv';p.rename(good);p.symlink_to(good)\n    altered=t.pd.read_csv(good).astype({'open':float});altered.loc[0,'open']=10.25;altered.to_csv(evil,index=False)\n    original_sha=m.sha256;original_read=t.pd.read_csv;events=[]\n    def racing_sha(path):\n        value=original_sha(path)\n        if Path(path)==p and not events:\n            p.unlink();p.symlink_to(evil);events.append('after_hash_use_evil')\n        return value\n    def racing_read(path,*args,**kwargs):\n        frame=original_read(path,*args,**kwargs)\n        if isinstance(path,(str,Path)) and Path(path)==p:\n            p.unlink();p.symlink_to(good);events.append('after_parse_restore_good')\n        return frame\n    with patch.object(m,'sha256',racing_sha),patch.object(t.pd,'read_csv',racing_read):\n        try:load(f,manifest,recorder=t.runtime.InputRecorder({}))\n        except ValueError as e:\n            assert str(e).startswith('consumed_source_absolute_non_symlink_required:')\n            result.append(dict(case='original_stage072_symlink_counterexample',rejected=True,error=str(e).split(':')[0],unsafe_reopen_events=events))\n        else:raise AssertionError('original symlink exploit not rejected')\nwith tempfile.TemporaryDirectory(prefix='stage077-file-swap-') as tmp:\n    f,manifest=build(Path(tmp));p=manifest.parent/'overlay.csv';good=p.read_bytes()\n    altered=t.pd.read_csv(p).astype({'open':float});altered.loc[0,'open']=10.25;evil=altered.to_csv(index=False).encode()\n    bound=m._bound_payload;read=t.pd.read_csv;events=[]\n    def swapped_bound(path,*args,**kwargs):\n        payload=bound(path,*args,**kwargs)\n        if Path(path)==p:\n            p.write_bytes(evil);events.append('ordinary_file_replaced_after_bound_bytes')\n        return payload\n    def restored_read(file,*args,**kwargs):\n        frame=read(file,*args,**kwargs)\n        if hasattr(file,'getvalue') and file.getvalue()==good:\n            p.write_bytes(good);events.append('parsed_cached_good_bytes_then_restored_path')\n        return frame\n    recorder=t.runtime.InputRecorder({})\n    with patch.object(m,'_bound_payload',swapped_bound),patch.object(t.pd,'read_csv',restored_read):\n        delta=load(f,manifest,recorder=recorder);recorder.verify()\n    assert float(delta.overlay.open.iloc[0])==10.0 and t.digest(p)==hashlib.sha256(good).hexdigest()\n    assert len(events)==2\n    result.append(dict(case='ordinary_file_swap_in_exact_original_window',consumed_open=float(delta.overlay.open.iloc[0]),attempted_unsigned_open=10.25,safe=True,recorder_verify_passed=True,events=events))\nwith tempfile.TemporaryDirectory(prefix='stage077-parser-') as tmp:\n    f=t.Fixture(Path(tmp));rows=[f.add('AA.CZCE',['2020-01-01T21:00:00']),f.add('BB.SHFE',['2020-01-01T21:00:00','2020-01-01T21:01:00'],'full_session')]\n    for row in rows:\n        request=json.loads(Path(row['request_path']).read_bytes())\n        delivery=t.gate.QualifiedDelivery(Path(row['receipt_path']),row['receipt_sha256'])\n        old=t.gate._read_delivery(request,delivery);new=m._read_delivery_bytes(request,delivery,{}, {},f.inputs)\n        t.pd.testing.assert_frame_equal(old[0],new[0])\n        assert old[1:]==new[1:]\n    result.append(dict(case='private_bytes_parser_valid_fixture_parity',fixtures=2,anchor_and_full=True,frames_rights_and_audit_equal=True))\nwith tempfile.TemporaryDirectory(prefix='stage077-stream-') as tmp:\n    p=Path(tmp)/'closure_only_large_source.bin';p.write_bytes(b'bounded-nonfinancial-fixture\\n'*80000)\n    expected=t.digest(p);sources={};payloads={};read_bytes=Path.read_bytes\n    def guarded_read_bytes(path):\n        if Path(path)==p:raise AssertionError('closure-only source cached as bytes')\n        return read_bytes(path)\n    with patch.object(Path,'read_bytes',guarded_read_bytes):m._bind(p,expected,sources)\n    assert sources[str(p)]==expected and str(p) not in payloads\n    result.append(dict(case='closure_only_source_streams',bytes=p.stat().st_size,Path_read_bytes_calls=0,payload_cache_entries=0,source_sha_bound=True))\nprint(json.dumps(dict(targeted_checks=result,real_deliveries_frozen=0,financial_replays=0,model_loads=0,predictions=0,network_calls=0),ensure_ascii=False,indent=2))\nPY",
+      "chunk_id": "0bd692",
+      "wall_time_seconds": 0.377550625,
+      "exit_code": 0,
+      "original_token_count": 256,
+      "output": "{\n  \"targeted_checks\": [\n    {\n      \"case\": \"original_stage072_symlink_counterexample\",\n      \"rejected\": true,\n      \"error\": \"consumed_source_absolute_non_symlink_required\",\n      \"unsafe_reopen_events\": []\n    },\n    {\n      \"case\": \"ordinary_file_swap_in_exact_original_window\",\n      \"consumed_open\": 10.0,\n      \"attempted_unsigned_open\": 10.25,\n      \"safe\": true,\n      \"recorder_verify_passed\": true,\n      \"events\": [\n        \"ordinary_file_replaced_after_bound_bytes\",\n        \"parsed_cached_good_bytes_then_restored_path\"\n      ]\n    },\n    {\n      \"case\": \"private_bytes_parser_valid_fixture_parity\",\n      \"fixtures\": 2,\n      \"anchor_and_full\": true,\n      \"frames_rights_and_audit_equal\": true\n    },\n    {\n      \"case\": \"closure_only_source_streams\",\n      \"bytes\": 2320000,\n      \"Path_read_bytes_calls\": 0,\n      \"payload_cache_entries\": 0,\n      \"source_sha_bound\": true\n    }\n  ],\n  \"real_deliveries_frozen\": 0,\n  \"financial_replays\": 0,\n  \"model_loads\": 0,\n  \"predictions\": 0,\n  \"network_calls\": 0\n}\n"
+    }
+  ],
+  "identity_verification": {
+    "stage074_declared_fingerprints_verified": true,
+    "original_stage069_072_preserved": true,
+    "original_stage021_unchanged": true
+  },
+  "conclusion": "code_accepted_for_root_actual_freeze_dataset_review_still_required",
+  "code_usable_for_actual_freeze": true,
+  "data_qualification_receipt_issued": false,
+  "manifest_path": null,
+  "manifest_sha256": null,
+  "limits": [
+    "仅定向关闭原代码P1；本receipt不是stage061_independent_wait_delta_review_v1数据集receipt。",
+    "真实190包freeze仍0；未重做190 schema扫描、旧suite或全市场hash。",
+    "root执行freeze后须对新manifest/产物另发独立数据集资格receipt，loader才可接入。",
+    "058两项模型PIT P1、066旧source859问题及成功owner未支持合同不由本阶段关闭。",
+    "不修改作者文件、旧021、LINE/registry、069/072，不stage/commit/push，不派reviewer。"
+  ],
+  "run_counts": {
+    "new_suite_runs": 1,
+    "tests": 3,
+    "targeted_counterexample_commands": 1,
+    "real_deliveries_frozen": 0,
+    "financial_replays": 0,
+    "model_loads": 0,
+    "model_fits": 0,
+    "predictions": 0,
+    "network_calls": 0,
+    "orders": 0,
+    "old_suite_runs": 0,
+    "real_190_schema_rescans": 0,
+    "full_market_hashes": 0,
+    "partial_PnL_read": false
+  },
+  "financial_metrics": "N/A",
+  "production_qualified": false,
+  "external_research": "按root明确无网络定向复审边界，仅本地021/061/074/072；无新alpha研究",
+  "overfitting": false,
+  "continued_value": true
+}
+

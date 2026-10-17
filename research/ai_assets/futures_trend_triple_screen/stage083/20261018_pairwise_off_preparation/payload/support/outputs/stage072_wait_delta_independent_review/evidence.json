@@ -1,0 +1,116 @@
+{
+  "schema": "stage072_wait_delta_independent_review_evidence_v1",
+  "reviewed_at": "2026-10-18T06:03:02.022095+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "review_scope": "Stage061新模块的有限spec+代码质量审查；未执行真实190包freeze",
+  "reviewed_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": "3f3cf7dfca8af51226271a3db4ea56927c6e8909f9a77ff262a1ea9d30a50e85",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py": "fa0fde4ca859e1a921ec30b4d36bf6eac9678bdc475873c6f473626c282a928c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0545_stage061_accepted_wait_delta_reuse_plan.md": "6a327717af10e81db2e3597b6b6d081b6ebb990a3eb4eb250b79d1bd02816d8f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0559_stage069_accepted_wait_delta_implementation.md": "e65540f519c757faec1c8a9469a604dfe8b2edbbd827009850384ee6db8c1de0",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage069_wait_delta_implementation/implementation_evidence.json": "d6a4c9980613e26f5dd0660e737ed3a73d6f1d2d4817595b87e8d2203eb69554",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage068_execution_control/ledger.md": "ddccaa43b63472b76866699a0f8310277a9fe49212eca655d24edf2937c364a2",
+    "/Users/mac/Desktop/fian/AGENTS.md": "e7b71beaa7ab4c7526743ca95843438651c26db30cc4c7a4adf8f75ba37713d9",
+    "/Users/mac/Desktop/fian/research/registry.md": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c"
+  },
+  "source_evidence_sha256": {
+    "run_failure": "f39f9d60b3e975263b0ee9411b70b766a9a8c4a3f12d068b9c35650888928536",
+    "terminal": "8f556fb6b76c27f28db7ff7799643bda5c7e934c844a29546545efe10d21981b",
+    "run_context": "161d5a52c63ef923c15221f2bdb3d9883e9fcdd8b20f3b2c9f83a867d29e51cc",
+    "stage064_receipt": "916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963"
+  },
+  "findings": [
+    {
+      "id": "P1-001",
+      "priority": "P1",
+      "title": "loader未把所解析的CSV字节绑定到已校验SHA",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py",
+      "lines": [
+        332,
+        337
+      ],
+      "related_lines": [
+        42,
+        56,
+        341,
+        352
+      ],
+      "condition": "同一路径或符号链接在_bind验SHA之后、read_csv消费之前发生替换，随后恢复原文件",
+      "actual_result": "overlay.csv pin的open=10；临时切换同键CSV的open=10.25后解析，loader成功返回10.25；最终artifact SHA仍与manifest相同，真实InputRecorder.verify()亦通过",
+      "impact": "下一回放可能消费未由独立receipt/manifest签署的七值，破坏SHA闭包和旧值比较的信任前提",
+      "recommendation": "用一次读取的bytes进行SHA校验并从同一bytes解析JSON/CSV；不要在验SHA后按路径重新打开。对manifest/review/输出artifact采用相同原语；可同时拒绝symlink，但仅拒绝symlink不足以消除普通文件替换窗口",
+      "fix_owner": "原作者，由root安排一次性修复"
+    }
+  ],
+  "counts": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 0
+  },
+  "commands": [
+    {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py -v",
+      "exit_code": 0,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 0.124,
+      "tool_chunk_id": "a92c72",
+      "stdout": "Ran 3 tests in 0.124s; OK",
+      "scope": "仅三个新增tests；未重扫旧suite"
+    },
+    {
+      "command": ".py311/bin/python - <<'PY'\nimport sys,json,tempfile,importlib.util\nfrom pathlib import Path\ntools=Path('research/lines/futures_trend_triple_screen/tools').resolve()\nsys.path.insert(0,str(tools))\nimport test_stage061_accepted_wait_delta as tests\nm=tests.AcceptedDeltaTests().api()\nresults=[]\ndef load(f,manifest,recorder=None):\n    return m.load_accepted_delta(manifest,tests.digest(manifest),f.root/'review.json',tests.digest(f.root/'review.json'),\n      base_stack=f.stack,base_stack_sha256=tests.digest(f.stack),inherited_anchor_inputs=f.payload['reused_anchor']['deliveries'],recorder=recorder)\ndef build(root):\n    f=tests.Fixture(root);f.add('AA.CZCE',['2020-01-01T21:00:00']);f.seal()\n    manifest=f.freeze(m);f.reviewed(m,manifest);return f,manifest\nwith tempfile.TemporaryDirectory(prefix='stage072-static-') as tmp:\n    f,manifest=build(Path(tmp))\n    p=manifest.parent/'rights.csv';p.write_text(p.read_text().replace(',0,1,',',1,1,'))\n    try:load(f,manifest)\n    except ValueError as e:results.append(dict(case='static_artifact_tamper',rejected=True,error=str(e).split(':')[0]))\n    else:raise AssertionError('static tamper not rejected')\nwith tempfile.TemporaryDirectory(prefix='stage072-publish-') as tmp:\n    f=tests.Fixture(Path(tmp));f.add('AA.CZCE',['2020-01-01T21:00:00']);f.seal()\n    original=m._write\n    def broken_write(path,value):\n        if Path(path).name=='manifest.json':raise OSError('injected_late_write_failure')\n        return original(path,value)\n    m._write=broken_write\n    try:\n        try:f.freeze(m)\n        except OSError as e:\n            assert str(e)=='injected_late_write_failure'\n        else:raise AssertionError('late failure not raised')\n    finally:m._write=original\n    assert not (f.root/'frozen').exists() and not list(f.root.glob('.frozen-*'))\n    results.append(dict(case='late_publish_failure',final_output_exists=False,temporary_dirs_remaining=0,rejected_atomically=True))\nwith tempfile.TemporaryDirectory(prefix='stage072-symlink-') as tmp:\n    f,manifest=build(Path(tmp))\n    p=manifest.parent/'overlay.csv';good=f.root/'overlay.good.csv';evil=f.root/'overlay.evil.csv'\n    p.rename(good);p.symlink_to(good)\n    altered=tests.pd.read_csv(good);altered.loc[0,'open']=10.25;altered.to_csv(evil,index=False)\n    original_sha=m.sha256;original_read=tests.pd.read_csv;switches=[]\n    def racing_sha(path):\n        value=original_sha(path)\n        if Path(path)==p and not switches:\n            p.unlink();p.symlink_to(evil);switches.append('after_hash_use_evil')\n        return value\n    def racing_read(path,*args,**kwargs):\n        frame=original_read(path,*args,**kwargs)\n        if Path(path)==p:\n            p.unlink();p.symlink_to(good);switches.append('after_parse_restore_good')\n        return frame\n    m.sha256=racing_sha;tests.pd.read_csv=racing_read\n    recorder=tests.runtime.InputRecorder({})\n    try:delta=load(f,manifest,recorder=recorder);recorder.verify()\n    finally:m.sha256=original_sha;tests.pd.read_csv=original_read\n    pinned=json.loads(manifest.read_text())['artifacts']['overlay.csv']\n    assert float(delta.overlay.open.iloc[0])==10.25\n    assert tests.digest(p)==pinned and float(original_read(good).open.iloc[0])==10.0\n    results.append(dict(case='symlink_hash_parse_window',rejected=False,pinned_open=10.0,consumed_open=float(delta.overlay.open.iloc[0]),\n      final_artifact_hash_matches_pin=True,recorder_verify_passed=True,switches=switches))\nprint(json.dumps({'bounded_review_probes':results,'real_deliveries_frozen':0,'financial_replays':0,'predictions':0,'model_fits':0,'network_calls':0},ensure_ascii=False,indent=2))\nPY",
+      "chunk_id": "830862",
+      "wall_time_seconds": 0.539034042,
+      "exit_code": 0,
+      "original_token_count": 245,
+      "output": "<stdin>:39: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '10.25' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.\n{\n  \"bounded_review_probes\": [\n    {\n      \"case\": \"static_artifact_tamper\",\n      \"rejected\": true,\n      \"error\": \"source_hash_changed\"\n    },\n    {\n      \"case\": \"late_publish_failure\",\n      \"final_output_exists\": false,\n      \"temporary_dirs_remaining\": 0,\n      \"rejected_atomically\": true\n    },\n    {\n      \"case\": \"symlink_hash_parse_window\",\n      \"rejected\": false,\n      \"pinned_open\": 10.0,\n      \"consumed_open\": 10.25,\n      \"final_artifact_hash_matches_pin\": true,\n      \"recorder_verify_passed\": true,\n      \"switches\": [\n        \"after_hash_use_evil\",\n        \"after_parse_restore_good\"\n      ]\n    }\n  ],\n  \"real_deliveries_frozen\": 0,\n  \"financial_replays\": 0,\n  \"predictions\": 0,\n  \"model_fits\": 0,\n  \"network_calls\": 0\n}\n"
+    },
+    {
+      "command": ".py311/bin/python - <<'PY'\nimport sys,json,hashlib\nfrom pathlib import Path\nline=Path('research/lines/futures_trend_triple_screen').resolve();sys.path.insert(0,str(line/'tools'))\nimport test_stage061_accepted_wait_delta as tests\nfrom collections import Counter\nh=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()\nterminal_path=line/'outputs/stage063_b_ts_actual_failure/actual_tool_terminal.json'\nterminal=json.loads(terminal_path.read_text());facts_path=Path(terminal['run_failure_path'])\nassert h(facts_path)==terminal['run_failure_sha256']\nfacts=json.loads(facts_path.read_text());context_path=facts_path.parent/'run_context.json';context=json.loads(context_path.read_text())\ngates=facts['qualified_wait_gate_audit'];resolvers=facts['resolver_audit'];by={r['request_sha256']:r for r in resolvers}\nfailed={r['request_sha256'] for r in gates if r['event']=='data_gate_failed'}\nselected=[r for r in gates if r['event']=='data_qualified_appended' and r['request_sha256'] not in failed and by[r['request_sha256']]['status']=='qualified_delivery_pointer_accepted']\nassert len(selected)==190 and len(resolvers)==191 and len(failed)==1\nassert all(all(r[k]==by[r['request_sha256']][k] for k in ('receipt_path','receipt_sha256','data_path','data_sha256')) and r['old_keys_changed']==0 for r in selected)\nfirst=selected[0];pointer=by[first['request_sha256']];request=json.loads(Path(pointer['request_path']).read_text())\ndata,full,anchor,audit=tests.gate._read_delivery(request,tests.gate.QualifiedDelivery(Path(pointer['receipt_path']),pointer['receipt_sha256']))\nclosure=pointer['source_fingerprints'];owner=facts['input_fingerprints']\nassert all(owner[path]['sha256']==sha for path,sha in closure.items())\noutput=dict(line_id='futures_trend_triple_screen',run_id=facts['run_id'],financial_terminal_observed=terminal['financial_terminal_observed'],\n financial_exit_code=terminal['financial_exit_code'],gate_event_counts=dict(Counter(r['event'] for r in gates)),resolvers=191,metadata_double_matched_commits=190,\n excluded_gate_failed_requests=sorted(failed),context_same_owner=all(context[k]==facts[k] for k in ('run_id','arm','attempt','started_at')),\n first_actual_delivery=dict(request_sha256=first['request_sha256'],data_rows=len(data),full_keys=len(full),anchor_keys=len(anchor),\n exact_gate_audit_matches=all(audit[k]==first[k] for k in audit),source_identity_closure_entries=len(closure),source_identity_closure_matches_owner=True),\n sha256=dict(run_failure=h(facts_path),terminal=h(terminal_path),run_context=h(context_path),stage064_receipt=h(line/'outputs/stage064_b_ts_failure_independent_review/review_receipt.json')),\n limits=dict(real_deliveries_frozen=0,actual_delivery_parsers_called=1,full_market_hashes=0,financial_replays=0,partial_PnL_read=False,network_calls=0))\nprint(json.dumps(output,ensure_ascii=False,indent=2))\nPY",
+      "chunk_id": "5ba558",
+      "wall_time_seconds": 0.359961458,
+      "exit_code": 0,
+      "original_token_count": 345,
+      "output": "{\n  \"line_id\": \"futures_trend_triple_screen\",\n  \"run_id\": \"ccc4a13cbc8e4691af41a16916c659f2\",\n  \"financial_terminal_observed\": true,\n  \"financial_exit_code\": 1,\n  \"gate_event_counts\": {\n    \"data_requested\": 191,\n    \"data_qualified_appended\": 190,\n    \"data_gate_failed\": 1\n  },\n  \"resolvers\": 191,\n  \"metadata_double_matched_commits\": 190,\n  \"excluded_gate_failed_requests\": [\n    \"6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730\"\n  ],\n  \"context_same_owner\": true,\n  \"first_actual_delivery\": {\n    \"request_sha256\": \"53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae\",\n    \"data_rows\": 225,\n    \"full_keys\": 225,\n    \"anchor_keys\": 0,\n    \"exact_gate_audit_matches\": true,\n    \"source_identity_closure_entries\": 31,\n    \"source_identity_closure_matches_owner\": true\n  },\n  \"sha256\": {\n    \"run_failure\": \"f39f9d60b3e975263b0ee9411b70b766a9a8c4a3f12d068b9c35650888928536\",\n    \"terminal\": \"8f556fb6b76c27f28db7ff7799643bda5c7e934c844a29546545efe10d21981b\",\n    \"run_context\": \"161d5a52c63ef923c15221f2bdb3d9883e9fcdd8b20f3b2c9f83a867d29e51cc\",\n    \"stage064_receipt\": \"916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963\"\n  },\n  \"limits\": {\n    \"real_deliveries_frozen\": 0,\n    \"actual_delivery_parsers_called\": 1,\n    \"full_market_hashes\": 0,\n    \"financial_replays\": 0,\n    \"partial_PnL_read\": false,\n    \"network_calls\": 0\n  }\n}\n"
+    }
+  ],
+  "checked_contracts": {
+    "real_terminal_owner_context_schema": "真实063失败终态、failure.run_id及同owner context匹配；成功路径不支持为root批准范围",
+    "metadata_selection": "191 resolver、190双记录commit、1失败末包；元数据190项均path/SHA/old_keys_changed匹配，未重hash190包",
+    "first_actual_delivery": "仅调用一次原021 _read_delivery：225键/full225/anchor0，audit精确匹配，31项source身份均与owner记录一致；只hash其request/response/receipt/data，不全市场hash",
+    "seven_value_overlap": "三个新增test逐项覆盖OHLCV/OI七值；同值保留旧source；冲突时不返回部分追加",
+    "rights": "新增anchor不因non859/邻接物理覆盖升full；真实full仅限签署key；冻结权利表有键集合/计数/finite检查",
+    "publication": "静态artifact tamper被拒绝；注入manifest最后写入失败后无final输出且无temporary残留",
+    "source_hash_consumption": "P1-001未通过"
+  },
+  "inherited_limits": [
+    "不重新认定原022/016旧层和两个旧anchor的价格资格。",
+    "原B失败完整绩效N/A；最后6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730不具复用资格。",
+    "原058两项历史模型PIT资格P1、066旧source859缺失字段问题不由本次修复或关闭。",
+    "成功owner、run_provenance、活跃journal路径按root ruling明确不支持。",
+    "本receipt只签代码审查结果，不是stage061 runtime数据资格receipt，manifest_sha256为空。",
+    "registry中未找到该line_id条目；沿root指定已存在研究线审查，未修改registry/LINE。"
+  ],
+  "run_counts": {
+    "new_financial_replays": 0,
+    "real_deliveries_frozen": 0,
+    "model_fits": 0,
+    "model_loads": 0,
+    "predictions": 0,
+    "network_calls": 0,
+    "orders": 0,
+    "old_suite_runs": 0,
+    "full_market_hashes": 0,
+    "partial_PnL_read": false
+  },
+  "conclusion": "blocked_pending_author_fix_P1_001",
+  "production_qualified": false,
+  "overfitting": false,
+  "continued_value": true
+}
+

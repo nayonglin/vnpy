@@ -1,0 +1,56 @@
+test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label (__main__.AcceptedDeltaTests.test_anchor_receipt_never_becomes_full_from_physical_coverage_or_source_label) ... ok
+test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source (__main__.AcceptedDeltaTests.test_any_old_seven_value_conflict_is_atomic_and_same_value_keeps_old_source) ... ok
+test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) ... 
+  test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_csv') ... FAIL
+  test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='symlink_csv') ... FAIL
+  test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_manifest') ... FAIL
+  test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_review') ... FAIL
+  test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='freeze_receipt') ... FAIL
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_csv')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 272, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    self.assertEqual(float(loaded.overlay.open.iloc[0]),10.)
+AssertionError: 10.25 != 10.0
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='symlink_csv')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 272, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    self.assertEqual(float(loaded.overlay.open.iloc[0]),10.)
+AssertionError: 10.25 != 10.0
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_manifest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 273, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    self.assertEqual(loaded.manifest['builder'],'stage061_accepted_wait_delta.py')
+AssertionError: 'unsigned-swapped-builder' != 'stage061_accepted_wait_delta.py'
+- unsigned-swapped-builder
++ stage061_accepted_wait_delta.py
+
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='ordinary_review')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 279, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    with self.assertRaises(ValueError):pinned_load(bad_review_sha)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze (__main__.AcceptedDeltaTests.test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze) (byte_binding='freeze_receipt')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py", line 289, in test_only_terminal_double_commit_and_unchanged_signed_source_can_freeze
+    self.assertNotIn('unsigned_note',frozen['deliveries'][0]['accepted_requirements'][0])
+AssertionError: 'unsigned_note' unexpectedly found in {'vt_symbol': 'AA.CZCE', 'execution_trade_date': '2020-01-02', 'requirement_kind': 'anchor', 'required_timestamps': ['2020-01-01T21:00:00'], 'missing_or_unqualified_timestamps': ['2020-01-01T21:00:00'], 'existing_source_timestamps': [], 'accepted': True, 'completed_bars_and_daily_qualified': True, 'accepted_timestamps': ['2020-01-01T21:00:00'], 'unsigned_note': 'must_not_be_consumed'}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.161s
+
+FAILED (failures=5)

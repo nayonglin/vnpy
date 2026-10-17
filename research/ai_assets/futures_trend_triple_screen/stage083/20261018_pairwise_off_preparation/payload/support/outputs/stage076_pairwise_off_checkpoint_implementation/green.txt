@@ -1,0 +1,8 @@
+Matplotlib is building the font cache; this may take a moment.
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+test_real_fill_identity_checkpoint_and_pure_export (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_real_fill_identity_checkpoint_and_pure_export) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.487s
+
+OK

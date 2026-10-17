@@ -1,0 +1,9 @@
+Matplotlib is building the font cache; this may take a moment.
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+test_disabled_profiles_native_and_b_no_model (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_disabled_profiles_native_and_b_no_model) ... ok
+test_real_planner_fallback_slot_margin_and_b_final_budget (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_real_planner_fallback_slot_margin_and_b_final_budget) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.213s
+
+OK

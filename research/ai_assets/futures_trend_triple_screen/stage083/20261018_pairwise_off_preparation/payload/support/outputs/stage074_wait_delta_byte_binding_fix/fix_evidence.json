@@ -1,0 +1,66 @@
+{
+  "schema": "stage074_wait_delta_byte_binding_fix_v1",
+  "recorded_at": "2026-10-18T06:10:32.341514+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "finding": "Stage072 P1-001",
+  "before": {
+    "source_sha256": "3f3cf7dfca8af51226271a3db4ea56927c6e8909f9a77ff262a1ea9d30a50e85",
+    "tests_sha256": "fa0fde4ca859e1a921ec30b4d36bf6eac9678bdc475873c6f473626c282a928c"
+  },
+  "after": {
+    "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py",
+    "source_sha256": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+    "tests_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py",
+    "tests_sha256": "9479ee9d268563dcb49f53baf4f980da49b8b4f7d1372aa287dd1c653c4f8bc8"
+  },
+  "parser_contract_source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py",
+    "sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+    "change": "Only consumption I/O: hash and parse the same cached bytes; all original qualification gates retained"
+  },
+  "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py -v",
+  "red": {
+    "exit_code": 1,
+    "tests": 3,
+    "failures": 5,
+    "errors": 0,
+    "cases": [
+      "ordinary_csv",
+      "symlink_csv",
+      "ordinary_manifest",
+      "ordinary_review",
+      "freeze_receipt"
+    ]
+  },
+  "green": {
+    "exit_code": 0,
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "elapsed_seconds": 0.146
+  },
+  "scope": {
+    "old_suite_runs": 0,
+    "real_deliveries_frozen": 0,
+    "financial_replays": 0,
+    "model_loads": 0,
+    "model_fits": 0,
+    "predictions": 0,
+    "network_calls": 0,
+    "orders": 0,
+    "original_data_modified": 0
+  },
+  "consumed_object_policy": "Read once per operation, verify digest and parse identical bytes; leaf symlinks rejected; final rehash is supplementary only",
+  "memory_policy": "Only parsed JSON/CSV and small output artifacts are cached; closure-only market sources are hashed as streams without storing their payloads",
+  "stage069_evidence_unchanged_sha256": "d6a4c9980613e26f5dd0660e737ed3a73d6f1d2d4817595b87e8d2203eb69554",
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage061_accepted_wait_delta.py": "9479ee9d268563dcb49f53baf4f980da49b8b4f7d1372aa287dd1c653c4f8bc8",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage074_wait_delta_byte_binding_fix/red.log": "04cef917672596caf58c74cbf84d0345f9eeefa89386df5ff0222384d74864a6",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage074_wait_delta_byte_binding_fix/green.log": "fdefcf22e8ae906e77601a242b1bc05bcfda940696be8fba9b2e0bd7b425659e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0603_stage072_wait_delta_independent_review.md": "cc25159cbe423201ff4e04f1554619d64abdf4c2a16cea9266b952301a1cea27",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage072_wait_delta_independent_review/evidence.json": "40b4dae8e1fba09b45b20044a27ea1d0b0895a03aae2277f2e58a66b90f9002a"
+  },
+  "independent_targeted_rereview_pending": true,
+  "production_qualified": false
+}

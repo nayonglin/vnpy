@@ -1,0 +1,548 @@
+{
+  "schema": "stage073_small_counterexamples_v1",
+  "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage073_pairwise_off_policy_independent_review/small_counterexamples.py",
+  "exit_code": 0,
+  "stdlib_import_only": true,
+  "source_sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+  "rejection_count": 88,
+  "probes": [
+    {
+      "arm": "A_OFF",
+      "probe": "requested_drift",
+      "field": "account_capital",
+      "rejected": "settings_requested_drift:account_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_drift",
+      "field": "c3_capital",
+      "rejected": "settings_requested_drift:c3_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_drift",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_requested_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_drift",
+      "field": "ai_product_pool_eligibility_path",
+      "rejected": "settings_requested_drift:ai_product_pool_eligibility_path"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_drift",
+      "field": "unknown_non_policy_path",
+      "rejected": "settings_requested_drift:unknown_non_policy_path"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "settings_requested_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "account_capital",
+      "rejected": "settings_requested_drift:account_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "c3_capital",
+      "rejected": "settings_requested_drift:c3_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "requested_missing",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_requested_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_drift",
+      "field": "account_capital",
+      "rejected": "settings_actual_drift:account_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_drift",
+      "field": "c3_capital",
+      "rejected": "settings_actual_drift:c3_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_drift",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_actual_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_drift",
+      "field": "ai_product_pool_eligibility_path",
+      "rejected": "settings_actual_drift:ai_product_pool_eligibility_path"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_drift",
+      "field": "unknown_non_policy_path",
+      "rejected": "settings_actual_drift:unknown_non_policy_path"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "settings_actual_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "account_capital",
+      "rejected": "settings_actual_drift:account_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "c3_capital",
+      "rejected": "settings_actual_drift:c3_capital"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "actual_missing",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_actual_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "effective_off_attribute_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_runtime",
+      "rejected": "effective_off_runtime_present:selection_pairwise_runtime"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "ai_path_damage_runtime",
+      "rejected": "effective_off_runtime_present:ai_path_damage_runtime"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_ai_path_damage_risk_discount",
+      "rejected": "effective_off_other_model_enabled"
+    },
+    {
+      "arm": "A_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "stage827_require_complete_minutes",
+      "rejected": "effective_off_strict_minute_gate_changed"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_drift",
+      "field": "account_capital",
+      "rejected": "settings_requested_drift:account_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_drift",
+      "field": "c3_capital",
+      "rejected": "settings_requested_drift:c3_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_drift",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_requested_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_drift",
+      "field": "ai_product_pool_eligibility_path",
+      "rejected": "settings_requested_drift:ai_product_pool_eligibility_path"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_drift",
+      "field": "unknown_non_policy_path",
+      "rejected": "settings_requested_drift:unknown_non_policy_path"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "settings_requested_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "settings_requested_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "settings_requested_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "account_capital",
+      "rejected": "settings_requested_drift:account_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "c3_capital",
+      "rejected": "settings_requested_drift:c3_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "requested_missing",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_requested_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_drift",
+      "field": "account_capital",
+      "rejected": "settings_actual_drift:account_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_drift",
+      "field": "c3_capital",
+      "rejected": "settings_actual_drift:c3_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_drift",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_actual_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_drift",
+      "field": "ai_product_pool_eligibility_path",
+      "rejected": "settings_actual_drift:ai_product_pool_eligibility_path"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_drift",
+      "field": "unknown_non_policy_path",
+      "rejected": "settings_actual_drift:unknown_non_policy_path"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "settings_actual_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "settings_actual_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "settings_actual_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "account_capital",
+      "rejected": "settings_actual_drift:account_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "c3_capital",
+      "rejected": "settings_actual_drift:c3_capital"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "actual_missing",
+      "field": "risk_ratio_of_total_assets",
+      "rejected": "settings_actual_drift:risk_ratio_of_total_assets"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_catastrophic_veto",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_catastrophic_veto"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_catastrophic_hard_filter",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_catastrophic_hard_filter"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_selection_pairwise_v2_volume_tilt",
+      "rejected": "effective_off_attribute_drift:enable_selection_pairwise_v2_volume_tilt"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_long_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_long_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_volume_tilt_short_strength",
+      "rejected": "effective_off_attribute_drift:selection_pairwise_volume_tilt_short_strength"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "incremental_margin_budget_gate_protected_selection_rank",
+      "rejected": "effective_off_attribute_drift:incremental_margin_budget_gate_protected_selection_rank"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "selection_pairwise_runtime",
+      "rejected": "effective_off_runtime_present:selection_pairwise_runtime"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "ai_path_damage_runtime",
+      "rejected": "effective_off_runtime_present:ai_path_damage_runtime"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "enable_ai_path_damage_risk_discount",
+      "rejected": "effective_off_other_model_enabled"
+    },
+    {
+      "arm": "B_OFF",
+      "probe": "effective_attribute_drift",
+      "field": "stage827_require_complete_minutes",
+      "rejected": "effective_off_strict_minute_gate_changed"
+    }
+  ],
+  "model_spies": {
+    "load": 0,
+    "runtime": 0,
+    "score": 0,
+    "predict": 0,
+    "fit": 0,
+    "old_smoke": 0
+  },
+  "financial_replays": 0,
+  "production_qualified": false
+}

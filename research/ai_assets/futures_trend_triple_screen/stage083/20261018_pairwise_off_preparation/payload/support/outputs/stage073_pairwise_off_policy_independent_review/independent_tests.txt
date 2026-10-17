@@ -1,0 +1,7 @@
+test_disabled_profiles_native_and_b_no_model (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_disabled_profiles_native_and_b_no_model) ... ok
+test_real_planner_fallback_slot_margin_and_b_final_budget (test_stage065_pairwise_off_integration.PairwiseOffIntegrationTests.test_real_planner_fallback_slot_margin_and_b_final_budget) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.161s
+
+OK
