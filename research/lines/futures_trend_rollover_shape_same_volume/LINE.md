@@ -315,3 +315,11 @@
 - 55个月均为9个非fu+固定fu、正式Top8全部保留；其中53个月严格等同模型Top9，2026-03-31与2026-05-29为“正式Top8锁定+同月模型补足至9”例外，2026-04-30虽走锁定政策但恰好等同严格Top9；2019-12-31 static18前AI边界仍不含fu。完整source rank、provenance和各源SHA已固化，所有复用summary/2101点curve/trades与Stage061逐值一致。
 - 决策 `offline_top9_fullperiod_fail_keep_stage037`；不进入多周期、不晋升、不继续向Top8以下或小数TopN扫描，不改正式AI池、master、生产或CTP，订单API `0/0/0`。
 - 独立review最终 `PASS，P0/P1/P2/P3=0/0/0/0`；数值、六门、Stage061复用、53/2成员划分、同eval_date评分、PIT源SHA与离线安全均从原始curve/ranking/formal/candidate eligibility独立复算闭合。
+
+
+## Stage259 正确性修复合入与后续AI研究准备（2026-10-17 15:51 CST）
+
+- 已将会计权益与盘中成交时序修复独立合入master并推送，核心提交 `40570be4b`；正式0.5R保持开启，AI Top10非fu＋固定fu保持不变。
+- 关闭0.5R、全池/随机池、Stage251—258历史脚本和轻量证据仅归档并推送到 `codex/stage251-disable-half-r-stop`；不改变正式参数。68项针对性unittest通过，本轮无新回测、无新模型训练。
+- 已从根目录私有文件恢复本机CTP/行情/邮件配置，未打印或提交秘密。当前m0008与修复源码不一致，本机缺新的生产资格/manifest/activation/daily receipt，旧机器plist路径尚未受控迁移，故没有安装或启动生产任务。
+- 后续从master直接切 `codex/ai-training-data-expansion` 研究；它是修复源码基线，不宣称已成为新生产release。详细边界见Stage259记录。
