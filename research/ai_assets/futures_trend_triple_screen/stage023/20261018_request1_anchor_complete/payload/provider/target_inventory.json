@@ -1,0 +1,21 @@
+{
+  "original_packet_manifest_sha256": "b8758c8075919694dc434418c2c221071d6f47acfaffc1a858eb9e0dea46f809",
+  "raw_daily_price_references_excluded": true,
+  "targets": [
+    {
+      "vt_symbol": "cu2609.SHFE",
+      "execution_trade_date": "2026-08-14",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2026-08-13T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2026-08-13T21:00:00"
+      ],
+      "existing_source_timestamps": [],
+      "daily_reference_source": "reviewed_stage013_daily",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv"
+    }
+  ],
+  "request_sha256": "fe0537d2a88976cee5be621e6ce5c3e5ed1320ce9b4941d8962a0d2677522607"
+}

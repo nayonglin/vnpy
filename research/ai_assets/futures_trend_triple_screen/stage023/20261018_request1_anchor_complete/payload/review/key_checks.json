@@ -1,0 +1,16 @@
+{
+  "status": "one_real_anchor_accepted",
+  "raw_rows": 1,
+  "exact_key": true,
+  "legal_seven_values": true,
+  "successor_time": "2026-08-13T21:01:00",
+  "daily_open_exact": true,
+  "daily_openOI_exact": true,
+  "qualification": "anchor_only_not_full_session",
+  "parent_exit_code": 0,
+  "provider_attempts": 1,
+  "all_inputs_unchanged": true,
+  "provider_sources_sha_checked": 23,
+  "network_calls": 0,
+  "financial_replays": 0
+}

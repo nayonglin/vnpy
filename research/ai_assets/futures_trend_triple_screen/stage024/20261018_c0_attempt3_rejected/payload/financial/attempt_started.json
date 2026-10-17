@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-10-18 01:46:45.540213+08:00",
+  "status": "started_no_retry_or_overwrite",
+  "pid": 8173,
+  "argv": [
+    "research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py",
+    "--run",
+    "--data-stack-sha256",
+    "2b650761fbf2bc30aa0046147b7e369a2a0a10a68ee6b520204dde8d4d7226a0"
+  ]
+}

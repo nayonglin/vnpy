@@ -1,0 +1,73 @@
+{
+  "status": "completed_terminal_descriptive_attribution_pending_independent_financial_review",
+  "created_at": "2026-10-18T01:55:50.570293+08:00",
+  "period": [
+    "2020-01-01",
+    "2026-10-14"
+  ],
+  "actual_daily_period": [
+    "2020-01-02",
+    "2026-10-14"
+  ],
+  "calendar_rows": 1641,
+  "only_candidate_delta": "completed-week MACD-slope permission on initial flat entries; unknown retains baseline",
+  "fullperiod_screen_gates": {
+    "higher_net_return": false,
+    "lower_drawdown": true,
+    "sharpe_not_lower": false,
+    "margin_peak_not_worse": true,
+    "margin_over100_days_not_worse": true,
+    "candidate_survives": true,
+    "nonempty_candidate": true
+  },
+  "fullperiod_screen_pass": false,
+  "net_profit_difference_C0_minus_A0": -1072300.0000000012,
+  "net_profit_retention_pct": 49.24251927132271,
+  "return_difference_pp": -714.8666666666676,
+  "drawdown_improvement_pp": 5.75811869398656,
+  "sharpe_difference": -0.18234606397983577,
+  "blocked_signals": 77,
+  "blocked_long": 60,
+  "blocked_short": 17,
+  "overfitting": false,
+  "parameter_selection": false,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "feature_rebuilds": 0,
+  "provider_connections": 0,
+  "financial_review": "separate independent reviewer pending; this artifact is descriptive only",
+  "next_action": "stop_this_first_screen_shape_no_parameter_rescue",
+  "production_qualified": false,
+  "input_sha256": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/daily.csv": "f645bc76c75631c177d56d9e212c017a2589e0dfe0fb82ea8f0a21a593ee3454",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/weekly_gate_audit.csv": "407d13ec18ba10efaeadef674959c7056b00c3c05d18f819b06df11e089d920f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/entry_candidates.csv": "600850b38a33deaf25f96a15dfd8fccf966b37824a6442bce93f6e4cf0217852",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/trades.csv": "a2d473712de9980575885e0f22c2aac1a547db77dfe5aea3468010bc437fdfd1",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/metrics.json": "a1f998c3e7434dcefa96e578911ecd9bd3dbb49c629ab94814d9dc25855e3ecb",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/daily.csv": "45ffb83243c820334957f2a25402d295b0f47cd4effde43708da73f4ce609b12",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/weekly_gate_audit.csv": "22419bdabe6da6a265d795ffeab4d18898adac6a1c50fd74b9e9aa6db807ad71",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/entry_candidates.csv": "3500a5d48682866beeca64b75e813f9a8538c97a81081590ac61a114171ae89d",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/trades.csv": "44b836460862a05963bb245c98a6397d4bc64239cbdda7e2aeae58d6ae3a01d8",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/metrics.json": "25ecdd78a2b4a99a13c531b35f875a6fb4b348badf4bc3932beb6b743ba62103"
+  },
+  "limitations": [
+    "Calendar years are partitions of the same compounded account paths, not independent January fresh starts.",
+    "Blocked A orders are not removed or treated as causal PnL contributions; equity/positions and later opportunities diverge.",
+    "Unknown weekly state is baseline fallback, not a veto; coverage uses native-openable flat plans, not all market-days.",
+    "This is a negative result for the frozen weekly-permission increment, not a test of a full ordered Elder triple-screen state machine.",
+    "Mother-order win rate is not inferred from fills or daily win rate; separate independent financial review owns episode accounting."
+  ],
+  "artifact_sha256": {
+    "blocked_signal_details.csv": "ac51a8c2b87b5ce821b68351a2698866f3ca50cd1bfbb62f022c201a81022205",
+    "blocked_direction_by_year.csv": "34773ce03f9a89226c72550629fb39e842dd40ea9a07b338762384215653954e",
+    "fills_by_year.csv": "766b4c0e8eec1c753e7d9f407b0aa541135a8036973fd21f4dafa2f07c427bbe",
+    "annual_comparison.csv": "3744c12a7a06b9a5d6afbfee15e40d57c00e9a2dce92515de1ac723e0e4797ec",
+    "fullperiod_comparison.csv": "736cb08f34ac6fcc0fb6c0932be831ba4990f0f583f2d59939ef01471baf22e2",
+    "candidate_status_by_year.csv": "39dfbbc006671d6cf6735596e1b90e9822c35a615be0266b4707a12a5147cf28",
+    "gate_coverage_by_year.csv": "fd3792db3d374970234259351c981a17bf4f8dd4664280ec4ac64f6a6f3991de",
+    "drawdown_anchor_dates.csv": "8e68bfff8c8372de55671a89ea5e6ddb565f82b18e2e81eb0792b1ef5af95537",
+    "same_day_drawdown_comparison.csv": "e72c84e31a6829e691516c25dbfdd9a6d030737681a0e0d5724e256072b9ed45"
+  },
+  "report_sha256": "16300c189560616ffe2625acaa1cebf6edd3e5d7124dc72c8c6456a32a99b167",
+  "output_csv_count": 9
+}

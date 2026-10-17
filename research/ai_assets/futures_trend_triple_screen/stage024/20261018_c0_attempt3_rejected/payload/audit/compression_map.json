@@ -1,0 +1,92 @@
+[
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/run_provenance.json",
+    "original_sha256": "a9436b96d0981478976ad6d8b2e4f4102cc926bb91bc356e35569eaeb494f8dd",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_run_provenance.json.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/summary.json",
+    "original_sha256": "8bc31219a19bb467a1aedf93a928c6ec8b3311ab76eb856e9094e599f5a99e32",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_summary.json.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/input_manifest.json",
+    "original_sha256": "94c404d29a22033677f101d660de2b8a14caa656dfb59f2ff8afe4f763afb5c2",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_input_manifest.json.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/weekly_gate_audit.csv",
+    "original_sha256": "22419bdabe6da6a265d795ffeab4d18898adac6a1c50fd74b9e9aa6db807ad71",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_weekly_gate_audit.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/execution_proxy_usage.csv",
+    "original_sha256": "de655230b9687fe6a05421f23980521b19310d8aa24e25f89f2cc73be881248c",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_execution_proxy_usage.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/entry_candidates.csv",
+    "original_sha256": "3500a5d48682866beeca64b75e813f9a8538c97a81081590ac61a114171ae89d",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_entry_candidates.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/daily.csv",
+    "original_sha256": "45ffb83243c820334957f2a25402d295b0f47cd4effde43708da73f4ce609b12",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_daily.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/long_signal_atr_shock.csv",
+    "original_sha256": "74d3550c349d92f74ca24baa8da8a3acc1cb2eee6b791f32a31a422471de4069",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_long_signal_atr_shock.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/long_signal_range_atr.csv",
+    "original_sha256": "61cc801100a20d2946213a7e87df81213cffdc4b23b6d88f1484ea7eeddef64f",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_long_signal_range_atr.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/trades.csv",
+    "original_sha256": "44b836460862a05963bb245c98a6397d4bc64239cbdda7e2aeae58d6ae3a01d8",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_trades.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/positions.csv",
+    "original_sha256": "caa157309e2411c7705e97fe14d326f06ad889b0db4d90fb322129186e0962ab",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_positions.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/data_stack_manifest.json",
+    "original_sha256": "2b650761fbf2bc30aa0046147b7e369a2a0a10a68ee6b520204dde8d4d7226a0",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_data_stack_manifest.json.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/trade_events.csv",
+    "original_sha256": "ea962849ed132bb60da1920e71f96e26381157b0efd4658a8b789fe0042458c2",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_trade_events.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/C0_attempt3/entry_risk.csv",
+    "original_sha256": "ab8cc8117069e62e67a5048bd828216d31a7f2f0935a5916eacd0162d5ebaa82",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/financial_entry_risk.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_attribution/same_day_drawdown_comparison.csv",
+    "original_sha256": "e72c84e31a6829e691516c25dbfdd9a6d030737681a0e0d5724e256072b9ed45",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_terminal_evidence_pack/attribution_same_day_drawdown_comparison.csv.gz",
+    "gzip_mtime": 0
+  }
+]

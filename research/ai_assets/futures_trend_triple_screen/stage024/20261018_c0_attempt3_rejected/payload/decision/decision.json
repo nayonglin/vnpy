@@ -1,0 +1,33 @@
+{
+  "gates": {
+    "higher_net_return": false,
+    "lower_drawdown": true,
+    "sharpe_not_lower": false,
+    "margin_peak_not_worse": true,
+    "margin_over100_days_not_worse": true,
+    "candidate_survives": true,
+    "nonempty_candidate": true
+  },
+  "fullperiod_screen_pass": false,
+  "return_delta_percentage_points": -714.8666666666676,
+  "drawdown_improvement_percentage_points": 5.75811869398656,
+  "next_action": "stop_first_screen_shape_no_parameter_rescue",
+  "promotion_allowed": false,
+  "production_qualified": false,
+  "scope": "descriptive full-period offline screen; robustness and unseen-data advantage not established",
+  "calendar_rows": 1641,
+  "calendar_first": "2020-01-02",
+  "calendar_last": "2026-10-14",
+  "accepted_financial_result": true,
+  "independent_review_pending": false,
+  "financial_cli_exit_code": 0,
+  "elapsed_seconds": 411.8439139580005,
+  "attempts_total": 5,
+  "completed_financial_replays": 2,
+  "independent_review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage024_independent_review/review_receipt.json",
+  "independent_review_sha256": "d06eef3568de0aeeb8ae1ecf736eee46ab0239b851a7b2201570ac1c5f618f93",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "accepted_p2_findings": 2,
+  "strict_OOS_claim": false
+}

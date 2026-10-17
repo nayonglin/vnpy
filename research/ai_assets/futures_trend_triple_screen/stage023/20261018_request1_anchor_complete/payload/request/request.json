@@ -1,0 +1,27 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 1,
+  "execution_trade_date": "2026-08-14",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.408",
+      "vt_symbol": "cu2609.SHFE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "cu2609.SHFE",
+      "execution_trade_date": "2026-08-14",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2026-08-13T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2026-08-13T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "fe0537d2a88976cee5be621e6ce5c3e5ed1320ce9b4941d8962a0d2677522607"
+}
