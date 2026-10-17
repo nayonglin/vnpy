@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import pwd
 import signal
 import subprocess
 import sys
@@ -114,7 +115,10 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
                 name,
             )
             self.assertEqual(
-                "/Users/bytedance/Desktop/person/vnpy_production_live",
+                str(
+                    Path(pwd.getpwuid(os.getuid()).pw_dir)
+                    / "Desktop/person/vnpy_production_live"
+                ),
                 payload["WorkingDirectory"],
                 name,
             )
@@ -178,7 +182,9 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool.plist",
             "local.qmt-roll.official-live.15w.c9-production-live-health.plist",
         )
-        expected_root = "/Users/bytedance/Desktop/person/vnpy_production_live"
+        expected_root = str(
+            Path(pwd.getpwuid(os.getuid()).pw_dir) / "Desktop/person/vnpy_production_live"
+        )
         payloads = [_plist(name) for name in names]
         self.assertEqual(7, len({payload["Label"] for payload in payloads}))
         self.assertEqual(
