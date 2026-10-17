@@ -1,0 +1,32 @@
+{
+  "reviewed_at": "2026-10-17T23:53:07+08:00",
+  "reviewer": "first_screen_independent",
+  "status": "saved_raw_completion_and_CSV_consistency_review_pass_original_Stage007_quality_rejected",
+  "p0_findings": 0,
+  "p1_findings": 1,
+  "p1_scope": "known Stage007 database OI field mapping error; original rejected evidence remains immutable; separate field-aware qualification required",
+  "network_connections_in_review": 0,
+  "provider_replays_in_review": 0,
+  "financial_replays": 0,
+  "raw_target_minutes": 345,
+  "all_completion_successor_rows": 345,
+  "seven_CSV_aggregate_fields_exact": true,
+  "three_DB_rows_openOI_semantics_verified": true,
+  "DB_closeOI": "not_provided_unknown",
+  "source_data_or_strategy_modified": false,
+  "cache_or_overlay_written": false,
+  "production_qualified": false,
+  "execution_fallback_authorized": false,
+  "C0_attempt3_authorized": false,
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "review_artifact_sha256": {
+    "independent_review.md": "f0f6c0eac0f1f5e8cc00591c1cbb97463320ac09665416ce39256379ae37707f",
+    "probe_evidence_checks.json": "62ff507af5cd8bbf57ec498e4c1b6ef188d0e988f877027095935dadfa3b479e",
+    "review_probe_evidence.py": "da12829f2d3b70e5c4f28de0b3bd0138a2eecb9a5ffd90ca1ac77551c2da92eb"
+  },
+  "source_Stage007_original_quality_sha256": "9bf02a770b12c7fe65d2efb105e3bfc4f29227d2961352eb0a614a6d5eb6625e",
+  "overfitting": false,
+  "continued_value": true
+}

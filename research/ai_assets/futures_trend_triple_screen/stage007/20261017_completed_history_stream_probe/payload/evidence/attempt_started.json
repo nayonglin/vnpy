@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-10-17T23:44:59.192623+08:00",
+  "target": "SHFE.rb2010",
+  "target_trading_date": "2020-08-12",
+  "provider_replay_attempts_max": 1,
+  "timeout_seconds": 180,
+  "local_TqSim_planned": true,
+  "financial_strategy_replays": 0,
+  "credential_values_saved": false
+}

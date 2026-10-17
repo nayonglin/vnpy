@@ -1,0 +1,50 @@
+{
+  "accepted": false,
+  "completion_evidence_complete": true,
+  "daily_csv_check": {
+    "status": "accepted",
+    "reason": "complete_daily_matched_base_preserved",
+    "expected_minutes": 345,
+    "actual_rows": 345,
+    "missing_minutes": 0,
+    "new_minutes": 345,
+    "base_overlap_minutes": 0,
+    "daily_open_oi_check": "checked",
+    "aggregate": {
+      "open": 3795.0,
+      "high": 3809.0,
+      "low": 3780.0,
+      "close": 3805.0,
+      "volume": 740132.0,
+      "open_oi": 1064817.0,
+      "close_oi": 1053986.0
+    },
+    "daily_mismatch_fields": []
+  },
+  "database_check": {
+    "status": "quarantined",
+    "reason": "daily_aggregate_mismatch",
+    "expected_minutes": 345,
+    "actual_rows": 345,
+    "missing_minutes": 0,
+    "new_minutes": 0,
+    "base_overlap_minutes": 0,
+    "daily_open_oi_check": "unknown",
+    "aggregate": {
+      "open": 3795.0,
+      "high": 3809.0,
+      "low": 3780.0,
+      "close": 3805.0,
+      "volume": 740132.0,
+      "open_oi": 1064817.0,
+      "close_oi": 1053986.0
+    },
+    "daily_mismatch_fields": [
+      "close_oi"
+    ]
+  },
+  "expected_minutes": 345,
+  "raw_rows": 345,
+  "raw_unique_keys": true,
+  "base_or_overlay_written": false
+}

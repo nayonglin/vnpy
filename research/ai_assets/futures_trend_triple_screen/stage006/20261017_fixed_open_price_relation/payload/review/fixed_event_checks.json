@@ -1,0 +1,123 @@
+{
+  "reviewed_at": "2026-10-17T23:32:37+08:00",
+  "status": "limited_fixed_event_equivalence_audit_review_pass_global_equivalence_false",
+  "production_qualified": false,
+  "financial_replays": 0,
+  "pnl_columns_read": 0,
+  "execution_fallback_enabled": false,
+  "fixed_events_identity_checked": 535,
+  "unique_exact_order_joins": 535,
+  "direction_join_matches": 535,
+  "exact_prices_from_fixed_event_table": 534,
+  "Open_event_exact_matches": 319,
+  "real_daily_SQL_sentinel_queries": 6,
+  "SQL_sentinels": [
+    {
+      "symbol": "rb2005.SHFE",
+      "trading_date": "2020-01-09",
+      "daily_datetime": "2020-01-09 00:00:00",
+      "daily_open": 3617.0,
+      "anchor": 3617.0,
+      "physical": "2020-01-08T21:00:00",
+      "exact": true
+    },
+    {
+      "symbol": "jm2005.DCE",
+      "trading_date": "2020-01-10",
+      "daily_datetime": "2020-01-10 00:00:00",
+      "daily_open": 1203.0,
+      "anchor": 1203.0,
+      "physical": "2020-01-09T21:00:00",
+      "exact": true
+    },
+    {
+      "symbol": "au2102.SHFE",
+      "trading_date": "2021-01-05",
+      "daily_datetime": "2021-01-05 00:00:00",
+      "daily_open": 401.88,
+      "anchor": 401.88,
+      "physical": "2021-01-04T21:00:00",
+      "exact": true
+    },
+    {
+      "symbol": "SM310.CZCE",
+      "trading_date": "2023-08-15",
+      "daily_datetime": "2023-08-15 00:00:00",
+      "daily_open": 6790.0,
+      "anchor": 6790.0,
+      "physical": "2023-08-15T09:00:00",
+      "exact": true
+    },
+    {
+      "symbol": "cu2611.SHFE",
+      "trading_date": "2026-10-14",
+      "daily_datetime": "2026-10-14 00:00:00",
+      "daily_open": 110950.0,
+      "anchor": 110950.0,
+      "physical": "2026-10-13T21:00:00",
+      "exact": true
+    },
+    {
+      "symbol": "au2610.SHFE",
+      "trading_date": "2026-10-14",
+      "daily_datetime": "2026-10-14 00:00:00",
+      "daily_open": 904.98,
+      "anchor": 903.62,
+      "physical": "2026-10-13T21:00:00",
+      "exact": false
+    }
+  ],
+  "unique_anomaly": {
+    "vt_symbol": "au2610.SHFE",
+    "trading_date": "2026-10-14",
+    "order_id": "BACKTESTING.560",
+    "offset": "Close",
+    "expected_start": "2026-10-13T21:00:00",
+    "actual_time": "2026-10-13T21:00:00",
+    "source": "canonical_session_first_minute_open",
+    "direction": "Long",
+    "anchor_present": true,
+    "anchor_price_valid": true,
+    "anchor_price": 903.62,
+    "daily_row_count": 1,
+    "daily_datetimes": "2026-10-14 00:00:00",
+    "daily_open_price": 904.98,
+    "daily_status": "unique_valid_real_daily_bar",
+    "absolute_price_difference": 1.3600000000000136,
+    "price_exact_match": false,
+    "price_tolerance_match": false,
+    "helper_session_start": "2026-10-13T21:00:00",
+    "expected_start_match": true,
+    "physical_time_match": true,
+    "session_error": "",
+    "canonical_anchor_source": true,
+    "equivalent": false,
+    "anomaly_reason": "price_difference",
+    "event_number": 534,
+    "direction_source": "exact_order_fields"
+  },
+  "anomaly_order_meaning": "Long is buy direction; Close+Long is closing a short, not a long position",
+  "existing_cache_adjacent_rows": [
+    {
+      "symbol": "au2610.SHFE",
+      "physical_time": "2026-10-13 21:00:00",
+      "open": 903.62,
+      "high": 903.62,
+      "low": 903.62,
+      "close": 903.62,
+      "volume": 0.0,
+      "open_oi": 1896.0,
+      "close_oi": 1896.0,
+      "source": "stage249_completed_trading_day_fragment"
+    }
+  ],
+  "existing_DB_adjacent_minute_rows": [],
+  "expected_original_daily_CSV_exists": false,
+  "observed_fact": "unique daily open904.98 differs from zero-volume canonical21:00 open903.62 by1.36",
+  "inference_only": "zero-trade minute carry versus daily first-trade/auction/source convention is a possible cause, not established without adjacent raw trades/auction data",
+  "limits": "6 independent daily SQL sentinels plus all535 identity joins; no repeated535 SQL audit, no PnL/account reconstruction, no source repair or broader QA",
+  "unchanged_consumer_sha256": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+  "source_summary_sha256": "aa4795b3d66f2cd444d66fb3cdec6ffce5c8cc2dbd7bbe440f69069a7692691b",
+  "all_audit_input_fingerprints_match": true,
+  "source_scope": "fixed535 accepted A0 events only; cannot generalize319 matching Opens to unseen candidate paths"
+}

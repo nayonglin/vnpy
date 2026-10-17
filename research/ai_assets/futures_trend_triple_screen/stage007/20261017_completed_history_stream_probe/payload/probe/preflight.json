@@ -1,0 +1,41 @@
+{
+  "status": "passed_offline_preflight_no_provider_connection",
+  "provider_replays": 0,
+  "sdk_version": "3.10.2",
+  "tq_symbol": "SHFE.rb2010",
+  "duration_seconds": 60,
+  "provider_window": [
+    "2020-08-11",
+    "2020-08-13"
+  ],
+  "target_trading_date": "2020-08-12",
+  "expected_minutes": 345,
+  "expected_first": "2020-08-11T21:00:00",
+  "expected_last": "2020-08-12T14:59:00",
+  "parent_wall_clock_timeout_seconds": 180,
+  "credentials_fields_present": true,
+  "credential_values_saved": false,
+  "auth_checks_unmodified": true,
+  "normal_sdk_authorization_required": true,
+  "explicit_local_TqSim_planned": true,
+  "may_consume_one_provider_backtest_quota": true,
+  "sdk_stdout_stderr_policy": "discard_raw_output_and_emit_only_allowlisted_receipt_fields",
+  "no_retry": true,
+  "no_orders": true,
+  "no_cache_or_overlay_write": true,
+  "financial_strategy_replays": 0,
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage007_tqsdk_stream_probe.py": "a4b869b69da9b6580a5a291499cb829d2dd7407467db11eea5c2c93baa3486dc",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261017_2338_stage007_tqsdk_official_stream_probe_protocol.md": "9fa54a69ccf68e8747c84aa12def08aa5e04ef29b04a5cba08bf65d687f32f1f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage002_local_minute_overlay.py": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+    "/Users/mac/Desktop/fian/.vntrader/database.db": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/rb2010.csv": "737c9e00cd13d877d8d8552d8aac3fe65d4605fab4ad7ddd3815be400a280d08",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/api.py": "264fff3e3979a156294d8bca745c8aa6c26136c8cbe58ef2bc7ceffd8b811c96",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/auth.py": "1252fd43b7991046148863edf834068fea53216ccf0c5a511e8002e482a01c49",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tradeable/sim/tqsim.py": "00a0c478f11c9c92dc402a2168c621fcd04c04c5f992b357459e8b0a228f3977",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/backtest/backtest.py": "6f3f3eb9980ea10b45a964316a1a34cc1346c99ca537bb28b98c04de264f0447",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tools/downloader.py": "12bd121175f943b0e895c8f5e771dc8d149e8aafa6d8c221d6dc47f38973d675"
+  }
+}

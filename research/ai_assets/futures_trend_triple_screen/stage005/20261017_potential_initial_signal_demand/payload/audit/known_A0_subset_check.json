@@ -1,0 +1,13 @@
+{
+  "known_rows": 886,
+  "matched_rows": 886,
+  "missing_rows": 0,
+  "fields_read": [
+    "date",
+    "product_vt_symbol",
+    "contract_vt_symbol",
+    "signal"
+  ],
+  "outcome_fields_read": 0,
+  "meaning": "necessary subset sentinel only, not complete-path proof"
+}

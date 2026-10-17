@@ -1,0 +1,196 @@
+{
+  "status": "target_requalified_pending_independent_review",
+  "accepted": true,
+  "elapsed_seconds": 0.28451895801117644,
+  "vt_symbol": "rb2010.SHFE",
+  "target_trading_date": "2020-08-12",
+  "network_calls": 0,
+  "provider_replays": 0,
+  "TqApi_instances": 0,
+  "TqSim_instances": 0,
+  "financial_strategy_replays": 0,
+  "order_calls": 0,
+  "cancel_calls": 0,
+  "model_fits": 0,
+  "source_writes": 0,
+  "cache_or_overlay_written": false,
+  "execution_fallback_enabled": false,
+  "production_qualified": false,
+  "all_inputs_unchanged": true,
+  "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/raw_completed_minutes.csv",
+  "raw_sha256": "0805e7083b24e988469bee78fabc53419d2855e85f92928256a184d9db9480ac",
+  "completion_evidence_sha256": "3eecacbf83069daac6e0508b5ebdb79e6db50ba60b89b1486d76ce2979f8aff2",
+  "minute_check": {
+    "accepted": true,
+    "rows": 345,
+    "unique_keys": true,
+    "exact_target_grid": true,
+    "legal_ohlcvoi": true,
+    "aggregate": {
+      "open": 3795.0,
+      "high": 3809.0,
+      "low": 3780.0,
+      "close": 3805.0,
+      "volume": 740132.0,
+      "open_oi": 1064817.0,
+      "close_oi": 1053986.0
+    }
+  },
+  "completion_check": {
+    "accepted": true,
+    "evidence_rows": 345,
+    "expected_minutes": 345,
+    "missing_evidence_minutes": 0,
+    "all_successors_forward": true,
+    "final_target_time": "2020-08-12T14:59:00",
+    "final_successor_time": "2020-08-12T21:00:00"
+  },
+  "field_checks": [
+    {
+      "source": "csv",
+      "source_field": "open",
+      "aggregate_field": "open",
+      "reference_value": 3795.0,
+      "aggregate_value": 3795.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "high",
+      "aggregate_field": "high",
+      "reference_value": 3809.0,
+      "aggregate_value": 3809.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "low",
+      "aggregate_field": "low",
+      "reference_value": 3780.0,
+      "aggregate_value": 3780.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "close",
+      "aggregate_field": "close",
+      "reference_value": 3805.0,
+      "aggregate_value": 3805.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "volume",
+      "aggregate_field": "volume",
+      "reference_value": 740132.0,
+      "aggregate_value": 740132.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "open_oi",
+      "aggregate_field": "open_oi",
+      "reference_value": 1064817.0,
+      "aggregate_value": 1064817.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "csv",
+      "source_field": "close_oi",
+      "aggregate_field": "close_oi",
+      "reference_value": 1053986.0,
+      "aggregate_value": 1053986.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "open",
+      "aggregate_field": "open",
+      "reference_value": 3795.0,
+      "aggregate_value": 3795.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "high",
+      "aggregate_field": "high",
+      "reference_value": 3809.0,
+      "aggregate_value": 3809.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "low",
+      "aggregate_field": "low",
+      "reference_value": 3780.0,
+      "aggregate_value": 3780.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "close",
+      "aggregate_field": "close",
+      "reference_value": 3805.0,
+      "aggregate_value": 3805.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "volume",
+      "aggregate_field": "volume",
+      "reference_value": 740132.0,
+      "aggregate_value": 740132.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    },
+    {
+      "source": "database",
+      "source_field": "open_interest",
+      "aggregate_field": "open_oi",
+      "reference_value": 1064817.0,
+      "aggregate_value": 1064817.0,
+      "absolute_difference": 0.0,
+      "matches": true
+    }
+  ],
+  "database_close_oi": "N/A_not_independently_available",
+  "importer_semantics": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/import_tqsdk_all_futures_daily_to_db.py",
+    "sha256": "0fd37e73b40a7c104eacc9acf9b2e456559cf1ebdcef0c8ce9acc2fd578255cb",
+    "line": 115,
+    "expression": "float(getattr(row, 'open_oi', 0.0) or 0.0)",
+    "interpretation": "For this known CSV importer, DB open_interest stores CSV open_oi; no independent DB closeOI exists."
+  },
+  "original_probe": {
+    "provider_replay_attempts": 1,
+    "status": "completed_quality_rejected",
+    "exit_code": 1,
+    "quality_sha256": "9bf02a770b12c7fe65d2efb105e3bfc4f29227d2961352eb0a614a6d5eb6625e",
+    "original_accepted": false,
+    "original_mismatch_fields": [
+      "close_oi"
+    ],
+    "unchanged": true
+  },
+  "limitations": [
+    "Only rb2010.SHFE trading date 2020-08-12 and this proven importer source; not a whole-market OI claim.",
+    "Official strategy continues using the unchanged DB OI semantics; no alpha or closeOI signal change.",
+    "Research data candidate only; no base/overlay merge, C0 attempt3, fallback or deployment authorization."
+  ],
+  "artifact_sha256": {
+    "input_manifest.json": "9098f3150e85f87ac7521bc375d80bc8fafecac94f1daeb72d439af4cbb446e7",
+    "attempt_started.json": "9dc66acdd8c2dce895677dababea9a64f03115fd6e315269cefd7cbdb0fe2bfe",
+    "field_checks.csv": "4bcd6656091f850fb70ba4b45216dee1984fd4dcf0bb211c8157dabbcfb6e1e4"
+  }
+}

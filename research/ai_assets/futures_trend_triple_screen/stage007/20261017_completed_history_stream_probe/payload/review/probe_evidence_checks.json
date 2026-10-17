@@ -1,0 +1,130 @@
+{
+  "reviewed_at": "2026-10-17T23:51:57+08:00",
+  "status": "saved_completed_probe_review_pass_original_quality_remains_rejected",
+  "original_quality_accepted": false,
+  "original_worker_status": "completed_quality_rejected",
+  "parent_exit_code": 1,
+  "p0_findings": 0,
+  "known_field_semantics_findings": 1,
+  "network_connections_in_review": 0,
+  "provider_replays_in_review": 0,
+  "provider_probe_attempts_historical": 1,
+  "provider_probe_elapsed_seconds": 38.22031941701425,
+  "financial_replays": 0,
+  "orders_or_cancel_calls": 0,
+  "credential_config_read_by_reviewer": false,
+  "independent_exact_grid_and_evidence_rows": 345,
+  "raw_rows_finite_legal_unique": true,
+  "last_target_bar": "2020-08-12T14:59:00",
+  "observed_successor_for_last_target": "2020-08-12T21:00:00",
+  "completion_evidence_scope": "saved successor record for every accepted target; collector code only accepts a non-final serial row with strictly later successor; original provider serial/log is deliberately not retained",
+  "UTC_to_Shanghai_source_and_clock_sentinel_match": true,
+  "independent_minute_aggregate": {
+    "open": 3795.0,
+    "high": 3809.0,
+    "low": 3780.0,
+    "close": 3805.0,
+    "volume": 740132.0,
+    "open_oi": 1064817.0,
+    "close_oi": 1053986.0
+  },
+  "all7_CSV_daily_fields_exact": true,
+  "exact_SQL_daily_rows_checked": 3,
+  "DB_vs_CSV_OI": [
+    {
+      "date": "2020-08-11",
+      "database_open_interest": 1114052.0,
+      "csv_open_oi": 1114052.0,
+      "csv_close_oi": 1064817.0,
+      "OHLCV_exact": true,
+      "database_matches_csv_open_oi": true,
+      "database_matches_csv_close_oi": false
+    },
+    {
+      "date": "2020-08-12",
+      "database_open_interest": 1064817.0,
+      "csv_open_oi": 1064817.0,
+      "csv_close_oi": 1053986.0,
+      "OHLCV_exact": true,
+      "database_matches_csv_open_oi": true,
+      "database_matches_csv_close_oi": false
+    },
+    {
+      "date": "2020-08-13",
+      "database_open_interest": 1053986.0,
+      "csv_open_oi": 1053986.0,
+      "csv_close_oi": 1023253.0,
+      "OHLCV_exact": true,
+      "database_matches_csv_open_oi": true,
+      "database_matches_csv_close_oi": false
+    }
+  ],
+  "importer_open_interest_keyword_line": 115,
+  "importer_open_interest_expression": "float(getattr(row, 'open_oi', 0.0) or 0.0)",
+  "importer_sha256": "0fd37e73b40a7c104eacc9acf9b2e456559cf1ebdcef0c8ce9acc2fd578255cb",
+  "root_cause": "Stage007 maps database open_interest to close_oi, but this accepted rb CSV import writes row.open_oi into database open_interest",
+  "target_database_open_oi_verified": 1064817.0,
+  "target_database_close_oi": "not_provided_unknown",
+  "corrected_semantics_scope": "exact rb2010 source and three observed dates plus original importer contract; no claim that every DB row from all sources has identical provenance",
+  "raw_data_requalification_done": false,
+  "original_rejected_quality_preserved": true,
+  "sdk_auth_and_related_files_match_wheel_RECORD_and_preflight": [
+    {
+      "path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/api.py",
+      "sha256": "264fff3e3979a156294d8bca745c8aa6c26136c8cbe58ef2bc7ceffd8b811c96",
+      "matches_install_RECORD": true,
+      "matches_preflight": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/auth.py",
+      "sha256": "1252fd43b7991046148863edf834068fea53216ccf0c5a511e8002e482a01c49",
+      "matches_install_RECORD": true,
+      "matches_preflight": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/backtest/backtest.py",
+      "sha256": "6f3f3eb9980ea10b45a964316a1a34cc1346c99ca537bb28b98c04de264f0447",
+      "matches_install_RECORD": true,
+      "matches_preflight": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tools/downloader.py",
+      "sha256": "12bd121175f943b0e895c8f5e771dc8d149e8aafa6d8c221d6dc47f38973d675",
+      "matches_install_RECORD": true,
+      "matches_preflight": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tradeable/sim/tqsim.py",
+      "sha256": "00a0c478f11c9c92dc402a2168c621fcd04c04c5f992b357459e8b0a228f3977",
+      "matches_install_RECORD": true,
+      "matches_preflight": true
+    }
+  ],
+  "no_order_evidence": "static worker call graph creates only TqSim and calls data API; parent/worker allowlisted receipts report zero orders/cancels; no broker account is passed",
+  "credentials_policy": "tool locally reads settings, passes only in-process TqAuth; no values in subprocess argv or receipts; SDK stdout/stderr/logging discarded; reviewer did not read private settings",
+  "hard_timeout_evidence": "single parent Popen session; 180s parent deadline, killpg SIGKILL on timeout and finally, no retry; actual probe finished before deadline",
+  "source_data_writes": false,
+  "cache_or_overlay_written": false,
+  "execution_fallback_enabled": false,
+  "production_qualified": false,
+  "stage008_boundary": "separate declared field-aware requalification may check DB OHLCV+known openOI; DB closeOI remains unknown; Stage007 files remain immutable/rejected",
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "C0_attempt3_authorized": false,
+  "overfitting": false,
+  "overfitting_reason": "data completion and source schema verified without outcomes or parameter choice",
+  "continued_value": true,
+  "continued_value_reason": "correct source-field qualification separates provider capability from importer semantic mismatch",
+  "checked_artifacts_sha256": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/preflight.json": "d578c4193d4aa0ceffdcbc51453afe8a9a28407622d621b14c61c234200e9729",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/attempt_started.json": "16e649dc90aaa56cd075f531be2b5a7c2e7f75531bb2d88228aa8014e2082b30",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/completion_evidence.csv": "3eecacbf83069daac6e0508b5ebdb79e6db50ba60b89b1486d76ce2979f8aff2",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/parent_receipt.json": "b3e17f340a1399aa2238f423c100b9a81c5d6d4765d7ea6781c85cfb757ba205",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/quality.json": "9bf02a770b12c7fe65d2efb105e3bfc4f29227d2961352eb0a614a6d5eb6625e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/raw_completed_minutes.csv": "0805e7083b24e988469bee78fabc53419d2855e85f92928256a184d9db9480ac",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage007_tqsdk_stream_probe/network_attempt1/worker_receipt.json": "837f00aa5557c70aef71685c37eadea9f6c81f31918e0e556b1cc47a4861f791",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage007_tqsdk_stream_probe.py": "a4b869b69da9b6580a5a291499cb829d2dd7407467db11eea5c2c93baa3486dc",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/import_tqsdk_all_futures_daily_to_db.py": "0fd37e73b40a7c104eacc9acf9b2e456559cf1ebdcef0c8ce9acc2fd578255cb"
+  }
+}

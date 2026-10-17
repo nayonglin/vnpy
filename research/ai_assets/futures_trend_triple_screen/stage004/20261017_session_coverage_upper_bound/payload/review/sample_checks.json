@@ -1,0 +1,141 @@
+{
+  "reviewed_at": "2026-10-17T23:19:52+08:00",
+  "status": "limited_semantic_and_small_enumeration_checks_pass",
+  "production_qualified": false,
+  "financial_replays": 0,
+  "old_account_recalculations": 0,
+  "weekly_recalculations": 0,
+  "full_coverage_batch_repeated": false,
+  "full_session_gzip_reenumerated": false,
+  "summary_sha256": "d4edaf2926d9cd227afaba623201d2df3bd01c2b50eda33b3025d76702ba24f9",
+  "implementation_sha256": "a30bc542b0b8c2dabea666f7a55a995a90c4b763e80d508369dc55c7767a75e3",
+  "selected_artifact_fingerprints_checked": [
+    "known_failure_session_coverage.csv",
+    "gap_examples.csv",
+    "local_source_candidates.csv",
+    "requirement_set_summary.csv",
+    "input_manifest.json"
+  ],
+  "sampled_sessions": [
+    {
+      "symbol": "rb2010.SHFE",
+      "date": "2020-05-18",
+      "role": "current_main",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 345,
+      "brute_available": 345,
+      "missing": 0,
+      "anchor_present": true,
+      "real_data_gap": false,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "rb2010.SHFE",
+      "date": "2020-08-12",
+      "role": "current_main",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 345,
+      "brute_available": 0,
+      "missing": 345,
+      "anchor_present": false,
+      "real_data_gap": true,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "AP005.CZCE",
+      "date": "2020-01-08",
+      "role": "current_main",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 225,
+      "brute_available": 224,
+      "missing": 1,
+      "anchor_present": true,
+      "real_data_gap": true,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "AP005.CZCE",
+      "date": "2020-04-17",
+      "role": "adjacent_previous_main",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 225,
+      "brute_available": 0,
+      "missing": 225,
+      "anchor_present": false,
+      "real_data_gap": true,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "AP005.CZCE",
+      "date": "2020-05-20",
+      "role": "adjacent_previous_main",
+      "real_daily_present": false,
+      "carry_risk": true,
+      "expected": 225,
+      "brute_available": 0,
+      "missing": 225,
+      "anchor_present": false,
+      "real_data_gap": false,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "AP005.CZCE",
+      "date": "2020-09-17",
+      "role": "earlier_prior_main",
+      "real_daily_present": false,
+      "carry_risk": true,
+      "expected": 225,
+      "brute_available": 0,
+      "missing": 225,
+      "anchor_present": false,
+      "real_data_gap": false,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "AP010.CZCE",
+      "date": "2020-01-02",
+      "role": "metadata_real_only",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 225,
+      "brute_available": 0,
+      "missing": 225,
+      "anchor_present": false,
+      "real_data_gap": true,
+      "classification_and_count_match": true
+    },
+    {
+      "symbol": "OI609.CZCE",
+      "date": "2026-09-09",
+      "role": "earlier_prior_main",
+      "real_daily_present": true,
+      "carry_risk": false,
+      "expected": 345,
+      "brute_available": 0,
+      "missing": 345,
+      "anchor_present": false,
+      "real_data_gap": true,
+      "classification_and_count_match": true
+    }
+  ],
+  "targeted_minute_lines_examined": {
+    "base": 899,
+    "overlay": 1035
+  },
+  "vectorized_sparse_night_day_probe": {
+    "expected_minutes": 345,
+    "available_minutes": 342,
+    "missing_minutes": 3,
+    "anchor_present": false,
+    "complete": false
+  },
+  "local_source_inventory_rows": 7912,
+  "inventory_measured_checksums_empty": true,
+  "inventory_never_auto_accepted": true,
+  "assertions": "current/prior/main-derived bounds conditional; no-real carry rows are diagnostic only; requirement sets overlap and cannot be summed as disjoint demands",
+  "confidence_limit": "8 session sentinels plus one sparse-grid probe and static/source semantics; not an independent enumeration of all 452069 coverage rows or price requalification"
+}

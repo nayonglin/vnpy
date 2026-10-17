@@ -1,0 +1,13 @@
+{
+  "status": "offline_preflight_failed_before_any_provider_connection",
+  "exception_type": "FileNotFoundError",
+  "cause": "Static source fingerprint expected sim/sim.py; installed TqSdk 3.10.2 uses tradeable/sim/tqsim.py.",
+  "initial_stdout_category": "network_rejected",
+  "initial_stdout_category_was_incorrect": true,
+  "corrected_category": "local_source_missing",
+  "provider_replay_attempts": 0,
+  "financial_strategy_replays": 0,
+  "raw_exception_text_saved": false,
+  "credential_values_saved": false,
+  "retry_scope": "One corrected offline preflight only; no network was started."
+}

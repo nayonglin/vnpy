@@ -1,0 +1,382 @@
+{
+  "reviewed_at": "2026-10-17T23:44:25+08:00",
+  "status": "limited_original_signal_and_initial_demand_semantic_review_pass",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "financial_replays": 0,
+  "full_indicator_stream_repeated": false,
+  "account_or_weekly_recalculations": 0,
+  "base_C9_research_wrapper_method_identity": {
+    "_build_history_df": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_calculate_macd": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_evaluate_ma5_angle_reversal_filter": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_generate_signal": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_get_ma_slope_direction": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_is_latest_ma_extreme": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_is_simple_ma_trend": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_open_interest_risk_mode": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_passes_entry_filters": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_signal_result": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_volume_open_interest_risk_mode": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    },
+    "_wick_chop_filter_ok": {
+      "c9_same": true,
+      "research_wrapper_same": true
+    }
+  },
+  "MRO": [
+    {
+      "name": "QmtRollPortfolioStrategyStage847C9StopRetry",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py"
+    },
+    {
+      "name": "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py"
+    },
+    {
+      "name": "QmtRollPortfolioStrategyStage827C2",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py"
+    },
+    {
+      "name": "QmtRollPortfolioStrategyLongTighterInitialStop",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py"
+    },
+    {
+      "name": "QmtRollPortfolioStrategyExactAm",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py"
+    },
+    {
+      "name": "QmtRollPortfolioStrategy",
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py"
+    },
+    {
+      "name": "StrategyTemplate",
+      "path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/template.py"
+    },
+    {
+      "name": "ABC",
+      "path": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/abc.py"
+    }
+  ],
+  "source_preload": "2019-06-01",
+  "source_array_manager_size": 41,
+  "positive_SQL_windows": 6,
+  "no_alpha_SQL_windows": 2,
+  "warmup_SQL_windows": 1,
+  "real_daily_price_rows_read": 329,
+  "SQL_window_checks": [
+    {
+      "kind": "positive",
+      "date": "2020-01-08",
+      "contract": "rb2005.SHFE",
+      "signal": "long_case3",
+      "risk_mode": "regular",
+      "observations_in_SQL": 150,
+      "SQL_window_rows": 41,
+      "first_window_date": "2019-11-12",
+      "last_window_date": "2020-01-08",
+      "history_first_close": 3263.0,
+      "history_last_close": 3617.0,
+      "next_global_day": "2020-01-09",
+      "weekly_ready": true,
+      "weekly_direction": -1,
+      "c0_allowed": false,
+      "matches": true
+    },
+    {
+      "kind": "positive",
+      "date": "2020-01-09",
+      "contract": "AP005.CZCE",
+      "signal": "short_case2",
+      "risk_mode": "regular",
+      "observations_in_SQL": 151,
+      "SQL_window_rows": 41,
+      "first_window_date": "2019-11-13",
+      "last_window_date": "2020-01-09",
+      "history_first_close": 8142.0,
+      "history_last_close": 7360.0,
+      "next_global_day": "2020-01-10",
+      "weekly_ready": true,
+      "weekly_direction": -1,
+      "c0_allowed": true,
+      "matches": true
+    },
+    {
+      "kind": "positive",
+      "date": "2020-01-10",
+      "contract": "ru2005.SHFE",
+      "signal": "long_case2",
+      "risk_mode": "regular",
+      "observations_in_SQL": 152,
+      "SQL_window_rows": 41,
+      "first_window_date": "2019-11-14",
+      "last_window_date": "2020-01-10",
+      "history_first_close": 12365.0,
+      "history_last_close": 13100.0,
+      "next_global_day": "2020-01-13",
+      "weekly_ready": false,
+      "weekly_direction": 0,
+      "c0_allowed": true,
+      "matches": true
+    },
+    {
+      "kind": "positive",
+      "date": "2020-09-01",
+      "contract": "hc2010.SHFE",
+      "signal": "long_case1a",
+      "risk_mode": "regular",
+      "observations_in_SQL": 217,
+      "SQL_window_rows": 41,
+      "first_window_date": "2020-07-07",
+      "last_window_date": "2020-09-01",
+      "history_first_close": 3629.0,
+      "history_last_close": 4037.0,
+      "next_global_day": "2020-09-02",
+      "weekly_ready": true,
+      "weekly_direction": -1,
+      "c0_allowed": false,
+      "matches": true
+    },
+    {
+      "kind": "positive",
+      "date": "2021-09-23",
+      "contract": "CF201.CZCE",
+      "signal": "short_case2",
+      "risk_mode": "regular",
+      "observations_in_SQL": 167,
+      "SQL_window_rows": 41,
+      "first_window_date": "2021-07-27",
+      "last_window_date": "2021-09-23",
+      "history_first_close": 17670.0,
+      "history_last_close": 17125.0,
+      "next_global_day": "2021-09-24",
+      "weekly_ready": false,
+      "weekly_direction": 0,
+      "c0_allowed": true,
+      "matches": true
+    },
+    {
+      "kind": "positive",
+      "date": "2026-10-14",
+      "contract": "sp2701.SHFE",
+      "signal": "short_case2",
+      "risk_mode": "open_interest_surge",
+      "observations_in_SQL": 80,
+      "SQL_window_rows": 41,
+      "first_window_date": "2026-08-11",
+      "last_window_date": "2026-10-14",
+      "history_first_close": 4810.0,
+      "history_last_close": 4730.0,
+      "next_global_day": "",
+      "weekly_ready": true,
+      "weekly_direction": -1,
+      "c0_allowed": true,
+      "matches": true
+    },
+    {
+      "kind": "no_alpha",
+      "date": "2020-01-07",
+      "product": "rb.SHFE",
+      "contract": "rb2005.SHFE",
+      "observations_in_SQL": 149,
+      "SQL_window_rows": 41,
+      "signal": "",
+      "matches": true
+    },
+    {
+      "kind": "no_alpha",
+      "date": "2020-01-08",
+      "product": "AP.CZCE",
+      "contract": "AP005.CZCE",
+      "observations_in_SQL": 150,
+      "SQL_window_rows": 41,
+      "signal": "",
+      "matches": true
+    },
+    {
+      "kind": "not_warmed",
+      "date": "2023-07-21",
+      "contract": "lc2401.GFEX",
+      "observations_in_SQL": 1,
+      "SQL_window_rows": 1,
+      "inited": false,
+      "matches": true
+    }
+  ],
+  "actual_count_separately_queried": true,
+  "window_equivalence": "last41 real observations exactly determine arrays, RSI and all original signal helpers; total historical AM count is separately checked for positive rows",
+  "pure_alpha_events_from_existing_table": 900,
+  "c0_permitted_events": 701,
+  "weekly_unknown_preserve_baseline": 143,
+  "terminal_pending_excluded_sessions": 1,
+  "known_A0_four_identity_columns_matched": 886,
+  "cross_mapping_boundary_events": 17,
+  "cross_mapping_examples": [
+    {
+      "signal_date": "2020-09-01",
+      "execution_trade_date": "2020-09-02",
+      "signal_contract": "hc2010.SHFE",
+      "next_mapping_contract": "hc2101.SHFE"
+    },
+    {
+      "signal_date": "2020-12-11",
+      "execution_trade_date": "2020-12-14",
+      "signal_contract": "MA101.CZCE",
+      "next_mapping_contract": "MA105.CZCE"
+    },
+    {
+      "signal_date": "2020-12-16",
+      "execution_trade_date": "2020-12-17",
+      "signal_contract": "SM101.CZCE",
+      "next_mapping_contract": "SM105.CZCE"
+    }
+  ],
+  "sample_cached_session_joins": [
+    {
+      "contract": "AP005.CZCE",
+      "execution_date": "2020-01-10",
+      "expected": 225,
+      "available": 0,
+      "missing": 225,
+      "physical_start": "2020-01-10T09:00:00",
+      "full_cache_count_and_helper_identity_match": true
+    },
+    {
+      "contract": "CF201.CZCE",
+      "execution_date": "2021-09-24",
+      "expected": 345,
+      "available": 345,
+      "missing": 0,
+      "physical_start": "2021-09-23T21:00:00",
+      "full_cache_count_and_helper_identity_match": true
+    },
+    {
+      "contract": "hc2010.SHFE",
+      "execution_date": "2020-09-02",
+      "expected": 345,
+      "available": 345,
+      "missing": 0,
+      "physical_start": "2020-09-01T21:00:00",
+      "full_cache_count_and_helper_identity_match": true
+    },
+    {
+      "contract": "rb2005.SHFE",
+      "execution_date": "2020-01-09",
+      "expected": 345,
+      "available": 345,
+      "missing": 0,
+      "physical_start": "2020-01-08T21:00:00",
+      "full_cache_count_and_helper_identity_match": true
+    },
+    {
+      "contract": "ru2005.SHFE",
+      "execution_date": "2020-01-13",
+      "expected": 345,
+      "available": 345,
+      "missing": 0,
+      "physical_start": "2020-01-10T21:00:00",
+      "full_cache_count_and_helper_identity_match": true
+    }
+  ],
+  "frozen_weekly_records_only": 6,
+  "raw_initial_sessions": 899,
+  "raw_missing_sessions": 483,
+  "raw_missing_minutes": 156831,
+  "c0_initial_sessions": 700,
+  "c0_missing_sessions": 378,
+  "c0_missing_minutes": 124772,
+  "known_failed_sessions_outside_immediate_initial_set": [
+    {
+      "attempt": "C0",
+      "contract": "rb2010.SHFE",
+      "execution_date": "2020-05-18",
+      "in_immediate_initial_demand": false,
+      "preserved_error": "RuntimeError('backtest_bar_failed:{\\'datetime\\': \\'2020-05-18 00:00:00+08:00\\', \\'error\\': \"ValueError(\\'intraday_open_anchor_missing:rb2010.SHFE:2020-05-18:2020-05-15 21:00:00\\')\"}')",
+      "preserved_bar_failures": [
+        {
+          "datetime": "2020-05-18 00:00:00+08:00",
+          "error": "ValueError('intraday_open_anchor_missing:rb2010.SHFE:2020-05-18:2020-05-15 21:00:00')"
+        }
+      ],
+      "engine_log_bytes": 0,
+      "offset": "unknown_not_retained",
+      "origin": "not_proven_from_retained_failure"
+    },
+    {
+      "attempt": "C0_attempt2",
+      "contract": "rb2010.SHFE",
+      "execution_date": "2020-08-12",
+      "in_immediate_initial_demand": false,
+      "preserved_error": "RuntimeError('backtest_bar_failed:{\\'datetime\\': \\'2020-08-12 00:00:00+08:00\\', \\'error\\': \"ValueError(\\'intraday_open_anchor_missing:rb2010.SHFE:2020-08-12:2020-08-11 21:00:00\\')\"}')",
+      "preserved_bar_failures": [
+        {
+          "datetime": "2020-08-12 00:00:00+08:00",
+          "error": "ValueError('intraday_open_anchor_missing:rb2010.SHFE:2020-08-12:2020-08-11 21:00:00')"
+        }
+      ],
+      "engine_log_bytes": 0,
+      "offset": "unknown_not_retained",
+      "origin": "not_proven_from_retained_failure"
+    }
+  ],
+  "old_minute_payloads_reopened": false,
+  "full_cached_coverage_counts_recomputed": false,
+  "checked_small_input_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261017_2326_stage005_potential_signal_demand_protocol.md": "c03bb81752babd24b5adf28784530c3679b1260e1a52cea50db108aea50587d5",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage005_potential_signal_demand.py": "20d9799211afe6953f9bf9b4410aa110c947796dfb13ec8db35545d5ba8f1218",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage005_potential_signal_demand.py": "6fd4156be42ddf973704e9f62d8c42dc0a741f5d679de6514e9d2b6c76faed89",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/actual_strategy_settings.json": "f2c038a8fcb176724822e25c97366abeb6853a86f177e15473d97751f12d9989",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/effective_parameters.json": "c49a2560d687bd506705e1ce7bd8cfee2fecb697869f1c51da3c6f7f1debfa61",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage004_minute_coverage/input_manifest.json": "00583b2ecb458635db38edb4ec2a61a5c49c021b8089b1cea57ba4dad73d9176",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage004_minute_coverage/summary.json": "d4edaf2926d9cd227afaba623201d2df3bd01c2b50eda33b3025d76702ba24f9",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage004_independent_review/review_receipt.json": "2e0edc2d64b77e2821f7427646ed457cded0d0a1da90be73de5f2d928ec25984"
+  },
+  "inherited_DB_weekly_minute_bindings": "reuse Stage005 input manifest and prior accepted Stage001/002/004 reviews; no repeated full old-data validation",
+  "source_summary_sha256": "09bf242474a0d665951e324f5d6898ff46f543d1d82023a0d5af5d30676cf000",
+  "source_input_manifest_sha256": "464649370e511c7ebc48f3b2b6014a54b6c924a9895be31834007950b5077586",
+  "production_qualified": false,
+  "C0_attempt3_authorized": false,
+  "fallback_authorized": false,
+  "financial_attempts_cumulative_unchanged": 4,
+  "financial_completed_cumulative_unchanged": 1,
+  "C0_alpha_verdict": "not_evaluable",
+  "scope": "exact original pure-alpha initial-event interface under frozen settings, not actual entry orders, deferred initial demand, fills, exits, adds, rollover reopens, full account paths, or independent B signals",
+  "uncertainty": "two prior failed anchors are absent from immediate initial demand; retained receipts do not identify their offset or origin",
+  "overfitting": false,
+  "overfitting_reason": "fixed-source identity/time/data-demand verification; no parameter or outcome selection; historical strategy-selection risk remains",
+  "continued_value": true,
+  "continued_value_reason": "bounded initial-demand table informs source validation, but full path closure is still required before any account run"
+}

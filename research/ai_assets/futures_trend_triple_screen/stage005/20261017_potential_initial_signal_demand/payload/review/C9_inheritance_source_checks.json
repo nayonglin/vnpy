@@ -1,0 +1,36 @@
+{
+  "C9_MRO_source_fingerprints": [
+    {
+      "class": "QmtRollPortfolioStrategyStage847C9StopRetry",
+      "source_sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "matches_A0_actual_runtime": true
+    },
+    {
+      "class": "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+      "source_sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647",
+      "matches_A0_actual_runtime": true
+    },
+    {
+      "class": "QmtRollPortfolioStrategyStage827C2",
+      "source_sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+      "matches_A0_actual_runtime": true
+    },
+    {
+      "class": "QmtRollPortfolioStrategyLongTighterInitialStop",
+      "source_sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57",
+      "matches_A0_actual_runtime": true
+    },
+    {
+      "class": "QmtRollPortfolioStrategyExactAm",
+      "source_sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+      "matches_A0_actual_runtime": true
+    },
+    {
+      "class": "QmtRollPortfolioStrategy",
+      "source_sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+      "matches_A0_actual_runtime": true
+    }
+  ],
+  "all_6_match_A0_actual_runtime": true,
+  "financial_replays": 0
+}

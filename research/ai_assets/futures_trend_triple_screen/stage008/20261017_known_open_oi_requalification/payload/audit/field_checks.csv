@@ -1,0 +1,14 @@
+source,source_field,aggregate_field,reference_value,aggregate_value,absolute_difference,matches
+csv,open,open,3795.0,3795.0,0.0,True
+csv,high,high,3809.0,3809.0,0.0,True
+csv,low,low,3780.0,3780.0,0.0,True
+csv,close,close,3805.0,3805.0,0.0,True
+csv,volume,volume,740132.0,740132.0,0.0,True
+csv,open_oi,open_oi,1064817.0,1064817.0,0.0,True
+csv,close_oi,close_oi,1053986.0,1053986.0,0.0,True
+database,open,open,3795.0,3795.0,0.0,True
+database,high,high,3809.0,3809.0,0.0,True
+database,low,low,3780.0,3780.0,0.0,True
+database,close,close,3805.0,3805.0,0.0,True
+database,volume,volume,740132.0,740132.0,0.0,True
+database,open_interest,open_oi,1064817.0,1064817.0,0.0,True

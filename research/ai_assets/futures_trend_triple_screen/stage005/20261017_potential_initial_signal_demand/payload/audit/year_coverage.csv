@@ -1,0 +1,15 @@
+year,sessions,complete_sessions,missing_minutes,anchor_present,potential_events,scope
+2020,112,73,11011,73,112,raw_initial_upper
+2021,122,80,14760,80,122,raw_initial_upper
+2022,138,69,24165,69,138,raw_initial_upper
+2023,134,49,27393,52,134,raw_initial_upper
+2024,153,62,29700,64,153,raw_initial_upper
+2025,132,47,27076,50,132,raw_initial_upper
+2026,108,36,22726,37,108,raw_initial_upper
+2020,89,56,9225,56,89,c0_initial_upper
+2021,99,64,12585,64,99,c0_initial_upper
+2022,108,52,19800,52,108,c0_initial_upper
+2023,105,35,22742,37,105,c0_initial_upper
+2024,116,48,22395,50,116,c0_initial_upper
+2025,94,38,18615,40,94,c0_initial_upper
+2026,89,29,19410,29,89,c0_initial_upper

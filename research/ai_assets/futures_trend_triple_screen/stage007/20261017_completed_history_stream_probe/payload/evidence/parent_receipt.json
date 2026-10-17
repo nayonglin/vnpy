@@ -1,0 +1,27 @@
+{
+  "status": "provider_worker_exited",
+  "exit_code": 1,
+  "elapsed_seconds": 38.22031941701425,
+  "parent_timeout_seconds": 180,
+  "hard_kill_on_timeout": false,
+  "all_inputs_unchanged": true,
+  "provider_replay_attempts_max": 1,
+  "no_automatic_retry": true,
+  "financial_strategy_replays": 0,
+  "broker_or_ctp_connections": 0,
+  "order_calls": 0,
+  "cancel_calls": 0,
+  "raw_sdk_output_saved": false,
+  "credential_values_saved": false,
+  "cache_or_overlay_written": false,
+  "execution_fallback_enabled": false,
+  "production_qualified": false,
+  "preflight_sha256": "d578c4193d4aa0ceffdcbc51453afe8a9a28407622d621b14c61c234200e9729",
+  "artifact_sha256": {
+    "raw_completed_minutes.csv": "0805e7083b24e988469bee78fabc53419d2855e85f92928256a184d9db9480ac",
+    "quality.json": "9bf02a770b12c7fe65d2efb105e3bfc4f29227d2961352eb0a614a6d5eb6625e",
+    "attempt_started.json": "16e649dc90aaa56cd075f531be2b5a7c2e7f75531bb2d88228aa8014e2082b30",
+    "worker_receipt.json": "837f00aa5557c70aef71685c37eadea9f6c81f31918e0e556b1cc47a4861f791",
+    "completion_evidence.csv": "3eecacbf83069daac6e0508b5ebdb79e6db50ba60b89b1486d76ce2979f8aff2"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "status": "completed_quality_rejected",
+  "provider_replay_attempts": 1,
+  "local_TqSim_created": true,
+  "financial_strategy_replays": 0,
+  "broker_or_ctp_connections": 0,
+  "order_calls": 0,
+  "cancel_calls": 0,
+  "completed_target_minutes": 345,
+  "sdk_raw_output_saved": false,
+  "credential_values_saved": false,
+  "execution_fallback_enabled": false,
+  "production_qualified": false
+}

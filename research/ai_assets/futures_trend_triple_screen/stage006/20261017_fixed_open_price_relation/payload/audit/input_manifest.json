@@ -1,0 +1,11 @@
+{
+  "/Users/mac/Desktop/fian/.vntrader/database.db": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+  "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+  "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261017_2323_stage006_daily_open_equivalence_protocol.md": "d7b0ec858d8cca42fc49dde0fa508ffe4a55218be8eff03cef2f782e942f125d",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage006_daily_open_equivalence.py": "3aa7e79ed46c180f93c08b8d158ac0f42ba8ba868289c4da9d500b64ff12a3ee",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/execution_anchor_requests.csv": "72b61783602257c16b1b8c0307b0da4221430204808fdc29f21124f7556fbb20",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/trades.csv": "a2d473712de9980575885e0f22c2aac1a547db77dfe5aea3468010bc437fdfd1",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/input_manifest.json": "c031740a2e11dc1355e3e1b3cf59ecc78b3dd68aaf7fe4cf023d4d4b28b52360",
+  "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/A_final3/input_manifest.json": "376cefaf2a56f75e97adf31e431dac508189695c4bb4691294ab5f950aeada03"
+}
