@@ -1,0 +1,15 @@
+{
+  "reviewed_at": "2026-10-17T23:02:54+08:00",
+  "status": "data_accepted_A0_path_equivalent_consumer_preflight_pending",
+  "reviewer": "first_screen_independent",
+  "production_qualified": false,
+  "financial_engine_runs": 0,
+  "weekly_recalculations": 0,
+  "A0_replays": 0,
+  "overlay_rows": 1078530,
+  "A0_read_keys": 106731,
+  "A0_read_intersection": 0,
+  "independent_checks_sha256": "2c57a48e5d0dd4d44d885af4da87266a3c7b5bc389360bcd31a942d000911e27",
+  "report_sha256": "d90687f99b4a637b6ba2d1b6a238c40b16edddf64029bdfe7b4823c0c6d54fdd",
+  "review_script_sha256": "4a821421d3975108b210adc65de7165d59510a93a1adffc420d6eacdc2cd4e0f"
+}

@@ -1,0 +1,21 @@
+{
+  "goal_status": "active",
+  "completed_accounts": {
+    "A0": "A0_attempt2"
+  },
+  "failed_attempts": {
+    "A0": "frozen-model/runtime mismatch; no accepted performance",
+    "C0": "2020-05-18 rb2010 open anchor missing",
+    "C0_attempt2": "2020-08-12 rb2010 open anchor missing after accepted batch overlay"
+  },
+  "financial_attempts": 4,
+  "completed_financial_replays": 1,
+  "weekly_feature_builds": 1,
+  "local_data_build_attempts": 2,
+  "accepted_local_overlays": 1,
+  "alpha_parameter_changes_after_first_run": 0,
+  "current_next_action": "No further account attempt: build conservative complete minute-demand coverage and local-source inventory before any further replay",
+  "new_downloads": 0,
+  "model_training_runs": 0,
+  "production_qualified": false
+}

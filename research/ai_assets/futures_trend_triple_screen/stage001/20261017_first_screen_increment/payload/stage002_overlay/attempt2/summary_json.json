@@ -1,0 +1,48 @@
+{
+  "status": "completed_local_overlay_pending_independent_review",
+  "financial_replays": 0,
+  "downloads": 0,
+  "base_cache_sha256": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+  "base_cache_unchanged": true,
+  "base_rows": 1411116,
+  "source_family": "Stage491 completed-row only",
+  "source_files": 134,
+  "source_bytes": 135604532,
+  "candidate_sessions": 4390,
+  "accepted_sessions": 3509,
+  "quarantined_sessions": 881,
+  "quarantine_reasons": {
+    "incomplete_session": 425,
+    "daily_aggregate_mismatch": 454,
+    "base_overlap_conflict": 2
+  },
+  "added_minutes": 1078530,
+  "new_key_intersection_with_base": 0,
+  "accepted_overlap_minutes": 60945,
+  "added_contracts": 117,
+  "a0_path_equivalence": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 1078530,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys.",
+    "original_read_keys_missing_in_base": 0
+  },
+  "elapsed_seconds": 26.19677374997991,
+  "attempt": 2,
+  "protocol_sha256": "a28e249309a762ec4be10930ead9ef8b38ddef6e6124366aeeeceddb01a564c8",
+  "builder_sha256": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+  "overlay_sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+  "session_manifest_sha256": "5f1ead9799648dba9f1d259cb2d9d11768bf0e7a69cf251109dacc8b5b61df78",
+  "source_manifest_sha256": "318da737a0a9e041919fbe6687669de3bf3aadacdbf191232b11ec43c6feb1ed",
+  "production_qualified": false,
+  "order_api_calls": 0,
+  "cancel_api_calls": 0,
+  "all_inputs_unchanged": true,
+  "limitations": [
+    "This batch certifies available completed sessions, not every potential future strategy path. Strict unknown sessions still fail closed."
+  ]
+}

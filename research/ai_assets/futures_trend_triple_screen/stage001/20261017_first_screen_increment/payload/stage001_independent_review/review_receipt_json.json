@@ -1,0 +1,41 @@
+{
+  "reviewed_at": "2026-10-17T22:47:19+08:00",
+  "reviewer": "first_screen_independent",
+  "stage": "stage001",
+  "status": "A0_independently_reviewed_C0_blocked_missing_minutes_no_alpha_verdict",
+  "production_qualified": false,
+  "financial_engine_runs_by_reviewer": 0,
+  "financial_accounts_reviewed": [
+    "A0_attempt2"
+  ],
+  "failed_attempts_reviewed": [
+    "A0",
+    "C0"
+  ],
+  "weekly_rows_independently_checked": 77368,
+  "remaining_implementation_p0": 0,
+  "remaining_implementation_p1": 0,
+  "remaining_data_gate_blockers": [
+    "C0 rb2010.SHFE trading_date2020-05-18 physical2020-05-15 21:00 anchor absent"
+  ],
+  "retained_p2": [
+    "diagnostic reason label may repaint before first future finite observation; no trading field impact, reason prohibited for decision use"
+  ],
+  "A0_metrics": {
+    "end_equity": 2262595.0000000023,
+    "total_return_pct": 1408.3966666666684,
+    "max_dd_pct": -48.789850291574346,
+    "sharpe": 1.367364263938052,
+    "total_slippage": 605450.0,
+    "total_trade_count": 816,
+    "max_broker10_margin_to_equity_pct": 63.12422763310105,
+    "days_over_100pct": 0,
+    "days_over_90pct": 0,
+    "days_equity_below_zero": 0
+  },
+  "candidate_economic_verdict": "not_evaluable_C0_incomplete",
+  "overfitting_added_by_review": false,
+  "continued_value": "minimal_provenance_data_completion_for_fixed_hypothesis_yes_no_parameter_sweep",
+  "report_sha256": "57b75bd648e18ae340b10550c456d94d487ef1beac919dabe325f2fc1dd094bf",
+  "review_script_sha256": "efdb1ca791615e853edfca03cd35e18b933d9f904de6b80ea06dd17596049c48"
+}

@@ -1,0 +1,39 @@
+{
+  "reviewed_at": "2026-10-17T22:41:32+08:00",
+  "scope": "runtime_restore_preflight_and_source_static_only",
+  "preflight_sha256": "d510c01754572cd957ea4ca58d73a71a7a0df20247deb9bbc5b3afe4484c8f11",
+  "runtime": {
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "portfolio": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/__init__.py",
+    "pandas": "2.3.3",
+    "source_head": "b2a6431700efbc9d0f58a21c1018fa4781058c8a"
+  },
+  "model_runtime_smoke": {
+    "status": "passed_binary_probability_smoke",
+    "model_sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66",
+    "sklearn_version": "1.8.0",
+    "numpy_version": "2.4.4",
+    "pandas_version": "2.3.3",
+    "scipy_version": "1.17.1",
+    "joblib_version": "1.5.3",
+    "package_paths": {
+      "sklearn": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/sklearn/__init__.py",
+      "numpy": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/numpy/__init__.py",
+      "pandas": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/__init__.py",
+      "scipy": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/scipy/__init__.py",
+      "joblib": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/joblib/__init__.py"
+    },
+    "probe_rows": 5,
+    "feature_columns": 19,
+    "max_probability_error": 0.0,
+    "model_fits": 0,
+    "financial_replays": 0,
+    "model_bytes_unchanged": true
+  },
+  "attempt": 2,
+  "production_qualified": false,
+  "financial_account_reviewed": false,
+  "assessment": "frozen numerical site matches existing Stage263/267 precedent; producer/consumer sklearn1.8 inference smoke passed, no attribute patch or fit; real A0 economic/trade sentinel still pending",
+  "attempt_guard": "later directory requires prior run_failure and no prior summary; exist_ok=False prohibits overwrite",
+  "exception_guard": "original bar cause stored and scope rejects swallowed errors; secondary calculate_result exceptions remain failed, never accepted"
+}

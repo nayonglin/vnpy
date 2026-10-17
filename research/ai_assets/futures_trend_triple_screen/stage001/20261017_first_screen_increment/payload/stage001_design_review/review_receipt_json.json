@@ -1,0 +1,27 @@
+{
+  "stage": "stage001_design_review",
+  "reviewed_at": "2026-10-17 22:27 CST",
+  "reviewer": "triple_screen_design_review",
+  "source_head": "cdac67c5a709ffeafce7292dd20a668a0783f991",
+  "decision": "design_can_proceed_offline_not_qualification",
+  "p0_design_blockers": 0,
+  "p1_design_blockers": 0,
+  "account_replays": 0,
+  "production_qualified": false,
+  "review_scope": "design_only",
+  "protocol_sha256": "f11f5a5e3b03fa4688f73d670c06320b2bf55b146fe686ce19045b31d5b640c5",
+  "review_sha256": "1a69bc24f28917f5366bb8764637233417421fe619f889611ff559413b61dea3",
+  "required_execution_evidence": [
+    "frozen_feature_inputs_and_settings",
+    "day_and_initial_mother_signal_coverage",
+    "pre_side_effect_gate_and_blocked_candidates",
+    "retry_rollover_bypass_events",
+    "causal_week_boundary_tests",
+    "baseline_sentinel_and_strict_minute_runtime",
+    "fresh_independent_financial_review"
+  ],
+  "protocol_path": "research/lines/futures_trend_triple_screen/stages/20261017_2229_stage001_first_screen_protocol.md",
+  "previous_protocol_sha256": "285826333ce6a301427fcbfdac0290380cec1d898af656befb4302340cbf4497",
+  "protocol_predeclared_commit": "b2a643170",
+  "metadata_update_reason": "仅补分钟级记录时间及文件命名；设计未改变，不重复审查"
+}

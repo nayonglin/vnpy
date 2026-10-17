@@ -1,0 +1,78 @@
+{
+  "reviewed_at": "2026-10-17T23:00:51+08:00",
+  "status": "independent_overlay_and_A0_path_equivalence_pass",
+  "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2",
+  "source_hashes": {
+    "overlay.csv": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+    "source_manifest.json": "318da737a0a9e041919fbe6687669de3bf3aadacdbf191232b11ec43c6feb1ed",
+    "session_manifest.csv": "5f1ead9799648dba9f1d259cb2d9d11768bf0e7a69cf251109dacc8b5b61df78",
+    "quarantine.csv": "b147eb05ec45c496a4516c90955795ed3f8514a61476545405835a47bf433f60",
+    "a0_path_equivalence.json": "f2b810ec281efb9bcb2e3b99d096777f3009aa5738eb1c931d159a2b64be31e9",
+    "summary.json": "abb5d723f186d0bc8a7e6d172719c84572eb844600dd8b4106d1a1a911993d4b"
+  },
+  "production_qualified": false,
+  "financial_engine_runs": 0,
+  "A0_financial_replays": 0,
+  "weekly_recalculations": 0,
+  "source_files": 134,
+  "source_bytes": 135604532,
+  "source_and_daily_SHA_match_accepted_A": true,
+  "mapping_SHA_match_accepted_A": true,
+  "protocol_amendment_after_build_explicit": true,
+  "original_base_SHA_unchanged": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+  "base_rows": 1411116,
+  "overlay_rows": 1078530,
+  "overlay_rows_bound_to_exact_source_row": 1078530,
+  "new_key_overlap_with_base": 0,
+  "accepted_sessions": 3509,
+  "sessions_adding_rows": 3369,
+  "quarantined_sessions": 881,
+  "quarantined_reason_counts": {
+    "daily_aggregate_mismatch": 454,
+    "incomplete_session": 425,
+    "base_overlap_conflict": 2
+  },
+  "quarantined_session_overlay_intersection": 0,
+  "accepted_base_overlap_minutes": 15915,
+  "daily_aggregate_scope": "only accepted sessions contributing new overlay keys; unchanged old-only sessions not revalidated",
+  "daily_max_absolute_difference": 0.0,
+  "daily_open_oi_checked_sessions": 3369,
+  "daily_open_oi_unknown_sessions": 0,
+  "target_rb2010_20200518": {
+    "minutes": 345,
+    "first": "2020-05-15 21:00:00",
+    "last": "2020-05-18 14:59:00",
+    "base_minutes": 0,
+    "added_minutes": 345,
+    "daily_fields_checked": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "close_oi",
+      "open_oi"
+    ],
+    "aggregate": {
+      "open": 3469.0,
+      "high": 3544.0,
+      "low": 3455.0,
+      "close": 3528.0,
+      "volume": 1869234.0,
+      "close_oi": 1473769.0,
+      "open_oi": 1568331.0
+    }
+  },
+  "daily_source_contract_counts": {
+    "accepted_exact_symbol_daily_csv": 117
+  },
+  "a0_anchor_requests": 535,
+  "a0_scan_requests": 501,
+  "a0_distinct_read_keys": 106731,
+  "added_anchor_intersection": 0,
+  "added_scan_intersection": 0,
+  "original_read_keys_missing_from_base": 0,
+  "A0_path_equivalent": true,
+  "equivalence_scope": "all recorded canonical anchor and requested session suffix keys preserved; no A0 economic rerun, based on deterministic existing consumers",
+  "limit": "certifies local accepted sessions and A0 invariance only; no guarantee that every new C0 or future strategy session is covered"
+}

@@ -1,0 +1,23 @@
+{
+  "reviewed_at": "2026-10-17T23:08:55+08:00",
+  "reviewer": "first_screen_independent",
+  "status": "data_and_A0_equivalence_accepted_C0_incomplete_new_gap_stop_retry_loop",
+  "financial_attempts_total": 4,
+  "financial_completed_total": 1,
+  "financial_completed_accounts": [
+    "A0_attempt2"
+  ],
+  "C0_alpha_verdict": "not_evaluable_incomplete",
+  "production_qualified": false,
+  "reviewer_financial_engine_runs": 0,
+  "weekly_recalculations": 0,
+  "A0_replays": 0,
+  "remaining_implementation_p0": 0,
+  "remaining_implementation_p1": 0,
+  "remaining_data_blocker": "rb2010.SHFE trading2020-08-12 expected physical2020-08-11 21:00 missing; no C0 metrics/daily",
+  "all_403_consumed_inputs_unchanged_after_failure": true,
+  "report_sha256": "aa53b74cab6a48b9fe3aa556bda1da950146ad1d933e9e59174bbd56156cb4b2",
+  "failure_checks_sha256": "d6dcfc7044a00ccefbc9956022dd267f8bee4053d57f2f99bbd0f2b07bf39dce",
+  "data_checks_sha256": "2c57a48e5d0dd4d44d885af4da87266a3c7b5bc389360bcd31a942d000911e27",
+  "next_step": "full_potential_signal_session_coverage_audit_before_any_further_account_attempt"
+}

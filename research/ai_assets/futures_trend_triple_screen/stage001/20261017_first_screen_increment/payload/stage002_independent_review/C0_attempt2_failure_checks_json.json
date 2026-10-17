@@ -1,0 +1,78 @@
+{
+  "reviewed_at": "2026-10-17T23:08:02+08:00",
+  "status": "C0_attempt2_failed_closed_no_accepted_performance_stop_gap_retry_loop",
+  "financial_attempts_total": 4,
+  "financial_completed_total": 1,
+  "financial_completed_accounts": [
+    "A0_attempt2"
+  ],
+  "failed_financial_attempts": [
+    "A0",
+    "C0",
+    "C0_attempt2"
+  ],
+  "source_files": {
+    "attempt_started.json": "1c2de50e74fc6da1042f81f2769b9073bc0d4cf3616ce42258efd7148a83e410",
+    "runner_used.py": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+    "engine.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run_failure.json": "b9776976cc0bd14ce0da760fcd42c389bef97bf19948d17384488700085d9da4"
+  },
+  "captured_original_bar_failures": [
+    {
+      "datetime": "2020-08-12 00:00:00+08:00",
+      "error": "ValueError('intraday_open_anchor_missing:rb2010.SHFE:2020-08-12:2020-08-11 21:00:00')"
+    }
+  ],
+  "metrics_or_daily_exported": false,
+  "production_qualified": false,
+  "order_api_count": 0,
+  "cancel_api_count": 0,
+  "overlay_used_receipt": {
+    "summary_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/summary.json",
+    "overlay_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/overlay.csv",
+    "overlay_sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+    "source_manifest_sha256": "318da737a0a9e041919fbe6687669de3bf3aadacdbf191232b11ec43c6feb1ed",
+    "added_minutes": 1078530,
+    "a0_path_equivalent": true,
+    "a0_actual_read_keys": 106731,
+    "added_intersection_with_a0_reads": 0,
+    "base_original_keys_unchanged": true,
+    "financial_replays_for_a0_equivalence": 0,
+    "builder_sha256": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+    "protocol_used_sha256": "a28e249309a762ec4be10930ead9ef8b38ddef6e6124366aeeeceddb01a564c8",
+    "summary_sha256": "abb5d723f186d0bc8a7e6d172719c84572eb844600dd8b4106d1a1a911993d4b",
+    "independent_review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_independent_review/overlay_independent_checks.json",
+    "independent_review_sha256": "2c57a48e5d0dd4d44d885af4da87266a3c7b5bc389360bcd31a942d000911e27"
+  },
+  "runner_snapshot_matches_preflight": true,
+  "all_consumed_inputs_rehashed_after_failure": 403,
+  "consumed_input_bytes": 595608855,
+  "changed_consumed_inputs": [],
+  "new_gap_exact_local_checks": {
+    "base": {
+      "target_natural_dates_rows": 224,
+      "expected_20200811_2100_present": false,
+      "first": "2020-08-11 09:00:00",
+      "last": "2020-08-11 14:58:00"
+    },
+    "overlay": {
+      "target_natural_dates_rows": 0,
+      "expected_20200811_2100_present": false,
+      "first": null,
+      "last": null
+    },
+    "Stage491_raw": {
+      "target_natural_dates_rows": 0,
+      "expected_20200811_2100_present": false,
+      "first": null,
+      "last": null
+    }
+  },
+  "old_may18_status": "345 complete accepted overlay minutes already independently checked; failure moved chronologically to Aug12. Failure receipt does not retain a May18 per-fill scan event, so no claim of independent May18 fill reconstruction.",
+  "captured_minute_request_rows": 0,
+  "economic_verdict": "not_evaluable_incomplete_C0_no_truncated_metrics",
+  "next_boundary": "stop per-gap account reruns; audit all potential signal session coverage before deciding another account run",
+  "financial_engine_runs_by_reviewer": 0,
+  "weekly_recalculations": 0,
+  "A0_account_recalculations": 0
+}

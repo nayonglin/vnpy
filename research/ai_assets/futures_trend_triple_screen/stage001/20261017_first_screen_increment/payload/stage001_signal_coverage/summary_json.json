@@ -1,0 +1,24 @@
+{
+  "scope": "coverage/nonredundancy only; selected source columns have no PnL; does not estimate candidate account result",
+  "source_sha256": "80db61b6906cb4c19b822fed543ad1ef6ba2a2c90940a0523aab04f212e8848e",
+  "weekly_sha256": "d8bae99069a24195975aac62fd47a1cfbdf5f024f15861a6772e424faf6c5f8e",
+  "strategy_PnL_accessed": false,
+  "rows": [
+    {
+      "scope": "all_flat_signals",
+      "n": 886,
+      "weekly_ready": 747,
+      "ready_ratio": 0.8431151241534989,
+      "would_block": 197,
+      "unknown_fallback": 139
+    },
+    {
+      "scope": "baseline_opened_flat",
+      "n": 312,
+      "weekly_ready": 254,
+      "ready_ratio": 0.8141025641025641,
+      "would_block": 73,
+      "unknown_fallback": 58
+    }
+  ]
+}

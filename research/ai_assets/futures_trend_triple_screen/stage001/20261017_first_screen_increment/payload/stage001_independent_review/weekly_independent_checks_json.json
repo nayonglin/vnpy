@@ -1,0 +1,21 @@
+{
+  "reviewed_at": "2026-10-17T22:31:20+08:00",
+  "scope": "independent_scalar_recursion_on_frozen_19_product_cache_not_financial_replay",
+  "source_fingerprints_match": {
+    "source": true,
+    "calendar": true,
+    "weekly_csv": true,
+    "module": true,
+    "tests": true
+  },
+  "weekly_rows": 77368,
+  "independently_checked_rows": 77368,
+  "mismatched_rows": 0,
+  "first_mismatches": [],
+  "max_hist_absolute_difference": 6.927791673660977e-14,
+  "ready_2020_plus": 23328,
+  "PnL_accessed": false,
+  "production_qualified": false,
+  "account_results_reviewed": false,
+  "conclusion": "weekly_cache_arithmetic_and_previous_completed_week_pass"
+}

@@ -1,0 +1,25 @@
+{
+  "reviewed_at": "2026-10-17T22:37:55+08:00",
+  "scope": "failed_A0_attempt_evidence_only_no_financial_acceptance",
+  "status": "failed_closed_no_accepted_performance",
+  "outer_error": "KeyError(datetime.date(2020, 3, 13))",
+  "captured_original_bar_failures": [
+    {
+      "datetime": "2020-03-13 00:00:00+08:00",
+      "error": "AttributeError(\"'LogisticRegression' object has no attribute 'multi_class'\")"
+    }
+  ],
+  "source_files": {
+    "attempt_started.json": "dde9c8e3dda5de374d372db923d83b3fe684d7acc5489eb657b63937789e62f8",
+    "engine.log": "0fcb15dcce0ae8163620dee38f07507b4a1678580e57bbfafd0ed2840e1611f9",
+    "run_failure.json": "863a1fd1bb9831a3ee34051442f36b79a8f03c39b571c7637325f48862474c11"
+  },
+  "metrics_or_daily_exported": false,
+  "production_qualified": false,
+  "account_audit_run": false,
+  "order_api_count": 0,
+  "cancel_api_count": 0,
+  "cause_assessment": "sklearn 1.6.1 consumed producer 1.8.0 persisted model; missing LogisticRegression.multi_class precedes vendor secondary calculate_result KeyError",
+  "acceptance_requirement": "restore proven accepted prior runtime or equivalent existing shim, record versions/source; no model retrain or arbitrary missing-field patch; compare new A0 economic and trade sentinel before C0 claims",
+  "source": "https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations"
+}

@@ -1,0 +1,20 @@
+{
+  "status": "not_evaluable_candidate_incomplete",
+  "completed_arm_paths": {
+    "A0": "A0_attempt2"
+  },
+  "candidate_failures": [
+    "C0",
+    "C0_attempt2"
+  ],
+  "candidate_economic_verdict": "none; incomplete financial path has no accepted return or drawdown",
+  "fullperiod_screen_pass": null,
+  "promotion_allowed": false,
+  "production_qualified": false,
+  "financial_attempts": 4,
+  "completed_financial_replays": 1,
+  "next_action": "stage004_complete_minute_requirement_coverage_before_any_additional_financial_replay",
+  "alpha_parameter_changes": 0,
+  "overfitting_judgment": "No new outcome-driven parameter selection; existing historical selection risk retained",
+  "continued_value": "Yes for full data-coverage audit; no for one-gap-one-replay loop"
+}

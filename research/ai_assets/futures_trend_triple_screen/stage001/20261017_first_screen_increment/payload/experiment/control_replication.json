@@ -1,0 +1,15 @@
+{
+  "accepted_control_path": "A0_attempt2",
+  "source": "Stage251 A_final3",
+  "daily_rows": 1641,
+  "trade_rows": 816,
+  "max_abs_errors": {
+    "account_equity": 0.0,
+    "net_pnl": 0.0,
+    "slippage": 0.0,
+    "trade_count": 0.0,
+    "broker10_margin_to_equity_pct": 0.0
+  },
+  "trade_economic_fields_identical": true,
+  "source_replication_pass": true
+}

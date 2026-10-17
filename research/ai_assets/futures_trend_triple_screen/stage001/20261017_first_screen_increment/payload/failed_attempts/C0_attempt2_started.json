@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-17 23:04:35.571946+08:00",
+  "status": "started_no_retry_or_overwrite",
+  "pid": 82413,
+  "argv": [
+    "research/lines/futures_trend_triple_screen/tools/stage001_run_first_screen.py",
+    "--arm",
+    "C0",
+    "--attempt",
+    "2",
+    "--local-minute-overlay",
+    "research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/summary.json",
+    "--run"
+  ]
+}

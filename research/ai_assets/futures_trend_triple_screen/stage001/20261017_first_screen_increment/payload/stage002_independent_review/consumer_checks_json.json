@@ -1,0 +1,32 @@
+{
+  "reviewed_at": "2026-10-17T23:04:33+08:00",
+  "status": "consumer_and_zero_financial_preflight_pass_can_run_single_C0_attempt2",
+  "production_qualified": false,
+  "financial_engine_runs_by_reviewer": 0,
+  "repeated_overlay_audits": 0,
+  "runner_sha256": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+  "preflight_sha256": "6efecc6d28414080a0b1b642546e414b3dbf9df201dad2236909d361b8e9275b",
+  "local_minute_overlay": {
+    "summary_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/summary.json",
+    "overlay_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/overlay.csv",
+    "overlay_sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+    "source_manifest_sha256": "318da737a0a9e041919fbe6687669de3bf3aadacdbf191232b11ec43c6feb1ed",
+    "added_minutes": 1078530,
+    "a0_path_equivalent": true,
+    "a0_actual_read_keys": 106731,
+    "added_intersection_with_a0_reads": 0,
+    "base_original_keys_unchanged": true,
+    "financial_replays_for_a0_equivalence": 0,
+    "builder_sha256": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+    "protocol_used_sha256": "a28e249309a762ec4be10930ead9ef8b38ddef6e6124366aeeeceddb01a564c8",
+    "summary_sha256": "abb5d723f186d0bc8a7e6d172719c84572eb844600dd8b4106d1a1a911993d4b",
+    "independent_review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_independent_review/overlay_independent_checks.json",
+    "independent_review_sha256": "2c57a48e5d0dd4d44d885af4da87266a3c7b5bc389360bcd31a942d000911e27"
+  },
+  "strict_minutes": true,
+  "parameters_equal_accepted_A": true,
+  "requested_settings_equal_accepted_A": true,
+  "wrapper_restoration": "temporary wrapper finally restores loader and all three s901 caches; unchanged _run_live_c9 finally restores s827 global minute data",
+  "scope": "consumer wiring and exact frozen preflight only; no financial or market-data rerun",
+  "limit": "authorizes one offline strict C0 attempt; no claim all potential sessions are covered or candidate economics pass"
+}

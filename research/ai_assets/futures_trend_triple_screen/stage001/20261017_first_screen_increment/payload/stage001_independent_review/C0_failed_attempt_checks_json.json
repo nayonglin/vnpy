@@ -1,0 +1,33 @@
+{
+  "reviewed_at": "2026-10-17T22:46:21+08:00",
+  "scope": "failed_C0_attempt_and_exact_missing_anchor_only_no_engine_or_whole_market_QA",
+  "status": "failed_closed_no_accepted_performance",
+  "error": "RuntimeError('backtest_bar_failed:{\\'datetime\\': \\'2020-05-18 00:00:00+08:00\\', \\'error\\': \"ValueError(\\'intraday_open_anchor_missing:rb2010.SHFE:2020-05-18:2020-05-15 21:00:00\\')\"}')",
+  "captured_original_bar_failures": [
+    {
+      "datetime": "2020-05-18 00:00:00+08:00",
+      "error": "ValueError('intraday_open_anchor_missing:rb2010.SHFE:2020-05-18:2020-05-15 21:00:00')"
+    }
+  ],
+  "source_files": {
+    "attempt_started.json": "e0087937012c93f97158c16cec67a5e7b29e5fad697aad89206995855be59eae",
+    "engine.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run_failure.json": "382a2a3660ed45bcc6898bafa94efcad0bc7c84ad8a74bfdf08dd9a91e61d7a5"
+  },
+  "metrics_or_daily_exported": false,
+  "production_qualified": false,
+  "account_audit_run": false,
+  "order_api_count": 0,
+  "cancel_api_count": 0,
+  "minute_cache": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_stage861_stage860_full_visual_atlas_v1.csv",
+  "target_contract": "rb2010.SHFE",
+  "trading_date": "2020-05-18",
+  "expected_physical_anchor": "2020-05-15 21:00:00",
+  "target_may15_may18_rows_in_frozen_cache": 0,
+  "target_first_time": null,
+  "target_last_time": null,
+  "expected_anchor_present": false,
+  "calendar_assessment": "2020-05-15 is Friday, next source trading date Monday May18; rb night belongs to Monday. This is after the frozen COVID night suspension cutoff May6, so 21:00 is required.",
+  "acceptance": "only A0_attempt2 financial result accepted; C0 is incomplete and no alpha or promotion verdict is possible",
+  "no_fallback": "strict anchor gate raised before any optimistic legacy/daily opening price was accepted; original failure preserved"
+}

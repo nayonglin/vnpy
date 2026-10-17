@@ -1,0 +1,8 @@
+{
+  "original_protocol_sha256": "a28e249309a762ec4be10930ead9ef8b38ddef6e6124366aeeeceddb01a564c8",
+  "protocol_used_snapshot": "research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/protocol_used.md",
+  "amended_protocol_sha256": "45686ae83a55df9e579006e86da83cf3f31a3225d25d5675396cd1eefbf60434",
+  "amendment_after_build": true,
+  "reason": "Exact SQLite fallback clarification; no alpha or completed-bar source expansion",
+  "financial_replays": 0
+}

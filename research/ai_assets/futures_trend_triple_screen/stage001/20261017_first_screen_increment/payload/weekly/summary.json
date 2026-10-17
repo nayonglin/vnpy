@@ -1,0 +1,73 @@
+{
+  "started_at": "2026-10-17T22:29:30+08:00",
+  "completed_at": "2026-10-17T22:29:34+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "stage": "stage001",
+  "PnL_accessed": false,
+  "strategy_PnL_accessed": false,
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage269_market_efficiency_validation/market/product_features.csv.gz",
+  "source_sha256": "47cc6ad7047228bbe9246ac355e4fdc530fc062deadf779ac4786a17df29cb51",
+  "calendar_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+  "calendar_sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+  "module_sha256": "d73addc98931d735ee0dd2d8680d0c74d4e8c3e2f694e90bb4487ec888f7c1ad",
+  "tests_sha256": "2fa2ea25b7543c83cbe2a600615dde640a4e7398c89d0f5e497f3a299176b77e",
+  "output_sha256": "d8bae99069a24195975aac62fd47a1cfbdf5f024f15861a6772e424faf6c5f8e",
+  "source_rows_read_selected_products": 77368,
+  "products": [
+    "CZCE.AP",
+    "CZCE.CF",
+    "CZCE.FG",
+    "CZCE.MA",
+    "CZCE.OI",
+    "CZCE.SA",
+    "CZCE.SH",
+    "CZCE.SM",
+    "DCE.JM",
+    "DCE.LH",
+    "GFEX.LC",
+    "GFEX.SI",
+    "SHFE.AU",
+    "SHFE.CU",
+    "SHFE.FU",
+    "SHFE.HC",
+    "SHFE.RB",
+    "SHFE.RU",
+    "SHFE.SP"
+  ],
+  "rows": 77368,
+  "start_date": "2010-01-04",
+  "end_date": "2026-10-14",
+  "date_basis": "source trading date, previous completed ISO week only",
+  "macd": {
+    "fast": 12,
+    "slow": 26,
+    "signal": 9,
+    "adjust": false,
+    "min_weeks": 35,
+    "index_initial": 100.0
+  },
+  "missing_policy": "missing return invalidates whole ISO week and restarts index/EMA segment",
+  "unknown_policy": "fall back to A0; weekly_direction=0 has no meaning unless weekly_ready=true",
+  "full_reason_counts": {
+    "ready": 43044,
+    "missing_previous_week_returns": 26042,
+    "warming_up": 8187,
+    "no_completed_week": 95
+  },
+  "research_2020_plus": {
+    "product_days": 31179,
+    "ready_days": 23328,
+    "ready_ratio": 0.7481959010872703,
+    "fallback_days": 7851,
+    "reason_counts": {
+      "ready": 23328,
+      "warming_up": 4819,
+      "missing_previous_week_returns": 3032
+    }
+  },
+  "output_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_weekly_features/weekly_daily.csv",
+  "coverage_denominator": "all source days x fixed formal19, includes prelisting days; diagnostic only, not candidate-signal coverage",
+  "artifact_filename_change": "Renamed existing cache weekly_features.csv to weekly_daily.csv; no feature recomputation",
+  "diagnostic_reason_label_limitation": "P2: missing_product_returns vs missing_previous_week_returns can change when a future finite product observation is appended because the former diagnosis checks whole-source presence. reason is a diagnostic label only, prohibited for trading/qualification. Decision fields weekly_ready/weekly_direction/weekly_hist/weekly_hist_prev/weekly_asof remain causal and unchanged.",
+  "forward_invariance_scope": "Actual decision fields only; diagnostic reason is not fully invariant for a wholly missing product before first future finite observation."
+}

@@ -1,0 +1,38 @@
+{
+  "reviewed_at": "2026-10-17T22:44:26+08:00",
+  "scope": "independent_existing_A0_vs_accepted_A_final3_sentinel_not_new_engine",
+  "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2",
+  "accepted_reference": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/A_final3",
+  "daily_rows": 1641,
+  "fills": 816,
+  "daily_max_abs_differences": {
+    "trade_count": 0.0,
+    "turnover": 0.0,
+    "commission": 0.0,
+    "slippage": 0.0,
+    "trading_pnl": 0.0,
+    "holding_pnl": 0.0,
+    "net_pnl": 0.0,
+    "account_equity": 0.0,
+    "broker10_total_margin_exact": 0.0,
+    "c3_active_contracts": 0.0,
+    "c3_active_products": 0.0
+  },
+  "fill_fields_exact_equal": {
+    "trade_id": true,
+    "order_id": true,
+    "vt_symbol": true,
+    "date": true,
+    "datetime": true,
+    "direction": true,
+    "offset": true,
+    "price": true,
+    "volume": true,
+    "signed_volume": true
+  },
+  "actual_strategy_attributes_equal_after_empty_signal_path_normalization": true,
+  "effective_parameters_equal_after_empty_signal_path_normalization": true,
+  "production_qualified": false,
+  "unresolved_economic_drift": false,
+  "status": "independent_A0_baseline_sentinel_pass"
+}
