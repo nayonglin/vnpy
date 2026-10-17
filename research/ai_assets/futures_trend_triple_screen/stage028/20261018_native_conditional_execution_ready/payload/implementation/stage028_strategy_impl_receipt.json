@@ -1,0 +1,103 @@
+{
+  "stage": "Stage028",
+  "line_id": "futures_trend_triple_screen",
+  "completed_at": "2026-10-18T02:44:04.414271+08:00",
+  "scope": "仅C_TS策略适配层与有限因果hook测试；无金融回测",
+  "source_head": "fe5e16a33d2685fd3c6f3b73afce360d2986837c",
+  "sha256": {
+    "tools/stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+    "tools/test_stage028_ordered_strategy.py": "0da03dab2e02f7693acb5afacaed2b29d05943116c06fa34772302cc85d398ce"
+  },
+  "interface": "build_ordered_strategy(base, weekly_lookup, fi_lookup, next_days, arm=\"C_TS\")",
+  "tdd": [
+    {
+      "phase": "RED",
+      "exit_code": 1,
+      "tests": 9,
+      "failures": 10,
+      "reason": "conditional adapter is not implemented；初始必要边界测试先观察缺实现失败"
+    },
+    {
+      "phase": "GREEN",
+      "exit_code": 0,
+      "tests": 9,
+      "reason": "原9个边界测试通过"
+    },
+    {
+      "phase": "runtime harness correction",
+      "exit_code": 1,
+      "tests": 10,
+      "failures": 1,
+      "reason": "subprocess configure_runtime chdir后未保留tools路径；只修测试sys.path"
+    },
+    {
+      "phase": "actual hook GREEN",
+      "exit_code": 0,
+      "tests": 11,
+      "reason": "真实847长短方向0.5R同bar不利优先、retry下一bar、C2 fallback均通过"
+    },
+    {
+      "phase": "holding view RED",
+      "exit_code": 1,
+      "tests": 11,
+      "failures": 1,
+      "reason": "11:00入场前daily low80被持仓管理读到；目标post-entry low108反例明确失败"
+    },
+    {
+      "phase": "holding view GREEN",
+      "exit_code": 0,
+      "tests": 11,
+      "reason": "env/history/signal保留80、管理context只读108；次日和普通账户不改"
+    },
+    {
+      "phase": "mandatory coverage RED",
+      "exit_code": 1,
+      "tests": 11,
+      "failures": 1,
+      "reason": "宽松旧flag可使post-entry缺一分钟被接受"
+    },
+    {
+      "phase": "final GREEN",
+      "exit_code": 0,
+      "tests": 11,
+      "elapsed_seconds": 18.593,
+      "reason": "强制读取canonical coverage收据的missing count，缺口一律fail-closed"
+    }
+  ],
+  "verification": [
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage028_ordered_strategy.py' -v",
+      "exit_code": 0,
+      "tests": 11
+    },
+    {
+      "command": ".py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py research/lines/futures_trend_triple_screen/tools/test_stage028_ordered_strategy.py",
+      "exit_code": 0
+    }
+  ],
+  "contracts": [
+    "native完整allocator之后才过滤；q/stop/排序/slot不重算，被删slot不重分配",
+    "从2020首个close空setup；2019仅FI暖机；无native/gate false/无AM context仍逐product观察",
+    "unknown仅保留原opened普通路径，actual持仓与AI硬限制优先，真实bar缺失cancel",
+    "pending冻结8个plan字段，不deepcopy account state；原产品snapshot处reserve，无layer/target/order",
+    "实际fill事件才activate原_open_position；u日bar/手数/stop/信号年龄冻结，extrema种子actualfill",
+    "真实fill后machine.on_fill消费准备；精简成交audit保留实际风险/保证金context",
+    "仅intrabar条件单临时copy分钟view修改真实entry分钟open，finally恢复；普通单/gap不改",
+    "Dclose先原full日线env再copy holding post-entry OHLC；AM/history/signal/volume/OI/close不改，缺分钟failclosed"
+  ],
+  "limitations": [
+    "只支持C_TS；B_TS明确拒绝，尚未实施",
+    "仅有限单元与真实847/827执行hook fixture验证；未运行全市场/全周期金融回测或全仓库suite",
+    "数值hook测试依赖Stage022接受的本机frozen runtime路径；未安装新依赖",
+    "独立引擎/runner接合、财务收益与独立审查由root继续；本收据不宣称金融目标达成",
+    "未提交Git；未修改正式模块、LINE、registry或其他研究线"
+  ],
+  "research_judgement": "沿用Stage028合同中Elder/LEAN/Backtrader主来源；本子任务按root禁止新增网络请求。判断保留原资源分配并只验证因果执行合理，不引入收益驱动参数。",
+  "overfitting": false,
+  "overfitting_reason": "实现固定执行因果与缺数据fail-closed，没有调阈值、样本筛选或收益选择；既有历史选择偏差仍在",
+  "continue_value": true,
+  "continue_value_reason": "必要执行hook已可进入独立接合；真实金融对照仍未验证",
+  "financial_backtests": 0,
+  "ctp_calls": 0,
+  "order_submission_calls": 0
+}

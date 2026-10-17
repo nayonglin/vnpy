@@ -1,0 +1,80 @@
+{
+  "status": "passed_finite_native_composition_fixture",
+  "checks": [
+    {
+      "direction": 1,
+      "mode": "survives",
+      "trade_prices": [
+        111.0
+      ],
+      "trade_count": 1,
+      "cost": 33.33,
+      "settled_balance": 149996.67,
+      "remaining_layers": 1,
+      "target": 3,
+      "signal_date": "2026-01-06",
+      "actual_entry": "2026-01-07 11:00:00",
+      "real_order_count": 1,
+      "original_minutes_unchanged": true
+    },
+    {
+      "direction": 1,
+      "mode": "samebar_stop_retry_fails",
+      "trade_prices": [
+        111.0,
+        101.0,
+        111.0,
+        101.0
+      ],
+      "trade_count": 4,
+      "cost": 132.72,
+      "settled_balance": 149267.28000000003,
+      "remaining_layers": 0,
+      "target": 0,
+      "signal_date": "2026-01-06",
+      "actual_entry": "2026-01-07 11:00:00",
+      "real_order_count": 1,
+      "original_minutes_unchanged": true
+    },
+    {
+      "direction": -1,
+      "mode": "survives",
+      "trade_prices": [
+        89.0
+      ],
+      "trade_count": 1,
+      "cost": 32.67,
+      "settled_balance": 149997.33,
+      "remaining_layers": 1,
+      "target": -3,
+      "signal_date": "2026-01-06",
+      "actual_entry": "2026-01-07 11:00:00",
+      "real_order_count": 1,
+      "original_minutes_unchanged": true
+    },
+    {
+      "direction": -1,
+      "mode": "samebar_stop_retry_fails",
+      "trade_prices": [
+        89.0,
+        99.0,
+        89.0,
+        99.0
+      ],
+      "trade_count": 4,
+      "cost": 131.28,
+      "settled_balance": 149268.71999999997,
+      "remaining_layers": 0,
+      "target": 0,
+      "signal_date": "2026-01-06",
+      "actual_entry": "2026-01-07 11:00:00",
+      "real_order_count": 1,
+      "original_minutes_unchanged": true
+    }
+  ],
+  "financial_replays": 0,
+  "historical_market_replays": 0,
+  "network_calls": 0,
+  "production_qualified": false,
+  "evidence": "Captured from the actual successful unified exec stdout; fixture was run once after correcting its native YYYYMMDD expectation."
+}

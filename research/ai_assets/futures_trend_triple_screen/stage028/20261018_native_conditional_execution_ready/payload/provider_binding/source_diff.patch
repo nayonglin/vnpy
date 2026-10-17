@@ -1,0 +1,21 @@
+--- research/lines/futures_trend_triple_screen/tools/stage023_request_provider.py
++++ research/lines/futures_trend_triple_screen/tools/stage029_ordered_request_provider.py
+@@ -1,4 +1,4 @@
+-"""One bounded provider packet for an actual Stage021 request; never signs review."""
++"""C_TS-scoped copy of the accepted Stage023 exact-request provider; never signs review."""
+ from __future__ import annotations
+ import argparse
+ from contextlib import redirect_stdout,redirect_stderr
+@@ -24,9 +24,9 @@
+ import stage021_blocking_data_gate as gate
+ 
+ LINE,ROOT=old.LINE,old.ROOT
+-OUTPUT=LINE/'outputs/stage023_request_provider'
+-REQUEST_ROOT=LINE/'outputs/stage001_first_screen/C0_attempt3/data_wait'
+-PROTOCOL=LINE/'stages/20261018_0134_stage023_request_provider_protocol.md'
++OUTPUT=LINE/'outputs/stage029_ordered_request_provider'
++REQUEST_ROOT=LINE/'outputs/stage028_ordered_account/C_TS/data_wait'
++PROTOCOL=LINE/'stages/20261018_0243_stage029_ordered_request_provider.md'
+ R013=LINE/'outputs/stage013_independent_review/review_receipt.json'
+ R013_SHA='194e48847c9e0927772c482cd5bacc3529a625ac76aeec2a157089924177c795'
+ OLD_MANIFEST_SHA='376cefaf2a56f75e97adf31e431dac508189695c4bb4691294ab5f950aeada03'

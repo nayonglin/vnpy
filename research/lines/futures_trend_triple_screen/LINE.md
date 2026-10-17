@@ -94,3 +94,4 @@
 - Stage028已冻结最小单一执行口径：保留u日native已admitted q/保护止损/名额，过滤后不再分配；D真实trigger才建立layer/order/fill。actual fill风险/保证金可超u预测，不把830 sizing gate说成fill guard，按原门审计；首分钟不能使用pre-entry open作入场后价。同一engine必要数据资格等待复用，普通路径不变。
 - 当前实施本线隔离strategy/engine/runner，C_TS真实金融仍待运行，B_TS后续独立机制仍在范围。金融累计仍5attempt/2完成，训练0、生产资格false。目标active，尚无更高收益且更低回撤候选；不因组件完成而缩小目标。
 - Stage027已精确登记20项复现资产，manifest `d8525c536bcc6a2c87d6b9fd1196f7f5e69c30d25f53c40ad8ff1328da599842`；FI派生值和潜在决策表无损gzip，原始日线/分钟/数据库/私有配置未入Git。原review stage算术笔误在root实际记录中明确13895，不重建数据。
+- Stage028隔离策略/引擎/runner已完成并独立接合验收：26项实现行为测试、4个真实native组合场景/10fills，P0/P1/P2=0/0/0；不是金融回测或alpha结论。Dclose新持仓排除入场前整根分钟H/L，同时AM/history/env保留fullD。029只调整原provider四行作用域绑定。21项复现资产manifest `c1c5b57fbb4e61e61220467192e0e529699f51728c6bc32cf91d048230a2472b`。下一步唯一C_TS全周期run内联preflight，独立金融agent已新建等待真实终态；不重复A0或再跑单独大preflight。
