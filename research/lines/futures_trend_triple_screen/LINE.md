@@ -86,3 +86,11 @@
 - 前后过拟合：本轮未按PnL调参，但历史研究选择偏差仍在，无严格新OOS主张。继续价值：此形状为否；不同机制的有序设计有条件为是。正式生产资格及基线不由本线变更。
 
 - Stage023精确anchor实际运行元数据登记13资产，manifest2ddd56143477a0f1448caffec294fe506f2fb66c6c7dbd8a40aa62e9051ea390。Stage024负结果登记63资产，manifestef4a9b7a9951ee2af575c5a05dcd2b3f4fa37507570eee4facc97c4e0f6fa800；大JSON/CSV无损gzip并核原字节，实际runner/源diff/账本/归因/独立receipt保留，原始行情及私有配置不入Git。
+
+## Stage025—028有序入场接合（2026-10-18 02:39 CST）
+
+- Stage027纯组件/真实特征构建已独立验收，P0/P1/P2=0/0/0；116394真实日线、112953 FI ready，900 native身份全匹配。唯一builder3.213秒，未重复FI或周cache；13895潜在intent（B13600/C295）及104 unknown候选不含资金、持仓或收益，不能当真实交易或全量下载需求。
+- CMT/LEAN/Backtrader机制与本地源码共同确认：真正的周许可→更早逆向准备→之后突破，不能靠原session首open context伪造条件成交，不能用D最终日线/账户值决定D盘中手数。
+- Stage028已冻结最小单一执行口径：保留u日native已admitted q/保护止损/名额，过滤后不再分配；D真实trigger才建立layer/order/fill。actual fill风险/保证金可超u预测，不把830 sizing gate说成fill guard，按原门审计；首分钟不能使用pre-entry open作入场后价。同一engine必要数据资格等待复用，普通路径不变。
+- 当前实施本线隔离strategy/engine/runner，C_TS真实金融仍待运行，B_TS后续独立机制仍在范围。金融累计仍5attempt/2完成，训练0、生产资格false。目标active，尚无更高收益且更低回撤候选；不因组件完成而缩小目标。
+- Stage027已精确登记20项复现资产，manifest `d8525c536bcc6a2c87d6b9fd1196f7f5e69c30d25f53c40ad8ff1328da599842`；FI派生值和潜在决策表无损gzip，原始日线/分钟/数据库/私有配置未入Git。原review stage算术笔误在root实际记录中明确13895，不重建数据。

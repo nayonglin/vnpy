@@ -1,0 +1,64 @@
+{
+  "status": "PASS_limited_component_review",
+  "artifact_hashes_verified": 5,
+  "source_output_key_count": 116394,
+  "FI_ready_count": 112953,
+  "FI_reason_counts": {
+    "warmup_close": 1095,
+    "warmup_force": 878,
+    "ready": 112953,
+    "invalid_volume": 1468
+  },
+  "native_identities_verified": 900,
+  "native_identity_fields": [
+    "signal_date",
+    "product_vt_symbol",
+    "vt_symbol",
+    "signal",
+    "execution_trade_date"
+  ],
+  "intent_counts": {
+    "B_TS": 13600,
+    "C_TS": 295
+  },
+  "fallback_candidates_verified": 104,
+  "real_price_rows_sampled": 30,
+  "real_FI_hand_samples": [
+    {
+      "contract": "MA005.CZCE",
+      "bars": 10,
+      "first": "2019-06-03",
+      "last": "2019-06-17",
+      "passed": true
+    },
+    {
+      "contract": "cu2005.SHFE",
+      "bars": 10,
+      "first": "2019-06-03",
+      "last": "2019-06-17",
+      "passed": true
+    },
+    {
+      "contract": "rb2005.SHFE",
+      "bars": 10,
+      "first": "2019-06-03",
+      "last": "2019-06-17",
+      "passed": true
+    }
+  ],
+  "causal_combination_experiments": 1,
+  "causal_combination": "C setup < u signal < D: fill before D close consumed; later roll+ineligible+indicator unknown blocked without retroactive effect; unfilled old D intent rejected after D close",
+  "AI_effective_date_mode": "signal_day strict prior eval",
+  "first_eval_date": "2019-12-31",
+  "first_eval_products": 18,
+  "first_eval_has_fu": false,
+  "first_fu_eval": "2022-01-28",
+  "full_FI_recalculation": false,
+  "existing_test_suites_repeated": false,
+  "DB_hash_repeated": false,
+  "minute_qualification_attempted": false,
+  "financial_replays": 0,
+  "outcome_fields_used": 0,
+  "model_fits": 0,
+  "network_calls": 0
+}

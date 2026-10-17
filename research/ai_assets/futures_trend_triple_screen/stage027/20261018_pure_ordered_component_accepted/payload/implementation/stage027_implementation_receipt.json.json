@@ -1,0 +1,149 @@
+{
+  "stage": "Stage027",
+  "line_id": "futures_trend_triple_screen",
+  "task": 1,
+  "recorded_at": "2026-10-18T02:21:47+08:00",
+  "status": "implemented_eight_test_groups_passed_pending_independent_review",
+  "spec": "research/lines/futures_trend_triple_screen/stages/20261018_0214_stage027_ordered_state_design.md",
+  "plan": "research/lines/futures_trend_triple_screen/stages/20261018_0214_stage027_ordered_state_plan.md",
+  "files_sha256": {
+    "stage027_ordered_state.py": "86149c15c2c7a5d46a8047fff7472bef14b29a56e29cb03a9763222b0bcb2e64",
+    "test_stage027_ordered_state.py": "8ed24e4da2452f7671213603f216f70cbc469b0c608c99287ab907d6a4e64f1f"
+  },
+  "test_command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage027_ordered_state.py' -v",
+  "red": {
+    "exit_code": 1,
+    "summary": "测试先写，缺实现导致 ModuleNotFoundError；符合计划要求的RED。",
+    "output": "test_stage027_ordered_state (unittest.loader._FailedTest.test_stage027_ordered_state) ... ERROR\n\n======================================================================\nERROR: test_stage027_ordered_state (unittest.loader._FailedTest.test_stage027_ordered_state)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_stage027_ordered_state\nTraceback (most recent call last):\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py\", line 407, in _find_test_path\n    module = self._get_module_from_name(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py\", line 350, in _get_module_from_name\n    __import__(name)\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 6, in <module>\n    from stage027_ordered_state import OrderedSetupMachine, force_index_rows\nModuleNotFoundError: No module named 'stage027_ordered_state'\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (errors=1)\n"
+  },
+  "green": {
+    "exit_code": 0,
+    "summary": "最小实现后指定命令首次GREEN，8组行为测试全部通过，耗时0.002秒；未运行无关全仓测试。",
+    "output": "test_01_force_seed_recursion_and_prefix_invariance (test_stage027_ordered_state.OrderedStateContractTests.test_01_force_seed_recursion_and_prefix_invariance) ... ok\ntest_02_real_calendar_gap_zero_invalid_and_contract_warmup (test_stage027_ordered_state.OrderedStateContractTests.test_02_real_calendar_gap_zero_invalid_and_contract_warmup) ... ok\ntest_03_c_requires_earlier_setup_and_b_can_emit_same_close (test_stage027_ordered_state.OrderedStateContractTests.test_03_c_requires_earlier_setup_and_b_can_emit_same_close) ... ok\ntest_04_week_ai_position_and_epoch_cancel_old_setup (test_stage027_ordered_state.OrderedStateContractTests.test_04_week_ai_position_and_epoch_cancel_old_setup) ... ok\ntest_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) ... ok\ntest_06_one_day_intent_expiry_and_no_old_c_signal_reuse (test_stage027_ordered_state.OrderedStateContractTests.test_06_one_day_intent_expiry_and_no_old_c_signal_reuse) ... ok\ntest_07_only_matching_unique_execution_fill_consumes_setup (test_stage027_ordered_state.OrderedStateContractTests.test_07_only_matching_unique_execution_fill_consumes_setup) ... ok\ntest_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.002s\n\nOK\n"
+  },
+  "interfaces": {
+    "on_close_result_keys": [
+      "decision",
+      "setup_id",
+      "setup_day",
+      "intent",
+      "baseline_fallback",
+      "cancel_reason"
+    ],
+    "intent_keys": [
+      "arm",
+      "intent_id",
+      "product",
+      "contract",
+      "epoch_id",
+      "setup_id",
+      "setup_day",
+      "signal_day",
+      "execution_day",
+      "direction",
+      "trigger",
+      "weekly_asof",
+      "native_signal"
+    ],
+    "decisions": [
+      "intent",
+      "waiting",
+      "blocked",
+      "baseline_fallback"
+    ],
+    "native_signal": "原生字符串标签或None；C只以当日long*/short*前缀判方向并原样保留，B明确写long_triple_screen/short_triple_screen。",
+    "cancel": "cancel(product,day,reason)记录无目标或无真实bar的观察日；清setup/intent且不回退，不编OHLC，强制后续日期递增。",
+    "on_fill": "on_fill(intent_id,execution_day)仅当前唯一D匹配成功；返回intent_id/execution_day/setup_id/consumed，错误和重复ValueError不消费。"
+  },
+  "rulings": [
+    "Ruling: 只按当前明确Task1范围写纯模块、测试和本收据，覆盖技能通用workspace/commit步骤；当前分支已由root指定，不新工作树、不提交、不修改LINE/registry。代价：提交与跨组件整理由root负责。",
+    "Ruling: FI previous_date表示该真实合约上一个实际观察行日期（含无效行）；当前有效gap行作为新段第一close，reason=calendar_gap。无效输入优先报告invalid_close/invalid_volume。代价：调用方不能把previous_date误当可用前收盘日期。",
+    "Ruling: 周或FI任一unknown均清两臂准备及intent；B等待，C返回baseline_fallback且仍须调用方原C9全部限制。代价：B在数据重暖后需要新逆向FI，可能舍弃旧准备。",
+    "Ruling: epoch、周方向或资格变化当晚先取消旧准备；若当前已知许可和逆向FI成立可建立当日新setup；C同日仍不通过。新epoch历史FI可用，但不会搬旧setup。代价：变化当晚是新的观察边界，不额外强加等待天数。",
+    "Ruling: root在读取真实builder时确认无target/真实bar需要显式取消，追加最小cancel接口；价格数据missing不视为指标unknown、不允许C fallback。代价：调用方必须对每个产品缺数据观察日调用cancel。",
+    "Ruling: 日期按ISO date规范输出，ID为固定字段的SHA256；多产品状态独立。真实next_day日历成员资格由调用方验证，本模块只验证严格晚于day。代价：纯组件无法独立证明调用方calendar是真实交易日。",
+    "Ruling: 有效输入算术若出现非有限Force/FI/trigger直接拒绝，不返回非标准JSON数值、不新增容错信号。代价：极端数值输入需要调用方修正源数据。"
+  ],
+  "investigation_judgement": "承接权威spec已核的CMT/LEAN/Backtrader来源；本Task只落实LEAN两Force均值seed与因果状态，不联网、不读取金融数据、不重复做参数研究。",
+  "overfitting_before": {
+    "is_overfitting": false,
+    "reason": "固定单一指标初始化和状态合同，未看收益、未搜索参数；既有历史研究选择偏差仍存在。"
+  },
+  "overfitting_after": {
+    "is_overfitting": false,
+    "reason": "八组测试仅验证公式、因果先后、数据缺口及状态消费，不依据收益改规则。"
+  },
+  "continuing_value_before": {
+    "has_value": true,
+    "reason": "无因果状态合同不能可信开展后续真实执行实验。"
+  },
+  "continuing_value_after": {
+    "has_value": true,
+    "reason": "纯软件门已通过，下一步只由root接合真实特征上界与独立review，不能替代B/C账户验证。"
+  },
+  "financial_backtest_run": false,
+  "real_data_read": false,
+  "network_calls": 0,
+  "account_pnl_fields": 0,
+  "production_qualified": false,
+  "formal_strategy_files_modified": false,
+  "git_commit_or_push": false,
+  "boundary": "此组件通过只证明所测纯行为；没有成交、预算、仓位、费用、收益或回撤结论。独立review仍由root安排。",
+  "fixcycle_1": {
+  "recorded_at": "2026-10-18T02:23:57+08:00",
+  "cause": "root独立最小反例发现组合状态优先级及触发价域缺陷；修复在本新臂PnL前完成。",
+  "initial_files_sha256": {
+    "stage027_ordered_state.py": "c248a70a3b5c0cd8b4fd3f09cd1c13f9549500e335660a8a3aa5112238a78c87",
+    "test_stage027_ordered_state.py": "bf77e835a28ae05519c018950829881bd53c310ed164b02786370c7ad83e6fc4"
+  },
+  "counterexamples": [
+    {
+      "input": "C_TS: weekly_ready=False, eligible=False",
+      "before": "baseline_fallback=True",
+      "expected": "blocked; baseline_fallback=False; cancel_reason=ineligible"
+    },
+    {
+      "input": "B_TS: high=3, low=1, tick=2, weekly_direction=-1, fi2=1",
+      "before": "intent.trigger=-2",
+      "expected": "blocked; intent=None; cancel_reason=invalid_trigger"
+    }
+  ],
+  "root_causes": [
+    "unknown分支先于eligible/position_open硬状态，导致明确不可交易状态被unknown回退覆盖。",
+    "tick不利网格公式只验证有限，没有验证结果严格为正。"
+  ],
+  "tests_added_within_existing_groups": {
+    "group5": "周unknown/FIunknown × ineligible/position_open × B_TS/C_TS，共8个组合子测试。",
+    "group8": "short low=1和low=2、tick=2，分别产生负/零trigger的2个子测试。"
+  },
+  "red": {
+    "exit_code": 1,
+    "summary": "先新增反例测试，8组运行中10个subtest确定失败；原组件6组仍通过。",
+    "output": "test_01_force_seed_recursion_and_prefix_invariance (test_stage027_ordered_state.OrderedStateContractTests.test_01_force_seed_recursion_and_prefix_invariance) ... ok\ntest_02_real_calendar_gap_zero_invalid_and_contract_warmup (test_stage027_ordered_state.OrderedStateContractTests.test_02_real_calendar_gap_zero_invalid_and_contract_warmup) ... ok\ntest_03_c_requires_earlier_setup_and_b_can_emit_same_close (test_stage027_ordered_state.OrderedStateContractTests.test_03_c_requires_earlier_setup_and_b_can_emit_same_close) ... ok\ntest_04_week_ai_position_and_epoch_cancel_old_setup (test_stage027_ordered_state.OrderedStateContractTests.test_04_week_ai_position_and_epoch_cancel_old_setup) ... ok\ntest_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) ... \n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'eligible': False}, arm='B_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'eligible': False}, arm='C_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'position_open': True}, arm='B_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'position_open': True}, arm='C_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'eligible': False}, arm='B_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'eligible': False}, arm='C_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'position_open': True}, arm='B_TS') ... FAIL\n  test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'position_open': True}, arm='C_TS') ... FAIL\ntest_06_one_day_intent_expiry_and_no_old_c_signal_reuse (test_stage027_ordered_state.OrderedStateContractTests.test_06_one_day_intent_expiry_and_no_old_c_signal_reuse) ... ok\ntest_07_only_matching_unique_execution_fill_consumes_setup (test_stage027_ordered_state.OrderedStateContractTests.test_07_only_matching_unique_execution_fill_consumes_setup) ... ok\ntest_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) ... \n  test_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) (nonpositive_short_trigger_low=1) ... FAIL\n  test_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) (nonpositive_short_trigger_low=2) ... FAIL\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'eligible': False}, arm='B_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'waiting' != 'blocked'\n- waiting\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'eligible': False}, arm='C_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'baseline_fallback' != 'blocked'\n- baseline_fallback\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'position_open': True}, arm='B_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'waiting' != 'blocked'\n- waiting\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'weekly_ready': False, 'weekly_asof': None, 'weekly_direction': None}, hard_state={'position_open': True}, arm='C_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'baseline_fallback' != 'blocked'\n- baseline_fallback\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'eligible': False}, arm='B_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'waiting' != 'blocked'\n- waiting\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'eligible': False}, arm='C_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'baseline_fallback' != 'blocked'\n- baseline_fallback\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'position_open': True}, arm='B_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'waiting' != 'blocked'\n- waiting\n+ blocked\n\n\n======================================================================\nFAIL: test_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) (unknown={'fi_ready': False, 'fi2': None}, hard_state={'position_open': True}, arm='C_TS')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 155, in test_05_unknown_wait_or_fallback_never_forces_intent\n    self.assertEqual(result[\"decision\"], \"blocked\")\nAssertionError: 'baseline_fallback' != 'blocked'\n- baseline_fallback\n+ blocked\n\n\n======================================================================\nFAIL: test_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) (nonpositive_short_trigger_low=1)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 216, in test_08_tick_mirrors_determinism_and_invalid_inputs\n    self.assertEqual(invalid_trigger[\"decision\"], \"blocked\")\nAssertionError: 'intent' != 'blocked'\n- intent\n+ blocked\n\n\n======================================================================\nFAIL: test_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) (nonpositive_short_trigger_low=2)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage027_ordered_state.py\", line 216, in test_08_tick_mirrors_determinism_and_invalid_inputs\n    self.assertEqual(invalid_trigger[\"decision\"], \"blocked\")\nAssertionError: 'intent' != 'blocked'\n- intent\n+ blocked\n\n\n----------------------------------------------------------------------\nRan 8 tests in 0.003s\n\nFAILED (failures=10)\n"
+  },
+  "fix": "硬状态判断前移至unknown前；有限但非正trigger返回blocked/invalid_trigger/intent=None，保留未消费准备，不回退、不新增参数。",
+  "green": {
+    "exit_code": 0,
+    "summary": "一次最小修复后同命令8/8通过，耗时0.001秒。",
+    "output": "test_01_force_seed_recursion_and_prefix_invariance (test_stage027_ordered_state.OrderedStateContractTests.test_01_force_seed_recursion_and_prefix_invariance) ... ok\ntest_02_real_calendar_gap_zero_invalid_and_contract_warmup (test_stage027_ordered_state.OrderedStateContractTests.test_02_real_calendar_gap_zero_invalid_and_contract_warmup) ... ok\ntest_03_c_requires_earlier_setup_and_b_can_emit_same_close (test_stage027_ordered_state.OrderedStateContractTests.test_03_c_requires_earlier_setup_and_b_can_emit_same_close) ... ok\ntest_04_week_ai_position_and_epoch_cancel_old_setup (test_stage027_ordered_state.OrderedStateContractTests.test_04_week_ai_position_and_epoch_cancel_old_setup) ... ok\ntest_05_unknown_wait_or_fallback_never_forces_intent (test_stage027_ordered_state.OrderedStateContractTests.test_05_unknown_wait_or_fallback_never_forces_intent) ... ok\ntest_06_one_day_intent_expiry_and_no_old_c_signal_reuse (test_stage027_ordered_state.OrderedStateContractTests.test_06_one_day_intent_expiry_and_no_old_c_signal_reuse) ... ok\ntest_07_only_matching_unique_execution_fill_consumes_setup (test_stage027_ordered_state.OrderedStateContractTests.test_07_only_matching_unique_execution_fill_consumes_setup) ... ok\ntest_08_tick_mirrors_determinism_and_invalid_inputs (test_stage027_ordered_state.OrderedStateContractTests.test_08_tick_mirrors_determinism_and_invalid_inputs) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK\n"
+  },
+  "final_files_sha256": {
+    "stage027_ordered_state.py": "86149c15c2c7a5d46a8047fff7472bef14b29a56e29cb03a9763222b0bcb2e64",
+    "test_stage027_ordered_state.py": "8ed24e4da2452f7671213603f216f70cbc469b0c608c99287ab907d6a4e64f1f"
+  },
+  "rulings": [
+    "Ruling: 已知position_open/ineligible优先于unknown；两者同时成立沿原既有顺序报告position_open。代价：诊断只报告一个主因，但不会产生fallback或intent。",
+    "Ruling: 非正trigger阻止本次intent，setup保留为未消费；后续有效价格观察可重新评估，只有合法fill消费setup。代价：invalid_trigger不会自动销毁回调历史，但不能生成负/零价条件。",
+    "Ruling: 保留首次RED/GREEN作为历史证据，最终资格仅以本fixcycle绑定的最终SHA与GREEN为准。"
+  ],
+  "financial_backtest_run": false,
+  "overfitting": {
+    "is_overfitting": false,
+    "reason": "只补已知限制优先级及价格域错误，不看收益、不扫描参数。"
+  },
+  "continuing_value": {
+    "has_value": true,
+    "reason": "修复必要正确性后继续独立review与真实组件接合。"
+  }
+}
+}

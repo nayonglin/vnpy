@@ -1,0 +1,47 @@
+{
+  "status": "completed_pure_state_build_pending_independent_review",
+  "elapsed_seconds": 3.213475833006669,
+  "source_daily_rows": 116394,
+  "FI_ready_rows": 112953,
+  "real_calendar_rows": 1786,
+  "metadata_contracts": 806,
+  "native_events": 900,
+  "native_identities_matched": 900,
+  "intent_counts": {
+    "B_TS": 13600,
+    "C_TS": 295
+  },
+  "C_baseline_fallback_candidates": 104,
+  "decision_counts": {
+    "B_TS:waiting": 5545,
+    "C_TS:waiting": 15213,
+    "B_TS:intent": 13600,
+    "C_TS:baseline_fallback": 3637,
+    "B_TS:missing_target_mapping": 2728,
+    "C_TS:missing_target_mapping": 2728,
+    "B_TS:blocked": 9306,
+    "C_TS:blocked": 9306,
+    "C_TS:intent": 295
+  },
+  "state_start": "2020-01-01",
+  "feature_preload_start": "2019-06-01",
+  "end": "2026-10-14",
+  "AI_effective_date_mode": "signal_day_strict_prior_eval; unchanged_original_default",
+  "setup_consumption": "not consumed: all-flat unfilled conservative potential upper bound",
+  "full_account_demand_or_fills": false,
+  "outcome_fields_used": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "strategy_initializations": 0,
+  "all_consumed_inputs_unchanged": true,
+  "production_qualified": false,
+  "artifacts": {
+    "input_manifest.json": "426cd031619b42167b150a1c543e367d39f75911612aa5bc101a14da754b3ae8",
+    "attempt_started.json": "aa504996eb9b3effc5d5c3b5786a03da5ef5afe22919a5349321d1c39ac7fd05",
+    "C_baseline_fallback_candidates.csv": "e92423f12081750f18eb66cb26b9f0e5a1d7a3e02927a8e77f3a38c6e6d2731d",
+    "potential_intents.csv": "0ab776ceaf8f863ebfc317ae06cb2b8f46f5b50cd9a770c9528619bb6e871ecd",
+    "fi2_daily.csv": "362b1aea72d72dc60e7ae505f9a999e1344c9b8335994f6b7945cd862620d570"
+  }
+}

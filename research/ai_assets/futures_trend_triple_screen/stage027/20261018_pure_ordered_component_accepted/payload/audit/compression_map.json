@@ -1,0 +1,14 @@
+[
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_ordered_features/fi2_daily.csv",
+    "original_sha256": "362b1aea72d72dc60e7ae505f9a999e1344c9b8335994f6b7945cd862620d570",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_registered_evidence_pack/features_fi2_daily.csv.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_ordered_features/potential_intents.csv",
+    "original_sha256": "0ab776ceaf8f863ebfc317ae06cb2b8f46f5b50cd9a770c9528619bb6e871ecd",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_registered_evidence_pack/features_potential_intents.csv.gz",
+    "gzip_mtime": 0
+  }
+]
