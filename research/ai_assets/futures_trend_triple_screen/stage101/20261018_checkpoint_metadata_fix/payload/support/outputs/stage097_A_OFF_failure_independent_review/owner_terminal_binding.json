@@ -1,0 +1,102 @@
+{
+  "schema": "stage097_actual_failure_owner_terminal_binding_v1",
+  "tool_terminal_inherited_from_root_observation": true,
+  "tool_session": 13114,
+  "tool_chunk": "8c75d9",
+  "exit_code": 1,
+  "arm": "A_OFF",
+  "attempt": 1,
+  "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+  "source_commit": "4e439c2e5d653d4171c4396afdc2aad037c547c7",
+  "actual_attempt_pid": 41681,
+  "process_observation": {
+    "available": false,
+    "error_type": "PermissionError",
+    "error": "[Errno 1] Operation not permitted: 'ps'",
+    "terminal_status_inherited_from_pinned_root_tool_observation": true
+  },
+  "readiness_context_preflight_bindings_consistent": true,
+  "financial_run_attempted": true,
+  "engine_return_evidence": [
+    "root terminal engine_returned_before_checkpoint=true",
+    "runner source calls save_raw_checkpoint only after run_profile_once returned combined,frames,spec",
+    "capture contains calculate_result-collected trades/usage"
+  ],
+  "data_wait_exists": false,
+  "actual_data_requests": 0,
+  "raw_checkpoint_exists": false,
+  "seal_exists": false,
+  "summary_exists": false,
+  "B_OFF_root_exists": false,
+  "performance": "N/A_no_complete_account_checkpoint",
+  "financial_attempts_total_inherited": 9,
+  "accepted_ledgers_total_inherited": 3,
+  "model_fits_total_inherited": 0,
+  "post_engine_validation_not_reached": true,
+  "all_input_guard_not_completed": true,
+  "full_market_data_rehashes": 0,
+  "fixture_preflight_fields": [
+    {
+      "line": 302,
+      "keys": [
+        "fixture_only",
+        "reference_calendar_scope",
+        "reference_calendar",
+        "source_bindings",
+        "data_bindings",
+        "account_classes",
+        "disabled_pairwise"
+      ]
+    }
+  ],
+  "read_inputs": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/attempt_started.json": {
+      "sha256": "d2a99885d63a4d62edc2034c6171fe7f39c3114b4813faca10751b5ea6bd6844",
+      "bytes": 519
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/engine.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_context.json": {
+      "sha256": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7",
+      "bytes": 249328
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json": {
+      "sha256": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5",
+      "bytes": 3247235
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_failure.json": {
+      "sha256": "6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082",
+      "bytes": 329
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/failure_capture.pkl.gz": {
+      "sha256": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f",
+      "bytes": 430064
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json": {
+      "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085",
+      "bytes": 2054
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/A_OFF.json": {
+      "sha256": "8eee3c7753ac4c86e9dc9a9f754ba2785abfa92e31f54644c305d52cb3b5fe69",
+      "bytes": 1563444
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py": {
+      "sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719",
+      "bytes": 49449
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic.json": {
+      "sha256": "752bd511b5b4bb7d6627729e314153af15651813f18711f2d2b5fe6a1502178e",
+      "bytes": 7924
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_original.sh": {
+      "sha256": "802ec62669f31e688132a3c82b822b04b1d25cb1cc1ba13a92daaf132ac9ad2c",
+      "bytes": 8702
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_tool_result.json": {
+      "sha256": "178059cc0fe2c31aa723bf22e323de1a3c884d2fe73ec0fab1de95c1a06bc860",
+      "bytes": 8880
+    }
+  }
+}

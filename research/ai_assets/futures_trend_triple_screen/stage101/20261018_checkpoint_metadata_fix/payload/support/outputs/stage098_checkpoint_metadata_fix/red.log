@@ -1,0 +1,125 @@
+test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... 
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (family_dispatch=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='prior_A_OFF_checkpoint_failure', value=None)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='repaired_checkpoint_family', value='old')
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_financial_attempts_before_family', value=0)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_arm_attempt', value=1)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_arm_attempt', value=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (engine_return_phase=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+test_real_096_metadata_and_prepare_prevalidation (__main__.CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation)
+Catch the exact real AI-pool string collision and a missing prepare guard. ... FAIL
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (family_dispatch=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 117, in test_dangerous_objects_family_readiness_and_return_phase
+    try:runner.main(['--arm','A_OFF','--run'])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py", line 478, in main
+    if (OUTPUT/args.arm).exists():raise FileExistsError('existing_account_refusing_repeat')
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: existing_account_refusing_repeat
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 119, in test_dangerous_objects_family_readiness_and_return_phase
+    except FileExistsError:self.fail('new_family_reused_old_A_OFF_owner')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: new_family_reused_old_A_OFF_owner
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='prior_A_OFF_checkpoint_failure', value=None)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 154, in test_dangerous_objects_family_readiness_and_return_phase
+    with self.assertRaisesRegex(ValueError,'root_(readiness_original_terminal_binding_missing|execution_readiness_contract_not_met)'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='repaired_checkpoint_family', value='old')
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 154, in test_dangerous_objects_family_readiness_and_return_phase
+    with self.assertRaisesRegex(ValueError,'root_(readiness_original_terminal_binding_missing|execution_readiness_contract_not_met)'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_financial_attempts_before_family', value=0)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 154, in test_dangerous_objects_family_readiness_and_return_phase
+    with self.assertRaisesRegex(ValueError,'root_(readiness_original_terminal_binding_missing|execution_readiness_contract_not_met)'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_arm_attempt', value=1)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 154, in test_dangerous_objects_family_readiness_and_return_phase
+    with self.assertRaisesRegex(ValueError,'root_(readiness_original_terminal_binding_missing|execution_readiness_contract_not_met)'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (readiness_field='global_arm_attempt', value=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 154, in test_dangerous_objects_family_readiness_and_return_phase
+    with self.assertRaisesRegex(ValueError,'root_(readiness_original_terminal_binding_missing|execution_readiness_contract_not_met)'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (engine_return_phase=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 180, in test_dangerous_objects_family_readiness_and_return_phase
+    self.assertEqual(ns['phase'],'returned_before_checkpoint')
+AssertionError: 'engine_not_returned' != 'returned_before_checkpoint'
+- engine_not_returned
++ returned_before_checkpoint
+
+
+======================================================================
+FAIL: test_real_096_metadata_and_prepare_prevalidation (__main__.CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation)
+Catch the exact real AI-pool string collision and a missing prepare guard.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 63, in test_real_096_metadata_and_prepare_prevalidation
+    try:checkpoint._account_only(envelope)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 201, in _account_only
+    _account_only(item)
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 201, in _account_only
+    _account_only(item)
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 200, in _account_only
+    raise ValueError("checkpoint_forbidden_engine_or_history")
+ValueError: checkpoint_forbidden_engine_or_history
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 64, in test_real_096_metadata_and_prepare_prevalidation
+    except ValueError as error:self.fail('real_096_metadata_was_rejected:'+str(error))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: real_096_metadata_was_rejected:checkpoint_forbidden_engine_or_history
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.647s
+
+FAILED (failures=8)

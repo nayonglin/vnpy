@@ -1,0 +1,50 @@
+{
+  "schema": "stage095_off_audit_adapter_preparation_v1",
+  "recorded_at": "2026-10-18T07:18:04.214662+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "status": "thin_adapter_frozen_wait_actual_arm_terminals_no_financial_acceptance",
+  "independent_account_auditor": true,
+  "self_authored_071_087_not_independently_reviewed_here": true,
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+    "bytes": 37776
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0718_stage095_independent_off_account_audit_adapter.md",
+    "sha256": "30e50746d7cfc04a8e941f137b06f1183da97de158760eda78f9db7b44884111",
+    "bytes": 7023
+  },
+  "output_files": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/A_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json": {
+      "sha256": "2f82b0b30942ba626605fae548cd8137db8aa4f5ad3b35b541d6041691bb6e5b",
+      "bytes": 1050
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/static_verification.json": {
+      "sha256": "3cb640d544c8e12937bf138ac463169dc5b2a93aa09f4310472830fe54e8ac40",
+      "bytes": 1481
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/B_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json": {
+      "sha256": "7efd9930ef86103a12e4d0018033e37df7a32404cd70d46283068d7fe88599c0",
+      "bytes": 1050
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/static_adapter_bindings.json": {
+      "sha256": "78b53aeef3b5156a84ddc607c3dfe909622940f84405de696c5c48640464994c",
+      "bytes": 3433
+    }
+  },
+  "account_outputs_accessed": false,
+  "old_account_PnL_accessed": false,
+  "raw_checkpoints_loaded": 0,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "market_DB_minute_loads": 0,
+  "network_calls": 0,
+  "old_test_suites_rerun": 0,
+  "actual_financial_reviews_signed": 0,
+  "fixture_financial_pass_signed": false,
+  "original_goal_achieved": false,
+  "promotion_allowed": false,
+  "production_qualified": false
+}

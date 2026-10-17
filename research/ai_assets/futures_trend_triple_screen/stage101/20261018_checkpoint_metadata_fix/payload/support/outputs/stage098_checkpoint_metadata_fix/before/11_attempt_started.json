@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-18 07:12:42.227838+08:00",
+  "status": "started_no_retry_or_overwrite",
+  "pid": 41681,
+  "argv": [
+    "research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+    "--arm",
+    "A_OFF",
+    "--run",
+    "--execution-readiness",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/A_OFF.json",
+    "--execution-readiness-sha256",
+    "8eee3c7753ac4c86e9dc9a9f754ba2785abfa92e31f54644c305d52cb3b5fe69"
+  ]
+}

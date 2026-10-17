@@ -1,0 +1,49 @@
+{
+  "schema": "stage095_pre099_immutable_snapshot_v1",
+  "files": [
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/stage095_independent_off_account_review.py",
+      "sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+      "bytes": 37776
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0718_stage095_independent_off_account_audit_adapter.md",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/20261018_0718_stage095_independent_off_account_audit_adapter.md",
+      "sha256": "30e50746d7cfc04a8e941f137b06f1183da97de158760eda78f9db7b44884111",
+      "bytes": 7023
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/preparation_receipt.json",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/preparation_receipt.json",
+      "sha256": "00bba127bc36f943dd2e978b2f7a83715ec9f9506a2333f1f0fc8486577b8cf1",
+      "bytes": 2375
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/static_verification.json",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/static_verification.json",
+      "sha256": "3cb640d544c8e12937bf138ac463169dc5b2a93aa09f4310472830fe54e8ac40",
+      "bytes": 1481
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/static_adapter_bindings.json",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/static_adapter_bindings.json",
+      "sha256": "78b53aeef3b5156a84ddc607c3dfe909622940f84405de696c5c48640464994c",
+      "bytes": 3433
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/A_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/A_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json",
+      "sha256": "2f82b0b30942ba626605fae548cd8137db8aa4f5ad3b35b541d6041691bb6e5b",
+      "bytes": 1050
+    },
+    {
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/B_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json",
+      "snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_stage095_snapshot/B_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json",
+      "sha256": "7efd9930ef86103a12e4d0018033e37df7a32404cd70d46283068d7fe88599c0",
+      "bytes": 1050
+    }
+  ],
+  "account_outputs_accessed": false,
+  "financial_replays": 0
+}

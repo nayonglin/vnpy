@@ -1,0 +1,82 @@
+test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... 
+  test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (family_dispatch=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... FAIL
+test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... ERROR
+test_real_096_metadata_and_prepare_prevalidation (__main__.CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation)
+Catch the exact real AI-pool string collision and a missing prepare guard. ... FAIL
+
+======================================================================
+ERROR: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 147, in test_dangerous_objects_family_readiness_and_return_phase
+    self.assertEqual(check(readiness)['document']['global_arm_attempt'],2)
+                     ^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 146, in check
+    return runner._readiness(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py", line 143, in _readiness
+    value=_bound_json(args.execution_readiness,args.execution_readiness_sha256)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py", line 58, in _bound_json
+    raw=_read_regular(Path(path))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 73, in _read_regular
+    path=_no_links(path)
+         ^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 61, in _no_links
+    raise ValueError("checkpoint_path_not_owned_symlink")
+ValueError: checkpoint_path_not_owned_symlink
+
+======================================================================
+FAIL: test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase) (family_dispatch=True)
+Catch broadened object exceptions, old owner reuse and missing parent pins.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 117, in test_dangerous_objects_family_readiness_and_return_phase
+    try:runner.main(['--arm','A_OFF','--run'])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py", line 478, in main
+    if (OUTPUT/args.arm).exists():raise FileExistsError('existing_account_refusing_repeat')
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: existing_account_refusing_repeat
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 119, in test_dangerous_objects_family_readiness_and_return_phase
+    except FileExistsError:self.fail('new_family_reused_old_A_OFF_owner')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: new_family_reused_old_A_OFF_owner
+
+======================================================================
+FAIL: test_real_096_metadata_and_prepare_prevalidation (__main__.CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation)
+Catch the exact real AI-pool string collision and a missing prepare guard.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 63, in test_real_096_metadata_and_prepare_prevalidation
+    try:checkpoint._account_only(envelope)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 201, in _account_only
+    _account_only(item)
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 201, in _account_only
+    _account_only(item)
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py", line 200, in _account_only
+    raise ValueError("checkpoint_forbidden_engine_or_history")
+ValueError: checkpoint_forbidden_engine_or_history
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py", line 64, in test_real_096_metadata_and_prepare_prevalidation
+    except ValueError as error:self.fail('real_096_metadata_was_rejected:'+str(error))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: real_096_metadata_was_rejected:checkpoint_forbidden_engine_or_history
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.150s
+
+FAILED (failures=2, errors=1)

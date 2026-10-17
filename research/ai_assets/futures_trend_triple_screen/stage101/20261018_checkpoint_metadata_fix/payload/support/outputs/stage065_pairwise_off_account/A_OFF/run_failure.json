@@ -1,0 +1,9 @@
+{
+  "arm": "A_OFF",
+  "error": "ValueError('checkpoint_forbidden_engine_or_history')",
+  "failure_capture_sha256": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f",
+  "partial": true,
+  "production_qualified": false,
+  "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+  "status": "failed_partial_no_engine_seal"
+}

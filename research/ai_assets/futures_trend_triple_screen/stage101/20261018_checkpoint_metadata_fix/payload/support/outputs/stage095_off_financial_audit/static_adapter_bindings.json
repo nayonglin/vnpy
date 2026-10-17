@@ -1,0 +1,34 @@
+{
+  "schema": "stage095_static_adapter_bindings_v1",
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+  "source_sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+  "inherited_helpers": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage001_independent_review.py": "4a821421d3975108b210adc65de7165d59510a93a1adffc420d6eacdc2cd4e0f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage001_compare.py": "7f62e2f08cf34267bfe1bfa55f709348b66c23f9ab246aa5e76c6c6056cc975c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage030_independent_ordered_account_review.py": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage033_independent_checkpoint_account_review.py": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage038_independent_b_ts_account_review.py": "e9d651be9467c04241809a86c1046881cbe8e9def7c55b1c41bf7c79f0603dd7",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f"
+  },
+  "adapter_source_sha256": {
+    "A0_episode_block": "17ca2fa211ad2994f37f2e969238be3a04457321cebc528727d05e9af97e5e61",
+    "OFF_zero_rank": "483479a92badcdb40acc9127c60e11683eddc15857cff698c72bfe197dae7376",
+    "B_same_close_setup": "e17fe07bd04a004951cfa767fc443ba96128fd0b674812abf4248a62306d6aa2"
+  },
+  "adapters": {
+    "A0_episode_block": "exact scalar block extracted from accepted Stage001 account_audit; no B candidate assumptions",
+    "OFF_zero_rank": "only rank=integer(row,'rank',True) replaced with integer rank plus rank==0 assertion; original (rank,serial), arithmetic unchanged",
+    "B_same_close_setup": "only setup_day<signal_day becomes <=; frozen B allows same-close preparation; weekly_asof<signal remains"
+  },
+  "qualification_scope": "071/087 are not self-reviewed; external078/081/094 fixed receipts inherited",
+  "account_outputs_accessed": false,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "network_calls": 0
+}

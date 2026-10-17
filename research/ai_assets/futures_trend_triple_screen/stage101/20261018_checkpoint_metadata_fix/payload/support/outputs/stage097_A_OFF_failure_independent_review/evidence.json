@@ -1,0 +1,524 @@
+{
+  "schema": "stage097_A_OFF_actual_failure_independent_review_evidence_v1",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "line_id": "futures_trend_triple_screen",
+  "reviewed_at": "2026-10-18T07:23:00+08:00",
+  "scope": "真实A_OFF attempt1失败的终态/owner/source/元数据guard与现存partial完整性审查；不回放、不构造engine/strategy、不读市场、不计算金融曲线。",
+  "owner_terminal_binding": {
+    "schema": "stage097_actual_failure_owner_terminal_binding_v1",
+    "tool_terminal_inherited_from_root_observation": true,
+    "tool_session": 13114,
+    "tool_chunk": "8c75d9",
+    "exit_code": 1,
+    "arm": "A_OFF",
+    "attempt": 1,
+    "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+    "source_commit": "4e439c2e5d653d4171c4396afdc2aad037c547c7",
+    "actual_attempt_pid": 41681,
+    "process_observation": {
+      "available": false,
+      "error_type": "PermissionError",
+      "error": "[Errno 1] Operation not permitted: 'ps'",
+      "terminal_status_inherited_from_pinned_root_tool_observation": true
+    },
+    "readiness_context_preflight_bindings_consistent": true,
+    "financial_run_attempted": true,
+    "engine_return_evidence": [
+      "root terminal engine_returned_before_checkpoint=true",
+      "runner source calls save_raw_checkpoint only after run_profile_once returned combined,frames,spec",
+      "capture contains calculate_result-collected trades/usage"
+    ],
+    "data_wait_exists": false,
+    "actual_data_requests": 0,
+    "raw_checkpoint_exists": false,
+    "seal_exists": false,
+    "summary_exists": false,
+    "B_OFF_root_exists": false,
+    "performance": "N/A_no_complete_account_checkpoint",
+    "financial_attempts_total_inherited": 9,
+    "accepted_ledgers_total_inherited": 3,
+    "model_fits_total_inherited": 0,
+    "post_engine_validation_not_reached": true,
+    "all_input_guard_not_completed": true,
+    "full_market_data_rehashes": 0,
+    "fixture_preflight_fields": [
+      {
+        "line": 302,
+        "keys": [
+          "fixture_only",
+          "reference_calendar_scope",
+          "reference_calendar",
+          "source_bindings",
+          "data_bindings",
+          "account_classes",
+          "disabled_pairwise"
+        ]
+      }
+    ],
+    "read_inputs": {
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/attempt_started.json": {
+        "sha256": "d2a99885d63a4d62edc2034c6171fe7f39c3114b4813faca10751b5ea6bd6844",
+        "bytes": 519
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/engine.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_context.json": {
+        "sha256": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7",
+        "bytes": 249328
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json": {
+        "sha256": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5",
+        "bytes": 3247235
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_failure.json": {
+        "sha256": "6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082",
+        "bytes": 329
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/failure_capture.pkl.gz": {
+        "sha256": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f",
+        "bytes": 430064
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json": {
+        "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085",
+        "bytes": 2054
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/A_OFF.json": {
+        "sha256": "8eee3c7753ac4c86e9dc9a9f754ba2785abfa92e31f54644c305d52cb3b5fe69",
+        "bytes": 1563444
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py": {
+        "sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719",
+        "bytes": 49449
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic.json": {
+        "sha256": "752bd511b5b4bb7d6627729e314153af15651813f18711f2d2b5fe6a1502178e",
+        "bytes": 7924
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_original.sh": {
+        "sha256": "802ec62669f31e688132a3c82b822b04b1d25cb1cc1ba13a92daaf132ac9ad2c",
+        "bytes": 8702
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_tool_result.json": {
+        "sha256": "178059cc0fe2c31aa723bf22e323de1a3c884d2fe73ec0fab1de95c1a06bc860",
+        "bytes": 8880
+      }
+    }
+  },
+  "coverage_diagnostic": {
+    "schema": "stage097_failure_capture_coverage_diagnostic_v1",
+    "one_owned_unpickle": true,
+    "unpickler_source_sha256": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+    "frozen_runtime": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages",
+    "owner": {
+      "arm": "A_OFF",
+      "attempt": 1,
+      "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+      "started_at": "2026-10-18 07:12:42.228672+08:00",
+      "output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF",
+      "source_head": "4e439c2e5d653d4171c4396afdc2aad037c547c7"
+    },
+    "bound_artifact_sha256": {
+      "run_failure.json": "6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082",
+      "failure_capture.pkl.gz": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f",
+      "run_context.json": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7",
+      "preflight_used.json": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5"
+    },
+    "core_source_checks": {
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+        "bytes": 34458,
+        "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09",
+        "snapshot": "sources/source_380.bin",
+        "current_and_snapshot_verified": true
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+        "bytes": 27561,
+        "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+        "snapshot": "sources/source_378.bin",
+        "current_and_snapshot_verified": true
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": {
+        "bytes": 56966,
+        "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+        "snapshot": "sources/source_364.bin",
+        "current_and_snapshot_verified": true
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+        "bytes": 60111,
+        "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+        "snapshot": "sources/source_359.bin",
+        "current_and_snapshot_verified": true
+      },
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+        "bytes": 6964,
+        "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+        "snapshot": "sources/source_379.bin",
+        "current_and_snapshot_verified": true
+      }
+    },
+    "payload_top_keys": [
+      "schema",
+      "partial",
+      "run_context",
+      "capture"
+    ],
+    "partial_keys": [
+      "capture",
+      "ordered",
+      "actual",
+      "effective_off_policy",
+      "wait_audit",
+      "resolver_audit",
+      "qualification_audit",
+      "isolation_audit",
+      "input_fingerprints",
+      "failure_phase"
+    ],
+    "capture_tables": {
+      "usage": {
+        "type": "list",
+        "rows": 817,
+        "fields": [
+          "anchor_coverage_status",
+          "corrected_legacy_proxy",
+          "direction",
+          "effective_tick",
+          "execution_datetime",
+          "execution_note",
+          "execution_policy",
+          "execution_time_source",
+          "expected_session_start",
+          "fill_date",
+          "intraday_episode_id",
+          "legacy_proxy_price",
+          "legacy_proxy_time",
+          "offset",
+          "order_price",
+          "order_volume",
+          "orderid",
+          "price_delta",
+          "price_source",
+          "proxy_bar_count",
+          "proxy_first_time",
+          "proxy_last_time",
+          "signal_date",
+          "signal_datetime",
+          "signal_order_id",
+          "tick_basis",
+          "trade_id",
+          "trade_price",
+          "trading_date",
+          "vt_symbol"
+        ]
+      },
+      "equity": {
+        "type": "list",
+        "rows": 1697,
+        "fields": [
+          "date",
+          "estimated_equity",
+          "settled_balance"
+        ]
+      },
+      "trades": {
+        "type": "list",
+        "rows": 817,
+        "fields": [
+          "direction",
+          "engine_datetime",
+          "execution_datetime",
+          "exit_reason",
+          "offset",
+          "price",
+          "trade_id",
+          "trading_date",
+          "volume",
+          "vt_symbol"
+        ]
+      },
+      "minute_requests": {
+        "type": "list",
+        "rows": 500,
+        "fields": [
+          "actual_bar_count",
+          "actual_first_time",
+          "actual_last_time",
+          "coverage_status",
+          "execution_datetime",
+          "execution_policy",
+          "expected_bar_count",
+          "missing_bar_count",
+          "requested_start",
+          "session_end_exclusive",
+          "session_start",
+          "trading_date",
+          "vt_symbol"
+        ]
+      },
+      "anchor_requests": {
+        "type": "list",
+        "rows": 534,
+        "fields": [
+          "actual_time",
+          "anchor_present",
+          "corrected_legacy_proxy",
+          "coverage_status",
+          "expected_start",
+          "legacy_price",
+          "legacy_source",
+          "legacy_time",
+          "offset",
+          "order_id",
+          "price",
+          "source",
+          "trading_date",
+          "vt_symbol"
+        ]
+      },
+      "failures": {
+        "type": "list",
+        "rows": 0,
+        "fields": []
+      },
+      "weekly_gate": {
+        "type": "list",
+        "rows": 0,
+        "fields": []
+      }
+    },
+    "failure_phase": "engine_not_returned",
+    "ordered_is_none": true,
+    "actual_settings_capture_count": 1,
+    "effective_policy_capture_count": 1,
+    "wait_audit_rows": 0,
+    "resolver_audit_rows": 0,
+    "forbidden_metadata_paths": [
+      {
+        "path": [
+          "payload",
+          "preflight",
+          "ai_pool_audit",
+          "strategy"
+        ],
+        "type": "str",
+        "value": "ai_top10_plus_fu_official_live_v1"
+      }
+    ],
+    "forbidden_partial_paths": [],
+    "metadata_guard_error": "checkpoint_forbidden_engine_or_history",
+    "identity_coverage": {
+      "captured_trade_rows": 817,
+      "unique_trade_ids": 817,
+      "usage_rows": 817,
+      "unique_usage_trade_ids": 817,
+      "trade_usage_id_sets_equal": true,
+      "actual_trade_identities_field_present": false,
+      "actual_identity_fields_absent_from_capture_trades": [
+        "intraday_episode_id",
+        "signal_datetime",
+        "signal_order_id"
+      ],
+      "actual_identity_fields_absent_from_capture_usage": [
+        "price",
+        "volume"
+      ]
+    },
+    "equity_calendar_coverage": {
+      "rows": 1697,
+      "unique_dates": 1697,
+      "first": "2019-10-15",
+      "last": "2026-10-14",
+      "reference_count": 1641,
+      "exact_reference_sequence": false,
+      "missing_reference_dates": 0,
+      "extra_dates": 56
+    },
+    "required_raw_fields_absent_from_partial": [
+      "actual_trade_identities",
+      "combined",
+      "engine_elapsed_seconds",
+      "frames",
+      "parameters",
+      "preflight",
+      "run_context",
+      "spec"
+    ],
+    "outer_run_context_available": true,
+    "preflight_available_as_separately_pinned_JSON": true,
+    "combined_present": false,
+    "frames_present": false,
+    "expected_returned_frame_names": [
+      "trades",
+      "positions",
+      "entry_risk",
+      "entry_candidates",
+      "trade_events",
+      "intraday_events",
+      "c2_events",
+      "stop_retry_events",
+      "rollover_shape_same_volume",
+      "rollover_delay",
+      "long_signal_atr_shock",
+      "long_signal_range_atr",
+      "pending_orders"
+    ],
+    "files_present": [
+      "attempt_started.json",
+      "engine.log",
+      "failure_capture.pkl.gz",
+      "preflight_used.json",
+      "run_context.json",
+      "run_failure.json"
+    ],
+    "source_data_counts": {
+      "source_bindings": 394,
+      "data_bindings": 4647,
+      "full_market_data_hashes_performed": 0
+    },
+    "forbidden_new_modules_loaded": [],
+    "financial_curve_or_metrics_computed": false,
+    "engine_or_strategy_constructed": false,
+    "source_or_market_loader_called": false,
+    "network_calls": 0,
+    "model_calls": 0,
+    "restoration_performed": false
+  },
+  "findings": [
+    {
+      "id": "stage097-P1-001",
+      "priority": "P1",
+      "title": "account-only guard按键名误拒实际AI池纯字符串元数据",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py",
+      "lines": [
+        196,
+        200
+      ],
+      "actual_path": "payload.preflight.ai_pool_audit.strategy",
+      "actual_type": "str",
+      "actual_value": "ai_top10_plus_fu_official_live_v1",
+      "evidence": "已pin真实preflight单独传给冻结cp._account_only即复现checkpoint_forbidden_engine_or_history。该路径是AI池来源身份字符串；没有因本异常发现真实engine/strategy/history对象。",
+      "impact": "真实引擎返回后、raw持久化前失败，A_OFF attempt1未形成完整checkpoint/seal/summary；当前817 fills不能补足已丢失的returned combined/frames，绩效N/A。",
+      "fixture_gap": "test3构造的tiny preflight仅7键，不含生产ai_pool_audit；它验证对象拒绝与raw/seal生命周期，却没有真实preflight元数据的schema覆盖。",
+      "minimal_remediation_boundary": "只为明确路径/类型/值的已验证元数据制定窄例外；仍拒绝真实engine/history与DataFrame object/attrs隐藏对象。在真实prepare对实际preflight/spec/parameters执行同account-only元数据门，以便在金融前捕获同类不兼容。修复由root另授权，不在097改源。"
+    },
+    {
+      "id": "stage097-P2-001",
+      "priority": "P2",
+      "title": "保存失败仍被记录为engine_not_returned，诊断phase不准确",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+      "lines": [
+        380,
+        416
+      ],
+      "related_lines": [
+        441,
+        443
+      ],
+      "evidence": "phase初值engine_not_returned，只有save_raw_checkpoint成功后才改post_engine_validation；本次实际run_profile_once已经返回，raw guard失败导致partial保留初值。",
+      "impact": "会混淆执行与持久化故障定位；没有授予成功/完整金融绩效。真实根终态已明确engine_returned_before_checkpoint，必须以该证据及源码顺序解释。",
+      "disposition": "非阻塞取证限制；不为此自行扩大098修复或触发重跑。"
+    }
+  ],
+  "remaining_findings": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 1
+  },
+  "restoration_assessment": {
+    "complete_equivalent_recovery_from_existing_artifacts": false,
+    "restoration_performed": false,
+    "performance": "N/A_no_complete_account_checkpoint",
+    "reason": "没有完整raw或原returned combined/frames；现存capture不足以证明原经济账本等价恢复。不能由内部equity/汇总trade记录拼造缺失的原native账本。",
+    "irrecoverable_from_saved_partial": [
+      "combined returned native daily/combined financial table",
+      "frames: all thirteen original returned account tables",
+      "actual_trade_identities ground-truth list captured separately by shared collector",
+      "actual spec and parameters returned at runtime",
+      "actual engine_elapsed_seconds"
+    ],
+    "available_separately": [
+      "outer run_context plus immutable source snapshots",
+      "SHA-bound preflight_used JSON and exact root readiness",
+      "actual settings and effective OFF policy captures",
+      "817 capture trades and817 usage IDs,1697 internal equity rows,500minute/534anchor request records"
+    ],
+    "not_equivalent_substitutes": [
+      "1697 internal equity includes56 preload dates; even filtered1641 dates is not original native combined daily/cost/margin table.",
+      "capture trades/usage can be joined for some fields, but cannot recreate lost positions/entry-candidates/risk/events/rollover/pending-order ledgers or independently prove all native actual trade identity attributes.",
+      "Preflight expected metadata is not an observed replacement for the missing returned actual spec/parameters."
+    ],
+    "missing_validation": [
+      "actual combined calendar/1641-day sequence and all economic tables",
+      "post-engine effective settings/parameters checks",
+      "strict minute completeness gate",
+      "full consumed-input unchanged guard",
+      "raw/seal/export/independent financial arithmetic audit"
+    ],
+    "confidence": "对误拒路径、owner绑定及缺失字段为高置信；完整财务结果和恢复等价性无资格，N/A。"
+  },
+  "root_minimal_fix_advice": "窄元数据例外+真实prepare同guard检查；保持隐藏engine/history对象拒绝、旧失败owner完整保留，不伪造丢失combined/frames。097不启动金融或修改任何源。",
+  "commands": [
+    {
+      "purpose": "one SHA-bound owned-unpickle metadata/table coverage diagnosis, not financial audit",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nfrom datetime import datetime\nimport ast,gzip,hashlib,io,json,os,pickle,sys\nline=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen');root=line.parents[2];tools=line/'tools';out=line/'outputs/stage097_A_OFF_failure_independent_review';out.mkdir(parents=True,exist_ok=False)\na=line/'outputs/stage065_pairwise_off_account/A_OFF'\npins={'run_failure.json':'6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082','failure_capture.pkl.gz':'443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f','run_context.json':'46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7','preflight_used.json':'4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5'}\ndef regular(p):\n assert p.is_file()and not any(x.is_symlink()for x in (p,*p.parents));return p.read_bytes()\nraws={n:regular(a/n)for n in pins}\nassert all(hashlib.sha256(raws[n]).hexdigest()==h for n,h in pins.items())\ncontext=json.loads(raws['run_context.json']);preflight=json.loads(raws['preflight_used.json']);failure=json.loads(raws['run_failure.json'])\nassert context['run_id']==failure['run_id']=='982636a096884e7e9610b1ad49eb1ae1'\nassert context['preflight_sha256']==pins['preflight_used.json']\nunpickler_path=tools/'stage033_independent_checkpoint_account_review.py';unpickler_raw=regular(unpickler_path)\nassert hashlib.sha256(unpickler_raw).hexdigest()=='940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf'\nnode=next(n for n in ast.parse(unpickler_raw).body if isinstance(n,ast.ClassDef)and n.name=='OwnedAccountUnpickler')\nnamespace={'pickle':pickle};exec(compile(ast.Module(body=[node],type_ignores=[]),str(unpickler_path),'exec'),namespace)\nfrozen=Path('/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages');assert frozen.is_dir()\nassert not any(n in sys.modules for n in ['numpy','pandas','sklearn','joblib'])\nos.environ.update(TZ='Asia/Shanghai',QT_QPA_PLATFORM='offscreen',OPENBLAS_NUM_THREADS='1');sys.path[:0]=[str(tools),str(frozen)]\nimport numpy as np\nimport pandas as pd\nassert all(Path(m.__file__).resolve().is_relative_to(frozen)for m in [np,pd])\n# Exactly one unpickle, with the frozen local allowlist, after SHA/ownership checks.\npayload=namespace['OwnedAccountUnpickler'](io.BytesIO(gzip.decompress(raws['failure_capture.pkl.gz']))).load()\nassert payload['schema']=='stage065_partial_failure_capture_v1'and payload['partial']is True\nassert payload['run_context']==context\npartial=payload['capture'];capture=partial['capture'];assert partial['ordered']is None\nforbidden={'engine','strategy','history','history_data','minute_cache','stage827_minute_by_symbol'}\ndef forbidden_paths(value,path):\n rows=[]\n if isinstance(value,dict):\n  for k,v in value.items():\n   if k in forbidden:rows.append(dict(path=path+[k],type=type(v).__name__,value=v if isinstance(v,(str,int,float,bool))or v is None else '<non-scalar>'))\n   rows+=forbidden_paths(v,path+[k])\n elif isinstance(value,(list,tuple)):\n  for i,v in enumerate(value):rows+=forbidden_paths(v,path+[i])\n return rows\n\ndef coverage(value):\n if isinstance(value,dict):return dict(type='dict',count=len(value),keys=list(value)if len(value)<30 else '<large metadata mapping>')\n if isinstance(value,(list,tuple)):\n  fields=sorted(set().union(*(set(x)for x in value if isinstance(x,dict))))\n  return dict(type=type(value).__name__,rows=len(value),fields=fields)\n if isinstance(value,pd.DataFrame):return dict(type='DataFrame',rows=len(value),columns=list(map(str,value.columns)))\n return dict(type=type(value).__name__,value=value if value is None or isinstance(value,(str,bool))else '<scalar not reported>')\ntables={k:coverage(v)for k,v in capture.items()}\ntrade_ids=[str(x['trade_id'])for x in capture.get('trades',[])];usage_ids=[str(x.get('trade_id',''))for x in capture.get('usage',[])]\nidentity_fields=['trade_id','vt_symbol','direction','offset','price','volume','execution_datetime','trading_date','signal_datetime','signal_order_id','intraday_episode_id']\ntrade_fields=set().union(*(set(x)for x in capture.get('trades',[])))\nusage_fields=set().union(*(set(x)for x in capture.get('usage',[])))\ndates=[str(x['date'])[:10]for x in capture.get('equity',[])];wanted=list(preflight['reference_calendar'])\ncpraw=regular(tools/'stage065_account_checkpoint.py');assert hashlib.sha256(cpraw).hexdigest()=='7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b'\nimport stage065_account_checkpoint as cp\ntry:cp._account_only(preflight)\nexcept ValueError as err:guard_error=str(err)\nelse:raise AssertionError('actual metadata no longer reproduces the guard failure')\ncore_names=['stage065_run_pairwise_off.py','stage065_account_checkpoint.py','stage031_run_ordered_checkpoint.py','stage022_run_c0_qualified_wait.py','stage065_pairwise_off_policy.py']\nsource_checks={}\nfor name in core_names:\n p=tools/name;row=context['source_bindings'][str(p)];snap=context['source_snapshots'][str(p)];snapshot=a/snap['snapshot'];current_raw=regular(p);saved_raw=regular(snapshot)\n assert hashlib.sha256(current_raw).hexdigest()==hashlib.sha256(saved_raw).hexdigest()==row['sha256']and len(current_raw)==len(saved_raw)==row['bytes']\n source_checks[str(p)]=dict(**row,snapshot=snap['snapshot'],current_and_snapshot_verified=True)\nrequired=next(n.value for n in ast.walk(ast.parse(cpraw))if isinstance(n,ast.Assign)and any(isinstance(t,ast.Name)and t.id=='required'for t in n.targets))\nrequired_keys=set(ast.literal_eval(required))\nexpected_frames=['trades','positions','entry_risk','entry_candidates','trade_events','intraday_events','c2_events','stop_retry_events','rollover_shape_same_volume','rollover_delay','long_signal_atr_shock','long_signal_range_atr','pending_orders']\nreport=dict(schema='stage097_failure_capture_coverage_diagnostic_v1',one_owned_unpickle=True,unpickler_source_sha256=hashlib.sha256(unpickler_raw).hexdigest(),frozen_runtime=str(frozen),\n owner=dict(arm=context['arm'],attempt=context['attempt'],run_id=context['run_id'],started_at=context['started_at'],output_directory=context['output_directory'],source_head=preflight['source_head']),\n bound_artifact_sha256=pins,core_source_checks=source_checks,payload_top_keys=list(payload),partial_keys=list(partial),capture_tables=tables,\n failure_phase=partial.get('failure_phase'),ordered_is_none=partial['ordered']is None,\n actual_settings_capture_count=len(partial.get('actual',[])),effective_policy_capture_count=len(partial.get('effective_off_policy',[])),wait_audit_rows=len(partial.get('wait_audit',[])),resolver_audit_rows=len(partial.get('resolver_audit',[])),\n forbidden_metadata_paths=forbidden_paths(preflight,['payload','preflight']),forbidden_partial_paths=forbidden_paths(partial,['failure_capture','capture']),metadata_guard_error=guard_error,\n identity_coverage=dict(captured_trade_rows=len(trade_ids),unique_trade_ids=len(set(trade_ids)),usage_rows=len(usage_ids),unique_usage_trade_ids=len(set(usage_ids)),trade_usage_id_sets_equal=set(trade_ids)==set(usage_ids),actual_trade_identities_field_present='actual_trade_identities'in partial,actual_identity_fields_absent_from_capture_trades=sorted(set(identity_fields)-trade_fields),actual_identity_fields_absent_from_capture_usage=sorted(set(identity_fields)-usage_fields)),\n equity_calendar_coverage=dict(rows=len(dates),unique_dates=len(set(dates)),first=min(dates)if dates else None,last=max(dates)if dates else None,reference_count=len(wanted),exact_reference_sequence=dates==wanted,missing_reference_dates=len(set(wanted)-set(dates)),extra_dates=len(set(dates)-set(wanted))),\n required_raw_fields_absent_from_partial=sorted(required_keys-set(partial)),outer_run_context_available=True,preflight_available_as_separately_pinned_JSON=True,\n combined_present='combined'in partial,frames_present='frames'in partial,expected_returned_frame_names=expected_frames,\n files_present=[str(p.relative_to(a))for p in sorted(a.rglob('*'))if p.is_file()and not p.is_relative_to(a/'sources')],\n source_data_counts=dict(source_bindings=len(context['source_bindings']),data_bindings=len(preflight['data_bindings']),full_market_data_hashes_performed=0),\n forbidden_new_modules_loaded=[n for n in ['tqsdk','sklearn','joblib','vnpy','vnpy_portfoliostrategy','stage065_run_pairwise_off']if n in sys.modules],\n financial_curve_or_metrics_computed=False,engine_or_strategy_constructed=False,source_or_market_loader_called=False,network_calls=0,model_calls=0,restoration_performed=False)\nassert not report['forbidden_new_modules_loaded']\n(out/'coverage_diagnostic.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False)+'\\n')\nprint(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False))\nPY",
+      "result": {
+        "chunk_id": "9246d1",
+        "wall_time_seconds": 0.412044,
+        "exit_code": 0,
+        "original_token_count": 1981,
+        "output": "{\n  \"schema\": \"stage097_failure_capture_coverage_diagnostic_v1\",\n  \"one_owned_unpickle\": true,\n  \"unpickler_source_sha256\": \"940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf\",\n  \"frozen_runtime\": \"/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages\",\n  \"owner\": {\n    \"arm\": \"A_OFF\",\n    \"attempt\": 1,\n    \"run_id\": \"982636a096884e7e9610b1ad49eb1ae1\",\n    \"started_at\": \"2026-10-18 07:12:42.228672+08:00\",\n    \"output_directory\": \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF\",\n    \"source_head\": \"4e439c2e5d653d4171c4396afdc2aad037c547c7\"\n  },\n  \"bound_artifact_sha256\": {\n    \"run_failure.json\": \"6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082\",\n    \"failure_capture.pkl.gz\": \"443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f\",\n    \"run_context.json\": \"46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7\",\n    \"preflight_used.json\": \"4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5\"\n  },\n  \"core_source_checks\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py\": {\n      \"bytes\": 34458,\n      \"sha256\": \"d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09\",\n      \"snapshot\": \"sources/source_380.bin\",\n      \"current_and_snapshot_verified\": true\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py\": {\n      \"bytes\": 27561,\n      \"sha256\": \"7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b\",\n      \"snapshot\": \"sources/source_378.bin\",\n      \"current_and_snapshot_verified\": true\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py\": {\n      \"bytes\": 56966,\n      \"sha256\": \"3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860\",\n      \"snapshot\": \"sources/source_364.bin\",\n      \"current_and_snapshot_verified\": true\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py\": {\n      \"bytes\": 60111,\n      \"sha256\": \"aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c\",\n      \"snapshot\": \"sources/source_359.bin\",\n      \"current_and_snapshot_verified\": true\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py\": {\n      \"bytes\": 6964,\n      \"sha256\": \"edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f\",\n      \"snapshot\": \"sources/source_379.bin\",\n      \"current_and_snapshot_verified\": true\n    }\n  },\n  \"payload_top_keys\": [\n    \"schema\",\n    \"partial\",\n    \"run_context\",\n    \"capture\"\n  ],\n  \"partial_keys\": [\n    \"capture\",\n    \"ordered\",\n    \"actual\",\n    \"effective_off_policy\",\n    \"wait_audit\",\n    \"resolver_audit\",\n    \"qualification_audit\",\n    \"isolation_audit\",\n    \"input_fingerprints\",\n    \"failure_phase\"\n  ],\n  \"capture_tables\": {\n    \"usage\": {\n      \"type\": \"list\",\n      \"rows\": 817,\n      \"fields\": [\n        \"anchor_coverage_status\",\n        \"corrected_legacy_proxy\",\n        \"direction\",\n        \"effective_tick\",\n        \"execution_datetime\",\n        \"execution_note\",\n        \"execution_policy\",\n        \"execution_time_source\",\n        \"expected_session_start\",\n        \"fill_date\",\n        \"intraday_episode_id\",\n        \"legacy_proxy_price\",\n        \"legacy_proxy_time\",\n        \"offset\",\n        \"order_price\",\n        \"order_volume\",\n        \"orderid\",\n        \"price_delta\",\n        \"price_source\",\n        \"proxy_bar_count\",\n        \"proxy_first_time\",\n        \"proxy_last_time\",\n        \"signal_date\",\n        \"signal_datetime\",\n        \"signal_order_id\",\n        \"tick_basis\",\n        \"trade_id\",\n        \"trade_price\",\n        \"trading_date\",\n        \"vt_symbol\"\n      ]\n    },\n    \"equity\": {\n      \"type\": \"list\",\n      \"rows\": 1697,\n      \"fields\": [\n        \"date\",\n        \"estimated_equity\",\n        \"settled_balance\"\n      ]\n    },\n    \"trades\": {\n      \"type\": \"list\",\n      \"rows\": 817,\n      \"fields\": [\n        \"direction\",\n        \"engine_datetime\",\n        \"execution_datetime\",\n        \"exit_reason\",\n        \"offset\",\n        \"price\",\n        \"trade_id\",\n        \"trading_date\",\n        \"volume\",\n        \"vt_symbol\"\n      ]\n    },\n    \"minute_requests\": {\n      \"type\": \"list\",\n      \"rows\": 500,\n      \"fields\": [\n        \"actual_bar_count\",\n        \"actual_first_time\",\n        \"actual_last_time\",\n        \"coverage_status\",\n        \"execution_datetime\",\n        \"execution_policy\",\n        \"expected_bar_count\",\n        \"missing_bar_count\",\n        \"requested_start\",\n        \"session_end_exclusive\",\n        \"session_start\",\n        \"trading_date\",\n        \"vt_symbol\"\n      ]\n    },\n    \"anchor_requests\": {\n      \"type\": \"list\",\n      \"rows\": 534,\n      \"fields\": [\n        \"actual_time\",\n        \"anchor_present\",\n        \"corrected_legacy_proxy\",\n        \"coverage_status\",\n        \"expected_start\",\n        \"legacy_price\",\n        \"legacy_source\",\n        \"legacy_time\",\n        \"offset\",\n        \"order_id\",\n        \"price\",\n        \"source\",\n        \"trading_date\",\n        \"vt_symbol\"\n      ]\n    },\n    \"failures\": {\n      \"type\": \"list\",\n      \"rows\": 0,\n      \"fields\": []\n    },\n    \"weekly_gate\": {\n      \"type\": \"list\",\n      \"rows\": 0,\n      \"fields\": []\n    }\n  },\n  \"failure_phase\": \"engine_not_returned\",\n  \"ordered_is_none\": true,\n  \"actual_settings_capture_count\": 1,\n  \"effective_policy_capture_count\": 1,\n  \"wait_audit_rows\": 0,\n  \"resolver_audit_rows\": 0,\n  \"forbidden_metadata_paths\": [\n    {\n      \"path\": [\n        \"payload\",\n        \"preflight\",\n        \"ai_pool_audit\",\n        \"strategy\"\n      ],\n      \"type\": \"str\",\n      \"value\": \"ai_top10_plus_fu_official_live_v1\"\n    }\n  ],\n  \"forbidden_partial_paths\": [],\n  \"metadata_guard_error\": \"checkpoint_forbidden_engine_or_history\",\n  \"identity_coverage\": {\n    \"captured_trade_rows\": 817,\n    \"unique_trade_ids\": 817,\n    \"usage_rows\": 817,\n    \"unique_usage_trade_ids\": 817,\n    \"trade_usage_id_sets_equal\": true,\n    \"actual_trade_identities_field_present\": false,\n    \"actual_identity_fields_absent_from_capture_trades\": [\n      \"intraday_episode_id\",\n      \"signal_datetime\",\n      \"signal_order_id\"\n    ],\n    \"actual_identity_fields_absent_from_capture_usage\": [\n      \"price\",\n      \"volume\"\n    ]\n  },\n  \"equity_calendar_coverage\": {\n    \"rows\": 1697,\n    \"unique_dates\": 1697,\n    \"first\": \"2019-10-15\",\n    \"last\": \"2026-10-14\",\n    \"reference_count\": 1641,\n    \"exact_reference_sequence\": false,\n    \"missing_reference_dates\": 0,\n    \"extra_dates\": 56\n  },\n  \"required_raw_fields_absent_from_partial\": [\n    \"actual_trade_identities\",\n    \"combined\",\n    \"engine_elapsed_seconds\",\n    \"frames\",\n    \"parameters\",\n    \"preflight\",\n    \"run_context\",\n    \"spec\"\n  ],\n  \"outer_run_context_available\": true,\n  \"preflight_available_as_separately_pinned_JSON\": true,\n  \"combined_present\": false,\n  \"frames_present\": false,\n  \"expected_returned_frame_names\": [\n    \"trades\",\n    \"positions\",\n    \"entry_risk\",\n    \"entry_candidates\",\n    \"trade_events\",\n    \"intraday_events\",\n    \"c2_events\",\n    \"stop_retry_events\",\n    \"rollover_shape_same_volume\",\n    \"rollover_delay\",\n    \"long_signal_atr_shock\",\n    \"long_signal_range_atr\",\n    \"pending_orders\"\n  ],\n  \"files_present\": [\n    \"attempt_started.json\",\n    \"engine.log\",\n    \"failure_capture.pkl.gz\",\n    \"preflight_used.json\",\n    \"run_context.json\",\n    \"run_failure.json\"\n  ],\n  \"source_data_counts\": {\n    \"source_bindings\": 394,\n    \"data_bindings\": 4647,\n    \"full_market_data_hashes_performed\": 0\n  },\n  \"forbidden_new_modules_loaded\": [],\n  \"financial_curve_or_metrics_computed\": false,\n  \"engine_or_strategy_constructed\": false,\n  \"source_or_market_loader_called\": false,\n  \"network_calls\": 0,\n  \"model_calls\": 0,\n  \"restoration_performed\": false\n}\n"
+      }
+    },
+    {
+      "purpose": "owner/terminal/source/fixture metadata binding initial harness; ps unavailable in sandbox",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,subprocess,ast\nb=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen');a=b/'outputs/stage065_pairwise_off_account/A_OFF';t=b/'outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json'\ndef sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()\ndef canon(v):return (json.dumps(v,ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False)+'\\n').encode()\ne=json.loads(t.read_bytes());assert sha(t)=='8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085'\nc=json.loads((a/'run_context.json').read_bytes());p=json.loads((a/'preflight_used.json').read_bytes());f=json.loads((a/'run_failure.json').read_bytes());attempt=json.loads((a/'attempt_started.json').read_bytes());rpath=Path(p['execution_readiness']['path']);rraw=rpath.read_bytes();r=json.loads(rraw)\nassert sha(a/'run_context.json')==e['run_context']['sha256'] and sha(a/'preflight_used.json')==c['preflight_sha256']==e['preflight_used']['sha256']\nassert c['source_bindings']==p['source_bindings'] and hashlib.sha256(canon(p['source_bindings'])).hexdigest()==c['source_bindings_sha256'] and hashlib.sha256(canon(p['data_bindings'])).hexdigest()==c['data_bindings_sha256']\nassert hashlib.sha256(rraw).hexdigest()==p['execution_readiness']['sha256']==attempt['argv'][-1] and r==p['execution_readiness']['document']\nassert r['arm']==c['arm']==p['arm']==e['arm']=='A_OFF' and c['run_id']==f['run_id']==e['run_id']=='982636a096884e7e9610b1ad49eb1ae1'\nassert c['attempt']==p['attempt']==e['attempt']==1 and c['output_directory']==e['owner_root']==str(a)\nassert r['issued_by']=='root' and r['financial_execution_authorized']is True and r['source_bindings']==p['source_bindings']and r['data_bindings']==p['data_bindings']\nassert e['actual_terminal_observed']is True and e['exit_code']==1 and e['tool_session_id']==13114 and e['tool_terminal_chunk_id']=='8c75d9'\nassert not(a/'data_wait').exists()and not(a/'checkpoint').exists()and not(a/'summary.json').exists()\nassert f['status']=='failed_partial_no_engine_seal'and f['partial']is True\nhead=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();assert head==p['source_head']==e['source_commit']=='4e439c2e5d653d4171c4396afdc2aad037c547c7'\nprocess=subprocess.run(['ps','-ww','-p',str(attempt['pid']),'-o','pid=','-o','lstart=','-o','args='],capture_output=True,text=True)\nassert not process.stdout.strip()\ntestpath=b/'tools/test_stage065_pairwise_off_integration.py';testraw=testpath.read_bytes();assert hashlib.sha256(testraw).hexdigest()=='ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719'\ntr=ast.parse(testraw);klass=next(n for n in tr.body if isinstance(n,ast.ClassDef));fixture_preflight=[]\nfor n in ast.walk(tr):\n if isinstance(n,ast.Assign)and any(isinstance(x,ast.Name)and x.id=='preflight'for x in n.targets)and isinstance(n.value,ast.Call)and isinstance(n.value.func,ast.Name)and n.value.func.id=='dict':fixture_preflight.append(dict(line=n.lineno,keys=[x.arg for x in n.value.keywords]))\ninputs={}\nfor name in ['attempt_started.json','engine.log','run_context.json','preflight_used.json','run_failure.json','failure_capture.pkl.gz']:\n q=a/name;inputs[str(q)]=dict(sha256=sha(q),bytes=q.stat().st_size)\nfor q in [t,rpath,testpath,b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic.json',b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_original.sh',b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_tool_result.json']:\n inputs[str(q)]=dict(sha256=sha(q),bytes=q.stat().st_size)\nreport=dict(schema='stage097_actual_failure_owner_terminal_binding_v1',tool_terminal_inherited_from_root_observation=True,tool_session=13114,tool_chunk='8c75d9',exit_code=1,arm='A_OFF',attempt=1,run_id=c['run_id'],source_commit=head,actual_attempt_pid=attempt['pid'],process_ps_exit=process.returncode,process_no_longer_live=not process.stdout.strip(),readiness_context_preflight_bindings_consistent=True,financial_run_attempted=True,engine_return_evidence=['root terminal engine_returned_before_checkpoint=true','runner source calls save_raw_checkpoint only after run_profile_once returned combined,frames,spec','capture contains calculate_result-collected trades/usage'],data_wait_exists=False,actual_data_requests=0,raw_checkpoint_exists=False,seal_exists=False,summary_exists=False,B_OFF_root_exists=(b/'outputs/stage065_pairwise_off_account/B_OFF').exists(),performance='N/A_no_complete_account_checkpoint',financial_attempts_total_inherited=e['financial_attempts_total'],accepted_ledgers_total_inherited=e['accepted_ledgers_total'],model_fits_total_inherited=e['model_fits'],post_engine_validation_not_reached=True,all_input_guard_not_completed=True,full_market_data_rehashes=0,fixture_preflight_fields=fixture_preflight,read_inputs=inputs)\nprint(json.dumps(report,ensure_ascii=False,indent=2));(b/'outputs/stage097_A_OFF_failure_independent_review/owner_terminal_binding.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n')\nPY",
+      "result": {
+        "chunk_id": "d81c0d",
+        "wall_time_seconds": 0,
+        "exit_code": 1,
+        "original_token_count": 195,
+        "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 18, in <module>\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py\", line 1950, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nPermissionError: [Errno 1] Operation not permitted: 'ps'\n"
+      }
+    },
+    {
+      "purpose": "same metadata binding with ps unavailable accurately reported, no unpickle or test rerun",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,subprocess,ast\nb=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen');a=b/'outputs/stage065_pairwise_off_account/A_OFF';t=b/'outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json'\ndef sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()\ndef canon(v):return (json.dumps(v,ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False)+'\\n').encode()\ne=json.loads(t.read_bytes());assert sha(t)=='8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085'\nc=json.loads((a/'run_context.json').read_bytes());p=json.loads((a/'preflight_used.json').read_bytes());f=json.loads((a/'run_failure.json').read_bytes());attempt=json.loads((a/'attempt_started.json').read_bytes());rpath=Path(p['execution_readiness']['path']);rraw=rpath.read_bytes();r=json.loads(rraw)\nassert sha(a/'run_context.json')==e['run_context']['sha256'] and sha(a/'preflight_used.json')==c['preflight_sha256']==e['preflight_used']['sha256']\nassert c['source_bindings']==p['source_bindings'] and hashlib.sha256(canon(p['source_bindings'])).hexdigest()==c['source_bindings_sha256'] and hashlib.sha256(canon(p['data_bindings'])).hexdigest()==c['data_bindings_sha256']\nassert hashlib.sha256(rraw).hexdigest()==p['execution_readiness']['sha256']==attempt['argv'][-1] and r==p['execution_readiness']['document']\nassert r['arm']==c['arm']==p['arm']==e['arm']=='A_OFF' and c['run_id']==f['run_id']==e['run_id']=='982636a096884e7e9610b1ad49eb1ae1'\nassert c['attempt']==p['attempt']==e['attempt']==1 and c['output_directory']==e['owner_root']==str(a)\nassert r['issued_by']=='root' and r['financial_execution_authorized']is True and r['source_bindings']==p['source_bindings']and r['data_bindings']==p['data_bindings']\nassert e['actual_terminal_observed']is True and e['exit_code']==1 and e['tool_session_id']==13114 and e['tool_terminal_chunk_id']=='8c75d9'\nassert not(a/'data_wait').exists()and not(a/'checkpoint').exists()and not(a/'summary.json').exists()\nassert f['status']=='failed_partial_no_engine_seal'and f['partial']is True\nhead=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();assert head==p['source_head']==e['source_commit']=='4e439c2e5d653d4171c4396afdc2aad037c547c7'\ntry:\n process=subprocess.run(['ps','-ww','-p',str(attempt['pid']),'-o','pid=','-o','lstart=','-o','args='],capture_output=True,text=True)\n process_observation=dict(available=True,exit_code=process.returncode,stdout_empty=not process.stdout.strip())\nexcept PermissionError as err:\n process_observation=dict(available=False,error_type=type(err).__name__,error=str(err),terminal_status_inherited_from_pinned_root_tool_observation=True)\ntestpath=b/'tools/test_stage065_pairwise_off_integration.py';testraw=testpath.read_bytes();assert hashlib.sha256(testraw).hexdigest()=='ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719'\ntr=ast.parse(testraw);klass=next(n for n in tr.body if isinstance(n,ast.ClassDef));fixture_preflight=[]\nfor n in ast.walk(tr):\n if isinstance(n,ast.Assign)and any(isinstance(x,ast.Name)and x.id=='preflight'for x in n.targets)and isinstance(n.value,ast.Call)and isinstance(n.value.func,ast.Name)and n.value.func.id=='dict':fixture_preflight.append(dict(line=n.lineno,keys=[x.arg for x in n.value.keywords]))\ninputs={}\nfor name in ['attempt_started.json','engine.log','run_context.json','preflight_used.json','run_failure.json','failure_capture.pkl.gz']:\n q=a/name;inputs[str(q)]=dict(sha256=sha(q),bytes=q.stat().st_size)\nfor q in [t,rpath,testpath,b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic.json',b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_original.sh',b/'outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_tool_result.json']:\n inputs[str(q)]=dict(sha256=sha(q),bytes=q.stat().st_size)\nreport=dict(schema='stage097_actual_failure_owner_terminal_binding_v1',tool_terminal_inherited_from_root_observation=True,tool_session=13114,tool_chunk='8c75d9',exit_code=1,arm='A_OFF',attempt=1,run_id=c['run_id'],source_commit=head,actual_attempt_pid=attempt['pid'],process_observation=process_observation,readiness_context_preflight_bindings_consistent=True,financial_run_attempted=True,engine_return_evidence=['root terminal engine_returned_before_checkpoint=true','runner source calls save_raw_checkpoint only after run_profile_once returned combined,frames,spec','capture contains calculate_result-collected trades/usage'],data_wait_exists=False,actual_data_requests=0,raw_checkpoint_exists=False,seal_exists=False,summary_exists=False,B_OFF_root_exists=(b/'outputs/stage065_pairwise_off_account/B_OFF').exists(),performance='N/A_no_complete_account_checkpoint',financial_attempts_total_inherited=e['financial_attempts_total'],accepted_ledgers_total_inherited=e['accepted_ledgers_total'],model_fits_total_inherited=e['model_fits'],post_engine_validation_not_reached=True,all_input_guard_not_completed=True,full_market_data_rehashes=0,fixture_preflight_fields=fixture_preflight,read_inputs=inputs)\nprint(json.dumps(report,ensure_ascii=False,indent=2));(b/'outputs/stage097_A_OFF_failure_independent_review/owner_terminal_binding.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n')\nPY",
+      "result": {
+        "chunk_id": "015dd1",
+        "wall_time_seconds": 0.00000825,
+        "exit_code": 0,
+        "original_token_count": 1190,
+        "output": "{\n  \"schema\": \"stage097_actual_failure_owner_terminal_binding_v1\",\n  \"tool_terminal_inherited_from_root_observation\": true,\n  \"tool_session\": 13114,\n  \"tool_chunk\": \"8c75d9\",\n  \"exit_code\": 1,\n  \"arm\": \"A_OFF\",\n  \"attempt\": 1,\n  \"run_id\": \"982636a096884e7e9610b1ad49eb1ae1\",\n  \"source_commit\": \"4e439c2e5d653d4171c4396afdc2aad037c547c7\",\n  \"actual_attempt_pid\": 41681,\n  \"process_observation\": {\n    \"available\": false,\n    \"error_type\": \"PermissionError\",\n    \"error\": \"[Errno 1] Operation not permitted: 'ps'\",\n    \"terminal_status_inherited_from_pinned_root_tool_observation\": true\n  },\n  \"readiness_context_preflight_bindings_consistent\": true,\n  \"financial_run_attempted\": true,\n  \"engine_return_evidence\": [\n    \"root terminal engine_returned_before_checkpoint=true\",\n    \"runner source calls save_raw_checkpoint only after run_profile_once returned combined,frames,spec\",\n    \"capture contains calculate_result-collected trades/usage\"\n  ],\n  \"data_wait_exists\": false,\n  \"actual_data_requests\": 0,\n  \"raw_checkpoint_exists\": false,\n  \"seal_exists\": false,\n  \"summary_exists\": false,\n  \"B_OFF_root_exists\": false,\n  \"performance\": \"N/A_no_complete_account_checkpoint\",\n  \"financial_attempts_total_inherited\": 9,\n  \"accepted_ledgers_total_inherited\": 3,\n  \"model_fits_total_inherited\": 0,\n  \"post_engine_validation_not_reached\": true,\n  \"all_input_guard_not_completed\": true,\n  \"full_market_data_rehashes\": 0,\n  \"fixture_preflight_fields\": [\n    {\n      \"line\": 302,\n      \"keys\": [\n        \"fixture_only\",\n        \"reference_calendar_scope\",\n        \"reference_calendar\",\n        \"source_bindings\",\n        \"data_bindings\",\n        \"account_classes\",\n        \"disabled_pairwise\"\n      ]\n    }\n  ],\n  \"read_inputs\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/attempt_started.json\": {\n      \"sha256\": \"d2a99885d63a4d62edc2034c6171fe7f39c3114b4813faca10751b5ea6bd6844\",\n      \"bytes\": 519\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/engine.log\": {\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n      \"bytes\": 0\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_context.json\": {\n      \"sha256\": \"46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7\",\n      \"bytes\": 249328\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json\": {\n      \"sha256\": \"4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5\",\n      \"bytes\": 3247235\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_failure.json\": {\n      \"sha256\": \"6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082\",\n      \"bytes\": 329\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/failure_capture.pkl.gz\": {\n      \"sha256\": \"443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f\",\n      \"bytes\": 430064\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json\": {\n      \"sha256\": \"8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085\",\n      \"bytes\": 2054\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/A_OFF.json\": {\n      \"sha256\": \"8eee3c7753ac4c86e9dc9a9f754ba2785abfa92e31f54644c305d52cb3b5fe69\",\n      \"bytes\": 1563444\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py\": {\n      \"sha256\": \"ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719\",\n      \"bytes\": 49449\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic.json\": {\n      \"sha256\": \"752bd511b5b4bb7d6627729e314153af15651813f18711f2d2b5fe6a1502178e\",\n      \"bytes\": 7924\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_original.sh\": {\n      \"sha256\": \"802ec62669f31e688132a3c82b822b04b1d25cb1cc1ba13a92daaf132ac9ad2c\",\n      \"bytes\": 8702\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/coverage_diagnostic_tool_result.json\": {\n      \"sha256\": \"178059cc0fe2c31aa723bf22e323de1a3c884d2fe73ec0fab1de95c1a06bc860\",\n      \"bytes\": 8880\n    }\n  }\n}\n"
+      }
+    }
+  ],
+  "financial_performance_accepted": false,
+  "new_accepted_ledger": false,
+  "financial_attempt_count_changed": false,
+  "financial_attempts_total_inherited": 9,
+  "accepted_ledgers_total_inherited": 3,
+  "model_fits_total_inherited": 0,
+  "actual_backtests_run_by_reviewer": 0,
+  "owned_unpickles": 1,
+  "engine_or_strategy_constructions": 0,
+  "market_or_source_loaders": 0,
+  "new_financial_runs": 0,
+  "whole_market_hashes": 0,
+  "old_tests_rerun": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "author_sources_modified": false,
+  "frozen_owner_artifacts_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_agent_spawned": false,
+  "production_qualified": false,
+  "overfitting": false,
+  "continued_value": true,
+  "research_note": "遵root无网络/模型/金融扩展边界，只核固定本地真实失败与实际源；不做新网上/GitHub/alpha研究。原A0受限、原B失败N/A、PIT与目标未达边界继承。"
+}

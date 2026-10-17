@@ -1,0 +1,30 @@
+{
+  "schema": "stage095_static_verification_v1",
+  "recorded_at": "2026-10-18T07:17:12.431094+08:00",
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+  "source_sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+  "source_bytes": 37776,
+  "final_command": ".py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py; .py311/bin/python research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py --schema-check",
+  "observed_shell_exit_code": 0,
+  "compile_diagnostics": [],
+  "schema_stdout": {
+    "status": "stdlib_schema_dispatch_only_passed_not_financial_review",
+    "rejected": [
+      "fixture",
+      "live",
+      "wrong_arm",
+      "tiny"
+    ],
+    "account_outputs_accessed": false,
+    "financial_replays": 0,
+    "model_loads": 0,
+    "network_calls": 0,
+    "review_script_sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd"
+  },
+  "static_qualification_only": true,
+  "real_financial_acceptance": false,
+  "old_test_suites_rerun": 0,
+  "fixture_economic_pass_signed": false,
+  "development_schema_check_invocations": 2,
+  "explanation": "first dispatch check passed; final source additionally aligned actual084 readiness key, actualclock/frames equality, and static-compiles exact three adapter fragments; no ledger fixture run"
+}

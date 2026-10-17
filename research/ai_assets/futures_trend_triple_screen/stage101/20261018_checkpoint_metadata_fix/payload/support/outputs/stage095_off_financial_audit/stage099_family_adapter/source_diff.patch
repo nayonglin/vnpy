@@ -1,0 +1,125 @@
+--- frozen_stage095_796aaef.py
++++ stage095_stage099_family.py
+@@ -26,7 +26,7 @@
+ LINE = Path(__file__).resolve().parents[1]
+ ROOT = LINE.parents[2]
+ TOOLS = LINE / 'tools'
+-ACCOUNTS = LINE / 'outputs/stage065_pairwise_off_account'
++ACCOUNTS = LINE / 'outputs/stage099_pairwise_off_account'
+ OUT = LINE / 'outputs/stage095_off_financial_audit'
+ SCOPE = 'offline_full_2020_2026_shared_pairwise_off_native_vs_stage035_package'
+ PINS = {
+@@ -37,9 +37,9 @@
+     'stage031_run_ordered_checkpoint.py': '3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860',
+     'stage033_independent_checkpoint_account_review.py': '940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf',
+     'stage038_independent_b_ts_account_review.py': 'e9d651be9467c04241809a86c1046881cbe8e9def7c55b1c41bf7c79f0603dd7',
+-    'stage065_account_checkpoint.py': '7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b',
++    'stage065_account_checkpoint.py': 'ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99',
+     'stage065_pairwise_off_policy.py': 'edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f',
+-    'stage065_run_pairwise_off.py': 'd83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09',
++    'stage065_run_pairwise_off.py': '1717f2ef30d098f4e503906c032f9b6ddac7aa9b968ae072b60b32b86b0725fb',
+     'stage035_b_ts_strategy.py': 'fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e',
+     'stage035_b_ts_pricing.py': 'd45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f',
+ }
+@@ -88,6 +88,21 @@
+     with path.open('xb') as stream: stream.write(canonical(value))
+ 
+ 
++def family_metadata(arm):
++    return dict(repaired_checkpoint_family='stage099_checkpoint_metadata_fix_v1',
++        global_financial_attempts_before_family=9, global_arm_attempt={'A_OFF':2,'B_OFF':1}[arm],
++        prior_A_OFF_checkpoint_failure=dict(path=str(LINE/'outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json'),
++            sha256='8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085'))
++
++
++def check_family(document, arm):
++    expected=family_metadata(arm)
++    for key,value in expected.items():
++        assert document.get(key)==value, ('repaired run family lineage missing',key)
++        if type(value) is int: assert type(document[key]) is int, key
++    return expected
++
++
+ def terminal_schema(e, arm):
+     """Metadata only; must succeed before any account or numerical import."""
+     assert e.get('schema') == 'stage095_off_actual_completion_v1'
+@@ -95,6 +110,7 @@
+     assert type(e.get('exit_code')) is int and e['exit_code'] == 0
+     assert e.get('arm') == arm and e.get('attempt') == 1 and e.get('fixture_only') is False
+     assert e.get('reference_calendar_scope') == 'full_2020_2026'
++    check_family(e,arm)
+     assert e.get('tool_session_id') and e.get('tool_terminal_chunk_id') and e.get('run_id')
+     assert e.get('owner_root') == str(ACCOUNTS/arm)
+     assert e.get('runner084_source_path') == str(TOOLS/'stage065_run_pairwise_off.py')
+@@ -170,6 +186,7 @@
+         owner_root=str(ACCOUNTS/'A_OFF'), export_source=str(ACCOUNTS/'A_OFF'),
+         runner084_source_path=str(TOOLS/'stage065_run_pairwise_off.py'), runner084_source_sha256=PINS['stage065_run_pairwise_off.py'],
+         checkpoint_writer='stage065_account_checkpoint.py', checkpoint_writer_source_sha256=PINS['stage065_account_checkpoint.py'],
++        **family_metadata('A_OFF'),
+         **{k:'0'*64 for k in ('summary_sha256','raw_checkpoint_sha256','raw_manifest_sha256','validation_seal_sha256','seal_receipt_sha256','run_context_sha256')})
+     terminal_schema(base, 'A_OFF')
+     rejected = []
+@@ -217,6 +234,9 @@
+     assert rd['arm'] == arm and rd['financial_execution_authorized'] is True and rd['independent_integration_accepted'] is True
+     assert rd['period']==preflight['period'] and rd['capital']==150000
+     assert rd['limits_decision']==dict(action='inherit_original_limits',wait_seconds=1800,run_seconds=7200)
++    assert check_family(rd,arm)==check_family(e,arm)
++    parent=rd['prior_A_OFF_checkpoint_failure']
++    assert sha(regular(parent['path']))==parent['sha256']
+     for group in ('source_bindings','data_bindings'): assert rd[group] == preflight[group]
+     # These are inherited external qualifications, not self-review of 071/087.
+     inherited = {}
+@@ -228,8 +248,22 @@
+     assert preflight['source859_isolation_review_sha256'] == INHERITED['source859'][1]
+     assert preflight['accepted_wait_delta_review_sha256'] == INHERITED['accepted061'][1]
+     scope_review = preflight['data_scope_binding']['review']
+-    assert scope_review['sha256'] == INHERITED['data_scope'][1]
+     assert rd['data_scope_review']==scope_review
++    # 094 remains historical inheritance. The new family's independently
++    # reviewed sources are externally bound by the actual root readiness.
++    review_path=regular(scope_review['path']);review_raw=review_path.read_bytes()
++    assert hashlib.sha256(review_raw).hexdigest()==scope_review['sha256']
++    current_review=json.loads(review_raw)
++    assert current_review['independent_review'] is True
++    assert current_review['p0_findings']==current_review['p1_findings']==0
++    expected_scope={str(TOOLS/name):preflight['source_bindings'][str(TOOLS/name)]
++        for name in ('stage087_off_data_scope.py','stage087_off_data_provider.py')}
++    assert current_review['source_bindings']==expected_scope
++    for name,binding in expected_scope.items():
++        path=regular(name)
++        assert sha(path)==binding['sha256'] and path.stat().st_size==binding['bytes']
++    inherited['current_data_scope']=dict(path=str(review_path),sha256=scope_review['sha256'],
++        source_bindings=expected_scope,independently_reaudited_here=False)
+     return raw, context, preflight, manifest, seal, inherited
+ 
+ 
+@@ -442,6 +476,7 @@
+         result=dict(schema='stage095_independent_off_account_review_v1', independent_review=True,
+             status='accepted_independent_cash_inventory_costs_identity_and_OFF_account', reviewed_at=datetime.now().astimezone().isoformat(),
+             arm=arm,attempt=1,run_id=context['run_id'],owner_root=str(ACCOUNTS/arm),export_source=str(export),
++            **check_family(e,arm),prior_A_OFF_status='failed_no_complete_performance_NA',
+             completion_evidence_path=str(evidence_path),completion_evidence_sha256=evidence_sha,review_script_sha256=sha(__file__),
+             raw_checkpoint_sha256=e['raw_checkpoint_sha256'],source_bindings=context['source_bindings'],export_hashes=hashes,
+             actual_daily_dates=1641,reference_calendar=preflight['reference_calendar'],reconstructed_metrics=metrics,
+@@ -475,15 +510,20 @@
+         assert row['status']=='accepted_independent_cash_inventory_costs_identity_and_OFF_account'
+         assert row['p0_findings']==row['p1_findings']==0 and row['fixture_only'] is False and row['actual_daily_dates']==1641
+         assert row['review_script_sha256']==sha(__file__)
++        check_family(row,arm)
+         reports[arm]=row
+     assert set(reports)==set(CLASSES) and reports['A_OFF']['reference_calendar']==reports['B_OFF']['reference_calendar']
+     runtime(); cmp=module('stage001_compare.py')
+     rows=[dict(arm='A0',status='restricted_fixed_pairwise_counterfactual_057_058_P1s',
+         end_equity=2262595.,total_return_pct=1408.396667,max_dd_pct=-48.789850,sharpe=1.367364),
+         dict(arm='original_B',status='failed_qualified_delivery_old_value_conflict_NA',end_equity=None,total_return_pct=None,max_dd_pct=None,sharpe=None)]
+-    rows += [dict(arm=arm,status='independently_reconciled',**reports[arm]['reconstructed_metrics']) for arm in CLASSES]
++    rows += [dict(arm=arm,status='independently_reconciled',global_arm_attempt=reports[arm]['global_arm_attempt'],
++        **reports[arm]['reconstructed_metrics']) for arm in CLASSES]
+     b=reports['B_OFF']['reconstructed_metrics']
+     result=dict(schema='stage095_independent_four_row_comparison_v1',rows=rows,
++        repaired_checkpoint_family='stage099_checkpoint_metadata_fix_v1',global_financial_attempts_before_family=9,
++        prior_A_OFF_checkpoint_failure=family_metadata('A_OFF')['prior_A_OFF_checkpoint_failure'],
++        prior_A_OFF_status='failed_no_complete_performance_NA',
+         paired_seven_gates=cmp.evaluate_metrics(reports['A_OFF']['reconstructed_metrics'],b),
+         B_OFF_vs_restricted_A0_context=dict(higher_return=b['total_return_pct']>1408.396667,lower_drawdown=b['max_dd_pct']>-48.789850,
+             strict_PIT_or_fair_common_policy_comparison=False),

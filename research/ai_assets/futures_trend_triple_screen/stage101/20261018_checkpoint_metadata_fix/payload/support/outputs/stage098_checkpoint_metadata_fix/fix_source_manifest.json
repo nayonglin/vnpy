@@ -1,0 +1,47 @@
+{
+  "schema": "stage098_checkpoint_metadata_fix_source_manifest_v1",
+  "recorded_at": "2026-10-18T07:27:44.269952+08:00",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+      "sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99",
+      "bytes": 28541
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "1717f2ef30d098f4e503906c032f9b6ddac7aa9b968ae072b60b32b86b0725fb",
+      "bytes": 35215
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "73c8957f577908b322387aa65a547bd3dc25c6d40e211718bba99fa3f176a3b1",
+      "bytes": 52684
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+      "bytes": 16901
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py": {
+      "sha256": "e581f47c4a1c5008487a99d080e7c2c4a8481c1c9a652930808510894e3b67d9",
+      "bytes": 11022
+    }
+  },
+  "changed_frozen_sources": [
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py"
+  ],
+  "old_failure_evidence_unchanged": true,
+  "scope_changes_exactly_account_root_and_protocol": true,
+  "old_integration_test_unchanged": true,
+  "targeted_tests": 2,
+  "red_exit": 1,
+  "red_failures": 8,
+  "red_errors": 0,
+  "green_exit": 0,
+  "green_elapsed_seconds": 0.423,
+  "financial_runs": 0,
+  "old_suites_run": 0,
+  "network_calls": 0,
+  "new_family_account_owners_created": 0,
+  "global_financial_attempts_before_family": 9,
+  "global_accepted_ledgers_before_family": 3,
+  "production_qualified": false
+}

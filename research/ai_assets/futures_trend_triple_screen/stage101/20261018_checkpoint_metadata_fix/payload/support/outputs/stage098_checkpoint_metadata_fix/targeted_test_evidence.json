@@ -1,0 +1,46 @@
+{
+  "schema": "stage098_targeted_red_green_evidence_v1",
+  "author_execution_evidence_not_independent_review": true,
+  "command": "PYTHONDONTWRITEBYTECODE=1 .py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py",
+  "red": {
+    "exit_code": 1,
+    "failures": 8,
+    "errors": 0,
+    "tool_chunk": "bcffa5",
+    "sha256": "258bbd29722a13a6aa4c72c29705925b1eb5cbe936c8752a7a7bd7b9e4a838a9"
+  },
+  "green": {
+    "exit_code": 0,
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 0.423,
+    "tool_chunk": "654a5c",
+    "sha256": "f3857eebd89e8c2d047f45b26cc7d2cebd3e1605236aed7b112e455bdf5ea204"
+  },
+  "initial_fixture_error": {
+    "fixed_before_effective_red": true,
+    "error": "temporary_path_contains_symlink",
+    "evidence": "red_initial_fixture_path_error.log"
+  },
+  "input_metadata_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json": {
+      "sha256": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5",
+      "bytes": 3247235
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/A_final3/effective_parameters.json": {
+      "bytes": 83553,
+      "sha256": "e0b45b2f62bc6b5f0b1c49f067c58b7635a5b0145764a9fa77f1348b785d7268"
+    }
+  },
+  "real_prepare_executed": false,
+  "real_prepare_guard_statement_executed": true,
+  "real_execute_account_executed": false,
+  "real_return_to_raw_statement_boundary_executed": true,
+  "engine_constructed": false,
+  "financial_runs": 0,
+  "model_calls": 0,
+  "old_suites_run": 0,
+  "network_calls": 0,
+  "production_qualified": false
+}

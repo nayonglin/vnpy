@@ -3,7 +3,7 @@
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
 - 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 07:09 CST）：原B真实exit1/无完整绩效，金融仍8attempt/3 accepted、训练0；原C0/C_TS负结果和057/058历史pairwise限制保留。084 runner由089接受并保留非阻塞P2；087经090两项P1反证后由093单波修复，094定向接受、P0/P1/P2=0/0/0，090失败不改写。091已登记101项复现资产并逐SHA验证，准备本地检查点及真实两臂preflight，尚无新金融/provider。目标active未达成、production_qualified=false。
+- 当前状态（2026-10-18 07:26 CST）：真实A_OFF首次已exit1，097独立确认为纯AI池strategy字符串被checkpoint键名guard误拒，partial缺完整账本、绩效N/A；不能等价恢复，原session不再poll/restart。098按099合同只修保存与真实prepare预验，095仅同步新固定族/当前review绑定，等待100定向独立接受；旧A目录原地保留，新族明确全局A第2次/B第1次。当前无活跃金融/provider，累计9attempt/3accepted、训练0；4e439c2/091冻结、所有失败/负结果/PIT限制保持，目标active未达成、production_qualified=false。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -179,3 +179,9 @@
 - 两臂入口及统一数据scope已完成有限独立接受；087原失败、090两P1、093定向修复及094接受链全部保留，详见`20261018_0709_stage091_off_runtime_registration.md`。
 - 091保存101项复现资产，manifest `aa9770302433cbae17b1d3a963037c7ca24be8d7c1bc3fc0bed08c4f379d47b3`；原始行情/私有文件未加入，未推送部署。
 - 旧账本不重跑，原数据与经济门不放宽；准备真实preflight再签金融readiness。新账户成绩仍N/A，金融8attempt/3 accepted、训练0，目标未达成。
+
+## Stage096—101：真实A失败与保存器窄修复（2026-10-18 07:34 CST）
+
+- 原A_OFF第1次金融实际exit1，合法AI策略字符串被checkpoint字段名guard误拒；引擎已返回但完整frames未保存，097独立确认不可等价恢复，绩效N/A。旧失败原地保留，金融9attempt/3accepted、训练0。
+- 唯一098修复对真实metadata精确路径/字符串身份放行，真实prepare先校验；引擎返回立即正确标phase。新固定099族与原失败绑定，下一A整体第2次、B第1次。095只适配路径/身份，经济算术未变，087只改两常量。
+- 100独立定向复核0/0/0，新两项测试仅一次exit0；receipt34721033…c3f。101真实注册78项payload，manifest3e2592f9…5d73，副本SHA通过，不含原始行情/私有配置。尚无新preflight/金融结果。下一步新闭包实际preflight/readiness后运行A，再独立验账与B对照；不将修复当alpha突破。新增过拟合否，继续真实取证有价值，目标active、生产资格false。

@@ -1,0 +1,278 @@
+{
+  "schema": "stage097_failure_capture_coverage_diagnostic_v1",
+  "one_owned_unpickle": true,
+  "unpickler_source_sha256": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+  "frozen_runtime": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages",
+  "owner": {
+    "arm": "A_OFF",
+    "attempt": 1,
+    "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+    "started_at": "2026-10-18 07:12:42.228672+08:00",
+    "output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF",
+    "source_head": "4e439c2e5d653d4171c4396afdc2aad037c547c7"
+  },
+  "bound_artifact_sha256": {
+    "run_failure.json": "6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082",
+    "failure_capture.pkl.gz": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f",
+    "run_context.json": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7",
+    "preflight_used.json": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5"
+  },
+  "core_source_checks": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "bytes": 34458,
+      "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09",
+      "snapshot": "sources/source_380.bin",
+      "current_and_snapshot_verified": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+      "bytes": 27561,
+      "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+      "snapshot": "sources/source_378.bin",
+      "current_and_snapshot_verified": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": {
+      "bytes": 56966,
+      "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+      "snapshot": "sources/source_364.bin",
+      "current_and_snapshot_verified": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "bytes": 60111,
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+      "snapshot": "sources/source_359.bin",
+      "current_and_snapshot_verified": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+      "bytes": 6964,
+      "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+      "snapshot": "sources/source_379.bin",
+      "current_and_snapshot_verified": true
+    }
+  },
+  "payload_top_keys": [
+    "schema",
+    "partial",
+    "run_context",
+    "capture"
+  ],
+  "partial_keys": [
+    "capture",
+    "ordered",
+    "actual",
+    "effective_off_policy",
+    "wait_audit",
+    "resolver_audit",
+    "qualification_audit",
+    "isolation_audit",
+    "input_fingerprints",
+    "failure_phase"
+  ],
+  "capture_tables": {
+    "usage": {
+      "type": "list",
+      "rows": 817,
+      "fields": [
+        "anchor_coverage_status",
+        "corrected_legacy_proxy",
+        "direction",
+        "effective_tick",
+        "execution_datetime",
+        "execution_note",
+        "execution_policy",
+        "execution_time_source",
+        "expected_session_start",
+        "fill_date",
+        "intraday_episode_id",
+        "legacy_proxy_price",
+        "legacy_proxy_time",
+        "offset",
+        "order_price",
+        "order_volume",
+        "orderid",
+        "price_delta",
+        "price_source",
+        "proxy_bar_count",
+        "proxy_first_time",
+        "proxy_last_time",
+        "signal_date",
+        "signal_datetime",
+        "signal_order_id",
+        "tick_basis",
+        "trade_id",
+        "trade_price",
+        "trading_date",
+        "vt_symbol"
+      ]
+    },
+    "equity": {
+      "type": "list",
+      "rows": 1697,
+      "fields": [
+        "date",
+        "estimated_equity",
+        "settled_balance"
+      ]
+    },
+    "trades": {
+      "type": "list",
+      "rows": 817,
+      "fields": [
+        "direction",
+        "engine_datetime",
+        "execution_datetime",
+        "exit_reason",
+        "offset",
+        "price",
+        "trade_id",
+        "trading_date",
+        "volume",
+        "vt_symbol"
+      ]
+    },
+    "minute_requests": {
+      "type": "list",
+      "rows": 500,
+      "fields": [
+        "actual_bar_count",
+        "actual_first_time",
+        "actual_last_time",
+        "coverage_status",
+        "execution_datetime",
+        "execution_policy",
+        "expected_bar_count",
+        "missing_bar_count",
+        "requested_start",
+        "session_end_exclusive",
+        "session_start",
+        "trading_date",
+        "vt_symbol"
+      ]
+    },
+    "anchor_requests": {
+      "type": "list",
+      "rows": 534,
+      "fields": [
+        "actual_time",
+        "anchor_present",
+        "corrected_legacy_proxy",
+        "coverage_status",
+        "expected_start",
+        "legacy_price",
+        "legacy_source",
+        "legacy_time",
+        "offset",
+        "order_id",
+        "price",
+        "source",
+        "trading_date",
+        "vt_symbol"
+      ]
+    },
+    "failures": {
+      "type": "list",
+      "rows": 0,
+      "fields": []
+    },
+    "weekly_gate": {
+      "type": "list",
+      "rows": 0,
+      "fields": []
+    }
+  },
+  "failure_phase": "engine_not_returned",
+  "ordered_is_none": true,
+  "actual_settings_capture_count": 1,
+  "effective_policy_capture_count": 1,
+  "wait_audit_rows": 0,
+  "resolver_audit_rows": 0,
+  "forbidden_metadata_paths": [
+    {
+      "path": [
+        "payload",
+        "preflight",
+        "ai_pool_audit",
+        "strategy"
+      ],
+      "type": "str",
+      "value": "ai_top10_plus_fu_official_live_v1"
+    }
+  ],
+  "forbidden_partial_paths": [],
+  "metadata_guard_error": "checkpoint_forbidden_engine_or_history",
+  "identity_coverage": {
+    "captured_trade_rows": 817,
+    "unique_trade_ids": 817,
+    "usage_rows": 817,
+    "unique_usage_trade_ids": 817,
+    "trade_usage_id_sets_equal": true,
+    "actual_trade_identities_field_present": false,
+    "actual_identity_fields_absent_from_capture_trades": [
+      "intraday_episode_id",
+      "signal_datetime",
+      "signal_order_id"
+    ],
+    "actual_identity_fields_absent_from_capture_usage": [
+      "price",
+      "volume"
+    ]
+  },
+  "equity_calendar_coverage": {
+    "rows": 1697,
+    "unique_dates": 1697,
+    "first": "2019-10-15",
+    "last": "2026-10-14",
+    "reference_count": 1641,
+    "exact_reference_sequence": false,
+    "missing_reference_dates": 0,
+    "extra_dates": 56
+  },
+  "required_raw_fields_absent_from_partial": [
+    "actual_trade_identities",
+    "combined",
+    "engine_elapsed_seconds",
+    "frames",
+    "parameters",
+    "preflight",
+    "run_context",
+    "spec"
+  ],
+  "outer_run_context_available": true,
+  "preflight_available_as_separately_pinned_JSON": true,
+  "combined_present": false,
+  "frames_present": false,
+  "expected_returned_frame_names": [
+    "trades",
+    "positions",
+    "entry_risk",
+    "entry_candidates",
+    "trade_events",
+    "intraday_events",
+    "c2_events",
+    "stop_retry_events",
+    "rollover_shape_same_volume",
+    "rollover_delay",
+    "long_signal_atr_shock",
+    "long_signal_range_atr",
+    "pending_orders"
+  ],
+  "files_present": [
+    "attempt_started.json",
+    "engine.log",
+    "failure_capture.pkl.gz",
+    "preflight_used.json",
+    "run_context.json",
+    "run_failure.json"
+  ],
+  "source_data_counts": {
+    "source_bindings": 394,
+    "data_bindings": 4647,
+    "full_market_data_hashes_performed": 0
+  },
+  "forbidden_new_modules_loaded": [],
+  "financial_curve_or_metrics_computed": false,
+  "engine_or_strategy_constructed": false,
+  "source_or_market_loader_called": false,
+  "network_calls": 0,
+  "model_calls": 0,
+  "restoration_performed": false
+}

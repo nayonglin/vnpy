@@ -1,0 +1,154 @@
+{
+  "schema": "stage100_checkpoint_fix_independent_integration_review_v1",
+  "reviewed_at": "2026-10-18T07:30:18+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "accepted_limited_checkpoint_metadata_phase_family_and_audit_adapter_integration",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "73c8957f577908b322387aa65a547bd3dc25c6d40e211718bba99fa3f176a3b1",
+      "bytes": 52684
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+      "bytes": 16901
+    }
+  },
+  "integration_source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+      "sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99",
+      "bytes": 28541
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "1717f2ef30d098f4e503906c032f9b6ddac7aa9b968ae072b60b32b86b0725fb",
+      "bytes": 35215
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py": {
+      "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f",
+      "bytes": 40131
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py": {
+      "sha256": "e581f47c4a1c5008487a99d080e7c2c4a8481c1c9a652930808510894e3b67d9",
+      "bytes": 11022
+    }
+  },
+  "dependency_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0723_stage099_checkpoint_repair_run_family_contract.md": {
+      "sha256": "1fcce3b243b16a03b7f3838cf56e30fa6daa6cdfa2f489b1f9a5c3b1148dd0f1",
+      "bytes": 5495
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage098_checkpoint_metadata_fix/fix_source_manifest.json": {
+      "sha256": "482f9183d14916ce8e109ee6af84fd56f20845fcf698cf62ba347700fca385ca",
+      "bytes": 2152
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/verification.json": {
+      "sha256": "cb8f15f9215e283dbfa88c5d0875ffdd22f59d2514c9c974c0eb053f14ec07c2",
+      "bytes": 1970
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/review_receipt.json": {
+      "sha256": "48bc517989da434e22db70fbb7d603ff09c7f52581f67c868cb0ca736aae2684",
+      "historical_inheritance_only": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage097_A_OFF_failure_independent_review/review_receipt.json": {
+      "sha256": "66dbcae018de1a76b58ad08dcadee85ed8b0d1a3c56fdb52872d2a0e47835a13",
+      "original_failure_preserved": true
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "remaining_blocking_findings": [],
+  "findings_closed": [
+    {
+      "id": "stage097-P1-001",
+      "status": "closed_in_new_sources_only",
+      "evidence": "_account_only仅精确路径(preflight,ai_pool_audit,strategy)、type is str、值等于同preflight已绑定active_parameter_identity.strategy_version且等于既定正式标识时例外；错误路径/类型/identity/列表嵌套/DataFrame cell和attrs隐藏对象仍拒。真实prepare返回前调用同guard封装实际preflight/spec/parameters；guard先于未来金融执行。"
+    },
+    {
+      "id": "stage097-P2-001",
+      "status": "closed_in_new_sources_only",
+      "evidence": "run_profile_once返回后立即phase=returned_before_checkpoint，任何随后save失败保留真实阶段；新增statement边界回归证实。原096/097失败值保留未改。"
+    }
+  ],
+  "independent_integration_accepted": true,
+  "integration_accepted": true,
+  "finite_code_review_accepted": true,
+  "family_identity": {
+    "account_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account",
+    "repaired_checkpoint_family": "stage099_checkpoint_metadata_fix_v1",
+    "global_financial_attempts_before_family": 9,
+    "global_arm_attempt": {
+      "A_OFF": 2,
+      "B_OFF": 1
+    },
+    "family_attempt": 1,
+    "prior_A_OFF_checkpoint_failure": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json",
+      "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085"
+    }
+  },
+  "fresh_tests": {
+    "runs": 1,
+    "tests": 2,
+    "exit_code": 0,
+    "elapsed_seconds": 0.421,
+    "named_tests": [
+      "CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation",
+      "CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase"
+    ],
+    "source_sha256": "e581f47c4a1c5008487a99d080e7c2c4a8481c1c9a652930808510894e3b67d9",
+    "source_and_assertions_unchanged": true,
+    "output_note": "test098无作者OUT/evidence写路径，runtime全用TemporaryDirectory；只将工具stdout保存100，不覆盖098。"
+  },
+  "scope_two_constant_changes_only": true,
+  "provider_unchanged": true,
+  "source095_mathematics_unchanged": true,
+  "source095_schema_compile_evidence_reviewed_only": true,
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage100_checkpoint_fix_independent_review/evidence.json",
+    "sha256": "19251273a23fe13c0bf2d3c8351b2eeeab3537c9dc80982071e1bfed6566ce2b"
+  },
+  "fresh_test_log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage100_checkpoint_fix_independent_review/fresh_two_tests.txt",
+    "sha256": "6ec892f2c4c1ee89320263ce0d1ba10f191a00ae92ab1aa6ad95787cad2fc756"
+  },
+  "stage_record_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0730_stage100_checkpoint_fix_independent_review.md",
+  "acceptance_scope": "同一receipt仅供root绑定有限integration_review/data_scope_review。source_bindings精确二源；整体checkpoint/runner/095/test单列。仅关闭097 metadata误拒及phase并核新族接线，其余094/089/095有限验证按未改逻辑继承。095无未来receipt SHA，外部readiness绑定当前review，不构造自哈希循环。",
+  "actual_source_qualification_issued": false,
+  "actual_owner_created": false,
+  "actual_prepare_executed": false,
+  "financial_ready": false,
+  "financial_execution_authorized": false,
+  "performance_accepted": false,
+  "production_qualified": false,
+  "financial_attempts_total_unchanged": 9,
+  "accepted_ledgers_total_unchanged": 3,
+  "old_A_OFF_attempt1_status": "failed_no_complete_performance_NA",
+  "old090_and097_failure_records_preserved": true,
+  "financial_replays": 0,
+  "market_loaders": 0,
+  "market_hashes": 0,
+  "network_calls": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "old_suites_run": 0,
+  "old_three_scope_tests_rerun": false,
+  "stage090_093_regressions_rerun": false,
+  "stage095_schema_or_math_examples_rerun": false,
+  "author_sources_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_agent_spawned": false,
+  "inherited_limits": [
+    "原096/097 A attempt1仍failed/N/A，partial缺账本不可恢复，不以此代码接受改写原成绩。",
+    "原090失败及094修复接受历史均保留；本轮只迁移scope目录常量，不重新签数据集资格。",
+    "089非阻塞失败capture缺fill身份限制仍保留；仅修097 phase，不扩展失败对象捕获。",
+    "原A0受限、原B失败N/A、PIT、目标未达、不能只胜弱A即达标均不变。",
+    "新族真实preflight/readiness及金融启动仍需root后续真实证据与授权；本次不执行。"
+  ],
+  "overfitting": false,
+  "continued_value": true
+}

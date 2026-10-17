@@ -1,0 +1,75 @@
+{
+  "schema": "stage095_stage099_family_adapter_implementation_v1",
+  "recorded_at": "2026-10-18T07:29:28.083245+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "status": "minimal_fixed_family_and_source_binding_adapter_frozen_no_actual_audit",
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f",
+    "bytes": 40131
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0729_stage095_stage099_account_family_adapter.md",
+    "sha256": "2df04929661d5597b8f1bcb65436f5830581c4aa4c3e5b01c959c953166626d7",
+    "bytes": 4938
+  },
+  "files": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/A_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json": {
+      "sha256": "2e5ee831a5afb729f6bcc005a7995f04c9aa5ed401b33f45c73291a1da91fdf3",
+      "bytes": 1466
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/source_diff.patch": {
+      "sha256": "8764d5c6897ffbb5342560c3776938eb461b5cb2c988343aec00978b6f43192e",
+      "bytes": 8580
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/B_OFF_completion_input_TEMPLATE_NOT_TERMINAL.json": {
+      "sha256": "0182338ebc78fbf17faa9768e057e2db4ac996bf2e427b05ff11ccd0b82f8ff4",
+      "bytes": 1466
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/original_snapshot_manifest.json": {
+      "sha256": "f09a993c49cad968046d35a1007dcf789ac003cbbe38a6e869f1202a051fc757",
+      "bytes": 3644
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/verification.json": {
+      "sha256": "cb8f15f9215e283dbfa88c5d0875ffdd22f59d2514c9c974c0eb053f14ec07c2",
+      "bytes": 1970
+    }
+  },
+  "previous_source_sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+  "new_account_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account",
+  "family_metadata": {
+    "A_OFF": {
+      "repaired_checkpoint_family": "stage099_checkpoint_metadata_fix_v1",
+      "global_financial_attempts_before_family": 9,
+      "global_arm_attempt": 2,
+      "prior_A_OFF_checkpoint_failure": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json",
+        "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085"
+      }
+    },
+    "B_OFF": {
+      "repaired_checkpoint_family": "stage099_checkpoint_metadata_fix_v1",
+      "global_financial_attempts_before_family": 9,
+      "global_arm_attempt": 1,
+      "prior_A_OFF_checkpoint_failure": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json",
+        "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085"
+      }
+    }
+  },
+  "prior_A_OFF_status": "failed_no_complete_performance_NA",
+  "financial_accounting_algorithms_changed": false,
+  "current_scope_review": "external readiness SHA closure and exact preflight two-source SHA/bytes; no future receipt hash guessed",
+  "actual_account_outputs_accessed": false,
+  "raw_checkpoints_loaded": 0,
+  "actual_financial_reviews_signed": 0,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "network_calls": 0,
+  "old_test_suites_rerun": 0,
+  "source_qualification_self_review": false,
+  "awaits_independent_stage100_delta_review": true,
+  "original_goal_achieved": false,
+  "promotion_allowed": false,
+  "production_qualified": false
+}

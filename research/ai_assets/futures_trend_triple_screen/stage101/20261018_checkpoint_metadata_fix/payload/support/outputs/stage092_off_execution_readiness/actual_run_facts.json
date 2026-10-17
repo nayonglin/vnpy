@@ -1,0 +1,101 @@
+{
+  "schema": "stage092_actual_off_execution_control_v1",
+  "recorded_at": "2026-10-18T07:16:31.540998+08:00",
+  "source_commit": "4e439c2e5d653d4171c4396afdc2aad037c547c7",
+  "preflights": [
+    {
+      "arm": "A_OFF",
+      "preflight_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/preflight/A_OFF.json",
+      "preflight_sha256": "bc38114ecc42d8b2ef1287051cbf7b2fa8c20db71dc940149e742e2b85021e7a",
+      "start_chunk": "b81856",
+      "terminal_chunk": "f2852d",
+      "exit_code": 0,
+      "actual_reference_calendar_rows": 1641,
+      "capital": 150000,
+      "period": [
+        "2020-01-01",
+        "2026-10-14"
+      ],
+      "fixture_only": false,
+      "non_off_differences": [],
+      "data_scope_ready": true,
+      "readiness_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/A_OFF.json",
+      "readiness_sha256": "8eee3c7753ac4c86e9dc9a9f754ba2785abfa92e31f54644c305d52cb3b5fe69"
+    },
+    {
+      "arm": "B_OFF",
+      "preflight_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/preflight/B_OFF.json",
+      "preflight_sha256": "7a30e1aeeaad8a6214ed1eb06bd4cab614d805cd09ae2f121f1eb1f9f942947d",
+      "start_chunk": "8c14c1",
+      "terminal_chunk": "03c0a5",
+      "exit_code": 0,
+      "actual_reference_calendar_rows": 1641,
+      "capital": 150000,
+      "period": [
+        "2020-01-01",
+        "2026-10-14"
+      ],
+      "fixture_only": false,
+      "non_off_differences": [],
+      "data_scope_ready": true,
+      "readiness_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage092_off_execution_readiness/B_OFF.json",
+      "readiness_sha256": "83ff6bf8b63af6036e1b66545da9d68f99672e14076e9fe5233552d293c41021"
+    }
+  ],
+  "A_OFF": {
+    "status": "terminal_failed_checkpoint_guard_no_complete_performance",
+    "attempt": 1,
+    "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+    "tool_session_id": 13114,
+    "start_chunk": "a6ef7d",
+    "last_running_chunk": "fda7b2",
+    "pid": 41681,
+    "context_started_at": "2026-10-18 07:12:42.228672+08:00",
+    "run_context_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_context.json",
+    "run_context_sha256": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7",
+    "preflight_used_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json",
+    "preflight_used_sha256": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5",
+    "owner_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope/A_OFF/982636a096884e7e9610b1ad49eb1ae1/owner.json",
+    "owner_sha256": "0eb70954f4d8467dc935a18195f0613f2b7381e8978c1ce37610b38dee73e0d1",
+    "owner_tool_chunk": "b8f1fa",
+    "actual_ps_observation": {
+      "chunk": "e3cf13",
+      "observed_at": "2026-10-18T07:14:59+08:00",
+      "etime": "02:34",
+      "cpu_percent": 99.9,
+      "rss_kib": 1055360,
+      "stat": "Rs"
+    },
+    "actual_terminal": {
+      "tool_session_id": 13114,
+      "tool_terminal_chunk_id": "8c75d9",
+      "exit_code": 1,
+      "evidence_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json",
+      "evidence_sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085"
+    }
+  },
+  "B_OFF": {
+    "status": "not_started_preflight_ready"
+  },
+  "financial_attempts_total": 9,
+  "accepted_financial_ledgers_total": 3,
+  "model_fits": 0,
+  "operator_failures_before_owner": [
+    {
+      "chunk": "a70ba2",
+      "reason": "sandbox_ps_denied",
+      "owner_created": false,
+      "engine_restart": false
+    },
+    {
+      "chunk": "5b5d5f",
+      "reason": "operator_guessed_preflight_filename",
+      "owner_created": false,
+      "engine_restart": false
+    }
+  ],
+  "operator_correction": "read actual checkpoint writer, use preflight_used.json; no financial source change/replay",
+  "original_goal_achieved": false,
+  "production_qualified": false,
+  "updated_at": "2026-10-18T07:19:55.274705+08:00"
+}

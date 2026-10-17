@@ -1,0 +1,9 @@
+test_dangerous_objects_family_readiness_and_return_phase (__main__.CheckpointMetadataFixTests.test_dangerous_objects_family_readiness_and_return_phase)
+Catch broadened object exceptions, old owner reuse and missing parent pins. ... ok
+test_real_096_metadata_and_prepare_prevalidation (__main__.CheckpointMetadataFixTests.test_real_096_metadata_and_prepare_prevalidation)
+Catch the exact real AI-pool string collision and a missing prepare guard. ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.423s
+
+OK

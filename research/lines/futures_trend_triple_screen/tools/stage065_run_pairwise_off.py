@@ -19,7 +19,7 @@ import time
 
 ROOT=Path(__file__).resolve().parents[4]
 LINE=ROOT/'research/lines/futures_trend_triple_screen'
-OUTPUT=LINE/'outputs/stage065_pairwise_off_account'
+OUTPUT=LINE/'outputs/stage099_pairwise_off_account'
 PLAN=LINE/'stages/20261018_0546_stage062_pairwise_off_implementation_plan.md'
 STACK=LINE/'outputs/stage022_qualified_wait/data_stack_manifest.json'
 STACK_SHA='2b650761fbf2bc30aa0046147b7e369a2a0a10a68ee6b520204dde8d4d7226a0'
@@ -38,12 +38,14 @@ TERMINAL_BINDINGS={
      'f39f9d60b3e975263b0ee9411b70b766a9a8c4a3f12d068b9c35650888928536'),
  'conflict_review':(LINE/'outputs/stage064_b_ts_failure_independent_review/review_receipt.json',
      '916edbc472fb49dcb9e1fbcde396b0b555a82b1468622b1db526a98c1bee9963'),
+ 'prior_A_OFF_checkpoint_failure':(LINE/'outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json',
+     '8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085'),
 }
 FROZEN={
  'stage022_run_c0_qualified_wait.py':'aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c',
  'stage031_run_ordered_checkpoint.py':'3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860',
  'stage065_pairwise_off_policy.py':'edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f',
- 'stage065_account_checkpoint.py':'7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b',
+ 'stage065_account_checkpoint.py':'ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99',
  'stage061_accepted_wait_delta.py':'3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a',
  'stage071_source859_isolation.py':'12580b91d0e264ac4f63807679742cbbc67c8cb03e66dd42343cf9b72c26fe27',
  'stage028_ordered_strategy.py':'d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48',
@@ -150,7 +152,12 @@ def _readiness(args):
         or value.get('data_stack_sha256')!=STACK_SHA or value.get('accepted_wait_delta_sha256')!=DELTA_SHA
         or value.get('accepted_wait_delta_review_sha256')!=DELTA_REVIEW_SHA
         or value.get('original_B_status')!='failed_no_complete_performance'
-        or value.get('A0_reference_status')!='restricted_fixed_pairwise_counterfactual'):
+        or value.get('A0_reference_status')!='restricted_fixed_pairwise_counterfactual'
+        or value.get('repaired_checkpoint_family')!='stage099_checkpoint_metadata_fix_v1'
+        or type(value.get('global_financial_attempts_before_family')) is not int
+        or value.get('global_financial_attempts_before_family')!=9
+        or type(value.get('global_arm_attempt')) is not int
+        or value.get('global_arm_attempt')!={'A_OFF':2,'B_OFF':1}[args.arm]):
         raise ValueError('root_execution_readiness_contract_not_met')
     for name,(path,digest) in TERMINAL_BINDINGS.items():
         if value.get(name)!={'path':str(path),'sha256':digest}:
@@ -329,6 +336,8 @@ def prepare_account(args):
             for name in ('source_bindings','data_bindings'):
                 if readiness['document'].get(name)!=preflight[name]:raise ValueError('root_readiness_prepared_binding_drift:'+name)
             preflight['execution_readiness']=readiness
+        checkpoint._account_only(dict(preflight=preflight,spec=asdict(profile['spec']),
+            parameters=_parameters(profile['spec'],metadata)))
         return dict(args=args,s901=s901,profile=profile,engine_class=engine_class,metadata=metadata,preflight=preflight,
             recorder=recorder,start=start,end=end,stack=stack,overlay=overlay,qualified=qualified,delta=delta,
             completed_keys=completed_keys,anchor_data=anchor_data,anchor_keys=anchor_keys,demand=demand,calendar=calendar,
@@ -405,6 +414,7 @@ def execute_account(prepared):
             try:
                 combined,frames,spec=run_profile_once(s901,prepared['profile'],prepared['metadata'],engine_class=engine,
                     start=prepared['start'],end=prepared['end'],minute_audit=minute_audit)
+                phase='returned_before_checkpoint'
                 ordered=None if arm=='A_OFF' else {k:ordered_capture[k] for k in ('decision','fill','execution','pending')}
                 parameters=_parameters(spec,prepared['metadata'])
                 raw_manifest=checkpoint.save_raw_checkpoint(output,dict(combined=combined,frames=frames,capture=capture,

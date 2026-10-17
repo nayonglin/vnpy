@@ -1,0 +1,48 @@
+{
+  "schema": "stage095_stage099_family_adapter_verification_v1",
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f",
+    "bytes": 40131
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/mac/Desktop/fian/.py311/bin/python",
+        "-m",
+        "py_compile",
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/mac/Desktop/fian/.py311/bin/python",
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+        "--schema-check"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"stdlib_schema_dispatch_only_passed_not_financial_review\", \"rejected\": [\"fixture\", \"live\", \"wrong_arm\", \"tiny\"], \"account_outputs_accessed\": false, \"financial_replays\": 0, \"model_loads\": 0, \"network_calls\": 0, \"review_script_sha256\": \"be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f\"}\n",
+      "stderr": ""
+    }
+  ],
+  "original_source_sha256": "796aaef7994018196deb4799132a0cd288c027516f21ce672646c880d05990dd",
+  "unchanged_accounting_functions": {
+    "adapter_fragments": true,
+    "runtime": true,
+    "settings_review": true,
+    "raw_exports": true,
+    "a_mothers": true
+  },
+  "source_diff": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/stage099_family_adapter/source_diff.patch",
+    "sha256": "8764d5c6897ffbb5342560c3776938eb461b5cb2c988343aec00978b6f43192e"
+  },
+  "account_outputs_accessed": false,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "network_calls": 0,
+  "old_test_suites_rerun": 0
+}

@@ -193,14 +193,23 @@ def _context(output,arm=None,*,verify_sources=True):
     return output,context,preflight,context_raw
 
 
-def _account_only(value):
+def _account_only(value,_path=(),_strategy_id=None):
+    if not _path and isinstance(value,Mapping):
+        preflight=value.get("preflight")
+        identity=preflight.get("active_parameter_identity") if isinstance(preflight,Mapping) else None
+        _strategy_id=identity.get("strategy_version") if isinstance(identity,Mapping) else None
     if isinstance(value,Mapping):
         for key,item in value.items():
+            path=(*_path,key)
             if key in ("engine","strategy","history","history_data","minute_cache","stage827_minute_by_symbol"):
-                raise ValueError("checkpoint_forbidden_engine_or_history")
-            _account_only(item)
+                # This bound AI-pool audit field is an identity string, never
+                # an engine strategy. No other path or value earns an exception.
+                if not (path==("preflight","ai_pool_audit","strategy") and type(item) is str
+                    and item==_strategy_id=="ai_top10_plus_fu_official_live_v1"):
+                    raise ValueError("checkpoint_forbidden_engine_or_history")
+            _account_only(item,path,_strategy_id)
     elif isinstance(value,(list,tuple)):
-        for item in value:_account_only(item)
+        for index,item in enumerate(value):_account_only(item,(*_path,index),_strategy_id)
     elif value is not None and not isinstance(value,(str,int,float,bool,date,datetime,Path)):
         module=type(value).__module__
         if not module.startswith(("pandas.","numpy")):
@@ -208,11 +217,13 @@ def _account_only(value):
         # Object cells / attrs can otherwise hide an engine or model inside a
         # perfectly ordinary DataFrame and make the "account-only" pickle huge.
         if hasattr(value,"select_dtypes"):
-            _account_only(value.attrs)
-            _account_only(value.index.tolist());_account_only(value.columns.tolist())
-            for item in value.select_dtypes(include=["object"]).to_numpy().flat:_account_only(item)
+            _account_only(value.attrs,(*_path,"<attrs>"),_strategy_id)
+            _account_only(value.index.tolist(),(*_path,"<index>"),_strategy_id)
+            _account_only(value.columns.tolist(),(*_path,"<columns>"),_strategy_id)
+            for index,item in enumerate(value.select_dtypes(include=["object"]).to_numpy().flat):
+                _account_only(item,(*_path,"<object_cells>",index),_strategy_id)
         elif getattr(getattr(value,"dtype",None),"hasobject",False):
-            for item in value.tolist():_account_only(item)
+            for index,item in enumerate(value.tolist()):_account_only(item,(*_path,index),_strategy_id)
 
 
 def save_failure_capture(output,payload,*,error):

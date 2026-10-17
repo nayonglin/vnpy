@@ -1,0 +1,42 @@
+{
+  "schema": "stage096_A_OFF_actual_failure_terminal_v1",
+  "recorded_at": "2026-10-18T07:17:58.925501+08:00",
+  "actual_terminal_observed": true,
+  "tool_session_id": 13114,
+  "tool_terminal_chunk_id": "8c75d9",
+  "exit_code": 1,
+  "arm": "A_OFF",
+  "attempt": 1,
+  "run_id": "982636a096884e7e9610b1ad49eb1ae1",
+  "owner_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF",
+  "source_commit": "4e439c2e5d653d4171c4396afdc2aad037c547c7",
+  "engine_returned_before_checkpoint": true,
+  "failure_location": "save_raw_checkpoint._account_only(payload)",
+  "error": "ValueError(checkpoint_forbidden_engine_or_history)",
+  "raw_checkpoint_exists": false,
+  "summary_exists": false,
+  "validation_seal_exists": false,
+  "run_context": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_context.json",
+    "sha256": "46126a8af641d76e47978bd10d5aba9b7a5f8072af24ef7f0f781b0f7f1db7f7"
+  },
+  "preflight_used": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/preflight_used.json",
+    "sha256": "4612f307b30e6917d227d624cdbf35c9ff74238a73cd1d0bd7a8267a53d92bf5"
+  },
+  "run_failure": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/run_failure.json",
+    "sha256": "6a21416440f3f3441599435ebf55c1ae688006d865d5683a537fea5af2c3d082"
+  },
+  "failure_capture": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF/failure_capture.pkl.gz",
+    "sha256": "443216dc4e7b3b2550f97aeafee33c9f4376a94aa1513ad3f8e19f5c71cfd96f"
+  },
+  "complete_performance": "N/A_no_complete_account_checkpoint",
+  "financial_attempts_total": 9,
+  "accepted_ledgers_total": 3,
+  "owner_issuer_failures_are_not_account_restarts": true,
+  "B_OFF_started": false,
+  "model_fits": 0,
+  "production_qualified": false
+}
