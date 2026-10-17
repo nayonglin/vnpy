@@ -110,6 +110,11 @@ PRODUCTION_REQUIRED_TEST_SUITES = (
     "tests/test_stage946_production_health_check.py",
     "tests/test_stage947_production_support_launcher.py",
     "tests/test_stage948_production_installer.py",
+    "tests/test_stage179_candidate_material_qualification.py",
+    "tests/test_stage260_local_production_paths.py",
+    "tests/test_stage249_account_equity.py",
+    "tests/test_stage249_intraday_execution.py",
+    "tests/test_qmt_entry_context_diagnostics.py",
 )
 PRODUCTION_PERFORMANCE_TEST_SUITE = (
     "tests/test_stage179_production_performance_gate.py"
@@ -374,6 +379,7 @@ _TRUSTED_READONLY_INVOCATION_FIELDS = {
 }
 DEFAULT_CRITICAL_FILES = (
     "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+    "examples/portfolio_backtesting/qmt_roll_intraday_execution.py",
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
     "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
@@ -484,6 +490,11 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage179_performance_gate_diagnostics.py",
     "tests/test_stage179_readonly_canary_qualification.py",
     "tests/test_stage179_release_manifest.py",
+    "tests/test_stage179_candidate_material_qualification.py",
+    "tests/test_stage260_local_production_paths.py",
+    "tests/test_stage249_account_equity.py",
+    "tests/test_stage249_intraday_execution.py",
+    "tests/test_qmt_entry_context_diagnostics.py",
     "tests/test_stage907_readonly_refresh_gate.py",
     "tests/test_stage608_continuous_tick_stream.py",
     "tests/test_stage179_stage260_execution_profile.py",
