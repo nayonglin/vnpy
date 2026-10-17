@@ -1,0 +1,5 @@
+{
+  "category": "network_or_wait_timeout",
+  "exception_type": "TimeoutError",
+  "raw_exception_text_saved": false
+}

@@ -1,0 +1,17 @@
+vt_symbol,execution_trade_date,requirement_kind,real_daily_present
+fu2005.SHFE,2020-04-07,anchor,False
+fu2005.SHFE,2020-04-08,anchor,False
+fu2005.SHFE,2020-04-09,anchor,False
+fu2005.SHFE,2020-04-10,anchor,False
+fu2005.SHFE,2020-04-13,anchor,False
+fu2005.SHFE,2020-04-14,anchor,False
+fu2005.SHFE,2020-04-15,anchor,False
+fu2009.SHFE,2020-08-11,anchor,False
+fu2009.SHFE,2020-08-12,anchor,False
+fu2009.SHFE,2020-08-13,anchor,False
+fu2009.SHFE,2020-08-14,anchor,False
+fu2009.SHFE,2020-08-17,anchor,False
+fu2009.SHFE,2020-08-18,anchor,False
+fu2009.SHFE,2020-08-19,anchor,False
+fu2605.SHFE,2026-05-06,anchor,False
+fu2605.SHFE,2026-05-07,anchor,False

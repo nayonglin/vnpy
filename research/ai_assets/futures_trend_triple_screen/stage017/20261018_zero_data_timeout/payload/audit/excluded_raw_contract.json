@@ -1,0 +1,5 @@
+{
+  "batch_manifest_original_sha256": "a58a875df23d2dda6c797d94e7f46275f0b832377325ef7cf68423b7601a0219",
+  "daily_price_references_and_raw_market_data_excluded": true,
+  "target_inventory_preserves_identity_grid_boundary_and_counts": true
+}

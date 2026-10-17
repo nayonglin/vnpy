@@ -1,0 +1,59 @@
+{
+  "status": "completed_scoped_minute_delta_pending_independent_review",
+  "elapsed_seconds": 28.787516792013776,
+  "delta_sessions": 4511,
+  "delta_contracts": 96,
+  "accepted_delta_sessions": 1480,
+  "quarantine_reasons": {
+    "incomplete_session": 3031
+  },
+  "added_minutes": 452401,
+  "added_contracts": 56,
+  "input_required_sessions": 28268,
+  "ready_before": 18711,
+  "ready_after": 20191,
+  "remaining_requirements": 8077,
+  "remaining_full_sessions": 135,
+  "remaining_anchors": 7942,
+  "unrelated_readiness_rows_unchanged": 23757,
+  "original_13752_sessions_requalified": 0,
+  "existing_rows_retained": 1822,
+  "new_key_intersection_with_existing": 0,
+  "a0_path_equivalence": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 452401,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "financial_replays": 0,
+  "downloads": 0,
+  "account_engines": 0,
+  "orders": 0,
+  "cancels": 0,
+  "model_fits": 0,
+  "PnL_accessed": false,
+  "source_writes": 0,
+  "all_inputs_unchanged": true,
+  "financial_metrics": "N/A",
+  "production_qualified": false,
+  "artifact_sha256": {
+    "input_manifest.json": "ed36325fb5c4b7ab0230d4e49c781f863d440f3290680b4654999f9b8ba9f018",
+    "overlay.csv": "5f756b03fd459905e8a4a75057f05be17f767b773a300097ade4b22a62ddc178",
+    "remaining_demand.csv": "ed2e5e9dc479ff5109c4ed09b216156c17e10af83a3d8ad56cadc2ac2995b86a",
+    "session_manifest.csv": "2775c4125ef3afbb2d7bd9610a9dd79b4515beedd7a88c08e8a7d1572abcabe7",
+    "source_manifest.json": "9825945e21946fabe3697fe019d69fb02c1eb526b956c086d3cd86ea36f28c25",
+    "attempt_started.json": "a056dd02dbc6302d854d7d2eed78ffdb7509d0a8addba43cd67dbd4c183a7a94",
+    "quarantine.csv": "9b44326f75cec9c06f631351a3d9c6f6a27b373d50b0545e9b49603c21ad0b51",
+    "demand_readiness.csv": "54516c613c1851ba3410b1eab18861286d83f4e07eb08598afcdeefcdac79fcc",
+    "a0_path_equivalence.json": "a7c3ad78f6136efc9f7f6c6938302095a0c0de5b8332edfa000387af77d3cf09"
+  },
+  "limitations": [
+    "Only reviewed recovered target days and 11 reviewed provider sessions reconsidered.",
+    "Missing/failed daily targets, 16 carry constraints and original conflicts are not waived.",
+    "Original readiness retained for untouched keys; no new financial replay authorized."
+  ]
+}
