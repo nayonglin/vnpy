@@ -1,0 +1,9 @@
+{
+  "started_at": "2026-10-18 02:50:55.673737+08:00",
+  "status": "started_no_retry_or_overwrite",
+  "pid": 15292,
+  "argv": [
+    "research/lines/futures_trend_triple_screen/tools/stage028_run_ordered.py",
+    "--run"
+  ]
+}

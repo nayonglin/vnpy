@@ -3,7 +3,7 @@
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
 - 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 02:04 CST）：A0_attempt2与C0_attempt3均完整且独立验收。C0仅加完成周MACD柱斜率首次入场许可：1190295/693.53%/DD−43.03173%/Sharpe1.185018，对照A0为2262595/1408.39667%/DD−48.78985%/Sharpe1.367364。收益/Sharpe门失败，停止此固定形状，不扫周参数、不扩多周期。647fills、251完整母单/89赢/35.4582%；真实新补仅cu2609平仓anchor1根，同一engine恢复、未重放bar。金融累计5attempt/2完成，模型训练0；总体目标active，尚无双目标候选。
+- 当前状态（2026-10-18 03:12 CST）：A0_attempt2与C0_attempt3完整且独立验收，周硬过滤负结果保持。C_TS attempt1已真实exit1，原引擎返回后synthetic信号身份导出失败，且旧runner没有完整raw账本checkpoint；无新绩效可接受。Stage031只修真实成交身份与先持久化完整账本，策略/引擎不变，新3项有限测试通过、独立delta复核P0/P1/P2=0/0/0（收据496e8de3...c242）。OI009精确anchor1根已独立验收，后续与cu2609各一anchor复用，不重下。金融累计6attempt/2 accepted，模型训练0；目标active，production_qualified=false。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -95,3 +95,11 @@
 - 当前实施本线隔离strategy/engine/runner，C_TS真实金融仍待运行，B_TS后续独立机制仍在范围。金融累计仍5attempt/2完成，训练0、生产资格false。目标active，尚无更高收益且更低回撤候选；不因组件完成而缩小目标。
 - Stage027已精确登记20项复现资产，manifest `d8525c536bcc6a2c87d6b9fd1196f7f5e69c30d25f53c40ad8ff1328da599842`；FI派生值和潜在决策表无损gzip，原始日线/分钟/数据库/私有配置未入Git。原review stage算术笔误在root实际记录中明确13895，不重建数据。
 - Stage028隔离策略/引擎/runner已完成并独立接合验收：26项实现行为测试、4个真实native组合场景/10fills，P0/P1/P2=0/0/0；不是金融回测或alpha结论。Dclose新持仓排除入场前整根分钟H/L，同时AM/history/env保留fullD。029只调整原provider四行作用域绑定。21项复现资产manifest `c1c5b57fbb4e61e61220467192e0e529699f51728c6bc32cf91d048230a2472b`。下一步唯一C_TS全周期run内联preflight，独立金融agent已新建等待真实终态；不重复A0或再跑单独大preflight。
+
+## Stage028实际失败与Stage031最小修复（2026-10-18 03:12 CST）
+
+- C_TS attempt1工具67762真实exit1，总477.246799秒，其中252.943968秒等待精确数据。487分钟请求零缺失；完整账户帧在进程退出前未持久化，100条件fill不能替代全账本，全部绩效N/A。前置028复核遗漏了真实827 synthetic usage不含signal identity的producer/consumer契约，旧0P1不覆盖此缺陷。
+- 唯一实际OI009补数16.820751秒、full0/anchor1、与A0实读键交集0，delivery SHA09444de4...03fa。029实际证据已登记14项，manifest9e78e4939ccfa4af040f74043b2c03cfd910f441bce9d9dc7cba4e6f886d6a12；原始分钟未入Git。
+- 失败证据及030独立失败审查登记17项，manifestb7cdc6f74de1a31838fa8d37e319c910ef4620165c19dba5d3e36018d0c1c137；大证据无损压缩并核原字节。不能从部分证据恢复或借A0补造金融结果。
+- 新031 runner绑定真实TradeData信号字段并验证synthetic母OPEN；返回后任何guard/导出前原子保存全部账户帧/capture，原guard通过才seal。后处理失败可仅sealed checkpoint重导出，新目录保留旧失败。真实producer与持久化/恢复3项有限测试通过，26旧suite/FI/行情资格未重复；032仅改4行provider作用域，无新网络。
+- 本阶段过拟合判断：新增否，只修导出/持久化、规则不变，历史研究选择风险仍在。继续价值：是，仍需一次可独立验收的完整C_TS金融闭环；绝不把基建完工或部分fill当alpha突破。

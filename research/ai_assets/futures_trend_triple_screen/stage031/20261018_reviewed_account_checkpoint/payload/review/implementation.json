@@ -1,0 +1,75 @@
+{
+  "stage": "Stage031",
+  "line_id": "futures_trend_triple_screen",
+  "component": "actual_trade_identity_and_durable_account_export",
+  "implemented_at": "2026-10-18T03:09+08:00",
+  "implementer": "conditional_runner_impl",
+  "status": "new_delta_finite_fixtures_pass_pending_independent_review",
+  "attempt": 2,
+  "arm": "C_TS",
+  "source_files_sha256": {
+    "research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+    "research/lines/futures_trend_triple_screen/tools/test_stage031_ordered_checkpoint.py": "ed23c22410a5c2ef39dc59bafc5becea21b9afab23c217eb1b6a1bb793679391"
+  },
+  "parent_runner_sha256": "c05924175609c09ce0a44b451bcc97497be2b30012cb9c971886217c4960c6af",
+  "frozen_alpha_modules_sha256": {
+    "stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+    "stage028_ordered_engine.py": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23"
+  },
+  "output": "outputs/stage031_ordered_account/C_TS",
+  "alpha_changed": false,
+  "changes": [
+    "actual_trade_identities reads actual TradeData explicit signal_datetime/signal_order_id/intraday_episode_id; absence is preserved and rejected as appropriate",
+    "build_execution_clock validates all real trades one-to-one, usage existing signal fields, unique actual mother OPEN, same symbol/trading day and execution chronology; synthetic missing producer fields use only explicit actual identity",
+    "exported usage gains checked actual identity fields and source annotation; raw producer usage remains exact in checkpoint",
+    "raw complete combined/all frames/capture trades+usage+equity+minute+anchor/actual identities/ordered/settings/parameters/spec/preflight/input fingerprints/run context is atomically pickle.gz persisted immediately inside the original engine-return scope before post-return guards",
+    "raw SHA manifest binds writer snapshot/run ID/schema/attempt/frozen parent and alpha modules; raw evidence is not a validation or performance pass",
+    "original engine/calendar/settings/params/minute/input checks precede strict engine validation seal bound to raw and manifest SHA",
+    "--export-only early branch uses only exact owned sealed checkpoint after runtime bootstrap; no data stack/FI rebuild/engine invocation/provider; exact dtype/float retained",
+    "failed exports use new exports/export_NNN directories; old failure files remain; successful result rejects further export",
+    "two independently reviewed exact copper/OI anchor keys reused via Stage021 _read_delivery; no new full-session rights or downloads",
+    "original 028/holding contracts remain inputs, Stage031 protocol independent; frozen 028 sources and failed output unchanged"
+  ],
+  "interfaces": [
+    "actual_trade_identities(trades)",
+    "build_execution_clock(capture, identities) -> (clock, normalized_usage)",
+    "save_raw_checkpoint(output, payload)",
+    "seal_checkpoint(output, manifest, validation)",
+    "load_sealed_checkpoint(output) -> (payload, checkpoint_receipt)",
+    "export_checkpoint(output, destination, metrics_function=None, export_only=False)",
+    "CLI --preflight | --run | --export-only"
+  ],
+  "validation": {
+    "red": "three new fixture tests initially failed on missing new identity/checkpoint functions",
+    "green_command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage031_ordered_checkpoint.py' -v",
+    "green_tests": 3,
+    "green_failures": 0,
+    "compile_passed": true,
+    "evidence": [
+      "real Stage827 producer emits ordinary mother and synthetic close; missing synthetic usage signal fields now pass from actual TradeData",
+      "conflicting usage signal, missing actual mother, wrong day, missing ordinary actual identity and pre-parent timestamp all rejected",
+      "exact DataFrame dtypes and float.hex survive durable checkpoint, unsealed load rejected",
+      "real export function metrics-stage failure followed by pure sealed checkpoint export succeeds without engine replay or data-stack call; original failure preserved and raw SHA unchanged",
+      "external output and tampered raw rejected before pickle.loads; existing export success refuses overwrite"
+    ],
+    "old_suites_rerun": false,
+    "full_preflight_run": false,
+    "financial_account_replays": 0,
+    "network_calls": 0,
+    "model_fits": 0,
+    "broker_connections": 0,
+    "order_api_calls": 0,
+    "cancel_api_calls": 0
+  },
+  "independent_review": false,
+  "production_qualified": false,
+  "financial_metrics": null,
+  "known_integration_note": "Frozen Stage030 auditor has hardcoded Stage028 runner source SHA; root must bind audit entry to new Stage031 runner source. Expected CSV/JSON names are preserved.",
+  "research_judgement": "沿已冻结机制与真实827 producer source查明导出合同；本次不做新alpha、参数扫描或收益选择。",
+  "overfitting_before": false,
+  "overfitting_after": false,
+  "overfitting_reason": "只修实际身份导出与持久化，不改交易决策；旧历史研究选择偏差保留。",
+  "continuing_value_before": true,
+  "continuing_value_after": true,
+  "continuing_value_reason": "完整真实账户结果仍缺，修复使必要一次新attempt及后处理恢复可审计；组件fixture不证明alpha。"
+}

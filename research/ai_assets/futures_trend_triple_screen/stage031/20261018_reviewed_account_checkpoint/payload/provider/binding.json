@@ -1,0 +1,10 @@
+{
+  "source": "research/lines/futures_trend_triple_screen/tools/stage029_ordered_request_provider.py",
+  "source_sha256": "8330c62ce8de9ea4704d255faffa231177c80a9b8a47d14e0e97504b1b236c99",
+  "target": "research/lines/futures_trend_triple_screen/tools/stage032_checkpoint_request_provider.py",
+  "target_sha256": "0f89a712e5d8b091f43e20ee211e92183b6af74cb8d00b36799b556865ab2208",
+  "changed_lines": 4,
+  "protocol": "research/lines/futures_trend_triple_screen/stages/20261018_0304_stage032_checkpoint_request_provider.md",
+  "network_calls": 0,
+  "financial_replays": 0
+}

@@ -1,0 +1,102 @@
+{
+  "reviewed_at": "2026-10-18T03:01:24+08:00",
+  "reviewer": "ordered_financial_auditor",
+  "status": "failed_attempt_evidence_review_only_no_account_acceptance",
+  "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage028_ordered_account/C_TS",
+  "arm": "C_TS",
+  "scope": "one failed Stage028 process; saved failure and source control flow only; no account performance or accepted full-calendar audit",
+  "terminal_evidence": {
+    "source": "explicit root followup based on observed terminal completion",
+    "session_id": 67762,
+    "exit_code": 1,
+    "independently_observed_terminal_by_this_reviewer": false
+  },
+  "failure_status": "failed_closed_no_accepted_performance",
+  "error": "ValueError('execution_clock_identity_unmapped:signal_datetime')",
+  "started_at": "2026-10-18 02:50:55.674625+08:00",
+  "failed_at": "2026-10-18 02:58:52.921424+08:00",
+  "source_hashes": {
+    "run_failure.json": "a1fdefb4ceb36da07bbfdd99fb8d32ad8af1fa2015ea245f41aa075d87939db2",
+    "runner_used.py": "c05924175609c09ce0a44b451bcc97497be2b30012cb9c971886217c4960c6af",
+    "ordered_audits.json": "a077c8c3854ede3f1264ffff2f1af3dad72b829de2398a01aa34b65b49179872",
+    "ordered_fill_audit.csv": "4e7c18ac074bf0fe5a8f807a367d4dd16c5110b16934a7e244efa463ab14d695",
+    "minute_scan_requests.csv": "4881c5ddc8c454fda6ada891e34bfe9919555554fccc89d296a332dc1bf81fc7",
+    "qualified_wait_audit.json": "bd9771792ada3d09a2ad48c1ba842f35e7fe17fe0c302f12e040548b20296f9d",
+    "engine.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preflight_used.json": "bf9cdac769a2133decaf4cb356e0c14fb97d74bc6be8427922479b667e868661",
+    "stage028_ordered_engine.py": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+    "stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48"
+  },
+  "missing_core_artifacts": [
+    "summary.json",
+    "metrics.json",
+    "daily.csv",
+    "trades.csv",
+    "positions.csv",
+    "execution_clock.csv",
+    "execution_proxy_usage.csv",
+    "internal_equity_daily.csv",
+    "effective_parameters.json",
+    "actual_strategy_settings.json",
+    "input_manifest.json",
+    "run_provenance.json"
+  ],
+  "financial_payload_saved_in_failure": false,
+  "engine_log_bytes": 0,
+  "captured_bar_failures": [],
+  "minute_requests_saved": 487,
+  "minute_missing_bar_count": 0,
+  "minute_coverage_statuses": [
+    "complete"
+  ],
+  "ordered_audit_saved_shapes": {
+    "decision": 31179,
+    "fill": 100,
+    "execution": 152,
+    "pending": 0
+  },
+  "logic_findings": [
+    {
+      "priority": "P1",
+      "title": "后处理身份 guard 失败前未持久化完整金融账本",
+      "evidence": "runner_used.py:467 _run_live_c9 返回；494 clock signal_datetime 映射 guard 抛错；499—507 才写完整 frames/daily/clock/usage/equity；541—550 failure receipt 未保留 combined/frames/capture trades/usage/equity。",
+      "impact": "本次 terminal exit1 后，已保存产物无法独立重建完整现金、成本、库存、母单/胜率或七门；不能接受新 PnL。",
+      "repair_boundary": "新 attempt 在任何可失败元数据装饰之前原子 checkpoint 完整 combined、全部 frames、raw captured trades/usage/equity 及参数/source identity；纯导出允许从该不可变 checkpoint 重算。保留原失败目录，不把异常字段伪造为合法身份。"
+    }
+  ],
+  "recoverability": {
+    "full_ledger_from_saved_artifacts": false,
+    "partial_conditional_initial_audit_is_full_trade_ledger": false,
+    "engine_return_inferred_from_executed_control_flow": true,
+    "full_calendar_independently_verified": false,
+    "account_arithmetic_independently_verified": false,
+    "cannot_recover_reason": "conditional fill audit excludes unknown ordinary entries, roll/close/retry and complete positions/marks; empty log and failure JSON contain no full ledger; terminated process has no durable account checkpoint"
+  },
+  "p0_findings": 0,
+  "p1_findings": 1,
+  "p2_findings": 0,
+  "confidence": {
+    "failure_stage_and_saved_artifact_insufficiency": "high",
+    "engine_return": "high_by_frozen_control_flow_not_serialized_account",
+    "actual_economic_result": "not_assessed",
+    "root_cause_which_usage_rows_lack_identity": "not_isolated_without_persisted_usage_other_reviewer_assigned"
+  },
+  "external_research": "本轮仅审查失败与持久化边界；沿已冻结 Stage028 合同，不新增外部研究或 alpha 参数。",
+  "performance": {
+    "end_equity": null,
+    "total_return_pct": null,
+    "max_dd_pct": null,
+    "sharpe": null,
+    "total_slippage": null,
+    "total_trade_count": null,
+    "mother_order_win_rate_pct": null
+  },
+  "financial_attempts_this_source": 1,
+  "accepted_financial_accounts_this_review": 0,
+  "financial_engine_runs_by_reviewer": 0,
+  "model_training_runs": 0,
+  "overfitting_added_by_review": false,
+  "continued_value": "yes_minimal_export_identity_and_durable_checkpoint_fix_before_new_attempt; no_parameter_rescue",
+  "promotion_allowed": false,
+  "production_qualified": false
+}

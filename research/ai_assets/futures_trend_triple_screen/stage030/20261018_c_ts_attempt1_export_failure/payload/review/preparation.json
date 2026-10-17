@@ -1,0 +1,17 @@
+{
+  "status": "prepared_waiting_explicit_root_completion_evidence",
+  "reviewer": "ordered_financial_auditor",
+  "source_scope": "outputs/stage028_ordered_account/C_TS",
+  "script_sha256": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+  "finite_nonfinancial_fixtures": 3,
+  "financial_replays": 0,
+  "financial_metrics_computed": false,
+  "C_TS_financial_outputs_accessed": false,
+  "production_qualified": false,
+  "required_completion_evidence": {
+    "exit_code": 0,
+    "terminal_observed": true,
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage028_ordered_account/C_TS",
+    "summary_sha256": "<root-observed-complete-summary-sha256>"
+  }
+}
