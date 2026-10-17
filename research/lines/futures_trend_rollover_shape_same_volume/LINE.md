@@ -324,3 +324,11 @@
 - 六纯AI期限×起点组收益差中位均为正，但窗口重叠且3年1月组仅1窗；2025独立全年AI11.2233%低于49随机中位33.4433%。结论是长周期诊断较好、一年明显分化，未证明通用优势。
 - 1950账户存在执行数据缺口，5账户仍处诊断模式；历史模型与名单严格点时性未重建。最终独审PASS_FINAL_DIAGNOSTIC_REVIEW，P0/P1=0；只接受离线诊断，不晋升，不再扩大同历史抽样。
 - 记录：`stages/20261016_1253_stage257_multicycle_execution.md`。报告：`outputs/stage257_multicycle/report/snapshots/20261017T040020069259/index.html`；33窗与1955账户明细、五图和最终独审均已落盘。
+
+
+## Stage259 正确性修复合入与后续AI研究准备（2026-10-17 15:51 CST）
+
+- 已将会计权益与盘中成交时序修复独立合入master并推送，核心提交 `40570be4b`；正式0.5R保持开启，AI Top10非fu＋固定fu保持不变。
+- 关闭0.5R、全池/随机池、Stage251—258历史脚本和轻量证据仅归档并推送到 `codex/stage251-disable-half-r-stop`；不改变正式参数。68项针对性unittest通过，本轮无新回测、无新模型训练。
+- 已从根目录私有文件恢复本机CTP/行情/邮件配置，未打印或提交秘密。当前m0008与修复源码不一致，本机缺新的生产资格/manifest/activation/daily receipt，旧机器plist路径尚未受控迁移，故没有安装或启动生产任务。
+- 后续从master直接切 `codex/ai-training-data-expansion` 研究；它是修复源码基线，不宣称已成为新生产release。详细边界见Stage259记录。

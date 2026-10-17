@@ -27,3 +27,14 @@
 - 唯一远端origin为https://github.com/nayonglin/vnpy.git，GitHub连接器显示公开仓库、当前连接账号有admin/push权限。
 - 自动审批拒绝上传策略源码blob，原因是用户概括推送授权尚未明确该具体目的地。没有通过其他通道绕过；需在内容准备完成后由用户确认此仓库，才继续上传。
 - 本地精确提交、合入与新分支准备可继续，原始行情/凭证和其他任务改动均不进入提交。
+
+
+## 2026-10-17 15:51 CST 后续确认与交付
+
+- 用户已明确确认向公开仓库 `https://github.com/nayonglin/vnpy` 推送选定源码、测试、研究记录；不含凭证或原始行情。
+- GitHub连接器写入返回403；本机HTTPS无登录，但现有SSH密钥已验证为nayonglin。使用单次URL重写、原子快进推送，同一origin地址配置未修改，无强推。
+- 首次推送与独立readback一致：master=`40570be4beebe7bc6048d67464badad930aac1de`；研究分支=`c62934126550021b0f87d20e7cfbaf03e2421adf`。本补充为文档变更，后续提交SHA另以最终远端readback为准。
+- 已找到根目录 `vnpy_configuration.private.json`。已恢复CTP、邮件env及行情源三键，均0600、Git忽略且未跟踪；没有输出秘密、发邮件或连接CTP。先前“缺私有配置”已解决；旧资格信息没有复制成本机新资格。
+- 本机部署仍未完成：缺新物料的正式资格、release manifest、activation及daily receipt，且7份plist仍包含旧机器路径。当前m0008不能为修复后源码背书。部署skill要求“final qualification evidence with every P0/P1 count zero”和“two formal production CTP read-only captures”；未满足，故未运行Stage948安装/激活，不手工bootstrap或替换路径绕过资格。
+- 本轮仅运行过68项针对性unittest并全部通过，没有新增回测或AI训练。原研究归档已推送，后续从修复后的master直接切 `codex/ai-training-data-expansion`，不创建研究worktree。该源码研究基线尚不是一个已重新资格并安装的生产release。
+- 结束判断：无新增过拟合，变更依据会计与时序正确性；继续有价值，AI研究基线和历史实验已分离，生产安装需按真实资格闭环另行推进。
