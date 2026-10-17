@@ -1,0 +1,91 @@
+{
+  "url": "https://bundle.assets.ricequant.com/bundles_v4/rqbundle_202610.tar.bz2",
+  "expected_bytes": 1044966957,
+  "expected_etag": "\"8d5f2c84c715e9e28f9336a593377656\"",
+  "started_at": "2026-10-17T18:12:29.002466+08:00",
+  "status": "complete_selected_daily_data_extracted",
+  "saved": [
+    {
+      "file": "trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+    },
+    {
+      "file": "futures.h5",
+      "bytes": 377901136,
+      "sha256": "d288f6e4c7468981e95fbb0c1c9e2e1e66bfb99f5ba607843728aec535c8bfee"
+    },
+    {
+      "file": "instruments.pk",
+      "bytes": 9714521,
+      "sha256": "1edb7b5cade6c6f42f548c2de72b9af4765f001f6f6e59575309d595f7157805"
+    },
+    {
+      "file": "future_info.json",
+      "bytes": 1759224,
+      "sha256": "e040dbc9ebd26c6c1cdff6366e1ac258b583d15710fbe6d6418cf237c537919e"
+    }
+  ],
+  "resumed_from": 0,
+  "downloaded_bytes": 1044966957,
+  "updated_at": "2026-10-17T18:20:44.921449+08:00",
+  "archive_sha256": "4a9088e49e09ede379e466ce6bd57088dbcd443d446fc091e542d88c9ddbe29f",
+  "members": [
+    {
+      "name": "stocks.h5",
+      "size": 1309672704
+    },
+    {
+      "name": "indexes.h5",
+      "size": 1551265192
+    },
+    {
+      "name": "trading_dates.npy",
+      "size": 44824
+    },
+    {
+      "name": "funds.h5",
+      "size": 259898208
+    },
+    {
+      "name": "futures.h5",
+      "size": 377901136
+    },
+    {
+      "name": "yield_curve.h5",
+      "size": 959640
+    },
+    {
+      "name": "share_transformation.json",
+      "size": 3802
+    },
+    {
+      "name": "instruments.pk",
+      "size": 9714521
+    },
+    {
+      "name": "suspended_days.h5",
+      "size": 5752536
+    },
+    {
+      "name": "st_stock_days.h5",
+      "size": 7690072
+    },
+    {
+      "name": "split_factor.h5",
+      "size": 2940696
+    },
+    {
+      "name": "dividends.h5",
+      "size": 6721992
+    },
+    {
+      "name": "ex_cum_factor.h5",
+      "size": 3651120
+    },
+    {
+      "name": "future_info.json",
+      "size": 1759224
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+{
+  "generated_at": "2026-10-17T18:41:03.031913+08:00",
+  "scope": "Already-downloaded DCE/CZCE/GFEX recent daily tail, no batch redownload",
+  "metadata_safety": {
+    "pickletools_dangerous_opcodes": [],
+    "all_find_class_calls_rejected": true,
+    "persistent_load_rejected": true,
+    "recursive_primitive_validation": true
+  },
+  "source_mtimes_unchanged": true,
+  "catalog_total": 870,
+  "tail_total": 542,
+  "selection_reconstructed_equal": true,
+  "exchange_census": {
+    "CFFEX": {
+      "current_catalog": 28,
+      "tail_selected": 0,
+      "intersection": 0,
+      "catalog_not_in_tail": 28,
+      "tail_not_in_current": []
+    },
+    "CZCE": {
+      "current_catalog": 243,
+      "tail_selected": 244,
+      "intersection": 243,
+      "catalog_not_in_tail": 0,
+      "tail_not_in_current": [
+        "CZCE.ZC610"
+      ]
+    },
+    "DCE": {
+      "current_catalog": 250,
+      "tail_selected": 250,
+      "intersection": 250,
+      "catalog_not_in_tail": 0,
+      "tail_not_in_current": []
+    },
+    "GFEX": {
+      "current_catalog": 48,
+      "tail_selected": 48,
+      "intersection": 48,
+      "catalog_not_in_tail": 0,
+      "tail_not_in_current": []
+    },
+    "INE": {
+      "current_catalog": 63,
+      "tail_selected": 0,
+      "intersection": 0,
+      "catalog_not_in_tail": 63,
+      "tail_not_in_current": []
+    },
+    "SHFE": {
+      "current_catalog": 238,
+      "tail_selected": 0,
+      "intersection": 0,
+      "catalog_not_in_tail": 238,
+      "tail_not_in_current": []
+    }
+  },
+  "latest_date_distribution": {
+    "2026-10-16": 536,
+    "empty": 5,
+    "2026-10-14": 1
+  },
+  "reported_formed_rows_excluded": 364,
+  "independent_original_probe_formed_row_proofs": [
+    {
+      "symbol": "DCE.jm2701",
+      "initial_rows": 35,
+      "initial_after_cutoff_dates": [
+        "2026-10-19"
+      ],
+      "none_after_cutoff_in_final": true
+    },
+    {
+      "symbol": "CZCE.CF701",
+      "initial_rows": 35,
+      "initial_after_cutoff_dates": [
+        "2026-10-19"
+      ],
+      "none_after_cutoff_in_final": true
+    },
+    {
+      "symbol": "GFEX.si2611",
+      "initial_rows": 35,
+      "initial_after_cutoff_dates": [],
+      "none_after_cutoff_in_final": true
+    }
+  ],
+  "raw_csv_file_count": 542,
+  "raw_csv_fingerprint_sha256": "40f2bc38e8a7b56f084f159d49e1dd46aee136b04081cac5bcb2b9956191e74a",
+  "by_exchange": {
+    "CZCE": {
+      "symbols": 244,
+      "raw_rows": 6378,
+      "valid_traded_rows": 5127,
+      "zero_volume_rows_excluded": 1251
+    },
+    "DCE": {
+      "symbols": 250,
+      "raw_rows": 6651,
+      "valid_traded_rows": 6148,
+      "zero_volume_rows_excluded": 503
+    },
+    "GFEX": {
+      "symbols": 48,
+      "raw_rows": 1314,
+      "valid_traded_rows": 1166,
+      "zero_volume_rows_excluded": 148
+    }
+  },
+  "raw_rows": 14343,
+  "valid_traded_rows": 12441,
+  "zero_volume_rows_excluded": 1902,
+  "invalid_rows": 0,
+  "validation_errors": [],
+  "empty_series_checks": [
+    {
+      "symbol": "CZCE.CY708",
+      "rq_id": "CY2708",
+      "listed_date": "2026-08-17",
+      "delisted_date": "2027-08-13",
+      "rq_rows": 32,
+      "rq_date_min": "2026-08-17",
+      "rq_date_max": "2026-09-30",
+      "rq_all_stored_volume_zero": true,
+      "rq_volume_sum": 0.0,
+      "classification": "real listed contract; RQ stored no-trade encoding through 09-30; TQ empty does not prove every later historical day had no trades"
+    },
+    {
+      "symbol": "CZCE.JR611",
+      "rq_id": "JR2611",
+      "listed_date": "2025-11-17",
+      "delisted_date": "2026-11-13",
+      "rq_rows": 214,
+      "rq_date_min": "2025-11-17",
+      "rq_date_max": "2026-09-30",
+      "rq_all_stored_volume_zero": true,
+      "rq_volume_sum": 0.0,
+      "classification": "real listed contract; RQ stored no-trade encoding through 09-30; TQ empty does not prove every later historical day had no trades"
+    },
+    {
+      "symbol": "CZCE.JR707",
+      "rq_id": "JR2707",
+      "listed_date": "2026-07-15",
+      "delisted_date": "2027-07-14",
+      "rq_rows": 55,
+      "rq_date_min": "2026-07-15",
+      "rq_date_max": "2026-09-30",
+      "rq_all_stored_volume_zero": true,
+      "rq_volume_sum": 0.0,
+      "classification": "real listed contract; RQ stored no-trade encoding through 09-30; TQ empty does not prove every later historical day had no trades"
+    },
+    {
+      "symbol": "CZCE.PM703",
+      "rq_id": "PM2703",
+      "listed_date": "2026-03-16",
+      "delisted_date": "2027-03-12",
+      "rq_rows": 137,
+      "rq_date_min": "2026-03-16",
+      "rq_date_max": "2026-09-30",
+      "rq_all_stored_volume_zero": true,
+      "rq_volume_sum": 0.0,
+      "classification": "real listed contract; RQ stored no-trade encoding through 09-30; TQ empty does not prove every later historical day had no trades"
+    },
+    {
+      "symbol": "CZCE.RS706",
+      "rq_id": "RS2706",
+      "listed_date": "2026-09-16",
+      "delisted_date": "2027-06-14",
+      "rq_rows": 10,
+      "rq_date_min": "2026-09-16",
+      "rq_date_max": "2026-09-30",
+      "rq_all_stored_volume_zero": true,
+      "rq_volume_sum": 0.0,
+      "classification": "real listed contract; RQ stored no-trade encoding through 09-30; TQ empty does not prove every later historical day had no trades"
+    }
+  ],
+  "readonly_empty_quote_result": {
+    "listed_unexpired_static_metadata_ready": 5,
+    "no_observable_latest_trade_price_volume_zero": 5,
+    "actual_quote_message_timestamp_present": 5
+  },
+  "rq_snapshot_metadata_absent_symbols": [
+    "CZCE.ZC710",
+    "DCE.l2704F",
+    "DCE.pp2704F",
+    "DCE.v2704F"
+  ],
+  "ambiguous_contemporaneous_metadata": [],
+  "rq_metadata_dataset_missing": [],
+  "F_month_average_current_contracts": [
+    {
+      "symbol": "DCE.l2611F",
+      "rq_order_book_id": "L2611F",
+      "rq_maturity_date": "2026-10-30",
+      "nominal_contract_yymm": "2611",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.l2612F",
+      "rq_order_book_id": "L2612F",
+      "rq_maturity_date": "2026-11-30",
+      "nominal_contract_yymm": "2612",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.l2701F",
+      "rq_order_book_id": "L2701F",
+      "rq_maturity_date": "2026-12-31",
+      "nominal_contract_yymm": "2701",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.l2702F",
+      "rq_order_book_id": "L2702F",
+      "rq_maturity_date": "2027-01-29",
+      "nominal_contract_yymm": "2702",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.l2703F",
+      "rq_order_book_id": "L2703F",
+      "rq_maturity_date": "2027-02-26",
+      "nominal_contract_yymm": "2703",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.l2704F",
+      "rq_order_book_id": null,
+      "rq_maturity_date": null,
+      "nominal_contract_yymm": "2704",
+      "last_date": "2026-10-16",
+      "raw_rows": 7
+    },
+    {
+      "symbol": "DCE.pp2611F",
+      "rq_order_book_id": "PP2611F",
+      "rq_maturity_date": "2026-10-30",
+      "nominal_contract_yymm": "2611",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.pp2612F",
+      "rq_order_book_id": "PP2612F",
+      "rq_maturity_date": "2026-11-30",
+      "nominal_contract_yymm": "2612",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.pp2701F",
+      "rq_order_book_id": "PP2701F",
+      "rq_maturity_date": "2026-12-31",
+      "nominal_contract_yymm": "2701",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.pp2702F",
+      "rq_order_book_id": "PP2702F",
+      "rq_maturity_date": "2027-01-29",
+      "nominal_contract_yymm": "2702",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.pp2703F",
+      "rq_order_book_id": "PP2703F",
+      "rq_maturity_date": "2027-02-26",
+      "nominal_contract_yymm": "2703",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.pp2704F",
+      "rq_order_book_id": null,
+      "rq_maturity_date": null,
+      "nominal_contract_yymm": "2704",
+      "last_date": "2026-10-16",
+      "raw_rows": 7
+    },
+    {
+      "symbol": "DCE.v2611F",
+      "rq_order_book_id": "V2611F",
+      "rq_maturity_date": "2026-10-30",
+      "nominal_contract_yymm": "2611",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.v2612F",
+      "rq_order_book_id": "V2612F",
+      "rq_maturity_date": "2026-11-30",
+      "nominal_contract_yymm": "2612",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.v2701F",
+      "rq_order_book_id": "V2701F",
+      "rq_maturity_date": "2026-12-31",
+      "nominal_contract_yymm": "2701",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.v2702F",
+      "rq_order_book_id": "V2702F",
+      "rq_maturity_date": "2027-01-29",
+      "nominal_contract_yymm": "2702",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.v2703F",
+      "rq_order_book_id": "V2703F",
+      "rq_maturity_date": "2027-02-26",
+      "nominal_contract_yymm": "2703",
+      "last_date": "2026-10-16",
+      "raw_rows": 28
+    },
+    {
+      "symbol": "DCE.v2704F",
+      "rq_order_book_id": null,
+      "rq_maturity_date": null,
+      "nominal_contract_yymm": "2704",
+      "last_date": "2026-10-16",
+      "raw_rows": 7
+    }
+  ],
+  "F_real_metadata_count_all_vintages": 42,
+  "F_h5_supplement_to_prior_plain_contract_review": {
+    "real_metadata_contracts": 42,
+    "dataset_count": 42,
+    "missing_datasets": [],
+    "yearly_rows": {
+      "2026": {
+        "raw_rows": 3258,
+        "zero_volume_rows_excluded": 290,
+        "valid_traded_rows": 2964,
+        "invalid_traded_rows": 4
+      },
+      "2025": {
+        "raw_rows": 612,
+        "valid_traded_rows": 513,
+        "zero_volume_rows_excluded": 98,
+        "invalid_traded_rows": 1
+      }
+    },
+    "missing_expected_calendar_days": 0
+  },
+  "september_overlap_by_exchange": {
+    "CZCE": {
+      "tq_september_raw_rows": 4716,
+      "matched_raw_keys": 4716,
+      "both_traded": 3838,
+      "ohlc_equal": 3838,
+      "volume_equal": 3838,
+      "close_oi_equal_rq_oi": 3838,
+      "open_oi_equal_rq_oi": 181,
+      "not_both_traded_excluded": 878
+    },
+    "DCE": {
+      "tq_september_raw_rows": 4901,
+      "matched_raw_keys": 4901,
+      "both_traded": 4540,
+      "ohlc_equal": 4528,
+      "volume_equal": 4540,
+      "close_oi_equal_rq_oi": 4540,
+      "open_oi_equal_rq_oi": 172,
+      "not_both_traded_excluded": 361,
+      "ohlc_different": 12
+    },
+    "GFEX": {
+      "tq_september_raw_rows": 978,
+      "matched_raw_keys": 978,
+      "both_traded": 865,
+      "ohlc_equal": 864,
+      "volume_equal": 865,
+      "close_oi_equal_rq_oi": 865,
+      "open_oi_equal_rq_oi": 62,
+      "not_both_traded_excluded": 113,
+      "ohlc_different": 1
+    }
+  },
+  "september_overlap_totals": {
+    "tq_september_raw_rows": 10595,
+    "matched_raw_keys": 10595,
+    "both_traded": 9243,
+    "ohlc_equal": 9230,
+    "volume_equal": 9243,
+    "close_oi_equal_rq_oi": 9243,
+    "open_oi_equal_rq_oi": 415,
+    "not_both_traded_excluded": 1352,
+    "ohlc_different": 13
+  },
+  "september_field_difference_rows": 13,
+  "post_rq_cutoff_observed_raw_rows": 3748,
+  "post_rq_cutoff_valid_traded_rows": 3198,
+  "post_rq_cutoff_valid_traded_on_10_16": 452,
+  "prior_cutoff_P1": "The 09-30-only limitation is resolved for actually observed tail rows through 10-16, not for unobserved zero-trade days or other exchanges.",
+  "F_scope_correction": "Previous plain-YYMM DCE review excluded actual F monthly-average contracts together with nonstandard codes. Those earlier counts apply only to ordinary contracts; this tail review includes all 18 current F contracts and preserves suffix F. Named contract YYMM and maturity date may differ.",
+  "unit_semantics": "TQ volume compared unscaled with RQ in September 2026; TQ close_oi compared with daily RQ open_interest. TQ open_oi is a different opening-time field and must not silently replace closing OI.",
+  "no_trade_policy": "All V0 rows excluded from genuine bars; empty quotes prove only latest observable state, never blanket historical zero volume.",
+  "network_calls_in_offline_review": 0,
+  "quote_probe_symbols": 5,
+  "batch_redownloads": 0,
+  "database_write_calls": 0,
+  "backtest_calls": 0,
+  "training_calls": 0,
+  "frozen_at": "2026-10-17T18:42:51.414378+08:00",
+  "final_empty_quote_sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60",
+  "quote_probe_history": {
+    "unique_symbols": 5,
+    "small_probe_runs": 2,
+    "reason_for_second_run": "Initial static metadata was ready before actual quote message values; repeated only the same five symbols with a bounded observation window."
+  },
+  "final_empty_quote_classification": "quote_messages_received_no_observable_latest_trade_price_volume_and_oi_zero"
+}

@@ -1,0 +1,4895 @@
+{
+  "started_at": "2026-10-17T18:23:56.108019+08:00",
+  "cutoff": "2026-10-16",
+  "start": "2026-09-01",
+  "duration_seconds": 86400,
+  "data_length": 35,
+  "broker_connections": 0,
+  "order_api_calls": 0,
+  "cancel_api_calls": 0,
+  "items": {
+    "CZCE.AP610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP610.csv"
+    },
+    "CZCE.AP611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP611.csv"
+    },
+    "CZCE.AP612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP612.csv"
+    },
+    "CZCE.AP701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP701.csv"
+    },
+    "CZCE.AP703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP703.csv"
+    },
+    "CZCE.AP704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP704.csv"
+    },
+    "CZCE.AP705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_AP705.csv"
+    },
+    "CZCE.CF611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF611.csv"
+    },
+    "CZCE.CF701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF701.csv"
+    },
+    "CZCE.CF703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF703.csv"
+    },
+    "CZCE.CF705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF705.csv"
+    },
+    "CZCE.CF707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF707.csv"
+    },
+    "CZCE.CF709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CF709.csv"
+    },
+    "CZCE.CJ612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ612.csv"
+    },
+    "CZCE.CJ701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ701.csv"
+    },
+    "CZCE.CJ703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ703.csv"
+    },
+    "CZCE.CJ705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ705.csv"
+    },
+    "CZCE.CJ707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ707.csv"
+    },
+    "CZCE.CJ709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CJ709.csv"
+    },
+    "CZCE.CY610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY610.csv"
+    },
+    "CZCE.CY611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY611.csv"
+    },
+    "CZCE.CY612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY612.csv"
+    },
+    "CZCE.CY701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY701.csv"
+    },
+    "CZCE.CY702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY702.csv"
+    },
+    "CZCE.CY703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY703.csv"
+    },
+    "CZCE.CY704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY704.csv"
+    },
+    "CZCE.CY705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY705.csv"
+    },
+    "CZCE.CY706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY706.csv"
+    },
+    "CZCE.CY707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY707.csv"
+    },
+    "CZCE.CY708": {
+      "status": "downloaded",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_CY708.csv"
+    },
+    "CZCE.CY709": {
+      "status": "downloaded",
+      "rows": 3,
+      "first_date": "2026-10-14",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_CY709.csv"
+    },
+    "CZCE.FG610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG610.csv"
+    },
+    "CZCE.FG611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG611.csv"
+    },
+    "CZCE.FG612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG612.csv"
+    },
+    "CZCE.FG701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG701.csv"
+    },
+    "CZCE.FG702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG702.csv"
+    },
+    "CZCE.FG703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG703.csv"
+    },
+    "CZCE.FG704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG704.csv"
+    },
+    "CZCE.FG705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG705.csv"
+    },
+    "CZCE.FG706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG706.csv"
+    },
+    "CZCE.FG707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG707.csv"
+    },
+    "CZCE.FG708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG708.csv"
+    },
+    "CZCE.FG709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_FG709.csv"
+    },
+    "CZCE.JR611": {
+      "status": "downloaded",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR611.csv"
+    },
+    "CZCE.JR701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR701.csv"
+    },
+    "CZCE.JR703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR703.csv"
+    },
+    "CZCE.JR705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR705.csv"
+    },
+    "CZCE.JR707": {
+      "status": "downloaded",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR707.csv"
+    },
+    "CZCE.JR709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_JR709.csv"
+    },
+    "CZCE.MA610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA610.csv"
+    },
+    "CZCE.MA611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA611.csv"
+    },
+    "CZCE.MA612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA612.csv"
+    },
+    "CZCE.MA701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA701.csv"
+    },
+    "CZCE.MA702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA702.csv"
+    },
+    "CZCE.MA703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA703.csv"
+    },
+    "CZCE.MA704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA704.csv"
+    },
+    "CZCE.MA705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA705.csv"
+    },
+    "CZCE.MA706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA706.csv"
+    },
+    "CZCE.MA707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA707.csv"
+    },
+    "CZCE.MA708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA708.csv"
+    },
+    "CZCE.MA709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_MA709.csv"
+    },
+    "CZCE.OI611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI611.csv"
+    },
+    "CZCE.OI701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI701.csv"
+    },
+    "CZCE.OI703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI703.csv"
+    },
+    "CZCE.OI705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI705.csv"
+    },
+    "CZCE.OI707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI707.csv"
+    },
+    "CZCE.OI709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_OI709.csv"
+    },
+    "CZCE.PF610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF610.csv"
+    },
+    "CZCE.PF611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF611.csv"
+    },
+    "CZCE.PF612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF612.csv"
+    },
+    "CZCE.PF701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF701.csv"
+    },
+    "CZCE.PF702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF702.csv"
+    },
+    "CZCE.PF703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF703.csv"
+    },
+    "CZCE.PF704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF704.csv"
+    },
+    "CZCE.PF705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF705.csv"
+    },
+    "CZCE.PF706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF706.csv"
+    },
+    "CZCE.PF707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF707.csv"
+    },
+    "CZCE.PF708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF708.csv"
+    },
+    "CZCE.PF709": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PF709.csv"
+    },
+    "CZCE.PK610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK610.csv"
+    },
+    "CZCE.PK611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK611.csv"
+    },
+    "CZCE.PK612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK612.csv"
+    },
+    "CZCE.PK701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK701.csv"
+    },
+    "CZCE.PK703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK703.csv"
+    },
+    "CZCE.PK704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK704.csv"
+    },
+    "CZCE.PK705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PK705.csv"
+    },
+    "CZCE.PL610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL610.csv"
+    },
+    "CZCE.PL611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL611.csv"
+    },
+    "CZCE.PL612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL612.csv"
+    },
+    "CZCE.PL701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL701.csv"
+    },
+    "CZCE.PL702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL702.csv"
+    },
+    "CZCE.PL703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL703.csv"
+    },
+    "CZCE.PL704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL704.csv"
+    },
+    "CZCE.PL705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL705.csv"
+    },
+    "CZCE.PL706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL706.csv"
+    },
+    "CZCE.PL707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL707.csv"
+    },
+    "CZCE.PL708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL708.csv"
+    },
+    "CZCE.PL709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PL709.csv"
+    },
+    "CZCE.PM611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM611.csv"
+    },
+    "CZCE.PM701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM701.csv"
+    },
+    "CZCE.PM703": {
+      "status": "downloaded",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM703.csv"
+    },
+    "CZCE.PM705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM705.csv"
+    },
+    "CZCE.PM707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM707.csv"
+    },
+    "CZCE.PM709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_PM709.csv"
+    },
+    "CZCE.PR610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR610.csv"
+    },
+    "CZCE.PR611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR611.csv"
+    },
+    "CZCE.PR612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR612.csv"
+    },
+    "CZCE.PR701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR701.csv"
+    },
+    "CZCE.PR702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR702.csv"
+    },
+    "CZCE.PR703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR703.csv"
+    },
+    "CZCE.PR704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR704.csv"
+    },
+    "CZCE.PR705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR705.csv"
+    },
+    "CZCE.PR706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR706.csv"
+    },
+    "CZCE.PR707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR707.csv"
+    },
+    "CZCE.PR708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR708.csv"
+    },
+    "CZCE.PR709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PR709.csv"
+    },
+    "CZCE.PX610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX610.csv"
+    },
+    "CZCE.PX611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX611.csv"
+    },
+    "CZCE.PX612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX612.csv"
+    },
+    "CZCE.PX701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX701.csv"
+    },
+    "CZCE.PX702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX702.csv"
+    },
+    "CZCE.PX703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX703.csv"
+    },
+    "CZCE.PX704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX704.csv"
+    },
+    "CZCE.PX705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX705.csv"
+    },
+    "CZCE.PX706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX706.csv"
+    },
+    "CZCE.PX707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX707.csv"
+    },
+    "CZCE.PX708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX708.csv"
+    },
+    "CZCE.PX709": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_PX709.csv"
+    },
+    "CZCE.RI611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI611.csv"
+    },
+    "CZCE.RI701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI701.csv"
+    },
+    "CZCE.RI703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI703.csv"
+    },
+    "CZCE.RI705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI705.csv"
+    },
+    "CZCE.RI707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI707.csv"
+    },
+    "CZCE.RI709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RI709.csv"
+    },
+    "CZCE.RM611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM611.csv"
+    },
+    "CZCE.RM701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM701.csv"
+    },
+    "CZCE.RM703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM703.csv"
+    },
+    "CZCE.RM705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM705.csv"
+    },
+    "CZCE.RM707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM707.csv"
+    },
+    "CZCE.RM708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM708.csv"
+    },
+    "CZCE.RM709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_RM709.csv"
+    },
+    "CZCE.RS611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS611.csv"
+    },
+    "CZCE.RS701": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS701.csv"
+    },
+    "CZCE.RS703": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS703.csv"
+    },
+    "CZCE.RS706": {
+      "status": "downloaded",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS706.csv"
+    },
+    "CZCE.RS707": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS707.csv"
+    },
+    "CZCE.RS709": {
+      "status": "downloaded",
+      "rows": 17,
+      "first_date": "2026-09-16",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_RS709.csv"
+    },
+    "CZCE.SA610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA610.csv"
+    },
+    "CZCE.SA611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA611.csv"
+    },
+    "CZCE.SA612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA612.csv"
+    },
+    "CZCE.SA701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA701.csv"
+    },
+    "CZCE.SA702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA702.csv"
+    },
+    "CZCE.SA703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA703.csv"
+    },
+    "CZCE.SA704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA704.csv"
+    },
+    "CZCE.SA705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA705.csv"
+    },
+    "CZCE.SA706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA706.csv"
+    },
+    "CZCE.SA707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA707.csv"
+    },
+    "CZCE.SA708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA708.csv"
+    },
+    "CZCE.SA709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SA709.csv"
+    },
+    "CZCE.SF610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF610.csv"
+    },
+    "CZCE.SF611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF611.csv"
+    },
+    "CZCE.SF612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF612.csv"
+    },
+    "CZCE.SF701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF701.csv"
+    },
+    "CZCE.SF702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF702.csv"
+    },
+    "CZCE.SF703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF703.csv"
+    },
+    "CZCE.SF704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF704.csv"
+    },
+    "CZCE.SF705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF705.csv"
+    },
+    "CZCE.SF706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF706.csv"
+    },
+    "CZCE.SF707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF707.csv"
+    },
+    "CZCE.SF708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF708.csv"
+    },
+    "CZCE.SF709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SF709.csv"
+    },
+    "CZCE.SH610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH610.csv"
+    },
+    "CZCE.SH611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH611.csv"
+    },
+    "CZCE.SH612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH612.csv"
+    },
+    "CZCE.SH701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH701.csv"
+    },
+    "CZCE.SH702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH702.csv"
+    },
+    "CZCE.SH703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH703.csv"
+    },
+    "CZCE.SH704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH704.csv"
+    },
+    "CZCE.SH705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH705.csv"
+    },
+    "CZCE.SH706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH706.csv"
+    },
+    "CZCE.SH707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH707.csv"
+    },
+    "CZCE.SH708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH708.csv"
+    },
+    "CZCE.SH709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SH709.csv"
+    },
+    "CZCE.SM610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM610.csv"
+    },
+    "CZCE.SM611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM611.csv"
+    },
+    "CZCE.SM612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM612.csv"
+    },
+    "CZCE.SM701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM701.csv"
+    },
+    "CZCE.SM702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM702.csv"
+    },
+    "CZCE.SM703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM703.csv"
+    },
+    "CZCE.SM704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM704.csv"
+    },
+    "CZCE.SM705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM705.csv"
+    },
+    "CZCE.SM706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM706.csv"
+    },
+    "CZCE.SM707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM707.csv"
+    },
+    "CZCE.SM708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM708.csv"
+    },
+    "CZCE.SM709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_SM709.csv"
+    },
+    "CZCE.SR611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR611.csv"
+    },
+    "CZCE.SR701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR701.csv"
+    },
+    "CZCE.SR703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR703.csv"
+    },
+    "CZCE.SR705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR705.csv"
+    },
+    "CZCE.SR707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR707.csv"
+    },
+    "CZCE.SR709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_SR709.csv"
+    },
+    "CZCE.TA610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA610.csv"
+    },
+    "CZCE.TA611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA611.csv"
+    },
+    "CZCE.TA612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA612.csv"
+    },
+    "CZCE.TA701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA701.csv"
+    },
+    "CZCE.TA702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA702.csv"
+    },
+    "CZCE.TA703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA703.csv"
+    },
+    "CZCE.TA704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA704.csv"
+    },
+    "CZCE.TA705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA705.csv"
+    },
+    "CZCE.TA706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA706.csv"
+    },
+    "CZCE.TA707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA707.csv"
+    },
+    "CZCE.TA708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA708.csv"
+    },
+    "CZCE.TA709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_TA709.csv"
+    },
+    "CZCE.UR610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR610.csv"
+    },
+    "CZCE.UR611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR611.csv"
+    },
+    "CZCE.UR612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR612.csv"
+    },
+    "CZCE.UR701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR701.csv"
+    },
+    "CZCE.UR702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR702.csv"
+    },
+    "CZCE.UR703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR703.csv"
+    },
+    "CZCE.UR704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR704.csv"
+    },
+    "CZCE.UR705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR705.csv"
+    },
+    "CZCE.UR706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR706.csv"
+    },
+    "CZCE.UR707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR707.csv"
+    },
+    "CZCE.UR708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR708.csv"
+    },
+    "CZCE.UR709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_UR709.csv"
+    },
+    "CZCE.WH611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH611.csv"
+    },
+    "CZCE.WH701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH701.csv"
+    },
+    "CZCE.WH703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH703.csv"
+    },
+    "CZCE.WH705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH705.csv"
+    },
+    "CZCE.WH707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH707.csv"
+    },
+    "CZCE.WH709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_WH709.csv"
+    },
+    "CZCE.ZC610": {
+      "status": "downloaded",
+      "rows": 26,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-14",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/CZCE_ZC610.csv"
+    },
+    "CZCE.ZC611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC611.csv"
+    },
+    "CZCE.ZC612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC612.csv"
+    },
+    "CZCE.ZC701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC701.csv"
+    },
+    "CZCE.ZC702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC702.csv"
+    },
+    "CZCE.ZC703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC703.csv"
+    },
+    "CZCE.ZC704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC704.csv"
+    },
+    "CZCE.ZC705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC705.csv"
+    },
+    "CZCE.ZC706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC706.csv"
+    },
+    "CZCE.ZC707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC707.csv"
+    },
+    "CZCE.ZC708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC708.csv"
+    },
+    "CZCE.ZC709": {
+      "status": "downloaded",
+      "rows": 23,
+      "first_date": "2026-09-08",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC709.csv"
+    },
+    "CZCE.ZC710": {
+      "status": "downloaded",
+      "rows": 2,
+      "first_date": "2026-10-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/CZCE_ZC710.csv"
+    },
+    "DCE.a2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2611.csv"
+    },
+    "DCE.a2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2701.csv"
+    },
+    "DCE.a2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2703.csv"
+    },
+    "DCE.a2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2705.csv"
+    },
+    "DCE.a2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2707.csv"
+    },
+    "DCE.a2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_a2709.csv"
+    },
+    "DCE.b2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2610.csv"
+    },
+    "DCE.b2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2611.csv"
+    },
+    "DCE.b2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2612.csv"
+    },
+    "DCE.b2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2701.csv"
+    },
+    "DCE.b2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2702.csv"
+    },
+    "DCE.b2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2703.csv"
+    },
+    "DCE.b2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2704.csv"
+    },
+    "DCE.b2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2705.csv"
+    },
+    "DCE.b2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2706.csv"
+    },
+    "DCE.b2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2707.csv"
+    },
+    "DCE.b2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2708.csv"
+    },
+    "DCE.b2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_b2709.csv"
+    },
+    "DCE.bb2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2611.csv"
+    },
+    "DCE.bb2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2701.csv"
+    },
+    "DCE.bb2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2703.csv"
+    },
+    "DCE.bb2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2705.csv"
+    },
+    "DCE.bb2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2707.csv"
+    },
+    "DCE.bb2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_bb2709.csv"
+    },
+    "DCE.bz2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2610.csv"
+    },
+    "DCE.bz2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2611.csv"
+    },
+    "DCE.bz2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2612.csv"
+    },
+    "DCE.bz2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2701.csv"
+    },
+    "DCE.bz2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2702.csv"
+    },
+    "DCE.bz2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2703.csv"
+    },
+    "DCE.bz2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2704.csv"
+    },
+    "DCE.bz2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2705.csv"
+    },
+    "DCE.bz2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2706.csv"
+    },
+    "DCE.bz2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2707.csv"
+    },
+    "DCE.bz2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2708.csv"
+    },
+    "DCE.bz2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_bz2709.csv"
+    },
+    "DCE.c2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2611.csv"
+    },
+    "DCE.c2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2701.csv"
+    },
+    "DCE.c2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2703.csv"
+    },
+    "DCE.c2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2705.csv"
+    },
+    "DCE.c2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2707.csv"
+    },
+    "DCE.c2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_c2709.csv"
+    },
+    "DCE.cs2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2611.csv"
+    },
+    "DCE.cs2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2701.csv"
+    },
+    "DCE.cs2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2703.csv"
+    },
+    "DCE.cs2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2705.csv"
+    },
+    "DCE.cs2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2707.csv"
+    },
+    "DCE.cs2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_cs2709.csv"
+    },
+    "DCE.eb2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2610.csv"
+    },
+    "DCE.eb2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2611.csv"
+    },
+    "DCE.eb2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2612.csv"
+    },
+    "DCE.eb2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2701.csv"
+    },
+    "DCE.eb2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2702.csv"
+    },
+    "DCE.eb2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2703.csv"
+    },
+    "DCE.eb2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2704.csv"
+    },
+    "DCE.eb2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2705.csv"
+    },
+    "DCE.eb2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2706.csv"
+    },
+    "DCE.eb2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2707.csv"
+    },
+    "DCE.eb2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2708.csv"
+    },
+    "DCE.eb2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eb2709.csv"
+    },
+    "DCE.eg2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2610.csv"
+    },
+    "DCE.eg2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2611.csv"
+    },
+    "DCE.eg2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2612.csv"
+    },
+    "DCE.eg2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2701.csv"
+    },
+    "DCE.eg2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2702.csv"
+    },
+    "DCE.eg2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2703.csv"
+    },
+    "DCE.eg2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2704.csv"
+    },
+    "DCE.eg2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2705.csv"
+    },
+    "DCE.eg2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2706.csv"
+    },
+    "DCE.eg2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2707.csv"
+    },
+    "DCE.eg2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2708.csv"
+    },
+    "DCE.eg2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_eg2709.csv"
+    },
+    "DCE.fb2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2610.csv"
+    },
+    "DCE.fb2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2611.csv"
+    },
+    "DCE.fb2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2612.csv"
+    },
+    "DCE.fb2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2701.csv"
+    },
+    "DCE.fb2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2702.csv"
+    },
+    "DCE.fb2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2703.csv"
+    },
+    "DCE.fb2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2704.csv"
+    },
+    "DCE.fb2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2705.csv"
+    },
+    "DCE.fb2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2706.csv"
+    },
+    "DCE.fb2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2707.csv"
+    },
+    "DCE.fb2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2708.csv"
+    },
+    "DCE.fb2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_fb2709.csv"
+    },
+    "DCE.i2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2610.csv"
+    },
+    "DCE.i2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2611.csv"
+    },
+    "DCE.i2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2612.csv"
+    },
+    "DCE.i2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2701.csv"
+    },
+    "DCE.i2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2702.csv"
+    },
+    "DCE.i2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2703.csv"
+    },
+    "DCE.i2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2704.csv"
+    },
+    "DCE.i2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2705.csv"
+    },
+    "DCE.i2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2706.csv"
+    },
+    "DCE.i2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2707.csv"
+    },
+    "DCE.i2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2708.csv"
+    },
+    "DCE.i2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_i2709.csv"
+    },
+    "DCE.j2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2610.csv"
+    },
+    "DCE.j2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2611.csv"
+    },
+    "DCE.j2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2612.csv"
+    },
+    "DCE.j2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2701.csv"
+    },
+    "DCE.j2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2702.csv"
+    },
+    "DCE.j2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2703.csv"
+    },
+    "DCE.j2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2704.csv"
+    },
+    "DCE.j2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2705.csv"
+    },
+    "DCE.j2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2706.csv"
+    },
+    "DCE.j2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2707.csv"
+    },
+    "DCE.j2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2708.csv"
+    },
+    "DCE.j2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_j2709.csv"
+    },
+    "DCE.jd2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2610.csv"
+    },
+    "DCE.jd2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2611.csv"
+    },
+    "DCE.jd2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2612.csv"
+    },
+    "DCE.jd2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2701.csv"
+    },
+    "DCE.jd2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2702.csv"
+    },
+    "DCE.jd2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2703.csv"
+    },
+    "DCE.jd2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2704.csv"
+    },
+    "DCE.jd2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2705.csv"
+    },
+    "DCE.jd2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2706.csv"
+    },
+    "DCE.jd2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2707.csv"
+    },
+    "DCE.jd2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2708.csv"
+    },
+    "DCE.jd2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_jd2709.csv"
+    },
+    "DCE.jm2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2610.csv"
+    },
+    "DCE.jm2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2611.csv"
+    },
+    "DCE.jm2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2612.csv"
+    },
+    "DCE.jm2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2701.csv"
+    },
+    "DCE.jm2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2702.csv"
+    },
+    "DCE.jm2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2703.csv"
+    },
+    "DCE.jm2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2704.csv"
+    },
+    "DCE.jm2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2705.csv"
+    },
+    "DCE.jm2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2706.csv"
+    },
+    "DCE.jm2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2707.csv"
+    },
+    "DCE.jm2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2708.csv"
+    },
+    "DCE.jm2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_jm2709.csv"
+    },
+    "DCE.l2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2610.csv"
+    },
+    "DCE.l2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2611.csv"
+    },
+    "DCE.l2611F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2611F.csv"
+    },
+    "DCE.l2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2612.csv"
+    },
+    "DCE.l2612F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2612F.csv"
+    },
+    "DCE.l2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2701.csv"
+    },
+    "DCE.l2701F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2701F.csv"
+    },
+    "DCE.l2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2702.csv"
+    },
+    "DCE.l2702F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2702F.csv"
+    },
+    "DCE.l2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2703.csv"
+    },
+    "DCE.l2703F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2703F.csv"
+    },
+    "DCE.l2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2704.csv"
+    },
+    "DCE.l2704F": {
+      "status": "downloaded",
+      "rows": 7,
+      "first_date": "2026-10-08",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2704F.csv"
+    },
+    "DCE.l2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2705.csv"
+    },
+    "DCE.l2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2706.csv"
+    },
+    "DCE.l2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2707.csv"
+    },
+    "DCE.l2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2708.csv"
+    },
+    "DCE.l2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_l2709.csv"
+    },
+    "DCE.lg2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2611.csv"
+    },
+    "DCE.lg2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2701.csv"
+    },
+    "DCE.lg2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2703.csv"
+    },
+    "DCE.lg2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2705.csv"
+    },
+    "DCE.lg2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2707.csv"
+    },
+    "DCE.lg2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lg2709.csv"
+    },
+    "DCE.lh2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2611.csv"
+    },
+    "DCE.lh2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2701.csv"
+    },
+    "DCE.lh2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2703.csv"
+    },
+    "DCE.lh2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2705.csv"
+    },
+    "DCE.lh2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2707.csv"
+    },
+    "DCE.lh2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/DCE_lh2709.csv"
+    },
+    "DCE.m2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2611.csv"
+    },
+    "DCE.m2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2612.csv"
+    },
+    "DCE.m2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2701.csv"
+    },
+    "DCE.m2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2703.csv"
+    },
+    "DCE.m2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2705.csv"
+    },
+    "DCE.m2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2707.csv"
+    },
+    "DCE.m2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2708.csv"
+    },
+    "DCE.m2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_m2709.csv"
+    },
+    "DCE.p2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2610.csv"
+    },
+    "DCE.p2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2611.csv"
+    },
+    "DCE.p2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2612.csv"
+    },
+    "DCE.p2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2701.csv"
+    },
+    "DCE.p2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2702.csv"
+    },
+    "DCE.p2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2703.csv"
+    },
+    "DCE.p2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2704.csv"
+    },
+    "DCE.p2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2705.csv"
+    },
+    "DCE.p2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2706.csv"
+    },
+    "DCE.p2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2707.csv"
+    },
+    "DCE.p2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2708.csv"
+    },
+    "DCE.p2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_p2709.csv"
+    },
+    "DCE.pg2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2610.csv"
+    },
+    "DCE.pg2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2611.csv"
+    },
+    "DCE.pg2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2612.csv"
+    },
+    "DCE.pg2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2701.csv"
+    },
+    "DCE.pg2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2702.csv"
+    },
+    "DCE.pg2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2703.csv"
+    },
+    "DCE.pg2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2704.csv"
+    },
+    "DCE.pg2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2705.csv"
+    },
+    "DCE.pg2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2706.csv"
+    },
+    "DCE.pg2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2707.csv"
+    },
+    "DCE.pg2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2708.csv"
+    },
+    "DCE.pg2709": {
+      "status": "downloaded",
+      "rows": 10,
+      "first_date": "2026-09-28",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pg2709.csv"
+    },
+    "DCE.pp2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2610.csv"
+    },
+    "DCE.pp2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2611.csv"
+    },
+    "DCE.pp2611F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2611F.csv"
+    },
+    "DCE.pp2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2612.csv"
+    },
+    "DCE.pp2612F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2612F.csv"
+    },
+    "DCE.pp2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2701.csv"
+    },
+    "DCE.pp2701F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2701F.csv"
+    },
+    "DCE.pp2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2702.csv"
+    },
+    "DCE.pp2702F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2702F.csv"
+    },
+    "DCE.pp2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2703.csv"
+    },
+    "DCE.pp2703F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2703F.csv"
+    },
+    "DCE.pp2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2704.csv"
+    },
+    "DCE.pp2704F": {
+      "status": "downloaded",
+      "rows": 7,
+      "first_date": "2026-10-08",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2704F.csv"
+    },
+    "DCE.pp2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2705.csv"
+    },
+    "DCE.pp2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2706.csv"
+    },
+    "DCE.pp2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2707.csv"
+    },
+    "DCE.pp2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2708.csv"
+    },
+    "DCE.pp2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_pp2709.csv"
+    },
+    "DCE.rr2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2610.csv"
+    },
+    "DCE.rr2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2611.csv"
+    },
+    "DCE.rr2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2612.csv"
+    },
+    "DCE.rr2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2701.csv"
+    },
+    "DCE.rr2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2702.csv"
+    },
+    "DCE.rr2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2703.csv"
+    },
+    "DCE.rr2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2704.csv"
+    },
+    "DCE.rr2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2705.csv"
+    },
+    "DCE.rr2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2706.csv"
+    },
+    "DCE.rr2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2707.csv"
+    },
+    "DCE.rr2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2708.csv"
+    },
+    "DCE.rr2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_rr2709.csv"
+    },
+    "DCE.v2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2610.csv"
+    },
+    "DCE.v2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2611.csv"
+    },
+    "DCE.v2611F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2611F.csv"
+    },
+    "DCE.v2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2612.csv"
+    },
+    "DCE.v2612F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2612F.csv"
+    },
+    "DCE.v2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2701.csv"
+    },
+    "DCE.v2701F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2701F.csv"
+    },
+    "DCE.v2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2702.csv"
+    },
+    "DCE.v2702F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2702F.csv"
+    },
+    "DCE.v2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2703.csv"
+    },
+    "DCE.v2703F": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2703F.csv"
+    },
+    "DCE.v2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2704.csv"
+    },
+    "DCE.v2704F": {
+      "status": "downloaded",
+      "rows": 7,
+      "first_date": "2026-10-08",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2704F.csv"
+    },
+    "DCE.v2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2705.csv"
+    },
+    "DCE.v2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2706.csv"
+    },
+    "DCE.v2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2707.csv"
+    },
+    "DCE.v2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2708.csv"
+    },
+    "DCE.v2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_v2709.csv"
+    },
+    "DCE.y2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2611.csv"
+    },
+    "DCE.y2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2612.csv"
+    },
+    "DCE.y2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2701.csv"
+    },
+    "DCE.y2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2703.csv"
+    },
+    "DCE.y2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2705.csv"
+    },
+    "DCE.y2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2707.csv"
+    },
+    "DCE.y2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2708.csv"
+    },
+    "DCE.y2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 1,
+      "file": "daily35/DCE_y2709.csv"
+    },
+    "GFEX.lc2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2610.csv"
+    },
+    "GFEX.lc2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2611.csv"
+    },
+    "GFEX.lc2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2612.csv"
+    },
+    "GFEX.lc2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2701.csv"
+    },
+    "GFEX.lc2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2702.csv"
+    },
+    "GFEX.lc2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2703.csv"
+    },
+    "GFEX.lc2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2704.csv"
+    },
+    "GFEX.lc2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2705.csv"
+    },
+    "GFEX.lc2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2706.csv"
+    },
+    "GFEX.lc2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2707.csv"
+    },
+    "GFEX.lc2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2708.csv"
+    },
+    "GFEX.lc2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_lc2709.csv"
+    },
+    "GFEX.pd2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2610.csv"
+    },
+    "GFEX.pd2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2612.csv"
+    },
+    "GFEX.pd2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2702.csv"
+    },
+    "GFEX.pd2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2704.csv"
+    },
+    "GFEX.pd2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2706.csv"
+    },
+    "GFEX.pd2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pd2708.csv"
+    },
+    "GFEX.ps2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2610.csv"
+    },
+    "GFEX.ps2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2611.csv"
+    },
+    "GFEX.ps2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2612.csv"
+    },
+    "GFEX.ps2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2701.csv"
+    },
+    "GFEX.ps2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2702.csv"
+    },
+    "GFEX.ps2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2703.csv"
+    },
+    "GFEX.ps2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2704.csv"
+    },
+    "GFEX.ps2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2705.csv"
+    },
+    "GFEX.ps2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2706.csv"
+    },
+    "GFEX.ps2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2707.csv"
+    },
+    "GFEX.ps2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2708.csv"
+    },
+    "GFEX.ps2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_ps2709.csv"
+    },
+    "GFEX.pt2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2610.csv"
+    },
+    "GFEX.pt2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2612.csv"
+    },
+    "GFEX.pt2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2702.csv"
+    },
+    "GFEX.pt2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2704.csv"
+    },
+    "GFEX.pt2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2706.csv"
+    },
+    "GFEX.pt2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_pt2708.csv"
+    },
+    "GFEX.si2610": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2610.csv"
+    },
+    "GFEX.si2611": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2611.csv"
+    },
+    "GFEX.si2612": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2612.csv"
+    },
+    "GFEX.si2701": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2701.csv"
+    },
+    "GFEX.si2702": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2702.csv"
+    },
+    "GFEX.si2703": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2703.csv"
+    },
+    "GFEX.si2704": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2704.csv"
+    },
+    "GFEX.si2705": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2705.csv"
+    },
+    "GFEX.si2706": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2706.csv"
+    },
+    "GFEX.si2707": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2707.csv"
+    },
+    "GFEX.si2708": {
+      "status": "downloaded",
+      "rows": 28,
+      "first_date": "2026-09-01",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2708.csv"
+    },
+    "GFEX.si2709": {
+      "status": "downloaded",
+      "rows": 18,
+      "first_date": "2026-09-15",
+      "last_date": "2026-10-16",
+      "future_or_incomplete_rows_excluded": 0,
+      "file": "daily35/GFEX_si2709.csv"
+    }
+  },
+  "expected_symbols": [
+    "CZCE.AP610",
+    "CZCE.AP611",
+    "CZCE.AP612",
+    "CZCE.AP701",
+    "CZCE.AP703",
+    "CZCE.AP704",
+    "CZCE.AP705",
+    "CZCE.CF611",
+    "CZCE.CF701",
+    "CZCE.CF703",
+    "CZCE.CF705",
+    "CZCE.CF707",
+    "CZCE.CF709",
+    "CZCE.CJ612",
+    "CZCE.CJ701",
+    "CZCE.CJ703",
+    "CZCE.CJ705",
+    "CZCE.CJ707",
+    "CZCE.CJ709",
+    "CZCE.CY610",
+    "CZCE.CY611",
+    "CZCE.CY612",
+    "CZCE.CY701",
+    "CZCE.CY702",
+    "CZCE.CY703",
+    "CZCE.CY704",
+    "CZCE.CY705",
+    "CZCE.CY706",
+    "CZCE.CY707",
+    "CZCE.CY708",
+    "CZCE.CY709",
+    "CZCE.FG610",
+    "CZCE.FG611",
+    "CZCE.FG612",
+    "CZCE.FG701",
+    "CZCE.FG702",
+    "CZCE.FG703",
+    "CZCE.FG704",
+    "CZCE.FG705",
+    "CZCE.FG706",
+    "CZCE.FG707",
+    "CZCE.FG708",
+    "CZCE.FG709",
+    "CZCE.JR611",
+    "CZCE.JR701",
+    "CZCE.JR703",
+    "CZCE.JR705",
+    "CZCE.JR707",
+    "CZCE.JR709",
+    "CZCE.MA610",
+    "CZCE.MA611",
+    "CZCE.MA612",
+    "CZCE.MA701",
+    "CZCE.MA702",
+    "CZCE.MA703",
+    "CZCE.MA704",
+    "CZCE.MA705",
+    "CZCE.MA706",
+    "CZCE.MA707",
+    "CZCE.MA708",
+    "CZCE.MA709",
+    "CZCE.OI611",
+    "CZCE.OI701",
+    "CZCE.OI703",
+    "CZCE.OI705",
+    "CZCE.OI707",
+    "CZCE.OI709",
+    "CZCE.PF610",
+    "CZCE.PF611",
+    "CZCE.PF612",
+    "CZCE.PF701",
+    "CZCE.PF702",
+    "CZCE.PF703",
+    "CZCE.PF704",
+    "CZCE.PF705",
+    "CZCE.PF706",
+    "CZCE.PF707",
+    "CZCE.PF708",
+    "CZCE.PF709",
+    "CZCE.PK610",
+    "CZCE.PK611",
+    "CZCE.PK612",
+    "CZCE.PK701",
+    "CZCE.PK703",
+    "CZCE.PK704",
+    "CZCE.PK705",
+    "CZCE.PL610",
+    "CZCE.PL611",
+    "CZCE.PL612",
+    "CZCE.PL701",
+    "CZCE.PL702",
+    "CZCE.PL703",
+    "CZCE.PL704",
+    "CZCE.PL705",
+    "CZCE.PL706",
+    "CZCE.PL707",
+    "CZCE.PL708",
+    "CZCE.PL709",
+    "CZCE.PM611",
+    "CZCE.PM701",
+    "CZCE.PM703",
+    "CZCE.PM705",
+    "CZCE.PM707",
+    "CZCE.PM709",
+    "CZCE.PR610",
+    "CZCE.PR611",
+    "CZCE.PR612",
+    "CZCE.PR701",
+    "CZCE.PR702",
+    "CZCE.PR703",
+    "CZCE.PR704",
+    "CZCE.PR705",
+    "CZCE.PR706",
+    "CZCE.PR707",
+    "CZCE.PR708",
+    "CZCE.PR709",
+    "CZCE.PX610",
+    "CZCE.PX611",
+    "CZCE.PX612",
+    "CZCE.PX701",
+    "CZCE.PX702",
+    "CZCE.PX703",
+    "CZCE.PX704",
+    "CZCE.PX705",
+    "CZCE.PX706",
+    "CZCE.PX707",
+    "CZCE.PX708",
+    "CZCE.PX709",
+    "CZCE.RI611",
+    "CZCE.RI701",
+    "CZCE.RI703",
+    "CZCE.RI705",
+    "CZCE.RI707",
+    "CZCE.RI709",
+    "CZCE.RM611",
+    "CZCE.RM701",
+    "CZCE.RM703",
+    "CZCE.RM705",
+    "CZCE.RM707",
+    "CZCE.RM708",
+    "CZCE.RM709",
+    "CZCE.RS611",
+    "CZCE.RS701",
+    "CZCE.RS703",
+    "CZCE.RS706",
+    "CZCE.RS707",
+    "CZCE.RS709",
+    "CZCE.SA610",
+    "CZCE.SA611",
+    "CZCE.SA612",
+    "CZCE.SA701",
+    "CZCE.SA702",
+    "CZCE.SA703",
+    "CZCE.SA704",
+    "CZCE.SA705",
+    "CZCE.SA706",
+    "CZCE.SA707",
+    "CZCE.SA708",
+    "CZCE.SA709",
+    "CZCE.SF610",
+    "CZCE.SF611",
+    "CZCE.SF612",
+    "CZCE.SF701",
+    "CZCE.SF702",
+    "CZCE.SF703",
+    "CZCE.SF704",
+    "CZCE.SF705",
+    "CZCE.SF706",
+    "CZCE.SF707",
+    "CZCE.SF708",
+    "CZCE.SF709",
+    "CZCE.SH610",
+    "CZCE.SH611",
+    "CZCE.SH612",
+    "CZCE.SH701",
+    "CZCE.SH702",
+    "CZCE.SH703",
+    "CZCE.SH704",
+    "CZCE.SH705",
+    "CZCE.SH706",
+    "CZCE.SH707",
+    "CZCE.SH708",
+    "CZCE.SH709",
+    "CZCE.SM610",
+    "CZCE.SM611",
+    "CZCE.SM612",
+    "CZCE.SM701",
+    "CZCE.SM702",
+    "CZCE.SM703",
+    "CZCE.SM704",
+    "CZCE.SM705",
+    "CZCE.SM706",
+    "CZCE.SM707",
+    "CZCE.SM708",
+    "CZCE.SM709",
+    "CZCE.SR611",
+    "CZCE.SR701",
+    "CZCE.SR703",
+    "CZCE.SR705",
+    "CZCE.SR707",
+    "CZCE.SR709",
+    "CZCE.TA610",
+    "CZCE.TA611",
+    "CZCE.TA612",
+    "CZCE.TA701",
+    "CZCE.TA702",
+    "CZCE.TA703",
+    "CZCE.TA704",
+    "CZCE.TA705",
+    "CZCE.TA706",
+    "CZCE.TA707",
+    "CZCE.TA708",
+    "CZCE.TA709",
+    "CZCE.UR610",
+    "CZCE.UR611",
+    "CZCE.UR612",
+    "CZCE.UR701",
+    "CZCE.UR702",
+    "CZCE.UR703",
+    "CZCE.UR704",
+    "CZCE.UR705",
+    "CZCE.UR706",
+    "CZCE.UR707",
+    "CZCE.UR708",
+    "CZCE.UR709",
+    "CZCE.WH611",
+    "CZCE.WH701",
+    "CZCE.WH703",
+    "CZCE.WH705",
+    "CZCE.WH707",
+    "CZCE.WH709",
+    "CZCE.ZC610",
+    "CZCE.ZC611",
+    "CZCE.ZC612",
+    "CZCE.ZC701",
+    "CZCE.ZC702",
+    "CZCE.ZC703",
+    "CZCE.ZC704",
+    "CZCE.ZC705",
+    "CZCE.ZC706",
+    "CZCE.ZC707",
+    "CZCE.ZC708",
+    "CZCE.ZC709",
+    "CZCE.ZC710",
+    "DCE.a2611",
+    "DCE.a2701",
+    "DCE.a2703",
+    "DCE.a2705",
+    "DCE.a2707",
+    "DCE.a2709",
+    "DCE.b2610",
+    "DCE.b2611",
+    "DCE.b2612",
+    "DCE.b2701",
+    "DCE.b2702",
+    "DCE.b2703",
+    "DCE.b2704",
+    "DCE.b2705",
+    "DCE.b2706",
+    "DCE.b2707",
+    "DCE.b2708",
+    "DCE.b2709",
+    "DCE.bb2611",
+    "DCE.bb2701",
+    "DCE.bb2703",
+    "DCE.bb2705",
+    "DCE.bb2707",
+    "DCE.bb2709",
+    "DCE.bz2610",
+    "DCE.bz2611",
+    "DCE.bz2612",
+    "DCE.bz2701",
+    "DCE.bz2702",
+    "DCE.bz2703",
+    "DCE.bz2704",
+    "DCE.bz2705",
+    "DCE.bz2706",
+    "DCE.bz2707",
+    "DCE.bz2708",
+    "DCE.bz2709",
+    "DCE.c2611",
+    "DCE.c2701",
+    "DCE.c2703",
+    "DCE.c2705",
+    "DCE.c2707",
+    "DCE.c2709",
+    "DCE.cs2611",
+    "DCE.cs2701",
+    "DCE.cs2703",
+    "DCE.cs2705",
+    "DCE.cs2707",
+    "DCE.cs2709",
+    "DCE.eb2610",
+    "DCE.eb2611",
+    "DCE.eb2612",
+    "DCE.eb2701",
+    "DCE.eb2702",
+    "DCE.eb2703",
+    "DCE.eb2704",
+    "DCE.eb2705",
+    "DCE.eb2706",
+    "DCE.eb2707",
+    "DCE.eb2708",
+    "DCE.eb2709",
+    "DCE.eg2610",
+    "DCE.eg2611",
+    "DCE.eg2612",
+    "DCE.eg2701",
+    "DCE.eg2702",
+    "DCE.eg2703",
+    "DCE.eg2704",
+    "DCE.eg2705",
+    "DCE.eg2706",
+    "DCE.eg2707",
+    "DCE.eg2708",
+    "DCE.eg2709",
+    "DCE.fb2610",
+    "DCE.fb2611",
+    "DCE.fb2612",
+    "DCE.fb2701",
+    "DCE.fb2702",
+    "DCE.fb2703",
+    "DCE.fb2704",
+    "DCE.fb2705",
+    "DCE.fb2706",
+    "DCE.fb2707",
+    "DCE.fb2708",
+    "DCE.fb2709",
+    "DCE.i2610",
+    "DCE.i2611",
+    "DCE.i2612",
+    "DCE.i2701",
+    "DCE.i2702",
+    "DCE.i2703",
+    "DCE.i2704",
+    "DCE.i2705",
+    "DCE.i2706",
+    "DCE.i2707",
+    "DCE.i2708",
+    "DCE.i2709",
+    "DCE.j2610",
+    "DCE.j2611",
+    "DCE.j2612",
+    "DCE.j2701",
+    "DCE.j2702",
+    "DCE.j2703",
+    "DCE.j2704",
+    "DCE.j2705",
+    "DCE.j2706",
+    "DCE.j2707",
+    "DCE.j2708",
+    "DCE.j2709",
+    "DCE.jd2610",
+    "DCE.jd2611",
+    "DCE.jd2612",
+    "DCE.jd2701",
+    "DCE.jd2702",
+    "DCE.jd2703",
+    "DCE.jd2704",
+    "DCE.jd2705",
+    "DCE.jd2706",
+    "DCE.jd2707",
+    "DCE.jd2708",
+    "DCE.jd2709",
+    "DCE.jm2610",
+    "DCE.jm2611",
+    "DCE.jm2612",
+    "DCE.jm2701",
+    "DCE.jm2702",
+    "DCE.jm2703",
+    "DCE.jm2704",
+    "DCE.jm2705",
+    "DCE.jm2706",
+    "DCE.jm2707",
+    "DCE.jm2708",
+    "DCE.jm2709",
+    "DCE.l2610",
+    "DCE.l2611",
+    "DCE.l2611F",
+    "DCE.l2612",
+    "DCE.l2612F",
+    "DCE.l2701",
+    "DCE.l2701F",
+    "DCE.l2702",
+    "DCE.l2702F",
+    "DCE.l2703",
+    "DCE.l2703F",
+    "DCE.l2704",
+    "DCE.l2704F",
+    "DCE.l2705",
+    "DCE.l2706",
+    "DCE.l2707",
+    "DCE.l2708",
+    "DCE.l2709",
+    "DCE.lg2611",
+    "DCE.lg2701",
+    "DCE.lg2703",
+    "DCE.lg2705",
+    "DCE.lg2707",
+    "DCE.lg2709",
+    "DCE.lh2611",
+    "DCE.lh2701",
+    "DCE.lh2703",
+    "DCE.lh2705",
+    "DCE.lh2707",
+    "DCE.lh2709",
+    "DCE.m2611",
+    "DCE.m2612",
+    "DCE.m2701",
+    "DCE.m2703",
+    "DCE.m2705",
+    "DCE.m2707",
+    "DCE.m2708",
+    "DCE.m2709",
+    "DCE.p2610",
+    "DCE.p2611",
+    "DCE.p2612",
+    "DCE.p2701",
+    "DCE.p2702",
+    "DCE.p2703",
+    "DCE.p2704",
+    "DCE.p2705",
+    "DCE.p2706",
+    "DCE.p2707",
+    "DCE.p2708",
+    "DCE.p2709",
+    "DCE.pg2610",
+    "DCE.pg2611",
+    "DCE.pg2612",
+    "DCE.pg2701",
+    "DCE.pg2702",
+    "DCE.pg2703",
+    "DCE.pg2704",
+    "DCE.pg2705",
+    "DCE.pg2706",
+    "DCE.pg2707",
+    "DCE.pg2708",
+    "DCE.pg2709",
+    "DCE.pp2610",
+    "DCE.pp2611",
+    "DCE.pp2611F",
+    "DCE.pp2612",
+    "DCE.pp2612F",
+    "DCE.pp2701",
+    "DCE.pp2701F",
+    "DCE.pp2702",
+    "DCE.pp2702F",
+    "DCE.pp2703",
+    "DCE.pp2703F",
+    "DCE.pp2704",
+    "DCE.pp2704F",
+    "DCE.pp2705",
+    "DCE.pp2706",
+    "DCE.pp2707",
+    "DCE.pp2708",
+    "DCE.pp2709",
+    "DCE.rr2610",
+    "DCE.rr2611",
+    "DCE.rr2612",
+    "DCE.rr2701",
+    "DCE.rr2702",
+    "DCE.rr2703",
+    "DCE.rr2704",
+    "DCE.rr2705",
+    "DCE.rr2706",
+    "DCE.rr2707",
+    "DCE.rr2708",
+    "DCE.rr2709",
+    "DCE.v2610",
+    "DCE.v2611",
+    "DCE.v2611F",
+    "DCE.v2612",
+    "DCE.v2612F",
+    "DCE.v2701",
+    "DCE.v2701F",
+    "DCE.v2702",
+    "DCE.v2702F",
+    "DCE.v2703",
+    "DCE.v2703F",
+    "DCE.v2704",
+    "DCE.v2704F",
+    "DCE.v2705",
+    "DCE.v2706",
+    "DCE.v2707",
+    "DCE.v2708",
+    "DCE.v2709",
+    "DCE.y2611",
+    "DCE.y2612",
+    "DCE.y2701",
+    "DCE.y2703",
+    "DCE.y2705",
+    "DCE.y2707",
+    "DCE.y2708",
+    "DCE.y2709",
+    "GFEX.lc2610",
+    "GFEX.lc2611",
+    "GFEX.lc2612",
+    "GFEX.lc2701",
+    "GFEX.lc2702",
+    "GFEX.lc2703",
+    "GFEX.lc2704",
+    "GFEX.lc2705",
+    "GFEX.lc2706",
+    "GFEX.lc2707",
+    "GFEX.lc2708",
+    "GFEX.lc2709",
+    "GFEX.pd2610",
+    "GFEX.pd2612",
+    "GFEX.pd2702",
+    "GFEX.pd2704",
+    "GFEX.pd2706",
+    "GFEX.pd2708",
+    "GFEX.ps2610",
+    "GFEX.ps2611",
+    "GFEX.ps2612",
+    "GFEX.ps2701",
+    "GFEX.ps2702",
+    "GFEX.ps2703",
+    "GFEX.ps2704",
+    "GFEX.ps2705",
+    "GFEX.ps2706",
+    "GFEX.ps2707",
+    "GFEX.ps2708",
+    "GFEX.ps2709",
+    "GFEX.pt2610",
+    "GFEX.pt2612",
+    "GFEX.pt2702",
+    "GFEX.pt2704",
+    "GFEX.pt2706",
+    "GFEX.pt2708",
+    "GFEX.si2610",
+    "GFEX.si2611",
+    "GFEX.si2612",
+    "GFEX.si2701",
+    "GFEX.si2702",
+    "GFEX.si2703",
+    "GFEX.si2704",
+    "GFEX.si2705",
+    "GFEX.si2706",
+    "GFEX.si2707",
+    "GFEX.si2708",
+    "GFEX.si2709"
+  ],
+  "expected_contracts": 542,
+  "status": "complete",
+  "updated_at": "2026-10-17T18:24:27.688022+08:00"
+}

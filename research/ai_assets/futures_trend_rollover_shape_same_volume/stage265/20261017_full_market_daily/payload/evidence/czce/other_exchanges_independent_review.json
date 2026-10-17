@@ -1,0 +1,477 @@
+{
+  "generated_at": "2026-10-17T18:39:04.906833+08:00",
+  "status": "PASS_isolated_official_download_and_normalization_REFERENCE_ONLY",
+  "reviewer": "independent_czce_agent_no_implementer_functions_imported",
+  "raw_sources_verified": 247,
+  "zip_sha_and_full_crc_verified": 233,
+  "json_sha_schema_reportdate_verified": 14,
+  "raw_bytes_including_reuse": 378216882,
+  "stage264_reused_source_ids": [
+    "SHFE_futures_2014",
+    "SHFE_futures_2015",
+    "SHFE_futures_2016",
+    "SHFE_futures_2017",
+    "SHFE_futures_2018",
+    "SHFE_futures_2019"
+  ],
+  "normalized_hash_files_verified": 741,
+  "accepted_rows_read_independently": 747972,
+  "accepted_zero_volume_rows_flagged": 0,
+  "no_trade_rows_read": 188950,
+  "rejected_rows_read": 188980,
+  "no_trade_rejected_key_overlap": 188950,
+  "accepted_rejected_key_overlap": 0,
+  "duplicate_accepted_keys": 0,
+  "by_exchange_rows": {
+    "INE": 62837,
+    "SHFE": 617437,
+    "CFFEX": 67698
+  },
+  "contract_epoch_counts": {
+    "INE": 396,
+    "SHFE": 3337,
+    "CFFEX": 692
+  },
+  "products": 33,
+  "product_date_ranges": [
+    {
+      "exchange": "CFFEX",
+      "product": "IC",
+      "rows": 11180,
+      "min_date": "2015-04-16",
+      "max_date": "2026-10-16",
+      "epochs": 141
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "IF",
+      "rows": 16024,
+      "min_date": "2010-04-16",
+      "max_date": "2026-10-16",
+      "epochs": 201
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "IH",
+      "rows": 11180,
+      "min_date": "2015-04-16",
+      "max_date": "2026-10-16",
+      "epochs": 141
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "IM",
+      "rows": 4100,
+      "min_date": "2022-07-22",
+      "max_date": "2026-10-16",
+      "epochs": 54
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "T",
+      "rows": 8171,
+      "min_date": "2015-03-20",
+      "max_date": "2026-10-16",
+      "epochs": 48
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "TF",
+      "rows": 9004,
+      "min_date": "2013-09-06",
+      "max_date": "2026-10-16",
+      "epochs": 55
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "TL",
+      "rows": 2511,
+      "min_date": "2023-04-21",
+      "max_date": "2026-10-16",
+      "epochs": 17
+    },
+    {
+      "exchange": "CFFEX",
+      "product": "TS",
+      "rows": 5528,
+      "min_date": "2018-08-17",
+      "max_date": "2026-10-16",
+      "epochs": 35
+    },
+    {
+      "exchange": "INE",
+      "product": "bc",
+      "rows": 6773,
+      "min_date": "2020-11-19",
+      "max_date": "2026-10-16",
+      "epochs": 78
+    },
+    {
+      "exchange": "INE",
+      "product": "ec",
+      "rows": 4762,
+      "min_date": "2023-08-18",
+      "max_date": "2026-10-16",
+      "epochs": 25
+    },
+    {
+      "exchange": "INE",
+      "product": "lu",
+      "rows": 13351,
+      "min_date": "2020-06-22",
+      "max_date": "2026-10-16",
+      "epochs": 82
+    },
+    {
+      "exchange": "INE",
+      "product": "nr",
+      "rows": 13310,
+      "min_date": "2019-08-12",
+      "max_date": "2026-10-16",
+      "epochs": 93
+    },
+    {
+      "exchange": "INE",
+      "product": "sc",
+      "rows": 24641,
+      "min_date": "2018-03-26",
+      "max_date": "2026-10-16",
+      "epochs": 118
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ad",
+      "rows": 2266,
+      "min_date": "2025-06-10",
+      "max_date": "2026-10-16",
+      "epochs": 23
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ag",
+      "rows": 39401,
+      "min_date": "2012-05-10",
+      "max_date": "2026-10-16",
+      "epochs": 182
+    },
+    {
+      "exchange": "SHFE",
+      "product": "al",
+      "rows": 64146,
+      "min_date": "2002-01-07",
+      "max_date": "2026-10-16",
+      "epochs": 310
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ao",
+      "rows": 9309,
+      "min_date": "2023-06-19",
+      "max_date": "2026-10-16",
+      "epochs": 48
+    },
+    {
+      "exchange": "SHFE",
+      "product": "au",
+      "rows": 34216,
+      "min_date": "2008-01-09",
+      "max_date": "2026-10-16",
+      "epochs": 229
+    },
+    {
+      "exchange": "SHFE",
+      "product": "br",
+      "rows": 8067,
+      "min_date": "2023-07-28",
+      "max_date": "2026-10-16",
+      "epochs": 45
+    },
+    {
+      "exchange": "SHFE",
+      "product": "bu",
+      "rows": 34716,
+      "min_date": "2013-10-09",
+      "max_date": "2026-10-16",
+      "epochs": 167
+    },
+    {
+      "exchange": "SHFE",
+      "product": "cu",
+      "rows": 68753,
+      "min_date": "2002-01-07",
+      "max_date": "2026-10-16",
+      "epochs": 310
+    },
+    {
+      "exchange": "SHFE",
+      "product": "fu",
+      "rows": 40069,
+      "min_date": "2004-08-25",
+      "max_date": "2026-10-16",
+      "epochs": 251
+    },
+    {
+      "exchange": "SHFE",
+      "product": "hc",
+      "rows": 25612,
+      "min_date": "2014-03-21",
+      "max_date": "2026-10-16",
+      "epochs": 160
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ni",
+      "rows": 30678,
+      "min_date": "2015-03-27",
+      "max_date": "2026-10-16",
+      "epochs": 148
+    },
+    {
+      "exchange": "SHFE",
+      "product": "op",
+      "rows": 1391,
+      "min_date": "2025-09-10",
+      "max_date": "2026-10-16",
+      "epochs": 19
+    },
+    {
+      "exchange": "SHFE",
+      "product": "pb",
+      "rows": 33415,
+      "min_date": "2011-03-24",
+      "max_date": "2026-10-16",
+      "epochs": 193
+    },
+    {
+      "exchange": "SHFE",
+      "product": "rb",
+      "rows": 49056,
+      "min_date": "2009-03-27",
+      "max_date": "2026-10-16",
+      "epochs": 218
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ru",
+      "rows": 53947,
+      "min_date": "2002-01-07",
+      "max_date": "2026-10-16",
+      "epochs": 259
+    },
+    {
+      "exchange": "SHFE",
+      "product": "sn",
+      "rows": 20885,
+      "min_date": "2015-03-27",
+      "max_date": "2026-10-16",
+      "epochs": 147
+    },
+    {
+      "exchange": "SHFE",
+      "product": "sp",
+      "rows": 19833,
+      "min_date": "2018-11-27",
+      "max_date": "2026-10-16",
+      "epochs": 100
+    },
+    {
+      "exchange": "SHFE",
+      "product": "ss",
+      "rows": 18698,
+      "min_date": "2019-09-25",
+      "max_date": "2026-10-16",
+      "epochs": 93
+    },
+    {
+      "exchange": "SHFE",
+      "product": "wr",
+      "rows": 8892,
+      "min_date": "2009-03-27",
+      "max_date": "2026-10-16",
+      "epochs": 192
+    },
+    {
+      "exchange": "SHFE",
+      "product": "zn",
+      "rows": 54087,
+      "min_date": "2007-03-26",
+      "max_date": "2026-10-16",
+      "epochs": 243
+    }
+  ],
+  "latest_20261016_independent_census": {
+    "CFFEX": {
+      "accepted": 28,
+      "no_trade": 0,
+      "rejected": 0,
+      "ordinary_union": 28
+    },
+    "INE": {
+      "accepted": 50,
+      "no_trade": 13,
+      "rejected": 13,
+      "ordinary_union": 63
+    },
+    "SHFE": {
+      "accepted": 214,
+      "no_trade": 24,
+      "rejected": 24,
+      "ordinary_union": 238
+    }
+  },
+  "unit_regime_rows": {
+    "official_two_sided_volume_and_close_oi": 259619,
+    "official_single_sided_volume_and_close_oi": 229842,
+    "official_original_units_not_inferred": 188965,
+    "cffex_official_single_sided_volume_and_close_oi": 67698,
+    "official_2026_single_sided_volume_and_close_oi": 1848
+  },
+  "cross_exchange_mirror_in_accepted_rows": 0,
+  "raw_coordinate_samples": [
+    {
+      "source_id": "INE_futures_2018",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+      "source_sheet": "所内合约行情报表",
+      "source_row": 4,
+      "date": "2018-03-26",
+      "symbol": "sc1809",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "INE_futures_2024",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "ine╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2024.1╘┬-12╘┬.xlsx",
+      "source_sheet": "所内合约行情表",
+      "source_row": 15,
+      "date": "2024-01-02",
+      "symbol": "bc2402",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "INE_futures_2026",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "ine所内合约行情报表2026.1月-9月.xlsx",
+      "source_sheet": "所内合约行情表",
+      "source_row": 5,
+      "date": "2026-01-05",
+      "symbol": "bc2601",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_futures_2002",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "所内合约行情报表2002.xlsx",
+      "source_sheet": "所内合约行情表",
+      "source_row": 5,
+      "date": "2002-01-08",
+      "symbol": "al0201",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_futures_2014",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+      "source_sheet": "所内合约行情报表",
+      "source_row": 4,
+      "date": "2014-01-02",
+      "symbol": "ag1401",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_futures_2019",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.3.xls",
+      "source_sheet": "所内合约行情报表",
+      "source_row": 4,
+      "date": "2019-03-01",
+      "symbol": "ag1903",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_futures_2024",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "╔╧╞┌╦∙║╧╘╝╨╨╟Θ▒¿▒φ2024/╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2024.1.xls",
+      "source_sheet": "所内合约行情报表",
+      "source_row": 5,
+      "date": "2024-01-02",
+      "symbol": "ag2401",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_futures_2026",
+      "kind": "original_spreadsheet_cell_sample",
+      "source_member": "上期所合约行情报表2026/所内合约行情报表2026.6.xlsx",
+      "source_sheet": "所内合约行情表",
+      "source_row": 5,
+      "date": "2026-06-01",
+      "symbol": "ad2606",
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "CFFEX_futures_options_201004",
+      "kind": "original_csv_or_json_row_sample",
+      "date": "2010-04-23",
+      "symbol": "IF1005",
+      "source_row": 2,
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "CFFEX_futures_options_202610",
+      "kind": "original_csv_or_json_row_sample",
+      "date": "2026-10-08",
+      "symbol": "IC2610",
+      "source_row": 161,
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "SHFE_daily_20261016",
+      "kind": "original_csv_or_json_row_sample",
+      "date": "2026-10-16",
+      "symbol": "cu2611",
+      "source_row": 1,
+      "field_cells_verified": 6
+    },
+    {
+      "source_id": "INE_daily_20261016",
+      "kind": "original_csv_or_json_row_sample",
+      "date": "2026-10-16",
+      "symbol": "sc2611",
+      "source_row": 1,
+      "field_cells_verified": 6
+    }
+  ],
+  "sample_cells_verified": 72,
+  "main_database_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+  "main_database_matches_stage264_baseline": true,
+  "source_manifest_sha256": {
+    "official_archive_sources_manifest.json": "cccb1f02727561e57aae1d1166a3d194d232109e23e9edf102591f1c8321a778",
+    "cffex_month_sources_manifest.json": "f07d455b2e1800c3e52a39ceb24e388959a2e79481f3b7203bcf936e611c67c7",
+    "official_tail_sources_manifest.json": "7e1fdb16fce049f547076b7549cdd3d23c8118209323de7f16679f36ae5ed319"
+  },
+  "normalization_manifest_sha256": "8bb05edd2664b63c4c51a84ddd04f25dbdd4e7fdbc80feb46041399af391a432",
+  "download_review": {
+    "P0": 0,
+    "P1": 0,
+    "verdict": "PASS_requested_SHFE_INE_CFFEX_artifacts_and_latest_date_census"
+  },
+  "training_qualification_review": {
+    "P0": 0,
+    "P1": 2,
+    "verdict": "NOT_QUALIFIED",
+    "P1_reasons": [
+      "188965 accepted reference rows retain explicitly unknown side units; no conversion/clock/PIT acceptance contract yet",
+      "Observed bounds and downloaded official sources do not certify all-market per-contract lifetime metadata or training readiness; GFEX official route remains missing in this source set"
+    ]
+  },
+  "limits": [
+    "No full XLS reparse: every saved raw SHA/ZIP CRC and every normalized row was checked; 12 stratified original raw coordinate samples verify 72 numeric cells.",
+    "No-trade and rejected datasets overlap by design, so latest/overall coverage uses set unions, not naive counts.",
+    "This official reference set covers SHFE/INE/CFFEX; it is not a six-exchange training dataset. Unknown units do not invalidate download success but prevent automatic training acceptance."
+  ],
+  "network_requests": 0,
+  "raw_or_normalized_mutations": 0,
+  "main_database_writes": 0,
+  "training_runs": 0,
+  "backtest_runs": 0
+}

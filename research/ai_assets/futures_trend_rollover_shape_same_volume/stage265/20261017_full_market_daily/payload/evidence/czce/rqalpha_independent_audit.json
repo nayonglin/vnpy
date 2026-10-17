@@ -1,0 +1,1266 @@
+{
+  "generated_at": "2026-10-17T18:30:23.084482+08:00",
+  "status": "independent_raw_vendor_audit_no_database_or_training_acceptance",
+  "inputs_sha256": {
+    "futures.h5": "d288f6e4c7468981e95fbb0c1c9e2e1e66bfb99f5ba607843728aec535c8bfee",
+    "instruments.pk": "1edb7b5cade6c6f42f548c2de72b9af4765f001f6f6e59575309d595f7157805",
+    "trading_dates.npy": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+    "future_info.json": "e040dbc9ebd26c6c1cdff6366e1ac258b583d15710fbe6d6418cf237c537919e"
+  },
+  "pickle_opcode_counts": {
+    "PROTO": 1,
+    "EMPTY_LIST": 1,
+    "BINPUT": 256,
+    "MARK": 28092,
+    "EMPTY_DICT": 28063,
+    "BINUNICODE": 376001,
+    "BININT1": 56806,
+    "BINFLOAT": 43124,
+    "SETITEMS": 28063,
+    "BINGET": 500939,
+    "LONG_BINPUT": 403809,
+    "NONE": 6524,
+    "BININT2": 514,
+    "LONG_BINGET": 2036,
+    "APPENDS": 29,
+    "STOP": 1
+  },
+  "pickle_globals_or_reducers": 0,
+  "unpickler_find_class": "all_globals_denied",
+  "quality_issue_rows": 1502,
+  "quality_issue_reasons": {
+    "positive_volume_invalid_ohlc_geometry": 807,
+    "before_candidate_listing": 695
+  },
+  "monthly_average_datasets": 42,
+  "future_metadata_rows": 11355,
+  "h5_datasets": 11036,
+  "real_delivery_datasets": 10547,
+  "excluded_continuous_or_non_delivery_datasets": 489,
+  "h5_keys_without_future_metadata": [],
+  "exchange_counts": {
+    "CFFEX": {
+      "real_contract_datasets": 692,
+      "rows_in_scope": 68736,
+      "finite_six_fields": 68736,
+      "positive_ohlc": 68736,
+      "valid_positive_ohlc_geometry": 68646,
+      "volume_positive_rows": 67507,
+      "zero_volume_rows": 1229,
+      "zero_volume_positive_ohlc": 1229,
+      "zero_volume_invalid_ohlc_geometry": 90,
+      "positive_volume_invalid_ohlc_geometry": 0,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 0,
+      "rows_after_candidate_delisting": 0
+    },
+    "CZCE": {
+      "real_contract_datasets": 2841,
+      "rows_in_scope": 609165,
+      "finite_six_fields": 609165,
+      "positive_ohlc": 609165,
+      "valid_positive_ohlc_geometry": 596421,
+      "volume_positive_rows": 389422,
+      "zero_volume_rows": 219743,
+      "zero_volume_positive_ohlc": 219743,
+      "zero_volume_invalid_ohlc_geometry": 12744,
+      "positive_volume_invalid_ohlc_geometry": 0,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 0,
+      "rows_after_candidate_delisting": 0
+    },
+    "DCE": {
+      "real_contract_datasets": 3221,
+      "rows_in_scope": 685809,
+      "finite_six_fields": 685809,
+      "positive_ohlc": 685809,
+      "valid_positive_ohlc_geometry": 674627,
+      "volume_positive_rows": 471391,
+      "zero_volume_rows": 214418,
+      "zero_volume_positive_ohlc": 214418,
+      "zero_volume_invalid_ohlc_geometry": 10439,
+      "positive_volume_invalid_ohlc_geometry": 743,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 0,
+      "rows_after_candidate_delisting": 0
+    },
+    "GFEX": {
+      "real_contract_datasets": 139,
+      "rows_in_scope": 25581,
+      "finite_six_fields": 25581,
+      "positive_ohlc": 25581,
+      "valid_positive_ohlc_geometry": 25045,
+      "volume_positive_rows": 24404,
+      "zero_volume_rows": 1177,
+      "zero_volume_positive_ohlc": 1177,
+      "zero_volume_invalid_ohlc_geometry": 475,
+      "positive_volume_invalid_ohlc_geometry": 61,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 0,
+      "rows_after_candidate_delisting": 0
+    },
+    "INE": {
+      "real_contract_datasets": 394,
+      "rows_in_scope": 101251,
+      "finite_six_fields": 101251,
+      "positive_ohlc": 101251,
+      "valid_positive_ohlc_geometry": 93317,
+      "volume_positive_rows": 62483,
+      "zero_volume_rows": 38768,
+      "zero_volume_positive_ohlc": 38768,
+      "zero_volume_invalid_ohlc_geometry": 7933,
+      "positive_volume_invalid_ohlc_geometry": 1,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 0,
+      "rows_after_candidate_delisting": 0
+    },
+    "SHFE": {
+      "real_contract_datasets": 3260,
+      "rows_in_scope": 666662,
+      "finite_six_fields": 666662,
+      "positive_ohlc": 666662,
+      "valid_positive_ohlc_geometry": 658544,
+      "volume_positive_rows": 534863,
+      "zero_volume_rows": 131799,
+      "zero_volume_positive_ohlc": 131799,
+      "zero_volume_invalid_ohlc_geometry": 8116,
+      "positive_volume_invalid_ohlc_geometry": 2,
+      "nonfinite_six_fields": 0,
+      "negative_volume_or_oi": 0,
+      "duplicate_dates": 0,
+      "non_increasing_datetimes": 0,
+      "raw_rows_after_user_cutoff": 0,
+      "rows_before_candidate_listing": 695,
+      "rows_after_candidate_delisting": 0
+    }
+  },
+  "by_product": {
+    "CFFEX.IC": {
+      "datasets": 141,
+      "datasets_with_rows_in_scope": 141,
+      "rows_in_scope": 11152,
+      "first_date_in_scope": 20150416,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.IF": {
+      "datasets": 201,
+      "datasets_with_rows_in_scope": 201,
+      "rows_in_scope": 15996,
+      "first_date_in_scope": 20100416,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.IH": {
+      "datasets": 141,
+      "datasets_with_rows_in_scope": 141,
+      "rows_in_scope": 11152,
+      "first_date_in_scope": 20150416,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.IM": {
+      "datasets": 54,
+      "datasets_with_rows_in_scope": 54,
+      "rows_in_scope": 4072,
+      "first_date_in_scope": 20220722,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.T": {
+      "datasets": 48,
+      "datasets_with_rows_in_scope": 48,
+      "rows_in_scope": 8418,
+      "first_date_in_scope": 20150320,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.TF": {
+      "datasets": 55,
+      "datasets_with_rows_in_scope": 55,
+      "rows_in_scope": 9528,
+      "first_date_in_scope": 20130906,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.TL": {
+      "datasets": 17,
+      "datasets_with_rows_in_scope": 17,
+      "rows_in_scope": 2508,
+      "first_date_in_scope": 20230421,
+      "last_date_in_scope": 20260930
+    },
+    "CFFEX.TS": {
+      "datasets": 35,
+      "datasets_with_rows_in_scope": 35,
+      "rows_in_scope": 5910,
+      "first_date_in_scope": 20180817,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.AP": {
+      "datasets": 64,
+      "datasets_with_rows_in_scope": 64,
+      "rows_in_scope": 14650,
+      "first_date_in_scope": 20171222,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.CF": {
+      "datasets": 148,
+      "datasets_with_rows_in_scope": 107,
+      "rows_in_scope": 24374,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.CJ": {
+      "datasets": 48,
+      "datasets_with_rows_in_scope": 48,
+      "rows_in_scope": 10667,
+      "first_date_in_scope": 20190430,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.CY": {
+      "datasets": 117,
+      "datasets_with_rows_in_scope": 117,
+      "rows_in_scope": 26369,
+      "first_date_in_scope": 20170818,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.ER": {
+      "datasets": 23,
+      "datasets_with_rows_in_scope": 21,
+      "rows_in_scope": 4324,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20130523
+    },
+    "CZCE.FG": {
+      "datasets": 175,
+      "datasets_with_rows_in_scope": 175,
+      "rows_in_scope": 40216,
+      "first_date_in_scope": 20121203,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.JR": {
+      "datasets": 82,
+      "datasets_with_rows_in_scope": 82,
+      "rows_in_scope": 18750,
+      "first_date_in_scope": 20131118,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.LR": {
+      "datasets": 67,
+      "datasets_with_rows_in_scope": 67,
+      "rows_in_scope": 15515,
+      "first_date_in_scope": 20140708,
+      "last_date_in_scope": 20260116
+    },
+    "CZCE.MA": {
+      "datasets": 148,
+      "datasets_with_rows_in_scope": 148,
+      "rows_in_scope": 34534,
+      "first_date_in_scope": 20140617,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.ME": {
+      "datasets": 39,
+      "datasets_with_rows_in_scope": 39,
+      "rows_in_scope": 8817,
+      "first_date_in_scope": 20111028,
+      "last_date_in_scope": 20150515
+    },
+    "CZCE.OI": {
+      "datasets": 86,
+      "datasets_with_rows_in_scope": 86,
+      "rows_in_scope": 20109,
+      "first_date_in_scope": 20120716,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PF": {
+      "datasets": 77,
+      "datasets_with_rows_in_scope": 77,
+      "rows_in_scope": 16955,
+      "first_date_in_scope": 20201012,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PK": {
+      "datasets": 39,
+      "datasets_with_rows_in_scope": 39,
+      "rows_in_scope": 8733,
+      "first_date_in_scope": 20210201,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PL": {
+      "datasets": 21,
+      "datasets_with_rows_in_scope": 21,
+      "rows_in_scope": 3210,
+      "first_date_in_scope": 20250722,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PM": {
+      "datasets": 89,
+      "datasets_with_rows_in_scope": 89,
+      "rows_in_scope": 20809,
+      "first_date_in_scope": 20120117,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PR": {
+      "datasets": 31,
+      "datasets_with_rows_in_scope": 31,
+      "rows_in_scope": 5702,
+      "first_date_in_scope": 20240830,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.PX": {
+      "datasets": 41,
+      "datasets_with_rows_in_scope": 41,
+      "rows_in_scope": 8279,
+      "first_date_in_scope": 20230915,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.RI": {
+      "datasets": 86,
+      "datasets_with_rows_in_scope": 86,
+      "rows_in_scope": 20078,
+      "first_date_in_scope": 20120724,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.RM": {
+      "datasets": 102,
+      "datasets_with_rows_in_scope": 102,
+      "rows_in_scope": 23321,
+      "first_date_in_scope": 20121228,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.RO": {
+      "datasets": 36,
+      "datasets_with_rows_in_scope": 21,
+      "rows_in_scope": 4293,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20130515
+    },
+    "CZCE.RS": {
+      "datasets": 61,
+      "datasets_with_rows_in_scope": 61,
+      "rows_in_scope": 13312,
+      "first_date_in_scope": 20121228,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.SA": {
+      "datasets": 89,
+      "datasets_with_rows_in_scope": 89,
+      "rows_in_scope": 19620,
+      "first_date_in_scope": 20191206,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.SF": {
+      "datasets": 155,
+      "datasets_with_rows_in_scope": 155,
+      "rows_in_scope": 35358,
+      "first_date_in_scope": 20140808,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.SH": {
+      "datasets": 41,
+      "datasets_with_rows_in_scope": 41,
+      "rows_in_scope": 8279,
+      "first_date_in_scope": 20230915,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.SM": {
+      "datasets": 155,
+      "datasets_with_rows_in_scope": 155,
+      "rows_in_scope": 35358,
+      "first_date_in_scope": 20140808,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.SR": {
+      "datasets": 129,
+      "datasets_with_rows_in_scope": 107,
+      "rows_in_scope": 30624,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.TA": {
+      "datasets": 248,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48804,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.TC": {
+      "datasets": 29,
+      "datasets_with_rows_in_scope": 29,
+      "rows_in_scope": 6029,
+      "first_date_in_scope": 20130926,
+      "last_date_in_scope": 20160408
+    },
+    "CZCE.UR": {
+      "datasets": 93,
+      "datasets_with_rows_in_scope": 93,
+      "rows_in_scope": 20571,
+      "first_date_in_scope": 20190809,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.WH": {
+      "datasets": 86,
+      "datasets_with_rows_in_scope": 86,
+      "rows_in_scope": 20078,
+      "first_date_in_scope": 20120724,
+      "last_date_in_scope": 20260930
+    },
+    "CZCE.WS": {
+      "datasets": 51,
+      "datasets_with_rows_in_scope": 21,
+      "rows_in_scope": 5934,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20130523
+    },
+    "CZCE.WT": {
+      "datasets": 48,
+      "datasets_with_rows_in_scope": 18,
+      "rows_in_scope": 3593,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20121122
+    },
+    "CZCE.ZC": {
+      "datasets": 137,
+      "datasets_with_rows_in_scope": 137,
+      "rows_in_scope": 31900,
+      "first_date_in_scope": 20150518,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.A": {
+      "datasets": 137,
+      "datasets_with_rows_in_scope": 107,
+      "rows_in_scope": 30872,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.B": {
+      "datasets": 192,
+      "datasets_with_rows_in_scope": 163,
+      "rows_in_scope": 37322,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.BB": {
+      "datasets": 146,
+      "datasets_with_rows_in_scope": 146,
+      "rows_in_scope": 33917,
+      "first_date_in_scope": 20131206,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.BZ": {
+      "datasets": 19,
+      "datasets_with_rows_in_scope": 19,
+      "rows_in_scope": 2937,
+      "first_date_in_scope": 20250708,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.C": {
+      "datasets": 137,
+      "datasets_with_rows_in_scope": 107,
+      "rows_in_scope": 24402,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.CS": {
+      "datasets": 76,
+      "datasets_with_rows_in_scope": 76,
+      "rows_in_scope": 17165,
+      "first_date_in_scope": 20141219,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.EB": {
+      "datasets": 90,
+      "datasets_with_rows_in_scope": 90,
+      "rows_in_scope": 19988,
+      "first_date_in_scope": 20190926,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.EG": {
+      "datasets": 100,
+      "datasets_with_rows_in_scope": 100,
+      "rows_in_scope": 22373,
+      "first_date_in_scope": 20181210,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.FB": {
+      "datasets": 162,
+      "datasets_with_rows_in_scope": 162,
+      "rows_in_scope": 37228,
+      "first_date_in_scope": 20131206,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.I": {
+      "datasets": 163,
+      "datasets_with_rows_in_scope": 163,
+      "rows_in_scope": 37626,
+      "first_date_in_scope": 20131018,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.J": {
+      "datasets": 193,
+      "datasets_with_rows_in_scope": 193,
+      "rows_in_scope": 44898,
+      "first_date_in_scope": 20110415,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.JD": {
+      "datasets": 157,
+      "datasets_with_rows_in_scope": 157,
+      "rows_in_scope": 36183,
+      "first_date_in_scope": 20131108,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.JM": {
+      "datasets": 171,
+      "datasets_with_rows_in_scope": 171,
+      "rows_in_scope": 39350,
+      "first_date_in_scope": 20130322,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.L": {
+      "datasets": 240,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48804,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.LG": {
+      "datasets": 14,
+      "datasets_with_rows_in_scope": 14,
+      "rows_in_scope": 2477,
+      "first_date_in_scope": 20241118,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.LH": {
+      "datasets": 37,
+      "datasets_with_rows_in_scope": 37,
+      "rows_in_scope": 8060,
+      "first_date_in_scope": 20210108,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.L_F": {
+      "datasets": 14,
+      "datasets_with_rows_in_scope": 14,
+      "rows_in_scope": 1290,
+      "first_date_in_scope": 20251029,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.M": {
+      "datasets": 181,
+      "datasets_with_rows_in_scope": 142,
+      "rows_in_scope": 32536,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.P": {
+      "datasets": 237,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48804,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.PG": {
+      "datasets": 83,
+      "datasets_with_rows_in_scope": 83,
+      "rows_in_scope": 18397,
+      "first_date_in_scope": 20200330,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.PP": {
+      "datasets": 161,
+      "datasets_with_rows_in_scope": 161,
+      "rows_in_scope": 36725,
+      "first_date_in_scope": 20140228,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.PP_F": {
+      "datasets": 14,
+      "datasets_with_rows_in_scope": 14,
+      "rows_in_scope": 1290,
+      "first_date_in_scope": 20251029,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.RR": {
+      "datasets": 93,
+      "datasets_with_rows_in_scope": 93,
+      "rows_in_scope": 20535,
+      "first_date_in_scope": 20190816,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.V": {
+      "datasets": 217,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48804,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.V_F": {
+      "datasets": 14,
+      "datasets_with_rows_in_scope": 14,
+      "rows_in_scope": 1290,
+      "first_date_in_scope": 20251029,
+      "last_date_in_scope": 20260930
+    },
+    "DCE.Y": {
+      "datasets": 173,
+      "datasets_with_rows_in_scope": 142,
+      "rows_in_scope": 32536,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "GFEX.LC": {
+      "datasets": 45,
+      "datasets_with_rows_in_scope": 45,
+      "rows_in_scope": 9019,
+      "first_date_in_scope": 20230721,
+      "last_date_in_scope": 20260930
+    },
+    "GFEX.PD": {
+      "datasets": 8,
+      "datasets_with_rows_in_scope": 8,
+      "rows_in_scope": 1078,
+      "first_date_in_scope": 20251127,
+      "last_date_in_scope": 20260930
+    },
+    "GFEX.PS": {
+      "datasets": 28,
+      "datasets_with_rows_in_scope": 28,
+      "rows_in_scope": 4877,
+      "first_date_in_scope": 20241226,
+      "last_date_in_scope": 20260930
+    },
+    "GFEX.PT": {
+      "datasets": 8,
+      "datasets_with_rows_in_scope": 8,
+      "rows_in_scope": 1078,
+      "first_date_in_scope": 20251127,
+      "last_date_in_scope": 20260930
+    },
+    "GFEX.SI": {
+      "datasets": 50,
+      "datasets_with_rows_in_scope": 50,
+      "rows_in_scope": 9529,
+      "first_date_in_scope": 20221222,
+      "last_date_in_scope": 20260930
+    },
+    "INE.BC": {
+      "datasets": 79,
+      "datasets_with_rows_in_scope": 79,
+      "rows_in_scope": 16972,
+      "first_date_in_scope": 20201119,
+      "last_date_in_scope": 20260930
+    },
+    "INE.EC": {
+      "datasets": 25,
+      "datasets_with_rows_in_scope": 25,
+      "rows_in_scope": 4720,
+      "first_date_in_scope": 20230818,
+      "last_date_in_scope": 20260930
+    },
+    "INE.LU": {
+      "datasets": 81,
+      "datasets_with_rows_in_scope": 81,
+      "rows_in_scope": 17945,
+      "first_date_in_scope": 20200622,
+      "last_date_in_scope": 20260930
+    },
+    "INE.NR": {
+      "datasets": 92,
+      "datasets_with_rows_in_scope": 92,
+      "rows_in_scope": 20459,
+      "first_date_in_scope": 20190812,
+      "last_date_in_scope": 20260930
+    },
+    "INE.SC": {
+      "datasets": 117,
+      "datasets_with_rows_in_scope": 117,
+      "rows_in_scope": 41155,
+      "first_date_in_scope": 20180326,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.AD": {
+      "datasets": 23,
+      "datasets_with_rows_in_scope": 23,
+      "rows_in_scope": 3628,
+      "first_date_in_scope": 20250610,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.AG": {
+      "datasets": 181,
+      "datasets_with_rows_in_scope": 181,
+      "rows_in_scope": 41850,
+      "first_date_in_scope": 20120510,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.AL": {
+      "datasets": 273,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48789,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.AO": {
+      "datasets": 47,
+      "datasets_with_rows_in_scope": 47,
+      "rows_in_scope": 9376,
+      "first_date_in_scope": 20230619,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.AU": {
+      "datasets": 228,
+      "datasets_with_rows_in_scope": 209,
+      "rows_in_scope": 36086,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.BR": {
+      "datasets": 45,
+      "datasets_with_rows_in_scope": 45,
+      "rows_in_scope": 8984,
+      "first_date_in_scope": 20230728,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.BU": {
+      "datasets": 168,
+      "datasets_with_rows_in_scope": 168,
+      "rows_in_scope": 42181,
+      "first_date_in_scope": 20131009,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.CU": {
+      "datasets": 273,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48798,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.FU": {
+      "datasets": 258,
+      "datasets_with_rows_in_scope": 203,
+      "rows_in_scope": 46333,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.HC": {
+      "datasets": 159,
+      "datasets_with_rows_in_scope": 159,
+      "rows_in_scope": 36473,
+      "first_date_in_scope": 20140321,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.NI": {
+      "datasets": 147,
+      "datasets_with_rows_in_scope": 147,
+      "rows_in_scope": 33510,
+      "first_date_in_scope": 20150327,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.OP": {
+      "datasets": 21,
+      "datasets_with_rows_in_scope": 21,
+      "rows_in_scope": 2942,
+      "first_date_in_scope": 20250910,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.PB": {
+      "datasets": 193,
+      "datasets_with_rows_in_scope": 193,
+      "rows_in_scope": 44990,
+      "first_date_in_scope": 20110324,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.RB": {
+      "datasets": 217,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48798,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.RU": {
+      "datasets": 228,
+      "datasets_with_rows_in_scope": 178,
+      "rows_in_scope": 40670,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.SN": {
+      "datasets": 147,
+      "datasets_with_rows_in_scope": 147,
+      "rows_in_scope": 33510,
+      "first_date_in_scope": 20150327,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.SP": {
+      "datasets": 100,
+      "datasets_with_rows_in_scope": 100,
+      "rows_in_scope": 22472,
+      "first_date_in_scope": 20181127,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.SS": {
+      "datasets": 92,
+      "datasets_with_rows_in_scope": 92,
+      "rows_in_scope": 20240,
+      "first_date_in_scope": 20190925,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.WR": {
+      "datasets": 217,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48239,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    },
+    "SHFE.ZN": {
+      "datasets": 243,
+      "datasets_with_rows_in_scope": 213,
+      "rows_in_scope": 48793,
+      "first_date_in_scope": 20100104,
+      "last_date_in_scope": 20260930
+    }
+  },
+  "old231_targets": {
+    "targets": 231,
+    "datasets_present": 231,
+    "metadata_exchange_matches": 231,
+    "AM120_nominal_raw_rows_through_original_first_main": 190,
+    "AM120_positive_volume_valid_rows_through_original_first_main": 180
+  },
+  "work_comparison": {
+    "totals": {
+      "source_rows": 47751,
+      "overlap_rows": 47751,
+      "equal_open": 47751,
+      "equal_high": 47751,
+      "equal_low": 47751,
+      "equal_close": 47751,
+      "equal_volume": 47018,
+      "equal_open_interest": 46952,
+      "equal_ohlc": 47751,
+      "different_open_interest": 799,
+      "different_volume": 733
+    },
+    "by_product": {
+      "AP.CZCE": {
+        "source_rows": 503,
+        "overlap_rows": 503,
+        "equal_open": 503,
+        "equal_high": 503,
+        "equal_low": 503,
+        "equal_close": 503,
+        "equal_volume": 503,
+        "equal_open_interest": 503,
+        "equal_ohlc": 503,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0
+      },
+      "CF.CZCE": {
+        "source_rows": 4411,
+        "overlap_rows": 4411,
+        "equal_open": 4411,
+        "equal_high": 4411,
+        "equal_low": 4411,
+        "equal_close": 4411,
+        "equal_volume": 4331,
+        "equal_open_interest": 4322,
+        "equal_ohlc": 4411,
+        "volume_source_equals_2x_rq": 1,
+        "oi_source_equals_2x_rq": 16,
+        "different_open_interest": 89,
+        "different_volume": 80
+      },
+      "CY.CZCE": {
+        "source_rows": 308,
+        "overlap_rows": 308,
+        "equal_open": 308,
+        "equal_high": 308,
+        "equal_low": 308,
+        "equal_close": 308,
+        "equal_volume": 308,
+        "equal_open_interest": 308,
+        "equal_ohlc": 308,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 10
+      },
+      "FG.CZCE": {
+        "source_rows": 5714,
+        "overlap_rows": 5714,
+        "equal_open": 5714,
+        "equal_high": 5714,
+        "equal_low": 5714,
+        "equal_close": 5714,
+        "equal_volume": 5714,
+        "equal_open_interest": 5713,
+        "equal_ohlc": 5714,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 74,
+        "different_open_interest": 1
+      },
+      "JR.CZCE": {
+        "source_rows": 178,
+        "overlap_rows": 178,
+        "equal_open": 178,
+        "equal_high": 178,
+        "equal_low": 178,
+        "equal_close": 178,
+        "equal_volume": 178,
+        "equal_open_interest": 178,
+        "equal_ohlc": 178,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 40
+      },
+      "LR.CZCE": {
+        "source_rows": 180,
+        "overlap_rows": 180,
+        "equal_open": 180,
+        "equal_high": 180,
+        "equal_low": 180,
+        "equal_close": 180,
+        "equal_volume": 180,
+        "equal_open_interest": 180,
+        "equal_ohlc": 180,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 37
+      },
+      "MA.CZCE": {
+        "source_rows": 4883,
+        "overlap_rows": 4883,
+        "equal_open": 4883,
+        "equal_high": 4883,
+        "equal_low": 4883,
+        "equal_close": 4883,
+        "equal_volume": 4879,
+        "equal_open_interest": 4873,
+        "equal_ohlc": 4883,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 148,
+        "different_volume": 4,
+        "different_open_interest": 10
+      },
+      "ME.CZCE": {
+        "source_rows": 143,
+        "overlap_rows": 143,
+        "equal_open": 143,
+        "equal_high": 143,
+        "equal_low": 143,
+        "equal_close": 143,
+        "equal_volume": 143,
+        "equal_open_interest": 141,
+        "equal_ohlc": 143,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 2,
+        "different_open_interest": 2
+      },
+      "OI.CZCE": {
+        "source_rows": 2797,
+        "overlap_rows": 2797,
+        "equal_open": 2797,
+        "equal_high": 2797,
+        "equal_low": 2797,
+        "equal_close": 2797,
+        "equal_volume": 2789,
+        "equal_open_interest": 2774,
+        "equal_ohlc": 2797,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 40,
+        "different_open_interest": 23,
+        "different_volume": 8
+      },
+      "PM.CZCE": {
+        "source_rows": 241,
+        "overlap_rows": 241,
+        "equal_open": 241,
+        "equal_high": 241,
+        "equal_low": 241,
+        "equal_close": 241,
+        "equal_volume": 241,
+        "equal_open_interest": 241,
+        "equal_ohlc": 241,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 36
+      },
+      "RI.CZCE": {
+        "source_rows": 845,
+        "overlap_rows": 845,
+        "equal_open": 845,
+        "equal_high": 845,
+        "equal_low": 845,
+        "equal_close": 845,
+        "equal_volume": 845,
+        "equal_open_interest": 845,
+        "equal_ohlc": 845,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 34
+      },
+      "RM.CZCE": {
+        "source_rows": 5244,
+        "overlap_rows": 5244,
+        "equal_open": 5244,
+        "equal_high": 5244,
+        "equal_low": 5244,
+        "equal_close": 5244,
+        "equal_volume": 5244,
+        "equal_open_interest": 5243,
+        "equal_ohlc": 5244,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 8,
+        "different_open_interest": 1
+      },
+      "RS.CZCE": {
+        "source_rows": 763,
+        "overlap_rows": 763,
+        "equal_open": 763,
+        "equal_high": 763,
+        "equal_low": 763,
+        "equal_close": 763,
+        "equal_volume": 763,
+        "equal_open_interest": 763,
+        "equal_ohlc": 763,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 21
+      },
+      "SF.CZCE": {
+        "source_rows": 2071,
+        "overlap_rows": 2071,
+        "equal_open": 2071,
+        "equal_high": 2071,
+        "equal_low": 2071,
+        "equal_close": 2071,
+        "equal_volume": 2070,
+        "equal_open_interest": 2069,
+        "equal_ohlc": 2071,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 59,
+        "different_volume": 1,
+        "different_open_interest": 2
+      },
+      "SM.CZCE": {
+        "source_rows": 1758,
+        "overlap_rows": 1758,
+        "equal_open": 1758,
+        "equal_high": 1758,
+        "equal_low": 1758,
+        "equal_close": 1758,
+        "equal_volume": 1751,
+        "equal_open_interest": 1742,
+        "equal_ohlc": 1758,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 47,
+        "different_volume": 7,
+        "different_open_interest": 16
+      },
+      "SR.CZCE": {
+        "source_rows": 5954,
+        "overlap_rows": 5954,
+        "equal_open": 5954,
+        "equal_high": 5954,
+        "equal_low": 5954,
+        "equal_close": 5954,
+        "equal_volume": 5339,
+        "equal_open_interest": 5334,
+        "equal_ohlc": 5954,
+        "volume_source_equals_2x_rq": 2,
+        "oi_source_equals_2x_rq": 16,
+        "different_open_interest": 620,
+        "different_volume": 615
+      },
+      "TA.CZCE": {
+        "source_rows": 5483,
+        "overlap_rows": 5483,
+        "equal_open": 5483,
+        "equal_high": 5483,
+        "equal_low": 5483,
+        "equal_close": 5483,
+        "equal_volume": 5471,
+        "equal_open_interest": 5465,
+        "equal_ohlc": 5483,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 39,
+        "different_open_interest": 18,
+        "different_volume": 12
+      },
+      "TC.CZCE": {
+        "source_rows": 633,
+        "overlap_rows": 633,
+        "equal_open": 633,
+        "equal_high": 633,
+        "equal_low": 633,
+        "equal_close": 633,
+        "equal_volume": 633,
+        "equal_open_interest": 632,
+        "equal_ohlc": 633,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 27,
+        "different_open_interest": 1
+      },
+      "WH.CZCE": {
+        "source_rows": 2500,
+        "overlap_rows": 2500,
+        "equal_open": 2500,
+        "equal_high": 2500,
+        "equal_low": 2500,
+        "equal_close": 2500,
+        "equal_volume": 2500,
+        "equal_open_interest": 2493,
+        "equal_ohlc": 2500,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 26,
+        "different_open_interest": 7
+      },
+      "ZC.CZCE": {
+        "source_rows": 3142,
+        "overlap_rows": 3142,
+        "equal_open": 3142,
+        "equal_high": 3142,
+        "equal_low": 3142,
+        "equal_close": 3142,
+        "equal_volume": 3136,
+        "equal_open_interest": 3133,
+        "equal_ohlc": 3142,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 66,
+        "different_open_interest": 9,
+        "different_volume": 6
+      }
+    },
+    "ohlc_difference_rows": 0,
+    "any_field_difference_rows": 800
+  },
+  "shfe_official_comparison": {
+    "totals": {
+      "source_rows": 29316,
+      "overlap_rows": 29316,
+      "equal_open": 29316,
+      "equal_high": 29316,
+      "equal_low": 29316,
+      "equal_close": 29316,
+      "equal_volume": 29247,
+      "equal_open_interest": 29240,
+      "equal_ohlc": 29316,
+      "different_volume": 69,
+      "different_open_interest": 76
+    },
+    "by_product": {
+      "au.SHFE": {
+        "source_rows": 2907,
+        "overlap_rows": 2907,
+        "equal_open": 2907,
+        "equal_high": 2907,
+        "equal_low": 2907,
+        "equal_close": 2907,
+        "equal_volume": 2907,
+        "equal_open_interest": 2907,
+        "equal_ohlc": 2907,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0
+      },
+      "cu.SHFE": {
+        "source_rows": 14588,
+        "overlap_rows": 14588,
+        "equal_open": 14588,
+        "equal_high": 14588,
+        "equal_low": 14588,
+        "equal_close": 14588,
+        "equal_volume": 14574,
+        "equal_open_interest": 14575,
+        "equal_ohlc": 14588,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0,
+        "different_volume": 14,
+        "different_open_interest": 13
+      },
+      "hc.SHFE": {
+        "source_rows": 3494,
+        "overlap_rows": 3494,
+        "equal_open": 3494,
+        "equal_high": 3494,
+        "equal_low": 3494,
+        "equal_close": 3494,
+        "equal_volume": 3494,
+        "equal_open_interest": 3494,
+        "equal_ohlc": 3494,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 4
+      },
+      "rb.SHFE": {
+        "source_rows": 3803,
+        "overlap_rows": 3803,
+        "equal_open": 3803,
+        "equal_high": 3803,
+        "equal_low": 3803,
+        "equal_close": 3803,
+        "equal_volume": 3803,
+        "equal_open_interest": 3803,
+        "equal_ohlc": 3803,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0
+      },
+      "ru.SHFE": {
+        "source_rows": 3806,
+        "overlap_rows": 3806,
+        "equal_open": 3806,
+        "equal_high": 3806,
+        "equal_low": 3806,
+        "equal_close": 3806,
+        "equal_volume": 3751,
+        "equal_open_interest": 3743,
+        "equal_ohlc": 3806,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0,
+        "different_open_interest": 63,
+        "different_volume": 55
+      },
+      "sp.SHFE": {
+        "source_rows": 718,
+        "overlap_rows": 718,
+        "equal_open": 718,
+        "equal_high": 718,
+        "equal_low": 718,
+        "equal_close": 718,
+        "equal_volume": 718,
+        "equal_open_interest": 718,
+        "equal_ohlc": 718,
+        "volume_source_equals_2x_rq": 0,
+        "oi_source_equals_2x_rq": 0
+      }
+    },
+    "ohlc_difference_rows": 0,
+    "any_field_difference_rows": 98
+  },
+  "SM77_raw_comparison": {
+    "original_gap_days": 77,
+    "rq_rows_present": 77,
+    "work_four_prices_blank": 77,
+    "work_volume_zero": 77,
+    "rq_zero_volume_flat_positive_prices": 77
+  },
+  "calendar_np_load_allow_pickle": false,
+  "calendar_first": 20050104,
+  "calendar_last": 20271231,
+  "limits": [
+    "Positive flat OHLC on V=0 can encode a vendor fill for exchange blank no-trade prices. All SM77 existing gaps have V0 and flat positive OHLC in RQ, and cannot be declared repaired observed trading days.",
+    "A raw calendar row or metadata listing date is not exchange lifecycle certification or a qualified training sample. No change to AM120 or source acceptance contract is made.",
+    "Monthly bundle ends before the user date cutoff; recent daily tails require separate frozen/source-clock validation. Trading calendar through 2027 is not future price coverage.",
+    "Cross-source matches support only the compared products/dates. V/OI are not divided or overwritten, and current metadata margin is not historical daily margin."
+  ],
+  "database_writes": 0,
+  "training_runs": 0,
+  "backtest_runs": 0,
+  "network_requests": 0
+}

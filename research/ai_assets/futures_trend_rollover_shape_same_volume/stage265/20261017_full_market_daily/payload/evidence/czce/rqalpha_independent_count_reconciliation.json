@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-10-17T18:34:49.668060+08:00",
+  "status": "counts_reconciled_by_date_scope_and_iteration_universe_no_data_change",
+  "root_raw_row_scope": "all historical raw dates in real H5 datasets",
+  "independent_raw_row_scope": "2010-01-01 through 2026-10-16 in real H5 datasets",
+  "root_raw_rows": 2331029,
+  "independent_raw_rows": 2157204,
+  "rows_before_2010": 173825,
+  "root_invalid_traded_ohlc_all_history": 808,
+  "independent_invalid_traded_ohlc_target_scope": 807,
+  "root_only_invalid_rows": [
+    {
+      "contract_id": "DCE.Y.200607",
+      "source_symbol": "Y0607",
+      "exchange": "DCE",
+      "product": "Y",
+      "date": "2006-07-14",
+      "open": "5110.0",
+      "high": "5110.0",
+      "low": "5110.0",
+      "close": "5139.0",
+      "volume": "22.0",
+      "open_interest": "42.0",
+      "reason": "invalid_traded_ohlc"
+    }
+  ],
+  "independent_only_invalid_rows": [],
+  "monthly_average_invalid_traded_ohlc_rows": 5,
+  "root_exclusion_universe": "H5 keys union all Future metadata IDs",
+  "independent_exclusion_universe": "H5 keys only",
+  "root_excluded_count": 493,
+  "independent_excluded_h5_count": 489,
+  "metadata_only_continuous_excluded_ids": [
+    "S88",
+    "S888",
+    "S889",
+    "S99"
+  ],
+  "metadata_only_continuous_detail": "All four IDs absent from H5, underlying S, DCE, maturity/de_listed_date 2003-01-15, listed_date 0000-00-00; source symbol labels distinguish dominant/adjusted/index continuous.",
+  "full_future_metadata_real_classifier_independent_count": 10862,
+  "root_real_metadata_count": 10862,
+  "real_metadata_classification_symmetric_difference": [],
+  "shared_real_h5_dataset_count": 10547,
+  "real_metadata_without_h5_dataset_count": 315,
+  "main_database_writes": 0,
+  "raw_market_data_changes": 0,
+  "full_audit_reruns": 0,
+  "network_requests": 0,
+  "root_all_history_raw_classification": {
+    "valid_positive_volume_ohlc": 1700630,
+    "zero_volume": 629377,
+    "invalid_traded_ohlc": 808,
+    "calendar_conflict_rows": 214,
+    "sum": 2331029
+  },
+  "calendar_conflict_detail": {
+    "scope": "all 214 are 2006-01-26/27 per root row investigation; outside 2010 target",
+    "affected_contracts_from_root_inventory": 107,
+    "rows_from_root_inventory": 214,
+    "raw_h5_calendar_samples": [
+      {
+        "source_symbol": "A0603",
+        "date": 20060126,
+        "volume": 42.0,
+        "in_vendor_calendar": false
+      },
+      {
+        "source_symbol": "A0603",
+        "date": 20060127,
+        "volume": 92.0,
+        "in_vendor_calendar": false
+      }
+    ],
+    "status": "vendor_calendar_conflict_not_illegal_date_or_deleted_raw"
+  }
+}

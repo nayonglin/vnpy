@@ -1,0 +1,264 @@
+{
+  "generated_at": "2026-10-17T18:43:17.436218+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "scope": "six domestic futures exchanges; all real futures delivery contracts, including historical retired families and monthly-average F contracts",
+  "target_start": "2010-01-01",
+  "latest_complete_trading_day": "2026-10-16",
+  "download_status": "sources_downloaded_and_current_contract_directory_fully_accounted",
+  "training_qualification": false,
+  "historical_library": {
+    "source": "RQAlpha public 202610 bundle",
+    "raw_daily_path": "rqalpha/futures.h5",
+    "metadata_path": "rqalpha/futures_metadata.json",
+    "calendar_path": "rqalpha/trading_dates.npy",
+    "real_delivery_datasets": 10547,
+    "historical_product_codes_with_data": 97,
+    "metadata_product_codes_including_no_data_pre2010": 98,
+    "rows_2010_through_20260930": 2157204,
+    "source_archive_bytes": 1044966957,
+    "source_archive_sha256": "4a9088e49e09ede379e466ce6bd57088dbcd443d446fc091e542d88c9ddbe29f",
+    "by_exchange": {
+      "DCE": {
+        "real_contracts": 3283,
+        "datasets": 3221,
+        "raw_rows": 743599,
+        "valid_traded_ohlc": 517703,
+        "no_trade_zero_volume": 225082,
+        "invalid_traded_ohlc": 744,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 0
+      },
+      "SHFE": {
+        "real_contracts": 3465,
+        "datasets": 3260,
+        "raw_rows": 737128,
+        "valid_traded_ohlc": 598101,
+        "no_trade_zero_volume": 138933,
+        "invalid_traded_ohlc": 2,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 695
+      },
+      "CZCE": {
+        "real_contracts": 2889,
+        "datasets": 2841,
+        "raw_rows": 654734,
+        "valid_traded_ohlc": 430494,
+        "no_trade_zero_volume": 224188,
+        "invalid_traded_ohlc": 0,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 0
+      },
+      "INE": {
+        "real_contracts": 394,
+        "datasets": 394,
+        "raw_rows": 101251,
+        "valid_traded_ohlc": 62482,
+        "no_trade_zero_volume": 38768,
+        "invalid_traded_ohlc": 1,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 0
+      },
+      "CFFEX": {
+        "real_contracts": 692,
+        "datasets": 692,
+        "raw_rows": 68736,
+        "valid_traded_ohlc": 67507,
+        "no_trade_zero_volume": 1229,
+        "invalid_traded_ohlc": 0,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 0
+      },
+      "GFEX": {
+        "real_contracts": 139,
+        "datasets": 139,
+        "raw_rows": 25581,
+        "valid_traded_ohlc": 24343,
+        "no_trade_zero_volume": 1177,
+        "invalid_traded_ohlc": 61,
+        "invalid_quantity": 0,
+        "missing_target_raw_observations": 0,
+        "before_metadata_listing": 0
+      }
+    },
+    "candidate_lifetime_calendar_missing_raw_days_2010_onward": 0,
+    "coverage_limit": "against this vendor metadata/calendar, not an exchange-certified proof of every historical listing"
+  },
+  "official_crosscheck_layers": {
+    "SHFE_INE_CFFEX": {
+      "source_count": 247,
+      "source_bytes_including_stage264_reuse": 378216882,
+      "unique_daily_rows": 747972,
+      "catalog": "other_exchanges/official_reference_catalog.json"
+    },
+    "DCE": {
+      "normalization": "dce/official_fullmarket_normalization.json",
+      "data": "dce/official_fullmarket_daily.csv",
+      "raw_packages": 229,
+      "date_scope": "2006-2022",
+      "unique_daily_rows": 333766,
+      "contract_epochs": 2245,
+      "data_sha256": "8a76e396856e18ba1c1c4c3f276e733466e587587094b39a0921c84eb64844b5"
+    },
+    "CZCE_backup": {
+      "data_tables": [
+        "czce/work_AP_fullmarket_bars.csv",
+        "czce/work_CF_fullmarket_bars.csv",
+        "czce/work_CY_fullmarket_bars.csv",
+        "czce/work_FG_fullmarket_bars.csv",
+        "czce/work_JR_fullmarket_bars.csv",
+        "czce/work_LR_fullmarket_bars.csv",
+        "czce/work_MA_fullmarket_bars.csv",
+        "czce/work_OI_fullmarket_bars.csv",
+        "czce/work_PM_fullmarket_bars.csv",
+        "czce/work_RI_fullmarket_bars.csv",
+        "czce/work_RM_fullmarket_bars.csv",
+        "czce/work_RS_fullmarket_bars.csv",
+        "czce/work_SF_fullmarket_bars.csv",
+        "czce/work_SM_fullmarket_bars.csv",
+        "czce/work_SR_fullmarket_bars.csv",
+        "czce/work_TA_fullmarket_bars.csv",
+        "czce/work_WH_fullmarket_bars.csv",
+        "czce/work_ZC_fullmarket_bars.csv"
+      ],
+      "summary": "czce/work_fullmarket_summary.json",
+      "status": "local GitHub archival crosscheck, not official licensed production source"
+    }
+  },
+  "latest_market_census": {
+    "directory_count": 870,
+    "directory_by_exchange": {
+      "INE": 63,
+      "DCE": 250,
+      "GFEX": 48,
+      "SHFE": 238,
+      "CZCE": 243,
+      "CFFEX": 28
+    },
+    "missing_source_contracts": [],
+    "extra_recent_expired_contracts": [
+      "CZCE.ZC610"
+    ],
+    "census_path": "current_contract_source_census.csv",
+    "tqsdk_downloaded_symbols": 542,
+    "tqsdk_empty_symbols": [
+      "CZCE.CY708",
+      "CZCE.JR611",
+      "CZCE.JR707",
+      "CZCE.PM703",
+      "CZCE.RS706"
+    ],
+    "future_or_incomplete_daily_rows_excluded": 364
+  },
+  "quality_contract": {
+    "raw_preserved": true,
+    "units_converted": false,
+    "cross_source_prices_blended": false,
+    "zero_volume": "raw flat or blank prices do not count as observed traded candles or AM120 history",
+    "invalid_positive_volume_ohlc_2010_onward": 807,
+    "candidate_listing_conflict_rows": 695,
+    "pre_2010_calendar_conflict": "214 raw rows on 2006-01-26/27 absent from vendor calendar; raw retained and outside primary scope",
+    "quantity_contract": "source/year dependent volume units and closing OI; source disputes kept separate",
+    "point_in_time": "ex-post archives do not establish contemporaneous publication bytes",
+    "licenses": "download access is not blanket commercial authorization; raw files stay local and are not redistributed"
+  },
+  "source_receipts": [
+    {
+      "path": "rqalpha/bundle_download_status.json",
+      "bytes": 2067,
+      "sha256": "86292908f3f178dbfccd2835f146f838aa8b6266b0d4c191b2b4a31e5b32cbad"
+    },
+    {
+      "path": "rqalpha/full_market_inventory_summary.json",
+      "bytes": 36443,
+      "sha256": "4536a0713161d4e735dd62e53ca9767bc7a7d3603c4a37f394668bfdf3cb9292"
+    },
+    {
+      "path": "czce/rqalpha_independent_audit.json",
+      "bytes": 36970,
+      "sha256": "9d3d6aaa6092bd4fc7d78a941ba4393be739e13332ad21fad84a964f5465bac6"
+    },
+    {
+      "path": "czce/rqalpha_independent_count_reconciliation.json",
+      "bytes": 2635,
+      "sha256": "12e3e70078906287e2fbdd3e6296be40b017dad95fcdae9d306bdfaa3c39efe5"
+    },
+    {
+      "path": "dce/official_fullmarket_manifest.json",
+      "bytes": 149795,
+      "sha256": "28d4a784e8e9b869de40c17a781f46ed250b8a2a2fcd62541cabd57bbcb48439"
+    },
+    {
+      "path": "dce/official_fullmarket_verification.json",
+      "bytes": 1858,
+      "sha256": "20fe2a24bbe79c4512daa25e87bcba0d01f60d21e00ac21843fd42b1cdd34549"
+    },
+    {
+      "path": "dce/independent_review_stage265_dce_rq_verdict.json",
+      "bytes": 1982,
+      "sha256": "ee1e6d5db4fe0de9f1d8ba2589211cd943d2d455b1f32dc4818db3f9b99228cc"
+    },
+    {
+      "path": "other_exchanges/official_reference_catalog.json",
+      "bytes": 493175,
+      "sha256": "d7dd5c6f2f57ee1983c347b0c3154908a10d354a8aa5c95224b3e43be72f09b2"
+    },
+    {
+      "path": "other_exchanges/official_self_validation.json",
+      "bytes": 2255,
+      "sha256": "e5116086bb4d06934d7e8c84b58d5006396f78e12e1a823646eb42a98e5a9cbf"
+    },
+    {
+      "path": "other_exchanges/latest_trade_date_census.json",
+      "bytes": 17573,
+      "sha256": "a299ae7178dc883c2478f90446c1b23e113a116772c16a484d198ada437dbee0"
+    },
+    {
+      "path": "tq_latest/current_futures_catalog.json",
+      "bytes": 16057,
+      "sha256": "8b94efd341c899bfa42b2dff7a07418330d67631e4cc5ec8b0b4fa4455aecff3"
+    },
+    {
+      "path": "tq_latest/recent_download_status.json",
+      "bytes": 133485,
+      "sha256": "4f1c45ff342d8824488390955e11b3a6f465688f39cc5772185d0ed2948c1876"
+    },
+    {
+      "path": "current_contract_source_census.csv",
+      "bytes": 69428,
+      "sha256": "f2a405907addf6a9bf21428e8a9d58ea22f73d3e1f6fe44dd05208cf23549f0b"
+    },
+    {
+      "path": "tq_latest/independent_review_stage265_tq_tail.json",
+      "bytes": 12984,
+      "sha256": "513a2dabc85bda99e1a4cca3dd9ea9cd4dac7552b83cf55ea4070b968d450d41"
+    },
+    {
+      "path": "tq_latest/independent_review_stage265_tq_tail_empty_quotes.json",
+      "bytes": 5265,
+      "sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60"
+    },
+    {
+      "path": "czce/other_exchanges_independent_review.json",
+      "bytes": 12858,
+      "sha256": "ebd37e0cc8c75abdd4d6b9fee9342ba3c35ce6895e1d1ca98cdd9d49136b0af9"
+    },
+    {
+      "path": "primary_integrity.json",
+      "bytes": 1279,
+      "sha256": "f9e074c96c7558c9ac9c521b9b9c8069c0a5b764cb3bc2c2ee4633af7bba7aad"
+    }
+  ],
+  "safety": {
+    "main_database_writes": 0,
+    "production_changes": 0,
+    "new_minute_downloads": 0,
+    "financial_backtests": 0,
+    "model_fits": 0,
+    "order_api_calls": 0
+  }
+}

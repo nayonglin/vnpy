@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-10-17T18:21:19.436557+08:00",
+  "status": "all_accepted_cells_match_raw_coordinates",
+  "accepted_rows_checked": 47751,
+  "field_cells_checked": 286506,
+  "duplicate_epoch_dates": 0,
+  "source_input_sha256": {
+    "work_AP_fullmarket_bars.csv": "a73483813ca717eec01d927a9f64e575aecf31927d2a251025088aacffccfbc2",
+    "work_CF_fullmarket_bars.csv": "7a6183c40997aeb34df5b21b110dde0c17b62a8a2e31f6566e8fd28df5a77973",
+    "work_CY_fullmarket_bars.csv": "220121e06b2108c74f5d575efae20441c9f91e288a71080d6ab68f02e8fb6cd6",
+    "work_FG_fullmarket_bars.csv": "6cff14b9ad85acc54b7d61a35bd9f5fd9decd68a4ea143f89eb99f7ac62d879c",
+    "work_JR_fullmarket_bars.csv": "8fe3be02d57201038f93a8a32e5c0321b0987f9ca6301b3935c10bf95b3a316a",
+    "work_LR_fullmarket_bars.csv": "2f8a6d58acf0a4aec095022b67177695527293c506be253d376201a8a21b6a5d",
+    "work_MA_fullmarket_bars.csv": "dbdf0c743c13d4febfebf1ded815f4c70a3ee8a5b6aa6904d03ac80c1285565c",
+    "work_OI_fullmarket_bars.csv": "33ea5745dbf22db518569b96cc7868085971b02d83c76458d08e5f5f79b582ca",
+    "work_PM_fullmarket_bars.csv": "a8450af089482c2f318d2fbf693a8e112863f11edd25e72b6ceaa5e80afe4c6b",
+    "work_RI_fullmarket_bars.csv": "26132a3d5616e1dce812327920df3ca4afd7e876d49a49e858928ebe9c8dc6f6",
+    "work_RM_fullmarket_bars.csv": "db9f51a476bd29dce9edc6845963c90982f2ffcf8f58cdb357091357c7a35059",
+    "work_RS_fullmarket_bars.csv": "5c7bf40c3d91d44605f75c2e8f45e925d23685d07e0bc2136b2d2ed21a1015ad",
+    "work_SF_fullmarket_bars.csv": "16de0dd8bc77394adf15a51c6459b5ea16b44afa3996d9798c952337f8ce3e09",
+    "work_SM_fullmarket_bars.csv": "02422b1930453c37191023195810bc8e56a9a40a419853389322ce07561d0c3b",
+    "work_SR_fullmarket_bars.csv": "693444ac6104792602c9e9ea343bf8768ea4fcc1d9ddd80be42a772ed7e55668",
+    "work_TA_fullmarket_bars.csv": "5a4f916de43d1fd94f1e533812f66b723b755d56fcec4c7a806bab8aa1463d96",
+    "work_WH_fullmarket_bars.csv": "256652f5d7f03bacf4925995f687fd2599c892fd5ec911348d626a8c8af381c1",
+    "work_ZC_fullmarket_bars.csv": "d8d058384016c23f25d23da7c8b589fe94000e2456ca3c4f9b0f6efe63ad97e3"
+  },
+  "limits": "Direct cell/identity representation verification only; does not certify source vendor, exchange listing, data license, complete lifecycle, or time-clock compatibility.",
+  "database_writes": 0,
+  "training_runs": 0,
+  "backtest_runs": 0
+}

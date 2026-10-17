@@ -1,0 +1,45 @@
+{
+  "frozen_at": "2026-10-17T18:42:51.414378+08:00",
+  "state": "frozen_no_further_subscriptions_or_rewrites_by_this_agent",
+  "evidence_files": [
+    {
+      "path": "outputs/stage265_deep_daily/tq_latest/independent_review_stage265_tq_tail.json",
+      "bytes": 12984,
+      "sha256": "513a2dabc85bda99e1a4cca3dd9ea9cd4dac7552b83cf55ea4070b968d450d41"
+    },
+    {
+      "path": "outputs/stage265_deep_daily/tq_latest/independent_review_stage265_tq_tail_details.json",
+      "bytes": 106895,
+      "sha256": "3bde15d8d8f649ed5c6cdb310a596c2d9d258a9f1d3ba1a8931d77fc98a35f8a"
+    },
+    {
+      "path": "outputs/stage265_deep_daily/tq_latest/independent_review_stage265_tq_tail_verdict.json",
+      "bytes": 1479,
+      "sha256": "68a5a5be01163da9e624e5e429e09d60e7faa42164e1933271a4e670cfbe9a75"
+    },
+    {
+      "path": "outputs/stage265_deep_daily/tq_latest/independent_review_stage265_tq_tail_empty_quotes.json",
+      "bytes": 5265,
+      "sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60"
+    },
+    {
+      "path": "stages/20261017_1841_stage265_tq_tail_independent_review.md",
+      "bytes": 8330,
+      "sha256": "6e1febb8f995696a52b4de1b4021810635cd5879a0196bd7308e5ff23ccf4ef5"
+    },
+    {
+      "path": "tools/independent_review_stage265_tq_tail.py",
+      "bytes": 16010,
+      "sha256": "443dee9e1876cf25f9d11277ec6f93d2cf20367975eca10aafa11ec317631cab"
+    },
+    {
+      "path": "tools/independent_review_stage265_tq_tail_quote.py",
+      "bytes": 4337,
+      "sha256": "b3f910bcd8645af42a06638e99820fe2fcf82188cceedd4456668798ec2296d3"
+    }
+  ],
+  "previously_verified_csv_count": 542,
+  "previously_verified_raw_csv_fingerprint_sha256": "40f2bc38e8a7b56f084f159d49e1dd46aee136b04081cac5bcb2b9956191e74a",
+  "final_quote_classification": "quote_messages_received_no_observable_latest_trade_price_volume_and_oi_zero",
+  "no_new_full_audit_or_batch_download": true
+}

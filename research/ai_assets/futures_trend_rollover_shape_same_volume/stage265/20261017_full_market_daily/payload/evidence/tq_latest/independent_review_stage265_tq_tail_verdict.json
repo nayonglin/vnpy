@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-10-17T18:41:03.031913+08:00",
+  "scope": "TQ recent-tail integrity, not unqualified full-history merge",
+  "P0": 0,
+  "P1": 0,
+  "base_contract_pass": true,
+  "cutoff_closed_for_observed_genuine_rows_only": true,
+  "actual_valid_traded_rows_after_09_30": 3198,
+  "actual_valid_traded_rows_on_10_16": 452,
+  "empty_series_latest_quote_classification": "All five are listed unexpired FUTURE instruments with timestamped quote messages but zero volume and no observable last trade price; historical non-trading cannot be generalized.",
+  "cross_source_price_differences": 13,
+  "all_price_difference_rq_rows_invalid": true,
+  "merge_requirement": "Preserve observed source rows and explicit source priority; exclude all V0 and quarantine incompatible prices. Do not create bars on unobserved days.",
+  "F_current_contracts_included": 18,
+  "F_all_snapshot_contracts_included_in_supplement": 42,
+  "other_exchange_tail_not_reviewed": [
+    "SHFE",
+    "INE",
+    "CFFEX"
+  ],
+  "previous_review_scope_correction": "Previous plain-YYMM DCE review excluded actual F monthly-average contracts together with nonstandard codes. Those earlier counts apply only to ordinary contracts; this tail review includes all 18 current F contracts and preserves suffix F. Named contract YYMM and maturity date may differ.",
+  "frozen_at": "2026-10-17T18:42:51.414378+08:00",
+  "final_empty_quote_sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60"
+}

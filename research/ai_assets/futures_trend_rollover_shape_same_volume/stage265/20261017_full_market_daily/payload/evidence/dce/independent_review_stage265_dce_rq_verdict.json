@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-10-17T18:30:24.459883+08:00",
+  "scope": "Independent DCE official-vs-RQ data review only",
+  "P0": 0,
+  "P1": 3,
+  "unqualified_merge_approved": false,
+  "findings": [
+    {
+      "priority": "P1",
+      "title": "Rows requiring quarantine before genuine-bar use",
+      "evidence": {
+        "cross_source_price_or_nonmodal_unit_rows": 1064,
+        "cross_source_price_mismatch": 53,
+        "official_traded_rq_zero_volume": 16,
+        "post_2023_invalid_traded_ohlc": 563,
+        "post_2023_vendor_zero_volume_rows": 27198
+      },
+      "required": "Keep zero-volume rows out of genuine bars; quarantine incompatible OHLC and source conflicts with provenance. Do not expand high/low or forward-fill prices to fabricate valid bars."
+    },
+    {
+      "priority": "P1",
+      "title": "Volume and closing OI have a source/time unit seam",
+      "evidence": "Official/RQ yearly modal ratio is 1 through 2019 and 2 in 2020-2022, with explicit nonmodal rows.",
+      "required": "Declare source and period unit policy, preserve raw units, and quarantine nonmodal differences; never apply a single full-history divisor or mix closing OI with TQ opening OI."
+    },
+    {
+      "priority": "P1",
+      "title": "Monthly RQ bundle does not reach the requested 2026-10-16 cutoff",
+      "evidence": {
+        "max_actual_dce_real_date": "2026-09-30",
+        "requested_target": "2026-10-16"
+      },
+      "required": "Verify a separate actual latest-date source through 2026-10-16; metadata and raw row counts alone do not close this gap."
+    }
+  ],
+  "positive_evidence": {
+    "all_official_valid_traded_keys_found_in_rq": true,
+    "post_2023_missing_datasets": 0,
+    "post_2023_missing_expected_calendar_days": 0,
+    "source_files_unchanged": true,
+    "metadata_primitive_safe_read": true
+  },
+  "not_a_backtest": true,
+  "overfitting": "No new fit or selection was performed; continue only data validation and declared source reconciliation."
+}

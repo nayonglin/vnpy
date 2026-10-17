@@ -1,0 +1,314 @@
+{
+  "generated_at": "2026-10-17T18:40:01.023145+08:00",
+  "reviewer_role": "independent review of root global catalog by official-reference implementer; did not implement root catalog or RQ inventory",
+  "review_scope": "read-only code/catalog/CSV/receipts/hash review; no network, H5/XLS re-parsing, training, backtest or main DB write",
+  "verdict": "PASS_FOR_SOURCE_CATALOG_ONLY_NOT_TRAINING_QUALIFICATION",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "P3": 1,
+  "inputs": {
+    "root_catalog_script_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage265_build_dataset_catalog.py",
+    "root_catalog_script_sha256": "c6a843b992d960df404ab14cbabd269f4f2d04e32cdf1a3367081947463c34bc",
+    "data_catalog_sha256": "0671b661e4391fb4d2fe50baf2d28e87762f66423339ae3a475dd7ee83fb89cd",
+    "data_catalog_generated_at": "2026-10-17T18:43:17.436218+08:00",
+    "current_census_sha256": "f2a405907addf6a9bf21428e8a9d58ea22f73d3e1f6fe44dd05208cf23549f0b"
+  },
+  "current_contracts": {
+    "directory_count": 870,
+    "census_unique_rows": 871,
+    "missing_sources": [],
+    "extra_expired": [
+      "CZCE.ZC610"
+    ],
+    "by_exchange": {
+      "CFFEX": 28,
+      "CZCE": 243,
+      "DCE": 250,
+      "GFEX": 48,
+      "INE": 63,
+      "SHFE": 238
+    },
+    "statuses": {
+      "official_daily_observation": 292,
+      "raw_daily_observations": 537,
+      "ready_empty_no_trade_price_observed": 5,
+      "official_no_trade_missing_prices": 37
+    },
+    "five_empty_symbols": [
+      "CZCE.CY708",
+      "CZCE.JR611",
+      "CZCE.JR707",
+      "CZCE.PM703",
+      "CZCE.RS706"
+    ],
+    "five_empty_independent_evidence": "Final timestamped quote messages received: valid pre_close/pre_settlement, last_price null, volume/OI zero; latest snapshot only, not blanket historical non-trading."
+  },
+  "historical_counts": {
+    "inventory_rows": 10862,
+    "inventory_real_dataset_count": 10547,
+    "inventory_product_count_with_data": 97,
+    "inventory_latest_date": "2026-09-30",
+    "catalog_real_datasets": 10547,
+    "independent_real_datasets": 10547,
+    "history_scope_sum": 2157204,
+    "catalog_scope_rows": 2157204,
+    "all_history_rows": 2331029,
+    "pre2010_rows": 173825,
+    "metadata_product_count": 98,
+    "no_dataset_products": [
+      "DCE.S"
+    ]
+  },
+  "quality_boundaries": {
+    "positive_volume_invalid_ohlc_2010_onward": 807,
+    "candidate_listing_conflicts": 695,
+    "pre2010_calendar_conflicts": 214,
+    "pre2010_dates": [
+      "2006-01-26",
+      "2006-01-27"
+    ]
+  },
+  "all_link_count": 43,
+  "missing_links": [],
+  "source_receipts": [
+    {
+      "path": "rqalpha/bundle_download_status.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "rqalpha/full_market_inventory_summary.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "czce/rqalpha_independent_audit.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "czce/rqalpha_independent_count_reconciliation.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "dce/official_fullmarket_manifest.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "dce/official_fullmarket_verification.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "dce/independent_review_stage265_dce_rq_verdict.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "other_exchanges/official_reference_catalog.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "other_exchanges/official_self_validation.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "other_exchanges/latest_trade_date_census.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "tq_latest/current_futures_catalog.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "tq_latest/recent_download_status.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "current_contract_source_census.csv",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true,
+      "sha256": "f2a405907addf6a9bf21428e8a9d58ea22f73d3e1f6fe44dd05208cf23549f0b",
+      "bytes": 69428,
+      "matches_final_catalog_receipt": true
+    },
+    {
+      "path": "tq_latest/independent_review_stage265_tq_tail.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true,
+      "sha256": "513a2dabc85bda99e1a4cca3dd9ea9cd4dac7552b83cf55ea4070b968d450d41",
+      "bytes": 12984,
+      "matches_final_catalog_receipt": true
+    },
+    {
+      "path": "tq_latest/independent_review_stage265_tq_tail_empty_quotes.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true,
+      "sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60",
+      "bytes": 5265,
+      "matches_final_catalog_receipt": true
+    },
+    {
+      "path": "czce/other_exchanges_independent_review.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    },
+    {
+      "path": "primary_integrity.json",
+      "exists": true,
+      "sha_matches": true,
+      "bytes_matches": true
+    }
+  ],
+  "physical_hash_checks": {
+    "archive_sha_matches": true,
+    "archive_bytes_matches": true,
+    "extracted_files": {
+      "trading_dates.npy": {
+        "sha_matches": true,
+        "bytes_matches": true
+      },
+      "futures.h5": {
+        "sha_matches": true,
+        "bytes_matches": true
+      },
+      "instruments.pk": {
+        "sha_matches": true,
+        "bytes_matches": true
+      },
+      "future_info.json": {
+        "sha_matches": true,
+        "bytes_matches": true
+      }
+    },
+    "primary_integrity": {
+      ".vntrader/database.db": {
+        "actual_matches_record_and_before": true,
+        "bytes_matches": true
+      },
+      "examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": {
+        "actual_matches_record_and_before": true,
+        "bytes_matches": true
+      },
+      "research/registry.md": {
+        "actual_matches_record_and_before": true,
+        "bytes_matches": true
+      }
+    }
+  },
+  "tq_actual_csv_rows": 14343,
+  "tq_actual_row_count_errors": [],
+  "no_double_counting": {
+    "root_total_history_rows_uses_RQ_independent_scope_only": true,
+    "official_reference_rows_are_separate_crosscheck_layer": true,
+    "current_census_uses_symbol_dictionary_and_set_difference": true,
+    "raw_zerovolume_not_counted_as_AM120_history": true
+  },
+  "safety": {
+    "catalog_training_qualification": false,
+    "declared_safety": {
+      "main_database_writes": 0,
+      "production_changes": 0,
+      "new_minute_downloads": 0,
+      "financial_backtests": 0,
+      "model_fits": 0,
+      "order_api_calls": 0
+    },
+    "main_database_actual_sha_matches_before_after_receipt": true,
+    "catalog_builder_output_mutations": [
+      "current_contract_source_census.csv",
+      "data_catalog.json"
+    ]
+  },
+  "nonblocking_notes": [
+    {
+      "priority": "P3",
+      "note_zh": "historical_library.by_exchange.raw_rows等沿用全历史统计，合计2331029；rows_2010_through_20260930为2010范围2157204。count reconciliation receipt已解释差173825条pre2010，最终对用户应写清这两个时间范围，不能把两者或官方crosscheck层相加。"
+    }
+  ],
+  "limitations": [
+    "This accepts source presence, provenance and declared boundaries, not every historical exchange listing or same-clock V/OI semantics.",
+    "Five no-quote contracts and later independent tail reviews are reviewed separately; catalog receipts should be regenerated after adding them.",
+    "Primary database byte equality proves unchanged persistent contents across the recorded snapshots; no production activation was performed."
+  ],
+  "outputs_written_by_this_review": [
+    "other_exchanges/independent_global_catalog_physical_hash_checks.json",
+    "other_exchanges/independent_global_catalog_review.json"
+  ],
+  "final_frozen_catalog_checked_at": "2026-10-17T18:45:04.784879+08:00",
+  "final_catalog_receipt_refresh": {
+    "prior_catalog_sha256": "9e0442b145ce6ba83acd74285ff16d32ba30ae025648240c209dba8e6228a9f4",
+    "final_catalog_sha256": "0671b661e4391fb4d2fe50baf2d28e87762f66423339ae3a475dd7ee83fb89cd",
+    "receipt_count": 17,
+    "semantic_counts_unchanged": true,
+    "official_independent_review_path": "czce/other_exchanges_independent_review.json",
+    "tail_independent_review_path": "tq_latest/independent_review_stage265_tq_tail.json"
+  },
+  "final_quote_message_refresh_appendix": {
+    "checked_at": "2026-10-17T18:45:04.784879+08:00",
+    "prior_catalog_sha256": "9e0442b145ce6ba83acd74285ff16d32ba30ae025648240c209dba8e6228a9f4",
+    "final_catalog_sha256": "0671b661e4391fb4d2fe50baf2d28e87762f66423339ae3a475dd7ee83fb89cd",
+    "tail_freeze_sha256": "5392da24098ae812f38b2f5aa6ac78b1c4b8ae60ff6b4002d621d50eaf8675ce",
+    "tail_freeze_state": "frozen_no_further_subscriptions_or_rewrites_by_this_agent",
+    "changed_small_files_verified": [
+      {
+        "path": "current_contract_source_census.csv",
+        "sha256": "f2a405907addf6a9bf21428e8a9d58ea22f73d3e1f6fe44dd05208cf23549f0b",
+        "bytes": 69428,
+        "matches_final_catalog_receipt": true
+      },
+      {
+        "path": "tq_latest/independent_review_stage265_tq_tail.json",
+        "sha256": "513a2dabc85bda99e1a4cca3dd9ea9cd4dac7552b83cf55ea4070b968d450d41",
+        "bytes": 12984,
+        "matches_final_catalog_receipt": true
+      },
+      {
+        "path": "tq_latest/independent_review_stage265_tq_tail_empty_quotes.json",
+        "sha256": "f3fbfb6133bf30d9e922fd6cad4fbf7f959a138c76d3e1ea098135f07a78ef60",
+        "bytes": 5265,
+        "matches_final_catalog_receipt": true
+      }
+    ],
+    "quote_symbols": [
+      "CZCE.CY708",
+      "CZCE.JR611",
+      "CZCE.JR707",
+      "CZCE.PM703",
+      "CZCE.RS706"
+    ],
+    "pre_close_and_pre_settlement_valid_count": 5,
+    "timestamped_quote_message_count": 5,
+    "last_price_null_volume_and_oi_zero_count": 5,
+    "current_empty_status": "ready_empty_no_trade_price_observed",
+    "latest_state_only_not_every_historical_day": true,
+    "raw_market_data_rehashed_or_reparsed": false,
+    "previous_large_archive_h5_db_checks_reused": true,
+    "counts_and_training_qualification_unchanged": true,
+    "conclusion": "final_frozen_small_receipt_update_verified"
+  }
+}

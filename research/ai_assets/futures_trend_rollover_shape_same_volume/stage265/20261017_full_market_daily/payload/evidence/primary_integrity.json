@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-10-17T18:37:56.373569+08:00",
+  "all_unchanged": true,
+  "files": [
+    {
+      "path": ".vntrader/database.db",
+      "bytes": 112726016,
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "expected_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "unchanged": true
+    },
+    {
+      "path": "examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "bytes": 18392086,
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+      "expected_sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+      "unchanged": true
+    },
+    {
+      "path": "research/registry.md",
+      "bytes": 22928,
+      "sha256": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4",
+      "expected_sha256": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4",
+      "unchanged": true
+    }
+  ],
+  "primary_database_daily_rows": 1001334,
+  "min_daily_timestamp": "2015-01-05 00:00:00",
+  "max_daily_timestamp": "2026-10-14 00:00:00",
+  "read_only_database_connection": true,
+  "financial_backtests": 0,
+  "model_fits": 0,
+  "minute_downloads": 0,
+  "orders": 0
+}

@@ -1,0 +1,73 @@
+{
+  "verified_at": "2026-10-17T18:22:14.751071+08:00",
+  "all_checks_passed": true,
+  "errors": [],
+  "raw_archive_count": 229,
+  "raw_bytes": 50815751,
+  "actual_format_counts": {
+    "xlsx": 113,
+    "zip_xlsx": 1,
+    "zip_csv": 115
+  },
+  "format_metadata_corrections": [
+    {
+      "key": "dce_2017_c",
+      "previous": "zip_csv",
+      "verified": "zip_xlsx"
+    }
+  ],
+  "normalized_unique_rows": 333766,
+  "contract_epoch_count": 2245,
+  "unique_key_count": 333766,
+  "valid_zero_volume_rows": 0,
+  "by_year": {
+    "2006": 7226,
+    "2007": 8198,
+    "2008": 10741,
+    "2009": 14927,
+    "2010": 13878,
+    "2011": 13036,
+    "2012": 12941,
+    "2013": 14473,
+    "2014": 20145,
+    "2015": 19995,
+    "2016": 19847,
+    "2017": 18995,
+    "2018": 19384,
+    "2019": 23212,
+    "2020": 33829,
+    "2021": 42274,
+    "2022": 40665
+  },
+  "by_product": {
+    "a.DCE": 28769,
+    "b.DCE": 16539,
+    "bb.DCE": 2798,
+    "c.DCE": 23850,
+    "cs.DCE": 8759,
+    "eb.DCE": 6273,
+    "eg.DCE": 8147,
+    "fb.DCE": 5661,
+    "i.DCE": 22536,
+    "j.DCE": 17743,
+    "jd.DCE": 23071,
+    "jm.DCE": 13814,
+    "l.DCE": 25662,
+    "lh.DCE": 2577,
+    "m.DCE": 31368,
+    "p.DCE": 26084,
+    "pg.DCE": 6301,
+    "pp.DCE": 14136,
+    "rr.DCE": 6859,
+    "v.DCE": 18839,
+    "y.DCE": 23980
+  },
+  "target_2010_2022_rows": 292674,
+  "normalized_sha256": "8a76e396856e18ba1c1c4c3f276e733466e587587094b39a0921c84eb64844b5",
+  "manifest_sha256": "28d4a784e8e9b869de40c17a781f46ed250b8a2a2fcd62541cabd57bbcb48439",
+  "database_writes": 0,
+  "downloads_in_verification": 0,
+  "backtest_training_calls": 0,
+  "scope_limit": "Official static archives end 2022-12-30; does not prove availability in 2023-2026 or full requested six-exchange coverage.",
+  "unit_limit": "Native archive volume / closing OI retained; no silent side conversion or mixing with opening OI."
+}

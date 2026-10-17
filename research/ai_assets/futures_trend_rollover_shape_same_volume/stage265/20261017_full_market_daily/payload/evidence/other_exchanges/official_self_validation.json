@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-10-17T18:34:58+08:00",
+  "status": "pass_implementer_self_audit_not_independent_review",
+  "script_sha256": "6d0a7838aa68ac18aae49926e7ff97bee5ad1c8961b9ce5257ac1affa959fafc",
+  "source_count": 247,
+  "archive_count": 233,
+  "source_bytes_including_stage264_reuse": 378216882,
+  "reused_stage264_bytes": 21606045,
+  "ordinary_accepted_rows": 747972,
+  "cross_source_duplicate_keys": 0,
+  "accepted_invalid_ohlcv_rows": 0,
+  "by_exchange_rows": {
+    "INE": 62837,
+    "SHFE": 617437,
+    "CFFEX": 67698
+  },
+  "contract_count_by_exchange": {
+    "INE": 396,
+    "SHFE": 3337,
+    "CFFEX": 692
+  },
+  "unit_regime_rows": {
+    "official_two_sided_volume_and_close_oi": 259619,
+    "official_single_sided_volume_and_close_oi": 229842,
+    "official_original_units_not_inferred": 188965,
+    "cffex_official_single_sided_volume_and_close_oi": 67698,
+    "official_2026_single_sided_volume_and_close_oi": 1848
+  },
+  "raw_classification_counts": {
+    "raw_data_rows": 6949142,
+    "valid_ohlc": 747972,
+    "accepted_rows": 747972,
+    "no_trade_missing_ohlc": 188950,
+    "no_trade_rows_separate": 188950,
+    "inconsistent_ohlc": 4,
+    "alternative_or_aggregate_raw_retained": 5970183,
+    "invalid_ohlc": 26,
+    "mirrored_other_exchange_raw_retained": 42007
+  },
+  "main_database_written": false,
+  "cross_source_units_converted": false,
+  "independent_review_complete": false,
+  "unified_training_data_qualified": false,
+  "remaining_limitations": [
+    "GFEX official endpoints returned challenge HTML/TLS host mismatch",
+    "some XLSX archive members omit unit notes; original units remain un-inferred",
+    "observed date bounds are not a listing/delisting metadata certification",
+    "official anomalous or incomplete OHLC stays in rejected tables"
+  ],
+  "source_manifests": {
+    "official_archive_sources_manifest.json": "cccb1f02727561e57aae1d1166a3d194d232109e23e9edf102591f1c8321a778",
+    "cffex_month_sources_manifest.json": "f07d455b2e1800c3e52a39ceb24e388959a2e79481f3b7203bcf936e611c67c7",
+    "official_tail_sources_manifest.json": "7e1fdb16fce049f547076b7549cdd3d23c8118209323de7f16679f36ae5ed319"
+  },
+  "normalization_manifest_sha256": "8bb05edd2664b63c4c51a84ddd04f25dbdd4e7fdbc80feb46041399af391a432"
+}

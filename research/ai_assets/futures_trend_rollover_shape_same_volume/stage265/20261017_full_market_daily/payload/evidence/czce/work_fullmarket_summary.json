@@ -1,0 +1,1991 @@
+{
+  "generated_at": "2026-10-17T18:20:06.013478+08:00",
+  "source_repository": "ildhj0116/Work",
+  "source_commit": "e8dd9a55b9a30b1e3033fe838724c23fcdd87ad1",
+  "source_commit_date": "2018-04-26",
+  "requested_scope": {
+    "exchanges": [
+      "CZCE"
+    ],
+    "min_date": "2010-01-01",
+    "max_date": "2026-10-16",
+    "all_listed_and_historical_products": true
+  },
+  "status": "isolated_full_source_snapshot_not_full_market_lifecycle_certification",
+  "downloaded_product_tables": [
+    "AP",
+    "CF",
+    "CY",
+    "FG",
+    "JR",
+    "LR",
+    "MA",
+    "OI",
+    "PM",
+    "RI",
+    "RM",
+    "RS",
+    "SF",
+    "SM",
+    "SR",
+    "TA",
+    "WH",
+    "ZC"
+  ],
+  "metadata_file_reports": [
+    {
+      "product_table": "AP",
+      "rows": 7,
+      "actual_product_codes": {
+        "AP.CZCE": 7
+      },
+      "sha256": "dd53b009b6fbbb1de85f33762f4de8649b9d181fac771784bd1bce59b6328554"
+    },
+    {
+      "product_table": "CF",
+      "rows": 99,
+      "actual_product_codes": {
+        "CF.CZCE": 99
+      },
+      "sha256": "f5fe6192dfa0d0184fa92c482d4a5be9c4e78062a2ce56b9058269b0b89b04f6"
+    },
+    {
+      "product_table": "CY",
+      "rows": 16,
+      "actual_product_codes": {
+        "CY.CZCE": 16
+      },
+      "sha256": "f704c3acb75ac2babafa0f9379b770d12c1e00f4a60c71fec09f34d78d0bd6f0"
+    },
+    {
+      "product_table": "FG",
+      "rows": 74,
+      "actual_product_codes": {
+        "FG.CZCE": 74
+      },
+      "sha256": "8171ed9c659d20a05f5df4be181754b2798c2ba39a3d3d9381866d530baf109d"
+    },
+    {
+      "product_table": "JR",
+      "rows": 31,
+      "actual_product_codes": {
+        "JR.CZCE": 31
+      },
+      "sha256": "52acd54dae5ba1af2ec35687a11bc5ff3bbcf33b979a030f3cc8657e863183f9"
+    },
+    {
+      "product_table": "LR",
+      "rows": 27,
+      "actual_product_codes": {
+        "LR.CZCE": 27
+      },
+      "sha256": "7853a443b1a276a986ee33513ce0d382100eb975d9a9ed74559337d6595759d5"
+    },
+    {
+      "product_table": "MA",
+      "rows": 86,
+      "actual_product_codes": {
+        "ME.CZCE": 39,
+        "MA.CZCE": 47
+      },
+      "sha256": "7889ef3ab26351344fb1261323ffeb9b9a468ae6f12b83b3711d35ad89a89f9a"
+    },
+    {
+      "product_table": "OI",
+      "rows": 71,
+      "actual_product_codes": {
+        "RO.CZCE": 36,
+        "OI.CZCE": 35
+      },
+      "sha256": "320018271ff8479a1f6ae0ee98af6c78157e41e4f8d8f47ec7aa398b1a20ee91"
+    },
+    {
+      "product_table": "PM",
+      "rows": 38,
+      "actual_product_codes": {
+        "PM.CZCE": 38
+      },
+      "sha256": "c6d769a542fa143d1484a74f0fa205198d7c06ce123b5163b8365872ef260e26"
+    },
+    {
+      "product_table": "RI",
+      "rows": 58,
+      "actual_product_codes": {
+        "ER.CZCE": 23,
+        "RI.CZCE": 35
+      },
+      "sha256": "68e7c79c78bc418dcd101ad37710be1b07bc82976354ac2ff50e5d32be48eecd"
+    },
+    {
+      "product_table": "RM",
+      "rows": 42,
+      "actual_product_codes": {
+        "RM.CZCE": 42
+      },
+      "sha256": "b08a9337f4c64e74a66ba4095409512a7348f1c7e6291956db2e0449639928bd"
+    },
+    {
+      "product_table": "RS",
+      "rows": 24,
+      "actual_product_codes": {
+        "RS.CZCE": 24
+      },
+      "sha256": "0581d16bacaf7ee1c68d699343f767217b67c7879fa621bf60f9e1d29f037c5a"
+    },
+    {
+      "product_table": "SF",
+      "rows": 54,
+      "actual_product_codes": {
+        "SF.CZCE": 54
+      },
+      "sha256": "f1a0ce6dd775731e480fcb5269390b5e69cb6e504b5c6d0f4037bf0a29284a70"
+    },
+    {
+      "product_table": "SM",
+      "rows": 54,
+      "actual_product_codes": {
+        "SM.CZCE": 54
+      },
+      "sha256": "9c6d0833bcea648ad062d4550fb652a6a4ec3f521b4b3c557c99dd210af7f3cf"
+    },
+    {
+      "product_table": "SR",
+      "rows": 81,
+      "actual_product_codes": {
+        "SR.CZCE": 81
+      },
+      "sha256": "ce37aed515f92c68c662236b43424c679d1b0a68ea8aa6a048dd2e5214b4e7d9"
+    },
+    {
+      "product_table": "TA",
+      "rows": 147,
+      "actual_product_codes": {
+        "TA.CZCE": 147
+      },
+      "sha256": "b1609306e4be1cef81d4910c89643930107d8a950c1a609323d9f1728f44cc4a"
+    },
+    {
+      "product_table": "WH",
+      "rows": 96,
+      "actual_product_codes": {
+        "WS.CZCE": 61,
+        "WH.CZCE": 35
+      },
+      "sha256": "16f761130ff61f3e56dc2b6268e5a9baa39c826ff4bb8e294865810facf4a89b"
+    },
+    {
+      "product_table": "ZC",
+      "rows": 65,
+      "actual_product_codes": {
+        "TC.CZCE": 29,
+        "ZC.CZCE": 36
+      },
+      "sha256": "4bda7f6a46d33bef521b1db926c6e5a163bf01833bce114557e740d7535492d7"
+    }
+  ],
+  "metadata_rows": 1070,
+  "metadata_unique_identities": 1070,
+  "actual_metadata_product_codes": {
+    "AP.CZCE": 7,
+    "CF.CZCE": 99,
+    "CY.CZCE": 16,
+    "FG.CZCE": 74,
+    "JR.CZCE": 31,
+    "LR.CZCE": 27,
+    "ME.CZCE": 39,
+    "MA.CZCE": 47,
+    "RO.CZCE": 36,
+    "OI.CZCE": 35,
+    "PM.CZCE": 38,
+    "ER.CZCE": 23,
+    "RI.CZCE": 35,
+    "RM.CZCE": 42,
+    "RS.CZCE": 24,
+    "SF.CZCE": 54,
+    "SM.CZCE": 54,
+    "SR.CZCE": 81,
+    "TA.CZCE": 147,
+    "WS.CZCE": 61,
+    "WH.CZCE": 35,
+    "TC.CZCE": 29,
+    "ZC.CZCE": 36
+  },
+  "accepted_rows": 47751,
+  "accepted_contract_epochs": 527,
+  "accepted_first_date": "2015-01-05",
+  "accepted_last_date": "2018-04-26",
+  "accepted_by_product": {
+    "AP.CZCE": {
+      "rows": 503,
+      "epochs": 7,
+      "first_date": "2017-12-22",
+      "last_date": "2018-04-26"
+    },
+    "CF.CZCE": {
+      "rows": 4411,
+      "epochs": 26,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "CY.CZCE": {
+      "rows": 308,
+      "epochs": 13,
+      "first_date": "2017-08-18",
+      "last_date": "2018-04-25"
+    },
+    "FG.CZCE": {
+      "rows": 5714,
+      "epochs": 52,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "JR.CZCE": {
+      "rows": 178,
+      "epochs": 19,
+      "first_date": "2015-01-07",
+      "last_date": "2018-04-26"
+    },
+    "LR.CZCE": {
+      "rows": 180,
+      "epochs": 17,
+      "first_date": "2015-01-06",
+      "last_date": "2018-03-30"
+    },
+    "MA.CZCE": {
+      "rows": 4883,
+      "epochs": 46,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "ME.CZCE": {
+      "rows": 143,
+      "epochs": 5,
+      "first_date": "2015-01-05",
+      "last_date": "2015-05-15"
+    },
+    "OI.CZCE": {
+      "rows": 2797,
+      "epochs": 26,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "PM.CZCE": {
+      "rows": 241,
+      "epochs": 18,
+      "first_date": "2015-01-06",
+      "last_date": "2018-04-26"
+    },
+    "RI.CZCE": {
+      "rows": 845,
+      "epochs": 22,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-11"
+    },
+    "RM.CZCE": {
+      "rows": 5244,
+      "epochs": 30,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "RS.CZCE": {
+      "rows": 763,
+      "epochs": 14,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "SF.CZCE": {
+      "rows": 2071,
+      "epochs": 39,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "SM.CZCE": {
+      "rows": 1758,
+      "epochs": 38,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "SR.CZCE": {
+      "rows": 5954,
+      "epochs": 29,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "TA.CZCE": {
+      "rows": 5483,
+      "epochs": 51,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "TC.CZCE": {
+      "rows": 633,
+      "epochs": 15,
+      "first_date": "2015-01-05",
+      "last_date": "2016-03-08"
+    },
+    "WH.CZCE": {
+      "rows": 2500,
+      "epochs": 25,
+      "first_date": "2015-01-05",
+      "last_date": "2018-04-26"
+    },
+    "ZC.CZCE": {
+      "rows": 3142,
+      "epochs": 35,
+      "first_date": "2015-05-18",
+      "last_date": "2018-04-26"
+    }
+  },
+  "rejected_rows": 991898,
+  "rejected_reasons": {
+    "missing_required_fields": 151857,
+    "outside_candidate_lifetime_all_present_cells_zero": 840041
+  },
+  "missing_field_patterns": {
+    "open,high,low,close": 90673,
+    "high,low": 60387,
+    "open,high,low,close,volume": 776,
+    "open,high,low,volume": 4,
+    "open,volume": 14,
+    "open,close,volume": 3
+  },
+  "unresolved_identity_rows": {
+    "metadata_identity_missing_or_ambiguous": 840786
+  },
+  "no_trade_blank_price_rows": 90593,
+  "tables": [
+    {
+      "source_table_product": "AP",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_open.raw",
+          "sha256": "609a6dc9ad64e2373a8785504224ebe18e265cc1d2b1ff14eac73e1d22ea6494",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 503,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_high.raw",
+          "sha256": "211577b948a5e375d49724b356a26c1eb0b31b29803818d3ddabe9b84735d041",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 503,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_low.raw",
+          "sha256": "0e590b6dd1adf912dee802fa0b1d25a9d36e8ba01f3c26392fdbff0ba85983d4",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 503,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_cl.raw",
+          "sha256": "10445f2a29c8c7ea09e4d166d642e527d1240501429458e44788b94e7da439fc",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 503,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_vol.raw",
+          "sha256": "634dc810f64a3b1c8ba5f1ea96bd82e3c204f49f861cca619ecf2228ad8312db",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 505,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_AP_data_oi.raw",
+          "sha256": "fea349cae82f39ff79776293a4544b40aa0aa5283d81c9c309c082574985bebf",
+          "rows": 82,
+          "first_date": "2017-12-22",
+          "last_date": "2018-04-26",
+          "columns": 7,
+          "nonmissing_cells": 505,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 503,
+      "accepted_contract_epochs": 7,
+      "accepted_first_date": "2017-12-22",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "AP.CZCE": 503
+      },
+      "rejected_rows": 2,
+      "rejected_reasons": {
+        "missing_required_fields": 2
+      },
+      "no_trade_blank_price_rows": 2
+    },
+    {
+      "source_table_product": "CF",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_open.raw",
+          "sha256": "003a9d407fa40c2d9a8a5b0718745296bcccc236ac90cf949696c9ab3198b7c1",
+          "rows": 3384,
+          "first_date": "2004-06-01",
+          "last_date": "2018-04-26",
+          "columns": 99,
+          "nonmissing_cells": 21384,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_high.raw",
+          "sha256": "bd43df7b582e6b72e8fef82d9185290f52eee36b1adb3ee63e9cb2b443277870",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 4411,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_low.raw",
+          "sha256": "595fa39379b1e8bcc7eb86b51e6eaf6a04439a281a6d8a417946700d3d9601fb",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 4411,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_cl.raw",
+          "sha256": "9e371ff87b65b933db4fa2dbeb58a67885e5589a738ee8b751448ed013138063",
+          "rows": 3384,
+          "first_date": "2004-06-01",
+          "last_date": "2018-04-26",
+          "columns": 99,
+          "nonmissing_cells": 21384,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_vol.raw",
+          "sha256": "3da2d548dc7e1254af84c267bb5cae2402fd16dafd932958c8f1f14bac50b165",
+          "rows": 3384,
+          "first_date": "2004-06-01",
+          "last_date": "2018-04-26",
+          "columns": 99,
+          "nonmissing_cells": 22705,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_CF_data_oi.raw",
+          "sha256": "57b195c448b47abd51fced502a568beb97791c04c8f345637c6e8277df7ab49a",
+          "rows": 3384,
+          "first_date": "2004-06-01",
+          "last_date": "2018-04-26",
+          "columns": 99,
+          "nonmissing_cells": 184964,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 4411,
+      "accepted_contract_epochs": 26,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "CF.CZCE": 4411
+      },
+      "rejected_rows": 138666,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 130985,
+        "missing_required_fields": 7681
+      },
+      "no_trade_blank_price_rows": 672
+    },
+    {
+      "source_table_product": "CY",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_open.raw",
+          "sha256": "7f311a6fd4a5caedd28b78e564145d9493044e379c33e218ced577cc842d4cee",
+          "rows": 153,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 308,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_high.raw",
+          "sha256": "03cdb75008b3d8487fa7b1cef198353ac0018d4412174fa66672e351ccee087e",
+          "rows": 153,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 308,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_low.raw",
+          "sha256": "9368d00187aa5bf19df05b0d5371defec42644e537cbc97c09a9af0e2e0ffe30",
+          "rows": 153,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 308,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_cl.raw",
+          "sha256": "bd8c4f61ab11868631524b6251cb6f49460d1e1b06be32ce87fc580f6f394889",
+          "rows": 154,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 309,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_vol.raw",
+          "sha256": "20d0496b547c07715024a8af39747b1a93ebe49dc5917b4e344fc3138ed3a005",
+          "rows": 167,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 1799,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_CY_data_oi.raw",
+          "sha256": "d290cb734b95f19b71c379e2f86ccb91ecf516bc5dff1ec5db0e2c72dbfa466a",
+          "rows": 167,
+          "first_date": "2017-08-18",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 1881,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 308,
+      "accepted_contract_epochs": 13,
+      "accepted_first_date": "2017-08-18",
+      "accepted_last_date": "2018-04-25",
+      "actual_product_codes": {
+        "CY.CZCE": 308
+      },
+      "rejected_rows": 1573,
+      "rejected_reasons": {
+        "missing_required_fields": 1497,
+        "outside_candidate_lifetime_all_present_cells_zero": 76
+      },
+      "no_trade_blank_price_rows": 1491
+    },
+    {
+      "source_table_product": "FG",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_open.raw",
+          "sha256": "0f96c80297b40227924c1bb7a29eb79dc028d547a68cdbb0b70c69c7fea4aed9",
+          "rows": 1312,
+          "first_date": "2012-12-03",
+          "last_date": "2018-04-26",
+          "columns": 74,
+          "nonmissing_cells": 10169,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_high.raw",
+          "sha256": "4ebdeab1768e9d9f1acfb6e3bfd0dcb4d71b89a74b5afaacc5d5832cdedc0600",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5716,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_low.raw",
+          "sha256": "625c22f9114b731d2bf3110b9f04bbd91019cfeedd4a170d894509c98b279bff",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5716,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_cl.raw",
+          "sha256": "bc81cde9c2e7072694fa0387b3aba7e96de83fac0ef71445d52c0e203b09b643",
+          "rows": 1312,
+          "first_date": "2012-12-03",
+          "last_date": "2018-04-26",
+          "columns": 74,
+          "nonmissing_cells": 10171,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_vol.raw",
+          "sha256": "31daf1888a00aa382e94ec665e8a436421db939b0ff8bed41adc3feb5919699b",
+          "rows": 1312,
+          "first_date": "2012-12-03",
+          "last_date": "2018-04-26",
+          "columns": 74,
+          "nonmissing_cells": 15650,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_FG_data_oi.raw",
+          "sha256": "dbce321b8434f2a6a3d41a6bfe85fe912e31bb76fcc84285bc1e34943711d4be",
+          "rows": 1312,
+          "first_date": "2012-12-03",
+          "last_date": "2018-04-26",
+          "columns": 74,
+          "nonmissing_cells": 50050,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 5714,
+      "accepted_contract_epochs": 52,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "FG.CZCE": 5714
+      },
+      "rejected_rows": 44336,
+      "rejected_reasons": {
+        "missing_required_fields": 9938,
+        "outside_candidate_lifetime_all_present_cells_zero": 34398
+      },
+      "no_trade_blank_price_rows": 5479
+    },
+    {
+      "source_table_product": "JR",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_open.raw",
+          "sha256": "8e2cabadcbaedf2cdbdfa9f4c01adfcb573738f6d689f07fd49aad57aa9f6e3e",
+          "rows": 355,
+          "first_date": "2013-11-18",
+          "last_date": "2018-04-26",
+          "columns": 31,
+          "nonmissing_cells": 579,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_high.raw",
+          "sha256": "fd79dac3feee02960320b3517298d203b521c064ced248d00f5eba4487cd6ee8",
+          "rows": 160,
+          "first_date": "2015-01-07",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 178,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_low.raw",
+          "sha256": "46cbd3a8c2747ff33799ec94ea05b579b4c76b80ec91bce8038b3205134be9d5",
+          "rows": 160,
+          "first_date": "2015-01-07",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 178,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_cl.raw",
+          "sha256": "60d519dbcfcd955e5627d6640d67259f18ed4832ad49373fbe05cecb1f1cf12e",
+          "rows": 355,
+          "first_date": "2013-11-18",
+          "last_date": "2018-04-26",
+          "columns": 31,
+          "nonmissing_cells": 579,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_vol.raw",
+          "sha256": "6d5e804a0de89cb9e046bbbd8067e3d723a8805727ac1fe6ce4799d323716224",
+          "rows": 1086,
+          "first_date": "2013-11-18",
+          "last_date": "2018-04-26",
+          "columns": 31,
+          "nonmissing_cells": 6465,
+          "identical_duplicate_nonmissing_cells_deduplicated": 6,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_JR_data_oi.raw",
+          "sha256": "b606b6276550f8cdfa0c4bbc49b1e4b0d97de738dac1b54b7195624f0efb5012",
+          "rows": 1086,
+          "first_date": "2013-11-18",
+          "last_date": "2018-04-26",
+          "columns": 31,
+          "nonmissing_cells": 17570,
+          "identical_duplicate_nonmissing_cells_deduplicated": 6,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 178,
+      "accepted_contract_epochs": 19,
+      "accepted_first_date": "2015-01-07",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "JR.CZCE": 178
+      },
+      "rejected_rows": 17392,
+      "rejected_reasons": {
+        "missing_required_fields": 6290,
+        "outside_candidate_lifetime_all_present_cells_zero": 11102
+      },
+      "no_trade_blank_price_rows": 5885
+    },
+    {
+      "source_table_product": "LR",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_open.raw",
+          "sha256": "fca6642720d04fd6639ea96f65e598bea2e1da4e45f9cff352b7176f5cc20c29",
+          "rows": 305,
+          "first_date": "2014-07-08",
+          "last_date": "2018-04-26",
+          "columns": 27,
+          "nonmissing_cells": 416,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_high.raw",
+          "sha256": "416daf9113681fc36eaaa52f3179ad3eeb82bf4a935fb029421c1c1ccd9198ae",
+          "rows": 184,
+          "first_date": "2015-01-06",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 180,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_low.raw",
+          "sha256": "8a98589d4b04ee5e478f19692fdc5485026287b67d8a160d833f42a3e14277d0",
+          "rows": 184,
+          "first_date": "2015-01-06",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 180,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_cl.raw",
+          "sha256": "96f4fc416078f3e8026bc96a63cd4f7961f723c54fa384263d151f07112d752a",
+          "rows": 305,
+          "first_date": "2014-07-08",
+          "last_date": "2018-04-26",
+          "columns": 27,
+          "nonmissing_cells": 416,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_vol.raw",
+          "sha256": "e1bdf138d97e5d42876e1942a43dbbe18a9145fcb8971a662e5ff2dc3134cb97",
+          "rows": 945,
+          "first_date": "2014-07-08",
+          "last_date": "2018-04-26",
+          "columns": 27,
+          "nonmissing_cells": 5520,
+          "identical_duplicate_nonmissing_cells_deduplicated": 94,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_LR_data_oi.raw",
+          "sha256": "c6ffbd81c063ffc3682265208d1df8ee25b5dbe2b8be52e2c93d60db794a3d00",
+          "rows": 945,
+          "first_date": "2014-07-08",
+          "last_date": "2018-04-26",
+          "columns": 27,
+          "nonmissing_cells": 13152,
+          "identical_duplicate_nonmissing_cells_deduplicated": 96,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 180,
+      "accepted_contract_epochs": 17,
+      "accepted_first_date": "2015-01-06",
+      "accepted_last_date": "2018-03-30",
+      "actual_product_codes": {
+        "LR.CZCE": 180
+      },
+      "rejected_rows": 12972,
+      "rejected_reasons": {
+        "missing_required_fields": 5340,
+        "outside_candidate_lifetime_all_present_cells_zero": 7632
+      },
+      "no_trade_blank_price_rows": 5101
+    },
+    {
+      "source_table_product": "MA",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_open.raw",
+          "sha256": "158540a5e78b7097c7049c36c73e31a57cd40155948524fb9fa028aedc6d05b5",
+          "rows": 1580,
+          "first_date": "2011-10-28",
+          "last_date": "2018-04-26",
+          "columns": 86,
+          "nonmissing_cells": 8196,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_high.raw",
+          "sha256": "84d8b71cf297f687654a468f4a225b35fcc44de8b9ca42ec0b13471e36646ac1",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5026,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_low.raw",
+          "sha256": "172e063071ebb277411c9d8455a8c81f86e4ce7cd15e72d56649e753b389dae1",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5026,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_cl.raw",
+          "sha256": "d1a79ae96a9fbcd5f9ea0f6ac22184dd6361b91695e94f589a93fb2bb28e357f",
+          "rows": 1580,
+          "first_date": "2011-10-28",
+          "last_date": "2018-04-26",
+          "columns": 86,
+          "nonmissing_cells": 8197,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_vol.raw",
+          "sha256": "5534d0067dd0e74904efbebcd5026c84506a85ce81fa0550aa848c234f7bef8e",
+          "rows": 1580,
+          "first_date": "2011-10-28",
+          "last_date": "2018-04-26",
+          "columns": 86,
+          "nonmissing_cells": 18785,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_MA_data_oi.raw",
+          "sha256": "23604b14ed5765425e78e2e1b143933931faf065494d49b1f98f9336ec76f50f",
+          "rows": 1580,
+          "first_date": "2011-10-28",
+          "last_date": "2018-04-26",
+          "columns": 86,
+          "nonmissing_cells": 68767,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 5026,
+      "accepted_contract_epochs": 51,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "MA.CZCE": 4883,
+        "ME.CZCE": 143
+      },
+      "rejected_rows": 63741,
+      "rejected_reasons": {
+        "missing_required_fields": 13761,
+        "outside_candidate_lifetime_all_present_cells_zero": 49980
+      },
+      "no_trade_blank_price_rows": 10580
+    },
+    {
+      "source_table_product": "OI",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_open.raw",
+          "sha256": "30e1b557669b864bce842d569094195e2851d8286eb419e13fbb9d360b4625d4",
+          "rows": 2651,
+          "first_date": "2007-06-08",
+          "last_date": "2018-04-26",
+          "columns": 71,
+          "nonmissing_cells": 10692,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_high.raw",
+          "sha256": "319829bbdcc272eb197d7a72f508c6be5463c0e72ff73775a98ee4cfbc4a103b",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 2799,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_low.raw",
+          "sha256": "b9c810209ac683a65040e45e544f1244f44b2bb6ff285a60ddfa5ac6a0adce74",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 2799,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_cl.raw",
+          "sha256": "a1d89eb1e84cab3730be021774d2ab80b83ada43d2ce92a101d7c0b5453e74fe",
+          "rows": 2651,
+          "first_date": "2007-06-08",
+          "last_date": "2018-04-26",
+          "columns": 71,
+          "nonmissing_cells": 10694,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_vol.raw",
+          "sha256": "4302fdba7cd1e4518be225ab7932ee6282c5a1d157017987a47fd1ccb6a9e90e",
+          "rows": 2651,
+          "first_date": "2007-06-08",
+          "last_date": "2018-04-26",
+          "columns": 71,
+          "nonmissing_cells": 15903,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_OI_data_oi.raw",
+          "sha256": "c3d7c87c97099eaf652258f0ac4d4ddb05fc27d10b6e00bffc56b43faa8e97c3",
+          "rows": 2651,
+          "first_date": "2007-06-08",
+          "last_date": "2018-04-26",
+          "columns": 71,
+          "nonmissing_cells": 97232,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 2797,
+      "accepted_contract_epochs": 26,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "OI.CZCE": 2797
+      },
+      "rejected_rows": 85876,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 76553,
+        "missing_required_fields": 9323
+      },
+      "no_trade_blank_price_rows": 4517
+    },
+    {
+      "source_table_product": "PM",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_open.raw",
+          "sha256": "a4d550b9d769b94b5db91d508eb3259fea75a2ff636726866aee6c3fa20e8dc9",
+          "rows": 743,
+          "first_date": "2012-01-17",
+          "last_date": "2018-04-26",
+          "columns": 38,
+          "nonmissing_cells": 1089,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_high.raw",
+          "sha256": "66f3e31b7d1e24e0be144a53a6526f3b8862e6fe3763b05eeb16438db2482803",
+          "rows": 209,
+          "first_date": "2015-01-06",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 241,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_low.raw",
+          "sha256": "dae7a2ed27e4e450e0dd8a3fa3afe64383913b1cfc690fded8b6145eabef67a8",
+          "rows": 209,
+          "first_date": "2015-01-06",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 241,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_cl.raw",
+          "sha256": "1e87d42eec52cf36a902bd9cb429139983892031adb1bdb0cb27363bf54041af",
+          "rows": 743,
+          "first_date": "2012-01-17",
+          "last_date": "2018-04-26",
+          "columns": 38,
+          "nonmissing_cells": 1089,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_vol.raw",
+          "sha256": "4ef5dd7c23a2e0de48c6eedef196e9c64b74a9f36c47b319a2ec090e03a6a6e4",
+          "rows": 1530,
+          "first_date": "2012-01-17",
+          "last_date": "2018-04-26",
+          "columns": 38,
+          "nonmissing_cells": 8522,
+          "identical_duplicate_nonmissing_cells_deduplicated": 30,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_PM_data_oi.raw",
+          "sha256": "8b343671536bfd6786cd258e1201262d79ab17b623d61182357fc6383c5c83b8",
+          "rows": 1530,
+          "first_date": "2012-01-17",
+          "last_date": "2018-04-26",
+          "columns": 38,
+          "nonmissing_cells": 27251,
+          "identical_duplicate_nonmissing_cells_deduplicated": 30,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 241,
+      "accepted_contract_epochs": 18,
+      "accepted_first_date": "2015-01-06",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "PM.CZCE": 241
+      },
+      "rejected_rows": 27010,
+      "rejected_reasons": {
+        "missing_required_fields": 8286,
+        "outside_candidate_lifetime_all_present_cells_zero": 18724
+      },
+      "no_trade_blank_price_rows": 7433
+    },
+    {
+      "source_table_product": "RI",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_open.raw",
+          "sha256": "834ee6aea59050614db46aaa2027c3fd6b56977c185e2c97f9d80ebc933d0eb4",
+          "rows": 1949,
+          "first_date": "2009-04-20",
+          "last_date": "2018-04-26",
+          "columns": 58,
+          "nonmissing_cells": 7024,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_high.raw",
+          "sha256": "6b44a5ba4b0ab7a0f61f7e3b257cebaf679bf3f8f6432be1b2c1ade3084d5c82",
+          "rows": 562,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 845,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_low.raw",
+          "sha256": "ec837d9530996f45c275a9cb28bbb921760a85d017db7d7b14acd91498c69e70",
+          "rows": 562,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 845,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_cl.raw",
+          "sha256": "810b2b41fcb62e074a92b0bdf7ced7a1c54d3d1ed406f8901df1be3b66a6801c",
+          "rows": 1949,
+          "first_date": "2009-04-20",
+          "last_date": "2018-04-26",
+          "columns": 58,
+          "nonmissing_cells": 7024,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_vol.raw",
+          "sha256": "8d7fc87213d4ee5310199bfa33fff31aa017ee8647485276498a3a2e64b29a2b",
+          "rows": 2205,
+          "first_date": "2009-04-20",
+          "last_date": "2018-04-26",
+          "columns": 58,
+          "nonmissing_cells": 13083,
+          "identical_duplicate_nonmissing_cells_deduplicated": 56,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_RI_data_oi.raw",
+          "sha256": "c7d94e5f53578e69d03e9220a5c883416f303dd28fd32a3dfce2cc8242c4bba5",
+          "rows": 2205,
+          "first_date": "2009-04-20",
+          "last_date": "2018-04-26",
+          "columns": 58,
+          "nonmissing_cells": 64355,
+          "identical_duplicate_nonmissing_cells_deduplicated": 60,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 845,
+      "accepted_contract_epochs": 22,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-11",
+      "actual_product_codes": {
+        "RI.CZCE": 845
+      },
+      "rejected_rows": 62452,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 51177,
+        "missing_required_fields": 11275
+      },
+      "no_trade_blank_price_rows": 5975
+    },
+    {
+      "source_table_product": "RM",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_open.raw",
+          "sha256": "01cb84472196503e59a1e4bf03e6e08de19690506514bab86912ce4dc1bf39e0",
+          "rows": 1293,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 42,
+          "nonmissing_cells": 8507,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_high.raw",
+          "sha256": "4bebd78916094e89a51c33a3d74a7ee9f2307ec1a86e6ec890987ea11f20dc02",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 30,
+          "nonmissing_cells": 5248,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_low.raw",
+          "sha256": "7a30e9c80240462a8847295148c1de90c443dc15fd0cf4380aa136edbde3cf95",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 30,
+          "nonmissing_cells": 5248,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_cl.raw",
+          "sha256": "aff43b747ea8902c909db320d4874f7e2e4b1692802b3160a11ac68a90207166",
+          "rows": 1293,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 42,
+          "nonmissing_cells": 8511,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_vol.raw",
+          "sha256": "fcbfdbba915760ba175500037ddbbcb051f71a14d2550fb7cf9ca63b44de734a",
+          "rows": 1293,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 42,
+          "nonmissing_cells": 8987,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_RM_data_oi.raw",
+          "sha256": "490c23ae6a57b68bada55dd0b66a7a4bf49ca74773a0932b0cb579b32552e990",
+          "rows": 1293,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 42,
+          "nonmissing_cells": 28246,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 5244,
+      "accepted_contract_epochs": 30,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "RM.CZCE": 5244
+      },
+      "rejected_rows": 23002,
+      "rejected_reasons": {
+        "missing_required_fields": 3748,
+        "outside_candidate_lifetime_all_present_cells_zero": 19254
+      },
+      "no_trade_blank_price_rows": 477
+    },
+    {
+      "source_table_product": "RS",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_open.raw",
+          "sha256": "5a214307788964088a24e11128b095d5775e36107a92661db885a2996cc6a994",
+          "rows": 1007,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 24,
+          "nonmissing_cells": 1545,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_high.raw",
+          "sha256": "824909d509e0b804db719bd2de6307af3683efa4932f60a00af5c39b5c20851d",
+          "rows": 561,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 763,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_low.raw",
+          "sha256": "15c8b8eaf3b7427d44c61a902a8862cd76bcc770b4568395af9eccd0d7f29d73",
+          "rows": 561,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 16,
+          "nonmissing_cells": 763,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_cl.raw",
+          "sha256": "f285b7f2adbbbdbd035a4a6c595c6ad0d77513cd9332608729158355a4a7a577",
+          "rows": 1007,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 24,
+          "nonmissing_cells": 1545,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_vol.raw",
+          "sha256": "6bca8910bf87ff2e1492c2763b961ae86040b0ec1baa00bb267eda31a505a0d9",
+          "rows": 1294,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 24,
+          "nonmissing_cells": 5169,
+          "identical_duplicate_nonmissing_cells_deduplicated": 4,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_RS_data_oi.raw",
+          "sha256": "2660572b05c5722b72d5dfb06cdddd4f5b1ed8aeafaf10d85db07bd508ebdc75",
+          "rows": 1294,
+          "first_date": "2012-12-28",
+          "last_date": "2018-04-26",
+          "columns": 24,
+          "nonmissing_cells": 16496,
+          "identical_duplicate_nonmissing_cells_deduplicated": 4,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 763,
+      "accepted_contract_epochs": 14,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "RS.CZCE": 763
+      },
+      "rejected_rows": 15733,
+      "rejected_reasons": {
+        "missing_required_fields": 4409,
+        "outside_candidate_lifetime_all_present_cells_zero": 11324
+      },
+      "no_trade_blank_price_rows": 3623
+    },
+    {
+      "source_table_product": "SF",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_open.raw",
+          "sha256": "51df9bc1909ab89c12c4e3a41b33d1fe381e027879ffdd371c3b5a3fb41c0efb",
+          "rows": 870,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 2278,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_high.raw",
+          "sha256": "ba86c9eb8c62c4b8d5cc6ec1ee7e0cffef36e9aca6f10dc6243e8a24a65cc20c",
+          "rows": 773,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 2074,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_low.raw",
+          "sha256": "23b7e1f53e89623506b60a77c64bf64fb216df7747a48bcecf9ecfca57565d6b",
+          "rows": 773,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 2074,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_cl.raw",
+          "sha256": "7525565bd1d10e626091276829e409f4f51e3de15aebc2fe1f2859aa7134f66d",
+          "rows": 870,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 2280,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_vol.raw",
+          "sha256": "4593ead4e8e69ee49bd360e8934bfa79dc0d11cc061d89c97b29ff092b300403",
+          "rows": 906,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 10786,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_SF_data_oi.raw",
+          "sha256": "3a71ce2a996a2e35cbf2dae5f3290cdae98dcf72408257c204ae40a0d2705bb6",
+          "rows": 906,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 25630,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 2071,
+      "accepted_contract_epochs": 39,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "SF.CZCE": 2071
+      },
+      "rejected_rows": 23559,
+      "rejected_reasons": {
+        "missing_required_fields": 8723,
+        "outside_candidate_lifetime_all_present_cells_zero": 14836
+      },
+      "no_trade_blank_price_rows": 8508
+    },
+    {
+      "source_table_product": "SM",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_open.raw",
+          "sha256": "68f1734724c243249d129a2f900eff7c25d8b3d10776ed7d709a341b507e1eda",
+          "rows": 843,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 1964,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_high.raw",
+          "sha256": "ec4307845557664cf64b4cb8db2be040eb3c6a00edc79aa80ec4071d6d93a223",
+          "rows": 745,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 1760,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_low.raw",
+          "sha256": "4364c75be650e736824cfa95b2f650a824bfa874ecf5e57599d385aad03d78a1",
+          "rows": 745,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 1760,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_cl.raw",
+          "sha256": "3f6fc4471670d92ca4b80a2342e83fe87c963bd46c6fdc4d99a4e73d6c6df189",
+          "rows": 843,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 1966,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_vol.raw",
+          "sha256": "f709c9b3754b554510fd3c52f7ae25aeacd39d51990c2749d99b68e568804058",
+          "rows": 906,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 10789,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_SM_data_oi.raw",
+          "sha256": "0374bda2eafd7cd62fc2dc36deea0f8f000c66edcabeafc42a6e253cd72868a1",
+          "rows": 906,
+          "first_date": "2014-08-08",
+          "last_date": "2018-04-26",
+          "columns": 54,
+          "nonmissing_cells": 25630,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 1758,
+      "accepted_contract_epochs": 38,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "SM.CZCE": 1758
+      },
+      "rejected_rows": 23872,
+      "rejected_reasons": {
+        "missing_required_fields": 9036,
+        "outside_candidate_lifetime_all_present_cells_zero": 14836
+      },
+      "no_trade_blank_price_rows": 8824
+    },
+    {
+      "source_table_product": "SR",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_open.raw",
+          "sha256": "390b19f2650d5316701716c5b88363b322d8d467590e60574cf5dbf91a3aada4",
+          "rows": 2991,
+          "first_date": "2006-01-06",
+          "last_date": "2018-04-26",
+          "columns": 81,
+          "nonmissing_cells": 23150,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_high.raw",
+          "sha256": "217a5733f1a0ecf68358a28f0a1924d981c31fa692659ec6d1b8ba9f3f1290ed",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 29,
+          "nonmissing_cells": 5955,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_low.raw",
+          "sha256": "4f5f6b6fe0d66427f521caeb5473d95ed40701b357f60c4ebef26e66f33f0ef2",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 29,
+          "nonmissing_cells": 5955,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_cl.raw",
+          "sha256": "b0c8a447f8b028ca87b130e3689bc91cd139025f3108b240fa73aefb12fa2b36",
+          "rows": 2991,
+          "first_date": "2006-01-06",
+          "last_date": "2018-04-26",
+          "columns": 81,
+          "nonmissing_cells": 23152,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_vol.raw",
+          "sha256": "fe4eafd55479f845c543970cf40605543fe0e58d374c5b8e60eddf34467e3f9b",
+          "rows": 2991,
+          "first_date": "2006-01-06",
+          "last_date": "2018-04-26",
+          "columns": 81,
+          "nonmissing_cells": 25196,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_SR_data_oi.raw",
+          "sha256": "aa2b76ba7ed66054ff57e18cdfaa7c91b0af8d1fa9839cadb0ab4ae5b46755b2",
+          "rows": 2991,
+          "first_date": "2006-01-06",
+          "last_date": "2018-04-26",
+          "columns": 81,
+          "nonmissing_cells": 125487,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 5954,
+      "accepted_contract_epochs": 29,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "SR.CZCE": 5954
+      },
+      "rejected_rows": 102387,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 90161,
+        "missing_required_fields": 12226
+      },
+      "no_trade_blank_price_rows": 1988
+    },
+    {
+      "source_table_product": "TA",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_open.raw",
+          "sha256": "b7e71d2707e864364610a992b47f3c3a1b8312be31334b2cf3ba7328ad30fe99",
+          "rows": 2762,
+          "first_date": "2006-12-18",
+          "last_date": "2018-04-26",
+          "columns": 147,
+          "nonmissing_cells": 23146,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_high.raw",
+          "sha256": "014f9d5ea770c9911283318ab01995c72bec17ffb9a9c78a95824a887a9c27f6",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5484,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_low.raw",
+          "sha256": "c3ae1211579d145c0cd2fe01a3121270c921ce29b347d9410152159ef196e882",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 5484,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_cl.raw",
+          "sha256": "fd28826e32d92be7f5e09e7ce448434e21c19f1981590bb159f219124fd543c1",
+          "rows": 2762,
+          "first_date": "2006-12-18",
+          "last_date": "2018-04-26",
+          "columns": 147,
+          "nonmissing_cells": 23147,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_vol.raw",
+          "sha256": "1d919db44d4b66bfba2178b516deeb960cc1e7f77979366a619996dc05f1db58",
+          "rows": 2762,
+          "first_date": "2006-12-18",
+          "last_date": "2018-04-26",
+          "columns": 147,
+          "nonmissing_cells": 32552,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_TA_data_oi.raw",
+          "sha256": "440ad18e9ebe0f9f4a9c087a93961a66c1045aea26889b78d3860034104659a9",
+          "rows": 2762,
+          "first_date": "2006-12-18",
+          "last_date": "2018-04-26",
+          "columns": 147,
+          "nonmissing_cells": 204622,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 5483,
+      "accepted_contract_epochs": 51,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "TA.CZCE": 5483
+      },
+      "rejected_rows": 178602,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 159100,
+        "missing_required_fields": 19502
+      },
+      "no_trade_blank_price_rows": 7810
+    },
+    {
+      "source_table_product": "WH",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_open.raw",
+          "sha256": "9baa777e62695ae69e4e0233b0f552c458dea02bc48371953e1341581ded129c",
+          "rows": 3665,
+          "first_date": "2003-03-28",
+          "last_date": "2018-04-26",
+          "columns": 96,
+          "nonmissing_cells": 20633,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_high.raw",
+          "sha256": "d7c41e4576cfd04614367d5b8b0c78f954029434f3a5f605c05ba6b37785f343",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 2500,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_low.raw",
+          "sha256": "a1eb50b4b455ce717a3d8e62ae34b7d729f8f58a93e15a1d5761ad46bbd54ecd",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 26,
+          "nonmissing_cells": 2500,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_cl.raw",
+          "sha256": "dba3028807ab4e47f58b1754b6e1c943cb8f2a813807a11f887e3336ce66027a",
+          "rows": 3665,
+          "first_date": "2003-03-28",
+          "last_date": "2018-04-26",
+          "columns": 96,
+          "nonmissing_cells": 20633,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_vol.raw",
+          "sha256": "ce7449effbc9a40c8a9362cc2c330a18892b1909b7adba5106d75440f700d02d",
+          "rows": 3665,
+          "first_date": "2003-03-28",
+          "last_date": "2018-04-26",
+          "columns": 96,
+          "nonmissing_cells": 24914,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_WH_data_oi.raw",
+          "sha256": "0ccc9be3b5ab85ae05ddec0127f9c02053952c32f66feba0e87427b37dc13ed4",
+          "rows": 3665,
+          "first_date": "2003-03-28",
+          "last_date": "2018-04-26",
+          "columns": 96,
+          "nonmissing_cells": 182766,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 2500,
+      "accepted_contract_epochs": 25,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "WH.CZCE": 2500
+      },
+      "rejected_rows": 136279,
+      "rejected_reasons": {
+        "outside_candidate_lifetime_all_present_cells_zero": 125049,
+        "missing_required_fields": 11230
+      },
+      "no_trade_blank_price_rows": 3970
+    },
+    {
+      "source_table_product": "ZC",
+      "fields": [
+        {
+          "field": "open",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_open.raw",
+          "sha256": "a35d3c6d0a67986b0d96ec0506a5d683a01fc758eb1f13e865511cd2b6fae72e",
+          "rows": 1117,
+          "first_date": "2013-09-26",
+          "last_date": "2018-04-26",
+          "columns": 65,
+          "nonmissing_cells": 5102,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "high",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_high.raw",
+          "sha256": "a94aa8bddf48b459e97623284bdeafb9f6bd7f2bdb54c35bc5b9248be341b8e2",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 3777,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "low",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_low.raw",
+          "sha256": "d2dd9b30fa8084e192a373faad026e550b5dc0867ca544feea8a345fed5fa3ca",
+          "rows": 808,
+          "first_date": "2015-01-05",
+          "last_date": "2018-04-26",
+          "columns": 52,
+          "nonmissing_cells": 3777,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "close",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_cl.raw",
+          "sha256": "e72a80da807b27372f891a9b77858bdac6c5e1980e81ef3677220c1f7b52b3b7",
+          "rows": 1117,
+          "first_date": "2013-09-26",
+          "last_date": "2018-04-26",
+          "columns": 65,
+          "nonmissing_cells": 5103,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "volume",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_vol.raw",
+          "sha256": "17292904efdf4043976b80ec82edafc59b0c22cad2ee4444a2ce461b860d6de5",
+          "rows": 1117,
+          "first_date": "2013-09-26",
+          "last_date": "2018-04-26",
+          "columns": 65,
+          "nonmissing_cells": 13361,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        },
+        {
+          "field": "open_interest",
+          "file": "outputs/stage265_deep_daily/opensource/work_ZC_data_oi.raw",
+          "sha256": "11a3d0f07a118ee9c0a61f2ab828aa62553657b15de62141c452069d596c3a65",
+          "rows": 1117,
+          "first_date": "2013-09-26",
+          "last_date": "2018-04-26",
+          "columns": 65,
+          "nonmissing_cells": 38219,
+          "identical_duplicate_nonmissing_cells_deduplicated": 0,
+          "conflicting_duplicate_nonmissing_cells_rejected": []
+        }
+      ],
+      "accepted_rows": 3775,
+      "accepted_contract_epochs": 50,
+      "accepted_first_date": "2015-01-05",
+      "accepted_last_date": "2018-04-26",
+      "actual_product_codes": {
+        "TC.CZCE": 633,
+        "ZC.CZCE": 3142
+      },
+      "rejected_rows": 34444,
+      "rejected_reasons": {
+        "missing_required_fields": 9590,
+        "outside_candidate_lifetime_all_present_cells_zero": 24854
+      },
+      "no_trade_blank_price_rows": 8258
+    }
+  ],
+  "limits": [
+    "Snapshot ending in 2018 cannot cover 2019 to 2026 or later listings; requested full market scope remains incomplete.",
+    "Per-contract listing and last-trade dates are unverified third-party metadata; no exchange listing rule is guessed.",
+    "Six fields have different starts and sparse cells. Missing fields and zero-volume blank-price rows are retained as rejected evidence, never fabricated. Identical duplicate source cells are deduplicated with counts, conflicting nonmissing cells are rejected without choosing a value. Out-of-candidate-lifetime all-zero grid cells are separately counted; they are not missing trading days.",
+    "ME/MA, RO/OI, WS/WH, WT/PM, ER/RI, TC/ZC are preserved by actual column product code; source filenames do not authorize renaming.",
+    "Repository GPLv3 text does not establish data vendor redistribution rights; raw data stays local ignored output.",
+    "Raw V/OI are not globally divided by 2 or mixed with TQ open OI. Product-specific official comparison is pending."
+  ],
+  "database_writes": 0,
+  "training_runs": 0,
+  "backtest_runs": 0,
+  "minute_downloads": 0
+}
