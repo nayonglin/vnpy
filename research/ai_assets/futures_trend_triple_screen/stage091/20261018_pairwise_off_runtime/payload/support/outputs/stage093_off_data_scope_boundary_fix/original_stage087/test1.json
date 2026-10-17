@@ -1,0 +1,13 @@
+{
+  "same_digest_separate_owners": true,
+  "wrong_owner_pid_run_sha_wait_rejected": true,
+  "provider_rejects_fixture_owner": true,
+  "old_sources_unchanged": {
+    "stage044_qualified_wait_driver.py": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+    "stage037_b_ts_request_provider.py": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+    "stage041_exact_daily_request_provider.py": "e4320208cc70d25959db7f66b80518ac0f6ceaaf3e6a61a97bdfc23f008bfa0d",
+    "stage051_generic_exact_daily_recovery.py": "89a2de7464f4b30eb3b3887ac265ca5433c7288fafcb117802072360c6a6228a",
+    "stage052_generic_daily_source_resolver.py": "5b2772c700f0ddabb5536df4be1bfe1f70e07d8fea43400abfa74c66ae727b78"
+  },
+  "financial_replays": 0
+}

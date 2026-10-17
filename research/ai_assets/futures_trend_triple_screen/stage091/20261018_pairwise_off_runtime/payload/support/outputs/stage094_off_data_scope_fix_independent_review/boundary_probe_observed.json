@@ -1,0 +1,10 @@
+{
+  "original_tool_result": {
+    "chunk_id": "1b8bea",
+    "wall_time_seconds": 0.009047083,
+    "exit_code": 0,
+    "original_token_count": 301,
+    "output": "{\n  \"fixture_only\": true,\n  \"cases\": [\n    {\n      \"case\": \"exact_840\",\n      \"reserves\": [\n        840,\n        840,\n        0\n      ],\n      \"error\": null,\n      \"fake_launches\": 1,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 2,\n      \"attempt_created\": true,\n      \"result\": {\n        \"status\": \"worker_terminal\",\n        \"exit_code\": 0,\n        \"all_inputs_unchanged\": true\n      }\n    },\n    {\n      \"case\": \"sdk_crosses_839\",\n      \"reserves\": [\n        900,\n        839\n      ],\n      \"error\": \"public_provider_launch_reserve_budget_unavailable\",\n      \"fake_launches\": 0,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 2,\n      \"attempt_created\": false,\n      \"result\": null\n    },\n    {\n      \"case\": \"current_changes_after_sdk\",\n      \"reserves\": [\n        900,\n        900\n      ],\n      \"error\": \"temporary_current_wait_changed\",\n      \"fake_launches\": 0,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 1,\n      \"attempt_created\": false,\n      \"result\": null\n    }\n  ],\n  \"real_provider_starts\": 0,\n  \"network_connections\": 0,\n  \"financial_replays\": 0\n}\n"
+  },
+  "reexecuted_for_delivery": false
+}

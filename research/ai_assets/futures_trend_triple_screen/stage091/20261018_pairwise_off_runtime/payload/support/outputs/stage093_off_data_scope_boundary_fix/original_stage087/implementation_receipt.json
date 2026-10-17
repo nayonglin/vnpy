@@ -1,0 +1,94 @@
+{
+  "schema": "stage087_off_data_scope_implementation_v1",
+  "recorded_at": "2026-10-18 06:54 CST",
+  "author": "/root/ordered_execution_review",
+  "independent_review": false,
+  "status": "implemented_three_finite_contract_tests_green_pending_independent_review",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737",
+      "bytes": 49864
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f",
+      "bytes": 16482
+    }
+  },
+  "test_binding": {
+    "sha256": "629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f",
+    "bytes": 24721
+  },
+  "p0_findings_in_self_checked_scope": 0,
+  "p1_findings_in_self_checked_scope": 0,
+  "remaining_known_implementation_failures": [],
+  "verification": {
+    "unique_named_tests": 3,
+    "red_exit_code": 1,
+    "red_seconds": 0.001,
+    "final_green_exit_code": 0,
+    "final_green_seconds": 0.559,
+    "final_green_tests": 3,
+    "historical_green_runs": 4,
+    "total_method_executions_including_red": 15,
+    "compile_files": 3,
+    "compile_exit_code": 0,
+    "stdlib_bootstrap_no_numeric_or_SDK_import": true
+  },
+  "contract_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0639_stage087_off_data_scope_contract.md",
+  "contract_sha256": "2ff306e630635ad500341cec8c4a04d860294a3e4a316094da48b44e68160884",
+  "stage_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0653_stage087_off_data_scope_implementation.md",
+  "stage_sha256": "929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76",
+  "artifacts_sha256": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test_stage087_off_data_scope.pyc": "079d003887543461f2ad8cafc89e88caee65bdb3d1647ee2fab7deeb53bf4f92",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/execution_history.json": "c38bc42c04b79290aee6f640b900ba814c3b4b3e2a5c2ac92383aca1ae628283",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/red.log": "492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test1.json": "bdae53725d34b8142081e8a548e678df624017957c4125e3920f65715841183a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green.log": "ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/stage087_off_data_provider.pyc": "5c9c1ab7a2824f2981ff0102bb4f3693c32d1642912431c5fd8e53e4399624c5",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/compile_bootstrap.json": "b42a456cf7873ecdf7970a476c2b4f5693e9fc7530756a31ac734d9ee34e4ffa",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/CLI_AND_API.md": "0110ac2a2513ac0edf8da737b96a8adf14136bb997a9abd07f05b3cfedfcb396",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate3.log": "730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test2.json": "3a47bb62ad7e6eace59d35dfe8a748e0cac8ea8399b790ec02a18b5dc02e1b01",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate2.log": "2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate1.log": "ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test3.json": "330f4002a466751b54ac05e16b6cf60757e0acf1358c1c447ab302a0ad20c6f8",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/stage087_off_data_scope.pyc": "32d8c83a64416a27f7fe8d52ac8cf4e0fefb22675c60b09b0c07cb8063aa7de6"
+  },
+  "five_boundaries": [
+    "scope.read_actual_request",
+    "scope.resolve_actual",
+    "provider.prepare_packet",
+    "scope.review_packet",
+    "scope.publish_reviewed"
+  ],
+  "CLI_documentation": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/CLI_AND_API.md",
+  "actual_owner_created": false,
+  "future_owner_PID": null,
+  "financial_replays": 0,
+  "real_provider_starts": 0,
+  "network_connections": 0,
+  "whole_database_preflights": 0,
+  "model_loads": 0,
+  "model_predictions": 0,
+  "model_fits": 0,
+  "external_orders": 0,
+  "actual_engine_response_written": false,
+  "fixture_only_responses_in_temporary_tests": true,
+  "data_scope_review_signed": false,
+  "financial_ready": false,
+  "production_qualified": false,
+  "limits": {
+    "batch_connections_including_daily": 4,
+    "batch_budget_seconds": [
+      840,
+      3600
+    ],
+    "launch_reserve_seconds": 840,
+    "financial_wait_seconds": 1800,
+    "financial_run_seconds": 7200,
+    "provider_soft_seconds": 570,
+    "provider_hard_seconds": 600,
+    "automatic_retry": false
+  },
+  "confidence": "bounded code/fixture evidence only; no real owner, SDK invocation, full account or market-wide qualification claim"
+}

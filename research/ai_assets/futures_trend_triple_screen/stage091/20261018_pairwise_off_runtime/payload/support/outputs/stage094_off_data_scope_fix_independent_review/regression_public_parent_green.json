@@ -1,0 +1,21 @@
+{
+  "fixture_only": true,
+  "expired_cases": [
+    {
+      "remaining_seconds": 0,
+      "budget_calls": 1,
+      "fake_launches": 0
+    },
+    {
+      "remaining_seconds": 839,
+      "budget_calls": 1,
+      "fake_launches": 0
+    }
+  ],
+  "valid_fake_child_launches": 1,
+  "reserve_checked_only_before_launch": true,
+  "no_repeat_attempt": true,
+  "financial_replays": 0,
+  "network_connections": 0,
+  "real_provider_starts": 0
+}

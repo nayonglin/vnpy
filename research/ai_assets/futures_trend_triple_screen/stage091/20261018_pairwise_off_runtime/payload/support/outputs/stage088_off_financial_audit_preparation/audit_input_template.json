@@ -1,0 +1,215 @@
+{
+  "schema": "stage088_future_off_audit_input_template_v1",
+  "template_only": true,
+  "not_an_execution_readiness_or_financial_review_receipt": true,
+  "status": "wait_both_real_terminals_and_frozen084_pins",
+  "permission_to_read_in_progress_PnL": false,
+  "financial_execution_authorized": false,
+  "expected_shared_economics": {
+    "capital": 150000,
+    "requested_start": "2020-01-01",
+    "actual_first_account_date": "2020-01-02",
+    "end": "2026-10-14",
+    "calendar_rows": 1641,
+    "calendar_path": null,
+    "calendar_sha256": null,
+    "original_costs_preserved": true,
+    "contract_metadata_preserved": true,
+    "monthly_AI_preserved": true,
+    "only_allowed_settings_delta": {
+      "enable_selection_pairwise_v2": false,
+      "enable_selection_pairwise_v2_catastrophic_veto": false,
+      "enable_selection_pairwise_v2_catastrophic_hard_filter": false,
+      "enable_selection_pairwise_v2_volume_tilt": false,
+      "selection_pairwise_volume_tilt_strength": 0,
+      "selection_pairwise_volume_tilt_long_strength": 0,
+      "selection_pairwise_volume_tilt_short_strength": 0,
+      "incremental_margin_budget_gate_protected_selection_rank": 0
+    }
+  },
+  "expected_seal_validation": {
+    "engine_returned": true,
+    "actual_settings_match_off_expected": true,
+    "parameters_match_reference_except_off_policy": true,
+    "pairwise_decision_dependency_absent": true,
+    "actual_daily_dates_equal_preflight_reference": true,
+    "captured_bar_failures": 0,
+    "strict_minute_missing_bars": 0,
+    "all_consumed_inputs_unchanged_during_run": true,
+    "frozen_correctness_code_unchanged": true,
+    "historical_shared_signal_input_empty": true
+  },
+  "common_data_bindings": {
+    "base_stack": null,
+    "correction016": null,
+    "old_two_completed_anchors": null,
+    "accepted061_manifest_and_review": null,
+    "source859_policy_and_review": null,
+    "readiness_receipt_and_sha": null,
+    "note": "only metadata/bindings at this preparation; no061/071 re-review or global price/source hash"
+  },
+  "audit_code_bindings": {
+    "frozen_helpers": {
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage030_independent_ordered_account_review.py": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage033_independent_checkpoint_account_review.py": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage038_independent_b_ts_account_review.py": "e9d651be9467c04241809a86c1046881cbe8e9def7c55b1c41bf7c79f0603dd7",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage001_compare.py": "7f62e2f08cf34267bfe1bfa55f709348b66c23f9ab246aa5e76c6c6056cc975c",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0546_stage062_pairwise_off_implementation_plan.md": "fc31120390ab4c04c95d52a7dfd629992aab0f6a4abf139d1976a0b2252343e1",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0338_stage038_b_ts_independent_financial_preparation.md": "cd68c1e83f06a0ea5b09bf6f1e46da331cea0910ded68f046c3d7c88303197bf",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0308_stage033_checkpoint_account_review_preparation.md": "8a971e4ded9b43f4b6cbf4a96ba07ca939b22d06b08da31e29f1a655802076ea",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0524_stage057_pairwise_training_asof_evidence.md": "d5eb8be36831670587db4644ea63331b3ff7f2114f170dee33b768df00dfbb89",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0532_stage058_pairwise_asof_independent_review.md": "15753f029561b2b949a15d8d24c081fc891e1adc6914a034cadaa5d5a0de0a1c"
+    },
+    "final_thin_adapter_path": null,
+    "final_thin_adapter_sha256": null,
+    "note": "No new audit implementation or guessed CLI is created now; root supplies final084 and actual terminal evidence first."
+  },
+  "arms": {
+    "A_OFF": {
+      "arm": "A_OFF",
+      "attempt": 1,
+      "owner_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF",
+      "export_source": null,
+      "actual_terminal_observed": false,
+      "tool_session_id": null,
+      "tool_terminal_chunk_id": null,
+      "exit_code": null,
+      "completion_evidence_path": null,
+      "completion_evidence_sha256": null,
+      "run_id": null,
+      "summary_sha256": null,
+      "raw_checkpoint_sha256": null,
+      "raw_manifest_sha256": null,
+      "validation_seal_sha256": null,
+      "seal_receipt_sha256": null,
+      "run_context_sha256": null,
+      "runner084_source_path": null,
+      "runner084_source_sha256": null,
+      "checkpoint_writer": "stage065_account_checkpoint.py",
+      "checkpoint_writer_source_sha256": null,
+      "fixture_only_required": false,
+      "reference_calendar_scope_required": "full_2020_2026",
+      "ordered_applicable_required": false,
+      "signal_machine_arm_required": null,
+      "expected_account_classes": {
+        "strategy_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+        "strategy_name": "QmtRollPortfolioStrategyStage847C9StopRetry",
+        "engine_module": "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine",
+        "engine_name": "Stage847StopRetryEngine"
+      },
+      "actual_financial_review_status": "not_started_no_account_output_read",
+      "independent_metrics": null,
+      "mother_episode_win_rate": null,
+      "financial_findings": null
+    },
+    "B_OFF": {
+      "arm": "B_OFF",
+      "attempt": 1,
+      "owner_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/B_OFF",
+      "export_source": null,
+      "actual_terminal_observed": false,
+      "tool_session_id": null,
+      "tool_terminal_chunk_id": null,
+      "exit_code": null,
+      "completion_evidence_path": null,
+      "completion_evidence_sha256": null,
+      "run_id": null,
+      "summary_sha256": null,
+      "raw_checkpoint_sha256": null,
+      "raw_manifest_sha256": null,
+      "validation_seal_sha256": null,
+      "seal_receipt_sha256": null,
+      "run_context_sha256": null,
+      "runner084_source_path": null,
+      "runner084_source_sha256": null,
+      "checkpoint_writer": "stage065_account_checkpoint.py",
+      "checkpoint_writer_source_sha256": null,
+      "fixture_only_required": false,
+      "reference_calendar_scope_required": "full_2020_2026",
+      "ordered_applicable_required": true,
+      "signal_machine_arm_required": "B_TS",
+      "expected_account_classes": {
+        "strategy_module": "stage035_b_ts_strategy",
+        "strategy_name": "Stage035IndependentB_TS",
+        "engine_module": "stage028_ordered_engine",
+        "engine_name": "Stage028OrderedStage847StopRetryEngine"
+      },
+      "actual_financial_review_status": "not_started_no_account_output_read",
+      "independent_metrics": null,
+      "mother_episode_win_rate": null,
+      "financial_findings": null
+    }
+  },
+  "comparison_rows_required": [
+    {
+      "arm": "A0",
+      "status": "restricted_fixed_pairwise_counterfactual",
+      "end_equity": 2262595,
+      "total_return_pct": 1408.396667,
+      "max_dd_pct": -48.78985,
+      "sharpe": 1.367364,
+      "source": "fixed Stage062/065 historical description; no old account rerun/read in this preparation",
+      "PIT_limits": "Stage057/058 two historical pairwise P1s remain"
+    },
+    {
+      "arm": "original_B",
+      "status": "failed_qualified_delivery_old_value_conflict",
+      "metrics": null,
+      "report_metrics_as": "N/A_no_complete_account"
+    },
+    {
+      "arm": "A_OFF",
+      "status": "pending_real_terminal_independent_audit",
+      "metrics": null
+    },
+    {
+      "arm": "B_OFF",
+      "status": "pending_real_terminal_independent_audit",
+      "metrics": null
+    }
+  ],
+  "decision_template": {
+    "both_1641_day_accounts_independently_reconciled": false,
+    "paired_B_OFF_vs_A_OFF_seven_gates": null,
+    "B_OFF_vs_restricted_A0_return_drawdown_context": null,
+    "original_goal_achieved": false,
+    "no_claim_from_only_beating_weaker_A_OFF": true,
+    "PIT_cost_multicycle_unseen_data_qualification": "not_established",
+    "promotion_allowed": false,
+    "production_qualified": false
+  },
+  "cost_policy": {
+    "charge_basis": "unique actual trade_id fills only; slippage=volume*size*slippage_parameter; commission=volume*size*actual_price*rate",
+    "cash": "-signed_volume*size*actual_price - slippage - commission",
+    "equity": "150000 + cumulative_actual_fill_cash + signed_end_inventory_marks",
+    "double_charge_forbidden": "do not subtract fees again from net_pnl/equity or from net_cash-based mother PnL",
+    "zero_commission": "if pinned original rates are zero, reconcile and disclose zero; do not invent fees or call cost robustness passed"
+  },
+  "mother_policy": {
+    "root": "actual opening order/trade, not guessed candidate row",
+    "retry": "same symbol/day, real earlier parent opening identity; all actual retry fills/costs stay in same mother root",
+    "rollover": "require actual old-contract close lineage; target reopen remains distinct episode",
+    "end_open": "exclude any still-live mother root from closed-mother win denominator, retain open MTM in account identity",
+    "win": "episode net_pnl>1e-6, denominator=complete closed mother episodes; no fills-as-wins"
+  },
+  "margin_policy": {
+    "exchange_close": "sum(abs(end_pos)*saved_close_price*contract_size*margin_ratio)",
+    "original_daily_broker_reporting_multiplier": 1.1,
+    "native_admission_multiplier": 1.65,
+    "additional_165_daily_diagnostic": true,
+    "full_minute_PIT_portfolio_peak_established": false,
+    "fill_time_broker_budget_rechecked": false,
+    "B_final_q": "u frozen T/S/q and gross original admitted a prefix; no fill-gap quantity recompute"
+  },
+  "limits": [
+    "No current new account roots opened; no actual raw checkpoint loaded.",
+    "Original A0/newA comparisons include data/policy differences; historical PIT issues are not canceled by common model or common data.",
+    "OFF removes pairwise runtime dependency only when actual effective evidence confirms it; monthly AI eligibility remains a separate inherited chain.",
+    "Seal/summary/deployable flag alone are not independent financial proof."
+  ]
+}
+

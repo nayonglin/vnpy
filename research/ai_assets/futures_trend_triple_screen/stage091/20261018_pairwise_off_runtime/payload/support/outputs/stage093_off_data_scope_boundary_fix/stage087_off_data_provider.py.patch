@@ -1,0 +1,19 @@
+--- original087/stage087_off_data_provider.py
++++ stage093/stage087_off_data_provider.py
+@@ -96,11 +96,16 @@
+ 
+ def run_once(owner,packet):
+     if owner.fixture_allowed or owner.document.get('fixture_only'):raise ValueError('fixture_owner_provider_forbidden')
++    owner.verify()
+     manifest,current,preflight,b=read_packet(owner,packet);packet=Path(packet);attempt=packet/'network_attempt1'
+     if attempt.exists():raise FileExistsError('existing_provider_attempt_no_retry')
++    scope.read_actual_request(owner,current['path'],current['file_sha'])
++    if scope.remaining_engine_seconds(owner,current)<840:raise ValueError('public_provider_launch_reserve_budget_unavailable')
+     probe=scope.Bindings();sdk_preflight(probe)
+     for path,digest in probe.inputs.items():
+         if preflight['source_fingerprints'].get(path)!=digest:raise ValueError('provider_sdk_preflight_drift')
++    scope.read_actual_request(owner,current['path'],current['file_sha'])
++    if scope.remaining_engine_seconds(owner,current)<840:raise ValueError('public_provider_launch_reserve_budget_unavailable')
+     attempt.mkdir();scope.atomic(attempt/'attempt_started.json',dict(owner_sha256=owner.sha256,
+         request_sha256=current['digest'],provider_attempts_max=1,soft_seconds=SOFT,hard_seconds=HARD,automatic_retry=False))
+     began=time.monotonic();process=None;killed=False

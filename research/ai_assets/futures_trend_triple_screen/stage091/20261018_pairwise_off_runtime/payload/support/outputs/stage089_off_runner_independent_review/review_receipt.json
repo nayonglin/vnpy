@@ -1,0 +1,103 @@
+{
+  "schema": "stage089_off_runner_independent_integration_review_v1",
+  "reviewed_at": "2026-10-18T06:50:10.082733+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "limited_integration_accepted_with_root_nonblocking_P2",
+  "independent_integration_accepted": true,
+  "integration_accepted": true,
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py": {
+      "sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719"
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 1,
+  "blocking_findings": [],
+  "nonblocking_findings": [
+    {
+      "id": "P2-001",
+      "priority": "P2",
+      "title": "calculate_result前异常的失败投影遗漏已收集实际fill身份",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+      "lines": [
+        441,
+        443
+      ],
+      "evidence": "shared capture_ordered_engine finally能保留actual_trade_identities，但partial字典没有该字段；原capture_engine仅calculate_result后写usage/trades，A ordered=None时失败capture可不含这些已收集fill身份。",
+      "bounded_probe": "对runner精确partial表达式用fixture A输入求值：available_actual_identities=1，persisted_actual_identity_field=false，capture.trades=0。不是实际账户结果或金融运行。",
+      "impact": "失败取证可能缺真实fill身份；不影响成功raw/seal门，不会给不完整失败绩效或生产资格。",
+      "disposition": "root明确接受本轮为非阻塞取证限制；保持084冻结，不追加修复波次或重跑。",
+      "root_ruling": "接受本轮P2为明确非阻塞取证限制，不改冻结084、不为此重跑或开启修复波次；真实异常若发生在calculate_result前，A失败capture可能遗漏已收集fill身份，但raw/seal成功门未放宽，不能赋予不完整失败绩效。"
+    }
+  ],
+  "raw_and_seal_success_gates_unchanged": true,
+  "incomplete_failed_capture_performance_qualified": false,
+  "author_test_history": {
+    "three_tests": {
+      "tests": 3,
+      "exit_code": 0,
+      "elapsed_seconds": 0.692,
+      "runner_sha256": "d13caafde4f8027c207ca1bf0458a4dedd88daca764f9cb6c6a375aa9497029a"
+    },
+    "targeted_test1": {
+      "tests": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 0.209,
+      "runner_sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09"
+    }
+  },
+  "fresh_tests": {
+    "runner_sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09",
+    "test_sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719",
+    "named_tests": [
+      "test_disabled_profiles_native_and_b_no_model",
+      "test_real_planner_fallback_slot_margin_and_b_final_budget",
+      "test_real_fill_identity_checkpoint_and_pure_export"
+    ],
+    "runs": 1,
+    "tests": 3,
+    "exit_code": 0,
+    "elapsed_seconds": 0.669,
+    "fixture_only": true,
+    "output_redirect_only_in_memory": true
+  },
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage089_off_runner_independent_review/evidence.json",
+    "sha256": "1cc2fd10771e33049c96c919001015600ae7278eef6c340b207a8d91816058a8"
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0650_stage089_off_runner_independent_review.md",
+    "sha256": "0f3e6afed0100ef12235ba39291dc56861133b75bdd1014e1941e0e51f8141aa"
+  },
+  "financial_ready": false,
+  "financial_execution_authorized": false,
+  "production_qualified": false,
+  "pending087_not_runner_defect": true,
+  "actual087_sources_read": false,
+  "future_owner_PID_or_readiness_issued": false,
+  "limits": {
+    "real_prepare_calls": 0,
+    "whole_data_preflights": 0,
+    "full_financial_replays": 0,
+    "old_suite_runs": 0,
+    "new_account_PnL_read": false,
+    "model_loads": 0,
+    "model_fits": 0,
+    "predictions": 0,
+    "network_calls": 0,
+    "orders": 0
+  },
+  "author_files_modified": false,
+  "LINE_registry_modified": false,
+  "stage_commit_push_performed": false,
+  "new_reviewer_spawned": false,
+  "acceptance_scope": "固定SHA的有限runner接合；保留root接受的P2失败取证限制。087及真实来源资格须另审；本收据不是实际数据签收、execution-readiness、金融授权或经济审计。",
+  "overfitting": false,
+  "continued_value": true
+}

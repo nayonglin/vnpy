@@ -1,0 +1,32 @@
+{
+  "command_source": "critical_probe_original.sh",
+  "original_tool_result": {
+    "chunk_id": "ab9e92",
+    "wall_time_seconds": 0.026988958,
+    "exit_code": 0,
+    "original_token_count": 167,
+    "output": "{\n  \"owner_binding\": {\n    \"finite_fixture_only\": true,\n    \"nonfixture_validation_branch\": true,\n    \"wrong_readiness_accepted\": true,\n    \"context_started_at\": \"2026-10-17T19:55:44.543207+00:00\",\n    \"owner_run_started_at\": \"2026-10-17T22:55:44.543207+00:00\",\n    \"context_run_seconds_remaining\": -3600.005072,\n    \"reported_remaining_seconds\": 1799.994935,\n    \"verify_accepted\": true\n  },\n  \"direct_provider_admission\": {\n    \"finite_fake_child_only\": true,\n    \"expired_budget_seconds\": 0,\n    \"remaining_engine_seconds_calls\": 0,\n    \"fake_launches\": 1,\n    \"returned_status\": \"worker_terminal\",\n    \"real_provider_starts\": 0,\n    \"network_connections\": 0\n  }\n}\n"
+  },
+  "observations": {
+    "owner_binding": {
+      "finite_fixture_only": true,
+      "nonfixture_validation_branch": true,
+      "wrong_readiness_accepted": true,
+      "context_started_at": "2026-10-17T19:55:44.543207+00:00",
+      "owner_run_started_at": "2026-10-17T22:55:44.543207+00:00",
+      "context_run_seconds_remaining": -3600.005072,
+      "reported_remaining_seconds": 1799.994935,
+      "verify_accepted": true
+    },
+    "direct_provider_admission": {
+      "finite_fake_child_only": true,
+      "expired_budget_seconds": 0,
+      "remaining_engine_seconds_calls": 0,
+      "fake_launches": 1,
+      "returned_status": "worker_terminal",
+      "real_provider_starts": 0,
+      "network_connections": 0
+    }
+  },
+  "reexecuted_for_delivery": false
+}

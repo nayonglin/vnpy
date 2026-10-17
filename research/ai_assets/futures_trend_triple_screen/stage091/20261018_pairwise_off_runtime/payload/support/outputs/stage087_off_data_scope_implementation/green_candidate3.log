@@ -1,0 +1,8 @@
+test_fake_child_terminal_daily_budget_no_retry_and_bootstrap (__main__.ScopeContracts.test_fake_child_terminal_daily_budget_no_retry_and_bootstrap) ... ok
+test_owner_same_digest_and_current_identity_fail_closed (__main__.ScopeContracts.test_owner_same_digest_and_current_identity_fail_closed) ... ok
+test_real021_joint_local_cache_rights_and_atomic_old_values (__main__.ScopeContracts.test_real021_joint_local_cache_rights_and_atomic_old_values) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.562s
+
+OK

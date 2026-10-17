@@ -1,0 +1,132 @@
+{
+  "schema": "stage094_off_data_scope_fix_independent_review_v1",
+  "recorded_at": "2026-10-18T07:05:41+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "two_targeted_boundary_fixes_accepted_with_inherited_stage090_finite_review",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb",
+      "bytes": 52670
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+      "bytes": 16901
+    }
+  },
+  "test_binding": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py",
+    "sha256": "17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a",
+    "bytes": 35924
+  },
+  "dependency_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/review_receipt.json": {
+      "sha256": "91ea83235b9cbc6f2c13240fbc31d3a97a64e145b2de17aa39227fd723a774da",
+      "original_p1_findings": 2,
+      "preserved": true
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/implementation_receipt.json": {
+      "sha256": "b535d1b06817ff2db55389bdac012c027264937e6f4b44325b2ce70ae85b8c4b",
+      "bytes": 14333
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0702_stage093_off_data_scope_readiness_budget_boundary_fix.md": {
+      "sha256": "e6a8dac58ad82d4e07c2c1f3baa32f53c5e746db89f55f1412c2842dedea6710",
+      "bytes": 7080
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_snapshot_manifest.json": {
+      "sha256": "75fc8323c96fa394083a490610c93dea4dd3052fed87389d8b483e79e4a5a65b",
+      "bytes": 6837
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+      "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b"
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "remaining_blocking_findings": [],
+  "findings_closed": [
+    {
+      "id": "P1-001",
+      "status": "closed",
+      "evidence": "严格非fixture分支context内部preflight SHA、source/data bindings内部SHA、preflight arm/attempt/fixture和实际readiness path/SHA/document/source/data/原限额闭合；实际argv readiness path/SHA唯一一致。owner.run_started_at与有时区context.started_at原字符串相同，remaining重新核owner并从context bytes读起点。新增定向回归9负例拒绝，正例原context余量仍约-3600。与084实际readiness返回结构/prepare绑定及checkpoint JSON hash格式逐段核对，无新readiness合同。"
+    },
+    {
+      "id": "P1-002",
+      "status": "closed",
+      "evidence": "公开run_once重验owner，在SDK前核current/≥840，在SDK后/attempt与Popen前再核current/≥840；已启动worker不追加840门。新增定向回归0/839无launch/attempt，正常launch及once attempt维持；独立小边界840→840允许1fake、900→839拒、SDK后current变化拒。原570/600和parent.wait/finally终态逻辑未变。"
+    }
+  ],
+  "only_stage090_two_P1_reassessed": true,
+  "stage090_other_finite_validation_inherited": true,
+  "original_three_tests_rerun": false,
+  "original090_probe_reexecuted": false,
+  "fresh_targeted_tests": {
+    "runs": 1,
+    "tests": 2,
+    "exit_code": 0,
+    "elapsed_seconds": 0.03,
+    "named_tests": [
+      "ScopeBoundaryRegressionTests.test_owner_readiness_and_context_clock_are_bound",
+      "ScopeBoundaryRegressionTests.test_public_provider_launch_reserve_cannot_be_bypassed"
+    ],
+    "output_redirect_only_in_memory": true,
+    "source_assertions_unchanged": true,
+    "fixture_only": true
+  },
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/evidence.json",
+    "sha256": "dc8d0551ebe19015fa0c685e7bf67fc9f933297d8591589f359a3ada75bcb8f2"
+  },
+  "boundary_probe_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/boundary_probe_original.sh",
+    "sha256": "25f827a9d61d74a1dfdbf1b6060f2c998bf81395146372a91d8a49b0130c7198"
+  },
+  "boundary_probe_output": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/boundary_probe_observed.json",
+    "sha256": "558ef63ddbcc3024d2cfb5110a9a29cb5d88cd6ad54cf08992705fb4b3e01850"
+  },
+  "test_log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/two_targeted_regressions.txt",
+    "sha256": "72ef97cbb6de972e805ed3405f2db383e2b1e7c8b1d3bf0eabc65a07bf0c0f2a"
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0705_stage094_off_data_scope_fix_independent_review.md",
+    "sha256": "ae11041d26d537949a8f75b60e87e87eaff6b79f0ad591de220bd1d05f5bf376"
+  },
+  "integration_accepted": true,
+  "finite_code_review_accepted": true,
+  "actual_source_qualification_issued": false,
+  "financial_ready": false,
+  "financial_execution_authorized": false,
+  "production_qualified": false,
+  "actual_owner_created": false,
+  "actual_prepare_calls": 0,
+  "real_provider_starts": 0,
+  "network_connections": 0,
+  "financial_replays": 0,
+  "whole_database_preflights": 0,
+  "old_suite_runs": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "new_account_PnL_read": false,
+  "author_files_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_reviewer_spawned": false,
+  "inherited_limits": [
+    "090其余有限owner/source/整R/rights/terminal/driver验证继承，不冒称在093版再次跑三测试。",
+    "无真实PID/owner/provider/SDK/prepare/preflight/整账户或数据来源资格证明。",
+    "089已接受P2失败capture身份取证限制不变；不完整失败绩效仍不能合格。",
+    "原A0受限、原B失败N/A、PIT及目标未达限制不变；代码接受不等于策略优势或金融授权。"
+  ],
+  "acceptance_scope": "仅固定新两源的090两项P1修复与直接差异接受；090其他有限验证继承。该receipt可满足084两源代码review小合同，但不是实际来源资格、owner/PID、prepare/preflight、金融readiness或授权。",
+  "overfitting": false,
+  "continued_value": true
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "stage088_off_financial_audit_preparation_receipt_v1",
+  "recorded_at": "2026-10-18T06:36:08.950774+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "preparer": "accepted_delta_review",
+  "status": "preparation_complete_wait_frozen084_and_both_real_terminals",
+  "preparation_complete": true,
+  "actual_financial_review_performed": false,
+  "actual_financial_findings": null,
+  "actual_financial_audit_ready": false,
+  "independent_financial_qualification_issued": false,
+  "owner_roots": [
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/A_OFF",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account/B_OFF"
+  ],
+  "economics": {
+    "capital": 150000,
+    "calendar_rows": 1641,
+    "cost": "original_preserved",
+    "monthly_AI": "preserved",
+    "pairwise_policy": "exact_shared8OFF"
+  },
+  "helper_algorithm_sha256": {
+    "stage030": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+    "stage033": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+    "stage038": "e9d651be9467c04241809a86c1046881cbe8e9def7c55b1c41bf7c79f0603dd7"
+  },
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage088_off_financial_audit_preparation/helper_inventory.json",
+      "sha256": "dee4be17a5c2d01357a4eb4a23265cca7096896c1f647140e4ccafafdf9cda81"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage088_off_financial_audit_preparation/audit_input_template.json",
+      "sha256": "f4b53c23198a1e777c96a2035fe5d3238ae5781bc70df1d0cb14675d31801921"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage088_off_financial_audit_preparation/preparation_evidence.json",
+      "sha256": "ec0fdeb7b1ad9c8d7774974e3422a48513ad6b928e83c8197ae20a0947da7158"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0636_stage088_off_financial_audit_preparation.md",
+      "sha256": "1639f945583f44582d1f302f376275268abc9c52230e15c7b95511a139af37f7"
+    }
+  ],
+  "minimum_adapter_points": [
+    "stage065 owner/schema/writer/source/seal identity",
+    "strict8OFF requested+actual settings gate",
+    "A exactnative ordered=None vs B producer internalB_TS",
+    "B pairwise rank0 distinct from stable order/intent ordinal",
+    "stage065 all-CSV owner decoration and raw-export field projection",
+    "both complete1641-day accounts plus restrictedA0 and originalB failure/N/A comparison"
+  ],
+  "not_a_new_general_audit_framework": true,
+  "old_A0_C0_C_TS_run_or_output_accessed": false,
+  "new_account_roots_opened": 0,
+  "in_progress_PnL_read": false,
+  "old_suite_runs": 0,
+  "financial_replays": 0,
+  "models_loaded": 0,
+  "model_fits": 0,
+  "predictions": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "global_market_hashes": 0,
+  "runner084_files_read_or_modified": false,
+  "LINE_registry_modified": false,
+  "stage_commit_push_performed": false,
+  "next_step": "root给最终084及两臂真实终态、owner/export路径与SHA后再单次加载完整raw独立审计；现在不运行旧033/038 actualCLI，不给新结果通过标记。",
+  "production_qualified": false,
+  "promotion_allowed": false,
+  "financial_execution_authorized": false,
+  "overfitting": false,
+  "continued_value": true
+}
+

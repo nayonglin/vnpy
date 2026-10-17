@@ -1,0 +1,22 @@
+{
+  "schema": "stage087_compile_and_stdlib_bootstrap_v1",
+  "exit_code": 0,
+  "sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737",
+      "bytes": 49864
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f",
+      "bytes": 16482
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py": {
+      "sha256": "629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f",
+      "bytes": 24721
+    }
+  },
+  "stdlib_bootstrap": true,
+  "numeric_or_sdk_loaded": false,
+  "network_connections": 0,
+  "financial_replays": 0
+}

@@ -1,0 +1,610 @@
+{
+  "schema": "stage085_readonly_off_data_path_audit_evidence_v1",
+  "method": "read source + AST signatures and targeted SHA; no imported provider/resolver/main execution",
+  "future_output_contract": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account",
+  "future_arms": [
+    "A_OFF",
+    "B_OFF"
+  ],
+  "attempt_per_arm": 1,
+  "observed_new_runner_source_present": false,
+  "observed_future_output_exists": false,
+  "new_owner_pid": null,
+  "new_runner_final_sha256": null,
+  "future_engine_started": false,
+  "frozen_sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py": {
+      "sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+      "bytes": 19351,
+      "functions": {
+        "sha": {
+          "line": 32,
+          "end_line": 33,
+          "arguments": "path"
+        },
+        "load": {
+          "line": 36,
+          "end_line": 37,
+          "arguments": "path"
+        },
+        "atomic": {
+          "line": 40,
+          "end_line": 44,
+          "arguments": "path, value"
+        },
+        "engine_identity": {
+          "line": 47,
+          "end_line": 54,
+          "arguments": "pid"
+        },
+        "current_request": {
+          "line": 57,
+          "end_line": 74,
+          "arguments": "wait_root=WAIT"
+        },
+        "provider_action": {
+          "line": 77,
+          "end_line": 88,
+          "arguments": "packet"
+        },
+        "call": {
+          "line": 91,
+          "end_line": 102,
+          "arguments": "argv, timeout"
+        },
+        "publish": {
+          "line": 105,
+          "end_line": 122,
+          "arguments": "current, receipt_path, receipt_sha"
+        },
+        "checked_binding": {
+          "line": 125,
+          "end_line": 129,
+          "arguments": "bindings, selection"
+        },
+        "existing_binding": {
+          "line": 132,
+          "end_line": 138,
+          "arguments": "bindings, digest"
+        },
+        "prepare": {
+          "line": 141,
+          "end_line": 182,
+          "arguments": "args"
+        },
+        "run": {
+          "line": 185,
+          "end_line": 279,
+          "arguments": "manifest_path, source_sha"
+        },
+        "main": {
+          "line": 282,
+          "end_line": 293,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py": {
+      "sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+      "bytes": 16954,
+      "functions": {
+        "read": {
+          "line": 31,
+          "end_line": 31,
+          "arguments": "path"
+        },
+        "write": {
+          "line": 32,
+          "end_line": 33,
+          "arguments": "path, value"
+        },
+        "keys": {
+          "line": 34,
+          "end_line": 34,
+          "arguments": "frame"
+        },
+        "legal": {
+          "line": 35,
+          "end_line": 39,
+          "arguments": "frame"
+        },
+        "select_provider": {
+          "line": 42,
+          "end_line": 51,
+          "arguments": "folders"
+        },
+        "new_physical_data": {
+          "line": 54,
+          "end_line": 69,
+          "arguments": "data, request"
+        },
+        "main": {
+          "line": 72,
+          "end_line": 217,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage052_generic_daily_source_resolver.py": {
+      "sha256": "5b2772c700f0ddabb5536df4be1bfe1f70e07d8fea43400abfa74c66ae727b78",
+      "bytes": 34167,
+      "functions": {
+        "request_key_scope": {
+          "line": 35,
+          "end_line": 47,
+          "arguments": "request"
+        },
+        "assemble_delivery": {
+          "line": 50,
+          "end_line": 65,
+          "arguments": "request, frames"
+        },
+        "ordinary_raw_evidence": {
+          "line": 68,
+          "end_line": 96,
+          "arguments": "raw, symbol, day, db_six"
+        },
+        "root051_terminal": {
+          "line": 99,
+          "end_line": 118,
+          "arguments": "review, folder, request"
+        },
+        "validate051_origin": {
+          "line": 121,
+          "end_line": 205,
+          "arguments": "review, folder, symbol"
+        },
+        "select051_origin": {
+          "line": 208,
+          "end_line": 231,
+          "arguments": "review, symbol, request"
+        },
+        "read051_daily": {
+          "line": 234,
+          "end_line": 252,
+          "arguments": "review, symbol, day, request"
+        },
+        "recover_daily": {
+          "line": 255,
+          "end_line": 271,
+          "arguments": "review, symbol, day, old_review, request"
+        },
+        "main": {
+          "line": 274,
+          "end_line": 422,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage045_exact_request_resolver.py": {
+      "sha256": "597551c51a021f763318086e4e3084bd5a54aa03abb8d4b038f63d131f8d02df",
+      "bytes": 26109,
+      "functions": {
+        "read_json": {
+          "line": 54,
+          "end_line": 54,
+          "arguments": "path"
+        },
+        "write": {
+          "line": 55,
+          "end_line": 56,
+          "arguments": "path, value"
+        },
+        "integer": {
+          "line": 57,
+          "end_line": 60,
+          "arguments": "value"
+        },
+        "local_ns": {
+          "line": 61,
+          "end_line": 63,
+          "arguments": "value"
+        },
+        "legal": {
+          "line": 64,
+          "end_line": 68,
+          "arguments": "row"
+        },
+        "qualify_local": {
+          "line": 88,
+          "end_line": 158,
+          "arguments": "sources, grid, daily, kind"
+        },
+        "recover_daily": {
+          "line": 161,
+          "end_line": 223,
+          "arguments": "review, symbol, day, old_review"
+        },
+        "main": {
+          "line": 226,
+          "end_line": 352,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage047_multi_exact_request_resolver.py": {
+      "sha256": "84f9ca450ec8854a3ae75d64f2eb152f0fb396d1ff1c2232cfe223084801b950",
+      "bytes": 16801,
+      "functions": {
+        "request_key_scope": {
+          "line": 26,
+          "end_line": 38,
+          "arguments": "request"
+        },
+        "assemble_delivery": {
+          "line": 41,
+          "end_line": 56,
+          "arguments": "request, frames"
+        },
+        "main": {
+          "line": 59,
+          "end_line": 207,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py": {
+      "sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+      "bytes": 21144,
+      "functions": {
+        "read_request": {
+          "line": 38,
+          "end_line": 49,
+          "arguments": "path, file_sha, *, fixture_root=None"
+        },
+        "packet_targets": {
+          "line": 52,
+          "end_line": 85,
+          "arguments": "request, calendar, packet_index"
+        },
+        "choose_daily_reference": {
+          "line": 88,
+          "end_line": 101,
+          "arguments": "symbol, day, kind, original, recovered, rejected"
+        },
+        "qualify_target": {
+          "line": 104,
+          "end_line": 128,
+          "arguments": "raw, proofs, target"
+        },
+        "prepare": {
+          "line": 131,
+          "end_line": 160,
+          "arguments": "request_path, request_file_sha, packet_index, *, fixture_root=None"
+        },
+        "read_packet": {
+          "line": 163,
+          "end_line": 169,
+          "arguments": "folder"
+        },
+        "preflight": {
+          "line": 172,
+          "end_line": 195,
+          "arguments": "folder"
+        },
+        "save": {
+          "line": 198,
+          "end_line": 202,
+          "arguments": "folder, collector, diagnostic"
+        },
+        "worker": {
+          "line": 205,
+          "end_line": 247,
+          "arguments": "folder, parent_pid"
+        },
+        "run_once": {
+          "line": 250,
+          "end_line": 274,
+          "arguments": "folder"
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage041_exact_daily_request_provider.py": {
+      "sha256": "e4320208cc70d25959db7f66b80518ac0f6ceaaf3e6a61a97bdfc23f008bfa0d",
+      "bytes": 28238,
+      "functions": {
+        "reviewed_exact_daily": {
+          "line": 38,
+          "end_line": 97,
+          "arguments": "request, inputs, review_path, review_sha"
+        },
+        "read_request": {
+          "line": 100,
+          "end_line": 111,
+          "arguments": "path, file_sha, *, fixture_root=None"
+        },
+        "packet_targets": {
+          "line": 114,
+          "end_line": 147,
+          "arguments": "request, calendar, packet_index"
+        },
+        "choose_daily_reference": {
+          "line": 150,
+          "end_line": 163,
+          "arguments": "symbol, day, kind, original, recovered, rejected"
+        },
+        "qualify_target": {
+          "line": 166,
+          "end_line": 190,
+          "arguments": "raw, proofs, target"
+        },
+        "prepare": {
+          "line": 193,
+          "end_line": 236,
+          "arguments": "request_path, request_file_sha, packet_index, *, fixture_root=None, daily_review_path=None, daily_review_sha256=None"
+        },
+        "read_packet": {
+          "line": 239,
+          "end_line": 245,
+          "arguments": "folder"
+        },
+        "preflight": {
+          "line": 248,
+          "end_line": 277,
+          "arguments": "folder"
+        },
+        "save": {
+          "line": 280,
+          "end_line": 284,
+          "arguments": "folder, collector, diagnostic"
+        },
+        "worker": {
+          "line": 287,
+          "end_line": 329,
+          "arguments": "folder, parent_pid"
+        },
+        "run_once": {
+          "line": 332,
+          "end_line": 356,
+          "arguments": "folder"
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage051_generic_exact_daily_recovery.py": {
+      "sha256": "89a2de7464f4b30eb3b3887ac265ca5433c7288fafcb117802072360c6a6228a",
+      "bytes": 20606,
+      "functions": {
+        "atomic_csv": {
+          "line": 59,
+          "end_line": 63,
+          "arguments": "path, frame"
+        },
+        "select_requirements": {
+          "line": 66,
+          "end_line": 79,
+          "arguments": "request, symbols, calendar"
+        },
+        "require_missing_reference": {
+          "line": 82,
+          "end_line": 84,
+          "arguments": "key, csv_exists, approved, rejected"
+        },
+        "database_targets": {
+          "line": 87,
+          "end_line": 106,
+          "arguments": "selected"
+        },
+        "frozen_inputs": {
+          "line": 109,
+          "end_line": 129,
+          "arguments": "request_path, request_file_sha, symbols=None"
+        },
+        "preflight": {
+          "line": 132,
+          "end_line": 168,
+          "arguments": "request_path, request_file_sha, symbols=None"
+        },
+        "peak_memory": {
+          "line": 171,
+          "end_line": 173,
+          "arguments": ""
+        },
+        "budget_guard": {
+          "line": 176,
+          "end_line": 180,
+          "arguments": "began"
+        },
+        "bind_preflight": {
+          "line": 183,
+          "end_line": 190,
+          "arguments": "preflight_path"
+        },
+        "worker": {
+          "line": 193,
+          "end_line": 270,
+          "arguments": "parent_pid, preflight_path"
+        },
+        "run_once": {
+          "line": 273,
+          "end_line": 307,
+          "arguments": "preflight_path, source_sha"
+        },
+        "main": {
+          "line": 310,
+          "end_line": 331,
+          "arguments": ""
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": {
+      "sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+      "bytes": 13115,
+      "functions": {
+        "request_sha256": {
+          "line": 28,
+          "end_line": 31,
+          "arguments": "request"
+        },
+        "_keys": {
+          "line": 40,
+          "end_line": 41,
+          "arguments": "frame"
+        },
+        "_frame": {
+          "line": 44,
+          "end_line": 51,
+          "arguments": "frame, symbol"
+        },
+        "_offset_kind": {
+          "line": 54,
+          "end_line": 58,
+          "arguments": "order"
+        },
+        "_source_contains": {
+          "line": 61,
+          "end_line": 63,
+          "arguments": "source, key"
+        },
+        "_state_snapshot": {
+          "line": 66,
+          "end_line": 73,
+          "arguments": "engine, current"
+        },
+        "_read_delivery": {
+          "line": 76,
+          "end_line": 115,
+          "arguments": "request, delivery"
+        },
+        "qualified_wait_scope": {
+          "line": 206,
+          "end_line": 223,
+          "arguments": "engine_class, resolver, audit, *, qualified_existing_keys=None, qualified_anchor_existing_keys=None"
+        }
+      }
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+      "bytes": 60111,
+      "functions": {
+        "sha256": {
+          "line": 60,
+          "end_line": 64,
+          "arguments": "path"
+        },
+        "json_safe": {
+          "line": 67,
+          "end_line": 73,
+          "arguments": "value"
+        },
+        "write_json": {
+          "line": 76,
+          "end_line": 77,
+          "arguments": "path, payload"
+        },
+        "ready_bool": {
+          "line": 80,
+          "end_line": 83,
+          "arguments": "value"
+        },
+        "build_research_strategy": {
+          "line": 120,
+          "end_line": 157,
+          "arguments": "base, lookup, arm"
+        },
+        "reserve_attempt": {
+          "line": 160,
+          "end_line": 165,
+          "arguments": "output"
+        },
+        "resolve_attempt_output": {
+          "line": 168,
+          "end_line": 175,
+          "arguments": "root, arm, attempt"
+        },
+        "replace_strategy_class": {
+          "line": 179,
+          "end_line": 184,
+          "arguments": "module, strategy"
+        },
+        "capture_formal_profile": {
+          "line": 187,
+          "end_line": 205,
+          "arguments": "s901, metadata, start, end"
+        },
+        "capture_actual_settings": {
+          "line": 209,
+          "end_line": 228,
+          "arguments": "engine_class"
+        },
+        "capture_engine": {
+          "line": 232,
+          "end_line": 272,
+          "arguments": "engine_class"
+        },
+        "canonical_trade_enums": {
+          "line": 275,
+          "end_line": 286,
+          "arguments": "frame"
+        },
+        "attach_trading_dates": {
+          "line": 289,
+          "end_line": 300,
+          "arguments": "trades, clock"
+        },
+        "configure_runtime": {
+          "line": 347,
+          "end_line": 366,
+          "arguments": "shared"
+        },
+        "model_runtime_smoke": {
+          "line": 369,
+          "end_line": 408,
+          "arguments": "model_path, summary_path"
+        },
+        "read_overlay_receipt": {
+          "line": 411,
+          "end_line": 441,
+          "arguments": "summary_path, *, expected_summary_sha256=EXPECTED_OVERLAY_SUMMARY, review_path=OVERLAY_REVIEW, expected_review_sha256=EXPECTED_OVERLAY_REVIEW"
+        },
+        "normalize_reference": {
+          "line": 444,
+          "end_line": 448,
+          "arguments": "value, shared, reference_shared"
+        },
+        "atomic_json": {
+          "line": 451,
+          "end_line": 457,
+          "arguments": "path, payload"
+        },
+        "canonical_request_sha256": {
+          "line": 460,
+          "end_line": 462,
+          "arguments": "request"
+        },
+        "whole_run_budget": {
+          "line": 538,
+          "end_line": 545,
+          "arguments": "seconds=RUN_SECONDS"
+        },
+        "freeze_data_stack": {
+          "line": 552,
+          "end_line": 628,
+          "arguments": "review020_sha, review021_sha"
+        },
+        "read_data_stack": {
+          "line": 631,
+          "end_line": 640,
+          "arguments": "path, expected_sha"
+        },
+        "inherited_qualification_predicates": {
+          "line": 643,
+          "end_line": 668,
+          "arguments": "groups, allowed016, demand, calendar"
+        },
+        "main": {
+          "line": 671,
+          "end_line": 906,
+          "arguments": ""
+        }
+      }
+    }
+  },
+  "tests_run": 0,
+  "network_connections": 0,
+  "provider_starts": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "response_written": false,
+  "dataset_complete_claimed": false
+}

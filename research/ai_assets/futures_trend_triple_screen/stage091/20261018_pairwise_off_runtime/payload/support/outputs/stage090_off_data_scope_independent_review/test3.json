@@ -1,0 +1,15 @@
+{
+  "fake_children_only": true,
+  "parent_true_zero_required": true,
+  "daily_counts_in_four": true,
+  "ordinary_daily_actual_id_time_successor_checked": true,
+  "later_actual_day_reuses_same_snapshot": true,
+  "minute_independent_review_before_fixture_pointer": true,
+  "changed_current_wait_no_publish": true,
+  "no_automatic_retry": true,
+  "low_budget_and_pid_change_no_launch": true,
+  "fixture_provider_rejected": true,
+  "network_connections": 0,
+  "financial_replays": 0,
+  "model_fits": 0
+}

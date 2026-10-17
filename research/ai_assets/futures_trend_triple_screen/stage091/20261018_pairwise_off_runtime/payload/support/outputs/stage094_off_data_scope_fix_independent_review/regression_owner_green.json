@@ -1,0 +1,20 @@
+{
+  "fixture_only": true,
+  "strict_nonfixture_branch": true,
+  "rejected": [
+    "090_wrong_readiness_and_reset_clock",
+    "clock_only",
+    "readiness_only",
+    "argv_readiness",
+    "argv_readiness_sha",
+    "preflight_wrong_arm",
+    "preflight_wrong_attempt",
+    "readiness_document_conflict",
+    "context_internal_preflight_hash"
+  ],
+  "legitimate_context_clock_preserved": true,
+  "remaining_seconds": -3600.0209830000003,
+  "checkpoint_writer_not_runner": true,
+  "network_connections": 0,
+  "financial_replays": 0
+}

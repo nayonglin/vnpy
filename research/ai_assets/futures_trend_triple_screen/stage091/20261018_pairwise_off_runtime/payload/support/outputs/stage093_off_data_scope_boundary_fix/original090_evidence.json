@@ -1,0 +1,267 @@
+{
+  "schema": "stage090_off_data_scope_independent_review_evidence_v1",
+  "reviewed_at": "2026-10-18T06:56:50+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "scope": "固定087 scope/provider两源及三合同tests、085/084小合同和021/022必要接口；不改源、不重审061/071/历史市场。",
+  "reviewed_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737",
+      "bytes": 49864
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f",
+      "bytes": 16482
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py": {
+      "sha256": "629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f",
+      "bytes": 24721
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0639_stage087_off_data_scope_contract.md": {
+      "sha256": "2ff306e630635ad500341cec8c4a04d860294a3e4a316094da48b44e68160884",
+      "bytes": 6824
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0636_stage085_off_data_path_readonly_audit.md": {
+      "sha256": "769abe7ea42519349430f6d8a3e0378219460390788412800cd66b8f5458ee5b",
+      "bytes": 12916
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0653_stage087_off_data_scope_implementation.md": {
+      "sha256": "929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76",
+      "bytes": 8491
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/implementation_receipt.json": {
+      "sha256": "59fdd0fe6346cd7c1b057c37d537af73e8986db2371db0cc8e93f8f5c4da83f2",
+      "bytes": 6044
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/CLI_AND_API.md": {
+      "sha256": "0110ac2a2513ac0edf8da737b96a8adf14136bb997a9abd07f05b3cfedfcb396",
+      "bytes": 4671
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/execution_history.json": {
+      "sha256": "c38bc42c04b79290aee6f640b900ba814c3b4b3e2a5c2ac92383aca1ae628283",
+      "bytes": 2227
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test1.json": {
+      "sha256": "bdae53725d34b8142081e8a548e678df624017957c4125e3920f65715841183a",
+      "bytes": 759
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test2.json": {
+      "sha256": "20d60178c547ee860d2ee0b1f79002c2d86f5c187f257f093c34daace75557b2",
+      "bytes": 2340
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test3.json": {
+      "sha256": "330f4002a466751b54ac05e16b6cf60757e0acf1358c1c447ab302a0ad20c6f8",
+      "bytes": 500
+    }
+  },
+  "author_artifact_bindings_verified": 14,
+  "author_execution_history": {
+    "schema": "stage087_finite_test_history_v1",
+    "runs": [
+      {
+        "log": "red.log",
+        "tests": 3,
+        "seconds": 0.001,
+        "exit_code": 1,
+        "purpose": "实现前缺新scope/provider边界，三项明确功能缺失FAIL；非import/runtime故障",
+        "sha256": "492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d",
+        "mtime": "2026-10-18T06:42:01.699500+08:00"
+      },
+      {
+        "log": "green_candidate1.log",
+        "tests": 3,
+        "seconds": 0.405,
+        "exit_code": 0,
+        "purpose": "首版owner/current/local/driver-provider实现后验证原三具名方法",
+        "sha256": "ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3",
+        "mtime": "2026-10-18T06:46:31.022856+08:00"
+      },
+      {
+        "log": "green_candidate2.log",
+        "tests": 3,
+        "seconds": 0.455,
+        "exit_code": 0,
+        "purpose": "实质补闭worker/parent状态及后继raw结构、新ordinary daily snapshot后续实际日复用；相应断言加入原test3",
+        "sha256": "2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096",
+        "mtime": "2026-10-18T06:49:28.877651+08:00"
+      },
+      {
+        "log": "green_candidate3.log",
+        "tests": 3,
+        "seconds": 0.562,
+        "exit_code": 0,
+        "purpose": "实质补闭真实已pin191来源正向重资格及minute独立reader→current guard→fixture pointer；相应断言只加入原test2/3",
+        "sha256": "730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6",
+        "mtime": "2026-10-18T06:50:27.668308+08:00"
+      },
+      {
+        "log": "green.log",
+        "tests": 3,
+        "seconds": 0.559,
+        "exit_code": 0,
+        "purpose": "收尾检查runner显式source binding与terminal/parent冗余身份一致性，固定最终证据字段；本轮最终三方法GREEN",
+        "sha256": "ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67",
+        "mtime": "2026-10-18T06:51:24.833896+08:00"
+      }
+    ],
+    "unique_named_tests": 3,
+    "method_executions": 15,
+    "financial_replays": 0,
+    "provider_real_starts": 0,
+    "network_connections": 0,
+    "model_fits": 0,
+    "repeated_runs_after_source_or_contract_assertion_changes_only": true,
+    "no_more_test_runs_after_final_green": true
+  },
+  "fresh_tests": {
+    "runs": 1,
+    "tests": 3,
+    "exit_code": 0,
+    "elapsed_seconds": 0.6,
+    "named_tests": [
+      "test_owner_same_digest_and_current_identity_fail_closed",
+      "test_real021_joint_local_cache_rights_and_atomic_old_values",
+      "test_fake_child_terminal_daily_budget_no_retry_and_bootstrap"
+    ],
+    "output_redirect": "仅内存替换OUT为090，源与断言不改",
+    "fixture_only": true
+  },
+  "findings": [
+    {
+      "id": "P1-001",
+      "priority": "P1",
+      "title": "owner未闭合实际readiness/preflight与原run clock身份",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py",
+      "lines": [
+        125,
+        147
+      ],
+      "related_lines": [
+        151,
+        175,
+        628,
+        631
+      ],
+      "evidence": "Owner.verify只分别核context/preflight/execution_readiness字节与局部source_bindings；不核context.preflight_sha256与绑定preflight、preflight.execution_readiness与owner readiness路径/SHA/内容、实际argv的readiness参数、run_started_at与context.started_at。load_owner仅检查argv runner basename/--run/--arm。",
+      "reproduction": "在临时目录将固定路径常量内存替换为纯fixture文件，仅观察器用受控替身；fixture_only=False的严格校验分支接受了与preflight/argv指向不同的B_OFF dummy readiness以及较context晚3小时的owner起点。context实际7200余量约-3600秒，scope报告约1800秒。",
+      "impact": "owner可与实际runner授权或原始时钟脱钩；错误owner起点会把已耗尽的金融余量报告为可启动，违反真实owner/readiness绑定及不重置7200合同。没有声称实际金融时钟被修改；原022自身仍有权威超时。",
+      "required_change": "在非fixture入口从固定真实context/preflight闭合路径与SHA，校验其相互绑定、实际readiness与argv精确一致，并从context继承/严格核对原始run起点；不由owner另给可漂移的起点。"
+    },
+    {
+      "id": "P1-002",
+      "priority": "P1",
+      "title": "公开provider run入口缺金融余量与840 reserve启动门",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py",
+      "lines": [
+        97,
+        110
+      ],
+      "evidence": "driver.run_provider_connection核remaining_engine_seconds及840门，但文档支持的provider --role run直接调用run_once；该函数read_packet/SDK preflight后就创建attempt并Popen，未检查剩余金融时钟。worker同样在真实网络路径前未作该余量门。",
+      "reproduction": "只替换read_packet/SDK与Popen为明确临时fake child，在remaining_engine_seconds=0时调用公开API run_once，预算函数调用0次而fake_launches=1并返回worker_terminal；真实provider/SDK/网络均0。",
+      "impact": "driver调度路径的门正确，但公开parent路径可在不足840秒时启动一次连接，也不能保证较早driver检查到实际worker连接之间余量仍充足。实际SDK父子570/600不替代金融1800/7200和840 reserve。",
+      "required_change": "在run_once实际创建attempt/child前以及必要的worker网络入口复核同owner/current与原金融剩余余量；保持driver持久计数/四连接和一次attempt，不引入放宽或自动重试。"
+    }
+  ],
+  "remaining_findings": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 0
+  },
+  "contract_checks": {
+    "owner_namespace": "固定A_OFF/B_OFF、attempt1、run_id+digest目录；PID lstart+完整args持续重验，跨臂/换run/fileSHA/current waiting拒绝；但P1-001完整闭包未满足。",
+    "source_closure": "新Bindings对JSON/CSV同被pin bytes解析，已消费来源sha/旧helper pins进入新receipt；mutable当前audit/journal只读不入immutable sources；原helper接口仅有限必要静态比对。",
+    "request_and_rights": "旧packet_targets+request_key_scope/assemble_delivery保留整R/E/M；full完整grid+完成+日七值，anchor仅首分钟+open/可用openOI；真实021等值重叠仍原子拒绝，test2含full345+anchor1和旧值冲突。",
+    "cache191": "原白名单独立receipt/origin/完成证据重新核验，实际pin191的345值/345 proof在不同fixture request重资格；无061或commit继承，075 fixture路径拒绝；不重审061/071或全市场。",
+    "provider_lifecycle": "正常driver真实Popen communicate/wait+parent exit0+inputs unchanged后terminal；独立reader核raw/proof/daily/owner/parent/worker再签原021receipt，不写pointer；driver真parser/current再publish。fake child与fixture owner不具市场签收。",
+    "budgets": "driver每batch4含daily、840–3600/840reserve，provider570/600、network_attempt1无自动retry；公开provider入口的金融余量门缺失见P1-002。",
+    "globals_and_runtime": "无旧owner/root/provider globals patch；只有022.configure_runtime期间OUTPUT路由并finally恢复。stdlib bootstrap先，numeric deps通过原022冻结栈；没有真实owner的CLI load_owner先拒绝。",
+    "not_accepted": "三测试证明有限fixture，不足以弥补两个未覆盖生产入口；independent code review不等于实际来源资格、owner创建、financial授权或readiness。"
+  },
+  "critical_probe": {
+    "owner_binding": {
+      "finite_fixture_only": true,
+      "nonfixture_validation_branch": true,
+      "wrong_readiness_accepted": true,
+      "context_started_at": "2026-10-17T19:55:44.543207+00:00",
+      "owner_run_started_at": "2026-10-17T22:55:44.543207+00:00",
+      "context_run_seconds_remaining": -3600.005072,
+      "reported_remaining_seconds": 1799.994935,
+      "verify_accepted": true
+    },
+    "direct_provider_admission": {
+      "finite_fake_child_only": true,
+      "expired_budget_seconds": 0,
+      "remaining_engine_seconds_calls": 0,
+      "fake_launches": 1,
+      "returned_status": "worker_terminal",
+      "real_provider_starts": 0,
+      "network_connections": 0
+    }
+  },
+  "commands": [
+    {
+      "purpose": "final three named tests exactly once",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,sys,types,unittest\nroot=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen')\npath=root/'tools/test_stage087_off_data_scope.py';raw=path.read_bytes()\nassert hashlib.sha256(raw).hexdigest()=='629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f'\nsource=raw.decode()\nold=\"OUT = TOOLS.parent / 'outputs/stage087_off_data_scope_implementation'\"\nnew=\"OUT = TOOLS.parent / 'outputs/stage090_off_data_scope_independent_review'\"\nassert source.count(old)==1;source=source.replace(old,new)\nmodule=types.ModuleType('stage090_fresh_scope_contracts');module.__file__=str(path);sys.modules[module.__name__]=module\nexec(compile(source,str(path),'exec'),module.__dict__)\nnames=['test_owner_same_digest_and_current_identity_fail_closed','test_real021_joint_local_cache_rights_and_atomic_old_values','test_fake_child_terminal_daily_budget_no_retry_and_bootstrap']\nsuite=unittest.TestSuite(module.ScopeContracts(name) for name in names)\nresult=unittest.TextTestRunner(verbosity=2).run(suite)\nraise SystemExit(not result.wasSuccessful())\nPY",
+      "initial_result": {
+        "chunk_id": "e7ea31",
+        "wall_time_seconds": 1.002942375,
+        "session_id": 8113,
+        "original_token_count": 129,
+        "output": "test_owner_same_digest_and_current_identity_fail_closed (stage090_fresh_scope_contracts.ScopeContracts.test_owner_same_digest_and_current_identity_fail_closed) ... ok\ntest_real021_joint_local_cache_rights_and_atomic_old_values (stage090_fresh_scope_contracts.ScopeContracts.test_real021_joint_local_cache_rights_and_atomic_old_values) ... ok\ntest_fake_child_terminal_daily_budget_no_retry_and_bootstrap (stage090_fresh_scope_contracts.ScopeContracts.test_fake_child_terminal_daily_budget_no_retry_and_bootstrap) ... "
+      },
+      "completion": {
+        "chunk_id": "b46222",
+        "wall_time_seconds": 0.000006208,
+        "exit_code": 0,
+        "original_token_count": 26,
+        "output": "ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.600s\n\nOK\n"
+      }
+    },
+    {
+      "purpose": "necessary uncovered owner/readiness/clock and public provider admission probes, all temporary/fake",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nfrom tempfile import TemporaryDirectory\nfrom datetime import datetime,timezone,timedelta\nfrom unittest.mock import patch\nfrom types import SimpleNamespace\nimport hashlib,json,sys\nroot=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen')\nsys.path.insert(0,str(root/'tools'))\nimport stage087_off_data_scope as scope\nimport stage087_off_data_provider as provider\npins={root/'tools/stage087_off_data_scope.py':'7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737',root/'tools/stage087_off_data_provider.py':'d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f'}\nassert all(hashlib.sha256(p.read_bytes()).hexdigest()==h for p,h in pins.items())\ndef write(p,v):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v)+'\\n')\nresults={}\nwith TemporaryDirectory(prefix='critical_probe_',dir=root/'outputs/stage090_off_data_scope_independent_review') as temp:\n f=Path(temp).resolve();tools=f/'tools';tools.mkdir();accounts=f/'accounts';out=f/'scope'\n for n in ['stage065_run_pairwise_off.py','stage087_off_data_scope.py','stage087_off_data_provider.py','stage021_blocking_data_gate.py','stage022_run_c0_qualified_wait.py','contract.md']:(tools/n).write_text('# finite owner validation probe only\\n')\n runner=tools/'stage065_run_pairwise_off.py';source=tools/'stage087_off_data_scope.py';provider_path=tools/'stage087_off_data_provider.py';contract=tools/'contract.md'\n sources={str(p):scope.sha(p) for p in [source,provider_path,tools/'stage021_blocking_data_gate.py',tools/'stage022_run_c0_qualified_wait.py',contract]}\n bindings={str(p):dict(sha256=scope.sha(p),bytes=p.stat().st_size)for p in [runner,source,provider_path]}\n account=accounts/'A_OFF';now=datetime.now(timezone.utc);started=now-timedelta(hours=3)\n correct=account/'readiness_used_by_runner.json';wrong=account/'other_readiness.json'\n write(correct,dict(schema='fixture_finite_authorization',arm='A_OFF'))\n write(wrong,dict(schema='fixture_unrelated_NOT_financial_readiness',arm='B_OFF'))\n preflight=dict(source_bindings=bindings,execution_readiness=dict(path=str(correct),sha256=scope.sha(correct),document=json.loads(correct.read_bytes())))\n write(account/'preflight_used.json',preflight)\n context=dict(schema='stage065_run_context_v1',arm='A_OFF',attempt=1,run_id='strict_probe',output_directory=str(account),writer='stage065_account_checkpoint.py',source_bindings=bindings,started_at=started.isoformat(),preflight_sha256=scope.sha(account/'preflight_used.json'))\n write(account/'run_context.json',context)\n review=f/'review.json';write(review,dict(independent_review=True,p0_findings=0,p1_findings=0,source_bindings={str(p):bindings[str(p)]for p in [source,provider_path]}))\n process='Sun Oct 18 00:00:00 2026 '+str(runner)+' --run --arm A_OFF --execution-readiness '+str(correct)+' --execution-readiness-sha256 '+scope.sha(correct)\n doc=dict(schema='stage087_off_owner_v1',arm='A_OFF',attempt=1,run_id='strict_probe',account_output=str(account),wait_root=str(account/'data_wait'),runner_path=str(runner),runner_sha256=scope.sha(runner),engine_pid=98765,process_identity=process,run_started_at=now.isoformat(),source_fingerprints=sources,fixture_only=False,data_scope_review_path=str(review),data_scope_review_sha256=scope.sha(review))\n for k,p in [('run_context',account/'run_context.json'),('preflight',account/'preflight_used.json'),('execution_readiness',wrong)]:doc[k+'_path']=str(p);doc[k+'_sha256']=scope.sha(p)\n ownerpath=f/'owner.json';write(ownerpath,doc)\n with patch.multiple(scope,ACCOUNT_ROOT=accounts,TOOLS=tools,SOURCE=source,PROVIDER=provider_path,PROTOCOL=contract):\n  owner=scope.load_owner(ownerpath,scope.sha(ownerpath),_observer=lambda pid:process)\n  owner.verify()\n  reported=scope.remaining_engine_seconds(owner,dict(wait=dict(started_at=now.isoformat())))\n  actual=7200-(datetime.now(timezone.utc)-started).total_seconds()\n  results['owner_binding']={'finite_fixture_only':True,'nonfixture_validation_branch':True,'wrong_readiness_accepted':doc['execution_readiness_path']!=preflight['execution_readiness']['path'],'context_started_at':context['started_at'],'owner_run_started_at':doc['run_started_at'],'context_run_seconds_remaining':actual,'reported_remaining_seconds':reported,'verify_accepted':True}\n # Direct provider role is a public production path. All child/SDK seams are replaced:\n # this proves launch admission only, and cannot open Tq/network or fake a real packet.\n packet=f/'direct_run_packet';packet.mkdir();write(packet/'preflight.json',dict(source_fingerprints={}))\n fakeowner=SimpleNamespace(fixture_allowed=False,document=dict(fixture_only=False),sha256='finite',path=f/'no_actual_owner.json')\n fakecurrent=dict(digest='finite',wait=dict(started_at=started.isoformat()))\n class Child:\n  pid=99999\n  def wait(self,timeout=None):return 0\n  def poll(self):return 0\n calls=[]\n def launch(*args,**kwargs):calls.append('fake_child_only');return Child()\n with patch.object(provider,'read_packet',return_value=({},fakecurrent,dict(source_fingerprints={}),scope.Bindings())),patch.object(provider,'sdk_preflight',return_value={}),patch.object(provider.subprocess,'Popen',side_effect=launch),patch.object(scope,'remaining_engine_seconds',return_value=0)as budget:\n  result=provider.run_once(fakeowner,packet)\n results['direct_provider_admission']={'finite_fake_child_only':True,'expired_budget_seconds':0,'remaining_engine_seconds_calls':budget.call_count,'fake_launches':len(calls),'returned_status':result['status'],'real_provider_starts':0,'network_connections':0}\nassert all(hashlib.sha256(p.read_bytes()).hexdigest()==h for p,h in pins.items())\nprint(json.dumps(results,ensure_ascii=False,indent=2))\nPY",
+      "result": {
+        "chunk_id": "ab9e92",
+        "wall_time_seconds": 0.026988958,
+        "exit_code": 0,
+        "original_token_count": 167,
+        "output": "{\n  \"owner_binding\": {\n    \"finite_fixture_only\": true,\n    \"nonfixture_validation_branch\": true,\n    \"wrong_readiness_accepted\": true,\n    \"context_started_at\": \"2026-10-17T19:55:44.543207+00:00\",\n    \"owner_run_started_at\": \"2026-10-17T22:55:44.543207+00:00\",\n    \"context_run_seconds_remaining\": -3600.005072,\n    \"reported_remaining_seconds\": 1799.994935,\n    \"verify_accepted\": true\n  },\n  \"direct_provider_admission\": {\n    \"finite_fake_child_only\": true,\n    \"expired_budget_seconds\": 0,\n    \"remaining_engine_seconds_calls\": 0,\n    \"fake_launches\": 1,\n    \"returned_status\": \"worker_terminal\",\n    \"real_provider_starts\": 0,\n    \"network_connections\": 0\n  }\n}\n"
+      }
+    },
+    {
+      "purpose": "final author metadata/hash/test evidence identity only, no tests repeated",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,json\nb=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen')\ndef binding(p):raw=p.read_bytes();return dict(sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))\npaths=[b/'tools/stage087_off_data_scope.py',b/'tools/stage087_off_data_provider.py',b/'tools/test_stage087_off_data_scope.py',b/'stages/20261018_0639_stage087_off_data_scope_contract.md',b/'stages/20261018_0636_stage085_off_data_path_readonly_audit.md',b/'stages/20261018_0653_stage087_off_data_scope_implementation.md',b/'outputs/stage087_off_data_scope_implementation/implementation_receipt.json',b/'outputs/stage087_off_data_scope_implementation/CLI_AND_API.md',b/'outputs/stage087_off_data_scope_implementation/execution_history.json',b/'outputs/stage090_off_data_scope_independent_review/test1.json',b/'outputs/stage090_off_data_scope_independent_review/test2.json',b/'outputs/stage090_off_data_scope_independent_review/test3.json']\nresult={str(p):binding(p)for p in paths}\nreceipt=json.loads(paths[6].read_bytes())\nassert result[str(paths[5])]['sha256']=='929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76'\nassert result[str(paths[6])]['sha256']=='59fdd0fe6346cd7c1b057c37d537af73e8986db2371db0cc8e93f8f5c4da83f2'\nfor p,v in receipt['source_bindings'].items():assert binding(Path(p))==v\nfor p,h in receipt['artifacts_sha256'].items():assert binding(Path(p))['sha256']==h,p\nprint(json.dumps({'fingerprints':result,'author_artifact_bindings_verified':len(receipt['artifacts_sha256']),'execution_history':json.loads(paths[8].read_bytes())},ensure_ascii=False,indent=2))\nPY",
+      "result": {
+        "chunk_id": "46ca0f",
+        "wall_time_seconds": 0.000007917,
+        "exit_code": 0,
+        "original_token_count": 1341,
+        "output": "{\n  \"fingerprints\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py\": {\n      \"sha256\": \"7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737\",\n      \"bytes\": 49864\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py\": {\n      \"sha256\": \"d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f\",\n      \"bytes\": 16482\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py\": {\n      \"sha256\": \"629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f\",\n      \"bytes\": 24721\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0639_stage087_off_data_scope_contract.md\": {\n      \"sha256\": \"2ff306e630635ad500341cec8c4a04d860294a3e4a316094da48b44e68160884\",\n      \"bytes\": 6824\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0636_stage085_off_data_path_readonly_audit.md\": {\n      \"sha256\": \"769abe7ea42519349430f6d8a3e0378219460390788412800cd66b8f5458ee5b\",\n      \"bytes\": 12916\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0653_stage087_off_data_scope_implementation.md\": {\n      \"sha256\": \"929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76\",\n      \"bytes\": 8491\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/implementation_receipt.json\": {\n      \"sha256\": \"59fdd0fe6346cd7c1b057c37d537af73e8986db2371db0cc8e93f8f5c4da83f2\",\n      \"bytes\": 6044\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/CLI_AND_API.md\": {\n      \"sha256\": \"0110ac2a2513ac0edf8da737b96a8adf14136bb997a9abd07f05b3cfedfcb396\",\n      \"bytes\": 4671\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/execution_history.json\": {\n      \"sha256\": \"c38bc42c04b79290aee6f640b900ba814c3b4b3e2a5c2ac92383aca1ae628283\",\n      \"bytes\": 2227\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test1.json\": {\n      \"sha256\": \"bdae53725d34b8142081e8a548e678df624017957c4125e3920f65715841183a\",\n      \"bytes\": 759\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test2.json\": {\n      \"sha256\": \"20d60178c547ee860d2ee0b1f79002c2d86f5c187f257f093c34daace75557b2\",\n      \"bytes\": 2340\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/test3.json\": {\n      \"sha256\": \"330f4002a466751b54ac05e16b6cf60757e0acf1358c1c447ab302a0ad20c6f8\",\n      \"bytes\": 500\n    }\n  },\n  \"author_artifact_bindings_verified\": 14,\n  \"execution_history\": {\n    \"schema\": \"stage087_finite_test_history_v1\",\n    \"runs\": [\n      {\n        \"log\": \"red.log\",\n        \"tests\": 3,\n        \"seconds\": 0.001,\n        \"exit_code\": 1,\n        \"purpose\": \"实现前缺新scope/provider边界，三项明确功能缺失FAIL；非import/runtime故障\",\n        \"sha256\": \"492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d\",\n        \"mtime\": \"2026-10-18T06:42:01.699500+08:00\"\n      },\n      {\n        \"log\": \"green_candidate1.log\",\n        \"tests\": 3,\n        \"seconds\": 0.405,\n        \"exit_code\": 0,\n        \"purpose\": \"首版owner/current/local/driver-provider实现后验证原三具名方法\",\n        \"sha256\": \"ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3\",\n        \"mtime\": \"2026-10-18T06:46:31.022856+08:00\"\n      },\n      {\n        \"log\": \"green_candidate2.log\",\n        \"tests\": 3,\n        \"seconds\": 0.455,\n        \"exit_code\": 0,\n        \"purpose\": \"实质补闭worker/parent状态及后继raw结构、新ordinary daily snapshot后续实际日复用；相应断言加入原test3\",\n        \"sha256\": \"2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096\",\n        \"mtime\": \"2026-10-18T06:49:28.877651+08:00\"\n      },\n      {\n        \"log\": \"green_candidate3.log\",\n        \"tests\": 3,\n        \"seconds\": 0.562,\n        \"exit_code\": 0,\n        \"purpose\": \"实质补闭真实已pin191来源正向重资格及minute独立reader→current guard→fixture pointer；相应断言只加入原test2/3\",\n        \"sha256\": \"730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6\",\n        \"mtime\": \"2026-10-18T06:50:27.668308+08:00\"\n      },\n      {\n        \"log\": \"green.log\",\n        \"tests\": 3,\n        \"seconds\": 0.559,\n        \"exit_code\": 0,\n        \"purpose\": \"收尾检查runner显式source binding与terminal/parent冗余身份一致性，固定最终证据字段；本轮最终三方法GREEN\",\n        \"sha256\": \"ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67\",\n        \"mtime\": \"2026-10-18T06:51:24.833896+08:00\"\n      }\n    ],\n    \"unique_named_tests\": 3,\n    \"method_executions\": 15,\n    \"financial_replays\": 0,\n    \"provider_real_starts\": 0,\n    \"network_connections\": 0,\n    \"model_fits\": 0,\n    \"repeated_runs_after_source_or_contract_assertion_changes_only\": true,\n    \"no_more_test_runs_after_final_green\": true\n  }\n}\n"
+      }
+    }
+  ],
+  "financial_ready": false,
+  "integration_accepted": false,
+  "actual_source_qualification_issued": false,
+  "actual_owner_created": false,
+  "real_provider_starts": 0,
+  "network_connections": 0,
+  "actual_prepare_calls": 0,
+  "whole_database_preflights": 0,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "new_account_PnL_read": false,
+  "old_suite_runs": 0,
+  "full_market_scan_or_hash": false,
+  "author_files_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_reviewer_spawned": false,
+  "overfitting": false,
+  "continued_value": true,
+  "research_note": "遵root禁止网络的明确scope，仅本地冻结合同/API调查；工程门核验不是alpha研究。原A0受限/原B失败N/A/PIT限制和目标未达均继承。"
+}

@@ -1,0 +1,143 @@
+--- original087/test_stage087_off_data_scope.py
++++ stage093/test_stage087_off_data_scope.py
+@@ -296,4 +296,140 @@
+             network_connections=0,financial_replays=0,model_fits=0))
+ 
+ 
++class ScopeBoundaryRegressionTests(unittest.TestCase):
++    """Only the two P1s observed by090; temporary controlled process/child seams."""
++    def test_owner_readiness_and_context_clock_are_bound(self):
++        from datetime import timedelta
++        with tempfile.TemporaryDirectory(dir=OUT,prefix='readiness_clock_')as temp:
++            folder=Path(temp);tools=folder/'tools';tools.mkdir();accounts=folder/'accounts'
++            for name in ('stage065_run_pairwise_off.py','stage087_off_data_scope.py','stage087_off_data_provider.py',
++                    'stage021_blocking_data_gate.py','stage022_run_c0_qualified_wait.py','contract.md'):
++                (tools/name).write_text('# temporary strict nonfixture branch regression, no financial owner\n')
++            source=tools/'stage087_off_data_scope.py';provider_path=tools/'stage087_off_data_provider.py'
++            runner=tools/'stage065_run_pairwise_off.py';contract=tools/'contract.md';account=accounts/'A_OFF'
++            data=folder/'data.json';write(data,{'tiny_only':True})
++            bindings={str(p):dict(sha256=sha(p),bytes=p.stat().st_size)for p in (runner,source,provider_path)}
++            data_bindings={str(data):dict(sha256=sha(data),bytes=data.stat().st_size)}
++            correct=account/'readiness_used_by_runner.json';wrong=account/'other_readiness.json'
++            readiness=dict(schema='stage065_pairwise_off_execution_readiness_v1',arm='A_OFF',issued_by='root',
++                financial_execution_authorized=True,independent_integration_accepted=True,
++                limits_decision=dict(action='inherit_original_limits',wait_seconds=1800,run_seconds=7200),
++                source_bindings=bindings,data_bindings=data_bindings)
++            write(correct,readiness);write(wrong,dict(readiness,arm='B_OFF'))
++            preflight=dict(arm='A_OFF',attempt=1,fixture_only=False,source_bindings=bindings,data_bindings=data_bindings,
++                execution_readiness=dict(path=str(correct),sha256=sha(correct),document=readiness))
++            write(account/'preflight_used.json',preflight)
++            started=(datetime.now(timezone.utc)-timedelta(hours=3)).isoformat()
++            context=dict(schema='stage065_run_context_v1',arm='A_OFF',attempt=1,run_id='strict_regression',
++                output_directory=str(account),writer='stage065_account_checkpoint.py',started_at=started,
++                source_bindings=bindings,source_bindings_sha256=scope.sha_bytes(scope.json_bytes(bindings)),
++                data_bindings_sha256=scope.sha_bytes(scope.json_bytes(data_bindings)),preflight_sha256=sha(account/'preflight_used.json'))
++            write(account/'run_context.json',context)
++            review=folder/'review.json';write(review,dict(independent_review=True,p0_findings=0,p1_findings=0,
++                source_bindings={str(p):bindings[str(p)]for p in (source,provider_path)}))
++            command='Sun Oct 18 00:00:00 2026 '+str(runner)+' --run --arm A_OFF --execution-readiness '+str(correct)+' --execution-readiness-sha256 '+sha(correct)
++            document=dict(schema='stage087_off_owner_v1',arm='A_OFF',attempt=1,run_id='strict_regression',account_output=str(account),
++                wait_root=str(account/'data_wait'),runner_path=str(runner),runner_sha256=sha(runner),engine_pid=98765,
++                process_identity=command,run_started_at=started,fixture_only=False,data_scope_review_path=str(review),
++                data_scope_review_sha256=sha(review),source_fingerprints={str(p):sha(p)for p in
++                    (source,provider_path,tools/'stage021_blocking_data_gate.py',tools/'stage022_run_c0_qualified_wait.py',contract)})
++            for key,path in (('run_context',account/'run_context.json'),('preflight',account/'preflight_used.json'),('execution_readiness',correct)):
++                document[key+'_path']=str(path);document[key+'_sha256']=sha(path)
++            owner_path=folder/'owner.json';rejected=[]
++            def load(doc):
++                write(owner_path,doc)
++                return scope.load_owner(owner_path,sha(owner_path),_observer=lambda pid:doc['process_identity'])
++            with patch.multiple(scope,ACCOUNT_ROOT=accounts,TOOLS=tools,SOURCE=source,PROVIDER=provider_path,PROTOCOL=contract):
++                # Exact090 combined counterexample, then each boundary separately.
++                bad=deepcopy(document);bad.update(run_started_at=datetime.now(timezone.utc).isoformat(),
++                    execution_readiness_path=str(wrong),execution_readiness_sha256=sha(wrong))
++                try:
++                    with self.assertRaisesRegex(ValueError,'readiness|clock|started'):
++                        load(bad)
++                    rejected.append('090_wrong_readiness_and_reset_clock')
++                finally:
++                    write(OUT/'regression_owner_observation.json',dict(fixture_only=True,real_owner_created=False,
++                        original090_counterexample_rejected=bool(rejected),context_started_at=started,
++                        attempted_owner_run_started_at=bad['run_started_at'],financial_replays=0))
++                for name,changes in (
++                    ('clock_only',dict(run_started_at=datetime.now(timezone.utc).isoformat())),
++                    ('readiness_only',dict(execution_readiness_path=str(wrong),execution_readiness_sha256=sha(wrong))),
++                    ('argv_readiness',dict(process_identity=command.replace(str(correct),str(wrong)))),
++                    ('argv_readiness_sha',dict(process_identity=command.replace(sha(correct),'0'*64)))):
++                    bad=deepcopy(document);bad.update(changes)
++                    with self.subTest(name=name):
++                        with self.assertRaises(ValueError):load(bad)
++                    rejected.append(name)
++                for name,mutate in (
++                    ('preflight_wrong_arm',lambda x:x.update(arm='B_OFF')),
++                    ('preflight_wrong_attempt',lambda x:x.update(attempt=2)),
++                    ('readiness_document_conflict',lambda x:x['execution_readiness'].update(document=dict(readiness,arm='B_OFF')))):
++                    altered=deepcopy(preflight);mutate(altered);write(account/'preflight_used.json',altered)
++                    altered_context=dict(context,preflight_sha256=sha(account/'preflight_used.json'))
++                    write(account/'run_context.json',altered_context)
++                    bad=deepcopy(document);bad['preflight_sha256']=sha(account/'preflight_used.json');bad['run_context_sha256']=sha(account/'run_context.json')
++                    with self.subTest(name=name):
++                        with self.assertRaises(ValueError):load(bad)
++                    rejected.append(name)
++                write(account/'preflight_used.json',preflight);write(account/'run_context.json',dict(context,preflight_sha256='0'*64))
++                bad=deepcopy(document);bad['run_context_sha256']=sha(account/'run_context.json')
++                with self.assertRaises(ValueError):load(bad)
++                rejected.append('context_internal_preflight_hash')
++                write(account/'run_context.json',context)
++                owner=load(document)
++                remaining=scope.remaining_engine_seconds(owner,dict(wait=dict(started_at=datetime.now(timezone.utc).isoformat())))
++                self.assertLess(remaining,-3599.)
++                self.assertEqual(owner.document['run_started_at'],context['started_at'])
++            write(OUT/'regression_owner_green.json',dict(fixture_only=True,strict_nonfixture_branch=True,
++                rejected=rejected,legitimate_context_clock_preserved=True,remaining_seconds=remaining,
++                checkpoint_writer_not_runner=True,network_connections=0,financial_replays=0))
++
++    def test_public_provider_launch_reserve_cannot_be_bypassed(self):
++        class Child:
++            pid=99999
++            def wait(self,timeout=None):return 0
++            def poll(self):return 0
++        records=[]
++        with tempfile.TemporaryDirectory(dir=OUT,prefix='public_parent_')as temp:
++            folder=Path(temp)
++            fakeowner=SimpleNamespace(fixture_allowed=False,document=dict(fixture_only=False),sha256='unit_only',
++                path=folder/'no_actual_owner.json',verify=lambda:scope.Bindings())
++            current=dict(path=folder/'no_actual_request.json',file_sha='unit_only',digest='unit_only',wait={})
++            for seconds in (0,839):
++                packet=folder/('expired_'+str(seconds));packet.mkdir();write(packet/'preflight.json',dict(source_fingerprints={}))
++                launches=[]
++                def launch(*args,**kwargs):launches.append('fake_child');return Child()
++                with patch.object(provider,'read_packet',return_value=({},current,dict(source_fingerprints={}),scope.Bindings())),\
++                     patch.object(provider,'sdk_preflight',return_value={}),\
++                     patch.object(scope,'read_actual_request',return_value=current),\
++                     patch.object(scope,'remaining_engine_seconds',return_value=seconds)as budget,\
++                     patch.object(provider.subprocess,'Popen',side_effect=launch):
++                    try:
++                        with self.assertRaisesRegex(ValueError,'budget|reserve'):
++                            provider.run_once(fakeowner,packet)
++                    finally:
++                        records.append(dict(remaining_seconds=seconds,budget_calls=budget.call_count,fake_launches=len(launches)))
++                        write(OUT/'regression_public_parent_observation.json',dict(fixture_only=True,cases=records,
++                            network_connections=0,real_provider_starts=0))
++                    self.assertEqual(len(launches),0)
++                    self.assertGreaterEqual(budget.call_count,1)
++                    self.assertFalse((packet/'network_attempt1').exists())
++            packet=folder/'valid_launch';packet.mkdir();write(packet/'preflight.json',dict(source_fingerprints={}))
++            calls=[]
++            def launch(*args,**kwargs):calls.append('fake_child');return Child()
++            # 840 is a launch reserve only; finishing must not demand another840.
++            with patch.object(provider,'read_packet',return_value=({},current,dict(source_fingerprints={}),scope.Bindings())),\
++                 patch.object(provider,'sdk_preflight',return_value={}),\
++                 patch.object(scope,'read_actual_request',return_value=current),\
++                 patch.object(scope,'remaining_engine_seconds',side_effect=[900,900,0])as budget,\
++                 patch.object(provider.subprocess,'Popen',side_effect=launch):
++                result=provider.run_once(fakeowner,packet)
++                self.assertEqual(result['status'],'worker_terminal');self.assertEqual(calls,['fake_child'])
++                self.assertEqual(budget.call_count,2)
++                with self.assertRaises(FileExistsError):provider.run_once(fakeowner,packet)
++            write(OUT/'regression_public_parent_green.json',dict(fixture_only=True,expired_cases=records,
++                valid_fake_child_launches=1,reserve_checked_only_before_launch=True,no_repeat_attempt=True,
++                financial_replays=0,network_connections=0,real_provider_starts=0))
++
++
+ if __name__=='__main__':unittest.main(verbosity=2)

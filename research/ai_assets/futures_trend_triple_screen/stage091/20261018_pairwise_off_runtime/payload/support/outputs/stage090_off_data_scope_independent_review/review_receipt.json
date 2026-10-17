@@ -1,0 +1,141 @@
+{
+  "schema": "stage090_off_data_scope_independent_review_v1",
+  "recorded_at": "2026-10-18T06:59:00+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "rejected_two_blocking_integration_findings",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737",
+      "bytes": 49864
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f",
+      "bytes": 16482
+    }
+  },
+  "test_binding": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py",
+    "sha256": "629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f",
+    "bytes": 24721
+  },
+  "dependency_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0639_stage087_off_data_scope_contract.md": {
+      "sha256": "2ff306e630635ad500341cec8c4a04d860294a3e4a316094da48b44e68160884",
+      "bytes": 6824
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0636_stage085_off_data_path_readonly_audit.md": {
+      "sha256": "769abe7ea42519349430f6d8a3e0378219460390788412800cd66b8f5458ee5b",
+      "bytes": 12916
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": {
+      "sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c"
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 2,
+  "p2_findings": 0,
+  "findings": [
+    {
+      "id": "P1-001",
+      "priority": "P1",
+      "title": "owner未闭合实际readiness/preflight与原run clock身份",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py",
+      "lines": [
+        125,
+        147
+      ],
+      "related_lines": [
+        151,
+        175,
+        628,
+        631
+      ],
+      "evidence": "Owner.verify只分别核context/preflight/execution_readiness字节与局部source_bindings；不核context.preflight_sha256与绑定preflight、preflight.execution_readiness与owner readiness路径/SHA/内容、实际argv的readiness参数、run_started_at与context.started_at。load_owner仅检查argv runner basename/--run/--arm。",
+      "reproduction": "在临时目录将固定路径常量内存替换为纯fixture文件，仅观察器用受控替身；fixture_only=False的严格校验分支接受了与preflight/argv指向不同的B_OFF dummy readiness以及较context晚3小时的owner起点。context实际7200余量约-3600秒，scope报告约1800秒。",
+      "impact": "owner可与实际runner授权或原始时钟脱钩；错误owner起点会把已耗尽的金融余量报告为可启动，违反真实owner/readiness绑定及不重置7200合同。没有声称实际金融时钟被修改；原022自身仍有权威超时。",
+      "required_change": "在非fixture入口从固定真实context/preflight闭合路径与SHA，校验其相互绑定、实际readiness与argv精确一致，并从context继承/严格核对原始run起点；不由owner另给可漂移的起点。"
+    },
+    {
+      "id": "P1-002",
+      "priority": "P1",
+      "title": "公开provider run入口缺金融余量与840 reserve启动门",
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py",
+      "lines": [
+        97,
+        110
+      ],
+      "evidence": "driver.run_provider_connection核remaining_engine_seconds及840门，但文档支持的provider --role run直接调用run_once；该函数read_packet/SDK preflight后就创建attempt并Popen，未检查剩余金融时钟。worker同样在真实网络路径前未作该余量门。",
+      "reproduction": "只替换read_packet/SDK与Popen为明确临时fake child，在remaining_engine_seconds=0时调用公开API run_once，预算函数调用0次而fake_launches=1并返回worker_terminal；真实provider/SDK/网络均0。",
+      "impact": "driver调度路径的门正确，但公开parent路径可在不足840秒时启动一次连接，也不能保证较早driver检查到实际worker连接之间余量仍充足。实际SDK父子570/600不替代金融1800/7200和840 reserve。",
+      "required_change": "在run_once实际创建attempt/child前以及必要的worker网络入口复核同owner/current与原金融剩余余量；保持driver持久计数/四连接和一次attempt，不引入放宽或自动重试。"
+    }
+  ],
+  "integration_accepted": false,
+  "data_scope_ready": false,
+  "financial_ready": false,
+  "financial_execution_authorized": false,
+  "actual_source_qualification_issued": false,
+  "production_qualified": false,
+  "fresh_tests": {
+    "runs": 1,
+    "tests": 3,
+    "exit_code": 0,
+    "elapsed_seconds": 0.6,
+    "named_tests": [
+      "test_owner_same_digest_and_current_identity_fail_closed",
+      "test_real021_joint_local_cache_rights_and_atomic_old_values",
+      "test_fake_child_terminal_daily_budget_no_retry_and_bootstrap"
+    ],
+    "output_redirect": "仅内存替换OUT为090，源与断言不改",
+    "fixture_only": true
+  },
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/evidence.json",
+    "sha256": "4e2566d0aba25997c8fc7a9cb51849f8484a78bef9f9c3af0da305be1c3843a4"
+  },
+  "critical_probe_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/critical_probe_original.sh",
+    "sha256": "db6b14021ae187f8b10705bac81e714ef7d268df65e054ddfa2220a748fa9bcd"
+  },
+  "critical_probe_output": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/critical_probe_observed.json",
+    "sha256": "17274058f529202f2fc1f20425352e9927204795e40116d1a537a1d686fc4bae"
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0656_stage090_off_data_scope_independent_review.md",
+    "sha256": "3e3b1c509e3f7c711cd565b84a918fbf452c113108f5ef0cea3a73e81c4d110c"
+  },
+  "scope_limit": "finite code/fixture review only; no real owner/provider/SDK/source qualification, preflight, financial execution or production authorization",
+  "root_disposition": "P1=2均属必要接合问题；原作者单波修复，090失败记录保留不覆写。后续另Stage094，仅针对两修复复核，当前不接受或运行真实preflight/金融。",
+  "minimum_followup_review": [
+    "核新冻结源/测试身份及只针对两P1的代码差异；不回头重审061/071/旧scope。",
+    "owner正确固定context/preflight/readiness/argv与起点闭包为正例；错readiness、context-preflight SHA、起点漂移/换owner为拒绝例。只临时文件和受控观察器。",
+    "公开parent/worker实际连接前以fake child验证0/839秒拒绝与>=840秒正常小分支；实际current/owner变更仍拒绝。无SDK/真实provider。",
+    "不重跑整组三测，除非修复实际改变其他已测语义；不重扫市场、真实prepare/preflight、金融或模型。"
+  ],
+  "real_provider_starts": 0,
+  "network_connections": 0,
+  "actual_prepare_calls": 0,
+  "whole_database_preflights": 0,
+  "financial_replays": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "new_account_PnL_read": false,
+  "old_suite_runs": 0,
+  "author_files_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_reviewer_spawned": false,
+  "overfitting": false,
+  "continued_value": true
+}

@@ -1,0 +1,55 @@
+{
+  "real021": true,
+  "cases": [
+    {
+      "conflict": false,
+      "events": [
+        {
+          "event": "data_requested",
+          "request_sha256": "4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308",
+          "request_sequence": 1,
+          "requirements": 2,
+          "requested_keys": 346
+        },
+        {
+          "event": "data_qualified_appended",
+          "request_sha256": "4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308",
+          "appended_keys": 345,
+          "old_keys_changed": 0,
+          "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/local_70yj9bce/scope/A_OFF/finite_A_OFF/request_4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308/review/delivery_receipt.json",
+          "receipt_sha256": "6a598a3f0eda9ff270f0b46f8e5e56a1d4d1f6213a6ccd807c8d722de089f3e3",
+          "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/local_70yj9bce/scope/A_OFF/finite_A_OFF/request_4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308/review/delivery_minutes.csv",
+          "data_sha256": "eb85d576710174e0a1eec16efb8f2b5a377601bf95dc1dd7a7b354628009ccfd",
+          "reviewer": "stage087_independent_exact_scope_reader",
+          "accepted_keys": 346
+        }
+      ]
+    },
+    {
+      "conflict": true,
+      "events": [
+        {
+          "event": "data_requested",
+          "request_sha256": "4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308",
+          "request_sequence": 1,
+          "requirements": 2,
+          "requested_keys": 346
+        },
+        {
+          "event": "data_gate_failed",
+          "request_sha256": "4937d8e95d2626d0c0215c10fb622ca3ac531abe04c93ef6dddd47e27c040308",
+          "error_type": "ValueError"
+        }
+      ]
+    }
+  ],
+  "full_keys": 345,
+  "anchor_keys": 1,
+  "actual_cache191_origin": "6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730",
+  "actual_cache191_rows": 345,
+  "actual_cache191_proofs": 345,
+  "cache191_not_commit_inheritance": true,
+  "new_fixture_request_digest": "6a511a4055ff42e9d0eefca029a1f2ac2c3d12daf41b70ef369f494cecca98db",
+  "fixture075_rejected": true,
+  "financial_replays": 0
+}

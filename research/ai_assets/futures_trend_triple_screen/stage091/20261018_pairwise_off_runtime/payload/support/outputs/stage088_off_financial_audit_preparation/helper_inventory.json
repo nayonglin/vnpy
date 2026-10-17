@@ -1,0 +1,265 @@
+{
+  "schema": "stage088_static_helper_inventory_v1",
+  "recorded_at": "2026-10-18T06:36:08.950774+08:00",
+  "helpers": [
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "close",
+      "line": 56,
+      "end_line": 61,
+      "signature": "(actual, expected, name, atol=1e-06)",
+      "docstring": null
+    },
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "reconstruct_metrics",
+      "line": 76,
+      "end_line": 88,
+      "signature": "(d, t, capital)",
+      "docstring": null
+    },
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "reconstruct_episodes",
+      "line": 91,
+      "end_line": 156,
+      "signature": "(t, candidates, conditional, rollover)",
+      "docstring": "Actual OPEN order link is authoritative for conditional mother identity."
+    },
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "audit_inventory",
+      "line": 159,
+      "end_line": 203,
+      "signature": "(source, d, t, parameters, settings)",
+      "docstring": "One chunked positions pass, independent sparse fill-to-inventory lookup."
+    },
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "ordered_evidence",
+      "line": 206,
+      "end_line": 274,
+      "signature": "(source, t, candidates, parameters, minutes, d)",
+      "docstring": null
+    },
+    {
+      "module": "stage030_independent_ordered_account_review.py",
+      "helper": "run",
+      "line": 324,
+      "end_line": 400,
+      "signature": "(exit_path)",
+      "docstring": null
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "OwnedAccountUnpickler",
+      "line": 81,
+      "end_line": 87,
+      "signature": "class",
+      "docstring": "A frozen local account snapshot cannot import strategy/native modules."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "checkpoint_binding",
+      "line": 90,
+      "end_line": 133,
+      "signature": "(source, evidence)",
+      "docstring": "No unpickling occurs until exact local ownership and external SHA pins pass."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "identity_audit",
+      "line": 136,
+      "end_line": 184,
+      "signature": "(raw_usage, identities, exported_clock, exported_usage)",
+      "docstring": "Compare sparse producer evidence with explicit real TradeData identity."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "serialized_csv_sha",
+      "line": 187,
+      "end_line": 197,
+      "signature": "(frame, decorate=False)",
+      "docstring": "Compare a raw table to its actual CSV without materializing CSV text."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "raw_export_equivalence",
+      "line": 200,
+      "end_line": 256,
+      "signature": "(base, source, payload, bindings, prov, summary)",
+      "docstring": "Full saved account data must be the source of every exported economics."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "use_raw_positions_once",
+      "line": 259,
+      "end_line": 297,
+      "signature": "(base, payload)",
+      "docstring": "Reuse the original inventory arithmetic with the already verified raw table.\n\nIts exported CSV is hash-equivalent above, so there is no second parsing\npass through the large positions file and no account-engine recomputation."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "supplementary_risk_and_holding_review",
+      "line": 300,
+      "end_line": 331,
+      "signature": "(base, result)",
+      "docstring": "Small exported-ledger diagnostics; never replay or load market minutes."
+    },
+    {
+      "module": "stage033_independent_checkpoint_account_review.py",
+      "helper": "provenance_audit",
+      "line": 334,
+      "end_line": 393,
+      "signature": "(base, source, exit_path, hashes)",
+      "docstring": "Exact Stage031 source guard, plus all original financial provenance gates."
+    },
+    {
+      "module": "stage038_independent_b_ts_account_review.py",
+      "helper": "make_bound_audit",
+      "line": 63,
+      "end_line": 122,
+      "signature": "()",
+      "docstring": "Controlled in-memory identity adapters; accepted source files never change.\n\nOnly explicit arm/attempt/schema/protocol/new-alpha labels are replaced.\nNo arithmetic, cash/position logic, source guard or financial gate is cut."
+    },
+    {
+      "module": "stage038_independent_b_ts_account_review.py",
+      "helper": "b_artifact_review",
+      "line": 125,
+      "end_line": 204,
+      "signature": "(bound, payload)",
+      "docstring": "Exact source-field projection; every budget is traced to its u snapshot."
+    },
+    {
+      "module": "stage038_independent_b_ts_account_review.py",
+      "helper": "audit_b_timing",
+      "line": 222,
+      "end_line": 235,
+      "signature": "(rows)",
+      "docstring": "Canonical rows are bound to exact final B artifact fields after review."
+    },
+    {
+      "module": "stage038_independent_b_ts_account_review.py",
+      "helper": "audit_b_budget_rows",
+      "line": 238,
+      "end_line": 291,
+      "signature": "(rows)",
+      "docstring": "Scalar final-q recomputation using original admitted gross prefixes.\n\nThis is an audit-only canonical representation, not a strategy allocator.\nFinal adapters must prove each field comes from the frozen u sizing/plan."
+    },
+    {
+      "module": "stage038_independent_b_ts_account_review.py",
+      "helper": "main",
+      "line": 337,
+      "end_line": 355,
+      "signature": "()",
+      "docstring": null
+    },
+    {
+      "module": "stage065_pairwise_off_policy.py",
+      "helper": "check_settings_delta",
+      "line": 71,
+      "end_line": 98,
+      "signature": "(reference: Mapping, requested: Mapping, actual: Mapping, *, shared: Path, reference_shared: Path)",
+      "docstring": "Require the entire requested and effective snapshot, with eight allowed keys.\n\nShared empty-input roots use the unchanged Stage022 normalizer. Unknown\nkeys, removed fields and other paths remain material differences."
+    },
+    {
+      "module": "stage065_pairwise_off_policy.py",
+      "helper": "disabled_pairwise_preflight",
+      "line": 101,
+      "end_line": 106,
+      "signature": "()",
+      "docstring": "A disabled branch, not a fabricated successful model smoke test."
+    },
+    {
+      "module": "stage065_pairwise_off_policy.py",
+      "helper": "check_effective_off_policy",
+      "line": 109,
+      "end_line": 131,
+      "signature": "(strategy: object)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_pairwise_off_policy.py",
+      "helper": "select_account_classes",
+      "line": 134,
+      "end_line": 144,
+      "signature": "(arm: Arm, native_strategy: type, native_engine: type, *, weekly=None, fi=None, next_days=None, qualify=None)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "_check_preflight",
+      "line": 111,
+      "end_line": 134,
+      "signature": "(preflight, arm)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "_context",
+      "line": 163,
+      "end_line": 193,
+      "signature": "(output, arm=None, *, verify_sources=True)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "_raw_envelope",
+      "line": 270,
+      "end_line": 285,
+      "signature": "(output, arm=None)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "load_sealed_checkpoint",
+      "line": 304,
+      "end_line": 324,
+      "signature": "(output, *, arm)",
+      "docstring": "All file bindings are checked before decompress/unpickle, using one read."
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "export_checkpoint",
+      "line": 343,
+      "end_line": 415,
+      "signature": "(output, destination, *, arm, metrics_function=None, export_only=False)",
+      "docstring": null
+    },
+    {
+      "module": "stage065_account_checkpoint.py",
+      "helper": "write_comparison_if_ready",
+      "line": 418,
+      "end_line": 448,
+      "signature": "(root)",
+      "docstring": "Only full sealed accounts qualify; fixture summaries never make a table."
+    },
+    {
+      "module": "stage001_compare.py",
+      "helper": "evaluate_metrics",
+      "line": 8,
+      "end_line": 26,
+      "signature": "(a, c)",
+      "docstring": null
+    }
+  ],
+  "fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage030_independent_ordered_account_review.py": "3fe153c379b95b67aa1f083381b55786c1afb85efd5896f035d91c4eb55dac15",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage033_independent_checkpoint_account_review.py": "940ab1180392c7ca3a6cceef15b3bb33f3d37d6510c48f86b9e7c109b7205cbf",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage038_independent_b_ts_account_review.py": "e9d651be9467c04241809a86c1046881cbe8e9def7c55b1c41bf7c79f0603dd7",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage001_compare.py": "7f62e2f08cf34267bfe1bfa55f709348b66c23f9ab246aa5e76c6c6056cc975c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0546_stage062_pairwise_off_implementation_plan.md": "fc31120390ab4c04c95d52a7dfd629992aab0f6a4abf139d1976a0b2252343e1",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0338_stage038_b_ts_independent_financial_preparation.md": "cd68c1e83f06a0ea5b09bf6f1e46da331cea0910ded68f046c3d7c88303197bf",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0308_stage033_checkpoint_account_review_preparation.md": "8a971e4ded9b43f4b6cbf4a96ba07ca939b22d06b08da31e29f1a655802076ea",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0524_stage057_pairwise_training_asof_evidence.md": "d5eb8be36831670587db4644ea63331b3ff7f2114f170dee33b768df00dfbb89",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0532_stage058_pairwise_asof_independent_review.md": "15753f029561b2b949a15d8d24c081fc891e1adc6914a034cadaa5d5a0de0a1c"
+  },
+  "imports_of_audit_or_strategy_modules": 0,
+  "new_account_roots_opened": 0,
+  "financial_results_read": 0
+}
+

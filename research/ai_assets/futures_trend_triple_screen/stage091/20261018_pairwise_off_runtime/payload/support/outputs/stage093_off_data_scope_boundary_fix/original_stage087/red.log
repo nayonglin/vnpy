@@ -1,0 +1,32 @@
+test_fake_child_terminal_daily_budget_no_retry_and_bootstrap (__main__.ScopeContracts.test_fake_child_terminal_daily_budget_no_retry_and_bootstrap) ... FAIL
+test_owner_same_digest_and_current_identity_fail_closed (__main__.ScopeContracts.test_owner_same_digest_and_current_identity_fail_closed) ... FAIL
+test_real021_joint_local_cache_rights_and_atomic_old_values (__main__.ScopeContracts.test_real021_joint_local_cache_rights_and_atomic_old_values) ... FAIL
+
+======================================================================
+FAIL: test_fake_child_terminal_daily_budget_no_retry_and_bootstrap (__main__.ScopeContracts.test_fake_child_terminal_daily_budget_no_retry_and_bootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py", line 174, in test_fake_child_terminal_daily_budget_no_retry_and_bootstrap
+    self.assertIsNotNone(scope, 'new bounded OFF provider chain is absent')
+AssertionError: unexpectedly None : new bounded OFF provider chain is absent
+
+======================================================================
+FAIL: test_owner_same_digest_and_current_identity_fail_closed (__main__.ScopeContracts.test_owner_same_digest_and_current_identity_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py", line 80, in test_owner_same_digest_and_current_identity_fail_closed
+    self.assertIsNotNone(scope, 'new OFF owner/current-request scope is absent')
+AssertionError: unexpectedly None : new OFF owner/current-request scope is absent
+
+======================================================================
+FAIL: test_real021_joint_local_cache_rights_and_atomic_old_values (__main__.ScopeContracts.test_real021_joint_local_cache_rights_and_atomic_old_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py", line 107, in test_real021_joint_local_cache_rights_and_atomic_old_values
+    self.assertIsNotNone(scope, 'new OFF independent local qualification is absent')
+AssertionError: unexpectedly None : new OFF independent local qualification is absent
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=3)

@@ -1,0 +1,265 @@
+{
+  "schema": "stage094_off_data_scope_fix_independent_review_evidence_v1",
+  "reviewed_at": "2026-10-18T07:05:41+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "review_scope": "只关闭090 P1-001/002与直接变更；继承090其他有限验证，不重审061/071/旧市场资格，不重跑原三测试或090脚本。",
+  "reviewed_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "sha256": "5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb",
+      "bytes": 52670
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+      "bytes": 16901
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py": {
+      "sha256": "17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a",
+      "bytes": 35924
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/implementation_receipt.json": {
+      "sha256": "b535d1b06817ff2db55389bdac012c027264937e6f4b44325b2ce70ae85b8c4b",
+      "bytes": 14333
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0702_stage093_off_data_scope_readiness_budget_boundary_fix.md": {
+      "sha256": "e6a8dac58ad82d4e07c2c1f3baa32f53c5e746db89f55f1412c2842dedea6710",
+      "bytes": 7080
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_snapshot_manifest.json": {
+      "sha256": "75fc8323c96fa394083a490610c93dea4dd3052fed87389d8b483e79e4a5a65b",
+      "bytes": 6837
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_scope.py.patch": {
+      "sha256": "ef9db4a26d2b393248ad14808fc469e64910cddaa118ed6fe59139e5d4c98494",
+      "bytes": 3925
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_provider.py.patch": {
+      "sha256": "09898533c3199542b58c062964c535ad26d127aeeb3a93f7791d22676bca3f83",
+      "bytes": 1368
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/test_stage087_off_data_scope.py.patch": {
+      "sha256": "b05e6fdc86f4fa321698d9300645ea0475508361ce552686ca66a26c8c235673",
+      "bytes": 11580
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/run_two_regressions.py": {
+      "sha256": "f822a9f53590766802c910f49501fc4b3310025e07fd8bf23aa48e59f0fa5e21",
+      "bytes": 1003
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/red.log": {
+      "sha256": "1676926dc63a65291c14722d277cd0ce4b8a7c820044992933609b284a138d2c",
+      "bytes": 1766
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/green.log": {
+      "sha256": "aee19eb7e808d26357270972b0d63648817e19531554bbb85fb0b5dd2dda5e5b",
+      "bytes": 460
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/compile_delta_verification.json": {
+      "sha256": "93de6c49bbea67dd46418bc5adaf6741750667ce27d9ebe389c8b2ddd7670b1b",
+      "bytes": 4561
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/review_receipt.json": {
+      "sha256": "91ea83235b9cbc6f2c13240fbc31d3a97a64e145b2de17aa39227fd723a774da",
+      "bytes": 8336
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0656_stage090_off_data_scope_independent_review.md": {
+      "sha256": "3e3b1c509e3f7c711cd565b84a918fbf452c113108f5ef0cea3a73e81c4d110c",
+      "bytes": 6697
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_owner_green.json": {
+      "sha256": "e1b691008deef4afec3d550adfde34fc006a59c8175f91301edbc44f39a156d5",
+      "bytes": 530
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_owner_observation.json": {
+      "sha256": "bcd619240e41c27374ee23b848796dcc15ff8d7dac3be94adc7c203583f03877",
+      "bytes": 263
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_public_parent_green.json": {
+      "sha256": "d0a0951b27e1564dcd536fe33dbced9e5ceada0ac7e06fdfe2a45d3ea4e0399a",
+      "bytes": 432
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_public_parent_observation.json": {
+      "sha256": "383ee481e4d790879482c53ae539b3f64300aacbcd61611c6649235e85e8c80f",
+      "bytes": 289
+    }
+  },
+  "findings_closed": [
+    {
+      "id": "P1-001",
+      "status": "closed",
+      "evidence": "严格非fixture分支context内部preflight SHA、source/data bindings内部SHA、preflight arm/attempt/fixture和实际readiness path/SHA/document/source/data/原限额闭合；实际argv readiness path/SHA唯一一致。owner.run_started_at与有时区context.started_at原字符串相同，remaining重新核owner并从context bytes读起点。新增定向回归9负例拒绝，正例原context余量仍约-3600。与084实际readiness返回结构/prepare绑定及checkpoint JSON hash格式逐段核对，无新readiness合同。"
+    },
+    {
+      "id": "P1-002",
+      "status": "closed",
+      "evidence": "公开run_once重验owner，在SDK前核current/≥840，在SDK后/attempt与Popen前再核current/≥840；已启动worker不追加840门。新增定向回归0/839无launch/attempt，正常launch及once attempt维持；独立小边界840→840允许1fake、900→839拒、SDK后current变化拒。原570/600和parent.wait/finally终态逻辑未变。"
+    }
+  ],
+  "remaining_findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "fresh_targeted_tests": {
+    "runs": 1,
+    "tests": 2,
+    "exit_code": 0,
+    "elapsed_seconds": 0.03,
+    "named_tests": [
+      "ScopeBoundaryRegressionTests.test_owner_readiness_and_context_clock_are_bound",
+      "ScopeBoundaryRegressionTests.test_public_provider_launch_reserve_cannot_be_bypassed"
+    ],
+    "output_redirect_only_in_memory": true,
+    "source_assertions_unchanged": true,
+    "fixture_only": true
+  },
+  "author_history": {
+    "targeted_red": {
+      "tests": 2,
+      "runs": 1,
+      "exit_code": 1,
+      "failures": 2,
+      "elapsed_seconds": 0.01
+    },
+    "targeted_green": {
+      "tests": 2,
+      "runs": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 0.028
+    },
+    "not_reexecuted_by_reviewer": true
+  },
+  "boundary_probe": {
+    "fixture_only": true,
+    "cases": [
+      {
+        "case": "exact_840",
+        "reserves": [
+          840,
+          840,
+          0
+        ],
+        "error": null,
+        "fake_launches": 1,
+        "sdk_preflight_stub_calls": 1,
+        "current_guard_calls": 2,
+        "reserve_calls": 2,
+        "attempt_created": true,
+        "result": {
+          "status": "worker_terminal",
+          "exit_code": 0,
+          "all_inputs_unchanged": true
+        }
+      },
+      {
+        "case": "sdk_crosses_839",
+        "reserves": [
+          900,
+          839
+        ],
+        "error": "public_provider_launch_reserve_budget_unavailable",
+        "fake_launches": 0,
+        "sdk_preflight_stub_calls": 1,
+        "current_guard_calls": 2,
+        "reserve_calls": 2,
+        "attempt_created": false,
+        "result": null
+      },
+      {
+        "case": "current_changes_after_sdk",
+        "reserves": [
+          900,
+          900
+        ],
+        "error": "temporary_current_wait_changed",
+        "fake_launches": 0,
+        "sdk_preflight_stub_calls": 1,
+        "current_guard_calls": 2,
+        "reserve_calls": 1,
+        "attempt_created": false,
+        "result": null
+      }
+    ],
+    "real_provider_starts": 0,
+    "network_connections": 0,
+    "financial_replays": 0
+  },
+  "preservation": {
+    "snapshot_files_verified": 16,
+    "exact_scope_provider_diff_verified": true,
+    "original_three_method_AST_unchanged": true,
+    "protected_frozen_sources_verified": 5,
+    "original087_records_verified": 13,
+    "author_artifact_bindings_verified": 36,
+    "original090_failure_receipt_preserved": true,
+    "original090_p1_findings": 2,
+    "original090_probe_not_reexecuted": true
+  },
+  "commands": [
+    {
+      "purpose": "only two new targeted regressions once",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,sys,unittest\nline=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen')\npath=line/'tools/test_stage087_off_data_scope.py';raw=path.read_bytes()\nassert hashlib.sha256(raw).hexdigest()=='17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a'\nbefore=\"OUT = TOOLS.parent / 'outputs/stage087_off_data_scope_implementation'\"\nafter=\"OUT = TOOLS.parent / 'outputs/stage094_off_data_scope_fix_independent_review'\"\nsource=raw.decode();assert source.count(before)==1\nsys.path.insert(0,str(path.parent));sys.dont_write_bytecode=True\nnamespace={'__file__':str(path),'__name__':'stage094_memory_redirected_regressions'}\nexec(compile(source.replace(before,after),str(path),'exec'),namespace)\ncls=namespace['ScopeBoundaryRegressionTests']\nsuite=unittest.TestSuite([cls('test_owner_readiness_and_context_clock_are_bound'),cls('test_public_provider_launch_reserve_cannot_be_bypassed')])\nresult=unittest.TextTestRunner(verbosity=2).run(suite)\nraise SystemExit(0 if result.wasSuccessful()else 1)\nPY",
+      "result": {
+        "chunk_id": "639247",
+        "wall_time_seconds": 0.555677833,
+        "exit_code": 0,
+        "original_token_count": 115,
+        "output": "test_owner_readiness_and_context_clock_are_bound (stage094_memory_redirected_regressions.ScopeBoundaryRegressionTests.test_owner_readiness_and_context_clock_are_bound) ... ok\ntest_public_provider_launch_reserve_cannot_be_bypassed (stage094_memory_redirected_regressions.ScopeBoundaryRegressionTests.test_public_provider_launch_reserve_cannot_be_bypassed) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.030s\n\nOK\n"
+      }
+    },
+    {
+      "purpose": "necessary exact840 and postSDK boundary probes, fake only",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nfrom tempfile import TemporaryDirectory\nfrom unittest.mock import patch\nfrom types import SimpleNamespace\nimport hashlib,json,sys\nline=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen');sys.path.insert(0,str(line/'tools'));sys.dont_write_bytecode=True\nimport stage087_off_data_scope as scope\nimport stage087_off_data_provider as provider\npins={'stage087_off_data_scope.py':'5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb','stage087_off_data_provider.py':'33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46'}\nassert all(hashlib.sha256((line/'tools'/n).read_bytes()).hexdigest()==h for n,h in pins.items())\nclass Child:\n pid=99998\n def wait(self,timeout=None):return 0\n def poll(self):return 0\nrows=[]\nwith TemporaryDirectory(prefix='exact_reserve_',dir=line/'outputs/stage094_off_data_scope_fix_independent_review')as temp:\n f=Path(temp).resolve();owner=SimpleNamespace(fixture_allowed=False,document=dict(fixture_only=False),sha256='temporary_only',path=f/'no_real_owner.json',verify=lambda:scope.Bindings());current=dict(path=f/'no_real_request.json',file_sha='temporary_only',digest='temporary_only',wait={})\n cases=[('exact_840',[840,840,0],False),('sdk_crosses_839',[900,839],True),('current_changes_after_sdk',[900,900],True)]\n for name,reserves,reject in cases:\n  packet=f/name;packet.mkdir();(packet/'preflight.json').write_text('{\"source_fingerprints\":{}}\\n');launches=[]\n  def launch(*a,**k):launches.append('fake_child');return Child()\n  checks=[current,ValueError('temporary_current_wait_changed')]if name=='current_changes_after_sdk'else None\n  actual_kwargs=dict(side_effect=checks)if checks else dict(return_value=current)\n  with patch.object(provider,'read_packet',return_value=({},current,dict(source_fingerprints={}),scope.Bindings())),patch.object(provider,'sdk_preflight',return_value={})as sdk,patch.object(scope,'read_actual_request',**actual_kwargs)as read,patch.object(scope,'remaining_engine_seconds',side_effect=reserves)as budget,patch.object(provider.subprocess,'Popen',side_effect=launch):\n   try:result=provider.run_once(owner,packet);error=None\n   except ValueError as exc:result=None;error=str(exc)\n   assert bool(error)==reject,(name,error)\n   assert len(launches)==(0 if reject else 1)\n   assert (packet/'network_attempt1').exists()is(not reject)\n   assert sdk.call_count==1 and read.call_count==2\n   assert budget.call_count==(1 if name=='current_changes_after_sdk'else 2)\n   rows.append(dict(case=name,reserves=reserves,error=error,fake_launches=len(launches),sdk_preflight_stub_calls=sdk.call_count,current_guard_calls=read.call_count,reserve_calls=budget.call_count,attempt_created=(packet/'network_attempt1').exists(),result=result))\nassert all(hashlib.sha256((line/'tools'/n).read_bytes()).hexdigest()==h for n,h in pins.items())\nprint(json.dumps(dict(fixture_only=True,cases=rows,real_provider_starts=0,network_connections=0,financial_replays=0),ensure_ascii=False,indent=2))\nPY",
+      "result": {
+        "chunk_id": "1b8bea",
+        "wall_time_seconds": 0.009047083,
+        "exit_code": 0,
+        "original_token_count": 301,
+        "output": "{\n  \"fixture_only\": true,\n  \"cases\": [\n    {\n      \"case\": \"exact_840\",\n      \"reserves\": [\n        840,\n        840,\n        0\n      ],\n      \"error\": null,\n      \"fake_launches\": 1,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 2,\n      \"attempt_created\": true,\n      \"result\": {\n        \"status\": \"worker_terminal\",\n        \"exit_code\": 0,\n        \"all_inputs_unchanged\": true\n      }\n    },\n    {\n      \"case\": \"sdk_crosses_839\",\n      \"reserves\": [\n        900,\n        839\n      ],\n      \"error\": \"public_provider_launch_reserve_budget_unavailable\",\n      \"fake_launches\": 0,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 2,\n      \"attempt_created\": false,\n      \"result\": null\n    },\n    {\n      \"case\": \"current_changes_after_sdk\",\n      \"reserves\": [\n        900,\n        900\n      ],\n      \"error\": \"temporary_current_wait_changed\",\n      \"fake_launches\": 0,\n      \"sdk_preflight_stub_calls\": 1,\n      \"current_guard_calls\": 2,\n      \"reserve_calls\": 1,\n      \"attempt_created\": false,\n      \"result\": null\n    }\n  ],\n  \"real_provider_starts\": 0,\n  \"network_connections\": 0,\n  \"financial_replays\": 0\n}\n"
+      }
+    },
+    {
+      "purpose": "093 final stage/receipt and old evidence identity, no tests rerun",
+      "command": ".py311/bin/python - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,ast\nb=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen');out=b/'outputs/stage093_off_data_scope_boundary_fix'\ndef binding(p):raw=p.read_bytes();return dict(sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))\nrp=out/'implementation_receipt.json';sp=b/'stages/20261018_0702_stage093_off_data_scope_readiness_budget_boundary_fix.md'\nassert binding(rp)['sha256']=='b535d1b06817ff2db55389bdac012c027264937e6f4b44325b2ce70ae85b8c4b'\nassert binding(sp)['sha256']=='e6a8dac58ad82d4e07c2c1f3baa32f53c5e746db89f55f1412c2842dedea6710'\nreceipt=json.loads(rp.read_bytes());print(json.dumps(receipt,ensure_ascii=False,indent=2));print(sp.read_text())\n# Verify author delta metadata only, with no execution of old tests or probes.\ndelta=json.loads((out/'compile_delta_verification.json').read_bytes())\nfor group in ('protected_sources_unchanged','original087_records_evidence_unchanged'):\n for p,h in delta[group].items():assert binding(Path(p))['sha256']==h,p\nold=out/'original_stage087/test_stage087_off_data_scope.py';new=b/'tools/test_stage087_off_data_scope.py'\ndef methods(p):\n tree=ast.parse(p.read_text());cls=next(n for n in tree.body if isinstance(n,ast.ClassDef)and n.name=='ScopeContracts');return {n.name:ast.dump(n,include_attributes=False)for n in cls.body if isinstance(n,ast.FunctionDef)}\nassert methods(old)==methods(new)\npaths=[b/'tools/stage087_off_data_scope.py',b/'tools/stage087_off_data_provider.py',new,rp,sp,out/'original_snapshot_manifest.json',out/'stage087_off_data_scope.py.patch',out/'stage087_off_data_provider.py.patch',out/'test_stage087_off_data_scope.py.patch',out/'run_two_regressions.py',out/'red.log',out/'green.log',out/'compile_delta_verification.json',b/'outputs/stage090_off_data_scope_independent_review/review_receipt.json',b/'stages/20261018_0656_stage090_off_data_scope_independent_review.md']\npaths+=sorted((b/'outputs/stage094_off_data_scope_fix_independent_review').glob('*.json'))\nprint('FINAL_FINGERPRINTS_JSON')\nprint(json.dumps({str(p):binding(p)for p in paths},ensure_ascii=False,indent=2))\nprint('protected_sources_verified',len(delta['protected_sources_unchanged']))\nprint('original_records_verified',len(delta['original087_records_evidence_unchanged']))\nprint('old_three_method_AST_unchanged',True)\nPY",
+      "result": {
+        "chunk_id": "1612be",
+        "wall_time_seconds": 0.000008167,
+        "exit_code": 0,
+        "original_token_count": 6566,
+        "output": "{\n  \"schema\": \"stage093_off_data_scope_boundary_fix_implementation_v1\",\n  \"recorded_at\": \"2026-10-18 07:02 CST\",\n  \"author\": \"/root/ordered_execution_review\",\n  \"independent_review\": false,\n  \"status\": \"two_targeted_regressions_green_pending094\",\n  \"addressed_findings\": [\n    \"P1-001\",\n    \"P1-002\"\n  ],\n  \"source_bindings\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py\": {\n      \"sha256\": \"5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb\",\n      \"bytes\": 52670\n    },\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py\": {\n      \"sha256\": \"33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46\",\n      \"bytes\": 16901\n    }\n  },\n  \"test_binding\": {\n    \"sha256\": \"17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a\",\n    \"bytes\": 35924\n  },\n  \"verification\": {\n    \"command\": \"PYTHONDONTWRITEBYTECODE=1 .py311/bin/python /Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/run_two_regressions.py\",\n    \"red\": {\n      \"tests\": 2,\n      \"seconds\": 0.01,\n      \"exit_code\": 1,\n      \"failures\": 2,\n      \"executions\": 1\n    },\n    \"green\": {\n      \"tests\": 2,\n      \"seconds\": 0.028,\n      \"exit_code\": 0,\n      \"failures\": 0,\n      \"executions\": 1\n    },\n    \"compile_files\": 3,\n    \"compile_exit_code\": 0,\n    \"original_three_tests_rerun\": false,\n    \"old_suites_rerun\": false,\n    \"original_three_test_bytes_preserved\": true\n  },\n  \"old_source_snapshot_manifest\": \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_snapshot_manifest.json\",\n  \"stage_path\": \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0702_stage093_off_data_scope_readiness_budget_boundary_fix.md\",\n  \"stage_sha256\": \"e6a8dac58ad82d4e07c2c1f3baa32f53c5e746db89f55f1412c2842dedea6710\",\n  \"artifacts_sha256\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/test_stage087_off_data_scope.pyc\": \"6563cfe139942a350103ae8ebf7a873432952de8ea2a97f141acc9273e3d4d0a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original090_critical_probe_observed.json\": \"17274058f529202f2fc1f20425352e9927204795e40116d1a537a1d686fc4bae\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/regression_public_parent_green.json\": \"d0a0951b27e1564dcd536fe33dbced9e5ceada0ac7e06fdfe2a45d3ea4e0399a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/red.log\": \"1676926dc63a65291c14722d277cd0ce4b8a7c820044992933609b284a138d2c\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/red_regression_public_parent_observation.json\": \"c46595e7519cec7b6dada333d53e6a78e793c6d5c4de59fefa297df2a01e7085\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/regression_public_parent_observation.json\": \"383ee481e4d790879482c53ae539b3f64300aacbcd61611c6649235e85e8c80f\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/regression_owner_observation.json\": \"4950af56a7cb911fc02263f558f35419e87e5e28015b6b86986216cea481b1a0\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original090_evidence.json\": \"4e2566d0aba25997c8fc7a9cb51849f8484a78bef9f9c3af0da305be1c3843a4\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/run_two_regressions.py\": \"f822a9f53590766802c910f49501fc4b3310025e07fd8bf23aa48e59f0fa5e21\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/green.log\": \"aee19eb7e808d26357270972b0d63648817e19531554bbb85fb0b5dd2dda5e5b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_provider.pyc\": \"a7d19c0040b62f3b8ad6bcef7b298eefce566a34d6a3a91badd1937db4874335\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/red_regression_owner_observation.json\": \"4cf525b1c8452ccdf95a905c02763b9443a99e0d4ca8ff19e84993ed203707e8\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/regression_owner_green.json\": \"159e3b29d75752351f19cff8b69a1bd8eda7f77f10618854fdee5f5dc21d41bc\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/test_stage087_off_data_scope.py.patch\": \"b05e6fdc86f4fa321698d9300645ea0475508361ce552686ca66a26c8c235673\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_snapshot_manifest.json\": \"75fc8323c96fa394083a490610c93dea4dd3052fed87389d8b483e79e4a5a65b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_provider.py.patch\": \"09898533c3199542b58c062964c535ad26d127aeeb3a93f7791d22676bca3f83\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original090_critical_probe_original.sh\": \"db6b14021ae187f8b10705bac81e714ef7d268df65e054ddfa2220a748fa9bcd\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/compile_delta_verification.json\": \"93de6c49bbea67dd46418bc5adaf6741750667ce27d9ebe389c8b2ddd7670b1b\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_scope.py.patch\": \"ef9db4a26d2b393248ad14808fc469e64910cddaa118ed6fe59139e5d4c98494\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/protected_sources_before.json\": \"894fdbc9a217de25c3c51826472daa165a6a675e30fc5f54da73be960c98b5c0\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_scope.pyc\": \"b3392c45e24f998df689c926af79a3c41abedcb29cbe7cf575ed744e87866594\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/20261018_0653_stage087_off_data_scope_implementation.md\": \"929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/execution_history.json\": \"c38bc42c04b79290aee6f640b900ba814c3b4b3e2a5c2ac92383aca1ae628283\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/red.log\": \"492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/test1.json\": \"bdae53725d34b8142081e8a548e678df624017957c4125e3920f65715841183a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/green.log\": \"ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/compile_bootstrap.json\": \"b42a456cf7873ecdf7970a476c2b4f5693e9fc7530756a31ac734d9ee34e4ffa\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/CLI_AND_API.md\": \"0110ac2a2513ac0edf8da737b96a8adf14136bb997a9abd07f05b3cfedfcb396\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/test_stage087_off_data_scope.py\": \"629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/green_candidate3.log\": \"730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/stage087_off_data_scope.py\": \"7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/test2.json\": \"3a47bb62ad7e6eace59d35dfe8a748e0cac8ea8399b790ec02a18b5dc02e1b01\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/stage087_off_data_provider.py\": \"d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/green_candidate2.log\": \"2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/green_candidate1.log\": \"ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_stage087/test3.json\": \"330f4002a466751b54ac05e16b6cf60757e0acf1358c1c447ab302a0ad20c6f8\"\n  },\n  \"protected_sources_unchanged\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py\": \"d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py\": \"3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage071_source859_isolation.py\": \"12580b91d0e264ac4f63807679742cbbc67c8cb03e66dd42343cf9b72c26fe27\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py\": \"aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py\": \"7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b\"\n  },\n  \"original087_records_evidence_unchanged\": {\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0653_stage087_off_data_scope_implementation.md\": \"929850ea55f00f4957d5899a01553458cf5dc5b85c3ee30bc11c4f081b124f76\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/implementation_receipt.json\": \"59fdd0fe6346cd7c1b057c37d537af73e8986db2371db0cc8e93f8f5c4da83f2\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/CLI_AND_API.md\": \"0110ac2a2513ac0edf8da737b96a8adf14136bb997a9abd07f05b3cfedfcb396\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/red.log\": \"492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate1.log\": \"ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate2.log\": \"2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green_candidate3.log\": \"730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/green.log\": \"ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/execution_history.json\": \"c38bc42c04b79290aee6f640b900ba814c3b4b3e2a5c2ac92383aca1ae628283\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test1.json\": \"bdae53725d34b8142081e8a548e678df624017957c4125e3920f65715841183a\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test2.json\": \"3a47bb62ad7e6eace59d35dfe8a748e0cac8ea8399b790ec02a18b5dc02e1b01\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/test3.json\": \"330f4002a466751b54ac05e16b6cf60757e0acf1358c1c447ab302a0ad20c6f8\",\n    \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope_implementation/compile_bootstrap.json\": \"b42a456cf7873ecdf7970a476c2b4f5693e9fc7530756a31ac734d9ee34e4ffa\"\n  },\n  \"original090_preserved\": true,\n  \"public_launch_reserve_only\": 840,\n  \"financial_wait_seconds\": 1800,\n  \"financial_run_seconds\": 7200,\n  \"provider_soft_seconds\": 570,\n  \"provider_hard_seconds\": 600,\n  \"automatic_retry\": false,\n  \"real_owner_created\": false,\n  \"real_provider_starts\": 0,\n  \"network_connections\": 0,\n  \"financial_replays\": 0,\n  \"model_fits\": 0,\n  \"orders\": 0,\n  \"whole_database_preflights\": 0,\n  \"data_scope_review_signed\": false,\n  \"financial_ready\": false,\n  \"production_qualified\": false,\n  \"remaining_known_targeted_regression_failures\": [],\n  \"confidence\": \"limited two-boundary code/fixture proof; no live owner, SDK or complete account execution\"\n}\n# Stage093：087 readiness/真实时钟与公开parent启动余量两项P1修复\n\n- line_id：`futures_trend_triple_screen`；时间 2026-10-18 07:02 CST；实现者 `/root/ordered_execution_review`。只处理090完整阻塞清单P1-001/002，一波必要修复，无新alpha/预算/框架。\n- 本轮先读090实际反例脚本/原始tool观察，不把原三test通过误当真实owner链完整；再核084 `_readiness` 返回的`{document,path,sha256}`、preflight.execution_readiness及真实checkpoint内部hash/started_at。\n- 原087记录、CLI、三源和证据保持历史身份；原源先复制到093/original_stage087，再改当前087两源/test。未改090、084、061、071、022、中性checkpoint、LINE/registry；未stage/commit/push或另派reviewer。\n\n## 原始问题与根因\n\n090源实测：严格nonfixture分支中，context.started_at已3小时前，owner把run_started_at改当前并绑定另一个B_OFF dummy readiness，旧load_owner/verify仍接受；真实context7200余量约−3600，旧remaining报告约1800。根因是只分别校验owner引用的JSON哈希，没有把readiness关联到**真实preflight及实际ps argv**，预算也直接用owner自报时钟。\n\n第二个独立反例：直接公开provider `--role run` 的run_once绕过driver预算门；把remaining_engine_seconds替为0，旧parent仍启动一个受控假worker，预算检查调用0、fake launches1。这里没有真实provider/network，但足以证明入口会绕过原launch reserve。\n\n原090反例脚本SHA`db6b14021ae187f8b10705bac81e714ef7d268df65e054ddfa2220a748fa9bcd`；原观察SHA`17274058f529202f2fc1f20425352e9927204795e40116d1a537a1d686fc4bae`；evidence SHA`4e2566d0aba25997c8fc7a9cb51849f8484a78bef9f9c3af0da305be1c3843a4`。均按root提供SHA读并复制为093/original090_*，没有重跑090原命令或覆盖其输出。\n\n## 唯一修复波次\n\nP1-001：仅加强Owner.verify及remaining_engine_seconds的nonfixture边界。context仍按原schema、arm/attempt/run_id/output/writer身份核验；新增context内部preflight_sha256与实际已pin preflight字节一致、source/data bindings内部SHA和实际preflight一致、preflight arm/attempt/fixture身份一致。owner execution_readiness的path/SHA必须等于真实preflight.execution_readiness，document必须等于该SHA实际解析的文档，arm/root授权/既有source-data绑定/原1800-7200限额保持一致。再对齐真实ps argv中唯一`--execution-readiness`及其SHA参数；不是另造替代readiness合同。\n\nowner.run_started_at必须与context.started_at**原字符串一致且有时区**，禁止重设。remaining从再次验证后的真实context字节读取started_at，fixture分支保持原测试隔离，不把fixture当金融。checkpoint.writer继续为stage065_account_checkpoint.py，金融runner仍取context/preflight source bindings。\n\nP1-002：公开provider run_once自身先重验owner/current，在SDK离线检查前核金融剩余≥840，再在实际attempt/worker启动前复核current及同余量；不足则无attempt、无Popen。840仅launch reserve，worker正常完成不再要求余下840；原570soft/600hard、单attempt/无retry不变。没有给公开入口增加免费连接或新预算。\n\n除这两处真实边界及两个具名回归外，没有改新scope协议、缓存资格、provider/API/collector、策略或独立reader逻辑。旧087原三test方法的bytes仍完整保留，按移除新regression class重建SHA精确等于旧test `629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f`。\n\n## 定向RED→GREEN及证据\n\n真实命令（仅两个新增方法）：\n\n```sh\nPYTHONDONTWRITEBYTECODE=1 .py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/run_two_regressions.py\n```\n\n适配器只在内存中把测试OUT从087改到093，原`__file__`与实际实现身份不变；不会覆盖原087证据。测试仅`ScopeBoundaryRegressionTests.test_owner_readiness_and_context_clock_are_bound`及`test_public_provider_launch_reserve_cannot_be_bypassed`。\n\n- RED一次：2 tests/0.010秒/exit1，两个assertRaises均因原问题未抛异常而FAIL；public budget calls0/fake launches1。非import/环境错误。RED两观察另存red_regression_*，不被GREEN覆盖。\n- 修复后GREEN一次：2 tests/0.028秒/exit0。正确旧context时钟继续约−3600秒；错readiness、单独改时钟、实际argv path/SHA、preflight arm/attempt、document冲突及内部preflight SHA拒绝。全部是同一P1身份链的字段反例，不另扩安全矩阵。\n- parent余量0/839时各budget calls1/fake launches0、无attempt；900余量允许一个受控假child，SDK前后共检查2次，child结束不再核840；已有attempt拒绝。所有worker/SDK/ps观察为明确受控替身，无真实owner/网络/金融。\n- 三文件compile exit0；未重跑087原三测、旧suite、整库/全市场预检。共两个方法各RED/GREEN一次，4次方法执行，0金融。\n- 084/061/071/022/checkpoint五源SHA前后未变；13份原087记录/证据原文件未变；完整16对象原始快照和SHA在original_snapshot_manifest.json。新旧源码精确diff保存各文件.patch。\n\n## 冻结身份与交接\n\n| 文件 | 原087 SHA | 新093 SHA | 新bytes |\n| --- | --- | --- | --- |\n| stage087_off_data_scope.py | `7c65bb01147a687529e27901d82b74ff4284a4dc1c84be2c7fe22e8f3aa5d737` | `5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb` | 52670 |\n| stage087_off_data_provider.py | `d8ecebf5b27ebb4179f81f7b960165a14ddbe9ce8655837bbf58ff1ecbf4706f` | `33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46` | 16901 |\n| test_stage087_off_data_scope.py | `629f81cb4ce3880e96f52756f8fd33c62e7f104b18803356d33b92d89fbe8e2f` | `17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a` | 35924 |\n\nCLI/五个数据边界API均不新增、不改签名；新增精确要求是owner时钟原样复制实际context.started_at，readiness只能取实际preflight/argv同一path/SHA/document。root在未来真实runner/PID存在后才能绑定，不会因本轮测试生成金融owner。\n\n两源与test已先发root，可并行交同一独立reviewer094定向复核；本记录/实施收据`independent_review=false`，不自签关闭090或data_scope_review。root后续独立receipt仍需source_bindings恰两源绝对path→SHA+bytes，test/dependency另字段；旧087/090身份不覆盖。自检未见这两项剩余失败，是否接受由094/root决定。\n\n金融/真实provider/网络/训练/预测/订单/全市场审计均0，production_qualified=false。新增/修改/删除策略参数与完整回测结果0；权益、收益、最大回撤、Sharpe、滑点、交易次数、胜率均N/A。\n\n开始/结束过拟合判断：否，这是有真实反例的身份和预算接线修复，不按PnL选参数；继续价值：是，原完整对照数据通路必须拒错授权及超时启动。未使用新外部资料或联网，判断来自090原反例及084真实源字段，不证明alpha、数据齐备或金融readiness。\n\nFINAL_FINGERPRINTS_JSON\n{\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py\": {\n    \"sha256\": \"5919f098af14ea9819cee3445e2555f9a740ebc2c808af1afdafa508235d01fb\",\n    \"bytes\": 52670\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py\": {\n    \"sha256\": \"33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46\",\n    \"bytes\": 16901\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage087_off_data_scope.py\": {\n    \"sha256\": \"17863dd4ec07ee43128c9ef606cb131fc07fd9fae79df2c917680062dd29dd6a\",\n    \"bytes\": 35924\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/implementation_receipt.json\": {\n    \"sha256\": \"b535d1b06817ff2db55389bdac012c027264937e6f4b44325b2ce70ae85b8c4b\",\n    \"bytes\": 14333\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0702_stage093_off_data_scope_readiness_budget_boundary_fix.md\": {\n    \"sha256\": \"e6a8dac58ad82d4e07c2c1f3baa32f53c5e746db89f55f1412c2842dedea6710\",\n    \"bytes\": 7080\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/original_snapshot_manifest.json\": {\n    \"sha256\": \"75fc8323c96fa394083a490610c93dea4dd3052fed87389d8b483e79e4a5a65b\",\n    \"bytes\": 6837\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_scope.py.patch\": {\n    \"sha256\": \"ef9db4a26d2b393248ad14808fc469e64910cddaa118ed6fe59139e5d4c98494\",\n    \"bytes\": 3925\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/stage087_off_data_provider.py.patch\": {\n    \"sha256\": \"09898533c3199542b58c062964c535ad26d127aeeb3a93f7791d22676bca3f83\",\n    \"bytes\": 1368\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/test_stage087_off_data_scope.py.patch\": {\n    \"sha256\": \"b05e6fdc86f4fa321698d9300645ea0475508361ce552686ca66a26c8c235673\",\n    \"bytes\": 11580\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/run_two_regressions.py\": {\n    \"sha256\": \"f822a9f53590766802c910f49501fc4b3310025e07fd8bf23aa48e59f0fa5e21\",\n    \"bytes\": 1003\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/red.log\": {\n    \"sha256\": \"1676926dc63a65291c14722d277cd0ce4b8a7c820044992933609b284a138d2c\",\n    \"bytes\": 1766\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/green.log\": {\n    \"sha256\": \"aee19eb7e808d26357270972b0d63648817e19531554bbb85fb0b5dd2dda5e5b\",\n    \"bytes\": 460\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage093_off_data_scope_boundary_fix/compile_delta_verification.json\": {\n    \"sha256\": \"93de6c49bbea67dd46418bc5adaf6741750667ce27d9ebe389c8b2ddd7670b1b\",\n    \"bytes\": 4561\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage090_off_data_scope_independent_review/review_receipt.json\": {\n    \"sha256\": \"91ea83235b9cbc6f2c13240fbc31d3a97a64e145b2de17aa39227fd723a774da\",\n    \"bytes\": 8336\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0656_stage090_off_data_scope_independent_review.md\": {\n    \"sha256\": \"3e3b1c509e3f7c711cd565b84a918fbf452c113108f5ef0cea3a73e81c4d110c\",\n    \"bytes\": 6697\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_owner_green.json\": {\n    \"sha256\": \"e1b691008deef4afec3d550adfde34fc006a59c8175f91301edbc44f39a156d5\",\n    \"bytes\": 530\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_owner_observation.json\": {\n    \"sha256\": \"bcd619240e41c27374ee23b848796dcc15ff8d7dac3be94adc7c203583f03877\",\n    \"bytes\": 263\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_public_parent_green.json\": {\n    \"sha256\": \"d0a0951b27e1564dcd536fe33dbced9e5ceada0ac7e06fdfe2a45d3ea4e0399a\",\n    \"bytes\": 432\n  },\n  \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage094_off_data_scope_fix_independent_review/regression_public_parent_observation.json\": {\n    \"sha256\": \"383ee481e4d790879482c53ae539b3f64300aacbcd61611c6649235e85e8c80f\",\n    \"bytes\": 289\n  }\n}\nprotected_sources_verified 5\noriginal_records_verified 13\nold_three_method_AST_unchanged True\n"
+      }
+    }
+  ],
+  "integration_accepted": true,
+  "finite_code_review_accepted": true,
+  "actual_source_qualification_issued": false,
+  "financial_ready": false,
+  "financial_execution_authorized": false,
+  "production_qualified": false,
+  "real_owner_created": false,
+  "actual_prepare_calls": 0,
+  "real_provider_starts": 0,
+  "network_connections": 0,
+  "financial_replays": 0,
+  "whole_database_preflights": 0,
+  "old_suite_runs": 0,
+  "original_three_tests_rerun": false,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "new_account_PnL_read": false,
+  "author_files_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_reviewer_spawned": false,
+  "inherited_limits": [
+    "090其余有限owner/source/整R/rights/terminal/driver验证继承，不冒称在093版再次跑三测试。",
+    "无真实PID/owner/provider/SDK/prepare/preflight/整账户或数据来源资格证明。",
+    "089已接受P2失败capture身份取证限制不变；不完整失败绩效仍不能合格。",
+    "原A0受限、原B失败N/A、PIT及目标未达限制不变；代码接受不等于策略优势或金融授权。"
+  ],
+  "overfitting": false,
+  "continued_value": true,
+  "research_note": "按root无网络边界只读冻结本地合同/090反例/084实际接口与093差异；无新alpha/参数研究。"
+}

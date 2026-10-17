@@ -117,6 +117,31 @@ class PairwiseOffIntegrationTests(unittest.TestCase):
         meta = metadata()
         formal = runtime.capture_formal_profile(s901, meta, pd.Timestamp(runtime.START), pd.Timestamp(runtime.END))
         before = asdict(formal["spec"]), dict(formal)
+        runner = importlib.import_module("stage065_run_pairwise_off")
+        # Root's external data-tool binding contract is independent of whole
+        # prepare/data/native execution; source files are hashed, never imported.
+        import hashlib
+        with tempfile.TemporaryDirectory(prefix="stage084_scope_binding_") as scope_temp:
+            scope_root=Path(scope_temp).resolve()
+            scope_sources=(scope_root/"scope.py",scope_root/"provider.py")
+            with patch.object(runner,"DATA_SCOPE_SOURCES",scope_sources):
+                self.assertFalse(runner.data_scope_bindings()['data_scope_ready'])
+                for path in scope_sources:path.write_text("raise AssertionError('source must not execute')\n")
+                unreviewed=runner.data_scope_bindings()
+                self.assertFalse(unreviewed['data_scope_ready'])
+                expected_sources={str(path):dict(sha256=hashlib.sha256(path.read_bytes()).hexdigest(),bytes=path.stat().st_size)
+                    for path in scope_sources}
+                self.assertEqual(unreviewed['source_bindings'],expected_sources)
+                review=scope_root/"review.json"
+                review.write_text(json.dumps(dict(independent_review=True,p0_findings=0,p1_findings=0,
+                    source_bindings=expected_sources)))
+                reviewed=runner.data_scope_bindings(review,hashlib.sha256(review.read_bytes()).hexdigest())
+                self.assertTrue(reviewed['data_scope_ready'])
+                self.assertEqual(reviewed['source_bindings'],expected_sources)
+                provider=scope_sources[1];old=provider.read_bytes();provider.write_bytes(old+b"# changed\n")
+                with self.assertRaisesRegex(ValueError,"source_review"):
+                    runner.data_scope_bindings(review,hashlib.sha256(review.read_bytes()).hexdigest())
+                provider.write_bytes(old)
         reference = s901.s847.s827.s772._build_setting(metadata=meta, spec=formal["spec"],
             base_c3_overrides=dict(s901.s513._c3_overrides(pd.Timestamp(runtime.START).to_pydatetime())),
             start=pd.Timestamp(runtime.START))
@@ -141,6 +166,32 @@ class PairwiseOffIntegrationTests(unittest.TestCase):
             stack.enter_context(patch.object(runtime, "model_runtime_smoke", forbidden("old_smoke")))
             for arm in ("A_OFF", "B_OFF"):
                 off = p.make_off_profile(formal, arm)
+                projected, projected_engine = runner.build_account_profile(formal, arm, NATIVE, ENGINE,
+                    weekly=Weekly(), fi={}, next_days={}, qualify=lambda *args: None)
+                self.assertEqual(projected["spec"].overrides["enable_selection_pairwise_v2"], False)
+                self.assertEqual(projected["spec"].overrides["selection_pairwise_volume_tilt_long_strength"], 0.)
+                self.assertEqual(projected["strategy_cls"] is NATIVE, arm == "A_OFF")
+                fake847=SimpleNamespace(START=pd.Timestamp("2000-01-01"), END=pd.Timestamp("2001-01-01"),
+                    Stage847StopRetryEngine=ENGINE,s827=SimpleNamespace(_GLOBAL_MINUTE_BY_SYMBOL={"before":1}))
+                def run_direct(profile, metadata):
+                    self.assertIs(profile["strategy_cls"], projected["strategy_cls"])
+                    self.assertIs(fake847.Stage847StopRetryEngine, projected_engine)
+                    self.assertFalse(profile["spec"].overrides["enable_selection_pairwise_v2"])
+                    return pd.DataFrame({"date":[pd.Timestamp(DAY)]}), {"tiny":pd.DataFrame({"event":["fixture"]})}
+                fake847._run_profile=run_direct
+                fake901=SimpleNamespace(s847=fake847,_run_live_c9=forbidden("old_smoke"))
+                original_global=fake847.s827._GLOBAL_MINUTE_BY_SYMBOL
+                daily, exported, spec=runner.run_profile_once(fake901,projected,meta,
+                    engine_class=projected_engine,start=pd.Timestamp(runtime.START),end=pd.Timestamp(runtime.END),
+                    minute_audit=dict(source="tiny_dispatch",loaded_symbol_count=3))
+                self.assertIs(spec,projected["spec"])
+                self.assertEqual(daily.account_capital.tolist(),[150000.])
+                self.assertEqual(daily.minute_source.tolist(),["tiny_dispatch"])
+                self.assertEqual(exported["tiny"].profile.tolist(),[spec.profile])
+                self.assertEqual(fake847.START,pd.Timestamp("2000-01-01"))
+                self.assertEqual(fake847.END,pd.Timestamp("2001-01-01"))
+                self.assertIs(fake847.s827._GLOBAL_MINUTE_BY_SYMBOL,original_global)
+                self.assertIs(fake847.Stage847StopRetryEngine,ENGINE)
                 self.assertEqual(asdict(formal["spec"]), before[0])
                 self.assertEqual(formal, before[1])
                 self.assertEqual(off["spec"].capital, formal["spec"].capital)
@@ -237,6 +288,7 @@ class PairwiseOffIntegrationTests(unittest.TestCase):
         import vnpy_portfoliostrategy.backtesting as backtesting
         from stage031_run_ordered_checkpoint import build_execution_clock
         from sklearn.pipeline import Pipeline
+        import stage065_run_pairwise_off as runner
         records, rejects = [], []
         with tempfile.TemporaryDirectory(prefix="stage076_checkpoint_") as temp:
             base = Path(temp).resolve()
@@ -352,14 +404,20 @@ class PairwiseOffIntegrationTests(unittest.TestCase):
                     stack.enter_context(patch.object(Pipeline,"predict",forbid("predict")))
                     stack.enter_context(patch.object(Pipeline,"predict_proba",forbid("predict")))
                     stack.enter_context(patch.object(Pipeline,"fit",forbid("model")))
+                    stack.enter_context(patch.object(runner,"prepare_account",forbid("data")))
+                    stack.enter_context(patch.object(runner,"execute_account",forbid("engine")))
+                    stack.enter_context(patch.object(runner,"OUTPUT",base/"snapshots"))
                     first=cp.reserve_export_destination(output,arm=arm)
                     def bad_metrics(*args):raise RuntimeError("metrics export sentinel")
                     with self.assertRaisesRegex(RuntimeError,"metrics export sentinel"):
                         cp.export_checkpoint(output,first,arm=arm,metrics_function=bad_metrics,export_only=True)
                     self.assertTrue((first/"export_failure.json").is_file())
                     self.assertFalse((first/"summary.json").exists())
-                    second=cp.reserve_export_destination(output,arm=arm)
-                    summary=cp.export_checkpoint(output,second,arm=arm,export_only=True)
+                    second=output/"exports/export_002"
+                    previous_runtime_output=runtime.OUTPUT
+                    self.assertEqual(runner.main(["--arm",arm,"--export-only"]),0)
+                    self.assertIs(runtime.OUTPUT,previous_runtime_output)
+                    summary=json.loads((second/"summary.json").read_text())
                     with self.assertRaises(FileExistsError):cp.reserve_export_destination(output,arm=arm)
                 self.assertEqual(export_calls,dict.fromkeys(export_calls,0))
                 self.assertEqual(summary["arm"],arm)

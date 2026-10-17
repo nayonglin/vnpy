@@ -1,0 +1,102 @@
+{
+  "schema": "stage084_pairwise_off_runner_implementation_v1",
+  "head": "e59055face49e2eda17bfcdd11d834905b987c42",
+  "sources": {
+    "research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py": {
+      "sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09",
+      "bytes": 34458
+    },
+    "research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py": {
+      "sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719",
+      "bytes": 49449
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+      "bytes": 60111
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": {
+      "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+      "bytes": 56966
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py": {
+      "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+      "bytes": 6964
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py": {
+      "sha256": "7e5a265a23b8fce871c895292e0738831604eefb9a341f7a83bd0320a68cf15b",
+      "bytes": 27561
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py": {
+      "sha256": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+      "bytes": 30535
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage071_source859_isolation.py": {
+      "sha256": "12580b91d0e264ac4f63807679742cbbc67c8cb03e66dd42343cf9b72c26fe27",
+      "bytes": 6012
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": {
+      "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+      "bytes": 14012
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": {
+      "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+      "bytes": 13613
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": {
+      "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+      "bytes": 11298
+    },
+    "research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": {
+      "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+      "bytes": 25106
+    },
+    "research/lines/futures_trend_triple_screen/stages/20261018_0546_stage062_pairwise_off_implementation_plan.md": {
+      "sha256": "fc31120390ab4c04c95d52a7dfd629992aab0f6a4abf139d1976a0b2252343e1",
+      "bytes": 29092
+    },
+    "research/lines/futures_trend_triple_screen/stages/20261018_0627_stage083_reviewed_off_preparation_registration.md": {
+      "sha256": "6e2fbc66de53bdd017c210aae2d28641cea25c981407a81fe1da479ddaa5154c",
+      "bytes": 5775
+    },
+    "research/lines/futures_trend_triple_screen/stages/20261018_0636_stage085_off_data_path_readonly_audit.md": {
+      "sha256": "769abe7ea42519349430f6d8a3e0378219460390788412800cd66b8f5458ee5b",
+      "bytes": 12916
+    },
+    "research/lines/futures_trend_triple_screen/stages/20261018_0639_stage087_off_data_scope_contract.md": {
+      "sha256": "2ff306e630635ad500341cec8c4a04d860294a3e4a316094da48b44e68160884",
+      "bytes": 6824
+    }
+  },
+  "historical_test_task1_2_sha256": "51731fdd31bd9fe2d7ba7f04ed34fc99f3c19fddb70dd7abae839d35c5771539",
+  "historical_test_task3_sha256": "2515326d771587c5ed49459c54286bd3f5c682c39455155082fd1daf982664c0",
+  "current_changed_test_methods": [
+    "test_disabled_profiles_native_and_b_no_model",
+    "test_real_fill_identity_checkpoint_and_pure_export"
+  ],
+  "stdlib_import_only": true,
+  "full_prepare_calls": 0,
+  "financial_replays": 0,
+  "network_calls": 0,
+  "model_loads": 0,
+  "model_predictions": 0,
+  "model_fits": 0,
+  "financial_ready": false,
+  "production_qualified": false,
+  "account_directories_created": false,
+  "canonical_output": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage065_pairwise_off_account",
+  "A_OFF_exists": false,
+  "B_OFF_exists": false,
+  "three_test_run": {
+    "tests": 3,
+    "exit_code": 0,
+    "elapsed_seconds": 0.692,
+    "runner_sha256": "d13caafde4f8027c207ca1bf0458a4dedd88daca764f9cb6c6a375aa9497029a"
+  },
+  "targeted_rerun": {
+    "tests": 1,
+    "exit_code": 0,
+    "elapsed_seconds": 0.209,
+    "runner_sha256": "d83b4cc20c09e07e9bcecfd541ba223fbf602db194430e6ed307a80e5e25ed09"
+  },
+  "root_data_scope_contract": "independent_review=true; p0=p1=0; source_bindings exactly the two fixed real Stage087 source hashes and byte sizes; no future hash fabricated"
+}

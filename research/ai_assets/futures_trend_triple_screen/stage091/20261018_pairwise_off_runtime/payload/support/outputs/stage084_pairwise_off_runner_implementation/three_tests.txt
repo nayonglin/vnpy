@@ -1,0 +1,12 @@
+Matplotlib is building the font cache; this may take a moment.
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+test_disabled_profiles_native_and_b_no_model (stage084_finite_tests.PairwiseOffIntegrationTests.test_disabled_profiles_native_and_b_no_model) ... ok
+test_real_planner_fallback_slot_margin_and_b_final_budget (stage084_finite_tests.PairwiseOffIntegrationTests.test_real_planner_fallback_slot_margin_and_b_final_budget) ... ok
+test_real_fill_identity_checkpoint_and_pure_export (stage084_finite_tests.PairwiseOffIntegrationTests.test_real_fill_identity_checkpoint_and_pure_export) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.692s
+
+OK
+{"status": "completed_pending_independent_review", "arm": "A_OFF", "source": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_6da8208i/snapshots/A_OFF/exports/export_002", "financial_replays_this_process": 0}
+{"status": "completed_pending_independent_review", "arm": "B_OFF", "source": "/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/stage076_checkpoint_6da8208i/snapshots/B_OFF/exports/export_002", "financial_replays_this_process": 0}

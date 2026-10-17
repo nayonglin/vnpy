@@ -1,0 +1,52 @@
+--- original087/stage087_off_data_scope.py
++++ stage093/stage087_off_data_scope.py
+@@ -139,6 +139,34 @@
+         if preflight.get('source_bindings',{}).get(d['runner_path'])!=binding:
+             raise ValueError('owner_runner_preflight_binding_mismatch')
+         if not self.fixture_allowed:
++            if(context.get('schema')!='stage065_run_context_v1'or context.get('preflight_sha256')!=d['preflight_sha256']or
++                preflight.get('arm')!=d['arm']or preflight.get('attempt')!=d['attempt']or preflight.get('fixture_only')is not False or
++                context.get('source_bindings')!=preflight.get('source_bindings')or
++                context.get('source_bindings_sha256')!=sha_bytes(json_bytes(preflight.get('source_bindings')))or
++                context.get('data_bindings_sha256')!=sha_bytes(json_bytes(preflight.get('data_bindings')))):
++                raise ValueError('owner_actual_preflight_context_binding_mismatch')
++            used=preflight.get('execution_readiness',{})
++            actual_ready=json.loads(b.payloads[str(Path(d['execution_readiness_path']).absolute())])
++            if(used.get('path')!=d['execution_readiness_path']or used.get('sha256')!=d['execution_readiness_sha256']or
++                used.get('document')!=actual_ready or actual_ready.get('schema')!='stage065_pairwise_off_execution_readiness_v1'or
++                actual_ready.get('arm')!=d['arm']or actual_ready.get('issued_by')!='root'or
++                actual_ready.get('financial_execution_authorized')is not True or actual_ready.get('independent_integration_accepted')is not True or
++                actual_ready.get('source_bindings')!=preflight['source_bindings']or actual_ready.get('data_bindings')!=preflight['data_bindings']or
++                actual_ready.get('limits_decision')!=dict(action='inherit_original_limits',wait_seconds=1800,run_seconds=7200)):
++                raise ValueError('owner_execution_readiness_not_used_by_actual_runner')
++            tokens=shlex.split(d['process_identity'])
++            def argument(name):
++                found=[tokens[i+1]for i,t in enumerate(tokens[:-1])if t==name]
++                found.extend(t.split('=',1)[1]for t in tokens if t.startswith(name+'='))
++                if len(found)!=1:raise ValueError('owner_actual_argv_readiness_required:'+name)
++                return found[0]
++            cli_path=Path(argument('--execution-readiness'))
++            if not cli_path.is_absolute():cli_path=ROOT/cli_path
++            if str(cli_path.absolute())!=used['path']or argument('--execution-readiness-sha256')!=used['sha256']:
++                raise ValueError('owner_actual_argv_readiness_mismatch')
++            started=context.get('started_at')
++            if d.get('run_started_at')!=started or not started or datetime.fromisoformat(started).tzinfo is None:
++                raise ValueError('owner_run_clock_must_equal_context_started_at')
+             for path in (SOURCE,PROVIDER):
+                 expected=dict(sha256=d['source_fingerprints'][str(path)],bytes=len(regular_bytes(path)))
+                 if context.get('source_bindings',{}).get(str(path))!=expected or preflight.get('source_bindings',{}).get(str(path))!=expected:
+@@ -626,9 +654,13 @@
+ 
+ 
+ def remaining_engine_seconds(owner,current):
++    if not owner.fixture_allowed:
++        verified=owner.verify()
++        started=json.loads(verified.payloads[str(Path(owner.document['run_context_path']).absolute())])['started_at']
++    else:started=owner.document['run_started_at']
+     now=datetime.now(timezone.utc)
+     elapsed=lambda value:(now-datetime.fromisoformat(value).astimezone(timezone.utc)).total_seconds()
+-    return min(1800-elapsed(current['wait']['started_at']),7200-elapsed(owner.document['run_started_at']))
++    return min(1800-elapsed(current['wait']['started_at']),7200-elapsed(started))
+ 
+ 
+ def drive(owner,batch_id,*,max_connections=4,budget_seconds=3600):

@@ -1,0 +1,58 @@
+{
+  "schema": "stage087_finite_test_history_v1",
+  "runs": [
+    {
+      "log": "red.log",
+      "tests": 3,
+      "seconds": 0.001,
+      "exit_code": 1,
+      "purpose": "实现前缺新scope/provider边界，三项明确功能缺失FAIL；非import/runtime故障",
+      "sha256": "492f22ea2317bd9c3a0a4ae7e5c0995138cf995c8e9eaf4a6bc1066db505181d",
+      "mtime": "2026-10-18T06:42:01.699500+08:00"
+    },
+    {
+      "log": "green_candidate1.log",
+      "tests": 3,
+      "seconds": 0.405,
+      "exit_code": 0,
+      "purpose": "首版owner/current/local/driver-provider实现后验证原三具名方法",
+      "sha256": "ec3755256a1305facedd6d3eef044e7ed85af9eb63dbe9e02ee3d1a910bf14a3",
+      "mtime": "2026-10-18T06:46:31.022856+08:00"
+    },
+    {
+      "log": "green_candidate2.log",
+      "tests": 3,
+      "seconds": 0.455,
+      "exit_code": 0,
+      "purpose": "实质补闭worker/parent状态及后继raw结构、新ordinary daily snapshot后续实际日复用；相应断言加入原test3",
+      "sha256": "2b39615f54b7e0336f33d05afb07a82d13c4a29064ebbbc35c28486203ada096",
+      "mtime": "2026-10-18T06:49:28.877651+08:00"
+    },
+    {
+      "log": "green_candidate3.log",
+      "tests": 3,
+      "seconds": 0.562,
+      "exit_code": 0,
+      "purpose": "实质补闭真实已pin191来源正向重资格及minute独立reader→current guard→fixture pointer；相应断言只加入原test2/3",
+      "sha256": "730cdf4c530ec725034a95f12a42960138291167b20db9b1dc09edddc251f9b6",
+      "mtime": "2026-10-18T06:50:27.668308+08:00"
+    },
+    {
+      "log": "green.log",
+      "tests": 3,
+      "seconds": 0.559,
+      "exit_code": 0,
+      "purpose": "收尾检查runner显式source binding与terminal/parent冗余身份一致性，固定最终证据字段；本轮最终三方法GREEN",
+      "sha256": "ab4823d355bae86b6ccc269d460756c51e6b696786246b402419803143805a67",
+      "mtime": "2026-10-18T06:51:24.833896+08:00"
+    }
+  ],
+  "unique_named_tests": 3,
+  "method_executions": 15,
+  "financial_replays": 0,
+  "provider_real_starts": 0,
+  "network_connections": 0,
+  "model_fits": 0,
+  "repeated_runs_after_source_or_contract_assertion_changes_only": true,
+  "no_more_test_runs_after_final_green": true
+}

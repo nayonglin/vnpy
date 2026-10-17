@@ -1,0 +1,17 @@
+{
+  "fixture_only": true,
+  "cases": [
+    {
+      "remaining_seconds": 0,
+      "budget_calls": 1,
+      "fake_launches": 0
+    },
+    {
+      "remaining_seconds": 839,
+      "budget_calls": 1,
+      "fake_launches": 0
+    }
+  ],
+  "network_connections": 0,
+  "real_provider_starts": 0
+}
