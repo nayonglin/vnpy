@@ -1,0 +1,14 @@
+[
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage022_qualified_wait/data_stack_manifest.json",
+    "original_sha256": "2b650761fbf2bc30aa0046147b7e369a2a0a10a68ee6b520204dde8d4d7226a0",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage021_023_adapter_evidence_pack/stage022_audit_data_stack_manifest.json.gz",
+    "gzip_mtime": 0
+  },
+  {
+    "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/preflight/C0_attempt3.json",
+    "original_sha256": "62cbcce2a016fd6881f722769821a7a4c394e55967834e21338de8df1a4fb91a",
+    "compressed": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage021_023_adapter_evidence_pack/stage022_audit_C0_attempt3.json.gz",
+    "gzip_mtime": 0
+  }
+]

@@ -1,0 +1,82 @@
+{
+  "status": "built_reviewed_provider_overlay_pending_independent_review",
+  "elapsed_seconds": 9.485780165996403,
+  "candidate_sessions": 259,
+  "accepted_sessions": 259,
+  "quarantine_reasons": {},
+  "excluded_stage016_sessions": 1,
+  "added_minutes": 69765,
+  "existing_rows_changed": 0,
+  "deleted_keys": 0,
+  "stage016_scope_intersection_count": 0,
+  "new_key_intersection_with_existing": 0,
+  "a0_path_equivalence": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 69765,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys.",
+    "stage016_all_scope_keys": 1500,
+    "stage016_scope_intersection_count": 0
+  },
+  "ready_before": 20193,
+  "ready_after": 20452,
+  "remaining_requirements": 7816,
+  "inherited_ready_not_global_price_qualification": true,
+  "provider_terminal_receipts_preserved": [
+    {
+      "provider_label": "stage018",
+      "review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage018_independent_review/review_receipt.json",
+      "review_sha256": "b7820471cc7d84963251182b8d10cf26e82cfc009a45e70ac9a7184ab39cd0cf",
+      "parent_exit_code": 0,
+      "parent_status": "worker_terminal",
+      "worker_status": "all_target_minutes_completed",
+      "review_accepted_sessions": 39,
+      "selected_sessions": 38,
+      "stage016_excluded_sessions": 1
+    },
+    {
+      "provider_label": "stage019",
+      "review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage019_independent_review/review_receipt.json",
+      "review_sha256": "0e2d6e29e546b0dcf9c9fb7bbb52f3cedb92f7d2ebb40086c1f8a3c8fd169d32",
+      "parent_exit_code": 0,
+      "parent_status": "worker_terminal",
+      "worker_status": "all_initial_snapshots_observed",
+      "review_accepted_sessions": 221,
+      "selected_sessions": 221,
+      "stage016_excluded_sessions": 0
+    }
+  ],
+  "all_inputs_unchanged": true,
+  "financial_replays": 0,
+  "downloads": 0,
+  "account_engines": 0,
+  "orders": 0,
+  "cancels": 0,
+  "model_fits": 0,
+  "PnL_accessed": false,
+  "original_source_writes": 0,
+  "financial_metrics": "N/A",
+  "production_qualified": false,
+  "limitations": [
+    "Only explicitly independently accepted provider session grids are integrated.",
+    "Stage016 four full sessions are excluded; its correction loader stays outermost.",
+    "Partial provider qualification does not change provider batch terminal status.",
+    "Existing data and inherited unrelated readiness are retained; no C0 replay is authorized."
+  ],
+  "artifact_sha256": {
+    "input_manifest.json": "0b7d68d077f40f6ddec40909e4cb5a2c73fc1fef3e5f4b66a4566ebb18636180",
+    "overlay.csv": "ced7d46b749229cff984bf1575c3452f93b14b17b9c303a78cfb75ab0c1e907f",
+    "remaining_demand.csv": "ff6501f46b271d4e1c535c6903161ba1f6abf1bcc2451931f42bbaf760f4cf41",
+    "session_manifest.csv": "0df861a65b998c87a8485fada0147967e63f20e05261b069e99e145e1adc9e03",
+    "source_manifest.json": "99a39570b7807fda246772de80f029d0bdaf8639562decc98ae01d8795fdc8f0",
+    "attempt_started.json": "4cd8495de069bf1cd182ba4b61aae18cf48191df3dae9557f1ddf814429e2648",
+    "quarantine.csv": "7d5947393d45cbeef2cdd746fe7e18db2cbe48f6edaef3fcef26a7ed88c89c71",
+    "demand_readiness.csv": "56231b7694f1d7edb1dd3a93caf0177e8783917b134a1a2b53bb7f2fd62893a5",
+    "excluded_stage016_sessions.json": "eb6a2292079c75fe2d4409caf723c3dc31181961c8fd433289ca61460090fc49",
+    "a0_path_equivalence.json": "a8a77e4178295f87e9abb2f7fdb3da02d90529e2773f29caca7b246697a0fd04"
+  }
+}

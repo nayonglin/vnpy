@@ -1,0 +1,1 @@
+status,reason,requirement_kind,expected_minutes,new_minutes,conflicting_minutes,source_ids,source_rows,actual_rows,missing_minutes,base_overlap_minutes,daily_open_oi_check,aggregate,daily_mismatch_fields,vt_symbol,execution_trade_date

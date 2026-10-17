@@ -1,0 +1,12 @@
+{
+  "status": "implementation_and_control_tests_passed_not_financial",
+  "source001_sha256": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+  "runner_sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+  "protocol_sha256": "37587b418c8083f15f1d46b5219410984cb9fe17ba9940d6b518ad7b41ddb585",
+  "source_diff_sha256": "f7aec3c7e16bd3749706d76afe35e03ee08a7c6f751d52879a96fd77d4e9fd95",
+  "test_sha256": "934f8688353e073c43ddeef9b6456b2eb126ba062da540402a012411f17684b5",
+  "focused_tests": 7,
+  "financial_replays": 0,
+  "provider_connections": 0,
+  "production_qualified": false
+}

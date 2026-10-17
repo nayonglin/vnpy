@@ -1,0 +1,91 @@
+{
+  "reviewed_at": "2026-10-18T01:21:28+08:00",
+  "status": "bounded_actual_provider_subset_review_pass",
+  "qualified_precise_sessions": 221,
+  "qualified_minute_rows": 57045,
+  "full_sessions": 13,
+  "anchor_sessions": 208,
+  "all_rows_unique_legal_exact_frozen_grid": true,
+  "saved_forward_proofs": 57045,
+  "source_hashes_checked": 238,
+  "parent_exit_code": 0,
+  "parent_elapsed_seconds": 45.963382499990985,
+  "worker_elapsed_seconds": 44.212867167021614,
+  "peak_memory_bytes": 494944256,
+  "false_waits": 0,
+  "provider_attempts": 1,
+  "all_inputs_unchanged": true,
+  "independent_aggregate_samples": [
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-21",
+      "requirement_kind": "full_session",
+      "minutes": 225,
+      "seven_fields_exact": true,
+      "aggregate": {
+        "open": "126000.0",
+        "high": "133720.0",
+        "low": "125400.0",
+        "close": "132500.0",
+        "volume": "184646.0",
+        "open_oi": "425377.0",
+        "close_oi": "426094.0"
+      }
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-22",
+      "requirement_kind": "full_session",
+      "minutes": 345,
+      "seven_fields_exact": true,
+      "aggregate": {
+        "open": "15915.0",
+        "high": "15975.0",
+        "low": "15770.0",
+        "close": "15790.0",
+        "volume": "273723.0",
+        "open_oi": "539940.0",
+        "close_oi": "551251.0"
+      }
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-14",
+      "requirement_kind": "anchor",
+      "minutes": 345,
+      "seven_fields_exact": true,
+      "aggregate": {
+        "open": "3089.0",
+        "high": "3091.0",
+        "low": "3070.0",
+        "close": "3073.0",
+        "volume": "580359.0",
+        "open_oi": "1710845.0",
+        "close_oi": "1703241.0"
+      }
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-14",
+      "requirement_kind": "anchor",
+      "minutes": 225,
+      "seven_fields_exact": true,
+      "aggregate": {
+        "open": "6744.0",
+        "high": "6744.0",
+        "low": "6240.0",
+        "close": "6242.0",
+        "volume": "320355.0",
+        "open_oi": "152188.0",
+        "close_oi": "170103.0"
+      }
+    }
+  ],
+  "all_221_aggregates_independently_repeated": false,
+  "independent_grid_reconstructed": false,
+  "existing_overlap_qualified": false,
+  "provider_original_ns_snapshots_retained": false,
+  "reused_review_logic": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage018_independent_review/review_completed_batch.py",
+  "network_calls": 0,
+  "financial_replays": 0
+}

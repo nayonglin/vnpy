@@ -3,7 +3,7 @@
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
 - 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 01:03 CST）：Stage001 A0经济回放已独立验收，C0仍未完整。Stage010已生成28,268个初始/换月OPEN与可能CLOSE需求的条件上界；Stage011/015分别新增4,646,214与452,401分钟并独立通过，Stage013恢复4500个精确日线参考。继承覆盖20191/28268、剩余8077。source859涉及潜在full网格735键/4session，A0消费该源为0；Stage016工具与5测试完成，未构建。Stage017唯一正常公开批次64.247秒终态超时，0分钟/0合格session，实际只读tq_dl=false；不把超时推断为历史权限拒绝。另确认采集器把一次30秒无更新误作终止，Stage018正离线修正统一等待预算并等待审查，旧证据不改。金融attempt仍4/完成1，无C0第三次、无更高收益且更低回撤候选，目标active。
+- 当前状态（2026-10-18 01:37 CST）：A0经济回放已独立验收，C0仍未完整。Stage018修正总等待预算后单连接取得12945分钟/39session，Stage019普通API再取57045分钟/221session；均独立合格。Stage016四session源859修正734旧键、追加465键，全部变更与A0实读零交集；Stage020又追加69765分钟/259session并独立通过。继承物理ready20452/28268，剩余7816＝120full＋7696anchor，为理论条件上界，不能冒称实际成交需求或全价格资格。Stage021同一engine阻塞等待门已独立通过；Stage022独立runner固定数据栈与一次完整离线preflight通过，参数/AI/周特征/成本/0.5R均同A0，尚待独立接合审查及023合法响应工具。金融attempt仍4/完成1，无C0第三次、无收益更高且回撤更低候选，目标active。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -64,3 +64,15 @@
 - 三个session已有同SHA completed源/原CSV七字段匹配替代，AP210当前没有完成替代。Stage016只允许已证据源的具体差异，非859不得覆盖、open/openOI若变拒绝；全部变更而非只新key要与A0实际读取disjoint。Stage017将唯一取回AP210及同窗必要数据，正常BT/公开API，不用多合约价差历史窗口捷径。
 - 金融attempt仍4/完成1、模型训练0，累计数据provider连接3（007历史流、012历史流、013普通日线）；没有C0新回放、没有alpha结论、没有生产操作。继续数据修正有实质价值，不按收益改参数；若无合格新数据，不得用fallback或覆盖计数启动候选。
 - Stage013/015复现资产manifest分别bd6978434b286eb97d01f2d4147e4be532d612c39b3895e98e94e39a937717e1、35fdb3539716b974395ae29a4022f8a908589b137d9b9ebc1cc58461731cccff；原始日线快照、DB目标价格表、原始分钟overlay均未加入Git。
+
+
+## Stage016—022 数据与执行准备（2026-10-18）
+
+- Stage017单次30秒无更新即中止的控制流问题已在018独立工具中修正；旧017失败不改。018实际同连接经历2次False后117秒取齐，证明继续等待语义；未改SDK、授权或下载接口。
+- Stage019普通latest10000一次45.96秒取得221session/57045分钟，峰值495MB，无TqBacktest。019及018均只有精确来源资格，020逐session完成旧键/范围/独立日线核对后才进入研究stack。
+- Stage016的1199实际变更、020的69765新键均与A0实读106731键零交集；020还与016全1500scope零交集。已有A0不重跑。016/020独立receipt分别98b6ad7b3e312e839abb51eefb3377e8e5c7239fbdd44c4ae30df5e9ace2308b、307a41cfdbff3d120b21a59fc216ed161cafe0d6d887332af8cdbcc395ff9271。
+- Stage021将普通订单context前的数据资格阻塞在同一个engine调用栈：OPEN完整时段、CLOSE真实首分钟，原context仍一次；浅copy策略minute字典避免污染_GLOBAL/cache别名，finally恢复。full与anchor-only源859资格分离，不以物理existing或scope phantom key自动通过。纯门独立receipt4cb45007591510c34598937fd3dc8e186954031fd5a9115318a8676887133367；未授权真实金融成绩。
+- Stage022保持原C0周滤网规则与全部A0参数门，复制真实新runner/旧001/diff，固定stack与已签各层输入，动态数据先独立资格和record再注入，最后verify；每次等待1800秒、整次7200秒。固定stack SHA2b650761fbf2bc30aa0046147b7e369a2a0a10a68ee6b520204dde8d4d7226a0、完整preflight SHA62cbcce2a016fd6881f722769821a7a4c394e55967834e21338de8df1a4fb91a。初次freeze的schema读取失败保留，未重建数据或放宽资格。022/023仍须独立接合审查，不能仅凭preflight开跑。
+- 不再将全部可能CLOSE上界作为开跑硬门，也不在异常后重放bar补缺口；先准备合法响应通路，再只对同一回测真正需要的精确数据阻塞等待，未合格就不推进，不跳订单、不用daily-open替代或截断成绩。
+- 数据资产manifest：016 dcdd282a40584fb5f36ae7e3d960dff332f2c20c7d00c8c8d749461af38a1891；018 f1b1da54166beb05b69aedd21754ea579f3ad5a6f1a3cfe9482bc1743d3fddc7；019 b8f6c1dc35a4ae812e166e4d38d071045d0d27ac843e33bd80b6907bcdcf40bf；020 de43d3f6a9e28b79b212a4b78082ff87a92cf2e2b445c79696624b971fb237ba。原始行情、overlay/correction价格CSV、凭证不加入Git。
+- 本阶段运行前后过拟合判断为否：只修正已证实来源/控制流并改进必要数据接合，不查看C0胜负选参。继续价值为是：目标仍是同周期更高净收益且更低回撤，不能把取数成功或代码预检当策略优势。

@@ -1,0 +1,56 @@
+{
+  "reviewed_at": "2026-10-18T01:27:10+08:00",
+  "status": "bounded_append_scope_and_identity_review_pass",
+  "original_inputs_sha_checked": 298,
+  "provider_session_counts": {
+    "stage018": 38,
+    "stage019": 221
+  },
+  "excluded_AP210_owned_by016": true,
+  "accepted_sessions": 259,
+  "added_minutes": 69765,
+  "all_append_values_equal_reviewed_provider_rows": true,
+  "old_key_intersection": 0,
+  "stage016_full_scope_keys": 1500,
+  "stage016_scope_intersection": 0,
+  "A0_actual_read_keys": 106731,
+  "new_key_intersection_A0": 0,
+  "untouched_readiness_rows": 28009,
+  "ready_before": 20193,
+  "ready_after": 20452,
+  "remaining_requirements": 7816,
+  "independent_aggregate_samples": [
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "minutes": 345,
+      "seven_fields_exact": true,
+      "requirement_kind": "anchor"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "minutes": 225,
+      "seven_fields_exact": true,
+      "requirement_kind": "anchor"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-08-25",
+      "minutes": 225,
+      "seven_fields_exact": true,
+      "requirement_kind": "full_session"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-04",
+      "minutes": 345,
+      "seven_fields_exact": true,
+      "requirement_kind": "full_session"
+    }
+  ],
+  "all_259_daily_aggregates_repeated": false,
+  "reused_source_qualification": true,
+  "financial_replays": 0,
+  "network_calls": 0
+}

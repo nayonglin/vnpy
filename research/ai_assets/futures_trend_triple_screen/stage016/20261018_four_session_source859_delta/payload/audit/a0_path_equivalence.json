@@ -1,0 +1,13 @@
+{
+  "changed_keys": 1199,
+  "replacement_keys": 734,
+  "appended_keys": 465,
+  "deleted_keys": 0,
+  "intersection_count": 0,
+  "intersection_examples": [],
+  "path_equivalent": true,
+  "distinct_actual_read_keys": 106731,
+  "anchor_request_rows": 535,
+  "scan_request_rows": 501,
+  "reasoning": "Every actual replacement and append key is disjoint from all recorded A0 anchor/scan reads; no deletion."
+}

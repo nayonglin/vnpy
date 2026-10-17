@@ -1,0 +1,13 @@
+{
+  "completed_minutes": 12945,
+  "target_minutes": 12945,
+  "updated_at": "2026-10-18T01:04:02.172198+08:00",
+  "diagnostic": {
+    "phase": "all_target_minutes_completed",
+    "elapsed_seconds": 114.59706749999896,
+    "idle_waits": 2,
+    "update_calls": 4,
+    "ready_serial_count": 8
+  },
+  "financial_replays": 0
+}

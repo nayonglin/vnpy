@@ -1,0 +1,3542 @@
+{
+  "original_batch_manifest_sha256": "502b0fd0ee517abc99434034a6b49433c73c88deec6508a8128e103fd1fe8133",
+  "raw_daily_price_references_excluded": true,
+  "targets": [
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-11T09:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4502,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-14T09:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4277,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-15T09:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4052,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-16T09:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3827,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-17T09:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3602,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-18T09:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3377,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-21T09:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3152,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-22T09:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2927,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-23T09:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2702,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-24T09:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2477,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2252,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-29T09:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2027,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-30T09:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1802,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1577,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-09T09:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1352,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-12T09:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1127,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-13T09:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "AP701.CZCE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 225,
+        "bars_upper": 902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-14T09:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-02",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 28,
+        "maximum_session_minutes": 345,
+        "bars_upper": 9662,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-01T21:00:00",
+      "session_end_exclusive": "2026-09-02T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-03",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 27,
+        "maximum_session_minutes": 345,
+        "bars_upper": 9317,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-02T21:00:00",
+      "session_end_exclusive": "2026-09-03T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8972,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-03T21:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-04T21:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8282,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-07T21:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7937,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-08T21:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7592,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-09T21:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7247,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-10T21:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-11T21:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6557,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-14T21:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6212,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-15T21:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5867,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-16T21:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5522,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-17T21:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-18T21:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4832,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-21T21:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4487,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-22T21:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4142,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-23T21:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3797,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3452,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-28T21:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3107,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-29T21:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2762,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2417,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-08T21:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2072,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-09T21:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-12T21:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1382,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-13T21:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-18",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 39,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8777,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-18T09:00:00",
+      "session_end_exclusive": "2026-08-18T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-19",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 38,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8552,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-19T09:00:00",
+      "session_end_exclusive": "2026-08-19T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-20",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 37,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8327,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-20T09:00:00",
+      "session_end_exclusive": "2026-08-20T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 36,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8102,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-21T09:00:00",
+      "session_end_exclusive": "2026-08-21T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 35,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7877,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-24T09:00:00",
+      "session_end_exclusive": "2026-08-24T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-25",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 34,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7652,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-25T09:00:00",
+      "session_end_exclusive": "2026-08-25T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-26",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 33,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7427,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-26T09:00:00",
+      "session_end_exclusive": "2026-08-26T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-27",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 32,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7202,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-27T09:00:00",
+      "session_end_exclusive": "2026-08-27T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 31,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6977,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-28T09:00:00",
+      "session_end_exclusive": "2026-08-28T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-08-31",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 30,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6752,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-31T09:00:00",
+      "session_end_exclusive": "2026-08-31T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-01",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 29,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6527,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-01T09:00:00",
+      "session_end_exclusive": "2026-09-01T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-02",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 28,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6302,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-02T09:00:00",
+      "session_end_exclusive": "2026-09-02T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-03",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 27,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6077,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-03T09:00:00",
+      "session_end_exclusive": "2026-09-03T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5852,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-04T09:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-07T09:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5402,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-08T09:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-09T09:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4952,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-10T09:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-11T09:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4502,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-14T09:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4277,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-15T09:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4052,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-16T09:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3827,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-17T09:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3602,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-18T09:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3377,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-21T09:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3152,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-22T09:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2927,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-23T09:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2702,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-24T09:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2477,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2252,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-29T09:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2027,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-30T09:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1802,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1577,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-09T09:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1352,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-12T09:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1127,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-13T09:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "SM611.CZCE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 225,
+        "bars_upper": 902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-14T09:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7592,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-09T21:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7247,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-10T21:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-11T21:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6557,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-14T21:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6212,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-15T21:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5867,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-16T21:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5522,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-17T21:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-18T21:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4832,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-21T21:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4487,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-22T21:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4142,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-23T21:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3797,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3452,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-28T21:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3107,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-29T21:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2762,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2417,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-08T21:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2072,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-09T21:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-12T21:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "hc2701.SHFE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1382,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-13T21:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-08-25",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 34,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7652,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-25T09:00:00",
+      "session_end_exclusive": "2026-08-25T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-08-26",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 33,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7427,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-26T09:00:00",
+      "session_end_exclusive": "2026-08-26T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-08-27",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 32,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7202,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-27T09:00:00",
+      "session_end_exclusive": "2026-08-27T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-08-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 31,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6977,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-28T09:00:00",
+      "session_end_exclusive": "2026-08-28T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-01",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 29,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6527,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-01T09:00:00",
+      "session_end_exclusive": "2026-09-01T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-02",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 28,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6302,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-02T09:00:00",
+      "session_end_exclusive": "2026-09-02T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5852,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-04T09:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-07T09:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5402,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-08T09:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-09T09:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4952,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-10T09:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-11T09:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4502,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-14T09:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4277,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-15T09:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4052,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-16T09:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3827,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-17T09:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3602,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-18T09:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3377,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-21T09:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3152,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-22T09:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2927,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-23T09:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2702,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-24T09:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2477,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2252,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-29T09:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2027,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-30T09:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1802,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1577,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-09T09:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1352,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-12T09:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1127,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-13T09:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "lc2701.GFEX",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 225,
+        "bars_upper": 902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-14T09:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-13",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 42,
+        "maximum_session_minutes": 225,
+        "bars_upper": 9452,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-13T09:00:00",
+      "session_end_exclusive": "2026-08-13T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 41,
+        "maximum_session_minutes": 225,
+        "bars_upper": 9227,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-14T09:00:00",
+      "session_end_exclusive": "2026-08-14T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 40,
+        "maximum_session_minutes": 225,
+        "bars_upper": 9002,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-17T09:00:00",
+      "session_end_exclusive": "2026-08-17T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 39,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8777,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-18T09:00:00",
+      "session_end_exclusive": "2026-08-18T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-19",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 38,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8552,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-19T09:00:00",
+      "session_end_exclusive": "2026-08-19T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-20",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 37,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8327,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-20T09:00:00",
+      "session_end_exclusive": "2026-08-20T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 36,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8102,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-21T09:00:00",
+      "session_end_exclusive": "2026-08-21T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 35,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7877,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-24T09:00:00",
+      "session_end_exclusive": "2026-08-24T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-25",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 34,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7652,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-25T09:00:00",
+      "session_end_exclusive": "2026-08-25T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-26",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 33,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7427,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-26T09:00:00",
+      "session_end_exclusive": "2026-08-26T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-27",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 32,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7202,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-27T09:00:00",
+      "session_end_exclusive": "2026-08-27T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 31,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6977,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-28T09:00:00",
+      "session_end_exclusive": "2026-08-28T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-08-31",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 30,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6752,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-31T09:00:00",
+      "session_end_exclusive": "2026-08-31T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-01",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 29,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6527,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-01T09:00:00",
+      "session_end_exclusive": "2026-09-01T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-02",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 28,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6302,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-02T09:00:00",
+      "session_end_exclusive": "2026-09-02T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-03",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 27,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6077,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-03T09:00:00",
+      "session_end_exclusive": "2026-09-03T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5852,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-04T09:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-07T09:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5402,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-08T09:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-09T09:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4952,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-10T09:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-11T09:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4502,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-14T09:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4277,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-15T09:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4052,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-16T09:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3827,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-17T09:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3602,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-18T09:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3377,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-21T09:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3152,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-22T09:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2927,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-23T09:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2702,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-24T09:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2477,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2252,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-29T09:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2027,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-30T09:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1802,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1577,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-09T09:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1352,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-12T09:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1127,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-13T09:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "lh2611.DCE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 225,
+        "bars_upper": 902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-14T09:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8972,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-03T21:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-04T21:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 345,
+        "bars_upper": 8282,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-07T21:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7937,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-08T21:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7592,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-09T21:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 345,
+        "bars_upper": 7247,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-10T21:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-11T21:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6557,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-14T21:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 345,
+        "bars_upper": 6212,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-15T21:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5867,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-16T21:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5522,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-17T21:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 345,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-18T21:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4832,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-21T21:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4487,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-22T21:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 345,
+        "bars_upper": 4142,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-23T21:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3797,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3452,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-28T21:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 345,
+        "bars_upper": 3107,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-09-29T21:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2762,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2417,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-08T21:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 345,
+        "bars_upper": 2072,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-09T21:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-12T21:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 345,
+        "bars_upper": 1382,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 345,
+      "session_start": "2026-10-13T21:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 36,
+        "maximum_session_minutes": 225,
+        "bars_upper": 8102,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-21T09:00:00",
+      "session_end_exclusive": "2026-08-21T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 35,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7877,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-24T09:00:00",
+      "session_end_exclusive": "2026-08-24T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-25",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 34,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7652,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-25T09:00:00",
+      "session_end_exclusive": "2026-08-25T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-26",
+      "original_requirement_kind": "full_session",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 33,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7427,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-26T09:00:00",
+      "session_end_exclusive": "2026-08-26T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-27",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 32,
+        "maximum_session_minutes": 225,
+        "bars_upper": 7202,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-27T09:00:00",
+      "session_end_exclusive": "2026-08-27T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 31,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6977,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-28T09:00:00",
+      "session_end_exclusive": "2026-08-28T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-08-31",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 30,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6752,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-08-31T09:00:00",
+      "session_end_exclusive": "2026-08-31T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-01",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 29,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6527,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-01T09:00:00",
+      "session_end_exclusive": "2026-09-01T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-02",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 28,
+        "maximum_session_minutes": 225,
+        "bars_upper": 6302,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-02T09:00:00",
+      "session_end_exclusive": "2026-09-02T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-04",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 26,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5852,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-04T09:00:00",
+      "session_end_exclusive": "2026-09-04T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-07",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 25,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5627,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-07T09:00:00",
+      "session_end_exclusive": "2026-09-07T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 24,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5402,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-08T09:00:00",
+      "session_end_exclusive": "2026-09-08T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 23,
+        "maximum_session_minutes": 225,
+        "bars_upper": 5177,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-09T09:00:00",
+      "session_end_exclusive": "2026-09-09T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-10",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 22,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4952,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-10T09:00:00",
+      "session_end_exclusive": "2026-09-10T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-11",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 21,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4727,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-11T09:00:00",
+      "session_end_exclusive": "2026-09-11T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 20,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4502,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-14T09:00:00",
+      "session_end_exclusive": "2026-09-14T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-15",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 19,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4277,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-15T09:00:00",
+      "session_end_exclusive": "2026-09-15T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-16",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 18,
+        "maximum_session_minutes": 225,
+        "bars_upper": 4052,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-16T09:00:00",
+      "session_end_exclusive": "2026-09-16T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-17",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 17,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3827,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-17T09:00:00",
+      "session_end_exclusive": "2026-09-17T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-18",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 16,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3602,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-18T09:00:00",
+      "session_end_exclusive": "2026-09-18T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-21",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 15,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3377,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-21T09:00:00",
+      "session_end_exclusive": "2026-09-21T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-22",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 14,
+        "maximum_session_minutes": 225,
+        "bars_upper": 3152,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-22T09:00:00",
+      "session_end_exclusive": "2026-09-22T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-23",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 13,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2927,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-23T09:00:00",
+      "session_end_exclusive": "2026-09-23T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-24",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 12,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2702,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-24T09:00:00",
+      "session_end_exclusive": "2026-09-24T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-28",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 11,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2477,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-28T09:00:00",
+      "session_end_exclusive": "2026-09-28T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-29",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 10,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2252,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-29T09:00:00",
+      "session_end_exclusive": "2026-09-29T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-09-30",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 9,
+        "maximum_session_minutes": 225,
+        "bars_upper": 2027,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-09-30T09:00:00",
+      "session_end_exclusive": "2026-09-30T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-10-08",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 8,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1802,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-08T09:00:00",
+      "session_end_exclusive": "2026-10-08T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-10-09",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 7,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1577,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-09T09:00:00",
+      "session_end_exclusive": "2026-10-09T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-10-12",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 6,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1352,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-12T09:00:00",
+      "session_end_exclusive": "2026-10-12T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-10-13",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 5,
+        "maximum_session_minutes": 225,
+        "bars_upper": 1127,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-13T09:00:00",
+      "session_end_exclusive": "2026-10-13T15:00:00"
+    },
+    {
+      "vt_symbol": "si2611.GFEX",
+      "execution_trade_date": "2026-10-14",
+      "original_requirement_kind": "anchor",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "capacity_estimate": {
+        "planning_endpoint": "2026-10-19",
+        "session_count_upper": 4,
+        "maximum_session_minutes": 225,
+        "bars_upper": 902,
+        "estimated_within_latest10000": true
+      },
+      "expected_minutes": 225,
+      "session_start": "2026-10-14T09:00:00",
+      "session_end_exclusive": "2026-10-14T15:00:00"
+    }
+  ]
+}

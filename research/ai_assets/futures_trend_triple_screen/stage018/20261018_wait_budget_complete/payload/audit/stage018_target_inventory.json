@@ -1,0 +1,396 @@
+{
+  "original_batch_manifest_sha256": "a58a875df23d2dda6c797d94e7f46275f0b832377325ef7cf68423b7601a0219",
+  "raw_daily_price_references_excluded": true,
+  "targets": [
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-28T09:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-29T09:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-30T09:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-31T09:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-01T09:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "AP205.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "AP210.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "full_session",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP210.csv",
+      "mandatory_ap210": true,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/FG205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-25T21:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/FG205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-28T21:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/FG205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-29T21:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/FG205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-30T21:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "FG205.CZCE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/FG205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-31T21:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-25T21:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-28T21:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-29T21:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-30T21:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-31T21:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "MA205.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-25T21:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-28T21:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-29T21:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-30T21:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 345,
+      "session_start": "2022-03-31T21:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "SA205.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SA205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-28T09:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-29T09:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-30T09:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-03-31T09:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-01T09:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "SM205.CZCE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/SM205.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 555,
+      "session_start": "2022-03-25T21:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 555,
+      "session_start": "2022-03-28T21:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 555,
+      "session_start": "2022-03-29T21:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-03-31",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 555,
+      "session_start": "2022-03-30T21:00:00",
+      "session_end_exclusive": "2022-03-31T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-04-01",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 555,
+      "session_start": "2022-03-31T21:00:00",
+      "session_end_exclusive": "2022-04-01T15:00:00"
+    },
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-04-06",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/au2206.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 225,
+      "session_start": "2022-04-06T09:00:00",
+      "session_end_exclusive": "2022-04-06T15:00:00"
+    },
+    {
+      "vt_symbol": "cu2204.SHFE",
+      "execution_trade_date": "2022-03-28",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/cu2204.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 465,
+      "session_start": "2022-03-25T21:00:00",
+      "session_end_exclusive": "2022-03-28T15:00:00"
+    },
+    {
+      "vt_symbol": "cu2204.SHFE",
+      "execution_trade_date": "2022-03-29",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/cu2204.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 465,
+      "session_start": "2022-03-28T21:00:00",
+      "session_end_exclusive": "2022-03-29T15:00:00"
+    },
+    {
+      "vt_symbol": "cu2204.SHFE",
+      "execution_trade_date": "2022-03-30",
+      "original_requirement_kind": "anchor",
+      "daily_csv_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/cu2204.csv",
+      "mandatory_ap210": false,
+      "expected_minutes": 465,
+      "session_start": "2022-03-29T21:00:00",
+      "session_end_exclusive": "2022-03-30T15:00:00"
+    }
+  ]
+}

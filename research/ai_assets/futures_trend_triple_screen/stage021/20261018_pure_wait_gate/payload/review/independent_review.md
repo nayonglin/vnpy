@@ -1,0 +1,11 @@
+# Stage021 纯等待门限定代码复核
+
+P0/P1=0，qualified_research_wait_gate=true。冻结helper/protocol当前SHA与root声明相同，并绑定当前test源码SHA；未重跑既有4 tests。只补一个混合用途fake：同一合约CLOSE+OPEN合并为225分钟full请求，resolver一次，两个原context各一次，等待前无fake账户/订单副作用，原共享dict和继承方法退出恢复。
+
+源码核对：request hash与receipt/data SHA绑定；accepted scope精确对应symbol/date/kind及完整timestamps；未签/错scope/非法七值/旧值冲突均在原context前拒绝。common/full与anchor用途分离，CLOSE资格不能借给OPEN。新增分钟提交前检查所有symbol，old.normal_times复制旧frame，按symbol新concat；策略minute字典浅拷贝隔离全局别名，正常或异常退出finally恢复原local/inherited方法和原dict对象。
+
+真实827 cross_delayed_orders第365–380行在所有context返回后才进入fill队列；第403–429行订单状态、trade count、update_trade均在context后。847 entry_session在OPEN成交hook中读取相同strategy字典，因此完整OPEN资格先于盘中扫描/retry。Stage502第112–138行已安装当前日datetime/bars，然后才进入cross_delayed_orders，策略on_bars和daily_close更新在其后。所谓等待冻结是当前batch保持不变，不是撤销进入batch前的正常bar/time安装。
+
+限定：resolver必须遵守只处理JSON/外部文件且不推进engine的合同；state_snapshot守住time/order字段及bars对象身份，不是对恶意闭包任意账户修改的沙箱。delivery日线七字段/后继由外部独立资格背书，helper只核签发标志/身份/hash/合法数据/旧值。真实022接合、初始用途predicate与vendor吞异常后的完整fail-closed仍待各自验证。此receipt不授权金融运行、下载或生产。
+
+无过拟合：只包操作时序与数据资格，不改变alpha/价格/订单顺序。继续价值：是，避免缺数据重放前缀；金融仍4尝试/1完成，C0无alpha结论。

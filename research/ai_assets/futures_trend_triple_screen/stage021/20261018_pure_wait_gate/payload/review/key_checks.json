@@ -1,0 +1,39 @@
+{
+  "reviewed_at": "2026-10-18T01:30:59+08:00",
+  "status": "bounded_pure_gate_semantics_review_pass",
+  "helper_sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+  "protocol_sha256": "65f2310a8714404f35f859f1965c24d47c36fd1be5782f74283d5c40225feb7f",
+  "test_sha256": "224f734e691383a8b3ecf5c153f4f2d9dc3893b583b989cd330c02c53c885f48",
+  "reviewed_contracts": [
+    "exact request hash/schema/receipt pin and exact symbol/date/kind/timestamps",
+    "full common versus anchor-only qualification separated",
+    "unsigned/incomplete/changed source and old seven-value conflict refuse before original context",
+    "same batch contexts collected before fills/trades/strategy callbacks",
+    "per-engine shallow dictionary copy and fresh per-symbol frames; global alias not mutated",
+    "finally restores inherited/local class method and original strategy dictionary"
+  ],
+  "independent_fake_cases": 1,
+  "fake_case": "same contract CLOSE+OPEN coalesces to one225 full request, resolver once, original contexts once each",
+  "fake_passed": true,
+  "tests_rerun": false,
+  "account_engine_runs": 0,
+  "network_calls": 0,
+  "financial_replays": 0,
+  "limitations": [
+    "Resolver is trusted external synchronous code and receives JSON only; snapshot guards time/order identity/status and bars identities, not arbitrary adversarial account mutation.",
+    "Original daily batch datetime/bars have already been installed by Stage502 before this gate; they do not advance further during the wait.",
+    "Daily seven-field and successor qualification is delegated to separately pinned independent delivery; helper does not download or independently certify raw data.",
+    "Gate helper review does not certify the future022 runner, initial qualification predicates or vendor error handling integration."
+  ],
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0126_stage021_blocking_data_gate_protocol.md": "65f2310a8714404f35f859f1965c24d47c36fd1be5782f74283d5c40225feb7f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage021_blocking_data_gate.py": "224f734e691383a8b3ecf5c153f4f2d9dc3893b583b989cd330c02c53c885f48",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage002_local_minute_overlay.py": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272"
+  }
+}

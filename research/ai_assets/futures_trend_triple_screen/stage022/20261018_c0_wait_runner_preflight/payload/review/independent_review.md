@@ -1,0 +1,9 @@
+# Stage022 新runner限定独立风险门
+
+P0/P1=0，可运行代码风险门通过，实际023合法响应通路仍须另审；未运行金融、网络、tests、preflight或模型smoke。实际目录为outputs/stage022_qualified_wait。核关键数据/源码/上游receipt等33文件当前SHA；1590项stack指纹均被既有1950输入preflight覆盖，未穷尽重hash。源diff逐字节等当前001→022差异，原19个非main helper AST相同；params/settings相等及冻结数值栈smoke证据复用已存preflight，max_probability_error=0，生产身份门仍明确not_passed_for_production。
+
+数据层顺序base→002→011→015→020，最外016按旧值/source前置条件修正，021在真实827 context前包住同一engine；full剔除残余859，只给固定Stage010 anchor首键用途，缺物理键不凭016集合空授资格。动态request及fingerprint原子落盘，response按request hash固定receipt，交付前逐源hash和record，021随后核精确用途/范围/旧值并只追加。等待1800秒、整个执行7200秒BaseException预算；capture与原827吞异常后的失败门保留，失败不能写完整metrics。原001及旧attempt不覆盖。
+
+runner_used.py将于reserve之后、引擎执行之前保存真实022字节并核SHA，provenance绑定真实副本；本次尚无C0_attempt3或真实runner_used，取证分支仅静态审核，不能声称已完成账户取证。正常/异常context退出恢复loader、三个s901缓存、strategy原dict及local/inherited方法。保留1项root已接受P2：新增预先_ensure使_run_live_c9保存的_GLOBAL原引用已经是新stack，进程内旧_GLOBAL引用未完整复原；本合同是单次独立CLI退出，不影响本次经济或磁盘，不为此改冻结代码/重预检，不能声称全局状态全部恢复。
+
+本receipt只授予022代码与已签栈接合风险门，不授权金融/生产，不替023数据与独立响应资格代签，不将继承全局ready当价格全认证。金融仍4尝试/1完成，C0无alpha结论。无过拟合：原C0 alpha、参数与目标未变；继续价值：是，在固定路径中等待必要数据，但启动仍取决于root确认合法023响应通路。

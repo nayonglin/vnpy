@@ -1,0 +1,10 @@
+[
+  {
+    "phase": "freeze_data_stack",
+    "attempt": 1,
+    "error": "Stage011 summary has no all_inputs_unchanged; original source commitment uses its actual signed schema",
+    "manifest_created": false,
+    "financial_replays": 0,
+    "recorded_at": "2026-10-18T01:34:10.512878+08:00"
+  }
+]

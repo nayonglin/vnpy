@@ -1,0 +1,52 @@
+{
+  "providers": [
+    {
+      "provider_label": "stage018",
+      "review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage018_independent_review/review_receipt.json",
+      "review_sha256": "b7820471cc7d84963251182b8d10cf26e82cfc009a45e70ac9a7184ab39cd0cf",
+      "parent_exit_code": 0,
+      "parent_status": "worker_terminal",
+      "worker_status": "all_target_minutes_completed",
+      "review_accepted_sessions": 39,
+      "selected_sessions": 38,
+      "stage016_excluded_sessions": 1
+    },
+    {
+      "provider_label": "stage019",
+      "review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage019_independent_review/review_receipt.json",
+      "review_sha256": "0e2d6e29e546b0dcf9c9fb7bbb52f3cedb92f7d2ebb40086c1f8a3c8fd169d32",
+      "parent_exit_code": 0,
+      "parent_status": "worker_terminal",
+      "worker_status": "all_initial_snapshots_observed",
+      "review_accepted_sessions": 221,
+      "selected_sessions": 221,
+      "stage016_excluded_sessions": 0
+    }
+  ],
+  "existing_scoped_read": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_stage861_stage860_full_visual_atlas_v1.csv",
+      "sha256": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+      "scanned_rows": 1411116,
+      "retained_rows": 0
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/overlay.csv",
+      "sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+      "scanned_rows": 1078530,
+      "retained_rows": 0
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/overlay.csv",
+      "sha256": "c65ce34e2f02ebfa2af0b6cdfadc4c15ba377458ea61cd8d7ccf4457066908e9",
+      "scanned_rows": 4646214,
+      "retained_rows": 0
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage015_daily_recovered_minute_delta/overlay.csv",
+      "sha256": "5f756b03fd459905e8a4a75057f05be17f767b773a300097ade4b22a62ddc178",
+      "scanned_rows": 452401,
+      "retained_rows": 0
+    }
+  ]
+}
