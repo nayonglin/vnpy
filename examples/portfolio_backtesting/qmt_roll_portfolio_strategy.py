@@ -869,6 +869,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.pending_close_reasons: dict[str, list[dict[str, Any]]] = {}
         self.pending_entry_diagnostics: dict[tuple[str, str], list[int]] = {}
         self.settled_balance: float = self.base_capital
+        # Frozen positions inherited from the previous daily settlement.  Trades
+        # add only their trade-to-close leg; they must not alter this holding leg.
+        self.equity_start_positions: dict[str, int] = {}
+        self.equity_settlement_date: str = ""
         self.portfolio_equity_high_water: float = self.base_capital
         self.portfolio_drawdown_pct: float = 0.0
         self.last_close_prices: dict[str, float] = {}
@@ -1234,6 +1238,10 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self.write_log("Roll portfolio strategy stopped")
 
     def update_trade(self, trade: TradeData) -> None:
+        # Capture before the parent applies the fill, including the first fill
+        # of a newly seen contract and synthetic stop/retry fills.  The boundary
+        # is on_bars settlement, not trade.datetime (which may be a prior night).
+        self.equity_start_positions.setdefault(trade.vt_symbol, int(self.get_pos(trade.vt_symbol)))
         super().update_trade(trade)
         self.trade_costs_total += self._trade_cost(trade)
 
@@ -1250,9 +1258,19 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
 
         self.settled_balance += self._trade_to_close_pnl(trade)
 
+        # SameDayCloseBacktestingEngine fills after on_bars has settled this day.
+        # Those fills change the position inherited by the next day immediately.
+        # Prefer the explicit trading day, falling back to the engine batch date;
+        # a physical execution timestamp can belong to the preceding night.
+        accounting_date = getattr(trade, "trading_date", None)
+        if accounting_date is None:
+            accounting_date = getattr(self.strategy_engine, "datetime", None)
+        if accounting_date is not None and pd.Timestamp(accounting_date).strftime("%Y-%m-%d") == self.equity_settlement_date:
+            self.equity_start_positions[trade.vt_symbol] = int(self.get_pos(trade.vt_symbol))
+
         engine_bars: dict[str, BarData] = getattr(self.strategy_engine, "bars", {})
         if engine_bars:
-            self.estimated_equity = self.settled_balance
+            self.estimated_equity = self._estimate_equity(engine_bars)
             self.total_margin_in_use = self._estimate_margin_usage(engine_bars)
 
     def rebalance_portfolio(self, bars: dict[str, BarData]) -> None:
@@ -1791,7 +1809,11 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
         self._record_portfolio_volatility_budget_daily_return()
         self._record_portfolio_overheat_cooldown_daily_equity()
         self.settled_balance = self.estimated_equity
-        self.last_close_prices = {vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()}
+        self.equity_start_positions = {vt_symbol: int(pos) for vt_symbol, pos in self.pos_data.items()}
+        self.equity_settlement_date = current_date
+        # A contract can be absent from this batch and resume later; retain its
+        # last settled mark so its next holding PNL spans the entire gap.
+        self.last_close_prices.update({vt_symbol: float(bar.close_price) for vt_symbol, bar in bars.items()})
         self.active_count = self._count_active_positions()
         self.put_event()
 
@@ -3389,7 +3411,7 @@ class QmtRollPortfolioStrategy(StrategyTemplate):
     def _estimate_equity(self, bars: dict[str, BarData]) -> float:
         equity: float = self.settled_balance
         for vt_symbol, bar in bars.items():
-            start_pos: int = int(self.get_pos(vt_symbol))
+            start_pos: int = self.equity_start_positions.get(vt_symbol, int(self.get_pos(vt_symbol)))
             if not start_pos:
                 continue
             pre_close: float = float(self.last_close_prices.get(vt_symbol, float(bar.close_price)))

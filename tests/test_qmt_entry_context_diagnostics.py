@@ -78,15 +78,14 @@ class QmtEntryContextDiagnosticsTest(unittest.TestCase):
     def test_stage847_synthetic_trade_datetime_uses_event_time(self) -> None:
         source = STAGE847_PATH.read_text(encoding="utf-8")
         block = _method_block(source, "_fill_synthetic_intraday_close")
-        helper_block = _function_block(source, "_stage847_synthetic_trade_datetime")
-
-        self.assertIn("trade_datetime = _stage847_synthetic_trade_datetime", block)
-        self.assertIn("datetime=trade_datetime", block)
-        self.assertIn("_naive_date(trade_datetime)", block)
-        self.assertNotIn("datetime=self.datetime", block)
-        self.assertNotIn("_naive_date(self.datetime)", block)
-        self.assertIn("fallback_timezone", helper_block)
-        self.assertIn("tz_localize(fallback_timezone)", helper_block)
+        # C9 and C2 now share one chronological emitter; executable regression
+        # tests cover physical event time and trading-day accounting separately.
+        self.assertIn("s827.Stage827IntradayC2Engine._fill_synthetic_intraday_close", block)
+        shared = (STAGE847_PATH.parent / "analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py").read_text()
+        shared_block = _method_block(shared, "_fill_synthetic_intraday_close")
+        self.assertIn('self._stage827_physical_datetime(item["time"])', shared_block)
+        self.assertIn("trade.trading_date", shared_block)
+        self.assertNotIn("datetime=self.datetime", shared_block)
 
     def test_stage847_profile_pins_legacy_base_profile(self) -> None:
         source = STAGE847_PATH.read_text(encoding="utf-8")

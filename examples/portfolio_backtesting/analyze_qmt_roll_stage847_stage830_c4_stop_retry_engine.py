@@ -170,11 +170,7 @@ class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyS
         if state.direction != position_direction:
             return None
 
-        trade_date = s827._normalize_date(trade.datetime)
-        bars = self.stage827_minute_by_symbol.get(str(trade.vt_symbol), pd.DataFrame())
-        if bars.empty:
-            return None
-        entry_day = bars[bars["bar_date"].eq(trade_date)].copy().reset_index(drop=True)
+        entry_day = s827.execution.entry_session(self, trade)
         if entry_day.empty:
             return None
 
@@ -194,59 +190,60 @@ class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyS
 
         risk_price = max(risk_prices) if risk_prices else 0.0
         min_risk = max(float(self.get_pricetick(trade.vt_symbol)), 1e-9)
+        fill_tick = s827.execution.effective_pricetick(trade.vt_symbol, getattr(trade, "trading_date", trade.datetime), min_risk)
         if not np.isfinite(risk_price) or risk_price < min_risk:
             return None
 
         sign = s827._direction_sign(position_direction)
         stop_price = entry_price - sign * float(self.stage847_stop_retry_r) * risk_price
         progress_price = entry_price + sign * float(self.stage847_stop_retry_r) * risk_price
-        first_stop_idx = -1
-        first_stop_time = ""
-        first_note = ""
-        for idx, item in enumerate(entry_day.itertuples(index=False)):
-            if position_direction == "long":
-                adverse_hit = float(item.low) <= stop_price
-                progress_hit = float(item.high) >= progress_price
-            else:
-                adverse_hit = float(item.high) >= stop_price
-                progress_hit = float(item.low) <= progress_price
-            if adverse_hit:
-                first_stop_idx = idx
-                first_stop_time = pd.Timestamp(item.bar_datetime).isoformat()
-                first_note = "same_bar_conservative_05r_stop_first" if progress_hit else "0.5R adverse before 0.5R progress"
-                break
-            if progress_hit:
-                return None
+        first_stop_idx, first_note = s827.execution.first_stop(
+            entry_day, stop_price, progress_price, long=position_direction == "long"
+        )
         if first_stop_idx < 0:
             return None
-
+        first_bar = entry_day.iloc[first_stop_idx]
+        first_stop_time = pd.Timestamp(first_bar["bar_datetime"]).isoformat()
+        first_fill, first_fill_note = s827.execution.stop_fill(
+            first_bar, stop_price, fill_tick, buy=position_direction == "short"
+        )
         reentry_idx = -1
         reentry_time = ""
+        reentry_fill = entry_price
+        reentry_note = ""
         max_retries = max(0, int(self.stage847_max_retries))
+        # A retry order is armed after the first stop bar.  There is no evidence
+        # that a same-bar reclaim occurred after that initial stop.
         if max_retries > 0:
             for idx in range(first_stop_idx + 1, len(entry_day)):
                 item = entry_day.iloc[idx]
-                if position_direction == "long":
-                    reclaimed = float(item["high"]) >= entry_price
-                else:
-                    reclaimed = float(item["low"]) <= entry_price
+                reclaimed = float(item["high"]) >= entry_price if position_direction == "long" else float(item["low"]) <= entry_price
                 if reclaimed:
                     reentry_idx = idx
                     reentry_time = pd.Timestamp(item["bar_datetime"]).isoformat()
+                    reentry_fill, reentry_note = s827.execution.stop_fill(
+                        item, entry_price, fill_tick, buy=position_direction == "long"
+                    )
                     break
-
         retry_failed_idx = -1
         retry_failed_time = ""
+        retry_fill = stop_price
+        retry_note = ""
         if reentry_idx >= 0:
-            for idx in range(reentry_idx + 1, len(entry_day)):
+            # After an intrabar reclaim, assume the adverse extreme can follow.
+            # Its pre-reclaim open cannot be used as the subsequent stop fill.
+            for idx in range(reentry_idx, len(entry_day)):
                 item = entry_day.iloc[idx]
-                if position_direction == "long":
-                    retry_stop_hit = float(item["low"]) <= stop_price
-                else:
-                    retry_stop_hit = float(item["high"]) >= stop_price
-                if retry_stop_hit:
+                hit = float(item["low"]) <= stop_price if position_direction == "long" else float(item["high"]) >= stop_price
+                if hit:
                     retry_failed_idx = idx
                     retry_failed_time = pd.Timestamp(item["bar_datetime"]).isoformat()
+                    retry_fill, retry_note = s827.execution.stop_fill(
+                        item, stop_price, fill_tick, buy=position_direction == "short",
+                        use_open=idx != reentry_idx,
+                    )
+                    if idx == reentry_idx:
+                        retry_note = "same_bar_reclaim_then_conservative_stop_" + retry_note
                     break
 
         contract_vt_symbol = state.contract_vt_symbol
@@ -259,21 +256,25 @@ class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyS
             {
                 "action": "close",
                 "source": "stage847_intraday_05r_initial_stop",
-                "price": stop_price,
+                "price": first_fill,
+                "trigger_price": stop_price,
+                "execution_note": first_fill_note,
                 "volume": close_volume,
                 "time": first_stop_time,
             }
         ]
         final_state = "flat_no_reentry"
         exit_reason = "stage847_intraday_05r_stop_no_reentry"
-        final_exit_price = stop_price
+        final_exit_price = first_fill
 
         if reentry_idx >= 0:
             synthetic_trades.append(
                 {
                     "action": "open",
                     "source": "stage847_intraday_reentry_at_original_entry",
-                    "price": entry_price,
+                    "price": reentry_fill,
+                    "trigger_price": entry_price,
+                    "execution_note": reentry_note,
                     "volume": close_volume,
                     "time": reentry_time,
                 }
@@ -286,41 +287,27 @@ class QmtRollPortfolioStrategyStage847C9StopRetry(s830.QmtRollPortfolioStrategyS
                     {
                         "action": "close",
                         "source": "stage847_intraday_retry_failed_05r_stop",
-                        "price": stop_price,
+                        "price": retry_fill,
+                        "trigger_price": stop_price,
+                        "execution_note": retry_note,
                         "volume": close_volume,
                         "time": retry_failed_time,
                     }
                 )
                 final_state = "flat_retry_failed"
                 exit_reason = "stage847_intraday_retry_failed_05r_stop"
-                final_exit_price = stop_price
-
-        event_bar = getattr(self.strategy_engine, "bars", {}).get(contract_vt_symbol)
-        if final_state != "open_after_reentry":
-            if len(candidate_indexes) == len(state.layers):
-                self._close_all_layers_and_set_flat_target(
-                    state,
-                    stop_price,
-                    execution_price_override=stop_price,
-                    exit_reason=exit_reason,
-                )
-            else:
-                self._record_trade_event(
-                    bar=event_bar,
-                    contract_vt_symbol=contract_vt_symbol,
-                    product_vt_symbol=product_vt_symbol,
-                    position_direction=position_direction,
-                    offset="Close",
-                    reason=exit_reason,
-                    volume=close_volume,
-                    price=stop_price,
-                )
-                self._close_layers(state, candidate_indexes, stop_price, exit_reason=exit_reason)
-                self._apply_state_target(state, execution_price_override=stop_price)
+                final_exit_price = retry_fill
 
         self.stage847_stop_retry_event_count += 1
         event = {
-            "datetime": trade.datetime,
+            "datetime": s827._normalize_date(getattr(trade, "trading_date", trade.datetime)),
+            "trading_date": str(getattr(trade, "trading_date", s827._normalize_date(trade.datetime).date())),
+            "execution_datetime": getattr(trade, "execution_datetime", trade.datetime),
+            "candidate_indexes": candidate_indexes,
+            "candidate_layer_ids": [self._stage827_layer_identity(state.layers[index]) for index in candidate_indexes],
+            "effective_tick": fill_tick,
+            "tick_basis": s827.execution.pricetick_basis(trade.vt_symbol),
+            "execution_policy": s827.execution.EXECUTION_POLICY,
             "trade_id": trade.vt_tradeid,
             "vt_symbol": trade.vt_symbol,
             "product_vt_symbol": product_vt_symbol,
@@ -372,62 +359,8 @@ def _stage847_synthetic_trade_datetime(item: dict[str, Any], fallback: datetime)
 
 class Stage847StopRetryEngine(s840.Stage840IntradayEngine):
     def _fill_synthetic_intraday_close(self, order: Any, open_trade: s827.TradeData, exit_event: dict[str, Any]) -> None:
-        sequence = exit_event.get("synthetic_trades")
-        if not isinstance(sequence, list) or not sequence:
-            super()._fill_synthetic_intraday_close(order, open_trade, exit_event)
-            return
-
-        for index, item in enumerate(sequence, start=1):
-            action = str(item.get("action") or "")
-            price = float(item.get("price") or 0.0)
-            volume = int(item.get("volume") or 0)
-            source = str(item.get("source") or "stage847_intraday_stop_retry")
-            if price <= 0 or volume <= 0:
-                continue
-            if action == "close":
-                direction = s827.Direction.SHORT if open_trade.direction == s827.Direction.LONG else s827.Direction.LONG
-                offset = s827.Offset.CLOSE
-            elif action == "open":
-                direction = open_trade.direction
-                offset = s827.Offset.OPEN
-            else:
-                continue
-            trade_datetime = _stage847_synthetic_trade_datetime(item, self.datetime)
-            self.trade_count += 1
-            trade = s827.TradeData(
-                symbol=order.symbol,
-                exchange=order.exchange,
-                orderid=f"{order.orderid}.stage847_c9.{index}",
-                tradeid=str(self.trade_count),
-                direction=direction,
-                offset=offset,
-                price=price,
-                volume=volume,
-                datetime=trade_datetime,
-                gateway_name=self.gateway_name,
-            )
-            self.strategy.update_trade(trade)
-            self.trades[trade.vt_tradeid] = trade
-            self.source_counter[source] += 1
-            self.trade_usage_rows.append(
-                {
-                    "trade_id": trade.vt_tradeid,
-                    "orderid": str(trade.orderid),
-                    "signal_date": s827.s778.s653.s517.s506.s501._naive_date(order.datetime),
-                    "fill_date": s827.s778.s653.s517.s506.s501._naive_date(trade_datetime),
-                    "vt_symbol": str(order.vt_symbol),
-                    "direction": s827.s778.s653.s517.s506.s501._direction_text(direction),
-                    "offset": "Open" if offset == s827.Offset.OPEN else "Close",
-                    "order_price": price,
-                    "trade_price": price,
-                    "price_delta": 0.0,
-                    "order_volume": float(volume),
-                    "price_source": source,
-                    "proxy_bar_count": np.nan,
-                    "proxy_first_time": item.get("time", ""),
-                    "proxy_last_time": item.get("time", ""),
-                }
-            )
+        # Bypass Stage840's legacy 00:00/threshold emitter for C2 fallback too.
+        s827.Stage827IntradayC2Engine._fill_synthetic_intraday_close(self, order, open_trade, exit_event)
 
 
 def _c9_profile(metadata: dict[str, Any]) -> dict[str, Any]:
