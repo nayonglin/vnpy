@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-10-18T04:53:28.221174+08:00",
+  "provider_connections_max": 1,
+  "soft_seconds": 570,
+  "hard_seconds": 600,
+  "memory_budget_bytes": 1500000000,
+  "TqBacktest_instances": 0,
+  "financial_replays": 0,
+  "automatic_retry": false
+}

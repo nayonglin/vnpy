@@ -1,0 +1,40 @@
+{
+  "request_sha256": "76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "rb2205.SHFE",
+      "execution_trade_date": "2022-01-20",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 345,
+      "actual_rows": 345,
+      "missing_minutes": 0,
+      "new_minutes": 345,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 4718.0,
+        "high": 4742.0,
+        "low": 4675.0,
+        "close": 4713.0,
+        "volume": 1170056.0,
+        "open_oi": 1932904.0,
+        "close_oi": 1908425.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 345,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

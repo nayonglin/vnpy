@@ -1,0 +1,45 @@
+{
+  "schema": "stage042_independent_exact_daily_v1",
+  "reviewed_at": "2026-10-18T04:04:27.359458+08:00",
+  "independent_review": true,
+  "reviewer": "ordered_execution_review_exact_daily",
+  "qualified_research_daily": true,
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "request_sha256": "2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b",
+  "accepted_target_keys": [
+    [
+      "au2006.SHFE",
+      "2020-01-08"
+    ]
+  ],
+  "qualified_rows": 1,
+  "target_rows": 1,
+  "qualified_daily_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/qualified_daily.csv",
+  "target_qualification_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/target_qualification.csv",
+  "daily_checks_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/daily_checks.json",
+  "six_fields_checked": true,
+  "actual_raw_forward_successor_checked": true,
+  "database_closeOI": "N/A_not_independently_available",
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/request.json": "6ea9aaacb616e7da841ea93c020eaecab593dc8cc6160b0f16d44d5d64714fd7",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/request_fingerprint.json": "7eb253ef3a118af98aea97db188cfafc040591ca8abfc4d916c4eb290338195c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_independent_review/review_receipt.json": "194e48847c9e0927772c482cd5bacc3529a625ac76aeec2a157089924177c795",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/parent_receipt.json": "e57f74deabd5b5ab48071fbd7a1a1d7d0a810425a0ed706c933076e4cb5878fc",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/preflight.json": "f5e463b5e1380c8e50aa40ac4bf51a298625e2a913f96429e11d9f0ac867d6c3",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/symbol_receipts.json": "25d427a79c9c714ed4d19bbcbaa73f2d708f28d6c4f2e4010c8ddce742b791ae",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/raw/SHFE/au2006.csv": "2f300473dc8f521fe59e3c678ecb0973de14e5c1fb7b2b9217e8ac1169db8d7f",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/qualified_daily.csv": "f2e7fcc8127cc45f113b4021fe8d18002a7d97f90504847d692df302a94a75b7",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/target_qualification.csv": "4243c3bffa16698766374f6fa5849d48eebf639184a17b4660ad3052e6f13a28",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/review_exact_daily.py": "69225d3e8114e455b04eade5ca443bc2880a7f7341e145d3f6f04849624e5ad3",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/request_2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b/daily_checks.json": "2fd94cf10050e5177fd9aae5963cf938b0e5c73c90fa62187ca448f0668a832d"
+  },
+  "network_connections_in_review": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "response_written": false,
+  "production_qualified": false
+}

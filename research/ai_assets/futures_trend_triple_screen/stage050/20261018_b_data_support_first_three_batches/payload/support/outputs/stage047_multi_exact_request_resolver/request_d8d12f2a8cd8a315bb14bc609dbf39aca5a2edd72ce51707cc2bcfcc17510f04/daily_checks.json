@@ -1,0 +1,63 @@
+{
+  "targets": [
+    {
+      "vt_symbol": "hc2005.SHFE",
+      "trade_date": "2020-03-04",
+      "daily": {
+        "open": 3455.0,
+        "high": 3495.0,
+        "low": 3443.0,
+        "close": 3491.0,
+        "volume": 137448.0,
+        "open_oi": 248098.0,
+        "close_oi": 253619.0
+      },
+      "exact_DB_six": {
+        "open": 3455.0,
+        "high": 3495.0,
+        "low": 3443.0,
+        "close": 3491.0,
+        "volume": 137448.0,
+        "open_oi": 248098.0
+      },
+      "six_fields_checked": true,
+      "six_fields_max_abs_difference": {
+        "open": 0.0,
+        "high": 0.0,
+        "low": 0.0,
+        "close": 0.0,
+        "volume": 0.0,
+        "open_oi": 0.0
+      },
+      "DB_open_interest_maps_to": "provider.open_oi",
+      "database_closeOI": "N/A_not_independently_available",
+      "actual_raw_forward_successor_checked": true,
+      "source_csv_row": 9953,
+      "successor_csv_row": 9954,
+      "source_bar_id": 195,
+      "source_datetime_ns": 1583251200000000000,
+      "successor_id": 196,
+      "successor_datetime_ns": 1583337600000000000,
+      "source_local_time": "2020-03-04T00:00:00+08:00",
+      "successor_local_time": "2020-03-05T00:00:00+08:00",
+      "successor_values": {
+        "open": 3491.0,
+        "high": 3518.0,
+        "low": 3476.0,
+        "close": 3483.0,
+        "volume": 136386.0,
+        "open_oi": 253619.0,
+        "close_oi": 259941.0
+      },
+      "raw_snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/raw/SHFE/hc2005.csv",
+      "raw_snapshot_sha256": "b25ed7e8bd26676a9d61a6ba80b85765f8dec8e22af8b5fdfda0ac9194bc71f4",
+      "raw_non_target_daily_rows_qualified": false,
+      "full_DB_rehashed_by_reviewer": false,
+      "exact_DB_queries": 1,
+      "inherited_DB_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "provider_original_exit_code": 1,
+      "provider_original_rejections_preserved": true,
+      "request_sha256": "d8d12f2a8cd8a315bb14bc609dbf39aca5a2edd72ce51707cc2bcfcc17510f04"
+    }
+  ]
+}

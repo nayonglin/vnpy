@@ -1,0 +1,63 @@
+{
+  "targets": [
+    {
+      "vt_symbol": "SM005.CZCE",
+      "trade_date": "2020-02-13",
+      "daily": {
+        "open": 6470.0,
+        "high": 6470.0,
+        "low": 6356.0,
+        "close": 6372.0,
+        "volume": 60625.0,
+        "open_oi": 59352.0,
+        "close_oi": 56920.0
+      },
+      "exact_DB_six": {
+        "open": 6470.0,
+        "high": 6470.0,
+        "low": 6356.0,
+        "close": 6372.0,
+        "volume": 60625.0,
+        "open_oi": 59352.0
+      },
+      "six_fields_checked": true,
+      "six_fields_max_abs_difference": {
+        "open": 0.0,
+        "high": 0.0,
+        "low": 0.0,
+        "close": 0.0,
+        "volume": 0.0,
+        "open_oi": 0.0
+      },
+      "DB_open_interest_maps_to": "provider.open_oi",
+      "database_closeOI": "N/A_not_independently_available",
+      "actual_raw_forward_successor_checked": true,
+      "source_csv_row": 9937,
+      "successor_csv_row": 9938,
+      "source_bar_id": 179,
+      "source_datetime_ns": 1581523200000000000,
+      "successor_id": 180,
+      "successor_datetime_ns": 1581609600000000000,
+      "source_local_time": "2020-02-13T00:00:00+08:00",
+      "successor_local_time": "2020-02-14T00:00:00+08:00",
+      "successor_values": {
+        "open": 6362.0,
+        "high": 6366.0,
+        "low": 6282.0,
+        "close": 6288.0,
+        "volume": 60771.0,
+        "open_oi": 56920.0,
+        "close_oi": 56133.0
+      },
+      "raw_snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/raw/CZCE/SM005.csv",
+      "raw_snapshot_sha256": "c4cc24d64e3eee78f2af690c375c46682a4b9dee2f067110978ec4efbd6014dd",
+      "raw_non_target_daily_rows_qualified": false,
+      "full_DB_rehashed_by_reviewer": false,
+      "exact_DB_queries": 1,
+      "inherited_DB_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "provider_original_exit_code": 0,
+      "provider_original_rejections_preserved": true,
+      "request_sha256": "780137a3bf60e532d47aa1c7f895681fcc4969ba33009d685ab3bb97b520cf79"
+    }
+  ]
+}

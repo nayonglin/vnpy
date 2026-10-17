@@ -1,0 +1,172 @@
+{
+  "schema": "stage058_pairwise_training_asof_independent_evidence_v1",
+  "reviewed_at": "2026-10-18T05:32:23.722927+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "delivery_guard_readonly",
+  "scope": "independent bounded corroboration of Stage057; no B intermediate PnL",
+  "physical_model_attributes": {
+    "method": "One independent SHA-verified trusted entity joblib.load; fitted attributes only, frozen numerical stack; no fit/predict",
+    "joblib_loads": 1,
+    "versions": {
+      "pandas": "2.3.3",
+      "numpy": "2.4.4",
+      "sklearn": "1.8.0",
+      "joblib": "1.5.3"
+    },
+    "pipeline": [
+      "StandardScaler",
+      "LogisticRegression"
+    ],
+    "scaler_n_samples_seen": 50,
+    "feature_count": 19,
+    "feature_names_equal": true,
+    "current_csv_train_rows": 50,
+    "current_csv_train_days": 25,
+    "current_csv_candidate_min": "2020-09-17",
+    "current_csv_candidate_max": "2022-12-08",
+    "distinct_candidates": 61,
+    "entity_scaler_mean_vs_current_csv_max_abs": 0.0,
+    "entity_scaler_scale_vs_current_csv_max_abs": 0.0,
+    "entity_scaler_mean_vs_sidecar_max_abs": 0.0,
+    "entity_scaler_scale_vs_sidecar_max_abs": 0.0,
+    "entity_classifier_coef_vs_sidecar_max_abs": 0.0,
+    "timestamp_named_attributes_found_in_pipeline_scaler_classifier": [],
+    "basis": "Independent tool execution in this review; source and entity hashes bound below."
+  },
+  "label_samples": [
+    {
+      "sample_id": "candidate_422",
+      "contract": "MA301.CZCE",
+      "candidate_date": "2022-12-08",
+      "actual_forward_bars": 20,
+      "label_end": "2023-01-06",
+      "recorded_r": -9.714285714285714,
+      "recomputed_r": -9.714285714285714,
+      "match": true,
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA301.csv"
+    },
+    {
+      "sample_id": "candidate_423",
+      "contract": "lh2301.DCE",
+      "candidate_date": "2022-12-08",
+      "actual_forward_bars": 20,
+      "label_end": "2023-01-06",
+      "recorded_r": 15.474947807933164,
+      "recomputed_r": 15.474947807933164,
+      "match": true,
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/DCE/lh2301.csv"
+    },
+    {
+      "sample_id": "candidate_286",
+      "contract": "cu2202.SHFE",
+      "candidate_date": "2022-01-13",
+      "actual_forward_bars": 18,
+      "label_end": "2022-02-15",
+      "recorded_r": -0.3569428891377372,
+      "recomputed_r": -0.35694288913773725,
+      "match": true,
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/cu2202.csv"
+    }
+  ],
+  "label_end_max_scope": "Maximum 2023-01-06 inherited from full 61-candidate Stage057 table; independently recomputed its two attaining contracts and one truncation example, not all daily CSVs.",
+  "training_time_logic": {
+    "strongly_supported": "Physical fit statistics match the current 50-row pre-2023 cohort, including later-than-2020 samples.",
+    "not_proven": [
+      "Unique original training dataset",
+      "Actual fit timestamp or historical publication availability",
+      "No validation/test/research selection influence",
+      "Historical first score or magnitude/direction of financial bias"
+    ],
+    "earliest_label_availability_if_this_exact_cohort_used": "No earlier than 2023-01-06 completed close plus actual data publication availability; this is not a verified trained_at."
+  },
+  "runtime": {
+    "fixed_model_loaded_once_at_strategy_initialization": true,
+    "feature_history_truncated_to_candidate": true,
+    "dated_model_registry_or_trained_before_candidate_gate_found": false,
+    "B_reuses_original_planner_pairwise_ranking": true,
+    "actual_A_settings_pairwise_enabled": true,
+    "long_tilt_strength": 0.15,
+    "first_effect_date_reconstructed": false,
+    "rank_can_change_admission_and_volume_tilt": true
+  },
+  "monthly_pool": {
+    "inherited_preflight_status": "valid",
+    "inherited_validated_snapshots": 58,
+    "first_oos_eval_date": "2022-01-28",
+    "pairwise_is_separate_chain": true,
+    "m0008_generator": "examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
+    "m0008_training_label_cutoff": "2026-07-07",
+    "pairwise_entity_or_sidecar_named_in_manifest": false,
+    "full_monthly_qualification_repeated": false
+  },
+  "shared_AB": {
+    "common_model_controls_model_choice": true,
+    "lookahead_bias_cancellation_guaranteed": false,
+    "reason": "Different signal/candidate sets and cross-sectional features create different pair rankings/admission/tilt, followed by nonlinear budget and account paths; common model bytes do not make its historical information bias an additive common constant."
+  },
+  "findings": [
+    {
+      "severity": "P1",
+      "title": "固定模型没有历史逐日训练可用性门，不能授予全历史PIT/OOS资格",
+      "qualification_effect": "早于匹配队列标签成熟的历史段不能称严格样本外；本次没有重建首次实际评分/影响日期，不量化受影响收益。",
+      "new_bug": false,
+      "corroborates_stage057": true
+    },
+    {
+      "severity": "P1",
+      "title": "实体资产缺不可变训练运行与label-asof证明",
+      "qualification_effect": "拟合属性与现存队列相符不能推出真实trained_at、唯一原始队列或训练截止；2023及以后不自动PIT。",
+      "new_bug": false,
+      "corroborates_stage057": true
+    },
+    {
+      "severity": "P2",
+      "title": "历史影响与统计有效样本必须限缩解释",
+      "qualification_effect": "未重建首个评分及账户影响；50相关pair仅覆盖25日期/61candidate，不能视作50独立时间样本；不能将后期训练措辞读作已确定真实fit日期。",
+      "new_bug": false,
+      "documentation_limit": true
+    }
+  ],
+  "p0_findings": 0,
+  "p1_findings": 2,
+  "p2_findings": 1,
+  "pit_qualified": false,
+  "model_asof_qualified": false,
+  "current_B_action": "Continue original single frozen counterfactual unchanged; no interruption/restart/model/source/score change.",
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage057_pairwise_training_asof_audit/evidence.json": "59e40b822dec471078a5cdcc3b5037b45ed10436f18ff287fc5180163ee1a8eb",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0524_stage057_pairwise_training_asof_evidence.md": "d5eb8be36831670587db4644ea63331b3ff7f2114f170dee33b768df00dfbb89",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v2_risk_weighted.joblib": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v2_risk_weighted.json": "c399a5787577c1cb55276766ed28b0cad8385c063de5b492076dfa8e0619ee86",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_samples_v2.csv": "bdff621b0b97c000e22063fd88a3114c7b328534004d9e58970675a647ba2113",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_training_samples.csv": "e3cc5212e7b19d8bad125baa4f197114a02f3d6434bd5eca058e9bf24c0eb7b9",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/train_qmt_roll_ai_candidate_selection_pairwise_classifier_v2.py": "fcb6fa76ecd32bb3cf38555dde48152c76fb0f7183499da61b2c64898d03594c",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage036_run_b_ts_checkpoint.py": "34563257e25e49b19c9631e06cd9107fc26cfd954713739e01a1bf67d574ff43",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/preflight_used.json": "d3420beab98f4fd90ef07e0cf34c11a92b5b54eb60f1cd27fc96d007cc5289f3",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/A_final3/actual_strategy_settings.json": "4c6d0ec6c6e36279dc3082fdfa1f8604a1a2a018557b8c1c0fcf45389ff6ed5a",
+    "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/manifest.json": "7a4849de61799db97b476ed8549e337e9db36dd50fab65d251dd101dc8e6fbde",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/MA301.csv": "de00a532d15edb9502234edfbbf3e0073691b20443e0248ef9be4172e02ad0e3",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/DCE/lh2301.csv": "835c966282f7beb6f1eb6fde50e7249d4a009cb92d36bbb70fe79e32e942d6a2",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/cu2202.csv": "04e130dddd73f08683789aed72593395492f2c95fc228eaff7f52940a32955fb"
+  },
+  "full_stage057_69_file_hash_repeated": false,
+  "network_connections": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "predictions": 0,
+  "B_intermediate_PnL_read": false,
+  "model_or_config_or_consumed_source_modified": false,
+  "production_qualified": false,
+  "historical_simulation_distinction": {
+    "actual_historical_deployment": "Requires evidence that the exact version was actually available at historical u.",
+    "PIT_simulation": "May be fitted today from only historically available observations and matured labels under a reproducible frozen as-of training/selection policy. Wall-clock fit time after historical u alone does not invalidate such a simulation.",
+    "current_asset": "Neither complete deployment provenance nor complete as-of simulation provenance is demonstrated."
+  }
+}

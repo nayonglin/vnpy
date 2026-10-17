@@ -1,0 +1,32 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 91,
+  "execution_trade_date": "2020-09-10",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.124",
+      "vt_symbol": "MA101.CZCE",
+      "requirement_kind": "anchor"
+    },
+    {
+      "order_id": "BACKTESTING.125",
+      "vt_symbol": "SA101.CZCE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "SA101.CZCE",
+      "execution_trade_date": "2020-09-10",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2020-09-09T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2020-09-09T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "0f16334657a37e64d90bb737bbbfdb41a518013b188f0876dcb8fc3113699349"
+}

@@ -1,0 +1,42 @@
+{
+  "request_sha256": "8e6ddf68f652e3a9394b179dd1456326b3bb356fdc251387cd8a0fa314b7821f",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "CF101.CZCE",
+      "execution_trade_date": "2020-11-20",
+      "requirement_kind": "anchor",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "anchor_only_not_full_session",
+      "status": "accepted",
+      "reason": "real_completed_anchor_open_matched_not_daily_price_fallback",
+      "expected_minutes": 1,
+      "actual_rows": 1,
+      "daily_mismatch_fields": [],
+      "daily_openOI_check": "checked"
+    },
+    {
+      "vt_symbol": "SA101.CZCE",
+      "execution_trade_date": "2020-11-20",
+      "requirement_kind": "anchor",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "anchor_only_not_full_session",
+      "status": "accepted",
+      "reason": "real_completed_anchor_open_matched_not_daily_price_fallback",
+      "expected_minutes": 1,
+      "actual_rows": 1,
+      "daily_mismatch_fields": [],
+      "daily_openOI_check": "checked"
+    }
+  ],
+  "raw_rows": 2,
+  "accepted_requirements": 2,
+  "independent_review_signed": false,
+  "response_written": false
+}

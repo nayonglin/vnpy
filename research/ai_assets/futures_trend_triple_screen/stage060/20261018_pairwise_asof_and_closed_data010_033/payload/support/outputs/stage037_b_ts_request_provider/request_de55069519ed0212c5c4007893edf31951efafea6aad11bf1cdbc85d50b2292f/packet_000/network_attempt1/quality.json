@@ -1,0 +1,40 @@
+{
+  "request_sha256": "de55069519ed0212c5c4007893edf31951efafea6aad11bf1cdbc85d50b2292f",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "AP110.CZCE",
+      "execution_trade_date": "2021-04-02",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 225,
+      "actual_rows": 225,
+      "missing_minutes": 0,
+      "new_minutes": 225,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 5834.0,
+        "high": 5863.0,
+        "low": 5734.0,
+        "close": 5813.0,
+        "volume": 453425.0,
+        "open_oi": 313674.0,
+        "close_oi": 332628.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 225,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

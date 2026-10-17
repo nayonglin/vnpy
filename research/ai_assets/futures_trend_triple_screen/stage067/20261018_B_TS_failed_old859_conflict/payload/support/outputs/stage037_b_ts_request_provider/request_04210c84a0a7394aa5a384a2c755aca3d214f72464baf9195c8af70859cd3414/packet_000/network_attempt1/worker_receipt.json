@@ -1,0 +1,26 @@
+{
+  "status": "all_target_minutes_completed",
+  "provider_attempts": 1,
+  "local_TqSim_created": true,
+  "request_sha256": "04210c84a0a7394aa5a384a2c755aca3d214f72464baf9195c8af70859cd3414",
+  "completed_minutes": 225,
+  "target_minutes": 225,
+  "diagnostic": {
+    "phase": "all_target_minutes_completed",
+    "idle_waits": 0,
+    "update_calls": 2,
+    "ready_serial_count": 1,
+    "elapsed_seconds": 10.816093541012378
+  },
+  "financial_replays": 0,
+  "orders": 0,
+  "cancels": 0,
+  "broker_or_ctp_connections": 0,
+  "model_fits": 0,
+  "raw_sdk_output_saved": false,
+  "credential_values_saved": false,
+  "cache_or_overlay_written": false,
+  "independent_review_signed": false,
+  "response_written": false,
+  "production_qualified": false
+}

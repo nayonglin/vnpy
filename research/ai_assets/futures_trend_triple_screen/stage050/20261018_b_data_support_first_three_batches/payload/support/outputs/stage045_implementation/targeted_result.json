@@ -1,0 +1,12 @@
+{
+  "status": "two_focused_local_boundary_cases_passed",
+  "cases": [
+    "complete225_delivers_anchor1_actual225_successors",
+    "cross_source_price_conflict_blocks"
+  ],
+  "source_sha256": "edc898e42cbbadeb7b0f95338490bc3326c1b3b6441e5b6026ccc148d2050734",
+  "fixture_sha256": "d91a098fd9438a8041dc37232a95a8f2c045d6b028634b56ceec4d43619bd912",
+  "financial_replays": 0,
+  "network_connections": 0,
+  "actual_request_qualified_by_this_test": false
+}

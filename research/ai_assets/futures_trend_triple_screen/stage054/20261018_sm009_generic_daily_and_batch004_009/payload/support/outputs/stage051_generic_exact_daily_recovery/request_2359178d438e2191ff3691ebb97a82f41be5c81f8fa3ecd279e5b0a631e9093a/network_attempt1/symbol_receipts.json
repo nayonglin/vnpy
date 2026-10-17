@@ -1,0 +1,13 @@
+[
+  {
+    "vt_symbol": "SM009.CZCE",
+    "tq_symbol": "CZCE.SM009",
+    "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage051_generic_exact_daily_recovery/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a/network_attempt1/raw/CZCE/SM009.csv",
+    "raw_sha256": "e0dd65acaa10bcf1cfb87e130ae6237ed6ae426aafd264e2848ad2a7f0f3c5b8",
+    "raw_rows": 10000,
+    "target_days": 1,
+    "accepted_days": 1,
+    "rejected_days": 0,
+    "database_closeOI": "N/A_not_independently_available"
+  }
+]

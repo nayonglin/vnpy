@@ -1,0 +1,62 @@
+{
+  "schema": "stage050_same_live_engine_batch_chain_v1",
+  "started_at": "2026-10-18T04:41:36.794454+08:00",
+  "engine_pid": 21822,
+  "financial_runs_started": 0,
+  "first_batch": 4,
+  "last_batch": 20,
+  "max_new_provider_connections_per_batch": 4,
+  "frozen_sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage047_multi_exact_request_resolver.py": "84f9ca450ec8854a3ae75d64f2eb152f0fb396d1ff1c2232cfe223084801b950",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage044_root_bindings/providers_v2.json": "24078404996b534bfc4486c04cc0fa54b4eaea475e8661ef6e22c3d0cad98a04"
+  },
+  "original_financial_deadline_unchanged": true,
+  "events": [
+    {
+      "batch": "batch004",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "710edd96024c4a52dc0f040df583a10429a481c90a169159e94faef2f8f9ef71",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "bdfc33ba0292caa60db23e720c3cc999979f6e6894beacabd8b93d65f5dc2a50",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch005",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "130fcdb3b6c2dd3cbb22cb807a1a45ec880ece681036b1ed033c3c5ccaa6f18a",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "2521d884db4822b5ad64b886f4f63e76741734121a19c4559bebb60abe23ce5d",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch006",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "ae9e80c1515127100004d44aa098edc3ccede90d0ffb4499dea753658ff734b8",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "fb65549409ebf1ab77ec3531419fc904d43515cfe0e130bd92c9f33203ba4534",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch007",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "87263dcf01f5b5887199acc0de4a8e4ed66a50514024edb2acdd574b79fb553d",
+      "run_exit_code": 1,
+      "run_terminal_observed": true,
+      "driver_status": "blocked",
+      "journal_sha256": "b66b6d8704185f409ed81110f360a60d61afe68969d87d7914e16b4cc54145ff",
+      "provider_connections": 3
+    }
+  ],
+  "status": "stopped_driver_terminal"
+}

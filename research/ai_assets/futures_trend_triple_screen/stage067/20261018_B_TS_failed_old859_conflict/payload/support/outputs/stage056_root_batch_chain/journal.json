@@ -1,0 +1,216 @@
+{
+  "schema": "stage056_same_live_engine_batch_chain_v1",
+  "started_at": "2026-10-18T05:19:26.403741+08:00",
+  "engine_pid": 21822,
+  "financial_runs_started": 0,
+  "first_batch": 21,
+  "last_batch": 40,
+  "max_new_provider_connections_per_batch": 4,
+  "frozen_sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage052_generic_daily_source_resolver.py": "5b2772c700f0ddabb5536df4be1bfe1f70e07d8fea43400abfa74c66ae727b78",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage044_root_bindings/providers_v2.json": "24078404996b534bfc4486c04cc0fa54b4eaea475e8661ef6e22c3d0cad98a04"
+  },
+  "original_financial_deadline_unchanged": true,
+  "events": [
+    {
+      "batch": "batch021",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "233330c0cf6bff49c9c4f5f3e090a5e3d0741928d5d1e28e0f05f221e525edd2",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "5bb4c321016a375657b35df4e5c829465cc0bf89f694b2582d70dbda612829d0",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch022",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "39834daa643447c28219ef0263dd91fb95d847b791bc6cf56123cf512b206af3",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "e3a0907f2be99454806e2776698d0798573cb782ce72d443ad44fcc5836e2e6a",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch023",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "91d1a37a66ddf58455e0250fd13f48abf5c5a025c4ed0ed1c2acc64e30043874",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "866d830af62bed8072e1d531b480a071254417b91398c9a2f74f4172f0cb64ec",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch024",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "715b7d713af4d01b9c391f0f36373f78967c289db2fea2d69460c40e56eff29c",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "418fdd57d33141ec26e83c2096a0541b86dfddf8d3586f6fbb83c2f5850348aa",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch025",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "7ee0c339fc981ccdd1569be83e46efe4ca84e8cf7401e484123c68723096c5e9",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "5ea5be0f3584bf005c7220f034f97c561de5b256005b47425873cd3b457c98e4",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch026",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "2f8ddc9605688827c8a9df96353e054188b0466c1466109ffa69f08cba2cfe4e",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "b1d67562d863e5c0a94b8f612a5c10dda49176a79d4814f0e6c19bed29b4f93c",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch027",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "3b385efe16417b42abb36c8c46a730e308df7c15218101e30d373ace6fe03b84",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "0e97f89e804298bc18c92d68d78036a2903287e34becb579d88246b0b68bc0d4",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch028",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "cdc04269ebcacceb633abf94b5566359953c91c485f1331b15fd7e9fbf947b00",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "6efd8ae31de452614f4cb678dd3d23f7b997832029245a6a4feadce081478a7b",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch029",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "03e9b7240a512d2541038b83bef5057677563893282e9e64fab2e02b49cefe07",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "d1fb469d2ed2d9ae5d5a7ea2f4ddb43223204fb9a11a379e9869f1334d92bea8",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch030",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "07f34f17cf751df2d3c4d00432cca2adc7717adc8111a60e136d807737083b8a",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "82dfddf2b4b53cf96acba24a02591e5144c3e145ecb19538eebdbf61fa85f735",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch031",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "efdb8fae564b0cb47e5c7b7d3b803e9d8234dc233a5b7cf6ab3f774fa42b610f",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "79b75e6458611ed14dc5818c2647e290efa7c52b4ebf716839d12d4df1f068f7",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch032",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "0d347d55d2f38418e09a4463c964ab485da6a7abde5e60103539bf4d9b5b4359",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "6f3171506e8af2b42ac42256fb4057af6d06de71ec1b8fa68adad97b35250137",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch033",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "d9ba537b0ed5a7b9b4d0471e11b0073996ccf036dce7b8bd539e7860c945d244",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "24df241cf69ca1d4f7e18f4a697f590fa5663bfe26b25daef33fa7d3bc893c51",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch034",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "fee4e09721ba6c59034e8d6078359e1b6386e660fbd5f8d61b170c1aef3e3844",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "1d3399de6e405690e4d8c73b8747d9b9ec63b0b1192ccb02d6d2682c73335c65",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch035",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "a207fe2fc06a1968f1e793c86e5bb157c3ed36128f9d2ffdfeb81c26de94db7a",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "786794e25b167a9d4c1f96f2f1990821170f3e60aaafe230ae1b05df6e24526d",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch036",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "4d2bd1c3e72c80a73e37a7e11cb05b397d527c78b8e18a1dd41194a62812e436",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "bce8c93e4d43d64187ae65f7f193d703f1c0a1265ada73fe82666145be52312f",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch037",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "b34067d48a16b89a6d9abacaf01aec991e960e0b607d3879ef993a9d5c5eb7fc",
+      "run_exit_code": 0,
+      "run_terminal_observed": true,
+      "driver_status": "paused_provider_batch_limit",
+      "journal_sha256": "81480fb295561153f70abe3a77f036e221f45280e6e65deef9f348ff3f5a0c45",
+      "provider_connections": 4
+    },
+    {
+      "batch": "batch038",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "7d8377de1a0eff497339a92305a698183395ef192868d29600d1c40aadb41a90",
+      "run_exit_code": 1,
+      "run_terminal_observed": true,
+      "driver_status": "blocked",
+      "journal_sha256": "73ef1b15348583ef9e8947f2d70202f18bc4a5f2e6039d82c6fd9ef5cceac480",
+      "provider_connections": 2
+    }
+  ],
+  "status": "stopped_driver_terminal"
+}

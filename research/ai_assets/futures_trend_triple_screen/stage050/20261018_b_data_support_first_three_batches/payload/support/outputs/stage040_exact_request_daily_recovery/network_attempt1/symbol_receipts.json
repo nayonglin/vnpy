@@ -1,0 +1,13 @@
+[
+  {
+    "vt_symbol": "SM005.CZCE",
+    "tq_symbol": "CZCE.SM005",
+    "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/raw/CZCE/SM005.csv",
+    "raw_sha256": "c4cc24d64e3eee78f2af690c375c46682a4b9dee2f067110978ec4efbd6014dd",
+    "raw_rows": 10000,
+    "target_days": 1,
+    "accepted_days": 1,
+    "rejected_days": 0,
+    "database_closeOI": "N/A_not_independently_available"
+  }
+]

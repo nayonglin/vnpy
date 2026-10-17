@@ -1,0 +1,60 @@
+{
+  "request_sha256": "534a6532d1753bc1d1c70154bac13f1d2354f4c60e083dcb5bb2285060a896ce",
+  "targets": [
+    {
+      "vt_symbol": "SM005.CZCE",
+      "execution_trade_date": "2020-02-10",
+      "requirement_kind": "full_session",
+      "daily_reference_source": "new_independent_actual_request_daily",
+      "is_new_daily": true,
+      "local_accepted": true,
+      "source_checks": [
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/SM005_completed_minute_backtest.csv",
+          "vt_symbol": "SM005.CZCE",
+          "expected_sha256": "391899b58a6d58265fc02629e99622e16f6877dd84299800e1e0214373aa32b8",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 13050,
+          "sha256": "391899b58a6d58265fc02629e99622e16f6877dd84299800e1e0214373aa32b8",
+          "bytes": 1275839
+        }
+      ],
+      "source_audits": [
+        {
+          "source_id": "s491_052",
+          "source_rows": 13050,
+          "target_rows": 225
+        }
+      ],
+      "local_present_minutes": 225,
+      "missing_minutes": 0,
+      "missing_timestamps": [],
+      "uncompleted_minutes": 0,
+      "uncompleted_timestamps": [],
+      "full_session_grid_minutes": 225,
+      "required_minutes": 225,
+      "full_session_qualified": true,
+      "session_qualification": {
+        "status": "accepted",
+        "reason": "complete_daily_matched_base_preserved",
+        "expected_minutes": 225,
+        "actual_rows": 225,
+        "missing_minutes": 0,
+        "new_minutes": 225,
+        "base_overlap_minutes": 0,
+        "daily_open_oi_check": "checked",
+        "aggregate": {
+          "open": 6510.0,
+          "high": 6530.0,
+          "low": 6480.0,
+          "close": 6510.0,
+          "volume": 37345.0,
+          "open_oi": 68236.0,
+          "close_oi": 67387.0
+        },
+        "daily_mismatch_fields": []
+      }
+    }
+  ]
+}

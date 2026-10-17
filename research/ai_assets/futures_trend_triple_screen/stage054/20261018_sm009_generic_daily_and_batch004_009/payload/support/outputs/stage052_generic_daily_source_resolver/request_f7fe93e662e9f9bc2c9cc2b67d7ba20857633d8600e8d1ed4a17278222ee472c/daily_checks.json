@@ -1,0 +1,130 @@
+{
+  "targets": [
+    {
+      "vt_symbol": "SM009.CZCE",
+      "trade_date": "2020-04-17",
+      "daily": {
+        "open": 7206.0,
+        "high": 7290.0,
+        "low": 7142.0,
+        "close": 7234.0,
+        "volume": 165110.0,
+        "open_oi": 92432.0,
+        "close_oi": 96637.0
+      },
+      "exact_DB_six": {
+        "open": 7206.0,
+        "high": 7290.0,
+        "low": 7142.0,
+        "close": 7234.0,
+        "volume": 165110.0,
+        "open_oi": 92432.0
+      },
+      "six_fields_checked": true,
+      "six_fields_max_abs_difference": {
+        "open": 0.0,
+        "high": 0.0,
+        "low": 0.0,
+        "close": 0.0,
+        "volume": 0.0,
+        "open_oi": 0.0
+      },
+      "DB_open_interest_maps_to": "provider.open_oi",
+      "database_closeOI": "N/A_not_independently_available",
+      "actual_raw_forward_successor_checked": true,
+      "source_csv_row": 9900,
+      "successor_csv_row": 9901,
+      "source_bar_id": 140,
+      "source_datetime_ns": 1587052800000000000,
+      "successor_id": 141,
+      "successor_datetime_ns": 1587312000000000000,
+      "source_local_time": "2020-04-17T00:00:00+08:00",
+      "successor_local_time": "2020-04-20T00:00:00+08:00",
+      "successor_values": {
+        "open": 7236.0,
+        "high": 7314.0,
+        "low": 7162.0,
+        "close": 7220.0,
+        "volume": 162110.0,
+        "open_oi": 96637.0,
+        "close_oi": 99672.0
+      },
+      "raw_non_target_daily_rows_qualified": false,
+      "raw_snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage051_generic_exact_daily_recovery/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a/network_attempt1/raw/CZCE/SM009.csv",
+      "raw_snapshot_sha256": "e0dd65acaa10bcf1cfb87e130ae6237ed6ae426aafd264e2848ad2a7f0f3c5b8",
+      "raw_rows": 10000,
+      "inherited_DB_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "full_DB_rehashed_by_reviewer": false,
+      "exact_DB_queries": 1,
+      "source_family": "stage051_normal_daily",
+      "provider_original_exit_code": 0,
+      "root_terminal_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage051_generic_exact_daily_recovery/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a/terminal_observed.json",
+      "root_terminal_sha256": "df922f4025a1031d0cbc61f0a80fe40b93e8a47eca23c9f518c9dfccaa370934",
+      "provider_original_rejections_preserved": true,
+      "source_origin_request_sha256": "2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a",
+      "source_origin_request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a/request.json",
+      "source_origin_qualified_targets": [
+        {
+          "vt_symbol": "SM009.CZCE",
+          "trade_date": "2020-04-15",
+          "daily": {
+            "open": 6910.0,
+            "high": 6998.0,
+            "low": 6910.0,
+            "close": 6982.0,
+            "volume": 104359.0,
+            "open_oi": 68585.0,
+            "close_oi": 75175.0
+          },
+          "exact_DB_six": {
+            "open": 6910.0,
+            "high": 6998.0,
+            "low": 6910.0,
+            "close": 6982.0,
+            "volume": 104359.0,
+            "open_oi": 68585.0
+          },
+          "six_fields_checked": true,
+          "six_fields_max_abs_difference": {
+            "open": 0.0,
+            "high": 0.0,
+            "low": 0.0,
+            "close": 0.0,
+            "volume": 0.0,
+            "open_oi": 0.0
+          },
+          "DB_open_interest_maps_to": "provider.open_oi",
+          "database_closeOI": "N/A_not_independently_available",
+          "actual_raw_forward_successor_checked": true,
+          "source_csv_row": 9898,
+          "successor_csv_row": 9899,
+          "source_bar_id": 138,
+          "source_datetime_ns": 1586880000000000000,
+          "successor_id": 139,
+          "successor_datetime_ns": 1586966400000000000,
+          "source_local_time": "2020-04-15T00:00:00+08:00",
+          "successor_local_time": "2020-04-16T00:00:00+08:00",
+          "successor_values": {
+            "open": 6970.0,
+            "high": 7276.0,
+            "low": 6946.0,
+            "close": 7178.0,
+            "volume": 342167.0,
+            "open_oi": 75175.0,
+            "close_oi": 92432.0
+          },
+          "raw_non_target_daily_rows_qualified": false,
+          "DB_reference_source": "origin_frozen_051_target_manifest",
+          "fresh_DB_queries": 0
+        }
+      ],
+      "equivalent_completed_origin_roots": [
+        "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage051_generic_exact_daily_recovery/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a"
+      ],
+      "newly_qualified_request_sha256": "f7fe93e662e9f9bc2c9cc2b67d7ba20857633d8600e8d1ed4a17278222ee472c",
+      "newly_qualified_trade_date": "2020-04-17",
+      "reused_completed_snapshot": true,
+      "request_sha256": "f7fe93e662e9f9bc2c9cc2b67d7ba20857633d8600e8d1ed4a17278222ee472c"
+    }
+  ]
+}

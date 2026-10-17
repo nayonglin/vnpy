@@ -1,0 +1,14 @@
+{
+  "status": "needs_provider",
+  "request_sha256": "7e1e8c52866a9f885c81c936e7ade1a739ce75a7a7cb7975e62f5a30ec7d0362",
+  "packet_count": 1,
+  "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage041_exact_daily_request_provider.py",
+  "provider_sha256": "e4320208cc70d25959db7f66b80518ac0f6ceaaf3e6a61a97bdfc23f008bfa0d",
+  "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+  "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+  "requirements": 1,
+  "local_ready_requirements": 0,
+  "provider_scope": "entire_actual_request_not_only_the_local_missing_subset",
+  "daily_review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage047_multi_exact_request_resolver/request_7e1e8c52866a9f885c81c936e7ade1a739ce75a7a7cb7975e62f5a30ec7d0362/daily_review_receipt.json",
+  "daily_review_sha256": "ab2f9004c6992a229565163aab3e6f4490cdec9b0993d7d1648bae28099b0a5c"
+}

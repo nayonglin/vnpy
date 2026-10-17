@@ -1,0 +1,28 @@
+{
+  "request_sha256": "0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "hc2205.SHFE",
+      "execution_trade_date": "2022-01-18",
+      "requirement_kind": "anchor",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "anchor_only_not_full_session",
+      "status": "accepted",
+      "reason": "real_completed_anchor_open_matched_not_daily_price_fallback",
+      "expected_minutes": 1,
+      "actual_rows": 1,
+      "daily_mismatch_fields": [],
+      "daily_openOI_check": "checked"
+    }
+  ],
+  "raw_rows": 1,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

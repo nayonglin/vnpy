@@ -1,0 +1,40 @@
+{
+  "request_sha256": "997050286f352c12930ab2480d52e8473a3e0ed971bfd6c8c4cd734df07d8041",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "rb2010.SHFE",
+      "execution_trade_date": "2020-08-25",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 345,
+      "actual_rows": 345,
+      "missing_minutes": 0,
+      "new_minutes": 345,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 3781.0,
+        "high": 3819.0,
+        "low": 3770.0,
+        "close": 3773.0,
+        "volume": 615545.0,
+        "open_oi": 740580.0,
+        "close_oi": 688362.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 345,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

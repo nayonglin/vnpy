@@ -1,0 +1,31 @@
+{
+  "status": "worker_terminal",
+  "exit_code": 0,
+  "hard_kill": false,
+  "elapsed_seconds": 27.494663709017914,
+  "all_inputs_unchanged": true,
+  "request_sha256": "419c98e9b4187ce0c2e2b04e7e2db51ed6ffebcf55d989c9c6ff89163797437a",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "provider_attempts_max": 1,
+  "automatic_retry": false,
+  "financial_replays": 0,
+  "orders": 0,
+  "cancels": 0,
+  "broker_or_ctp_connections": 0,
+  "raw_sdk_output_saved": false,
+  "credential_values_saved": false,
+  "cache_or_overlay_written": false,
+  "independent_review_signed": false,
+  "response_written": false,
+  "production_qualified": false,
+  "artifact_sha256": {
+    "raw_completed_minutes.csv": "edfb6a40bbd9a7747bbc6564570de3b633511c6cd19f2e36afd4d5822a9ac223",
+    "quality.json": "ae33741f2b2469d2c4f4a391ecc81c07bf9c4dbb7852cab323c196d811c72135",
+    "attempt_started.json": "b0f10d98c6a4d76f6b7018603b3c1024c596899acb6e36eba454e403a06000b7",
+    "progress.json": "53bac48e9aa7b4a374ac0d198d64dd5aa90c35872766d0d5065c4d7dd05b33a2",
+    "worker_receipt.json": "b7d0168d05704f1e7fd49ec881e39b02092000b0cb345a6fbfcf9c73910e18ad",
+    "completion_evidence.csv": "554c6a0c3b47f6e04a049859f2c6a4be4a12208cf879e5ed3f82ff5a130ec27f"
+  }
+}

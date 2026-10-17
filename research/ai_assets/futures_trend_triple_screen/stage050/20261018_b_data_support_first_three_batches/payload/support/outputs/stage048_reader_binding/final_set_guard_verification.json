@@ -1,0 +1,7 @@
+{
+  "source_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+  "status": "passed_new_physical_keys_must_be_reported_missing",
+  "negative_case": "R-E not subset of M rejected",
+  "actual_qualification_runs": 0,
+  "old_suites_rerun": 0
+}

@@ -1,0 +1,55 @@
+{
+  "vt_symbol": "SM005.CZCE",
+  "trade_date": "2020-01-06",
+  "daily": {
+    "open": 6378.0,
+    "high": 6380.0,
+    "low": 6262.0,
+    "close": 6280.0,
+    "volume": 76307.0,
+    "open_oi": 68372.0,
+    "close_oi": 61153.0
+  },
+  "exact_DB_six": {
+    "open": 6378.0,
+    "high": 6380.0,
+    "low": 6262.0,
+    "close": 6280.0,
+    "volume": 76307.0,
+    "open_oi": 68372.0
+  },
+  "six_fields_max_abs_difference": {
+    "open": 0.0,
+    "high": 0.0,
+    "low": 0.0,
+    "close": 0.0,
+    "volume": 0.0,
+    "open_oi": 0.0
+  },
+  "DB_open_interest_maps_to": "provider.open_oi",
+  "database_closeOI": "N/A_not_independently_available",
+  "raw_snapshot_sha256": "c4cc24d64e3eee78f2af690c375c46682a4b9dee2f067110978ec4efbd6014dd",
+  "raw_rows": 10000,
+  "source_csv_row": 9915,
+  "source_id": 157,
+  "source_ns": 1578240000000000000,
+  "source_local_time": "2020-01-06T00:00:00+08:00",
+  "successor_csv_row": 9916,
+  "successor_id": 158,
+  "successor_ns": 1578326400000000000,
+  "successor_local_time": "2020-01-07T00:00:00+08:00",
+  "successor_values": {
+    "open": 6278.0,
+    "high": 6332.0,
+    "low": 6242.0,
+    "close": 6300.0,
+    "volume": 49762.0,
+    "open_oi": 61153.0,
+    "close_oi": 60931.0
+  },
+  "exact_DB_queries": 1,
+  "full_DB_rehashed_by_reviewer": false,
+  "inherited_DB_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+  "provider_inputs_unchanged": true,
+  "nonrequested_raw_daily_rows_qualified": false
+}

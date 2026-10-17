@@ -1,0 +1,51 @@
+{
+  "schema": "stage051_generic_daily_implementation_v1",
+  "created_at": "2026-10-18T04:52:22.336946+08:00",
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage051_generic_exact_daily_recovery.py",
+  "source_sha256": "89a2de7464f4b30eb3b3887ac265ca5433c7288fafcb117802072360c6a6228a",
+  "protocol_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0450_stage051_generic_exact_daily_recovery_protocol.md",
+  "protocol_sha256": "ef26cec11539e488ad30d327afaa5ac7635826ed02c57aa5cff6a3ffe29add61",
+  "test_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage051_generic_exact_daily_recovery.py",
+  "test_sha256": "3239ad7313003aa0c5b55f8121a9abe2fc2366b8d279af2313a41a8d1ce28a6f",
+  "red": {
+    "true_terminal": true,
+    "exit_code": 1,
+    "tests": 2,
+    "reason": "missing adapter assertion"
+  },
+  "green": {
+    "true_terminal": true,
+    "exit_code": 0,
+    "tests": 2,
+    "test_seconds": 0.168,
+    "wall_seconds": 0.437629625
+  },
+  "compile": {
+    "true_terminal": true,
+    "exit_code": 0
+  },
+  "prepare": {
+    "true_terminal": true,
+    "exit_code": 0,
+    "wall_seconds": 0.455094833,
+    "preflight_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage051_generic_exact_daily_recovery/request_2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a/preflight.json",
+    "preflight_sha256": "692f0c45529fc2984c86d3a814ba09b07f85064d399412aeb97afac0029301d1"
+  },
+  "source040_sha256": "32ddecd055d7bb52b8d7f68ab8f1c5d3023ce0943f47045620b254d4e09cc820",
+  "unchanged_budget_functions": {
+    "atomic_csv": true,
+    "peak_memory": true,
+    "budget_guard": true
+  },
+  "provider_connections": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "cancels": 0,
+  "independent_review_signed": false,
+  "response_written": false,
+  "terminal_observed_written": false,
+  "database_closeOI": "N/A_not_independently_available",
+  "DB_open_interest_maps_to": "provider.open_oi",
+  "production_qualified": false
+}

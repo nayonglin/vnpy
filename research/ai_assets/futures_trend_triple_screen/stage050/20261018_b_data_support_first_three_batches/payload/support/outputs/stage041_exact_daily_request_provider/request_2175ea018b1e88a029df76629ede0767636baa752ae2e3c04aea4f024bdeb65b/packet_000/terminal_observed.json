@@ -1,0 +1,21 @@
+{
+  "schema": "stage041_provider_actual_tool_terminal_v1",
+  "observed_at": "2026-10-18T04:07:57.557938+08:00",
+  "tool_session_id": 65925,
+  "terminal_observed": true,
+  "exit_code": 0,
+  "parent_status": "worker_terminal",
+  "worker_exit_code": 0,
+  "elapsed_seconds": 16.443464625015622,
+  "all_inputs_unchanged": true,
+  "request_sha256": "2175ea018b1e88a029df76629ede0767636baa752ae2e3c04aea4f024bdeb65b",
+  "source_sha256": "e4320208cc70d25959db7f66b80518ac0f6ceaaf3e6a61a97bdfc23f008bfa0d",
+  "preflight_sha256": "35cf5874605684b32602c745c4cca364e0d12c750b121c7e04fa782e02bc63d2",
+  "parent_receipt_sha256": "5e5ea4bd668b0d5dd5807901364949893b441bf02d250dfc3d6026171d3adb5c",
+  "new_provider_connections": 1,
+  "new_minute_provider_connections": 1,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "production_qualified": false
+}

@@ -1,0 +1,10 @@
+{
+  "status": "passed_limited_inherited_core_scope_and_new_key_checks",
+  "source_sha256": "42a3fc13ed68a0c73dc48a5fdcaea21e6c6e31798bf33d5cf7af9370d0c52909",
+  "mixed_old_new_filter": true,
+  "all_old_filter": true,
+  "two_provider_branches": true,
+  "mixed_and_unknown_roots_rejected": true,
+  "actual_qualification_runs": 0,
+  "financial_replays": 0
+}

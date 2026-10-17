@@ -1,0 +1,46 @@
+{
+  "schema": "stage039_independent_exact_daily_v1",
+  "reviewed_at": "2026-10-18T04:01:23.840594+08:00",
+  "independent_review": true,
+  "reviewer": "ordered_execution_review_independent_exact_local_delivery",
+  "qualified_research_daily": true,
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "request_sha256": "53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae",
+  "accepted_target_keys": [
+    [
+      "SM005.CZCE",
+      "2020-01-06"
+    ]
+  ],
+  "qualified_rows": 1,
+  "target_rows": 1,
+  "qualified_daily_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/request_53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae/reviewed_daily.csv",
+  "daily_checks_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/request_53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae/daily_checks.json",
+  "database_closeOI": "N/A_not_independently_available",
+  "provider_request_sha256": "53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae",
+  "provider_actual_tool_terminal_exit_code": 0,
+  "source_fingerprints": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae/request.json": "f7ba04a28e5b0f99d695c567415c681c91cbd62672bd0469f4034e832302f420",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/review_local_delivery.py": "695eaa41b5b8e7b45b5d0677ecc7e33d6727a0199669628d24b11cb7d7e727bb",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/preflight.json": "ae032b5c8ad1ac1e9efa1a51c6af3f1ec0e537bcf47411853327547b1c824b9a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/terminal_observed.json": "e13d4b523b507bc7267bbcac0d2cd7ccf7e08798c961c90405e372d1efbd55e0",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage040_exact_request_daily_recovery.py": "32ddecd055d7bb52b8d7f68ab8f1c5d3023ce0943f47045620b254d4e09cc820",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/parent_receipt.json": "fbf7a5ff966711fca3b7afc735284457b5ad5099b988931d6ebc15ca4da4238f",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/symbol_receipts.json": "2406b8fdd4b11e1a04825149b970647c77e7dfbdee5f96e431126315fd4a49a1",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/attempt_started.json": "6340b3e19e3627e33417027ca4ac66c53a1c8d7c744a4a55d164f6320cc7fc29",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/target_qualification.csv": "62e16c0eca3e3b14e2da2a3ffda3e30afe37353ec97c0f7ec968d8ecd3a9ed97",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/qualified_daily.csv": "19383739fbafad5fafc7a36b1e90c43189c003ad84a36bf1e0e739d79523c1ad",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/progress.json": "f10dce70d4bcdf7af0d79a234e4a33d89f6055e4681099fba9cc2dd538f2f81b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/worker_receipt.json": "f3c50c5a26689e68e120ed77f3a2a846bc3afd5b45c49edfad70d7a091e6a274",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/network_attempt1/raw/CZCE/SM005.csv": "c4cc24d64e3eee78f2af690c375c46682a4b9dee2f067110978ec4efbd6014dd",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/target_manifest.csv": "c2a28aa3a00b89980e9d7ef8e3230414b2d8c4c341f913b8bf7dc26933179367",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/excluded_constraints.csv": "8adf64966b39e18445a2bfc2f7d6f1a2927d79a901d29ed66b0ac64102360ad1",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/request_53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae/reviewed_daily.csv": "50c0759c507ef6695e49e7be1f53b378131e4496a6b9db49a775b6e5b6c91cf7",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/request_53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae/daily_checks.json": "c02454af2d61c84aa6e5db7d2af14a9aa90b694fa226e48f889a3aec3a6a0877"
+  },
+  "network_connections_in_review": 0,
+  "financial_replays": 0,
+  "orders": 0,
+  "production_qualified": false
+}

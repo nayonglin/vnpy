@@ -1,0 +1,216 @@
+{
+  "model_metadata": {
+    "model_type": "logistic_regression",
+    "feature_columns": [
+      "feature_pair_same_direction",
+      "feature_pair_same_signal",
+      "feature_pair_same_risk_mode",
+      "delta_risk_ratio",
+      "delta_remaining_position_slots",
+      "delta_feature_ret_signed_5d",
+      "delta_feature_trend_ma20_gap_pct",
+      "delta_feature_atr14_pct_zscore_120",
+      "delta_feature_lower_wick_pct",
+      "delta_feature_volume_ratio_2v2",
+      "delta_feature_margin_per_contract_to_equity",
+      "delta_feature_oi_delta_1d_pct",
+      "delta_feature_oi_delta_1d_pct_zscore_120",
+      "delta_feature_close_position_60d",
+      "delta_feature_ret_20d_zscore_120",
+      "delta_feature_range_pct_zscore_120",
+      "delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d",
+      "delta_feature_ma20_ma40_gap_pct_cs_zscore_1d",
+      "delta_feature_close_position_60d_cs_zscore_1d"
+    ],
+    "target_column": "label_preferred_left_wins",
+    "weight_column": "label_preferred_pair_weight_v2",
+    "train_rows": 50,
+    "train_days": 25
+  },
+  "model_tag": "selection_pairwise_v2_risk_weighted",
+  "split_dates": {
+    "valid_start_date": "2023-01-01",
+    "test_start_date": "2024-01-01"
+  },
+  "dataset_rows": 152,
+  "dataset_days": 73,
+  "split_metrics": {
+    "train": {
+      "rows": 50,
+      "days": 25,
+      "positive_rate": 0.36,
+      "predicted_positive_rate": 0.26,
+      "accuracy": 0.82,
+      "weighted_accuracy": 0.8997718300253268,
+      "precision": 0.8461538461538461,
+      "recall": 0.6111111111111112,
+      "f1": 0.7096774193548387,
+      "roc_auc": 0.8888888888888888,
+      "log_loss": 0.27180315860062304
+    },
+    "valid": {
+      "rows": 32,
+      "days": 17,
+      "positive_rate": 0.5,
+      "predicted_positive_rate": 0.3125,
+      "accuracy": 0.375,
+      "weighted_accuracy": 0.34828655899010863,
+      "precision": 0.3,
+      "recall": 0.1875,
+      "f1": 0.23076923076923078,
+      "roc_auc": 0.35546875,
+      "log_loss": 1.2112654563191647
+    },
+    "test": {
+      "rows": 70,
+      "days": 31,
+      "positive_rate": 0.5428571428571428,
+      "predicted_positive_rate": 0.2857142857142857,
+      "accuracy": 0.5428571428571428,
+      "weighted_accuracy": 0.5504101618895272,
+      "precision": 0.65,
+      "recall": 0.34210526315789475,
+      "f1": 0.4482758620689655,
+      "roc_auc": 0.5485197368421052,
+      "log_loss": 0.9680880067224317
+    }
+  },
+  "top_coefficients": [
+    {
+      "feature": "delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d",
+      "scaled_coefficient": 0.6280116050537666,
+      "abs_scaled_coefficient": 0.6280116050537666,
+      "feature_mean": -0.02666666666666668,
+      "feature_scale": 1.5788040480763352
+    },
+    {
+      "feature": "delta_remaining_position_slots",
+      "scaled_coefficient": -0.49191762379062953,
+      "abs_scaled_coefficient": 0.49191762379062953,
+      "feature_mean": 0.36,
+      "feature_scale": 0.6858571279792899
+    },
+    {
+      "feature": "delta_feature_lower_wick_pct",
+      "scaled_coefficient": -0.47073630043340703,
+      "abs_scaled_coefficient": 0.47073630043340703,
+      "feature_mean": -0.00032524303692771,
+      "feature_scale": 0.005630101570148881
+    },
+    {
+      "feature": "delta_feature_ret_signed_5d",
+      "scaled_coefficient": -0.33536007958310915,
+      "abs_scaled_coefficient": 0.33536007958310915,
+      "feature_mean": -0.012025413741285962,
+      "feature_scale": 0.035831127087213525
+    },
+    {
+      "feature": "delta_feature_trend_ma20_gap_pct",
+      "scaled_coefficient": 0.33508874016221923,
+      "abs_scaled_coefficient": 0.33508874016221923,
+      "feature_mean": 0.003904675958844246,
+      "feature_scale": 0.05832537896699231
+    },
+    {
+      "feature": "delta_feature_close_position_60d_cs_zscore_1d",
+      "scaled_coefficient": -0.32474484615468535,
+      "abs_scaled_coefficient": 0.32474484615468535,
+      "feature_mean": -0.17777726639717614,
+      "feature_scale": 1.4029950974797978
+    },
+    {
+      "feature": "delta_feature_atr14_pct_zscore_120",
+      "scaled_coefficient": -0.3092847848011136,
+      "abs_scaled_coefficient": 0.3092847848011136,
+      "feature_mean": 0.17540532212871987,
+      "feature_scale": 1.007387713888274
+    },
+    {
+      "feature": "delta_feature_margin_per_contract_to_equity",
+      "scaled_coefficient": 0.307435012355915,
+      "abs_scaled_coefficient": 0.307435012355915,
+      "feature_mean": -0.0009793802519625096,
+      "feature_scale": 0.01081503661770848
+    },
+    {
+      "feature": "delta_feature_volume_ratio_2v2",
+      "scaled_coefficient": 0.21614831455289887,
+      "abs_scaled_coefficient": 0.21614831455289887,
+      "feature_mean": 0.014953001647058112,
+      "feature_scale": 0.43242263937498465
+    },
+    {
+      "feature": "delta_feature_ma20_ma40_gap_pct_cs_zscore_1d",
+      "scaled_coefficient": 0.19872844686334593,
+      "abs_scaled_coefficient": 0.19872844686334593,
+      "feature_mean": -0.14098163109066514,
+      "feature_scale": 1.4071688525884216
+    },
+    {
+      "feature": "delta_feature_close_position_60d",
+      "scaled_coefficient": 0.15489572138424837,
+      "abs_scaled_coefficient": 0.15489572138424837,
+      "feature_mean": -0.02604245568583837,
+      "feature_scale": 0.3896610239213647
+    },
+    {
+      "feature": "delta_feature_ret_20d_zscore_120",
+      "scaled_coefficient": 0.13977145139757846,
+      "abs_scaled_coefficient": 0.13977145139757846,
+      "feature_mean": 0.06033255343379592,
+      "feature_scale": 1.242317627361149
+    },
+    {
+      "feature": "feature_pair_same_direction",
+      "scaled_coefficient": -0.06812661719504945,
+      "abs_scaled_coefficient": 0.06812661719504945,
+      "feature_mean": 0.58,
+      "feature_scale": 0.4935585071701226
+    },
+    {
+      "feature": "delta_feature_oi_delta_1d_pct_zscore_120",
+      "scaled_coefficient": -0.05630202144865125,
+      "abs_scaled_coefficient": 0.05630202144865125,
+      "feature_mean": 0.2706175545469248,
+      "feature_scale": 1.5972840505994688
+    },
+    {
+      "feature": "feature_pair_same_risk_mode",
+      "scaled_coefficient": 0.04868141192815059,
+      "abs_scaled_coefficient": 0.04868141192815059,
+      "feature_mean": 0.9,
+      "feature_scale": 0.3
+    },
+    {
+      "feature": "delta_feature_range_pct_zscore_120",
+      "scaled_coefficient": 0.045976993889017354,
+      "abs_scaled_coefficient": 0.045976993889017354,
+      "feature_mean": -0.3530649488249016,
+      "feature_scale": 1.5505075372861534
+    },
+    {
+      "feature": "delta_feature_oi_delta_1d_pct",
+      "scaled_coefficient": -0.029564360738691873,
+      "abs_scaled_coefficient": 0.029564360738691873,
+      "feature_mean": 0.024493831613037916,
+      "feature_scale": 0.11260917778200102
+    },
+    {
+      "feature": "feature_pair_same_signal",
+      "scaled_coefficient": -0.017496696935304902,
+      "abs_scaled_coefficient": 0.017496696935304902,
+      "feature_mean": 0.32,
+      "feature_scale": 0.466476151587624
+    },
+    {
+      "feature": "delta_risk_ratio",
+      "scaled_coefficient": -0.008398185975541176,
+      "abs_scaled_coefficient": 0.008398185975541176,
+      "feature_mean": 0.001699999999999996,
+      "feature_scale": 0.005158488150611557
+    }
+  ],
+  "model_judgement": {
+    "why_v2": "保留 pairwise 选择权范式，但把极端波动/极端趋势尾部下沉到 pair 权重层，并补充与失败模式直接相关的差分特征。"
+  }
+}

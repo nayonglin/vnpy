@@ -1,0 +1,28 @@
+{
+  "request_sha256": "9d550a779cd753b13ae2c3676579031dbfa80b340ac8e041263ed0fc960caee7",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "AP005.CZCE",
+      "execution_trade_date": "2020-04-14",
+      "requirement_kind": "anchor",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "anchor_only_not_full_session",
+      "status": "accepted",
+      "reason": "real_completed_anchor_open_matched_not_daily_price_fallback",
+      "expected_minutes": 1,
+      "actual_rows": 1,
+      "daily_mismatch_fields": [],
+      "daily_openOI_check": "checked"
+    }
+  ],
+  "raw_rows": 1,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

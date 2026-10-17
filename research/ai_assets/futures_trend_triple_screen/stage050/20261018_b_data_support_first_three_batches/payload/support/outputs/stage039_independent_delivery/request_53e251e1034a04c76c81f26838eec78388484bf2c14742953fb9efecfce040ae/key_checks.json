@@ -1,0 +1,78 @@
+{
+  "request_sha256": "53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae",
+  "expected_full_session_minutes": 225,
+  "delivered_minutes": 225,
+  "source_audit": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/SM005_completed_minute_backtest.csv",
+    "vt_symbol": "SM005.CZCE",
+    "expected_sha256": "391899b58a6d58265fc02629e99622e16f6877dd84299800e1e0214373aa32b8",
+    "status": "accepted_source_bytes",
+    "reason": "",
+    "rows": 13050,
+    "sha256": "391899b58a6d58265fc02629e99622e16f6877dd84299800e1e0214373aa32b8",
+    "bytes": 1275839
+  },
+  "session_audit": {
+    "status": "accepted",
+    "reason": "complete_daily_matched_base_preserved",
+    "requirement_kind": "full_session",
+    "expected_minutes": 225,
+    "new_minutes": 225,
+    "conflicting_minutes": 0,
+    "source_ids": [
+      "s491_052"
+    ],
+    "source_rows": 225,
+    "actual_rows": 225,
+    "missing_minutes": 0,
+    "base_overlap_minutes": 0,
+    "daily_open_oi_check": "checked",
+    "aggregate": {
+      "open": 6378.0,
+      "high": 6380.0,
+      "low": 6262.0,
+      "close": 6280.0,
+      "volume": 76307.0,
+      "open_oi": 68372.0,
+      "close_oi": 61153.0
+    },
+    "daily_mismatch_fields": []
+  },
+  "all_225_actual_forward_successors_checked": true,
+  "first_completion": {
+    "vt_symbol": "SM005.CZCE",
+    "bar_datetime": "2020-01-06T09:00:00",
+    "source_row_number": 678,
+    "source_bar_id": 35325,
+    "successor_row_number": 679,
+    "successor_id": 35326,
+    "successor_datetime": "2020-01-06T09:01:00"
+  },
+  "last_completion": {
+    "vt_symbol": "SM005.CZCE",
+    "bar_datetime": "2020-01-06T14:59:00",
+    "source_row_number": 902,
+    "source_bar_id": 35549,
+    "successor_row_number": 903,
+    "successor_id": 35550,
+    "successor_datetime": "2020-01-07T09:00:00"
+  },
+  "A0_actual_read_disjointness": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 225,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "request_scope_existing_physical_keys": 0,
+  "new_request_scope_physical_keys": 225,
+  "global_existing_keys_claimed_empty": false,
+  "outside_request_mapping_untouched": true,
+  "old_key_protection": "Actual stage021.ensure compares overlap seven values with np.array_equal; adds absent keys only and commits after all symbols pass.",
+  "no_engine_loaded": true,
+  "no_base_cache_reloaded": true,
+  "no_source_stack_requalification": true
+}

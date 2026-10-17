@@ -1,0 +1,32 @@
+{
+  "request_sha256": "adda31217d747a6a82b28360732841d82aa1d89d4e8255835b79e9be220f720e",
+  "accepted_requirement_identities": [
+    [
+      "FG009.CZCE",
+      "2020-06-10",
+      "full_session"
+    ]
+  ],
+  "active_order_keys_not_requested_not_requalified": true,
+  "A0_actual_read_disjointness": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 345,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "request_scope_existing_physical_keys": 0,
+  "new_request_scope_physical_keys": 345,
+  "delivered_required_keys": 345,
+  "global_existing_keys_claimed_empty": false,
+  "old_physical_values_independently_compared": false,
+  "old_value_comparison_delegated_to_actual_stage021": true,
+  "actual_stage021_sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+  "full_session_qualified": {
+    "FG009.CZCE": true
+  },
+  "old_key_protection": "Real Stage021 compares all overlap seven-values exactly before append-only atomic commit."
+}

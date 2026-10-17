@@ -1,0 +1,90 @@
+{
+  "request_sha256": "f00bd491b03a4c184c28cad79d4a452f580d7c45e91367511aa0ecfaddb309f2",
+  "targets": [
+    {
+      "vt_symbol": "CF009.CZCE",
+      "execution_trade_date": "2020-07-14",
+      "requirement_kind": "full_session",
+      "daily_reference_source": "reviewed_stage013_daily",
+      "is_new_daily": false,
+      "local_accepted": true,
+      "source_checks": [
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/CF009_completed_minute_backtest.csv",
+          "vt_symbol": "CF009.CZCE",
+          "expected_sha256": "eaf7dce513f02adee7b70992e03775dfacbbb755af4aca5dca3e353bbb53192a",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 21960,
+          "sha256": "eaf7dce513f02adee7b70992e03775dfacbbb755af4aca5dca3e353bbb53192a",
+          "bytes": 2290366
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/CF009_completed_minute_backtest.csv",
+          "vt_symbol": "CF009.CZCE",
+          "expected_sha256": "aaf90671c319081cbf2afda7d4d41cfd753a9be2927620e37ac71ad669e5e4c2",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 1575,
+          "sha256": "aaf90671c319081cbf2afda7d4d41cfd753a9be2927620e37ac71ad669e5e4c2",
+          "bytes": 164641
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/CF009_completed_minute_backtest.csv",
+          "vt_symbol": "CF009.CZCE",
+          "expected_sha256": "3444b9e0e14c966e9c16087b65d8206a30a6967b26b5910491e42e7f83e12443",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 6090,
+          "sha256": "3444b9e0e14c966e9c16087b65d8206a30a6967b26b5910491e42e7f83e12443",
+          "bytes": 636582
+        }
+      ],
+      "source_audits": [
+        {
+          "source_id": "s491_012",
+          "source_rows": 21960,
+          "target_rows": 345
+        },
+        {
+          "source_id": "local_0042",
+          "source_rows": 1575,
+          "target_rows": 0
+        },
+        {
+          "source_id": "local_0043",
+          "source_rows": 6090,
+          "target_rows": 0
+        }
+      ],
+      "local_present_minutes": 345,
+      "missing_minutes": 0,
+      "missing_timestamps": [],
+      "uncompleted_minutes": 0,
+      "uncompleted_timestamps": [],
+      "full_session_grid_minutes": 345,
+      "required_minutes": 345,
+      "full_session_qualified": true,
+      "session_qualification": {
+        "status": "accepted",
+        "reason": "complete_daily_matched_base_preserved",
+        "expected_minutes": 345,
+        "actual_rows": 345,
+        "missing_minutes": 0,
+        "new_minutes": 345,
+        "base_overlap_minutes": 0,
+        "daily_open_oi_check": "checked",
+        "aggregate": {
+          "open": 12130.0,
+          "high": 12160.0,
+          "low": 11945.0,
+          "close": 11995.0,
+          "volume": 321064.0,
+          "open_oi": 329709.0,
+          "close_oi": 322098.0
+        },
+        "daily_mismatch_fields": []
+      }
+    }
+  ]
+}

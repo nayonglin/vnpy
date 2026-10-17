@@ -1,0 +1,18 @@
+{
+  "schema": "stage036_run_context_v1",
+  "run_id": "ccc4a13cbc8e4691af41a16916c659f2",
+  "arm": "B_TS",
+  "attempt": 1,
+  "output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS",
+  "started_at": "2026-10-18 03:47:59.193786+08:00",
+  "writer": "stage036_run_b_ts_checkpoint.py",
+  "writer_source_sha256": "34563257e25e49b19c9631e06cd9107fc26cfd954713739e01a1bf67d574ff43",
+  "parent_runner_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "strategy_engine_sha256": {
+    "stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+    "stage028_ordered_engine.py": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+    "stage035_b_ts_pricing.py": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+    "stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e"
+  },
+  "production_qualified": false
+}

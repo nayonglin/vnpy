@@ -1,0 +1,63 @@
+{
+  "targets": [
+    {
+      "vt_symbol": "OI009.CZCE",
+      "trade_date": "2020-04-08",
+      "daily": {
+        "open": 6668.0,
+        "high": 6726.0,
+        "low": 6651.0,
+        "close": 6700.0,
+        "volume": 73981.0,
+        "open_oi": 78419.0,
+        "close_oi": 82233.0
+      },
+      "exact_DB_six": {
+        "open": 6668.0,
+        "high": 6726.0,
+        "low": 6651.0,
+        "close": 6700.0,
+        "volume": 73981.0,
+        "open_oi": 78419.0
+      },
+      "six_fields_checked": true,
+      "six_fields_max_abs_difference": {
+        "open": 0.0,
+        "high": 0.0,
+        "low": 0.0,
+        "close": 0.0,
+        "volume": 0.0,
+        "open_oi": 0.0
+      },
+      "DB_open_interest_maps_to": "provider.open_oi",
+      "database_closeOI": "N/A_not_independently_available",
+      "actual_raw_forward_successor_checked": true,
+      "source_csv_row": 9893,
+      "successor_csv_row": 9894,
+      "source_bar_id": 133,
+      "source_datetime_ns": 1586275200000000000,
+      "successor_id": 134,
+      "successor_datetime_ns": 1586361600000000000,
+      "source_local_time": "2020-04-08T00:00:00+08:00",
+      "successor_local_time": "2020-04-09T00:00:00+08:00",
+      "successor_values": {
+        "open": 6726.0,
+        "high": 6818.0,
+        "low": 6710.0,
+        "close": 6812.0,
+        "volume": 83197.0,
+        "open_oi": 82233.0,
+        "close_oi": 84069.0
+      },
+      "raw_snapshot_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/raw/CZCE/OI009.csv",
+      "raw_snapshot_sha256": "dc23285c3642b882de031586ebffaeda3f50cc9c026c77c88d57dc757cc70317",
+      "raw_non_target_daily_rows_qualified": false,
+      "full_DB_rehashed_by_reviewer": false,
+      "exact_DB_queries": 1,
+      "inherited_DB_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "provider_original_exit_code": 1,
+      "provider_original_rejections_preserved": true,
+      "request_sha256": "8787a0927d397d2b818352dd448804441731a2e4c7f4972afb72c6194abd1914"
+    }
+  ]
+}

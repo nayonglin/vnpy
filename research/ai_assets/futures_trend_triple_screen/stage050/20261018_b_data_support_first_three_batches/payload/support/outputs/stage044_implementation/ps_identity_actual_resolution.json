@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-18T04:23:48.273747+08:00",
+  "old_source_sha256": "ec6ca80e10510e06b5edbe04d96cd7d64524e7d17712fe779b50dc57d21eed25",
+  "new_source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+  "actual_prepare_exit_code": 1,
+  "original_reason": "original_B_engine_command_not_live",
+  "actual_B_tool_session_live": 70433,
+  "PID": 21822,
+  "root_cause": "macOS ps command field before lstart truncated command; actual args last with -ww exposes full argv",
+  "fixed_command_validated_exit_code": 0,
+  "fixed_length": 240,
+  "fixed_contains_runner": true,
+  "fixed_contains_run_flag": true,
+  "unchanged_assertions": [
+    "same PID 21822",
+    "runner SHA",
+    "script name",
+    "--run",
+    "manifest full command/start identity equality"
+  ],
+  "financial_replays": 0,
+  "network_connections": 0,
+  "actual_batch_started": false
+}

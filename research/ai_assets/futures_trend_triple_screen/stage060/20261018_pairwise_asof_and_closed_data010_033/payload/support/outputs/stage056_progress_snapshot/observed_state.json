@@ -1,0 +1,46 @@
+{
+  "schema": "stage056_observed_progress_not_financial_terminal_v1",
+  "observed_at": "2026-10-18T05:33:09.759329+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "financial_tool_session": 70433,
+  "data_tool_session": 43111,
+  "last_actual_tool_live_verification_at": "2026-10-18T05:31:46+08:00",
+  "last_actual_tool_observation": "both tool sessions returned running handles, not terminal",
+  "closed_stage054_chain": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage054_root_batch_chain/journal.json",
+    "sha256": "882f50fb8110baa65790ac1a1997572fc8d731a672e3977c4d41f227da5cbbac",
+    "status": "bounded_chain_limit_reached",
+    "closed_batches": 13,
+    "provider_connections": 52
+  },
+  "stage056_live_chain": {
+    "status_at_snapshot": "continuing_same_engine",
+    "closed_batches_at_snapshot": 9,
+    "last_event_at_snapshot": {
+      "batch": "batch030",
+      "prepare_exit_code": 0,
+      "prepare_terminal_observed": true,
+      "manifest_sha256": "07f34f17cf751df2d3c4d00432cca2adc7717adc8111a60e136d807737083b8a"
+    },
+    "controller_source_sha256": "1926cba827dac8224f20b136f164d725806a218082c2635a46e0f95568467128",
+    "live_journal_is_not_registered_as_immutable": true
+  },
+  "last_request": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c/request.json",
+    "file_sha256": "37173726030daab3eab8cfd836ad88225b6a7651e584c0472b5ea6b54d252094",
+    "request_sequence": 158,
+    "execution_trade_date": "2022-01-20",
+    "requirements": [
+      {
+        "vt_symbol": "rb2205.SHFE",
+        "execution_trade_date": "2022-01-20",
+        "requirement_kind": "full_session"
+      }
+    ]
+  },
+  "financial_replays_started": 0,
+  "model_fits": 0,
+  "original_B_deadlines_or_economics_changed": false,
+  "B_full_financial_metrics": "N/A_pending_true_terminal",
+  "production_qualified": false
+}

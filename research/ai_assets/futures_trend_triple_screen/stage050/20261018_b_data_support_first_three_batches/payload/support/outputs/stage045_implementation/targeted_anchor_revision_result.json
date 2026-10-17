@@ -1,0 +1,13 @@
+{
+  "status": "three_focused_local_boundary_cases_passed",
+  "cases": [
+    "complete225_source_delivers_anchor1_proof1_only",
+    "cross_source_anchor_price_conflict_blocks",
+    "two_actual_rows_anchor_pass_full_session_fail"
+  ],
+  "source_sha256": "597551c51a021f763318086e4e3084bd5a54aa03abb8d4b038f63d131f8d02df",
+  "fixture_sha256": "95bd6282f57e47ffa908340566a79341f75c6f89e1580d72e3d0ae3390f3ee16",
+  "financial_replays": 0,
+  "network_connections": 0,
+  "actual_request_qualified_by_this_test": false
+}

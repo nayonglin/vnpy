@@ -1,0 +1,40 @@
+{
+  "request_sha256": "90a06b9459fed0fd5b3b4e9e1640630a4eec6f64560c30017a8f9659bc57c5f0",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "jm2005.DCE",
+      "execution_trade_date": "2020-03-26",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 225,
+      "actual_rows": 225,
+      "missing_minutes": 0,
+      "new_minutes": 225,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 1257.5,
+        "high": 1265.5,
+        "low": 1247.0,
+        "close": 1250.5,
+        "volume": 49374.0,
+        "open_oi": 80265.0,
+        "close_oi": 75765.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 225,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

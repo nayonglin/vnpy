@@ -1,0 +1,27 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 149,
+  "execution_trade_date": "2021-10-22",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.353",
+      "vt_symbol": "lh2201.DCE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "lh2201.DCE",
+      "execution_trade_date": "2021-10-22",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2021-10-22T09:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2021-10-22T09:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "e3f5b945b27c91221ce298c8a2e32a4d3ad58428290159fdb5eeee4719883f0b"
+}

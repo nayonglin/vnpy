@@ -1,0 +1,90 @@
+{
+  "request_sha256": "7fd1108862297c568f463041d4128af4e8a47738d36a00e786a559f9e6cebe74",
+  "targets": [
+    {
+      "vt_symbol": "MA101.CZCE",
+      "execution_trade_date": "2020-08-24",
+      "requirement_kind": "full_session",
+      "daily_reference_source": "original_daily_csv",
+      "is_new_daily": false,
+      "local_accepted": true,
+      "source_checks": [
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/MA101_completed_minute_backtest.csv",
+          "vt_symbol": "MA101.CZCE",
+          "expected_sha256": "af504cccff71f32f8b40657ea1ffa2ae885c0791dc691ae5a6327d65fa24fdf0",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 23340,
+          "sha256": "af504cccff71f32f8b40657ea1ffa2ae885c0791dc691ae5a6327d65fa24fdf0",
+          "bytes": 2383892
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/MA101_completed_minute_backtest.csv",
+          "vt_symbol": "MA101.CZCE",
+          "expected_sha256": "8f698c8478056b2ebbbebe029e89e7ed389334d4a3e91062a03d815e6e257b5e",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 1725,
+          "sha256": "8f698c8478056b2ebbbebe029e89e7ed389334d4a3e91062a03d815e6e257b5e",
+          "bytes": 173750
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/MA101_completed_minute_backtest.csv",
+          "vt_symbol": "MA101.CZCE",
+          "expected_sha256": "5209e0f5347a98b034445fb9dcae1bfb33167a13e27de5db854c1af6de8c17ba",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 4485,
+          "sha256": "5209e0f5347a98b034445fb9dcae1bfb33167a13e27de5db854c1af6de8c17ba",
+          "bytes": 457053
+        }
+      ],
+      "source_audits": [
+        {
+          "source_id": "s491_028",
+          "source_rows": 23340,
+          "target_rows": 0
+        },
+        {
+          "source_id": "local_0122",
+          "source_rows": 1725,
+          "target_rows": 0
+        },
+        {
+          "source_id": "local_0123",
+          "source_rows": 4485,
+          "target_rows": 345
+        }
+      ],
+      "local_present_minutes": 345,
+      "missing_minutes": 0,
+      "missing_timestamps": [],
+      "uncompleted_minutes": 0,
+      "uncompleted_timestamps": [],
+      "full_session_grid_minutes": 345,
+      "required_minutes": 345,
+      "full_session_qualified": true,
+      "session_qualification": {
+        "status": "accepted",
+        "reason": "complete_daily_matched_base_preserved",
+        "expected_minutes": 345,
+        "actual_rows": 345,
+        "missing_minutes": 0,
+        "new_minutes": 345,
+        "base_overlap_minutes": 0,
+        "daily_open_oi_check": "checked",
+        "aggregate": {
+          "open": 1924.0,
+          "high": 1949.0,
+          "low": 1920.0,
+          "close": 1944.0,
+          "volume": 1108371.0,
+          "open_oi": 938871.0,
+          "close_oi": 1113781.0
+        },
+        "daily_mismatch_fields": []
+      }
+    }
+  ]
+}

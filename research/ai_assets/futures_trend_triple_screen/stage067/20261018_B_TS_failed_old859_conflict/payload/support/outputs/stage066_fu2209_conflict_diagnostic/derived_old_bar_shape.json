@@ -1,0 +1,10 @@
+{
+  "schema": "stage066_old_bar_shape_derived_from_differences_v1",
+  "evidence_sha256": "2a92f959bef508d0b893579aa763490e2c2dcfdc4ed0c4c56c09bbf67d42597b",
+  "delivery_sha256": "7e41b88df89143f1205f83e53280c9b84f23ff15ce06309aac698e7b70ddec22",
+  "changed_rows": 225,
+  "old_zero_volume_rows": 225,
+  "old_ohlc_all_equal_open_rows": 225,
+  "changed_rows_have_open_or_openOI_difference": false,
+  "note": "Derived only from stored full difference list and unchanged delivery; no source re-read/replay or data change."
+}

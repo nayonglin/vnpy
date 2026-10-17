@@ -1,0 +1,66 @@
+{
+  "vt_symbol": "au2006.SHFE",
+  "execution_trade_date": "2020-01-10",
+  "requirement_kind": "anchor",
+  "source_checks": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/au2006_completed_minute_backtest.csv",
+      "vt_symbol": "au2006.SHFE",
+      "expected_sha256": "90859b2d16e04ddf33bf89048eaeaf3bf88f16da6dfba9875a86d60347464cf7",
+      "status": "accepted_source_bytes",
+      "reason": "",
+      "rows": 13275,
+      "sha256": "90859b2d16e04ddf33bf89048eaeaf3bf88f16da6dfba9875a86d60347464cf7",
+      "bytes": 1350070
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/au2006_completed_minute_backtest.csv",
+      "vt_symbol": "au2006.SHFE",
+      "expected_sha256": "6412a0611bc4b7f5228dcef180b9393064d3983a21e956d1c470bb19bf3c5e69",
+      "status": "accepted_source_bytes",
+      "reason": "",
+      "rows": 2235,
+      "sha256": "6412a0611bc4b7f5228dcef180b9393064d3983a21e956d1c470bb19bf3c5e69",
+      "bytes": 225800
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2006_completed_minute_backtest.csv",
+      "vt_symbol": "au2006.SHFE",
+      "expected_sha256": "d5f22517bb90818d69c20f4697f620a1f633fef10e3e4e075180fbfb0de9876b",
+      "status": "accepted_source_bytes",
+      "reason": "",
+      "rows": 4455,
+      "sha256": "d5f22517bb90818d69c20f4697f620a1f633fef10e3e4e075180fbfb0de9876b",
+      "bytes": 447437
+    }
+  ],
+  "source_audits": [
+    {
+      "source_id": "s491_085",
+      "source_rows": 13275,
+      "target_rows": 0
+    },
+    {
+      "source_id": "local_0307",
+      "source_rows": 2235,
+      "target_rows": 0
+    },
+    {
+      "source_id": "local_0308",
+      "source_rows": 4455,
+      "target_rows": 0
+    }
+  ],
+  "local_present_minutes": 0,
+  "missing_minutes": 1,
+  "missing_timestamps": [
+    "2020-01-09T21:00:00"
+  ],
+  "uncompleted_minutes": 1,
+  "uncompleted_timestamps": [
+    "2020-01-09T21:00:00"
+  ],
+  "full_session_grid_minutes": 555,
+  "required_minutes": 1,
+  "full_session_qualified": false
+}

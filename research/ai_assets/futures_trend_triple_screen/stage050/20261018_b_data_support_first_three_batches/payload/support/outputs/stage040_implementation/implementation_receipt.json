@@ -1,0 +1,51 @@
+{
+  "schema": "stage040_exact_request_daily_implementation_v1",
+  "created_at": "2026-10-18T03:57:22.943365+08:00",
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage040_exact_request_daily_recovery.py",
+  "source_sha256": "32ddecd055d7bb52b8d7f68ab8f1c5d3023ce0943f47045620b254d4e09cc820",
+  "test_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage040_exact_request_daily_recovery.py",
+  "test_sha256": "4d0d001f1b0a9a437e12df5eaab79455a26d6a2b40cbc50d39f9e58cdab3185a",
+  "protocol_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0400_stage040_exact_actual_daily_recovery_protocol.md",
+  "preflight_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage040_exact_request_daily_recovery/preflight.json",
+  "preflight_sha256": "ae032b5c8ad1ac1e9efa1a51c6af3f1ec0e537bcf47411853327547b1c824b9a",
+  "exact_request_sha256": "53e251e1034a04c76c81f26838eec78388484bf2c14742953fb9efecfce040ae",
+  "exact_request_file_sha256": "f7ba04a28e5b0f99d695c567415c681c91cbd62672bd0469f4034e832302f420",
+  "exact_target": {
+    "vt_symbol": "SM005.CZCE",
+    "trade_date": "2020-01-06",
+    "kind": "full_session",
+    "required_minutes": 225
+  },
+  "red": {
+    "true_terminal": true,
+    "exit_code": 1,
+    "reason": "module missing assertion",
+    "elapsed_seconds": 0.169672875
+  },
+  "green": {
+    "true_terminal": true,
+    "exit_code": 0,
+    "tests": 1,
+    "test_seconds": 0.288,
+    "wall_seconds": 0.507127291
+  },
+  "prepare": {
+    "true_terminal": true,
+    "exit_code": 0,
+    "wall_seconds": 0.389218667
+  },
+  "provider_connections": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "cancels": 0,
+  "reused_qualifier": "stage013_missing_daily_recovery.qualify_daily_snapshot",
+  "database_contract": "DB.open_interest == provider.open_oi; DB.closeOI N/A",
+  "unchanged_sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage013_missing_daily_recovery.py": "2b8ad6b843ada5c214c447429f8ae01a7eb3d0f4e9abedc9195e9bb8549dcb17",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1"
+  },
+  "independent_review_signed": false,
+  "response_written": false,
+  "production_qualified": false
+}

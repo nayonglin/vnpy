@@ -1,0 +1,11 @@
+{
+  "completed_minutes": 225,
+  "target_minutes": 225,
+  "diagnostic": {
+    "phase": "all_target_minutes_completed",
+    "idle_waits": 0,
+    "update_calls": 2,
+    "ready_serial_count": 1,
+    "elapsed_seconds": 10.433678333007265
+  }
+}

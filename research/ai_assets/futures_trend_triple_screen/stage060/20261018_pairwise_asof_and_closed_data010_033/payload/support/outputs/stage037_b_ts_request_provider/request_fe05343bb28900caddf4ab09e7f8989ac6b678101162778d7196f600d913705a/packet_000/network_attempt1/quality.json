@@ -1,0 +1,40 @@
+{
+  "request_sha256": "fe05343bb28900caddf4ab09e7f8989ac6b678101162778d7196f600d913705a",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "hc2110.SHFE",
+      "execution_trade_date": "2021-08-16",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 345,
+      "actual_rows": 345,
+      "missing_minutes": 0,
+      "new_minutes": 345,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 5775.0,
+        "high": 5820.0,
+        "low": 5675.0,
+        "close": 5703.0,
+        "volume": 357019.0,
+        "open_oi": 376057.0,
+        "close_oi": 341143.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 345,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

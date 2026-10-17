@@ -1,0 +1,22 @@
+{
+  "schema": "stage047_pre_actual_main_shadow_fix_v1",
+  "recorded_at": "2026-10-18T04:33:14+08:00",
+  "status": "root_review_caught_and_fixed_before_first_actual",
+  "source_sha256": "84f9ca450ec8854a3ae75d64f2eb152f0fb396d1ff1c2232cfe223084801b950",
+  "previous_candidate_sha256": "600d51ab98799edb74bfa0886687fe5fc6abf77c6f0fdb571b0814a029053c97",
+  "previous_candidate_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage047_implementation/source_candidate600.py",
+  "finding_priority": "P1_in_pre_actual_candidate",
+  "finding": "New-daily receipt keys overwrote the main physical new_keys set; an all-local new-daily path could fail added-key filtering.",
+  "fix": "Only rename the daily list and its duplicate/accepted_target_keys uses to new_daily_keys; preserve physical new_keys set.",
+  "compile_exit_code": 0,
+  "helper_fixture_rerun": false,
+  "helper_fixture_coverage_limit": "Old joint fixture exercised helpers/parser, not the complete main new-daily branch.",
+  "actual_main_runs": 0,
+  "financial_replays": 0,
+  "network_connections": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "response_written": false,
+  "next_validation": "Root first actual current two-target call covers the new-daily complete main path; no claim of prior main success.",
+  "source045_044_048_changed": false
+}

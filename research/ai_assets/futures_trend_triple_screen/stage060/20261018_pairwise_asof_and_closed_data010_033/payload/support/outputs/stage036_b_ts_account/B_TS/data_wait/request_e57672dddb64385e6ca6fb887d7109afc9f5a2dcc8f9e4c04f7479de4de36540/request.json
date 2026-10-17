@@ -1,0 +1,32 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 88,
+  "execution_trade_date": "2020-09-01",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.116",
+      "vt_symbol": "rb2010.SHFE",
+      "requirement_kind": "anchor"
+    },
+    {
+      "order_id": "BACKTESTING.117",
+      "vt_symbol": "sp2012.SHFE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "rb2010.SHFE",
+      "execution_trade_date": "2020-09-01",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2020-08-31T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2020-08-31T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "e57672dddb64385e6ca6fb887d7109afc9f5a2dcc8f9e4c04f7479de4de36540"
+}

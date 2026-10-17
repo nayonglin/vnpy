@@ -1,0 +1,19 @@
+{
+  "status": "two_new_source_structural_cases_passed",
+  "cases": [
+    "ordinary_raw_schema_exact_six_and_real_forward_daily_row",
+    "missing_root_observed_terminal_rejected"
+  ],
+  "source_sha256": "ec0d914d8b649d064a1fcc1532e065b4e331273b6f685a28d45f0e6d29593fd8",
+  "fixture_sha256": "83c028481544056fe31729d92c8d11e87d4339ff3db87d3ad4e64a0f86f79b8c",
+  "fixture_only": true,
+  "actual_main_runs": 0,
+  "actual_SM009_qualified": false,
+  "root_terminal_written": false,
+  "coverage_limit": "Pure raw structure and absent-root-terminal guard; successful051 envelope/main awaits root actual terminal.",
+  "financial_replays": 0,
+  "network_connections": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "response_written": false
+}

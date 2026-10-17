@@ -1,0 +1,40 @@
+{
+  "request_sha256": "04838ce5c2097e2fdd1e780562b69f34b5ffb5006f410b30fc1c40268283ce02",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "sp2111.SHFE",
+      "execution_trade_date": "2021-10-26",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 345,
+      "actual_rows": 345,
+      "missing_minutes": 0,
+      "new_minutes": 345,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 5112.0,
+        "high": 5134.0,
+        "low": 5008.0,
+        "close": 5100.0,
+        "volume": 112002.0,
+        "open_oi": 51784.0,
+        "close_oi": 36167.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 345,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

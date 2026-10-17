@@ -1,0 +1,345 @@
+{
+  "status": "paused_provider_batch_limit",
+  "started_at": "2026-10-18T05:32:14.101914+08:00",
+  "driver_pid": 31784,
+  "source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+  "manifest_sha256": "07f34f17cf751df2d3c4d00432cca2adc7717adc8111a60e136d807737083b8a",
+  "provider_connections": 4,
+  "events": [
+    {
+      "request_sha256": "94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae/request.json",
+      "request_file_sha256": "f30d72d13f757e41b35fe64e8e5e39d58446bab37efdf93a5332a4a22a07adb6",
+      "provider_binding": {
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "reviewer_output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery",
+        "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider"
+      },
+      "provider_launch_reserved": true,
+      "provider_terminal": {
+        "schema": "stage041_provider_actual_tool_terminal_v1",
+        "observed_at": "2026-10-18T05:32:30.577970+08:00",
+        "subprocess_pid": 31787,
+        "subprocess_returncode": 0,
+        "terminal_observed": true,
+        "exit_code": 0,
+        "all_inputs_unchanged": true,
+        "request_sha256": "94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae",
+        "source_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "provider_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "preflight_sha256": "3595cc262a49503465a0c71c568a633341f39919d03e130603eee15b8a0f711c",
+        "parent_receipt_sha256": "61cda276e57704eb35410ba039841f593d198f96dd2cb3981214e28b7df4ad41",
+        "driver_pid": 31784,
+        "driver_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py",
+        "driver_source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+        "parent_status": "worker_terminal",
+        "worker_exit_code": 0,
+        "new_provider_connections": 1,
+        "new_minute_provider_connections": 1,
+        "financial_replays": 0,
+        "model_fits": 0,
+        "orders": 0,
+        "production_qualified": false
+      },
+      "qualifier_terminal": {
+        "subprocess_pid": 31799,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "source": "provider",
+      "response_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae/response.json",
+      "response_sha256": "a5e3b3afeea8c0182384111d200068df565b0bf44894959ec4fed43871af6bb9",
+      "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae/delivery_receipt.json",
+      "receipt_sha256": "afed8353c6cc95de368918cda54a71564fafcd013eef12ca13ec13c2210270ea",
+      "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_94bee27f989f61c4e82221164f81b43bc86e5a687330b3c5fa7bcc7515e9d6ae/delivery_minutes.csv",
+      "data_sha256": "551c1a38e9f7f6a6d83dea28945ae78b31ade7f3191b8ba99c9822deb50879ef"
+    },
+    {
+      "request_sha256": "712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01/request.json",
+      "request_file_sha256": "5e45c441ebd4cbf26ee876cca2cf8d1461c193a51ba68b49186b604993558507",
+      "resolver_result": {
+        "status": "accepted",
+        "request_sha256": "712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01",
+        "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage052_generic_daily_source_resolver/request_712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01/delivery_receipt.json",
+        "receipt_sha256": "fa6e418389bfb0497926c4a59eadf1ae55a797ef3811759142952bde1fad0407",
+        "requirements": 1,
+        "rows": 345,
+        "full_keys": 345,
+        "anchor_keys": 0,
+        "actual_stage021_parser_passed": true,
+        "response_written": false
+      },
+      "resolver_terminal": {
+        "subprocess_pid": 31834,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "response_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01/response.json",
+      "response_sha256": "94dd0af95a440a9ed6f2c15d71bfedf804d035a32ebc4b0e692b7c16cf9998af",
+      "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage052_generic_daily_source_resolver/request_712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01/delivery_receipt.json",
+      "receipt_sha256": "fa6e418389bfb0497926c4a59eadf1ae55a797ef3811759142952bde1fad0407",
+      "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage052_generic_daily_source_resolver/request_712b1856a19e1f10bb49700c7fa25e5cd0e66abadb798af5427270743ac94c01/delivery_minutes.csv",
+      "data_sha256": "4e3900e0b9bdce391e823fef86e5c31f9982e2b5cbc09d57deb4ade4aa658543",
+      "source": "local"
+    },
+    {
+      "request_sha256": "0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6/request.json",
+      "request_file_sha256": "403b40dc4ee44a527f7317f4f8cea13defb964065ddf9ad7a1f349c6829d9ea8",
+      "resolver_result": {
+        "status": "needs_provider",
+        "request_sha256": "0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6",
+        "packet_count": 1,
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "requirements": 1,
+        "local_ready_requirements": 0,
+        "provider_scope": "entire_actual_request_not_only_the_local_missing_subset"
+      },
+      "resolver_terminal": {
+        "subprocess_pid": 31851,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "prepare_terminal": {
+        "subprocess_pid": 31852,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "provider_binding": {
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "reviewer_output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery",
+        "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider"
+      },
+      "provider_launch_reserved": true,
+      "provider_terminal": {
+        "schema": "stage041_provider_actual_tool_terminal_v1",
+        "observed_at": "2026-10-18T05:32:57.302309+08:00",
+        "subprocess_pid": 31854,
+        "subprocess_returncode": 0,
+        "terminal_observed": true,
+        "exit_code": 0,
+        "all_inputs_unchanged": true,
+        "request_sha256": "0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6",
+        "source_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "provider_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "preflight_sha256": "d7cd7e4df2ba747bc5563d471678478a7e9ca1f0b45ae237abfb89e11a8387cf",
+        "parent_receipt_sha256": "3f36aaae91eb8d1749796f5f9e78ec3a74179c5b3134f654a1c32af05511c4a6",
+        "driver_pid": 31784,
+        "driver_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py",
+        "driver_source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+        "parent_status": "worker_terminal",
+        "worker_exit_code": 0,
+        "new_provider_connections": 1,
+        "new_minute_provider_connections": 1,
+        "financial_replays": 0,
+        "model_fits": 0,
+        "orders": 0,
+        "production_qualified": false
+      },
+      "qualifier_terminal": {
+        "subprocess_pid": 31868,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "source": "provider",
+      "response_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6/response.json",
+      "response_sha256": "5df33ea3793c66c34a0c783956516e5ad78c116590c9b8f3b29db99f36bb039f",
+      "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6/delivery_receipt.json",
+      "receipt_sha256": "fb94bd16986a0318ddf51d3fb8bda44d4ad833c1a2ddd3f3eceadefab2dc92fa",
+      "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_0894331807b1bc46cd783892d6c8e09bd60a630c2a397228c4a42b97eb124ef6/delivery_minutes.csv",
+      "data_sha256": "21cd176d66eab623e37d6c4b1b0e78b15e75c914997538162680a6c679645e39"
+    },
+    {
+      "request_sha256": "76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c/request.json",
+      "request_file_sha256": "37173726030daab3eab8cfd836ad88225b6a7651e584c0472b5ea6b54d252094",
+      "resolver_result": {
+        "status": "needs_provider",
+        "request_sha256": "76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c",
+        "packet_count": 1,
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "requirements": 1,
+        "local_ready_requirements": 0,
+        "provider_scope": "entire_actual_request_not_only_the_local_missing_subset"
+      },
+      "resolver_terminal": {
+        "subprocess_pid": 31885,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "prepare_terminal": {
+        "subprocess_pid": 31886,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "provider_binding": {
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "reviewer_output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery",
+        "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider"
+      },
+      "provider_launch_reserved": true,
+      "provider_terminal": {
+        "schema": "stage041_provider_actual_tool_terminal_v1",
+        "observed_at": "2026-10-18T05:33:18.803411+08:00",
+        "subprocess_pid": 31888,
+        "subprocess_returncode": 0,
+        "terminal_observed": true,
+        "exit_code": 0,
+        "all_inputs_unchanged": true,
+        "request_sha256": "76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c",
+        "source_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "provider_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "preflight_sha256": "0f1c7ebe43cf45da0db51cb02278792f75663f99b325aba9ecee59be97eb35c6",
+        "parent_receipt_sha256": "61ef633e7ed4b63335277a2ad71ac1e482615d44877d36e68978124b1d908dde",
+        "driver_pid": 31784,
+        "driver_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py",
+        "driver_source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+        "parent_status": "worker_terminal",
+        "worker_exit_code": 0,
+        "new_provider_connections": 1,
+        "new_minute_provider_connections": 1,
+        "financial_replays": 0,
+        "model_fits": 0,
+        "orders": 0,
+        "production_qualified": false
+      },
+      "qualifier_terminal": {
+        "subprocess_pid": 32064,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "source": "provider",
+      "response_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c/response.json",
+      "response_sha256": "42017c7e18e5c7f8cc75833db5dbad1911a7d5d1a0ece51f7c66ff43169b026b",
+      "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c/delivery_receipt.json",
+      "receipt_sha256": "9d11913ef759060a7572851bfb4b320799c6062a3ad0e763e5f6556e5b779cda",
+      "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_76e551d0673f1dc8bd46a7703c9e9a2f7ba11c48fac2f016b4d24fb9d458fb3c/delivery_minutes.csv",
+      "data_sha256": "f0eef24bbb914ae12675e3ac27d24a4315712127fea0c20e47f227f5ba17b7a0"
+    },
+    {
+      "request_sha256": "106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3/request.json",
+      "request_file_sha256": "252731713f0bb4c3b417980f6a98f627eb3d445dad20b75020f3ff3e4bfea127",
+      "resolver_result": {
+        "status": "needs_provider",
+        "request_sha256": "106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3",
+        "packet_count": 1,
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "requirements": 1,
+        "local_ready_requirements": 0,
+        "provider_scope": "entire_actual_request_not_only_the_local_missing_subset"
+      },
+      "resolver_terminal": {
+        "subprocess_pid": 32084,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "prepare_terminal": {
+        "subprocess_pid": 32091,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "provider_binding": {
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "reviewer_output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery",
+        "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider"
+      },
+      "provider_launch_reserved": true,
+      "provider_terminal": {
+        "schema": "stage041_provider_actual_tool_terminal_v1",
+        "observed_at": "2026-10-18T05:33:38.781578+08:00",
+        "subprocess_pid": 32098,
+        "subprocess_returncode": 0,
+        "terminal_observed": true,
+        "exit_code": 0,
+        "all_inputs_unchanged": true,
+        "request_sha256": "106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3",
+        "source_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "provider_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "preflight_sha256": "a0a5ac0f44fc4464ff78ea692f823c0e482db860f26fa136fde0a758f5c92c1f",
+        "parent_receipt_sha256": "44f29eaeb9652c049332895f2ed9e6cc326889012ce00f29ccde95e47bb7df17",
+        "driver_pid": 31784,
+        "driver_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py",
+        "driver_source_sha256": "1a27fa40efab481330bed6d3ac8714ddbd414a785d84200578001a8fcc7c5445",
+        "parent_status": "worker_terminal",
+        "worker_exit_code": 0,
+        "new_provider_connections": 1,
+        "new_minute_provider_connections": 1,
+        "financial_replays": 0,
+        "model_fits": 0,
+        "orders": 0,
+        "production_qualified": false
+      },
+      "qualifier_terminal": {
+        "subprocess_pid": 32127,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "source": "provider",
+      "response_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3/response.json",
+      "response_sha256": "721b935ff137e3e74e1016203849fcc846520d05c43d31e8de6894c5b5b38126",
+      "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3/delivery_receipt.json",
+      "receipt_sha256": "6ce0efe673d2c526214298699620869c99c590aa13553d24f69e92f0da1a8d47",
+      "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_106956920c859e78ffd82fb47b54322720b279e49958faad3718ec3b0b64eaa3/delivery_minutes.csv",
+      "data_sha256": "4ab39d8ab4cecdfbb43d1b6d65214754dcf79f8d1cbf5a4a64679ad6fb8b16c8"
+    },
+    {
+      "request_sha256": "ba9152bf228a9fb0c499bf98a0023cea6c5e74b806a148cf72810044d3f06c59",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_ba9152bf228a9fb0c499bf98a0023cea6c5e74b806a148cf72810044d3f06c59/request.json",
+      "request_file_sha256": "bdb123ea7a8a9c2305d3c81d03c4d6d756638866b2966c00177792c72eddf3a9",
+      "resolver_result": {
+        "status": "needs_provider",
+        "request_sha256": "ba9152bf228a9fb0c499bf98a0023cea6c5e74b806a148cf72810044d3f06c59",
+        "packet_count": 1,
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "requirements": 1,
+        "local_ready_requirements": 0,
+        "provider_scope": "entire_actual_request_not_only_the_local_missing_subset"
+      },
+      "resolver_terminal": {
+        "subprocess_pid": 32132,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "prepare_terminal": {
+        "subprocess_pid": 32133,
+        "subprocess_returncode": 0,
+        "terminal_observed": true
+      },
+      "provider_binding": {
+        "provider_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+        "provider_sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+        "reviewer_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+        "reviewer_sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+        "reviewer_output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery",
+        "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider"
+      }
+    }
+  ],
+  "elapsed_seconds": 87.50646316699567
+}

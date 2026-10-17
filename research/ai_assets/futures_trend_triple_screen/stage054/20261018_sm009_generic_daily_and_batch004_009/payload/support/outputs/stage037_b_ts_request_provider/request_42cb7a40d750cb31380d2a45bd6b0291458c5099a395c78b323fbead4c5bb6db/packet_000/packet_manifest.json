@@ -1,0 +1,57 @@
+{
+  "schema": "stage023_provider_packet_v1",
+  "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_42cb7a40d750cb31380d2a45bd6b0291458c5099a395c78b323fbead4c5bb6db/request.json",
+  "request_file_sha256": "39b9f1d2f3047afb456b17f1c7f8453cea2d446f8f001dc734b622f61469dd81",
+  "request_sha256": "42cb7a40d750cb31380d2a45bd6b0291458c5099a395c78b323fbead4c5bb6db",
+  "targets": [
+    {
+      "vt_symbol": "AP005.CZCE",
+      "execution_trade_date": "2020-03-27",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2020-03-27T09:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2020-03-27T09:00:00"
+      ],
+      "existing_source_timestamps": [],
+      "daily_reference": {
+        "open": 6650.0,
+        "high": 6754.0,
+        "low": 6605.0,
+        "close": 6664.0,
+        "volume": 214544.0,
+        "open_oi": 77154.0,
+        "close_oi": 74397.0
+      },
+      "daily_reference_source": "reviewed_stage013_daily",
+      "daily_reference_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv"
+    }
+  ],
+  "packet_index": 0,
+  "packet_count": 1,
+  "packet_contracts": [
+    "AP005.CZCE"
+  ],
+  "total_request_contracts": 1,
+  "covers_whole_request": true,
+  "request_required_minutes": 1,
+  "packet_required_minutes": 1,
+  "provider_start": "2020-03-30T09:01:00",
+  "provider_end": "2020-03-30T09:05:00",
+  "input_sha256": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_42cb7a40d750cb31380d2a45bd6b0291458c5099a395c78b323fbead4c5bb6db/request.json": "39b9f1d2f3047afb456b17f1c7f8453cea2d446f8f001dc734b622f61469dd81",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/data_wait/request_42cb7a40d750cb31380d2a45bd6b0291458c5099a395c78b323fbead4c5bb6db/request_fingerprint.json": "499fd0a9482975441728edda88d369c2267177822ee74a3560a56833b098bb50",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/A_final3/input_manifest.json": "376cefaf2a56f75e97adf31e431dac508189695c4bb4691294ab5f950aeada03",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_independent_review/review_receipt.json": "194e48847c9e0927772c482cd5bacc3529a625ac76aeec2a157089924177c795",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv": "89cd6502bba89bb32fce4ca032adb1266a8978b91fd7f1b0e1519aa464df6833",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/target_qualification.csv": "b29b623935a5580faccd40586f445f303beb83287278a7e8f8d67c83dfe405c0"
+  },
+  "fixture_scope": false,
+  "fixture_root": null,
+  "financial_replays": 0,
+  "orders": 0,
+  "independent_review_signed": false,
+  "response_written": false
+}

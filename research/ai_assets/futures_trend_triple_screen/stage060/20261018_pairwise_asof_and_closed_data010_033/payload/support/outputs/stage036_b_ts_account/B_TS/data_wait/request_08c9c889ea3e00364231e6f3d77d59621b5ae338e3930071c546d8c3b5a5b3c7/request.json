@@ -1,0 +1,27 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 127,
+  "execution_trade_date": "2021-05-31",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.273",
+      "vt_symbol": "au2106.SHFE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "au2106.SHFE",
+      "execution_trade_date": "2021-05-31",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2021-05-28T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2021-05-28T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "08c9c889ea3e00364231e6f3d77d59621b5ae338e3930071c546d8c3b5a5b3c7"
+}

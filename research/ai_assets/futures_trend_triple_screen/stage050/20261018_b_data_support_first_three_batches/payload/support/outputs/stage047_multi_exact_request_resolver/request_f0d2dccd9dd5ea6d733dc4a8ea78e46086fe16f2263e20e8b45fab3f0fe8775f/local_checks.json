@@ -1,0 +1,90 @@
+{
+  "request_sha256": "f0d2dccd9dd5ea6d733dc4a8ea78e46086fe16f2263e20e8b45fab3f0fe8775f",
+  "targets": [
+    {
+      "vt_symbol": "jm2005.DCE",
+      "execution_trade_date": "2020-02-07",
+      "requirement_kind": "full_session",
+      "daily_reference_source": "reviewed_stage013_daily",
+      "is_new_daily": false,
+      "local_accepted": true,
+      "source_checks": [
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/DCE/jm2005_completed_minute_backtest.csv",
+          "vt_symbol": "jm2005.DCE",
+          "expected_sha256": "48d71ad63d7eba251e6e052b94755f2eea0d699e1c7e4e42a73d11f26c5bf344",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 8985,
+          "sha256": "48d71ad63d7eba251e6e052b94755f2eea0d699e1c7e4e42a73d11f26c5bf344",
+          "bytes": 877905
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2005_completed_minute_backtest.csv",
+          "vt_symbol": "jm2005.DCE",
+          "expected_sha256": "7c2ec29ce1a7454a3102b1d3f8dbaaa1b4e0d9f1d93761eff4555ff6289a9d30",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 1950,
+          "sha256": "7c2ec29ce1a7454a3102b1d3f8dbaaa1b4e0d9f1d93761eff4555ff6289a9d30",
+          "bytes": 190108
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2005_completed_minute_backtest.csv",
+          "vt_symbol": "jm2005.DCE",
+          "expected_sha256": "7c2ec29ce1a7454a3102b1d3f8dbaaa1b4e0d9f1d93761eff4555ff6289a9d30",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 1950,
+          "sha256": "7c2ec29ce1a7454a3102b1d3f8dbaaa1b4e0d9f1d93761eff4555ff6289a9d30",
+          "bytes": 190108
+        }
+      ],
+      "source_audits": [
+        {
+          "source_id": "s491_061",
+          "source_rows": 8985,
+          "target_rows": 225
+        },
+        {
+          "source_id": "local_0607",
+          "source_rows": 1950,
+          "target_rows": 0
+        },
+        {
+          "source_id": "local_0608",
+          "source_rows": 1950,
+          "target_rows": 0
+        }
+      ],
+      "local_present_minutes": 225,
+      "missing_minutes": 0,
+      "missing_timestamps": [],
+      "uncompleted_minutes": 0,
+      "uncompleted_timestamps": [],
+      "full_session_grid_minutes": 225,
+      "required_minutes": 225,
+      "full_session_qualified": true,
+      "session_qualification": {
+        "status": "accepted",
+        "reason": "complete_daily_matched_base_preserved",
+        "expected_minutes": 225,
+        "actual_rows": 225,
+        "missing_minutes": 0,
+        "new_minutes": 225,
+        "base_overlap_minutes": 0,
+        "daily_open_oi_check": "checked",
+        "aggregate": {
+          "open": 1228.0,
+          "high": 1233.5,
+          "low": 1223.0,
+          "close": 1231.0,
+          "volume": 33785.0,
+          "open_oi": 92672.0,
+          "close_oi": 85945.0
+        },
+        "daily_mismatch_fields": []
+      }
+    }
+  ]
+}

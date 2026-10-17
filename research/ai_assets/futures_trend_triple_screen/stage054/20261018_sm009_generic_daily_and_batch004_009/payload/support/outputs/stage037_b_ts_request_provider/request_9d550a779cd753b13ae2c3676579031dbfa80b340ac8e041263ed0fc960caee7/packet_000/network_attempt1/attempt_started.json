@@ -1,0 +1,8 @@
+{
+  "request_sha256": "9d550a779cd753b13ae2c3676579031dbfa80b340ac8e041263ed0fc960caee7",
+  "packet_index": 0,
+  "provider_attempts_max": 1,
+  "soft_seconds": 570,
+  "hard_seconds": 600,
+  "automatic_retry": false
+}

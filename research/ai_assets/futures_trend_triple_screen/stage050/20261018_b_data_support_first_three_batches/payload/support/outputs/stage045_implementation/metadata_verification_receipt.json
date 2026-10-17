@@ -1,0 +1,16 @@
+{
+  "schema": "stage045_metadata_verification_v1",
+  "verified_at": "2026-10-18T04:21:48+08:00",
+  "source_sha256": "597551c51a021f763318086e4e3084bd5a54aa03abb8d4b038f63d131f8d02df",
+  "field": "qualified_full_local_session_for_anchor",
+  "actual_value": false,
+  "source_line": 333,
+  "source_changed": false,
+  "reason": "False already included in the previous anchor-scope revision; old candidate logic is absent.",
+  "compile_exit_code": 0,
+  "three_cases_rerun": false,
+  "financial_replays": 0,
+  "network_connections": 0,
+  "orders": 0,
+  "response_written": false
+}

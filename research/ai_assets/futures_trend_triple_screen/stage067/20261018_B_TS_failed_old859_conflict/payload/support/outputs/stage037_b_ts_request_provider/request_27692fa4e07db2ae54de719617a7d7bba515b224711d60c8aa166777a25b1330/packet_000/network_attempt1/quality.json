@@ -1,0 +1,40 @@
+{
+  "request_sha256": "27692fa4e07db2ae54de719617a7d7bba515b224711d60c8aa166777a25b1330",
+  "packet_index": 0,
+  "packet_count": 1,
+  "covers_whole_request": true,
+  "packet_all_targets_accepted": true,
+  "request_fully_qualified_by_this_packet": true,
+  "sessions": [
+    {
+      "vt_symbol": "au2206.SHFE",
+      "execution_trade_date": "2022-04-25",
+      "requirement_kind": "full_session",
+      "accepted": true,
+      "completion_evidence_complete": true,
+      "qualification_kind": "completed_full_session_daily7",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 555,
+      "actual_rows": 555,
+      "missing_minutes": 0,
+      "new_minutes": 555,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 405.66,
+        "high": 407.78,
+        "low": 403.48,
+        "close": 404.42,
+        "volume": 181631.0,
+        "open_oi": 148913.0,
+        "close_oi": 140109.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "raw_rows": 555,
+  "accepted_requirements": 1,
+  "independent_review_signed": false,
+  "response_written": false
+}

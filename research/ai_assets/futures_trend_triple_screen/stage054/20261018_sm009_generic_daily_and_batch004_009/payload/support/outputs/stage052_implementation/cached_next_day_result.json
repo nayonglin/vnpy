@@ -1,0 +1,30 @@
+{
+  "status": "cached_real_snapshot_next_actual_day_helper_passed",
+  "fixture_only": true,
+  "actual_main_runs": 0,
+  "current_SM009_request_qualified": false,
+  "new_daily_receipt_signed": false,
+  "engine_loaded": false,
+  "source_origin_request_sha256": "2359178d438e2191ff3691ebb97a82f41be5c81f8fa3ecd279e5b0a631e9093a",
+  "source_origin_day": "2020-04-15",
+  "newly_checked_day": "2020-04-16",
+  "daily": {
+    "open": 6970.0,
+    "high": 7276.0,
+    "low": 6946.0,
+    "close": 7178.0,
+    "volume": 342167.0,
+    "open_oi": 75175.0,
+    "close_oi": 92432.0
+  },
+  "source_bar_id": 139,
+  "successor_id": 140,
+  "source_sha256": "5b2772c700f0ddabb5536df4be1bfe1f70e07d8fea43400abfa74c66ae727b78",
+  "fixture_sha256": "68cfd853a42abbcaec9af5d4bef9246b832a8226d48c9a3ab8612a3623534fb0",
+  "financial_replays": 0,
+  "network_connections": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "response_written": false,
+  "root_terminal_written": false
+}

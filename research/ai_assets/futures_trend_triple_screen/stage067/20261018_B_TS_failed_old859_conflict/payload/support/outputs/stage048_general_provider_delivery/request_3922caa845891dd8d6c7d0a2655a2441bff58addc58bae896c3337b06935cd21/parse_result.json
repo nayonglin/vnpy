@@ -1,0 +1,13 @@
+{
+  "status": "accepted",
+  "request_sha256": "3922caa845891dd8d6c7d0a2655a2441bff58addc58bae896c3337b06935cd21",
+  "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage048_general_provider_delivery/request_3922caa845891dd8d6c7d0a2655a2441bff58addc58bae896c3337b06935cd21/delivery_receipt.json",
+  "receipt_sha256": "a6fca2c07198f8332ce915d99a8e95cef5d7b174118bb20c6e10bde532ec72d4",
+  "rows": 345,
+  "full_keys": 345,
+  "anchor_keys": 0,
+  "actual_stage021_parser_passed": true,
+  "response_written": false,
+  "financial_replays": 0,
+  "network_connections_in_review": 0
+}

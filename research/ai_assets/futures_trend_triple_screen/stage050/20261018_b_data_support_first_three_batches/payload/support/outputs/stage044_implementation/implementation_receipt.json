@@ -1,0 +1,51 @@
+{
+  "schema": "stage044_bounded_driver_implementation_v1",
+  "created_at": "2026-10-18T04:14:12.694686+08:00",
+  "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage044_qualified_wait_driver.py",
+  "source_sha256": "ec6ca80e10510e06b5edbe04d96cd7d64524e7d17712fe779b50dc57d21eed25",
+  "test_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage044_qualified_wait_driver.py",
+  "test_sha256": "016c55647d66eb946a3babeaa8abaf1f0c8d4bc67876fbe6645e77712756c2c4",
+  "protocol_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0409_stage044_bounded_actual_wait_driver_contract.md",
+  "red": {
+    "true_terminal": true,
+    "exit_code": 1,
+    "tests": 2,
+    "reason": "missing driver assertions"
+  },
+  "green": {
+    "true_terminal": true,
+    "exit_code": 0,
+    "tests": 2,
+    "test_seconds": 0.001
+  },
+  "compile": {
+    "true_terminal": true,
+    "exit_code": 0
+  },
+  "actual_prepare": false,
+  "actual_driver_run": false,
+  "provider_connections": 0,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "orders": 0,
+  "review_fix": "Root verified frozen043 requires new_minute_provider_connections=1; added before any actual binding/run. Provider subprocess timeout remains660 seconds; full provider+post reserve840 seconds. Root approved reviewer_output_root binding: absolute within this line outputs, only root manifest selects it; necessary for reader046 source in tools with separate output directory. Compile exit0; no repeated suite.",
+  "constraints": [
+    "original PID21822/runner036/ps command+lstart identity",
+    "actual latest audit request/canonical/file fingerprint",
+    "root pinned resolver/provider037-or041/reader allowlist; no arbitrary resolver executable selection",
+    "existing partial/failed provider attempt never retried; complete signed parse result consumed",
+    "max4 new minute provider connections per explicit batch; total840..3600 seconds",
+    "true provider subprocess returncode0 + samepreflight + parent receipt before terminal evidence",
+    "actual021 receipt parsing and all bound input SHAs before atomic022 pointer"
+  ],
+  "unresolved_before_root_run": [
+    "root must independently review source",
+    "045 resolver and037 reader046 source bindings required for both modes",
+    "sandbox denies ps; real PID proof not claimed from offline work"
+  ],
+  "no_alpha_change": true,
+  "independent_review_signed": false,
+  "response_written": false,
+  "production_qualified": false,
+  "updated_at": "2026-10-18T04:15:10.021214+08:00"
+}

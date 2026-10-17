@@ -1,0 +1,18 @@
+{
+  "schema": "stage064_runtime_rejected_delivery_exclusion_v1",
+  "request_sha256": "6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730",
+  "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage052_generic_daily_source_resolver/request_6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730/delivery_receipt.json",
+  "receipt_sha256": "274190b95b9c1ff18cdee2743730ddec0a89b6ad4f035e108f69f269701327bf",
+  "data_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage052_generic_daily_source_resolver/request_6873f0a1930106a91bb35355efbf2e9843ddcd9f05aa3ebf1ebf105806ab3730/delivery_minutes.csv",
+  "data_sha256": "7e41b88df89143f1205f83e53280c9b84f23ff15ce06309aac698e7b70ddec22",
+  "independent_data_receipt_accepted": true,
+  "pointer_parser_accepted": true,
+  "runtime_gate_accepted": false,
+  "data_qualified_appended": false,
+  "new_keys_committed_by_this_delivery": 0,
+  "full_or_anchor_rights_granted_by_this_delivery": 0,
+  "inheritance_eligible": false,
+  "reason": "Runtime Stage021 old-value comparison rejected before atomic mapping/qualification update.",
+  "prior_independently_accepted_rights_not_revoked": true,
+  "original_receipt_or_data_modified": false
+}

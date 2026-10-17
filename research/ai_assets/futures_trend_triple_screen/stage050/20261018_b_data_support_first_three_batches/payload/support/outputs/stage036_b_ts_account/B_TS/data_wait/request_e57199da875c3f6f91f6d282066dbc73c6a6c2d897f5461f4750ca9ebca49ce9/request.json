@@ -1,0 +1,49 @@
+{
+  "schema": "stage021_exact_execution_minute_request_v1",
+  "request_sequence": 12,
+  "execution_trade_date": "2020-01-23",
+  "active_orders": [
+    {
+      "order_id": "BACKTESTING.14",
+      "vt_symbol": "MA005.CZCE",
+      "requirement_kind": "anchor"
+    },
+    {
+      "order_id": "BACKTESTING.15",
+      "vt_symbol": "hc2005.SHFE",
+      "requirement_kind": "anchor"
+    },
+    {
+      "order_id": "BACKTESTING.16",
+      "vt_symbol": "rb2005.SHFE",
+      "requirement_kind": "anchor"
+    }
+  ],
+  "requirements": [
+    {
+      "vt_symbol": "MA005.CZCE",
+      "execution_trade_date": "2020-01-23",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2020-01-22T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2020-01-22T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    },
+    {
+      "vt_symbol": "hc2005.SHFE",
+      "execution_trade_date": "2020-01-23",
+      "requirement_kind": "anchor",
+      "required_timestamps": [
+        "2020-01-22T21:00:00"
+      ],
+      "missing_or_unqualified_timestamps": [
+        "2020-01-22T21:00:00"
+      ],
+      "existing_source_timestamps": []
+    }
+  ],
+  "request_sha256": "e57199da875c3f6f91f6d282066dbc73c6a6c2d897f5461f4750ca9ebca49ce9"
+}

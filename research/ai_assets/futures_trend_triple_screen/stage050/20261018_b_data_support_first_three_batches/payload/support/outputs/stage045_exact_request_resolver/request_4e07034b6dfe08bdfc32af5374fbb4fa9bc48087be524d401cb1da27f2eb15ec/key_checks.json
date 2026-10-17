@@ -1,0 +1,19 @@
+{
+  "A0_actual_read_disjointness": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 1,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "request_scope_existing_physical_keys": 0,
+  "new_request_scope_physical_keys": 1,
+  "global_existing_keys_claimed_empty": false,
+  "old_key_protection": "Real Stage021 compares overlap seven-values exactly before append-only atomic commit.",
+  "full_session_qualified": false,
+  "qualified_full_local_session_for_anchor": false,
+  "delivered_right": "anchor"
+}

@@ -1,0 +1,70 @@
+{
+  "request_sha256": "fe58a81024ae0fbcca3f9602b9ba3a4607337f9b36fca2135b46f2e18ae04550",
+  "rows": 345,
+  "sessions": [
+    {
+      "vt_symbol": "sp2205.SHFE",
+      "execution_trade_date": "2022-03-28",
+      "requirement_kind": "full_session",
+      "status": "accepted",
+      "reason": "complete_daily_matched_base_preserved",
+      "expected_minutes": 345,
+      "actual_rows": 345,
+      "missing_minutes": 0,
+      "new_minutes": 345,
+      "base_overlap_minutes": 0,
+      "daily_open_oi_check": "checked",
+      "aggregate": {
+        "open": 6744.0,
+        "high": 7024.0,
+        "low": 6666.0,
+        "close": 7016.0,
+        "volume": 223220.0,
+        "open_oi": 138019.0,
+        "close_oi": 126113.0
+      },
+      "daily_mismatch_fields": []
+    }
+  ],
+  "packets": [
+    {
+      "packet_dir": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider/request_fe58a81024ae0fbcca3f9602b9ba3a4607337f9b36fca2135b46f2e18ae04550/packet_000",
+      "packet_index": 0,
+      "rows": 345,
+      "completion_rows": 345,
+      "successors_also_in_delivered_raw": 344,
+      "observed_successors_outside_target": 1,
+      "last_evidence": {
+        "vt_symbol": "sp2205.SHFE",
+        "bar_datetime": "2022-03-28 14:59:00",
+        "successor_time": "2022-03-28 21:00:00",
+        "method": "observed_later_serial_kline",
+        "completed": true
+      },
+      "root_terminal_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage037_b_ts_request_provider/request_fe58a81024ae0fbcca3f9602b9ba3a4607337f9b36fca2135b46f2e18ae04550/packet_000/terminal_observed.json",
+      "root_terminal_sha256": "9207acf522470043469c07003d331a1e760b2d953027741aaefb7642c33bf3ca",
+      "provider_elapsed_seconds": 19.025758959003724
+    }
+  ],
+  "A0_actual_read_disjointness": {
+    "path_equivalent": true,
+    "intersection_count": 0,
+    "anchor_request_rows": 535,
+    "scan_request_rows": 501,
+    "distinct_actual_read_keys": 106731,
+    "added_keys": 345,
+    "intersection_examples": [],
+    "reasoning": "Only absent base keys are appended; every recorded A0 canonical anchor and requested entry-session minute is disjoint from added keys."
+  },
+  "request_scope_existing_physical_keys": 0,
+  "new_request_scope_physical_keys": 345,
+  "global_existing_keys_claimed_empty": false,
+  "old_key_protection": "Delegated to actual frozen Stage021 ensure: exact overlap seven-values before any commit; append absent keys only. Reader does not claim independent old-value reload.",
+  "independent_old_physical_values_reloaded": false,
+  "A0_disjoint_scope": "only_actual_new_physical_keys",
+  "successor_boundary": "Actual frozen collector observations; successor OHLC outside target is not exported or independently reconstructed.",
+  "source_stack_requalified": false,
+  "engine_loaded": false,
+  "network_connections_in_review": 0,
+  "financial_replays": 0
+}

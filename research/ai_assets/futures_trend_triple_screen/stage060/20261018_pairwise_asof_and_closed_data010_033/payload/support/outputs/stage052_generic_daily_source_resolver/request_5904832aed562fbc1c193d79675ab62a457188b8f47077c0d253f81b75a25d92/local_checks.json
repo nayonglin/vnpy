@@ -1,0 +1,75 @@
+{
+  "request_sha256": "5904832aed562fbc1c193d79675ab62a457188b8f47077c0d253f81b75a25d92",
+  "targets": [
+    {
+      "vt_symbol": "cu2007.SHFE",
+      "execution_trade_date": "2020-05-26",
+      "requirement_kind": "full_session",
+      "daily_reference_source": "new_independent_actual_request_daily",
+      "is_new_daily": true,
+      "local_accepted": true,
+      "source_checks": [
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/cu2007_completed_minute_backtest.csv",
+          "vt_symbol": "cu2007.SHFE",
+          "expected_sha256": "2a1291ac476ab12209bc09a456c9326dadb702a26be2e5f6cc15fc544ef5d5eb",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 2550,
+          "sha256": "2a1291ac476ab12209bc09a456c9326dadb702a26be2e5f6cc15fc544ef5d5eb",
+          "bytes": 269553
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/cu2007_completed_minute_backtest.csv",
+          "vt_symbol": "cu2007.SHFE",
+          "expected_sha256": "8f164a7be963e423dc2846345104c90ad25ff99ff8b11488055d4702cf8d75c5",
+          "status": "accepted_source_bytes",
+          "reason": "",
+          "rows": 10920,
+          "sha256": "8f164a7be963e423dc2846345104c90ad25ff99ff8b11488055d4702cf8d75c5",
+          "bytes": 1153229
+        }
+      ],
+      "source_audits": [
+        {
+          "source_id": "local_0375",
+          "source_rows": 2550,
+          "target_rows": 0
+        },
+        {
+          "source_id": "local_0376",
+          "source_rows": 10920,
+          "target_rows": 465
+        }
+      ],
+      "local_present_minutes": 465,
+      "missing_minutes": 0,
+      "missing_timestamps": [],
+      "uncompleted_minutes": 0,
+      "uncompleted_timestamps": [],
+      "full_session_grid_minutes": 465,
+      "required_minutes": 465,
+      "full_session_qualified": true,
+      "session_qualification": {
+        "status": "accepted",
+        "reason": "complete_daily_matched_base_preserved",
+        "expected_minutes": 465,
+        "actual_rows": 465,
+        "missing_minutes": 0,
+        "new_minutes": 465,
+        "base_overlap_minutes": 0,
+        "daily_open_oi_check": "checked",
+        "aggregate": {
+          "open": 43780.0,
+          "high": 43940.0,
+          "low": 43660.0,
+          "close": 43860.0,
+          "volume": 70689.0,
+          "open_oi": 103260.0,
+          "close_oi": 105051.0
+        },
+        "daily_mismatch_fields": []
+      }
+    }
+  ]
+}
