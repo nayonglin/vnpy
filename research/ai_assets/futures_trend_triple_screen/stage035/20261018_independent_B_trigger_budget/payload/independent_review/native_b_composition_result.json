@@ -1,0 +1,65 @@
+{
+  "status": "passed_limited_real_B_native_composition",
+  "cases": [
+    {
+      "direction": 1,
+      "unknown": false,
+      "native_signal_absent": true,
+      "B_label": "long_triple_screen",
+      "T": 111.0,
+      "S": 99.0,
+      "rho_T": 120.0,
+      "final_q": 10,
+      "decisions": 1,
+      "reserves": 1,
+      "real_orders": 1,
+      "real_fill_prices": [
+        111.0,
+        105.0,
+        111.0,
+        105.0
+      ],
+      "actual_signal_identity_and_synthetic_parent_checked": true,
+      "predicted_risk_preserved": 1200.0,
+      "original_minutes_unchanged": true,
+      "cost": 443.2
+    },
+    {
+      "direction": -1,
+      "unknown": false,
+      "native_signal_absent": true,
+      "B_label": "short_triple_screen",
+      "T": 89.0,
+      "S": 101.0,
+      "rho_T": 120.0,
+      "final_q": 10,
+      "decisions": 1,
+      "reserves": 1,
+      "real_orders": 1,
+      "real_fill_prices": [
+        89.0,
+        95.0,
+        89.0,
+        95.0
+      ],
+      "actual_signal_identity_and_synthetic_parent_checked": true,
+      "predicted_risk_preserved": 1200.0,
+      "original_minutes_unchanged": true,
+      "cost": 436.79999999999995
+    },
+    {
+      "direction": 1,
+      "unknown": true,
+      "native_trap_cleared": true,
+      "decisions": 1,
+      "reserves": 0,
+      "orders": 0,
+      "fills": 0
+    }
+  ],
+  "financial_replays": 0,
+  "network_calls": 0,
+  "model_inference": 0,
+  "production_qualified": false,
+  "scope": "real on_bars/planner/T-pricing/804-stop/final-budget/single-reserve plus native 827 fills and B-runner clock; only native alpha generation is an explicit fixture literal"
+}

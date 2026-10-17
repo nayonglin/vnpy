@@ -1,0 +1,274 @@
+--- frozen_stage031_run_ordered_checkpoint.py
++++ stage036_run_b_ts_checkpoint.py
+@@ -1,9 +1,9 @@
+-"""One fixed C_TS account replay with ordered initial-entry execution.
++"""One fixed independent B_TS replay with u-known trigger-priced entry budget.
+ 
+ Bootstrap is deliberately stdlib-only. Stage022 is imported for its accepted
+ runtime/data/capture helpers; its main and its C0 strategy are never executed.
+-The research engine retains native u-close q/S and does not re-run that budget
+-at the conditional fill. Actual gap risk can exceed the original u estimate.
++The independent B signal uses known u trigger T, original u stop S and a final
++only-shrinking budget. The real D gap can exceed the T forecast; q stays frozen.
+ """
+ from __future__ import annotations
+ 
+@@ -29,12 +29,15 @@
+ import stage022_run_c0_qualified_wait as prior
+ 
+ ROOT, LINE = prior.ROOT, prior.LINE
+-OUTPUT = LINE/'outputs/stage031_ordered_account'
+-PARENT_RUNNER_SHA='c05924175609c09ce0a44b451bcc97497be2b30012cb9c971886217c4960c6af'
+-FROZEN_MODULES={'stage028_ordered_strategy.py':'d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48','stage028_ordered_engine.py':'f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23'}
+-PROTOCOL = LINE/'stages/20261018_0302_stage031_export_checkpoint_fix.md'
+-ENTRY_CONTRACT = LINE/'stages/20261018_0234_stage028_conditional_execution_contract.md'
+-PLAN = LINE/'stages/20261018_0234_stage028_conditional_execution_plan.md'
++OUTPUT = LINE/'outputs/stage036_b_ts_account'
++PARENT_RUNNER_SHA='3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860'
++FROZEN_NATIVE_MODULES={'stage028_ordered_strategy.py':'d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48','stage028_ordered_engine.py':'f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23'}
++# Explicitly blocked until the two reviewed B source hashes are frozen by root.
++FROZEN_B_MODULES={'stage035_b_ts_pricing.py': 'd45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f', 'stage035_b_ts_strategy.py': 'fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e'}
++FROZEN_MODULES={**FROZEN_NATIVE_MODULES,**FROZEN_B_MODULES}
++PROTOCOL = LINE/'stages/20261018_0338_stage036_b_ts_checkpoint_contract.md'
++ENTRY_CONTRACT = LINE/'stages/20261018_0333_stage035_b_ts_execution_contract.md'
++PLAN = LINE/'stages/20261018_0333_stage035_b_ts_implementation_plan.md'
+ HOLDING_CONTRACT = LINE/'stages/20261018_0242_stage028_entry_day_holding_causality.md'
+ FEATURE_ROOT = LINE/'outputs/stage027_ordered_features'
+ FEATURE_REVIEW = LINE/'outputs/stage027_independent_review/review_receipt.json'
+@@ -57,8 +60,8 @@
+ ANCHOR_REQUEST = LINE/('outputs/stage001_first_screen/C0_attempt3/data_wait/request_'+ANCHOR_REQUEST_ID+'/request.json')
+ ANCHOR_RECEIPT = LINE/('outputs/stage023_independent_review/request_'+ANCHOR_REQUEST_ID+'/delivery_receipt.json')
+ ANCHOR_RECEIPT_SHA = '343a33480af2d8d68ccfa6a524a940639353f68f12fb8438f4b4f3e0482cd6b0'
+-RESULT_SCOPE = 'offline_ordered_initial_entry_C_TS_vs_reused_A0_attempt2'
+-EXECUTION_CONTRACT = 'native_u_close_fixed_q_and_S; no_D_budget_reallocation; actual_gap_R_and_margin_not_bounded_by_u_gate'
++RESULT_SCOPE = 'offline_standalone_initial_triple_screen_B_TS_vs_reused_A0_attempt2'
++EXECUTION_CONTRACT = 'u_known_T_priced_allocator_then_final_min_budget_fixed_q_and_original_S; no_D_budget_reallocation; actual_gap_R_and_margin_can_exceed_u_T_forecast'
+ sha256, write_json, json_safe = prior.sha256, prior.write_json, prior.json_safe
+ ENGINE_VALIDATION=dict(engine_returned=True,actual_settings_equal_accepted_A=True,parameters_equal_accepted_A=True,actual_daily_dates_equal_accepted_A0=True,captured_bar_failures=0,strict_minute_missing_bars=0,all_consumed_inputs_unchanged_during_run=True,frozen_correctness_code_unchanged=True,historical_shared_signal_input_empty=True)
+ 
+@@ -131,7 +134,7 @@
+ 
+ def owned_output(output):
+     output=Path(output)
+-    expected=OUTPUT/'C_TS'
++    expected=OUTPUT/'B_TS'
+     if output.resolve()!=expected.resolve()or output.is_symlink():
+         raise ValueError('checkpoint_requires_exact_owned_output')
+     return output.resolve()
+@@ -139,8 +142,8 @@
+ 
+ def new_run_context(output,started):
+     output=owned_output(output)
+-    return dict(schema='stage031_run_context_v1',run_id=uuid.uuid4().hex,arm='C_TS',attempt=2,
+-        output_directory=str(output),started_at=str(started),writer='stage031_run_ordered_checkpoint.py',
++    return dict(schema='stage036_run_context_v1',run_id=uuid.uuid4().hex,arm='B_TS',attempt=1,
++        output_directory=str(output),started_at=str(started),writer='stage036_run_b_ts_checkpoint.py',
+         writer_source_sha256=sha256(Path(__file__)),parent_runner_sha256=PARENT_RUNNER_SHA,
+         strategy_engine_sha256=FROZEN_MODULES,production_qualified=False)
+ 
+@@ -163,12 +166,12 @@
+     raw=folder/'raw_account.pkl.gz';temporary=folder/'raw_account.pkl.gz.tmp'
+     with temporary.open('xb')as handle:
+         with gzip.GzipFile(fileobj=handle,mode='wb',mtime=0)as compressed:
+-            pickle.dump(dict(payload,schema='stage031_raw_account_checkpoint_v1'),compressed,protocol=5)
++            pickle.dump(dict(payload,schema='stage036_raw_account_checkpoint_v1'),compressed,protocol=5)
+         handle.flush();os.fsync(handle.fileno())
+     os.replace(temporary,raw);fsync_directory(folder)
+-    manifest=dict(schema='stage031_raw_checkpoint_manifest_v1',status='raw_evidence_not_validation_or_performance_pass',
++    manifest=dict(schema='stage036_raw_checkpoint_manifest_v1',status='raw_evidence_not_validation_or_performance_pass',
+         raw_filename=raw.name,raw_sha256=sha256(raw),raw_bytes=raw.stat().st_size,
+-        output_directory=str(output),run_id=context['run_id'],arm='C_TS',attempt=2,
++        output_directory=str(output),run_id=context['run_id'],arm='B_TS',attempt=1,
+         writer=context['writer'],writer_source_sha256=context['writer_source_sha256'],
+         run_context_sha256=sha256(output/'run_context.json'),parent_runner_sha256=PARENT_RUNNER_SHA,
+         strategy_engine_sha256=FROZEN_MODULES,account_exports_only=True,production_qualified=False)
+@@ -182,8 +185,8 @@
+     if json.loads((folder/'raw_manifest.json').read_text())!=manifest or sha256(folder/manifest['raw_filename'])!=manifest['raw_sha256']:
+         raise ValueError('checkpoint_changed_before_seal')
+     if any(validation.get(key)!=value for key,value in ENGINE_VALIDATION.items()):raise ValueError('engine_not_validated')
+-    seal=dict(schema='stage031_engine_validation_seal_v1',status='engine_snapshot_validated_not_independent_economic_review',
+-        run_id=manifest['run_id'],attempt=2,arm='C_TS',raw_sha256=manifest['raw_sha256'],
++    seal=dict(schema='stage036_engine_validation_seal_v1',status='engine_snapshot_validated_not_independent_economic_review',
++        run_id=manifest['run_id'],attempt=1,arm='B_TS',raw_sha256=manifest['raw_sha256'],
+         manifest_sha256=sha256(folder/'raw_manifest.json'),writer_source_sha256=manifest['writer_source_sha256'],
+         validated_at=str(datetime.now().astimezone()),validation=validation,production_qualified=False)
+     if(folder/'validation_seal.json').exists():raise FileExistsError('existing_validation_seal')
+@@ -199,12 +202,12 @@
+     if folder.is_symlink()or any(path.is_symlink()or path.resolve().parent not in(folder.resolve(),output)for path in paths):
+         raise ValueError('checkpoint_path_not_owned')
+     manifest=json.loads(paths[1].read_text());seal=json.loads(paths[2].read_text());context=json.loads(paths[3].read_text())
+-    if(manifest.get('schema')!='stage031_raw_checkpoint_manifest_v1'or seal.get('schema')!='stage031_engine_validation_seal_v1'or
+-       context.get('schema')!='stage031_run_context_v1'or manifest.get('raw_filename')!='raw_account.pkl.gz'or
++    if(manifest.get('schema')!='stage036_raw_checkpoint_manifest_v1'or seal.get('schema')!='stage036_engine_validation_seal_v1'or
++       context.get('schema')!='stage036_run_context_v1'or manifest.get('raw_filename')!='raw_account.pkl.gz'or
+        manifest.get('output_directory')!=str(output)or context.get('output_directory')!=str(output)or
+-       manifest.get('writer')!='stage031_run_ordered_checkpoint.py'or manifest.get('parent_runner_sha256')!=PARENT_RUNNER_SHA or
++       manifest.get('writer')!='stage036_run_b_ts_checkpoint.py'or manifest.get('parent_runner_sha256')!=PARENT_RUNNER_SHA or
+        manifest.get('strategy_engine_sha256')!=FROZEN_MODULES or manifest.get('account_exports_only')is not True or
+-       any(row.get('arm')!='C_TS'or row.get('attempt')!=2 for row in(manifest,seal,context))):
++       any(row.get('arm')!='B_TS'or row.get('attempt')!=1 for row in(manifest,seal,context))):
+         raise ValueError('checkpoint_manifest_identity_mismatch')
+     if not context.get('run_id')or any(row.get('run_id')!=context['run_id']for row in(manifest,seal)):
+         raise ValueError('checkpoint_run_id_mismatch')
+@@ -217,7 +220,7 @@
+         raise ValueError('checkpoint_raw_sha_mismatch')
+     # All checks above precede pickle.loads, and use exactly these pinned bytes.
+     payload=pickle.loads(gzip.decompress(raw))
+-    if payload.get('schema')!='stage031_raw_account_checkpoint_v1'or payload.get('run_context')!=context:
++    if payload.get('schema')!='stage036_raw_account_checkpoint_v1'or payload.get('run_context')!=context:
+         raise ValueError('checkpoint_payload_identity_mismatch')
+     return payload,dict(manifest=manifest,seal=seal,seal_sha256=sha256(paths[2]))
+ 
+@@ -249,7 +252,7 @@
+     # Explicit contracts may contain formats outside the old recorder allowlist.
+     if str(path)not in recorder.files:
+         recorder.files[str(path)]=dict(sha256=sha256(path),bytes=path.stat().st_size,
+-            accepted_stage251_match=False,explicit_stage031_input=True)
++            accepted_stage251_match=False,explicit_stage036_input=True)
+     return path
+ 
+ 
+@@ -519,7 +522,7 @@
+     capture=payload['capture'];ordered=payload['ordered'];preflight=payload['preflight'];context=payload['run_context']
+     if destination!=output:
+         for name in('runner_used.py','protocol_used.md','entry_contract_used.md','plan_used.md','holding_contract_used.md',
+-                     'data_stack_manifest.json','stage028_ordered_strategy.py','stage028_ordered_engine.py','preflight_used.json','run_context.json'):
++                     'data_stack_manifest.json',*FROZEN_MODULES,'preflight_used.json','run_context.json'):
+             (destination/name).write_bytes((output/name).read_bytes())
+     write_ordered_audits(destination,capture,ordered,payload.get('wait_audit',[]),payload.get('resolver_audit',[]),payload.get('qualification_audit',{}))
+     clock,usage=build_execution_clock(capture,payload['actual_trade_identities'])
+@@ -532,7 +535,7 @@
+     frames['trades']=prior.attach_trading_dates(trades,clock)
+     for name,frame in frames.items():
+         if frame.empty and not len(frame.columns):frame=pd.DataFrame(columns=['date','vt_symbol','event','reason'])
+-        frame=frame.copy();frame['research_arm']='C_TS';frame['production_qualified']=False
++        frame=frame.copy();frame['research_arm']='B_TS';frame['production_qualified']=False
+         frame.to_csv(destination/f'{name}.csv',index=False,encoding='utf-8-sig')
+     combined.to_csv(destination/'daily.csv',index=False,encoding='utf-8-sig')
+     clock.to_csv(destination/'execution_clock.csv',index=False,encoding='utf-8-sig')
+@@ -549,7 +552,7 @@
+     minutes=pd.DataFrame(capture['minute_requests'])
+     minute_summary=dict(strict_required=True,request_rows=len(minutes),captured_bar_failures=0,
+         coverage_status_counts=dict(Counter(minutes.get('coverage_status',[]))),missing_bar_count=0)
+-    provenance=dict(status='completed_pending_independent_review',arm='C_TS',attempt=2,started_at=context['started_at'],
++    provenance=dict(status='completed_pending_independent_review',arm='B_TS',attempt=1,started_at=context['started_at'],
+         completed_at=datetime.now().astimezone(),elapsed_seconds=payload.get('engine_elapsed_seconds'),result_scope=RESULT_SCOPE,production_qualified=False,
+         correctness_code_sha256=prior.ACCEPTED_CODE,active_parameter_identity=preflight.get('active_parameter_identity'),
+         input_fingerprints=payload['input_fingerprints'],all_consumed_inputs_unchanged_during_run=True,
+@@ -557,9 +560,9 @@
+         protocol_sha256=sha256(output/'protocol_used.md'),entry_contract_sha256=sha256(output/'entry_contract_used.md'),
+         holding_contract_sha256=sha256(output/'holding_contract_used.md'),source_adapter_sha256=sha256(output/'runner_used.py'),data_stack_sha256=STACK_SHA,
+         source_modules_sha256=FROZEN_MODULES,execution_contract=EXECUTION_CONTRACT,
+-        only_candidate_delta='unchanged Stage028 ordered entry and post-entry holding view; Stage031 changes actual trade identity export and durable checkpoint only',
+-        original_u_close_quantity_and_stop_frozen=True,fill_time_broker_budget_rechecked=False,actual_gap_risk_bounded_by_u_gate=False,
+-        data_adapter_changed=True,alpha_changed_from_C0=True,alpha_changed_from_Stage028=False,strict_minutes=True,captured_bar_failure_count=0,
++        only_candidate_delta='independent B weekly/FI ordered signal replaces native initial signal; u-known T pricing and final min budget; inherited holding and reliable Stage031 checkpoint unchanged',
++        u_trigger_priced_quantity_and_original_u_stop_frozen=True,final_B_budget_clamp_enabled=True,original_native_quantity_policy_preserved=False,fill_time_broker_budget_rechecked=False,actual_gap_risk_bounded_by_u_gate=False,
++        data_adapter_changed=True,alpha_changed_from_C0=True,alpha_changed_from_Stage028=True,strict_minutes=True,captured_bar_failure_count=0,
+         actual_settings_equal_accepted_A=True,parameters_equal_accepted_A=True,actual_daily_dates_equal_accepted_A0=True,
+         reused_A0=preflight.get('reused_A0'),reused_anchor=preflight.get('reused_anchor'),vendor_swallowed_bar_exception_guard=True,
+         source_head=preflight.get('runtime',{}).get('source_head'),runtime=preflight.get('runtime'),model_runtime_smoke=preflight.get('model_runtime_smoke'),
+@@ -569,7 +572,7 @@
+     for name,value in(('actual_strategy_settings.json',payload['actual']),('effective_parameters.json',payload['parameters']),
+                       ('input_manifest.json',payload['input_fingerprints']),('run_provenance.json',provenance),('metrics.json',stats)):
+         write_json(destination/name,value)
+-    summary=dict(status=provenance['status'],arm='C_TS',attempt=2,result_scope=RESULT_SCOPE,statistics=stats,ordered_counts=counts,
++    summary=dict(status=provenance['status'],arm='B_TS',attempt=1,result_scope=RESULT_SCOPE,statistics=stats,ordered_counts=counts,
+         strict_minutes=minute_summary,actual_settings=payload['actual'],input_fingerprints=payload['input_fingerprints'],
+         ordered_feature_cache=preflight.get('ordered_feature_cache'),reused_A0=preflight.get('reused_A0'),execution_contract=EXECUTION_CONTRACT,
+         financial_replays=1,financial_replays_this_export_process=0 if export_only else 1,production_qualified=False,
+@@ -583,7 +586,7 @@
+ 
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument('--arm',choices=['C_TS'],default='C_TS')
++    parser.add_argument('--arm',choices=['B_TS'],default='B_TS')
+     parser.add_argument('--data-stack-manifest',type=Path,default=prior.STACK_PATH)
+     parser.add_argument('--data-stack-sha256',default=STACK_SHA)
+     action=parser.add_mutually_exclusive_group(required=True)
+@@ -608,7 +611,8 @@
+             write_json(destination/'export_failure.json',dict(error=repr(error),failed_at=datetime.now().astimezone(),financial_replays_this_process=0))
+             raise
+         return
+-    if sha256(Path(__file__).with_name('stage028_run_ordered.py'))!=PARENT_RUNNER_SHA:raise ValueError('frozen_parent_runner_changed')
++    if set(FROZEN_B_MODULES)!={'stage035_b_ts_pricing.py','stage035_b_ts_strategy.py'}:raise ValueError('B_sources_not_reviewed_or_frozen')
++    if sha256(Path(__file__).with_name('stage031_run_ordered_checkpoint.py'))!=PARENT_RUNNER_SHA:raise ValueError('frozen_parent_runner_changed')
+     for name,digest in FROZEN_MODULES.items():
+         if sha256(Path(__file__).with_name(name))!=digest:raise ValueError(f'frozen_alpha_module_changed:{name}')
+     minute_overlay=prior.read_data_stack(args.data_stack_manifest,STACK_SHA)
+@@ -622,10 +626,10 @@
+     accepted=json.loads((prior.OLD/'input_manifest.json').read_text())
+     recorder=prior.InputRecorder(accepted)
+     recorder.extra.update(Path(path).resolve()for path in minute_overlay['source_fingerprints'])
+-    recorder.extra.update(feature_paths|A0_paths|{Path(__file__).resolve(),PROTOCOL,ENTRY_CONTRACT,PLAN,HOLDING_CONTRACT,Path(__file__).with_name('stage028_run_ordered.py'),
++    recorder.extra.update(feature_paths|A0_paths|{Path(__file__).resolve(),PROTOCOL,ENTRY_CONTRACT,PLAN,HOLDING_CONTRACT,Path(__file__).with_name('stage031_run_ordered_checkpoint.py'),
+         args.data_stack_manifest.resolve(),prior.SOURCE001,prior.SOURCE_PROTOCOL,
+         prior.DESIGN/'source_stage001_original.py',prior.DESIGN/'source_diff.patch'})
+-    for name in ('stage028_ordered_strategy.py','stage028_ordered_engine.py'):
++    for name in FROZEN_MODULES:
+         recorder.extra.add(Path(__file__).with_name(name))
+     sys.addaudithook(recorder.audit);recorder.enabled=True
+     for path in list(recorder.extra):bind_input(recorder,path)
+@@ -637,7 +641,7 @@
+     import stage002_local_minute_overlay as local_minutes
+     import stage016_source859_qualification as qualified_delta
+     import stage021_blocking_data_gate as wait_gate
+-    from stage028_ordered_strategy import build_ordered_strategy
++    from stage035_b_ts_strategy import build_b_strategy
+     from stage028_ordered_engine import build_ordered_engine
+     overlay_parts=[]
+     for item in minute_overlay['overlays']:
+@@ -689,7 +693,7 @@
+     predicted_settings=s901.s847.s827.s772._build_setting(metadata=metadata,spec=profile['spec'],base_c3_overrides=dict(s901.s513._c3_overrides(pd.Timestamp(prior.START).to_pydatetime())),start=pd.Timestamp(prior.START))
+     if normal({key:value for key,value in predicted_settings.items()if key in old_settings})!=normal(old_settings):
+         raise ValueError('preflight_requested_settings_drift_from_accepted_A')
+-    strategy=build_ordered_strategy(s901.s847.QmtRollPortfolioStrategyStage847C9StopRetry,weekly,fi,next_days,arm=arm)
++    strategy=build_b_strategy(s901.s847.QmtRollPortfolioStrategyStage847C9StopRetry,weekly,fi,next_days)
+     strategy.stage827_require_complete_minutes=True
+     holder={}
+     newengine=build_ordered_engine(s901.s847.Stage847StopRetryEngine,build_qualification_callback(holder,Offset,Direction))
+@@ -700,8 +704,8 @@
+         path=Path(filename).resolve()
+         if path.suffix=='.py'and path.is_file()and(path.is_relative_to(prior.PROJECT)or path.is_relative_to(prior.VENDOR)or path.parent==Path(__file__).parent):
+             bind_input(recorder,path);runtime_code[str(path)]=recorder.files[str(path)]['sha256']
+-    preflight=dict(status='passed_offline_preflight_no_financial_replay',arm=arm,attempt=2,result_scope=RESULT_SCOPE,
+-        stage='Stage031',alpha_changed_from_Stage028=False,parent_runner_sha256=PARENT_RUNNER_SHA,source_modules_sha256=FROZEN_MODULES,
++    preflight=dict(status='passed_offline_preflight_no_financial_replay',arm=arm,attempt=1,result_scope=RESULT_SCOPE,
++        stage='Stage036',alpha_changed_from_Stage028=True,parent_runner_sha256=PARENT_RUNNER_SHA,source_modules_sha256=FROZEN_MODULES,
+         execution_contract=EXECUTION_CONTRACT,financial_replays=0,production_qualified=False,
+         formal_identity_gate='not_passed_for_production',active_parameter_identity=identity,
+         runtime_material_drift=drift,accepted_correctness_code=prior.ACCEPTED_CODE,
+@@ -720,7 +724,7 @@
+     if args.preflight:
+         recorder.verify()
+         folder=OUTPUT/'preflight';folder.mkdir(parents=True,exist_ok=True)
+-        write_json(folder/'C_TS.json',preflight)
++        write_json(folder/'B_TS.json',preflight)
+         print(json.dumps({key:preflight[key]for key in('status','arm','financial_replays','production_qualified','strict_minutes','strategy_class','engine_class')}))
+         return
+ 
+@@ -737,7 +741,7 @@
+                             (args.data_stack_manifest,'data_stack_manifest.json')):
+             (output/name).write_bytes(source.read_bytes())
+             if sha256(output/name)!=sha256(source):raise ValueError(f'run_input_snapshot_failed:{name}')
+-        for name in('stage028_ordered_strategy.py','stage028_ordered_engine.py'):
++        for name in FROZEN_MODULES:
+             (output/name).write_bytes(Path(__file__).with_name(name).read_bytes())
+         write_json(output/'preflight_used.json',preflight)
+         with (output/'engine.log').open('w',buffering=1)as log,redirect_stdout(log),redirect_stderr(log):
+@@ -779,13 +783,13 @@
+             strict_minute_missing_bars=0,all_consumed_inputs_unchanged_during_run=True,
+             frozen_correctness_code_unchanged=True,historical_shared_signal_input_empty=True))
+         summary=export_checkpoint(output,output,export_only=False)
+-        print(json.dumps(json_safe(dict(status=summary['status'],arm=arm,attempt=2,statistics=summary['statistics'])),ensure_ascii=False))
++        print(json.dumps(json_safe(dict(status=summary['status'],arm=arm,attempt=1,statistics=summary['statistics'])),ensure_ascii=False))
+     except BaseException as error:
+         recorder.enabled=False
+         audit_export_error=''
+         try:write_ordered_audits(output,capture,ordered,wait_audit,resolver_audit,qualification_audit)
+         except Exception as audit_error:audit_export_error=repr(audit_error)
+-        write_json(output/'run_failure.json',dict(audit_export_error=audit_export_error,status='failed_closed_no_accepted_performance',arm=arm,attempt=2,result_scope=RESULT_SCOPE,
++        write_json(output/'run_failure.json',dict(audit_export_error=audit_export_error,status='failed_closed_no_accepted_performance',arm=arm,attempt=1,result_scope=RESULT_SCOPE,
+             run_id=run_context['run_id'],raw_checkpoint=raw_manifest,validation_seal_exists=(output/'checkpoint/validation_seal.json').is_file(),
+             error=repr(error),started_at=started,failed_at=datetime.now().astimezone(),financial_replay_attempts=1,production_qualified=False,
+             input_fingerprints=recorder.files,captured_bar_failures=capture.get('failures',[]),actual_settings=actual,

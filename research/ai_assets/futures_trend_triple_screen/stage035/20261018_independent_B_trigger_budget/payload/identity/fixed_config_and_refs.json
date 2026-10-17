@@ -1,0 +1,20 @@
+{
+  "local_source_head": "ed41e3578aa4fd64606b481a74003f9855d1fad5",
+  "remote_master_sha": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "production_source_commit": "6b607203a41a47b1255ac1328dde2dc489bb487c",
+  "active_material_identity": {
+    "strategy_version": "ai_top10_plus_fu_official_live_v1",
+    "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+    "source_commit": "2a7420a9f9550ab912b5c4a302a61acc5740b04c",
+    "release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "release_commit": "334d18f069de06df3aa7728203e942e3ecb94ce9",
+    "manifest_sha256": "94b6936ab4b338430981f4c2f7e0f4ff38f24534c32f1d16722c8d1367d89474"
+  },
+  "config_identity_agrees": true,
+  "formal_runtime_repaired_offline_only": true,
+  "production_qualified": false,
+  "accepted_A0_reused": true,
+  "user_authorized_scope": "autonomous reversible offline triple-screen research; original Stage001/027/028 contracts; no new production promotion",
+  "provider_calls": 0,
+  "financial_replays": 0
+}

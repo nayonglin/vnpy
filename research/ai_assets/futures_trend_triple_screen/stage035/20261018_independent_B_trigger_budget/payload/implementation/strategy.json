@@ -1,0 +1,91 @@
+{
+  "line_id": "futures_trend_triple_screen",
+  "stage": "Stage035 Task2",
+  "arm": "B_TS",
+  "written_at": "2026-10-18T03:39:47.244929+08:00",
+  "重要突破": false,
+  "修改总结": "新增独立B首次信号研究子类；同flat context前置单观察并重算通用OI模式、精确开放short_triple_screen；原planner完整返回后一次final预算，冻结最终q/T/S/rank；snapshot沿共享产品循环单reserve，fill沿共享on_fill一次后准确记录B身份。",
+  "interface": "build_b_strategy(native_base, weekly_lookup, fi_lookup, next_days) -> class",
+  "trigger_map": "self.ts_trigger_by_key[(ISO signal_day, contract, direction long/short)] = T",
+  "source_sha256": {
+    "tools/stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+    "tools/test_stage035_b_ts_strategy.py": "58947778cb4be990aef91db04f3f72b87a12315c9a27f9d1732bf01e81bcaa16"
+  },
+  "shared_unchanged_sha256": {
+    "tools/stage027_ordered_state.py": "86149c15c2c7a5d46a8047fff7472bef14b29a56e29cb03a9763222b0bcb2e64",
+    "tools/stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48"
+  },
+  "red": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage035_b_ts_strategy.py' -v",
+    "exit_code": 1,
+    "test_count": 4,
+    "failures_including_subcases": 12,
+    "reason": "independent B adapter is missing; feature not yet implemented"
+  },
+  "green": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage035_b_ts_strategy.py' -v",
+    "exit_code": 0,
+    "test_count": 4,
+    "elapsed_seconds": 0.004,
+    "result": "OK"
+  },
+  "compile": {
+    "command": ".py311/bin/python: py_compile.compile(..., cfile=temporary_path, doraise=True) for both new source files",
+    "exit_code": 0,
+    "result": "2 files compiled"
+  },
+  "verification_scope": [
+    "long/short新B标签、无native可选、同context、weekly一次读取及真实machine非重复close",
+    "unknown/filter/AI/no_context/entryday拒绝且无ordinary fallback、held signal_data原对象保留、2019无准备",
+    "真实finalizer q12到10、snapshot仅一次reserve、q0不消费setup不发单、冻结copy不受后续修改影响",
+    "共享activation接真实账户state，fill审计B与同intent二次on_fill拒绝"
+  ],
+  "研发参数新增": [
+    "B_TS独立首次信号与按T估价/最终只减量结构；无新增数值旋钮"
+  ],
+  "正式参数新增修改删除": 0,
+  "新增修改删除金融结果": 0,
+  "financial_backtests": 0,
+  "model_training": 0,
+  "model_inference": 0,
+  "network_requests": 0,
+  "ctp_connections": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "financial_metrics": {
+    "期末权益": null,
+    "总收益": null,
+    "最大回撤": null,
+    "Sharpe": null,
+    "总滑点": null,
+    "总交易次数": null,
+    "胜率": null
+  },
+  "调研与判断": "沿冻结Stage034/035已核CMT Elder、LEAN FI与Backtrader执行资料，不重复联网；本次只核接合语义，不支持盈利资格。",
+  "开始过拟合": {
+    "是否": false,
+    "原因": "收益前固定B机制与预算合同，无收益回看或参数扫描；历史多轮选择偏差仍存在。"
+  },
+  "结束过拟合": {
+    "是否": false,
+    "原因": "只修新增信号/消费/审计接合，无新阈值，不以测试代替alpha资格。"
+  },
+  "继续价值": {
+    "开始": true,
+    "结束": true,
+    "原因": "独立B尚缺真实native+engine接合和完整经济证据，有限部件验证可降低误记风险。"
+  },
+  "限制": [
+    "tiny native consumer只覆盖新增hook，真实847+028engine组合由root Task4独立验证",
+    "未重跑旧026/027/028/031 suite、FI构建、大数据、模型或金融；按root明确验收边界仅跑4项新增测试",
+    "19数值特征含same_signal，B新域属旧模型外推；veto/recovery旧开关和名单未扩",
+    "一次过程中pricing文件仍写入曾引入IndentationError；pricing完成compile后原命令GREEN，未修改对方文件",
+    "4项unit现显式隔离pricing factory，仅保留真实finalizer与B planner/observer/共享消费；不将tiny fixture称为真实MRO资格。"
+  ],
+  "TODO": [
+    "root独立真实native/engine接合审查",
+    "root冻结source并接独立B runner与provider",
+    "收益前合同内唯一B金融与独立经济复核，不据unit宣告总体目标完成"
+  ],
+  "fixture_isolation": "按root聚焦更正，仅unit构造时patch stage035_b_ts_strategy.build_trigger_priced_base=lambda base:base；生产Bstrategy字节不变。真实pricing已由Task1 native fixture和Task4真实组合承担，不在生产factory保留测试专用fallback。"
+}

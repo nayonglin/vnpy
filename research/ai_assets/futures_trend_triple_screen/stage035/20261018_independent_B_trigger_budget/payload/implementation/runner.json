@@ -1,0 +1,62 @@
+{
+  "stage": "Stage036",
+  "line_id": "futures_trend_triple_screen",
+  "implemented_at": "2026-10-18T03:42:46.208597+08:00",
+  "status": "two_new_owner_and_recovery_fixtures_pass_pending_independent_review",
+  "arm": "B_TS",
+  "attempt": 1,
+  "source_files_sha256": {
+    "stage036_run_b_ts_checkpoint.py": "34563257e25e49b19c9631e06cd9107fc26cfd954713739e01a1bf67d574ff43",
+    "test_stage036_b_ts_checkpoint.py": "f7b76151ab19f596e3c8b97565b497b87b1accd7b59060eba4ac07f28e908c8d",
+    "stage037_b_ts_request_provider.py": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1"
+  },
+  "parent_runner_sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+  "frozen_B_modules": {
+    "stage035_b_ts_pricing.py": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+    "stage035_b_ts_strategy.py": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e"
+  },
+  "red": {
+    "session_id": 88900,
+    "exit_code": 1,
+    "tests": 2,
+    "reason": "missing B runner"
+  },
+  "intermediate": {
+    "session_id": 18064,
+    "exit_code": 1,
+    "tests": 2,
+    "failures": 1,
+    "reason": "B owner writer literal still inherited ordered filename; corrected both ownership literals before financial"
+  },
+  "green": {
+    "session_id": 84914,
+    "exit_code": 0,
+    "tests": 2,
+    "failures": 0,
+    "elapsed_test_seconds": 0.076,
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage036_b_ts_checkpoint.py' -v"
+  },
+  "compile_passed": true,
+  "financial_replays": 0,
+  "full_preflight_run": false,
+  "network_calls": 0,
+  "model_fits": 0,
+  "old_suites_rerun": false,
+  "production_qualified": false,
+  "changes": [
+    "B_TS attempt1 owns stage036 paths/writer/context/raw/manifest/seal; C ownership/mixed arm rejected before deserialize",
+    "real native827 sparse synthetic identity preserved via actualTrade validation",
+    "same sealed raw metrics-export failure then new destination pure export with no engine/data stack; old failure retained",
+    "new035 sources exact pinned; build_b_strategy injects independent signal/T pricing/final budget; original A parameters identity checks retained",
+    "two historical reviewed anchors keep original actual C receipt paths, exact1-key rights each; no redownload",
+    "037 provider exact4 scope changes; auth/SDK/endpoints/quality/budget untouched"
+  ],
+  "retained_economic_limits": [
+    "D gap actual risk can exceed u T budget; full-minute PIT margin not established",
+    "old model19 numeric features applied to new B domain",
+    "commission parameter remains0; original slippage held fixed"
+  ],
+  "overfitting_added": false,
+  "continued_value": true,
+  "financial_metrics": null
+}

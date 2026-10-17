@@ -1,0 +1,9 @@
+{
+  "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage036_b_ts_checkpoint.py -v",
+  "session_id": 88900,
+  "exit_code": 1,
+  "tests": 2,
+  "failures": 2,
+  "reason": "new B runner missing; assertIsNotNone failed before implementation",
+  "financial_replays": 0
+}

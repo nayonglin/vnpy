@@ -1,0 +1,105 @@
+{
+  "stage": "Stage035 Task1",
+  "line_id": "futures_trend_triple_screen",
+  "created_at": "2026-10-18T03:40+08:00",
+  "status": "passed_finite_implementation_checks_no_financial_run",
+  "production_qualified": false,
+  "source_identity": {
+    "qmt_path": "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+    "qmt_sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "expected_qmt_sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "original_sizing_method_sha256": "3dc435da25d2a53e5ada5dc7d716ebf58d0250170bd1752bde43ff102e5c267b",
+    "pricing_sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+    "test_sha256": "ca4786edb5fe4046aa546aec7dffe47514489da3ddede8ebf65977493496b977"
+  },
+  "frozen_shared_source_sha256": {
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+    "research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+    "research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860"
+  },
+  "interfaces": {
+    "build_trigger_priced_base": "native_base -> class; native MRO 847 -> 830 -> 827 -> 804 -> 772 -> PricingQmt -> qmt; outer wrapper snapshots exact Stage830 equity fallback; unsupported native base -> ValueError(b_ts_native_base_unsupported)",
+    "trigger_map": "self.ts_trigger_by_key[(ISO signal day, contract, long/short)] = finite positive T",
+    "finalize_b_plan_batch": "strategy, dict/list of original plans -> audit list; mutate only originally admitted B volume/status/sizing; rank/stable order; original gross prefix; no reserve/reallocation"
+  },
+  "static_copy_scope": {
+    "source_method": "QmtRollPortfolioStrategy._calculate_entry_sizing",
+    "entry_price_substitutions": 3,
+    "original_algorithm_and_stop_dispatch_retained": true,
+    "fixed_size_qualified": 0
+  },
+  "verification": {
+    "runtime": "stage022.configure_runtime frozen vendor/numeric site; no dependency installation",
+    "red": {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage035_b_ts_pricing.py",
+      "exit_code": 1,
+      "tests": 5,
+      "failures": 5,
+      "reason": "new API missing; assertion failures observed before implementation"
+    },
+    "green": {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage035_b_ts_pricing.py",
+      "exit_code": 0,
+      "tests": 5,
+      "failures": 0,
+      "final_after_review_fix": true
+    },
+    "compile": {
+      "command": ".py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py research/lines/futures_trend_triple_screen/tools/test_stage035_b_ts_pricing.py",
+      "exit_code": 0,
+      "final_verification": "Both final files compiled with py_compile.compile(doraise=True) into temporary cfiles; exit0"
+    },
+    "implementation_iteration_note": "First copied-source assembly had an indentation error, corrected before final GREEN; no old source changed.",
+    "coverage": [
+      "real native MRO and original 804 long/qmt short stop with T risk/margin arithmetic",
+      "missing/invalid T rejects; nonB and nonflat original path",
+      "tilt 12 clamped to original risk 10; single/broker/cluster cap 8",
+      "gross60000 blocks third even after first risk reduction; skipped unchanged",
+      "invalid budget and inconsistent original integer cap fail closed",
+      "unsupported native base explicitly rejected; no production pricing fallback"
+    ],
+    "focused_review_red": {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/tools/test_stage035_b_ts_pricing.py TriggerPricingTests.test_missing_or_invalid_trigger_fails_closed_non_b_and_nonflat_use_original",
+      "exit_code": 1,
+      "tests": 1,
+      "failures": 1,
+      "reason": "unsupported native base did not raise before removing fixture convenience fallback"
+    }
+  },
+  "activity": {
+    "financial_runs": 0,
+    "market_replay": 0,
+    "normal_engine_backtests": 0,
+    "database_connections": 0,
+    "network_requests": 0,
+    "model_load_or_inference": 0,
+    "model_training": 0,
+    "real_order_api": 0,
+    "commit_push": 0
+  },
+  "research_judgment": {
+    "research": "复用收益前已核CMT/LEAN/Backtrader资料和Stage034/0330源码结论，本次按root离线分工不重复联网。",
+    "overfitting_start": false,
+    "overfitting_end": false,
+    "overfitting_reason": "只落实收益前冻结的估价与整数预算合同；不选品种/月份/倍率/阈值，未观察新增金融结果；历史选择偏差保留。",
+    "continue_value_start": true,
+    "continue_value_end": true,
+    "continue_reason": "实现部件能独立复核B首次实验的预算语义；收益与完整资格仍待root真实组合审查及单次金融。"
+  },
+  "financial_results": {
+    "ending_equity": null,
+    "total_return": null,
+    "max_drawdown": null,
+    "sharpe": null,
+    "total_slippage": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "parameters": {
+    "new_numeric_thresholds": 0,
+    "official_added": 0,
+    "official_modified": 0,
+    "official_removed": 0
+  },
+  "next_step": "root independent native integration review; no financial launch authorized by this receipt"
+}

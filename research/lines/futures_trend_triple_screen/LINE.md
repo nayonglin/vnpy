@@ -112,3 +112,11 @@
 - B_TS独立假说仍在原范围，尚无新金融；先定u-known trigger一致估价且S不改、保留active通用过滤、unknown禁开与19特征旧模型域外推披露，再决定最小实现。没有高收益且低回撤候选，目标active。新增过拟合否、固定C继续价值否、独立B有条件为是。
 
 - Stage031 reviewed delta登记12项，manifest34b317d76886a848e6984e4a90bcbb60d4200063d0387bf9676acb863430eb53，已提交f0c9f1580。Stage033完整负结果登记68项，manifestfa62dd88c3bf7da874e1030ef6aed5310144f63bdeb219c0e1f823a0d7380466；包含自有sealed账户checkpoint、原始导出、独立复算/消费者失败、实际source/协议与中文记录，不含原始行情/私有配置，不推送或部署。
+
+## Stage035/036：独立B源码与真实接合完成（2026-10-18 03:47 CST）
+
+- 用户持续自主目标范围内，B首个金融收益前冻结0333合同：独立周/FI准备信号，unknown禁开，保留原generic filters/OI/AI，u已知T估q/S仍真实u，原allocator后按原gross前缀只缩量最终预算、不补位；这是B新增约束，不冒充原A/C已有。
+- 新035 pricing/strategy、036 B自有checkpoint、037四行provider scope；5+4+2新tests通过，独立真实long/short/unknown三场景8fills通过，receipt10c74fc9...d0c P0/P1/P2=0/0/0。没有B金融/模型训练/下载/旧suite重跑，累计仍7attempt/3 accepted。
+- 接下来单次B全周期内联preflight，A0/FI/周缓存复用，037仅实际缺口；038独立经济准备已就绪，需真实terminal后才审。B机械接合不代表alpha或晋级；旧C负结果保持，goal active、production_qualified=false。新增过拟合否、继续价值是。
+
+- Stage035执行源码/真实组合26项复现资产manifest e1c03af12704503a67871d0737a9cae4607f85185d55c79546a6fc23ac244807；Stage038收益前审计准备3项manifest3e88255d7c0ea00edbd889f6e66099b02634eb3974b96cec4d8aa1fce773a743。原始行情/私有配置未加入Git，未推送/部署。

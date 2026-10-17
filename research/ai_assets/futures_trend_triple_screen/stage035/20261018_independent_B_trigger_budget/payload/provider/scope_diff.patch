@@ -1,0 +1,21 @@
+--- research/lines/futures_trend_triple_screen/tools/stage032_checkpoint_request_provider.py
++++ research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py
+@@ -1,4 +1,4 @@
+-"""Checkpoint-run C_TS scope for the accepted exact-request provider; never signs review."""
++"""Independent B_TS scope for the accepted exact-request provider; never signs review."""
+ from __future__ import annotations
+ import argparse
+ from contextlib import redirect_stdout,redirect_stderr
+@@ -24,9 +24,9 @@
+ import stage021_blocking_data_gate as gate
+ 
+ LINE,ROOT=old.LINE,old.ROOT
+-OUTPUT=LINE/'outputs/stage032_checkpoint_request_provider'
+-REQUEST_ROOT=LINE/'outputs/stage031_ordered_account/C_TS/data_wait'
+-PROTOCOL=LINE/'stages/20261018_0304_stage032_checkpoint_request_provider.md'
++OUTPUT=LINE/'outputs/stage037_b_ts_request_provider'
++REQUEST_ROOT=LINE/'outputs/stage036_b_ts_account/B_TS/data_wait'
++PROTOCOL=LINE/'stages/20261018_0338_stage037_b_ts_request_provider.md'
+ R013=LINE/'outputs/stage013_independent_review/review_receipt.json'
+ R013_SHA='194e48847c9e0927772c482cd5bacc3529a625ac76aeec2a157089924177c795'
+ OLD_MANIFEST_SHA='376cefaf2a56f75e97adf31e431dac508189695c4bb4691294ab5f950aeada03'
