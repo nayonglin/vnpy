@@ -1,0 +1,42 @@
+{
+  "scope": "lightweight_existing_offline_evidence",
+  "production_qualified": false,
+  "files": [
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage251_final_acceptance.json",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/final_acceptance.json",
+      "sha256": "68b3877ea2382d711dd088a368bf6104ef29077670f50bcbc0cdc3ee0137f72e",
+      "size_bytes": 1994
+    },
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage251_comparison_summary.json",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/comparison_summary.json",
+      "sha256": "c5821912c101b247363ee5a1f632596937e1b91f3c094883d5a9adbc2fa9c315",
+      "size_bytes": 13050
+    },
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage251_accepted_common_patch_manifest.json",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/accepted_common_patch_manifest.json",
+      "sha256": "4057cecc1b5ef98f6e8502dfca1607c42d8f6f81774007f27af4c862e363f531",
+      "size_bytes": 1158
+    },
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage257_windows.csv",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage257_multicycle/report/snapshots/20261017T040020069259/windows.csv",
+      "sha256": "b02f030df76faa4841a1fdc83b52862ab7e5bbf01690aef819153ee2d7fe3d37",
+      "size_bytes": 44294
+    },
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage257_cohorts.csv",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage257_multicycle/report/snapshots/20261017T040020069259/cohorts.csv",
+      "sha256": "fd8de44bbc88c4239ac5a5139a9b04c705148e9a8bd684588f0d0428954b1811",
+      "size_bytes": 6759
+    },
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/evidence/stage259_merge/stage257_final_review.md",
+      "source_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage257_multicycle/independent_reviews/agent_reviews/final_multicycle_review.md",
+      "sha256": "5406f0eecd9a580964d7d87a6d1444a104c7d43219e409c491b8fa8e32ff3c7c",
+      "size_bytes": 8315
+    }
+  ]
+}

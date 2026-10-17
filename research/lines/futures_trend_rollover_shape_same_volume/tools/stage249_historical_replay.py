@@ -81,7 +81,7 @@ def audit_historical_ai_pool(path: Path, required_eval_dates: list[str]) -> dict
         if blockers:
             raise ValueError(f"invalid_snapshot:{eval_date}:{','.join(blockers)}")
 
-    # Stage901 的原日历来源与逐月要求照旧；只把首个 OOS 前的月份
+    # Stage901 的原日历来源与逐月要求照旧；只把首个历史月池前的月份
     # 明确映射到唯一静态边界，而不合成或提前训练历史月池。
     pre_ai_required: list[str] = []
     monthly_required: list[str] = []
@@ -195,15 +195,23 @@ def audit_correctness_overlay(root: Path, baseline: Path, active: Any) -> dict[s
 def capture_execution_proxy_usage(engine_class: type) -> Any:
     names = ["calculate_result", "new_bars"]
     originals = {name: (name in engine_class.__dict__, getattr(engine_class, name)) for name in names}
-    captured = {"usage": [], "equity": [], "trades": [], "minute_requests": [], "anchor_requests": []}
+    captured = {"usage": [], "equity": [], "trades": [], "minute_requests": [], "anchor_requests": [], "failures": []}
+    failure_causes: list[Exception] = []
     def capture_bar(engine: Any, dt: Any) -> Any:
-        result = originals["new_bars"][1](engine, dt)
-        strategy = getattr(engine, "strategy", None)
-        if strategy is not None and getattr(strategy, "trading", False):
-            captured["equity"].append({"date": pd_date(dt),
-                "estimated_equity": float(strategy.estimated_equity),
-                "settled_balance": float(strategy.settled_balance)})
-        return result
+        try:
+            result = originals["new_bars"][1](engine, dt)
+            strategy = getattr(engine, "strategy", None)
+            if strategy is not None and getattr(strategy, "trading", False):
+                captured["equity"].append({"date": pd_date(dt),
+                    "estimated_equity": float(strategy.estimated_equity),
+                    "settled_balance": float(strategy.settled_balance)})
+            return result
+        except Exception as error:
+            # Frozen vendor catches new_bars errors and returns normally. Preserve
+            # them before that catch, then fail the research scope on normal exit.
+            captured["failures"].append({"datetime": str(dt), "error": repr(error)})
+            failure_causes.append(error)
+            raise
     def capture_result(engine: Any, *args: Any, **kwargs: Any) -> Any:
         result = originals["calculate_result"][1](engine, *args, **kwargs)
         captured["usage"][:] = [dict(row) for row in getattr(engine, "trade_usage_rows", [])]
@@ -224,6 +232,8 @@ def capture_execution_proxy_usage(engine_class: type) -> Any:
     engine_class.calculate_result = capture_result
     try:
         yield captured
+        if failure_causes:
+            raise RuntimeError(f"backtest_bar_failed:{captured['failures'][0]}") from failure_causes[0]
     finally:
         for name, (local, original) in originals.items():
             if local:
@@ -346,7 +356,7 @@ def main() -> None:
             "vnpy_sqlite": vnpy_sqlite.__file__,
         },
         "process_timezone": "Asia/Shanghai",
-        "historical_ai_boundary": "2019-12-31 static18 through 2022-01-28; OOS from next trade date",
+        "historical_ai_boundary": "2019-12-31 static18 through 2022-01-28; historical monthly pools from next trade date; not a strict out-of-sample claim",
         "order_api_count": 0,
         "check": "passed",
     }
@@ -378,8 +388,19 @@ def main() -> None:
     correctness_code_hashes = {name: hashlib.sha256((root/name).read_bytes()).hexdigest()
                               for name in ALLOWED_PATCHES | CORRECTNESS_HELPERS}
     s901.s847.QmtRollPortfolioStrategyStage847C9StopRetry.stage827_require_complete_minutes = not args.diagnostic_incomplete_minutes
-    with capture_execution_proxy_usage(s901.s847.Stage847StopRetryEngine) as execution_proxy_rows:
-        combined, frames, spec = s901._run_live_c9(metadata, start, end)
+    try:
+        with capture_execution_proxy_usage(s901.s847.Stage847StopRetryEngine) as execution_proxy_rows:
+            combined, frames, spec = s901._run_live_c9(metadata, start, end)
+    except Exception as error:
+        (output / 'run_failure.json').write_text(json.dumps({
+            'status': 'failed_closed_no_performance_result', 'error': repr(error),
+            'started_at': started_at, 'failed_at': datetime.now().astimezone().isoformat(),
+            'diagnostic_incomplete_minutes': args.diagnostic_incomplete_minutes,
+            'correctness_code_sha256': correctness_code_hashes,
+            'input_manifest_sha256': hashlib.sha256((output / 'input_manifest.json').read_bytes()).hexdigest(),
+            'order_api_count': 0,
+        }, ensure_ascii=False, indent=2))
+        raise
     if any(hashlib.sha256((root/name).read_bytes()).hexdigest() != digest
            for name, digest in correctness_code_hashes.items()):
         raise SystemExit('correctness code changed during replay')
@@ -404,6 +425,7 @@ def main() -> None:
         raise SystemExit('official alpha/risk/cost parameters drifted from baseline')
     (output / 'effective_parameters.json').write_text(json.dumps(s901._json_safe(parameters), ensure_ascii=False, indent=2))
     (output / 'run_provenance.json').write_text(json.dumps({
+        'argv': sys.argv, 'python_executable': sys.executable,
         'started_at': started_at, 'completed_at': datetime.now().astimezone().isoformat(),
         'minute_input_sha256': minute_input_sha256, 'minute_input_unchanged_during_run': True,
         'input_file_count': len(inputs_before), 'all_data_and_model_inputs_unchanged_during_run': True,
@@ -414,6 +436,8 @@ def main() -> None:
         'correctness_code_sha256': correctness_code_hashes,
         'official_parameters_match_baseline': True,
         'diagnostic_incomplete_minutes': args.diagnostic_incomplete_minutes,
+        'vendor_swallowed_bar_exception_guard': True,
+        'captured_bar_failure_count': len(execution_proxy_rows['failures']),
     }, ensure_ascii=False, indent=2))
     metrics = s901.s650._metrics(combined, spec.capital, 1.0)
     validation_status = "diagnostic_incomplete_minutes" if args.diagnostic_incomplete_minutes else "strict_engine_completed_pending_independent_review"
@@ -442,6 +466,12 @@ def main() -> None:
             frame["variant"] = "stage249_corrected_offline_c9_15w"
         if "label" in frame:
             frame["label"] = "C9 15万正确性修复离线回放"
+        if "combo_variant" in frame:
+            frame["source_official_combo_variant"] = frame["combo_variant"]
+            frame["combo_variant"] = "stage249_corrected_offline_c9_15w"
+        if "note" in frame:
+            frame["source_official_note"] = frame["note"]
+            frame["note"] = metrics["note"]
     combined.to_csv(output / "daily.csv", index=False, encoding="utf-8-sig")
     for name, frame in frames.items():
         frame.to_csv(output / f"{name}.csv", index=False, encoding="utf-8-sig")

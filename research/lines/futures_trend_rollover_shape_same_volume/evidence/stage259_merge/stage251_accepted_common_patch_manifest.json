@@ -1,0 +1,14 @@
+{
+  "base_head": "77538e394167c290d5f2923f4d08931b9bbd7c4f",
+  "patch_sha256": "0d66b76338be103f8b3243c89a9938f0e7c72913bfbe669b6c8f1cd4b39e44d0",
+  "source_files": {
+    "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+    "tests/test_qmt_entry_context_diagnostics.py": "d14f0dc6b20a1d4d7b9310fb088ebd225ba146089b6e57797838d3f3fb783ded",
+    "examples/portfolio_backtesting/qmt_roll_intraday_execution.py": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+    "tests/test_stage249_account_equity.py": "de53ac4ac81a123362fb1cadcebbe427de93644413c5da0861018877862c9a73",
+    "tests/test_stage249_intraday_execution.py": "e789bc768d76c5ffd9203cf1c2fc76b869e9035c3692945c8d23788861cb029a"
+  },
+  "production_qualified": false
+}

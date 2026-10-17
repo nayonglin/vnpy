@@ -1,0 +1,37 @@
+{
+  "status": "verified_offline_ablation_comparison",
+  "completed_at": "2026-10-15T20:52:22.808192+08:00",
+  "branch": "codex/stage251-disable-half-r-stop",
+  "workspace": "/Users/mac/Desktop/fian",
+  "new_worktree_created": false,
+  "A_run": "A_final3",
+  "C_run": "C_final",
+  "same_input_and_model_identity": true,
+  "single_strategy_delta": {
+    "enable_stage847_half_r_stop_retry": {
+      "A": true,
+      "C": false
+    }
+  },
+  "strict_actual_coverage_and_source_binding_passed": true,
+  "independent_account_and_execution_review_passed": true,
+  "input_cache_sha256": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+  "production_promoted": false,
+  "scope_limitations": [
+    "full period is not strict AI out-of-sample",
+    "historical supply-demand external file absent; both arms rows=0",
+    "no independent-start multicycle validation",
+    "both arms fail 40-percent drawdown gate"
+  ],
+  "evidence_sha256": {
+    "final_data_binding.json": "c3e4cd7e538e47c42972305f86fb1f2659a7322b5374defdc33587d159499e4c",
+    "independent_reviews/A_final3_C_final_lightweight_acceptance.json": "270b9db072faaf763c6df3fcdce823ba4dea5f5451dfc7556409e47f3b634b78",
+    "independent_reviews/stage251_A_final3_key_review.json": "5ad1734cf1b7c988725a29beb43877fda052b7f8d546ea0d44e2bfaf8ea4b1a2",
+    "independent_reviews/stage251_C_final_key_review.json": "16bfcbd63f8f19c0447ca81fb2b215c2c88975aff5d72b9b67aa831306faf84c",
+    "A_final3/run_provenance.json": "5e43d29111219b7690995285caf6d8555aae6ca265ea7a617dd09b96a66647bc",
+    "C_final/run_provenance.json": "f044262c8ecde8aa00d50a4ad6a3c4f1be69a6e4f76609b431a76139a2f7e92d",
+    "A_final3/statistics_audit/summary.json": "0f78e5e508b2be934b51bf75f38087b51b864b1b0cd055ee344c52fcc8cb7597",
+    "C_final/statistics_audit/summary.json": "647894d8026b168501d48c6a0212d5152efdead4afa6704b27b3fdd86e5e6e0c",
+    "validation/final_focused_tests.txt": "286f240936006522d67920d1b19a6927be3bf359f5df7ad205a6ea2ca6293682"
+  }
+}

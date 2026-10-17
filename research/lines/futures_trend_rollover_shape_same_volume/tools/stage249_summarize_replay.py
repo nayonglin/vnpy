@@ -73,6 +73,13 @@ def main():
         first=g.sort_values('first_id').iloc[0];last=g.sort_values('last_id').iloc[-1]
         episodes.append({'root_id':key,'entry_date':first.entry_date,'exit_date':last.exit_date,'net_pnl':g.net_pnl.sum(),'cost':g.cost.sum(),'cycle_count':len(g)})
     episodes=pd.DataFrame(episodes)
+    open_episodes=[]
+    for root_id in sorted({row['root_id'] for row in open_rows}):
+        closed_leg_pnl=float(cycles.loc[cycles.root_id.eq(root_id),'net_pnl'].sum())
+        remaining_mtm=sum(row['net_mtm'] for row in open_rows if row['root_id']==root_id)
+        open_episodes.append({'root_id':root_id,'closed_cycle_pnl':closed_leg_pnl,
+                              'remaining_cycle_net_mtm':remaining_mtm,'net_mtm':closed_leg_pnl+remaining_mtm})
+    assert abs(episodes.net_pnl.sum()+sum(row['net_mtm'] for row in open_episodes)-d.net_pnl.sum())<EPS
     def stats(g):
         v=g.net_pnl;wins=v[v>EPS];loss=v[v<-EPS]
         return {'closed_cycles':len(g),'wins':len(wins),'losses':len(loss),'win_rate_pct':len(wins)/len(g)*100 if len(g) else None,'net_pnl':float(v.sum()),'profit_factor':float(wins.sum()/-loss.sum()) if len(loss) else None}
@@ -96,7 +103,7 @@ def main():
         if len(match)==1:
             for col in ['candidate_index','ai_product_pool_signal_date','ai_product_pool_rank','ai_product_pool_score','sizing_equity']:
                 if col in match:cycles.loc[i,col]=match.iloc[0][col]
-    for name,frame in [('complete_cycles',cycles),('complete_episodes',episodes),('open_positions',pd.DataFrame(open_rows)),('year_month_results',pd.DataFrame(grouped)),('retry_links',pd.DataFrame(retry_links)),('trades_costed',t)]:
+    for name,frame in [('complete_cycles',cycles),('complete_episodes',episodes),('open_positions',pd.DataFrame(open_rows)),('open_episodes',pd.DataFrame(open_episodes)),('year_month_results',pd.DataFrame(grouped)),('retry_links',pd.DataFrame(retry_links)),('trades_costed',t)]:
         frame.to_csv(out/f'{name}.csv',index=False,encoding='utf-8-sig')
     requests=pd.read_csv(src/'minute_scan_requests.csv')
     # Intraday requests on one symbol/day are suffixes of the same session;
@@ -107,7 +114,7 @@ def main():
     checks={'status':'arithmetic_passed_only','diagnostic_incomplete_minutes':provenance['diagnostic_incomplete_minutes'],
             'validation_status':'diagnostic_not_accepted' if provenance['diagnostic_incomplete_minutes'] else 'strict_engine_completed_pending_independent_review',
             'scan_union_policy':'earliest request suffix within identical session end; source provenance is a separate gate',
-            'source_hashes':hashes,'daily_rows':len(d),'fill_count':len(t),'equity_max_abs_residual':eqres,'sizing_max_abs_residual':sizingres,'independent_cashflow_max_abs_residual':cashres,'closed_cycles':len(cycles),'closed_episodes':len(episodes),'end_open_contracts':len(open_rows),'end_open_mtm':sum(x['net_mtm'] for x in open_rows),'scan_keys':len(scans),'incomplete_scan_keys':int(scans.coverage_status.ne('complete').sum()),'unique_missing_minutes':int(scans.missing_bar_count.sum()),'periods':periods}
+            'source_hashes':hashes,'daily_rows':len(d),'fill_count':len(t),'equity_max_abs_residual':eqres,'sizing_max_abs_residual':sizingres,'independent_cashflow_max_abs_residual':cashres,'closed_cycles':len(cycles),'closed_episodes':len(episodes),'end_open_contracts':len(open_rows),'end_open_mtm':sum(x['net_mtm'] for x in open_rows),'end_open_episode_net_mtm':sum(x['net_mtm'] for x in open_episodes),'scan_keys':len(scans),'incomplete_scan_keys':int(scans.coverage_status.ne('complete').sum()),'unique_missing_minutes':int(scans.missing_bar_count.sum()),'periods':periods}
     for name,digest in hashes.items():assert hashlib.sha256((src/name).read_bytes()).hexdigest()==digest
     (out/'summary.json').write_text(json.dumps(checks,ensure_ascii=False,indent=2)+'\n');print(json.dumps({k:v for k,v in checks.items() if k!='source_hashes'},ensure_ascii=False))
 
