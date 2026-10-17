@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-10-17T17:33:18.157060+08:00",
+  "index_url": "https://www.shfe.com.cn/reports/tradedata/datadownload/download.json",
+  "index_sha256": "42bded46596f52331ce2d40a51c64bb36e615c11af4d8f89ac90112c60efbd55",
+  "selection": [
+    {
+      "type": "1",
+      "year": "2019",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119586374207845.zip",
+      "name": "2019期货"
+    },
+    {
+      "type": "1",
+      "year": "2018",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119586086733906.zip",
+      "name": "2018期货"
+    },
+    {
+      "type": "1",
+      "year": "2017",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585862827439.zip",
+      "name": "2017期货"
+    },
+    {
+      "type": "1",
+      "year": "2016",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585669672682.zip",
+      "name": "2016期货"
+    },
+    {
+      "type": "1",
+      "year": "2015",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585470551464.zip",
+      "name": "2015期货"
+    },
+    {
+      "type": "1",
+      "year": "2014",
+      "url": "/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119576761100818.zip",
+      "name": "2014期货"
+    }
+  ]
+}

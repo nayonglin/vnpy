@@ -1,0 +1,257 @@
+{
+  "generated_at": "2026-10-17T17:47:18.409736+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage264",
+  "status": "partial_official_daily_data_acquired_no_merge_no_training",
+  "source_scope": {
+    "planned_products": 14,
+    "planned_contract_epochs": 231,
+    "shfe_products": [
+      "au",
+      "cu",
+      "hc",
+      "rb",
+      "ru",
+      "sp"
+    ],
+    "shfe_contract_epochs": 124,
+    "shfe_archive_years": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "full_lifetime_listing_metadata": "unknown"
+  },
+  "shfe_summary": {
+    "contract_epochs": 124,
+    "products": {
+      "au.SHFE": 12,
+      "cu.SHFE": 60,
+      "hc.SHFE": 16,
+      "rb.SHFE": 16,
+      "ru.SHFE": 16,
+      "sp.SHFE": 4
+    },
+    "source_valid_rows_before_deduplication": 29316,
+    "normalized_valid_unique_rows": 29316,
+    "rejected_raw_rows": 376,
+    "rejection_reasons": {
+      "no_trade_missing_ohlc_placeholder": 376
+    },
+    "outside_manifest_rows_ignored": 200635,
+    "identical_duplicate_extra_rows": 0,
+    "conflicting_duplicate_keys": 0,
+    "conflicting_duplicate_rows": 0,
+    "overlap_days": 7146,
+    "exact_match_days": 6276,
+    "different_days": 870,
+    "different_field_counts": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 869,
+      "open_interest": 869
+    },
+    "official_new_unique_days": 22170,
+    "official_new_pre_main_days": 18594,
+    "AM120_ready_before": 6,
+    "AM120_coverage_ready_after": 99,
+    "AM120_nonconflicting_ready_after": 93,
+    "source_scope_AM120_ready_before": 6,
+    "source_scope_AM120_coverage_ready_after": 92,
+    "source_scope_AM120_nonconflicting_ready_after": 86,
+    "main_days_in_scope_expected": 6363,
+    "main_days_in_scope_existing_covered": 6363,
+    "main_days_in_scope_union_covered": 6363,
+    "main_days_in_scope_nonconflicting_covered": 6276,
+    "unknown_listing_dates": 124,
+    "all_lifetime_metadata_unknown": true
+  },
+  "unit_semantics": {
+    "official_volume": "two-sided hands retained",
+    "official_open_interest": "two-sided end-of-day held positions retained",
+    "overlap_difference_classification": {
+      "volume_2x_and_previous_close_oi_2x_existing": 868,
+      "other_difference": 2
+    },
+    "interpretation": "The coupled identity is evidence consistent with one-sided volume and beginning-of-day OI in the existing rows; the ingest-field choice itself has not been proved. Same-day OI cannot be fixed by a constant scale.",
+    "transforms_applied": false
+  },
+  "tqsdk_diagnosis": {
+    "range": {
+      "mode": "range",
+      "stage": "query_daily",
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "generated_at": "2026-10-17T17:40:30.097410+08:00",
+      "api_constructed": true,
+      "status": "failed",
+      "error_type": "Exception",
+      "error_redacted": "get_kline_data_series 数据获取方式仅限专业版用户使用，如需购买专业版或者申请试用，请访问 <provider_url>",
+      "traceback_locations": [
+        {
+          "file": "stage264_diagnose_tqsdk.py",
+          "function": "run",
+          "line": 56
+        },
+        {
+          "file": "api.py",
+          "function": "get_kline_data_series",
+          "line": 954
+        },
+        {
+          "file": "api.py",
+          "function": "_get_data_series",
+          "line": 1026
+        }
+      ],
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "auth_mode": "real",
+      "access_token_received": true
+    },
+    "serial": {
+      "mode": "serial",
+      "stage": "query_daily",
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "generated_at": "2026-10-17T17:40:52.198671+08:00",
+      "api_constructed": true,
+      "status": "failed",
+      "error_type": "Exception",
+      "error_redacted": "查询合约服务报错 failed to execute graphql operation, errors: [variable instrument_id: [SHFE.rb1505] contains non-existent instrument: SHFE.rb1505]",
+      "traceback_locations": [
+        {
+          "file": "api.py",
+          "function": "get_kline_serial",
+          "line": 782
+        },
+        {
+          "file": "api.py",
+          "function": "wait_update",
+          "line": 2079
+        },
+        {
+          "file": "api.py",
+          "function": "_wait_update",
+          "line": 2108
+        },
+        {
+          "file": "baseApi.py",
+          "function": "_run_until_task_done",
+          "line": 114
+        },
+        {
+          "file": "baseApi.py",
+          "function": "_run_once",
+          "line": 83
+        },
+        {
+          "file": "symbols.py",
+          "function": "_run",
+          "line": 45
+        }
+      ],
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "auth_mode": "real",
+      "access_token_received": true
+    },
+    "snapshot": {
+      "mode": "snapshot",
+      "stage": "wait_snapshot",
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "generated_at": "2026-10-17T17:41:03.237136+08:00",
+      "api_constructed": true,
+      "status": "failed",
+      "error_type": "Exception",
+      "error_redacted": "查询合约服务报错 failed to execute graphql operation, errors: [variable instrument_id: [SHFE.rb1505] contains non-existent instrument: SHFE.rb1505]",
+      "traceback_locations": [
+        {
+          "file": "stage264_diagnose_tqsdk.py",
+          "function": "run",
+          "line": 71
+        },
+        {
+          "file": "api.py",
+          "function": "wait_update",
+          "line": 2079
+        },
+        {
+          "file": "api.py",
+          "function": "_wait_update",
+          "line": 2108
+        },
+        {
+          "file": "baseApi.py",
+          "function": "_run_until_task_done",
+          "line": 114
+        },
+        {
+          "file": "baseApi.py",
+          "function": "_run_once",
+          "line": 83
+        },
+        {
+          "file": "symbols.py",
+          "function": "_run",
+          "line": 45
+        }
+      ],
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "auth_mode": "bt",
+      "access_token_received": true
+    }
+  },
+  "remaining_blockers": [
+    "CZCE official access HTTP 412 in current client",
+    "DCE official requests timeout",
+    "full-pool pre-main coverage and cross-source volume/OI semantics not ready"
+  ],
+  "decision": "retain isolated official SHFE dataset; no financial replay or model fitting until data qualification gate passes",
+  "verification": {
+    "stage264_target_tests": 23,
+    "test_failures": 0,
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_rollover_shape_same_volume/tools -p 'test_stage264_*.py' -v",
+    "main_database_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+    "mapping_sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+    "main_database_unchanged": true,
+    "mapping_unchanged": true
+  },
+  "safety": {
+    "database_writes": 0,
+    "financial_backtest_runs": 0,
+    "model_fits": 0,
+    "broker_connections": 0,
+    "order_api_calls": 0,
+    "cancel_api_calls": 0,
+    "official_strategy_changes": 0
+  },
+  "artifact_hashes": {
+    "summary_daily_manifest.json": "e8b07f8c5583c16b9fedc613ca3ac200b8ddad45effa088ae0acc2f128278c66",
+    "manifest_contracts.csv": "8fd8e2626e8639cbcdeb22689510d0fcca127fdd2bf194a248029d1382017b38",
+    "manifest_main_dates.csv": "289086e786068c038feda82d9378d6f30fbee370763bcbe68badb5671ec77050",
+    "shfe_archive_index_selection.json": "a4383ac2d7180e2fc20ce01effc67d9c928f2b5b78ffdb6c4bc5b2e8754c7eaf",
+    "shfe_official/year_download_status.json": "12324c16ec633fc125c4de9c9e13d03494e2c9821accf592495d460f8f7646fb",
+    "shfe_official/normalized_bars.csv": "f548b4f4874d409b5bfa993ad45892d8cb65eb5d41c05e7a6b4911f574324680",
+    "shfe_official/quality_report.json": "110397674da2de0f2f94ffeb0fae3bb4d66701c52de3b7f429004b398447e061",
+    "shfe_official/unit_semantics_audit.json": "7e1ec7fbb68d0a423bbcabc999aaea9ef8e57f45d9271730b3c6c59efc02f2a0",
+    "tqsdk_diagnosis/range.json": "11bab63971cec64301b45792ded79c50c740e75055e3c4981ab46c7e077768f1",
+    "tqsdk_diagnosis/serial.json": "30b465b5dc63d9ec5071e3546dd93e5507eacc921324138cfea1ce0dae5e67fc",
+    "tqsdk_diagnosis/snapshot.json": "079cbb5791b3b285dd96d28181e2e01316456ca4bb9f378a15e7ba39d2487106",
+    "tqsdk_diagnosis/explanation.md": "9399756d587c24306226a427677e48cb7434d5da71ed3252c446b5c09cc5561a"
+  },
+  "external_dependency_policy": "Raw annual archives, parsed market bars and original database remain local ignored dependencies; registered evidence saves source URLs, hashes, contracts and derived counts, not raw market data."
+}

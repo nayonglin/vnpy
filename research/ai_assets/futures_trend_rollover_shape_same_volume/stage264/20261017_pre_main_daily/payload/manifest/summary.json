@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-10-17T17:27:58.322517+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage264",
+  "git_branch": "codex/ai-training-data-expansion",
+  "git_head": "071018b0c3bbfe6cbc49191fea59fa91d50b8495",
+  "status": "research_manifest_only_no_download_or_replay",
+  "scope_start": "2015-01-01",
+  "scope_end": "2019-12-31",
+  "contract_epochs": 231,
+  "products": 14,
+  "main_mapping_days_in_scope": 14187,
+  "effective_source_AM_size": 120,
+  "missing_or_invalid_main_mapping_days_in_scope": 77,
+  "ready_at_global_first_main_close": 13,
+  "needed_bars_lower_bound_at_global_first_main_close": 25953,
+  "source_scope_preload_start": "2015-01-01",
+  "stage263_comparable_ready_at_first_in_scope_main_close": 13,
+  "stage263_comparable_needed_bars_lower_bound": 25942,
+  "global_first_main_precedes_scope_start_epochs": 11,
+  "unknown_listing_date_epochs": 231,
+  "duplicate_same_epoch_days": 0,
+  "invalid_same_epoch_ohlc_rows": 0,
+  "product_epoch_counts": {
+    "AP.CZCE": 7,
+    "CF.CZCE": 16,
+    "FG.CZCE": 16,
+    "MA.CZCE": 16,
+    "OI.CZCE": 16,
+    "SA.CZCE": 1,
+    "SM.CZCE": 19,
+    "au.SHFE": 12,
+    "cu.SHFE": 60,
+    "hc.SHFE": 16,
+    "jm.DCE": 16,
+    "rb.SHFE": 16,
+    "ru.SHFE": 16,
+    "sp.SHFE": 4
+  },
+  "source_identities": {
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "bytes": 18392086,
+      "mtime_ns": 1792040144966871374,
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325"
+    },
+    "/Users/mac/Desktop/fian/.vntrader/database.db": {
+      "path": "/Users/mac/Desktop/fian/.vntrader/database.db",
+      "bytes": 112726016,
+      "mtime_ns": 1792049549085915333,
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_build_daily_manifest.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_build_daily_manifest.py",
+      "bytes": 18821,
+      "mtime_ns": 1792229277179710833,
+      "sha256": "75a8faa34f84f802007f5d5a750cb886d1e0cc75225a79d0a12e87909188099d"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_summary.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_summary.json",
+      "bytes": 55485,
+      "mtime_ns": 1792228063772987999,
+      "sha256": "9c0735fcae2eacc63574d1f9669940c61be3bb466358ff80144a18b2023ad2c1"
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/repair_qmt_roll_stage196_stage78_2015_tushare_data.py": {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/repair_qmt_roll_stage196_stage78_2015_tushare_data.py",
+      "bytes": 22261,
+      "mtime_ns": 1791959693571234916,
+      "sha256": "caa8b4e276edcadbe2a55af9cec7b75e626dfa79e0d6601ef556e60741b5a4fa"
+    }
+  },
+  "official_documentation": {
+    "rqdata": "https://www.ricequant.com/doc/rqdata/python/generic-api",
+    "rqdata_historical_product_codes": "https://www.ricequant.com/doc/rqdata/python/futures-mod#郑商所相关数据约定",
+    "tushare_contract_codes": "https://tushare.pro/document/2?doc_id=134",
+    "tushare_contract_metadata": "https://tushare.pro/document/2?doc_id=135",
+    "tq_contract_codes": "https://doc.shinnytech.com/tqsdk/latest/usage/mddatas.html",
+    "tq_downloader_source": "https://github.com/shinnytech/tqsdk-python/blob/master/tqsdk/tools/downloader.py"
+  },
+  "definitions": {
+    "contract_epoch_id": "vt_symbol@YYYYMM; mapping and every bar are independently date-qualified",
+    "history_count_before_first_main": "unique valid same-delivery daily bars strictly before global first mapped main date",
+    "needed_bars_lower_bound": "max(0,120-history_count_through_first_main); includes actual first-main-day bar only if present",
+    "stage263_comparable": "counts same-epoch valid bars >=2015-01-01 through first main date inside 2015--2019 scope",
+    "probe_window": "first global main date minus730 calendar days through delivery month end; a heuristic exploratory query, never listing/expiry evidence or guaranteed full lifetime",
+    "full_lifetime_download": "must first obtain and validate metadata list_date/delist_date and delivery month; currently unknown for all epochs",
+    "vendor_codes": "official format normalization only; individual historical catalog existence/entitlement not verified; TQ YYMM aliases remain explicitly unverified",
+    "resume": "copy download_state_template.csv to a separate mutable state file; key by resume_key, write raw/hash/status atomically; generator does not read or overwrite downloader checkpoints",
+    "lower_bound_limit": "minimum missing count at the first-main clock; not a trading-calendar gap count or proof all120 bars existed before listing"
+  },
+  "data_download_calls": 0,
+  "training_calls": 0,
+  "backtest_calls": 0,
+  "database_write_calls": 0,
+  "output_identities": {
+    "manifest_contracts.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/manifest_contracts.json",
+      "bytes": 627455,
+      "mtime_ns": 1792229278321075166,
+      "sha256": "0d19045cd0fa472bb82f868daf79ea4f4defea2ed3c472b0dee0944d4936efae"
+    },
+    "manifest_main_dates.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/manifest_main_dates.csv",
+      "bytes": 1096292,
+      "mtime_ns": 1792229278315025541,
+      "sha256": "289086e786068c038feda82d9378d6f30fbee370763bcbe68badb5671ec77050"
+    },
+    "download_state_template.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/download_state_template.csv",
+      "bytes": 26508,
+      "mtime_ns": 1792229278322307291,
+      "sha256": "99681e9ee4bb001a6c5f297502bbe5dd309734812c439b6246f9ba1f645b9f67"
+    },
+    "manifest_contracts.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/manifest_contracts.csv",
+      "bytes": 180953,
+      "mtime_ns": 1792229278287458666,
+      "sha256": "8fd8e2626e8639cbcdeb22689510d0fcca127fdd2bf194a248029d1382017b38"
+    }
+  }
+}

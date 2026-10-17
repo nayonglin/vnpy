@@ -1,0 +1,51 @@
+{
+  "reports": [
+    {
+      "mode": "range",
+      "status": "failed",
+      "stage": "query_daily",
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "sha256": "11bab63971cec64301b45792ded79c50c740e75055e3c4981ab46c7e077768f1",
+      "reported_rows": null,
+      "interpreted_failure": "local_professional_download_feature_gate_for_this_account"
+    },
+    {
+      "mode": "serial",
+      "status": "failed",
+      "stage": "query_daily",
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "sha256": "30b465b5dc63d9ec5071e3546dd93e5507eacc921324138cfea1ce0dae5e67fc",
+      "reported_rows": null,
+      "interpreted_failure": "the_requested_SHFE_rb1505_instrument_was_not_recognized_in_this_mode_snapshot"
+    },
+    {
+      "mode": "snapshot",
+      "status": "failed",
+      "stage": "wait_snapshot",
+      "login_grants": {
+        "futr": true,
+        "tq_dl": false
+      },
+      "broker_connections": 0,
+      "order_api_calls": 0,
+      "sha256": "079cbb5791b3b285dd96d28181e2e01316456ca4bb9f378a15e7ba39d2487106",
+      "reported_rows": null,
+      "interpreted_failure": "the_requested_SHFE_rb1505_instrument_was_not_recognized_in_this_mode_snapshot"
+    }
+  ],
+  "known_local_credentials_found": false,
+  "unredacted_url_or_email_found": false,
+  "unexpected_long_token_string_found": false,
+  "safety_conclusion": "No credential values printed; comparison used in-memory equality only.",
+  "scope_limit": "Only this account, SDK mode and requested SHFE.rb1505 were tested. Does not establish all old contracts unavailable or promise professional account historical coverage."
+}

@@ -1,0 +1,352 @@
+{
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": 264,
+  "index_url": "https://www.shfe.com.cn/reports/tradedata/datadownload/download.json",
+  "index_sha256": "42bded46596f52331ce2d40a51c64bb36e615c11af4d8f89ac90112c60efbd55",
+  "max_bytes_per_archive": 33554432,
+  "authenticated_requests": 0,
+  "order_calls": 0,
+  "ctp_connections": 0,
+  "main_database_modified": false,
+  "pit_limit": "Official archive is an ex-post publication and may contain later revisions; not proof of historical as-of bytes.",
+  "years": [
+    {
+      "year": 2014,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119576761100818.zip",
+      "index_name": "2014期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2014.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:37:28+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "2049865",
+      "response_at": "2026-10-17T17:37:28+08:00",
+      "completed_at": "2026-10-17T17:37:35+08:00",
+      "bytes": 2049865,
+      "sha256": "dd9f0a225696d1849ff32442f12e8c9c23a700c64ed1e5ebafb46f3ea548d8a7",
+      "zip_valid": true,
+      "crc_valid": true,
+      "members": [
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "uncompressed_bytes": 8396288,
+          "compressed_bytes": 2049727,
+          "is_dir": false,
+          "display_name": "所内合约行情报表.xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 7.205,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    },
+    {
+      "year": 2015,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585470551464.zip",
+      "index_name": "2015期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2015.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:34:54+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "2284105",
+      "response_at": "2026-10-17T17:34:54+08:00",
+      "completed_at": "2026-10-17T17:35:02+08:00",
+      "bytes": 2284105,
+      "sha256": "79ffb605f4a1b4d786e772f683201a50b3c55b147b1dfd992a2a5e3ccef8b36c",
+      "zip_valid": true,
+      "members": [
+        {
+          "name": "MarketData_Year_2015.xls",
+          "uncompressed_bytes": 9678336,
+          "compressed_bytes": 2283923,
+          "is_dir": false,
+          "display_name": "MarketData_Year_2015.xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "MarketData_Year_2015.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 8.639,
+      "crc_valid": true,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    },
+    {
+      "year": 2016,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585669672682.zip",
+      "index_name": "2016期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2016.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:37:35+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "1815988",
+      "response_at": "2026-10-17T17:37:36+08:00",
+      "completed_at": "2026-10-17T17:37:43+08:00",
+      "bytes": 1815988,
+      "sha256": "71b8996857b26a5cdb6e84a04ebbf773bffdc2f7b62249fc2573f8ff30a6949b",
+      "zip_valid": true,
+      "crc_valid": true,
+      "members": [
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ(1).xls",
+          "uncompressed_bytes": 5558272,
+          "compressed_bytes": 1815844,
+          "is_dir": false,
+          "display_name": "所内合约行情报表(1).xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ(1).xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 7.555,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    },
+    {
+      "year": 2017,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119585862827439.zip",
+      "index_name": "2017期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2017.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:37:43+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "1847623",
+      "response_at": "2026-10-17T17:37:43+08:00",
+      "completed_at": "2026-10-17T17:37:50+08:00",
+      "bytes": 1847623,
+      "sha256": "f2a2f754f700025551db296f5da1c53d0443b36a3b9d66bf8212490771c79d87",
+      "zip_valid": true,
+      "crc_valid": true,
+      "members": [
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "uncompressed_bytes": 5575680,
+          "compressed_bytes": 1847485,
+          "is_dir": false,
+          "display_name": "所内合约行情报表.xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 6.861,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    },
+    {
+      "year": 2018,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119586086733906.zip",
+      "index_name": "2018期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2018.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:37:50+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "3339665",
+      "response_at": "2026-10-17T17:37:50+08:00",
+      "completed_at": "2026-10-17T17:38:02+08:00",
+      "bytes": 3339665,
+      "sha256": "feb7cf908c0f748f060fde1c41161cddcc169fba138031871e41a28d26d0d422",
+      "zip_valid": true,
+      "crc_valid": true,
+      "members": [
+        {
+          "name": "2018╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "uncompressed_bytes": 13221888,
+          "compressed_bytes": 3339519,
+          "is_dir": false,
+          "display_name": "2018所内合约行情报表.xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "2018╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 12.054,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    },
+    {
+      "year": 2019,
+      "url": "https://www.shfe.com.cn/reports/tradedata/datadownload/historicaldata/futures/202401/P020240119586374207845.zip",
+      "index_name": "2019期货",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/raw_years/shfe_futures_2019.zip",
+      "status": "downloaded",
+      "started_at": "2026-10-17T17:38:02+08:00",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "content_length_header": "10268799",
+      "response_at": "2026-10-17T17:38:02+08:00",
+      "completed_at": "2026-10-17T17:38:41+08:00",
+      "bytes": 10268799,
+      "sha256": "e2f25d9e02facde9bbd08dd8a9db8aac45f2729c2200e1995d4ccb99fc795992",
+      "zip_valid": true,
+      "crc_valid": true,
+      "members": [
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.3.xls",
+          "uncompressed_bytes": 4080128,
+          "compressed_bytes": 996893,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.3.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.4.xls",
+          "uncompressed_bytes": 4290048,
+          "compressed_bytes": 1033018,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.4.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.5.xls",
+          "uncompressed_bytes": 4227072,
+          "compressed_bytes": 1015703,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.5.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.1.xls",
+          "uncompressed_bytes": 2612736,
+          "compressed_bytes": 654042,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.1.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.2.xls",
+          "uncompressed_bytes": 2672128,
+          "compressed_bytes": 664048,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.2.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.6.xls",
+          "uncompressed_bytes": 4058112,
+          "compressed_bytes": 981972,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.6.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.7.xls",
+          "uncompressed_bytes": 2947584,
+          "compressed_bytes": 866087,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.7.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.8.xls",
+          "uncompressed_bytes": 2891776,
+          "compressed_bytes": 828806,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.8.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.9.xls",
+          "uncompressed_bytes": 3079168,
+          "compressed_bytes": 791711,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.9.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.10.xls",
+          "uncompressed_bytes": 2410496,
+          "compressed_bytes": 692484,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.10.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.11.xls",
+          "uncompressed_bytes": 2793984,
+          "compressed_bytes": 811278,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.11.xls"
+        },
+        {
+          "name": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.12.xls",
+          "uncompressed_bytes": 3211776,
+          "compressed_bytes": 931193,
+          "is_dir": false,
+          "display_name": "所内合约行情报表2019.12.xls"
+        }
+      ],
+      "member_previews": [
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.3.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        },
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.4.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        },
+        {
+          "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2019.5.xls",
+          "signature_hex": "d0cf11e0a1b11ae10000000000000000",
+          "format": "ole_xls"
+        }
+      ],
+      "elapsed_seconds": 38.958,
+      "final_sha256_verified": true,
+      "all_members_ole_xls": true,
+      "git_ignored": true
+    }
+  ],
+  "updated_at": "2026-10-17T17:43:53+08:00",
+  "first_sample_gate": {
+    "year": 2015,
+    "verified_by": "independent_parser_agent",
+    "verified_at": "2026-10-17T17:37:28+08:00",
+    "format": "OLE_BIFF_XLS",
+    "sheet": "所内合约行情报表",
+    "rows": 37695,
+    "columns": 15,
+    "has_contract_date_ohlc_volume_oi": true,
+    "non_main_sample": "2015-01-05 rb1510 O2583 H2598 L2574 C2589 matches official daily JSON",
+    "volume_oi_raw_convention": "双边计算（原始脚注）",
+    "gate": "pass",
+    "archive_sha256": "79ffb605f4a1b4d786e772f683201a50b3c55b147b1dfd992a2a5e3ccef8b36c"
+  },
+  "batch_complete": true,
+  "total_archive_bytes": 21606045,
+  "all_archive_integrity_verified_at": "2026-10-17T17:39:29+08:00",
+  "index_sha256_verified": true,
+  "all_archives_integrity_verified": true,
+  "archive_count": 6,
+  "xls_member_count": 17,
+  "download_method": "isolated_inline_commands_before_reusable_entrypoint_was_written",
+  "reusable_entrypoint": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_download_shfe_years.py",
+    "sha256": "d0ae0a551a4e9ec05459c6129969c3629c0176d0dedb620d9fda24ab4d40e164",
+    "created_after_download": true,
+    "executed_mode": "verify-only (offline)"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "generated_at": "2026-10-17T17:45:58.342274+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage264",
+  "status": "isolated_official_dataset_no_main_db_import_pending_independent_review",
+  "source_code_sha256": {
+    "tools/stage264_normalize_shfe_years.py": "6c4e631cc5ab0293ca03f4fca573b6ca1c049507afacb49f5fa4cb7dadb16f5c",
+    "tools/test_stage264_normalize_shfe_years.py": "c719268012e45474b1445c6c2abb7500ad88a4e3a96e9e9380cd6314da628199"
+  },
+  "source_archives": [
+    {
+      "year": 2014,
+      "sha256": "dd9f0a225696d1849ff32442f12e8c9c23a700c64ed1e5ebafb46f3ea548d8a7",
+      "bytes": 2049865,
+      "xls_member_count": 1
+    },
+    {
+      "year": 2015,
+      "sha256": "79ffb605f4a1b4d786e772f683201a50b3c55b147b1dfd992a2a5e3ccef8b36c",
+      "bytes": 2284105,
+      "xls_member_count": 1
+    },
+    {
+      "year": 2016,
+      "sha256": "71b8996857b26a5cdb6e84a04ebbf773bffdc2f7b62249fc2573f8ff30a6949b",
+      "bytes": 1815988,
+      "xls_member_count": 1
+    },
+    {
+      "year": 2017,
+      "sha256": "f2a2f754f700025551db296f5da1c53d0443b36a3b9d66bf8212490771c79d87",
+      "bytes": 1847623,
+      "xls_member_count": 1
+    },
+    {
+      "year": 2018,
+      "sha256": "feb7cf908c0f748f060fde1c41161cddcc169fba138031871e41a28d26d0d422",
+      "bytes": 3339665,
+      "xls_member_count": 1
+    },
+    {
+      "year": 2019,
+      "sha256": "e2f25d9e02facde9bbd08dd8a9db8aac45f2729c2200e1995d4ccb99fc795992",
+      "bytes": 10268799,
+      "xls_member_count": 12
+    }
+  ],
+  "output_sha256": {
+    "outputs/stage264_pre_main_daily/shfe_official/normalized_bars.csv": "f548b4f4874d409b5bfa993ad45892d8cb65eb5d41c05e7a6b4911f574324680",
+    "outputs/stage264_pre_main_daily/shfe_official/rejected_rows.csv": "21a0f30c6b40ebded0e987c95a5e770a474273a7246735c7d0a1ad7976c8b3c6",
+    "outputs/stage264_pre_main_daily/shfe_official/overlap_differences.csv": "ca180b0abed6c0e8d32c26b03a7afdfa377366c2231c02869b16314b5e9d30ff",
+    "outputs/stage264_pre_main_daily/shfe_official/unit_semantics_audit.json": "7e1ec7fbb68d0a423bbcabc999aaea9ef8e57f45d9271730b3c6c59efc02f2a0",
+    "outputs/stage264_pre_main_daily/shfe_official/quality_report.json": "110397674da2de0f2f94ffeb0fae3bb4d66701c52de3b7f429004b398447e061"
+  },
+  "summary": {
+    "contract_epochs": 124,
+    "products": {
+      "au.SHFE": 12,
+      "cu.SHFE": 60,
+      "hc.SHFE": 16,
+      "rb.SHFE": 16,
+      "ru.SHFE": 16,
+      "sp.SHFE": 4
+    },
+    "source_valid_rows_before_deduplication": 29316,
+    "normalized_valid_unique_rows": 29316,
+    "rejected_raw_rows": 376,
+    "rejection_reasons": {
+      "no_trade_missing_ohlc_placeholder": 376
+    },
+    "outside_manifest_rows_ignored": 200635,
+    "identical_duplicate_extra_rows": 0,
+    "conflicting_duplicate_keys": 0,
+    "conflicting_duplicate_rows": 0,
+    "overlap_days": 7146,
+    "exact_match_days": 6276,
+    "different_days": 870,
+    "different_field_counts": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 869,
+      "open_interest": 869
+    },
+    "official_new_unique_days": 22170,
+    "official_new_pre_main_days": 18594,
+    "AM120_ready_before": 6,
+    "AM120_coverage_ready_after": 99,
+    "AM120_nonconflicting_ready_after": 93,
+    "source_scope_AM120_ready_before": 6,
+    "source_scope_AM120_coverage_ready_after": 92,
+    "source_scope_AM120_nonconflicting_ready_after": 86,
+    "main_days_in_scope_expected": 6363,
+    "main_days_in_scope_existing_covered": 6363,
+    "main_days_in_scope_union_covered": 6363,
+    "main_days_in_scope_nonconflicting_covered": 6276,
+    "unknown_listing_dates": 124,
+    "all_lifetime_metadata_unknown": true
+  },
+  "unit_audit": {
+    "classification_counts": {
+      "volume_2x_and_previous_close_oi_2x_existing": 868,
+      "other_difference": 2
+    },
+    "all_17_xls_members_footnote_two_sided": true,
+    "unit_or_clock_transforms_applied": false,
+    "same_day_oi_ratio_is_not_uniform": true,
+    "exceptions": [
+      {
+        "contract_epoch_id": "ru1905.SHFE@201905",
+        "date": "2019-03-05",
+        "classification": "other_difference",
+        "official_volume": 307036.0,
+        "existing_volume": 307036.0,
+        "official_close_oi": 314392.0,
+        "existing_oi": 314390.0,
+        "previous_official_date": "2019-03-04",
+        "previous_official_close_oi": 326518.0
+      },
+      {
+        "contract_epoch_id": "ru1905.SHFE@201905",
+        "date": "2019-03-11",
+        "classification": "other_difference",
+        "official_volume": 264406.0,
+        "existing_volume": 264402.0,
+        "official_close_oi": 290100.0,
+        "existing_oi": 290100.0,
+        "previous_official_date": "2019-03-08",
+        "previous_official_close_oi": 288672.0
+      }
+    ]
+  },
+  "pit_limit": "Official annual packages are ex-post archives linked under 202401 and may contain revisions; date cutoffs do not prove contemporaneous 2014-2019 as-of publication bytes.",
+  "targeted_verification": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_rollover_shape_same_volume/tools -p 'test_stage264*.py' -v",
+    "tests": 23,
+    "result": "PASS"
+  },
+  "no_training_or_replay": true,
+  "main_database_writes": false,
+  "independent_review_status": "pending_other_agent"
+}

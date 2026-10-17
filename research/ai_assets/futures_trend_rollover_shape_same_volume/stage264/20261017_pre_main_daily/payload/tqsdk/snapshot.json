@@ -1,0 +1,49 @@
+{
+  "mode": "snapshot",
+  "stage": "wait_snapshot",
+  "broker_connections": 0,
+  "order_api_calls": 0,
+  "generated_at": "2026-10-17T17:41:03.237136+08:00",
+  "api_constructed": true,
+  "status": "failed",
+  "error_type": "Exception",
+  "error_redacted": "查询合约服务报错 failed to execute graphql operation, errors: [variable instrument_id: [SHFE.rb1505] contains non-existent instrument: SHFE.rb1505]",
+  "traceback_locations": [
+    {
+      "file": "stage264_diagnose_tqsdk.py",
+      "function": "run",
+      "line": 71
+    },
+    {
+      "file": "api.py",
+      "function": "wait_update",
+      "line": 2079
+    },
+    {
+      "file": "api.py",
+      "function": "_wait_update",
+      "line": 2108
+    },
+    {
+      "file": "baseApi.py",
+      "function": "_run_until_task_done",
+      "line": 114
+    },
+    {
+      "file": "baseApi.py",
+      "function": "_run_once",
+      "line": 83
+    },
+    {
+      "file": "symbols.py",
+      "function": "_run",
+      "line": 45
+    }
+  ],
+  "login_grants": {
+    "futr": true,
+    "tq_dl": false
+  },
+  "auth_mode": "bt",
+  "access_token_received": true
+}

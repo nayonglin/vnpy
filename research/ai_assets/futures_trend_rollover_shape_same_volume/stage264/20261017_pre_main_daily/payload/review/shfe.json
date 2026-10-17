@@ -1,0 +1,258 @@
+{
+  "reviewed_at": "2026-10-17T17:48:29.373922+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "stage": "Stage264",
+  "reviewer": "independent stage264_manifest agent, distinct from downloader and normalizer",
+  "verdict": "SHFE独立原始/规范化数据集验收通过，跨源合并/训练未就绪",
+  "status": "accepted_isolated_shfe_raw_and_normalized_only_merge_training_not_ready",
+  "implementation_findings": {
+    "P0": 0,
+    "P1": 0,
+    "findings": []
+  },
+  "confidence": {
+    "raw_identity_numeric_reproduction": "high",
+    "coverage_count_reproduction": "high",
+    "legacy_db_oi_ingestion_cause": "not_proven_only_consistent_arithmetic_evidence",
+    "full_lifetime_listing_completeness": "not_established",
+    "AI_profitability_or_generalization": "not_tested"
+  },
+  "verification": {
+    "six_archive_urls_bound_to_actual_saved_official_index": true,
+    "six_archive_sha_size_crc_verified": true,
+    "all_17_members_and_all_sheets_read_directly": true,
+    "independent_no_normalizer_imports_or_pipeline_rerun": true,
+    "normalized_keys_and_all_six_values_equal_raw": true,
+    "all_124_contract_coverage_stats_match": true,
+    "all_870_difference_rows_values_and_flags_verified": true,
+    "376_no_trade_missing_ohlc_rows_rejected_without_fill": true,
+    "17_original_double_sided_footnotes_confirmed": true,
+    "database_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+    "database_same_as_stage263": true,
+    "final_related_unit_tests": {
+      "passed": 23,
+      "failures": 0,
+      "errors": 0,
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_rollover_shape_same_volume/tools -p test_stage264*.py -v"
+    },
+    "in_progress_red_tests_observed_and_resolved": [
+      "test_zero_no_trade_prices_nonfinite_and_negative_units_never_become_bars",
+      "test_unit_audit_separates_previous_close_oi_clock_from_same_day_scaling"
+    ],
+    "new_downloader_created_after_original_inline_download": true,
+    "new_downloader_was_only_verified_offline": true
+  },
+  "data_summary": {
+    "contract_epochs": 124,
+    "products": {
+      "au.SHFE": 12,
+      "cu.SHFE": 60,
+      "hc.SHFE": 16,
+      "rb.SHFE": 16,
+      "ru.SHFE": 16,
+      "sp.SHFE": 4
+    },
+    "source_valid_rows_before_deduplication": 29316,
+    "normalized_valid_unique_rows": 29316,
+    "rejected_raw_rows": 376,
+    "rejection_reasons": {
+      "no_trade_missing_ohlc_placeholder": 376
+    },
+    "outside_manifest_rows_ignored": 200635,
+    "identical_duplicate_extra_rows": 0,
+    "conflicting_duplicate_keys": 0,
+    "conflicting_duplicate_rows": 0,
+    "overlap_days": 7146,
+    "exact_match_days": 6276,
+    "different_days": 870,
+    "different_field_counts": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 869,
+      "open_interest": 869
+    },
+    "official_new_unique_days": 22170,
+    "official_new_pre_main_days": 18594,
+    "AM120_ready_before": 6,
+    "AM120_coverage_ready_after": 99,
+    "AM120_nonconflicting_ready_after": 93,
+    "source_scope_AM120_ready_before": 6,
+    "source_scope_AM120_coverage_ready_after": 92,
+    "source_scope_AM120_nonconflicting_ready_after": 86,
+    "main_days_in_scope_expected": 6363,
+    "main_days_in_scope_existing_covered": 6363,
+    "main_days_in_scope_union_covered": 6363,
+    "main_days_in_scope_nonconflicting_covered": 6276,
+    "unknown_listing_dates": 124,
+    "all_lifetime_metadata_unknown": true
+  },
+  "unit_semantics_independent": {
+    "changed_days": 870,
+    "all_changed_days_year": 2019,
+    "volume_2x_and_previous_close_oi_2x_existing_days": 868,
+    "other_small_discrepancies": [
+      {
+        "epoch": "ru1905.SHFE@201905",
+        "date": "2019-03-05",
+        "official_volume": 307036.0,
+        "db_volume": 307036.0,
+        "official_oi": 314392.0,
+        "db_oi": 314390.0
+      },
+      {
+        "epoch": "ru1905.SHFE@201905",
+        "date": "2019-03-11",
+        "official_volume": 264406.0,
+        "db_volume": 264402.0,
+        "official_oi": 290100.0,
+        "db_oi": 290100.0
+      }
+    ],
+    "interpretation": "Consistent with old one-sided volume and daily opening OI versus official two-sided closing OI. Ingest cause itself unproven; cannot fix current-day OI with a constant multiplier. Original fields retained and no transformation applied."
+  },
+  "integration_blockers": [
+    {
+      "kind": "cross_source_semantics",
+      "description": "870 official/old-DB date conflicts remain quarantined; 87 are scoped main days. A merged source needs an explicit frozen units/OI-clock contract and precedence decision."
+    },
+    {
+      "kind": "partial_exchange_scope",
+      "description": "Only SHFE6 products124 epochs received this archive repair. Remaining8 products107 epochs, including77 SM missing main days, are not repaired; CZCE412 and DCE timeout remain source-access facts."
+    },
+    {
+      "kind": "lifetime_metadata",
+      "description": "All124 listing/delist dates unknown. AM120 not-ready cases may reflect true short listed/traded history, no-trade placeholders or source boundaries; not every deficit is a downloadable gap."
+    }
+  ],
+  "scope_limits": [
+    "The 2014--2019 official archive is an ex-post published snapshot, not proof of historical as-of bytes.",
+    "Coverage gain is market input evidence only; no label, account, training, alpha or AI performance proof.",
+    "No silent source overwrite, universal V/OI rescale, zero fill, AM shortening or all14-products completion claim."
+  ],
+  "tqsdk_diagnostic_review": {
+    "reports": [
+      {
+        "mode": "range",
+        "status": "failed",
+        "stage": "query_daily",
+        "login_grants": {
+          "futr": true,
+          "tq_dl": false
+        },
+        "broker_connections": 0,
+        "order_api_calls": 0,
+        "sha256": "11bab63971cec64301b45792ded79c50c740e75055e3c4981ab46c7e077768f1",
+        "reported_rows": null,
+        "interpreted_failure": "local_professional_download_feature_gate_for_this_account"
+      },
+      {
+        "mode": "serial",
+        "status": "failed",
+        "stage": "query_daily",
+        "login_grants": {
+          "futr": true,
+          "tq_dl": false
+        },
+        "broker_connections": 0,
+        "order_api_calls": 0,
+        "sha256": "30b465b5dc63d9ec5071e3546dd93e5507eacc921324138cfea1ce0dae5e67fc",
+        "reported_rows": null,
+        "interpreted_failure": "the_requested_SHFE_rb1505_instrument_was_not_recognized_in_this_mode_snapshot"
+      },
+      {
+        "mode": "snapshot",
+        "status": "failed",
+        "stage": "wait_snapshot",
+        "login_grants": {
+          "futr": true,
+          "tq_dl": false
+        },
+        "broker_connections": 0,
+        "order_api_calls": 0,
+        "sha256": "079cbb5791b3b285dd96d28181e2e01316456ca4bb9f378a15e7ba39d2487106",
+        "reported_rows": null,
+        "interpreted_failure": "the_requested_SHFE_rb1505_instrument_was_not_recognized_in_this_mode_snapshot"
+      }
+    ],
+    "known_local_credentials_found": false,
+    "unredacted_url_or_email_found": false,
+    "unexpected_long_token_string_found": false,
+    "safety_conclusion": "No credential values printed; comparison used in-memory equality only.",
+    "scope_limit": "Only this account, SDK mode and requested SHFE.rb1505 were tested. Does not establish all old contracts unavailable or promise professional account historical coverage."
+  },
+  "start_overfitting_judgment": "否：固定来源与固定样本的独立数值和身份复算，无收益筛选或调参。",
+  "end_overfitting_judgment": "否：原样保留差异、拒绝占位和不完整边界，不为提高AM比例放宽规则。",
+  "continue_value_judgment": "继续真实数据修复有价值；当前只接受隔离SHFE数据，合并与训练仍未就绪。",
+  "evidence_identities": {
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/quality_report.json": {
+      "bytes": 347228,
+      "sha256": "110397674da2de0f2f94ffeb0fae3bb4d66701c52de3b7f429004b398447e061"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/year_download_status.json": {
+      "bytes": 13859,
+      "sha256": "12324c16ec633fc125c4de9c9e13d03494e2c9821accf592495d460f8f7646fb"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/normalized_bars.csv": {
+      "bytes": 7057195,
+      "sha256": "f548b4f4874d409b5bfa993ad45892d8cb65eb5d41c05e7a6b4911f574324680"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/rejected_rows.csv": {
+      "bytes": 144126,
+      "sha256": "21a0f30c6b40ebded0e987c95a5e770a474273a7246735c7d0a1ad7976c8b3c6"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/overlap_differences.csv": {
+      "bytes": 152496,
+      "sha256": "ca180b0abed6c0e8d32c26b03a7afdfa377366c2231c02869b16314b5e9d30ff"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/unit_semantics_audit.json": {
+      "bytes": 279974,
+      "sha256": "7e1ec7fbb68d0a423bbcabc999aaea9ef8e57f45d9271730b3c6c59efc02f2a0"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/download_entrypoint_offline_verification.json": {
+      "bytes": 6187,
+      "sha256": "582afb27864d9459d9e3cbcc4b81bda9262971ebec0868697d0b0a4e3b5755e6"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/independent_raw_recount.json": {
+      "bytes": 155862,
+      "sha256": "782e8c8a6ba6d7e0e52d90af2e829a73c527ef8a6ac222831d973f4a12a33860"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/independent_unit_semantics_check.json": {
+      "bytes": 2057,
+      "sha256": "e5bbe26ba1b4e654211eb14088a131ac10c993c57c61a1570100365472284110"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/independent_tqsdk_diagnostic_review.json": {
+      "bytes": 1778,
+      "sha256": "6408eaa4e81d28d13da73b7bf33d2a9a2dc540d080dfb7d7cf89aa3cb14c66f3"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage264_pre_main_daily/shfe_official/independent_review_recount.py": {
+      "bytes": 12965,
+      "sha256": "fa054c27cda98a48e04b5769bdd13e8c0cd0b7fbfd531ce60d6a784690f5bc25"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_download_shfe_years.py": {
+      "bytes": 10920,
+      "sha256": "d0ae0a551a4e9ec05459c6129969c3629c0176d0dedb620d9fda24ab4d40e164"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/test_stage264_download_shfe_years.py": {
+      "bytes": 3487,
+      "sha256": "e7f21e80883f98b5b0714928e8d7e5cb54488344ae40a921084995fb90b28b6d"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_normalize_shfe_years.py": {
+      "bytes": 33812,
+      "sha256": "6c4e631cc5ab0293ca03f4fca573b6ca1c049507afacb49f5fa4cb7dadb16f5c"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/test_stage264_normalize_shfe_years.py": {
+      "bytes": 8870,
+      "sha256": "c719268012e45474b1445c6c2abb7500ad88a4e3a96e9e9380cd6314da628199"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/stage264_diagnose_tqsdk.py": {
+      "bytes": 5170,
+      "sha256": "e9d3f0bccf20d21872605a671bd020beb81f084d460e25fe4d67d33ef555889d"
+    },
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/test_stage264_diagnose_tqsdk.py": {
+      "bytes": 969,
+      "sha256": "9b4c66a9ffef91c4d64f820c8ac5c36ba76267b887a17f756377da6a4ab8a357"
+    }
+  }
+}
