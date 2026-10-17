@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-10-17T19:56:43.765636+08:00",
+  "status": "PASS_TOOL_BOUNDARY_TESTS_AWAIT_FINAL_SOURCE_CENSUS",
+  "tests_passed": 20,
+  "model_fits": 0,
+  "financial_backtests": 0,
+  "real_source_census_by_this_agent": 0,
+  "files": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_build_monthly_samples.py",
+      "bytes": 22611,
+      "sha256": "e7932ba5b0669c80a1449da63487e3be909792d62571d3427880e959f48b2ccf"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/test_stage267_build_monthly_samples.py",
+      "bytes": 12894,
+      "sha256": "0de9bae4553a17b68f6624beeb9d38de5b4616231f9261205e3b1581173eab9e"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_tool_validation/boundary_tests.log",
+      "bytes": 4338,
+      "sha256": "78ce4406fac6051259d9e51cf7092592b3dd4f058c8daf8e09b19bc091ac3aa6"
+    }
+  ],
+  "primary_references": [
+    {
+      "url": "https://github.com/microsoft/qlib/blob/main/qlib/workflow/task/gen.py",
+      "finding": "RollingGen trunc_days explicitly guards future information leakage; use actual label_end here."
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "finding": "Time ordered splits avoid future-to-past training; generic row gap is not substituted for actual source-date label horizon."
+    }
+  ],
+  "overfitting_before": false,
+  "overfitting_after": false,
+  "continue_value": true,
+  "judgment_zh": "固定108列与120/60覆盖合同，只计样本，不按收益或数量改门。真实source由root生成及执行census；本agent不回放不训练。"
+}

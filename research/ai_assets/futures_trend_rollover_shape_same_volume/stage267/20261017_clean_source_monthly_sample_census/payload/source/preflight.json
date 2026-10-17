@@ -1,0 +1,84 @@
+{
+  "status": "clean_source_adapter_preflight",
+  "financial_replays": 0,
+  "model_fits": 0,
+  "period": [
+    "2010-01-04",
+    "2026-10-14"
+  ],
+  "products": [
+    "lc.GFEX",
+    "au.SHFE",
+    "cu.SHFE",
+    "MA.CZCE",
+    "OI.CZCE",
+    "AP.CZCE",
+    "SM.CZCE",
+    "SA.CZCE",
+    "rb.SHFE",
+    "jm.DCE",
+    "hc.SHFE",
+    "CF.CZCE",
+    "FG.CZCE",
+    "SH.CZCE",
+    "si.GFEX",
+    "ru.SHFE",
+    "lh.DCE",
+    "sp.SHFE"
+  ],
+  "contract_epochs": 837,
+  "source_calendar_days": 4072,
+  "real_daily_bar_count": 190168,
+  "mapped_product_days": 50270,
+  "real_main_bar_days": 48506,
+  "am_size": 120,
+  "warmup_ready_product_days": 41043,
+  "extra_conservative_140_ready_days": 36442,
+  "inputs": {
+    "clean": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+      "bytes": 378552320,
+      "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711"
+    },
+    "primary_database": {
+      "path": "/Users/mac/Desktop/fian/.vntrader/database.db",
+      "bytes": 112726016,
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54"
+    },
+    "mapping": {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "bytes": 18392086,
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325"
+    },
+    "calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+    },
+    "pairwise_model": {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v2_risk_weighted.joblib",
+      "bytes": 2865,
+      "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66"
+    },
+    "pairwise_summary": {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v2_risk_weighted.json",
+      "bytes": 7423,
+      "sha256": "c399a5787577c1cb55276766ed28b0cad8385c063de5b492076dfa8e0619ee86"
+    },
+    "protocol": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/stages/20261017_1952_stage267_clean_source_protocol.md",
+      "bytes": 4814,
+      "sha256": "5892a5e69843a9cc7f77383405d1ecdaefe7bf4ec514210cfc11867a16b1971c"
+    }
+  },
+  "runtime": {
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "portfolio_package": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/__init__.py",
+    "numerical_stack": {
+      "pandas": "2.3.3",
+      "numpy": "2.4.4",
+      "scikit-learn": "1.8.0",
+      "joblib": "1.5.3"
+    }
+  }
+}

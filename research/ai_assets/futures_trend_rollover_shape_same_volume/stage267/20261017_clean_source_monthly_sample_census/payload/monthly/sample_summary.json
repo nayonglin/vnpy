@@ -1,0 +1,224 @@
+{
+  "generated_at": "2026-10-17T19:57:03.308686+08:00",
+  "status": "STRICT_MONTHLY_SAMPLE_CENSUS_NO_MODEL_FIT",
+  "inputs": {
+    "positions": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_position_changes.csv",
+      "bytes": 117966705,
+      "sha256": "d32a18207b125084cc9cb3a0bbb6a9f63d776136908fb4885b78e9fbd424e18b"
+    },
+    "entries": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_entry_candidate_snapshots.csv",
+      "bytes": 2418626,
+      "sha256": "c3a0a40ea3bd5e824f7c60c7f48bd7a741836d5527b2bff3b9f7b280a8ce1e74"
+    },
+    "coverage": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/product_coverage.csv",
+      "bytes": 4897121,
+      "sha256": "c536f40d5cf1c89773f0945e035ee6ce927f146f9315b22f6f76b20745a1bc52"
+    },
+    "calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_calendar.csv",
+      "bytes": 45413,
+      "sha256": "0ca75571a27247b95b74eae17bba6782b15cc818af82f986f43200ddcd75bbb9"
+    },
+    "baseline_samples": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/eligible_samples.csv",
+      "bytes": 1871026,
+      "sha256": "c308d6ab3aebf66a2e37f22c606d0a063190a4d202bef1da1e7c048c29215962"
+    }
+  },
+  "runtime": {
+    "python": "3.11.5",
+    "pandas": "2.2.3",
+    "numpy": "2.2.3"
+  },
+  "script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_build_monthly_samples.py",
+    "bytes": 22611,
+    "sha256": "e7932ba5b0669c80a1449da63487e3be909792d62571d3427880e959f48b2ccf"
+  },
+  "feature_contract": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/feature_contract.json",
+    "bytes": 4962,
+    "sha256": "f561de779808185884dd44aea5a9732db21683a69eb9d6fc8b063c407733debd"
+  },
+  "outputs": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/all_sample_contract.csv",
+      "bytes": 3737481,
+      "sha256": "c5c60bc2a01f20855c06c1adb25998dc2bec9d2a1e2ad622e03263da0c11216b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/qualified_samples.csv",
+      "bytes": 705579,
+      "sha256": "d620ded30914fe3760e80b7260007da3a5fc23eec5af89cfd4eb672c97aadea1"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/informative_samples.csv",
+      "bytes": 697069,
+      "sha256": "194cd49fccb52fe9c5ff36b9763549adc3f1ff44d3381747c85a39289a7dff14"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/monthly_counts.csv",
+      "bytes": 8874,
+      "sha256": "e8148a93a7c4b70b76036e07181ae49c7e8a8bd1ca70cbcceee6af375db61172"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/annual_sample_counts.csv",
+      "bytes": 2078,
+      "sha256": "e22bff3c5cf29bdbb5000fe2769f06533efcd80b5d825decf22b278c81e811c2"
+    }
+  ],
+  "source_start": "2010-01-04",
+  "source_end": "2026-10-14",
+  "all": {
+    "rows": 3618,
+    "months": 201,
+    "first": "2010-01-29",
+    "last": "2026-09-30",
+    "zero_future_rows": 500,
+    "max_label_end": "2026-09-22"
+  },
+  "qualified": {
+    "rows": 544,
+    "months": 55,
+    "first": "2017-01-26",
+    "last": "2026-06-30",
+    "zero_future_rows": 129,
+    "max_label_end": "2026-09-22"
+  },
+  "informative": {
+    "rows": 535,
+    "months": 54,
+    "first": "2017-01-26",
+    "last": "2026-06-30",
+    "zero_future_rows": 120,
+    "max_label_end": "2026-09-22"
+  },
+  "all_zero_future_months": 1,
+  "all_zero_future_rows": 9,
+  "constant_nonzero_future_months": 0,
+  "mature_asof": {
+    "date": "2026-10-14",
+    "rows": 535,
+    "months": 54,
+    "first": "2017-01-26",
+    "last": "2026-06-30",
+    "zero_future_rows": 120,
+    "max_label_end": "2026-09-22"
+  },
+  "vs_stage263_informative_sample_keys": {
+    "current_rows": 535,
+    "baseline_rows": 1294,
+    "common_rows": 492,
+    "new_rows": 43,
+    "lost_rows": 802,
+    "current_months": 54,
+    "baseline_months": 82,
+    "new_months": 5,
+    "lost_months": 33,
+    "new_rows_by_year": {
+      "2017": 35,
+      "2018": 8
+    },
+    "boundary": "Exact product-month key comparison only; changed replay path means this is not an expansion causal effect."
+  },
+  "same_source_history_split": {
+    "method": "Filter eval_date on identical source, features, coverage, ranks, targets and weights; no replay/window reset or model fit.",
+    "qualified": {
+      "all_history": {
+        "rows": 544,
+        "months": 55,
+        "first": "2017-01-26",
+        "last": "2026-06-30",
+        "zero_future_rows": 129,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_2020_plus": {
+        "rows": 474,
+        "months": 47,
+        "first": "2020-01-23",
+        "last": "2026-06-30",
+        "zero_future_rows": 91,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_pre2020": {
+        "rows": 70,
+        "months": 8,
+        "first": "2017-01-26",
+        "last": "2019-12-31",
+        "zero_future_rows": 38,
+        "max_label_end": "2020-04-02"
+      }
+    },
+    "informative": {
+      "all_history": {
+        "rows": 535,
+        "months": 54,
+        "first": "2017-01-26",
+        "last": "2026-06-30",
+        "zero_future_rows": 120,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_2020_plus": {
+        "rows": 474,
+        "months": 47,
+        "first": "2020-01-23",
+        "last": "2026-06-30",
+        "zero_future_rows": 91,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_pre2020": {
+        "rows": 61,
+        "months": 7,
+        "first": "2017-01-26",
+        "last": "2019-12-31",
+        "zero_future_rows": 29,
+        "max_label_end": "2020-04-02"
+      }
+    },
+    "informative_mature_asof": {
+      "all_history": {
+        "rows": 535,
+        "months": 54,
+        "first": "2017-01-26",
+        "last": "2026-06-30",
+        "zero_future_rows": 120,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_2020_plus": {
+        "rows": 474,
+        "months": 47,
+        "first": "2020-01-23",
+        "last": "2026-06-30",
+        "zero_future_rows": 91,
+        "max_label_end": "2026-09-22"
+      },
+      "eval_pre2020": {
+        "rows": 61,
+        "months": 7,
+        "first": "2017-01-26",
+        "last": "2019-12-31",
+        "zero_future_rows": 29,
+        "max_label_end": "2020-04-02"
+      }
+    }
+  },
+  "feature_count": 108,
+  "feature_values_from_original_functions": true,
+  "original_pool_count": 18,
+  "strict_month_end_from_explicit_calendar": true,
+  "model_fits": 0,
+  "financial_backtests": 0,
+  "orders": 0,
+  "main_database_writes": 0,
+  "training_models_ready": false,
+  "limits": [
+    "Same 108 feature functions; full120 coverage and60 labels are stricter eligibility than original partial windows.",
+    "Zero/constant target months excluded from informative set independently of model outcomes; qualified rows retain null ranks/targets for those months.",
+    "Exact added sample keys vs Stage263 are availability counts, not causal performance improvement or independent observations.",
+    "Source strategy is fixed ex-post specification; this census does not establish historical PIT, execution or profitability.",
+    "legacy108_row_usable/open_oi CSV gates are not necessary monthly108 eligibility conditions."
+  ]
+}

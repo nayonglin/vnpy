@@ -1,0 +1,380 @@
+{
+  "generated_at": "2026-10-17T19:48:11.107057+08:00",
+  "line_id": "futures_trend_rollover_shape_same_volume",
+  "conclusion": "clean_close_only_semantically_sufficient_for_original_pairwise19_but_needs_strict_adapter_not_legacy_fallback",
+  "model_tag": "selection_pairwise_v2_risk_weighted",
+  "model_type": "logistic_regression",
+  "model_feature_count": 19,
+  "model_feature_names": [
+    "feature_pair_same_direction",
+    "feature_pair_same_signal",
+    "feature_pair_same_risk_mode",
+    "delta_risk_ratio",
+    "delta_remaining_position_slots",
+    "delta_feature_ret_signed_5d",
+    "delta_feature_trend_ma20_gap_pct",
+    "delta_feature_atr14_pct_zscore_120",
+    "delta_feature_lower_wick_pct",
+    "delta_feature_volume_ratio_2v2",
+    "delta_feature_margin_per_contract_to_equity",
+    "delta_feature_oi_delta_1d_pct",
+    "delta_feature_oi_delta_1d_pct_zscore_120",
+    "delta_feature_close_position_60d",
+    "delta_feature_ret_20d_zscore_120",
+    "delta_feature_range_pct_zscore_120",
+    "delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d",
+    "delta_feature_ma20_ma40_gap_pct_cs_zscore_1d",
+    "delta_feature_close_position_60d_cs_zscore_1d"
+  ],
+  "physical_joblib_feature_names_in_order": [
+    "feature_pair_same_direction",
+    "feature_pair_same_signal",
+    "feature_pair_same_risk_mode",
+    "delta_risk_ratio",
+    "delta_remaining_position_slots",
+    "delta_feature_ret_signed_5d",
+    "delta_feature_trend_ma20_gap_pct",
+    "delta_feature_atr14_pct_zscore_120",
+    "delta_feature_lower_wick_pct",
+    "delta_feature_volume_ratio_2v2",
+    "delta_feature_margin_per_contract_to_equity",
+    "delta_feature_oi_delta_1d_pct",
+    "delta_feature_oi_delta_1d_pct_zscore_120",
+    "delta_feature_close_position_60d",
+    "delta_feature_ret_20d_zscore_120",
+    "delta_feature_range_pct_zscore_120",
+    "delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d",
+    "delta_feature_ma20_ma40_gap_pct_cs_zscore_1d",
+    "delta_feature_close_position_60d_cs_zscore_1d"
+  ],
+  "physical_feature_names_equal_summary": true,
+  "artifact_inspection": "pickletools opcode/string inspection only; no joblib.load/pickle.load, no predict/fit",
+  "real_open_oi_required_by_model": false,
+  "close_oi_required_by_model": true,
+  "market_raw_columns": [
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "close_oi"
+  ],
+  "non_market_inputs": [
+    "direction",
+    "signal",
+    "risk_mode",
+    "risk_ratio",
+    "remaining_position_slots",
+    "margin_per_contract",
+    "estimated_equity",
+    "sample_id",
+    "candidate_index",
+    "candidate_date",
+    "same_date_candidate_pool"
+  ],
+  "feature_dependency_rows": [
+    {
+      "model_feature": "feature_pair_same_direction",
+      "raw_dependencies": [
+        "direction"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "feature_pair_same_signal",
+      "raw_dependencies": [
+        "signal"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "feature_pair_same_risk_mode",
+      "raw_dependencies": [
+        "risk_mode"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_risk_ratio",
+      "raw_dependencies": [
+        "risk_ratio"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_remaining_position_slots",
+      "raw_dependencies": [
+        "remaining_position_slots"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_ret_signed_5d",
+      "raw_dependencies": [
+        "close",
+        "direction"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 6,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_trend_ma20_gap_pct",
+      "raw_dependencies": [
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 20,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_atr14_pct_zscore_120",
+      "raw_dependencies": [
+        "high",
+        "low",
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 133,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_lower_wick_pct",
+      "raw_dependencies": [
+        "open",
+        "low",
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 1,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_volume_ratio_2v2",
+      "raw_dependencies": [
+        "volume"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 4,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_margin_per_contract_to_equity",
+      "raw_dependencies": [
+        "margin_per_contract",
+        "estimated_equity"
+      ],
+      "category": "candidate_context",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 0,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_oi_delta_1d_pct",
+      "raw_dependencies": [
+        "close_oi"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 2,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_oi_delta_1d_pct_zscore_120",
+      "raw_dependencies": [
+        "close_oi"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 121,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_close_position_60d",
+      "raw_dependencies": [
+        "high",
+        "low",
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 60,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_ret_20d_zscore_120",
+      "raw_dependencies": [
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 140,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_range_pct_zscore_120",
+      "raw_dependencies": [
+        "high",
+        "low",
+        "close"
+      ],
+      "category": "market_history",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 120,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_trend_ma20_gap_pct_cs_rank_centered_1d",
+      "raw_dependencies": [
+        "close",
+        "same_date_candidate_pool"
+      ],
+      "category": "cross_section",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 20,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_ma20_ma40_gap_pct_cs_zscore_1d",
+      "raw_dependencies": [
+        "close",
+        "same_date_candidate_pool"
+      ],
+      "category": "cross_section",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 40,
+      "needs_real_open_oi": false
+    },
+    {
+      "model_feature": "delta_feature_close_position_60d_cs_zscore_1d",
+      "raw_dependencies": [
+        "high",
+        "low",
+        "close",
+        "same_date_candidate_pool"
+      ],
+      "category": "cross_section",
+      "minimum_raw_valid_bars_for_finite_rolling_value": 60,
+      "needs_real_open_oi": false
+    }
+  ],
+  "maturity": {
+    "old_helper_minimum_bars": 41,
+    "true_minimum_for_all19_finite_with_nonzero_rolling_std_and_nonzero_OI_denominators": 140,
+    "ret20_zscore120_minimum": 140,
+    "atr14_zscore120_minimum": 133,
+    "oi_delta1pct_zscore120_minimum": 121,
+    "120_valid_bars_alone_not_enough": true,
+    "140_is_necessary_not_sufficient": "calendar gaps, OI previous zero, zero rolling std or unavailable feature_asof may still reject"
+  },
+  "findings": [
+    {
+      "priority": "P1",
+      "key": "legacy_open_oi_mechanical_dependency_and_fabricated_fallback",
+      "locations": [
+        "build_qmt_roll_ai_position_training_samples.py:110",
+        "build_qmt_roll_ai_position_training_samples.py:164",
+        "build_qmt_roll_ai_position_training_samples.py:196",
+        "qmt_roll_ai_selection_pairwise_runtime.py:61"
+      ],
+      "detail": "Loader/extractor reads open_oi and emits unused feature_open_oi. Empty-CSV fallback shifts closeOI and zero-fills unknown values. Do not use fallback or present null as measured zero."
+    },
+    {
+      "priority": "P1",
+      "key": "candidate_date_is_not_explicit_information_cutoff",
+      "locations": [
+        "qmt_roll_ai_selection_pairwise_runtime.py:53",
+        "qmt_roll_ai_selection_pairwise_runtime.py:58",
+        "qmt_roll_ai_selection_pairwise_runtime.py:75",
+        "build_qmt_roll_ai_position_training_samples.py:120",
+        "qmt_roll_portfolio_strategy.py:4245"
+      ],
+      "detail": "Date<=candidate includes candidate-day close; safe only once that bar was published. Missing candidate day silently uses latest prior row. Fallback invents calendar dates. Require exact complete source day, explicit asof and one-date candidate pool."
+    },
+    {
+      "priority": "P1",
+      "key": "immature_or_missing_features_silently_zero_filled",
+      "locations": [
+        "build_qmt_roll_ai_position_training_samples.py:156",
+        "build_qmt_roll_ai_position_training_samples.py:248",
+        "build_qmt_roll_ai_position_training_samples.py:262",
+        "qmt_roll_ai_selection_pairwise_runtime.py:133",
+        "qmt_roll_portfolio_strategy.py:4261"
+      ],
+      "detail": "41-bar guard permits immature 120z features to become zero. Missing feature rows are dropped and model can be skipped with native zero defaults. Require 140 genuine source-calendar bars and explicit per-feature finite/missingness checks, audit unavailable instead of silent fallback."
+    }
+  ],
+  "adapter_contract_recommendation": {
+    "read_clean_source_only": true,
+    "open_oi_policy": "unused_and_keep_null; no shift, zero, ffill or backward fill",
+    "candidate_asof_policy": "explicit already-completed-bar cutoff; choose <candidate day or <=last completed day according to declared event clock",
+    "missing_exact_source_day": "unavailable_not_retag_prior_day",
+    "minimum_valid_source_calendar_rows": 140,
+    "no_trade_rows": "exclude not ffill",
+    "same_date_candidate_pool_required": true,
+    "feature_vector_order": "exact19 names as pinned artifact",
+    "training_policy_change": "strict maturity filter changes historical sample eligibility; declare it, do not claim old scores exactly replicated"
+  },
+  "source_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+      "bytes": 7670,
+      "sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "bytes": 29587,
+      "sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py",
+      "bytes": 13999,
+      "sha256": "0b13e6797606a9f0206168493cb0a2c26dc924818c1a2f9a420036db8797b5d1"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py",
+      "bytes": 8685,
+      "sha256": "22d18f920303279756c79748e518073eba2837511be7b8b0a177ddfa0c87f868"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py",
+      "bytes": 25283,
+      "sha256": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/train_qmt_roll_ai_candidate_selection_pairwise_classifier_v2.py",
+      "bytes": 8152,
+      "sha256": "fcb6fa76ecd32bb3cf38555dde48152c76fb0f7183499da61b2c64898d03594c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "bytes": 492864,
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v2_risk_weighted.json",
+      "bytes": 7423,
+      "sha256": "c399a5787577c1cb55276766ed28b0cad8385c063de5b492076dfa8e0619ee86"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v2_risk_weighted.joblib",
+      "bytes": 2865,
+      "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66"
+    }
+  ],
+  "scope_limits": [
+    "Dependency approval is not a new model, new training eligibility or financial replay qualification",
+    "Monthly108 dependency already confirmed by root; not re-audited here",
+    "No live/production entry modified"
+  ],
+  "P0": 0,
+  "P1": 3,
+  "backtests": 0,
+  "training_runs": 0,
+  "model_predictions": 0,
+  "new_market_downloads": 0,
+  "databases_written": 0,
+  "source_code_modified": false
+}

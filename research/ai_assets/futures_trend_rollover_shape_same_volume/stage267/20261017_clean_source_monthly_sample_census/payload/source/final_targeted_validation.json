@@ -1,0 +1,29 @@
+{
+  "verified_at": "2026-10-17T19:57:45.612856+08:00",
+  "adapter_tests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "monthly_tests": {
+    "passed": 20,
+    "failed": 0
+  },
+  "financial_replays": 1,
+  "model_fits": 0,
+  "new_market_downloads": 0,
+  "primary_database_writes": 0,
+  "production_changes": 0,
+  "protected_sha256": {
+    ".vntrader/database.db": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+    "examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+    "research/registry.md": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4"
+  },
+  "sample_runtime": {
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "packages": {
+      "numpy": "2.2.3",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1"
+    }
+  }
+}

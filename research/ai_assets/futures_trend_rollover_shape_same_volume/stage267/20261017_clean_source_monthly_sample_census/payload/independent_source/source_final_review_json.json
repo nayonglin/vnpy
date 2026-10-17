@@ -1,0 +1,488 @@
+{
+  "status": "PASS_WITH_RESEARCH_SCOPE_LIMITS",
+  "source_summary": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_summary.json",
+    "bytes": 12553,
+    "sha256": "51919ccdcb541eae33dde32edccb8fb8e2976447f0d06b032583c848f161f59c"
+  },
+  "input_fingerprints_checked": 32,
+  "metadata_reference_file": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_contract_metadata.csv",
+    "bytes": 11173,
+    "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a"
+  },
+  "epochs": 837,
+  "selected_clean_rows": 190168,
+  "source_calendar_days": 4072,
+  "independent_mapping_rows": 73296,
+  "fill_count": 1633,
+  "every_fill_has_real_exact_epoch_date": true,
+  "deferred_stale_order_attempts": 0,
+  "guard_recovery_price_exercised": false,
+  "pairwise_calls": 276,
+  "pairwise_prefix_counts_and_asof_all_equal": true,
+  "pairwise_min_observations": 124,
+  "pairwise_calls_below_140": 22,
+  "coverage120_observed": 41043,
+  "coverage140_observed": 36442,
+  "position_rows": 1440036,
+  "independent_ledger_max_errors": {
+    "close_matches_real_or_prior_valuation": 0.0,
+    "previous_close_chain": 0.0,
+    "position_continuity": 0.0,
+    "trade_count": 0.0,
+    "turnover": 2.3283064365386963e-10,
+    "commission": 0.0,
+    "slippage": 0.0,
+    "holding_pnl": 3.637978807091713e-12,
+    "trading_pnl": 5.6843418860808015e-11,
+    "total_pnl": 5.6843418860808015e-11,
+    "net_pnl": 5.6843418860808015e-11,
+    "pos_change": 0.0,
+    "end_pos": 0.0,
+    "portfolio_trade_count": 0.0,
+    "portfolio_turnover": 0.0,
+    "portfolio_commission": 0.0,
+    "portfolio_slippage": 0.0,
+    "portfolio_holding_pnl": 1.4551915228366852e-11,
+    "portfolio_trading_pnl": 1.4210854715202004e-14,
+    "portfolio_total_pnl": 1.4551915228366852e-11,
+    "portfolio_net_pnl": 1.4551915228366852e-11,
+    "balance": 3.4924596548080444e-10
+  },
+  "missing_held_product_days": 6,
+  "candidate_equity_comparison": {
+    "rows": 1894,
+    "premise": "prior vendor balance plus current holding PNL, before same-day fills/costs",
+    "matches_within_1e_6": 1894,
+    "max_abs_difference": 3.4924596548080444e-10
+  },
+  "frozen_source_inputs_and_code": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+      "bytes": 378552320,
+      "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/.vntrader/database.db",
+      "bytes": 112726016,
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "bytes": 18392086,
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_selection_pairwise_v2_risk_weighted.joblib",
+      "bytes": 2865,
+      "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_candidate_selection_pairwise_classifier_summary_selection_pairwise_v2_risk_weighted.json",
+      "bytes": 7423,
+      "sha256": "c399a5787577c1cb55276766ed28b0cad8385c063de5b492076dfa8e0619ee86"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/stages/20261017_1952_stage267_clean_source_protocol.md",
+      "bytes": 4814,
+      "sha256": "5892a5e69843a9cc7f77383405d1ecdaefe7bf4ec514210cfc11867a16b1971c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_build_clean_source.py",
+      "bytes": 14501,
+      "sha256": "b32ac15243ff70336c0807f342189f9decba35fb67a5f76c12dd8181345ad05e"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_clean_source_adapter.py",
+      "bytes": 7190,
+      "sha256": "15f4a15979ca730a5c653d445031ce6bb03ba303c1415ac7fd22747cfef947d3"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_backtest.py",
+      "bytes": 18496,
+      "sha256": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "bytes": 492864,
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+      "bytes": 61731,
+      "sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_universe.py",
+      "bytes": 4781,
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/main_contract_mapping.py",
+      "bytes": 6948,
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/contract_metadata.py",
+      "bytes": 3905,
+      "sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+      "bytes": 7670,
+      "sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "bytes": 29587,
+      "sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py",
+      "bytes": 6157,
+      "sha256": "6a1b5080e1d62772aaea2460b31f73bd0afd24e5528ece08ae82bb64de280003"
+    },
+    {
+      "path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/backtesting.py",
+      "bytes": 34265,
+      "sha256": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2"
+    },
+    {
+      "path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/template.py",
+      "bytes": 10402,
+      "sha256": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_entry_candidate_snapshots.csv",
+      "bytes": 2418626,
+      "sha256": "c3a0a40ea3bd5e824f7c60c7f48bd7a741836d5527b2bff3b9f7b280a8ce1e74"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/real_bar_fill_audit.csv",
+      "bytes": 67349,
+      "sha256": "c59ee79006fb3c507fc6e99e94b161fa02f58ae41e628d8f66a8ec5b0840d0f7"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/deferred_missing_real_bar_orders.csv",
+      "bytes": 54,
+      "sha256": "81b19e6c3cd25945d04aa3a34866881f12a4ef32a68942545f2a9fa5ea0aafa6"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/contract_epoch_identity.csv",
+      "bytes": 40505,
+      "sha256": "03102d59cc379501bb3bf5e42abdf207b7befb8d45bae813e9ebe25f43d7e880"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_daily.csv",
+      "bytes": 535764,
+      "sha256": "510f675247d5273746ddfbcb4533aa389b882aa39aa39ad4cdc7bc7ccf36dbf2"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_calendar.csv",
+      "bytes": 45413,
+      "sha256": "0ca75571a27247b95b74eae17bba6782b15cc818af82f986f43200ddcd75bbb9"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/product_coverage_extra140.csv",
+      "bytes": 4906323,
+      "sha256": "53b53f93bbedaffa2223855988fe7f973b5b2cef3086da7167425cddb95308f2"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_trades.csv",
+      "bytes": 254141,
+      "sha256": "d1fff2bdf75ca0d9360f970484db47b6320c929fa021633c98c5ebcf963efd7d"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/pairwise_input_audit.csv",
+      "bytes": 11790,
+      "sha256": "1c1ee3ae0cc381674d6382ad72dd7c262c39fc9c63230dcd06ce4064d32527e9"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/research_epoch_mapping.csv",
+      "bytes": 5599942,
+      "sha256": "cbd4080fed12979ea0cf2818d3965ee29c7a83e02ba6161586c488adc5360cc6"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_position_changes.csv",
+      "bytes": 117966705,
+      "sha256": "d32a18207b125084cc9cb3a0bbb6a9f63d776136908fb4885b78e9fbd424e18b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/product_coverage.csv",
+      "bytes": 4897121,
+      "sha256": "c536f40d5cf1c89773f0945e035ee6ce927f146f9315b22f6f76b20745a1bc52"
+    }
+  ],
+  "qualifications": {
+    "retrospective_fixed_policy": true,
+    "upstream_model_PIT_certified": false,
+    "source_PNL_is_conditional_account_path": true,
+    "original_AM_and_undefined_derived_stat_policy_preserved": true
+  },
+  "findings": [
+    {
+      "priority": "P2",
+      "code": "guard_branch_unexercised",
+      "detail": "No deferred orders occurred; real fill keys passed. Delayed cancellation/repricing behavior has static review only; no financial rerun requested."
+    },
+    {
+      "priority": "P2",
+      "code": "metadata_reference_not_runtime_snapshot",
+      "detail": "Current native metadata is exported and size/cost is independently checked against every ledger row. Native metadata CSV was not included in original run input receipt; tick/margin historical PIT is not certified."
+    },
+    {
+      "priority": "P2",
+      "code": "partial_strategy_equity_trace",
+      "detail": "Candidate equity can be compared at pre-fill timing; no full daily strategy-equity trace was exported. Vendor contract/daily PNL is independently verified and remains the label source."
+    },
+    {
+      "priority": "P2",
+      "code": "fixed_policy_model_time_and_missing_data",
+      "detail": "Frozen pairwise model uses 2020-2022 training observations; early source is retrospective. Missing held days may affect later shared account state; source is conditional, not independent product return or production PIT proof."
+    },
+    {
+      "priority": "P2",
+      "code": "inherited_pairwise_maturity_policy",
+      "detail": "22 of 276 exact-asof calls have fewer than 140 observations (minimum 124). Original AM120 and undefined-derived-value policy retained; not all 19 features are certified mature."
+    }
+  ],
+  "activity": {
+    "financial_replays": 0,
+    "model_fits": 0,
+    "new_downloads": 0,
+    "main_database_writes": 0,
+    "clean_queries": "read-only selected 837 epochs only; no full raw-data QA"
+  },
+  "generated_at": "2026-10-17T19:59:39.625634+08:00",
+  "review_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_independent_review.py",
+    "bytes": 21726,
+    "sha256": "ca59a447241247a4d0b09080ab531f057aced9d0c9d3a271da082551a5f0ea24"
+  },
+  "monthly": {
+    "status": "DELEGATED_INDEPENDENT_REVIEW",
+    "evidence": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_monthly_independent_review.json",
+      "bytes": 7448,
+      "sha256": "bea343656b6719403e29499056fe6e170d356b7b0d66c3e83518281ade5bfd5d"
+    },
+    "report": {
+      "generated_at": "2026-10-17T19:58:10.158460+08:00",
+      "status": "PASS_INDEPENDENT_MONTHLY_ELIGIBILITY_AND_LABELS",
+      "P0": 0,
+      "P1": 0,
+      "P2": 1,
+      "final_output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final",
+      "script_sha256_current": "e7932ba5b0669c80a1449da63487e3be909792d62571d3427880e959f48b2ccf",
+      "executed_script_binding_matches_current": true,
+      "feature_count": 108,
+      "frozen108_schema_exact_match": true,
+      "frozen_original_module_sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4",
+      "source_contract_pnl_rows_read": 1440036,
+      "duplicate_source_contract_date_rows": 0,
+      "source_product_day_aggregates": 48530,
+      "source_period": [
+        "2010-01-04",
+        "2026-10-14"
+      ],
+      "first_source_position_PNL_date": "2010-05-18",
+      "pre_initial_PNL_rows": "Calendar grid placeholders only; coverage false so excluded from qualified history/labels",
+      "independent_all_rows": 3618,
+      "independent_months": 201,
+      "independent_qualified_rows": 544,
+      "independent_qualified_months": 55,
+      "independent_informative_rows": 535,
+      "independent_informative_months": 54,
+      "same_source_informative_history_split": {
+        "all": {
+          "rows": 535,
+          "months": 54
+        },
+        "pre2020": {
+          "rows": 61,
+          "months": 7
+        },
+        "2020plus": {
+          "rows": 474,
+          "months": 47
+        }
+      },
+      "allzero_qualified_months": 1,
+      "constant_nonzero_qualified_months": 0,
+      "all_metadata_rows_independently_checked": 3618,
+      "coverage_or_date_mismatch_count": 0,
+      "max_abs_60_day_label_difference": 2.1827872842550278e-11,
+      "independent_pnl_feature_sentinel_values_checked": 14595,
+      "max_abs_pnl_feature_sentinel_difference": 1.929052473315096e-09,
+      "cross_section_recomputed_after_eligibility": true,
+      "informative_rank_max_abs_error": 1.1102230246251565e-16,
+      "informative_weight_max_abs_error": 8.326672684688674e-17,
+      "informative_target_mismatch_count": 0,
+      "new_vs_stage263_keys": 43,
+      "lost_vs_stage263_keys": 802,
+      "new_rows_by_year": {
+        "2017": 35,
+        "2018": 8
+      },
+      "after_close_maturity": "label_end<=explicit asof and eval_date<asof",
+      "mature_asof": "2026-10-14",
+      "mature_rows": 535,
+      "max_informative_label_end": "2026-09-22",
+      "old_attempt_and_final_all_csv_columns_identical": [
+        "all_sample_contract.csv",
+        "qualified_samples.csv",
+        "informative_samples.csv",
+        "monthly_counts.csv",
+        "annual_sample_counts.csv"
+      ],
+      "resolved_findings": [
+        "Initial duplicate contract-date source PNL acceptance could double count; final guard rejects, no actual source duplicates",
+        "Initial executed-script digest mismatch resolved by final pure census rebuild; no financial replay repeated"
+      ],
+      "P2_findings": [
+        {
+          "location": "stage267_build_monthly_samples.py:281",
+          "detail": "asof date syntax/range checked but calendar membership not explicitly checked; non-source-day after-close census is conservatively equivalent to latest prior source close, so no observed leak in actual2026-10-14 source-day run"
+        }
+      ],
+      "limits": [
+        "Source policy/model is ex-post fixed and not certified historical PIT/OOS",
+        "Qualified zero/constant target rows intentionally retain null target; only informative rows are meaningful training candidates",
+        "Coverage-failed placeholders are excluded from history or labels, not treated as observed economic zero",
+        "Stage263+43/-802 availability-key difference is not causal improvement",
+        "No model fitting, performance claim or deployment qualification"
+      ],
+      "input_and_output_bindings": [
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_build_monthly_samples.py",
+          "bytes": 22611,
+          "sha256": "e7932ba5b0669c80a1449da63487e3be909792d62571d3427880e959f48b2ccf"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/test_stage267_build_monthly_samples.py",
+          "bytes": 12894,
+          "sha256": "0de9bae4553a17b68f6624beeb9d38de5b4616231f9261205e3b1581173eab9e"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage262_ai_sample_contract.py",
+          "bytes": 5811,
+          "sha256": "6617da56dded1d16eb7215affb966b7498063fc706b38562e91df7f574c2ba7c"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/sample_summary.json",
+          "bytes": 8037,
+          "sha256": "0bc0980d80f5e12c83af593df1d79f8d16e52393d157001a4707b5d0e7117c6e"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/feature_contract.json",
+          "bytes": 4962,
+          "sha256": "f561de779808185884dd44aea5a9732db21683a69eb9d6fc8b063c407733debd"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/all_sample_contract.csv",
+          "bytes": 3737481,
+          "sha256": "c5c60bc2a01f20855c06c1adb25998dc2bec9d2a1e2ad622e03263da0c11216b"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/qualified_samples.csv",
+          "bytes": 705579,
+          "sha256": "d620ded30914fe3760e80b7260007da3a5fc23eec5af89cfd4eb672c97aadea1"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_monthly_samples_final/informative_samples.csv",
+          "bytes": 697069,
+          "sha256": "194cd49fccb52fe9c5ff36b9763549adc3f1ff44d3381747c85a39289a7dff14"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/product_coverage.csv",
+          "bytes": 4897121,
+          "sha256": "c536f40d5cf1c89773f0945e035ee6ce927f146f9315b22f6f76b20745a1bc52"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_calendar.csv",
+          "bytes": 45413,
+          "sha256": "0ca75571a27247b95b74eae17bba6782b15cc818af82f986f43200ddcd75bbb9"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_position_changes.csv",
+          "bytes": 117966705,
+          "sha256": "d32a18207b125084cc9cb3a0bbb6a9f63d776136908fb4885b78e9fbd424e18b"
+        },
+        {
+          "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_clean_training_source/source_entry_candidate_snapshots.csv",
+          "bytes": 2418626,
+          "sha256": "c3a0a40ea3bd5e824f7c60c7f48bd7a741836d5527b2bff3b9f7b280a8ce1e74"
+        }
+      ],
+      "financial_replays": 0,
+      "training_runs": 0,
+      "model_predictions": 0,
+      "data_corrected": 0,
+      "implementation_files_modified": false,
+      "boundary_tests": {
+        "executed_with": ".py311/bin/python",
+        "test_count": 20,
+        "passed": 20,
+        "failures": 0,
+        "final_test_file_sha256": "0de9bae4553a17b68f6624beeb9d38de5b4616231f9261205e3b1581173eab9e",
+        "pure_fixture_only_no_financial_replay": true,
+        "includes_future_perturbation_feature_invariance": true,
+        "includes_duplicate_contract_PNL_rejection": true
+      }
+    },
+    "method": "Separate independent reviewer, no repeated monthly calculation in this source audit"
+  },
+  "finding_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 5
+  },
+  "reused_independent_source_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_independent_review/source_only_review_initial.json",
+    "bytes": 12635,
+    "sha256": "b75a6ed7f620bf3acc03632bd45a75a4497bf17d80df7dbac4918646e1926038"
+  },
+  "original_source_validation_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage267_independent_review.py",
+    "bytes": 20783,
+    "sha256": "313905ac1b1675d8738b87923bc5f78b10bbeb0f845a61713bb2c04667f7024c"
+  },
+  "candidate_equity_evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_independent_review/candidate_equity_timing_comparison.csv",
+    "bytes": 154047,
+    "sha256": "b373d705c9c1bd2ef565821b89f2f25d2b37f0d6a2f11f71abd6f41dc592136f"
+  },
+  "derived_metadata_evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_independent_review/current_native_metadata_reference.json",
+    "bytes": 152096,
+    "sha256": "71d50339ecb6c42cee021b0250a3536b1b4f710c8429cea649e9a842c92c2106"
+  },
+  "real_day_trade_price_comparison": {
+    "evidence_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage267_independent_review/trade_price_comparison.json",
+    "evidence_sha256": "389eabd05c05d6a835eac39ac09914a9105fcd71453ff5c84a84deed28c13270",
+    "summary": {
+      "trade_rows": 1633,
+      "price_matches_real_clean_or_validated_current_ledger": true,
+      "price_offset_ticks_min": -1.0000000000047748,
+      "price_offset_ticks_max": 1.5,
+      "max_tick_grid_rounding_error": 3.637978807091713e-12,
+      "offset_tick_value_counts": {
+        "-1.0": 266,
+        "-0.5": 8,
+        "0.0": 725,
+        "0.5": 8,
+        "1.0": 624,
+        "1.5": 2
+      },
+      "note": "Every trade date has a real clean bar; current close was independently verified in the source audit. Same-day-close order pricing is a frozen research execution convention, not proof of actual market fillability. No deferred orders occurred, so recovery pricing branch unexercised.",
+      "detail_csv_sha256": "6c655fdb6cc2c39beb6a13b58c13971bd46bc5f3f9e0defc3c3f9cdc4d3946fb"
+    }
+  },
+  "source_mathematical_evidence_policy": "All 1,440,036-row economic checks, selected clean-key and asof checks were executed exactly once in the initial audit. Finalization only updates findings, delegated-monthly references and current review-script receipt; no full source audit or financial engine was rerun."
+}

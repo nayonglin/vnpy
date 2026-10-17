@@ -1,0 +1,17 @@
+{
+  "trade_rows": 1633,
+  "price_matches_real_clean_or_validated_current_ledger": true,
+  "price_offset_ticks_min": -1.0000000000047748,
+  "price_offset_ticks_max": 1.5,
+  "max_tick_grid_rounding_error": 3.637978807091713e-12,
+  "offset_tick_value_counts": {
+    "-1.0": 266,
+    "-0.5": 8,
+    "0.0": 725,
+    "0.5": 8,
+    "1.0": 624,
+    "1.5": 2
+  },
+  "note": "Every trade date has a real clean bar; current close was independently verified in the source audit. Same-day-close order pricing is a frozen research execution convention, not proof of actual market fillability. No deferred orders occurred, so recovery pricing branch unexercised.",
+  "detail_csv_sha256": "6c655fdb6cc2c39beb6a13b58c13971bd46bc5f3f9e0defc3c3f9cdc4d3946fb"
+}
